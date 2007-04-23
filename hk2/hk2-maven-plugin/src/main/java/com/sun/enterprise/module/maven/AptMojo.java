@@ -7,7 +7,7 @@ import org.apache.maven.plugin.AbstractCompilerMojo;
 import java.lang.reflect.Field;
 
 /**
- * @goal modsys-compile
+ * @goal hk2-compile
  * @phase compile
  * @author Kohsuke Kawaguchi
  */
@@ -16,7 +16,7 @@ public class AptMojo extends CompilerMojo {
     public void execute() throws MojoExecutionException, CompilationFailureException {
         // overwrite the compilerId value. This seems to be the only way to
         //do so without touching the copied files.
-        setField("compilerId", "modsys-apt");
+        setField("compilerId", "hk2-apt");
 
         super.execute();
     }

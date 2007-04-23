@@ -54,7 +54,7 @@ public class MavenProjectRepository extends AbstractRepositoryImpl {
         // adds the ones that we already know of.
         Artifact ma = project.getArtifact();
         if(!project.getPackaging().equals("pom") && ma.getFile()==null) {
-            // allow people to run "modsys:run" without executing the compilie phase.
+            // allow people to run "hk2:run" without executing the compilie phase.
             // so pick up the default
             File outdir = new File(project.getBuild().getOutputDirectory());
             if(!outdir.exists())

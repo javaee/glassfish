@@ -3,13 +3,13 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.sun.enterprise</groupId>
-        <artifactId>modsys-parent</artifactId>
+        <artifactId>hk2-parent</artifactId>
         <version>0.1-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     
-    <artifactId>modsys</artifactId>
-    <name>Modsys core module</name>
+    <artifactId>hk2</artifactId>
+    <name>HK2 core module</name>
 
     <dependencies>
         <dependency>

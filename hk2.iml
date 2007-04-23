@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module version="4" relativePaths="true" type="JAVA_MODULE">
+  <component name="ModuleRootManager" />
+  <component name="NewModuleRootManager" inherit-compiler-output="true">
+    <exclude-output />
+    <content url="file://$MODULE_DIR$">
+      <sourceFolder url="file://$MODULE_DIR$/hk2/apt/src/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/hk2/auto-depends-tests/test1/src/main/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/hk2/auto-depends/src/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/hk2/core/src/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/hk2/core/test/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/hk2/hk2-maven-plugin/src/main/java/com/sun/enterprise/module/maven" isTestSource="false" packagePrefix="org.apache.maven.plugin" />
+      <sourceFolder url="file://$MODULE_DIR$/hk2/hk2-maven/src/main/java" isTestSource="false" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntryProperties />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <option name="ACTIVE_VCS_NAME" value="svn" />
+    <option name="USE_PROJECT_VCS" value="false" />
+  </component>
+</module>
+

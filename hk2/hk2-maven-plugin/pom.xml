@@ -2,15 +2,15 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>com.sun.enterprise</groupId>
-    <artifactId>modsys-parent</artifactId>
+    <artifactId>hk2-parent</artifactId>
     <version>0.1-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
   
-  <artifactId>modsys-maven-plugin</artifactId>
+  <artifactId>hk2-maven-plugin</artifactId>
   <packaging>maven-plugin</packaging>
   
-  <name>Maven Plugin for modsys</name>
+  <name>Maven Plugin for hk2</name>
   <!--
   <description>Maven2 plugin for developing </description>
   -->
@@ -21,7 +21,7 @@
   <dependencies>
     <dependency>
       <groupId>com.sun.enterprise</groupId>
-      <artifactId>modsys-maven</artifactId>
+      <artifactId>hk2-maven</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
