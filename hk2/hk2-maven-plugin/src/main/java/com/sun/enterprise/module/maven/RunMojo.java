@@ -72,8 +72,8 @@ public class RunMojo extends AbstractMojo {
     public void execute() throws MojoExecutionException, MojoFailureException {
 
         // sanity check
-        if(project.getPackaging().equals("modsys-jar") && project.getArtifact()==null) {
-            getLog().warn("This project isn't compiled yet. Perhaps you meant 'mvn compile modsys:run'?");
+        if(project.getPackaging().equals("hk2-jar") && project.getArtifact()==null) {
+            getLog().warn("This project isn't compiled yet. Perhaps you meant 'mvn compile hk2:run'?");
         }
 
         try {

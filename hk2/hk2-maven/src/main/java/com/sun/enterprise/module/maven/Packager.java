@@ -79,7 +79,7 @@ public class Packager {
                 name = attributes.getValue(ManifestConstants.BUNDLE_NAME);
             }
             if(name !=null) {
-                    // this is a modsys module
+                    // this is a hk2 module
                     if(!a.isOptional())
                         dependencyModuleNames.add(name);
 
@@ -92,11 +92,11 @@ public class Packager {
         }
 
         // find jar files to be listed in Class-Path. This needs to include transitive
-        // dependencies, except when the path involves a modsys module.
+        // dependencies, except when the path involves a hk2 module.
         TokenListBuilder classPathNames = new TokenListBuilder(" ");
         TokenListBuilder classPathIds = new TokenListBuilder(" ");
         for (Artifact a : (Set<Artifact>)pom.getArtifacts()) {
-            // check the trail. does that include modsys module in the path?
+            // check the trail. does that include hk2 module in the path?
             boolean throughModule = false;
             for (String module : dependencyModules)
                 throughModule |= a.getDependencyTrail().get(1).toString().startsWith(module);

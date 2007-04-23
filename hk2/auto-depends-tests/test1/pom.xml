@@ -9,6 +9,6 @@
     </parent>
     
     <artifactId>test1</artifactId>
-    <packaging>modsys-jar</packaging>
-    <name>modsys test</name>
+    <packaging>hk2-jar</packaging>
+    <name>HK2 test</name>
 </project>

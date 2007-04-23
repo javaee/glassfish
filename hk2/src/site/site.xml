@@ -1,9 +1,9 @@
 <?xml version="1.0" ?>
-<project name="ModSys">
+<project name="hk2">
   <bannerLeft>
-    <name>ModSys</name>
+    <name>hk2</name>
     <src>https://glassfish.dev.java.net/glassfish.gif</src>
-    <href>https://modsys.dev.java.net/</href>
+    <href>https://hk2.dev.java.net/</href>
   </bannerLeft>
   <skin>
     <groupId>org.jvnet.maven-javanet-skin</groupId>

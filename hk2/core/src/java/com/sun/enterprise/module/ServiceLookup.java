@@ -12,7 +12,7 @@ import java.util.logging.Level;
  * @author Kohsuke Kawaguchi
  */
 public abstract class ServiceLookup implements org.jvnet.hk2.component.ServiceLookup {
-    // no subclassing is allowed outside modsys
+    // no subclassing is allowed outside hk2
     ServiceLookup() {
     }
 

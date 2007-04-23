@@ -40,7 +40,7 @@ import java.util.jar.Manifest;
 /**
  * {@link ModuleDefinition} implementation that picks up most of the module
  * properties from the manifest file of the jar, as baked in by
- * the modsys-maven-plugin.
+ * the hk2-maven-plugin.
  *
  * @author Jerome Dochez
  */

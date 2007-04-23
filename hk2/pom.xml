@@ -2,14 +2,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.sun.enterprise</groupId>
-    <artifactId>modsys-parent</artifactId>
+    <artifactId>hk2-parent</artifactId>
     <packaging>pom</packaging>
     
     <version>0.1-SNAPSHOT</version>
     <name>Modules Subsystem</name>
     <description>Generic Modules subsystem</description>
     <scm>
-        <connection>scm:svn:https://${java.net.usernane}@modsys.dev.java.net/svn/modsys</connection>
+        <connection>scm:svn:https://${java.net.usernane}@hk2.dev.java.net/svn/hk2</connection>
     </scm>
     <distributionManagement>
         <site>
@@ -47,8 +47,8 @@
         <module>auto-depends-tests</module>
         <module>apt</module>
         <module>core</module>
-        <module>modsys-maven</module>
-        <module>modsys-maven-plugin</module>
+        <module>hk2-maven</module>
+        <module>hk2-maven-plugin</module>
     </modules>
 
     <dependencies>
