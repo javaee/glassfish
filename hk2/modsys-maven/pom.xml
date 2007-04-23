@@ -1,0 +1,45 @@
+<!--
+  This module hosts Maven-support code for modsys,
+  which should be reusable for any maven embedding application.
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>com.sun.enterprise</groupId>
+    <artifactId>modsys-parent</artifactId>
+    <version>0.1-SNAPSHOT</version>
+    <relativePath>../pom.xml</relativePath>
+  </parent>
+  <artifactId>modsys-maven</artifactId>
+  <packaging>jar</packaging>
+  
+  <name>Module system maven support</name>
+  <description>Maven2 plugin for developing</description>
+
+  <build>
+    <sourceDirectory>src/main/java</sourceDirectory>
+  </build>
+  <dependencies>
+    <dependency>
+      <groupId>com.sun.enterprise</groupId>
+      <artifactId>modsys</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.apache.maven</groupId>
+      <artifactId>maven-project</artifactId>
+      <version>2.0.4</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.maven</groupId>
+      <artifactId>maven-artifact</artifactId>
+      <version>2.0.4</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.maven</groupId>
+      <artifactId>maven-archiver</artifactId>
+      <version>2.0.4</version>
+    </dependency>
+  </dependencies>
+</project>
