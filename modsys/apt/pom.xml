@@ -1,0 +1,50 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <parent>
+        <groupId>com.sun.enterprise</groupId>
+        <artifactId>modsys-parent</artifactId>
+        <version>0.1-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>auto-depends-plugin</artifactId>
+    <packaging>jar</packaging>
+    <name>Service File APT plugin</name>
+    <description>Automatic Service file generation APT tool plugin</description>    
+    <build>
+        <sourceDirectory>src/java</sourceDirectory>  
+        <resources>
+            <resource>
+                <directory>src/misc</directory>
+            </resource>
+        </resources>
+    </build>
+    <dependencies>
+        <dependency>
+            <groupId>com.sun.enterprise</groupId>
+            <artifactId>auto-depends</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>  
+    </dependencies>
+  <profiles>
+    <profile>
+	<!-- This is only for non MAC OS X builds, hence the property below -->
+      <id>default-tools.jar</id>
+      <activation>
+        <property>
+          <name>java.vendor</name>
+          <value>Sun Microsystems Inc.</value>
+       </property>
+     </activation>
+      <dependencies>
+        <dependency>
+          <groupId>com.sun</groupId>
+          <artifactId>tools</artifactId>
+          <version>1.4.2</version>
+          <scope>system</scope>
+          <systemPath>${java.home}/../lib/tools.jar</systemPath>
+       </dependency>
+     </dependencies>
+   </profile>
+ </profiles>
+</project>
