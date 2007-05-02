@@ -1,3 +1,4 @@
-com.sun.enterprise.annotations
-com.sun.enterprise.component
-com.sun.enterprise.dependency
+com.sun.hk2.component
+com.sun.hk2.utils
+org.jvnet.hk2.annotations
+org.jvnet.hk2.component
