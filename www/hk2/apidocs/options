@@ -1,0 +1,16 @@
+-classpath '/Users/dochez/java/svn/hk2/hk2/core/target/classes:/Users/dochez/.m2/repository/com/sun/enterprise/auto-depends/0.1-SNAPSHOT/auto-depends-0.1-SNAPSHOT.jar' -protected
+-sourcepath
+'/Users/dochez/java/svn/hk2/hk2/core/src/java'
+-author
+-bottom
+'Copyright &copy; 2007. All Rights Reserved.'
+-charset
+'ISO-8859-1'
+-d
+'/Users/dochez/java/svn/hk2/hk2/core/target/site/apidocs'
+-doctitle
+'HK2 core module 0.1-SNAPSHOT API'
+-use
+-version
+-windowtitle
+'HK2 core module 0.1-SNAPSHOT API'
