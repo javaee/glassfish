@@ -1,0 +1,243 @@
+Introduction
+
+    With the GF v3 module system, the module system is already responsible for instanciating many classes that constitute the application functionality.
+
+    HK2 components runtime will complement the module system so that it creates objects, but it configures such objects by:
+
+    * injecting other objects that are needed by a newly instanciated object.
+
+    * injecting configuration information needed for that object.
+
+    * making newly created objects available, so that it can be then injected to other objects that need it.
+
+Services
+
+    HK2 relies on the notion of Service to identify the building blocks or the extension points of an application. Services are just POJO :
+
+    * implementating an interface
+
+    * declared in jar with the META-INF/services file
+
+    To clearly separatethe contract interface and its implementation, the HK2 runtime needs to understand what interfaces
+are contract and what implemenations of such interfaces are services, so this call for an annotation describing
+interfaces as a service contract.
+
+
++-----+
+@Retention(RUNTIME)
+@Target(TYPE)
+public @interface Contract {   
+}
++-----+
+
+    Implementations of such contract should also be annotated with an annotation so the HK2 runtime can identify them
+as contracts implementations.
+
++-----+
+@Retention(RUNTIME)
+@Target(TYPE)
+public @interface Service {
+...
+}
++-----+
+
+    see {{{auto-depends/apidocs/org/jvnet/hk2/annotations/Service.html}Service}} for complete reference
+
+
+* Build System
+
+    When using maven 2 to build HK2 components, users should invoke the auto-depends plugin for maven so the META-INF/services
+files are generated automatically during build time.
+
+    Example of the maven plugin configuration :
+
+--------------
+            <plugin>
+                <groupId>com.sun.enterprise</groupId>
+                <artifactId>hk2-maven-plugin</artifactId>
+                <configuration>
+                    <includes>
+                        <include>com/sun/enterprise/v3/**</include>
+                    </includes>
+                </configuration>
+            </plugin>
+--------------
+
+    Example on how to use {{{auto-depends/apidocs/org/jvnet/hk2/annotations/Contract.html}@Contract}}
+     and {{{auto-depends/apidocs/org/jvnet/hk2/annotations/Service.html}@Service}} and resulting META-INF/services files.
+    
++----+
+package com.sun.v3.annotations;
+@Contract
+public interface Startup {...}
+
+
+package com.wombat;
+@Contract
+public interface RandomContract {...}
+
+
+package com.sun.v3;
+@Service
+public class MyService implements Startup, RandomContract, PropertyChangeListener {
+...
+}
++----+
+
+    will generate the following META-INF/services files :
+
+---
+com.sun.v3.annotations.Startup
+com.wombat.RandomContract
+with the com.sun.v3.MyService content    
+---
+
+* Runtime
+
+    Once Services are defined, HK2 runtime can be used to instantiate or retrieve instances of services. Each service
+instance can be scoped to be Singleton, per thread, per application or custom. This allow for greater flexibility.
+
+** Scopes
+
+    Scopes are services themselves, so they can be custom defined and added to the HK2 runtime before being used by other
+ services. Each scope is responsible for storing the services instances which are tied to itself, therefore HK2 runtime
+ does not rely on predefined scopes (although it comes with a few predefined ones).
+
++------------+
+@Contract
+public abstract class Scope {
+    public abstract ScopeInstance current();
+}
++------------+
+
+    Example of scoping for service to the predefined {{{org.jvnet.hk2.component.Singleton.html}Singleton}} Scope
+
++--------------+
+@Service
+public Singleton implements Scope {
+...
+}
+
+@Scope(Singleton.class)
+@Service
+public class SingletonService implements RandomContract {
+...
+}
++--------------+
+
+    For the curious reader, you can experiment defining a new Scope implementation and have that scope used on your
+@Service implementations. You will see that the HK2 runtime use the Scope instance to store/retrieve services instances
+tied to that scope.
+
+** Instantiation
+
+    Instantiation of components
+
+    In the IoC world, components are not instantiated using a new () method call. Components are retrieved using the
+ComponentManager instance. The simplest way is to do that is through a getComponent(Class<T> contract) call although there are more
+APIs available at {{{auto-depends/apidocs/org/jvnet/hk2/compinent/ComponentManager.html}ComponentManager}}
+
++-----------+
+    /**
+     * Obtains a reference to the component inside the manager.
+     *
+     * <p>
+     * This is the "new Foo()" equivalent in the IoC world.
+     *
+     * <p>
+     * Depending on the {@link Scope} of the component, a new instance
+     * might be created, or an existing instance might be returned.
+     *
+     * @return
+     *      non-null.
+     * @throws ComponentException
+     *      If failed to obtain a requested instance.
+     *      In practice, failure only happens when we try to create a
+     *      new instance of the component.
+     */
+    public <T> T getComponent(Class<T> clazz) throws ComponentException
++--------------+
+
+** Lifecycle
+
+    Components can attach behaviours to their construction and destruction events by implementing the {{{auto-depends/apidocs/org/jvnet/hk2/component/PostContruct.html}PostConstruct}} and/or
+the {{{auto-depends/apidocs/org/jvnet/hk2/component/PreDestroy.html}PreDestroy}} interfaces. Interfaces have been used rather than annotations for performance as it is faster to cast component instance to any of these interfaces to check if the component has implemented one of them rather than using
+reflection on all methods to find if they are annotated.
+
+
+Inversion of Control
+
+* Injection
+
+    Services usually rely of other services to perform their tasks and the model described above can easily be extended
+to have the HK2 runtime identify the @Contract implementations required by a service. This call for a new annotation
+{{{auto-depends/apidocs/org/jvnet/hk2/annotations/Inject.html}Inject}} which can be placed on fields or setter methods of
+any Service instantiated by the HK2 runtime and have that Service retrieved and injected during the service's instantiation
+by the component manager.
+
++----------+
+Field :
+@Inject
+ConfigService config;
+
+Setter method :
+@Inject
+public void set(ConfigService svc) {..}
++----------+
+
+    Injection can further qualify the intended injected service implementation by using a name and scope from which the
+    service should be available.
+
++----------+
+@Inject(Scope=Singleton.class, name="deploy")
+AdminCommand deployCommand;
++----------+
+
+
+* Extraction
+
+    Although all Services are automatically placed into the Scope for later retrieval, it is conceivable that a component
+want to extract more than itself. One pratical way of doing so is to use a Factory service, however, for simplicity, the HK2
+runtime will also extract all fields or getter methods annotated with {{{auto-depends/apidocs/org/jvnet/hk2/annotations/Extract.html}Extract}}
+
++----------+
+Field :
+@Extract
+ConfigService config;
+
+Getter method :
+@Extract
+public ConfigService getConfigService() {..}
++----------+
+
+    Extraction can also use the name and scope annotation fields to further qualify the extracted Contract implementation.
+
+* Instantiation cascading
+
+    Injection of instances which have not been already instantiated triggers more instantiation. In a sense, you can see this
+as a components instantiation cascading where some code requests for a high level Service will in turn throuh @Inject
+annotation requires more injection/instantiation of lower level Services. This important feature is a great tool to keep
+the implementation as private as possible while relying on interfaces and separation of contract/providers.
+
+    Below is the example of how the instantiation of DeploymentService as a Startup contract implementation will trigger
+    the instantiation of the ConfigService.
+    
++----------+
+@Contract
+public interface Startup {...}
+
+Iterable<Startup> startups;
+startups = componentMgr.getComponents(Startup.class);
+
+@Service
+public class DeploymentService implements Startup {
+
+    @Inject
+    ConfigService config;
+}
+
+@Service
+public Class ConfigService implements ... {...}
+
++----------+
+
