@@ -12,7 +12,7 @@
   </skin>
   <body>
     <links>
-      <item name="Glassfish" href="http://glassfishi.dev.java.net/"/>
+      <item name="Glassfish" href="http://glassfish.dev.java.net/"/>
     </links>
 
     <menu name="Module Subsystem">
@@ -25,8 +25,11 @@
       -->
     </menu>
 
-    <menu name="APIs">
+    <menu name="Modules APIs">
       <item name="APIs" href="apidocs/index.html"/>
+    </menu>
+    <menu name="Components APIs">
+      <item name="APIs" href="auto-depends/apidocs/index.html"/>
     </menu>
 
     ${reports}
