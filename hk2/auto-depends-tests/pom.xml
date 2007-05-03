@@ -15,6 +15,7 @@
     
     <modules>
         <module>test1</module>
+        <module>test2</module>
     </modules>
     
     <build>

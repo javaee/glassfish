@@ -8,15 +8,15 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
     
-    <artifactId>test1</artifactId>
+    <artifactId>test2</artifactId>
     <packaging>hk2-jar</packaging>
     <name>HK2 test</name>
 
-    <dependencies>
-        <dependency>
-          <groupId>commons-discovery</groupId>
-          <artifactId>commons-discovery</artifactId>
-          <version>0.4</version>
-        </dependency>
-    </dependencies>
+  <dependencies>
+    <dependency>
+      <groupId>com.sun.enterprise.auto-depends-test</groupId>
+      <artifactId>test1</artifactId>
+      <version>${version}</version>
+    </dependency>
+  </dependencies>
 </project>
