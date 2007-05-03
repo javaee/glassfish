@@ -21,7 +21,9 @@
  * Copyright 2006 Sun Microsystems, Inc. All rights reserved.
  */
 
-package com.sun.enterprise.module.impl;
+package com.sun.enterprise.module;
+
+import com.sun.enterprise.module.impl.Utils;
 
 import java.io.IOException;
 import java.io.PrintStream;
@@ -35,7 +37,7 @@ import java.util.HashSet;
  *
  * @author dochez
  */
-public class ClassLoaderFacade extends URLClassLoader {
+final class ClassLoaderFacade extends URLClassLoader {
  
     private final static URL[] EMPTY_URLS = new URL[0];
     private HashSet<String> publicPkgs = null;

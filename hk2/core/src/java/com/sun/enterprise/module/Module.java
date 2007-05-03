@@ -24,8 +24,8 @@
 package com.sun.enterprise.module;
 
 
-import com.sun.enterprise.module.impl.ClassLoaderFacade;
-import com.sun.enterprise.module.impl.ModuleClassLoader;
+import com.sun.enterprise.module.ClassLoaderFacade;
+import com.sun.enterprise.module.ModuleClassLoader;
 import com.sun.enterprise.module.impl.Utils;
 
 import java.io.File;
@@ -37,7 +37,6 @@ import java.net.URL;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -66,7 +65,7 @@ public final class Module extends ServiceLookup {
     private volatile ModuleClassLoader privateCL;
 
     /**
-     * Lazily loaded provider {@link Class}es from {@link ServiceProviderInfo}.
+     * Lazily loaded provider {@link Class}es from {@link ServiceProviderInfoList}.
      * The key is the service class name. We can't use {@link Class} because that would cause leaks.
      */
     private final Map<String,List<Class>> serviceClasses = new ConcurrentHashMap<String,List<Class>>();
@@ -128,7 +127,7 @@ public final class Module extends ServiceLookup {
      * module definition
      * @return the private <code>ClassLoader</code> instance
      */
-    private ModuleClassLoader getPrivateClassLoader() {
+    /*package*/ ModuleClassLoader getPrivateClassLoader() {
         if (privateCL==null) {
             synchronized(this) {
                 if(privateCL==null) {
@@ -251,7 +250,7 @@ public final class Module extends ServiceLookup {
      * @return a collection of ServiceProviderInfo 
      * 
      */
-    public Collection<ServiceProviderInfo> getServiceProviders() {
+    public ServiceProviderInfoList getServiceProviders() {
         return moduleDef.getServiceProviders();
     }
     
@@ -505,16 +504,13 @@ public final class Module extends ServiceLookup {
         // the worst case scenario in the race situation is we end up creating the same list twice,
         // which is not a big deal.
 
-        for( ServiceProviderInfo spi : getServiceProviders()) {
-            if(!spi.getServiceName().equals(name))
-                continue;
-
+        for( String provider : getServiceProviders().getEntry(name).providerNames) {
             if(r==null)
                 r = new ArrayList<Class>();
             try {
-                r.add(getPrivateClassLoader().loadClass(spi.getProviderName()));
+                r.add(getPrivateClassLoader().loadClass(provider));
             } catch (ClassNotFoundException e) {
-                Utils.getDefaultLogger().log(Level.SEVERE, "Failed to load "+spi.getProviderName()+" from "+getName(),e);
+                Utils.getDefaultLogger().log(Level.SEVERE, "Failed to load "+provider+" from "+getName(),e);
             }
         }
 
@@ -534,11 +530,7 @@ public final class Module extends ServiceLookup {
         List<Class> v = serviceClasses.get(name);
         if(v!=null && !v.isEmpty())    return true;
 
-        for( ServiceProviderInfo spi : getServiceProviders())
-            if(spi.getServiceName().equals(name))
-                return true;
-
-        return false;
+        return getServiceProviders().getEntry(name).hasProvider();
     }
 
     void dumpState(PrintStream writer) {

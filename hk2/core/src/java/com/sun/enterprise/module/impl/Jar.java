@@ -1,19 +1,17 @@
 package com.sun.enterprise.module.impl;
 
-import com.sun.enterprise.module.ServiceProviderInfo;
+import com.sun.enterprise.module.ServiceProviderInfoList;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Enumeration;
-import java.util.List;
-import java.util.Scanner;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 import java.util.logging.Level;
 import java.util.zip.ZipException;
+import java.net.URL;
 
 /**
  * Abstraction of {@link JarFile} so that we can handle
@@ -32,7 +30,7 @@ public abstract class Jar {
     /**
      * Loads all <tt>META-INF/services</tt> entries and store them to the list.
      */
-    public abstract void getServiceProviders(List<ServiceProviderInfo> result);
+    public abstract void getServiceProviders(ServiceProviderInfoList result);
 
     /**
      * Gets the base name of the jar.
@@ -48,22 +46,6 @@ public abstract class Jar {
         else
             return new Archive(file);
     }
-
-    /**
-     * Loads a single service file.
-     */
-    protected final void load(InputStream is, String serviceName, List<ServiceProviderInfo> result) throws IOException {
-        try {
-            Scanner scanner = new Scanner(is);
-            while (scanner.hasNext()) {
-                ServiceProviderInfo info = new ServiceProviderInfo(serviceName, scanner.next());
-                result.add(info);
-            }
-        } finally {
-            is.close();
-        }
-    }
-
 
     private static final class Directory extends Jar {
         private final File dir;
@@ -86,7 +68,7 @@ public abstract class Jar {
             }
         }
 
-        public void getServiceProviders(List<ServiceProviderInfo> result) {
+        public void getServiceProviders(ServiceProviderInfoList result) {
             File[] services = new File(dir,SERVICE_LOCATION).listFiles();
             if(services==null)  return;
 
@@ -95,7 +77,7 @@ public abstract class Jar {
                     continue;
 
                 try {
-                    load(new FileInputStream(svc), svc.getName(), result);
+                    result.load( svc.toURL(), svc.getName() );
                 } catch(IOException e) {
                     Utils.getDefaultLogger().log(Level.SEVERE, "Error reading service provider in " + svc, e);
                 }
@@ -127,7 +109,7 @@ public abstract class Jar {
             return jar.getManifest();
         }
 
-        public void getServiceProviders(List<ServiceProviderInfo> result) {
+        public void getServiceProviders(ServiceProviderInfoList result) {
             Enumeration<JarEntry> entries = jar.entries();
             while (entries.hasMoreElements()) {
                 JarEntry entry = entries.nextElement();
@@ -135,7 +117,7 @@ public abstract class Jar {
                     String serviceName = entry.getName().substring(SERVICE_LOCATION.length()+1);
 
                     try {
-                        load(jar.getInputStream(entry), serviceName, result);
+                        result.load( new URL("jar:"+file.toURL()+"!/"+entry.getName()), serviceName, jar.getInputStream(entry));
                     } catch(IOException e) {
                         Utils.getDefaultLogger().log(Level.SEVERE, "Error reading service provider in " + jar.getName(), e);
                     }

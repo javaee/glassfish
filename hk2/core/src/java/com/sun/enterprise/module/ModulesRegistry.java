@@ -35,6 +35,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -60,6 +61,16 @@ public class ModulesRegistry extends ServiceLookup implements ModuleChangeListen
     private final Map<Integer,Repository> repositories = new TreeMap<Integer,Repository>();
 
     private final ConcurrentMap<Class, CopyOnWriteArrayList> runningServices = new ConcurrentHashMap<Class,CopyOnWriteArrayList>();
+
+    /**
+     * Service provider class names and which modules they are in.
+     *
+     * <p>
+     * This is used for the classloader punch-in hack &mdash; to work nicely
+     * with classic service loader implementation, we need to be able to allow
+     * any modules to see these classes.
+     */
+    private final Map<String,Module> providers = new HashMap<String,Module>();
 
     /**
      * Creates and return a new top-level registry instance
@@ -232,6 +243,12 @@ public class ModulesRegistry extends ServiceLookup implements ModuleChangeListen
         //}
         assert newModule.getRegistry()==this;
         modules.put(newModule.getModuleDefinition().getName(), newModule);
+
+        // pick up providers from this module
+        for( ServiceProviderInfoList.Entry spi : newModule.getServiceProviders().getEntries() ) {
+            for( String name : spi.providerNames )
+                providers.put(name,newModule);
+        }
     }
     
     /**
@@ -447,6 +464,13 @@ public class ModulesRegistry extends ServiceLookup implements ModuleChangeListen
         List r = runningServices.get(serviceClass);
         if(r!=null)     return r;
         return Collections.emptyList();
+    }
+
+    /**
+     * Gets the {@link Module} that provides the provider of the given name.
+     */
+    /*package*/ Module getProvidingModule(String providerClassName) {
+        return providers.get(providerClassName);
     }
 
     public void dumpState(PrintStream writer) {

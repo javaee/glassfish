@@ -21,10 +21,9 @@
  * Copyright 2006 Sun Microsystems, Inc. All rights reserved.
  */
 
-package com.sun.enterprise.module.impl;
+package com.sun.enterprise.module;
 
-import com.sun.enterprise.module.Module;
-import com.sun.enterprise.module.ModuleState;
+import com.sun.enterprise.module.impl.Utils;
 
 import java.io.IOException;
 import java.io.PrintStream;
@@ -35,12 +34,14 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Vector;
 
 /**
+ * {@link ClassLoader} that loads classes for a module.
  *
  * @author dochez
  */
-public class ModuleClassLoader extends URLClassLoader {
+final class ModuleClassLoader extends URLClassLoader {
     
     private final List<ClassLoader> surrogates = Collections.synchronizedList(new ArrayList<ClassLoader>());
     private final List<ClassLoaderFacade> facadeSurrogates = Collections.synchronizedList(new ArrayList<ClassLoaderFacade>());
@@ -73,12 +74,54 @@ public class ModuleClassLoader extends URLClassLoader {
 
     public URL getResource(String name) {
         initialize(name);
-        return super.getResource(name);
+        if(name.startsWith(META_INF_SERVICES)) {
+            // punch in. find the service loader from any module
+            String serviceName = name.substring(META_INF_SERVICES.length());
+
+            ModulesRegistry reg = module.getRegistry();
+            for( Module m : reg.getModules() ) {
+                List<URL> list = m.getServiceProviders().getDescriptors(serviceName);
+                if(!list.isEmpty())     return list.get(0);
+            }
+
+            // no such resource
+            return null;
+        } else {
+            // normal service look up
+            URL url = super.getResource(name);
+            if(url!=null)
+                return url;
+
+            // commons-logging looks for a class file resource for providers,
+            // so check for those
+            if(name.endsWith(".class")) {
+                String className = name.replace('/', '.').substring(0, name.length() - 6);
+                Module m = module.getRegistry().getProvidingModule(className);
+                if(m!=null)
+                    return m.getPrivateClassLoader().getResource(name);
+            }
+
+            return null;
+        }
     }
 
     public Enumeration<URL> getResources(String name) throws IOException {
         initialize(name);
-        return super.getResources(name);
+        if(name.startsWith(META_INF_SERVICES)) {
+            // punch in. find the service loader from any module
+            String serviceName = name.substring(META_INF_SERVICES.length());
+
+            Vector<URL> urls = new Vector<URL>();
+
+            ModulesRegistry reg = module.getRegistry();
+            for( Module m : reg.getModules() )
+                urls.addAll(m.getServiceProviders().getDescriptors(serviceName));
+
+            return urls.elements();
+        } else {
+            // normal look up
+            return super.getResources(name);
+        }
     }
 
     /**
@@ -135,35 +178,49 @@ public class ModuleClassLoader extends URLClassLoader {
 
     
     protected Class<?> findClass(String name) throws ClassNotFoundException {
-       
-        Class c = null;
-        synchronized(facadeSurrogates) {
-            for (ClassLoaderFacade classLoader : facadeSurrogates) {
-                try {
-                    c = classLoader.getClass(name);
-                } catch(ClassNotFoundException e) {
-                    // ignored.
-                }
-                if (c!=null) {
-                    return c;
+        try {
+            Class c=null;
+            synchronized(facadeSurrogates) {
+                for (ClassLoaderFacade classLoader : facadeSurrogates) {
+                    try {
+                        c = classLoader.getClass(name);
+                    } catch(ClassNotFoundException e) {
+                        // ignored.
+                    }
+                    if (c!=null) {
+                        return c;
+                    }
                 }
             }
-        }
-        synchronized(surrogates) {
-            for (ClassLoader classLoader : surrogates) {
-                try {
+            synchronized(surrogates) {
+                for (ClassLoader classLoader : surrogates) {
+                    try {
                         c = classLoader.loadClass(name);
-                } catch(ClassNotFoundException e) {
-                    // ignored.
-                }
-                if (c!=null) {
-                    return c;
+                    } catch(ClassNotFoundException e) {
+                        // ignored.
+                    }
+                    if (c!=null) {
+                        return c;
+                    }
                 }
             }
+            return findClassDirect(name);
+        } catch (ClassNotFoundException e) {
+            // is this for service loader punch-in?
+            Module m = getOwner().getRegistry().getProvidingModule(name);
+            if(m!=null)
+                return m.getPrivateClassLoader().findClassDirect(name);
+            throw e;
         }
+    }
+
+    /**
+     * {@link #findClass(String)} except the classloader punch-in hack.
+     */
+    private Class findClassDirect(String name) throws ClassNotFoundException {
         return super.findClass(name);
     }
-     
+
     public URL findResource(String name) {
         synchronized(facadeSurrogates) {
             for (ClassLoaderFacade classLoader : facadeSurrogates) {
@@ -241,4 +298,6 @@ public class ModuleClassLoader extends URLClassLoader {
         }
         return s.toString();
     }          
+
+    private static final String META_INF_SERVICES = "META-INF/services/";
 }
