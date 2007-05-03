@@ -114,7 +114,7 @@ public interface ModuleDefinition {
      * described in the JDK jar file format description.
      *
      * @return
-     *      Can be empty but never be null.
+     *      Always non-null.
      */
-    Collection<ServiceProviderInfo> getServiceProviders();
+    ServiceProviderInfoList getServiceProviders();
 }

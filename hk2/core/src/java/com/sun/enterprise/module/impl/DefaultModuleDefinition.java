@@ -26,13 +26,12 @@ package com.sun.enterprise.module.impl;
 import com.sun.enterprise.module.ManifestConstants;
 import com.sun.enterprise.module.ModuleDefinition;
 import com.sun.enterprise.module.ModuleDependency;
-import com.sun.enterprise.module.ServiceProviderInfo;
+import com.sun.enterprise.module.ServiceProviderInfoList;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
@@ -62,7 +61,7 @@ public class DefaultModuleDefinition implements ModuleDefinition {
     /**
      * Service entries exposed by this module.
      */
-    private final List<ServiceProviderInfo> services = new ArrayList<ServiceProviderInfo>();
+    private final ServiceProviderInfoList services = new ServiceProviderInfoList();
 
     /** TO DO need to support a URI constructor */
     public DefaultModuleDefinition(File location) throws IOException {
@@ -231,7 +230,7 @@ public class DefaultModuleDefinition implements ModuleDefinition {
         return manifest;
     }
 
-    public Collection<ServiceProviderInfo> getServiceProviders() {
+    public ServiceProviderInfoList getServiceProviders() {
         return services;
     }
 }
