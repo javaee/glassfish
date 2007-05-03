@@ -494,8 +494,10 @@ public final class Module extends ServiceLookup {
     }
 
     public <T> Iterable<Class<? extends T>> getProvidersClass(Class<T> serviceClass) {
-        String name = serviceClass.getName();
+        return getProvidersClass(serviceClass.getName());
+    }
 
+    public <T> Iterable<Class<? extends T>> getProvidersClass(String name) {
         List r = serviceClasses.get(name);
         if(r!=null) return r;
 
