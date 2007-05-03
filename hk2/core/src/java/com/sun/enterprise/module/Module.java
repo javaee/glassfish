@@ -493,12 +493,13 @@ public final class Module extends ServiceLookup {
         this.sticky = sticky;
     }
 
+    @SuppressWarnings({"unchecked"})
     public <T> Iterable<Class<? extends T>> getProvidersClass(Class<T> serviceClass) {
-        return getProvidersClass(serviceClass.getName());
+        return (Iterable)getProvidersClass(serviceClass.getName());
     }
 
-    public <T> Iterable<Class<? extends T>> getProvidersClass(String name) {
-        List r = serviceClasses.get(name);
+    public Iterable<Class> getProvidersClass(String name) {
+        List<Class> r = serviceClasses.get(name);
         if(r!=null) return r;
 
         // the worst case scenario in the race situation is we end up creating the same list twice,
