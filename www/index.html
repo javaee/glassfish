@@ -26,106 +26,6 @@
       <div class="xright">      <a href="http://glassfish.dev.java.net/">Glassfish</a>
       </div>
     -->
-    <div id="leftColumn">
-      <div id="navcolumn">
-             <dl class=navgroup>
-        <dt>Module Subsystem</dt>
-        <dd><ul>
-              
-    <li class="none">
-              <strong>Introduction</strong>
-        </li>
-          </ul></dd>
-    </dl>
-      <dl class=navgroup>
-        <dt>Modules APIs</dt>
-        <dd><ul>
-              
-    <li class="none">
-              <a href="modules.html">Description</a>
-        </li>
-              
-    <li class="none">
-              <a href="nonav/hk2/apidocs/index.html">APIs</a>
-        </li>
-          </ul></dd>
-    </dl>
-      <dl class=navgroup>
-        <dt>Components APIs</dt>
-        <dd><ul>
-              
-    <li class="none">
-              <a href="components.html">Description</a>
-        </li>
-              
-    <li class="none">
-              <a href="nonav/auto-depends/apidocs/index.html">APIs</a>
-        </li>
-          </ul></dd>
-    </dl>
-      <dl class=navgroup>
-        <dt>Project Documentation</dt>
-        <dd><ul>
-              
-                
-              
-      
-            
-      
-            
-      
-            
-      
-            
-      
-            
-      
-            
-      
-            
-      
-            
-      
-              
-        <li class="collapsed">
-              <a href="project-info.html">Project Information</a>
-              </li>
-              
-                
-              
-      
-              
-        <li class="collapsed">
-              <a href="project-reports.html">Project Reports</a>
-              </li>
-          </ul></dd>
-    </dl>
-        </div>
-      <script>
-        // replace the java.net project tools with the navigation bar from Maven.
-        // also get rid of "Get Involved" thingie too, while we are at it
-        var pt = document.getElementById("projecttools");
-        var nv = document.getElementById("navcolumn");
-        
-        while(pt.previousSibling!=null)
-          pt.parentNode.removeChild(pt.previousSibling);
-        
-        pt.parentNode.insertBefore(nv,pt);
-        pt.parentNode.removeChild(pt);
-      </script>
-      <script>
-        // kill "description" h3 bar
-        var ld = document.getElementById("longdescription");
-        if(ld!=null) {
-          for( n=ld.firstChild; n!=null; n=n.nextSibling ) {
-            if(n.nodeType==1 && n.innerHTML=="Description" ) {
-              n.parentNode.removeChild(n);
-              break;
-            }
-          }
-        }
-      </script>
-    </div>
     <div id="bodyColumn">
       <div id="contentBox">
         <div class="section"><h2>Introduction</h2><p>HK2 for Hundred Kilobytes Kernel is a module subsystem coupled with a simple yet powerful component model to build software. It is the foundation for the GlassFish V3 application server and consist of two technologies :</p><ul><li>Modules subsystem<p>Modern Java software usually rely on a module subsystem to offer a better level of isolation between parts of the application. Many technologies have been around for years, HK2 proposes a model which is aimed to be friendly to existing technologies such as OSGi yet will provide a path to the implementation of modules in Java SE 7.</p><p>Link to <a href="modules.html">Modules Subsystem</a></p></li><li>Component Model<p>On top of the module subsystem, HK2 define components which can also be seen as Services. These components can be automatically and dynamically discovered by the runtime and can use innovative tachnologies such as Inversion of Control or injection of dependencies as well as automatic resolution of dependencies.</p><p>Link to <a href="components.html">Component Model</a></p></li></ul><img src="images/300px-K2-big.jpg" alt="K2" /></div>
@@ -143,7 +43,7 @@
 
   
   
-  &nbsp;| Last Published: 05/02/2007
+  &nbsp;| Last Published: 05/14/2007
   &nbsp;| Version: 0.1-SNAPSHOT
 </div>
       <div class="clear">
