@@ -43,17 +43,6 @@ import org.jvnet.hk2.component.ComponentException;
  */
 public class Main {
 
-    final Logger logger;
-
-    /** Creates a new instance of Main */
-    public Main() {
-        logger = Logger.getAnonymousLogger();
-    }
-
-    public Main(Logger logger) {
-        this.logger = logger;
-    }
-
     public static void main(final String[] args) {
         (new Main()).run(args);       
     }
@@ -86,7 +75,7 @@ public class Main {
 
     /**
      *  We need to determine which jar file has been used to load this class
-     *  Using geth getResourceURL we can get this information, after that, it
+     *  Using the getResourceURL we can get this information, after that, it
      *  is just a bit of detective work to get the file path for the jar file.
      *
      * @return
@@ -99,7 +88,6 @@ public class Main {
     protected File getBootstrapFile() throws BootException {
         String resourceName = getClass().getName().replace(".","/")+".class";
         URL resource = getClass().getClassLoader().getResource(resourceName);
-        logger.fine("URL for " + resourceName + " is " + resource);
         if (resource==null) {
             throw new BootException("Cannot get bootstrap path from "
                     + resourceName + " class location, aborting");
@@ -110,7 +98,6 @@ public class Main {
                 JarURLConnection c = (JarURLConnection) resource.openConnection();
                 URL jarFile = c.getJarFileURL();
                 File f = new File(jarFile.toURI());
-                logger.fine("loaded from " + f);
                 return f;
             } catch (IOException e) {
                 throw new BootException("Cannot open bootstrap jar file", e);
@@ -126,6 +113,7 @@ public class Main {
      * @param args the command line arguments
      */
     public void start(String[] args) throws BootException {
+        
         File bootstrap = this.getBootstrapFile();
         File root = bootstrap.getAbsoluteFile().getParentFile();
 
@@ -135,8 +123,6 @@ public class Main {
         if (root==null) {
             throw new BootException("Cannot find root installation from "+bootstrap);
         }
-
-        logger.log(Level.INFO, "Module subsystem starting at " + root);
 
         String targetModule = findMainModuleName(bootstrap);
 
@@ -177,7 +163,7 @@ public class Main {
      *
      */
     public void launch(ModulesRegistry registry, File root, String[] args) throws BootException {
-        Collection<ModuleStartup> startups = new ComponentManager(registry).getComponents(ModuleStartup.class, logger);
+        Collection<ModuleStartup> startups = new ComponentManager(registry).getComponents(ModuleStartup.class);
         if(startups.isEmpty())
             throw new BootException("No module has ModuleStartup");
         if(startups.size()>1) {
@@ -216,24 +202,29 @@ public class Main {
         if (targetClassName==null) {
             throw new BootException("Cannot find a ModuleStartup implementation in the META-INF/services/com.sun.enterprise.v3.ModuleStartup file, aborting");
         }
-        logger.fine("Module startup implementation is " + targetClassName);
 
         mainModule.setSticky(true);
 
         Class<? extends ModuleStartup> targetClass=null;
         ModuleStartup startupCode;
+        ClassLoader currentCL = Thread.currentThread().getContextClassLoader();
         try {
-            targetClass = mainModule.getClassLoader().loadClass(targetClassName).asSubclass(ModuleStartup.class);
-            startupCode = new ComponentManager(registry).getComponent(targetClass);
-        } catch (ClassNotFoundException e) {
-            throw new BootException("Unable to load "+targetClassName,e);
-        } catch (ComponentException e) {
-            throw new BootException("Unable to load "+targetClass,e);
+            Thread.currentThread().setContextClassLoader(mainModule.getClassLoader());
+            try {
+                targetClass = mainModule.getClassLoader().loadClass(targetClassName).asSubclass(ModuleStartup.class);
+                startupCode = new ComponentManager(registry).getComponent(targetClass);
+            } catch (ClassNotFoundException e) {
+                throw new BootException("Unable to load "+targetClassName,e);
+            } catch (ComponentException e) {
+                throw new BootException("Unable to load "+targetClass,e);                
+            }
+            StartupContext context = new StartupContext(root, mainModule, args);
+
+            launch(startupCode, context, mainModule);
+        } finally {
+            Thread.currentThread().setContextClassLoader(currentCL);
         }
 
-        StartupContext context = new StartupContext(root, mainModule, args);
-
-        launch(startupCode, context, mainModule);
     }
 
     protected String findMainModuleName(File bootstrap) throws BootException {
@@ -287,20 +278,20 @@ public class Main {
         try {
             is = mainModuleClassLoader.getResourceAsStream("META-INF/services/"+serviceIntf);
             if (is==null) {
-                logger.severe("no META-INF/services/"+ serviceIntf + " file found in " + mainModule);
+                System.err.println("no META-INF/services/"+ serviceIntf + " file found in " + mainModule);
                 return null;
             }
             fr = new LineNumberReader(new InputStreamReader(is));
             return fr.readLine();
         } catch (IOException e) {
-            logger.log(Level.SEVERE, "Cannot read the META-INF/services/"+serviceIntf+" file", e);
+            System.err.println("Cannot read the META-INF/services/"+serviceIntf+" file : " +  e);
             return null;
         } finally {
             if (fr!=null) {
                 try {
                     fr.close();
                 } catch(Exception e) {
-                    logger.log(Level.FINER, "Cannot close file reader", e);
+                    System.err.println("Cannot close file reader "  + e);
 
                 }
             }
@@ -308,7 +299,7 @@ public class Main {
                 try {
                     is.close();
                 } catch(Exception e) {
-                    logger.log(Level.FINER, "Cannot close input stream", e);
+                    System.err.println( "Cannot close input stream " + e);
                 }
             }
         }

@@ -29,11 +29,14 @@ import com.sun.mirror.apt.RoundCompleteEvent;
 import com.sun.mirror.apt.RoundCompleteListener;
 import com.sun.mirror.declaration.ClassDeclaration;
 import com.sun.mirror.declaration.TypeDeclaration;
+import com.sun.mirror.declaration.AnnotationMirror;
 import com.sun.mirror.type.InterfaceType;
+import com.sun.mirror.type.MirroredTypeException;
 import com.sun.mirror.util.DeclarationVisitors;
 import com.sun.mirror.util.SimpleDeclarationVisitor;
 import org.jvnet.hk2.annotations.Contract;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.ContractProvided;
 
 import java.io.File;
 import java.io.FileReader;
@@ -139,6 +142,10 @@ public class ServiceAnnotationProcessor implements AnnotationProcessor, RoundCom
                 env.getMessager().printNotice("Service annotation = " + service);
             }
             if (service != null) {
+
+                // look for @ContractProvided interface
+                checkContractProvided(d);
+                
                 // look for contract in interfaces
                 for (InterfaceType intf : d.getSuperinterfaces()) {
                     checkContract(intf.getDeclaration(), d);
@@ -177,28 +184,54 @@ public class ServiceAnnotationProcessor implements AnnotationProcessor, RoundCom
 
         }
 
+
+        private void checkContractProvided(ClassDeclaration impl) {
+            ContractProvided provided = impl.getAnnotation(ContractProvided.class);
+
+            String intfName = null;
+            if (provided != null) {
+
+                try {
+                    provided.value();
+                } catch (MirroredTypeException e) {
+                    intfName = e.getQualifiedName();
+                }
+                if (debug) {
+                    System.out.println("Provided is " + intfName);
+                }
+                createContractImplementation(intfName, impl.getQualifiedName());
+            }
+
+        }
+
         private void checkContract(TypeDeclaration type, ClassDeclaration impl) {
             Contract contract = type.getAnnotation(Contract.class);
-            if (contract != null) {
 
-                ServiceFileInfo info;
-                if (!serviceFiles.containsKey(type.getQualifiedName())) {
-                    info = new ServiceFileInfo(type.getQualifiedName(), new HashSet<String>());
-                    serviceFiles.put(type.getQualifiedName(), info);
-                } else {
-                    info = serviceFiles.get(type.getQualifiedName());
-                }
+            String intfName = null;
 
-                if (!info.getImplementors().contains(impl.getQualifiedName())) {
-                    info.getImplementors().add(impl.getQualifiedName());
-                    try {
-                        info.createFile(env);
-                    } catch(IOException ioe) {
-                        env.getMessager().printError(ioe.getMessage());
-                    }
-
-                }
+            if (contract != null || (intfName != null && intfName.equals(type.getQualifiedName()))) {
+                createContractImplementation(type.getQualifiedName(), impl.getQualifiedName());
             }
+        }
+    }
+
+    private void createContractImplementation(String contractName, String implementationName) {
+        ServiceFileInfo info;
+        if (!serviceFiles.containsKey(contractName)) {
+            info = new ServiceFileInfo(contractName, new HashSet<String>());
+            serviceFiles.put(contractName, info);
+        } else {
+            info = serviceFiles.get(contractName);
+        }
+
+        if (!info.getImplementors().contains(implementationName)) {
+            info.getImplementors().add(implementationName);
+            try {
+                info.createFile(env);
+            } catch (IOException ioe) {
+                env.getMessager().printError(ioe.getMessage());
+            }
+
         }
     }
 

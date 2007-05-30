@@ -29,13 +29,9 @@ import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Extract;
 import org.jvnet.hk2.annotations.Configurable;
 
-import java.lang.reflect.Array;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+import java.lang.reflect.*;
+import java.lang.annotation.Annotation;
 import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import com.sun.hk2.component.ScopeInstance;
 
@@ -51,7 +47,7 @@ import com.sun.hk2.component.ScopeInstance;
  * @author Kohsuke Kawaguchi
  */
 @Service(scope=Singleton.class)
-public class ComponentManager {
+public class ComponentManager extends InjectionManager<Inject> {
 
     /**
      * Used to load services implementation from an underlying module system
@@ -267,7 +263,9 @@ public class ComponentManager {
     private  void inject(Object component) throws ComponentException {
         assert component!=null;
 
-        // TODO: faster implementation needed.
+        super.inject(component, Inject.class);
+
+/*        // TODO: faster implementation needed.
 
         Class currentClass = component.getClass();
         while (!currentClass.equals(Object.class)) {
@@ -325,6 +323,7 @@ public class ComponentManager {
             }
             currentClass = currentClass.getSuperclass();
         }
+        */
     }
 
     /**
@@ -348,15 +347,15 @@ public class ComponentManager {
                     Object value = field.get(component);
                     Class<?> type = field.getType();
 
-                    if (LOGGER.isLoggable(Level.FINER)) {
-                        LOGGER.log(Level.FINER, "Extracting resource " + value + " returned from " + field);
-                    }
+//                    if (LOGGER.isLoggable(Level.FINER)) {
+//                        LOGGER.log(Level.FINER, "Extracting resource " + value + " returned from " + field);
+//                    }
                     if (value!=null) {
                         extractValue(value, si, type, extract);
                     } else {
-                        if (LOGGER.isLoggable(Level.FINE)) {
-                            LOGGER.log(Level.FINE, "Resource returned from " + field + " is null");
-                        }
+//                        if (LOGGER.isLoggable(Level.FINE)) {
+//                            LOGGER.log(Level.FINE, "Resource returned from " + field + " is null");
+//                        }
                     }
                 } catch (IllegalArgumentException ex) {
                     throw new ComponentException("Extraction failed on " + field, ex);
@@ -379,15 +378,15 @@ public class ComponentManager {
                 try {
                     method.setAccessible(true);
                     Object value = method.invoke(component);
-                    if (LOGGER.isLoggable(Level.FINER)) {
-                        LOGGER.log(Level.FINER, "Extracting resource " + value + " returned from " + method);
-                    }
+//                    if (LOGGER.isLoggable(Level.FINER)) {
+//                        LOGGER.log(Level.FINER, "Extracting resource " + value + " returned from " + method);
+//                    }
                     if (value!=null) {
                         extractValue(value, si, type, extract);
                     } else {
-                        if (LOGGER.isLoggable(Level.FINE)) {
-                            LOGGER.log(Level.FINE, "Resource returned from " + method + " is null");
-                        }
+//                        if (LOGGER.isLoggable(Level.FINE)) {
+//                            LOGGER.log(Level.FINE, "Resource returned from " + method + " is null");
+//                        }
                     }
                 } catch (IllegalArgumentException ex) {
                     throw new ComponentException("Extraction failed on " + method.toGenericString(), ex);
@@ -430,7 +429,7 @@ public class ComponentManager {
      * @return
      *      can be empty but never null.
      */
-    public <T> Collection<T> getComponents(Class<T> contract, Logger logger) {
+    public <T> Collection<T> getComponents(Class<T> contract)  {
 
         Set<T> providers = new HashSet<T>();
         for (Class<? extends T> providerClass : serviceLookup.getProvidersClass(contract)) {
@@ -448,7 +447,7 @@ public class ComponentManager {
                     providers.add(getComponent(providerClass));
                 }
             } catch(ComponentException e) {
-                logger.log(Level.SEVERE, "Cannot instantiate service " + providerClass, e);
+                System.out.println("Cannot instantiate service " + providerClass + e);
             }
         }
         return providers;
@@ -532,26 +531,34 @@ public class ComponentManager {
             releaseComponent(c);
     }
 
+    @Override
+    protected boolean isOptional(Inject annotation) {
+        return annotation.optional();
+    }
+
     /**
      * Obtains the value to inject, based on the type and {@link Inject} annotation.
      */
     @SuppressWarnings("unchecked")
-    protected <T> Object getValue(Inject inject, Class<T> type) throws ComponentException {
+    protected Object getValue(AnnotatedElement target, Class type) throws ComponentException {
+
+
+        Inject inject = target.getAnnotation(Inject.class);
         if (type.isArray()) {
             Class<?> ct = type.getComponentType();
 
             Contract ctr = ct.getAnnotation(Contract.class);
             if(ctr!=null) {
-                Collection instances = getComponents(ct, LOGGER);
+                Collection instances = getComponents(ct);
                 return instances.toArray((Object[])Array.newInstance(ct, instances.size()));
             }
         } else {
-            Service svc = type.getAnnotation(Service.class);
+            Annotation svc = type.getAnnotation(Service.class);
             if(svc!=null)
                 // component injection
                 return getComponent(type);
 
-            Contract ctr = type.getAnnotation(Contract.class);
+            Annotation ctr = type.getAnnotation(Contract.class);
             if(ctr!=null)
                 // service lookup injection
                 return getComponent(new ResourceLocator(inject, type));
@@ -559,5 +566,4 @@ public class ComponentManager {
         throw new ComponentException(type+" cannot be injected: it's neither a contract nor a service");
     }
 
-    private static final Logger LOGGER = Logger.getLogger(ComponentManager.class.getName());
 }
