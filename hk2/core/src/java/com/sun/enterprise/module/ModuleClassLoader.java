@@ -206,7 +206,7 @@ final class ModuleClassLoader extends URLClassLoader {
             }
             return findClassDirect(name);
         } catch (ClassNotFoundException e) {
-            // is this for service loader punch-in?
+            // check if this for service loader punch-in, and if so, let it through
             Module m = getOwner().getRegistry().getProvidingModule(name);
             if(m!=null)
                 return m.getPrivateClassLoader().findClassDirect(name);
