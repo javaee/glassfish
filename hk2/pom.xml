@@ -28,6 +28,17 @@
             <url>https://maven2-repository.dev.java.net/nonav/repository</url>
         </repository>
     </repositories>
+ <reporting>
+    <plugins>
+      <plugin>
+        <artifactId>maven-javadoc-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>jxr-maven-plugin</artifactId>
+      </plugin>      
+    </plugins>
+  </reporting>
     <build>
         <sourceDirectory>src/java</sourceDirectory>
         <testSourceDirectory>test/java</testSourceDirectory>

@@ -218,6 +218,8 @@ final class ModuleClassLoader extends URLClassLoader {
      * {@link #findClass(String)} except the classloader punch-in hack.
      */
     private Class findClassDirect(String name) throws ClassNotFoundException {
+        Class c = findLoadedClass(name);
+        if(c!=null) return c;
         return super.findClass(name);
     }
 

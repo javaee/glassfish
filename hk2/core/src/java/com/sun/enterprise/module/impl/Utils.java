@@ -23,9 +23,13 @@
 
 package com.sun.enterprise.module.impl;
 
+import com.sun.enterprise.module.Module;
+import com.sun.enterprise.module.ModuleDependency;
+import com.sun.enterprise.module.ModulesRegistry;
+
+import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-//import com.sun.logging.LogDomains;
 
 /**
  *
@@ -34,15 +38,53 @@ import java.util.logging.Logger;
 public class Utils {
     
     /** Creates a new instance of Utils */
-    public Utils() {
+    private Utils() {
     }
 
-    static public Logger getDefaultLogger() {
-        return Logger.getAnonymousLogger(); //LogDomains.getLogger(LogDomains.CORE_LOGGER);
+    public static  Logger getDefaultLogger() {
+        return Logger.getAnonymousLogger();
     }
     
-    static public boolean isLoggable(Level level) {
+    public static boolean isLoggable(Level level) {
         return false;
-       // return getDefaultLogger().isLoggable(level);
+    }
+
+    public static void identifyCyclicDependency(Module m, Logger logger) {
+
+        StringBuffer tree = new StringBuffer();
+        tree.append(m.getName());
+        Vector<Module> traversed = new Vector<Module>();
+        boolean success = traverseAndFind(m, m, traversed);
+        if (success) {
+            traversed.remove(0);
+            for (Module mod : traversed) {
+                tree.append("-->" + mod.getName());
+            }
+            tree.append("-->" + m.getName());
+        logger.log(Level.SEVERE, "Cyclic dependency : " + tree.toString());
+        }
+    }
+
+    static private boolean traverseAndFind(Module toTraverse, Module toFind, Vector<Module> traversed) {
+
+        traversed.add(toTraverse);
+        for (ModuleDependency md : toTraverse.getModuleDefinition().getDependencies())  {
+            ModulesRegistry registry = toTraverse.getRegistry();
+            for (Module mod : registry.getModules()) {
+                if (mod.getName().equals(md.getName())) {
+                    if (mod!=null) {
+                        if (mod.getName().equals(toFind.getName())) {
+                            return true;
+                        }
+                        if (traverseAndFind(mod, toFind, traversed)) {
+                            return true;
+                        }
+                    }
+
+                }
+            }
+        }
+        traversed.remove(toTraverse);
+        return false;
     }
 }

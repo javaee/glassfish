@@ -1,6 +1,6 @@
 Introduction
 
-    With the GF v3 module system, the module system is already responsible for instanciating many classes that constitute the application functionality.
+    With the HK2 module system, the module system is already responsible for instanciating many classes that constitute the application functionality.
 
     HK2 components runtime will complement the module system so that it creates objects, but it configures such objects by:
 
