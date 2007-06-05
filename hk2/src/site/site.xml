@@ -26,10 +26,12 @@
     </menu>
 
     <menu name="Modules APIs">
-      <item name="APIs" href="apidocs/index.html"/>
+        <item name="Description" href="modules.html"/>
+        <item name="APIs" href="nonav/hk2/apidocs/index.html"/>
     </menu>
     <menu name="Components APIs">
-      <item name="APIs" href="auto-depends/apidocs/index.html"/>
+      <item name="Description" href="components.html"/>
+        <item name="APIs" href="nonav/auto-depends/apidocs/index.html"/>
     </menu>
 
     ${reports}

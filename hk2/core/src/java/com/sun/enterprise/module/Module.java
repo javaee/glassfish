@@ -24,8 +24,6 @@
 package com.sun.enterprise.module;
 
 
-import com.sun.enterprise.module.ClassLoaderFacade;
-import com.sun.enterprise.module.ModuleClassLoader;
 import com.sun.enterprise.module.impl.Utils;
 
 import java.io.File;
@@ -36,13 +34,10 @@ import java.net.URI;
 import java.net.URL;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * A module represents a set of resources accessible to third party modules. 
@@ -275,6 +270,10 @@ public final class Module extends ServiceLookup {
         if (state.compareTo(ModuleState.RESOLVED)>=0)
             return;
 
+        if (state==ModuleState.VALIDATING) {
+            Utils.identifyCyclicDependency(this, Logger.getAnonymousLogger());
+            throw new ResolveError("Cyclic dependency with " + getName());
+        }
         state = ModuleState.VALIDATING;
         
         if (moduleDef.getImportPolicyClassName()!=null) {
