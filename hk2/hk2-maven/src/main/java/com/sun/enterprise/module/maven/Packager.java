@@ -78,13 +78,13 @@ public class Packager {
 
                 name = attributes.getValue(ManifestConstants.BUNDLE_NAME);
             }
-            if(name !=null) {
-                    // this is a hk2 module
-                    if(!a.isOptional())
-                        dependencyModuleNames.add(name);
+            if (name != null) {
+                // this is a hk2 module
+                if (!a.isOptional())
+                    dependencyModuleNames.add(name);
 
-                    // even optional modules need to be listed here
-                dependencyModules.add(a.getGroupId()+':'+a.getArtifactId()+':');
+                // even optional modules need to be listed here
+                dependencyModules.add(a.getGroupId() + ':' + a.getArtifactId() + ':');
             }
         }
         if(!dependencyModuleNames.isEmpty()) {
