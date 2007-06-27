@@ -18,7 +18,7 @@
         <repository>
             <uniqueVersion>false</uniqueVersion>
             <id>gf-repository</id>
-            <url>scpexe://download.java.net/title/ju/htdocs/download/maven/glassfish</url>
+            <url>sftp://trx2.sun.com:/export/nfs/dlc/maven/glassfish</url>
         </repository>
     </distributionManagement>
     <repositories>
