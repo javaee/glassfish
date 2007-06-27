@@ -65,7 +65,7 @@ public class MavenProjectRepository extends AbstractRepositoryImpl {
         artifacts.put(ma.getId(),ma);
 
         if(ma.getFile().isDirectory()) {
-            // if the main artifact is from target/classes, create META-INF/MF
+            // if the main artifact is from target/classes, create META-INF.MF
             new Packager().writeManifest(project,ma.getFile());
         }
 
