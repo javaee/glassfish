@@ -62,7 +62,7 @@ public class ComponentManager extends InjectionManager<Inject> {
     /**
      * Cached providers
      */
-    final private Map<ResourceLocator, Class> cachedProviders = new Hashtable();
+    final private Map<ResourceLocator,Class> cachedProviders = new Hashtable();
 
     /**
      * Creates a new component manager capable of instantiating components, injecting
@@ -235,6 +235,10 @@ public class ComponentManager extends InjectionManager<Inject> {
         } catch (InstantiationException e) {
             throw new ComponentException("Exception while instantiating component of type " + impl, e);
         } catch (IllegalAccessException e) {
+            throw new ComponentException("Exception while instantiating component of type " + impl, e);
+        } catch (NoClassDefFoundError e) {
+            // when dependency of 'impl' fails to load, we get NCDFE.
+            // wrap the exception to assist trouble-shooting
             throw new ComponentException("Exception while instantiating component of type " + impl, e);
         }
 
