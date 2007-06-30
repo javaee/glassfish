@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
+import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -72,7 +73,16 @@ public class MavenProjectRepository extends AbstractRepositoryImpl {
             }
         }
 
-        for (Artifact a : (Set<Artifact>) project.getArtifacts())
+        Set<Artifact> dependencies = (Set<Artifact>) project.getArtifacts();
+
+        if(logger.isLoggable(Level.CONFIG)) {
+            logger.config("Repository constructed with the following modules");
+            for (Artifact a : dependencies) {
+                logger.config(a.getId()+" from "+a.getDependencyTrail());
+            }
+        }
+
+        for (Artifact a : dependencies)
             artifacts.put(a.getId(),a);
     }
 
