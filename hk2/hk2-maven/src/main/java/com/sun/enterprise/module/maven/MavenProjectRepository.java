@@ -78,7 +78,7 @@ public class MavenProjectRepository extends AbstractRepositoryImpl {
         if(logger.isLoggable(Level.CONFIG)) {
             logger.config("Repository constructed with the following modules");
             for (Artifact a : dependencies) {
-                logger.config(a.getId()+" from "+a.getDependencyTrail());
+                logger.config(a.getId()+" trail: "+a.getDependencyTrail());
             }
         }
 
