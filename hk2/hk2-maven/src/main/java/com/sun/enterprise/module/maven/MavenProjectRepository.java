@@ -2,6 +2,7 @@ package com.sun.enterprise.module.maven;
 
 import com.sun.enterprise.module.ModuleDefinition;
 import com.sun.enterprise.module.Repository;
+import com.sun.enterprise.module.ManifestConstants;
 import com.sun.enterprise.module.impl.AbstractRepositoryImpl;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
@@ -73,16 +74,7 @@ public class MavenProjectRepository extends AbstractRepositoryImpl {
             }
         }
 
-        Set<Artifact> dependencies = (Set<Artifact>) project.getArtifacts();
-
-        if(logger.isLoggable(Level.CONFIG)) {
-            logger.config("Repository constructed with the following modules");
-            for (Artifact a : dependencies) {
-                logger.config(a.getId()+" trail: "+a.getDependencyTrail());
-            }
-        }
-
-        for (Artifact a : dependencies)
+        for (Artifact a : (Set<Artifact>) project.getArtifacts())
             artifacts.put(a.getId(),a);
     }
 
@@ -116,6 +108,15 @@ public class MavenProjectRepository extends AbstractRepositoryImpl {
             return;
 
         ModuleDefinition moduleDef = loadJar(jarFile);
+        if(moduleDef.getManifest().getMainAttributes().getValue(ManifestConstants.BUNDLE_NAME)==null)
+            // project.getArtifacts() pick up all the transitive dependencies,
+            // including to the normal jar files through modules.
+            // we don't want to create modules from those jar files, so we need to ignore non-modules.
+            return;
+
+        if(logger.isLoggable(Level.CONFIG))
+            logger.config(a.getId()+" trail: "+a.getDependencyTrail());
+
         moduleDefs.put(moduleDef.getName(), moduleDef);
     }
 
