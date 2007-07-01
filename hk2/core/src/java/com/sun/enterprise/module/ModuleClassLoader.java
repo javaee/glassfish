@@ -147,10 +147,13 @@ final class ModuleClassLoader extends URLClassLoader {
     }
 
     /*package*/ void dumpState(PrintStream writer) {
+        writer.println("Class-Path:");
+        for (URL url : getURLs())
+            writer.println("  "+url);
         if (initializerThread!=null) {
             writer.println("Initialized when " + initializerClassName + " was requested by :");
             for (StackTraceElement e : initializerThread) {
-                writer.println(e.toString());
+                writer.println("  "+e.toString());
             }
         }
     }
