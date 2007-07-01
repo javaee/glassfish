@@ -29,13 +29,13 @@ import com.sun.enterprise.module.impl.FlattenIterator;
 import java.io.PrintStream;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
-import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -45,7 +45,7 @@ import java.util.logging.Logger;
  * The Modules Registry maintains the registry of all available module.
  *
  * TODO: concurrency bug in the acess of the repositories field.
- * 
+ *
  * @author Jerome Dochez
  */
 public class ModulesRegistry extends ServiceLookup implements ModuleChangeListener {
@@ -79,7 +79,7 @@ public class ModulesRegistry extends ServiceLookup implements ModuleChangeListen
     public static ModulesRegistry createRegistry() {
         return new ModulesRegistry(null);
     }
-    
+
     private ModulesRegistry(ModulesRegistry parent) {
         this.parent = parent;
     }
@@ -485,5 +485,17 @@ public class ModulesRegistry extends ServiceLookup implements ModuleChangeListen
             writer.println("Registered Module " + module.getModuleDefinition().getName());
             module.dumpState(writer);
         }
+    }
+
+    /**
+     * Finds the {@link ModulesRegistry} that owns the given class.
+     *
+     * @return
+     *      null if the class is loaded outside the module system.
+     */
+    public static ModulesRegistry find(Class clazz) {
+        Module m = Module.find(clazz);
+        if(m==null)     return null;
+        return m.getRegistry();
     }
 }
