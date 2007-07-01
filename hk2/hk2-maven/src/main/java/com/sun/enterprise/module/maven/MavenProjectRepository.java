@@ -115,7 +115,7 @@ public class MavenProjectRepository extends AbstractRepositoryImpl {
             return;
 
         if(logger.isLoggable(Level.CONFIG))
-            logger.config(a.getId()+" trail: "+a.getDependencyTrail());
+            logger.config("Adding module "+a.getId()+" trail: "+a.getDependencyTrail());
 
         moduleDefs.put(moduleDef.getName(), moduleDef);
     }
