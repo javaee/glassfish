@@ -70,7 +70,7 @@ public abstract class InjectionManager<T extends Annotation> {
                     }
                 } catch (ComponentException e) {
                     if (!isOptional(inject)) {
-                        throw new UnsatisfiedDepedencyException(field);
+                        throw new UnsatisfiedDepedencyException(field,e);
                     }
                 } catch (IllegalAccessException e) {
                     throw new ComponentException("Injection failed on " + field.toGenericString(), e);
