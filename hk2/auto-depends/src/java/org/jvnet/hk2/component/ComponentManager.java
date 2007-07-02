@@ -467,6 +467,15 @@ public class ComponentManager extends InjectionManager<Inject> {
         
     }
 
+    /**
+     * Loads a component that implements the given contract and has the given name.
+     *
+     * @return
+     *      null if no such servce exists. 
+     */
+    public <T> T getComponent(Class<T> contract, String name) throws ComponentException {
+        return getComponent(new ResourceLocator<T>(name,contract));
+    }
 
     /**
      * Loads a component that implements the given contract.
