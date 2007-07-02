@@ -41,11 +41,17 @@ public class UnsatisfiedDepedencyException extends ComponentException {
 
 
     public UnsatisfiedDepedencyException(Field target) {
-        super("Unsatisfied dependency exception : " + target);
+        this(target,null);
+    }
+    public UnsatisfiedDepedencyException(Field target,Throwable cause) {
+        super("Unsatisfied dependency exception : " + target,cause);
         this.field = target;
     }
     public UnsatisfiedDepedencyException(Method target) {
-        super("Unsatisfied dependency exception : " + target);
+        this(target,null);
+    }
+    public UnsatisfiedDepedencyException(Method target,Throwable cause) {
+        super("Unsatisfied dependency exception : " + target,cause);
         this.method = target;
     }
 
