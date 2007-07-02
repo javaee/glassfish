@@ -33,13 +33,15 @@ import static java.lang.annotation.ElementType.TYPE;
  *
  * Example :
  *
+ * <pre>
  * import java.util.logging.Handler
  *
- * @Service(name="console")
- * @ContractProvided(Handler.class)
+ * &#64;Service(name="console")
+ * &#64;ContractProvided(Handler.class)
  * public class MyConsoleHandler implements Handler {
  *      // implementation of Handler interface
  * }
+ * </pre>
  *
  * @author Jerome Dochez
  */
