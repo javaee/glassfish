@@ -113,7 +113,7 @@ public class ComponentManager extends InjectionManager<Inject> {
         try {
             ScopeInstance si = getScope(svc);
             if(si==null)    // prototype scope?
-                return instantiate(clazz,svc,null);
+                return instantiate(clazz,svc,null,null);
 
             // TODO: ResourceLocator needs to get contract class, not service class.
             ResourceLocator<T> loc = new ResourceLocator<T>(svc, clazz);
@@ -130,11 +130,8 @@ public class ComponentManager extends InjectionManager<Inject> {
                     return c; // glad we locked!
 
                 // really create a new instance now
-                c = instantiate(clazz,svc,si);
-                si.store.add(loc,c);
+                return instantiate(clazz,svc,si,loc);
             }
-
-            return c;
         } catch (ComponentException e) {
             throw new ComponentException("Failed to obtain "+clazz+" component",e);
         }
@@ -214,9 +211,11 @@ public class ComponentManager extends InjectionManager<Inject> {
      * @param si
      *      the instanciated component will be put into this scope.
      *      this is used to store all {@link Extract extracted} resources.
+     * @param loc
+     *      the loaded component will be stored with this name.
      * @return a new instance of a service implementing the contract interface
      */
-    private <T> T instantiate(Class<T> impl, Service svc, ScopeInstance si) throws ComponentException {
+    private <T> T instantiate(Class<T> impl, Service svc, ScopeInstance si, ResourceLocator<T> loc) throws ComponentException {
 
         T component;
         try {
@@ -241,6 +240,16 @@ public class ComponentManager extends InjectionManager<Inject> {
             // wrap the exception to assist trouble-shooting
             throw new ComponentException("Exception while instantiating component of type " + impl, e);
         }
+
+        // store the component. The component is not fully constructed yet,
+        // but when the injection and postConstruct triggers cascading
+        // effects and that causes a cyclic reference to this component,
+        // this early-storing allows them to find the right component.
+        //
+        // partially constructed components are not exposed to other threads
+        // since this part of the code executes in synchronized block.
+        if(loc!=null)
+            si.store.add(loc,component);
 
         // perform injection
         inject(component);
