@@ -283,68 +283,7 @@ public class ComponentManager extends InjectionManager<Inject> {
      */
     private  void inject(Object component) throws ComponentException {
         assert component!=null;
-
         super.inject(component, Inject.class);
-
-/*        // TODO: faster implementation needed.
-
-        Class currentClass = component.getClass();
-        while (!currentClass.equals(Object.class)) {
-            // get the list of the instances variable
-            for (Field field : currentClass.getDeclaredFields()) {
-                Inject inject = field.getAnnotation(Inject.class);
-                if (inject == null)     continue;
-
-                Class<?> fieldType = field.getType();
-                try {
-                    Object value = getValue(inject, fieldType);
-                    if (value != null) {
-                        field.setAccessible(true);
-                        field.set(component, value);
-                    } else {
-                        if(!inject.optional())
-                            throw new ComponentException("Failed to find component to be injected to "+field.toGenericString());
-                    }
-                } catch (IllegalAccessException e) {
-                    throw new ComponentException("Injection failed on " + field.toGenericString(), e);
-                }
-            }
-            for (Method method : currentClass.getDeclaredMethods()) {
-                Inject inject = method.getAnnotation(Inject.class);
-                if (inject == null)     continue;
-
-                if (method.getReturnType() != void.class) {
-                    throw new ComponentException("Injection failed on " + method.toGenericString()
-                            + " : setter method is not declared with a void return type");
-                }
-
-                Class<?>[] paramTypes = method.getParameterTypes();
-
-                if (paramTypes.length > 1) {
-                    throw new ComponentException("injection failed on " + method.toGenericString() + " : setter method takes more than 1 parameter");
-                }
-                if (paramTypes.length == 0) {
-                    throw new ComponentException("injection failed on " + method.toGenericString() + " : setter method does not take a parameter");
-                }
-
-                try {
-                    Object value = getValue(inject, paramTypes[0]);
-                    if (value != null) {
-                        method.setAccessible(true);
-                        method.invoke(component, value);
-                    } else {
-                        if (!inject.optional())
-                            throw new ComponentException("Failed to find component to be injected to " + method.toGenericString());
-                    }
-                } catch (IllegalAccessException e) {
-                    throw new ComponentException("Injection failed on " + method.toGenericString(), e);
-                } catch (InvocationTargetException e) {
-                    throw new ComponentException("Injection failed on " + method.toGenericString(), e);
-                }
-            }
-            currentClass = currentClass.getSuperclass();
-        }
-        */
     }
 
     /**
