@@ -8,16 +8,11 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
     
-    <artifactId>test2</artifactId>
+    <artifactId>test-config</artifactId>
     <packaging>hk2-jar</packaging>
-    <name>HK2 test</name>
+    <name>HK2 config test</name>
 
   <dependencies>
-    <dependency>
-      <groupId>com.sun.enterprise.auto-depends-test</groupId>
-      <artifactId>test1</artifactId>
-      <version>${version}</version>
-    </dependency>
     <dependency>
       <groupId>com.sun.enterprise</groupId>
       <artifactId>config</artifactId>

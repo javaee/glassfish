@@ -58,6 +58,7 @@
         <module>auto-depends-tests</module>
         <module>apt</module>
         <module>core</module>
+        <module>config</module>
         <module>hk2-maven</module>
         <module>hk2-maven-plugin</module>
     </modules>
@@ -66,7 +67,7 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>3.8</version>
+            <version>4.3.1</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

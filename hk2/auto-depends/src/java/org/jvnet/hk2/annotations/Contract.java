@@ -23,6 +23,10 @@
 
 package org.jvnet.hk2.annotations;
 
+import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
+
+import org.jvnet.hk2.component.ComponentManager;
+
 import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import java.lang.annotation.ElementType;
@@ -31,13 +35,27 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Marker annotation for interfaces that represent a contract 
- * that will be implemented by services.
+ * Marker annotation to allow implementations to be discovered from
+ * the contract they implement.
+ *
+ * <p>
+ * There are two usages of this annotation.
+ *
+ * <h2>Contract interface</h2>
+ * <p>
+ * This annotation can be placed on interfaces and abstract classes <tt>T</tt>,
+ * and derived classes that are assignable to <tt>T</tt> with {@link Service}
+ * annotation can be looked up by using {@link ComponentManager#getComponent(Class)}
+ * (and its family of methods.)
+ *
+ * <h2>Contract annotation</h2>
+ * <p>
+ * TBD.
  *
  * @author Jerome Dochez
  */
 @Retention(RUNTIME)
-@Target(TYPE)
+@Target({TYPE,ANNOTATION_TYPE})
 public @interface Contract {
     
 }
