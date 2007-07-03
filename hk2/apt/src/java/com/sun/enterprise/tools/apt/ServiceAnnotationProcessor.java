@@ -27,16 +27,17 @@ import com.sun.mirror.apt.AnnotationProcessor;
 import com.sun.mirror.apt.AnnotationProcessorEnvironment;
 import com.sun.mirror.apt.RoundCompleteEvent;
 import com.sun.mirror.apt.RoundCompleteListener;
+import com.sun.mirror.declaration.AnnotationMirror;
+import com.sun.mirror.declaration.AnnotationTypeDeclaration;
 import com.sun.mirror.declaration.ClassDeclaration;
 import com.sun.mirror.declaration.TypeDeclaration;
-import com.sun.mirror.declaration.AnnotationMirror;
 import com.sun.mirror.type.InterfaceType;
 import com.sun.mirror.type.MirroredTypeException;
 import com.sun.mirror.util.DeclarationVisitors;
 import com.sun.mirror.util.SimpleDeclarationVisitor;
 import org.jvnet.hk2.annotations.Contract;
-import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.ContractProvided;
+import org.jvnet.hk2.annotations.Service;
 
 import java.io.File;
 import java.io.FileReader;
@@ -181,6 +182,15 @@ public class ServiceAnnotationProcessor implements AnnotationProcessor, RoundCom
                 }
             }
 
+            // check for meta annotations
+            for(AnnotationMirror a : d.getAnnotationMirrors()) {
+                AnnotationTypeDeclaration atd = a.getAnnotationType().getDeclaration();
+                Contract c = atd.getAnnotation(Contract.class);
+                if(c!=null) {
+                    // this is a contract annotation
+                    createContractImplementation(atd.getQualifiedName(),d.getQualifiedName());
+                }
+            }
         }
 
 
@@ -214,6 +224,9 @@ public class ServiceAnnotationProcessor implements AnnotationProcessor, RoundCom
         }
     }
 
+    /**
+     * Records the contract&lt;->service relationship.
+     */
     private void createContractImplementation(String contractName, String implementationName) {
         ServiceFileInfo info;
         if (!serviceFiles.containsKey(contractName)) {

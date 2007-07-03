@@ -23,17 +23,26 @@
 
 package org.jvnet.hk2.component;
 
-import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.annotations.Contract;
-import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.annotations.Extract;
-import org.jvnet.hk2.annotations.Configurable;
-
-import java.lang.reflect.*;
-import java.lang.annotation.Annotation;
-import java.util.*;
-
 import com.sun.hk2.component.ScopeInstance;
+import org.jvnet.hk2.annotations.Configurable;
+import org.jvnet.hk2.annotations.Contract;
+import org.jvnet.hk2.annotations.Extract;
+import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Service;
+
+import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Array;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.Map;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * ComponentManager is responsible for instantiating components, as well as injecting
@@ -108,7 +117,6 @@ public class ComponentManager extends InjectionManager<Inject> {
     public <T> T getComponent(Class<T> clazz) throws ComponentException {
         Service svc = clazz.getAnnotation(Service.class);
         if(svc==null)
-
             throw new ComponentException(clazz+" is not a service");
         try {
             ScopeInstance si = getScope(svc);
@@ -460,7 +468,7 @@ public class ComponentManager extends InjectionManager<Inject> {
                     providers.add(getComponent(providerClass));
                 }
             } catch(ComponentException e) {
-                System.out.println("Cannot instantiate service " + providerClass + e);
+                LOGGER.log(Level.SEVERE,"Cannot instantiate service " + providerClass,e);
             }
         }
         return providers;
@@ -494,27 +502,60 @@ public class ComponentManager extends InjectionManager<Inject> {
      *      null if no such servce exists. 
      */
     public <T> T getComponent(ResourceLocator<T> locator) throws ComponentException {
+        Class<? extends T> provider = getComponentClass(locator);
+        if(provider==null)
+            return null;    // not found
+        return getComponent(provider);
+    }
+
+    /**
+     * Finds the class of the component that implements the given contract
+     * and has the specified name.
+     *
+     * @see #getComponent(ResourceLocator)
+     */
+    public <T> Class<? extends T> getComponentClass(ResourceLocator<T> locator) throws ComponentException {
         // TODO: more efficient implementation needed, but for now to get things moving
-
-
         Class<? extends T> cachedProvider = cachedProviders.get(locator);
-        if (cachedProvider!=null) {
-            return getComponent(cachedProvider);
-        }
-        for (Class<? extends T>  providerClass : serviceLookup.getProvidersClass(locator.getType())) {
+        if (cachedProvider!=null)   return cachedProvider;
+
+        Class<T> t = locator.getType();
+        for (Class<? extends T>  providerClass : serviceLookup.getProvidersClass(t)) {
             // let's cache this for future usage
-            ResourceLocator cacheID = new ResourceLocator(providerClass.getAnnotation(Service.class),
-                locator.getType());
+            ResourceLocator cacheID = new ResourceLocator<T>(providerClass.getAnnotation(Service.class),
+                t);
             cachedProviders.put(cacheID, providerClass);
 
-            if(locator.getName()!=null
-            && !providerClass.getAnnotation(Service.class).name().equals(locator.getName()))
-                continue;   // name doesn't match
+            String name = locator.getName();
+            if(name!=null) {
+                String providerName;
+                if(Annotation.class.isAssignableFrom(t)) {
+                    // this is a look up from the contract annotation.
+                    try {
+                        providerName = (String)t.getMethod("name").invoke(providerClass.getAnnotation((Class)t));
+                    } catch (IllegalAccessException e) {
+                        IllegalAccessError iae = new IllegalAccessError();
+                        iae.initCause(e);
+                        throw iae;
+                    } catch (InvocationTargetException e) {
+                        throw new Error(e); // impossible
+                    } catch (NoSuchMethodException e) {
+                        NoSuchMethodError nsme = new NoSuchMethodError();
+                        nsme.initCause(e);
+                        throw nsme;
+                    }
+                } else {
+                    providerName = providerClass.getAnnotation(Service.class).name();
+                }
+                
+                if(!providerName.equals(name))
+                    continue;   // name doesn't match
+            }
 
-            return getComponent(providerClass);
+            return providerClass;
         }
 
-        return null; // not found 
+        return null; // not found
     }
 
     /**
@@ -588,4 +629,5 @@ public class ComponentManager extends InjectionManager<Inject> {
         throw new ComponentException(type+" cannot be injected: it's neither a contract nor a service");
     }
 
+    private static final Logger LOGGER = Logger.getLogger(ComponentManager.class.getName());
 }

@@ -8,19 +8,14 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
     
-    <artifactId>hk2</artifactId>
-    <name>HK2 core module</name>
-
+    <artifactId>config</artifactId>
+    <name>HK2 configuration module</name>
+    
     <dependencies>
         <dependency>
             <groupId>com.sun.enterprise</groupId>
-            <artifactId>auto-depends</artifactId>
-            <version>${project.parent.version}</version>            
+            <artifactId>hk2</artifactId>
+            <version>${project.version}</version>            
         </dependency>
-      <dependency>
-          <groupId>javax.xml.stream</groupId>
-          <artifactId>stax-api</artifactId>
-          <version>1.0-2</version>
-      </dependency>
     </dependencies>
 </project>
