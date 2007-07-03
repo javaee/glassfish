@@ -47,6 +47,20 @@ public abstract class ConfiguredScope extends Scope implements PostConstruct {
                     String name = xsr.getLocalName();
                     Class component = cm.getComponentClass(
                         new ResourceLocator(name,Configured.class));
+                    if(component==null)
+                        throw new ComponentException("Unrecognized element name: "+name);
+                    
+                    /*
+                        A large portion of this code somewhat overlaps with ComponentManager,
+                        and therefore it doesn't feel right. Hmm.
+                     */
+                    // create new instance
+                    Object o = component.newInstance();
+                    // get values injected
+                    cm.inject(o,Inject.class);
+                    // push back to the scope
+
+                    instance.store.add(new ResourceLocator(component),o);
                 }
             }
         } catch (XMLStreamException e) {
@@ -54,6 +68,10 @@ public abstract class ConfiguredScope extends Scope implements PostConstruct {
         } catch (IOException e) {
             e.printStackTrace();
         } catch (ComponentException e) {
+            e.printStackTrace();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
     }

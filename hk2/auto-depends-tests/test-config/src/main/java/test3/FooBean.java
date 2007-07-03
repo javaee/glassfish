@@ -9,7 +9,9 @@ import org.jvnet.hk2.annotations.Service;
 @Service(scope=DomainXml.class)
 @Configured(name="foo")
 public class FooBean {
+    public Exception e;
+
     public FooBean() {
-        new Exception().printStackTrace();
+        e = new Exception();
     }
 }

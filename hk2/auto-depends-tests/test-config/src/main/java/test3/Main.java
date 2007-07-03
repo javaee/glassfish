@@ -26,5 +26,6 @@ public class Main extends Assert implements ModuleStartup {
 
     public void run() {
         assertNotNull(foo);
+        foo.e.printStackTrace();
     }
 }
