@@ -16,7 +16,7 @@
     <dependency>
       <groupId>com.sun.enterprise</groupId>
       <artifactId>config</artifactId>
-      <version>${version}</version>
+      <version>${project.version}</version>
     </dependency>
   </dependencies>
 </project>

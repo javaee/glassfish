@@ -23,12 +23,21 @@
 
 package com.sun.enterprise.module;
 
+import org.jvnet.hk2.annotations.Contract;
+import org.jvnet.hk2.annotations.Service;
+
 /**
  * Modules that wish to invoke special logic when it is loaded, started 
  * or stopped should implement this interface.
  *
+ * <p>
+ * To define an implementation of this in a module, write a class
+ * that implements this interface and puts {@link Service} on it.
+ * Maven will take care of the rest.
+ * 
  * @author dochez
  */
+@Contract
 public interface LifecyclePolicy {
     
     /**

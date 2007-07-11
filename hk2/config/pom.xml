@@ -17,5 +17,10 @@
             <artifactId>hk2</artifactId>
             <version>${project.version}</version>            
         </dependency>
+      <dependency>
+          <groupId>com.envoisolutions.sxc</groupId>
+          <artifactId>sxc-runtime</artifactId>
+          <version>0.6</version>
+      </dependency>
     </dependencies>
 </project>
