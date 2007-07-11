@@ -14,6 +14,10 @@ import java.io.StringReader;
 @Service(scope= Singleton.class)
 public class DomainXml extends ConfiguredScope {
     protected StreamSource getConfigFile() throws IOException {
-        return new StreamSource(new StringReader("<foo><bar/></foo>"));
+        return new StreamSource(new StringReader(
+            "<foo httpPort='80'><bar>qwerty</bar>" +
+                "<property name='xyz' value='abc'/>" +
+                "<property name='qqq' value='www'/>" +
+            "</foo>"));
     }
 }

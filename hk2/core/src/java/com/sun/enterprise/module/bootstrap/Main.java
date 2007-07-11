@@ -248,15 +248,18 @@ public class Main {
         ClassLoader cl = Thread.currentThread().getContextClassLoader();
         try {
             startupCode.setStartupContext(context);
-            Thread thread = new Thread(startupCode);
-            thread.setContextClassLoader(mainModule.getClassLoader());
+            //Thread thread = new Thread(startupCode);
+            //thread.setContextClassLoader(mainModule.getClassLoader());
+            //
+            //thread.start();
+            //try {
+            //    thread.join();
+            //} catch (InterruptedException e) {
+            //    e.printStackTrace();
+            //}
 
-            thread.start();
-            try {
-                thread.join();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            Thread.currentThread().setContextClassLoader(mainModule.getClassLoader());
+            startupCode.run();
         } finally {
             Thread.currentThread().setContextClassLoader(cl);
         }

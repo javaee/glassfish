@@ -24,12 +24,18 @@
 package com.sun.enterprise.module;
 
 import org.jvnet.hk2.annotations.Contract;
+import org.jvnet.hk2.annotations.Service;
 
 /**
  * Modules that wish to programmatically control their list of imports can 
  * implement this interface. Implementation of this interface will be called 
  * when the module is in {@link ModuleState#PREPARING PREPARING} state. 
  *
+ * <p>
+ * To define an implementation of this in a module, write a class
+ * that implements this interface and puts {@link Service} on it.
+ * Maven will take care of the rest.
+ * 
  * @author Jerome Dochez
  */
 @Contract
