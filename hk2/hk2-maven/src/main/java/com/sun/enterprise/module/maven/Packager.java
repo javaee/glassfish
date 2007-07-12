@@ -2,6 +2,7 @@ package com.sun.enterprise.module.maven;
 
 import com.sun.enterprise.module.ImportPolicy;
 import com.sun.enterprise.module.ManifestConstants;
+import com.sun.enterprise.module.LifecyclePolicy;
 import com.sun.enterprise.module.impl.Jar;
 import org.apache.maven.archiver.MavenArchiveConfiguration;
 import org.apache.maven.artifact.Artifact;
@@ -58,12 +59,9 @@ public class Packager {
         entries.put(ManifestConstants.BUNDLE_NAME, pom.getGroupId()+':'+pom.getArtifactId() );
 
         // check META-INF/services/xxx.ImportPolicy to fill in Import-Policy
-        File importPolicy = new File(classesDirectory, "META-INF/services/" + ImportPolicy.class.getName());
-        if(importPolicy.exists()) {
-            BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(importPolicy), "UTF-8"));
-            entries.put(ManifestConstants.IMPORT_POLICY,in.readLine());
-            in.close();
-        }
+        configureImportPolicy(classesDirectory, entries, ImportPolicy.class, ManifestConstants.IMPORT_POLICY);
+        configureImportPolicy(classesDirectory, entries, LifecyclePolicy.class, ManifestConstants.LIFECYLE_POLICY);
+
 
         // check direct dependencies to find out dependency modules.
         // we don't need to list transitive dependencies here, so use getDependencyArtifacts().
@@ -123,5 +121,14 @@ public class Packager {
         }
 
         return entries;
+    }
+
+    private void configureImportPolicy(File classesDirectory, Map<String, String> entries, Class<?> clazz, String entryName) throws IOException {
+        File importPolicy = new File(classesDirectory, "META-INF/services/" + clazz.getName());
+        if(importPolicy.exists()) {
+            BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(importPolicy), "UTF-8"));
+            entries.put(entryName,in.readLine());
+            in.close();
+        }
     }
 }
