@@ -37,6 +37,7 @@ import org.jvnet.hk2.annotations.Service;
  * Maven will take care of the rest.
  * 
  * @author Jerome Dochez
+ * @see ManifestConstants#IMPORT_POLICY
  */
 @Contract
 public interface ImportPolicy {

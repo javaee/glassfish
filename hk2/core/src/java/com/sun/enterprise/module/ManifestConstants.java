@@ -23,20 +23,114 @@
 
 package com.sun.enterprise.module;
 
+import org.jvnet.hk2.annotations.Service;
+
 /**
- * Constants used in the module manifest. 
+ * Constants used in the module manifest.
+ * These values define a module.
+ *
  * @author dochez
+ * @author Kohsuke Kawaguchi
  */
 public class ManifestConstants {
     // No instanciation allowed.
     private ManifestConstants() {
     }
-    
-    public static final String PKG_EXPORT_NAME = "Export-Package";
-    public static final String BUNDLE_IMPORT_NAME = "Import-Bundles";
+
+    /**
+     * Module name.
+     * <p>
+     * This uniquely identifies the module within modules,
+     * but this shouldn't include the version number.
+     * <p>
+     * Maven's <tt>hk2-module</tt> packaging type uses GROUPID:ARTIFACTID for this.
+     */
     public static final String BUNDLE_NAME = "Bundle-Name";
+    /**
+     * Exported package list.
+     * <p>
+     * The value is a comma separated list of packages that are
+     * visible to other modules that depend on this module.
+     * For example, "com.sun.foobar.spi,com.sun.foobar.abc"
+     * <p>
+     * If this manifest entry doesn't exist, all classes will be exported.
+     *
+     * <p>
+     * TODO: expand Maven's <tt>hk2-module</tt> packaging to generate this.
+     */
+    public static final String PKG_EXPORT_NAME = "Export-Package";
+
+    /**
+     * List of modules that this module depends on.
+     * <p>
+     * The value is a comma separated list of {@link #BUNDLE_NAME modules names}
+     * that this module depends on. Whitespaces are allowed before and after
+     * commas.
+     * <p>
+     *
+     * <p>
+     * Maven's <tt>hk2-module</tt> packaging uses dependency list in POM
+     * to fill in this entry.
+     *
+     * TODO: expand this field to support version specifier.
+     */
+    public static final String BUNDLE_IMPORT_NAME = "Import-Bundles";
+
+    /**
+     * List of other jar files in this module.
+     * <p>
+     * This identifies other jar files in this module, not other modules
+     * that this module depends on.
+     * <p>
+     * See <a href="http://java.sun.com/j2se/1.5.0/docs/guide/jar/jar.html#Main%20Attributes">
+     * jar file specification</a> for the format of the value.
+     *
+     * <p>
+     * Maven's <tt>hk2-module</tt> packaging uses dependency list in POM
+     * to fill in this entry.
+     *
+     * @see #CLASS_PATH_ID
+     */
     public static final String CLASS_PATH = "Class-Path";
+
+    /**
+     * List of other jar files in this module.
+     * <p>
+     * The value is a whitespace separated list of Maven ID of all the dependencies,
+     * which is of the form "GROUPID:ARTIFACTID:TYPE[:CLASSIFIER]:VERSION".
+     * <p>
+     * This entry contains essentially the same information as the {@link #CLASS_PATH}
+     * entry, but this enables HK2 to assemble all the required jars by using Maven.
+     *
+     * <p>
+     * Maven's <tt>hk2-module</tt> packaging uses dependency list in POM
+     * to fill in this entry.
+     *
+     * @see #CLASS_PATH
+     */
     public static final String CLASS_PATH_ID = "Class-Path-Id";
+
+    /**
+     * See {@link ImportPolicy}.
+     *
+     * <p>
+     * The value is the fully-qualified class name of a class that implements
+     * {@link ImportPolicy}.
+     * <p>
+     * Maven's <tt>hk2-module</tt> packaging automatically finds such a class
+     * and puts its name, provided that the class has @{@link Service} annotation.
+     */
     public static final String IMPORT_POLICY = "Module-Import-Policy";
+
+    /**
+     * See {@link LifecyclePolicy}.
+     *
+     * <p>
+     * The value is the fully-qualified class name of a class that implements
+     * {@link LifecyclePolicy}.
+     * <p>
+     * Maven's <tt>hk2-module</tt> packaging automatically finds such a class
+     * and puts its name, provided that the class has @{@link Service} annotation.
+     */
     public static final String LIFECYLE_POLICY = "Module-Lifecycle-Policy";
 }
