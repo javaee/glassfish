@@ -1,13 +1,13 @@
--classpath '/Users/dochez/java/svn/hk2/hk2/apt/target/classes:/Users/dochez/.m2/repository/com/sun/enterprise/auto-depends/0.1-SNAPSHOT/auto-depends-0.1-SNAPSHOT.jar' -protected
+-classpath 'c:/kohsuke/Sun/glassfish/v3/hk2/hk2/apt/target/classes;c:/development/versioned/j2sdk1.6.0/jre/../lib/tools.jar;c:/kohsuke/unixHome/.m2/repository/com/sun/enterprise/auto-depends/0.1-SNAPSHOT/auto-depends-0.1-SNAPSHOT.jar' -protected
 -sourcepath
-'/Users/dochez/java/svn/hk2/hk2/apt/src/java'
+'c:/kohsuke/Sun/glassfish/v3/hk2/hk2/apt/src/java'
 -author
 -bottom
 'Copyright &copy; 2007. All Rights Reserved.'
 -charset
 'ISO-8859-1'
 -d
-'/Users/dochez/java/svn/hk2/hk2/apt/target/site/apidocs'
+'c:/kohsuke/Sun/glassfish/v3/hk2/hk2/apt/target/site/apidocs'
 -doctitle
 'Service File APT plugin 0.1-SNAPSHOT API'
 -use

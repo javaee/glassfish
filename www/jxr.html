@@ -25,112 +25,6 @@
       <div class="xright">      <a href="http://glassfish.dev.java.net/">Glassfish</a>
       </div>
     -->
-    <div id="leftColumn">
-      <div id="navcolumn">
-             <dl class=navgroup>
-        <dt>Module Subsystem</dt>
-        <dd><ul>
-              
-    <li class="none">
-              <a href="index.html">Introduction</a>
-        </li>
-          </ul></dd>
-    </dl>
-      <dl class=navgroup>
-        <dt>Modules APIs</dt>
-        <dd><ul>
-              
-    <li class="none">
-              <a href="modules.html">Description</a>
-        </li>
-              
-    <li class="none">
-              <a href="nonav/hk2/apidocs/index.html">APIs</a>
-        </li>
-          </ul></dd>
-    </dl>
-      <dl class=navgroup>
-        <dt>Components APIs</dt>
-        <dd><ul>
-              
-    <li class="none">
-              <a href="components.html">Description</a>
-        </li>
-              
-    <li class="none">
-              <a href="nonav/auto-depends/apidocs/index.html">APIs</a>
-        </li>
-          </ul></dd>
-    </dl>
-      <dl class=navgroup>
-        <dt>Project Documentation</dt>
-        <dd><ul>
-              
-                
-              
-      
-            
-      
-            
-      
-            
-      
-            
-      
-            
-      
-            
-      
-            
-      
-            
-      
-              
-        <li class="collapsed">
-              <a href="project-info.html">Project Information</a>
-              </li>
-              
-                
-              
-            
-              
-            <li class="expanded">
-              <a href="project-reports.html">Project Reports</a>
-                <ul>
-                  
-    <li class="none">
-              <strong>Source Xref</strong>
-        </li>
-              </ul>
-        </li>
-          </ul></dd>
-    </dl>
-        </div>
-      <script>
-        // replace the java.net project tools with the navigation bar from Maven.
-        // also get rid of "Get Involved" thingie too, while we are at it
-        var pt = document.getElementById("projecttools");
-        var nv = document.getElementById("navcolumn");
-        
-        while(pt.previousSibling!=null)
-          pt.parentNode.removeChild(pt.previousSibling);
-        
-        pt.parentNode.insertBefore(nv,pt);
-        pt.parentNode.removeChild(pt);
-      </script>
-      <script>
-        // kill "description" h3 bar
-        var ld = document.getElementById("longdescription");
-        if(ld!=null) {
-          for( n=ld.firstChild; n!=null; n=n.nextSibling ) {
-            if(n.nodeType==1 && n.innerHTML=="Description" ) {
-              n.parentNode.removeChild(n);
-              break;
-            }
-          }
-        }
-      </script>
-    </div>
     <div id="bodyColumn">
       <div id="contentBox">
         <div class="section"><h2>Cross-reference Java source code</h2><p>This report includes a cross-reference of the project's sources. Each source entry is also linked with its corresponding Javadoc (if Javadoc was generated).</p><div class="section"><h3>Project sources</h3><p>No project sources were found. </p></div><div class="section"><h3>Test sources</h3><p>No test sources were found. </p></div></div>
@@ -148,7 +42,7 @@
 
   
   
-  &nbsp;| Last Published: 05/02/2007
+  &nbsp;| Last Published: 07/12/2007
   &nbsp;| Version: 0.1-SNAPSHOT
 </div>
       <div class="clear">

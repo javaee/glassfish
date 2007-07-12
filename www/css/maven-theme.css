@@ -22,6 +22,10 @@ a.newWindow, a.newWindow:link, a.newWindow:visited, a.newWindow:active, a.newWin
   padding-right: 18px;
 }
 
+.source {
+  border: 1px solid #999;
+}
+
 #organizationLogo img, #projectLogo img, #projectLogo span{
   margin: 8px;
 }
