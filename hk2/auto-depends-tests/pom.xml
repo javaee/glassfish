@@ -34,6 +34,9 @@
                         <goals>
                             <goal>run</goal>
                         </goals>
+                        <configuration>
+                            <skipId>${groupId}:${artifactId}</skipId>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
@@ -45,6 +48,11 @@
             <groupId>com.sun.enterprise</groupId>
             <artifactId>hk2</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.xml.stream</groupId>
+            <artifactId>sjsxp</artifactId>
+            <version>1.0</version>
         </dependency>
         <dependency>
             <!-- junit is main dependency inside tests -->
