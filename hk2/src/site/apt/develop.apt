@@ -1,0 +1,58 @@
+														------
+														Developing HK2 module
+														------
+														Kohsuke Kawaguchi
+														------
+														---
+
+Developing a module
+
+	HK2 comes with a Maven2 plugin to make module development productive. The following POM fragment illustrates how to add this plugin to your POM:
+
+-------------------------------------------------------------------
+<project>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.acme.foo</groupId>
+    <artifactId>mymodule</artifactId>
+    <packaging>hk2-jar</packaging>
+    
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>com.sun.enterprise</groupId>
+                <artifactId>hk2-maven-plugin</artifactId>
+                <version>...</version>
+                <extensions>true</extensions>
+            </plugin>
+        </plugins>
+    </build>
+    
+    <repositories>
+        <repository>
+            <id>gfv3</id>
+            <url>http://download.java.net/maven/glassfish/</url>
+        </repository>
+    </repositories>
+
+    ...
+</project>
+-------------------------------------------------------------------
+
+	The plugin is marked as "extension" because this plugin adds a custom packaging "hk2-jar". Once installed, this plugin can be accessible with the "hk2" prefix. This packaging forces relevant build phases to use the right mojo, which performs additional HK2-specific processing, such as:
+
+	* Produce proper manifest entries from POM
+	* Generating necessary <<<META-INF/services>>> files for @Service and @Contract.
+
+	Modules can be built and installed with usual <<<mvn install>>> and <<<mvn deploy>>>.
+
+* Running HK2 application
+
+	You can run the HK2 module you created by using the {{{/hk2-maven-plugin/run-mojo.html}hk2:run}} goal.
+
+
+
+Developing a mulit-module project
+
+* Inter-module dependency
+
+	To depend on another HK2 module, simply refer to the dependency module in your POM as you do normally. The "hk2-jar" packaging will recognize that and produce the right manifest entries, causing the runtime to set up dependency appropriately.
