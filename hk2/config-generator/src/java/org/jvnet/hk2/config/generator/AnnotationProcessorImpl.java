@@ -65,7 +65,7 @@ public class AnnotationProcessorImpl extends SimpleDeclarationVisitor implements
         JClass target = cm.ref(name);
         JVar $target = b.getBody().decl(target, "result", JExpr._new(target));
         b.getBody().add(JExpr._this().invoke("inject").arg(b.getXSR()).arg($target));
-        b.getBody()._return($target);
+        b.getBody()._return($target.type(), JExpr.invoke("wrapUp").arg($target));
 
         Set<Property> props = new LinkedHashSet<Property>();
 

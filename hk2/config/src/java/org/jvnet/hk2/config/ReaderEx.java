@@ -6,6 +6,7 @@ import com.envoisolutions.sxc.util.XoXMLStreamReader;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.ComponentManager;
+import org.jvnet.hk2.component.PostConstruct;
 
 import javax.xml.stream.XMLStreamException;
 import java.util.Map;
@@ -40,5 +41,14 @@ public abstract class ReaderEx extends Reader {
      */
     protected final <T extends Named> void addToMap(Map<String,T> m, T o) {
         m.put(o.getName(),o);
+    }
+
+    /**
+     * Perform post-construction.
+     */
+    protected final <T> T wrapUp(T t) {
+        if(t instanceof PostConstruct)
+            ((PostConstruct)t).postConstruct();
+        return t;
     }
 }
