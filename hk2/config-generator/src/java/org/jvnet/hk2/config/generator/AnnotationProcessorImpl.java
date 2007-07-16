@@ -81,10 +81,10 @@ public class AnnotationProcessorImpl extends SimpleDeclarationVisitor implements
                 props.add(p);
         }
 
-        for (Property p : props) {
-            p.pre(cm,b.getBody().getBlock());
-            p.post(cm,b.getTailBlock());
-        }
+        //for (Property p : props) {
+        //    p.pre(cm,b.getBody().getBlock());
+        //    p.post(cm,b.getTailBlock());
+        //}
 
         try {
             builder.write(new FilerCodeWriter(env.getFiler()));
