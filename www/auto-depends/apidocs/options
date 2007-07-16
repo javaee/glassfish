@@ -1,0 +1,16 @@
+-classpath 'c:/kohsuke/Sun/glassfish/v3/hk2/hk2/auto-depends/target/classes' -protected
+-sourcepath
+'c:/kohsuke/Sun/glassfish/v3/hk2/hk2/auto-depends/src/java'
+-author
+-bottom
+'Copyright &copy; 2007. All Rights Reserved.'
+-charset
+'ISO-8859-1'
+-d
+'c:/kohsuke/Sun/glassfish/v3/hk2/hk2/auto-depends/target/site/apidocs'
+-doctitle
+'Inversion of Control / Autodependency mechanism 0.1-SNAPSHOT API'
+-use
+-version
+-windowtitle
+'Inversion of Control / Autodependency mechanism 0.1-SNAPSHOT API'

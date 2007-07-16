@@ -1,0 +1,84 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1" /><title>AptCompiler xref</title>
+<link type="text/css" rel="stylesheet" href="../../../../../stylesheet.css" />
+</head>
+<body>
+<div id="overview"><a href="../../../../../../../../../../../../apidocs/com/sun/enterprise/module/maven/AptCompiler.html">View Javadoc</a></div><pre>
+
+<a name="1" href="#1">1</a>   <strong>package</strong> com.sun.enterprise.module.maven;
+<a name="2" href="#2">2</a>   
+<a name="3" href="#3">3</a>   <strong>import</strong> com.sun.enterprise.tools.apt.MetainfServiceGenerator;
+<a name="4" href="#4">4</a>   <strong>import</strong> org.codehaus.plexus.compiler.CompilerConfiguration;
+<a name="5" href="#5">5</a>   <strong>import</strong> org.codehaus.plexus.compiler.CompilerException;
+<a name="6" href="#6">6</a>   <strong>import</strong> org.codehaus.plexus.compiler.javac.JavacCompiler;
+<a name="7" href="#7">7</a>   
+<a name="8" href="#8">8</a>   <strong>import</strong> java.io.File;
+<a name="9" href="#9">9</a>   <strong>import</strong> java.io.PrintWriter;
+<a name="10" href="#10">10</a>  <strong>import</strong> java.util.Collections;
+<a name="11" href="#11">11</a>  <strong>import</strong> java.util.List;
+<a name="12" href="#12">12</a>  
+<a name="13" href="#13">13</a>  <em>/**<em>*</em></em>
+<a name="14" href="#14">14</a>  <em> * {@link Compiler} for APT.</em>
+<a name="15" href="#15">15</a>  <em> *</em>
+<a name="16" href="#16">16</a>  <em> * &lt;p></em>
+<a name="17" href="#17">17</a>  <em> * In Maven, {@link Compiler} handles the actual compiler invocation.</em>
+<a name="18" href="#18">18</a>  <em> *</em>
+<a name="19" href="#19">19</a>  <em> * @author Kohsuke Kawaguchi</em>
+<a name="20" href="#20">20</a>  <em> */</em>
+<a name="21" href="#21">21</a>  <strong>public</strong> <strong>class</strong> <a href="../../../../../com/sun/enterprise/module/maven/AptCompiler.html">AptCompiler</a> <strong>extends</strong> JavacCompiler {
+<a name="22" href="#22">22</a>  
+<a name="23" href="#23">23</a>      <strong>public</strong> List compile( CompilerConfiguration config ) throws CompilerException {
+<a name="24" href="#24">24</a>          <em class="comment">// force 1.5</em>
+<a name="25" href="#25">25</a>          config.setTargetVersion(<span class="string">"1.5"</span>);
+<a name="26" href="#26">26</a>          config.setSourceVersion(<span class="string">"1.5"</span>);
+<a name="27" href="#27">27</a>  
+<a name="28" href="#28">28</a>  
+<a name="29" href="#29">29</a>          File destinationDir = <strong>new</strong> File( config.getOutputLocation() );
+<a name="30" href="#30">30</a>  
+<a name="31" href="#31">31</a>          <strong>if</strong> ( !destinationDir.exists() )
+<a name="32" href="#32">32</a>          {
+<a name="33" href="#33">33</a>              destinationDir.mkdirs();
+<a name="34" href="#34">34</a>          }
+<a name="35" href="#35">35</a>  
+<a name="36" href="#36">36</a>          String[] sourceFiles = getSourceFiles( config );
+<a name="37" href="#37">37</a>  
+<a name="38" href="#38">38</a>          <strong>if</strong> ( sourceFiles.length == 0 )
+<a name="39" href="#39">39</a>          {
+<a name="40" href="#40">40</a>              <strong>return</strong> Collections.EMPTY_LIST;
+<a name="41" href="#41">41</a>          }
+<a name="42" href="#42">42</a>  
+<a name="43" href="#43">43</a>          getLogger().info( <span class="string">"Compiling "</span> + sourceFiles.length + <span class="string">" "</span> +
+<a name="44" href="#44">44</a>                            <span class="string">"source file"</span> + ( sourceFiles.length == 1 ? <span class="string">""</span> : <span class="string">"s"</span> ) +
+<a name="45" href="#45">45</a>                            <span class="string">" to "</span> + destinationDir.getAbsolutePath() );
+<a name="46" href="#46">46</a>  
+<a name="47" href="#47">47</a>          <em class="comment">// this is where the META-INF/services get generated.</em>
+<a name="48" href="#48">48</a>          config.addCompilerCustomArgument(<span class="string">"-s"</span>,<strong>new</strong> File(config.getOutputLocation()).getAbsolutePath());
+<a name="49" href="#49">49</a>          String[] args = buildCompilerArguments( config, sourceFiles );
+<a name="50" href="#50">50</a>  
+<a name="51" href="#51">51</a>          <strong>return</strong> compileInProcess( args );
+<a name="52" href="#52">52</a>      }
+<a name="53" href="#53">53</a>  
+<a name="54" href="#54">54</a>      <em>/**<em>*</em></em>
+<a name="55" href="#55">55</a>  <em>     * Compile the java sources in the current JVM, without calling an external executable,</em>
+<a name="56" href="#56">56</a>  <em>     * using &lt;code>com.sun.tools.javac.Main&lt;/code> class</em>
+<a name="57" href="#57">57</a>  <em>     *</em>
+<a name="58" href="#58">58</a>  <em>     * @param args arguments for the compiler as they would be used in the command line javac</em>
+<a name="59" href="#59">59</a>  <em>     * @return List of CompilerError objects with the errors encountered.</em>
+<a name="60" href="#60">60</a>  <em>     * @throws CompilerException</em>
+<a name="61" href="#61">61</a>  <em>     */</em>
+<a name="62" href="#62">62</a>      <strong>protected</strong> List compileInProcess( String[] args ) throws CompilerException {
+<a name="63" href="#63">63</a>          com.sun.tools.apt.Main aptTool = <strong>new</strong> com.sun.tools.apt.Main();
+<a name="64" href="#64">64</a>          <strong>int</strong> r = aptTool.process(<strong>new</strong> MetainfServiceGenerator(),<strong>new</strong> Pr<strong>int</strong>Writer(System.out,<strong>true</strong>),args);
+<a name="65" href="#65">65</a>          <strong>if</strong>(r!=0)
+<a name="66" href="#66">66</a>              <strong>throw</strong> <strong>new</strong> CompilerException(<span class="string">"APT failed: "</span>+r);
+<a name="67" href="#67">67</a>  
+<a name="68" href="#68">68</a>          <em class="comment">// TODO: should I try to parse the output?</em>
+<a name="69" href="#69">69</a>          <strong>return</strong> Collections.emptyList();
+<a name="70" href="#70">70</a>      }
+<a name="71" href="#71">71</a>  }
+</pre>
+<hr/><div id="footer">This page was automatically generated by <a href="http://maven.apache.org/">Maven</a></div></body>
+</html>
+
