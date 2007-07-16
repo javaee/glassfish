@@ -44,54 +44,6 @@ public @interface Service {
     see {{{auto-depends/apidocs/org/jvnet/hk2/annotations/Service.html}Service}} for complete reference
 
 
-* Build System
-
-    When using maven 2 to build HK2 components, users should invoke the auto-depends plugin for maven so the META-INF/services
-files are generated automatically during build time.
-
-    Example of the maven plugin configuration :
-
---------------
-            <plugin>
-                <groupId>com.sun.enterprise</groupId>
-                <artifactId>hk2-maven-plugin</artifactId>
-                <configuration>
-                    <includes>
-                        <include>com/sun/enterprise/v3/**</include>
-                    </includes>
-                </configuration>
-            </plugin>
---------------
-
-    Example on how to use {{{auto-depends/apidocs/org/jvnet/hk2/annotations/Contract.html}@Contract}}
-     and {{{auto-depends/apidocs/org/jvnet/hk2/annotations/Service.html}@Service}} and resulting META-INF/services files.
-    
-+----+
-package com.sun.v3.annotations;
-@Contract
-public interface Startup {...}
-
-
-package com.wombat;
-@Contract
-public interface RandomContract {...}
-
-
-package com.sun.v3;
-@Service
-public class MyService implements Startup, RandomContract, PropertyChangeListener {
-...
-}
-+----+
-
-    will generate the following META-INF/services files :
-
----
-com.sun.v3.annotations.Startup
-com.wombat.RandomContract
-with the com.sun.v3.MyService content    
----
-
 * Runtime
 
     Once Services are defined, HK2 runtime can be used to instantiate or retrieve instances of services. Each service
