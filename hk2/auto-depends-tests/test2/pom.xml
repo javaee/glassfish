@@ -12,6 +12,19 @@
     <packaging>hk2-jar</packaging>
     <name>HK2 test2</name>
 
+  <build>
+    <plugins>
+      <plugin>
+          <groupId>com.sun.enterprise</groupId>
+          <artifactId>hk2-maven-plugin</artifactId>
+        <configuration>
+          <!-- specify myself as the main module -->
+          <mainModule>${groupId}:${artifactId}</mainModule>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
   <dependencies>
     <dependency>
       <groupId>com.sun.enterprise.auto-depends-test</groupId>
