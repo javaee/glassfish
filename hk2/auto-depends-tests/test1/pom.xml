@@ -10,7 +10,7 @@
     
     <artifactId>test1</artifactId>
     <packaging>hk2-jar</packaging>
-    <name>HK2 test</name>
+    <name>HK2 test1</name>
 
     <dependencies>
         <dependency>
