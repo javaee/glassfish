@@ -8,6 +8,7 @@ import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.ComponentManager;
 
 import javax.xml.stream.XMLStreamException;
+import java.util.Map;
 
 /**
  * Base class for all {@link Configured} bean reader.
@@ -32,5 +33,12 @@ public abstract class ReaderEx extends Reader {
         } catch (ComponentException e) {
             throw new XMLStreamException2("Unable to inject to "+o,xsr.getLocation(),e);
         }
+    }
+
+    /**
+     * Adds an object to a map.
+     */
+    protected final <T extends Named> void addToMap(Map<String,T> m, T o) {
+        m.put(o.getName(),o);
     }
 }

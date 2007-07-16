@@ -25,6 +25,10 @@ import java.beans.Introspector;
 import java.lang.annotation.Annotation;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.Iterator;
+
+import org.jvnet.hk2.config.Named;
 
 /**
  * Represents configurable property of the component.
@@ -109,9 +113,19 @@ abstract class Property {
         if(t!=null) {
             DeclaredType d = (DeclaredType)t;
             return new ListField(decl,d.getActualTypeArguments().iterator().next());
-        } else {
-            return new Field(decl);
         }
+
+        t = baseClassFinder.apply(decl.getType(), env.getTypeDeclaration(Map.class.getName()));
+        if(t!=null) {
+            DeclaredType d = (DeclaredType)t;
+            Iterator<TypeMirror> itr = d.getActualTypeArguments().iterator();
+            TypeMirror keyType = itr.next();
+            TypeMirror valueType = itr.next();
+            // TODO: error check. 
+            return new MapField(decl,valueType);
+        }
+
+        return new Field(decl);
     }
 
     /**
@@ -168,6 +182,38 @@ abstract class Property {
 
         void assign(JVar $target, JBlock block, JExpression rhs) {
             block.invoke($target.ref(decl.getSimpleName()),"add").arg(rhs);
+        }
+    }
+
+    /**
+     * Field property of the type {@link Map}.
+     * The components in this property must be {@link Named},
+     * and its name is used as the key.
+     * This property can receive multiple values.
+     */
+    static final class MapField extends Property {
+        final FieldDeclaration decl;
+        final TypeMirror itemType;
+
+        public MapField(FieldDeclaration decl, TypeMirror itemType) {
+            this.decl = decl;
+            this.itemType = itemType;
+        }
+
+        MemberDeclaration decl() {
+            return decl;
+        }
+
+        String name() {
+            return decl.getSimpleName();
+        }
+
+        TypeMirror type() {
+            return itemType;
+        }
+
+        void assign(JVar $target, JBlock block, JExpression rhs) {
+            block.invoke("addToMap").arg($target.ref(decl.getSimpleName())).arg(rhs);
         }
     }
 
