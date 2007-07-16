@@ -69,8 +69,22 @@ public class RunMojo extends AbstractMojo {
      */
     private String[] args = new String[0];
 
-    public void execute() throws MojoExecutionException, MojoFailureException {
+    /**
+     * gorupId:artifactId of the module which the hk2:run mojo just skips executing.
+     *
+     * This hack is used to specify the "hk2:run" for a test phase execution
+     * in the parent POM for all the child modules (except the parent module itself.) 
+     *
+     * @parameter
+     */
+    private String skipId;
 
+    public void execute() throws MojoExecutionException, MojoFailureException {
+        if(skipId!=null && skipId.equals(project.getGroupId()+":"+project.getArtifactId())) {
+            getLog().info("Skipping");
+            return;
+        }
+        
         // sanity check
         if(project.getPackaging().equals("hk2-jar") && project.getArtifact()==null) {
             getLog().warn("This project isn't compiled yet. Perhaps you meant 'mvn compile hk2:run'?");
