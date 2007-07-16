@@ -1,4 +1,4 @@
--classpath 'c:/kohsuke/Sun/glassfish/v3/hk2/hk2/auto-depends-tests/test1/target/classes;c:/kohsuke/unixHome/.m2/repository/javax/xml/stream/stax-api/1.0-2/stax-api-1.0-2.jar;c:/kohsuke/unixHome/.m2/repository/commons-logging/commons-logging/1.0.4/commons-logging-1.0.4.jar;c:/kohsuke/unixHome/.m2/repository/commons-discovery/commons-discovery/0.4/commons-discovery-0.4.jar;c:/kohsuke/unixHome/.m2/repository/com/sun/enterprise/hk2/0.1-SNAPSHOT/hk2-0.1-SNAPSHOT.jar;c:/kohsuke/unixHome/.m2/repository/com/sun/enterprise/auto-depends/0.1-SNAPSHOT/auto-depends-0.1-SNAPSHOT.jar;c:/kohsuke/unixHome/.m2/repository/junit/junit/4.3.1/junit-4.3.1.jar' -protected
+-classpath 'c:/kohsuke/Sun/glassfish/v3/hk2/hk2/auto-depends-tests/test1/target/classes;c:/kohsuke/unixHome/.m2/repository/javax/xml/stream/stax-api/1.0/stax-api-1.0.jar;c:/kohsuke/unixHome/.m2/repository/commons-logging/commons-logging/1.0.4/commons-logging-1.0.4.jar;c:/kohsuke/unixHome/.m2/repository/commons-discovery/commons-discovery/0.4/commons-discovery-0.4.jar;c:/kohsuke/unixHome/.m2/repository/com/sun/xml/stream/sjsxp/1.0/sjsxp-1.0.jar;c:/kohsuke/unixHome/.m2/repository/com/sun/enterprise/hk2/0.1-SNAPSHOT/hk2-0.1-SNAPSHOT.jar;c:/kohsuke/unixHome/.m2/repository/com/sun/enterprise/auto-depends/0.1-SNAPSHOT/auto-depends-0.1-SNAPSHOT.jar;c:/kohsuke/unixHome/.m2/repository/junit/junit/4.3.1/junit-4.3.1.jar' -protected
 -sourcepath
 'c:/kohsuke/Sun/glassfish/v3/hk2/hk2/auto-depends-tests/test1/src/main/java'
 -author
@@ -9,8 +9,8 @@
 -d
 'c:/kohsuke/Sun/glassfish/v3/hk2/hk2/auto-depends-tests/test1/target/site/apidocs'
 -doctitle
-'HK2 test 0.1-SNAPSHOT API'
+'HK2 test1 0.1-SNAPSHOT API'
 -use
 -version
 -windowtitle
-'HK2 test 0.1-SNAPSHOT API'
+'HK2 test1 0.1-SNAPSHOT API'
