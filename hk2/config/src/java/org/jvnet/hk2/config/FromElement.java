@@ -16,4 +16,6 @@ public @interface FromElement {
      * Element name. By default inferred from field name.
      */
     String value() default "";
+
+    boolean reference() default false;
 }
