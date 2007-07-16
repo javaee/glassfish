@@ -24,6 +24,7 @@ import com.sun.mirror.type.WildcardType;
 import java.beans.Introspector;
 import java.lang.annotation.Annotation;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Represents configurable property of the component.
@@ -107,7 +108,7 @@ abstract class Property {
         TypeMirror t = baseClassFinder.apply(decl.getType(), env.getTypeDeclaration(Collection.class.getName()));
         if(t!=null) {
             DeclaredType d = (DeclaredType)t;
-            return new CollectionField(decl,d.getActualTypeArguments().iterator().next());
+            return new ListField(decl,d.getActualTypeArguments().iterator().next());
         } else {
             return new Field(decl);
         }
@@ -140,11 +141,15 @@ abstract class Property {
         }
     }
 
-    static final class CollectionField extends Property {
+    /**
+     * Field property of the type {@link List}.
+     * This property can receive multiple values.
+     */
+    static final class ListField extends Property {
         final FieldDeclaration decl;
         final TypeMirror itemType;
 
-        public CollectionField(FieldDeclaration decl, TypeMirror itemType) {
+        public ListField(FieldDeclaration decl, TypeMirror itemType) {
             this.decl = decl;
             this.itemType = itemType;
         }
