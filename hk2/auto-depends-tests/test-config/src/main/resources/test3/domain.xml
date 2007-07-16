@@ -1,0 +1,7 @@
+<foo httpPort='80'>
+  <bar>qwerty</bar>
+  <jvm-options>-Xmx256m</jvm-options>
+  <jvm-options>-verbose:gc</jvm-options>
+  <property name='xyz' value='abc'/>
+  <property name='qqq' value='www'/>
+</foo>
