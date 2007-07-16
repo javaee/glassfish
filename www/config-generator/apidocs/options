@@ -1,0 +1,16 @@
+-classpath 'c:/kohsuke/Sun/glassfish/v3/hk2/hk2/config-generator/target/classes;c:/kohsuke/unixHome/.m2/repository/stax/stax-api/1.0.1/stax-api-1.0.1.jar;c:/kohsuke/unixHome/.m2/repository/com/envoisolutions/sxc/sxc-runtime/0.6/sxc-runtime-0.6.jar;c:/kohsuke/unixHome/.m2/repository/javax/xml/bind/jaxb-api/2.1/jaxb-api-2.1.jar;c:/kohsuke/unixHome/.m2/repository/com/sun/xml/bind/jaxb-impl/2.1.3/jaxb-impl-2.1.3.jar;c:/development/versioned/j2sdk1.6.0/jre/../lib/tools.jar;c:/kohsuke/unixHome/.m2/repository/com/sun/enterprise/config/0.1-SNAPSHOT/config-0.1-SNAPSHOT.jar;c:/kohsuke/unixHome/.m2/repository/com/envoisolutions/sxc/sxc-core/0.6/sxc-core-0.6.jar;c:/kohsuke/unixHome/.m2/repository/javax/xml/stream/stax-api/1.0-2/stax-api-1.0-2.jar;c:/kohsuke/unixHome/.m2/repository/com/sun/xml/bind/jaxb-xjc/2.1.3/jaxb-xjc-2.1.3.jar;c:/kohsuke/unixHome/.m2/repository/javax/activation/activation/1.1/activation-1.1.jar;c:/kohsuke/unixHome/.m2/repository/javax/xml/bind/jsr173_api/1.0/jsr173_api-1.0.jar;c:/kohsuke/unixHome/.m2/repository/com/sun/enterprise/hk2/0.1-SNAPSHOT/hk2-0.1-SNAPSHOT.jar;c:/kohsuke/unixHome/.m2/repository/com/sun/enterprise/auto-depends/0.1-SNAPSHOT/auto-depends-0.1-SNAPSHOT.jar' -protected
+-sourcepath
+'c:/kohsuke/Sun/glassfish/v3/hk2/hk2/config-generator/src/java'
+-author
+-bottom
+'Copyright &copy; 2007. All Rights Reserved.'
+-charset
+'ISO-8859-1'
+-d
+'c:/kohsuke/Sun/glassfish/v3/hk2/hk2/config-generator/target/site/apidocs'
+-doctitle
+'HK2 configuration reader generator module 0.1-SNAPSHOT API'
+-use
+-version
+-windowtitle
+'HK2 configuration reader generator module 0.1-SNAPSHOT API'
