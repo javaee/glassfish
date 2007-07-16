@@ -26,6 +26,11 @@
     </dependency>
     <dependency>
       <groupId>com.sun.enterprise</groupId>
+      <artifactId>config-generator</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.sun.enterprise</groupId>
       <artifactId>auto-depends-plugin</artifactId>
       <version>${project.version}</version>
     </dependency>
