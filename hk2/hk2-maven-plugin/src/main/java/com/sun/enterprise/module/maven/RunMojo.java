@@ -4,6 +4,7 @@ import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.module.bootstrap.BootException;
 import com.sun.enterprise.module.bootstrap.Main;
 import com.sun.enterprise.module.bootstrap.StartupContext;
+import com.sun.enterprise.module.bootstrap.ModuleStartup;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -70,7 +71,7 @@ public class RunMojo extends AbstractMojo {
     private String[] args = new String[0];
 
     /**
-     * gorupId:artifactId of the module which the hk2:run mojo just skips executing.
+     * groupId:artifactId of the module which the hk2:run mojo just skips executing.
      *
      * This hack is used to specify the "hk2:run" for a test phase execution
      * in the parent POM for all the child modules (except the parent module itself.) 
@@ -78,6 +79,14 @@ public class RunMojo extends AbstractMojo {
      * @parameter expression="${skipId}"
      */
     private String skipId;
+
+    /**
+     * groupId:artifactId of the module that includes {@link ModuleStartup}.
+     * If omitted, the module list is searched to find one.
+     *
+     * @parameter expression="${mainModule}"
+     */
+    private String mainModule;
 
     public void execute() throws MojoExecutionException, MojoFailureException {
         if(skipId!=null && skipId.equals(project.getGroupId()+":"+project.getArtifactId())) {
@@ -91,7 +100,10 @@ public class RunMojo extends AbstractMojo {
         }
 
         try {
-            new Main().launch(createModuleRegistry(),rootDir,args);
+            if(mainModule==null)
+                new Main().launch(createModuleRegistry(),rootDir,args);
+            else
+                new Main().launch(createModuleRegistry(),mainModule,rootDir,args);
         } catch (BootException e) {
             throw new MojoExecutionException("Failed to boot up the module system",e);
         } catch (IOException e) {
