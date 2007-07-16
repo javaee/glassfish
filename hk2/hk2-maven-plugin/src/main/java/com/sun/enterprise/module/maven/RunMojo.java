@@ -22,7 +22,8 @@ import java.io.IOException;
  * <p>
  * Not specifying "@execute phase=compile" so that it runs
  * quickly even with a large project.
- *
+ * </p>
+ * 
  * @requiresProject
  * @goal run
  * @requiresDependencyResolution runtime
