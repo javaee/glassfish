@@ -73,7 +73,9 @@ abstract class Property {
         return name;
     }
 
-
+    /**
+     * Property that consists of a set/add method.
+     */
     static final class Method extends Property {
         final MethodDeclaration decl;
 
@@ -111,6 +113,9 @@ abstract class Property {
         }
     }
 
+    /**
+     * Property that consists of a field.
+     */
     static final class Field extends Property {
         final FieldDeclaration decl;
 
