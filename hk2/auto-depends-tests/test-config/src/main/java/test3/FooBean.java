@@ -7,6 +7,8 @@ import org.jvnet.hk2.config.FromElement;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 
 /**
  * @author Kohsuke Kawaguchi
@@ -21,7 +23,10 @@ public class FooBean {
 
     public String bar;
     
-    public List<Property> properties = new ArrayList<Property>();
+    public List<String> jvmOptions = new ArrayList<String>();
+
+    @FromElement("property")
+    public Map<String,Property> properties = new HashMap<String, Property>();
 
     public FooBean() {
         e = new Exception();
@@ -32,8 +37,8 @@ public class FooBean {
         this.bar = bar;
     }
 
-    @FromElement
-    public void addProperty(Property p) {
-        this.properties.add(p);
+    @FromElement("jvm-options")
+    public void addJvmOptions(String opt) {
+        this.jvmOptions.add(opt);
     }
 }

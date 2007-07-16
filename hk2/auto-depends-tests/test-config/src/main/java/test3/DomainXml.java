@@ -1,12 +1,11 @@
 package test3;
 
-import org.jvnet.hk2.config.ConfiguredScope;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Singleton;
+import org.jvnet.hk2.config.ConfiguredScope;
 
 import javax.xml.transform.stream.StreamSource;
 import java.io.IOException;
-import java.io.StringReader;
 
 /**
  * @author Kohsuke Kawaguchi
@@ -14,10 +13,6 @@ import java.io.StringReader;
 @Service(scope= Singleton.class)
 public class DomainXml extends ConfiguredScope {
     protected StreamSource getConfigFile() throws IOException {
-        return new StreamSource(new StringReader(
-            "<foo httpPort='80'><bar>qwerty</bar>" +
-                "<property name='xyz' value='abc'/>" +
-                "<property name='qqq' value='www'/>" +
-            "</foo>"));
+        return new StreamSource(getClass().getResourceAsStream("domain.xml"));
     }
 }

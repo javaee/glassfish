@@ -3,6 +3,7 @@ package test3;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.FromAttribute;
+import org.jvnet.hk2.config.Named;
 import org.jvnet.hk2.component.PostConstruct;
 
 /**
@@ -10,7 +11,7 @@ import org.jvnet.hk2.component.PostConstruct;
  */
 @Service(scope=DomainXml.class)
 @Configured(name="property")
-public class Property implements PostConstruct {
+public class Property implements PostConstruct, Named {
     @FromAttribute
     public String name;
 
@@ -18,6 +19,11 @@ public class Property implements PostConstruct {
     public String value;
 
     public boolean constructed;
+
+
+    public String getName() {
+        return name;
+    }
 
     public void postConstruct() {
         // make sure PostConstruct interface support works

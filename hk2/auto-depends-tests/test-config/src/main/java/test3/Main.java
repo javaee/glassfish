@@ -27,14 +27,17 @@ public class Main extends Assert implements ModuleStartup {
     public void run() {
         assertNotNull(foo);
         foo.e.printStackTrace();
-        assertEquals(foo.httpPort,80);
+        assertEquals(80,foo.httpPort);
         assertEquals(foo.bar,"qwerty");
 
         assertEquals(2,foo.properties.size());
-        assertEquals(foo.properties.get(0).name,"xyz");
-        assertEquals(foo.properties.get(0).value,"abc");
+        assertNotNull(foo.properties.get("xyz"));
+        assertNotNull(foo.properties.get("qqq"));
 
-        for (Property p : foo.properties)
+        for (Property p : foo.properties.values())
             assertTrue(p.constructed);
+
+        assertEquals(2,foo.jvmOptions.size());
+        assertEquals(foo.jvmOptions.get(0),"-Xmx256m");
     }
 }
