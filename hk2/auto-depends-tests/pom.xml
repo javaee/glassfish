@@ -28,6 +28,7 @@
                 <version>${project.version}</version>
                 <extensions>true</extensions>
                 <executions>
+                    <!-- Run the code as a test -->
                     <execution>
                         <phase>test</phase>
                         <goals>
