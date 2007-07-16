@@ -27,6 +27,14 @@
                 <artifactId>hk2-maven-plugin</artifactId>
                 <version>${project.version}</version>
                 <extensions>true</extensions>
+                <executions>
+                    <execution>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
