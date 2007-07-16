@@ -31,6 +31,7 @@ import java.io.File;
  * <p>
  * Mostly copied from JarMojo. See http://jira.codehaus.org/browse/MNG-2789
  * why we can't rely on it.
+ * </p>
  *
  * @author Kohsuke Kawaguchi
  * @goal package
