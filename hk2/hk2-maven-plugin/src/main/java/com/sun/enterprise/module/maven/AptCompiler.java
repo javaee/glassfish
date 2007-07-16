@@ -4,6 +4,7 @@ import com.sun.enterprise.tools.apt.MetainfServiceGenerator;
 import org.codehaus.plexus.compiler.CompilerConfiguration;
 import org.codehaus.plexus.compiler.CompilerException;
 import org.codehaus.plexus.compiler.javac.JavacCompiler;
+import org.jvnet.hk2.config.generator.AnnotationProcessorFactoryImpl;
 
 import java.io.File;
 import java.io.PrintWriter;
@@ -61,7 +62,11 @@ public class AptCompiler extends JavacCompiler {
      */
     protected List compileInProcess( String[] args ) throws CompilerException {
         com.sun.tools.apt.Main aptTool = new com.sun.tools.apt.Main();
-        int r = aptTool.process(new MetainfServiceGenerator(),new PrintWriter(System.out,true),args);
+        int r = aptTool.process(
+            new CompositeAnnotationProcessorFactory(
+                new MetainfServiceGenerator(),
+                new AnnotationProcessorFactoryImpl()
+            ), new PrintWriter(System.out,true),args);
         if(r!=0)
             throw new CompilerException("APT failed: "+r);
 
