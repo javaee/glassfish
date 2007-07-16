@@ -26,11 +26,28 @@ import java.lang.annotation.Annotation;
 import java.util.Collection;
 
 /**
+ * Represents configurable property of the component.
+ *
  * @author Kohsuke Kawaguchi
  */
 abstract class Property {
+    /**
+     * Field/method declaration of this property.
+     * Used to read annotations on this property.
+     */
     abstract MemberDeclaration decl();
+
+    /**
+     * Default XML name of this property.
+     * Unless overriden, this value is used as XML attribute/element name.
+     */
     abstract String name();
+
+    /**
+     * The type of the property.
+     * If the property is a collection property, this is the individual item type,
+     * not the collection type as a whole.
+     */
     abstract TypeMirror type();
 
     /**
