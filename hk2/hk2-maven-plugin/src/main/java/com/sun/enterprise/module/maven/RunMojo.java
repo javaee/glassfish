@@ -75,7 +75,7 @@ public class RunMojo extends AbstractMojo {
      * This hack is used to specify the "hk2:run" for a test phase execution
      * in the parent POM for all the child modules (except the parent module itself.) 
      *
-     * @parameter
+     * @parameter expression="${skipId}"
      */
     private String skipId;
 
