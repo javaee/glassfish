@@ -25,7 +25,7 @@
         <repository>
             <id>maven2-repository.dev.java.net</id>
             <name>Java.net Repository for Maven</name>
-            <url>https://maven2-repository.dev.java.net/nonav/repository</url>
+            <url>http://download.java.net/maven/2/</url>
         </repository>
     </repositories>
  <reporting>
