@@ -15,9 +15,10 @@ import com.sun.jmx.mbeanserver.SunJmxMBeanServer;
 
 import javax.management.MBeanServer;
 import javax.management.MBeanServerDelegate;
-import javax.management.MBeanServerFactory;
 import javax.management.ObjectName;
 import java.io.IOException;
+import java.lang.management.ManagementFactory;
+import java.lang.reflect.Field;
 import java.util.Set;
 
 /**
@@ -49,25 +50,19 @@ public class Agent {
         // Instantiates the MBean server
         //
         echo("\n\tInstantiating the MBean server of this agent...");
-        mbs = MBeanServerFactory.createMBeanServer();
+        mbs = ManagementFactory.getPlatformMBeanServer();
         echo("\tdone");
 
-        // Retrieves ID of the MBean server from the associated MBean
-        // server delegate
-        //
-        echo("\n\tGetting the ID of the MBean server from " +
-            " the associated MBean server delegate...");
+        // enable interceptor
         try {
-            final ObjectName delegateName =
-                new ObjectName(ServiceName.DELEGATE);
-            final String mBeanServerId = (String)
-                mbs.getAttribute(delegateName, "MBeanServerId");
-            echo("\tID = " + mBeanServerId);
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.exit(1);
+            Field f = mbs.getClass().getDeclaredField("interceptorsEnabled");
+            f.setAccessible(true);
+            f.set(mbs,true);
+        } catch (NoSuchFieldException e) {
+            throw new Error(e);
+        } catch (IllegalAccessException e) {
+            throw new Error(e);
         }
-        echo("\tdone");
     }
 
     /**
