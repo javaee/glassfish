@@ -498,8 +498,7 @@ public class FileMBeanServerInterceptor implements MBeanServerInterceptor {
         // Send an MBeanServerNotification.REGISTRATION_NOTIFICATION for
         // each MBean faked from the mirrored directory
         //
-        sendMBeanServerNotifications(
-                      MBeanServerNotification.REGISTRATION_NOTIFICATION);
+        sendMBeanServerNotifications(MBeanServerNotification.REGISTRATION_NOTIFICATION);
     }
 
     /**
@@ -511,8 +510,7 @@ public class FileMBeanServerInterceptor implements MBeanServerInterceptor {
             // Send an MBeanServerNotification.REGISTRATION_NOTIFICATION for
             // each MBean faked from the mirrored directory
             //
-            sendMBeanServerNotifications(
-                     MBeanServerNotification.UNREGISTRATION_NOTIFICATION);
+            sendMBeanServerNotifications(MBeanServerNotification.UNREGISTRATION_NOTIFICATION);
         } finally {
             synchronized(this) {
                 this.fileDir = null;
@@ -521,6 +519,7 @@ public class FileMBeanServerInterceptor implements MBeanServerInterceptor {
         }
     }
 
+    // We do not accept the creation of new files...
     public ObjectInstance createMBean(String className, ObjectName name) throws ReflectionException, InstanceAlreadyExistsException, MBeanException, NotCompliantMBeanException, IOException {
         throw new MBeanRegistrationException(null,"Registration failed.");
     }
@@ -529,21 +528,11 @@ public class FileMBeanServerInterceptor implements MBeanServerInterceptor {
         throw new MBeanRegistrationException(null,"Registration failed.");
     }
 
-    // We do not accept the creation of new files...
-    public final ObjectInstance createMBean(final String className,
-                                            final ObjectName name,
-                                            final Object params[],
-                                            final String signature[]) throws MBeanException {
+    public ObjectInstance createMBean(String className, ObjectName name, Object params[], String signature[]) throws ReflectionException, InstanceAlreadyExistsException, MBeanRegistrationException, MBeanException, NotCompliantMBeanException {
         throw new MBeanRegistrationException(null,"Registration failed.");
     }
 
-    // Always rejected.
-    //
-    public final ObjectInstance createMBean(final String className,
-                                      final ObjectName name,
-                                      final ObjectName loaderName,
-                                      final Object params[],
-                                      final String signature[]) throws MBeanException {
+    public ObjectInstance createMBean(String className, ObjectName name, ObjectName loaderName, Object params[], String signature[]) throws ReflectionException, InstanceAlreadyExistsException, MBeanRegistrationException, MBeanException, NotCompliantMBeanException, InstanceNotFoundException {
         throw new MBeanRegistrationException(null,"Registration failed.");
     }
 
