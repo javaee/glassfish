@@ -551,9 +551,7 @@ public class FileMBeanServerInterceptor implements MBeanServerInterceptor {
      *        faked MBean.
      * @return The faked ObjectInstance.
      */
-    final ObjectInstance getObjectInstance(ObjectName name, File file)
-        throws InstanceNotFoundException {
-
+    final ObjectInstance getObjectInstance(ObjectName name, File file) throws InstanceNotFoundException {
         final String clazz;
         if (file.isDirectory()) {
             clazz = VirtualDirObject;
@@ -565,8 +563,7 @@ public class FileMBeanServerInterceptor implements MBeanServerInterceptor {
 
     // Get the file associated with the given name and fake
     // a new ObjectInstance from that.
-    //
-    public final ObjectInstance getObjectInstance(final ObjectName name) throws InstanceNotFoundException {
+    public final ObjectInstance getObjectInstance(ObjectName name) throws InstanceNotFoundException {
 
         // This will throw InstanceNotFoundException if the given name
         // does not correspond to any MBean faked by this interceptor.
