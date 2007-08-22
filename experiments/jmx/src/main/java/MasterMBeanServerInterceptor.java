@@ -233,58 +233,12 @@ public class MasterMBeanServerInterceptor implements MBeanServerInterceptor {
     // By default, this method calls getMBeanCountByNames().
     //
     public Integer getMBeanCount() {
-        return getMBeanCountByNames();
+        return normalize(defaultInterceptor.getMBeanCount())+normalize(otherInterceptor.getMBeanCount());
     }
-
-    /**
-     * This method counts the MBeans by successively asking the default
-     * MBeanServerInterceptor and the other MBeanServerInterceptor in the list
-     * to count its own MBeans. It then returns the sum of all the obtained
-     * results. This method of counting may not be accurate if some MBeans
-     * in one interceptor are "shadowed" by another interceptor. This is
-     * why {@link #getMBeanCount()} calls by default
-     * {@link #getMBeanCountByNames()}. If you wish to change this behavior
-     * simply redefine {@link #getMBeanCount()} so that it calls this method:
-     * <pre>
-     *     public Integer getMBeanCount() {
-     *         return getMBeanCountByCount();
-     *     }
-     * </pre>
-     */
-    protected final Integer getMBeanCountByCount() {
-
-        final MBeanServerInterceptor defaultInterceptor = defaultInterceptor();
-        final MBeanServerInterceptor otherInterceptor = otherInterceptor();
-        int count = 0;
-        final Integer defaultCount = defaultInterceptor.getMBeanCount();
-        if (defaultCount != null) {
-            if (defaultCount > 0) count += defaultCount;
-        }
-        final Integer otherCount = otherInterceptor.getMBeanCount();
-        if (otherCount != null) {
-            if (otherCount > 0) count += otherCount;
-        }
-        return count;
-    }
-
-    /**
-     * This method counts the MBeans by calling
-     * <code>queryNames(null,null)</code> and then counting the names in the
-     * returned set. This method of counting is always accurate even if some
-     * MBeans in one interceptor are "shadowed" by another interceptor.
-     * This is why {@link #getMBeanCount()} calls by default
-     * {@link #getMBeanCountByNames()}. If you wish to change this behavior
-     * simply redefine {@link #getMBeanCount()} so that it calls the more
-     * intuitive {@link #getMBeanCountByCount()} method:
-     * <pre>
-     *     public Integer getMBeanCount() {
-     *         return getMBeanCountByCount();
-     *     }
-     * </pre>
-     */
-    protected Integer getMBeanCountByNames() {
-        final Set names = queryNames(null, null);
-        return (names == null ? 0 : names.size());
+    
+    private int normalize(Integer i) {
+        if(i==null || i<0)  return 0;
+        return i;
     }
 
     // Forwards to the defaultInterceptor, and if the object is not found
