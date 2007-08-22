@@ -40,6 +40,7 @@ import java.util.Set;
  * Implements a MasterMBeanServerInterceptor that receives all the requests
  * from the MBeanServer and forwards them to some sub-interceptors.
  * <p/>
+ * <p/>
  * This MasterMBeanServerInterceptor forwards all the requests to either:
  * <ul>
  * <li>the default MBeanServerInterceptor, or</li>
@@ -79,34 +80,20 @@ public class MasterMBeanServerInterceptor implements MBeanServerInterceptor {
         this.defaultInterceptor = defaultInterceptor;
         this.otherInterceptor = otherInterceptor;
         this.otherDomain = otherDomain;
-        checkInitialization();
     }
 
     /**
      * Returns the default MBeanServerInterceptor.
      */
-    protected final synchronized MBeanServerInterceptor defaultInterceptor() {
+    protected final MBeanServerInterceptor defaultInterceptor() {
         return defaultInterceptor;
     }
 
     /**
      * Returns the other MBeanServerInterceptor.
      */
-    protected final synchronized MBeanServerInterceptor otherInterceptor() {
+    protected final MBeanServerInterceptor otherInterceptor() {
         return otherInterceptor;
-    }
-
-    /**
-     * Check that this MasterMBeanServerInterceptor is correctly initialized.
-     *
-     * @throws IllegalArgumentException if the MasterMBeanServerInterceptor
-     *                                  is not correctly initialized.
-     */
-    protected void checkInitialization() throws IllegalArgumentException {
-        if (defaultInterceptor == null ||
-            otherInterceptor == null ||
-            otherDomain == null)
-            throw new IllegalArgumentException("Null parameter");
     }
 
     /**
@@ -119,12 +106,10 @@ public class MasterMBeanServerInterceptor implements MBeanServerInterceptor {
      * @param name The name of the MBean we want to access.
      * @return The MBeanServerInterceptor in which the MBean may be found.
      */
-    private MBeanServerInterceptor getMBeanServerInterceptor(
-        ObjectName name) {
-        if (name == null) return defaultInterceptor();
-        if (name.getDomain().equals(otherDomain))
-            return otherInterceptor();
-        return defaultInterceptor();
+    private MBeanServerInterceptor choose(ObjectName name) {
+        if (name == null) return defaultInterceptor;
+        if (name.getDomain().equals(otherDomain)) return otherInterceptor;
+        return defaultInterceptor;
     }
 
     /**
@@ -142,7 +127,7 @@ public class MasterMBeanServerInterceptor implements MBeanServerInterceptor {
      * @throws MBeanRegistrationException     to simulate a registration
      *                                        failure.
      */
-    protected void checkRegistration(ObjectName name)
+    private void checkRegistration(ObjectName name)
         throws InstanceAlreadyExistsException, MBeanRegistrationException {
         if (name == null) return;
         if (name.getDomain().equals(otherDomain)) {
@@ -154,30 +139,22 @@ public class MasterMBeanServerInterceptor implements MBeanServerInterceptor {
     }
 
     public ObjectInstance createMBean(String className, ObjectName name) throws ReflectionException, InstanceAlreadyExistsException, MBeanException, NotCompliantMBeanException, IOException {
-        final MBeanServerInterceptor interceptor = getMBeanServerInterceptor(name);
-        return interceptor.createMBean(className, name);
+        checkRegistration(name);
+        return choose(name).createMBean(className, name);
     }
 
     public ObjectInstance createMBean(String className, ObjectName name, ObjectName loaderName) throws ReflectionException, InstanceAlreadyExistsException, MBeanException, NotCompliantMBeanException, InstanceNotFoundException, IOException {
-        final MBeanServerInterceptor interceptor = getMBeanServerInterceptor(name);
-        return interceptor.createMBean(className, name, loaderName);
+        checkRegistration(name);
+        return choose(name).createMBean(className, name, loaderName);
     }
 
     // Forward to the appropriate interceptor.
     //
-    public final ObjectInstance createMBean(final String className,
-                                            final ObjectName name,
-                                            final Object params[],
-                                            final String signature[])
-        throws ReflectionException, InstanceAlreadyExistsException,
-        MBeanException,
-        NotCompliantMBeanException {
+    public final ObjectInstance createMBean(String className, ObjectName name, Object params[], String signature[])
+        throws ReflectionException, InstanceAlreadyExistsException, MBeanException, NotCompliantMBeanException {
 
         checkRegistration(name);
-
-        final MBeanServerInterceptor interceptor =
-            getMBeanServerInterceptor(name);
-        return interceptor.createMBean(className, name, params, signature);
+        return choose(name).createMBean(className, name, params, signature);
     }
 
     // Forward to the appropriate interceptor.
@@ -188,53 +165,49 @@ public class MasterMBeanServerInterceptor implements MBeanServerInterceptor {
                                             final Object params[],
                                             final String signature[])
         throws ReflectionException, InstanceAlreadyExistsException,
-        MBeanException,
-        NotCompliantMBeanException, InstanceNotFoundException {
+        MBeanException, NotCompliantMBeanException, InstanceNotFoundException {
 
         checkRegistration(name);
-
-        final MBeanServerInterceptor interceptor =
-            getMBeanServerInterceptor(name);
-
-        return interceptor.createMBean(className, name, loaderName,
+        return choose(name).createMBean(className, name, loaderName,
             params, signature);
     }
 
     // Forward to the appropriate interceptor.
     //
-    public final ObjectInstance getObjectInstance(final ObjectName name)
-        throws InstanceNotFoundException {
+    public final ObjectInstance getObjectInstance(final ObjectName name) throws InstanceNotFoundException {
+        return choose(name).getObjectInstance(name);
+    }
 
-        final MBeanServerInterceptor interceptor =
-            getMBeanServerInterceptor(name);
+    private <T> Set<T> union(Set<T> lhs, Set<T> rhs) {
+        Set<T> result = new HashSet<T>();
+        result.addAll(lhs);
+        result.addAll(rhs);
+        return result;
+    }
 
-        return interceptor.getObjectInstance(name);
+    private <T> List<T> union(List<T> lhs, List<T> rhs) {
+        List<T> result = new ArrayList<T>();
+        result.addAll(lhs);
+        result.addAll(rhs);
+        return result;
     }
 
     // Forward to both interceptors and merge the results.
     //
-    public final Set<ObjectInstance> queryMBeans(final ObjectName name,
-                                                 final QueryExp query) {
-
-        final MBeanServerInterceptor defaultInterceptor = defaultInterceptor();
-        final MBeanServerInterceptor otherInterceptor = otherInterceptor();
-        final Set<ObjectInstance> result = new HashSet<ObjectInstance>();
-        result.addAll(defaultInterceptor.queryMBeans(name, query));
-        result.addAll(otherInterceptor.queryMBeans(name, query));
-        return debugSet(result);
+    public final Set<ObjectInstance> queryMBeans(ObjectName name, QueryExp query) {
+        return union(
+            defaultInterceptor.queryMBeans(name, query),
+            otherInterceptor.queryMBeans(name, query)
+        );
     }
 
     // Forward to both interceptors and merge the results.
     //
-    public final Set<ObjectName> queryNames(final ObjectName name,
-                                            final QueryExp query) {
-
-        final MBeanServerInterceptor defaultInterceptor = defaultInterceptor();
-        final MBeanServerInterceptor otherInterceptor = otherInterceptor();
-        final Set<ObjectName> result = new HashSet<ObjectName>();
-        result.addAll(defaultInterceptor.queryNames(name, query));
-        result.addAll(otherInterceptor.queryNames(name, query));
-        return debugSet(result);
+    public final Set<ObjectName> queryNames(ObjectName name, QueryExp query) {
+        return union(
+            defaultInterceptor.queryNames(name, query),
+            otherInterceptor.queryNames(name, query)
+        );
     }
 
     /**
@@ -243,7 +216,6 @@ public class MasterMBeanServerInterceptor implements MBeanServerInterceptor {
      * @return the default Interceptor's default domain name.
      */
     public final String getDefaultDomain() {
-        final MBeanServerInterceptor defaultInterceptor = defaultInterceptor();
         return defaultInterceptor.getDefaultDomain();
     }
 
@@ -251,31 +223,10 @@ public class MasterMBeanServerInterceptor implements MBeanServerInterceptor {
     // By default, this method calls getDomainsByDomains().
     //
     public String[] getDomains() {
-        return getDomainsByDomains();
-    }
-
-    /**
-     * This method gets the domains by successively asking the default
-     * MBeanServerInterceptor and the other MBeanServerInterceptor in
-     * the list to get its own domains. It then returns the merge of
-     * all the obtained results.
-     */
-    protected final String[] getDomainsByDomains() {
-
-        final MBeanServerInterceptor defaultInterceptor = defaultInterceptor();
-        final MBeanServerInterceptor otherInterceptor = otherInterceptor();
-
-        final String[] defaultDomains = defaultInterceptor.getDomains();
-        final String[] otherDomains = otherInterceptor.getDomains();
-
-        List<String> defaultDomainsList = Arrays.asList(defaultDomains);
-        List<String> otherDomainsList = Arrays.asList(otherDomains);
-
-        ArrayList<String> al = new ArrayList<String>();
-        al.addAll(defaultDomainsList);
-        al.addAll(otherDomainsList);
-
-        return al.toArray(new String[al.size()]);
+        return union(
+            Arrays.asList(defaultInterceptor.getDomains()),
+            Arrays.asList(otherInterceptor.getDomains())
+        ).toArray(new String[0]);
     }
 
     // Forward to both interceptors and merge the results.
@@ -340,50 +291,29 @@ public class MasterMBeanServerInterceptor implements MBeanServerInterceptor {
     // there, forwards to the otherInterceptor.
     //
     public final boolean isRegistered(final ObjectName name) {
-
-        final MBeanServerInterceptor defaultInterceptor = defaultInterceptor();
-        final MBeanServerInterceptor otherInterceptor = otherInterceptor();
-
         return defaultInterceptor.isRegistered(name) || otherInterceptor.isRegistered(name);
     }
 
     // Forwards to the appropriate MBeanServerInterceptor.
     //
-    public final boolean isInstanceOf(final ObjectName name,
-                                      final String className)
-        throws InstanceNotFoundException {
-
-        final MBeanServerInterceptor interceptor =
-            getMBeanServerInterceptor(name);
-        return interceptor.isInstanceOf(name, className);
+    public final boolean isInstanceOf(ObjectName name, String className) throws InstanceNotFoundException {
+        return choose(name).isInstanceOf(name, className);
     }
 
     // Forwards to the appropriate MBeanServerInterceptor.
     //
-    public final ObjectInstance registerMBean(final Object object,
-                                              final ObjectName name)
-        throws InstanceAlreadyExistsException,
-        MBeanRegistrationException,
-        NotCompliantMBeanException {
+    public final ObjectInstance registerMBean(Object object, ObjectName name)
+        throws InstanceAlreadyExistsException, MBeanRegistrationException, NotCompliantMBeanException {
 
         checkRegistration(name);
-
-        final MBeanServerInterceptor interceptor =
-            getMBeanServerInterceptor(name);
-        return interceptor.registerMBean(object, name);
+        return choose(name).registerMBean(object, name);
     }
 
     // Forwards to the appropriate MBeanServerInterceptor.
     //
-    public final void addNotificationListener(final ObjectName name,
-                                              final NotificationListener listener,
-                                              final NotificationFilter filter,
-                                              final Object handback)
+    public final void addNotificationListener(ObjectName name, NotificationListener listener, NotificationFilter filter, Object handback)
         throws InstanceNotFoundException {
-
-        final MBeanServerInterceptor interceptor = getMBeanServerInterceptor(name);
-        interceptor.addNotificationListener(name, listener,
-            filter, handback);
+        choose(name).addNotificationListener(name, listener, filter, handback);
     }
 
     // Forwards to the appropriate MBeanServerInterceptor.
@@ -393,10 +323,7 @@ public class MasterMBeanServerInterceptor implements MBeanServerInterceptor {
                                               final NotificationFilter filter,
                                               final Object handback)
         throws InstanceNotFoundException {
-
-        final MBeanServerInterceptor interceptor =
-            getMBeanServerInterceptor(name);
-        interceptor.addNotificationListener(name, listener, filter, handback);
+        choose(name).addNotificationListener(name, listener, filter, handback);
     }
 
     // Forwards to the appropriate MBeanServerInterceptor.
@@ -406,9 +333,7 @@ public class MasterMBeanServerInterceptor implements MBeanServerInterceptor {
         final NotificationListener listener)
         throws InstanceNotFoundException, ListenerNotFoundException {
 
-        final MBeanServerInterceptor interceptor =
-            getMBeanServerInterceptor(name);
-        interceptor.removeNotificationListener(name, listener);
+        choose(name).removeNotificationListener(name, listener);
     }
 
     // Forwards to the appropriate MBeanServerInterceptor.
@@ -418,9 +343,7 @@ public class MasterMBeanServerInterceptor implements MBeanServerInterceptor {
         final ObjectName listener)
         throws InstanceNotFoundException, ListenerNotFoundException {
 
-        final MBeanServerInterceptor interceptor =
-            getMBeanServerInterceptor(name);
-        interceptor.removeNotificationListener(name, listener);
+        choose(name).removeNotificationListener(name, listener);
     }
 
     // Forwards to the appropriate MBeanServerInterceptor.
@@ -432,10 +355,7 @@ public class MasterMBeanServerInterceptor implements MBeanServerInterceptor {
         final Object handback)
         throws InstanceNotFoundException, ListenerNotFoundException {
 
-        final MBeanServerInterceptor interceptor =
-            getMBeanServerInterceptor(name);
-        interceptor.removeNotificationListener(name, listener,
-            filter, handback);
+        choose(name).removeNotificationListener(name, listener, filter, handback);
     }
 
     // Forwards to the appropriate MBeanServerInterceptor.
@@ -447,10 +367,7 @@ public class MasterMBeanServerInterceptor implements MBeanServerInterceptor {
         final Object handback)
         throws InstanceNotFoundException, ListenerNotFoundException {
 
-        final MBeanServerInterceptor interceptor =
-            getMBeanServerInterceptor(name);
-        interceptor.removeNotificationListener(name, listener,
-            filter, handback);
+        choose(name).removeNotificationListener(name, listener, filter, handback);
     }
 
     // Forwards to the appropriate MBeanServerInterceptor.
@@ -458,9 +375,7 @@ public class MasterMBeanServerInterceptor implements MBeanServerInterceptor {
     public final void unregisterMBean(final ObjectName name)
         throws InstanceNotFoundException, MBeanRegistrationException {
 
-        final MBeanServerInterceptor interceptor =
-            getMBeanServerInterceptor(name);
-        interceptor.unregisterMBean(name);
+        choose(name).unregisterMBean(name);
     }
 
     // Forwards to the appropriate MBeanServerInterceptor.
@@ -470,9 +385,7 @@ public class MasterMBeanServerInterceptor implements MBeanServerInterceptor {
         throws MBeanException, AttributeNotFoundException,
         InstanceNotFoundException, ReflectionException {
 
-        final MBeanServerInterceptor interceptor =
-            getMBeanServerInterceptor(name);
-        return interceptor.getAttribute(name, attribute);
+        return choose(name).getAttribute(name, attribute);
     }
 
     // Forwards to the appropriate MBeanServerInterceptor.
@@ -480,9 +393,7 @@ public class MasterMBeanServerInterceptor implements MBeanServerInterceptor {
     public final AttributeList getAttributes(final ObjectName name,
                                              final String[] attributes)
         throws InstanceNotFoundException, ReflectionException {
-        final MBeanServerInterceptor interceptor =
-            getMBeanServerInterceptor(name);
-        return interceptor.getAttributes(name, attributes);
+        return choose(name).getAttributes(name, attributes);
     }
 
     // Forwards to the appropriate MBeanServerInterceptor.
@@ -493,9 +404,7 @@ public class MasterMBeanServerInterceptor implements MBeanServerInterceptor {
         InvalidAttributeValueException, MBeanException,
         ReflectionException {
 
-        final MBeanServerInterceptor interceptor =
-            getMBeanServerInterceptor(name);
-        interceptor.setAttribute(name, attribute);
+        choose(name).setAttribute(name, attribute);
     }
 
     // Forwards to the appropriate MBeanServerInterceptor.
@@ -504,9 +413,7 @@ public class MasterMBeanServerInterceptor implements MBeanServerInterceptor {
                                              final AttributeList attributes)
         throws InstanceNotFoundException, ReflectionException {
 
-        final MBeanServerInterceptor interceptor =
-            getMBeanServerInterceptor(name);
-        return interceptor.setAttributes(name, attributes);
+        return choose(name).setAttributes(name, attributes);
     }
 
     // Forwards to the appropriate MBeanServerInterceptor.
@@ -517,74 +424,24 @@ public class MasterMBeanServerInterceptor implements MBeanServerInterceptor {
                                final String signature[])
         throws InstanceNotFoundException, MBeanException, ReflectionException {
 
-        final MBeanServerInterceptor interceptor =
-            getMBeanServerInterceptor(name);
-        return interceptor.invoke(name, operationName, params, signature);
+        return choose(name).invoke(name, operationName, params, signature);
     }
 
     // Forwards to the appropriate MBeanServerInterceptor.
     //
-    public final MBeanInfo getMBeanInfo(final ObjectName name)
-        throws InstanceNotFoundException,
-        IntrospectionException,
-        ReflectionException {
-        final MBeanServerInterceptor interceptor =
-            getMBeanServerInterceptor(name);
-        return interceptor.getMBeanInfo(name);
+    public final MBeanInfo getMBeanInfo(ObjectName name) throws InstanceNotFoundException, IntrospectionException, ReflectionException {
+        return choose(name).getMBeanInfo(name);
     }
 
     // Forwards to the appropriate MBeanServerInterceptor.
     //
-    public final ClassLoader getClassLoader(final ObjectName loaderName)
-        throws InstanceNotFoundException {
-
-        final MBeanServerInterceptor interceptor =
-            getMBeanServerInterceptor(loaderName);
-
-        return interceptor.getClassLoader(loaderName);
+    public final ClassLoader getClassLoader(final ObjectName loaderName) throws InstanceNotFoundException {
+        return choose(loaderName).getClassLoader(loaderName);
     }
 
     // Forwards to the appropriate MBeanServerInterceptor.
     //
-    public final ClassLoader getClassLoaderFor(final ObjectName name)
-        throws InstanceNotFoundException {
-
-        final MBeanServerInterceptor interceptor =
-            getMBeanServerInterceptor(name);
-
-        return interceptor.getClassLoaderFor(name);
-    }
-
-    // Debug the content of a Set
-    //
-    private static <T> Set<T> debugSet(Set<T> result) {
-        if (isDebugOn() && result != null) {
-            for (T n : result) {
-                if (n instanceof ObjectInstance) {
-                    final ObjectInstance o = (ObjectInstance) n;
-                    debug("ObjectInstance", o.getObjectName() + " [" +
-                        o.getClassName() + "] (" + o + ")");
-                } else {
-                    debug(n.getClass().getName(), n.toString());
-                }
-            }
-        }
-        return result;
-    }
-
-    //
-    // Debug
-    //
-
-    private static final boolean debugOn = false;
-    private static final String debugTag = "MasterMBeanServerInterceptor";
-
-    private static boolean isDebugOn() {
-        return debugOn;
-    }
-
-    private static void debug(String func, String info) {
-        if (isDebugOn())
-            System.out.println(debugTag + "::" + func + "::" + info);
+    public final ClassLoader getClassLoaderFor(ObjectName name) throws InstanceNotFoundException {
+        return choose(name).getClassLoaderFor(name);
     }
 }

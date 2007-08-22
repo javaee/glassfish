@@ -8,18 +8,15 @@
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
  */
 
-import com.sun.jmx.defaults.ServiceName;
 import com.sun.jmx.interceptor.DefaultMBeanServerInterceptor;
 import com.sun.jmx.interceptor.MBeanServerInterceptor;
 import com.sun.jmx.mbeanserver.SunJmxMBeanServer;
 
 import javax.management.MBeanServer;
 import javax.management.MBeanServerDelegate;
-import javax.management.ObjectName;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.lang.reflect.Field;
-import java.util.Set;
 
 /**
  * This class implements a simple Java DMK agent which instantiates a
@@ -75,36 +72,27 @@ public class Agent {
      * MBean's ObjectName. It then inserts the
      * {@link MasterMBeanServerInterceptor} into the given MBeanServer.
      *
-     * @param server The MBeanServer where the new FileMBeanServerInterceptor
-     *               is to be inserted.
      * @param domain The domain name reserved for the MBeans managed
      *               by the FileMBeanServerInterceptor.
      * @return The new FileMBeanServerInterceptor.
      * @throws IllegalArgumentException if the given MBeanServer is
      *                                  null, or does not support {@link MBeanServerInterceptor}s.
      */
-    public static FileMBeanServerInterceptor insertFileInterceptor(
-        MBeanServer server,
-        String domain) {
-        // The server must not be null
-        //
-        if (server == null)
-            throw new IllegalArgumentException("MBeanServer can't be null");
+    public FileMBeanServerInterceptor insertFileInterceptor(String domain) {
+        SunJmxMBeanServer beanServer = (SunJmxMBeanServer) mbs;
 
         // We get the server's DefaultMBeanServerInterceptor. We will pass
         // this interceptor to our MasterMBeanServerInterceptor so that no
         // MBeans are lost.
         //
-        final MBeanServerInterceptor defaultInterceptor =
-            ((SunJmxMBeanServer) server).getMBeanServerInterceptor();
+        final MBeanServerInterceptor defaultInterceptor = beanServer.getMBeanServerInterceptor();
 
         // We get the MBeanServerDelegate. We will pass the MBeanServerDelegate
         // to our FileMBeanServerInterceptor so that we can fake the creation
         // and destruction of MBeans by sending MBeanServerNotifications through
         // the delegate.
         //
-        final MBeanServerDelegate delegate =
-            ((SunJmxMBeanServer) server).getMBeanServerDelegate();
+        final MBeanServerDelegate delegate = beanServer.getMBeanServerDelegate();
 
         // We create the FileMBeanServerInterceptor. The
         // FileMBeanServerInterceptor handles virtual MBeans which represent
@@ -121,7 +109,7 @@ public class Agent {
         // evaluate QueryExp objects.
         //
         final FileMBeanServerInterceptor fileInterceptor =
-            new FileMBeanServerInterceptor(domain, delegate, server);
+            new FileMBeanServerInterceptor(domain, delegate, mbs);
 
         // We create a new MasterMBeanServerInterceptor that will route requests
         // to either the DefaultMBeanServerInterceptor, or the
@@ -148,14 +136,12 @@ public class Agent {
         // the FileMBeanServerInterceptor.
         //
         final MBeanServerInterceptor master =
-            new MasterMBeanServerInterceptor(defaultInterceptor,
-                fileInterceptor,
-                domain);
+            new MasterMBeanServerInterceptor(defaultInterceptor, fileInterceptor, domain);
 
         // We set the MasterMBeanServerInterceptor as the MBeanServer's default
         // MBeanServerInterceptor.
         //
-        ((SunJmxMBeanServer) server).setMBeanServerInterceptor(master);
+        beanServer.setMBeanServerInterceptor(master);
 
         return fileInterceptor;
     }
@@ -170,8 +156,7 @@ public class Agent {
      */
     public void showFiles() {
         echo("\n\tInserting the FileMBeanServerInterceptor in this agent...");
-        FileMBeanServerInterceptor fileInterceptor =
-            insertFileInterceptor(mbs, "file");
+        FileMBeanServerInterceptor fileInterceptor = insertFileInterceptor("file");
         echo("\tdone");
         echo("\n\tStarting the FileMBeanServerInterceptor...");
         fileInterceptor.start(".");
@@ -198,44 +183,8 @@ public class Agent {
         echo("\nPress <Enter> to stop the agent...");
         waitForEnterPressed();
 
-        // Remove the MBeans that we have added, i.e. the HTML adaptor.
-        // Removes all MBeans except the delegate and the MBeans from
-        // the "file" domain.
-        //
-        myAgent.removeMBeans("file");
-
         echo(SEP_LINE);
         System.exit(0);
-    }
-
-    public void removeMBeans(String excludedDomain) {
-        echo(SEP_LINE);
-        try {
-            echo("Unregistering all MBeans except " +
-                "the MBean server delegate");
-            if (excludedDomain != null)
-                echo("and the MBeans from the \"" + excludedDomain +
-                    ":\" domain.\n");
-            else
-                echo("");
-            echo("    Current MBean count = " +
-                mbs.getMBeanCount() + "\n");
-
-            Set<ObjectName> allMBeans = mbs.queryNames(null, null);
-            for (ObjectName name : allMBeans) {
-                if (name == null) continue;
-                if (name.toString().equals(ServiceName.DELEGATE)) continue;
-                if (excludedDomain != null &&
-                    name.getDomain().equals(excludedDomain)) continue;
-                echo("\tUnregistering " + name.toString());
-                mbs.unregisterMBean(name);
-            }
-            echo("\n    Current MBean count = " +
-                mbs.getMBeanCount() + "\n");
-            echo("done\n");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     private static void echo(String msg) {
