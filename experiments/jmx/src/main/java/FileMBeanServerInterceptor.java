@@ -761,21 +761,14 @@ public class FileMBeanServerInterceptor implements MBeanServerInterceptor {
     //
     public Integer getMBeanCount()  {
 
-        File result;
-        synchronized (this) {
-            result = fileDir;
-        }
-        final File wd = result;
-        if (wd == null) return 0;
-
-        final File[] list = wd.listFiles();
+        if (fileDir == null) return 0;
 
         // The number of MBeans faked by this MBean interceptor is:
         //  1 MBean for each file and directory in the mirrored directory,
         // +1 MBean for the parent directory,
         // +1 MBean for the mirrored directory itself.
         //
-        return list.length + 2;
+        return fileDir.listFiles().length + 2;
     }
 
     // Get the file associated with the given name in order
