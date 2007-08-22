@@ -42,7 +42,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Hashtable;
 import java.util.Map;
 import java.util.Set;
 
@@ -226,25 +225,15 @@ public class FileMBeanServerInterceptor implements MBeanServerInterceptor {
                                         ObjectName pattern) {
         if (pattern == null) return true;
         final String od = name.getDomain();
-        if (!(od == null || od.equals(""))) {
+        if (!od.equals("")) {
             final String domain = pattern.getDomain();
-            if (domain == null) return false;
             if (!wildmatch(od.toCharArray(),domain.toCharArray(),0,0))
                 return false;
         }
         if (pattern.isPropertyPattern()) {
-            final Hashtable<String,String> propertyList = pattern.getKeyPropertyList();
-            if (propertyList == null) return true;
-            final Set<Map.Entry<String,String>> set = propertyList.entrySet();
-            if (set == null) return true;
-            final int len = set.size();
-            if (len == 0) return true;
-            final Map.Entry[] entries =
-                set.toArray(new Map.Entry[len]);
-            for (int i=0 ; i < len ; i++) {
-                final Map.Entry e = entries[i];
-                final String key = (String)e.getKey();
-                final String value = (String)e.getValue();
+            for( Map.Entry<String,String> e : pattern.getKeyPropertyList().entrySet()) {
+                final String key = e.getKey();
+                final String value = e.getValue();
                 final String v = name.getKeyProperty(key);
                 if (v == null && value != null) return false;
                 if (v.equals(value)) continue;
@@ -298,65 +287,11 @@ public class FileMBeanServerInterceptor implements MBeanServerInterceptor {
      * @param server    The MBeanServer in which this interceptor
      *                  is going to be inserted.
      */
-    public FileMBeanServerInterceptor(String fileDomain,
-				      MBeanServerDelegate forwarder,
-				      MBeanServer server) {
+    public FileMBeanServerInterceptor(String fileDomain, MBeanServerDelegate forwarder, MBeanServer server) {
         this.fileDomain = fileDomain;
-        this.fileDomainChars =
-            (fileDomain == null ? null : fileDomain.toCharArray());
+        this.fileDomainChars = fileDomain.toCharArray();
         this.forwarder = forwarder;
         this.server = server;
-        checkInitialization();
-    }
-
-    /**
-     * Returns the domain name reserved for this FileMBeanServerInterceptor.
-     */
-    protected final synchronized String fileDomain() {
-        return fileDomain;
-    }
-
-    /**
-     * Returns the File object representing the directory mirrored
-     * by this FileMBeanServerInterceptor.
-     */
-    protected final synchronized File fileDir() {
-        return fileDir;
-    }
-
-    /**
-     * The MBeanServerDelegate through which MBeanServerNotification
-     * will be sent.
-     * @return The MBeanServerDelegate.
-     */
-    protected final synchronized MBeanServerDelegate forwarder() {
-        return forwarder;
-    }
-
-    /**
-     * Check that this FileMBeanServerInterceptor is correctly initialized.
-     * @exception IllegalArgumentException if the FileMBeanServerInterceptor
-     *            is not correctly initialized.
-     */
-    protected void checkInitialization()
-        throws IllegalArgumentException {
-
-        // fileDomain must not be null
-        //
-        if (fileDomain == null)
-            throw new IllegalArgumentException("Bad initialization: " +
-                            "MBeanServerInterceptor domain must not be null.");
-        // MBeanServerDelegate must not be null
-        //
-        if (forwarder == null)
-            throw new IllegalArgumentException("Bad initialization: " +
-                            "MBeanServerDelegate must not be null.");
-
-        // MBeanServer must not be null
-        //
-        if (server == null)
-            throw new IllegalArgumentException("Bad initialization: " +
-                            "MBeanServer must not be null.");
     }
 
     /**
@@ -368,7 +303,11 @@ public class FileMBeanServerInterceptor implements MBeanServerInterceptor {
      */
     private void sendMBeanServerNotifications(String type) {
         try {
-            final File wd = fileDir();
+            File result;
+            synchronized (this) {
+                result = fileDir;
+            }
+            final File wd = result;
             if (wd == null) return;
             final File[] list = wd.listFiles();
             final int len = list.length;
@@ -379,16 +318,16 @@ public class FileMBeanServerInterceptor implements MBeanServerInterceptor {
                     final ObjectName n = getName(f);
                     final Notification notif =
                         new MBeanServerNotification(type,delegateName,0,n);
-                    final MBeanServerDelegate fwd = forwarder();
+                    MBeanServerDelegate result1;
+                    synchronized (this) {
+                        result1 = forwarder;
+                    }
+                    final MBeanServerDelegate fwd = result1;
                     fwd.sendNotification(notif);
                 } catch (Exception x) {
-                    debug("sendMBeanServerNotifications",
-                          "Virtual MBean failed: " + x);
                 }
             }
         } catch (Exception x) {
-            debug("sendMBeanServerNotifications",
-                  "Failed to send notifications: " + x);
         }
     }
 
@@ -433,8 +372,6 @@ public class FileMBeanServerInterceptor implements MBeanServerInterceptor {
     protected final File getFile(ObjectName name)
         throws InstanceNotFoundException {
         try {
-            if (isDebugOn())
-                debug("getFile", "trying to find file for " + name);
             final File   wd;
             final String pwd;
             synchronized (this) {
@@ -450,8 +387,6 @@ public class FileMBeanServerInterceptor implements MBeanServerInterceptor {
             //
             if (wd == null || name == null ||
                 !name.getDomain().equals(fileDomain)) {
-                debug("getFile", "Interceptor not started or MBean not in "+
-                      fileDomain);
                 throw new InstanceNotFoundException(name +
                                                     ": MBean not found.");
             }
@@ -459,15 +394,6 @@ public class FileMBeanServerInterceptor implements MBeanServerInterceptor {
             // Get the value of the "path" property.
             //
             final String path = name.getKeyProperty("path").replace(';',':');
-
-            // If the "path" property is not present, the given name
-            // does not correspond to any MBean faked by this interceptor.
-            //
-            if (path == null) {
-                debug("getFile", "path property not found");
-                throw new InstanceNotFoundException(name.toString() +
-                                                    ": MBean not found.");
-            }
 
             // Get the file pointed to by the "path" property.
             //
@@ -481,7 +407,6 @@ public class FileMBeanServerInterceptor implements MBeanServerInterceptor {
             // Check that the "path" property is the canonical pathname.
             //
             if (!path.equals(cp)) {
-                debug("getFile", "Path is not the canonical form: " + cp);
                 throw new InstanceNotFoundException(name.toString() +
                                                     ": MBean not found.");
             }
@@ -501,7 +426,6 @@ public class FileMBeanServerInterceptor implements MBeanServerInterceptor {
                 (parentWd!=null?parentWd.getCanonicalPath():"");
             if ((!cp.equals(pwd))&&(!cp.equals(dotdot))
                 &&(!pwd.equals(parent))) {
-                debug("getFile", "File not in current scope: " + wd);
                 throw new InstanceNotFoundException(name.toString() +
                                                     ": MBean not found.");
             }
@@ -511,7 +435,6 @@ public class FileMBeanServerInterceptor implements MBeanServerInterceptor {
             //
             final String ps = name.getKeyPropertyListString();
             if (!ps.equals("path="+cp.replace(':',';'))) {
-                debug("getFile", "Invalid keys: " + ps);
                 throw new InstanceNotFoundException(name.toString() +
                                                     ": MBean not found.");
             }
@@ -526,8 +449,6 @@ public class FileMBeanServerInterceptor implements MBeanServerInterceptor {
         } catch (Exception x) {
             // We obviously don't fake an MBean of that name...
             //
-            debug("getFile",name.toString() + ": MBean not found.");
-            debug("getFile",x);
             throw new InstanceNotFoundException(name.toString() +
                                                 ": MBean not found.");
         }
@@ -542,8 +463,7 @@ public class FileMBeanServerInterceptor implements MBeanServerInterceptor {
     void cd(File file) throws IOException {
         synchronized(fileDomain) {
             stop();
-            final String cdn = file.getCanonicalPath();
-            start(cdn);
+            start(file.getCanonicalPath());
         }
     }
 
@@ -568,8 +488,7 @@ public class FileMBeanServerInterceptor implements MBeanServerInterceptor {
         final File dir;
         final String cp;
         try {
-            final File tmpdir = new File(dirName);
-            cp = tmpdir.getCanonicalPath();
+            cp = new File(dirName).getCanonicalPath();
             dir = new File(cp);
         } catch (Exception x) {
             // Problem reading the directory => we cannot mirror
@@ -626,23 +545,12 @@ public class FileMBeanServerInterceptor implements MBeanServerInterceptor {
         throw new MBeanRegistrationException(null,"Registration failed.");
     }
 
-    // Always rejected.
-    //
+    // We do not accept the creation of new files...
     public final ObjectInstance createMBean(final String className,
                                             final ObjectName name,
                                             final Object params[],
-                                            final String signature[])
-        throws ReflectionException, InstanceAlreadyExistsException,
-        MBeanException,
-        NotCompliantMBeanException {
-
-        // We do not accept the creation of new files...
-        //
-        final RuntimeException x =
-            new UnsupportedOperationException(name.getDomain() +
-                            ": Can't register an MBean in that domain.");
-        throw new
-            MBeanRegistrationException(x,"Registration failed.");
+                                            final String signature[]) throws MBeanException {
+        throw new MBeanRegistrationException(null,"Registration failed.");
     }
 
     // Always rejected.
@@ -651,19 +559,16 @@ public class FileMBeanServerInterceptor implements MBeanServerInterceptor {
                                       final ObjectName name,
                                       final ObjectName loaderName,
                                       final Object params[],
-                                      final String signature[])
-        throws ReflectionException, InstanceAlreadyExistsException,
-        MBeanException,
-        NotCompliantMBeanException, InstanceNotFoundException {
+                                      final String signature[]) throws MBeanException {
+        throw new MBeanRegistrationException(null,"Registration failed.");
+    }
 
-        // We do not accept the creation of new files...
-        //
+    public ObjectInstance registerMBean(Object object, ObjectName name) throws InstanceAlreadyExistsException, MBeanRegistrationException, NotCompliantMBeanException {
+        throw new MBeanRegistrationException(null,"Registration failed.");
+    }
 
-        final RuntimeException x =
-            new UnsupportedOperationException(name.getDomain() +
-                            ": Can't register an MBean in that domain.");
-        throw new
-            MBeanRegistrationException(x,"Registration failed.");
+    public void unregisterMBean(ObjectName name) throws InstanceNotFoundException, MBeanRegistrationException {
+        throw new MBeanRegistrationException(null,"Registration failed.");
     }
 
     /**
@@ -673,8 +578,7 @@ public class FileMBeanServerInterceptor implements MBeanServerInterceptor {
      *        faked MBean.
      * @return The faked ObjectInstance.
      */
-    final ObjectInstance getObjectInstance(final ObjectName name,
-                                                  final File file)
+    final ObjectInstance getObjectInstance(ObjectName name, File file)
         throws InstanceNotFoundException {
 
         final String clazz;
@@ -689,8 +593,7 @@ public class FileMBeanServerInterceptor implements MBeanServerInterceptor {
     // Get the file associated with the given name and fake
     // a new ObjectInstance from that.
     //
-    public final ObjectInstance getObjectInstance(final ObjectName name)
-        throws InstanceNotFoundException {
+    public final ObjectInstance getObjectInstance(final ObjectName name) throws InstanceNotFoundException {
 
         // This will throw InstanceNotFoundException if the given name
         // does not correspond to any MBean faked by this interceptor.
@@ -708,8 +611,7 @@ public class FileMBeanServerInterceptor implements MBeanServerInterceptor {
      * @param query The QueryExp to apply
      * @return the result of the query evaluation.
      */
-    private boolean query(final ObjectName name,
-                                final QueryExp query) {
+    private boolean query(ObjectName name, QueryExp query) {
         if (query == null) return true;
 
         try {
@@ -732,8 +634,7 @@ public class FileMBeanServerInterceptor implements MBeanServerInterceptor {
      *   the virtual MBean identified by <var>file</var> matches
      *   the given <var>pattern</var> and <var>query</var>.
      */
-    final void addMBean(final ObjectName pattern, final QueryExp query,
-                        final File file, final Set<ObjectInstance> result) {
+    final void addMBean(final ObjectName pattern, final QueryExp query, File file, Set<ObjectInstance> result) {
         try {
             if (file == null) return;
 
@@ -750,18 +651,19 @@ public class FileMBeanServerInterceptor implements MBeanServerInterceptor {
             //
             result.add(getObjectInstance(n,file));
         } catch (Exception x) {
-            debug("queryMBeans",
-                  "Virtual MBean failed: " + x);
         }
     }
 
     // Parses the directory mirrored by this interceptor
     // in order to find the list of faked MBeans.
     //
-    public final Set<ObjectInstance> queryMBeans(final ObjectName name,
-                                 final QueryExp query) {
+    public final Set<ObjectInstance> queryMBeans(ObjectName name, QueryExp query) {
 
-        final File wd = fileDir();
+        File result1;
+        synchronized (this) {
+            result1 = fileDir;
+        }
+        final File wd = result1;
 
         // No directory mirrored (interceptor stopped) => return an
         // empty Set.
@@ -794,12 +696,9 @@ public class FileMBeanServerInterceptor implements MBeanServerInterceptor {
         // check whether the files and directory contained in the mirrored
         // directory match.
         //
-        for (int i=0;i<len;i++) {
+        for (int i=0;i<len;i++)
             addMBean(name,query,list[i],result);
-        }
 
-        // Finally return the result.
-        //
         return result;
     }
 
@@ -834,8 +733,6 @@ public class FileMBeanServerInterceptor implements MBeanServerInterceptor {
             result.add(n);
 
         } catch (Exception x) {
-            debug("queryNames",
-                  "Virtual MBean failed: " + x);
         }
     }
 
@@ -845,12 +742,10 @@ public class FileMBeanServerInterceptor implements MBeanServerInterceptor {
     public final Set<ObjectName> queryNames(final ObjectName name,
                                 final QueryExp query) {
 
-        final File wd = fileDir();
-
         // No directory mirrored (interceptor stopped) => return an
         // empty Set.
         //
-        if (wd == null) return Collections.emptySet();
+        if (fileDir == null) return Collections.emptySet();
 
         // If name is not null, check that the domain matches this
         // interceptor domain.
@@ -862,18 +757,18 @@ public class FileMBeanServerInterceptor implements MBeanServerInterceptor {
 
         // Build a new empty Set.
         //
-        final File[] list = wd.listFiles();
+        final File[] list = fileDir.listFiles();
         final int len = list.length;
         final HashSet<ObjectName> result = new HashSet<ObjectName>(len+2);
 
         // check whether the parent directory of the mirrored directory
         // matches.
         //
-        addName(name,query,wd.getParentFile(),result);
+        addName(name,query, fileDir.getParentFile(),result);
 
         // check whether the mirrored directory matches.
         //
-        addName(name,query,wd,result);
+        addName(name,query, fileDir,result);
 
         // check whether the files and directory contained in the mirrored
         // directory match.
@@ -882,8 +777,6 @@ public class FileMBeanServerInterceptor implements MBeanServerInterceptor {
             addName(name,query,list[i],result);
         }
 
-        // Finally return the result.
-        //
         return result;
     }
 
@@ -904,7 +797,11 @@ public class FileMBeanServerInterceptor implements MBeanServerInterceptor {
     //
     public Integer getMBeanCount()  {
 
-        final File wd = fileDir();
+        File result;
+        synchronized (this) {
+            result = fileDir;
+        }
+        final File wd = result;
         if (wd == null) return 0;
 
         final File[] list = wd.listFiles();
@@ -921,22 +818,13 @@ public class FileMBeanServerInterceptor implements MBeanServerInterceptor {
     // to check if it corresponds to an MBean faked by this
     // interceptor.
     //
-    public final boolean isRegistered(final ObjectName name) {
+    public final boolean isRegistered(ObjectName name) {
         try {
             // This will throw InstanceNotFoundException if the given name
             // does not correspond to any MBean faked by this interceptor.
-            //
             getFile(name);
-
-            // If we get here, it means that the name correspond to one of
-            // the MBeans we are faking => return true.
-            //
             return true;
-        } catch (Exception x) {
-
-            // If we get here, it means we are not faking any MBean of that
-            // name => return false.
-            //
+        } catch (InstanceNotFoundException x) {
             return false;
         }
     }
@@ -944,8 +832,7 @@ public class FileMBeanServerInterceptor implements MBeanServerInterceptor {
     // Get the file associated with the given name and see if
     // it corresponds to the given className.
     //
-    public final boolean isInstanceOf(final ObjectName name,
-                                      final String className)
+    public final boolean isInstanceOf(ObjectName name, String className)
         throws InstanceNotFoundException {
 
         // This will throw InstanceNotFoundException if the given name
@@ -964,101 +851,30 @@ public class FileMBeanServerInterceptor implements MBeanServerInterceptor {
         return false;
     }
 
-    // Always reject.
-    //
-    public final ObjectInstance registerMBean(final Object object,
-                                              final ObjectName name)
-        throws InstanceAlreadyExistsException,
-               MBeanRegistrationException, NotCompliantMBeanException {
-
-        // We do not support creation of new files...
-        //
-        final RuntimeException x =
-            new UnsupportedOperationException(name.getDomain() +
-                            ": Can't register an MBean in that domain.");
-        throw new
-            MBeanRegistrationException(x,"Registration failed.");
-    }
-
     // No faked MBean is a NotificationBroadcaster => Always reject.
-    //
-    public final void addNotificationListener(final ObjectName name,
-                                        final NotificationListener listener,
-                                        final NotificationFilter filter,
-                                        final Object handback)
-        throws InstanceNotFoundException {
 
-        throw new InstanceNotFoundException("No broadcaster by that name");
-
-    }
-
-    // No faked MBean is a NotificationBroadcaster => Always reject.
-    //
-    public final void addNotificationListener(final ObjectName name,
-                                        final ObjectName listener,
-                                        final NotificationFilter filter,
-                                        final Object handback)
-        throws InstanceNotFoundException {
-
+    public void addNotificationListener(ObjectName name, NotificationListener listener, NotificationFilter filter, Object handback) throws InstanceNotFoundException {
         throw new InstanceNotFoundException("No broadcaster by that name");
     }
 
-    // No faked MBean is a NotificationBroadcaster => Always reject.
-    //
-    public final void removeNotificationListener(
-					final ObjectName name,
-					final NotificationListener listener)
-        throws InstanceNotFoundException, ListenerNotFoundException {
-
+    public void addNotificationListener(ObjectName name, ObjectName listener, NotificationFilter filter, Object handback) throws InstanceNotFoundException {
         throw new InstanceNotFoundException("No broadcaster by that name");
     }
 
-    // No faked MBean is a NotificationBroadcaster => Always reject.
-    //
-    public final void removeNotificationListener(
-					final ObjectName name,
-					final ObjectName listener)
-	throws InstanceNotFoundException, ListenerNotFoundException {
-
+    public void removeNotificationListener(ObjectName name, ObjectName listener) throws InstanceNotFoundException, ListenerNotFoundException {
         throw new InstanceNotFoundException("No broadcaster by that name");
     }
 
-    // No faked MBean is a NotificationBroadcaster => Always reject.
-    //
-    public final void removeNotificationListener(
-					final ObjectName name,
-					final NotificationListener listener,
-					final NotificationFilter filter,
-					final Object handback)
-       throws InstanceNotFoundException, ListenerNotFoundException {
-
+    public void removeNotificationListener(ObjectName name, ObjectName listener, NotificationFilter filter, Object handback) throws InstanceNotFoundException, ListenerNotFoundException {
         throw new InstanceNotFoundException("No broadcaster by that name");
     }
 
-    // No faked MBean is a NotificationBroadcaster => Always reject.
-    //
-    public final void removeNotificationListener(
-					final ObjectName name,
-					final ObjectName listener,
-					final NotificationFilter filter,
-					final Object handback)
-       throws InstanceNotFoundException, ListenerNotFoundException {
-
+    public void removeNotificationListener(ObjectName name, NotificationListener listener) throws InstanceNotFoundException, ListenerNotFoundException {
         throw new InstanceNotFoundException("No broadcaster by that name");
     }
 
-    // Always reject.
-    //
-    public final void unregisterMBean(final ObjectName name)
-        throws InstanceNotFoundException, MBeanRegistrationException {
-
-        // We always show the content of the mirrored directory.
-        //
-        final RuntimeException x =
-            new UnsupportedOperationException(name.getDomain() +
-                            ": Can't unregister an MBean from that domain.");
-        throw new
-            MBeanRegistrationException(x,"Unregistration failed.");
+    public void removeNotificationListener(ObjectName name, NotificationListener listener, NotificationFilter filter, Object handback) throws InstanceNotFoundException, ListenerNotFoundException {
+        throw new InstanceNotFoundException("No broadcaster by that name");
     }
 
     /**
@@ -1097,9 +913,7 @@ public class FileMBeanServerInterceptor implements MBeanServerInterceptor {
 
             // Unknown attribute
             //
-            else
-                throw new AttributeNotFoundException("null");
-
+            throw new AttributeNotFoundException("null");
         } catch (AttributeNotFoundException x) {
             throw x;
         } catch (JMRuntimeException j) {
@@ -1158,13 +972,9 @@ public class FileMBeanServerInterceptor implements MBeanServerInterceptor {
             } catch (Exception x) {
                 // Skip the attribute that couldn't be obtained.
                 //
-                debug("getAttributes",name + ": Attribute " + attn[i] +
-                      " not found.");
             }
         }
 
-        // Finally return the result.
-        //
         return list;
     }
 
@@ -1345,28 +1155,5 @@ public class FileMBeanServerInterceptor implements MBeanServerInterceptor {
         // backed up by File objects...
         //
         return file.getClass().getClassLoader();
-    }
-
-    //
-    // Debug
-    //
-
-    private static final boolean debugOn = false;
-    private static final String debugTag = "FileMBeanServerInterceptor";
-
-    private static boolean isDebugOn() {
-        return debugOn;
-    }
-
-    private static void debug(String func, String info) {
-        if (isDebugOn())
-            System.out.println(debugTag + "::" + func + "::" + info);
-    }
-
-    private static void debug(String func, Throwable t) {
-        if (isDebugOn()) {
-            System.out.println(debugTag + "::" + func + "::" + t.getMessage());
-            t.printStackTrace();
-        }
     }
 }
