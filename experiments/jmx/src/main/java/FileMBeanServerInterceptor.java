@@ -528,11 +528,11 @@ public class FileMBeanServerInterceptor implements MBeanServerInterceptor {
         throw new MBeanRegistrationException(null,"Registration failed.");
     }
 
-    public ObjectInstance createMBean(String className, ObjectName name, Object params[], String signature[]) throws ReflectionException, InstanceAlreadyExistsException, MBeanRegistrationException, MBeanException, NotCompliantMBeanException {
+    public ObjectInstance createMBean(String className, ObjectName name, Object params[], String signature[]) throws ReflectionException, InstanceAlreadyExistsException, MBeanException, NotCompliantMBeanException {
         throw new MBeanRegistrationException(null,"Registration failed.");
     }
 
-    public ObjectInstance createMBean(String className, ObjectName name, ObjectName loaderName, Object params[], String signature[]) throws ReflectionException, InstanceAlreadyExistsException, MBeanRegistrationException, MBeanException, NotCompliantMBeanException, InstanceNotFoundException {
+    public ObjectInstance createMBean(String className, ObjectName name, ObjectName loaderName, Object params[], String signature[]) throws ReflectionException, InstanceAlreadyExistsException,  MBeanException, NotCompliantMBeanException, InstanceNotFoundException {
         throw new MBeanRegistrationException(null,"Registration failed.");
     }
 
