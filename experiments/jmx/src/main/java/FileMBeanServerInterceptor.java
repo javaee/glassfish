@@ -30,7 +30,6 @@ import javax.management.MBeanServerDelegate;
 import javax.management.MBeanServerNotification;
 import javax.management.MalformedObjectNameException;
 import javax.management.NotCompliantMBeanException;
-import javax.management.Notification;
 import javax.management.NotificationFilter;
 import javax.management.NotificationListener;
 import javax.management.ObjectInstance;
@@ -303,27 +302,12 @@ public class FileMBeanServerInterceptor implements MBeanServerInterceptor {
      */
     private void sendMBeanServerNotifications(String type) {
         try {
-            File result;
-            synchronized (this) {
-                result = fileDir;
-            }
-            final File wd = result;
-            if (wd == null) return;
-            final File[] list = wd.listFiles();
-            final int len = list.length;
-            for (int i=0;i<len;i++) {
+            if (fileDir == null) return;
+
+            for (File f : fileDir.listFiles()) {
                 try {
-                    final File f = list[i];
-                    if (f == null) continue;
-                    final ObjectName n = getName(f);
-                    final Notification notif =
-                        new MBeanServerNotification(type,delegateName,0,n);
-                    MBeanServerDelegate result1;
-                    synchronized (this) {
-                        result1 = forwarder;
-                    }
-                    final MBeanServerDelegate fwd = result1;
-                    fwd.sendNotification(notif);
+                    forwarder.sendNotification(
+                        new MBeanServerNotification(type,delegateName,0, getName(f)));
                 } catch (Exception x) {
                 }
             }
@@ -659,16 +643,10 @@ public class FileMBeanServerInterceptor implements MBeanServerInterceptor {
     //
     public final Set<ObjectInstance> queryMBeans(ObjectName name, QueryExp query) {
 
-        File result1;
-        synchronized (this) {
-            result1 = fileDir;
-        }
-        final File wd = result1;
-
         // No directory mirrored (interceptor stopped) => return an
         // empty Set.
         //
-        if (wd == null) return Collections.emptySet();
+        if (fileDir == null) return Collections.emptySet();
 
         // If name is not null, check that the domain matches this
         // interceptor domain.
@@ -680,18 +658,18 @@ public class FileMBeanServerInterceptor implements MBeanServerInterceptor {
 
         // Build a new empty Set.
         //
-        final File[] list = wd.listFiles();
+        final File[] list = fileDir.listFiles();
         final int len = list.length;
         final HashSet<ObjectInstance> result = new HashSet<ObjectInstance>(len+2);
 
         // check whether the parent directory of the mirrored directory
         // matches.
         //
-        addMBean(name,query,wd.getParentFile(),result);
+        addMBean(name,query, fileDir.getParentFile(),result);
 
         // check whether the mirrored directory matches.
         //
-        addMBean(name,query,wd,result);
+        addMBean(name,query, fileDir,result);
 
         // check whether the files and directory contained in the mirrored
         // directory match.
