@@ -8,6 +8,55 @@
     <version>0.1-SNAPSHOT</version>
     <name>Modules Subsystem</name>
     <description>Generic Modules subsystem</description>
+    <developers>
+        <developer>
+            <id>kohuske</id>
+            <name>Kohsuke Kawaguchi</name>
+            <url>http://weblogs.java.net/blog/kohsuke</url>
+            <organization>Sun Microsystems, Inc.</organization>
+            <roles>
+                <role>developer</role>
+            </roles>
+        </developer>
+        <developer>
+            <id>dochez</id>
+            <name>Jerome Dochez</name>
+            <url>http://blogs.sun.com/dochez</url>
+            <organization>Sun Microsystems, Inc.</organization>
+            <roles>
+                <role>lead</role>
+                <role>developer</role>
+            </roles>
+        </developer>
+    </developers>
+
+    <mailingLists>
+        <mailingList>
+            <name>dev</name>
+            <subscribe>https://hk2.dev.java.net/servlets/ProjectMailingListList</subscribe>
+            <post>dev@hk2.dev.java.ne</post>
+            <archive>https://hk2.dev.java.net/servlets/SummarizeList?listName=dev</archive>
+        </mailingList>
+        <mailingList>
+            <name>users</name>
+            <subscribe>https://hk2.dev.java.net/servlets/ProjectMailingListList</subscribe>
+            <post>users@hk2.dev.java.net</post>
+            <archive>https://glassfish.dev.java.net/servlets/SummarizeList?listName=users</archive>
+        </mailingList>
+        <mailingList>
+            <name>issues</name>
+            <subscribe>https://hk2.dev.java.net/servlets/ProjectMailingListList</subscribe>
+            <post>issues@hk2.dev.java.net</post>
+            <archive>https://hk2.dev.java.net/servlets/SummarizeList?listName=issues</archive>
+        </mailingList>
+        <mailingList>
+            <name>commits</name>
+            <subscribe>https://hk2.dev.java.net/servlets/ProjectMailingListList</subscribe>
+            <post>commits@hk2.dev.java.net</post>
+            <archive>https://hk2.dev.java.net/servlets/SummarizeList?listName=commits</archive>
+        </mailingList>
+    </mailingLists>
+
     <scm>
         <connection>scm:svn:https://${java.net.usernane}@hk2.dev.java.net/svn/hk2</connection>
     </scm>
@@ -17,7 +66,7 @@
         </site>
         <repository>
             <uniqueVersion>false</uniqueVersion>
-            <id>gf-repository</id>
+            <id>glassfish-repository</id>
             <url>sftp://trx2.sun.com:/export/nfs/dlc/maven/glassfish</url>
         </repository>
     </distributionManagement>
