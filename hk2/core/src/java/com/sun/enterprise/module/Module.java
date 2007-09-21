@@ -24,9 +24,13 @@
 package com.sun.enterprise.module;
 
 
+import com.sun.enterprise.module.ModuleMetadata.InhabitantsDescriptor;
 import com.sun.enterprise.module.impl.Utils;
+import com.sun.hk2.component.Holder;
+import com.sun.hk2.component.InhabitantsParser;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.PrintStream;
 import java.lang.ref.WeakReference;
 import java.net.MalformedURLException;
@@ -34,7 +38,11 @@ import java.net.URI;
 import java.net.URL;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -53,14 +61,14 @@ import java.util.logging.Logger;
  *
  * @author Jerome Dochez
  */
-public final class Module extends ServiceLookup {
+public final class Module {
     
     private ModuleDefinition moduleDef;
     private WeakReference<ClassLoader> publicCL;
     private volatile ModuleClassLoader privateCL;
 
     /**
-     * Lazily loaded provider {@link Class}es from {@link ServiceProviderInfoList}.
+     * Lazily loaded provider {@link Class}es from {@link ModuleMetadata}.
      * The key is the service class name. We can't use {@link Class} because that would cause leaks.
      */
     private final Map<String,List<Class>> serviceClasses = new ConcurrentHashMap<String,List<Class>>();
@@ -237,19 +245,27 @@ public final class Module extends ServiceLookup {
     }   
     
     /**
-     * Requests the list of Services this module provide (generally, module
-     * provide one service but it's not limited). The Service is described 
-     * by the module implementation using the META_INF/services format 
-     * described in the JDK jar file format description.
-     *
-     * @return a collection of ServiceProviderInfo 
-     * 
+     * Gets the metadata of this module.
      */
-    public ServiceProviderInfoList getServiceProviders() {
-        return moduleDef.getServiceProviders();
+    public ModuleMetadata getMetadata() {
+        return moduleDef.getMetadata();
     }
-    
-    /** 
+
+    /**
+     * Parses all the inhabitants descriptors of the given name in this module.
+     */
+    void parseInhabitants(String name,InhabitantsParser parser) throws IOException {
+        Holder<ClassLoader> holder = new Holder<ClassLoader>() {
+            public ClassLoader get() {
+                return getPrivateClassLoader();
+            }
+        };
+
+        for (InhabitantsDescriptor d : getMetadata().getHabitats(name))
+            parser.parse(d.createScanner(),holder);
+    }
+
+    /**
      * Ensure that this module is {@link ModuleState#RESOLVED resolved}.
      *
      * <p>
@@ -503,7 +519,7 @@ public final class Module extends ServiceLookup {
         // the worst case scenario in the race situation is we end up creating the same list twice,
         // which is not a big deal.
 
-        for( String provider : getServiceProviders().getEntry(name).providerNames) {
+        for( String provider : getMetadata().getEntry(name).providerNames) {
             if(r==null)
                 r = new ArrayList<Class>();
             try {
@@ -529,7 +545,7 @@ public final class Module extends ServiceLookup {
         List<Class> v = serviceClasses.get(name);
         if(v!=null && !v.isEmpty())    return true;
 
-        return getServiceProviders().getEntry(name).hasProvider();
+        return getMetadata().getEntry(name).hasProvider();
     }
 
     void dumpState(PrintStream writer) {

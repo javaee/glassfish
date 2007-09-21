@@ -1,11 +1,13 @@
 package test1;
 
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.Factory;
 
 /**
  * @author Kohsuke Kawaguchi
  */
-@Service(factory=TestFactory.class)
+@Service
+@Factory(TestFactory.class)
 public class FactoryTest extends Test {
     private final int x;
 

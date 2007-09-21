@@ -2,6 +2,7 @@ package org.jvnet.hk2.component;
 
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.Scoped;
 import com.sun.hk2.component.ScopeInstance;
 
 /**
@@ -9,15 +10,17 @@ import com.sun.hk2.component.ScopeInstance;
  *
  * @author Kohsuke Kawaguchi
  */
-@Service(scope=Singleton.class)
+@Service @Scoped(Singleton.class)
 public class Singleton extends Scope {
     @Inject
-    public ComponentManager manager;
+    public Habitat habitat;
 
-    // ComponentManager knows Singleton and doesn't call this method
-    // for efficiency, but nevertheless it is implemented correctly.
+    /**
+     * @deprecated
+     *  Singleton instances are not stored in a single map.
+     */
     @Override
     public ScopeInstance current() {
-        return manager.singletonScope;
+        throw new UnsupportedOperationException();
     }
 }

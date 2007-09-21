@@ -1,7 +1,10 @@
 package com.sun.enterprise.module.impl;
 
-import com.sun.enterprise.module.ServiceProviderInfoList;
+import com.sun.enterprise.module.ModuleMetadata;
+import com.sun.enterprise.module.ModuleMetadata.InhabitantsDescriptor;
+import com.sun.hk2.component.InhabitantsFile;
 
+import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -28,9 +31,9 @@ public abstract class Jar {
     public abstract Manifest getManifest() throws IOException;
 
     /**
-     * Loads all <tt>META-INF/services</tt> entries and store them to the list.
+     * Loads all <tt>META-INF/habitats</tt> entries and store them to the list.
      */
-    public abstract void getServiceProviders(ServiceProviderInfoList result);
+    public abstract void loadMetadata(ModuleMetadata result);
 
     /**
      * Gets the base name of the jar.
@@ -68,24 +71,50 @@ public abstract class Jar {
             }
         }
 
-        public void getServiceProviders(ServiceProviderInfoList result) {
-            File[] services = new File(dir,SERVICE_LOCATION).listFiles();
-            if(services==null)  return;
+        private File[] fixNull(File[] f) {
+            if(f==null) return new File[0];
+            else        return f;
+        }
 
-            for( File svc : services ) {
+        public void loadMetadata(ModuleMetadata result) {
+            for( File svc : fixNull(new File(dir, InhabitantsFile.PATH).listFiles())) {
+                if(svc.isDirectory())
+                    continue;
+
+                try {
+                    result.addHabitat(svc.getName(),
+                        new InhabitantsDescriptor(svc.getPath(), readFully(svc))
+                    );
+                } catch(IOException e) {
+                    Utils.getDefaultLogger().log(Level.SEVERE, "Error reading habitats file from " + svc, e);
+                }
+            }
+
+            for( File svc : fixNull(new File(dir, SERVICE_LOCATION).listFiles()) ) {
                 if(svc.isDirectory())
                     continue;
 
                 try {
                     result.load( svc.toURL(), svc.getName() );
                 } catch(IOException e) {
-                    Utils.getDefaultLogger().log(Level.SEVERE, "Error reading service provider in " + svc, e);
+                    Utils.getDefaultLogger().log(Level.SEVERE, "Error reading service provider from " + svc, e);
                 }
             }
         }
 
         public String getBaseName() {
             return dir.getName();
+        }
+
+        private byte[] readFully(File f) throws IOException {
+            byte[] buf = new byte[(int)f.length()];
+            DataInputStream in = new DataInputStream(new FileInputStream(f));
+            try {
+                in.readFully(buf);
+                return buf;
+            } finally {
+                in.close();
+            }
         }
     }
 
@@ -109,10 +138,22 @@ public abstract class Jar {
             return jar.getManifest();
         }
 
-        public void getServiceProviders(ServiceProviderInfoList result) {
+        public void loadMetadata(ModuleMetadata result) {
             Enumeration<JarEntry> entries = jar.entries();
             while (entries.hasMoreElements()) {
                 JarEntry entry = entries.nextElement();
+                if (entry.getName().startsWith(InhabitantsFile.PATH)) {
+                    String habitatName = entry.getName().substring(InhabitantsFile.PATH.length()+1);
+
+                    try {
+                        result.addHabitat(habitatName,new InhabitantsDescriptor(
+                            "jar:"+file.toURL()+"!/"+entry.getName(),
+                            loadFully(entry)
+                        ));
+                    } catch(IOException e) {
+                        Utils.getDefaultLogger().log(Level.SEVERE, "Error reading inhabitants list in " + jar.getName(), e);
+                    }
+                } else
                 if (entry.getName().startsWith(SERVICE_LOCATION)) {
                     String serviceName = entry.getName().substring(SERVICE_LOCATION.length()+1);
 
@@ -131,6 +172,17 @@ public abstract class Jar {
             if(idx>=0)
                 name = name.substring(0,idx);
             return name;
+        }
+
+        private byte[] loadFully(JarEntry e) throws IOException {
+            byte[] buf = new byte[(int)e.getSize()];
+            DataInputStream in = new DataInputStream(jar.getInputStream(e));
+            try {
+                in.readFully(buf);
+                return buf;
+            } finally {
+                in.close();
+            }
         }
     }
 

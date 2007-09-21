@@ -1,16 +1,15 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <parent>
         <groupId>com.sun.enterprise</groupId>
         <artifactId>hk2-parent</artifactId>
-        <version>0.1-SNAPSHOT</version>
+        <version>0.2-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>auto-depends-plugin</artifactId>
     <packaging>jar</packaging>
-    <name>Service File APT plugin</name>
-    <description>Automatic Service file generation APT tool plugin</description>    
+    <name>Inhabitats index generator</name>
+    <description>Index generator for auto-depends</description>    
     <build>
         <sourceDirectory>src/java</sourceDirectory>  
         <resources>

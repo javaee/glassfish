@@ -80,7 +80,7 @@ final class ModuleClassLoader extends URLClassLoader {
 
             ModulesRegistry reg = module.getRegistry();
             for( Module m : reg.getModules() ) {
-                List<URL> list = m.getServiceProviders().getDescriptors(serviceName);
+                List<URL> list = m.getMetadata().getDescriptors(serviceName);
                 if(!list.isEmpty())     return list.get(0);
             }
 
@@ -115,7 +115,7 @@ final class ModuleClassLoader extends URLClassLoader {
 
             ModulesRegistry reg = module.getRegistry();
             for( Module m : reg.getModules() )
-                urls.addAll(m.getServiceProviders().getDescriptors(serviceName));
+                urls.addAll(m.getMetadata().getDescriptors(serviceName));
 
             return urls.elements();
         } else {

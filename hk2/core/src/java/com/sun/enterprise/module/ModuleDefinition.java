@@ -24,7 +24,6 @@
 package com.sun.enterprise.module;
 
 import java.net.URI;
-import java.util.Collection;
 import java.util.jar.Manifest;
 
 /**
@@ -108,13 +107,10 @@ public interface ModuleDefinition {
     Manifest getManifest();
 
     /**
-     * Requests the list of Services this module provide (generally, module
-     * provide one service but it's not limited). The Service is described
-     * by the module implementation using the META_INF/services format
-     * described in the JDK jar file format description.
+     * Gets the metadata that describes various components and services in this module.
      *
      * @return
      *      Always non-null.
      */
-    ServiceProviderInfoList getServiceProviders();
+    ModuleMetadata getMetadata();
 }

@@ -11,27 +11,27 @@ package com.sun.enterprise.module.bootstrap;
 
 import com.sun.enterprise.module.ManifestConstants;
 import com.sun.enterprise.module.Module;
+import com.sun.enterprise.module.ModuleMetadata.InhabitantsDescriptor;
 import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.module.impl.DirectoryBasedRepository;
+import com.sun.hk2.component.ExistingSingletonInhabitant;
+import static com.sun.hk2.component.InhabitantsFile.CLASS_KEY;
+import static com.sun.hk2.component.InhabitantsFile.INDEX_KEY;
+import com.sun.hk2.component.KeyValuePairParser;
+import org.jvnet.hk2.component.ComponentException;
+import org.jvnet.hk2.component.Habitat;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.LineNumberReader;
 import java.net.JarURLConnection;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.Iterator;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
-import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import org.jvnet.hk2.component.ComponentManager;
-import org.jvnet.hk2.component.ComponentException;
 
 /**
  * CLI entry point that will setup the module subsystem and delegate the
@@ -163,7 +163,13 @@ public class Main {
      *
      */
     public void launch(ModulesRegistry registry, File root, String[] args) throws BootException {
-        Collection<ModuleStartup> startups = new ComponentManager(registry).getComponents(ModuleStartup.class);
+
+        Habitat mgr = registry.newHabitat();
+        StartupContext context = new StartupContext(root, args);
+        mgr.add(new ExistingSingletonInhabitant<StartupContext>(context));
+        registry.createHabitat("default", mgr);
+
+        Collection<ModuleStartup> startups = mgr.getAllByContract(ModuleStartup.class);
         if(startups.isEmpty())
             throw new BootException("No module has ModuleStartup");
         if(startups.size()>1) {
@@ -173,7 +179,6 @@ public class Main {
 
         ModuleStartup ms = startups.iterator().next();
         Module mainModule = Module.find(ms.getClass());
-        StartupContext context = new StartupContext(root, mainModule, args);
         launch(ms,context, mainModule);
     }
 
@@ -188,6 +193,8 @@ public class Main {
      *
      */
     public void launch(ModulesRegistry registry, String mainModuleName, File root, String[] args) throws BootException {
+        final String habitatName = "default"; // TODO: take this as a parameter
+
         // instantiate the main module, this is the entry point of the application
         // code. it is supposed to have 1 ModuleStartup implementation.
         final Module mainModule = registry.makeModuleFor(mainModuleName, null);
@@ -198,7 +205,7 @@ public class Main {
                 throw new BootException("Cannot find main module " + mainModuleName+" : no such module");
         }
 
-        String targetClassName = findModuleStartup(mainModule);
+        String targetClassName = findModuleStartup(mainModule, habitatName);
         if (targetClassName==null) {
             throw new BootException("Cannot find a ModuleStartup implementation in the META-INF/services/com.sun.enterprise.v3.ModuleStartup file, aborting");
         }
@@ -207,18 +214,23 @@ public class Main {
 
         Class<? extends ModuleStartup> targetClass=null;
         ModuleStartup startupCode;
+
+        StartupContext context = new StartupContext(root, args);
+        
         ClassLoader currentCL = Thread.currentThread().getContextClassLoader();
         try {
             Thread.currentThread().setContextClassLoader(mainModule.getClassLoader());
             try {
                 targetClass = mainModule.getClassLoader().loadClass(targetClassName).asSubclass(ModuleStartup.class);
-                startupCode = new ComponentManager(registry).getComponent(targetClass);
+                Habitat mgr = registry.newHabitat();
+                mgr.add(new ExistingSingletonInhabitant<StartupContext>(context));
+                mgr.add(new ExistingSingletonInhabitant<Logger>(Logger.global));
+                startupCode = registry.createHabitat(habitatName, mgr).getComponent(targetClass);
             } catch (ClassNotFoundException e) {
                 throw new BootException("Unable to load "+targetClassName,e);
             } catch (ComponentException e) {
                 throw new BootException("Unable to load "+targetClass,e);                
             }
-            StartupContext context = new StartupContext(root, mainModule, args);
 
             launch(startupCode, context, mainModule);
         } finally {
@@ -271,40 +283,22 @@ public class Main {
      * <p>
      * This implementation does so by looking it up from services.
      */
-    protected String findModuleStartup(Module mainModule) {
-        // so far, I only take the first implementation...
-        ClassLoader mainModuleClassLoader = mainModule.getClassLoader();
-
-        LineNumberReader fr=null;
-        InputStream is=null;
-        final String serviceIntf = ModuleStartup.class.getName();
-        try {
-            is = mainModuleClassLoader.getResourceAsStream("META-INF/services/"+serviceIntf);
-            if (is==null) {
-                System.err.println("no META-INF/services/"+ serviceIntf + " file found in " + mainModule);
-                return null;
-            }
-            fr = new LineNumberReader(new InputStreamReader(is));
-            return fr.readLine();
-        } catch (IOException e) {
-            System.err.println("Cannot read the META-INF/services/"+serviceIntf+" file : " +  e);
-            return null;
-        } finally {
-            if (fr!=null) {
-                try {
-                    fr.close();
-                } catch(Exception e) {
-                    System.err.println("Cannot close file reader "  + e);
-
+    protected String findModuleStartup(Module mainModule, String habitatName) throws BootException {
+        for(InhabitantsDescriptor d : mainModule.getMetadata().getHabitats(habitatName)) {
+            try {
+                for (KeyValuePairParser kvpp : d.createScanner()) {
+                    for (String v : kvpp.findAll(INDEX_KEY)) {
+                        if(v.equals(ModuleStartup.class.getName())) {
+                            kvpp.rewind();
+                            return kvpp.find(CLASS_KEY);
+                        }
+                    }
                 }
-            }
-            if (is!=null) {
-                try {
-                    is.close();
-                } catch(Exception e) {
-                    System.err.println( "Cannot close input stream " + e);
-                }
+            } catch (IOException e) {
+                throw new BootException("Failed to parse "+d.systemId,e);
             }
         }
+
+        throw new BootException("No "+ModuleStartup.class.getName()+" in "+mainModule);
     }
 }

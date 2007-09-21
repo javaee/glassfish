@@ -1,6 +1,7 @@
 package test1;
 
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.PerLookup;
 
 /**
@@ -8,6 +9,6 @@ import org.jvnet.hk2.component.PerLookup;
  * 
  * @author Kohsuke Kawaguchi
  */
-@Service(scope= PerLookup.class)
+@Service @Scoped(PerLookup.class)
 public class PrototypeScopeBean {
 }

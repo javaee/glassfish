@@ -23,9 +23,9 @@
 
 package org.jvnet.hk2.annotations;
 
-import org.jvnet.hk2.component.PerLookup;
-import org.jvnet.hk2.component.Scope;
-import org.jvnet.hk2.component.Factory;
+import com.sun.hk2.component.InhabitantsFile;
+import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.component.Inhabitant;
 
 import static java.lang.annotation.ElementType.TYPE;
 import java.lang.annotation.Retention;
@@ -40,34 +40,39 @@ import java.lang.annotation.Target;
  *
  * @author Jerome Dochez
  * @author Kohsuke Kawaguchi
+ * @see Factory
  */
 @Retention(RUNTIME)
 @Target(TYPE)
+@InhabitantAnnotation("default")
 public @interface Service {
 
     /**
-     * Returns name of the service 
-     * @return name of the service
+     * Name of the service.
+     *
+     * <p>
+     * {@link Habitat#getComponent(Class, String)} and similar methods can be used
+     * to obtain a service with a particular name. All the named services
+     * are still available through {@link Habitat#getAllByContract(Class)}.
+     *
+     * <p>
+     * The default value "" indicates that the inhabitant is anonymous.
      */
+    @Index
     String name() default "";
 
     /**
-     * Indicates the scope that this implementation is tied to.
-     */
-    Class<? extends Scope> scope() default PerLookup.class;
-
-    /**
-     * If this implementation is created from a factory
-     * (instead of calling the default constructor), then specify
-     * the factory class.
+     * Additional metadata that goes into the inhabitants file.
+     * The value is "key=value,key=value,..." format. See {@link InhabitantsFile}
+     * for more details.
+     *
+     * This information is accessilbe from {@link Inhabitant#metadata()}.
      *
      * <p>
-     * If specified, the factory component is activated, and
-     * {@link Factory#getObject()} is used to obtain the instance,
-     * instead of the default action, which is to call the constructor.
-     * <p>
-     * The resource injection and extraction happens like it normally
-     * does, after the factory returns the object.
+     * While this is limited in expressiveness, metadata has a performance advantage
+     * in it that it can be read without even creating a classloader for this class.
+     * For example, this feature is used by the configuration module so that
+     * the config file can be read without actually loading the classes. 
      */
-    Class<? extends Factory> factory() default Factory.class;
+    String metadata() default "";
 }

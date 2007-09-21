@@ -25,6 +25,6 @@ public class AnnotationProcessorFactoryImpl implements AnnotationProcessorFactor
     }
 
     public AnnotationProcessor getProcessorFor(Set<AnnotationTypeDeclaration> set, AnnotationProcessorEnvironment annotationProcessorEnvironment) {
-        return new AnnotationProcessorImpl(annotationProcessorEnvironment);
+        return new ConfigInjectorGenerator(annotationProcessorEnvironment);
     }
 }

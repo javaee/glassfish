@@ -3,7 +3,7 @@
   <parent>
     <groupId>com.sun.enterprise</groupId>
     <artifactId>hk2-parent</artifactId>
-    <version>0.1-SNAPSHOT</version>
+    <version>0.2-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
   
@@ -35,6 +35,11 @@
       <groupId>com.sun.enterprise</groupId>
       <artifactId>config-generator</artifactId>
       <version>${project.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>com.sun.xml.stream</groupId>
+        <artifactId>sjsxp</artifactId>
+        <version>1.0</version>
     </dependency>
     <dependency>
       <groupId>com.sun.enterprise</groupId>

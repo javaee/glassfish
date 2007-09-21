@@ -72,16 +72,6 @@ public class RunMojo extends AbstractMojo {
     private String[] args = new String[0];
 
     /**
-     * groupId:artifactId of the module which the hk2:run mojo just skips executing.
-     *
-     * This hack is used to specify the "hk2:run" for a test phase execution
-     * in the parent POM for all the child modules (except the parent module itself.) 
-     *
-     * @parameter expression="${skipId}"
-     */
-    private String skipId;
-
-    /**
      * groupId:artifactId of the module that includes {@link ModuleStartup}.
      * If omitted, the module list is searched to find one.
      *
@@ -90,16 +80,18 @@ public class RunMojo extends AbstractMojo {
     private String mainModule;
 
     public void execute() throws MojoExecutionException, MojoFailureException {
-        if(skipId!=null && skipId.equals(project.getGroupId()+":"+project.getArtifactId())) {
+        if(project.getPackaging().equals("pom")) {
+            // we want to run "mvn test" from parent module and run tests of all descendants,
+            // but there's nothing to test in POM module itself.
             getLog().info("Skipping");
             return;
         }
-        
+
         // sanity check
         if(project.getPackaging().equals("hk2-jar") && project.getArtifact()==null) {
             getLog().warn("This project isn't compiled yet. Perhaps you meant 'mvn compile hk2:run'?");
         }
-
+    
         try {
             if(mainModule==null)
                 new Main().launch(createModuleRegistry(),rootDir,args);

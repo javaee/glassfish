@@ -29,13 +29,15 @@ package org.jvnet.hk2.component;
  *
  * @author Jerome Dochez
  */
-// TODO: should be RuntimeException
-public class ComponentException extends Exception {
+public class ComponentException extends RuntimeException {
     public ComponentException(String message) {
         super(message);
     }
     public ComponentException(String message, Throwable origin) {
         super(message, origin);
+    }
+    public ComponentException(String format, Object... args) {
+        super(String.format(format,args));
     }
 
 }

@@ -1,7 +1,24 @@
-<foo httpPort='80'>
+<domain http-port='80'>
   <bar>qwerty</bar>
   <jvm-options>-Xmx256m</jvm-options>
-  <jvm-options>-verbose:gc</jvm-options>
-  <property name='xyz' value='abc'/>
+  <!-- variable replacement -->
+  <jvm-options>-verbose:${xyz}</jvm-options>
+  <property name='xyz' value='abc${qqq}'/>
   <property name='qqq' value='www'/>
-</foo>
+  <property name='adminPort' value='4848'/>
+
+  <virtual-server http-listeners="a,b" state='on'/>
+
+  <http-listener id="a" acceptor-threads="5" port="8080" />
+  <http-listener id="b" port="${adminPort}"/>
+
+  <jbi abc="def" />
+
+  <!-- test substitution -->
+  <security-map>
+    <principal name="first" />
+    <user-group name="second" />
+    <principal name="third"/>
+    <backend-principal name="backend" />
+  </security-map>
+</domain>

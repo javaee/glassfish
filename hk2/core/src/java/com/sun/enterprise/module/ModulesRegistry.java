@@ -23,9 +23,15 @@
 
 package com.sun.enterprise.module;
 
+import com.sun.enterprise.module.bootstrap.Populator;
 import com.sun.enterprise.module.impl.AdapterIterator;
 import com.sun.enterprise.module.impl.FlattenIterator;
+import com.sun.hk2.component.InhabitantsParser;
+import org.jvnet.hk2.component.ComponentException;
+import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.config.ConfigParser;
 
+import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Collection;
 import java.util.Collections;
@@ -48,7 +54,7 @@ import java.util.logging.Logger;
  *
  * @author Jerome Dochez
  */
-public class ModulesRegistry extends ServiceLookup implements ModuleChangeListener {
+public class ModulesRegistry implements ModuleChangeListener {
     /**
      * {@link ModulesRegistry} can form a tree structure by using this pointer.
      * It works in a way similar to the classloader tree. Modules defined in the parent
@@ -89,6 +95,61 @@ public class ModulesRegistry extends ServiceLookup implements ModuleChangeListen
      */
     public ModulesRegistry createChild() {
         return new ModulesRegistry(this);
+    }
+
+
+    /**
+     * Creates an uninitialized {@link Habitat}
+     *
+     */
+    public Habitat newHabitat() throws ComponentException {
+        return new Habitat();
+    }
+
+
+    /**
+     * Creates a {@link Habitat} from all the modules in this registry
+     *
+     * @param name
+     *      Determines which inhabitants descriptors are loaded.
+     *      (so that different parallel habitats can be
+     *      created over the same modules registry.)
+     */
+    public Habitat createHabitat(String name) throws ComponentException {
+        Habitat h = newHabitat();
+        return createHabitat(name, h);
+    }
+
+    /**
+     * Creates a {@link Habitat} from all the modules in this registry
+     *
+     * @param name
+     *      Determines which inhabitants descriptors are loaded.
+     *      (so that different parallel habitats can be
+     *      created over the same modules registry.)
+     * @param h
+     *      Habitat to initialize, null if it should be created
+     *
+     * @return initialized Habitat
+     */
+    public Habitat createHabitat(String name, Habitat h) throws ComponentException {
+        try {
+            if (h==null) {
+                h = newHabitat();
+            }
+
+            InhabitantsParser inhabitantsParser = new InhabitantsParser(h);
+            for (final Module module : getModules())
+                module.parseInhabitants(name,inhabitantsParser);
+
+            ConfigParser configParser = new ConfigParser(h);
+            for( Populator p : h.getAllByContract(Populator.class) )
+                p.run(configParser);
+
+            return h;
+        } catch (IOException e) {
+            throw new ComponentException("Failed to create a habitat",e);
+        }
     }
 
     /**
@@ -245,7 +306,7 @@ public class ModulesRegistry extends ServiceLookup implements ModuleChangeListen
         modules.put(newModule.getModuleDefinition().getName(), newModule);
 
         // pick up providers from this module
-        for( ServiceProviderInfoList.Entry spi : newModule.getServiceProviders().getEntries() ) {
+        for( ModuleMetadata.Entry spi : newModule.getMetadata().getEntries() ) {
             for( String name : spi.providerNames )
                 providers.put(name,newModule);
         }

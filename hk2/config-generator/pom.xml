@@ -4,7 +4,7 @@
     <parent>
         <groupId>com.sun.enterprise</groupId>
         <artifactId>hk2-parent</artifactId>
-        <version>0.1-SNAPSHOT</version>
+        <version>0.2-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     
@@ -18,9 +18,9 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.envoisolutions.sxc</groupId>
-            <artifactId>sxc-core</artifactId>
-            <version>0.6</version>
+            <groupId>com.sun.enterprise</groupId>
+            <artifactId>auto-depends-plugin</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>com.sun.xml.bind</groupId>
