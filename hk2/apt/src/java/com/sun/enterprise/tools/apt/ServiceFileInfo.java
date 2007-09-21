@@ -36,7 +36,7 @@ import java.util.Set;
  * the list of implementors of that service type.
  * 
  */
-public class ServiceFileInfo {
+final class ServiceFileInfo {
 
     private final String serviceName;
     private Set<String> implementors;
@@ -56,7 +56,7 @@ public class ServiceFileInfo {
         // create the file at this time.
         if (writer==null) {
             File out = new File(new File("META-INF/services"),serviceName);
-            writer = env.getFiler().createTextFile(Filer.Location.SOURCE_TREE, "", out, null);
+            writer = env.getFiler().createTextFile(Filer.Location.SOURCE_TREE, "", out, "UTF-8");
         }
     }
 

@@ -35,6 +35,7 @@ import com.sun.mirror.type.InterfaceType;
 import com.sun.mirror.type.MirroredTypeException;
 import com.sun.mirror.util.DeclarationVisitors;
 import com.sun.mirror.util.SimpleDeclarationVisitor;
+import com.sun.mirror.util.DeclarationVisitor;
 import org.jvnet.hk2.annotations.Contract;
 import org.jvnet.hk2.annotations.ContractProvided;
 import org.jvnet.hk2.annotations.Service;
@@ -121,10 +122,12 @@ public class ServiceAnnotationProcessor implements AnnotationProcessor, RoundCom
      * only the class declaration.
      */
     public void process() {
+        DeclarationVisitor scanner = DeclarationVisitors.getDeclarationScanner(
+            new ListClassVisitor(),
+            DeclarationVisitors.NO_OP);
 
         for (TypeDeclaration typeDecl : env.getSpecifiedTypeDeclarations())
-            typeDecl.accept(DeclarationVisitors.getDeclarationScanner(new ListClassVisitor(),
-                    DeclarationVisitors.NO_OP));
+            typeDecl.accept(scanner);
     }
 
     /**
@@ -133,7 +136,6 @@ public class ServiceAnnotationProcessor implements AnnotationProcessor, RoundCom
      * added or removed from the generated service file.
      */
     private class ListClassVisitor extends SimpleDeclarationVisitor {
-        
         public void visitClassDeclaration(ClassDeclaration d) {
             if (debug) {
                 env.getMessager().printNotice("Visiting " + d.getQualifiedName());
@@ -254,7 +256,6 @@ public class ServiceAnnotationProcessor implements AnnotationProcessor, RoundCom
      * @param e
      */
     public void roundComplete(RoundCompleteEvent e) {
-        final boolean debug = env.getOptions().containsKey("-Adebug");
         for (ServiceFileInfo info : serviceFiles.values()) {
             if (info.isDirty()) {
                 if (debug) {

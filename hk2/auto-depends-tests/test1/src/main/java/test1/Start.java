@@ -5,7 +5,7 @@ import com.sun.enterprise.module.bootstrap.StartupContext;
 import junit.framework.Assert;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.ComponentManager;
+import org.jvnet.hk2.component.Habitat;
 
 /**
  * @author Kohsuke Kawaguchi
@@ -18,7 +18,7 @@ public class Start extends Assert implements ModuleStartup {
     Test[] tests;
 
     @Inject
-    ComponentManager manager;
+    Habitat habitat;
 
     public void setStartupContext(StartupContext context) {
         this.context = context;
@@ -26,7 +26,7 @@ public class Start extends Assert implements ModuleStartup {
 
     public void run() {
         assertNotNull(context);
-        assertNotNull(manager);
+        assertNotNull(habitat);
         assertTrue(tests.length!=0);
 
         for (Test test : tests) {

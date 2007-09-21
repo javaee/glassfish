@@ -1,14 +1,13 @@
 package org.jvnet.hk2.component;
 
-import org.jvnet.hk2.annotations.Contract;
-import org.jvnet.hk2.annotations.Service;
 import com.sun.hk2.component.ScopeInstance;
+import org.jvnet.hk2.annotations.Contract;
 
 /**
  * 
  *
  * @author Kohsuke Kawaguchi
- * @see Service#scope() 
+ * @see org.jvnet.hk2.annotations.Scoped#value() 
  */
 @Contract
 public abstract class Scope {

@@ -26,7 +26,7 @@ package com.sun.enterprise.module.impl;
 import com.sun.enterprise.module.ManifestConstants;
 import com.sun.enterprise.module.ModuleDefinition;
 import com.sun.enterprise.module.ModuleDependency;
-import com.sun.enterprise.module.ServiceProviderInfoList;
+import com.sun.enterprise.module.ModuleMetadata;
 
 import java.io.File;
 import java.io.IOException;
@@ -59,9 +59,9 @@ public class DefaultModuleDefinition implements ModuleDefinition {
      */
     protected final Attributes mainAttributes;
     /**
-     * Service entries exposed by this module.
+     * Metadata that works like index.
      */
-    private final ServiceProviderInfoList services = new ServiceProviderInfoList();
+    private final ModuleMetadata metadata = new ModuleMetadata();
 
     /** TO DO need to support a URI constructor */
     public DefaultModuleDefinition(File location) throws IOException {
@@ -117,7 +117,7 @@ public class DefaultModuleDefinition implements ModuleDefinition {
 
         parseAttributes(attr);
 
-        jarFile.getServiceProviders(services);
+        jarFile.loadMetadata(metadata);
     }
 
     /**
@@ -230,7 +230,7 @@ public class DefaultModuleDefinition implements ModuleDefinition {
         return manifest;
     }
 
-    public ServiceProviderInfoList getServiceProviders() {
-        return services;
+    public ModuleMetadata getMetadata() {
+        return metadata;
     }
 }

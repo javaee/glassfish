@@ -4,10 +4,18 @@
     <parent>
         <groupId>com.sun.enterprise</groupId>
         <artifactId>hk2-parent</artifactId>
-        <version>0.1-SNAPSHOT</version>
+        <version>0.2-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     
     <artifactId>auto-depends</artifactId>
     <name>Inversion of Control / Autodependency mechanism</name>
+
+  <dependencies>
+      <dependency>
+          <groupId>javax.xml.stream</groupId>
+          <artifactId>stax-api</artifactId>
+          <version>1.0-2</version>
+      </dependency>
+  </dependencies>
 </project>

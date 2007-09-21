@@ -55,6 +55,8 @@ public class MetainfServiceGenerator implements AnnotationProcessorFactory {
     // We only support debugging option
     private static final Collection<String> supportedOptions = Arrays.asList("-Adebug");
 
+    private DescriptorList list = new DescriptorList();
+
     public Collection<String> supportedAnnotationTypes() {
         return supportedAnnotations;
     }
@@ -66,8 +68,13 @@ public class MetainfServiceGenerator implements AnnotationProcessorFactory {
     public AnnotationProcessor getProcessorFor(
             Set<AnnotationTypeDeclaration> atds,
             AnnotationProcessorEnvironment env) {
+
+        list.loadExisting(env);
+
+        return new InhabitantsGenerator(env,list);
+            //return AnnotationProcessors.getCompositeAnnotationProcessor(
+            //    // new ServiceAnnotationProcessor(env), // no longer needed
+            //    new InhabitantsGenerator(env));
         
-            return new ServiceAnnotationProcessor(env);
-        
-    }    
+    }
 }

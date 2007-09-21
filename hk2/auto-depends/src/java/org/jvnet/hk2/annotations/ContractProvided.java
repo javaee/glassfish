@@ -47,6 +47,5 @@ import static java.lang.annotation.ElementType.TYPE;
  */
 @Target(TYPE)
 public @interface ContractProvided {
-
-    public Class value();
+    Class value();
 }

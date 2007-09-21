@@ -1,7 +1,9 @@
 package com.sun.hk2.component;
 
-import com.sun.hk2.utils.InMemoryResourceManager;
-import org.jvnet.hk2.component.ResourceManager;
+import org.jvnet.hk2.component.Inhabitant;
+import org.jvnet.hk2.component.PreDestroy;
+
+import java.util.Map;
 
 /**
  * A particular instanciation of a {@link org.jvnet.hk2.component.Scope}.
@@ -13,32 +15,47 @@ import org.jvnet.hk2.component.ResourceManager;
  * @author Kohsuke Kawaguchi
  * @see org.jvnet.hk2.component.Scope#current()
  */
-public class ScopeInstance {
+public final class ScopeInstance implements PreDestroy {
     /**
      * Human readable scope instance name for debug assistance. 
      */
     public final String name;
-    /**
-     * Stores component instances bound to this scope.
-     */
-    public final ResourceManager store;
 
-    public ScopeInstance(String name) {
+    private final Map backend;
+
+    public ScopeInstance(String name, Map backend) {
         this.name = name;
-        this.store = new InMemoryResourceManager();
+        this.backend = backend;
     }
 
-    public ScopeInstance(String name, ResourceManager resourceManager) {
-        this.name = name;
-        this.store = resourceManager;
-    }
-
-    public ScopeInstance() {
+    public ScopeInstance(Map backend) {
         this.name = super.toString();
-        this.store = new InMemoryResourceManager();
+        this.backend = backend;
     }
-
+    
     public String toString() {
         return name;
+    }
+
+    public <T> T get(Inhabitant<T> inhabitant) {
+        return (T) backend.get(inhabitant);
+    }
+
+    public <T> T put(Inhabitant<T> inhabitant, T value) {
+        return (T) backend.put(inhabitant,value);
+    }
+
+    public void release() {
+        synchronized(backend) {
+            for (Object o : backend.values()) {
+                if(o instanceof PreDestroy)
+                    ((PreDestroy)o).preDestroy();
+            }
+            backend.clear();
+        }
+    }
+
+    public void preDestroy() {
+        release();
     }
 }

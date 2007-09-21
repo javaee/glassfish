@@ -23,15 +23,12 @@
 
 package org.jvnet.hk2.annotations;
 
+import org.jvnet.hk2.component.Habitat;
+
 import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
-
-import org.jvnet.hk2.component.ComponentManager;
-
 import static java.lang.annotation.ElementType.TYPE;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
-import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import java.lang.annotation.Target;
 
 /**
@@ -45,7 +42,7 @@ import java.lang.annotation.Target;
  * <p>
  * This annotation can be placed on interfaces and abstract classes <tt>T</tt>,
  * and derived classes that are assignable to <tt>T</tt> with {@link Service}
- * annotation can be looked up by using {@link ComponentManager#getComponent(Class)}
+ * annotation can be looked up by using {@link Habitat#getByContract(Class)}
  * (and its family of methods.)
  *
  * <h2>Contract annotation</h2>

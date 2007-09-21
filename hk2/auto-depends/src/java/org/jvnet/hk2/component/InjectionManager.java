@@ -81,17 +81,16 @@ public abstract class InjectionManager<T extends Annotation> {
                 if (inject == null)     continue;
 
                 if (method.getReturnType() != void.class) {
-                    throw new ComponentException("Injection failed on " + method.toGenericString()
-                            + " : setter method is not declared with a void return type");
+                    throw new ComponentException("Injection failed on %s : setter method is not declared with a void return type",method.toGenericString());
                 }
 
                 Class<?>[] paramTypes = method.getParameterTypes();
 
                 if (paramTypes.length > 1) {
-                    throw new ComponentException("injection failed on " + method.toGenericString() + " : setter method takes more than 1 parameter");
+                    throw new ComponentException("injection failed on %s : setter method takes more than 1 parameter",method.toGenericString());
                 }
                 if (paramTypes.length == 0) {
-                    throw new ComponentException("injection failed on " + method.toGenericString() + " : setter method does not take a parameter");
+                    throw new ComponentException("injection failed on %s : setter method does not take a parameter",method.toGenericString());
                 }
 
                 try {
