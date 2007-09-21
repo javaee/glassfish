@@ -35,10 +35,10 @@ abstract class AbstractDynamicMBeanImpl implements DynamicMBean {
 
     public final AttributeList setAttributes(AttributeList attributes) {
         AttributeList r = new AttributeList(attributes.size());
-        for (Attribute a : (List<Attribute>)attributes) {
+        for (Object a : attributes) {
             try {
-                setAttribute(a);
-                r.add(a);
+                setAttribute(Attribute.class.cast(a));
+                r.add(Attribute.class.cast(a));
             } catch (AttributeNotFoundException e) {
                 // error is silently ignored
             } catch (ReflectionException e) {
