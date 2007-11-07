@@ -154,7 +154,7 @@ public class Main {
      *
      * <p>
      * This version of the method auto-discoveres the main module.
-     * If there's more than one {@link ModuleStartup} implementation, it is an error. 
+     * If there's more than one {@link ModuleStartup} implementation, it is an error.
      *
      * @param root
      *      This becomes {@link StartupContext#getRootDirectory()}
@@ -163,29 +163,16 @@ public class Main {
      *
      */
     public void launch(ModulesRegistry registry, File root, String[] args) throws BootException {
-
-        Habitat mgr = registry.newHabitat();
-        StartupContext context = new StartupContext(root, args);
-        mgr.add(new ExistingSingletonInhabitant<StartupContext>(context));
-        registry.createHabitat("default", mgr);
-
-        Collection<ModuleStartup> startups = mgr.getAllByContract(ModuleStartup.class);
-        if(startups.isEmpty())
-            throw new BootException("No module has ModuleStartup");
-        if(startups.size()>1) {
-            Iterator<ModuleStartup> itr = startups.iterator();
-            throw new BootException("Multiple ModuleStartup found: "+itr.next()+" and "+itr.next());
-        }
-
-        ModuleStartup ms = startups.iterator().next();
-        Module mainModule = Module.find(ms.getClass());
-        launch(ms,context, mainModule);
+        launch(registry,null,root,args);
     }
 
     /**
      * Launches the module system and hand over the execution to the {@link ModuleStartup}
      * implementation of the main module.
      *
+     * @param mainModuleName
+     *      The module that will provide {@link ModuleStartup}. If null,
+     *      one will be auto-discovered.
      * @param root
      *      This becomes {@link StartupContext#getRootDirectory()}
      * @param args
@@ -195,48 +182,62 @@ public class Main {
     public void launch(ModulesRegistry registry, String mainModuleName, File root, String[] args) throws BootException {
         final String habitatName = "default"; // TODO: take this as a parameter
 
-        // instantiate the main module, this is the entry point of the application
-        // code. it is supposed to have 1 ModuleStartup implementation.
-        final Module mainModule = registry.makeModuleFor(mainModuleName, null);
-        if (mainModule == null) {
-            if(registry.getModules().isEmpty())
-                throw new BootException("Registry has no module at all");
-            else
-                throw new BootException("Cannot find main module " + mainModuleName+" : no such module");
-        }
-
-        String targetClassName = findModuleStartup(mainModule, habitatName);
-        if (targetClassName==null) {
-            throw new BootException("Cannot find a ModuleStartup implementation in the META-INF/services/com.sun.enterprise.v3.ModuleStartup file, aborting");
-        }
-
-        mainModule.setSticky(true);
-
-        Class<? extends ModuleStartup> targetClass=null;
-        ModuleStartup startupCode;
-
+        // create a habitat and initialize them
         StartupContext context = new StartupContext(root, args);
-        
-        ClassLoader currentCL = Thread.currentThread().getContextClassLoader();
-        try {
+        Habitat mgr = registry.newHabitat();
+        mgr.add(new ExistingSingletonInhabitant<StartupContext>(context));
+        mgr.add(new ExistingSingletonInhabitant<Logger>(Logger.global));
+        registry.createHabitat(habitatName, mgr);
+
+
+        // now go figure out the start up module
+        final ModuleStartup startupCode;
+        final Module mainModule;
+
+        if(mainModuleName!=null) {
+            // instantiate the main module, this is the entry point of the application
+            // code. it is supposed to have 1 ModuleStartup implementation.
+            mainModule = registry.makeModuleFor(mainModuleName, null);
+            if (mainModule == null) {
+                if(registry.getModules().isEmpty())
+                    throw new BootException("Registry has no module at all");
+                else
+                    throw new BootException("Cannot find main module " + mainModuleName+" : no such module");
+            }
+
+            String targetClassName = findModuleStartup(mainModule, habitatName);
+            if (targetClassName==null) {
+                throw new BootException("Cannot find a ModuleStartup implementation in the META-INF/services/com.sun.enterprise.v3.ModuleStartup file, aborting");
+            }
+
+            Class<? extends ModuleStartup> targetClass=null;
+            ClassLoader currentCL = Thread.currentThread().getContextClassLoader();
             Thread.currentThread().setContextClassLoader(mainModule.getClassLoader());
             try {
                 targetClass = mainModule.getClassLoader().loadClass(targetClassName).asSubclass(ModuleStartup.class);
-                Habitat mgr = registry.newHabitat();
-                mgr.add(new ExistingSingletonInhabitant<StartupContext>(context));
-                mgr.add(new ExistingSingletonInhabitant<Logger>(Logger.global));
-                startupCode = registry.createHabitat(habitatName, mgr).getComponent(targetClass);
+                startupCode = mgr.getComponent(targetClass);
             } catch (ClassNotFoundException e) {
                 throw new BootException("Unable to load "+targetClassName,e);
             } catch (ComponentException e) {
-                throw new BootException("Unable to load "+targetClass,e);                
+                throw new BootException("Unable to load "+targetClass,e);
+            } finally {
+                Thread.currentThread().setContextClassLoader(currentCL);
+            }
+        } else {
+            Collection<ModuleStartup> startups = mgr.getAllByContract(ModuleStartup.class);
+            if(startups.isEmpty())
+                throw new BootException("No module has ModuleStartup");
+            if(startups.size()>1) {
+                Iterator<ModuleStartup> itr = startups.iterator();
+                throw new BootException("Multiple ModuleStartup found: "+itr.next()+" and "+itr.next());
             }
 
-            launch(startupCode, context, mainModule);
-        } finally {
-            Thread.currentThread().setContextClassLoader(currentCL);
+            startupCode = startups.iterator().next();
+            mainModule = Module.find(startupCode.getClass());
         }
 
+        mainModule.setSticky(true);
+        launch(startupCode, context, mainModule);
     }
 
     protected String findMainModuleName(File bootstrap) throws BootException {
