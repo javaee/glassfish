@@ -29,6 +29,8 @@ public class ConstructorWomb<T> extends AbstractWombImpl<T> {
             throw new ComponentException("Failed to create "+type,e);
         } catch (IllegalAccessException e) {
             throw new ComponentException("Failed to create "+type,e);
+        } catch (LinkageError e) {
+            throw new ComponentException("Failed to create "+type,e);
         }
     }
 
