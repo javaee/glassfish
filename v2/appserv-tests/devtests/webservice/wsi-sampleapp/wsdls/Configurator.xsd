@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+	September 14, 2002
+
+	(c) Copyright 2002, The Web Services-Interoperability Organization (WS-I)
+	Download or use of this file is governed by the Policies and Bylaws of WS-I.
+
+	For more information, send email info@ws-i.org. 	
+-->
+<xs:schema targetNamespace="http://www.ws-i.org/SampleApplications/SupplyChainManagement/2002-08/Configurator.xsd" xmlns:tns="http://www.ws-i.org/SampleApplications/SupplyChainManagement/2002-08/Configurator.xsd" xmlns:cfgn="http://www.ws-i.org/SampleApplications/SupplyChainManagement/2002-08/Configuration.xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+	<xs:import namespace="http://www.ws-i.org/SampleApplications/SupplyChainManagement/2002-08/Configuration.xsd" schemaLocation="Configuration.xsd"/>
+	<xs:element name="configOption" type="tns:ConfigOptionType"/>
+	<xs:complexType name="ConfigOptionType">
+		<xs:sequence>
+			<xs:element name="name" type="xs:string"/>
+			<xs:element name="selectionParms" type="xs:string"/>
+			<xs:element name="configurationEndpoint" type="cfgn:ConfigurationEndpointType"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="configOptions" type="tns:ConfigOptionsType"/>
+	<xs:complexType name="ConfigOptionsType">
+		<xs:sequence>
+			<xs:element ref="tns:configOption" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="refresh" type="xs:boolean"/>
+	<xs:element name="configError" type="xs:string"/>
+</xs:schema>

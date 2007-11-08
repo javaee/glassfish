@@ -1,0 +1,19 @@
+#! /bin/sh
+#
+# Copyright 1997-2007 Sun Microsystems, Inc.  All rights reserved.
+# Use is subject to license terms.
+#
+
+#set appserv specific env variables
+. "%CONFIG_HOME%/asenv.conf"
+# Set ANT_HOME
+ANT_HOME="${AS_ANT}"
+# Set JAVA_HOME
+JAVA_HOME="$AS_JAVA"
+# set ANT_OPTS
+ANT_OPTS="-Djava.library.path=${AS_INSTALL}/lib:${AS_ICU_LIB}:${AS_NSS} -Dcom.sun.aas.installRoot=${AS_INSTALL} -Dcom.sun.aas.instanceRoot=${AS_INSTALL} -Dcom.sun.aas.instanceName=server -Dcom.sun.aas.configRoot=${AS_CONFIG} -Dcom.sun.aas.processLauncher=SE -Dcom.sun.appserv.admin.pluggable.features=com.sun.enterprise.ee.admin.pluggable.EEClientPluggableFeatureImpl"
+
+LD_LIBRARY_PATH=$AS_NSS:$AS_INSTALL/lib:$AS_ICU_LIB:$LD_LIBRARY_PATH
+CLASSPATH="${AS_INSTALL}/lib/sun-appserv-ant.jar:${AS_DERBY_INSTALL}/lib/derby.jar:${AS_INSTALL}/jbi/lib/jbi-ant-tasks.jar"
+
+. ${ANT_HOME}/bin/ant "${@}"

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE ejb-jar PUBLIC "-//Sun Microsystems, Inc.//DTD Enterprise JavaBeans 2.0//EN" "http://java.sun.com/dtd/ejb-jar_2_0.dtd">
+<ejb-jar>
+  <display-name>Ejb1</display-name>
+  <enterprise-beans>
+
+    <session>
+      <display-name>SFSBEJB</display-name>
+      <ejb-name>SFSBEJB</ejb-name>
+      <home>com.sun.s1asdev.ejb.sfsb.passivateactivate.ejb.SFSBHome</home>
+      <remote>com.sun.s1asdev.ejb.sfsb.passivateactivate.ejb.SFSB</remote>
+      <local-home>com.sun.s1asdev.ejb.sfsb.passivateactivate.ejb.SFSBLocalHome</local-home>
+      <local>com.sun.s1asdev.ejb.sfsb.passivateactivate.ejb.SFSBLocal</local>
+      <ejb-class>com.sun.s1asdev.ejb.sfsb.passivateactivate.ejb.SFSBEJB</ejb-class>
+      <session-type>Stateful</session-type>
+      <transaction-type>Bean</transaction-type>
+      <env-entry>
+        <env-entry-name>TagValue</env-entry-name>
+        <env-entry-type>java.lang.String</env-entry-type>
+        <env-entry-value>MyTagValue</env-entry-value>
+      </env-entry>
+      <ejb-ref>
+        <ejb-ref-name>ejb/SimpleEntityHome</ejb-ref-name>
+        <ejb-ref-type>Entity</ejb-ref-type>
+        <home>com.sun.s1asdev.ejb.sfsb.passivateactivate.ejb.SimpleEntityHome</home>
+        <remote>com.sun.s1asdev.ejb.sfsb.passivateactivate.ejb.SimpleEntityRemote</remote>
+      </ejb-ref>
+      <ejb-local-ref>
+        <ejb-ref-name>ejb/SimpleEntityLocalHome</ejb-ref-name>
+        <ejb-ref-type>Entity</ejb-ref-type>
+        <local-home>com.sun.s1asdev.ejb.sfsb.passivateactivate.ejb.SimpleEntityLocalHome</local-home>
+        <local>com.sun.s1asdev.ejb.sfsb.passivateactivate.ejb.SimpleEntityLocal</local>
+        <ejb-link>SimpleEntityLocal</ejb-link>
+      </ejb-local-ref>
+      <security-identity>
+        <use-caller-identity/>
+      </security-identity>
+    </session>
+
+    <entity>
+      <display-name>SimpleEntity</display-name>
+      <ejb-name>SimpleEntity</ejb-name>
+      <home>com.sun.s1asdev.ejb.sfsb.passivateactivate.ejb.SimpleEntityHome</home>
+      <remote>com.sun.s1asdev.ejb.sfsb.passivateactivate.ejb.SimpleEntityRemote</remote>
+      <ejb-class>com.sun.s1asdev.ejb.sfsb.passivateactivate.ejb.SimpleEntityBean</ejb-class>
+      <persistence-type>Bean</persistence-type>
+      <prim-key-class>java.lang.String</prim-key-class>
+      <reentrant>False</reentrant>
+      <resource-ref>
+        <res-ref-name>jdbc/DataSource</res-ref-name>
+        <res-type>javax.sql.DataSource</res-type>
+        <res-auth>Container</res-auth>
+        <res-sharing-scope>Shareable</res-sharing-scope>
+      </resource-ref>
+    </entity>
+
+    <entity>
+      <display-name>SimpleEntityLocal</display-name>
+      <ejb-name>SimpleEntityLocal</ejb-name>
+      <local-home>com.sun.s1asdev.ejb.sfsb.passivateactivate.ejb.SimpleEntityLocalHome</local-home>
+      <local>com.sun.s1asdev.ejb.sfsb.passivateactivate.ejb.SimpleEntityLocal</local>
+      <ejb-class>com.sun.s1asdev.ejb.sfsb.passivateactivate.ejb.SimpleEntityBean</ejb-class>
+      <persistence-type>Bean</persistence-type>
+      <prim-key-class>java.lang.String</prim-key-class>
+      <reentrant>False</reentrant>
+      <resource-ref>
+        <res-ref-name>jdbc/DataSource</res-ref-name>
+        <res-type>javax.sql.DataSource</res-type>
+        <res-auth>Container</res-auth>
+        <res-sharing-scope>Shareable</res-sharing-scope>
+      </resource-ref>
+    </entity>
+
+  </enterprise-beans>
+  <assembly-descriptor>
+    <container-transaction>
+      <method>
+        <ejb-name>SimpleEntity</ejb-name>
+        <method-name>*</method-name>
+      </method>
+      <trans-attribute>Required</trans-attribute>
+    </container-transaction>
+  </assembly-descriptor>
+</ejb-jar>

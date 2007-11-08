@@ -1,0 +1,22 @@
+#!/bin/sh
+
+#
+# Copyright 1997-2007 Sun Microsystems, Inc.  All rights reserved.
+# Use is subject to license terms.
+#
+ 
+. %CONFIG_HOME%/asenv.conf
+
+first_arg=$1
+shift
+second_arg=$1
+shift
+third_arg=$1
+shift
+LD_LIBRARY_PATH=$first_arg:$second_arg:/usr/lib/mps/secv1:$LD_LIBRARY_PATH;export LD_LIBRARY_PATH
+
+#hpux-dev.vs156896.0105
+SHLIB_PATH=$first_arg:$second_arg:/opt/sun/private/lib:/opt/sun/private/share/lib:/opt/sun/mps/serverroot/lib:$SHLIB_PATH;export SHLIB_PATH
+
+$third_arg/pk12util "$@"
+ 

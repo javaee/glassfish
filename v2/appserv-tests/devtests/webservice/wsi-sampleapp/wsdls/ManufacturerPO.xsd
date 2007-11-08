@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+	October 7, 2002
+
+	(c) Copyright 2002, The Web Services-Interoperability Organization (WS-I)
+	Download or use of this file is governed by the Policies and Bylaws of WS-I.
+
+	For more information, send email info@ws-i.org. 	
+-->
+<xs:schema targetNamespace="http://www.ws-i.org/SampleApplications/SupplyChainManagement/2002-10/ManufacturerPO.xsd" xmlns:po="http://www.ws-i.org/SampleApplications/SupplyChainManagement/2002-10/ManufacturerPO.xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+	<xs:annotation>
+		<xs:documentation xml:lang="en">Purchase Order schema for Manufacturer system of WS-I sample application</xs:documentation>
+	</xs:annotation>
+	<xs:element name="PurchaseOrder" type="po:PurchOrdType"/>
+	<xs:complexType name="PurchOrdType">
+		<xs:sequence>
+			<xs:element name="orderNum" type="xs:string"/>
+			<xs:element name="customerRef" type="po:CustomerReferenceType"/>
+			<xs:element name="items" type="po:ItemList"/>
+			<xs:element name="total" type="xs:float"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="CustomerReferenceType">
+		<xs:restriction base="xs:normalizedString">
+			<xs:maxLength value="20"/>
+			<xs:pattern value="[A-D][0-9]{5}-[0-9A-Z]{7}-[a-z]{3}#*"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="ItemList">
+		<xs:sequence>
+			<xs:element name="Item" type="po:Item" nillable="false" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="Item">
+		<xs:sequence>
+			<xs:element name="ID" type="xs:nonNegativeInteger"/>
+			<xs:element name="qty" type="xs:unsignedShort"/>
+			<xs:element name="price" type="xs:float"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="ackPO" type="xs:boolean"/>
+	<xs:element name="submitPOFault" type="po:submitPOFaultType"/>
+	<xs:complexType name="submitPOFaultType">
+		<xs:sequence>
+			<xs:element name="Reason">
+				<xs:simpleType>
+					<xs:restriction base="xs:NMTOKEN">
+						<xs:enumeration value="MalformedOrder"/>
+						<xs:enumeration value="InvalidProduct"/>
+						<xs:enumeration value="InvalidQty"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+</xs:schema>

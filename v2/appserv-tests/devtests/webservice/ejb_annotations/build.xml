@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+
+<!DOCTYPE project [
+]>
+
+<project name="webservice ejb annotations" default="all" basedir=".">
+    <target name="all">
+        <ant dir="noname" target="all"/>
+        <ant dir="nointf" target="all"/>
+        <ant dir="ejbclient" target="all"/>
+	<ant dir="security" target="all"/>
+	<!--ant dir="provider" target="all"/-->
+	<ant dir="exception" target="all"/>
+	<ant dir="methodinjection" target="all"/>
+	<ant dir="invalidmethodinjection" target="all"/>
+	<ant dir="dependencynoinjection" target="all"/>
+        <ant dir="portdependencynoinjection" target="all"/>
+	<ant dir="portfieldinjection" target="all"/>
+	<ant dir="portmethodinjection" target="all"/>
+        <ant dir="serviceejbclient" target="all"/>
+	<ant dir="portejbclient" target="all"/>
+        <ant dir="svchandler" target="all"/>
+	<ant dir="wsctxt" target="all"/>
+	<ant dir="oneway" target="all"/>
+	<ant dir="async" target="all"/>
+	<ant dir="asyncejbclient" target="all"/>
+	<ant dir="wsctxtinterceptor" target="all"/>
+	<ant dir="libdependent" target="all"/>
+	<ant dir="msgctxt" target="all"/>
+	<ant dir="libdependent-2" target="all"/>
+	<!--ant dir="wsnameejbname" target="all"/-->
+    </target>
+</project>

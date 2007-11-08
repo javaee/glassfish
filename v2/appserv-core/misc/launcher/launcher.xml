@@ -1,0 +1,146 @@
+<!--
+ DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+ 
+ Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ 
+ The contents of this file are subject to the terms of either the GNU
+ General Public License Version 2 only ("GPL") or the Common Development
+ and Distribution License("CDDL") (collectively, the "License").  You
+ may not use this file except in compliance with the License. You can obtain
+ a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
+ or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
+ language governing permissions and limitations under the License.
+ 
+ When distributing the software, include this License Header Notice in each
+ file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
+ Sun designates this particular file as subject to the "Classpath" exception
+ as provided by Sun in the GPL Version 2 section of the License file that
+ accompanied this code.  If applicable, add the following below the License
+ Header, with the fields enclosed by brackets [] replaced by your own
+ identifying information: "Portions Copyrighted [year]
+ [name of copyright owner]"
+ 
+ Contributor(s):
+ 
+ If you wish your version of this file to be governed by only the CDDL or
+ only the GPL Version 2, indicate your decision by adding "[Contributor]
+ elects to include this software in this distribution under the [CDDL or GPL
+ Version 2] license."  If you don't indicate a single choice of license, a
+ recipient has the option to distribute your version of this file under
+ either the CDDL, the GPL Version 2 or to extend the choice of license to
+ its licensees as provided above.  However, if you add GPL Version 2 code
+ and therefore, elected the GPL Version 2 license, then the option applies
+ only if the new code is made subject to such option by the copyright
+ holder.
+-->
+
+<project name="SunOne AppServer PE Launcher" default="s1as-server" basedir=".">
+
+
+
+  <!-- standard properties -->
+  <property name="JAVA_HOME" value="${JAVA_HOME}"/>
+  <property environment="env" />
+  <property name="s1as.running" value="${domain.name} : J2EE 1.4 Server"/>
+
+  <!-- localized properties -->
+  <property resource="com/sun/enterprise/launcher/launcher_${launch.locale.language}_${launch.locale.country}.properties"/>
+  <property resource="com/sun/enterprise/launcher/launcher_${launch.locale.language}.properties"/>
+  <property resource="com/sun/enterprise/launcher/launcher.properties"/>
+
+
+  <target name="s1as-server" >
+
+    <property name="print" value="false" />
+    <!-- debug option  -->
+    <property name="debug" value="false" />
+
+    <!-- property which control whether parent process would
+         wait for child to exit -->
+    <property name="wait" value="false" />
+
+    <!-- Execute the Catalina server -->
+    <launch classname="com.sun.enterprise.server.PEMain"
+            requiretools="false"
+            print="${print}"
+            debug="${jdb}"
+            usesystemin="false"
+            waitforchild="${wait}"
+            redirectoutput="true"
+            output="${com.sun.aas.instanceRoot}/logs/server.log"
+            appendoutput="true"
+	    filterclassname="com.sun.enterprise.launcher.PELaunchFilter"
+            displayMinimizedWindow="true"
+            disposeMinimizedWindow="false"
+            minimizedWindowTitle="${s1as.running}">
+
+        <sysproperty key="com.sun.aas.instanceName"    value="${server.name}"/>
+	<!-- export domain.name so that /usr/ucb/ps -auwwx can provide -->
+	<!-- domain name  -->
+	<sysproperty key="domain.name"    value="${domain.name}"/>
+        <sysproperty key="com.sun.aas.instanceRoot"    value="${com.sun.aas.instanceRoot}"/>
+        <sysproperty key="com.sun.aas.configRoot"    value="${com.sun.aas.configRoot}"/>
+        <sysproperty key="user.classpath" value="${env.CLASSPATH}" />
+
+        <sysproperty key="javax.xml.parsers.SAXParserFactory"
+            value="com.sun.org.apache.xerces.internal.jaxp.SAXParserFactoryImpl"/>
+        <sysproperty key="javax.xml.parsers.DocumentBuilderFactory"
+            value="com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl"/>
+        <sysproperty key="javax.xml.transform.TransformerFactory"
+            value="com.sun.org.apache.xalan.internal.xsltc.trax.TransformerFactoryImpl"/>
+        <sysproperty key="org.xml.sax.parser"
+            value="org.xml.sax.helpers.XMLReaderAdapter"/>
+        <sysproperty key="org.xml.sax.driver"
+            value="com.sun.org.apache.xerces.internal.parsers.SAXParser"/>
+        <sysproperty key="java.util.logging.manager"
+            value="com.sun.enterprise.server.logging.ServerLogManager"/>
+        <sysproperty key="com.sun.enterprise.overrideablejavaxpackages"
+            value="javax.help,javax.portlet"/>
+
+        <classpath>
+            <fileset dir="${com.sun.aas.installRoot}/lib"
+	        includes="*.jar" excludes="appserv-assemblytool.jar,appserv-tags.jar,deployhelp.jar,jhall.jar,sun-appserv-ant.jar,commons-launcher.jar,javaee.jar">
+            </fileset>
+        </classpath>
+
+    </launch>
+
+  </target>
+
+
+  <target name="s1as-deploytool" >
+
+    <launch classname="com.sun.enterprise.tools.deployment.ui.Main"
+            print="false"
+            debug="${jdb}"
+            usesystemin="false"
+            waitforchild="false"
+            redirectoutput="true"
+            output="${user.home}/.deploytool/logfile"
+            appendoutput="true"
+            displayMinimizedWindow="false"
+            disposeMinimizedWindow="false"
+            minimizedWindowTitle="Deploytool : J2EE 1.4 Server">
+
+        <sysproperty key="com.sun.aas.installRoot"
+	    value="${com.sun.aas.installRoot}"/>
+        <sysproperty key="java.endorsed.dirs"
+	    value="${com.sun.aas.installRoot}/lib/endorsed"/>
+        <sysproperty key="com.sun.aas.defaultUserName"
+	    value="${com.sun.aas.defaultUserName}"
+               if="com.sun.aas.defaultUserName"/>
+        <sysproperty key="com.sun.aas.defaultPassword"
+	    value="${com.sun.aas.defaultPassword}"
+               if="com.sun.aas.defaultPassword"/>
+
+        <classpath>
+            <fileset dir="${com.sun.aas.installRoot}/lib"
+              includes="appserv-assemblytool.jar,activation.jar,jhall.jar,appserv-admin.jar,appserv-cmp.jar,appserv-rt.jar,javaee.jar,webservices-rt,webservices-tools,appserv-ext.jar,deployhelp.jar,admin-cli.jar">
+            </fileset>
+        </classpath>
+
+    </launch>
+
+  </target>
+
+</project>

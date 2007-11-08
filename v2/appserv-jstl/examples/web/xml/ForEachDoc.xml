@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<doc>
+ <a>
+  <b foo="foo">foo 1</b>
+ </a>
+ <a>
+  <c foo="bar">bar 2</c>
+ </a>
+ <a>
+  <d foo="bar">bar 3</d>
+ </a>
+ <a>
+  <d foo="foo">foo 4</d>
+ </a>
+</doc>

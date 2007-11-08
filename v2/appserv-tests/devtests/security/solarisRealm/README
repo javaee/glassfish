@@ -1,0 +1,9 @@
+It is important to note that S1AS must be run as root if Solaris realm is used.
+
+The default setting assumes that there is a Solaris login guest
+with password guest123.
+
+If a different Solaris password is used for testing, please modify build.xml.
+
+If a different Solaris user/password is used for testing, then please modify
+descriptor/sun-application.xml and build.xml.

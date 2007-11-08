@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE project [
+<!ENTITY commonSetup SYSTEM "file:./../../../config/properties.xml">
+<!ENTITY commonBuild SYSTEM "file:./../../../config/common.xml">
+<!ENTITY run SYSTEM "file:./../../../config/run.xml">
+<!ENTITY testproperties SYSTEM "file:./build.properties">
+]>
+
+<project name="webcontainer_unittest" default="all" basedir=".">
+
+    &commonSetup;
+    &commonBuild;
+    &testproperties;
+    &run;
+
+    <target name="all" depends="build,deploy-ear,reconfig,runfirst,restart-server-instance-common,runsecond,restore,undeploy-ear"/>
+
+    <target name="clean" depends="init-common">
+      <antcall target="clean-common"/>
+    </target>
+       
+    <target name="compile" depends="clean">
+        <antcall target="compile-common">
+            <param name="src" value="servlet"/>
+        </antcall>
+    </target>
+
+    <target name="build" depends="compile">
+        <javac srcdir="."
+               classpath="${env.APS_HOME}/lib/reporter.jar"
+               includes="WebTest.java"/>
+    </target> 
+
+    <target name="deploy-ear" depends="init-common">
+        <property name="deployed.app" value="${earfile}" />
+        <exec executable="${ASADMIN}" failonerror="false">
+            <arg line="deploy"/>
+            <arg line="${as.props}"/>    
+            <arg line="--target ${appserver.instance.name}"/>
+            <arg line="${deployed.app}"/>
+        </exec>
+        <echo message="Deployment on target server ${appserver.instance.name} successful"/>
+    </target>    
+
+    <target name="runfirst" depends="init-common">
+        <java classname="WebTest">
+          <arg value="${http.host}"/>
+          <arg value="${http.port}"/>
+          <arg value="${contextroot}"/>
+          <arg value="first"/>
+          <classpath>
+           <pathelement location="${env.APS_HOME}/lib/reporter.jar"/>
+           <pathelement location="."/>
+         </classpath>
+        </java>
+    </target>
+
+    <target name="runsecond" depends="init-common">
+        <java classname="WebTest">
+          <arg value="${http.host}"/>
+          <arg value="${http.port}"/>
+          <arg value="${contextroot}"/>
+          <arg value="second"/>
+          <classpath>
+           <pathelement location="${env.APS_HOME}/lib/reporter.jar"/>
+           <pathelement location="."/>
+         </classpath>
+        </java>
+    </target>
+    
+    <target name="undeploy-ear" depends="init-common">
+	<property name="deployedapp.name" value="${ear-component-name}" />
+	<ant target="undeploy-common" />
+    </target>
+
+    <target name="reconfig" depends="init-common">
+        <antcall target="asadmin-common-ignore-fail">
+            <param name="admin.command" value="set" />
+            <param name="operand.props"
+                   value="${appserver.instance.name}.http-service.virtual-server.server.default-web-module=mytest#mywar.war"/>
+        </antcall>
+    </target>
+
+    <target name="restore" depends="reconfig">
+        <antcall target="asadmin-common-ignore-fail">
+            <param name="admin.command" value="set" />
+            <param name="operand.props"
+                   value="${appserver.instance.name}.http-service.virtual-server.server.default-web-module="/>
+        </antcall>
+    </target>
+
+    <target name="usage">
+        <antcall target="usage-common"/>
+    </target>
+
+</project>

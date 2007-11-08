@@ -1,0 +1,79 @@
+Copyright 2004-2005 Sun Microsystems, Inc., 4150 Network Circle, 
+Santa Clara, California 95054, U.S.A. All Rights Reserved.
+
+U.S. Government Rights - Commercial software.  Government users are subject 
+to the Sun Microsystems, Inc. standard license agreement and applicable 
+provisions of the FAR and its supplements.  
+
+Use is subject to license terms.
+
+This distribution may include materials developed by third parties.
+
+Parts of the product may be derived from Berkeley BSD systems, licensed from 
+the University of California. UNIX is a registered trademark in the U.S. and 
+in other countries, exclusively licensed through X/Open Company, Ltd.
+
+Sun,  Sun Microsystems,  the Sun logo,  Java,  Jini,  J2EE,  JavaServer Pages,
+Enterprise JavaBeans,  Java Naming and Directory Interface,  EJB,  J2SE,  JSTL,
+JDBC, JavaMail,  JAXP,  SAAJ, JAXR and  JAX RPC are trademarks or registered 
+trademarks of Sun Microsystems, Inc. in the U.S. and other countries.
+
+The OPEN LOOK and Sun(TM) Graphical User Interface was developed by Sun
+Microsystems, Inc. for its users and licensees. Sun acknowledges the pioneering
+efforts of Xerox in researching and developing the concept of visual or
+graphical user interfaces for the computer industry. Sun holds a non-exclusive 
+license from Xerox to the Xerox Graphical User Interface, which license also 
+covers Sun's licensees who implement OPEN LOOK GUIs and otherwise comply with
+Sun's written license agreements.
+
+This product is covered and controlled by U.S. Export Control laws and may 
+be subject to the export or import laws in other countries.  Nuclear, missile, 
+chemical biological weapons or nuclear maritime end uses or end users,
+whether direct or indirect, are strictly prohibited.  Export or reexport to 
+countries subject to U.S. embargo or to entities identified on U.S. export 
+exclusion lists, including, but not limited to, the denied persons and 
+specially designated nationals lists is strictly prohibited.
+
+Copyright 2004-2005 Sun Microsystems, Inc., 4150 Network Circle,
+Santa Clara, California 95054, Etats-Unis. Tous Droits Reserves.
+
+L'utilisation est soumise aux termes du contrat de licence.
+
+Cette distribution peut comprendre des composants developpes par des 
+tierces parties.
+
+Des parties de ce produit pourront etre derivees des systemes Berkeley BSD 
+licencies par l'Universite de Californie. UNIX est une marque deposee aux 
+Etats-Unis et dans d'autres pays et licenciee exclusivement par X/Open 
+Company, Ltd.
+
+Sun,  Sun Microsystems,  le logo Sun,  Java,  Jini,  J2EE,  JavaServer Pages,  
+Enterprise JavaBeans,  Java Naming and Directory Interface,  EJB,  J2SE, 
+JSTL,  JDBC, JavaMail,  JAXP,  SAAJ,  JAXR et  JAX RPC sont des marques
+de fabrique ou des marques deposees de Sun Microsystems, Inc. aux Etats-Unis
+et dans d'autres pays.
+
+L'interface d'utilisation graphique OPEN LOOK et Sun(TM) a ete developpee par 
+Sun Microsystems, Inc. pour ses utilisateurs et licencies. Sun reconnaet les 
+efforts de pionniers de Xerox pour la recherche et le developpement du concept 
+des interfaces d'utilisation   visuelle ou graphique pour l'industrie de l'infor
+matique. Sun detient une license non exclusive de Xerox sur l'interface d'utilis
+ation graphique Xerox, cette licence couvrant egalement les licencies de Sun 
+qui mettent en place l'interface d'utilisation graphique OPEN LOOK et qui, en 
+outre, se conforment aux licences ecrites de Sun.
+
+Ce produit est soumis a la legislation americaine en matiere de contrele des 
+exportations et peut etre soumis a la reglementation en vigueur dans d'autres 
+pays dans le domaine des exportations et importations. Les utilisations, ou 
+utilisateurs finaux, pour des armes nucleaires,des missiles, des armes 
+biologiques et chimiques ou du nucleaire maritime, directement ou indirectement,
+sont strictement interdites. Les exportations ou reexportations vers les pays 
+sous embargo americain, ou vers des entites figurant sur les listes d'exclusion
+d'exportation americaines, y compris, mais de maniere non exhaustive, la 
+liste de personnes qui font objet d'un ordre de ne pas participer, d'une facon
+directe ou indirecte, aux exportations des produits ou des services qui sont 
+regis  par la legislation americaine en matiere de controle des exportations
+et la liste de ressortissants specifiquement designes, sont rigoureusement 
+interdites.
+
+

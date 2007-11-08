@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration 
+  xmlns="http://java.sun.com/xml/ns/jax-rpc/ri/config">
+  <wsdl 
+      location="GoogleSearch.wsdl"
+      packageName="com.sun.s1asdev.ejb.webservice.ksink.googleserverweb"/>
+</configuration>

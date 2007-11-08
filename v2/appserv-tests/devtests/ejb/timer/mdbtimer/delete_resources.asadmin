@@ -1,0 +1,9 @@
+delete-jms-resource jms/ejb_timer_mdbtimer_QCF
+
+delete-jms-resource jms/ejb_timer_mdbtimer_InQueue
+delete-jmsdest --desttype queue ejb_timer_mdbtimer_InQueue
+
+delete-jms-resource jms/ejb_timer_mdbtimer_OutQueue
+delete-jmsdest --desttype queue ejb_timer_mdbtimer_OutQueue
+
+quit

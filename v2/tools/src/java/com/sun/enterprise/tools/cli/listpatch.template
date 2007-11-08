@@ -1,0 +1,9 @@
+#!/bin/sh
+
+#
+# Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+# Use is subject to license terms.
+#
+
+. %CONFIG_HOME%/asenv.conf
+$AS_PERL/perl $AS_INSTALL/lib/listpatch.pl $AS_INSTALL "${@}"

@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+SCCS-ID: @(#)dsn.mf	1.1 06/03/17
+Extension-Name: com.sun.mail.dsn
+Specification-Title: com.sun.mail.dsn
+Specification-Version: %RELEASE%
+Specification-Vendor: Sun Microsystems, Inc.
+Implementation-Title: com.sun.mail.dsn
+Implementation-Version: %RELEASE%
+Implementation-Vendor: Sun Microsystems, Inc.
+Implementation-Vendor-Id: com.sun

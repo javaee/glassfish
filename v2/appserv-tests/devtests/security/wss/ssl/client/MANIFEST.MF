@@ -1,0 +1,2 @@
+Manifest-Version: 1.0
+Main-Class: com.sun.s1asdev.security.wss.ssl.client.Client

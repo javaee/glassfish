@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<application version="1.4" xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/application_1_4.xsd">
+  <description>Application description</description>
+  <display-name>GoogleServerApp</display-name>
+  <module>
+    <web>
+      <web-uri>ksink-web.war</web-uri>
+      <context-root/>
+    </web>
+  </module>
+  <module>
+    <java>ksink-client.jar</java>
+  </module>
+  <module>
+    <ejb>ksink-ejb.jar</ejb>
+  </module>
+</application>

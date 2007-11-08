@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE application PUBLIC "-//Sun Microsystems, Inc.//DTD J2EE Application 1.3//EN" "http://java.sun.com/dtd/application_1_3.dtd">
+<application>
+  <display-name>WSSServletHelloApp</display-name>
+  <module>
+    <web>
+      <web-uri>security-wss-permethod-servlet-web.war</web-uri>
+      <context-root>security-wss-permethod-servlet</context-root>
+    </web>
+  </module>
+  <module>
+    <java>security-wss-permethod-servlet-client.jar</java>
+  </module>
+</application>

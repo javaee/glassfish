@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<application version="5" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/application_5.xsd">
+  <display-name>security-multirolemapping</display-name>
+  <module>
+    <web>
+      <web-uri>security-multirolemapping-web.war</web-uri>
+      <context-root>/security-multirolemapping</context-root>
+    </web>
+  </module>
+  <module>
+    <ejb>security-multirolemapping1-ejb.jar</ejb>
+  </module>
+  <module>
+    <ejb>security-multirolemapping2-ejb.jar</ejb>
+  </module>
+</application>

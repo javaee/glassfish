@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence 
+    xmlns="http://java.sun.com/xml/ns/persistence"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    version="1.0"
+    >
+    <persistence-unit name ="em">
+      <class>com.sun.s1asdev.ejb.ejb30.persistence.eem_injection.Person</class>
+    </persistence-unit>
+</persistence>

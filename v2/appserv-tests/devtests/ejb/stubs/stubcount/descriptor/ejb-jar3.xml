@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE ejb-jar PUBLIC "-//Sun Microsystems, Inc.//DTD Enterprise JavaBeans 2.0//EN" "http://java.sun.com/dtd/ejb-jar_2_0.dtd">
+<ejb-jar>
+  <display-name>Foo1</display-name>
+  <enterprise-beans>
+    <session>
+      <display-name>FooBean1</display-name>
+      <ejb-name>FooBean1</ejb-name>
+      <home>com.sun.s1asdev.ejb.stubs.stubcount.FooHome1</home>
+      <remote>com.sun.s1asdev.ejb.stubs.stubcount.Foo1</remote>
+      <ejb-class>com.sun.s1asdev.ejb.stubs.stubcount.FooBean</ejb-class>
+      <session-type>Stateless</session-type>
+      <transaction-type>Bean</transaction-type>
+      <security-identity>
+        <use-caller-identity/>
+      </security-identity>
+    </session>
+    <session>
+      <display-name>FooBean2</display-name>
+      <ejb-name>FooBean2</ejb-name>
+      <home>com.sun.s1asdev.ejb.stubs.stubcount.FooHome2</home>
+      <remote>com.sun.s1asdev.ejb.stubs.stubcount.Foo2</remote>
+      <ejb-class>com.sun.s1asdev.ejb.stubs.stubcount.FooBean</ejb-class>
+      <session-type>Stateless</session-type>
+      <transaction-type>Bean</transaction-type>
+      <security-identity>
+        <use-caller-identity/>
+      </security-identity>
+    </session>
+    <session>
+      <display-name>FooBean3</display-name>
+      <ejb-name>FooBean3</ejb-name>
+      <home>com.sun.s1asdev.ejb.stubs.stubcount.FooHome3</home>
+      <remote>com.sun.s1asdev.ejb.stubs.stubcount.Foo3</remote>
+      <ejb-class>com.sun.s1asdev.ejb.stubs.stubcount.FooBean</ejb-class>
+      <session-type>Stateless</session-type>
+      <transaction-type>Bean</transaction-type>
+      <security-identity>
+        <use-caller-identity/>
+      </security-identity>
+    </session>
+  </enterprise-beans>
+  <assembly-descriptor>
+  </assembly-descriptor>
+</ejb-jar>

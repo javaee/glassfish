@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+	September 14, 2002
+
+	(c) Copyright 2002, The Web Services-Interoperability Organization (WS-I)
+	Download or use of this file is governed by the Policies and Bylaws of WS-I.
+
+	For more information, send email info@ws-i.org. 	
+-->
+<xs:schema 
+  targetNamespace="http://www.ws-i.org/SampleApplications/SupplyChainManagement/2002-08/Configuration.xsd" 
+  xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+  xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" 
+  xmlns:tns="http://www.ws-i.org/SampleApplications/SupplyChainManagement/2002-08/Configuration.xsd" 
+  elementFormDefault="qualified">
+  <xs:import namespace="http://schemas.xmlsoap.org/soap/envelope/" 
+             schemaLocation="http://schemas.xmlsoap.org/soap/envelope/" />
+	<xs:annotation>
+	  <xs:documentation>
+        This schema describes the types needed to describe the header common to all services. This
+        header is used to pass the configuration of the demo to the various web services, and does not convey
+        meaning required to implement a Supply Chain Management System.
+    	  </xs:documentation>
+	</xs:annotation>
+	<xs:simpleType name="ConfigurationEndpointRole">
+		<xs:restriction base="xs:NMTOKEN">
+			<xs:enumeration value="LoggingFacility"/>
+			<xs:enumeration value="Retailer"/>
+			<xs:enumeration value="WarehouseA"/>
+			<xs:enumeration value="WarehouseB"/>
+			<xs:enumeration value="WarehouseC"/>
+			<xs:enumeration value="ManufacturerA"/>
+			<xs:enumeration value="ManufacturerB"/>
+			<xs:enumeration value="ManufacturerC"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="ConfigurationEndpointType">
+		<xs:simpleContent>
+			<xs:extension base="xs:anyURI">
+				<xs:attribute name="Role" type="tns:ConfigurationEndpointRole" use="required"/>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:element name="Configuration" type="tns:ConfigurationType"/>
+	<xs:complexType name="ConfigurationType">
+		<xs:sequence>
+			<xs:annotation>
+	  		  <xs:documentation>
+            It is left to the application to make sure that this array contains one of each of the
+            role values enumerated in ConfigurationEndpointType.
+        		  </xs:documentation>
+			</xs:annotation>
+			<xs:element name="UserId" type="xs:string" nillable="false"/>
+			<xs:element name="ServiceUrl" type="tns:ConfigurationEndpointType" nillable="false" minOccurs="8" maxOccurs="8"/>
+		</xs:sequence>
+		<xs:attribute ref="s:mustUnderstand" use="optional"/>
+	</xs:complexType>
+	<xs:element name="ConfigurationFault" type="tns:ConfigurationFaultType" />
+	<xs:complexType name="ConfigurationFaultType">
+		<xs:sequence>
+			<xs:annotation>
+				<xs:documentation>
+            It is required that every ServiceUrl that is missing, contains a duplicate, or does not resolve to a
+            reachable service will be indicated in the ErroneousElement array.
+        			</xs:documentation>
+			</xs:annotation>
+			<xs:element name="Message" type="xs:string"/>
+			<xs:element name="ErroneousElement" type="tns:ConfigurationEndpointRole" minOccurs="0" maxOccurs="8"/>
+		</xs:sequence>
+		<xs:attribute ref="s:mustUnderstand"/>
+	</xs:complexType>
+</xs:schema>

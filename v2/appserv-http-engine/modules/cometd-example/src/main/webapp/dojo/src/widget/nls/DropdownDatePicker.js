@@ -1,0 +1,3 @@
+({
+		selectDate: "Select a date"
+})

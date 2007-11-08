@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<games>
+  <country id="Luxembourg">
+    <athlete>
+      <name>Lux 1</name>
+      <sport>swimming</sport>
+      <age>23</age>
+      <gender>M</gender>
+    </athlete>
+    <athlete>
+      <name>Lux 2</name>
+      <sport>wrestling</sport>
+      <age>31</age>
+      <gender>M</gender>
+    </athlete>
+  </country>
+  <country id="Denmark">
+    <athlete>
+      <name>Den 1</name>
+      <sport>cycling</sport>
+      <age>18</age>
+      <gender>F</gender>
+    </athlete>
+    <athlete>
+      <name>Den 2</name>
+      <sport>sailing</sport>
+      <age>27</age>
+      <gender>M</gender>
+    </athlete>
+  </country>
+</games>

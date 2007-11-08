@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!--
+ The contents of this file are subject to the terms 
+ of the Common Development and Distribution License 
+ (the "License").  You may not use this file except 
+ in compliance with the License.
+ 
+ You can obtain a copy of the license at 
+ glassfish/bootstrap/legal/CDDLv1.0.txt or 
+ https://glassfish.dev.java.net/public/CDDLv1.0.html. 
+ See the License for the specific language governing 
+ permissions and limitations under the License.
+ 
+ When distributing Covered Code, include this CDDL 
+ HEADER in each file and include the License file at 
+ glassfish/bootstrap/legal/CDDLv1.0.txt.  If applicable, 
+ add the following below this CDDL HEADER, with the 
+ fields enclosed by brackets "[]" replaced with your 
+ own identifying information: Portions Copyright [yyyy] 
+ [name of copyright owner]
+-->
+<!DOCTYPE project [
+  <!ENTITY commonBuild SYSTEM "../bootstrap/ant-common.xml">
+]>
+<project name="Java Activation" default="all" basedir=".">  
+    
+    <property name="component.name" value="activation"/>    
+
+    <!-- Do NOT reorder the following lines -->
+    <property file="../bootstrap/project.properties"/>
+    <property file="./build.properties"/>
+
+    &commonBuild;
+
+    <!-- all -->
+    <target name="all" depends="compile, assemble"
+            description="Build entire component">
+    </target>
+
+    <!-- build -->
+    <target name="build" depends="compile, assemble"
+            description="Build entire component">
+    </target>
+
+    <target name="build-pwc" depends="compile, assemble-pwc"/>
+
+    <!-- init. Initialization involves creating publishing directories and
+         OS specific targets. --> 
+    <target name="init" description="${component.name} initialization">
+        <tstamp>
+            <format property="start.time" pattern="MM/dd/yyyy hh:mm aa"/>
+        </tstamp>    
+        <echo message="Building component ${component.name}"/>
+        <mkdir dir="${component.classes.dir}"/>
+        <copy file="${glassfish.maven}/legal/LICENSE.txt"
+                toFile="${component.classes.dir}/META-INF/LICENSE.txt"/>
+    </target>
+
+    <!-- compile --> 
+    <target name="compile" depends="init"
+        description="Compile com/sun/activation sources">  
+     
+        <javac srcdir="${src.dir}" destdir="${component.classes.dir}"
+               debug="${javac.debug}" optimize="${javac.optimize}"
+               source="1.4" deprecation="${javac.deprecation}"
+               failonerror="true" target="1.4">
+            <include name="javax/activation/**"/>            
+            <include name="com/sun/activation/**"/>            
+        </javac>
+    </target>
+    
+    <!-- prepare manifest files for jars -->
+    <target name="cook-manifest" depends="init"
+            description="Generate MANIFEST.MF files">
+        <copy todir="build/manifest">
+            <fileset dir="." includes="*.mf" />
+            <filterset>
+                <filter token="SPECVERSION" value="${release.specversion}"/>
+                <filter token="VERSION" value="${release.version}"/>
+            </filterset>
+        </copy>
+    </target>
+
+    <!-- assemble -->   
+    <target name="assemble" depends="cook-manifest"
+        description="Create Activation jar files">               
+
+        <jar jarfile="${activation.jar}"
+                manifest="${basedir}/build/manifest/activation.mf">
+            <metainf dir="${component.classes.dir}/META-INF"
+                     includes="LICENSE.txt"/>
+            <metainf dir="META-INF"
+                     includes="mailcap**,mimetypes**"/>
+            <fileset dir="${component.classes.dir}">
+                <include name="javax/activation/**/*.class"/>
+                <include name="com/sun/activation/**/*.class"/>
+                <include name="com/sun/activation/**/*.properties"/>
+            </fileset>
+        </jar>                        
+        <copy file="${activation.jar}" todir="${glassfish.home}/lib/endorsed"/>
+        <jar jarfile="${javaee.jar}" update="yes">
+            <fileset dir="${component.classes.dir}">
+                <include name="javax/activation/**/*.class"/>
+            </fileset>
+        </jar>                        
+    </target>
+
+    <!-- assemble pwc (Note: we don't update javaee.jar here)-->   
+    <target name="assemble-pwc" depends="cook-manifest"
+        description="Create Activation jar files">               
+
+        <jar jarfile="${activation.jar}"
+                manifest="${basedir}/build/manifest/activation.mf">
+            <metainf dir="${component.classes.dir}/META-INF"
+                     includes="LICENSE.txt"/>
+            <metainf dir="META-INF"
+                     includes="mailcap**,mimetypes**"/>
+            <fileset dir="${component.classes.dir}">
+                <include name="javax/activation/**/*.class"/>
+                <include name="com/sun/activation/**/*.class"/>
+                <include name="com/sun/activation/**/*.properties"/>
+            </fileset>
+        </jar>                        
+    </target>
+
+    <target name="clean">
+        <delete includeEmptyDirs="true" failonerror="false">
+            <fileset dir="${component.classes.dir}"/>
+        </delete>
+    </target>
+
+    <!-- JAF bundle build targets -->
+    <target name="release" depends="init, jar, docs">
+        <property name="jaf.zip" value="jaf.zip"/>
+        <delete file="${basedir}/${jaf.zip}"/>
+        <echo message="Creating jaf bundle ${basedir}/${jaf.zip}"/>
+        <zip destfile="${jaf.zip}" basedir="${release.dir}"/>
+    </target>
+
+    <!-- Assemble activation.jar without updating glassfish/image/lib/ -->
+    <target name="jar" depends="init, compile, cook-manifest">
+        <mkdir dir="${release.dir}"/>
+        <jar jarfile="${release.activation.jar}"
+                manifest="${basedir}/build/manifest/activation.mf">
+            <metainf dir="${component.classes.dir}/META-INF"
+                     includes="LICENSE.txt"/>
+            <metainf dir="META-INF"
+                     includes="mailcap**,mimetypes**"/>
+            <fileset dir="${component.classes.dir}">
+                <include name="javax/activation/**/*.class"/>
+                <include name="com/sun/activation/**/*.class"/>
+            </fileset>
+        </jar>
+        <zip file="build/activation.src.zip">
+            <fileset dir="${src.dir}">
+                <include name="javax/activation/**"/>
+                <include name="com/sun/activation/**"/>
+            </fileset>
+        </zip>
+    </target>
+
+    <!-- javadocs -->
+    <target name="docs" depends="init">
+        <mkdir dir="${release.javadocs.dir}"/>
+        <javadoc packagenames="javax.activation"
+            destdir="${release.javadocs.dir}"
+            classpath="${build.classpath}"
+            author="true"
+            version="true"
+            use="true"
+            windowtitle="JavaBeans Activation Framework API documentation"
+            doctitle="JavaBeans Activation Framework API documentation"
+            bottom="Copyright &#169; 2004-2005 Sun Microsystems Inc. All Rights Reserved.">
+            <sourcepath>
+            <dirset dir=".">
+                <include name="${src.dir}"/>
+            </dirset>
+            </sourcepath>
+        </javadoc>
+    </target>
+
+    <target name="push-to-maven-prepare" depends="-push-to-maven-init, jar"
+        description="creates an image for the 'push-to-maven' goal">
+        <delete dir="build/maven-repo" /><!-- clean it -->
+        <maven-repository-importer destdir="build/maven-repo"
+		version="${release.version}">
+            <artifact jar="${release.activation.jar}" pom="activation.pom"
+		srczip="build/activation.src.zip" />
+        </maven-repository-importer>
+    </target>
+
+    <target name="push-to-maven" depends="push-to-maven-prepare"
+        description="pushes jars to the java.net maven repository">
+        <cvs-import src="build/maven-repo" dest="glassfish/repo" />
+    </target>
+
+</project>

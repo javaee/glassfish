@@ -1,0 +1,80 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE project [
+<!ENTITY setup-props SYSTEM "build.properties">
+<!ENTITY commonSetup SYSTEM "file:./../../config/properties.xml">
+<!ENTITY commonBuild SYSTEM "file:./../../config/common.xml">
+]>
+
+<project name="file-diff-utility" basedir="." default="all">
+&setup-props;
+&commonSetup;
+&commonBuild;
+
+  <target name="all" depends="clean,init,build,jar"/>
+        
+  <target name="init">
+  <mkdir dir="${build.dest}"/>
+    
+  </target>
+  
+   
+  <target name="build" depends="init">
+  <javac
+		destdir="${build.dest}"
+		classpath="${classpath}"
+                srcdir="${basedir}"
+                debug="on"
+		deprecation="on"
+    />
+    
+  </target>
+  
+   
+  <target name="jar" depends="init-common,build">
+  <echo message="outputting jar at ${jarfile}"/>
+  <property environment="env"/>
+  <echo message="my java.home is ${env.JAVA_HOME}"/>
+  <!--<exec executable="{env.JAVA_HOME}/bin/jar">
+   </exec>
+   <arg line="cvf ${jarfile} -C ${build.dest} ." />-->
+   <jar jarfile="${jarfile}" basedir="${build.dest}" update="true"
+   includes="**/*.class"/>
+   
+  
+  </target>
+  
+  <target name="clean">
+    <delete dir="${build.dest}"/>
+      
+  </target>
+  
+  <target name="run" depends="init-common">
+  <java
+	fork="on"
+	classpath="${classpath}:${jarfile}"
+	classname="com.sun.ejte.ccl.filediff.Diff">
+	<arg value="${env.APS_HOME}/util/filediff/golden_results.xml"/>
+	<arg value="${env.APS_HOME}/test_results.xml"/>
+</java>
+
+<!--<java
+	fork="on"
+	classpath="${classpath}:${jarfile}:${env.APS_HOME}/lib/reporter.jar:${s1astest.classpath}:${env.ANT_HOME}/lib/xercesImpl.jar:${env.ANT_HOME}/xmlParserAPIs.jar"
+	classname="com.sun.ejte.ccl.reporter.ParseML">
+	<arg value="${env.APS_HOME}/util/filediff/golden_results.xml"/>
+	<arg value="${env.APS_HOME}/test_results.xml"/>
+</java>-->
+</target>
+
+<target name="modifyReport" depends="init-common">
+  <java
+	fork="on"
+	classpath="${classpath}:${jarfile}"
+	classname="com.sun.ejte.ccl.filediff.ModifyReport">
+	<arg value="${env.APS_HOME}/test_results.html"/>	
+</java>
+</target>
+      
+</project>
+

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+
+<!DOCTYPE project [
+<!ENTITY commonSetup SYSTEM "file:./../../config/properties.xml">
+<!ENTITY commonBuild SYSTEM "file:./../../config/common.xml">
+<!ENTITY reporting   SYSTEM "file:./report.xml">
+<!ENTITY run SYSTEM "file:./../../config/run.xml">
+]>
+
+<project name="security" default="usage" basedir=".">
+
+    &commonSetup;
+    &commonBuild;
+    &reporting;
+    &run;
+
+    <target name="all">
+        <delete>
+           <fileset dir="${env.APS_HOME}" includes="test_results*, security-gtest-results.xml"/>
+        </delete>
+        <delete>
+           <fileset dir="." includes="*.output"/>
+        </delete>
+        <record name="security.output" action="start" />
+        <ant dir="authConf" target="all"/>
+        <ant dir="negativeRealmPerApp" target="all"/>
+        <ant dir="realmPerApp" target="all"/>  
+        <ant dir="sful" target="all"/>
+        <ant dir="userWithAtSymbol" target="all"/>
+        <ant dir="anyone" target="all"/>
+        <ant dir="ejb-oneway-ssl" target="all"/>
+        <ant dir="ejb-mutual-ssl" target="all"/>
+	<ant dir="web-mutual-ssl" target="all"/>
+        <ant dir="cplogin" target="all"/>
+	<ant dir="plogin" target="all"/>
+        <ant dir="jsp2sful" target="all"/>
+        <ant dir="httpMethod" target="all"/>
+        <ant dir="defaultp2r" target="all"/>
+        <ant dir="sameEjbName" target="all"/>
+        <ant dir="mdb" target="all"/>
+        <ant dir="timerStandalone" target="all"/>
+        <ant dir="container-auth" target="all"/>
+	<ant dir="jmac" target="all"/>
+	<ant dir="wss" target="all"/>
+	<ant dir="ciphertest" target="all"/>
+	<ant dir="standalone" target="all"/>
+	<ant dir="simpleMultiRoleMapping" target="all"/>
+	<ant dir="multiRoleMapping" target="all"/>
+        <!--
+        <ant dir="ldapRealmPerApp" target="all"/>
+        <ant dir="solarisRealm" target="all"/>
+        -->
+        <!-- put this at the end as there are 48734 tests -->
+        <ant dir="jaccApi" target="all"/>
+
+        <record name="security.output" action="stop" />
+        <antcall target="report"/>
+    </target>
+
+    <target name="ejb">
+        <ant dir="negativeRealmPerApp" target="all"/>
+        <ant dir="realmPerApp" target="all"/>  
+        <ant dir="sful" target="all"/>  
+    </target>
+                                                                                                                            
+   <target name="usage">
+	<echo>
+		Usage:
+			ant all (Executes all security tests)
+                        ant ejb (Executes all ejb-related security tests
+			ant web (Executes the web tests TBD)
+	</echo>
+    </target>
+</project>

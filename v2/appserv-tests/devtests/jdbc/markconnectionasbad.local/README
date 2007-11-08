@@ -1,0 +1,43 @@
+This devtest tries to test whether the appserver
+destroys the connection when it is marked as bad.
+
+-------------------------------------------------------------------------------------
+test1() READONLY Operation with db
+Pool - Steady, max-pool-size : 1
+Tx Attribute "Required"
+ejb-descriptor - "Shareable"
+
+Client will call test1() to get the "hashcode" of physical connection.
+Client will call test1() again and if the values of physical connection in first & second
+call differ, test is passed.
+-------------------------------------------------------------------------------------
+
+test2()  WRITE Operation with db
+Pool - Steady, max-pool-size : 1
+Tx Attribute "Required"
+ejb-descriptor - "Shareable"
+
+Client will call test2() to get the "hashcode" of physical connection.
+Client will call test2() again and if the values of physical connection in first & second
+call differ, test is passed.
+-------------------------------------------------------------------------------------
+
+test3()  No Operation with db
+Pool - Steady, max-pool-size : 1
+Tx Attribute "NotSupported"
+ejb-descriptor - "Shareable"
+
+EJB will get connections iteratively for 5 times. Each iteration must return a different connection
+indicating that the connection is dropped.
+
+-------------------------------------------------------------------------------------
+
+test4()  Write Operation with db
+Pool - Steady, max-pool-size : 1
+Tx Attribute "NotSupported"
+ejb-descriptor - "Shareable"
+
+EJB will get connections iteratively for 5 times. Each iteration must return a different connection
+indicating that the connection is dropped.
+
+-------------------------------------------------------------------------------------

@@ -1,0 +1,121 @@
+version: 1
+
+# entry-id: 1
+dn: dc=UNIQUE_SUB_CONTEXT,dc=sfbay,dc=sun,dc=com
+changetype: add
+objectClass: top
+objectClass: domain
+aci: (targetattr != "userPassword || passwordHistory") (version 3.0; acl "Anonymous access"; allow (read, search, compare)userdn = "ldap:///anyone";)
+aci: (targetattr != "nsroledn || aci || nsLookThroughLimit || nsSizeLimit || nsTimeLimit || nsIdleTimeout || passwordPolicySubentry || passwordExpirationTime || passwordExpWarned || passwordRetryCount || retryCountResetTime || accountUnlockTime || passwordHistory || passwordAllowChangeTime")(version 3.0; acl "Allow self entry modification except for nsroledn, aci, resource limitattributes, passwordPolicySubentry and password policy state attributes"; allow (write)userdn ="ldap:///self";)
+aci: (targetattr = "*")(version 3.0; acl "Configuration Administrator"; allow (all) userdn = "ldap:///uid=admin, ou=Administrators, ou=TopologyManagement, o=NetscapeRoot";)
+aci: (targetattr ="*")(version 3.0;acl "Configuration Administrators Group";allow (all) (groupdn = "ldap:///cn=Configuration Administrators, ou=Groups, ou=TopologyManagement, o=NetscapeRoot");)
+aci: (targetattr ="*")(version 3.0;acl "Directory Administrators Group";allow (all) (groupdn = "ldap:///cn=Directory Administrators, dc=sfbay,dc=sun,dc=com");)
+aci: (targetattr = "*")(version 3.0; acl "SIE Group"; allow (all)groupdn = "ldap:///cn=slapd-aryabhatt, cn=Sun ONE Directory Server, cn=Server Group, cn=aryabhatt.sfbay.sun.com, ou=sfbay.sun.com, o=NetscapeRoot";)
+
+# entry-id: 3
+dn: ou=Groups, dc=UNIQUE_SUB_CONTEXT,dc=sfbay,dc=sun,dc=com
+changetype: add
+objectClass: top
+objectClass: organizationalunit
+ou: Groups
+
+# entry-id: 4
+dn: ou=People, dc=UNIQUE_SUB_CONTEXT,dc=sfbay,dc=sun,dc=com
+changetype: add
+objectClass: top
+objectClass: organizationalunit
+ou: People
+aci: (targetattr ="userpassword || telephonenumber || facsimiletelephonenumber
+ ")(version 3.0;acl "Allow self entry modification";allow (write)(userdn = "l
+ dap:///self");)
+aci: (targetattr !="cn || sn || uid")(targetfilter ="(ou=Accounting)")(version
+  3.0;acl "Accounting Managers Group Permissions";allow (write)(groupdn = "ld
+ ap:///cn=Accounting Managers,ou=groups,dc=UNIQUE_SUB_CONTEXT,dc=sfbay,dc=sun,dc=com");)
+aci: (targetattr !="cn || sn || uid")(targetfilter ="(ou=Human Resources)")(ve
+ rsion 3.0;acl "HR Group Permissions";allow (write)(groupdn = "ldap:///cn=HR 
+ Managers,ou=groups,dc=UNIQUE_SUB_CONTEXT,dc=sfbay,dc=sun,dc=com");)
+aci: (targetattr !="cn ||sn || uid")(targetfilter ="(ou=Product Testing)")(ver
+ sion 3.0;acl "QA Group Permissions";allow (write)(groupdn = "ldap:///cn=QA M
+ anagers,ou=groups,dc=UNIQUE_SUB_CONTEXT,sfbay,dc=sun,dc=com");)
+aci: (targetattr !="cn || sn || uid")(targetfilter ="(ou=Product Development)"
+ )(version 3.0;acl "Engineering Group Permissions";allow (write)(groupdn = "l
+ dap:///cn=PD Managers,ou=groups,dc=UNIQUE_SUB_CONTEXT,dc=sfbay,dc=sun,dc=com");)
+
+# entry-id: 10
+dn: uid=munta,ou=People, dc=UNIQUE_SUB_CONTEXT,dc=sfbay,dc=sun,dc=com
+changetype: add
+telephoneNumber: 408-276-4397
+mail: jagadesh.munta@sun.com
+uid: munta
+givenName: jagadesh
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetorgperson
+sn: munta
+cn: jagadesh munta
+userPassword: {SSHA}kMk4elbUJuqy5o4tfhYeRJq1H8egS5xUWxPsRw==
+
+# entry-id: 11
+dn: uid=harpreet,ou=People, dc=UNIQUE_SUB_CONTEXT,dc=sfbay,dc=sun,dc=com
+changetype: add
+mail: harpreet.singh@sun.com	
+uid: harpreet
+givenName: Harpreet
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetorgperson
+sn: Singh
+cn: Harpreet Singh
+userPassword: {SSHA}uEL4dV/Ji3fJEDRkGogPwXODB9VCd2JHQAxVOw==
+
+# entry-id: 14
+dn: uid=j2ee,ou=People, dc=UNIQUE_SUB_CONTEXT,dc=sfbay,dc=sun,dc=com
+changetype: add
+mail: jagadesh.munta@sun.com
+uid: j2ee
+givenName: j2ee
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetorgperson
+sn: test
+cn: j2ee test
+userPassword: {SSHA}veO8sbrEk6W7gAUw0TQUlvqBnvjPLL5mdk2pAw==
+
+# entry-id: 16
+dn: cn=sqedynamicgroup,ou=Groups, dc=UNIQUE_SUB_CONTEXT,dc=sfbay,dc=sun,dc=com
+changetype: add
+description: SQE Security testing Dynamic group
+cn: sqedynamicgroup
+objectClass: top
+objectClass: groupofuniquenames
+objectClass: groupofurls
+memberURL: ldap:///dc=sfbay,dc=sun,dc=com??sub?(&(|(objectclass=person)(objectclass=groupofuniquenames))(cn=*Jagadesh*))
+memberURL: ldap:///dc=sfbay,dc=sun,dc=com??sub?(&(|(objectclass=person)(objectclass=groupofuniquenames))(uid=*munta*))
+memberURL: ldap:///dc=sfbay,dc=sun,dc=com??sub?(&(|(objectclass=person)(objectclass=groupofuniquenames))(cn=*java*))
+memberURL: ldap:///dc=sfbay,dc=sun,dc=com??sub?(&(|(objectclass=person)(objectclass=groupofuniquenames))(cn=*j2ee*))
+
+# entry-id: 17
+dn: uid=javajoe,ou=People, dc=UNIQUE_SUB_CONTEXT,dc=sfbay,dc=sun,dc=com
+changetype: add
+uid: javajoe
+givenName: java
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetorgperson
+sn: joe
+cn: java joe
+userPassword: {SSHA}RQdz5VFDOCFplv2OW2Vtihg3W9PBW64mDGitVA==
+
+# entry-id: 18
+dn: cn=sqestaticgroup,ou=Groups, dc=UNIQUE_SUB_CONTEXT,dc=sfbay,dc=sun,dc=com
+changetype: add
+description: sqe security test static group
+objectClass: top
+objectClass: groupofuniquenames
+cn: sqestaticgroup
+uniqueMember: uid=munta,ou=People, dc=UNIQUE_SUB_CONTEXT,dc=sfbay,dc=sun,dc=com
+

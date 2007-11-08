@@ -1,0 +1,12 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+  
+<suite name="web" >
+  <parameter name="host" value="localhost"/>
+  <parameter name="port" value="8080"/>
+  <parameter name="contextroot" value="/web-tag-plugin-for-each"/>
+  <test name="web.tag-plugin-for-each" >
+    <classes>
+      <class name="WebTestNG" />
+    </classes>
+  </test>
+</suite>

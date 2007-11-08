@@ -1,0 +1,100 @@
+<?xml version="1.0"?>
+
+<project name="Hello2" default="core" basedir=".">
+   
+    <property environment="env"/>
+    <property file="${env.APS_HOME}/config.properties"/>   
+
+    <target name="all" depends="clean, compile, run, undeploy, report"/>
+
+    <target name="clean">
+        <delete dir="${env.APS_HOME}/build/module/classes"/>
+    </target>
+
+    <target name="compile">
+        <mkdir dir="${env.APS_HOME}/build/module/classes"/>   
+        <javac srcdir="." destdir="${env.S1AS_HOME}/domains/domain1/autodeploy" 
+            classpath="${env.S1AS_HOME}/lib/j2ee.jar:${env.S1AS_HOME}/lib/webservices-rt.jar:${env.S1AS_HOME}/lib/webservices-tools.jar" 
+            includes="endpoint/Hello2.java"/>
+    </target>
+
+    <target name="compile-client">
+        <javac srcdir="." destdir="${env.APS_HOME}/build/module/classes" 
+            classpath="${env.APS_HOME}/lib/reporter.jar:${env.S1AS_HOME}/lib/j2ee.jar:${env.S1AS_HOME}/lib/webservices-rt.jar:${env.S1AS_HOME}/lib/webservices-tools.jar" 
+            includes="client/Client.java"/>
+    </target>
+
+    <target name="deploy">
+        <antcall target="compile"/>
+    </target>
+
+    <target name="undeploy">
+        <delete file="${env.S1AS_HOME}/domains/domain1/autodeploy/endpoint/Hello2.class"/>
+        <waitfor maxwait="100" maxwaitunit="second">
+           <or>
+                <available file="${env.S1AS_HOME}/domains/domain1/autodeploy/endpoint/Hello2.class_undeployed"/>
+                <available file="${env.S1AS_HOME}/domains/domain1/autodeploy/endpoint/Hello2.class_undeployFailed"/>
+           </or>
+        </waitfor>
+        <condition property="undeploy_succeeded">
+            <available file="${env.S1AS_HOME}/domains/domain1/autodeploy/endpoint/Hello2.class_undeployed"/>
+        </condition>
+        <condition property="undeploy_failed">
+            <available file="${env.S1AS_HOME}/domains/domain1/autodeploy/endpoint/Hello2.class_undeployFailed"/>
+        </condition>
+    </target>
+
+    <target name="report" depends="internal-report-success, internal-report-failure">
+        <delete file="${env.S1AS_HOME}/domains/domain1/autodeploy/Hello2.class_undeployed"/>    
+    </target>
+
+    <target name="run">
+        <waitfor maxwait="100" maxwaitunit="second">
+           <or>
+                <available file="${env.S1AS_HOME}/domains/domain1/autodeploy/endpoint/Hello2.class_deployed"/>
+                <available file="${env.S1AS_HOME}/domains/domain1/autodeploy/endpoint/Hello2.class_deployFailed"/>
+           </or>
+        </waitfor>
+        <condition property="deploy_succeeded">
+            <available file="${env.S1AS_HOME}/domains/domain1/autodeploy/endpoint/Hello2.class_deployed"/>
+        </condition>
+        <condition property="deploy_failed">
+            <available file="${env.S1AS_HOME}/domains/domain1/autodeploy/endpoint/Hello2.class_deployFailed"/>
+        </condition>
+        <antcall target="internal-run"/>
+        <antcall target="internal-report-failure"/>
+    </target>
+
+    <target name="internal-run" if="deploy_succeeded">
+        <echo message="wsimporting http://${http.host}:${http.port}/Hello2/HelloService?WSDL"/>
+        <exec executable="${env.S1AS_HOME}/bin/wsimport">
+            <arg line="-d ${env.APS_HOME}/build/module/classes http://${http.host}:${http.port}/Hello2/HelloService?WSDL"/>
+        </exec>
+        <antcall target="compile-client"/>   
+        <unjar src="${env.APS_HOME}/lib/reporter.jar" dest="${env.APS_HOME}/build/module/classes"/>
+        <exec executable="${env.S1AS_HOME}/bin/appclient" dir="${env.APS_HOME}/build/module/classes">
+            <arg value="client.Client"/>    
+        </exec>
+    </target>
+
+    <target name="internal-report-success" if="undeploy_succeeded">
+        <antcall target="report-success"/>
+    </target>
+
+    <target name="internal-report-failure" if="undeploy_failed, deploy_failed">
+        <antcall target="report-failure"/>
+    </target>
+
+    <target name="run-client">
+        <echo message="Deployed passed"/>
+    </target>	
+
+    <target name="report-success">
+            <echo message="Test PASSED"/>
+    </target>
+
+    <target name="report-failure">
+            <echo message="Test FAILED"/>
+    </target>   	
+    
+</project>

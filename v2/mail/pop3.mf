@@ -1,0 +1,8 @@
+Extension-Name: com.sun.mail.pop3
+Specification-Title: com.sun.mail.pop3
+Specification-Version: @SPECVERSION@
+Specification-Vendor: Sun Microsystems, Inc.
+Implementation-Title: com.sun.mail.pop3
+Implementation-Version: @VERSION@
+Implementation-Vendor: Sun Microsystems, Inc.
+Implementation-Vendor-Id: com.sun

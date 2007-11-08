@@ -1,0 +1,356 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+ DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+ 
+ Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ 
+ The contents of this file are subject to the terms of either the GNU
+ General Public License Version 2 only ("GPL") or the Common Development
+ and Distribution License("CDDL") (collectively, the "License").  You
+ may not use this file except in compliance with the License. You can obtain
+ a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
+ or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
+ language governing permissions and limitations under the License.
+ 
+ When distributing the software, include this License Header Notice in each
+ file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
+ Sun designates this particular file as subject to the "Classpath" exception
+ as provided by Sun in the GPL Version 2 section of the License file that
+ accompanied this code.  If applicable, add the following below the License
+ Header, with the fields enclosed by brackets [] replaced by your own
+ identifying information: "Portions Copyrighted [year]
+ [name of copyright owner]"
+ 
+ Contributor(s):
+ 
+ If you wish your version of this file to be governed by only the CDDL or
+ only the GPL Version 2, indicate your decision by adding "[Contributor]
+ elects to include this software in this distribution under the [CDDL or GPL
+ Version 2] license."  If you don't indicate a single choice of license, a
+ recipient has the option to distribute your version of this file under
+ either the CDDL, the GPL Version 2 or to extend the choice of license to
+ its licensees as provided above.  However, if you add GPL Version 2 code
+ and therefore, elected the GPL Version 2 license, then the option applies
+ only if the new code is made subject to such option by the copyright
+ holder.
+-->
+
+
+<!--
+ Copyright 2004-2005 Sun Microsystems, Inc.  All rights reserved.
+ Use is subject to license terms.
+-->
+
+
+<ejb-jar version="2.1" xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/ejb-jar_2_1.xsd">
+  <display-name>Ejb1</display-name>
+  <enterprise-beans>
+    <entity>
+      <display-name>TimerBean</display-name>
+      <ejb-name>TimerBean</ejb-name>
+      <local-home>com.sun.ejb.containers.TimerLocalHome</local-home>
+      <local>com.sun.ejb.containers.TimerLocal</local>
+      <ejb-class>com.sun.ejb.containers.TimerBean</ejb-class>
+      <persistence-type>Container</persistence-type>
+      <prim-key-class>com.sun.ejb.containers.TimerPrimaryKey</prim-key-class>
+      <reentrant>false</reentrant>
+      <cmp-version>2.x</cmp-version>
+      <abstract-schema-name>Timer</abstract-schema-name>
+      <cmp-field>
+        <description>no description</description>
+        <field-name>blob</field-name>
+      </cmp-field>
+      <cmp-field>
+        <description>no description</description>
+        <field-name>ownerId</field-name>
+      </cmp-field>
+      <cmp-field>
+        <description>no description</description>
+        <field-name>containerId</field-name>
+      </cmp-field>
+      <cmp-field>
+        <description>no description</description>
+        <field-name>creationTimeRaw</field-name>
+      </cmp-field>
+      <cmp-field>
+        <description>no description</description>
+        <field-name>lastExpirationRaw</field-name>
+      </cmp-field>
+      <cmp-field>
+        <description>no description</description>
+        <field-name>intervalDuration</field-name>
+      </cmp-field>
+      <cmp-field>
+        <description>no description</description>
+        <field-name>initialExpirationRaw</field-name>
+      </cmp-field>
+      <cmp-field>
+        <description>no description</description>
+        <field-name>state</field-name>
+      </cmp-field>
+      <cmp-field>
+        <description>hash code of entity timed obj pk</description>
+        <field-name>pkHashCode</field-name>
+      </cmp-field>
+      <cmp-field>
+        <description>no description</description>
+        <field-name>timerId</field-name>
+      </cmp-field>
+      <security-identity>
+        <description></description>
+        <use-caller-identity></use-caller-identity>
+      </security-identity>
+      <query>
+        <description></description>
+        <query-method>
+          <method-name>ejbSelectTimerIdsByContainer</method-name>
+          <method-params>
+            <method-param>long</method-param>            
+          </method-params>
+        </query-method>
+        <ejb-ql>SELECT t.timerId FROM Timer t WHERE t.containerId = ?1</ejb-ql>
+      </query>
+      <query>
+        <description></description>
+        <query-method>
+          <method-name>ejbSelectTimerIdsByContainerAndState</method-name>
+          <method-params>
+            <method-param>long</method-param>
+            <method-param>int</method-param>       
+          </method-params>
+        </query-method>
+        <ejb-ql>SELECT t.timerId FROM Timer t WHERE t.containerId = ?1 AND t.state=?2</ejb-ql>
+      </query>
+      <query>
+        <description></description>
+        <query-method>
+          <method-name>ejbSelectTimerIdsByContainerAndOwner</method-name>
+          <method-params>
+            <method-param>long</method-param>
+            <method-param>java.lang.String</method-param>       
+          </method-params>
+        </query-method>
+        <ejb-ql>SELECT t.timerId FROM Timer t WHERE t.containerId = ?1 AND t.ownerId=?2</ejb-ql>
+      </query>
+      <query>
+        <description></description>
+        <query-method>
+          <method-name>ejbSelectTimerIdsByContainerAndOwnerAndState
+          </method-name>
+          <method-params>
+            <method-param>long</method-param>
+            <method-param>java.lang.String</method-param>       
+            <method-param>int</method-param>
+          </method-params>
+        </query-method>
+        <ejb-ql>SELECT t.timerId FROM Timer t WHERE t.containerId = ?1 AND t.ownerId=?2 AND t.state=?3</ejb-ql>
+      </query>
+      <query>
+        <description></description>
+        <query-method>
+          <method-name>ejbSelectAllTimerIdsByOwner</method-name>
+          <method-params>           
+            <method-param>java.lang.String</method-param>       
+          </method-params>
+        </query-method>
+        <ejb-ql>SELECT t.timerId FROM Timer t WHERE t.ownerId=?1</ejb-ql>
+      </query>
+      <query>
+        <description></description>
+        <query-method>
+          <method-name>ejbSelectAllTimerIdsByOwnerAndState</method-name>
+          <method-params>           
+            <method-param>java.lang.String</method-param> 
+            <method-param>int</method-param>      
+          </method-params>
+        </query-method>
+        <ejb-ql>SELECT t.timerId FROM Timer t WHERE t.ownerId=?1 AND t.state=?2</ejb-ql>
+      </query>
+
+      <query>
+        <description></description>
+        <query-method>
+          <method-name>ejbSelectTimersByContainer</method-name>
+          <method-params>
+            <method-param>long</method-param>            
+          </method-params>
+        </query-method>
+        <ejb-ql>SELECT OBJECT(t) FROM Timer t WHERE t.containerId = ?1</ejb-ql>
+      </query>
+      <query>
+        <description></description>
+        <query-method>
+          <method-name>ejbSelectTimersByContainerAndState</method-name>
+          <method-params>
+            <method-param>long</method-param>
+            <method-param>int</method-param>       
+          </method-params>
+        </query-method>
+        <ejb-ql>SELECT OBJECT(t) FROM Timer t WHERE t.containerId = ?1 AND t.state=?2</ejb-ql>
+      </query>
+      <query>
+        <description></description>
+        <query-method>
+          <method-name>ejbSelectTimersByContainerAndOwner</method-name>
+          <method-params>
+            <method-param>long</method-param>
+            <method-param>java.lang.String</method-param>       
+          </method-params>
+        </query-method>
+        <ejb-ql>SELECT OBJECT(t) FROM Timer t WHERE t.containerId = ?1 AND t.ownerId=?2</ejb-ql>
+      </query>
+      <query>
+        <description></description>
+        <query-method>
+          <method-name>ejbSelectTimersByContainerAndOwnerAndState</method-name>
+          <method-params>
+            <method-param>long</method-param>
+            <method-param>java.lang.String</method-param>       
+            <method-param>int</method-param>
+          </method-params>
+        </query-method>
+        <ejb-ql>SELECT OBJECT(t) FROM Timer t WHERE t.containerId = ?1 AND t.ownerId=?2 AND t.state=?3</ejb-ql>
+      </query>
+      <query>
+        <description></description>
+        <query-method>
+          <method-name>ejbSelectAllTimersByOwner</method-name>
+          <method-params>           
+            <method-param>java.lang.String</method-param>       
+          </method-params>
+        </query-method>
+        <ejb-ql>SELECT OBJECT(t) FROM Timer t WHERE t.ownerId=?1</ejb-ql>
+      </query>
+      <query>
+        <description></description>
+        <query-method>
+          <method-name>ejbSelectAllTimersByOwnerAndState</method-name>
+          <method-params>           
+            <method-param>java.lang.String</method-param> 
+            <method-param>int</method-param>      
+          </method-params>
+        </query-method>
+        <ejb-ql>SELECT OBJECT(t) FROM Timer t WHERE t.ownerId=?1 AND t.state=?2</ejb-ql>
+      </query>
+
+      <query>
+        <description></description>
+        <query-method>
+          <method-name>ejbSelectCountTimersByContainer</method-name>
+          <method-params>
+            <method-param>long</method-param>            
+          </method-params>
+        </query-method>
+        <ejb-ql>SELECT COUNT(t) FROM Timer t WHERE t.containerId = ?1</ejb-ql>
+      </query>
+      <query>
+        <description></description>
+        <query-method>
+          <method-name>ejbSelectCountTimersByContainerAndState</method-name>
+          <method-params>
+            <method-param>long</method-param>
+            <method-param>int</method-param>       
+          </method-params>
+        </query-method>
+        <ejb-ql>SELECT COUNT(t) FROM Timer t WHERE t.containerId = ?1 AND t.state=?2</ejb-ql>
+      </query>
+      <query>
+        <description></description>
+        <query-method>
+          <method-name>ejbSelectCountTimersByContainerAndOwner</method-name>
+          <method-params>
+            <method-param>long</method-param>
+            <method-param>java.lang.String</method-param>       
+          </method-params>
+        </query-method>
+        <ejb-ql>SELECT COUNT(t) FROM Timer t WHERE t.containerId = ?1 AND t.ownerId=?2</ejb-ql>
+      </query>
+      <query>
+        <description></description>
+        <query-method>
+          <method-name>ejbSelectCountTimersByContainerAndOwnerAndState</method-name>
+          <method-params>
+            <method-param>long</method-param>
+            <method-param>java.lang.String</method-param>       
+            <method-param>int</method-param>
+          </method-params>
+        </query-method>
+        <ejb-ql>SELECT COUNT(t) FROM Timer t WHERE t.containerId = ?1 AND t.ownerId=?2 AND t.state=?3</ejb-ql>
+      </query>
+      <query>
+        <description></description>
+        <query-method>
+          <method-name>ejbSelectCountAllTimersByOwner</method-name>
+          <method-params>           
+            <method-param>java.lang.String</method-param>       
+          </method-params>
+        </query-method>
+        <ejb-ql>SELECT COUNT(t) FROM Timer t WHERE t.ownerId=?1</ejb-ql>
+      </query>
+      <query>
+        <description></description>
+        <query-method>
+          <method-name>ejbSelectCountAllTimersByOwnerAndState</method-name>
+          <method-params>           
+            <method-param>java.lang.String</method-param> 
+            <method-param>int</method-param>      
+          </method-params>
+        </query-method>
+        <ejb-ql>SELECT COUNT(t) FROM Timer t WHERE t.ownerId=?1 AND t.state=?2</ejb-ql>
+      </query>
+
+    </entity>
+    <entity>
+      <display-name>TimerMigrationBean</display-name>
+      <ejb-name>TimerMigrationBean</ejb-name>
+      <local-home>com.sun.ejb.containers.TimerMigrationLocalHome</local-home>
+      <local>com.sun.ejb.containers.TimerMigrationLocal</local>
+      <ejb-class>com.sun.ejb.containers.TimerMigrationBean</ejb-class>
+      <persistence-type>Container</persistence-type>
+      <prim-key-class>com.sun.ejb.containers.TimerPrimaryKey</prim-key-class>
+      <reentrant>false</reentrant>
+      <cmp-version>2.x</cmp-version>
+      <abstract-schema-name>TimerMigration</abstract-schema-name>
+      <cmp-field>
+        <description>no description</description>
+        <field-name>ownerId</field-name>
+      </cmp-field>
+      <cmp-field>
+        <description>no description</description>
+        <field-name>timerId</field-name>
+      </cmp-field>
+      <security-identity>
+        <description></description>
+        <use-caller-identity></use-caller-identity>
+      </security-identity>
+      <query>
+        <description></description>
+        <query-method>
+          <method-name>ejbSelectAllTimersByOwner</method-name>
+          <method-params>           
+            <method-param>java.lang.String</method-param>       
+          </method-params>
+        </query-method>
+        <ejb-ql>SELECT OBJECT(tm) FROM TimerMigration tm WHERE tm.ownerId=?1</ejb-ql>
+      </query>
+    </entity>
+  </enterprise-beans>
+  <assembly-descriptor>
+    <container-transaction>
+      <method>
+        <ejb-name>TimerBean</ejb-name>
+        <method-name>*</method-name>
+      </method>
+      <trans-attribute>Required</trans-attribute>
+    </container-transaction>
+    <container-transaction>
+      <method>
+        <ejb-name>TimerMigrationBean</ejb-name>
+        <method-name>*</method-name>
+      </method>
+      <trans-attribute>Required</trans-attribute>
+    </container-transaction>
+  </assembly-descriptor>
+</ejb-jar>
+

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE ejb-jar PUBLIC "-//Sun Microsystems, Inc.//DTD Enterprise JavaBeans 2.0//EN" "http://java.sun.com/dtd/ejb-jar_2_0.dtd">
+<ejb-jar>
+  <display-name>Ejb1</display-name>
+  <enterprise-beans>
+    <session>
+      <display-name>SFSBEJB</display-name>
+      <ejb-name>SFSBEJB</ejb-name>
+      <home>com.sun.s1asdev.ejb.stress.passivateactivate.ejb.SFSBHome</home>
+      <remote>com.sun.s1asdev.ejb.stress.passivateactivate.ejb.SFSB</remote>
+      <ejb-class>com.sun.s1asdev.ejb.stress.passivateactivate.ejb.SFSBEJB</ejb-class>
+      <session-type>Stateful</session-type>
+      <transaction-type>Container</transaction-type>
+      <security-identity>
+        <use-caller-identity/>
+      </security-identity>
+    </session>
+  </enterprise-beans>
+  <assembly-descriptor>
+    <container-transaction>
+      <method>
+        <ejb-name>SFSBEJB</ejb-name>
+        <method-name>*</method-name>
+      </method>
+      <trans-attribute>Required</trans-attribute>
+    </container-transaction>
+  </assembly-descriptor>
+</ejb-jar>

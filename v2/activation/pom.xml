@@ -1,0 +1,77 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+   <parent>
+        <groupId>com.sun.enterprise.glassfish</groupId>
+        <artifactId>bootstrap</artifactId>
+        <version>10.0-SNAPSHOT</version>
+        <relativePath>../bootstrap/pom.xml</relativePath>        
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>javax.activation</groupId>
+    <artifactId>activation</artifactId>
+    <packaging>jar</packaging>
+    <version>${activation-api.version}</version>
+    <name>JavaBeans(TM) Activation Framework</name>
+    <description>JavaBeans(TM) Activation Framework Specification</description>
+    <developers>
+        <developer>
+            <id>shannon</id>
+            <name>Bill Shannon</name>
+            <organization>Sun Microsystems, Inc.</organization>
+            <roles>
+                <role>lead</role>
+            </roles>
+        </developer>
+    </developers>    
+    <build> 
+        <sourceDirectory>src/java</sourceDirectory>        
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <configuration>
+          <archive>
+            <manifestEntries>
+              <Specification-Version>${activation-api.version}</Specification-Version>         
+              <Specification-Vendor>Sun Microsystems, Inc.</Specification-Vendor>
+              <Implementation-Vendor>Sun Microsystems, Inc.</Implementation-Vendor>
+              <Implementation-Vendor-Id>com.sun</Implementation-Vendor-Id>
+            </manifestEntries>
+          </archive>
+        </configuration>
+      </plugin>
+         <plugin>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <executions>
+              <execution>
+                <phase>process-resources</phase>
+                <configuration>
+                  <tasks>
+                        <copy file="../${pom.parent.artifactId}/legal/CDDLv1.0.txt"
+                                toFile="target/classes/META-INF/LICENSE.TXT">
+                        </copy>
+                  </tasks>
+                </configuration>
+                <goals>
+                  <goal>run</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>                        
+    </plugins>        
+        <resources>
+            <resource>
+                <directory>resources</directory>
+                <includes>
+                    <include>com/sun/activation/**/*.properties</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>.</directory>
+                <includes>
+                    <include>META-INF/*.default</include>
+                </includes>
+            </resource>
+        </resources>
+    </build>
+</project>

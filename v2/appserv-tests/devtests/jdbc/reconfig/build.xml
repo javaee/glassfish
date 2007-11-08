@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+
+<!DOCTYPE project [
+<!ENTITY commonSetup SYSTEM "file:./../../../config/properties.xml">
+<!ENTITY commonBuild SYSTEM "file:./../../../config/common.xml">
+<!ENTITY eeSetup SYSTEM "file:./../config/ee-common.xml">
+<!ENTITY eeProperties SYSTEM "file:./../config/ee-properties.xml">
+]>
+
+<project name="reconfig" default="usage" basedir=".">
+
+    <!--
+    &commonSetup;
+    &commonBuild;
+    -->
+
+    &eeSetup;
+    &eeProperties;
+
+    <target name="all">
+        <delete>
+           <fileset dir="${env.APS_HOME}" includes="test_results*"/>
+        </delete>
+        <delete>
+           <fileset dir="." includes="*.output"/>
+        </delete>
+        <record name="reconfig.output" action="start" />
+	<ant dir="maxpoolsize" target="all"/>
+        <record name="reconfig.output" action="stop" />
+    </target>
+
+    <target name="maxpoolsize">
+        <record name="maxpoolsize.output" action="start" />
+            <ant dir="maxpoolsize" target="all"/>
+        <record name="maxpoolsize.output" action="stop" />
+    </target>
+
+    <target name="usage">
+	<echo>
+		Usage:
+			ant all (Executes all the reconfig tests)
+	</echo>
+    </target>
+</project>

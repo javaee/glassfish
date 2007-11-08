@@ -1,0 +1,6 @@
+<Context>
+  <Environment name="webapp-env" type="java.lang.String" value="webapp-env-value"/>
+  <Resource name="jdbc/__default" auth="Container"
+            type="javax.sql.DataSource"
+     description="Default Database"/>
+</Context>

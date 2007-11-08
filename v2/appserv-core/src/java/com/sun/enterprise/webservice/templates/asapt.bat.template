@@ -1,0 +1,18 @@
+@echo off
+setlocal
+call "%CONFIG_HOME%\asenv.bat"
+
+rem
+rem Copyright 1997-2007 Sun Microsystems, Inc.  All rights reserved.
+rem Use is subject to license terms.
+rem
+
+rem
+rem Script to run apt tool
+rem 
+
+rem Set CLASSPATH
+set CLASSPATH=.;%AS_INSTALL%\lib\appserv-rt.jar;%AS_JAVA%\lib\tools.jar;%AS_INSTALL%\lib\appserv-jstl.jar;%AS_INSTALL%\lib\javaee.jar;%AS_INSTALL%\lib\webservices-rt.jar;%AS_INSTALL%\lib\webservices-tools.jar;%AS_WEBSERVICES_LIB%\commons-logging.jar;%AS_WEBSERVICES_LIB%\mail.jar;%AS_WEBSERVICES_LIB%\activation.jar;
+
+"%AS_JAVA%\bin\apt" -cp "%CLASSPATH%" -factory com.sun.enterprise.AptFactory -J-Dcom.sun.aas.installRoot=$AS_INSTALL %*
+endlocal

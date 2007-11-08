@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE ejb-jar PUBLIC "-//Sun Microsystems, Inc.//DTD Enterprise JavaBeans 2.0//EN" "http://java.sun.com/dtd/ejb-jar_2_0.dtd">
+
+<ejb-jar>
+  <display-name>txglobalTest</display-name>
+  <enterprise-beans>
+
+    <session>
+      <display-name>TxBeanB</display-name>
+      <ejb-name>TxBeanB</ejb-name>
+      <home>com.sun.s1peqe.transaction.txglobal.ejb.beanB.TxRemoteHomeB</home>
+      <remote>com.sun.s1peqe.transaction.txglobal.ejb.beanB.TxRemoteB</remote>
+      <ejb-class>com.sun.s1peqe.transaction.txglobal.ejb.beanB.TxBeanB</ejb-class>
+      <session-type>Stateful</session-type>
+      <transaction-type>Container</transaction-type>
+      <env-entry>
+        <env-entry-name>user</env-entry-name>
+        <env-entry-type>java.lang.String</env-entry-type>
+        <env-entry-value>dbuser</env-entry-value>
+      </env-entry>
+      <env-entry>
+        <env-entry-name>password</env-entry-name>
+        <env-entry-type>java.lang.String</env-entry-type>
+        <env-entry-value>dbpassword</env-entry-value>
+      </env-entry>
+      <env-entry>
+        <env-entry-name>dbURL1</env-entry-name>
+        <env-entry-type>java.lang.String</env-entry-type>
+        <env-entry-value>java:comp/env/jdbc/s1qeDB1</env-entry-value>
+      </env-entry>
+      <env-entry>
+        <env-entry-name>dbURL2</env-entry-name>
+        <env-entry-type>java.lang.String</env-entry-type>
+        <env-entry-value>java:comp/env/jdbc/s1qeDB2</env-entry-value>
+      </env-entry>
+      <resource-ref>
+        <res-ref-name>jdbc/s1qeDB1</res-ref-name>
+        <res-type>javax.sql.XADataSource</res-type>
+        <res-auth>Container</res-auth>
+        <res-sharing-scope>Shareable</res-sharing-scope>
+      </resource-ref>
+      <resource-ref>
+        <res-ref-name>jdbc/s1qeDB2</res-ref-name>
+        <res-type>javax.sql.XADataSource</res-type>
+        <res-auth>Container</res-auth>
+        <res-sharing-scope>Shareable</res-sharing-scope>
+      </resource-ref>
+    </session>
+
+  </enterprise-beans>
+  <assembly-descriptor>
+      <container-transaction>
+          <method>
+              <ejb-name>TxBeanB</ejb-name>
+              <method-intf>Remote</method-intf>
+              <method-name>test1</method-name>
+          </method>
+          <trans-attribute>Required</trans-attribute>
+      </container-transaction> 
+      <container-transaction>
+          <method>
+              <ejb-name>TxBeanB</ejb-name>
+              <method-intf>Remote</method-intf>
+              <method-name>test2</method-name>
+          </method>
+          <trans-attribute>Required</trans-attribute>
+      </container-transaction> 
+      <container-transaction>
+          <method>
+              <ejb-name>TxBeanB</ejb-name>
+              <method-intf>Remote</method-intf>
+              <method-name>getCommitStatus</method-name>
+          </method>
+          <trans-attribute>NotSupported</trans-attribute>
+      </container-transaction> 
+  </assembly-descriptor>
+</ejb-jar>

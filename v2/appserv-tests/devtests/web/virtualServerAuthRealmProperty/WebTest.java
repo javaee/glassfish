@@ -1,0 +1,226 @@
+import java.io.*;
+import java.net.*;
+import com.sun.ejte.ccl.reporter.*;
+
+/*
+ * Unit test for https://glassfish.dev.java.net/issues/show_bug.cgi?id=1537
+ * ("Add support for realm configuration at virtual server level"):
+ *
+ * This test deploys a webapp that does not specify any realm-name in its
+ * web.xml to the virtual-server "server" that specifies an "authRealm"
+ * property whose value references the admin-realm. This test then accesses
+ * one of the webapp's protected resources, by providing the admin's
+ * credentials.
+ *
+ * The "authRealm" property of the virtual-server "server" is added (before
+ * the webapp's deployment) and removed (after the webapp's undeployment)
+ * dynamically,
+ */
+public class WebTest {
+
+    private static final String TEST_NAME = "virtual-server-auth-realm-property";
+    private static final String JSESSIONID = "JSESSIONID";
+    private static final String JSESSIONIDSSO = "JSESSIONIDSSO";
+
+    private static final String EXPECTED = "SUCCESS!";
+
+    private static SimpleReporterAdapter stat
+        = new SimpleReporterAdapter("appserv-tests");
+
+    private String host;
+    private String port;
+    private String contextRoot;
+    private String adminUser;
+    private String adminPassword;
+
+    public WebTest(String[] args) {
+        host = args[0];
+        port = args[1];
+        contextRoot = args[2];
+        adminUser = args[3];
+        adminPassword = args[4];
+    }
+    
+    public static void main(String[] args) {
+
+        stat.addDescription("Unit test for GlassFish Issue 1537");
+        WebTest webTest = new WebTest(args);
+
+        try {
+            webTest.run();
+        } catch( Exception ex) {
+            ex.printStackTrace();
+            stat.addStatus(TEST_NAME, stat.FAIL);
+        }
+
+	stat.printSummary();
+    }
+
+    public void run() throws Exception {
+
+        String jsessionId = accessIndexDotJsp();
+        String redirect = accessLoginPage(jsessionId);
+        followRedirect(new URL(redirect).getPath(), jsessionId);
+
+        stat.addStatus(TEST_NAME, stat.PASS);
+    }
+
+    /*
+     * Attempt to access index.jsp resource protected by FORM based login.
+     */
+    private String accessIndexDotJsp() throws Exception {
+        Socket sock = new Socket(host, new Integer(port).intValue());
+        OutputStream os = sock.getOutputStream();
+        String get = "GET " + contextRoot + "/index.jsp" + " HTTP/1.0\n";
+        System.out.println(get);
+        os.write(get.getBytes());
+        os.write("\n".getBytes());
+        
+        InputStream is = sock.getInputStream();
+        BufferedReader br = new BufferedReader(new InputStreamReader(is));
+
+        String line = null;
+        while ((line = br.readLine()) != null) {
+            System.out.println(line);
+            if (line.startsWith("Set-Cookie:")
+                    || line.startsWith("Set-cookie:")) {
+                break;
+            }
+        }
+
+        if (line == null) {
+            throw new Exception("Missing Set-Cookie response header");
+        }
+
+        return getSessionIdFromCookie(line, JSESSIONID);
+    }
+
+    /*
+     * Access login.jsp.
+     */
+    private String accessLoginPage(String jsessionId) throws Exception {
+
+        Socket sock = new Socket(host, new Integer(port).intValue());
+        OutputStream os = sock.getOutputStream();
+        String get = "GET " + contextRoot
+            + "/j_security_check?j_username=" + adminUser
+            + "&j_password=" + adminPassword
+            + " HTTP/1.0\n";
+        System.out.println(get);
+        os.write(get.getBytes());
+        String cookie = "Cookie: " + jsessionId + "\n";
+        os.write(cookie.getBytes());
+        os.write("\n".getBytes());
+        
+        InputStream is = sock.getInputStream();
+        BufferedReader br = new BufferedReader(new InputStreamReader(is));
+
+        String line = null;
+        while ((line = br.readLine()) != null) {
+            System.out.println(line);
+            if (line.startsWith("Location:")) {
+                break;
+            }
+        }
+
+        if (line == null) {
+            throw new Exception("Missing Location response header");
+        }
+
+        return line.substring("Location:".length()).trim();
+    }
+
+    /*
+     * Follow redirect to
+     * http://<host>:<port>/web-virtual-server-auth-realm-property/index.jsp
+     * and access this resource.
+     */
+    private String followRedirect(String path, String jsessionId)
+            throws Exception {
+
+        Socket sock = new Socket(host, new Integer(port).intValue());
+        OutputStream os = sock.getOutputStream();
+        String get = "GET " + path + " HTTP/1.0\n";
+        System.out.println(get);
+        os.write(get.getBytes());
+        String cookie = "Cookie: " + jsessionId + "\n";
+        os.write(cookie.getBytes());
+        os.write("\n".getBytes());
+        
+        InputStream is = sock.getInputStream();
+        BufferedReader br = new BufferedReader(new InputStreamReader(is));
+
+        String line = null;
+        String cookieHeader = null;
+        boolean accessGranted = false;
+        while ((line = br.readLine()) != null) {
+            System.out.println(line);
+            if (line.startsWith("Set-Cookie:")
+                    || line.startsWith("Set-cookie:")) {
+                cookieHeader = line;
+            } else if (line.contains("SUCCESS!")) {
+                accessGranted = true;
+            }
+        }
+
+        if (cookieHeader == null) {
+            throw new Exception("Missing Set-Cookie response header");
+        }
+
+        if (!accessGranted) {
+            throw new Exception("Failed to access index.jsp");
+        }
+
+        return getSessionIdFromCookie(cookieHeader, JSESSIONIDSSO);
+    }
+
+    /*
+     * Attempt to access index.jsp resource protected by FORM based login,
+     * supplying JSESSIONIDSSO from previous run.
+     */
+    private void accessIndexDotJsp(String jsessionIdSSO) throws Exception {
+        Socket sock = new Socket(host, new Integer(port).intValue());
+        OutputStream os = sock.getOutputStream();
+        String get = "GET " + contextRoot + "/index.jsp" + " HTTP/1.0\n";
+        System.out.println(get);
+        os.write(get.getBytes());
+        String cookie = "Cookie: " + jsessionIdSSO + "\n";
+        os.write(cookie.getBytes());
+        os.write("\n".getBytes());
+        
+        InputStream is = sock.getInputStream();
+        BufferedReader br = new BufferedReader(new InputStreamReader(is));
+
+        String line = null;
+        boolean jSecurityCheckFound = false;
+        while ((line = br.readLine()) != null) {
+            System.out.println(line);
+            if (line.contains("j_security_check")) {
+                jSecurityCheckFound = true;
+                break;
+            }
+        }
+
+        if (!jSecurityCheckFound) {
+            throw new Exception("No j_security_check action found in response");
+        }
+    }
+
+    private String getSessionIdFromCookie(String cookie, String field) {
+
+        String ret = null;
+
+        int index = cookie.indexOf(field);
+        if (index != -1) {
+            int endIndex = cookie.indexOf(';', index);
+            if (endIndex != -1) {
+                ret = cookie.substring(index, endIndex);
+            } else {
+                ret = cookie.substring(index);
+            }
+            ret = ret.trim();
+        }
+
+        return ret;
+    }
+}

@@ -1,0 +1,8 @@
+To run tests:
+
+cd mbeanapi/common
+ant all             // compiles common files required
+
+cd mbeanapi/monitoring
+ant all
+

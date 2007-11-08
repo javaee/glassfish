@@ -1,0 +1,79 @@
+//
+// The contents of this file are subject to the terms 
+// of the Common Development and Distribution License 
+// (the "License").  You may not use this file except 
+// in compliance with the License.
+// 
+// You can obtain a copy of the license at 
+// glassfish/bootstrap/legal/CDDLv1.0.txt or 
+// https://glassfish.dev.java.net/public/CDDLv1.0.html. 
+// See the License for the specific language governing 
+// permissions and limitations under the License.
+// 
+// When distributing Covered Code, include this CDDL 
+// HEADER in each file and include the License file at 
+// glassfish/bootstrap/legal/CDDLv1.0.txt.  If applicable, 
+// add the following below this CDDL HEADER, with the 
+// fields enclosed by brackets "[]" replaced with your 
+// own identifying information: Portions Copyright [yyyy] 
+// [name of copyright owner]
+//
+
+/*  Copyright 2004 Sun Microsystems, Inc.  All rights reserved.    */
+/*  SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms. */
+
+//core server classes get all permissions by default
+grant codeBase "file:${com.sun.aas.installRoot}/lib/-" {
+	permission java.security.AllPermission;
+};
+
+//iMQ classes get all permissions by default
+grant codeBase "file:${com.sun.aas.imqLib}/-" {
+	permission java.security.AllPermission;
+};
+
+// Standard extensions get all permissions by default
+grant codeBase "file:${java.home}/lib/ext/-" {
+	permission java.security.AllPermission;
+};
+
+grant codeBase "file:${java.home}/../lib/tools.jar" {
+        permission java.security.AllPermission;
+};
+
+
+
+// default permissions granted to all domains
+grant { 
+	permission java.lang.RuntimePermission "loadLibrary.*";
+	permission java.lang.RuntimePermission "accessClassInPackage.*";
+	permission java.lang.RuntimePermission "exitVM";
+	permission java.lang.RuntimePermission "queuePrintJob";
+	permission java.lang.RuntimePermission "modifyThreadGroup";
+
+	permission java.awt.AWTPermission "accessClipboard";
+	permission java.awt.AWTPermission "accessEventQueue";
+	permission java.awt.AWTPermission "showWindowWithoutWarningBanner";
+
+	permission java.io.FilePermission "<<ALL FILES>>", "read,write";
+
+	permission java.net.SocketPermission "*", "connect,accept,resolve";
+	permission java.net.SocketPermission "localhost:1024-", "accept,listen";
+
+	// "standard" properies that can be read by anyone
+	permission java.util.PropertyPermission "*", "read";
+
+	// setting the JSSE provider for lazy authentication of app. clients.
+	// Please do not change it.
+	permission java.security.SecurityPermission "putProviderProperty.SunJSSE";
+	permission java.security.SecurityPermission "insertProvider.SunJSSE";
+
+        permission java.util.logging.LoggingPermission  "control";
+        //permission java.lang.RuntimePermission      "setSecurityManager";
+};
+
+
+
+
+
+

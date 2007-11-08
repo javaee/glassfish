@@ -1,0 +1,3 @@
+# JavaMail SMTP provider Sun Microsystems, Inc
+protocol=smtp; type=transport; class=com.sun.mail.smtp.SMTPTransport; vendor=Sun Microsystems, Inc;
+protocol=smtps; type=transport; class=com.sun.mail.smtp.SMTPSSLTransport; vendor=Sun Microsystems, Inc;

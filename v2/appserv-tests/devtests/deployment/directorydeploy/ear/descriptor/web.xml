@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ Copyright 2006 Sun Microsystems, Inc. All rights reserved.
+ Use is subject to license terms.
+-->
+<web-app version="2.4" xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
+  <display-name>helloworld</display-name>
+  <distributable/>
+  <servlet>
+    <servlet-name>GreeterServlet</servlet-name>
+    <servlet-class>samples.ejb.stateless.simple.servlet.GreeterServlet</servlet-class>
+    <load-on-startup>0</load-on-startup>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>GreeterServlet</servlet-name>
+    <url-pattern>/GreeterServlet</url-pattern>
+  </servlet-mapping>
+  <login-config>
+    <auth-method>BASIC</auth-method>
+  </login-config>
+  <ejb-ref>
+    <ejb-ref-name>ejb/greeter</ejb-ref-name>
+    <ejb-ref-type>Session</ejb-ref-type>
+    <home>samples.ejb.stateless.simple.ejb.GreeterHome</home>
+    <remote>samples.ejb.stateless.simple.ejb.Greeter</remote>
+    <ejb-link>TheGreeter</ejb-link>
+  </ejb-ref>
+</web-app>

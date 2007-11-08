@@ -1,0 +1,8 @@
+#
+# Map from CVS workspace directories to Teamware workspace directories
+#
+EXCLUDE	src/share/lib/jaf.mf
+#
+META-INF	src/share/lib
+src/java/com	src/share/classes/com
+src/java/javax	src/share/classes/javax

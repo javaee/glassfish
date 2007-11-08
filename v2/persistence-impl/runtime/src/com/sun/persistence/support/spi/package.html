@@ -1,0 +1,47 @@
+<!--
+ Copyright 2005 The Apache Software Foundation.
+ 
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at 
+ 
+     http://www.apache.org/licenses/LICENSE-2.0
+ 
+ Unless required by applicable law or agreed to in writing, software 
+ distributed under the License is distributed on an "AS IS" BASIS, 
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
+ See the License for the specific language governing permissions and 
+ limitations under the License.
+-->
+
+<html>
+<head>
+<title>JDO Service Provider Interface package</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body bgcolor="#FFFFFF">
+<P>This package contains the interfaces and classes used by JDO implementations. 
+<P>JDO defines interfaces and classes to be used by application programmers 
+when using classes whose instances are to be stored in persistent storage 
+(persistence-capable classes), and specifies the contracts between 
+suppliers of persistence-capable classes and the 
+runtime environment (which is part of the JDO implementation).
+<P>The PersistenceCapable interface is implemented by all classes
+whose instances are to be made persistent.  The implementation might be
+done by a combination of techniques, as determined by the JDO vendor:
+<ul>
+<li>Pre-processing .java files
+<li>Post-processing .class files
+<li>Generating .java or .class files directly from an abstraction
+</ul
+<P>The StateManager interface is the implementation's contact point with
+the PersistenceCapable instances.  It defines methods that are called by 
+the PersistenceCapable instances to implement the required PersistenceCapable
+behavior for persistent and transactional instances.
+<P>The JDOPermission class is used to manage security controls on JDO implementations.
+<P>The RegisterClassEvent class and RegisterClassListener interface are used
+by JDO implementations that need access to metadata of PersistenceCapable classes.
+<P>The JDOImplHelper class contains helper methods for JDO implementations.
+</body>
+</html>

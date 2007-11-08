@@ -1,0 +1,5 @@
+lib/appserv-upgrade.jar
+lib/pk12util
+lib/certutil
+lib/upgrade/pk12util
+lib/upgrade/certutil

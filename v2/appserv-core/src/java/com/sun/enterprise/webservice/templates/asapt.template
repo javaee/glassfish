@@ -1,0 +1,17 @@
+#!/bin/sh
+
+#
+# Copyright 1997-2007 Sun Microsystems, Inc.  All rights reserved.
+# Use is subject to license terms.
+#
+
+# Script to run apt tool
+#
+
+. %CONFIG_HOME%/asenv.conf
+
+# Set CLASSPATH
+CLASSPATH=.:"$AS_INSTALL"/lib/appserv-rt.jar:"$AS_JAVA"/lib/tools.jar:"$AS_INSTALL"/lib/appserv-jstl.jar:"$AS_INSTALL"/lib/javaee.jar:"$AS_INSTALL/lib/webservices-rt.jar":"$AS_INSTALL/lib/webservices-tools.jar":"$AS_WEBSERVICES_LIB"/commons-logging.jar:"$AS_WEBSERVICES_LIB"/mail.jar:"$AS_WEBSERVICES_LIB"/activation.jar
+
+"$AS_JAVA/bin/apt" -cp "$CLASSPATH" -factory com.sun.enterprise.AptFactory -J-Dcom.sun.aas.installRoot=$AS_INSTALL "$@"
+

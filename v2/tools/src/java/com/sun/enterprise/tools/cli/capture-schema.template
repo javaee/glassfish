@@ -1,0 +1,9 @@
+#!/bin/sh
+
+#
+# Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+# Use is subject to license terms.
+#
+
+. "%CONFIG_HOME%/asenv.conf"
+"${AS_JAVA}/bin/java" -Xms24m -Xmx96m -cp "${AS_INSTALL}/lib/appserv-rt.jar":"${AS_INSTALL}/lib/appserv-cmp.jar":"${AS_INSTALL}/lib/dbschema.jar":"${AS_INSTALL}/lib/appserv-ee.jar":"${AS_INSTALL}/lib/appserv-env.jar":"${CLASSPATH}" com.sun.jdo.spi.persistence.support.ejb.util.CaptureSchemaWrapper "${@}"

@@ -1,0 +1,19 @@
+#
+# Map from CVS workspace directories to Teamware workspace directories
+#
+EXCLUDE	src/share/lib/imap.mf
+EXCLUDE	src/share/lib/javamail.mbox.provider
+EXCLUDE	src/share/lib/javamail.mf
+EXCLUDE	src/share/lib/pop3.mf
+EXCLUDE	src/share/lib/smtp.mf
+EXCLUDE	src/share/classes/javax/mail/Version.java
+EXCLUDE	src/share/classes/com/sun/mail/pop3/POP3RemoteStore.java
+EXCLUDE	src/share/classes/com/sun/mail/mbox
+EXCLUDE	src/share/classes/com/sun/mail/remote
+EXCLUDE	src/share/classes/demo/internal
+#
+META-INF	src/share/lib
+src/java/com	src/share/classes/com
+src/java/javax	src/share/classes/javax
+src/java/demo	src/share/classes/demo
+src/java/overview.html	src/share/classes/overview.html

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE project [
+<!ENTITY commonSetup SYSTEM "file:./../../../config/properties.xml">
+<!ENTITY commonBuild SYSTEM "file:./../../../config/common.xml">
+<!ENTITY reporting   SYSTEM "file:./../report.xml">
+]>
+
+<project name="clientview" default="usage" basedir=".">
+    &commonSetup;
+    &commonBuild;
+    &reporting;
+
+    <target name="all">
+        <antcall target="clientview"/>
+        <antcall target="hello"/>
+        <antcall target="interceptors"/>
+        <antcall target="persistence"/>
+    </target>
+
+    <target name="clientview">
+        <record name="clientview.output" action="start" />
+            <ant dir="clientview" target="all"/>
+        <record name="clientview.output" action="stop" />
+    </target>
+
+    <target name="hello">
+        <record name="hello.output" action="start" />
+            <ant dir="hello" target="all"/>
+        <record name="hello.output" action="stop" />
+    </target>
+
+    <target name="interceptors">
+        <record name="interceptors.output" action="start" />
+            <ant dir="interceptors" target="all"/>
+        <record name="interceptors.output" action="stop" />
+    </target>
+
+    <target name="persistence">
+        <record name="persistence.output" action="start" />
+            <ant dir="persistence" target="all"/>
+        <record name="persistence.output" action="stop" />
+    </target>
+
+    <target name="usage">
+	<echo>
+		Usage:
+			ant all (Executes all the ejb-ejb30 tests)
+	</echo>
+    </target>
+</project>

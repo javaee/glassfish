@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE project [
+<!ENTITY commonSetup SYSTEM "file:./../../../config/properties.xml">
+<!ENTITY commonBuild SYSTEM "file:./../../../config/common.xml">
+<!ENTITY run SYSTEM "file:./../../../config/run.xml">
+<!ENTITY testproperties SYSTEM "file:./build.properties">
+]>
+
+<project name="webcontainer_unittest" default="all" basedir=".">
+
+    &commonSetup;
+    &commonBuild;
+    &testproperties;
+    &run;
+    <target name="all" depends="setup,run,restore"/>
+
+    <target name="run" depends="init-common">
+
+          <javac
+            srcdir="."
+            classpath="${env.APS_HOME}/lib/reporter.jar"
+            includes="WebTest.java"/>
+
+        <java classname="WebTest">
+          <arg value="${http.host}"/>
+          <arg value="${http.port}"/>
+          <arg value="5"/>
+          <classpath>
+           <pathelement location="${env.APS_HOME}/lib/reporter.jar"/>
+           <pathelement location="."/>
+         </classpath>
+        </java>
+    </target>
+
+    <target name="setup" depends="init-common">
+        <antcall target="asadmin-common-ignore-fail">
+            <param name="admin.command" value="create-jvm-options" />
+            <param name="operand.props"
+                   value="-Dcom.sun.enterprise.web.connector.grizzly.byteBufferInputStream.readTimeout=5000"/>
+        </antcall>
+        <antcall target="restart-server-instance-common"/>
+    </target>
+
+    <target name="restore" depends="init-common">
+        <antcall target="asadmin-common-ignore-fail">
+            <param name="admin.command" value="delete-jvm-options" />
+            <param name="operand.props"
+                   value="-Dcom.sun.enterprise.web.connector.grizzly.byteBufferInputStream.readTimeout=5000"/>
+        </antcall>
+        <antcall target="restart-server-instance-common"/>
+    </target>
+</project>

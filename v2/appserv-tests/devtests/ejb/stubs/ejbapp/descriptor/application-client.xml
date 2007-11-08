@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<application-client version="1.4" xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/application-client_1_4.xsd">
+  <display-name>ejb-stubs-ejbappClient</display-name>
+  <ejb-ref>
+    <ejb-ref-name>ejb/hello</ejb-ref-name>
+    <ejb-ref-type>Session</ejb-ref-type>
+    <home>com.sun.s1asdev.ejb.stubs.ejbapp.HelloHome</home>
+    <remote>com.sun.s1asdev.ejb.stubs.ejbapp.Hello</remote>
+    <ejb-link>a/b/../../ejb-stubs-ejbapp-ejb.jar#HelloBean</ejb-link>
+  </ejb-ref>
+  <ejb-ref>
+    <ejb-ref-name>ejb/hello_ejbclient</ejb-ref-name>
+    <ejb-ref-type>Session</ejb-ref-type>
+    <home>com.sun.s1asdev.ejb.stubs.ejbapp.FooHome</home>
+    <remote>com.sun.s1asdev.ejb.stubs.ejbapp.Foo</remote>
+    <ejb-link>ejb-stubs-ejbapp-ejb-ejbclient.jar#FooBean</ejb-link>
+  </ejb-ref>
+</application-client>
+

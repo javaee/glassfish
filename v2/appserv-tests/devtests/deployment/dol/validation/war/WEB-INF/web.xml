@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE web-app PUBLIC '-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN' 'http://java.sun.com/j2ee/dtds/web-app_2_3.dtd'>
+
+<web-app>
+  <icon>
+    <small-icon>employee-service-icon16x16.jpg</small-icon>
+    <large-icon>employee-service-icon32x32.jpg</large-icon>
+  </icon>
+  <display-name>simpleservlettest</display-name>
+  <description>validation test</description>
+  <distributable></distributable>
+  <context-param>
+    <param-name>locales</param-name>
+    <param-value>en_US,ja_JP,fr_FR</param-value>
+    <description>context param</description>
+  </context-param>
+  <filter>
+    <icon>
+      <large-icon>employee-service-icon32x32.jpg</large-icon>
+    </icon>
+    <filter-name>EncodingFilter</filter-name>
+    <display-name>filter</display-name>
+    <description>filter</description>
+    <filter-class>com.sun.j2ee.blueprints.encodingfilter.web.EncodingFilter</filter-class>
+    <init-param>
+      <param-name>encoding</param-name>
+      <param-value>UTF-8</param-value>
+      <description>init-param</description>
+    </init-param>
+  </filter>
+  <filter-mapping>
+    <filter-name>EncodingFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+  <listener>
+    <listener-class>com.sun.j2ee.blueprints.petstore.controller.web.PetstoreComponentManager</listener-class>
+  </listener>
+  <listener>
+    <listener-class>com.sun.j2ee.blueprints.petstore.controller.web.SignOnNotifier</listener-class>
+  </listener>
+  <servlet>
+    <icon>
+      <small-icon>employee-service-icon16x16.jpg</small-icon>
+      <large-icon>employee-service-icon32x32.jpg</large-icon>
+    </icon>
+    <servlet-name>HelloService</servlet-name>
+    <display-name>hello service</display-name>
+    <description>hello description</description>
+    <servlet-class>helloservice.SayHelloImpl</servlet-class>
+    <init-param>
+      <param-name>default_locale</param-name>
+      <param-value>en_US</param-value>
+    </init-param>
+    <load-on-startup>0</load-on-startup>
+    <run-as>
+      <description>run as employee</description>
+      <role-name>EMP</role-name>
+    </run-as>
+    <security-role-ref>
+      <description>sec role ref</description>
+     <role-name>EMP</role-name>
+     <role-link>employee</role-link>
+    </security-role-ref>
+  </servlet>
+  <servlet>
+    <servlet-name>CreateCustomerJsp</servlet-name>
+    <display-name>createCustomerJsp</display-name>
+    <jsp-file>/createCustomer.jsp</jsp-file>
+    <load-on-startup>0</load-on-startup>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>HelloService</servlet-name>
+    <url-pattern>/HelloService</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>CreateCustomerJsp</servlet-name>
+    <url-pattern>/createCustomer.jsp</url-pattern>
+  </servlet-mapping>
+  <session-config>
+    <session-timeout>54</session-timeout>
+  </session-config>
+  <mime-mapping>
+   <extension>.txt</extension>
+   <mime-type>text/plain</mime-type>
+  </mime-mapping>
+  <welcome-file-list>
+    <welcome-file>index.jsp</welcome-file>
+  </welcome-file-list>
+  <error-page>
+    <exception-type>java.lang.Exception</exception-type>
+    <location>/smartticket</location>
+  </error-page>
+  <taglib>
+    <taglib-uri>
+     http://jakarta.apache.org/tomcat/debug-taglib
+    </taglib-uri>
+    <taglib-location>
+     /WEB-INF/jsp/debug-taglib.tld
+    </taglib-location>
+  </taglib>
+  <resource-env-ref>
+    <description>resource env ref</description>
+    <resource-env-ref-name>jms/opc/InvoiceTopic</resource-env-ref-name>
+    <resource-env-ref-type>javax.jms.Topic</resource-env-ref-type>
+  </resource-env-ref>
+  <resource-ref>
+    <description>resource ref</description>
+    <res-ref-name>url/CatalogDAOSQLURL</res-ref-name>
+    <res-type>java.net.URL</res-type>
+    <res-auth>Container</res-auth>
+    <res-sharing-scope>Shareable</res-sharing-scope>
+  </resource-ref>
+  <security-constraint>
+    <display-name>constraint</display-name>
+    <web-resource-collection>
+      <web-resource-name>My Hello Service</web-resource-name>
+      <description>web resource collection</description>
+      <url-pattern>/HelloService</url-pattern>
+      <http-method>GET</http-method>
+      <http-method>POST</http-method>
+    </web-resource-collection>
+    <auth-constraint>
+      <description>auth constraint</description>
+      <role-name>employee</role-name>
+    </auth-constraint>
+    <user-data-constraint>
+      <description>user data constraint</description>
+      <transport-guarantee>NONE</transport-guarantee>
+    </user-data-constraint>
+  </security-constraint>
+  <login-config>
+    <auth-method>BASIC</auth-method>
+    <realm-name></realm-name>
+    <form-login-config>
+      <form-login-page></form-login-page>
+      <form-error-page></form-error-page>
+    </form-login-config>
+  </login-config>
+  <security-role>
+     <description>sec role</description>
+     <role-name>employee</role-name>
+  </security-role>
+  <env-entry>
+    <description>env description</description>
+    <env-entry-name>param/CatalogDAODatabase</env-entry-name>
+    <env-entry-value>pointbase</env-entry-value>
+    <env-entry-type>java.lang.String</env-entry-type>
+  </env-entry>
+  <ejb-ref>
+    <description>ejb ref</description>
+    <ejb-ref-name>ejb/MyStatelesshello</ejb-ref-name>
+    <ejb-ref-type>Session</ejb-ref-type>
+    <home>statelesshello.StatelesshelloHome</home>
+    <remote>statelesshello.Statelesshello</remote>
+    <ejb-link>MyStatelesshelloEJB</ejb-link>
+  </ejb-ref>
+  <ejb-local-ref>
+    <description>ejb local ref</description>
+    <ejb-ref-name>ejb/ShoppingClientFacade</ejb-ref-name>
+    <ejb-ref-type>Session</ejb-ref-type>
+    <local-home>com.sun.j2ee.blueprints.petstore.controller.ejb.ShoppingClientFacadeLocalHome</local-home>
+    <local>com.sun.j2ee.blueprints.petstore.controller.ejb.ShoppingClientFacadeLocal</local>
+    <ejb-link>ShoppingClientFacadeEJB</ejb-link>
+  </ejb-local-ref>
+</web-app>

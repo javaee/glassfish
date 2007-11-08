@@ -1,0 +1,3 @@
+({
+	statusLabel: "drag to resize"
+})

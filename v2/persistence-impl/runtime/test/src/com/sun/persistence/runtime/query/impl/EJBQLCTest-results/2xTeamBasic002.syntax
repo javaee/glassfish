@@ -1,0 +1,10 @@
+SELECT object (e) FROM Employee e WHERE true
+[QUERY, null]
+  [FROM, null]
+    [RANGE, null]
+      [[Employee,<ABSTRACT_SCHEMA_NAME>], null]
+      [[e,<IDENT>], null]
+  [SELECT, null]
+    [[e,<IDENT>], null]
+  [WHERE, null]
+    [true, null]

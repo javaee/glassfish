@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE project [
+<!ENTITY commonSetup SYSTEM "file:./../../../config/properties.xml">
+<!ENTITY commonBuild SYSTEM "file:./../../../config/common.xml">
+<!ENTITY reporting   SYSTEM "file:./../report.xml">
+]>
+
+<project name="bmp" default="usage" basedir=".">
+    &commonSetup;
+    &commonBuild;
+    &reporting;
+
+    <target name="all">
+        <antcall target="finder"/>      
+        <antcall target="handle"/>       
+        <antcall target="readonly"/>
+        <antcall target="simple"/>      
+        <antcall target="simple_nopackage"/>       
+        <antcall target="twolevel"/>
+        <antcall target="txtests"/>       
+    </target>
+
+
+    <target name="finder">
+        <record name="finder.output" action="start" />
+            <ant dir="finder" target="all"/>
+        <record name="finder.output" action="stop" />
+    </target>
+
+    <target name="handle">
+        <record name="handle.output" action="start" />
+            <ant dir="handle" target="all"/>
+        <record name="handle.output" action="stop" />
+    </target>
+
+    <target name="readonly">
+        <record name="readonly.output" action="start" />
+            <ant dir="readonly" target="all"/>
+        <record name="readonly.output" action="stop" />
+    </target>
+
+    <target name="simple">
+        <record name="simple.output" action="start" />
+            <ant dir="simple" target="all"/>
+        <record name="simple.output" action="stop" />
+    </target>
+
+    <target name="simple_nopackage">
+        <record name="simple_nopackage.output" action="start" />
+            <ant dir="simple_nopackage" target="all"/>
+        <record name="simple_nopackage.output" action="stop" />
+    </target>
+
+    <target name="twolevel">
+        <record name="twolevel.output" action="start" />
+            <ant dir="twolevel" target="all"/>
+        <record name="twolevel.output" action="stop" />
+    </target>
+
+    <target name="txtests">
+        <record name="txtests.output" action="start" />
+            <ant dir="txtests" target="all"/>
+        <record name="txtests.output" action="stop" />
+    </target>
+
+    <target name="usage">
+	<echo>
+		Usage:
+                     ant all (Executes all the ejb-bmp tests)
+
+                     ant finder
+                     ant handle 
+                     ant readonly 
+                     ant simple 
+                     ant simple_nopackage
+                     ant twolevel 
+                     ant txtests 
+			
+	</echo>
+    </target>
+</project>

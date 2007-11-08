@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE web-app PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN" "http://java.sun.com/dtd/web-app_2_3.dtd">
+
+<web-app>
+
+  <servlet>
+    <servlet-name>Default</servlet-name>
+    <servlet-class>org.apache.catalina.servlets.DefaultServlet</servlet-class>
+    <init-param>
+      <param-name>debug</param-name>
+      <param-value>0</param-value>
+    </init-param>
+    <init-param>
+      <param-name>input</param-name>
+      <param-value>10000</param-value>
+    </init-param>
+    <init-param>
+      <param-name>output</param-name>
+      <param-value>10000</param-value>
+    </init-param>
+    <init-param>
+      <param-name>listings</param-name>
+      <param-value>true</param-value>
+    </init-param>
+    <init-param>
+      <param-name>readonly</param-name>
+      <param-value>true</param-value>
+    </init-param>
+    <load-on-startup/>
+  </servlet>
+
+  <servlet>
+    <servlet-name>ServletTest</servlet-name>
+    <servlet-class>test.ServletTest</servlet-class>
+    <load-on-startup/>
+  </servlet>
+
+  <servlet>
+    <servlet-name>ServletTest2</servlet-name>
+    <servlet-class>test.ServletTest2</servlet-class>
+    <load-on-startup/>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>Default</servlet-name>
+    <url-pattern>/</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>ServletTest</servlet-name>
+    <url-pattern>/ServletTest</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>ServletTest2</servlet-name>
+    <url-pattern>/ServletTest2</url-pattern>
+  </servlet-mapping>
+
+</web-app>
+

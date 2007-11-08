@@ -1,0 +1,62 @@
+<project default="build"
+    xmlns:maven="jelly:maven"
+    xmlns:j="jelly:core"
+    xmlns:define="jelly:define"
+    xmlns:util="jelly:util"
+    xmlns:ant="jelly:ant">
+<!--
+ The contents of this file are subject to the terms 
+ of the Common Development and Distribution License 
+ (the "License").  You may not use this file except 
+ in compliance with the License.
+ 
+ You can obtain a copy of the license at 
+ glassfish/bootstrap/legal/CDDLv1.0.txt or 
+ https://glassfish.dev.java.net/public/CDDLv1.0.html. 
+ See the License for the specific language governing 
+ permissions and limitations under the License.
+ 
+ When distributing Covered Code, include this CDDL 
+ HEADER in each file and include the License file at 
+ glassfish/bootstrap/legal/CDDLv1.0.txt.  If applicable, 
+ add the following below this CDDL HEADER, with the 
+ fields enclosed by brackets "[]" replaced with your 
+ own identifying information: Portions Copyright [yyyy] 
+ [name of copyright owner]
+-->
+    <goal name="build" description="Build using ant">
+        <j:set var="ant.target" value="all" />
+        <j:set var="module.dir" value="./" />
+        <attainGoal name="invoke-ant"/>
+    </goal>
+
+    <goal name="clean" description="Clean using ant">
+        <j:set var="ant.target" value="clean" />
+        <j:set var="module.dir" value="./" />
+        <attainGoal name="invoke-ant"/>
+    </goal>
+
+    <goal name="checkout">
+        <ant:cvs cvsRoot="${glassfish.cvsroot}" tag="${glassfish.cvstag}"
+                 package="${glassfish.module.name}"
+                 dest="../."/>
+    </goal>
+
+    <goal name="release">
+        <j:set var="ant.target" value="release" />
+        <j:set var="module.dir" value="./" />
+        <attainGoal name="invoke-ant"/>
+    </goal>
+                                                                                                                                                             
+    <goal name="makejar">
+        <j:set var="ant.target" value="jar" />
+        <j:set var="module.dir" value="./" />
+        <attainGoal name="invoke-ant"/>
+    </goal>
+
+    <goal name="install">
+        <j:set var="ant.target" value="jar mailapijar smtpjar pop3jar imapjar" />
+        <j:set var="module.dir" value="./" />
+        <attainGoal name="invoke-ant"/>
+    </goal>
+</project>

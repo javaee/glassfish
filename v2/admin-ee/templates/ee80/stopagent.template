@@ -1,0 +1,28 @@
+#!/bin/sh
+
+#
+# Copyright 1997-2007 Sun Microsystems, Inc.  All rights reserved.
+# Use is subject to license terms.
+#
+
+. "%%%CONFIG_HOME%%%/asenv.conf"
+
+INSTANCE_ROOT=%%%INSTANCE_ROOT%%%
+SERVER_NAME=%%%SERVER_NAME%%%
+
+cd "$INSTANCE_ROOT/config"
+
+LD_LIBRARY_PATH=$AS_NSS:$AS_INSTALL/lib:/usr/lib/lwp:$LD_LIBRARY_PATH
+export LD_LIBRARY_PATH
+
+# set hold flag to the value handed into the script
+HOLD_FLAG=return;
+
+#executing launcher
+"$AS_JAVA"/bin/java -cp "$AS_INSTALL/lib/appserv-rt.jar":"$AS_INSTALL/lib/appserv-admin.jar":"$AS_INSTALL/lib/javaee.jar" -Dcom.sun.enterprise.config.config_environment_factory_class=com.sun.enterprise.config.serverbeans.AppserverConfigEnvironmentFactory -Dcom.sun.aas.installRoot="$AS_INSTALL" -Dcom.sun.aas.instanceRoot="$INSTANCE_ROOT"  -Dcom.sun.aas.configRoot="$AS_CONFIG" -DJAVA_HOME="$AS_JAVA" -Dcom.sun.aas.instanceName="$SERVER_NAME" -Djava.util.logging.manager=com.sun.enterprise.server.logging.ServerLogManager -Dcom.sun.aas.launcherReturn="$HOLD_FLAG" -Dcom.sun.aas.processName="s1as8-nodeagent" -Dcom.sun.aas.processLauncher="SE" com.sun.enterprise.tools.launcher.ProcessLauncher stop verbose
+
+# execute script if flag set for holding process
+if [ "$HOLD_FLAG" = hold ]
+then
+    . "${INSTANCE_ROOT}/bin/stop_temp.sh"
+fi

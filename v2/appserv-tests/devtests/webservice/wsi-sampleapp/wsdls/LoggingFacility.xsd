@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+	September 14, 2002
+
+	(c) Copyright 2002, The Web Services-Interoperability Organization (WS-I)
+	Download or use of this file is governed by the Policies and Bylaws of WS-I.
+
+	For more information, send email info@ws-i.org. 	
+-->
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified"  
+	xmlns:log="http://www.ws-i.org/SampleApplications/SupplyChainManagement/2002-08/LoggingFacility.xsd"  
+	targetNamespace="http://www.ws-i.org/SampleApplications/SupplyChainManagement/2002-08/LoggingFacility.xsd">
+
+	<xs:element name="logEventRequestElement" type="log:logEventRequestType"/>
+	<xs:complexType name="logEventRequestType">
+		<xs:sequence>
+			<xs:element name="DemoUserID" type="xs:string"/>
+			<xs:element name="ServiceID" type="xs:string"/>
+			<xs:element name="EventID" type="xs:string"/>
+			<xs:element name="EventDescription" type="xs:string"/>
+			<xs:any namespace="##other" minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:element name="getEventsRequestElement" type="log:getEventsRequestType"/>
+	<xs:complexType name="getEventsRequestType">
+		<xs:sequence>
+			<xs:element name="DemoUserID" type="xs:string"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:element name="getEventsResponseElement" type="log:getEventsResponseType"/>
+	<xs:complexType name="getEventsResponseType">
+		<xs:sequence>
+			<xs:element name="LogEntry" minOccurs="0" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Timestamp" type="xs:dateTime"/>
+						<xs:element name="ServiceID" type="xs:string"/>
+						<xs:element name="EventID" type="xs:string"/>
+						<xs:element name="EventDescription" type="xs:string"/>
+						<xs:any namespace="##other" minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:element name="getEventsFaultElement" type="log:getEventsFaultType"/>
+	<xs:complexType name="getEventsFaultType">
+		<xs:sequence>
+			<xs:element name="Reason">
+				<xs:simpleType>
+					<xs:restriction base="xs:NMTOKEN">
+						<xs:enumeration value="RepositoryMissing"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+</xs:schema>

@@ -1,0 +1,66 @@
+@echo off
+if "%OS%" == "Windows_NT" setlocal
+
+rem
+rem Copyright 1997-2007 Sun Microsystems, Inc.  All rights reserved.
+rem Use is subject to license terms.
+rem
+
+rem Sun ONE App Server startup scripts
+rem
+rem Environment Variable Prequisites
+rem
+rem   JAVA_HOME       Must point at your Java Development Kit installation.
+
+rem Get standard environment variables
+
+set PRG=%0
+set ASENV_CONF_LOCATION=%%%CONFIG_HOME%%%
+
+set SERVER_NAME=%%%SERVER_NAME%%%
+
+if exist "%ASENV_CONF_LOCATION%\asenv.bat" goto gotCmdPath
+rem %0 must have been found by DOS using the %Path% so we assume that asenv.bat
+rem will also be found in the %Path%
+call asenv.bat
+goto doneSetenv
+:gotCmdPath
+call "%ASENV_CONF_LOCATION%\asenv.bat"
+:doneSetenv
+
+set INSTANCE_ROOT=%%%INSTANCE_ROOT%%%
+
+set JAVA_HOME=%AS_JAVA%
+rem Make sure prerequisite environment variables are set
+if not "%JAVA_HOME%" == "" goto gotJavaHome
+echo The JAVA_HOME environment variable is not defined
+echo This environment variable is needed to run this program
+goto end
+:gotJavaHome
+
+
+rem Get command line arguments and save them
+rem set CMD_LINE_ARGS=
+rem :setArgs
+rem if ""%1""=="""" goto doneSetArgs
+rem set CMD_LINE_ARGS=%CMD_LINE_ARGS% %1
+rem shift
+rem goto setArgs
+rem :doneSetArgs
+
+set Path=%AS_NSS%;%AS_INSTALL%\lib;%AS_INSTALL%\bin;%PATH%
+
+cd "%INSTANCE_ROOT%\config"
+
+rem Launch the S1AS server using s1as-start target 
+rem "%JAVA_HOME%\bin\java" -classpath "%AS_INSTALL%\lib";"%AS_INSTALL%\lib\commons-launcher.jar";"%AS_INSTALL%\lib\appserv-admin.jar";"%AS_INSTALL%\lib\appserv-rt.jar";"%AS_ANT_LIB%\ant.jar";"%AS_ANT_LIB%\optional.jar";"%AS_INSTALL%\lib\endorsed\xercesImpl.jar";"%AS_INSTALL%\lib\endorsed\xalan.jar"  -Dcom.sun.aas.installRoot="%AS_INSTALL%" -Dcom.sun.aas.instanceRoot="%INSTANCE_ROOT%" -Dcom.sun.aas.configRoot="%ASENV_CONF_LOCATION%" LauncherBootstrap  s1as-server -DJAVA_HOME="%JAVA_HOME%" -Dcom.sun.aas.instanceName="%SERVER_NAME%" -DCATALINA_OPTS="%CATALINA_OPTS%" stop
+
+rem set hold flag
+set HOLD_FLAG=return
+
+rem executing launcher
+"%JAVA_HOME%\bin\java" -cp "%AS_INSTALL%\lib\appserv-rt.jar";"%AS_INSTALL%\lib\appserv-admin.jar";"%AS_INSTALL%\lib\javaee.jar" -Dcom.sun.enterprise.config.config_environment_factory_class=com.sun.enterprise.config.serverbeans.AppserverConfigEnvironmentFactory -Dcom.sun.aas.installRoot="%AS_INSTALL%" -Dcom.sun.aas.instanceRoot="%INSTANCE_ROOT%"  -Dcom.sun.aas.configRoot="%ASENV_CONF_LOCATION%" -DJAVA_HOME="%JAVA_HOME%" -Dcom.sun.aas.instanceName="%SERVER_NAME%" -Ddomain.name="%DOMAIN_NAME%" -DCATALINA_OPTS="%CATALINA_OPTS%" -Djava.util.logging.manager=com.sun.enterprise.server.logging.ServerLogManager -Dcom.sun.aas.launcherReturn="%HOLD_FLAG%" -Dcom.sun.aas.processName="as9-server" -Dcom.sun.aas.processLauncher="SE" com.sun.enterprise.tools.launcher.ProcessLauncher stop verbose
+
+if "%HOLD_FLAG%" == "hold" call "%INSTANCE_ROOT%"\bin\stop_temp.bat
+
+:end

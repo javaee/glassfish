@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<application-client version="1.4" xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/application-client_1_4.xsd">
+  <description>application client for wstoejb application</description>
+  <display-name>wstoejbClient</display-name>
+  <service-ref>
+     <description>web service ref</description>
+     <service-ref-name>service/WstoEjbService</service-ref-name>
+     <service-interface>wstoejb.WebServiceToEjb</service-interface>
+     <wsdl-file>META-INF/wsdl/WebServiceToEjb.wsdl</wsdl-file>
+     <jaxrpc-mapping-file>mapping.xml</jaxrpc-mapping-file>
+     <port-component-ref>
+        <service-endpoint-interface>wstoejb.WebServiceToEjbSEI</service-endpoint-interface>
+        <port-component-link>WebServiceToEjbSEIPort</port-component-link>
+     </port-component-ref>
+  </service-ref>
+</application-client>

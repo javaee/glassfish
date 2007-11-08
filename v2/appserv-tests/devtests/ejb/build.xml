@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+
+<!DOCTYPE project [
+<!ENTITY commonSetup SYSTEM "file:./../../config/properties.xml">
+<!ENTITY commonBuild SYSTEM "file:./../../config/common.xml">
+<!ENTITY reporting   SYSTEM "file:./report.xml">
+]>
+
+<project name="ejb" default="usage" basedir=".">
+
+    &commonSetup;
+    &commonBuild;
+    &reporting;
+
+    <target name="all">
+        <delete>
+           <fileset dir="${env.APS_HOME}" includes="test_results*"/>
+        </delete>
+        <delete>
+           <fileset dir="." includes="*.output"/>
+        </delete>
+        <record name="ejb.output" action="start" />
+        <ant dir="allowedmethods" target="all"/>
+        <ant dir="bmp" target="all"/>  
+        <ant dir="cmp" target="all"/>  
+        <ant dir="ejb30" target="all"/>  
+        <ant dir="ejbc" target="all"/>  
+        <ant dir="jms" target="all"/>  
+        <ant dir="mdb" target="all"/> 
+        <ant dir="stubs" target="all"/>
+        <ant dir="timer" target="all"/>
+        <ant dir="txprop" target="all"/>
+        <ant dir="sfsb" target="all"/>
+        <ant dir="util" target="all"/>
+        <record name="ejb.output" action="stop" />
+        <antcall target="report"/>
+    </target>
+
+    <target name="orb_integration">
+        <ant dir="ejb30" target="clientview"/>  
+        <ant dir="ejb30" target="hello"/>  
+        <ant dir="ejbc" target="sameimpl"/>
+        <ant dir="txprop" target="simple"/>  
+        <ant dir="stubs" target="all"/>  
+        <ant dir="bmp" target="handle"/>  
+        <ant dir="bmp" target="txtests"/> 
+    </target>
+
+    <target name="allowedmethods">
+        <record name="allowedmethods.output" action="start" />
+            <ant dir="allowedmethods" target="all"/>
+        <record name="allowedmethods.output" action="stop" />
+        <antcall target="report"/>
+    </target>
+
+    <target name="bmp">
+        <record name="bmp.output" action="start" />
+            <ant dir="bmp" target="all"/>
+        <record name="bmp.output" action="stop" />
+        <antcall target="report"/>
+    </target>
+
+    <target name="ejb30">
+        <record name="ejb30.output" action="start" />
+            <ant dir="ejb30" target="all"/>
+        <record name="ejb30.output" action="stop" />
+        <antcall target="report"/>
+    </target>
+
+    <target name="ejbc">
+        <record name="ejbc.output" action="start" />
+            <ant dir="ejbc" target="all"/>
+        <record name="ejbc.output" action="stop" />
+        <antcall target="report"/>
+    </target>
+
+    <target name="jms">
+        <record name="jms.output" action="start" />
+            <ant dir="jms" target="all"/>
+        <record name="jms.output" action="stop" />
+        <antcall target="report"/>
+    </target>
+
+    <target name="mdb">
+        <record name="mdb.output" action="start" />
+            <ant dir="mdb" target="all"/>
+        <record name="mdb.output" action="stop" />
+        <antcall target="report"/>
+    </target>
+
+    <target name="stubs">
+        <record name="stubs.output" action="start" />
+            <ant dir="stubs" target="all"/>
+        <record name="stubs.output" action="stop" />
+        <antcall target="report"/>
+    </target>
+    
+    <target name="timer">
+        <record name="timer.output" action="start" />
+            <ant dir="timer" target="all"/>
+        <record name="timer.output" action="stop" />
+        <antcall target="report"/>
+    </target>
+
+    <target name="txprop">
+        <record name="txprop.output" action="start" />
+            <ant dir="txprop" target="all"/>
+        <record name="txprop.output" action="stop" />
+        <antcall target="report"/>
+    </target>
+
+
+    <target name="sfsb">
+        <record name="sfsb.output" action="start" />
+            <ant dir="sfsb" target="all"/>
+        <record name="sfsb.output" action="stop" />
+        <antcall target="report"/>
+    </target>
+
+    <target name="stress">
+        <record name="stress.output" action="start" />
+            <ant dir="stress" target="all"/>
+        <record name="stress.output" action="stop" />
+        <antcall target="report"/>
+    </target>
+
+   <target name="util">
+        <record name="util.output" action="start" />
+            <ant dir="util" target="all"/>
+        <record name="util.output" action="stop" />
+        <antcall target="report"/>
+    </target>
+
+    <target name="usage">
+	<echo>
+		Usage:
+			ant all (Executes all the ejb tests)
+            ant orb_integration (Executes all ejb-related orb integration tests
+
+			ant allowedmethods (Executes the ejb allowedmethods tests)
+			ant bmp (Executes the ejb bmp tests)
+			ant ejbc (Executes the ejb ejbc tests)
+			ant jms (Executes the ejb jms tests)
+			ant mdb (Executes the ejb mdb tests)
+			ant stubs (Executes the ejb stubs tests)
+			ant timer (Executes the ejb timer tests)
+			ant txprop (Executes the ejb txprop tests)
+			ant sfsb (Executes the ejb sfsb tests)
+			ant stress (Executes the ejb stress tests)
+			ant util (Executes the ejb util tests)
+	</echo>
+    </target>
+</project>

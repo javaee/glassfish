@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE sun-web-app PUBLIC '-//Sun Microsystems, Inc.//DTD Sun ONE Web Server 6.1 Servlet 2.3//EN' 'http://www.sun.com/software/sunone/appserver/dtds/sun-web-app_2_3-1.dtd'>
+
+<sun-web-app>
+  <session-config>
+    <session-manager persistence-type="file">
+     <manager-properties>
+      <property name="reapIntervalSeconds" value="20"/>
+     </manager-properties>
+     <store-properties>
+      <property name="directory" value="/tmp/session_store"/>
+     </store-properties>
+    </session-manager>
+  </session-config>
+  <jsp-config/>
+</sun-web-app>
+

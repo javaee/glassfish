@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<application xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="5" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/application_5.xsd">
+  <display-name>ejb-ejb30-hello-session2App</display-name>
+  <module>
+    <ejb>ejb-ejb30-hello-session2-ejb.jar</ejb>
+  </module>
+  <module>
+    <java>ejb-ejb30-hello-session2-client.jar</java>
+  </module>
+</application>

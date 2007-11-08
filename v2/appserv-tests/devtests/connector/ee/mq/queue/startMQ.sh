@@ -1,0 +1,2 @@
+echo test$1 
+    

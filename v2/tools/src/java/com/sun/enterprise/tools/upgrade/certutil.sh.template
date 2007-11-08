@@ -1,0 +1,12 @@
+#!/bin/sh
+
+#
+# Copyright 1997-2007 Sun Microsystems, Inc.  All rights reserved.
+# Use is subject to license terms.
+#
+
+. %CONFIG_HOME%/asenv.conf
+
+LD_LIBRARY_PATH=$6:$7:/usr/lib/mps/secv1:$LD_LIBRARY_PATH;export LD_LIBRARY_PATH
+$8/certutil $1 $2 $3 $4 $5
+

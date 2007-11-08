@@ -1,0 +1,21 @@
+@echo off
+
+rem
+rem Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+rem Use is subject to license terms.
+rem
+
+setlocal
+call "%CONFIG_HOME%\asenv.bat"
+
+set PATH=%AS_INSTALL%\bin;%AS_INSTALL%\lib;%PATH%
+set JAVA_HOME=%AS_JAVA%
+set ANT_HOME=%AS_ANT%
+set ANT_OPTS="-Dos.name=Windows_NT" "-Djava.library.path=%AS_INSTALL%\lib;%AS_ICU_LIB%;%AS_NSS%" "-Dcom.sun.aas.installRoot=%AS_INSTALL%" "-Dcom.sun.aas.instanceRoot=%AS_INSTALL%" "-Dcom.sun.aas.instanceName=server" "-Dcom.sun.aas.configRoot=%AS_CONFIG%" "-Dcom.sun.aas.processLauncher=SE" "-Dderby.root=%AS_DERBY_INSTALL%" "-Dcom.sun.appserv.admin.pluggable.features=com.sun.enterprise.ee.admin.pluggable.EEClientPluggableFeatureImpl"  
+set CLASSPATH=%AS_INSTALL%\lib\sun-appserv-ant.jar;%AS_DERBY_INSTALL%\lib\derby.jar;%AS_INSTALL%\jbi\lib\jbi-ant-tasks.jar
+
+call "%ANT_HOME%"\bin\ant.bat %*
+endlocal
+
+
+

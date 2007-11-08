@@ -1,0 +1,34 @@
+How to create the default-config:
+
+1) Take domain.xml from an installation, rip out the standard-pe-configuration, and rename the configuration to default-config.
+
+2) Globally substitute the machine name (e.g. xxxx in "server-name=xxxx") with c${com.sun.aas.hostName}.
+
+3) Remove the admin-vs virtual server and the admin-listener http-listener.
+
+4) Change admin-service type from "das-and-server" to "server".
+
+5) Change jms-service type from "LOCAL" to "REMOTE". Change the jms-host to %%%HOST_HAME%%%.
+
+6) Add the following properties to the end of the config (i.e. after the thread-pools element).
+
+     <property name="HTTP_LISTENER_PORT" value="8079"/>
+     <property name="HTTP_SSL_LISTENER_PORT" value="1042"/>
+     <property name="IIOP_LISTENER_PORT" value="3699"/>
+     <property name="IIOP_SSL_LISTENER_PORT" value="1059"/>
+     <property name="IIOP_SSL_MUTUALAUTH_PORT" value="1058"/>
+
+7) These properties must be referrenced as appropriate. For example the port attribute of http-listener-1 must be set to port="${HTTP_LISTENER_PORT}"
+
+8) Make sure the following referrence: config/
+    docroot
+    keyfile
+    server.policy
+    login.conf
+    keystore.jks
+    cacerts.jks
+9) Make sure the following referrence: config/${com.sun.aas.configName}
+    lib/ext
+    
+    
+

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!ELEMENT coffee-order (orderID, customer, address, line-item+, total)>
+
+<!ELEMENT orderID (#PCDATA)>
+
+<!ELEMENT customer (last-name, first-name, phone-number, 
+   email-address)>
+<!ELEMENT last-name (#PCDATA)>
+<!ELEMENT first-name (#PCDATA)>
+<!ELEMENT phone-number (#PCDATA)>
+<!ELEMENT email-address (#PCDATA)>
+
+<!ELEMENT address (street, city, state, zip)>
+<!ELEMENT street (#PCDATA)>
+<!ELEMENT city (#PCDATA)>
+<!ELEMENT state (#PCDATA)>
+<!ELEMENT zip (#PCDATA)>
+ 
+<!ELEMENT line-item (coffee-name, pounds, price)>
+<!ELEMENT coffee-name (#PCDATA)>
+<!ELEMENT pounds (#PCDATA)>
+<!ELEMENT price (#PCDATA)>
+   
+<!ELEMENT total (#PCDATA)>

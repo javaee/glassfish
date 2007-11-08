@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sun-ejb-jar>
+  <enterprise-beans>
+    <name>notxconn</name>
+    <module-name>notxconn</module-name>
+    <ejb>
+      <ejb-name>NoTxConnTestEJB</ejb-name>
+      <jndi-name>ejb/NoTxConnTestEJB</jndi-name>
+      <resource-ref>
+        <res-ref-name>jdbc/notxconn</res-ref-name>
+        <jndi-name>jdbc/oracleres</jndi-name>
+	<default-resource-principle>
+	  <name>aditya</name>
+	  <password>aditya</password>
+	</default-resource-principle>
+      </resource-ref>
+    </ejb>  
+  </enterprise-beans>
+</sun-ejb-jar>

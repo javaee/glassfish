@@ -1,0 +1,41 @@
+{
+    'name': 'Line Chart',
+    'type': 'jMaki Charting',
+    'image': 'images/line-chart.jpg',
+    'description': 'A series chart.',
+    'args': [
+        {'line':{'type':'BOOLEAN', 'defaultValue': false,'description': 'Whether or not this is a line chart.'}},
+    	{'height':{'type':'NUMBER', 'defaultValue': 250, 'description': 'The default height.'}},
+    	{'width':{'type':'NUMBER', 'defaultValue': 700, 'description': 'The default width.'}},
+    	{'paddingRight':{'type':'NUMBER', 'defaultValue': 30, 'description': 'The default right padding.'}},
+    	{'paddingLeft':{'type':'NUMBER', 'defaultValue': 50, 'description': 'The default left padding.'}},
+    	{'legend':{'type':'STRING',  'description': 'The id of a HTML component to add the legend to. If not found the legend will be added to the document body.'}}
+     ],
+     'value': {'required':'false', 'type': 'ARRAY',
+              'description':'An object containing chart data and the x and y axis information.',
+              'defaultValue': {
+                xAxis : {
+                    title : 'Months',
+                    labels : ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+                    },
+                yAxis : {
+                    title : 'Temperature',
+                    tickCount : 3
+                 },
+                data : [
+                   {color: 'red',    values : [10, 25, 25,  5, 35,  5, 15,  5, 10, 15, 25, 30] },
+                   {color: 'blue',   values : [15, 35, 15, 40, 40, 15, 20, 10, 15, 20, 30, 35 ] },
+                   {color: 'pink',   values : [20, 40, 30, 35, 45, 20, 25, 15, 20, 25, 30, 40] },
+                   {color: 'gray',   values : [25, 45, 25, 45, 50, 25, 35, 25, 25, 20, 35, 45] }
+                   ]
+               }        
+     }, 
+     'config' : {
+   	    'type': 
+	        {'id': 'jmaki',
+	         'libs': ['../dojo.js', '../charting-common.js' ],
+	         'styles' : ['../charting.css'],
+	         'preload' : "if (typeof djConfig == 'undefined') djConfig = { parseWidgets: false, searchIds: [] };"
+	        }
+	 }
+}

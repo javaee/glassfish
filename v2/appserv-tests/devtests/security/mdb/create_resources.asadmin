@@ -1,0 +1,11 @@
+create-jms-resource --restype javax.jms.QueueConnectionFactory jms/security_mdb_QCF
+
+
+create-jmsdest --desttype queue security_mdb_InQueue 
+create-jms-resource --restype javax.jms.Queue --property imqDestinationName=security_mdb__mdb_InQueue jms/security_mdb_InQueue
+
+
+create-jmsdest --desttype queue security_mdb_OutQueue 
+create-jms-resource --restype javax.jms.Queue --property imqDestinationName=security_mdb_OutQueue jms/security_mdb_OutQueue
+
+quit

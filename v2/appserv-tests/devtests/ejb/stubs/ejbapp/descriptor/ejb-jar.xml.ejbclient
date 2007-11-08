@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE ejb-jar PUBLIC "-//Sun Microsystems, Inc.//DTD Enterprise JavaBeans 2.0//EN" "http://java.sun.com/dtd/ejb-jar_2_0.dtd">
+<ejb-jar>
+  <display-name>Ejb1</display-name>
+  <enterprise-beans>
+    <session>
+      <display-name>FooBean</display-name>
+      <ejb-name>FooBean</ejb-name>
+      <home>com.sun.s1asdev.ejb.stubs.ejbapp.FooHome</home>
+      <remote>com.sun.s1asdev.ejb.stubs.ejbapp.Foo</remote>
+      <ejb-class>com.sun.s1asdev.ejb.stubs.ejbapp.FooBean</ejb-class>
+      <session-type>Stateless</session-type>
+      <transaction-type>Bean</transaction-type>
+      <ejb-ref>
+        <ejb-ref-name>ejb/hello</ejb-ref-name>
+        <ejb-ref-type>Session</ejb-ref-type>
+        <home>com.sun.s1asdev.ejb.stubs.ejbapp.HelloHome</home>
+        <remote>com.sun.s1asdev.ejb.stubs.ejbapp.Hello</remote>
+        <ejb-link>HelloBean</ejb-link>
+      </ejb-ref>
+      <security-identity>
+        <use-caller-identity/>
+      </security-identity>
+    </session>
+  </enterprise-beans>
+  <assembly-descriptor>
+  </assembly-descriptor>
+</ejb-jar>

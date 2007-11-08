@@ -1,0 +1,3 @@
+name: 		rjmx-impl
+description:	using JSR-160 RI and Extension of that to HTTP.
+contains:	no other sub-component.

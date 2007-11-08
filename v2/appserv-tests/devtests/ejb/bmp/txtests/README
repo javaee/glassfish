@@ -1,0 +1,37 @@
+This test uses a stateless session bean (SLSB) to start a (User)Transaction.
+The SLSB then calls an entity bean to create a row in a table
+It (SLSB) then verifies if the row was inderted or not by doing a findByPrimaryKey() method on the entitybean (This should not throw exception)
+It then rollsback the Tx.
+It (SLSB) then performs another findByPrimaryKey() method on the entitybean (This MUST throw exception)
+
+    Note:- S1AS_HOME is the S1AS installation dir.
+
+To run the txtests do the following
+
+mkdir <my_dir>
+cd <my_dir>
+cvs co -P appserv-tests
+
+Open one window (shell) and do the following:
+setenv APS_HOME <my_dir>/appserv-tests
+setenv JAVA_HOME to $S1AS_HOME/jdk
+cd $APS_HOME
+ant startPB
+
+Open another window (shell) and do the following:
+setenv APS_HOME <my_dir>/appserv-tests
+setenv JAVA_HOME to $S1AS_HOME/jdk
+cd $APS_HOME/devtests/ejb
+ant deploy-jdbc-common
+stop and restart the app server
+
+cd $APS_HOME/devtests/ejb/bmp/txtests
+cd simple
+ant all
+ant deploy
+
+Note:- It is enoughtto do all the above steps only once.
+
+cd $APS_HOME/devtests/ejb/bmp/txtests
+cd stateless
+ant all

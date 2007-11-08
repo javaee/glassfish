@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+    <servlet>
+        <servlet-name>WebTest</servlet-name>
+        <servlet-class>com.sun.s1asdev.security.simpleMultiRoleMapping.web.WebTest</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>EjbTest</servlet-name>
+        <servlet-class>com.sun.s1asdev.security.simpleMultiRoleMapping.web.EjbTest</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>WebTest</servlet-name>
+        <url-pattern>/web</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>EjbTest</servlet-name>
+        <url-pattern>/ejb</url-pattern>
+    </servlet-mapping>
+    <session-config>
+        <session-timeout>
+            30
+        </session-timeout>
+    </session-config>
+    <welcome-file-list>
+        <welcome-file>
+            index.jsp
+        </welcome-file>
+    </welcome-file-list>
+    <security-constraint>
+        <display-name>web-constraint</display-name>
+        <web-resource-collection>
+            <web-resource-name>WebTestServlet</web-resource-name>
+            <description/>
+            <url-pattern>/web</url-pattern>
+            <http-method>GET</http-method>
+        </web-resource-collection>
+        <auth-constraint>
+            <description>Only webrole can access web test</description>
+            <role-name>webrole</role-name>
+        </auth-constraint>
+    </security-constraint>
+    <security-constraint>
+        <display-name>ejb-constraint</display-name>
+        <web-resource-collection>
+            <web-resource-name>EJBTestServlet</web-resource-name>
+            <description/>
+            <url-pattern>/ejb</url-pattern>
+            <http-method>GET</http-method>
+        </web-resource-collection>
+        <auth-constraint>
+            <description>Only ejbrole can access ejb test</description>
+            <role-name>ejbrole</role-name>
+        </auth-constraint>
+    </security-constraint>
+    <login-config>
+        <auth-method>BASIC</auth-method>
+    </login-config>
+    <security-role>
+        <role-name>webrole</role-name>
+    </security-role>
+    <security-role>
+        <role-name>ejbrole</role-name>
+    </security-role>
+</web-app>

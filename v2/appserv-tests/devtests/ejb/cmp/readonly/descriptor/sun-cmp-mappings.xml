@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sun-cmp-mappings>
+  <sun-cmp-mapping>
+    <schema>readonly</schema>
+    <entity-mapping>
+      <ejb-name>StudentBean</ejb-name>
+      <table-name>STUDENT</table-name>
+      <cmp-field-mapping>
+        <field-name>studentId</field-name>
+        <column-name>STUDENT.STUDENTID</column-name>
+      </cmp-field-mapping>
+      <cmp-field-mapping>
+        <field-name>name</field-name>
+        <column-name>STUDENT.NAME</column-name>
+      </cmp-field-mapping>
+    </entity-mapping>
+    <entity-mapping>
+      <ejb-name>ReadOnlyStudentBean</ejb-name>
+      <table-name>STUDENT</table-name>
+      <cmp-field-mapping>
+        <field-name>studentId</field-name>
+        <column-name>STUDENT.STUDENTID</column-name>
+      </cmp-field-mapping>
+      <cmp-field-mapping>
+        <field-name>name</field-name>
+        <column-name>STUDENT.NAME</column-name>
+      </cmp-field-mapping>
+    </entity-mapping>
+  </sun-cmp-mapping>
+</sun-cmp-mappings>

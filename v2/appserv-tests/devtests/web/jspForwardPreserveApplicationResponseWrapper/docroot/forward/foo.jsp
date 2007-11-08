@@ -1,0 +1,4 @@
+<%
+    out.println(response.getClass());
+%>
+

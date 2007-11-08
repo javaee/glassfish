@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sun-application PUBLIC "-//Sun Microsystems, Inc.//DTD Application Server 9.0 Java EE Application 5.0//EN" "http://www.sun.com/software/appserver/dtds/sun-application_5_0-0.dtd">
+<sun-application>
+  
+  <!-- See readme for an explanation of all the
+      security role mappings in this file and
+      the ejb and web module files. -->
+  <security-role-mapping>
+    <role-name>role1</role-name>
+    <principal-name>r1p1</principal-name>
+  </security-role-mapping>
+  <security-role-mapping>
+    <role-name>role1</role-name>
+    <principal-name>r1p2</principal-name>
+  </security-role-mapping>
+  
+  <security-role-mapping>
+    <role-name>role2</role-name>
+    <principal-name>r2p1</principal-name>
+  </security-role-mapping>
+  <security-role-mapping>
+    <role-name>role2</role-name>
+    <group-name>r2g1</group-name>
+  </security-role-mapping>
+  <security-role-mapping>
+    <role-name>role2</role-name>
+    <group-name>r2g2</group-name>
+  </security-role-mapping>
+  
+  <security-role-mapping>
+    <role-name>role3</role-name>
+    <principal-name>r3p1</principal-name>
+  </security-role-mapping>
+  <security-role-mapping>
+    <role-name>role3</role-name>
+    <group-name>r3g1</group-name>
+  </security-role-mapping>
+  
+</sun-application>

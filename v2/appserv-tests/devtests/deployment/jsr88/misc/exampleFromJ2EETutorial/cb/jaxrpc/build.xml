@@ -1,0 +1,272 @@
+
+<project name="Coffee Break Supplier, JAX-RPC" default="build-service" basedir=".">
+
+  <property file="../../common/build.properties"/>
+  <property file="build.properties"/>
+
+<!-- ========================== CLASSPATHS ============================= -->
+
+  <path id="run.classpath">
+    <fileset dir="${dist}">
+      <include name="*.jar"/>
+    </fileset>
+    <fileset dir="${j2ee.home}/lib">
+      <include name="*.jar"/>
+    </fileset>
+    <fileset dir="${j2ee.home}/lib/endorsed">
+      <include name="*.jar"/>
+    </fileset>
+  </path>
+
+  <path id="compile.classpath">
+    <pathelement location="${build}/server"/>
+    <pathelement location="${common}"/>
+    <fileset dir="${j2ee.home}/lib">
+      <include name="*.jar"/>
+    </fileset>
+  </path>
+  
+ <!-- ========================== PREPARE ============================= -->
+
+  <target name="prepare" 
+     description="Creates the build and dist directories" >
+     <echo message="Creating the required directories...." />
+     <mkdir dir="${build}/client" />
+     <mkdir dir="${build}/server" />
+     <mkdir dir="${build}/registry" />
+     <mkdir dir="${dist}" />
+   </target>
+   
+   <target name="init">
+      <tstamp/>
+   </target>
+
+
+ <!-- ========================== WSCOMPILE ============================= -->
+ 
+ <target name="set-wscompile" >
+     <condition property="wscompile" value="${wscompile.dir}/wscompile.bat">
+        <os family="windows"/>
+     </condition>
+     <condition property="wscompile" value="${wscompile.dir}/wscompile">
+        <not>
+           <os family="windows"/>
+        </not>
+     </condition>
+  </target>
+
+  <target name="run-wscompile"  depends="prepare,set-wscompile"
+       description="Runs wscompile">
+    <echo message="Running wscompile:"/>
+    <echo message="  ${wscompile} ${param1}"/>
+    <exec executable="${wscompile}">
+       <arg line="${param1}"/>
+    </exec>
+  </target>
+
+  <target name="generate-wsdl"
+      description="Runs wscompile to generate the WSDL file">
+    <antcall target="run-wscompile">
+      <param name="param1" value="-define -mapping ${build}/server/${mapping.file} -d ${build}/server -nd ${build}/server  -classpath ${build}/server ${config.interface.file}"/>
+    </antcall>
+  </target>
+
+  <target name="generate-stubs"
+      description="Runs wscompile to generate the client stub classes">
+    <antcall target="run-wscompile">
+      <param name="param1" value="-gen:client -d ${build}/client -classpath ${build}/client ${config.wsdl.file}"/>
+    </antcall>
+  </target>
+
+<!-- ========================== COMPILE ============================= -->
+
+  <target name="compile-common" depends="prepare"
+      description="Compiles the common beans">
+      <echo message="Compiling the common bean source code...."/>
+      <ant antfile="../common/build.xml" 
+           dir="../common" 
+           target="build">
+      </ant>
+  </target>
+
+  <target name="compile-service" depends="prepare"
+      description="Compiles the server-side source code">
+      <echo message="Compiling the server-side source code...."/>
+      <javac
+         srcdir="${server.src}"
+         destdir="${build}/server"
+         classpath="${common}:dist/${registry.jar}"
+         includes="*.java"
+      />
+     <copy todir="${build}/server/${package.path}">
+         <fileset dir="src/server/${package.path}">
+         <include name="*.properties"/>
+         </fileset>
+     </copy>
+  </target>
+ 
+  <target name="compile-registry" depends="prepare" 
+        description="Compiles the registry source code"  >
+        <echo message="Compiling the registry source code...."/>
+      <javac srcdir="${registry.src}" destdir="${build}/registry">
+          <include name="**/*.java" />
+          <classpath refid="compile.classpath"/>
+      </javac>
+      <javac
+         srcdir="../common/src"
+         destdir="${build}/registry"
+         includes="**/URLHelper.java"
+      >
+      <classpath refid="compile.classpath" />
+      <classpath path="${common}" />
+      </javac>
+      <copy file="../common/src/${package.path}/CoffeeBreak.properties" 
+        todir="${build}/registry/${package.path}" />
+  </target>
+  
+  <target name="compile-client" depends="prepare" 
+         description="Compiles the client-side source code"  >
+         <echo message="Compiling the client source code...."/>
+       <javac srcdir="${client.src}" destdir="${build}/client">
+           <include name="**/*.java" />
+           <classpath refid="compile.classpath"/>
+       </javac>
+  </target>
+  
+ <!-- ========================== COPY & REMOVE ===================== -->
+
+  <target name="copy-common-service"
+     description="Copies common class files to build/service
+        because multiple classpaths for a wscompile command run 
+        within ant do not work.">
+     <echo message="Copying common classes...."/>
+     <copy todir="${build}/server/${package.path}">
+         <fileset dir="../common/build/${package.path}"  />
+     </copy>
+  </target>
+
+    <target name="copy-common-client"
+       description="Copies common class files to build/client
+       but doesn't copy beans because they are created w. generate-stubs.">
+       <echo message="Copying common classes...."/>
+       <copy file="../common/build/${package.path}/DateHelper.class" 
+        todir="${build}/client/${package.path}"/>
+    </target> 
+ 
+   
+<!-- ========================== PACKAGE ============================= -->
+
+
+  <target name="package-client"
+      description="Builds the JAR file that contains the client ">
+      <echo message="Building the client JAR file...."/>
+      <delete file="${dist}/${client.jar}" />
+      <jar jarfile="${dist}/${client.jar}" >
+        <fileset dir="${build}/client" />
+      </jar>
+  </target>
+
+  <target name="package-registry" 
+      description="Builds the JAR file that contains the registry routines">
+      <echo message="Building the registry JAR file...."/>
+      <copy file="${registry.src}/CoffeeRegistry.properties" todir="${build}/registry/${package.path}" />
+      <delete file="${dist}/${registry.jar}" />
+      <jar jarfile="${dist}/${registry.jar}" >
+        <fileset dir="${build}/registry" />
+      </jar>
+  </target>
+
+ 
+<!-- ========================== RUN ============================= -->
+
+  <target name="run-test-order" 
+     description="Runs TestOrderCaller">
+     <antcall target="run-test-client">
+       <param name="client.class" value="com.sun.cb.TestOrderCaller"/>
+     </antcall>
+  </target>
+
+  <target name="run-test-price" 
+     description="Runs TestPriceFetcher">
+     <antcall target="run-test-client">
+       <param name="client.class" value="com.sun.cb.TestPriceFetcher"/>
+     </antcall>
+  </target>
+
+  <target name="run-test-client" 
+     description="Runs a test JAX-RPC client.">
+      <java 
+            fork="on" 
+            classpath="dist/${client.jar}" 
+            classname="${client.class}" >
+           <arg value="${endpoint-address}" />
+      		 <classpath refid="run.classpath" />
+      </java>
+  </target>
+
+  <target name="run-registry-publish" 
+     description="Publishes an organization in the registry server.  Note: You must start the registry server before executing this task." >
+     <echo message="Running OrgPublisher." />
+     <echo message="Note: Remember to start the registry server before running this program." />
+    <java classname="com.sun.cb.OrgPublisher" 
+      fork="yes"
+      classpath="dist/${registry.jar}" >
+      <classpath refid="run.classpath" />
+      <sysproperty key="useSOAP" value="false"/>
+    </java>
+  </target>
+
+  <target name="run-registry-remove" 
+     description="Removes an organization from the registry. Note: You must start the registry server before executing this task." >
+     <echo message="Running OrgRemover." />
+     <echo message="Note: Remember to start the registry server before running this program." />
+    <java classname="com.sun.cb.OrgRemover" 
+      fork="yes"
+      classpath="dist/${registry.jar}:${foo}" >
+      <classpath refid="run.classpath" />
+      <sysproperty key="useSOAP" value="false"/>
+    </java>
+  </target>
+
+<!-- ========================== BUILD ============================= -->
+ 
+ 
+  
+   <target name="build-service" 
+       depends="compile-service,copy-common-service,generate-wsdl"
+       description="Executes the targets needed to build the service.">
+    </target>
+    
+    <target name="build-client" 
+       depends="generate-stubs,copy-common-client,compile-client,package-client"
+       description="Executes the targets needed to build the client files.">
+    </target>
+    
+    <target name="build-registry" 
+        depends="compile-registry,package-registry"
+        description="Executes the targets needed to build the registry JAR.">
+    </target>
+
+  
+<!-- ========================== UTIL ============================= -->
+
+
+  <target name="clean" 
+     description="Removes the build and dist directory">
+    <delete dir="${build}" />
+    <delete dir="dist" />
+  </target>
+
+  <target name="listprops" depends="set-wscompile"
+     description="Displays values of some of the properties of this build file">
+     <echo message="j2ee.home: ${j2ee.home}" />
+     <echo message="foo: ${foo}" />
+     <echo message="war.file: ${war.file}" />
+     <echo message="client.jar: ${client.jar}" />
+     <echo message="registry.jar: ${registry.jar}" />
+     <echo message="wscompile: ${wscompile}" />
+     <echo message="endpoint-address:  ${endpoint-address}" />
+  </target>
+
+
+</project>

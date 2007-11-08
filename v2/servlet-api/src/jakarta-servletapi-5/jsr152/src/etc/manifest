@@ -1,0 +1,10 @@
+Manifest-version: 1.0
+
+Name: javax/servlet/jsp/
+Specification-Title: Java API for JavaServer Pages
+Specification-Version: 2.0
+Specification-Vendor: Sun Microsystems, Inc.
+Implementation-Title: javax.servlet.jsp
+Implementation-Version: 2.0.@implementation.revision@
+Implementation-Vendor: Apache Software Foundation
+

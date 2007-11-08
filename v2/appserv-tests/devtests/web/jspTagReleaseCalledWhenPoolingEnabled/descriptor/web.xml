@@ -1,0 +1,16 @@
+<web-app xmlns="http://java.sun.com/xml/ns/j2ee"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee web-app_2_4.xsd"
+    version="2.4">
+
+  <jsp-config>
+
+    <taglib>
+      <taglib-uri>http://java.sun.com/test-taglib</taglib-uri>
+      <taglib-location>/WEB-INF/tlds/my.tld</taglib-location>
+    </taglib>
+
+  </jsp-config>
+
+</web-app>
+

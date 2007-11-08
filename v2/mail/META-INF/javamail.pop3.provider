@@ -1,0 +1,3 @@
+# JavaMail POP3 provider Sun Microsystems, Inc
+protocol=pop3; type=store; class=com.sun.mail.pop3.POP3Store; vendor=Sun Microsy stems, Inc;
+protocol=pop3s; type=store; class=com.sun.mail.pop3.POP3SSLStore; vendor=Sun Microsystems, Inc;

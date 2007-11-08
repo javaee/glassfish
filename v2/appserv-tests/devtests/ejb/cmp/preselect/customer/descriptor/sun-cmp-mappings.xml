@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE sun-cmp-mappings PUBLIC '-//Sun Microsystems, Inc.//DTD Sun ONE Application Server 7.0 OR Mapping //EN' 'http://www.sun.com/software/sunone/appserver/dtds/sun-cmp_mapping_1_0.dtd'>
+
+<sun-cmp-mappings>
+  <sun-cmp-mapping>
+<schema></schema>
+    <entity-mapping>
+      <ejb-name>Item</ejb-name>
+      <table-name>ITEM</table-name>
+      <cmp-field-mapping>
+        <field-name>id</field-name>
+        <column-name>ITEM.ITEM_ID</column-name>
+      </cmp-field-mapping>
+      <cmp-field-mapping>
+        <field-name>name</field-name>
+        <column-name>ITEM.NAME</column-name>
+      </cmp-field-mapping>
+      <cmp-field-mapping>
+        <field-name>price</field-name>
+        <column-name>ITEM.PRICE</column-name>
+      </cmp-field-mapping>
+    </entity-mapping>
+    <entity-mapping>
+      <ejb-name>CustomerBean</ejb-name>
+      <table-name>CUSTOMER</table-name>
+      <cmp-field-mapping>
+        <field-name>name</field-name>
+        <column-name>CUSTOMER.NAME</column-name>
+      </cmp-field-mapping>
+      <cmp-field-mapping>
+        <field-name>id</field-name>
+        <column-name>CUSTOMER.CUSTOMER_ID</column-name>
+      </cmp-field-mapping>
+      <cmr-field-mapping>
+        <cmr-field-name>items</cmr-field-name>
+        <column-pair>
+          <column-name>CUSTOMER.CUSTOMER_ID</column-name>
+          <column-name>ITEM.CUSTOMER_ID</column-name>
+        </column-pair>
+        <fetched-with>
+          <none/>
+        </fetched-with>
+      </cmr-field-mapping>
+    </entity-mapping>
+  </sun-cmp-mapping>
+</sun-cmp-mappings>

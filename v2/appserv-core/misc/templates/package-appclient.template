@@ -1,0 +1,14 @@
+#!/bin/sh
+#
+# Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+# Use is subject to license terms.
+#
+
+#
+# Script for packaging Application Client Container
+#
+
+. "%CONFIG_HOME%/asenv.conf"
+
+"$AS_JAVA/bin/java" -Dant.home="$AS_ANT" -Dmq.home="$AS_IMQ_LIB/.." -Ddomain.dir="$AS_DEF_DOMAINS_PATH" -classpath "$AS_ANT_LIB/ant.jar:$AS_ANT_LIB/ant-nodeps.jar" org.apache.tools.ant.Main -q -f "$AS_INSTALL/lib/package-appclient.xml"
+

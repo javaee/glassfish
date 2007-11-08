@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sun-web-app PUBLIC "-//Sun Microsystems, Inc.//DTD Sun ONE Application Server 8.0 Servlet 2.4//EN" "http://www.sun.com/software/sunone/appserver/dtds/sun-web-app_2_4-0.dtd">
+<sun-web-app>
+  <security-role-mapping>
+    <role-name>role1</role-name>
+    <principal-name>role1_user1</principal-name>
+    <principal-name class-name="com.acm.wombat.Principal">role1_user2</principal-name>
+  </security-role-mapping>
+  <security-role-mapping>
+    <role-name>role2</role-name>
+    <principal-name class-name="com.acm.womcat.Principal">role2_user1</principal-name>
+    <principal-name>role2_user2</principal-name>
+    <group-name>role2_group1</group-name>
+  </security-role-mapping>
+
+   <locale-charset-info default-locale="ja">
+    <locale-charset-map locale="it" agent="" charset="windows-31j"/>
+    <parameter-encoding form-hint-field="HINT" default-charset="GB18030"/>
+  </locale-charset-info>
+</sun-web-app>

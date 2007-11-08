@@ -1,0 +1,93 @@
+This unit test is for conflict detection and resolution among role
+mapping files. See https://glassfish.dev.java.net/issues/show_bug.cgi?id=2475.
+
+The application has a top-level mapping file and three submodules
+with their own mapping files. One module is a web module (used to
+receive client requests) and the other two are ejb modules. The ejb
+modules are only called indirectly in the initial version, but are
+needed to have more role mapping files. The tests need to test
+conflicts between mappings both submodule vs submodule and submodule
+vs top level. Conflicts are either extra mappings or fewer mappings
+to a role, and are tested with groups and principals.
+
+The tests are done by accessing the web module with addresses:
+  http://host:port/multiRoleMapping/role1
+  http://host:port/multiRoleMapping/role2
+  http://host:port/multiRoleMapping/role3
+...etc., where only a user in role1 can access the role1 url, role2 can
+access ther role2 url, etc.
+
+Using rX for roles, pX for principals, and gX for groups (a user in rXgY
+is "rXgYuser")), the mappings are below. The uses of the roles:
+
+  r1: Test that top level overrides others with principals.
+  r2: Test that top level overrides others with principals and groups.
+  r3: Test that top level is used. No mappings in submodules.
+  r4: Test that role is mapped properly when the same in all submodules.
+  r5: Test conflict with different number of mappings.
+  r6: Test conflict with different mappings, same number.
+  r7: Test no conflict when one submodule doesn't map.
+
+The top level mapping includes:
+  r1: r1p1, r1p2
+  r2: r2p1, r2g1, r2g2
+  r3: r3p1, r3g1 (not included in submodules)
+
+Module1 (ejb1):
+  r1: r1p1 (valid, but fewer than in top level)
+  r2: r2p2, r2g3 (principal and group that will not be mapped)
+  r3: (none)
+  r4: r4p1, r4g1
+  r5: r5p1, r5g1
+  r6: r6p1, r6p2
+  r7: r7p1, r7p2
+
+Module2 (ejb2):
+  r1: r1p1, r1p2 (same as top level)
+  r2: r2g1, r2g2 (both valid, but fewer than top level)
+  r3: (none)
+  r4: r4p1, r4g1
+  r5: r5p1, r5p2, r5g1 (r5p2 is extra)
+  r6: r6p1, r6g1
+  r7: (none -- absence of mapping is NOT a conflict)
+
+Module3 (web):
+  r1: r1p1, r1p2, r1p3 (r1p3 will not be mapped)
+  r2: r2p2, r2g1 (both valid, but fewer than top level)
+  r3: (none)
+  r4: r4p1, r4g1
+  r5: r5p1 (one fewer)
+  r6: r6p1, r6g1
+  r7: r7p1, r7p2
+
+Since the top-level mapping overrides other mappings, mapped and unmapped
+(for negative test) users for roles 1 through 3 are:
+
+  r1 mapped: r1p1, r1p2
+  r1 not mapped: r1p3, r2p1, r1g1user
+
+  r2 mapped: r2p1, r2g1user, r2g2user
+  r2 not mapped: r2p2, r2g3user, r1p1
+
+  r3 mapped: r3p1, r3g1
+  r3 not mapped: r3p2 (not much tested here since no conflict)
+
+For conflicts that do not involve the top-level file, the role is
+not mapped at all. Role 4 is mapped the same in all modules, so
+it is the only one mapped at all. The roles:
+
+  r4 mapped: r4p1, r4g1user
+  r5 tested: r5p1, r5p2, r5g1user
+  r6 tested: r6p1, r6p2, r6g1user
+  r7 mapped: r7p1, r7p2
+
+So, total set of users/groups to add to realm (rXpY is in 'dummy'
+group, rXgYuser is in 'rXgY' group):
+  r1p1, r1p2, r1p3, r1g1user
+  r2p1, r2p2, r2g1user, r2g2user, r2g3user
+  r3p1, r3p2, r3g1user
+  r4p1, r4g1user
+  r5p1, r5p2, r5g1user
+  r6p1, r6g1user
+  r7p1, r7p2
+  

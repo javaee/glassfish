@@ -1,0 +1,15 @@
+<table>
+<tr><td>${this.editorStrings.linkUrl}</td><td> <input type="text" dojoAttachPoint="link_href" name="dojo_createLink_href"/></td></tr>
+<tr><td>${this.editorStrings.linkTarget} </td><td><select dojoAttachPoint="link_target">
+	<option value="">${this.editorStrings.linkWindowSelf}</option>
+	<option value="_blank">${this.editorStrings.linkWindowNew}</option>
+	<option value="_top">${this.editorStrings.linkWindowTop}</option>
+	</select></td></tr>
+<tr><td>${this.editorStrings.linkClass} </td><td><input type="text" dojoAttachPoint="link_class" /></td></tr>
+<tr><td colspan="2">
+	<table><tr>
+	<td><button dojoType='Button' dojoAttachEvent='onClick:ok'>${this.commonStrings.buttonOk}</button></td>
+	<td><button dojoType='Button' dojoAttachEvent='onClick:cancel'>${this.commonStrings.buttonCancel}</button></td>
+	</tr></table>
+	</td></tr>
+</table>

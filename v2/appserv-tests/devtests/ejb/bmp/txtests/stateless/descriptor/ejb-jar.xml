@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE ejb-jar PUBLIC "-//Sun Microsystems, Inc.//DTD Enterprise JavaBeans 2.0//EN" "http://java.sun.com/dtd/ejb-jar_2_0.dtd">
+<ejb-jar>
+  <display-name>Ejb1</display-name>
+  <enterprise-beans>
+    <session>
+      <ejb-name>SLSBEJB</ejb-name>
+      <home>com.sun.s1asdev.ejb.bmp.txtests.stateless.ejb.SLSBHome</home>
+      <remote>com.sun.s1asdev.ejb.bmp.txtests.stateless.ejb.SLSB</remote>
+      <ejb-class>com.sun.s1asdev.ejb.bmp.txtests.stateless.ejb.SLSBEJB</ejb-class>
+      <session-type>Stateless</session-type>
+      <transaction-type>Bean</transaction-type>
+      <ejb-ref>
+        <ejb-ref-name>ejb/SimpleBMPHome</ejb-ref-name>
+        <ejb-ref-type>Entity</ejb-ref-type>
+        <home>com.sun.s1asdev.ejb.bmp.txtests.simple.ejb.SimpleBMPHome</home>
+        <remote>com.sun.s1asdev.ejb.bmp.txtests.simple.ejb.SimpleBMP</remote>
+      </ejb-ref>
+      <security-identity>
+        <use-caller-identity/>
+      </security-identity>
+    </session>
+  </enterprise-beans>
+  <assembly-descriptor>
+  </assembly-descriptor>
+</ejb-jar>

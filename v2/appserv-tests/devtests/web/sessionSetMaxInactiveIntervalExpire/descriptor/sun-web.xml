@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sun-web-app>
+  <session-config>
+    <session-manager>
+      <manager-properties>
+        <property name="reapIntervalSeconds" value="200" />
+      </manager-properties>
+    </session-manager>
+  </session-config>
+</sun-web-app>

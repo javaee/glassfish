@@ -1,0 +1,3 @@
+This is a simple unit test to ensure that statement-timeout (query-timeout) value is being set
+on all statements created in the application (statement, prepared-statement, callable-statment).
+

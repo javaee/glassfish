@@ -1,0 +1,1 @@
+Drop table customer_stmt_wrapper;

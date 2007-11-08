@@ -1,0 +1,4 @@
+({
+	buttonOk: "OK",
+	buttonCancel: "Cancel"
+})

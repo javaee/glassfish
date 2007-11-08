@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sun-ejb-jar PUBLIC "-//Sun Microsystems, Inc.//DTD Application Server 9.0 EJB 3.0//EN" "http://www.sun.com/software/appserver/dtds/sun-ejb-jar_3_0-0.dtd">
+<sun-ejb-jar>
+  <enterprise-beans>
+    <ejb>
+      <ejb-name>MessageBean</ejb-name>
+      <jndi-name>jms/ejb_ejb30_hello_mdb_InQueue</jndi-name>
+      <resource-ref>
+        <res-ref-name>jms/MyQueueConnectionFactory</res-ref-name>
+        <jndi-name>jms/ejb_ejb30_hello_mdb_QCF</jndi-name>
+        <default-resource-principal>
+          <name>guest</name>
+          <password>guest</password>
+        </default-resource-principal>
+      </resource-ref>
+      <message-destination-ref>
+        <message-destination-ref-name>com.sun.s1asdev.ejb.ejb30.hello.mdb.MessageBean/clientQueue</message-destination-ref-name>
+        <jndi-name>jms/ejb_ejb30_hello_mdb_OutQueue</jndi-name>
+      </message-destination-ref>
+    </ejb>
+  </enterprise-beans>
+</sun-ejb-jar>

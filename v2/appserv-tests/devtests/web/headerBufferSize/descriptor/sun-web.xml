@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sun-web-app>
+  <session-config>
+    <cookie-properties>
+      <property name="cookiePath" value="/" />
+      <property name="cookieDomain" value=".iplanet.com" />
+      <property name="cookieComment" value="Sun-Java-System/Application-Server-PE-8.0 Session Tracking Cookie" />
+    </cookie-properties>
+  </session-config>
+</sun-web-app>

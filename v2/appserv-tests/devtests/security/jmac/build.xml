@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE project [
+<!ENTITY commonSetup SYSTEM "file:../../../config/properties.xml">
+<!ENTITY commonBuild SYSTEM "file:../../../config/common.xml">
+<!ENTITY commonRun SYSTEM "file:../../../config/run.xml">
+<!ENTITY commonSecurity SYSTEM "file:../common.xml">
+]>
+
+
+<project name="wss" default="usage" basedir=".">
+    &commonSetup;
+    &commonBuild;
+    &commonSecurity;
+    &commonRun;
+
+    <target name="all">
+        <ant dir="httpServlet" target="all"/>
+        <ant dir="https" target="all"/>
+        <ant dir="httpServletDefault" target="all"/>
+        <ant dir="httpServletChallenge" target="all"/>
+        <ant dir="httpServletForm" target="all"/>
+
+        <ant dir="soap" target="all"/>
+        <ant dir="soapDefault" target="all"/>
+        <ant dir="soapEmbedded" target="all"/>
+    </target>
+</project>

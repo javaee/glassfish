@@ -1,0 +1,22 @@
+<tag-plugins>
+  <tag-plugin>
+    <tag-class>org.apache.taglibs.standard.tag.rt.core.IfTag</tag-class>
+    <plugin-class>org.apache.jasper.tagplugins.jstl.If</plugin-class>
+  </tag-plugin>
+  <tag-plugin>
+    <tag-class>org.apache.taglibs.standard.tag.common.core.ChooseTag</tag-class>
+    <plugin-class>org.apache.jasper.tagplugins.jstl.Choose</plugin-class>
+  </tag-plugin>
+  <tag-plugin>
+    <tag-class>org.apache.taglibs.standard.tag.rt.core.WhenTag</tag-class>
+    <plugin-class>org.apache.jasper.tagplugins.jstl.When</plugin-class>
+  </tag-plugin>
+  <tag-plugin>
+    <tag-class>org.apache.taglibs.standard.tag.common.core.OtherwiseTag</tag-class>
+    <plugin-class>org.apache.jasper.tagplugins.jstl.Otherwise</plugin-class>
+  </tag-plugin>
+  <tag-plugin>
+    <tag-class>org.apache.taglibs.standard.tag.rt.core.ForEachTag</tag-class>
+    <plugin-class>org.apache.jasper.tagplugins.jstl.ForEach</plugin-class>
+  </tag-plugin>
+</tag-plugins>

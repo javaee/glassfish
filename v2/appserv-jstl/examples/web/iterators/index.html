@@ -1,0 +1,78 @@
+<html><!-- #BeginTemplate "/Templates/ExamplesTemplate.dwt" -->
+<head>
+<!-- #BeginEditable "doctitle" --> 
+<title>JSTL: Iterator Tags Examples</title>
+<!-- #EndEditable -->
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" href="../global.css" type="text/css">
+</head>
+
+<body bgcolor="#FFFFFF" text="#000000">
+<table width="100%" border="0" cellpadding="5">
+  <tr> 
+    <td height="0"><font color="#000099"><b>standard taglib &#149; implementation 
+      of the JSP Standard Tag Library &#149; </b></font><font color="#003399"><a href="mailto:taglibs-user@jakarta.apache.org"><b>support</b></a> 
+      &nbsp;&nbsp;<b><a href="mailto:taglibs-dev@jakarta.apache.org">development</a>&nbsp;&nbsp; 
+      <a href="mailto:jsr-52-comments@jcp.org">comments to JSR-52</a></b></font></td>
+  </tr>
+  <tr> 
+    <td bgcolor="#CCCCFF"><font size="-1">Examples &nbsp;&nbsp;&nbsp;&nbsp;<a href="../index.html">Introduction</a> 
+      &#149; <a href="../elsupport/index.html">General Purpose</a> 
+      &#149; <a href="../conditionals/index.html">Conditionals</a> 
+      &#149; <a href="index.html">Iterators</a> &#149; 
+      <a href="../import/index.jsp">Import</a> &#149; <a href="../format/index.html">I18N 
+      & Formatting</a> &#149; <a href="../xml/index.html">XML</a> 
+      &#149; <a href="../sql/index.jsp">SQL</a> &#149; <a href="../functions/index.html">Functions</a> 
+      &#149; <a href="../tlv/index.html">TLV</a> &#149; <a href="../functions/index.html"></a><a href="../misc/index.html">Misc.</a></font></td>
+  </tr>
+</table>
+<!-- #BeginEditable "body" --> 
+<h2>Iterator Tags Examples</h2>
+<h3>Simple&nbsp;&nbsp; <a href="../ShowSource.jsp?filename=/iterators/Simple.jsp"><img src="../images/code.gif" width="24" height="24" border="0"></a> 
+  <a href="Simple.jsp"><img src="../images/execute.gif" width="24" height="24" border="0"></a> 
+</h3>
+Simply displays the default <code>toString()</code> value of the items in the 
+<code>Customers</code> collection.<br>
+<h3> Range &nbsp;&nbsp;<a href="../ShowSource.jsp?filename=/iterators/SimpleRange.jsp"><img src="../images/code.gif" width="24" height="24" border="0"></a> 
+  <a href="SimpleRange.jsp"><img src="../images/execute.gif" width="24" height="24" border="0"></a> 
+</h3>
+<p>Another simple example. Similar to the previous one, except that in this case 
+  there is no collection to iterate over. The <code>items</code> attribute is 
+  optional in the <code>&lt;forEach&gt;</code> tag. When it is not specified, 
+  the range attributes must be used to iterate a specific number of times over 
+  the tag's body. In this example, we simply iterate over the integer values specified 
+  by the range attributes.</p>
+<h3>Data Types&nbsp;&nbsp;<a href="../ShowSource.jsp?filename=/iterators/DataTypes.jsp"><img src="../images/code.gif" width="24" height="24" border="0"></a>&nbsp;<a href="DataTypes.jsp"><img src="../images/execute.gif" width="24" height="24" border="0"></a></h3>
+<p>The <code>&lt;forEach&gt;</code> tag supports a large number of data types 
+  for the collection of objects to iterate over. In this example, we feature the 
+  following data types: array of primitives, array of objects, Enumeration, Properties 
+  (Map), String (Comma Separated Values).</p>
+<h3>Iteration Status&nbsp;&nbsp;<a href="../ShowSource.jsp?filename=/iterators/Status.jsp"><img src="../images/code.gif" width="24" height="24" border="0"></a>&nbsp;<a href="Status.jsp"><img src="../images/execute.gif" width="24" height="24" border="0"></a></h3>
+<p>The iterator tag exposes a wealth of information relative to the iteration 
+  taking place. This example features some of that status information.</p>
+<h3>Collaboration&nbsp;&nbsp;<a href="../ShowSource.jsp?filename=/iterators/Collaboration.jsp"><img src="../images/code.gif" width="24" height="24" border="0"></a>&nbsp;<a href="Collaboration.jsp"><img src="../images/execute.gif" width="24" height="24" border="0"></a></h3>
+<p>The iterator tags expose interface IteratorTag to allow custom tags to establish 
+  implicit collaboration. This example shows two custom tags, &lt;even&gt; and 
+  &lt;odd&gt; who take advantage of this implicit collaboration.</p>
+<h3>&lt;forTokens&gt;&nbsp;&nbsp;<a href="../ShowSource.jsp?filename=/iterators/ForTokens.jsp"><img src="../images/code.gif" width="24" height="24" border="0"></a>&nbsp;<a href="ForTokens.jsp"><img src="../images/execute.gif" width="24" height="24" border="0"></a></h3>
+<p>The &lt;forEach&gt; tag provides the basic iteration capabilities. &lt;forTokens&gt; 
+  is a specialization for the handling of Strings of tokens. Essentially the same 
+  as &lt;forEach&gt;, except that it only applies to Strings of tokens and that 
+  it has an extra attribute &quot;delims&quot; to specify the token delimiter.</p>
+<h3>Extensibility&nbsp;&nbsp;<a href="../ShowSource.jsp?filename=/iterators/Extensability.jsp"><img src="../images/code.gif" width="24" height="24" border="0"></a>&nbsp;<a href="Extensability.jsp"><img src="../images/execute.gif" width="24" height="24" border="0"></a></h3>
+<p>JSTL exposes in its API the abstract class LoopTagSupport to facilitate 
+  the implementation of custom iterator tags that leverage the standard iteration 
+  behavior defined in JSTL. This example shows a custom iterator tag that shows all Locale objects available in the server and a custom conditional sub-tag that
+  display the default locale.</p>
+<!-- #EndEditable -->
+<hr noshade color="#000099">
+<table width="100%" border="0" cellpadding="5">
+  <tr> 
+    <td height="24"><font color="#000099"><b>standard taglib &#149; implementation 
+      of the JSP Standard Tag Library &#149; </b></font><font color="#003399"><a href="mailto:taglibs-user@jakarta.apache.org"><b>support</b></a> 
+      &nbsp;&nbsp;<b><a href="mailto:taglibs-dev@jakarta.apache.org">development</a>&nbsp;&nbsp; 
+      <a href="mailto:jsr-52-comments@jcp.org">comments to JSR-52</a></b></font></td>
+  </tr>
+</table>
+</body>
+<!-- #EndTemplate --></html>

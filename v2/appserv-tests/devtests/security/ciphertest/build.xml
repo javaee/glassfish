@@ -1,0 +1,214 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE project [
+<!ENTITY commonSetup SYSTEM "file:./../../../config/properties.xml">
+<!ENTITY commonBuild SYSTEM "file:./../../../config/common.xml">
+<!ENTITY commonRun SYSTEM "file:./../../../config/run.xml">
+<!ENTITY testProperties SYSTEM "./build.properties">
+<!ENTITY commonSecurity SYSTEM "file:./../common.xml">
+]>
+
+
+<project name="ciphertest" basedir="." default="usage">
+
+   &commonSetup;
+   &commonBuild;
+   &commonRun;
+   &testProperties;
+   &commonSecurity;
+
+    <target name="usage">
+	<echo>
+		Usage:
+			ant all (Executes all ciphertests)
+	</echo>
+    </target>
+    
+    <target name="all" depends="build, setup, deploy,run, undeploy, unsetup">
+    </target>
+
+    <target name="setup" depends="init-common, prepare-store-common">
+        <copy file="testsetup.asadmin.template" tofile="testsetup.asadmin"/>
+        <replace file="testsetup.asadmin">
+            <replacefilter token="@HTTPSPORT@" value="${https.port}"/>
+        </replace>
+
+        <antcall target="asadmin-batch-common">
+          <param name="asadmin.file" value="testsetup.asadmin"/>
+        </antcall>
+        <antcall target="restart-server-instance-common"/>
+    </target>
+
+    <target name="unsetup" depends="init-common, remove-store-common">
+        <antcall target="asadmin-batch-common">
+          <param name="asadmin.file" value="testunsetup.asadmin"/>
+        </antcall>
+    </target>
+
+    <target name="clean" depends="init-common">
+        <delete dir="${build.classes.dir}"/>
+        <delete dir="${assemble.dir}"/>
+    </target>
+
+    <target name="compile" depends="clean">
+        <antcall target="compile-common">
+            <param name="src" value="."/>
+        </antcall>
+    </target>
+
+    <target name="build" depends="compile">
+    </target>
+
+    <target name="deploy" depends="init-common">
+    </target>
+
+    <target name="run" depends="init-common">
+        <antcall target="runciphertest-1"/>
+        <antcall target="runciphertest-2"/>
+        <antcall target="runciphertest-3"/>
+    </target>
+
+    <target name="echo" depends="init-common">
+        <echo message="as.props = ${as.props}"/>
+        <echo message="mykeystore.db.file = ${mykeystore.db.file}"/>
+        <echo message="mytruststore.db.file = ${mytruststore.db.file}"/>
+    </target>
+
+    <target name="cipher-test">
+
+      <java classname="CipherTest" fork="true">
+        <classpath>
+  	       <pathelement path="${build.classes.dir}:${s1astest.classpath}"/>
+        </classpath>
+        <jvmarg value="-Djavax.net.ssl.trustStore=${mytruststore.db.file}"/>
+        <jvmarg value="-Djavax.net.ssl.trustStorePassword=${ssl.password}"/>
+
+<!--    <arg value="-verbose"/>  -->
+        <arg value="-host"/>
+        <arg value="${http.host}"/>
+        <arg value="-port"/>
+        <arg value="${https.port}"/>
+        <arg value="-shouldPass"/>
+        <arg value="${should-pass-cipher}"/>
+        <arg value="-enabledCipher"/>
+        <arg value="${enable-cipher}"/>
+      </java>
+
+    </target>
+
+    <target name="runciphertest-1" depends="init-common">
+
+      <antcall target="cipher-test">
+        <param name="should-pass-cipher" value="SSL_RSA_WITH_RC4_128_MD5"/>
+        <param name="enable-cipher"      value="SSL_RSA_WITH_RC4_128_MD5"/>
+        <param name="https.port"         value="1${https.port}"/>
+      </antcall>
+
+      <antcall target="cipher-test">
+        <param name="should-pass-cipher" value=""/>
+        <param name="enable-cipher"      value="SSL_RSA_WITH_3DES_EDE_CBC_SHA"/>
+        <param name="https.port"         value="1${https.port}"/>
+      </antcall>
+
+      <antcall target="cipher-test">
+        <param name="should-pass-cipher" value=""/>
+        <param name="enable-cipher"      value="SSL_RSA_WITH_DES_CBC_SHA"/>
+        <param name="https.port"         value="1${https.port}"/>
+      </antcall>
+
+      <antcall target="cipher-test">
+        <param name="should-pass-cipher" value=""/>
+        <param name="enable-cipher"      value="SSL_RSA_EXPORT_WITH_RC4_40_MD5"/>
+        <param name="https.port"         value="1${https.port}"/>
+      </antcall>
+
+      <antcall target="cipher-test">
+        <param name="should-pass-cipher" value=""/>
+        <param name="enable-cipher"      value="SSL_RSA_WITH_NULL_MD5"/>
+        <param name="https.port"         value="1${https.port}"/>
+      </antcall>
+
+      <antcall target="cipher-test">
+        <param name="should-pass-cipher" value=""/>
+        <param name="enable-cipher"      value="SSL_RSA_WITH_RC4_128_SHA"/>
+        <param name="https.port"         value="1${https.port}"/>
+      </antcall>
+
+      <antcall target="cipher-test">
+        <param name="should-pass-cipher" value=""/>
+        <param name="enable-cipher"      value="SSL_RSA_WITH_NULL_SHA"/>
+        <param name="https.port"         value="1${https.port}"/>
+      </antcall>
+    </target>
+
+
+    <target name="runciphertest-2" depends="init-common">
+      <antcall target="cipher-test">
+        <param name="should-pass-cipher" value="SSL_RSA_WITH_3DES_EDE_CBC_SHA"/>
+        <param name="enable-cipher"      value="SSL_RSA_WITH_3DES_EDE_CBC_SHA"/>
+        <param name="https.port"         value="2${https.port}"/>
+      </antcall>
+
+      <antcall target="cipher-test">
+        <param name="should-pass-cipher" value="SSL_RSA_WITH_DES_CBC_SHA"/>
+        <param name="enable-cipher"      value="SSL_RSA_WITH_DES_CBC_SHA"/>
+        <param name="https.port"         value="2${https.port}"/>
+      </antcall>
+
+      <antcall target="cipher-test">
+        <param name="should-pass-cipher" value="SSL_RSA_EXPORT_WITH_RC4_40_MD5"/>
+        <param name="enable-cipher"      value="SSL_RSA_EXPORT_WITH_RC4_40_MD5"/>
+        <param name="https.port"         value="2${https.port}"/>
+      </antcall>
+
+      <antcall target="cipher-test">
+        <param name="should-pass-cipher" value="SSL_RSA_WITH_NULL_MD5"/>
+        <param name="enable-cipher"      value="SSL_RSA_WITH_NULL_MD5"/>
+        <param name="https.port"         value="2${https.port}"/>
+      </antcall>
+
+      <antcall target="cipher-test">
+        <param name="should-pass-cipher" value="SSL_RSA_WITH_RC4_128_SHA"/>
+        <param name="enable-cipher"      value="SSL_RSA_WITH_RC4_128_SHA"/>
+        <param name="https.port"         value="2${https.port}"/>
+      </antcall>
+
+      <antcall target="cipher-test">
+        <param name="should-pass-cipher" value="SSL_RSA_WITH_NULL_SHA"/>
+        <param name="enable-cipher"      value="SSL_RSA_WITH_NULL_SHA"/>
+        <param name="https.port"         value="2${https.port}"/>
+      </antcall>
+
+      <antcall target="cipher-test">
+        <param name="should-pass-cipher" value=""/>
+        <param name="enable-cipher"      value="SSL_RSA_WITH_RC4_128_MD5"/>
+        <param name="https.port"         value="2${https.port}"/>
+      </antcall>
+    </target>
+
+    <target name="runciphertest-3" depends="init-common">
+      <antcall target="cipher-test">
+        <param name="should-pass-cipher" value=""/>
+        <param name="enable-cipher"      value="SSL_DH_anon_WITH_RC4_128_MD5"/>
+      </antcall>
+      <antcall target="cipher-test">
+        <param name="should-pass-cipher" value=""/>
+        <param name="enable-cipher"      value="SSL_DH_anon_WITH_3DES_EDE_CBC_SHA"/>
+      </antcall>
+      <antcall target="cipher-test">
+        <param name="should-pass-cipher" value=""/>
+        <param name="enable-cipher"      value="SSL_DH_anon_WITH_DES_CBC_SHA"/>
+      </antcall>
+      <antcall target="cipher-test">
+        <param name="should-pass-cipher" value=""/>
+        <param name="enable-cipher"      value="SSL_DH_anon_EXPORT_WITH_RC4_40_MD5"/>
+      </antcall>
+      <antcall target="cipher-test">
+        <param name="should-pass-cipher" value=""/>
+        <param name="enable-cipher"      value="SSL_DH_anon_EXPORT_WITH_DES40_CBC_SHA"/>
+      </antcall>
+
+    </target>
+
+    <target name="undeploy" depends="init-common"/>
+</project>

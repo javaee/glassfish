@@ -1,0 +1,9 @@
+Server is ready to accept connections on port 1527.
+Connection number: 1.
+----------------------------------------------------------------
+2006-01-18 08:47:22.289 GMT:
+ Booting Derby version The Apache Software Foundation - Apache Derby - 10.1.1.0 - (208786): instance c013800d-0108-dcb2-169a-0000001307f0
+on database directory /ko133006/ws/glassfish/appserv-tests/devtests/connector/embeddedweb-resourcesxml-defaultconnpool/testdb 
+
+Database Class Loader started - derby.database.classpath=''
+Connection number: 2.

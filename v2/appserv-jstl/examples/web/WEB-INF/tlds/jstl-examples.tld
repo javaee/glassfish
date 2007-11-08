@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<taglib xmlns="http://java.sun.com/xml/ns/j2ee"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee web-jsptaglibrary_2_0.xsd"
+    version="2.0">
+  <description>
+    Tag Library to support examples webapp
+  </description>
+  <tlib-version>1.1</tlib-version>
+  <short-name>ex</short-name>
+  <uri>/jstl-examples-taglib</uri>
+
+  <tag>
+    <name>defaultLocale</name>
+    <tag-class>org.apache.taglibs.standard.examples.taglib.DefaultLocaleTag</tag-class>
+    <body-content>JSP</body-content>
+  </tag>
+
+  <tag>
+    <name>locales</name>
+    <tag-class>org.apache.taglibs.standard.examples.taglib.LocalesTag</tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+        <name>var</name>
+        <required>required</required>
+        <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+        <name>varStatus</name>
+        <required>false</required>
+        <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+        <name>varTotal</name>
+        <required>false</required>
+        <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+        <name>begin</name>
+        <required>false</required>
+        <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+        <name>end</name>
+        <required>false</required>
+        <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+
+  <tag>
+    <name>escapeHtml</name>
+    <tag-class>org.apache.taglibs.standard.examples.taglib.EscapeHtmlTag</tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+        <name>reader</name>
+        <required>false</required>
+        <rtexprvalue>true</rtexprvalue>
+    </attribute>  
+    <attribute>
+        <name>writer</name>
+        <required>false</required>
+        <rtexprvalue>true</rtexprvalue>
+    </attribute>  
+  </tag>
+
+  <tag>
+    <name>resource</name>
+    <tag-class>org.apache.taglibs.standard.examples.taglib.ResourceTag</tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+        <name>id</name>
+        <required>true</required>
+        <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+        <name>resource</name>
+        <required>true</required>
+        <rtexprvalue>false</rtexprvalue>
+    </attribute>  
+  </tag>
+
+  <tag>
+    <name>file</name>
+    <tag-class>org.apache.taglibs.standard.examples.taglib.FileTag</tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+        <name>id</name>
+        <required>true</required>
+        <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+        <name>file</name>
+        <required>true</required>
+        <rtexprvalue>true</rtexprvalue>
+    </attribute>  
+  </tag>
+
+  <tag>
+    <name>odd</name>
+    <tag-class>org.apache.taglibs.standard.examples.taglib.OddTag</tag-class>
+    <body-content>JSP</body-content>
+  </tag>
+
+  <tag>
+    <name>even</name>
+    <tag-class>org.apache.taglibs.standard.examples.taglib.EvenTag</tag-class>
+    <body-content>JSP</body-content>
+  </tag>
+
+  <tag>
+    <name>usCustomer</name>
+    <tag-class>org.apache.taglibs.standard.examples.taglib.UsCustomerTag</tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+        <name>customer</name>
+        <required>true</required>
+        <rtexprvalue>true</rtexprvalue>
+    </attribute>  
+    <attribute>
+        <name>var</name>
+        <required>false</required>
+        <rtexprvalue>false</rtexprvalue>
+    </attribute>  
+  </tag>
+
+  <tag>
+    <name>customerFmt</name>
+    <tag-class>org.apache.taglibs.standard.examples.taglib.CustomerFmtTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+        <name>customer</name>
+        <required>true</required>
+        <rtexprvalue>true</rtexprvalue>
+    </attribute>  
+    <attribute>
+        <name>fmt</name>
+        <required>true</required>
+        <rtexprvalue>true</rtexprvalue>
+    </attribute>  
+  </tag>
+
+  <tag>
+    <name>SPath</name>
+    <tag-class>org.apache.taglibs.standard.extra.spath.SPathTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+        <name>var</name>
+        <required>true</required>
+        <rtexprvalue>false</rtexprvalue>
+    </attribute>  
+    <attribute>
+        <name>select</name>
+        <required>true</required>
+        <rtexprvalue>false</rtexprvalue>
+    </attribute>
+  </tag>
+
+  <function>
+    <name>display</name>
+    <function-class>org.apache.taglibs.standard.examples.taglib.Functions</function-class>
+    <function-signature>java.lang.String display(java.lang.Object)</function-signature>
+  </function>
+
+</taglib>

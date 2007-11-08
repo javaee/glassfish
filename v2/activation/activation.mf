@@ -1,0 +1,8 @@
+Extension-Name: javax.activation
+Specification-Title: JavaBeans(TM) Activation Framework Specification
+Specification-Version: @SPECVERSION@
+Specification-Vendor: Sun Microsystems, Inc.
+Implementation-Version: @VERSION@
+Implementation-Vendor: Sun Microsystems, Inc.
+Implementation-Vendor-Id: com.sun
+Implementation-Title: Sun Java System Application Server

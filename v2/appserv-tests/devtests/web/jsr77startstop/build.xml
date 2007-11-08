@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE project [
+<!ENTITY commonSetup SYSTEM "file:./../../../config/properties.xml">
+<!ENTITY commonBuild SYSTEM "file:./../../../config/common.xml">
+<!ENTITY testproperties SYSTEM "file:./build.properties">
+]>
+
+<project name="webcontainer_unittest" default="all" basedir=".">
+
+    &commonSetup;
+    &commonBuild;
+    &testproperties;
+
+    <target name="all" depends="setup,build,deploy,run,undeploy"/>
+
+    <target name="setup" depends="init-common">
+        <antcall target="deploy-jdbc-common">
+            <param name="jdbc.conpool.name" value="ConnPoolTest"/>
+            <param name="jdbc.resource.name" value="jdbc/ConnPoolTest"/>
+        </antcall>
+    </target>
+
+    <target name="clean" depends="init-common">
+      <antcall target="clean-common"/>
+    </target>
+       
+    <target name="compile" depends="clean">
+        <antcall target="compile-common">
+            <param name="src" value="servlet"/>
+        </antcall>
+    </target>
+
+    <target name="build" depends="compile">
+        <property name="hasWebclient" value="yes"/> 
+        <antcall target="webclient-war-common">
+            <param name="hasWebclient" value="yes"/>
+            <param name="webclient.war.classes" value="**/*.class"/> 
+        </antcall>
+
+    </target> 
+
+    <target name="build-publish-war" depends="build, publish-war-common" />
+    
+    <target name="re-deploy" depends="init-common">
+        <antcall target="deploy-war-common"/>
+    </target>
+
+    <target name="deploy" depends="init-common">
+        <antcall target="deploy-war-common"/>
+    </target>
+    
+    <target name="run" depends="init-common">
+          <javac
+            srcdir="."
+            classpath="${env.APS_HOME}/lib/reporter.jar:${env.S1AS_HOME}/lib/j2ee.jar:${env.S1AS_HOME}/lib/appserv-rt.jar:${env.S1AS_HOME}/lib/appserv-admin.jar:${env.S1AS_HOME}/lib/jmxremote.jar"
+            includes="WebTest.java"/>
+
+        <java classname="WebTest">
+          <arg value="${http.host}"/>
+          <arg value="${http.port}"/>
+          <arg value="${contextroot}"/>
+          <arg value="${admin.user}"/>
+          <arg value="${admin.password}"/>
+          <arg value="${admin.port}"/>
+          <classpath>
+           <pathelement location="${env.APS_HOME}/lib/reporter.jar"/>
+           <pathelement location="."/>
+           <pathelement location="${env.S1AS_HOME}/lib/j2ee.jar"/>
+           <pathelement location="${env.S1AS_HOME}/lib/appserv-rt.jar"/>
+           <pathelement location="${env.S1AS_HOME}/lib/appserv-admin.jar"/>
+           <pathelement location="${env.S1AS_HOME}/lib/jmxremote.jar"/>
+           <pathelement location="${env.S1AS_HOME}/lib/jmxremote_optional.jar"/>
+         </classpath>
+        </java>
+    </target>
+ 
+    <target name="undeploy" depends="init-common">
+        <antcall target="undeploy-war-common"/>
+        <antcall target="undeploy-jdbc-common">
+            <param name="jdbc.conpool.name" value="ConnPoolTest"/>
+            <param name="jdbc.resource.name" value="jdbc/ConnPoolTest"/>
+        </antcall>
+    </target>   
+
+    <target name="usage">
+        <antcall target="usage-common"/>
+    </target>
+</project>

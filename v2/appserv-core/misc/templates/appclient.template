@@ -1,0 +1,36 @@
+#!/bin/sh
+
+#
+# Copyright 2004-2007 Sun Microsystems, Inc. All rights reserved.
+# Use is subject to license terms.
+#
+
+
+. %CONFIG_HOME%/asenv.conf
+
+# environment set by tools
+if [ ! -z "${TOOLS_SETTINGS}" ]
+then
+    AS_INSTALL=$S1AS_INSTALL_ROOT 
+    AS_JAVA=$S1AS_JAVA_HOME
+    AS_ACC_CONFIG=$S1AS_ACC_CONFIG
+    AS_IMQ_LIB=$S1AS_IMQ_LIB
+    AS_WEBSERVICES_LIB=$S1AS_WEBSERVICES_LIB
+fi
+
+ACTIVATION=" -Dcom.sun.aas.configRoot=$AS_CONFIG -Dcom.sun.aas.installRoot=$AS_INSTALL -Dcom.sun.aas.imqLib=$AS_IMQ_LIB -Djava.security.policy=$AS_INSTALL/lib/appclient/client.policy -Djava.security.auth.login.config=$AS_INSTALL/lib/appclient/appclientlogin.conf -Djava.endorsed.dirs=$AS_INSTALL/lib/endorsed -Djavax.xml.parsers.SAXParserFactory=com.sun.org.apache.xerces.internal.jaxp.SAXParserFactoryImpl -Djavax.xml.parsers.DocumentBuilderFactory=com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl -Djavax.xml.transform.TransformerFactory=com.sun.org.apache.xalan.internal.xsltc.trax.TransformerFactoryImpl -Dorg.xml.sax.parser=org.xml.sax.helpers.XMLReaderAdapter -Dorg.xml.sax.driver=com.sun.org.apache.xerces.internal.parsers.SAXParser -Dcom.sun.aas.derbyRoot=$AS_DERBY_INSTALL"
+
+WEBSERVICES_CLASSPATH="$AS_WEBSERVICES_LIB/mail.jar":"$AS_WEBSERVICES_LIB/activation.jar":"$AS_WEBSERVICES_LIB/webservices-rt.jar":"$AS_WEBSERVICES_LIB/webservices-tools.jar"
+
+JVM_CLASSPATH="$AS_INSTALL/lib/appserv-rt.jar":"$AS_INSTALL/lib/javaee.jar":"$AS_INSTALL/lib/jmac-api.jar":"$AS_INSTALL/lib/appserv-ext.jar":$WEBSERVICES_CLASSPATH:"$AS_INSTALL/lib/appserv-cmp.jar":"$AS_INSTALL/lib/appserv-admin.jar":"$AS_INSTALL/lib/install/applications/jmsra/imqjmsra.jar":"$AS_IMQ_LIB/fscontext.jar":"$AS_INSTALL/lib/dtds":"$AS_INSTALL/lib/schemas"
+
+# Persistence JARs (derbyclient.jar, toplink-essentials.jar, dbschema.jar) are added to the classpath dynamically by the ACC
+LD_LIBRARY_PATH=$AS_INSTALL/lib:$AS_NSS:${LD_LIBRARY_PATH}
+export LD_LIBRARY_PATH
+
+if [ -n "$APPCPATH" ]
+then
+    JVM_CLASSPATH=$JVM_CLASSPATH:"$APPCPATH"
+fi
+$AS_JAVA/bin/java $ACTIVATION $VMARGS -Djava.util.logging.manager=com.sun.enterprise.server.logging.ACCLogManager -classpath $JVM_CLASSPATH com.sun.enterprise.appclient.Main "-configxml" "$AS_ACC_CONFIG" "$@"
+

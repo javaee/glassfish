@@ -1,0 +1,244 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+
+<!--
+  Copyright 2004 Sun Microsystems, Inc. All rights reserved.
+  SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+-->
+
+<!--
+  XML DTD for Sun ONE Application Server specific Object Relational Mapping 
+  with Container Managed Persistence.
+-->
+
+<!--
+
+The sun-cmp-mappings_1_2.mdd file differs from the default produced by
+schema2beans in 3 ways:
+
+(1) cmp-field-mapping implements HasFetchedWith
+
+(2) cmr-field-mapping implements HasFetchedWith
+
+(3) level has a wrapper-class of type int
+
+-->
+
+<metaDD>
+	<meta-element>
+		<dtd-name>sun-cmp-mappings</dtd-name>
+		<bean-name>SunCmpMappings</bean-name>
+		<meta-property>
+			<bean-name>SunCmpMapping</bean-name>
+		</meta-property>
+	</meta-element>
+	<meta-element>
+		<dtd-name>sun-cmp-mapping</dtd-name>
+		<bean-name>SunCmpMapping</bean-name>
+		<meta-property>
+			<bean-name>Schema</bean-name>
+		</meta-property>
+		<meta-property>
+			<bean-name>EntityMapping</bean-name>
+		</meta-property>
+	</meta-element>
+	<meta-element>
+		<dtd-name>schema</dtd-name>
+		<bean-name>Schema</bean-name>
+		<wrapper-class>String</wrapper-class>
+	</meta-element>
+	<meta-element>
+		<dtd-name>entity-mapping</dtd-name>
+		<bean-name>EntityMapping</bean-name>
+		<meta-property>
+			<bean-name>EjbName</bean-name>
+		</meta-property>
+		<meta-property>
+			<bean-name>TableName</bean-name>
+		</meta-property>
+		<meta-property>
+			<bean-name>CmpFieldMapping</bean-name>
+		</meta-property>
+		<meta-property>
+			<bean-name>CmrFieldMapping</bean-name>
+		</meta-property>
+		<meta-property>
+			<bean-name>SecondaryTable</bean-name>
+		</meta-property>
+		<meta-property>
+			<bean-name>Consistency</bean-name>
+		</meta-property>
+	</meta-element>
+	<meta-element>
+		<dtd-name>ejb-name</dtd-name>
+		<bean-name>EjbName</bean-name>
+		<wrapper-class>String</wrapper-class>
+	</meta-element>
+	<meta-element>
+		<dtd-name>table-name</dtd-name>
+		<bean-name>TableName</bean-name>
+		<wrapper-class>String</wrapper-class>
+	</meta-element>
+	<meta-element>
+		<dtd-name>cmp-field-mapping</dtd-name>
+		<bean-name>CmpFieldMapping</bean-name>
+		<meta-property>
+			<bean-name>FieldName</bean-name>
+		</meta-property>
+		<meta-property>
+			<bean-name>ColumnName</bean-name>
+		</meta-property>
+		<meta-property>
+			<bean-name>ReadOnly</bean-name>
+		</meta-property>
+		<meta-property>
+			<bean-name>FetchedWith</bean-name>
+		</meta-property>
+	      <implements>com.sun.jdo.api.persistence.mapping.ejb.HasFetchedWith</implements>
+	</meta-element>
+	<meta-element>
+		<dtd-name>cmr-field-mapping</dtd-name>
+		<bean-name>CmrFieldMapping</bean-name>
+		<meta-property>
+			<bean-name>CmrFieldName</bean-name>
+		</meta-property>
+		<meta-property>
+			<bean-name>ColumnPair</bean-name>
+		</meta-property>
+		<meta-property>
+			<bean-name>FetchedWith</bean-name>
+		</meta-property>
+	      <implements>com.sun.jdo.api.persistence.mapping.ejb.HasFetchedWith</implements>
+	</meta-element>
+	<meta-element>
+		<dtd-name>secondary-table</dtd-name>
+		<bean-name>SecondaryTable</bean-name>
+		<meta-property>
+			<bean-name>TableName</bean-name>
+		</meta-property>
+		<meta-property>
+			<bean-name>ColumnPair</bean-name>
+		</meta-property>
+	</meta-element>
+	<meta-element>
+		<dtd-name>consistency</dtd-name>
+		<bean-name>Consistency</bean-name>
+		<meta-property>
+			<bean-name>None</bean-name>
+		</meta-property>
+		<meta-property>
+			<bean-name>CheckModifiedAtCommit</bean-name>
+		</meta-property>
+		<meta-property>
+			<bean-name>LockWhenLoaded</bean-name>
+		</meta-property>
+		<meta-property>
+			<bean-name>LockWhenModified</bean-name>
+		</meta-property>
+		<meta-property>
+			<bean-name>CheckAllAtCommit</bean-name>
+		</meta-property>
+		<meta-property>
+			<bean-name>CheckVersionOfAccessedInstances</bean-name>
+		</meta-property>
+	</meta-element>
+	<meta-element>
+		<dtd-name>default</dtd-name>
+		<bean-name>Default</bean-name>
+		<wrapper-class>Boolean</wrapper-class>
+	</meta-element>
+	<meta-element>
+		<dtd-name>none</dtd-name>
+		<bean-name>None</bean-name>
+		<wrapper-class>Boolean</wrapper-class>
+	</meta-element>
+	<meta-element>
+		<dtd-name>check-modified-at-commit</dtd-name>
+		<bean-name>CheckModifiedAtCommit</bean-name>
+		<wrapper-class>Boolean</wrapper-class>
+	</meta-element>
+	<meta-element>
+		<dtd-name>lock-when-loaded</dtd-name>
+		<bean-name>LockWhenLoaded</bean-name>
+		<wrapper-class>Boolean</wrapper-class>
+	</meta-element>
+	<meta-element>
+		<dtd-name>lock-when-modified</dtd-name>
+		<bean-name>LockWhenModified</bean-name>
+		<wrapper-class>Boolean</wrapper-class>
+	</meta-element>
+	<meta-element>
+		<dtd-name>check-all-at-commit</dtd-name>
+		<bean-name>CheckAllAtCommit</bean-name>
+		<wrapper-class>Boolean</wrapper-class>
+	</meta-element>
+	<meta-element>
+		<dtd-name>check-version-of-accessed-instances</dtd-name>
+		<bean-name>CheckVersionOfAccessedInstances</bean-name>
+		<meta-property>
+			<bean-name>ColumnName</bean-name>
+		</meta-property>
+	</meta-element>
+	<meta-element>
+		<dtd-name>EMPTY</dtd-name>
+		<bean-name>Empty</bean-name>
+		<wrapper-class>String</wrapper-class>
+	</meta-element>
+	<meta-element>
+		<dtd-name>column-pair</dtd-name>
+		<bean-name>ColumnPair</bean-name>
+		<meta-property>
+			<bean-name>ColumnName</bean-name>
+		</meta-property>
+	</meta-element>
+	<meta-element>
+		<dtd-name>column-name</dtd-name>
+		<bean-name>ColumnName</bean-name>
+		<wrapper-class>String</wrapper-class>
+	</meta-element>
+	<meta-element>
+		<dtd-name>#PCDATA</dtd-name>
+		<bean-name>Pcdata</bean-name>
+		<wrapper-class>String</wrapper-class>
+	</meta-element>
+	<meta-element>
+		<dtd-name>cmr-field-name</dtd-name>
+		<bean-name>CmrFieldName</bean-name>
+		<wrapper-class>String</wrapper-class>
+	</meta-element>
+	<meta-element>
+		<dtd-name>fetched-with</dtd-name>
+		<bean-name>FetchedWith</bean-name>
+		<meta-property>
+			<bean-name>Default</bean-name>
+		</meta-property>
+		<meta-property>
+			<bean-name>Level</bean-name>
+		</meta-property>
+		<meta-property>
+			<bean-name>NamedGroup</bean-name>
+		</meta-property>
+		<meta-property>
+			<bean-name>None</bean-name>
+		</meta-property>
+	</meta-element>
+	<meta-element>
+		<dtd-name>level</dtd-name>
+		<bean-name>Level</bean-name>
+		<wrapper-class>int</wrapper-class>
+	</meta-element>
+	<meta-element>
+		<dtd-name>named-group</dtd-name>
+		<bean-name>NamedGroup</bean-name>
+		<wrapper-class>String</wrapper-class>
+	</meta-element>
+	<meta-element>
+		<dtd-name>field-name</dtd-name>
+		<bean-name>FieldName</bean-name>
+		<wrapper-class>String</wrapper-class>
+	</meta-element>
+	<meta-element>
+		<dtd-name>read-only</dtd-name>
+		<bean-name>ReadOnly</bean-name>
+		<wrapper-class>Boolean</wrapper-class>
+	</meta-element>
+</metaDD>

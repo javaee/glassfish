@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright (c) 2002 Sun Microsystems, Inc. All rights reserved. -->
+<!DOCTYPE sun-ejb-jar PUBLIC '-//Sun Microsystems, Inc.//DTD Sun ONE Application Server 7.0 EJB 2.0//EN' 'http://www.sun.com/software/sunone/appserver/dtds/sun-ejb-jar_2_0-0.dtd'>
+
+<sun-ejb-jar>
+  <enterprise-beans>
+    <name>ejb-bmp-finder-ejb.jar</name>
+    <unique-id>234</unique-id>
+    <ejb>
+      <ejb-name>FinderEnrollerBean</ejb-name>
+      <jndi-name>ejb/MyFinderEnroller</jndi-name>
+      <ejb-ref>
+        <ejb-ref-name>ejb/Student</ejb-ref-name>
+        <jndi-name>ejb/MyFinderStudent</jndi-name>
+      </ejb-ref>
+      <resource-ref>
+        <res-ref-name>jdbc/bmp-finderDB</res-ref-name>
+        <jndi-name>jdbc/__default</jndi-name>
+      </resource-ref>
+    </ejb>
+    <ejb>
+      <ejb-name>FinderCourseBean</ejb-name>
+      <jndi-name>ejb/MyFinderCourse</jndi-name>
+      <ejb-ref>
+        <ejb-ref-name>ejb/Enroller</ejb-ref-name>
+        <jndi-name>ejb/MyFinderEnroller</jndi-name>
+      </ejb-ref>
+      <resource-ref>
+        <res-ref-name>jdbc/bmp-finderDB</res-ref-name>
+        <jndi-name>jdbc/__default</jndi-name>
+      </resource-ref>
+    </ejb>
+    <ejb>
+      <ejb-name>FinderStudentBean</ejb-name>
+      <jndi-name>ejb/MyFinderStudent</jndi-name>
+      <ejb-ref>
+        <ejb-ref-name>ejb/Enroller</ejb-ref-name>
+        <jndi-name>ejb/MyFinderEnroller</jndi-name>
+      </ejb-ref>
+      <resource-ref>
+        <res-ref-name>jdbc/bmp-finderDB</res-ref-name>
+        <jndi-name>jdbc/__default</jndi-name>
+      </resource-ref>
+    </ejb>
+  </enterprise-beans>
+</sun-ejb-jar>

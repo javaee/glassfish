@@ -1,0 +1,26 @@
+UNIT TESTS ON SECURITY/WSS
+==========================
+
+FOR RUNNING THE SECURITY TESTS:
+-------------------------------
+1. Update appserv-tests/config.properties.
+2. setup the following environment variable:
+	S1AS_HOME
+	APS_HOME
+   as in Quicklook tests.
+3. Start the domain
+4. Simply type "ant all" from appserv-tests/devtests/security/wss
+   and pipe the result to a file.
+5. Examine the log file and make sure that all 42 tests pass.
+
+NOTE:
+-----
+If there is a problem in running wsimport for wss tests, then please check
+a) the line 127.0.0.1 is correct in /etc/hosts
+b) $APS_HOME should not have "/" at the end
+
+If the problem involves a proxy warning (when running on windows behind
+a firewall), make sure the host name of your machine is in the list of
+host names for which a proxy is not used in your internet options. 
+
+Contact: sjsas-security-dev@sun.com

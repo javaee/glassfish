@@ -1,0 +1,357 @@
+<?xml version="1.0"?>
+
+<!--
+ DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+ 
+ Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ 
+ The contents of this file are subject to the terms of either the GNU
+ General Public License Version 2 only ("GPL") or the Common Development
+ and Distribution License("CDDL") (collectively, the "License").  You
+ may not use this file except in compliance with the License. You can obtain
+ a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
+ or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
+ language governing permissions and limitations under the License.
+ 
+ When distributing the software, include this License Header Notice in each
+ file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
+ Sun designates this particular file as subject to the "Classpath" exception
+ as provided by Sun in the GPL Version 2 section of the License file that
+ accompanied this code.  If applicable, add the following below the License
+ Header, with the fields enclosed by brackets [] replaced by your own
+ identifying information: "Portions Copyrighted [year]
+ [name of copyright owner]"
+ 
+ Contributor(s):
+ 
+ If you wish your version of this file to be governed by only the CDDL or
+ only the GPL Version 2, indicate your decision by adding "[Contributor]
+ elects to include this software in this distribution under the [CDDL or GPL
+ Version 2] license."  If you don't indicate a single choice of license, a
+ recipient has the option to distribute your version of this file under
+ either the CDDL, the GPL Version 2 or to extend the choice of license to
+ its licensees as provided above.  However, if you add GPL Version 2 code
+ and therefore, elected the GPL Version 2 license, then the option applies
+ only if the new code is made subject to such option by the copyright
+ holder.
+-->
+
+<alterations xmlns="http://java.sun.com/j2ee/s1as8se/XMLAlterUtil" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xsi:schemaLocation="change.xsd">
+    <alteration type="FIRST_OCCURRENCE" elementName="jvm-options" dnType="text" dnValue="-Djavax.net.ssl.keyStore=${com.sun.aas.instanceRoot}/config/keystore.jks">
+          <removeElement/>
+    </alteration>
+    <alteration type="FIRST_OCCURRENCE" elementName="jvm-options" dnType="text" dnValue="-Djavax.net.ssl.trustStore=${com.sun.aas.instanceRoot}/config/cacerts.jks">
+          <removeElement/>
+    </alteration>
+    <alteration type="FIRST_OCCURRENCE" elementName="jvm-options" dnType="text" dnValue="-Djavax.management.builder.initial=com.sun.enterprise.admin.server.core.jmx.AppServerMBeanServerBuilder">
+          <removeElement/>
+    </alteration>
+    <alteration type="FIRST_OCCURRENCE" elementName="java-config">
+          <addElement>
+        <jvm-options>-Djavax.management.builder.initial=com.sun.enterprise.ee.admin.AppServerMBeanServerBuilder</jvm-options>
+          </addElement>
+    </alteration>
+    <alteration type="FIRST_OCCURRENCE" elementName="jms-service">
+        <changeAttribute name="type" value="EMBEDDED"/>
+    </alteration>
+    <alteration type="FIRST_OCCURRENCE" elementName="jmx-connector">
+        <changeAttribute name="security-enabled" value="true"/>
+        <addElement location="first">
+            <ssl cert-nickname="s1as" ssl3-enabled="true" tls-enabled="true" client-auth-enabled="false"/>
+        </addElement>
+        <addElement location="after" dnType="element" dnName="ssl">
+            <property name="client-hostname" value="%%%HOST_NAME%%%"/>
+        </addElement>
+    </alteration>
+    <alteration type="FIRST_OCCURRENCE" elementName="configs">
+          <addElement file="./ee80/default-config.xml"/>
+    </alteration>
+    <alteration type="FIRST_OCCURRENCE" elementName="domain">
+          <addElement location="after" dnType="element" dnName="servers">
+            <clusters></clusters>
+          </addElement>
+          <addElement location="after" dnType="element" dnName="clusters">
+            <node-agents></node-agents>
+          </addElement>
+          <addElement location="after" dnType="element" dnName="node-agents">
+            <lb-configs></lb-configs>
+          </addElement>
+          <addElement location="after" dnType="element" dnName="lb-configs">
+            <load-balancers></load-balancers>
+          </addElement>
+    </alteration>
+    <alteration type="FIRST_OCCURRENCE" elementName="config">
+          <addElement location="after" dnType="element" dnName="java-config">
+            <availability-service availability-enabled="true" auto-manage-ha-store="false" ha-store-healthcheck-enabled="false" ha-store-healthcheck-interval-in-seconds="5">
+                <web-container-availability availability-enabled="true" http-session-store-pool-name="jdbc/hastore" persistence-frequency="web-method" persistence-scope="session" persistence-store-health-check-enabled="false" persistence-type="ha" sso-failover-enabled="false"/>
+                <ejb-container-availability availability-enabled="true" sfsb-ha-persistence-type="ha" sfsb-persistence-type="file" sfsb-store-pool-name="jdbc/hastore"/>
+                <jms-availability availability-enabled="false"/>
+            </availability-service>
+          </addElement>
+    </alteration>    
+    <alteration type="ALL" elementName="web-container">
+          <addElement>
+                <session-config>
+                    <session-manager>
+                        <manager-properties/>
+                        <store-properties/>
+                    </session-manager>
+                    <session-properties/>
+                </session-config>
+          </addElement>
+    </alteration>     
+    <alteration type="ALL" elementName="java-config">
+          <addElement>
+            <jvm-options>-Dcom.sun.appserv.pluggable.features=com.sun.enterprise.ee.server.pluggable.EEPluggableFeatureImpl</jvm-options>
+          </addElement>
+          <addElement>
+            <jvm-options>-Dcom.sun.appserv.nss.db=${com.sun.aas.instanceRoot}/config</jvm-options>
+          </addElement>
+    </alteration>     
+    <alteration type="ALL" elementName="http-listener" dnType="attribute" dnName="id" dnValue="admin-listener">
+        <changeAttribute name="security-enabled" value="true"/>  
+    </alteration>
+    <alteration type="ALL" elementName="http-service">
+        <!-- See bug 6286325 for details about treatment of access-log element -->
+        <alteration type="ALL" elementName="access-log">
+            <removeElement />
+        </alteration>
+        <!-- See bug 6286325 for details about treatment of access-log element -->
+    </alteration>
+    <alteration type="ALL" elementName="http-service">
+        <addElement location="before" dnType="element" dnName="http-listener">
+           <access-log/>
+        </addElement>
+    </alteration>
+    <alteration type="ALL" elementName="virtual-server">
+          <addElement location="before" dnType="element" dnName="property">
+                <http-access-log/>
+          </addElement>
+    </alteration>
+    <alteration type="ALL" elementName="jvm-options" dnType="text" dnModifier="startsWith" dnValue="-Djava.ext.dirs=">
+        <addTextToElement location="after" value="${path.separator}${com.sun.aas.installRoot}/lib/jdbcdrivers"/>
+    </alteration>
+    <alteration type="ALL" elementName="jvm-options" dnType="text" dnValue="-client">
+          <removeElement/>
+    </alteration>
+    <alteration type="ALL" elementName="jvm-options" dnType="text" dnValue="-client">
+          <removeElement/>
+    </alteration>
+    <alteration type="FIRST_OCCURRENCE" elementName="property" dnType="attribute" dnName="value" dnValue="${com.sun.aas.instanceRoot}/lib/databases/sun-callflow" dnModifier="equals">
+    	<removeElement/>
+    </alteration>
+    <alteration type="FIRST_OCCURRENCE" elementName="jdbc-connection-pool">
+        <changeAttribute name="datasource-classname" value="org.apache.derby.jdbc.ClientDataSource" />
+        <addElement>
+           <property name="databaseName" value="sun-callflow"/>
+        </addElement>
+        <addElement>
+           <property name="PortNumber" value="1527"/>
+        </addElement>
+        <addElement>
+           <property name="Password" value="App" />
+        </addElement>
+        <addElement>
+           <property name="User" value="App" />
+        </addElement>
+        <addElement>
+           <property name="serverName" value="%%%HOST_NAME%%%" />
+        </addElement>
+    </alteration>
+    <alteration type="ALL" elementName="transaction-service">
+        <changeAttribute name="tx-log-dir" value="./"/>
+    </alteration>
+    <alteration type="FIRST_OCCURRENCE" elementName="applications">
+     <addElement location="after" dnType="element" dnName="web-module">
+      <mbean enabled="false" impl-class-name="com.sun.enterprise.ee.selfmanagement.actions.JdbcPoolMgmtAction" name="JdbcConnectionPoolMgmtAction" object-name="system:impl-class-name=com.sun.enterprise.ee.selfmanagement.actions.JdbcPoolMgmtAction,category=self-management" object-type="system-all">
+       <property name="PoolNames" value="jdbc-pool=300" />
+       <property name="SampleInterval" value="30" />
+      </mbean>
+     </addElement>
+    </alteration>
+    <alteration type="FIRST_OCCURRENCE" elementName="applications">
+     <addElement location="after" dnType="element" dnName="web-module">
+      <mbean enabled="false" impl-class-name="com.sun.enterprise.ee.selfmanagement.actions.DeadQueueMessageAlertAction" name="DeadQueueMessageAlertAction" object-name="system:impl-class-name=com.sun.enterprise.ee.selfmanagement.actions.DeadQueueMessageAlertAction,category=self-management" object-type="system-all">
+	<property name="Threshold" value="1"/>
+        <property name="Interval" value="120"/>
+        <property name="Offset" value="0"/>
+        <property name="MailRecipients" value="user@localhost"/>
+        <property name="MailResource" value="mail-ref-1"/>
+      </mbean> 
+     </addElement>
+    </alteration>
+    <alteration type="FIRST_OCCURRENCE" elementName="applications">
+     <addElement location="after" dnType="element" dnName="web-module">
+      <mbean enabled="false" impl-class-name="com.sun.enterprise.ee.selfmanagement.actions.LowMemoryAlertAction" name="LowMemoryAlertAction" object-name="system:impl-class-name=com.sun.enterprise.ee.selfmanagement.actions.LowMemoryAlertAction,category=self-management" object-type="system-all">
+	<property name="Threshold" value="80"/>
+        <property name="Offset" value="0"/>
+        <property name="MemoryPoolNames" value="Perm Gen, Tenured Gen"/>
+        <property name="MailRecipients" value="user@localhost"/>
+        <property name="MailResource" value="mail-ref-1"/>
+      </mbean> 
+     </addElement>
+    </alteration>
+    <alteration type="FIRST_OCCURRENCE" elementName="applications">
+     <addElement location="after" dnType="element" dnName="mbean">
+      <mbean enabled="false" impl-class-name="com.sun.enterprise.ee.selfmanagement.actions.ThreadHangAction" name="ThreadHangAction" object-name="system:impl-class-name=com.sun.enterprise.ee.selfmanagement.actions.ThreadHangAction,category=self-management" object-type="system-all">
+       <property name="ThresholdWait" value="80000" />
+       <property name="StopThread" value="false" />
+       <property name="MailAlertAppRef" value="MailAlert" /> <!-- name of the MailAlert mbean  -->
+      </mbean>
+     </addElement>
+    </alteration>
+    <alteration type="FIRST_OCCURRENCE" elementName="applications">
+     <addElement location="after" dnType="element" dnName="mbean">
+      <mbean enabled="false" impl-class-name="com.sun.enterprise.ee.selfmanagement.actions.InstanceHangAction" name="InstanceHangAction" object-name="system:impl-class-name=com.sun.enterprise.ee.selfmanagement.actions.InstanceHangAction,category=self-management" object-type="system-all">
+       <property name="TimeoutInSeconds" value="10"/>
+       <property name="Restart" value="true"/>
+      </mbean>
+     </addElement>
+    </alteration>
+    <alteration type="FIRST_OCCURRENCE" elementName="applications">
+     <addElement location="after" dnType="element" dnName="mbean">
+      <mbean enabled="false" impl-class-name="com.sun.enterprise.ee.selfmanagement.actions.MailAlert" name="MailAlert" object-name="system:impl-class-name=com.sun.enterprise.selfmanagement.actions.MailAlert,category=self-management" object-type="system-all">
+       <property name="Recipients" value="name@domain" />
+       <property name="MailResource" value="mail-ref-1" /> <!-- name of the deployed mail-resource -->
+      </mbean>
+     </addElement>
+    </alteration>
+    <alteration type="FIRST_OCCURRENCE" elementName="applications">
+     <addElement location="after" dnType="element" dnName="mbean">
+      <mbean enabled="false" impl-class-name="com.sun.enterprise.ee.selfmanagement.mbeans.DiskToolKit" name="DiskToolKit" object-name="system:impl-class-name=com.sun.enterprise.ee.selfmanagement.mbeans.DiskToolKit,category=self-management" object-type="user">
+       <property name="PartitionSpace" value="${com.sun.aas.instanceRoot}/logs" />
+      </mbean>
+     </addElement>
+    </alteration>
+    <alteration type="FIRST_OCCURRENCE" elementName="applications">
+     <addElement location="after" dnType="element" dnName="mbean">
+      <mbean enabled="false" impl-class-name="com.sun.enterprise.ee.selfmanagement.mbeans.CPU" name="CPUToolKit" object-name="system:impl-class-name=com.sun.enterprise.ee.selfmanagement.mbeans.CPU,category=self-management" object-type="user">
+      </mbean>
+     </addElement>
+    </alteration>
+    <alteration type="FIRST_OCCURRENCE" elementName="applications">
+     <addElement location="after" dnType="element" dnName="mbean">
+      <mbean enabled="false" impl-class-name="com.sun.enterprise.ee.selfmanagement.actions.DiskAction" name="LogCleanUpAction" object-name="system:impl-class-name=com.sun.enterprise.ee.selfmanagement.actions.DiskAction,category=self-management" object-type="system-all">
+       <property name="ServerLogFilter" value="true" />
+       <property name="AsadminAccessLogFilter" value="true" />
+       <property name="ServerAccessLogFilter" value="true" /> 
+      </mbean>
+     </addElement>
+    </alteration>
+    <alteration type="FIRST_OCCURRENCE" elementName="server">
+     <addElement location="before" dnType="element" dnName="resource-ref">
+      <application-ref disable-timeout-in-minutes="30" enabled="false" lb-enabled="false" ref="MailAlert" virtual-servers="server"/>
+     </addElement>
+    </alteration>
+    <alteration type="FIRST_OCCURRENCE" elementName="server">
+     <addElement location="before" dnType="element" dnName="resource-ref">
+      <application-ref disable-timeout-in-minutes="30" enabled="false" lb-enabled="false" ref="ThreadHangAction" virtual-servers="server"/>
+     </addElement>
+    </alteration>
+    <alteration type="FIRST_OCCURRENCE" elementName="server">
+     <addElement location="before" dnType="element" dnName="resource-ref">
+      <application-ref disable-timeout-in-minutes="30" enabled="false" lb-enabled="false" ref="InstanceHangAction" virtual-servers="server"/>
+     </addElement>
+    </alteration>
+    <alteration type="FIRST_OCCURRENCE" elementName="server">
+     <addElement location="before" dnType="element" dnName="resource-ref">
+      <application-ref disable-timeout-in-minutes="30" enabled="false" lb-enabled="false" ref="JdbcConnectionPoolMgmtAction" virtual-servers="server"/>
+     </addElement>
+    </alteration>
+    <alteration type="FIRST_OCCURRENCE" elementName="server">
+     <addElement location="before" dnType="element" dnName="resource-ref">
+      <application-ref disable-timeout-in-minutes="30" enabled="false" lb-enabled="false" ref="DeadQueueMessageAlertAction" virtual-servers="server"/>
+     </addElement>
+    </alteration>
+    <alteration type="FIRST_OCCURRENCE" elementName="server">
+     <addElement location="before" dnType="element" dnName="resource-ref">
+      <application-ref disable-timeout-in-minutes="30" enabled="false" lb-enabled="false" ref="LowMemoryAlertAction" virtual-servers="server"/>
+     </addElement>
+    </alteration>
+    <alteration type="FIRST_OCCURRENCE" elementName="server">
+     <addElement location="before" dnType="element" dnName="resource-ref">
+      <application-ref disable-timeout-in-minutes="30" enabled="false" lb-enabled="false" ref="DiskToolKit" virtual-servers="server"/>
+     </addElement>
+    </alteration>
+    <alteration type="FIRST_OCCURRENCE" elementName="server">
+     <addElement location="before" dnType="element" dnName="resource-ref">
+      <application-ref disable-timeout-in-minutes="30" enabled="false" lb-enabled="false" ref="CPUToolKit" virtual-servers="server"/>
+     </addElement>
+    </alteration>
+    <alteration type="FIRST_OCCURRENCE" elementName="server">
+     <addElement location="before" dnType="element" dnName="resource-ref">
+      <application-ref disable-timeout-in-minutes="30" enabled="false" lb-enabled="false" ref="LogCleanUpAction" virtual-servers="server"/>
+     </addElement>
+    </alteration>
+    <alteration type="FIRST_OCCURRENCE" elementName="management-rules">
+     <addElement>
+      <management-rule enabled="false" name="JdbcConnectionPoolMgmtRule">
+       <event level="FINE" record-event="false" type="lifecycle">
+        <property name="name" value="ready"/>
+       </event>
+       <action action-mbean-name="JdbcConnectionPoolMgmtAction"/>
+      <description>Management rule to auto tune connection pool attributes</description>
+      </management-rule>
+     </addElement>
+    </alteration>
+    <alteration type="FIRST_OCCURRENCE" elementName="management-rules">
+     <addElement>
+      <management-rule enabled="false" name="DeadQueueMessageAlertRule">
+       <event level="FINE" record-event="false" type="lifecycle">
+        <property name="name" value="ready"/>
+       </event>
+       <action action-mbean-name="DeadQueueMessageAlertAction"/>
+      <description>Management rule to send an alert in case of a dead message</description>
+      </management-rule>
+     </addElement>
+    </alteration>
+    <alteration type="FIRST_OCCURRENCE" elementName="management-rules">
+     <addElement>
+  <management-rule enabled="false" name="LowMemoryAlertRule">
+    <event level="FINE" record-event="false" type="lifecycle">
+     <property name="name" value="ready"/>
+    </event>
+    <action action-mbean-name="LowMemoryAlertAction"/>
+    <description>Management rule to send an alert in case of a low memory</description>
+   </management-rule>
+     </addElement>
+    </alteration>
+    <alteration type="FIRST_OCCURRENCE" elementName="management-rules">
+     <addElement>
+      <management-rule enabled="false" name="ThreadHangDetectionRule">
+       <event level="INFO" record-event="false" type="timer">
+        <property name="period" value="60000"/>
+       </event>
+       <action action-mbean-name="ThreadHangAction"/>
+        <description>Management Rule to detect thread hang and send an alert</description>
+      </management-rule>
+     </addElement>
+    </alteration>
+    <alteration type="FIRST_OCCURRENCE" elementName="management-rules">
+     <addElement>
+      <management-rule enabled="false" name="InstanceHangDetectionRule">
+       <event level="INFO" record-event="false" type="timer">
+        <property name="period" value="60000"/>
+       </event>
+       <action action-mbean-name="InstanceHangAction"/>
+        <description>Management Rule detect instance hang</description>
+      </management-rule>
+     </addElement>
+    </alteration>
+    <alteration type="FIRST_OCCURRENCE" elementName="management-rules">
+     <addElement>
+      <management-rule enabled="false" name="LogCleanupRule">
+       <event level="INFO" record-event="true" type="monitor">
+        <property name="monitortype" value="countermonitor"/>
+        <property name="initthreshold" value="0"/>
+        <property name="numbertype" value="long"/>
+        <property name="observedmbean" value="DiskToolkit"/>
+        <property name="observedattribute" value="DiskFree"/>
+       </event>
+       <action action-mbean-name="LogCleanUpAction"/>
+        <description>Management Rule to periodic log cleanup</description>
+      </management-rule>
+     </addElement>
+    </alteration>
+</alterations>    

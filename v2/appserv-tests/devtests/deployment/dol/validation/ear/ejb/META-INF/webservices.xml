@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<webservices xmlns="http://java.sun.com/xml/ns/j2ee"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee
+        http://www.ibm.com/webservices/xsd/j2ee_web_services_1_1.xsd"
+      version="1.1">
+  <description>desc</description>
+  <display-name>web service web</display-name>
+  <icon>
+    <small-icon>employee-service-icon16x16.jpg</small-icon>
+    <large-icon>employee-service-icon32x32.jpg</large-icon>
+  </icon>
+  <webservice-description>
+    <description>ejb service</description>
+    <display-name>ejb web service</display-name>
+    <icon>
+       <large-icon>employee-service-icon32x32.jpg</large-icon>
+    </icon>
+    <webservice-description-name>TaxcalculatorEjb</webservice-description-name>
+    <wsdl-file>META-INF/wsdl/TaxCalEjbService.wsdl</wsdl-file>
+    <jaxrpc-mapping-file>TaxCalMapping.xml</jaxrpc-mapping-file>
+    <port-component>
+      <description>port component description</description>
+      <port-component-name>StateTaxIFPort</port-component-name>
+      <wsdl-port xmlns:taxns="http://tax.org/wsdl">taxns:StateTaxIFPort
+      </wsdl-port>
+      <service-endpoint-interface>com.sun.s1peqe.webservices.ejb.taxcal.StateTaxIF
+      </service-endpoint-interface>
+      <service-impl-bean>
+        <ejb-link>StateTaxEjb</ejb-link>
+      </service-impl-bean>
+    </port-component>
+    <port-component>
+      <description>port component description</description>
+      <display-name>port component</display-name>
+      <icon>
+        <small-icon>employee-service-icon16x16.jpg</small-icon>
+      </icon>
+      <port-component-name>FedTaxIFPort</port-component-name>
+      <wsdl-port xmlns:taxns="http://tax.org/wsdl">taxns:FedTaxIFPort
+      </wsdl-port>
+      <service-endpoint-interface>com.sun.s1peqe.webservices.ejb.taxcal.FedTaxIF
+      </service-endpoint-interface>
+      <service-impl-bean>
+        <ejb-link>FedTaxEjb</ejb-link>
+      </service-impl-bean>
+    </port-component>
+  </webservice-description>
+  <webservice-description xmlns:googlens="urn:GoogleSearch">
+    <webservice-description-name>GoogleServiceEjb</webservice-description-name>
+    <wsdl-file>META-INF/wsdl/GoogleSearch.wsdl</wsdl-file>
+    <jaxrpc-mapping-file>GoogleMapping_ejb.xml</jaxrpc-mapping-file>
+    <port-component>
+      <description>port component description</description>
+      <port-component-name>GoogleSearchEjbPort</port-component-name>
+      <wsdl-port>googlens:GoogleSearchPort</wsdl-port>
+      <service-endpoint-interface>googleserver.GoogleSearchPort
+      </service-endpoint-interface>
+      <service-impl-bean>
+        <ejb-link>GoogleEjb</ejb-link>
+      </service-impl-bean>
+      <handler>
+        <description>handler 1</description>
+        <display-name>google service ref</display-name>
+        <icon>
+          <small-icon>handler-service-icon16x16.jpg</small-icon>
+        </icon>
+        <handler-name>handler1</handler-name>
+        <handler-class>googleserver.FooHandler</handler-class>
+        <init-param>
+          <description>param1 description</description>
+          <param-name>a</param-name>
+          <param-value>b</param-value>
+        </init-param>
+        <soap-header>googlens:DirectoryCategory</soap-header>
+        <soap-role>Role1</soap-role>
+        <soap-role>Role2</soap-role>
+      </handler>
+    </port-component>
+  </webservice-description>
+</webservices>

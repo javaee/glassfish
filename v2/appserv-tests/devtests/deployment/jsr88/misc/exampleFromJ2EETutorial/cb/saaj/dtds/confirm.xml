@@ -1,0 +1,19 @@
+<!--
+ Copyright 2002 Sun Microsystems, Inc. All rights reserved.
+ SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+-->
+
+
+<!DOCTYPE confirm
+    PUBLIC "-//Sun Microsystems, Inc.//DTD confirmation//EN"
+    "http://java.sun.com/webservices/dtds/confirm.dtd">
+
+<confirmation>
+    <orderID>
+		"1234"
+	</orderID>
+
+    <ship-date>
+		"01-01-2001"
+	</ship-date>
+</confirmation>

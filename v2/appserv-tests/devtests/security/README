@@ -1,0 +1,16 @@
+UNIT TESTS ON SECURITY
+======================
+
+FOR RUNNING THE SECURITY TESTS:
+-------------------------------
+1. Update appserv-tests/config.properties.
+2. Start the domain
+3. Simple type "ant all" from appserv-tests/devtests/security.
+
+NOTE:
+-----
+If there is a problem in running wsimport for wss tests, then please check
+a) the line 127.0.0.1 is correct in /etc/hosts
+b) $APS_HOME should not have "/" at the end
+
+For help contact sjsas-security-dev@sun.com

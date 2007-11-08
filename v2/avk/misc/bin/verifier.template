@@ -1,0 +1,24 @@
+#!/bin/sh
+#
+# Copyright 2004-2005 Sun Microsystems, Inc.  All rights reserved.
+# Use is subject to license terms.
+# 
+. "%CONFIG_HOME%/asenv.conf"
+OS=`uname -s`
+
+#change the classpath to point to your files
+JVM_CLASSPATH="$AS_INSTALL/lib/webservices-rt.jar":"$AS_INSTALL/lib/webservices-tools.jar":"${AS_INSTALL}/lib/appserv-ideplugin.jar":"${AS_INSTALL}/lib/appserv-rt.jar":"${AS_JAVA}/lib/tools.jar":"${AS_INSTALL}/lib/javaee.jar":"${AS_INSTALL}/lib/appserv-ext.jar":"${AS_INSTALL}/lib/appserv-cmp.jar":"${AS_INSTALL}/lib/dbschema.jar":"${AS_INSTALL}/lib/appserv-admin.jar":"${AS_INSTALL}/lib/install/applications/jmsra/imqjmsra.jar":"${AS_JHELP}/jhall.jar":"${AS_ANT_LIB}/ant.jar":"${AS_INSTALL}/lib/toplink-essentials.jar":"${AS_INSTALL}/lib/asm.jar":"${AS_INSTALL}/lib/asm-attrs.jar":"${AS_INSTALL}/lib"
+
+# LD LIB PATH 
+LD_LIBRARY_PATH="${AS_INSTALL}/lib":"${LD_LIBRARY_PATH}"
+
+HELP="${AS_INSTALL}/lib/verifier/verifierhelp.jar"
+
+if [  "$OS" = "Darwin" ] 
+then 
+    SYSTEM_PROPERTIES=-Djava.ext.dirs="${AS_JAVA}/lib/ext":"${AS_DEF_DOMAINS_PATH}/domain1/lib/ext"
+else
+    SYSTEM_PROPERTIES=-Djava.ext.dirs="${AS_JAVA}/jre/lib/ext":"${AS_DEF_DOMAINS_PATH}/domain1/lib/ext"
+fi
+
+"${AS_JAVA}/bin/java" "${SYSTEM_PROPERTIES}" -Dcom.sun.aas.installRoot="${AS_INSTALL}" -Djava.endorsed.dirs="${AS_INSTALL}/lib/endorsed" -Dcom.sun.aas.verifier.xsl="${AS_INSTALL}/lib/verifier" -classpath "${JVM_CLASSPATH}":"$HELP" com.sun.enterprise.tools.verifier.Verifier -C "${AS_INSTALL}/lib/verifier" "${@}"

@@ -1,0 +1,1 @@
+<jsp:include page="static.html"/>

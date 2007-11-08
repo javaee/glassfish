@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<application-client xmlns="http://java.sun.com/xml/ns/j2ee" version="1.4" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/application-client_1_4.xsd">
+  <display-name>justclient</display-name>
+  <ejb-ref>
+    <ejb-ref-name>ejb/JustBean</ejb-ref-name>
+    <ejb-ref-type>Session</ejb-ref-type>
+    <home>justbean.JustBeanHome</home>
+    <remote>justbean.JustBean</remote>
+    <ejb-link>JustSessionBean</ejb-link>
+  </ejb-ref>
+</application-client>

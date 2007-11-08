@@ -1,0 +1,378 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!--
+ The contents of this file are subject to the terms
+ of the Common Development and Distribution License
+ (the "License").  You may not use this file except
+ in compliance with the License.
+
+ You can obtain a copy of the license at
+ glassfish/bootstrap/legal/CDDLv1.0.txt or
+ https://glassfish.dev.java.net/public/CDDLv1.0.html.
+ See the License for the specific language governing
+ permissions and limitations under the License.
+
+ When distributing Covered Code, include this CDDL
+ HEADER in each file and include the License file at
+ glassfish/bootstrap/legal/CDDLv1.0.txt.  If applicable,
+ add the following below this CDDL HEADER, with the
+ fields enclosed by brackets "[]" replaced with your
+ own identifying information: Portions Copyright [yyyy]
+ [name of copyright owner]
+-->
+<!DOCTYPE project [
+  <!ENTITY commonBuild SYSTEM "../bootstrap/ant-common.xml">
+]>
+<project name="JavaMail" default="all" basedir=".">
+
+<!-- ========== Initialize Properties =================================== -->
+
+    <!--
+        component.name: required property.  the value should be the
+                        name of the component directory
+    -->
+    <property name="component.name" value="mail"/>
+
+    <property file="../bootstrap/project.properties"/>
+    <property file="./build.properties"/>
+    
+    &commonBuild;
+
+    <!-- all -->
+    <target name="all" depends="compile, assemble"
+            description="Build entire component">
+    </target>
+
+    <!-- build -->
+    <target name="build" depends="compile, assemble"
+            description="Build entire component">
+    </target>
+
+    <!-- build for pwc. -->
+    <target name="build-pwc" depends="compile-pwc, assemble-pwc"/>
+
+    <!-- init. Initialization involves creating publishing directories and
+         OS specific targets. -->
+    <target name="init" description="${component.name} initialization">
+        <tstamp>
+            <format property="start.time" pattern="MM/dd/yyyy hh:mm aa"/>
+        </tstamp>
+        <echo message="Building component ${component.name}"/>
+        <mkdir dir="${component.classes.dir}"/>
+        <copy file="${glassfish.maven}/legal/LICENSE.txt"
+                toFile="${component.classes.dir}/META-INF/LICENSE.txt"/>
+    </target>
+
+    <!-- compile -->
+    <target name="compile" depends="init"
+            description="Compile JavaMail sources">
+
+        <copy file="${src.dir}/javax/mail/Version.java.template"
+		toFile="${src.dir}/javax/mail/Version.java">
+            <filterset>
+                <filter token="VERSION" value="${release.version}"/>
+            </filterset>
+        </copy>
+        <javac srcdir="${src.dir}"
+               destdir="${component.classes.dir}"
+               debug="${javac.debug}"
+               optimize="${javac.optimize}"
+               source="1.4"
+               deprecation="${javac.deprecation}"
+               failonerror="true"
+               target="1.4">
+            <classpath>
+                <pathelement location="${javaee.jar}"/>
+            </classpath>
+            <include name="javax/mail/**"/>
+            <include name="com/sun/mail/**"/>
+            <exclude name="com/sun/mail/dsn/**"/>
+        </javac>
+    </target>
+    
+    <!-- compile for pwc. javaee.jar is unavailable hence activation.jar is used-->
+    <target name="compile-pwc" depends="init"
+            description="Compile JavaMail sources">
+
+        <copy file="${src.dir}/javax/mail/Version.java.template"
+		toFile="${src.dir}/javax/mail/Version.java">
+            <filterset>
+                <filter token="VERSION" value="${release.version}"/>
+            </filterset>
+        </copy>
+        <javac srcdir="${src.dir}"
+               destdir="${component.classes.dir}"
+               debug="${javac.debug}"
+               optimize="${javac.optimize}"
+               source="1.4"
+               deprecation="${javac.deprecation}"
+               failonerror="true"
+               target="1.4">
+            <classpath>
+                <pathelement location="${activation.jar}"/>
+            </classpath>
+            <include name="javax/mail/**"/>
+            <include name="com/sun/mail/**"/>
+            <exclude name="com/sun/mail/dsn/**"/>
+        </javac>
+    </target>
+
+    <!-- prepare manifest files for jars -->
+    <target name="cook-manifest" depends="init"
+            description="Generate MANIFEST.MF files">
+        <copy todir="build/manifest">
+            <fileset dir="." includes="*.mf" />
+            <filterset>
+                <filter token="SPECVERSION" value="${release.specversion}"/>
+                <filter token="VERSION" value="${release.version}"/>
+            </filterset>
+        </copy>
+    </target>
+
+    <!-- dsn compile -->
+    <target name="dsncompile" depends="init"
+            description="Compile com/sun/mail/dsn sources">
+
+        <javac srcdir="${src.dir}"
+               destdir="${component.classes.dir}"
+               debug="${javac.debug}"
+               optimize="${javac.optimize}"
+               source="1.4"
+               deprecation="${javac.deprecation}"
+               failonerror="true"
+               target="1.4">
+            <classpath>
+                <pathelement location="${javaee.jar}"/>
+            </classpath>
+            <include name="com/sun/mail/dsn/**"/>
+        </javac>
+    </target>
+
+    <!-- assemble -->
+    <target name="assemble" depends="cook-manifest"
+            description="Create JavaMail jar files">
+
+        <!--  I have no idea why this was here - shannon 3/16/2006
+        <copy todir="${component.classes.dir}">
+            <fileset dir="${src.dir}"/>
+        </copy>
+        -->
+
+        <jar jarfile="${mail.jar}" manifest="${basedir}/build/manifest/mail.mf">
+            <metainf dir="${component.classes.dir}/META-INF"
+                     includes="LICENSE.txt"/>
+            <metainf dir="META-INF"
+                    includes="javamail.charset.map,javamail.default.*,mailcap"/>
+            <fileset dir="${component.classes.dir}">
+                <include name="javax/mail/**/*.class"/>
+                <include name="com/sun/mail/**/*.class"/>
+                <exclude name="com/sun/mail/dsn/*.class"/>
+                <include name="com/sun/mail/**/*.properties"/>
+            </fileset>
+        </jar>
+
+        <jar jarfile="${javaee.jar}" update="yes">
+            <fileset dir="${component.classes.dir}">
+                <include name="javax/mail/**/*.class"/>
+            </fileset>
+        </jar>
+    </target>
+
+    <!-- assemble-pwc. This target does not update javaee.jar -->
+    <target name="assemble-pwc" depends="cook-manifest"
+            description="Create JavaMail jar files">
+
+        <jar jarfile="${mail.jar}" manifest="${basedir}/build/manifest/mail.mf">
+            <metainf dir="${component.classes.dir}/META-INF"
+                     includes="LICENSE.txt"/>
+            <metainf dir="META-INF"
+                    includes="javamail.charset.map,javamail.default.*,mailcap"/>
+            <fileset dir="${component.classes.dir}">
+                <include name="javax/mail/**/*.class"/>
+                <include name="com/sun/mail/**/*.class"/>
+                <exclude name="com/sun/mail/dsn/*.class"/>
+                <include name="com/sun/mail/**/*.properties"/>
+            </fileset>
+        </jar>
+    </target>
+
+    <target name="clean" description="Clean the build">
+        <delete includeEmptyDirs="true" failonerror="false">
+            <fileset dir="${component.classes.dir}"/>
+        </delete>
+    </target>
+
+    <!-- JavaMail bundle build targets -->
+
+    <target name="release"
+      depends="init, jar, mailapijar, pop3jar, imapjar, smtpjar, dsnjar, docs">
+        <property name="javamail.zip" value="javamail.zip"/>
+        <delete file="${basedir}/${javamail.zip}"/>
+        <echo message="Creating JavaMail bundle ${basedir}/${javamail.zip}"/>
+        <zip destfile="${javamail.zip}">
+             <zipfileset dir="${release.dir}" prefix="javamail"/>
+             <zipfileset dir="${src.dir}/demo" prefix="javamail/demo/"
+                excludes="**/internal/**"/>
+        </zip>
+    </target>
+
+    <!-- Assemble mail.jar without updating glassfish/image/lib/ -->
+    <target name="jar" depends="init, compile, cook-manifest">
+        <mkdir dir="${release.dir}"/>
+        <jar jarfile="${release.mail.jar}" manifest="${basedir}/build/manifest/mail.mf">
+            <metainf dir="${component.classes.dir}/META-INF"
+                     includes="LICENSE.txt"/>
+            <metainf dir="META-INF"
+                    includes="javamail.charset.map,javamail.default.*,mailcap"/>
+            <fileset dir="${component.classes.dir}">
+                <include name="javax/mail/**/*.class"/>
+                <include name="com/sun/mail/**/*.class"/>
+            </fileset>
+        </jar>
+        <zip file="build/mail.src.zip">
+            <fileset dir="${src.dir}">
+                <include name="javax/mail/**/*.java"/>
+                <include name="com/sun/mail/**/*.java"/>
+            </fileset>
+        </zip>
+    </target>
+
+    <target name="imapjar" depends="init, compile, cook-manifest">
+        <copy file="META-INF/javamail.imap.provider"
+                tofile="META-INF/javamail.providers"/>
+        <mkdir dir="${release.dir}/lib"/>
+        <jar jarfile="${release.imap.jar}" manifest="${basedir}/build/manifest/imap.mf">
+            <metainf dir="${component.classes.dir}/META-INF"
+                     includes="LICENSE.txt"/>
+            <metainf dir="META-INF"
+                     includes="javamail.providers"/>
+            <fileset dir="${component.classes.dir}">
+                <include name="com/sun/mail/iap/*.class"/>
+                <include name="com/sun/mail/imap/*.class"/>
+            </fileset>
+        </jar>
+        <delete file="META-INF/javamail.providers"/>
+     </target>
+
+    <target name="pop3jar" depends="init, compile, cook-manifest">
+        <copy file="META-INF/javamail.pop3.provider"
+                tofile="META-INF/javamail.providers"/>
+        <mkdir dir="${release.dir}/lib"/>
+        <jar jarfile="${release.pop3.jar}" manifest="${basedir}/build/manifest/pop3.mf">
+            <metainf dir="${component.classes.dir}/META-INF"
+                     includes="LICENSE.txt"/>
+            <metainf dir="META-INF"
+                     includes="javamail.providers"/>
+            <fileset dir="${component.classes.dir}">
+                <include name="com/sun/mail/pop3/*.class"/>
+                <exclude name="com/sun/mail/pop3/POP3RemoteStore.class"/>
+            </fileset>
+        </jar>
+        <delete file="META-INF/javamail.providers"/>
+     </target>
+
+     <target name="smtpjar" depends="init, compile, cook-manifest">
+        <copy file="META-INF/javamail.smtp.provider"
+                tofile="META-INF/javamail.providers"/>
+        <copy file="META-INF/javamail.smtp.address.map"
+                tofile="META-INF/javamail.address.map"/>
+        <mkdir dir="${release.dir}/lib"/>
+        <jar jarfile="${release.smtp.jar}" manifest="${basedir}/build/manifest/smtp.mf">
+            <metainf dir="${component.classes.dir}/META-INF"
+                     includes="LICENSE.txt"/>
+            <metainf dir="META-INF"
+                     includes="javamail.providers, javamail.address.map"/>
+            <fileset dir="${component.classes.dir}">
+                <include name="com/sun/mail/smtp/*.class"/>
+            </fileset>
+        </jar>
+        <delete file="META-INF/javamail.providers"/>
+        <delete file="META-INF/javamail.address.map"/>
+     </target>
+
+     <target name="dsnjar" depends="init, dsncompile, cook-manifest">
+        <mkdir dir="${release.dir}/lib"/>
+        <jar jarfile="${release.dsn.jar}" manifest="${basedir}/build/manifest/dsn.mf">
+            <metainf dir="${component.classes.dir}/META-INF"
+                     includes="LICENSE.txt"/>
+            <fileset dir="${component.classes.dir}">
+                <include name="com/sun/mail/dsn/*.class"/>
+                <include name="com/sun/mail/dsn/mailcap"/>
+            </fileset>
+        </jar>
+     </target>
+
+
+     <target name="mailapijar" depends="init, compile, cook-manifest">
+        <mkdir dir="${release.dir}/lib"/>
+        <jar jarfile="${release.mailapi.jar}" manifest="${basedir}/build/manifest/mail.mf">
+            <metainf dir="${component.classes.dir}/META-INF"
+                     includes="LICENSE.txt"/>
+            <metainf dir="META-INF"
+          includes="javamail.default.providers, javamail.default.address.map"/>
+            <fileset dir="${component.classes.dir}">
+                <include name="javax/mail/**/*.class"/>
+                <include name="com/sun/mail/util/*.class"/>
+                <include name="com/sun/mail/handlers/*.class"/>
+            </fileset>
+        </jar>
+     </target>
+
+
+    <!-- javadocs -->
+    <target name="docs" depends="init, jar, jar">
+        <mkdir dir="${release.javadocs.dir}"/>
+        <javadoc packagenames="javax.mail, javax.mail, javax.mail.internet,
+                               javax.mail.search, javax.mail.event,
+                               javax.mail.util,
+                               com.sun.mail.imap,
+                               com.sun.mail.pop3,
+                               com.sun.mail.smtp,
+                               com.sun.mail.dsn"
+            destdir="${release.javadocs.dir}"
+            classpath="${javaee.jar}:${release.mail.jar}"
+            author="true"
+            version="true"
+            use="true"
+            overview="${src.dir}/overview.html"
+            windowtitle="JavaMail API documentation"
+            doctitle="JavaMail API documentation">
+            <group title="JavaMail API Packages" packages="javax.*"/>
+            <group title="Sun-specific Packages" packages="com.sun.*"/>
+                <fileset dir="${src.dir}">
+                    <include name="javax/mail/**/*.java"/>
+                    <include name="com/sun/mail/imap/IMAPFolder.java" />
+                    <include name="com/sun/mail/imap/IMAPStore.java" />
+                    <include name="com/sun/mail/imap/IMAPSSLStore.java" />
+                    <include name="com/sun/mail/imap/ACL.java" />
+                    <include name="com/sun/mail/imap/Rights.java" />
+                    <include name="com/sun/mail/imap/Quota.java" />
+                    <include name="com/sun/mail/pop3/POP3Store.java" />
+                    <include name="com/sun/mail/pop3/POP3SSLStore.java" />
+                    <include name="com/sun/mail/pop3/POP3Folder.java" />
+                    <include name="com/sun/mail/pop3/POP3Message.java" />
+                    <include name="com/sun/mail/smtp/SMTPMessage.java" />
+                    <include name="com/sun/mail/smtp/SMTPAddressFailedException.java" />
+                    <include name="com/sun/mail/smtp/SMTPAddressSucceededException.java" />
+                    <include name="com/sun/mail/smtp/SMTPSendFailedException.java" />
+                    <include name="com/sun/mail/smtp/SMTPTransport.java" />
+                    <include name="com/sun/mail/smtp/SMTPSSLTransport.java" />
+                    <include name="com/sun/mail/dsn/DeliveryStatus.java" />
+                    <include name="com/sun/mail/dsn/MessageHeaders.java" />
+                    <include name="com/sun/mail/dsn/MultipartReport.java" />
+                </fileset>
+        </javadoc>
+    </target>
+
+    <target name="push-to-maven-prepare" depends="-push-to-maven-init, jar"
+        description="creates an image for the 'push-to-maven' goal">
+        <delete dir="build/maven-repo" /><!-- clean it -->
+        <maven-repository-importer destdir="build/maven-repo" version="${release.version}">
+            <artifact jar="build/release/mail.jar" pom="mail.pom" srczip="build/mail.src.zip" />
+        </maven-repository-importer>
+    </target>
+
+    <target name="push-to-maven" depends="push-to-maven-prepare"
+        description="pushes jars to the java.net maven repository">
+        <cvs-import src="build/maven-repo" dest="glassfish/repo" />
+    </target>
+</project>

@@ -1,0 +1,6 @@
+<jsp:root version="2.0"
+    xmlns:jsp="http://java.sun.com/JSP/Page"
+    xmlns:tag="urn:jsptagdir:/WEB-INF/tags">
+  <tag:Scriptless/>
+  <jsp:scriptlet>String x;</jsp:scriptlet>
+</jsp:root>

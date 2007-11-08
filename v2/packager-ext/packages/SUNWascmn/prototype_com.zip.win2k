@@ -1,0 +1,6 @@
+lib/appserv-launch.jar
+lib/j2ee.jar
+lib/install/templates/asenv.bat.template
+lib/javaee.jar.pack.gz
+lib/appserv-ext.jar.pack.gz
+lib/appserv-rt.jar.pack.gz

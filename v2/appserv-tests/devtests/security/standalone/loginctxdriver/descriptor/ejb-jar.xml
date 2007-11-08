@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ejb-jar version="2.1" xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/ejb-jar_2_1.xsd">
+    <display-name>MyEntApp1-EJBModule</display-name>
+    <enterprise-beans>
+        <session>
+            <display-name>MySession1SB</display-name>
+            <ejb-name>MySession1Bean</ejb-name>
+            <home>MySession1RemoteHome</home>
+            <remote>MySession1Remote</remote>
+            <ejb-class>MySession1Bean</ejb-class>
+            <session-type>Stateless</session-type>
+            <transaction-type>Container</transaction-type>
+        </session>
+        </enterprise-beans>
+    <assembly-descriptor>
+
+
+        <security-role>
+       	    <role-name>staff</role-name>
+        </security-role>
+
+        <method-permission>
+	     <description>method authorized to only staff role</description>
+             <role-name>staff</role-name>
+             <method>
+	         <ejb-name>MySession1Bean</ejb-name>
+	         <method-name>businessMethod</method-name>
+	     </method>
+        </method-permission>
+
+
+        <container-transaction>
+            <method>
+                <ejb-name>MySession1Bean</ejb-name>
+                <method-name>*</method-name>
+            </method>
+            <trans-attribute>Required</trans-attribute>
+        </container-transaction>
+        </assembly-descriptor>
+    </ejb-jar>

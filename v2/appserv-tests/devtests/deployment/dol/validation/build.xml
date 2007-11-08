@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE project [
+<!ENTITY commonBuild SYSTEM "file:./../../config/common.xml">
+]>
+
+<project name="validationApp" default="usage" basedir=".">
+
+    &commonBuild;
+
+    <property name="testName" value="validation"/>
+
+    <target name="prepare" depends="init">
+        <property name="validation.war" 
+            value="${build}/war/${testName}.war"/>
+        <property name="validation.jar" 
+            value="${build}/ejb/${testName}-ejb.jar"/>
+        <property name="validation.rar" 
+            value="${build}/rar/${testName}.rar"/>
+        <property name="validation.car" 
+            value="${build}/car/${testName}-client.jar"/>
+
+        <property name="validation.ear.dir" value="${build}/ear"/>
+        <property name="validation.ear.war" 
+                  value="${validation.ear.dir}/${testName}.war"/>
+        <property name="validation.ear.jar" 
+                  value="${validation.ear.dir}/${testName}-ejb.jar"/>
+        <property name="validation.ear.rar" 
+                  value="${validation.ear.dir}/${testName}.rar"/>
+        <property name="validation.ear.car" 
+                  value="${validation.ear.dir}/${testName}-client.jar"/>
+        <property name="validation.ear" 
+                  value="${validation.ear.dir}/${testName}.ear"/>
+        <mkdir dir="${build}/war"/>
+        <mkdir dir="${build}/ejb"/>
+        <mkdir dir="${build}/rar"/>
+        <mkdir dir="${build}/car"/>
+        <mkdir dir="${build}/ear"/>
+    </target>
+
+    <target name="compile" depends="prepare">
+        <javac srcdir="."
+               destdir="${build}"
+               debug="on"
+               classpath="${inst}/lib/appserv-rt.jar"
+               failonerror="true">
+        </javac>
+    </target>
+
+    <target name="assemble" depends="prepare">
+        <!-- assemble the standalone archives -->
+        <jar destfile="${validation.war}" basedir="${basedir}/war"/>
+        <jar destfile="${validation.jar}" basedir="${basedir}/ejb"/>
+        <jar destfile="${validation.rar}" basedir="${basedir}/rar"/>
+        <jar destfile="${validation.car}" basedir="${basedir}/car"
+             manifest="${basedir}/car/META-INF/MANIFEST.MF"/>
+
+        <!-- assemble the ear -->
+        <delete>
+          <fileset dir="${validation.ear.dir}" includes="*/**"/>
+        </delete>
+        <jar destfile="${validation.ear.war}" basedir="${basedir}/ear/war"/>
+        <jar destfile="${validation.ear.jar}" basedir="${basedir}/ear/ejb"/>
+        <jar destfile="${validation.ear.rar}" basedir="${basedir}/ear/rar"/>
+        <jar destfile="${validation.ear.car}" basedir="${basedir}/ear/car" 
+             manifest="${basedir}/ear/car/META-INF/MANIFEST.MF"/>
+        <copy todir="${validation.ear.dir}">
+            <fileset dir="${basedir}/ear" includes="META-INF/*"/>
+        </copy>
+        <copy todir="${validation.ear.dir}">
+            <fileset dir="${basedir}/ear" includes="alt-ejb-jar.xml"/>
+        </copy>
+        <jar destfile="${validation.ear}" basedir="${validation.ear.dir}"/>
+
+    </target>
+
+    <target name="run.validator" depends="init">
+        <javaWithResult
+            fork="true"
+            failonerror="false"
+            jvm="${JAVA}"
+            classname="dol.validation.Validator"
+            output="${build}/${log.id}.output.log"
+            resultproperty="result">
+<!--
+            <jvmarg value="-Xdebug"/>
+            <jvmarg value="-Xrunjdwp:transport=dt_socket,address=6666,server=y,suspend=y"/>
+-->
+            <jvmarg value="-Dorg.omg.CORBA.ORBInitialHost=${http.host}"/>
+            <jvmarg value="-Dorg.omg.CORBA.ORBInitialPort=${orb.port}"/>
+            <jvmarg value="-Djava.endorsed.dirs=${inst}/lib/endorsed"/>
+            <jvmarg value="-Dcom.sun.aas.installRoot=${inst}"/>
+
+            <classpath>
+                <path location="${inst}/lib/appserv-rt.jar"/>
+                <path location="${inst}/lib/appserv-cmp.jar"/>
+                <path location="${inst}/lib/webservices-rt.jar"/>
+                <path location="${inst}/lib/webservices-tools.jar"/>
+                <path location="${inst}/lib/j2ee.jar"/>
+                <path location="${inst}/lib/dom.jar"/>
+                <path location="${build}"/>
+            </classpath>
+
+            <arg line="${arg.list}"/>
+
+        </javaWithResult>
+
+        <antcall target="processResult">
+            <param name="result" value="${result}"/>
+            <param name="log" value="${build}/${log.id}.output.log"/>
+        </antcall>
+    </target>
+
+    <target name="private-all" depends="prepare">
+        <antcall target="compile"/>
+        <antcall target="assemble"/>
+        <antcall target="declare-test">
+            <param name="description" value="dol/validation Test standalone war"/>
+        </antcall>
+        <antcall target="run.validator">
+            <param name="arg.list" value="${validation.war}"/>
+            <param name="log.id" value="1"/>
+        </antcall>
+        <antcall target="declare-test">
+            <param name="description" value="dol/validation Test standalone ejb jar"/>
+        </antcall>
+        <antcall target="run.validator">
+            <param name="arg.list" value="${validation.jar}"/>
+            <param name="log.id" value="2"/>
+        </antcall>
+
+        <antcall target="declare-test">
+            <param name="description" value="dol/validation Test standalone rar"/>
+        </antcall>
+        <antcall target="run.validator">
+            <param name="arg.list" value="${validation.rar}"/>
+            <param name="log.id" value="3"/>
+        </antcall>
+        <antcall target="declare-test">
+            <param name="description" value="dol/validation Test standalone car"/>
+        </antcall>
+        <antcall target="run.validator">
+            <param name="arg.list" value="${validation.car}"/>
+            <param name="log.id" value="4"/>
+        </antcall>
+        <antcall target="declare-test">
+            <param name="description" value="dol/validation Test ear"/>
+        </antcall>
+        <antcall target="run.validator">
+            <param name="arg.list" value="${validation.ear}"/>
+            <param name="log.id" value="5"/>
+        </antcall>
+    </target>
+
+    <target name="clobber" depends="clean">
+        <delete dir="${build}"/>
+    </target>
+
+    <target name="usage">
+        <antcall target="all"/>
+    </target>
+
+</project>

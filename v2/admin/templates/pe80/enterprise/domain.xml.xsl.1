@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<xsl:stylesheet version="1.0"
+                xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+  <xsl:output method="xml"
+	  indent="yes"
+          doctype-public="-//Sun Microsystems Inc.//DTD Application Server 9.1 Domain//EN"
+	  doctype-system="http://www.sun.com/software/appserver/dtds/sun-domain_1_3.dtd">
+  </xsl:output>
+
+  <xsl:template match="/">
+      <xsl:apply-templates select="node()|@*"/>
+  </xsl:template>
+
+  <xsl:template match="node()|@*">
+    <xsl:copy>
+      <xsl:apply-templates select="node()|@*"/>
+    </xsl:copy>
+  </xsl:template>
+
+  <xsl:template match="http-service">
+    <xsl:copy>
+      <xsl:element name="access-log"/>
+      <!--<xsl:apply-templates select="node()|@*"/> -->
+      <xsl:apply-templates select="http-listener | virtual-server | request-processing | keep-alive | connection-pool | http-protocol | http-file-cache"/>
+      <xsl:element name="property">
+        <xsl:attribute name="name">accessLoggingEnabled</xsl:attribute>
+        <xsl:attribute name="value">true</xsl:attribute>
+      </xsl:element>
+    </xsl:copy>
+  </xsl:template>
+
+  <xsl:template match="http-listener">
+    <xsl:copy>
+      <xsl:copy-of select="@*"/>
+    </xsl:copy>
+  </xsl:template>
+
+  <xsl:template match="http-listener[@security-enabled='false']">
+    <xsl:copy>
+      <xsl:copy-of select="@*"/>
+      <!-- 1535 on issue-tracker -->
+      <xsl:element name="property">
+        <xsl:attribute name="name">proxiedProtocols</xsl:attribute>
+        <xsl:attribute name="value">ws/tcp</xsl:attribute>
+      </xsl:element>
+    </xsl:copy>
+  </xsl:template>
+
+  <xsl:template match="http-listener[@security-enabled='true']">
+    <xsl:copy>
+      <xsl:copy-of select="@*"/>
+      <xsl:element name="ssl">
+        <xsl:attribute name="cert-nickname">s1as</xsl:attribute>
+      </xsl:element>
+    </xsl:copy>
+  </xsl:template>
+
+  <xsl:template match="http-listener[@id='admin-listener']">
+    <xsl:copy>
+      <xsl:copy-of select="@*"/>
+      <xsl:attribute name="security-enabled">true</xsl:attribute>
+      <xsl:element name="property">
+        <xsl:attribute name="name">proxiedProtocols</xsl:attribute>
+        <xsl:attribute name="value">http</xsl:attribute>
+      </xsl:element>
+    </xsl:copy>
+  </xsl:template>
+  
+  <xsl:template match="http-file-cache">
+    <xsl:copy>
+      <xsl:copy-of select="@*"/>
+      <xsl:attribute name="globally-enabled">true</xsl:attribute>
+      <xsl:attribute name="file-caching-enabled">true</xsl:attribute>
+    </xsl:copy> 
+  </xsl:template>
+
+   <xsl:template match="request-processing">
+     <xsl:copy>
+       <xsl:copy-of select="@*"/>
+     </xsl:copy>
+   </xsl:template>
+  
+  <xsl:template match="virtual-server">
+    <xsl:copy>                    
+      <xsl:apply-templates select="node()|@*"/>
+      <xsl:element name="property">
+        <xsl:attribute name="name">sso-enabled</xsl:attribute>
+        <xsl:attribute name="value">true</xsl:attribute>
+      </xsl:element>
+    </xsl:copy>
+  </xsl:template>
+
+  <!-- jmx-connector is secure for enterprise profile by default -->
+  <xsl:template match="jmx-connector">
+    <xsl:copy>
+      <xsl:copy-of select="@*"/>
+      <xsl:attribute name="security-enabled">true</xsl:attribute>
+      <xsl:element name="ssl">
+        <xsl:attribute name="cert-nickname">s1as</xsl:attribute>
+      </xsl:element>
+      <xsl:element name="property">
+        <xsl:attribute name="name">client-hostname</xsl:attribute>
+        <xsl:attribute name="value">%%%HOST_NAME%%%</xsl:attribute>
+      </xsl:element>
+    </xsl:copy>
+  </xsl:template>
+
+  <!-- use specific jvm-options -->
+  <xsl:template match="java-config">
+    <xsl:copy>
+      <xsl:apply-templates select="@*"/>
+      <xsl:element name="jvm-options">-server</xsl:element>
+      <xsl:element name="jvm-options">-XX:MaxPermSize=192m</xsl:element>
+      <xsl:element name="jvm-options">-Djavax.management.builder.initial=com.sun.enterprise.ee.admin.AppServerMBeanServerBuilder</xsl:element>
+      <xsl:element name="jvm-options">-Dcom.sun.appserv.pluggable.features=com.sun.enterprise.ee.server.pluggable.EEPluggableFeatureImpl</xsl:element>
+      <xsl:element name="jvm-options">-Djava.endorsed.dirs=${com.sun.aas.installRoot}/lib/endorsed</xsl:element>
+      <xsl:element name="jvm-options">-Djava.security.manager</xsl:element> 
+      <xsl:element name="jvm-options">-Djava.security.policy=${com.sun.aas.instanceRoot}/config/server.policy</xsl:element>
+      <xsl:element name="jvm-options">-Djava.security.auth.login.config=${com.sun.aas.instanceRoot}/config/login.conf</xsl:element>
+      <xsl:element name="jvm-options">-Dsun.rmi.dgc.server.gcInterval=3600000</xsl:element>
+      <xsl:element name="jvm-options">-Dsun.rmi.dgc.client.gcInterval=3600000</xsl:element>
+      <xsl:element name="jvm-options">-Xmx512m</xsl:element>
+      <xsl:element name="jvm-options">-Djava.ext.dirs=${com.sun.aas.javaRoot}/lib/ext${path.separator}${com.sun.aas.javaRoot}/jre/lib/ext${path.separator}${com.sun.aas.instanceRoot}/lib/ext${path.separator}${com.sun.aas.derbyRoot}/lib${path.separator}${com.sun.aas.installRoot}/lib/jdbcdrivers</xsl:element>
+      <xsl:element name="jvm-options">-Djdbc.drivers=org.apache.derby.jdbc.ClientDriver</xsl:element>
+      <xsl:element name="jvm-options">-Dcom.sun.enterprise.config.config_environment_factory_class=com.sun.enterprise.config.serverbeans.AppserverConfigEnvironmentFactory</xsl:element>
+      <xsl:element name="jvm-options">-Dcom.sun.enterprise.taglibs=appserv-jstl.jar,jsf-impl.jar</xsl:element>
+      <xsl:element name="jvm-options">-Dcom.sun.enterprise.taglisteners=jsf-impl.jar</xsl:element>
+      <xsl:element name="jvm-options">-XX:NewRatio=2</xsl:element>
+      <!-- use NSS for cluster profile -->
+      <xsl:element name="jvm-options">-Dcom.sun.appserv.nss.db=${com.sun.aas.instanceRoot}/config</xsl:element>
+      <!-- use NSS for cluster profile -->
+    </xsl:copy>
+  </xsl:template>
+
+  <!-- disable the availability-service -->
+  <xsl:template match="availability-service">
+    <xsl:copy>
+      <xsl:copy-of select="@*"/>
+      <xsl:attribute name="availability-enabled">true</xsl:attribute>
+      <xsl:copy-of select="node()"/>
+    </xsl:copy>
+  </xsl:template>
+  
+  <xsl:template match="servers">
+    <xsl:copy>
+      <xsl:apply-templates select="node()|@*"/>
+    </xsl:copy>
+    <xsl:element name="clusters"/>
+    <xsl:element name="node-agents"/>
+    <xsl:element name="lb-configs"/>
+    <xsl:element name="load-balancers"/>
+  </xsl:template>
+</xsl:stylesheet>

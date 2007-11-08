@@ -1,0 +1,6 @@
+<project>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>jstl</groupId>
+  <artifactId>jstl</artifactId>
+  <version>@VERSION@</version>
+</project>

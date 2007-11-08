@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE project [
+<!ENTITY commonSetup SYSTEM "file:./../../config/properties.xml">
+<!ENTITY commonBuild SYSTEM "file:./../../config/common.xml">
+<!ENTITY reporting SYSTEM "file:./../../config/report.xml">
+]>
+
+<project name="mail" default="mail" basedir=".">
+    &commonSetup;
+    &commonBuild;
+    &reporting;
+
+    <target name="mail" depends="init-common">
+        <mail from="${results.mailer}" tolist="${results.mailee}"
+            subject="Test results for WebContainer dev tests"
+            mailhost="ha21sca-mail1.sfbay.sun.com"
+            message="Quick Look test results...">                
+
+        <fileset dir="${env.APS_HOME}"  
+                includes="count.txt,test_results.html"/>
+        </mail>
+    </target>
+</project>

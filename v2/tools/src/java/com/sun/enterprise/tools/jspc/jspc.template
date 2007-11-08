@@ -1,0 +1,9 @@
+#!/bin/sh
+
+#
+# Copyright 1997-2007 Sun Microsystems, Inc.  All rights reserved.
+# Use is subject to license terms.
+#
+
+. "%CONFIG_HOME%/asenv.conf"
+"${AS_JAVA}/bin/java" -cp "${AS_INSTALL}/lib/javaee.jar":"${AS_INSTALL}/lib/appserv-ext.jar":"${AS_INSTALL}/lib/appserv-rt.jar":"${AS_ANT_LIB}/ant.jar":"${AS_INSTALL}/lib/appserv-jstl.jar":"${AS_INSTALL}/lib/jsf-api.jar":"${AS_INSTALL}/lib/jsf-impl.jar":"${AS_JAVA}/lib/tools.jar":"${AS_INSTALL}/lib" org.apache.jasper.JspC -schemas "/schemas/" -dtds "/dtds/" $*

@@ -1,0 +1,87 @@
+<?xml version="1.0"?>
+
+<!-- WSDL description of the Google Web APIs.
+     The Google Web APIs are in beta release. All interfaces are subject to
+     change as we refine and extend our APIs. Please see the terms of use
+     for more information. -->
+
+<definitions name="urn:GoogleSearch"
+             targetNamespace="urn:GoogleSearch"
+             xmlns:typens="urn:GoogleSearch"
+             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+             xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+             xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/"
+             xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+             xmlns="http://schemas.xmlsoap.org/wsdl/">
+
+  <!-- Types for search - result elements, directory categories -->
+  <import namespace="urn:GoogleSearch" location="GoogleSearch_types.wsdl"/>
+
+  <!-- Binding for Google Web APIs - RPC, SOAP over HTTP -->
+
+  <binding name="GoogleSearchBinding" type="typens:GoogleSearchPort">
+    <soap:binding style="rpc"
+                  transport="http://schemas.xmlsoap.org/soap/http"/>
+
+    <operation name="doGetCachedPage">
+      <soap:operation soapAction="urn:GoogleSearchAction"/>
+      <input>
+        <soap:body use="encoded"
+                   namespace="urn:GoogleSearch"
+                   encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </input>
+      <output>
+        <soap:body use="encoded"
+                   namespace="urn:GoogleSearch"
+                   encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </output>
+    </operation>
+
+    <operation name="doSpellingSuggestion">
+      <soap:operation soapAction="urn:GoogleSearchAction"/>
+      <input>
+        <soap:body use="encoded"
+                   namespace="urn:GoogleSearch"
+                   encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </input>
+      <output>
+        <soap:body use="encoded"
+                   namespace="urn:GoogleSearch"
+                   encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </output>
+    </operation>
+
+    <operation name="doGoogleSearch">
+      <soap:operation soapAction="urn:GoogleSearchAction"/>
+      <input>
+        <soap:body use="encoded"
+                   namespace="urn:GoogleSearch"
+                   encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </input>
+      <output>
+        <soap:body use="encoded"
+                   namespace="urn:GoogleSearch"
+                   encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </output>
+    </operation>
+
+    <operation name="helloOneWay">
+      <soap:operation soapAction="urn:GoogleSearchAction"/>
+      <input>
+        <soap:body use="encoded"
+                   namespace="urn:GoogleSearch"
+                   encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </input>
+      
+    </operation>
+
+  </binding>
+
+  <!-- Endpoint for Google Web APIs -->
+  <service name="GoogleSearchService">
+    <port name="GoogleSearchPort" binding="typens:GoogleSearchBinding">
+      <soap:address location="http://api.google.com/search/beta2"/>
+    </port>
+  </service>
+
+</definitions>

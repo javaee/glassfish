@@ -1,0 +1,19 @@
+#!/bin/sh
+
+#
+# Copyright 1997-2007 Sun Microsystems, Inc.  All rights reserved.
+# Use is subject to license terms.
+#
+
+# Script to run WSGen
+
+. %CONFIG_HOME%/asenv.conf
+
+# Set the default -Djava.endorsed.dirs argument
+JAVA_ENDORSED_DIRS="$AS_WEBSERVICES_LIB"/endorsed
+
+# Set CLASSPATH
+CLASSPATH="$AS_JAVA"/lib/tools.jar:"$AS_INSTALL"/lib/appserv-jstl.jar:"$AS_INSTALL"/lib/javaee.jar:"$AS_INSTALL/lib/webservices-rt.jar":"$AS_INSTALL/lib/webservices-tools.jar":"$AS_WEBSERVICES_LIB"/commons-logging.jar:"$AS_WEBSERVICES_LIB"/mail.jar:"$AS_WEBSERVICES_LIB"/activation.jar
+
+"$AS_JAVA/bin/java" -Dcom.sun.org.apache.commons.logging.Log=com.sun.org.apache.commons.logging.impl.SimpleLog -Dcom.sun.org.apache.commons.logging.simplelog.defaultlog=warn -Djava.endorsed.dirs="$JAVA_ENDORSED_DIRS" -cp "$CLASSPATH" com.sun.tools.ws.WsGen "$@"
+

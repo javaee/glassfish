@@ -1,0 +1,62 @@
+#!/bin/sh
+#set -x
+
+#
+# Copyright 1997-2007 Sun Microsystems, Inc.  All rights reserved.
+# Use is subject to license terms.
+#
+
+# Sample script for launching S1AS Server using the Launcher
+
+# Resolve links - $0 may be a softlink
+PRG="$0"
+ASENV_CONF_LOCATION="%%%CONFIG_HOME%%%"
+
+SERVER_NAME=%%%SERVER_NAME%%%
+
+while [ -h "$PRG" ]; do
+  ls=`ls -ld "$PRG"`
+  link=`expr "$ls" : '.*-> \(.*\)$'`
+  if expr "$link" : '.*/.*' > /dev/null; then
+    PRG="$link"
+  else
+    PRG=`dirname "$PRG"`/"$link"
+  fi
+done
+
+# Get standard environment variables
+PRGDIR=`dirname "$PRG"`
+# echo "PRGDIR => $PRGDIR"
+if [ -r $ASENV_CONF_LOCATION/asenv.conf ]; then
+  . "$ASENV_CONF_LOCATION/asenv.conf"
+fi
+
+INSTANCE_ROOT="%%%INSTANCE_ROOT%%%"
+
+JAVA_HOME="$AS_JAVA"
+# Make sure prerequisite environment variables are set
+if [ -z "$JAVA_HOME" ]; then
+  echo "The JAVA_HOME environment variable is not defined"
+  echo "This environment variable is needed to run this program"
+  exit 1
+fi
+
+LD_LIBRARY_PATH=$AS_NSS:$AS_INSTALL/lib:/usr/lib/lwp:$LD_LIBRARY_PATH
+export LD_LIBRARY_PATH
+
+cd "$INSTANCE_ROOT/config"
+
+# Execute the Launcher using the "s1as-server" target
+#"$JAVA_HOME"/bin/java -classpath "$AS_INSTALL/lib":"$AS_INSTALL/lib/commons-launcher.jar":"$AS_INSTALL/lib/appserv-admin.jar":"$AS_INSTALL/lib/appserv-rt.jar":"$AS_ANT_LIB/ant.jar":"$AS_ANT_LIB/optional.jar":"$AS_INSTALL/lib/endorsed/xercesImpl.jar":"$AS_INSTALL/lib/endorsed/xalan.jar" -Dcom.sun.aas.installRoot="$AS_INSTALL" -Dcom.sun.aas.instanceRoot="$INSTANCE_ROOT" -Dcom.sun.aas.configRoot="$ASENV_CONF_LOCATION" LauncherBootstrap  s1as-server -DJAVA_HOME="$JAVA_HOME" -Dcom.sun.aas.instanceName="$SERVER_NAME" -DCATALINA_OPTS="$CATALINA_OPTS" stop
+
+# set hold flag to the value handed into the script
+HOLD_FLAG=return;
+
+#executing launcher
+"$JAVA_HOME"/bin/java -cp "$AS_INSTALL/lib/appserv-rt.jar":"$AS_INSTALL/lib/appserv-admin.jar":"$AS_INSTALL/lib/javaee.jar" -Dcom.sun.enterprise.config.config_environment_factory_class=com.sun.enterprise.config.serverbeans.AppserverConfigEnvironmentFactory -Dcom.sun.aas.installRoot="$AS_INSTALL" -Dcom.sun.aas.instanceRoot="$INSTANCE_ROOT"  -Dcom.sun.aas.configRoot="$ASENV_CONF_LOCATION" -DJAVA_HOME="$JAVA_HOME" -Dcom.sun.aas.instanceName="$SERVER_NAME" -Ddomain.name="$DOMAIN_NAME" -DCATALINA_OPTS="$CATALINA_OPTS" -Djava.util.logging.manager=com.sun.enterprise.server.logging.ServerLogManager -Dcom.sun.aas.launcherReturn="$HOLD_FLAG" -Dcom.sun.aas.processName="as9-server" -Dcom.sun.aas.processLauncher="SE" com.sun.enterprise.tools.launcher.ProcessLauncher stop verbose
+
+# execute script if flag set for holding process
+if [ "$HOLD_FLAG" = hold ]
+then
+    . ${INSTANCE_ROOT}/bin/stop_temp.sh
+fi

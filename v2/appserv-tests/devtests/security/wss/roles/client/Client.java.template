@@ -1,0 +1,149 @@
+/*
+ * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
+ * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+ */
+package com.sun.s1asdev.security.wss.roles.client;
+
+import java.util.Map;
+
+import javax.xml.ws.BindingProvider;
+import javax.xml.ws.WebServiceRef;
+
+import com.sun.ejte.ccl.reporter.SimpleReporterAdapter;
+
+import com.sun.s1asdev.security.wss.roles.ejbws.HelloEjb;
+import com.sun.s1asdev.security.wss.roles.ejbws.WssRolesEjbService;
+import com.sun.s1asdev.security.wss.roles.ejbws2.HelloEjb2;
+import com.sun.s1asdev.security.wss.roles.ejbws2.WssRolesEjb2Service;
+import com.sun.s1asdev.security.wss.roles.servletws.HelloServlet;
+import com.sun.s1asdev.security.wss.roles.servletws.WssRolesServletService;
+
+public class Client {
+    private static SimpleReporterAdapter stat =
+            new SimpleReporterAdapter("appserv-tests");
+    private static String testSuite = "Sec:WSS Roles test ";
+
+    @WebServiceRef(wsdlLocation="http://@HOST@:@PORT@/WssRolesEjbService/HelloEjb?WSDL")
+    private static WssRolesEjbService service;
+
+    @WebServiceRef(wsdlLocation="http://@HOST@:@PORT@/WssRolesEjb2Service/HelloEjb2?WSDL")
+    private static WssRolesEjb2Service service2;
+
+    @WebServiceRef(wsdlLocation="http://@HOST@:@PORT@/security-wss-roles-web/webservice/WssRolesServletService/HelloServlet?WSDL")
+    private static WssRolesServletService service3;
+
+    public static void main(String[] args) {
+        boolean authprop =
+            (args != null && args.length > 0 && "authprop".equals(args[0]));
+
+        if (authprop) {
+            System.out.println("Authenticate through BindingProvider property");
+            stat.addDescription("security-wss-roles: authprop");
+        } else {
+            stat.addDescription("security-wss-roles");
+        }
+
+        String description = null;
+        try {
+            // first ejb ws
+            HelloEjb port = service.getHelloEjbPort();
+
+            if (authprop) {
+                authenticate((BindingProvider)port);
+            }
+
+            description = testSuite + " ejbws1: hello";
+            port.hello("Sun");
+            stat.addStatus(description, stat.PASS);  
+
+            description = testSuite + " ejbws1: rolesAllowed1";
+            port.rolesAllowed1("Sun");
+            stat.addStatus(description, stat.PASS);  
+
+            try {
+                description = testSuite + " ejbws1: rolesAllowed2";
+                port.rolesAllowed2("Sun");
+                stat.addStatus(description, stat.FAIL);  
+            } catch(Exception e) {
+                System.out.println("Expected failure: " + e);
+                stat.addStatus(description, stat.PASS);  
+            }
+
+            description = testSuite + " ejbws1: permitAll";
+            port.permitAll("Sun");
+            stat.addStatus(description, stat.PASS);  
+
+            try {
+                description = testSuite + " ejbws1: denyAll";
+                port.denyAll("Sun");
+                stat.addStatus(description, stat.FAIL);  
+            } catch(Exception e) {
+                System.out.println("Expected failure: " + e);
+                stat.addStatus(description, stat.PASS);  
+            }
+
+            try {
+                description = testSuite + " ejbws1: runAs1";
+                port.runAs1();
+                stat.addStatus(description, stat.FAIL);
+            } catch(Exception e) {
+                System.out.println("Expected failure: " + e);
+                stat.addStatus(description, stat.PASS);
+            }
+
+            description = testSuite + " ejbws1: runAs2";
+            port.runAs2();
+            stat.addStatus(description, stat.PASS);
+
+            // second ejb ws
+            HelloEjb2 port2 = service2.getHelloEjb2Port();
+
+            if (authprop) {
+                authenticate((BindingProvider)port2);
+            }
+
+            description = testSuite + " ejbws2: rolesAllowed1";
+            port2.rolesAllowed1("Sun");
+            stat.addStatus(description, stat.PASS);  
+
+            try {
+                description = testSuite + " ejbws2: rolesAllowed2";
+                port2.rolesAllowed2("Sun");
+                stat.addStatus(description, stat.FAIL);  
+            } catch(Exception e) {
+                System.out.println("Expected failure: " + e);
+                stat.addStatus(description, stat.PASS);  
+            }
+
+            // first servlet ws
+            HelloServlet port3 = service3.getHelloServletPort();
+            if (authprop) {
+                authenticate((BindingProvider)port3);
+            }
+            description = testSuite + " serlvet: hello";
+            String msg = port3.hello("Sun");
+            if (msg != null && msg.startsWith("javaee")) {
+                stat.addStatus(description, stat.PASS);  
+            } else {
+                stat.addStatus(description, stat.FAIL);  
+            }
+
+        } catch(Exception ex) {
+            ex.printStackTrace();
+            stat.addStatus(description, stat.FAIL);
+        }
+
+        if (authprop) {
+            stat.printSummary("security-wss-roles: authprop");
+        } else {
+            stat.printSummary("security-wss-roles");
+        }
+    }
+
+    private static void authenticate(BindingProvider bd) {
+        System.out.println("authenticate through BindingProvider property");
+        Map<String, Object> requestContext = bd.getRequestContext();
+        requestContext.put(BindingProvider.USERNAME_PROPERTY, "javaee");
+        requestContext.put(BindingProvider.PASSWORD_PROPERTY, "javaee");
+    }
+}
