@@ -1,0 +1,202 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <prerequisites>
+        <maven>2.0.4</maven>
+    </prerequisites>
+    <groupId>org.glassfish</groupId>
+    <artifactId>glassfish-parent</artifactId>
+    <packaging>pom</packaging>
+    <version>10.0-SNAPSHOT</version>
+    <name>GlassFish Parent Project</name>
+    <url>http://glassfish.org/</url>
+    <scm>
+        <connection>scm:svn:https://${java.net.usernane}@glassfish-svn.dev.java.net/glassfish-svn/gfsvn/trunk/v3/${pom.artifactId}</connection>
+    </scm>
+    <issueManagement>
+        <system>IssueTracker</system>
+        <url>https://glassfish.dev.java.net/servlets/ProjectIssues</url>
+    </issueManagement>
+    <licenses>
+      <license>
+        <name>CDDL</name>
+        <url>http://www.sun.com/cddl</url>
+        <distribution>repo</distribution>
+        <comments>A business-friendly OSS license</comments>
+      </license>
+    </licenses>
+  	<organization>
+    	<name>Sun Microsystems, Inc.</name>
+    	<url>http://www.sun.com</url>
+  	</organization>    
+    <mailingLists>
+        <mailingList>
+            <name>dev</name>
+            <subscribe>https://glassfish.dev.java.net/servlets/ProjectMailingListList</subscribe>
+            <post>dev@glassfish.dev.java.net</post>
+            <archive>https://glassfish.dev.java.net/servlets/SummarizeList?listName=dev</archive>
+        </mailingList>
+        <mailingList>
+            <name>users</name>
+            <subscribe>https://glassfish.dev.java.net/servlets/ProjectMailingListList</subscribe>
+            <post>users@glassfish.dev.java.net</post>
+            <archive>https://glassfish.dev.java.net/servlets/SummarizeList?listName=users</archive>
+        </mailingList>
+        <mailingList>
+            <name>issues</name>
+            <subscribe>https://glassfish.dev.java.net/servlets/ProjectMailingListList</subscribe>
+            <post>issues@glassfish.dev.java.net</post>
+            <archive>https://glassfish.dev.java.net/servlets/SummarizeList?listName=issues</archive>
+        </mailingList>
+        <mailingList>
+            <name>cvs</name>
+            <subscribe>https://glassfish.dev.java.net/servlets/ProjectMailingListList</subscribe>
+            <post>cvs@glassfish.dev.java.net</post>
+            <archive>https://glassfish.dev.java.net/servlets/SummarizeList?listName=cvs</archive>
+        </mailingList>
+    </mailingLists>
+    
+    <properties>
+        <ant.version>1.7.0</ant.version>
+        <glassfish.version>10.0-SNAPSHOT</glassfish.version>
+        <javaee-api.version>5.0</javaee-api.version>
+        <activation-api.version>1.1</activation-api.version> 
+        <transaction-api.version>1.1</transaction-api.version>
+        <mail-api.version>1.4</mail-api.version>        
+        <mail.version>1.4.1ea-SNAPSHOT</mail.version>
+        <ejb-api.version>3.0</ejb-api.version>
+        <persistence-api.version>1.0</persistence-api.version>
+        <connector-api.version>1.5</connector-api.version>
+        <management-api.version>1.1</management-api.version>
+        <jms-api.version>1.1</jms-api.version>
+        <security-api.version>1.1</security-api.version>
+        <servlet-api.version>2.5</servlet-api.version>
+        <jsp-api.version>2.1.1-SNAPSHOT</jsp-api.version>
+        <deployment-api.version>1.2</deployment-api.version>
+        <jaxrpc-api.version>1.1</jaxrpc-api.version>
+        <grizzly.version>1.5.2</grizzly.version>
+        <jasper-jsr199.version>9.1</jasper-jsr199.version>
+        <com.sun.commons.logging.version>1.0.4</com.sun.commons.logging.version>
+        <com.sun.commons.modeler.version>1.1</com.sun.commons.modeler.version>
+        <com.sun.commons.digester.version>1.5</com.sun.commons.digester.version>
+        <com.sun.commons.beanutils.version>1.6.1-20070314</com.sun.commons.beanutils.version> 
+        <com.sun.commons.collections.version>2.1</com.sun.commons.collections.version>  
+        <hk2.version>0.2-SNAPSHOT</hk2.version>
+        <jsr223-api.version>1.0</jsr223-api.version>
+        <phobos.version>0.5.10</phobos.version>
+        <pe.version>10.0-SNAPSHOT</pe.version>
+        <pe-base.version>10.0-SNAPSHOT</pe-base.version>
+        <product.name>GlassFish</product.name>
+        <build.id>b001</build.id>
+        <abbrev_product_name>GlassFish</abbrev_product_name>
+        <major_version>10</major_version>
+        <minor_version>0</minor_version>
+        <nucleus.version>0.1-SNAPSHOT</nucleus.version>
+    </properties>
+    <modules>
+    	<module>build/maven-glassfish-plugin</module>
+    	<module>common</module>
+    	<module>admin</module>
+    	<module>core</module>
+    	<module>web</module>
+    	<module>extras</module>
+    	<module>distributions</module>
+    </modules> 
+    <repositories>
+        <repository>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+            <id>my-m1-repository</id>
+            <name>Maven 1.x Repository</name>
+            <layout>legacy</layout>
+            <url>http://download.java.net/javaee5/external/shared</url>
+        </repository>
+        <repository>
+            <id>glassfish-repository</id>
+            <name>Java.net Repository for Glassfish</name>
+            <url>http://download.java.net/maven/glassfish</url>
+        </repository>
+        <repository>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+            <id>java-dev-repository</id>
+            <name>Maven 1.x java.dev Snapshot Repository</name>
+            <layout>legacy</layout>
+            <url>http://download.java.net/maven/1</url>
+        </repository>
+        <repository>
+            <id>repo1.maven.org</id>
+            <name>Maven 2 default Repository</name>
+            <url>http://repo1.maven.org/maven2/</url>
+        </repository>
+        
+        <repository>
+            <id>maven2.java.net</id>
+            <name>Java.net Repository for Maven 2</name>
+            <url>http://download.java.net/maven/2</url>
+        </repository>
+    </repositories>
+    <pluginRepositories>
+        <pluginRepository>
+            <id>glassfish-repository</id>
+            <name>Java.net Repository for Maven 2</name>
+            <url>http://download.java.net/maven/glassfish</url>
+        </pluginRepository>
+        <pluginRepository>
+            <id>maven2.java.net</id>
+            <name>Java.net Repository for Maven 2</name>
+            <url>http://download.java.net/maven/2</url>
+        </pluginRepository>
+    </pluginRepositories>
+    <distributionManagement>
+        <repository>
+            <!-- the ID maps to ~/.m2/settings.xml, so don't change the ID -->
+            <id>glassfish-repository</id>
+            <uniqueVersion>false</uniqueVersion>
+            <url>sftp://trx2.sun.com:/export/nfs/dlc/maven/glassfish</url>
+        </repository>
+    </distributionManagement>
+    <build>
+        <sourceDirectory>src/main/java</sourceDirectory>      
+        <plugins>
+            <plugin>
+                <groupId>org.glassfish.build</groupId>
+                <artifactId>maven-glassfish-plugin</artifactId>
+                <configuration>
+                    <!-- configuration for the checkout mojo -->
+                    <checkoutDirectory>.</checkoutDirectory>
+                    <skipCheckoutIfExists>true</skipCheckoutIfExists>
+                    <!-- configuration for the run mojo -->
+                    <distribution>
+                        <groupId>org.glassfish.distributions</groupId>
+                        <artifactId>pe</artifactId>
+                        <version>${pe.version}</version>
+                    </distribution>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.sun.enterprise</groupId>
+                <artifactId>hk2-maven-plugin</artifactId>
+                <version>${hk2.version}</version>
+                <extensions>true</extensions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.5</source>
+                    <target>1.5</target>
+                </configuration>
+            </plugin>
+             <plugin>
+                 <groupId>org.apache.maven.plugins</groupId>
+                 <artifactId>maven-surefire-plugin</artifactId>
+                 <version>2.3</version>
+                 <!--configuration>
+                   <argLine>-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=9009</argLine>
+                 </configuration-->
+             </plugin>
+        </plugins>
+    </build>
+</project>

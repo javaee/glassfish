@@ -1,0 +1,207 @@
+/*
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+ * 
+ * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * 
+ * The contents of this file are subject to the terms of either the GNU
+ * General Public License Version 2 only ("GPL") or the Common Development
+ * and Distribution License("CDDL") (collectively, the "License").  You
+ * may not use this file except in compliance with the License. You can obtain
+ * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
+ * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
+ * language governing permissions and limitations under the License.
+ * 
+ * When distributing the software, include this License Header Notice in each
+ * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
+ * Sun designates this particular file as subject to the "Classpath" exception
+ * as provided by Sun in the GPL Version 2 section of the License file that
+ * accompanied this code.  If applicable, add the following below the License
+ * Header, with the fields enclosed by brackets [] replaced by your own
+ * identifying information: "Portions Copyrighted [year]
+ * [name of copyright owner]"
+ * 
+ * Contributor(s):
+ * 
+ * If you wish your version of this file to be governed by only the CDDL or
+ * only the GPL Version 2, indicate your decision by adding "[Contributor]
+ * elects to include this software in this distribution under the [CDDL or GPL
+ * Version 2] license."  If you don't indicate a single choice of license, a
+ * recipient has the option to distribute your version of this file under
+ * either the CDDL, the GPL Version 2 or to extend the choice of license to
+ * its licensees as provided above.  However, if you add GPL Version 2 code
+ * and therefore, elected the GPL Version 2 license, then the option applies
+ * only if the new code is made subject to such option by the copyright
+ * holder.
+ */
+package com.sun.enterprise.deployment.archivist;
+
+import com.sun.enterprise.deploy.shared.ArchiveFactory;
+import org.glassfish.api.ContractProvider;
+import org.glassfish.api.deployment.archive.ArchiveHandler;
+import org.glassfish.api.deployment.archive.ReadableArchive;
+import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.Singleton;
+
+import javax.enterprise.deploy.shared.ModuleType;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
+/**
+ * This factory class is responsible for creating Archivists
+ *
+ * @author  Jerome Dochez
+ */
+@Service
+@Scoped(Singleton.class)
+public class ArchivistFactory implements ContractProvider {
+    
+    @Inject
+    ArchiveHandler[] archivists;
+
+    // TODO: right now the ApplicationArchivist is not in the list
+    // to avoid circular injection
+    @Inject
+    PrivateArchivist[] privateArchivists;
+
+    @Inject
+    ArchiveFactory archiveFactory;
+
+
+    /**
+     * @return a new Archivist implementation for the type passed. 
+     * Supported types are defined in the application.xml DTD 
+     */
+    public ArchiveHandler getArchivistForType(ModuleType type) {
+
+        return getArchivistForType(type.toString());
+    }
+
+    /**
+     * @return a new Archivist implementation for the type passed.
+     * Supported types are defined in the application.xml DTD
+     */
+    public ArchiveHandler getArchivistForType(String type) {
+        for (ArchiveHandler archivist : archivists) {
+           Service service = archivist.getClass().getAnnotation(Service.class);
+           if (type.equals(service.name())) {
+               return archivist;
+           }
+        }
+        return null;
+    }
+    /**
+     * @return a new Archivist implementation for the archive file type
+     * Supported J2EE modules are defined in the J2EE platform spec
+     */
+    public ArchiveHandler getArchivist(File jarFileOrDirectory) throws IOException {
+        ReadableArchive archive = archiveFactory.openArchive(jarFileOrDirectory);
+        if (archive!=null) {
+            return getArchivist(archive);
+        }
+        return null;
+    }
+    
+    /** 
+     * @return a new Archivist implementation for the archive file type
+     * Supported J2EE modules are defined in the J2EE platform spec
+     */
+    public ArchiveHandler getArchivist(String path) throws IOException {
+
+        File f = new File(path);
+        if (!f.exists()) {
+            throw new FileNotFoundException(path);
+        }
+        return getArchivist(f);
+    }
+        
+    /** 
+     * @return a new Archivist implementation for the archive file type
+     * Supported J2EE modules are defined in the J2EE platform spec
+     */
+    public ArchiveHandler getArchivist(ReadableArchive archive) throws IOException {
+        for (ArchiveHandler a : archivists) {
+            if (a.handles(archive)) {
+                return a;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Returns an archivist for this handler
+     * TODO : need a much cleaner relationship between handlers and archivists.
+     */
+    public Archivist getArchivist(ArchiveHandler handler) {
+        if (handler!=null && handler instanceof Archivist) {
+            return (Archivist) handler;
+        }
+        return null;
+        
+    }
+
+    public Archivist getArchivist(ReadableArchive archive, 
+        ClassLoader cl) throws IOException {
+        Archivist archivist = getPrivateArchivistFor(archive);
+        archivist.setClassLoader(cl);
+        return archivist;
+    }
+
+    /**
+     * Only archivists should have access to this API. we'll see how it works,
+     * @param moduleType
+     * @return
+     * @throws IOException
+     */
+    Archivist getPrivateArchivistFor(ModuleType moduleType) throws IOException {
+        ArchiveHandler handler = getArchivistForType(moduleType);
+        if (handler!=null && handler instanceof Archivist) {
+            return (Archivist) handler;
+        }
+        return null;
+    }
+
+    /**
+     * Only archivists should have access to this API. we'll see how it works,
+     * @param archive 
+     * @return
+     * @throws IOException
+     */
+    Archivist getPrivateArchivistFor(ReadableArchive archive) throws IOException {
+        //first, check the existence of any deployment descriptors
+        for (PrivateArchivist pa : privateArchivists) {
+            Archivist a = Archivist.class.cast(pa);
+            if (a.hasStandardDeploymentDescriptor(archive) ||
+                    a.hasRuntimeDeploymentDescriptor(archive)) {
+                return a;
+            }
+        }
+
+        // Java EE 5 Specification: Section EE.8.4.2.1
+
+        //second, check file extension if any, excluding .jar as it needs
+        //additional processing
+        String uri = archive.getURI().getPath();
+        File file = new File(uri);
+        if (!file.isDirectory() && !uri.endsWith(Archivist.EJB_EXTENSION)) {
+            for (PrivateArchivist pa : privateArchivists) {
+                Archivist a = Archivist.class.cast(pa);
+                if (uri.endsWith(a.getArchiveExtension())) {
+                    return a;
+                }
+            }
+        }
+
+        //finally, still not returned here, call for additional processing
+        for (PrivateArchivist pa : privateArchivists) {
+            Archivist a = Archivist.class.cast(pa);
+            if (a.postHandles(archive)) {
+                return a;
+            }
+        }
+ 
+        return null;
+    }
+}
