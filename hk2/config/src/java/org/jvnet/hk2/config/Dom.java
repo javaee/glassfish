@@ -29,7 +29,7 @@ import java.util.StringTokenizer;
  *
  * @author Kohsuke Kawaguchi
  */
-public final class Dom extends LazyInhabitant {
+public class Dom extends LazyInhabitant {
     /**
      * Model drives the interpretation of this DOM.
      */

@@ -26,13 +26,13 @@ import java.util.ArrayList;
  *
  * @author Kohsuke Kawaguchi
  */
-public final class ConfigParser {
+public class ConfigParser {
     /**
      * This is where we put parsed inhabitants into.
      */
-    /*package*/ final Habitat habitat;
+    protected final Habitat habitat;
 
-    /*package*/ final Map<Inhabitant<? extends ConfigInjector>,ConfigModel> models = new HashMap<Inhabitant<? extends ConfigInjector>, ConfigModel>();
+    protected final Map<Inhabitant<? extends ConfigInjector>,ConfigModel> models = new HashMap<Inhabitant<? extends ConfigInjector>, ConfigModel>();
 
     public ConfigParser(Habitat habitat) {
         this.habitat = habitat;
@@ -92,7 +92,7 @@ public final class ConfigParser {
     }
 
     private Dom handleElement(XMLStreamReader in, DomDocument document, Dom parent, ConfigModel model) throws XMLStreamException {
-        final Dom dom = new Dom(habitat,document,parent,model,in);
+        final Dom dom = createDom(in, document, parent, model);
 
         // read values and fill DOM
         dom.fillAttributes(in);
@@ -132,6 +132,14 @@ public final class ConfigParser {
             habitat.addIndex(dom,model.targetTypeName,key);
 
         return dom;
+    }
+
+    /**
+     * Derived classes can create a sub-type of {@link Dom} to enhance
+     * the ability of the DOM tree.
+     */
+    protected Dom createDom(XMLStreamReader in, DomDocument document, Dom parent, ConfigModel model) {
+        return new Dom(habitat,document,parent,model,in);
     }
 
     private static final XMLInputFactory xif = XMLInputFactory.newInstance();
