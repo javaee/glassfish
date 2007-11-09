@@ -25,6 +25,7 @@ package com.sun.enterprise.v3.deployment;
 
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.v3.contract.ApplicationMetaDataPersistence;
 import com.sun.enterprise.v3.data.ApplicationInfo;
 import com.sun.enterprise.v3.server.ApplicationLifecycle;
@@ -148,6 +149,7 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
 
         }
 
+        File expansionDir=null;
         try {
 
             ArchiveHandler archiveHandler = getArchiveHandler(archive);
@@ -158,10 +160,12 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
             }
             File source = new File(archive.getURI().getSchemeSpecificPart());
             if (!source.isDirectory()) {
-                File expansionDir = new File(env.getApplicationRepositoryPath(), name);
+                expansionDir = new File(env.getApplicationRepositoryPath(), name);
                 if (!expansionDir.mkdirs()) {
                     report.setMessage(localStrings.getLocalString("deploy.cannotcreateexpansiondir", "Error while creating directory for jar expansion"));
                     report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                    // we don't own it, we don't delete it.
+                    expansionDir=null;
                     return;
                 }
                 try {
@@ -206,12 +210,16 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
 
                 metaData.save(name, moduleProps);
             }
+        } catch(Exception e) {
+            if (expansionDir!=null) {
+               FileUtils.whack(expansionDir);
+            }            
         } finally {
             try {
                 archive.close();
             } catch(IOException e) {
                 logger.log(Level.INFO, "Error while closing deployable artifact : " + file.getAbsolutePath(), e);
-            }            
+            }
         }
 
     }        

@@ -115,7 +115,14 @@ public class ContainerStarter {
         // first try, we get the glue code from our repositories.
         Module glueModule=null;
         try {
-            glueModule = modulesRegistry.makeModuleFor("com.sun.enterprise.glassfish:" + bundleName, version);
+            // TODO : this is really bad hack jerome
+            glueModule = modulesRegistry.makeModuleFor("org.glassfish.extras:" + bundleName, version);
+            if (glueModule==null) {
+                glueModule = modulesRegistry.makeModuleFor("org.glassfish.web:" + bundleName, version); 
+            }
+        } catch(ResolveError e) {
+            logger.log(Level.SEVERE, "Resolution Error ", e);
+            return null;
         } catch(Exception e) {
             // various bad things can happen here, log and return
             logger.severe(e.getMessage());

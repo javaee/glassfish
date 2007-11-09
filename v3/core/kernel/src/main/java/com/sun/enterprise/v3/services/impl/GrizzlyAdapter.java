@@ -246,7 +246,7 @@ public class GrizzlyAdapter implements Startup, com.sun.grizzly.tcp.Adapter, Pos
                 if (dispatchTo!=null) {
                     ClassLoader cl = null;
                     if (container!=null) {
-                        container.getClassLoader();
+                        cl = container.getClassLoader();
                     }
                     dispatcher.dispath(dispatchTo, cl, req, res);
 
