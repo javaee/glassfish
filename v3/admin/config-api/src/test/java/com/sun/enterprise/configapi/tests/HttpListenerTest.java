@@ -87,12 +87,12 @@ public class HttpListenerTest extends ConfigApiTest {
         
         ConfigBeansUtilities.apply((new SingleConfigCode<HttpListener>() {
             public boolean run(HttpListener okToChange) throws PropertyVetoException {
-                okToChange.setId("My new server name");
+                okToChange.setAcceptorThreads("2");
                 logger.fine("ID inside the transaction is " + okToChange.getId());
                 return true;
             }
         }), listener);
         logger.fine("ID outside the transaction is " + listener.getId());
-        assertTrue(listener.getId().equals("My new server name"));
+        assertTrue(listener.getAcceptorThreads().equals("2"));
     }    
 }
