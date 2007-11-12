@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+
+    <parent>
+        <groupId>org.glassfish.admin</groupId>
+        <artifactId>admin</artifactId>
+        <version>10.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>jmx-remote</artifactId>
+    <packaging>hk2-jar</packaging>
+    <name>JMX Remote Service</name>
+    <description>Private APIs for JMX connector infrastructure used internally within Glassfish V3</description>
+    
+    <developers>
+        <developer>
+            <id>ne110415</id>
+            <name>Nandini Ektare</name>
+            <url>http://blogs.sun.com/nektare</url>
+            <organization>Sun Microsystems, Inc.</organization>
+            <roles>
+                <role>lead</role>
+                <role>developer</role>
+            </roles>
+        </developer>
+    </developers>
+    <build>
+	<resources>
+            <resource>
+                <directory>src/main/java</directory>
+                <includes>
+                    <include>**/*.properties</include>
+                </includes>
+            </resource>
+        </resources>
+    </build>
+    <dependencies>
+        <!-- <dependency>
+            <groupId>com.sun.jmx</groupId>
+            <artifactId>remote-api</artifactId>
+            <version>1.0</version>
+        </dependency>        
+        <dependency
+            <groupId>com.sun.commons</groupId>
+            <artifactId>logging-api</artifactId>
+            <version>${com.sun.commons.logging.version}</version>
+        </dependency> -->        
+	<dependency>
+            <groupId>org.jvnet.opendmk</groupId>
+            <artifactId>jmxremote_optional</artifactId>
+            <version>1.0_01-ea</version>
+        </dependency>         
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+            <version>${servlet-api.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.common</groupId>
+            <artifactId>glassfish-api</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.external</groupId>
+            <artifactId>grizzly-http</artifactId>
+            <version>${grizzly.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.core</groupId>
+            <artifactId>kernel</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
+</project>
