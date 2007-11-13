@@ -1,0 +1,64 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.glassfish</groupId>
+        <artifactId>glassfish-parent</artifactId>
+        <version>10.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+    <groupId>org.glassfish.api</groupId>
+    <artifactId>api</artifactId>
+    <packaging>pom</packaging>
+    <name>Java EE API modules, usually not built as part of GlassFish</name>  
+
+	<build>
+		<plugins>
+			<plugin>
+        		<groupId>org.apache.maven.plugins</groupId>
+        		<artifactId>maven-jar-plugin</artifactId>
+ 		       <configuration>
+		          <archive>
+		            <manifest>
+		              <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+		              <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+		            </manifest>
+		              <manifestEntries>
+		              	<Extension-Name>${project.groupId}</Extension-Name>
+		              </manifestEntries>
+ 	         	  </archive>
+ 	       		</configuration>    
+    		</plugin>
+			<plugin>
+				<artifactId>maven-remote-resources-plugin</artifactId>
+				<executions>
+				  <execution>
+					<goals>
+					  <goal>process</goal>
+					</goals>
+					<configuration>
+					  <resourceBundles>
+						<resourceBundle>org.glassfish.build:legal:${project.parent.version}</resourceBundle>
+					  </resourceBundles>
+					</configuration>
+				  </execution>
+				</executions>
+			</plugin>	
+		</plugins>
+	</build>
+    <modules>
+    	<module>activation</module>
+        <module>connector</module>
+    	<module>deployment</module>
+        <module>ejb</module>
+        <module>jacc</module>
+        <module>javaee</module>
+        <module>jms</module>
+        <module>jsp</module>
+        <module>mail</module>
+        <module>management</module>
+        <module>servlet</module>
+        <module>persistence</module>
+    	<module>transaction</module>
+    </modules>
+</project>
