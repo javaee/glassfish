@@ -25,20 +25,6 @@
 <project name="nucleus-base bundle creation" default="all" basedir=".">
     <target name="create.bundle" depends="">
 	<mkdir dir="target/stage"/>
-        <resolveArtifact artifactId="javadb" property="javadb.jar"/>
-        <unjar src="${javadb.jar}" dest="target"/>
-        <!-- Note: the current version of the javadb jar file contains a single zip file.
-             As a result, we currently hard code the <unzip/> task to handle this file. -->
-        <unzip dest="target/stage">
-            <fileset dir="target">
-                <include name="*javadb*.zip"/>
-            </fileset>
-            <patternset>
-                <exclude name="javadb/demo/**"/>
-                <exclude name="javadb/bin/**"/>
-                <exclude name="javadb/3RDPARTY.zip"/>
-            </patternset> 
-        </unzip>
         <copy todir="target/stage">
             <fileset dir=".">
                 <include name="*.txt"/>
