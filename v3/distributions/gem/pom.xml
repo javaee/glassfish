@@ -1,0 +1,197 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.glassfish.distributions</groupId>
+    <artifactId>distributions</artifactId>
+    <version>10.0-SNAPSHOT</version>
+    <relativePath>../pom.xml</relativePath>
+  </parent>
+  
+  <artifactId>gem</artifactId>
+  <!-- the real artifact is created by distribution-builder plugin -->
+  <version>${pe.version}</version>
+  
+  <name>Glassfish Gem distribution</name>
+  <description>This module creates the jruby gem distribution image</description>
+  
+  <build>
+    <plugins>
+     <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>unpack</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>unpack</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.glassfish.distributions</groupId>
+                  <artifactId>nucleus</artifactId>
+                  <version>${nucleus.version}</version>
+                  <type>zip</type>
+                  <overWrite>true</overWrite>
+                </artifactItem>
+              </artifactItems>
+            </configuration>
+          </execution>
+          <execution>
+            <id>copy-modules</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>copy</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.glassfish.extras</groupId>
+                  <artifactId>gf-jruby-connector</artifactId>
+                  <version>${pe.version}</version>
+                  <type>jar</type>
+                  <overWrite>true</overWrite>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.glassfish.external</groupId>
+                  <artifactId>grizzly-jruby</artifactId>
+                  <version>${grizzly.version}</version>
+                  <type>jar</type>
+                  <overWrite>true</overWrite>
+                </artifactItem>
+              </artifactItems>
+			  <outputDirectory>${project.build.directory}/dependency/glassfish/lib</outputDirectory>
+            </configuration>
+          </execution>
+          <execution>
+            <id>copy-librairies</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>copy</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+			      <groupId>com.sun.grizzly</groupId>
+			      <artifactId>jruby</artifactId>
+			      <version>${grizzly.version}</version>
+                  <type>jar</type>
+                  <overWrite>true</overWrite>
+                </artifactItem>
+              </artifactItems>
+			  <outputDirectory>${project.build.directory}/dependency/glassfish/lib/jars</outputDirectory>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+          <artifactId>maven-antrun-plugin</artifactId>
+          <executions>
+              <execution>
+                  <phase>process-resources</phase>
+                  <configuration>
+                      <tasks>
+                          <copy file="glassfish_rails" todir="target/dependency/glassfish/bin"/>
+						  <copy file="glassfish.rb" todir="target/dependency/glassfish/lib"/>
+						  <concat destfile="target/dependency/glassfish/config/asenv.conf" append="true">jruby.home=../../../../../../..
+						  </concat>
+                      </tasks>
+                  </configuration>
+                  <goals>
+                      <goal>run</goal>
+                  </goals>
+              </execution>
+          </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.jruby.plugins</groupId>
+        <artifactId>jruby-rake-plugin</artifactId>
+        <version>1.0</version>
+        <executions>
+          <execution>
+            <id>download-actionwebservice</id>
+            <phase>package</phase>
+            <goals><goal>rake</goal></goals>
+            <configuration>
+              <script>
+				require 'rake/gempackagetask'
+
+				spec = Gem::Specification.new do |s| 
+				  s.name = "GlassFish"
+				  s.version = "10.0.0"
+				  s.author = "Jerome Dochez"
+				  s.email = "jerome.dochez@sun.com"
+				  s.homepage = "http://glassfish.dev.java.net"
+				  s.platform = Gem::Platform::CURRENT
+				  s.summary = "GlassFish V3 Application Server for JRuby"
+				  s.files = FileList["{bin,lib,config,javadb,domains,ext}/**/*"].to_a
+				  s.bindir = "bin"
+				  s.executables = ["glassfish_rails", "asadmin", "asadmin.bat"]
+				  s.default_executable = "glassfish_rails"
+				  s.autorequire = "GlassFish"
+				  s.test_files = FileList["{test}/**/*test.rb"].to_a
+				  s.has_rdoc = false
+				  s.extra_rdoc_files = ["README","LICENSE.txt","CDDLHeader.txt","CDDLv1.0.txt","COPYRIGHT"]
+				end
+
+				# Create the gem distribution package
+
+				Rake::GemPackageTask.new(spec) do |pkg| 
+				  pkg.need_tar = true 
+				end 
+
+				task :default => :gem do
+				end
+              </script>
+              <launchDirectory>target/dependency/glassfish</launchDirectory>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+	  <plugin>
+          <artifactId>maven-install-plugin</artifactId>
+          <executions>
+              <execution>
+				  <id>install-gem</id>
+                  <phase>install</phase>
+                  <configuration>
+				       <groupId>org.glassfish.distributions</groupId>
+				       <artifactId>GlassFish-Gem</artifactId>
+				       <version>10.0-SNAPSHOT</version>	
+					   <generatePom>false</generatePom>
+						<packaging>gem</packaging>
+						<file>target/dependency/glassfish/pkg/GlassFish-10.0.0-java.gem</file>
+                  </configuration>
+                  <goals>
+                      <goal>install-file</goal>
+                  </goals>
+              </execution>
+          </executions>
+      </plugin>
+	  <plugin>
+          <artifactId>maven-deploy-plugin</artifactId>
+          <executions>
+              <execution>
+				  <id>deploy-gem</id>
+				  <phase>deploy</phase>
+                  <goals>
+                      <goal>deploy-file</goal>
+                  </goals>
+                  <configuration>
+				       <groupId>org.glassfish.distributions</groupId>
+				       <artifactId>GlassFish-Gem</artifactId>
+				       <version>10.0-SNAPSHOT</version>	
+						<file>target/dependency/glassfish/pkg/GlassFish-10.0.0-java.gem</file>
+						<url>sftp://trx2.sun.com:/export/nfs/dlc/maven/glassfish</url>						
+                  </configuration>
+
+              </execution>
+          </executions>
+      </plugin>
+    </plugins>
+  </build>
+  
+  <dependencies>
+  </dependencies>
+</project>

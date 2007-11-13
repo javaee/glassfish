@@ -8,6 +8,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>nucleus-base</artifactId>
+    <version>${nucleus.version}</version>
     <name>Glassfish Nucleus Base Bundle</name>
     <description>This pom describes how to assemble the Glassfish Nucleus Base Bundle</description>
     <packaging>zip</packaging>
