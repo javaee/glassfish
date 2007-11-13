@@ -4,6 +4,7 @@
     <groupId>org.glassfish.distributions</groupId>
     <artifactId>distributions</artifactId>
     <version>10.0-SNAPSHOT</version>
+    <relativePath>../pom.xml</relativePath>
   </parent>
   
   <artifactId>pe</artifactId>
@@ -226,9 +227,9 @@
     </dependency>
     <dependency>
       <!-- base distribution image -->
-      <groupId>com.sun.enterprise.glassfish</groupId>
-      <artifactId>pe-base</artifactId>
-      <version>${pe-base.version}</version>
+      <groupId>org.glassfish.distributions</groupId>
+      <artifactId>nucleus-base</artifactId>
+      <version>${project.version}</version>
       <type>zip</type>
     </dependency>
   </dependencies>

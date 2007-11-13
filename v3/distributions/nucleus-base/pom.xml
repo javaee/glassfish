@@ -1,0 +1,54 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <parent>
+        <groupId>org.glassfish.distributions</groupId>
+        <artifactId>distributions</artifactId>
+        <version>10.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>nucleus-base</artifactId>
+    <name>Glassfish Nucleus Base Bundle</name>
+    <description>This pom describes how to assemble the Glassfish Nucleus Base Bundle</description>
+    <packaging>zip</packaging>
+    <!--distributionManagement>
+      <repository>
+          <id>glassfish-repository</id>
+          <uniqueVersion>false</uniqueVersion>
+          <url>sftp://trx2.sun.com:/export/nfs/dlc/maven/glassfish</url>
+      </repository>
+    </distributionManagement-->
+    <dependencies>
+      <!-- dependency with 'runtime' scope will be packaged into the distribution -->
+      <dependency>
+        <groupId>javadb</groupId>
+        <artifactId>javadb</artifactId>
+        <version>10.2.2.1-20070823</version>
+        <scope>runtime</scope>
+      </dependency>
+    </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.jvnet.maven-antrun-extended-plugin</groupId>
+                <artifactId>maven-antrun-extended-plugin</artifactId>
+                <extensions>true</extensions>
+                <executions>
+                  <execution>
+                    <!-- no phase element! -->
+                    <goals>
+                      <goal>run</goal>
+                    </goals>
+                  </execution>
+                </executions>
+                <configuration>
+                  <tasks>
+                    <ant dir="." antfile="build.xml" target="create.bundle"></ant>
+                  </tasks>
+                </configuration>
+             </plugin>
+        </plugins>
+    </build>
+
+</project>
+
