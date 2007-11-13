@@ -298,10 +298,13 @@ public final class Module {
                 ImportPolicy importPolicy = importPolicyClass.newInstance();
                 importPolicy.prepare(this);
             } catch(ClassNotFoundException e) {
+                state = ModuleState.ERROR;
                 throw new ResolveError(e);
             } catch(java.lang.InstantiationException e) {
+                state = ModuleState.ERROR;
                 throw new ResolveError(e);
             } catch(IllegalAccessException e) {
+                state = ModuleState.ERROR;
                 throw new ResolveError(e);
             }
         }
@@ -309,6 +312,7 @@ public final class Module {
             
             Module depModule = registry.makeModuleFor(dependency.getName(), null);
             if (depModule==null) {
+                state = ModuleState.ERROR;                
                 throw new ResolveError(dependency + " referenced from " 
                         + moduleDef.getName() + " is not resolved");
             }
@@ -322,13 +326,16 @@ public final class Module {
                 Class<LifecyclePolicy> lifecyclePolicyClass = (Class<LifecyclePolicy>) getPrivateClassLoader().loadClass(moduleDef.getLifecyclePolicyClassName());
                 lifecyclePolicy = lifecyclePolicyClass.newInstance();
             } catch(ClassNotFoundException e) {
+                state = ModuleState.ERROR;
                 throw new ResolveError("ClassNotFound : " + e.getMessage(), e);
             } catch(java.lang.InstantiationException e) {
+                state = ModuleState.ERROR;
                 throw new ResolveError(e);
             } catch(IllegalAccessException e) {
+                state = ModuleState.ERROR;                
                 throw new ResolveError(e);
             }
-            lifecyclePolicy.load(this);
+            lifecyclePolicy.load(this); 
         }
         //Logger.global.info("Module " + getName() + " resolved");
 
