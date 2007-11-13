@@ -61,4 +61,11 @@
         <module>persistence</module>
     	<module>transaction</module>
     </modules>
+    <repositories>
+        <repository>
+            <id>glassfish-repository</id>
+            <name>Java.net Repository for Glassfish</name>
+            <url>http://download.java.net/maven/glassfish</url>
+        </repository>
+    </repositories>
 </project>
