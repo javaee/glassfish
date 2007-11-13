@@ -56,7 +56,7 @@ public class RailsApplication extends RailsAdapter
      * @return true if stopping was successful.  
      */
     public boolean stop() {
-        return false;
+        return true;
     }
 
     /**
