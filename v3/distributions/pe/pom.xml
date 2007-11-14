@@ -8,8 +8,7 @@
   </parent>
   
   <artifactId>pe</artifactId>
-  <!-- the real artifact is created by distribution-builder plugin -->
-  <packaging>glassfish-distribution</packaging>
+  <packaging>zip</packaging>
   <version>${pe.version}</version>
   
   <name>Glassfish PE distribution image</name>
@@ -22,6 +21,24 @@
         <artifactId>maven-glassfish-plugin</artifactId>
         <extensions>true</extensions>
       </plugin>
+       <plugin>
+          <groupId>org.jvnet.maven-antrun-extended-plugin</groupId>
+          <artifactId>maven-antrun-extended-plugin</artifactId>
+          <extensions>true</extensions>
+          <executions>
+            <execution>
+              <!-- no phase element! -->
+              <goals>
+                <goal>run</goal>
+              </goals>
+            </execution>
+          </executions>
+          <configuration>
+            <tasks>
+              <ant dir="." antfile="build.xml" target="create.bundle"></ant>
+            </tasks>
+          </configuration>
+       </plugin>
     </plugins>
   </build>
   
@@ -228,7 +245,7 @@
     <dependency>
       <!-- base distribution image -->
       <groupId>org.glassfish.distributions</groupId>
-      <artifactId>nucleus-base</artifactId>
+      <artifactId>nucleus</artifactId>
       <version>${nucleus.version}</version>
       <type>zip</type>
     </dependency>
