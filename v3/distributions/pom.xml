@@ -28,6 +28,7 @@
     <modules>
     	<module>external</module>
     	<module>nucleus-base</module>
+    	<module>nucleus</module>
         <module>pe</module>
     </modules>
 

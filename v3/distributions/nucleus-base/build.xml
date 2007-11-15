@@ -32,7 +32,6 @@
                 <include name="config/**"/>
                 <include name="lib/**"/>
                 <include name="domains/**"/>
-                <include name="META-INF/**"/>
                 <include name="COPYRIGHT"/>
                 <include name="README"/>
             </fileset> 
