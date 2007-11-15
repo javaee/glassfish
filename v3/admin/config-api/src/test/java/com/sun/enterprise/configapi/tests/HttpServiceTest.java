@@ -40,6 +40,7 @@ import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
 import com.sun.enterprise.config.serverbeans.HttpService;
 import com.sun.enterprise.config.serverbeans.KeepAlive;
 import org.glassfish.api.admin.SingleConfigCode;
+import org.glassfish.api.admin.TransactionHelper;
 import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
@@ -75,7 +76,7 @@ public class HttpServiceTest extends ConfigApiTest {
     @Test
     public void validTransaction() throws PropertyVetoException {
         logger.fine("before..." +httpService.getKeepAlive().getThreadCount() );
-        ConfigBeansUtilities.apply((new SingleConfigCode<HttpService>() {
+        TransactionHelper.apply((new SingleConfigCode<HttpService>() {
             public boolean run(HttpService okToChange) throws PropertyVetoException {
                 KeepAlive newKeepAlive = okToChange.allocate(KeepAlive.class);
                 newKeepAlive.setMaxConnections(httpService.getKeepAlive().getMaxConnections());
@@ -99,7 +100,7 @@ public class HttpServiceTest extends ConfigApiTest {
     @Test(expected=PropertyVetoException.class)
     public void invalidTransaction() throws PropertyVetoException {
 
-            ConfigBeansUtilities.apply((new SingleConfigCode<HttpService>() {
+            TransactionHelper.apply((new SingleConfigCode<HttpService>() {
             public boolean run(HttpService okToChange) throws PropertyVetoException {
                 KeepAlive newKeepAlive = okToChange.allocate(KeepAlive.class);
                 newKeepAlive.setMaxConnections("500");

@@ -133,9 +133,8 @@
         <repository>
             <id>repo1.maven.org</id>
             <name>Maven 2 default Repository</name>
-            <url>http://repo1.maven.org/maven2/</url>
-        </repository>
-        
+            <url>http://repo1.maven.org/maven2</url>
+        </repository>        
         <repository>
             <id>maven2.java.net</id>
             <name>Java.net Repository for Maven 2</name>

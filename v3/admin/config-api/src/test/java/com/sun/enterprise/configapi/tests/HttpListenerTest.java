@@ -36,10 +36,10 @@
 
 package com.sun.enterprise.configapi.tests;
 
-import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
 import com.sun.enterprise.config.serverbeans.HttpListener;
 import com.sun.enterprise.config.serverbeans.HttpService;
 import org.glassfish.api.admin.SingleConfigCode;
+import org.glassfish.api.admin.TransactionHelper;
 import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
@@ -85,7 +85,7 @@ public class HttpListenerTest extends ConfigApiTest {
     @Test
     public void validTransaction() throws PropertyVetoException {
         
-        ConfigBeansUtilities.apply((new SingleConfigCode<HttpListener>() {
+        TransactionHelper.apply((new SingleConfigCode<HttpListener>() {
             public boolean run(HttpListener okToChange) throws PropertyVetoException {
                 okToChange.setAcceptorThreads("2");
                 logger.fine("ID inside the transaction is " + okToChange.getId());

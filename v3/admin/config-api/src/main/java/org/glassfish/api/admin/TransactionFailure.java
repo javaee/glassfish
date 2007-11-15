@@ -35,63 +35,10 @@
  */
 package org.glassfish.api.admin;
 
-import java.beans.PropertyChangeEvent;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-
 /**
- * Simple transaction mechanism for config-api objects
+ * Simple transaction failure exception
  *
  * @author Jerome Dochez
  */
-public class Transaction {
-
-    final LinkedList<Transactor> participants = new LinkedList<Transactor>();
-
-	/**
-	 * Enlists a new participant in this transaction
-     *
-     * @param t new participant to this transaction
-	 * 
-	 */
-    synchronized void addParticipant(Transactor t) {    	
-      	participants.addLast(t);
-    }
-
-	/**
-	 * Rollbacks all participants to this transaction. 
-	 */
-    public synchronized void rollback() {
-        for (Transactor t : participants) {
-            t.abort(this);
-        }
-    }
-
-	/**
-	 * Commits all participants to this transaction
-	 * 
-	 * @return list of PropertyChangeEvent for the changes that were applied to the 
-	 * participants during the transaction.
-     * @throws RetryableException if the transaction cannot commit at this time but
-     * could succeed later.
-     * @throws TransactionFailure if the transaction commit failed.
-	 */
-    public synchronized List<PropertyChangeEvent> commit()
-            throws RetryableException, TransactionFailure {
-
-        for (Transactor t : participants) {
-            if (!t.canCommit(this)) {
-                throw new RetryableException();
-            }
-        }
-        List<PropertyChangeEvent> events = new ArrayList<PropertyChangeEvent>();
-        for (Transactor t : participants) {
-            events.addAll(t.getTransactionEvents());
-        }
-        for (Transactor t : participants) {
-            t.commit(this);            
-        }
-        return events;
-    }
+public class TransactionFailure extends Exception {
 }

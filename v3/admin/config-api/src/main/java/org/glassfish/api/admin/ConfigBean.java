@@ -1,10 +1,41 @@
+/*
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+ *
+ * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ *
+ * The contents of this file are subject to the terms of either the GNU
+ * General Public License Version 2 only ("GPL") or the Common Development
+ * and Distribution License("CDDL") (collectively, the "License").  You
+ * may not use this file except in compliance with the License. You can obtain
+ * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
+ * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
+ * language governing permissions and limitations under the License.
+ *
+ * When distributing the software, include this License Header Notice in each
+ * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
+ * Sun designates this particular file as subject to the "Classpath" exception
+ * as provided by Sun in the GPL Version 2 section of the License file that
+ * accompanied this code.  If applicable, add the following below the License
+ * Header, with the fields enclosed by brackets [] replaced by your own
+ * identifying information: "Portions Copyrighted [year]
+ * [name of copyright owner]"
+ *
+ * Contributor(s):
+ *
+ * If you wish your version of this file to be governed by only the CDDL or
+ * only the GPL Version 2, indicate your decision by adding "[Contributor]
+ * elects to include this software in this distribution under the [CDDL or GPL
+ * Version 2] license."  If you don't indicate a single choice of license, a
+ * recipient has the option to distribute your version of this file under
+ * either the CDDL, the GPL Version 2 or to extend the choice of license to
+ * its licensees as provided above.  However, if you add GPL Version 2 code
+ * and therefore, elected the GPL Version 2 license, then the option applies
+ * only if the new code is made subject to such option by the copyright
+ * holder.
+ */
 package org.glassfish.api.admin;
 
 import org.jvnet.hk2.component.PostConstruct;
-import org.glassfish.api.admin.Transaction;
-import org.glassfish.api.admin.Transactor;
-import org.glassfish.api.admin.TypedVetoableChangeSupport;
-
 import java.beans.*;
 import java.io.Serializable;
 import java.util.LinkedList;
@@ -25,6 +56,11 @@ public class ConfigBean implements Serializable, Cloneable, ConstrainedBean, Pos
 
     protected VetoableChangeSupport support=new TypedVetoableChangeSupport(this);
 
+    /**
+     * HK2 component lifecyle
+     * Adds the necessary VetoableChangeListener so changes cannot be made on this
+     * instance without first associating it with a transaction.
+     */
     public void postConstruct() {
 
         // add a safeguard to check that any property change is done under a transaction scheme
@@ -49,6 +85,10 @@ public class ConfigBean implements Serializable, Cloneable, ConstrainedBean, Pos
         });
     }
 
+    /**
+     * Returns the vetoable change support
+     * @return vetoable change support
+     */
     public VetoableChangeSupport getVetoableChangeSupport() {
         return support;
     }
@@ -69,6 +109,17 @@ public class ConfigBean implements Serializable, Cloneable, ConstrainedBean, Pos
         support.removeVetoableChangeListener(listener);
     }
 
+	/**
+	 * Enter a new {@see Transaction}, this method should return false if this object
+	 * is already enlisted in another transaction, or cannot be enlisted with
+	 * the passed transaction. If the object returns true, the object
+	 * is enlisted in the passed transaction and cannot be enlisted in another
+	 * transaction until either commit or abort has been issued.
+	 *
+	 * @param t the transaction to enlist with
+	 * @return true if the enlisting with the passed transaction was accepted,
+	 * false otherwise
+	 */    
     public synchronized boolean join(Transaction t) {
         
         if (currentTx==null) {
@@ -83,11 +134,25 @@ public class ConfigBean implements Serializable, Cloneable, ConstrainedBean, Pos
         return false;
     }
 
+	/**
+	 * Returns true of this {@see Transaction} can be committed on this object
+	 *
+	 * @param t is the transaction to commit, should be the same as the
+	 * one passed during the join(Transaction t) call.
+	 *
+	 * @return true if the trsaction commiting would be successful
+	 */    
     public synchronized boolean canCommit(Transaction t) {
         // so far, it's pretty simple
         return currentTx==t;
     }
 
+	/**
+	 * Commit this {@see Transaction}.
+	 *
+	 * @param t the transaction commiting.
+	 * @throws TransactionFailure if the transaction commit failed
+	 */    
     public synchronized void commit(Transaction t) {
         if (currentTx==t) {
             currentTx=null;
@@ -100,6 +165,11 @@ public class ConfigBean implements Serializable, Cloneable, ConstrainedBean, Pos
         return listener.getEvents();
     }
 
+	/**
+	 * Aborts this {@see Transaction}, reverting the state
+
+	 * @param t the aborting transaction
+	 */    
     public synchronized void abort(Transaction t) {
 
         support.removeVetoableChangeListener(listener);
@@ -110,11 +180,20 @@ public class ConfigBean implements Serializable, Cloneable, ConstrainedBean, Pos
 
     }
 
+    /**
+     * Allocate a new {@see ConfigBean} object as part of the {@see Transaction}
+     * associated with this configuration object. This will eventually
+     * be moved to a factory.
+     *
+     * @param type the request configuration object type
+     * @return the propertly constructed configuration object
+     */
+
     public <T extends ConfigBean> T allocate(Class<T> type) {
         if (currentTx==null) {
             throw new RuntimeException("Not part of a transaction");
         }
-        T instance = null;
+        T instance;
         try {
             instance = type.newInstance();
         } catch (InstantiationException e) {
@@ -127,7 +206,14 @@ public class ConfigBean implements Serializable, Cloneable, ConstrainedBean, Pos
         return instance;
    }
 
-    public Object clone() {
+    /**
+     * Implementation of clone to support working on copies.
+     * This will eventually be removed and moved to the DOLElement
+     *
+     * @return a shallow copy of itself
+     * @throws CloneNotSupportedException
+     */
+   public Object clone() throws CloneNotSupportedException {
         try {
             ConfigBean o = (ConfigBean) super.clone();
             o.support=new TypedVetoableChangeSupport(o);
@@ -139,6 +225,9 @@ public class ConfigBean implements Serializable, Cloneable, ConstrainedBean, Pos
         }
     }
 
+    /**
+     * Utility class to register change events during a transaction
+     */
     private class BeanTransactionListener implements VetoableChangeListener {
 
         final LinkedList<PropertyChangeEvent> events = new LinkedList<PropertyChangeEvent>();
