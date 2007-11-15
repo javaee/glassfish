@@ -52,6 +52,9 @@
                         <goals>
                             <goal>dashboard</goal>
                         </goals>
+                        <configuration>
+                            <finalName>dashboard-${project.build.finalName}.txt</finalName>
+                        </configuration>
                     </execution>
 					<execution>
 						<id>contributors</id>
@@ -61,7 +64,8 @@
                         </goals>
 						<configuration>
 							<generatorName>com.sun.enterprise.build.ContributorsWikiGenerator</generatorName>
-						</configuration>
+                            <finalName>contrib-${project.build.finalName}.txt</finalName>
+                        </configuration>
                     </execution>
                 </executions>
           </plugin>
