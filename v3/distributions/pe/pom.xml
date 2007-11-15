@@ -243,6 +243,12 @@
       <scope>runtime</scope>
     </dependency>
     <dependency>
+      <groupId>javadb</groupId>
+      <artifactId>javadb</artifactId>
+      <version>10.2.2.1-20070823</version>
+      <scope>runtime</scope>
+    </dependency>    
+    <dependency>
       <!-- base distribution image -->
       <groupId>org.glassfish.distributions</groupId>
       <artifactId>nucleus</artifactId>
