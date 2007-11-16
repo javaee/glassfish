@@ -110,7 +110,7 @@ public class ConfigBean implements Serializable, Cloneable, ConstrainedBean, Pos
     }
 
 	/**
-	 * Enter a new {@see Transaction}, this method should return false if this object
+	 * Enter a new Transaction, this method should return false if this object
 	 * is already enlisted in another transaction, or cannot be enlisted with
 	 * the passed transaction. If the object returns true, the object
 	 * is enlisted in the passed transaction and cannot be enlisted in another
@@ -135,7 +135,7 @@ public class ConfigBean implements Serializable, Cloneable, ConstrainedBean, Pos
     }
 
 	/**
-	 * Returns true of this {@see Transaction} can be committed on this object
+	 * Returns true of this Transaction can be committed on this object
 	 *
 	 * @param t is the transaction to commit, should be the same as the
 	 * one passed during the join(Transaction t) call.
@@ -148,12 +148,12 @@ public class ConfigBean implements Serializable, Cloneable, ConstrainedBean, Pos
     }
 
 	/**
-	 * Commit this {@see Transaction}.
+	 * Commit this Transaction.
 	 *
 	 * @param t the transaction commiting.
 	 * @throws TransactionFailure if the transaction commit failed
 	 */    
-    public synchronized void commit(Transaction t) {
+    public synchronized void commit(Transaction t) throws TransactionFailure {
         if (currentTx==t) {
             currentTx=null;
             support.removeVetoableChangeListener(listener);
@@ -166,7 +166,7 @@ public class ConfigBean implements Serializable, Cloneable, ConstrainedBean, Pos
     }
 
 	/**
-	 * Aborts this {@see Transaction}, reverting the state
+	 * Aborts this Transaction, reverting the state
 
 	 * @param t the aborting transaction
 	 */    
@@ -181,7 +181,7 @@ public class ConfigBean implements Serializable, Cloneable, ConstrainedBean, Pos
     }
 
     /**
-     * Allocate a new {@see ConfigBean} object as part of the {@see Transaction}
+     * Allocate a new ConfigBean object as part of the Transaction
      * associated with this configuration object. This will eventually
      * be moved to a factory.
      *

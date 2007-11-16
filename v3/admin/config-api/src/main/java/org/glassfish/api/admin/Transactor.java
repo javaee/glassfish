@@ -47,7 +47,7 @@ import java.util.List;
 public interface Transactor {
 
 	/**
-	 * Enter a new {@see Transaction}, this method should return false if this object
+	 * Enter a new Transaction, this method should return false if this object
 	 * is already enlisted in another transaction, or cannot be enlisted with
 	 * the passed transaction. If the object returns true, the object
 	 * is enlisted in the passed transaction and cannot be enlisted in another 
@@ -60,7 +60,7 @@ public interface Transactor {
     public boolean join(Transaction t);
 	
 	/**
-	 * Returns true of this {@see Transaction} can be committed on this object
+	 * Returns true of this Transaction can be committed on this object
 	 *
 	 * @param t is the transaction to commit, should be the same as the
 	 * one passed during the join(Transaction t) call.
@@ -70,7 +70,7 @@ public interface Transactor {
     public boolean canCommit(Transaction t);
 
 	/**
-	 * Commit this {@see Transaction}.
+	 * Commit this Transaction.
 	 *
 	 * @param t the transaction commiting.
 	 * @throws TransactionFailure if the transaction commit failed
@@ -78,7 +78,7 @@ public interface Transactor {
     public void commit(Transaction t) throws TransactionFailure;
 
 	/**
-	 * Aborts this {@see Transaction}, reverting the state
+	 * Aborts this Transaction, reverting the state
 	 
 	 * @param t the aborting transaction
 	 */
