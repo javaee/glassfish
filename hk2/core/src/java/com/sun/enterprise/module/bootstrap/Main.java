@@ -187,7 +187,13 @@ public class Main {
         Habitat mgr = registry.newHabitat();
         mgr.add(new ExistingSingletonInhabitant<StartupContext>(context));
         mgr.add(new ExistingSingletonInhabitant<Logger>(Logger.global));
-        registry.createHabitat(habitatName, mgr);
+        ClassLoader oldCL = Thread.currentThread().getContextClassLoader();
+        Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
+        try {
+            registry.createHabitat(habitatName, mgr);
+        } finally {
+            Thread.currentThread().setContextClassLoader(oldCL);
+        }
 
 
         // now go figure out the start up module
