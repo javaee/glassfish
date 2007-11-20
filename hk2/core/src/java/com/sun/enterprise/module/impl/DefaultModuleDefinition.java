@@ -73,10 +73,12 @@ public class DefaultModuleDefinition implements ModuleDefinition {
         classPath.add(location.toURI());
         
         Jar jarFile = Jar.create(location);
-        manifest = jarFile.getManifest();
-        if (attr==null && manifest!=null) {
+        Manifest m = jarFile.getManifest();
+        if(m==null) m = EMPTY_MANIFEST;
+        manifest = m;
+
+        if (attr==null)
             attr = manifest.getMainAttributes();
-        }
 
         // no attributes whatsoever, I just use an empty collection to avoid 
         // testing for null all the time.
@@ -224,7 +226,9 @@ public class DefaultModuleDefinition implements ModuleDefinition {
     
     /**
      * Returns the manifest file from the module's implementation jar file
-     * @return the manifest file
+     *
+     * @return
+     *      never null.
      */
     public Manifest getManifest() {
         return manifest;
@@ -233,4 +237,6 @@ public class DefaultModuleDefinition implements ModuleDefinition {
     public ModuleMetadata getMetadata() {
         return metadata;
     }
+
+    private static final Manifest EMPTY_MANIFEST = new Manifest();
 }
