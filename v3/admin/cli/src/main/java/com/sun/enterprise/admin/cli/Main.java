@@ -13,8 +13,6 @@ import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * my v3 main, basically some throw away code
@@ -27,7 +25,6 @@ public class Main {
             System.err.println("usage : asadmin <command> [parameters]");
             return;
         }
-        int parametersSize = args.length-1;
         String command = args[0];
         int index=1;
         boolean primaryProvided = false;
