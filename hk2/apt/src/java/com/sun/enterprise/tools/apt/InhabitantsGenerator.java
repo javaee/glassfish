@@ -13,12 +13,16 @@ import com.sun.mirror.declaration.ClassDeclaration;
 import com.sun.mirror.declaration.InterfaceDeclaration;
 import com.sun.mirror.declaration.TypeDeclaration;
 import com.sun.mirror.type.InterfaceType;
+import com.sun.mirror.type.MirroredTypeException;
+import com.sun.mirror.type.TypeMirror;
 import com.sun.mirror.util.DeclarationVisitor;
 import com.sun.mirror.util.DeclarationVisitors;
 import com.sun.mirror.util.SimpleDeclarationVisitor;
 import org.jvnet.hk2.annotations.Contract;
+import org.jvnet.hk2.annotations.ContractProvided;
 import org.jvnet.hk2.annotations.Index;
 import org.jvnet.hk2.annotations.InhabitantAnnotation;
+import org.jvnet.hk2.annotations.Scoped;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -114,6 +118,7 @@ public class InhabitantsGenerator implements AnnotationProcessor, RoundCompleteL
             // check for Contract supertypes.
             String name = geIndexValue(a);
             for (TypeDeclaration t : ContractFinder.find(d)) {
+                enforceContractLevelScope(t,d);
                 addIndex(t.getQualifiedName(),name);
             }
 
@@ -123,6 +128,7 @@ public class InhabitantsGenerator implements AnnotationProcessor, RoundCompleteL
                 Contract c = atd.getAnnotation(Contract.class);
                 if(c!=null) {
                     // this is a contract annotation
+                    enforceContractLevelScope(atd,d);
                     addIndex(atd.getQualifiedName(), geIndexValue(am));
                 }
             }
@@ -179,6 +185,40 @@ public class InhabitantsGenerator implements AnnotationProcessor, RoundCompleteL
                 indices.add(primary);    // unnamed
             else
                 indices.add(primary+':'+secondary); // named
+        }
+
+        /**
+         * Records the contract&lt;->service relationship.
+         *
+         * @param ctrct
+         *      The contract type declaration. Null in case of {@link ContractProvided}.
+         * @param impl
+         *      Implementation class.
+         */
+        private void enforceContractLevelScope(TypeDeclaration ctrct, ClassDeclaration impl) {
+            // if @Scoped is on the contract, that means we are forcing a certain scope type.
+            Scoped s = ctrct.getAnnotation(Scoped.class);
+            if(s==null)     return;
+
+            try {
+                s.value();
+                throw new AssertionError();
+            } catch (MirroredTypeException e) {
+                TypeMirror forcedScope = e.getTypeMirror();
+
+                s = impl.getAnnotation(Scoped.class);
+                if(s!=null) {
+                    try {
+                        s.value();
+                        throw new AssertionError();
+                    } catch (MirroredTypeException f) {
+                        if(forcedScope.equals(f.getTypeMirror()))
+                            return; // forced scope and the actual scope are consistent
+                    }
+                }
+
+                env.getMessager().printError(impl.getPosition(),"@Scoped("+forcedScope+") is required because of the contract "+ctrct.getQualifiedName());
+            }
         }
     }
 }

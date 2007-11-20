@@ -1,8 +1,8 @@
 package com.sun.enterprise.module.maven;
 
+import com.sun.enterprise.module.ManifestConstants;
 import com.sun.enterprise.module.ModuleDefinition;
 import com.sun.enterprise.module.Repository;
-import com.sun.enterprise.module.ManifestConstants;
 import com.sun.enterprise.module.impl.AbstractRepositoryImpl;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
@@ -10,6 +10,7 @@ import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.resolver.ArtifactNotFoundException;
 import org.apache.maven.artifact.resolver.ArtifactResolutionException;
 import org.apache.maven.artifact.resolver.ArtifactResolver;
+import org.apache.maven.model.Resource;
 import org.apache.maven.project.MavenProject;
 
 import java.io.File;
@@ -19,8 +20,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Logger;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -84,7 +85,13 @@ public class MavenProjectRepository extends AbstractRepositoryImpl {
 
         logger.info("Loading modules list from "+project.getFile());
 
-        buildModule(project.getArtifact(),moduleDefs);
+        MavenModuleDefinition main = buildModule(project.getArtifact(), moduleDefs);
+        if(main!=null) {
+            // artifact from the main project, in case those are not compiled yet
+            main.addClasspath(new File(project.getBuild().getOutputDirectory()));
+            for (Resource res : (List<Resource>)project.getBuild().getResources())
+                main.addClasspath(new File(res.getDirectory()));
+        }
 
         for (Artifact a : (List<Artifact>) project.getAttachedArtifacts()) {
             buildModule(a, moduleDefs);
@@ -100,24 +107,25 @@ public class MavenProjectRepository extends AbstractRepositoryImpl {
         return moduleDefs;
     }
 
-    private void buildModule(Artifact a, Map<String, ModuleDefinition> moduleDefs) throws IOException {
+    private MavenModuleDefinition buildModule(Artifact a, Map<String, ModuleDefinition> moduleDefs) throws IOException {
         File jarFile = a.getFile();
         if(jarFile==null || (!jarFile.getName().endsWith(".jar") && !jarFile.isDirectory()))
             // between the compile phase and the package phase, the main artifact is
             // set to the target/classes. allow that to be used as a jar.
-            return;
+            return null;
 
-        ModuleDefinition moduleDef = loadJar(jarFile);
+        MavenModuleDefinition moduleDef = loadJar(jarFile);
         if(moduleDef.getManifest().getMainAttributes().getValue(ManifestConstants.BUNDLE_NAME)==null)
             // project.getArtifacts() pick up all the transitive dependencies,
             // including to the normal jar files through modules.
             // we don't want to create modules from those jar files, so we need to ignore non-modules.
-            return;
+            return null;
 
         if(logger.isLoggable(Level.CONFIG))
             logger.config("Adding module "+a.getId()+" trail: "+a.getDependencyTrail());
 
         moduleDefs.put(moduleDef.getName(), moduleDef);
+        return moduleDef;
     }
 
     /*package*/ File resolveArtifact(String id) throws IOException {
@@ -147,7 +155,7 @@ public class MavenProjectRepository extends AbstractRepositoryImpl {
     private static final Pattern ID_PATTERN = Pattern.compile(MessageFormat.format("{0}:{0}:{0}(?:\\:{0})?:{0}",TOKEN));
 
 
-    protected ModuleDefinition loadJar(File jar) throws IOException {
+    protected MavenModuleDefinition loadJar(File jar) throws IOException {
         return new MavenModuleDefinition(this,jar);
     }
 

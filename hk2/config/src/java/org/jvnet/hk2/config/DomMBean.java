@@ -1,7 +1,5 @@
 package org.jvnet.hk2.config;
 
-import org.jvnet.hk2.config.ConfigModel.ElementAction;
-
 import javax.management.Attribute;
 import javax.management.AttributeNotFoundException;
 import javax.management.InvalidAttributeValueException;
@@ -34,7 +32,7 @@ final class DomMBean extends AbstractDynamicMBeanImpl {
         if(model.attributes.containsKey(attribute))
             return dom.rawAttribute(attribute);
 
-        ElementAction element = model.elements.get(attribute);
+        ConfigModel.Property element = model.elements.get(attribute);
         if(element==null)
             throw new AttributeNotFoundException(attribute);
 
@@ -55,12 +53,12 @@ final class DomMBean extends AbstractDynamicMBeanImpl {
             return;
         }
 
-        ElementAction element = model.elements.get(attribute);
+        ConfigModel.Property element = model.elements.get(attribute);
         if(element==null)
             throw new AttributeNotFoundException(name);
 
         if(element.isLeaf()) {
-            if(element.collection)
+            if(element.isCollection())
                 dom.leafElement(name,cast(String.class,value));
             else
                 dom.leafElement(name,cast(String[].class,value));

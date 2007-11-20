@@ -5,19 +5,23 @@ import com.sun.hk2.component.InhabitantsFile;
 import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.component.MultiMap;
+import org.jvnet.tiger_types.Types;
 
-import javax.management.MBeanInfo;
-import javax.management.MBeanConstructorInfo;
-import javax.management.MBeanNotificationInfo;
 import javax.management.MBeanAttributeInfo;
+import javax.management.MBeanConstructorInfo;
+import javax.management.MBeanInfo;
+import javax.management.MBeanNotificationInfo;
 import javax.management.MBeanOperationInfo;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.AbstractList;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
-import java.util.ArrayList;
 
 /**
  * Describes the configuration model for a particular class (called "target type" in this class.)
@@ -36,12 +40,12 @@ public final class ConfigModel {
     /**
      * Legal attribute names.
      */
-    final Map<String,AttributeAction> attributes = new HashMap<String,AttributeAction>();
+    final Map<String,Leaf> attributes = new HashMap<String,Leaf>();
 
     /**
      * Legal child element names and how they should be handled
      */
-    final Map<String,ElementAction> elements = new HashMap<String,ElementAction>();
+    final Map<String,Property> elements = new HashMap<String,Property>();
 
     /**
      * Contracts under which the inhabitant should be registered.
@@ -49,7 +53,7 @@ public final class ConfigModel {
     final List<String> contracts;
 
     /**
-     * Type names for which this type creates a symbol space. 
+     * Type names for which this type creates a symbol space.
      */
     final Set<String> symoblSpaces;
 
@@ -101,24 +105,52 @@ public final class ConfigModel {
         }
     }
 
-    abstract static class ElementAction {
+    public abstract static class Property {
         /**
-         * Is multiple values allowed?
+         * @see #xmlName()
          */
-        public final boolean collection;
+        public final String xmlName;
 
-        protected ElementAction(boolean collection) {
-            this.collection = collection;
+        protected Property(String xmlName) {
+            this.xmlName = xmlName;
+        }
+
+        /**
+         * XML name of the property, like "abc-def".
+         */
+        public final String xmlName() {
+            return xmlName;
         }
 
         public abstract boolean isLeaf();
+
+        /**
+         * Is multiple values allowed?
+         */
+        public abstract boolean isCollection();
+
+        /**
+         * Gets the value from {@link Dom} in the specified type.
+         *
+         * @param dom
+         *      The DOM instance to get the value from.
+         * @param returnType
+         *      The expected type of the returned object.
+         *      Valid types are (1) primitive and 'leaf' Java types, such as {@link String},
+         *      (2) {@link ConfigBeanProxy}, (3) and its collections.
+         */
+        public abstract Object get(Dom dom, Type returnType);
+
+        /**
+         * Sets the value to {@link Dom}.
+         */
+        public abstract void set(Dom dom, Object arg);
     }
-    public static final ElementAction LEAF_SINGLE = new Leaf(false);
-    public static final ElementAction LEAF_COLLECTION = new Leaf(true);
-    static final class Node extends ElementAction {
+
+    static abstract class Node extends Property {
         final ConfigModel model;
-        public Node(ConfigModel model, boolean collection) {
-            super(collection);
+        public Node(ConfigModel model, String xmlName) {
+            super(xmlName);
             this.model = model;
         }
 
@@ -126,17 +158,179 @@ public final class ConfigModel {
             return false;
         }
     }
-    static final class Leaf extends ElementAction {
-        public Leaf(boolean collection) {
-            super(collection);
+
+    static final class CollectionNode extends Node {
+        CollectionNode(ConfigModel model, String xmlName) {
+            super(model, xmlName);
+        }
+
+        public boolean isCollection() {
+            return true;
+        }
+
+        public Object get(Dom dom, Type returnType) {
+            // TODO: perhaps support more collection types?
+            final List<Dom> v = dom.nodeElements(xmlName);
+            if(!(returnType instanceof ParameterizedType))
+                throw new IllegalArgumentException("List needs to be parameterized");
+            final Class itemType = Types.erasure(Types.getTypeArgument(returnType,0));
+
+            if(itemType==Dom.class)
+                // TODO: this returns a view, not a live list
+                return v;
+            if(ConfigBeanProxy.class.isAssignableFrom(itemType)) {
+                // return a live list
+                return new AbstractList<Object>() {
+                    public Object get(int index) {
+                        return v.get(index).createProxy(itemType);
+                    }
+
+                    public int size() {
+                        return v.size();
+                    }
+                };
+            }
+
+            // TODO: error check needs to be improved,
+            // as itemType might be inconsistent with the actual type
+            return new AbstractList() {
+                public Object get(int index) {
+                    return v.get(index).get();
+                }
+
+                public int size() {
+                    return v.size();
+                }
+            };
+        }
+
+        public void set(Dom dom, Object arg) {
+            // TODO
+            throw new UnsupportedOperationException();
+        }
+    }
+
+    static final class SingleNode extends Node {
+        SingleNode(ConfigModel model, String xmlName) {
+            super(model, xmlName);
+        }
+
+        public boolean isCollection() {
+            return false;
+        }
+
+        public Object get(Dom dom, Type returnType) {
+            Dom v = dom.nodeElement(xmlName);
+            if(v==null)     return null;
+
+            if(returnType==Dom.class)
+                return v;
+
+            Class rt = Types.erasure(returnType);
+            if(ConfigBeanProxy.class.isAssignableFrom(rt))
+                return v.createProxy(rt);
+
+            throw new IllegalArgumentException("Invalid type "+returnType+" for "+xmlName);
+        }
+
+        public void set(Dom dom, Object arg) {
+            // TODO
+            throw new UnsupportedOperationException();
+        }
+    }
+
+    static abstract class Leaf extends Property {
+        public Leaf(String xmlName) {
+            super(xmlName);
         }
 
         public boolean isLeaf() {
             return true;
         }
+
+        /**
+         * Converts a single value from string to the specified target type.
+         *
+         * @return
+         *      Instance of the given 'returnType'
+         */
+        protected static Object convertLeafValue(Class<?> returnType, String v) {
+            if(v==null)
+                // TODO: default value handling
+                // TODO: if primitive types, report an error
+                return null;
+
+            if(returnType==String.class) {
+                return v;
+            }
+            if(returnType==Integer.class || returnType==int.class) {
+                return Integer.valueOf(v);
+            }
+            if(returnType==Boolean.class || returnType==boolean.class) {
+                return BOOLEAN_TRUE.contains(v);
+            }
+            throw new IllegalArgumentException("Don't know how to handle "+returnType);
+        }
+
+        private static final Set<String> BOOLEAN_TRUE = new HashSet<String>(Arrays.asList("true","yes","on","1"));
     }
 
-    static enum AttributeAction { OPTIONAL, REQUIRED }
+    static final class CollectionLeaf extends Leaf {
+        CollectionLeaf(String xmlName) {
+            super(xmlName);
+        }
+
+        public boolean isCollection() {
+            return true;
+        }
+
+        public Object get(Dom dom, Type returnType) {
+            // TODO: perhaps support more collection types?
+            final List<String> v = dom.leafElements(xmlName);
+            if(!(returnType instanceof ParameterizedType))
+                throw new IllegalArgumentException("List needs to be parameterized");
+            final Class itemType = Types.erasure(Types.getTypeArgument(returnType,0));
+
+            // return a live list
+            return new AbstractList<Object>() {
+                public Object get(int index) {
+                    return convertLeafValue(itemType,v.get(index));
+                }
+
+                public int size() {
+                    return v.size();
+                }
+            };
+        }
+
+        public void set(Dom dom, Object arg) {
+            // TODO
+            throw new UnsupportedOperationException();
+        }
+    }
+
+    static final class SingleLeaf extends Leaf {
+        SingleLeaf(String xmlName) {
+            super(xmlName);
+        }
+
+        public boolean isCollection() {
+            return false;
+        }
+
+        public Object get(Dom dom, Type returnType) {
+            // leaf types
+            String v = dom.leafElement(xmlName);
+            return convertLeafValue(Types.erasure(returnType), v);
+        }
+
+        public void set(Dom dom, Object arg) {
+            if(arg==null)
+                // TODO: implement remove
+                throw new UnsupportedOperationException();
+            dom.leafElement(xmlName,arg.toString());
+        }
+    }
 
     /**
      * @param description
@@ -150,15 +344,18 @@ public final class ConfigModel {
         this.injector = injector;
         String targetTypeName=null,indexTypeName=null;
         String key = null;
-        for (Entry<String, List<String>> e : description.entrySet()) {
+        for (Map.Entry<String, List<String>> e : description.entrySet()) {
             String name = e.getKey();
             String value = e.getValue().size()>0 ? e.getValue().get(0) : null;
-            if(name.startsWith("@"))
-                attributes.put(name.substring(1),AttributeAction.valueOf(value.toUpperCase()));
-            else
-            if(name.startsWith("<"))
-                elements.put(name.substring(1,name.length()-1),parseValue(parent,value));
-            else
+            if(name.startsWith("@")) {
+                // TODO: handle value.equals("optional") and value.equals("required") distinctively.
+                String attributeName = name.substring(1);
+                attributes.put(attributeName, new SingleLeaf(attributeName));
+            } else
+            if(name.startsWith("<")) {
+                String elementName = name.substring(1, name.length() - 1);
+                elements.put(elementName,parseValue(elementName,parent,value));
+            } else
             if(name.equals(ConfigMetadata.TARGET))
                 targetTypeName = value;
             else
@@ -181,9 +378,36 @@ public final class ConfigModel {
     }
 
     /**
-     * Parses {@link ElementAction} object from a value in the metadata description.
+     * Finds the {@link Property} from either {@link #elements} or {@link #attributes}.
+     * @param xmlName
+     *      XML name to be searched.
+     * @return null
+     *      if none is found.
      */
-    private ElementAction parseValue(ConfigParser parent, String value) {
+    public Property findIgnoreCase(String xmlName) {
+        // first try the exact match to take our chance
+        Property a = attributes.get(xmlName);
+        if(a!=null)     return a;
+        a = elements.get(xmlName);
+        if(a!=null)     return a;
+
+        // exhaustive search
+        a = _findIgnoreCase(xmlName, attributes);
+        if(a!=null)     return a;
+        return _findIgnoreCase(xmlName, elements);
+    }
+
+    private Property _findIgnoreCase(String name, Map<String, ? extends Property> map) {
+        for (Map.Entry<String, ? extends Property> i : map.entrySet())
+            if(i.getKey().equalsIgnoreCase(name))
+                return i.getValue();
+        return null;
+    }
+
+    /**
+     * Parses {@link Property} object from a value in the metadata description.
+     */
+    private Property parseValue(String elementName, ConfigParser parent, String value) {
         boolean collection = false;
         if(value.startsWith("collection:")) {
             collection = true;
@@ -191,8 +415,8 @@ public final class ConfigModel {
         }
 
         if(value.equals("leaf")) {
-            if(collection)  return LEAF_COLLECTION;
-            else            return LEAF_SINGLE;
+            if(collection)  return new CollectionLeaf(elementName);
+            else            return new SingleLeaf(elementName);
         }
 
         // this element is a reference to another configured inhabitant.
@@ -202,7 +426,11 @@ public final class ConfigModel {
             throw new ComponentException(
                 "%s is referenced from %s but its ConfigInjector is not found",value,injector.typeName());
 
-        return new Node(parent.buildModel(i),collection);
+        ConfigModel model = parent.buildModel(i);
+        if(collection)
+            return new CollectionNode(model,elementName);
+        else
+            return new SingleNode(model,elementName);
     }
 
     public MBeanInfo getMBeanInfo() {
@@ -217,7 +445,7 @@ public final class ConfigModel {
         List<MBeanAttributeInfo> properties = new ArrayList<MBeanAttributeInfo>();
         List<MBeanOperationInfo> operations = new ArrayList<MBeanOperationInfo>();
 
-        for (Map.Entry<String,AttributeAction> a : attributes.entrySet()) {
+        for (Map.Entry<String,Leaf> a : attributes.entrySet()) {
             properties.add(new MBeanAttributeInfo(a.getKey(),
                 String.class.getName(),
                 a.getKey(), // TODO: fetch from javadoc
