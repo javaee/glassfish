@@ -33,9 +33,9 @@ import com.sun.mirror.declaration.ClassDeclaration;
 import com.sun.mirror.declaration.TypeDeclaration;
 import com.sun.mirror.type.InterfaceType;
 import com.sun.mirror.type.MirroredTypeException;
+import com.sun.mirror.util.DeclarationVisitor;
 import com.sun.mirror.util.DeclarationVisitors;
 import com.sun.mirror.util.SimpleDeclarationVisitor;
-import com.sun.mirror.util.DeclarationVisitor;
 import org.jvnet.hk2.annotations.Contract;
 import org.jvnet.hk2.annotations.ContractProvided;
 import org.jvnet.hk2.annotations.Service;
@@ -51,7 +51,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * This class is proccessing the @Service annotation and generates
+ * This class is proccessing the @{@link Service} annotation and generates
  * META-INF/services style text file for each interface annotated with @Contract
  *
  * @author Jerome Dochez
@@ -190,7 +190,7 @@ public class ServiceAnnotationProcessor implements AnnotationProcessor, RoundCom
                 Contract c = atd.getAnnotation(Contract.class);
                 if(c!=null) {
                     // this is a contract annotation
-                    createContractImplementation(atd.getQualifiedName(),d.getQualifiedName());
+                    createContractImplementation(atd.getQualifiedName(),d);
                 }
             }
         }
@@ -210,7 +210,7 @@ public class ServiceAnnotationProcessor implements AnnotationProcessor, RoundCom
                 if (debug) {
                     System.out.println("Provided is " + intfName);
                 }
-                createContractImplementation(intfName, impl.getQualifiedName());
+                createContractImplementation(intfName, impl);
             }
 
         }
@@ -218,18 +218,20 @@ public class ServiceAnnotationProcessor implements AnnotationProcessor, RoundCom
         private void checkContract(TypeDeclaration type, ClassDeclaration impl) {
             Contract contract = type.getAnnotation(Contract.class);
 
-            String intfName = null;
-
-            if (contract != null || (intfName != null && intfName.equals(type.getQualifiedName()))) {
-                createContractImplementation(type.getQualifiedName(), impl.getQualifiedName());
-            }
+            if (contract != null)
+                createContractImplementation(type.getQualifiedName(), impl);
         }
     }
 
     /**
      * Records the contract&lt;->service relationship.
+     *
+     * @param contractName
+     *      FQCN of the contract type/annotation.
+     * @param impl
+     *      Implementation class.
      */
-    private void createContractImplementation(String contractName, String implementationName) {
+    private void createContractImplementation(String contractName, ClassDeclaration impl) {
         ServiceFileInfo info;
         if (!serviceFiles.containsKey(contractName)) {
             info = new ServiceFileInfo(contractName, new HashSet<String>());
@@ -238,14 +240,12 @@ public class ServiceAnnotationProcessor implements AnnotationProcessor, RoundCom
             info = serviceFiles.get(contractName);
         }
 
-        if (!info.getImplementors().contains(implementationName)) {
-            info.getImplementors().add(implementationName);
+        if (info.getImplementors().add(impl.getQualifiedName())) {
             try {
                 info.createFile(env);
             } catch (IOException ioe) {
                 env.getMessager().printError(ioe.getMessage());
             }
-
         }
     }
 

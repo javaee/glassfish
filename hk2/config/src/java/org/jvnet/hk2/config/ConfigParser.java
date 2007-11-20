@@ -3,7 +3,6 @@ package org.jvnet.hk2.config;
 import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
-import org.jvnet.hk2.config.ConfigModel.ElementAction;
 import org.jvnet.hk2.config.Dom.Child;
 
 import javax.xml.stream.XMLInputFactory;
@@ -101,7 +100,7 @@ public class ConfigParser {
 
         while(in.nextTag()==START_ELEMENT) {
             String name = in.getLocalName();
-            ElementAction a = model.elements.get(name);
+            ConfigModel.Property a = model.elements.get(name);
 
             if(children==null)
                 children = new ArrayList<Child>();

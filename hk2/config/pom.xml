@@ -17,5 +17,10 @@
             <artifactId>auto-depends</artifactId>
             <version>${project.version}</version>            
         </dependency>
+        <dependency>
+            <groupId>org.jvnet</groupId>
+            <artifactId>tiger-types</artifactId>
+            <version>RELEASE</version>
+        </dependency>
     </dependencies>
 </project>

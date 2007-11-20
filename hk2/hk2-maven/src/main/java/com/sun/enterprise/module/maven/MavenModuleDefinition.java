@@ -31,6 +31,11 @@ final class MavenModuleDefinition extends DefaultModuleDefinition {
         }
     }
 
+    void addClasspath(File location) {
+        // insert at the front so that this takes precedence.
+        classPath.add(0,location.toURI());
+    }
+
     /**
      * Instead of looking at {@value ManifestConstants#CLASS_PATH}, look at
      * {@link ManifestConstants#CLASS_PATH_ID} and pick up artifacts from

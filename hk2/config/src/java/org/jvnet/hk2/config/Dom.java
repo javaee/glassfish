@@ -8,12 +8,17 @@ import org.jvnet.hk2.component.Womb;
 
 import javax.xml.stream.Location;
 import javax.xml.stream.XMLStreamReader;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
+import java.util.regex.Pattern;
 
 /**
  * {@link Inhabitant} that loads configuration from XML.
@@ -29,7 +34,7 @@ import java.util.StringTokenizer;
  *
  * @author Kohsuke Kawaguchi
  */
-public class Dom extends LazyInhabitant {
+public class Dom extends LazyInhabitant implements InvocationHandler {
     /**
      * Model drives the interpretation of this DOM.
      */
@@ -229,6 +234,8 @@ public class Dom extends LazyInhabitant {
 
     /**
      * Picks up all leaf-element values of the given name.
+     * @return
+     *      Can be empty but never null.
      */
     public List<String> leafElements(String name) {
         List<Child> children = this.children; // fix the snapshot that we'll work with
@@ -348,7 +355,7 @@ public class Dom extends LazyInhabitant {
 
     /**
      * Gets the {@link ConfigInjector} instance that can be used to inject
-     * this DOM to a bean. 
+     * this DOM to a bean.
      */
     public ConfigInjector getInjector() {
         return model.injector.get();
@@ -395,12 +402,118 @@ public class Dom extends LazyInhabitant {
     }
 
     /**
-     * This is how we inject the configuration into the created object
+     * Creates a strongly-typed proxy to access values in this {@link Dom} object.
+     */
+    public <T extends ConfigBeanProxy> T createProxy(Class<T> proxyType) {
+        return proxyType.cast(Proxy.newProxyInstance(proxyType.getClassLoader(),new Class[]{proxyType},this));
+    }
+
+    /**
+     * {@link InvocationHandler} implementation that allows strongly-typed access
+     * to the configuration.
+     *
+     * <p>
+     * TODO: it might be a great performance improvement to have APT generate
+     * code that does this during the development time by looking at the interface.
+     */
+    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+        // serve java.lang.Object methods by ourselves
+        if(method.getDeclaringClass()==Object.class) {
+            try {
+                return method.invoke(this,args);
+            } catch (InvocationTargetException e) {
+                throw e.getTargetException();
+            }
+        }
+
+        ConfigModel.Property p = toProperty(method);
+        if(p==null)
+            throw new IllegalArgumentException("No corresponding property found for method: "+method);
+
+        if(args==null || args.length==0) {
+            // getter
+            return p.get(this,method.getGenericReturnType());
+        } else {
+            // setter
+            p.set(this,args[0]);
+            return null;
+        }
+    }
+
+    /**
+     * Obtain XML names (like "abc-def") from strings like "getAbcDef" and "hasAbcDef".
+     * <p>
+     * The conversion rule uses the {@link #model} to find a good match.
+     */
+    protected ConfigModel.Property toProperty(Method method) {
+        String name = method.getName();
+
+        // check annotations first
+        Element e = method.getAnnotation(Element.class);
+        if(e!=null) {
+            String en = e.value();
+            if(en.length()>0)
+                return model.elements.get(en);
+        }
+        Attribute a = method.getAnnotation(Attribute.class);
+        if(a!=null) {
+            String an = a.value();
+            if(an.length()>0)
+                return model.attributes.get(an);
+        }
+        // TODO: check annotations on the getter/setter
+
+        // first, trim off the prefix
+        for (String p : PROPERTY_PREFIX) {
+            if(name.startsWith(p)) {
+                name = name.substring(p.length());
+                break;
+            }
+        }
+
+        // tokenize by finding 'x|X' and 'X|Xx' then insert '-'.
+        StringBuilder buf = new StringBuilder(name.length()+5);
+        for(String t : TOKENIZER.split(name)) {
+            if(buf.length()>0)  buf.append('-');
+            buf.append(t.toLowerCase());
+        }
+        name = buf.toString();
+
+        // at this point name should match XML names in the model, modulo case.
+        return model.findIgnoreCase(name);
+    }
+
+
+    /**
+     * Used to tokenize the property name into XML name.
+     */
+    private static final Pattern TOKENIZER;
+    private static String split(String lookback,String lookahead) {
+        return "(?<="+lookback+")(?="+lookahead+')';
+    }
+    static {
+        String pattern = String.format("(%1s)|(%2s)", split("x","X"), split("X","Xx"));
+        pattern = pattern.replace("x","\\p{Lower}").replace("X","\\p{Upper}");
+        TOKENIZER = Pattern.compile(pattern);
+    }
+
+    private static final String[] PROPERTY_PREFIX = new String[]{"get","set","is","has"};
+
+    /**
+     * This is how we inject the configuration into the created object.
+     * <p>
+     * There are two kinds &mdash; one where @{@link Configured} is put on
+     * a bean and that is placedinto Habitat, and the other is
+     * where @{@link Configured} is on {@link ConfigBeanProxy} subtype,
+     * in which case the proxy to {@link Dom} will be placed into the habitat.
      */
     @Override
     @SuppressWarnings("unchecked")
     protected Womb createWomb(Class c) {
-        return new ConfiguredWomb(super.createWomb(c),this);
+        if(ConfigBeanProxy.class.isAssignableFrom(c))
+            return new DomProxyWomb(c,metadata(),this);
+        else
+            return new ConfiguredWomb(super.createWomb(c),this);
     }
 
     /**

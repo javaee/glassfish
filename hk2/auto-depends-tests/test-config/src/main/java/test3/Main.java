@@ -9,6 +9,9 @@ import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.config.Dom;
 import test3.substitution.SecurityMap;
 
+import java.util.List;
+import java.util.Collection;
+
 /**
  * @author Kohsuke Kawaguchi
  */
@@ -28,6 +31,14 @@ public class Main extends Assert implements ModuleStartup {
         foo.e.printStackTrace();
         assertEquals(80,foo.httpPort);
         assertEquals(foo.bar,"qwerty");
+
+        // test the proxies
+        JmsHost jms = find(foo.all, JmsHost.class);
+        System.out.println(jms.toString());
+        List<Property> props = jms.getProperties();
+        assertEquals(2, props.size());
+        assertEquals("foo",props.get(0).name);
+        assertEquals("abc",props.get(0).value);
 
         assertEquals(3,foo.properties.size());
         assertNotNull(foo.properties.get("xyz"));
@@ -60,5 +71,13 @@ public class Main extends Assert implements ModuleStartup {
         Dom i = (Dom)manager.getInhabitant(HttpListener.class, "a");
         i.attribute("acceptor-threads","56");
         assertEquals(56,listener.acceptorThreads);
+    }
+
+    private <T> T find(Collection<?> all, Class<T> type) {
+        for (Object t : all) {
+            if(type.isInstance(t))
+                return type.cast(t);
+        }
+        return null;
     }
 }
