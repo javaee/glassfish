@@ -32,6 +32,12 @@ import java.util.jar.Manifest;
  * @author Kohsuke Kawaguchi
  */
 public class Packager {
+    /**
+     * Creates META-INF/MANIFEST.MF with all the entries needed for HK2 runtime.
+     *
+     * @param pom
+     *      The project from which we are creating manifest. 
+     */
     public void writeManifest(MavenProject pom, File classesDirectory) throws IOException {
         Manifest mf = new Manifest();
         for( Map.Entry<String,String> e : configureManifet(pom,null,classesDirectory).entrySet()) {
@@ -69,6 +75,14 @@ public class Packager {
         TokenListBuilder dependencyModuleNames = new TokenListBuilder();
         Set<String> dependencyModules = new HashSet<String>();  // used to find transitive dependencies through other modules.
         for (Artifact a : (Set<Artifact>)pom.getDependencyArtifacts()) {
+            // http://www.nabble.com/V3-gf%3Arun-throws-NPE-tf4816802.html indicates
+            // that some artifacts are not resolved at this point. Not sure when that could happen
+            // so aborting with diagnostics if we find it. We need to better understand what this
+            // means and work accordingly. - KK
+            if(a.getFile()==null) {
+                throw new AssertionError(a.getId()+" is not resolved. a="+a);
+            }
+
             Manifest manifest = Jar.create(a.getFile()).getManifest();
             String name = null;
             if (manifest!=null) {
