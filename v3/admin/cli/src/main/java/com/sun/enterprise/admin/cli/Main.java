@@ -1,12 +1,14 @@
 package com.sun.enterprise.admin.cli;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
@@ -18,7 +20,6 @@ import java.util.jar.Manifest;
  * my v3 main, basically some throw away code
  */
 public class Main {
-    
     public static void main(String[] args) {
 
         if (args.length==0) {
@@ -73,8 +74,8 @@ public class Main {
                 System.err.println("Error encoding " + param.getKey() + ", parameter value will be ignored");
             }
         }
-        if (Boolean.getBoolean("trace")) {
-            System.out.println(httpConnection);
+        if (TRACE) {
+            System.out.println("Connecting to "+httpConnection);
         }
         try {
             URL url = new URL(httpConnection);
@@ -82,12 +83,29 @@ public class Main {
             urlConnection.setRequestProperty("User-Agent", "hk2-cli");
             urlConnection.connect();
 
+            InputStream in = urlConnection.getInputStream();
+
+            if(TRACE) {
+                // dump the content
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                copyStream(urlConnection.getInputStream(),baos);
+                System.out.println("Response\n=====");
+                System.out.println(baos);
+                System.out.println("=====");
+                in = new ByteArrayInputStream(baos.toByteArray());
+            }
+
             int code = urlConnection.getResponseCode();
             if (code==200) {
-               if (params.size()==1 && params.get("help")!=null) {
-                   processHelp(urlConnection);
+                Manifest m = getManifest(in);
+                if (m==null) {
+                    return;
+                }
+
+                if (params.size()==1 && params.get("help")!=null) {
+                   processHelp(m);
                } else {
-                   processMessage(urlConnection);
+                   processMessage(m);
                }
             } else {
                 System.out.println("Failed : error code " + code);
@@ -97,10 +115,8 @@ public class Main {
         }
     }
 
-    private static Manifest getManifest(URLConnection connection) {
-        InputStream is=null;
+    private static Manifest getManifest(InputStream is) {
         try {
-            is = connection.getInputStream();
             Manifest m = new Manifest();
             m.read(is);
 
@@ -123,11 +139,7 @@ public class Main {
         return null;
     }
 
-    private static void processHelp(URLConnection connection) {
-        Manifest m = getManifest(connection);
-        if (m==null) {
-            return;
-        }
+    private static void processHelp(Manifest m) {
         System.out.println("");
         System.out.println(m.getMainAttributes().getValue("message"));
         System.out.println("");
@@ -148,14 +160,7 @@ public class Main {
 
     }
 
-    private static void processMessage(URLConnection connection)  {
-        
-
-        Manifest m = getManifest(connection);
-
-        if (m==null) {
-            return;
-        }
+    private static void processMessage(Manifest m)  {
         String exitCode = m.getMainAttributes().getValue("exit-code");
         String message = m.getMainAttributes().getValue("message");
         System.out.println(exitCode + " : " + message);
@@ -205,6 +210,17 @@ public class Main {
           processOneLevel(prefix + "\t", container, m, childAttr);
         }
     }
+
+    private static void copyStream(InputStream in, OutputStream out) throws IOException {
+        byte[] buf = new byte[1024];
+        int len;
+        while ((len = in.read(buf)) >= 0) {
+            out.write(buf, 0, len);
+        }
+        out.close();
+    }
+
+    public static final boolean TRACE = Boolean.getBoolean("trace");
 }
 
 
