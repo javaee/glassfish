@@ -235,7 +235,11 @@ public class Main {
                 throw new BootException("No module has ModuleStartup");
             if(startups.size()>1) {
                 Iterator<ModuleStartup> itr = startups.iterator();
-                throw new BootException("Multiple ModuleStartup found: "+itr.next()+" and "+itr.next());
+                ModuleStartup a = itr.next();
+                ModuleStartup b = itr.next();
+                Module am = Module.find(a.getClass());
+                Module bm = Module.find(b.getClass());
+                throw new BootException(String.format("Multiple ModuleStartup found: %s from %s and %s from %s",a,am,b,bm));
             }
 
             startupCode = startups.iterator().next();
