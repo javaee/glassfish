@@ -75,6 +75,8 @@ public class Packager {
         TokenListBuilder dependencyModuleNames = new TokenListBuilder();
         Set<String> dependencyModules = new HashSet<String>();  // used to find transitive dependencies through other modules.
         for (Artifact a : (Set<Artifact>)pom.getDependencyArtifacts()) {
+            if(a.getScope()!=null && a.getScope().equals("test"))
+                continue;
             // http://www.nabble.com/V3-gf%3Arun-throws-NPE-tf4816802.html indicates
             // that some artifacts are not resolved at this point. Not sure when that could happen
             // so aborting with diagnostics if we find it. We need to better understand what this
