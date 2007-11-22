@@ -162,6 +162,7 @@
         </repository>
     </distributionManagement>
     <build>
+        <defaultGoal>install</defaultGoal>
         <sourceDirectory>src/main/java</sourceDirectory>      
         <plugins>
             <plugin>
