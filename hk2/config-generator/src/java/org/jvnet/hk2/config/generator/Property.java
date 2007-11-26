@@ -72,13 +72,18 @@ abstract class Property {
     }
 
     /**
-     * Property that consists of a set/add method.
+     * Property that consists of a set/add/get method.
      */
     static final class Method extends Property {
         final MethodDeclaration decl;
+        /**
+         * True if this property is based on the getter method. False if the setter/adder.
+         */
+        final boolean getter;
 
         public Method(MethodDeclaration decl) {
             this.decl = decl;
+            getter = !decl.getReturnType().toString().equals("void");
         }
 
         MemberDeclaration decl() {
@@ -87,13 +92,16 @@ abstract class Property {
 
         String seedName() {
             String name = decl.getSimpleName();
-            if(name.startsWith("set") || name.startsWith("add")) // cut off the set prefix
+            if(name.startsWith("set") || name.startsWith("add") || name.startsWith("get")) // cut off the set prefix
                 name = Introspector.decapitalize(name.substring(3));
             return name;
         }
 
         TypeMirror type() {
-            return decl.getParameters().iterator().next().getType();
+            if(getter)
+                return decl.getReturnType();
+            else
+                return decl.getParameters().iterator().next().getType();
         }
 
         void assign(JVar $target, JBlock block, JExpression rhs) {
