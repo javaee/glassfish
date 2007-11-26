@@ -162,7 +162,7 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
             if (!source.isDirectory()) {
                 expansionDir = new File(env.getApplicationRepositoryPath(), name);
                 if (!expansionDir.mkdirs()) {
-                    report.setMessage(localStrings.getLocalString("deploy.cannotcreateexpansiondir", "Error while creating directory for jar expansion"));
+                    report.setMessage(localStrings.getLocalString("deploy.cannotcreateexpansiondir", "Error while creating directory for jar expansion: {0}",expansionDir));
                     report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                     // we don't own it, we don't delete it.
                     expansionDir=null;
