@@ -44,6 +44,7 @@ import org.jvnet.hk2.config.Dom;
 import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.Element;
 import org.jvnet.hk2.config.InjectionTarget;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -55,13 +56,14 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Generates {@link ConfigInjector} implementations for {@link Configured} objects.
+ * Generates {@link ConfigInjector} implementations for {@link Configured} objects
+ * and {@link ConfigBeanProxy} subtypes.
  * 
  * @author Kohsuke Kawaguchi
  */
 public class ConfigInjectorGenerator extends SimpleDeclarationVisitor implements AnnotationProcessor {
     private final AnnotationProcessorEnvironment env;
-    JCodeModel cm;
+    private JCodeModel cm;
 
     final TypeMath math;
 
