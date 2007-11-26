@@ -6,6 +6,7 @@ import com.sun.mirror.declaration.TypeDeclaration;
 import com.sun.mirror.type.DeclaredType;
 import com.sun.mirror.type.InterfaceType;
 import com.sun.mirror.type.MirroredTypeException;
+import com.sun.mirror.type.ClassType;
 import org.jvnet.hk2.annotations.Contract;
 import org.jvnet.hk2.annotations.ContractProvided;
 
@@ -13,7 +14,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Given a {@link ClassDeclaration},
+ * Given a {@link TypeDeclaration},
  * find all super-types that have {@link Contract},
  * including ones pointed by {@link ContractProvided}.
  *
@@ -23,7 +24,7 @@ public class ContractFinder {
     /**
      * The entry point.
      */
-    public static Set<TypeDeclaration> find(ClassDeclaration d) {
+    public static Set<TypeDeclaration> find(TypeDeclaration d) {
         return new ContractFinder().check(d).result;
     }
 
@@ -38,23 +39,27 @@ public class ContractFinder {
     private ContractFinder() {
     }
 
-    private ContractFinder check(ClassDeclaration d) {
+    private ContractFinder check(TypeDeclaration d) {
         // look for @ContractProvided interface
         checkContractProvided(d);
 
         // traverse up the inheritance tree and find all supertypes that have @Contract
-        ClassDeclaration sd = d;
-        while(sd.getSuperclass()!=null) {
+        while(true) {
             checkSuperInterfaces(d);
-
-            sd = sd.getSuperclass().getDeclaration();
-            checkContract(sd);
+            if (d instanceof ClassDeclaration) {
+                ClassDeclaration cd = (ClassDeclaration) d;
+                checkContract(cd);
+                ClassType sc = cd.getSuperclass();
+                if(sc==null)    break;
+                d = sc.getDeclaration();
+            } else
+                break;
         }
 
         return this;
     }
 
-    private void checkContractProvided(ClassDeclaration impl) {
+    private void checkContractProvided(TypeDeclaration impl) {
         ContractProvided provided = impl.getAnnotation(ContractProvided.class);
         if (provided != null) {
             try {

@@ -9,11 +9,11 @@ import com.sun.codemodel.JDefinedClass;
 import com.sun.codemodel.JExpr;
 import com.sun.codemodel.JExpression;
 import com.sun.codemodel.JForEach;
+import com.sun.codemodel.JInvocation;
 import com.sun.codemodel.JMethod;
 import com.sun.codemodel.JMod;
 import com.sun.codemodel.JType;
 import com.sun.codemodel.JVar;
-import com.sun.codemodel.JInvocation;
 import com.sun.enterprise.tools.apt.ContractFinder;
 import com.sun.istack.tools.APTTypeVisitor;
 import com.sun.mirror.apt.AnnotationProcessor;
@@ -22,6 +22,7 @@ import com.sun.mirror.declaration.AnnotationTypeDeclaration;
 import com.sun.mirror.declaration.ClassDeclaration;
 import com.sun.mirror.declaration.Declaration;
 import com.sun.mirror.declaration.FieldDeclaration;
+import com.sun.mirror.declaration.InterfaceDeclaration;
 import com.sun.mirror.declaration.MethodDeclaration;
 import com.sun.mirror.declaration.TypeDeclaration;
 import com.sun.mirror.type.ArrayType;
@@ -34,17 +35,19 @@ import com.sun.mirror.type.TypeVariable;
 import com.sun.mirror.type.VoidType;
 import com.sun.mirror.type.WildcardType;
 import com.sun.mirror.util.SimpleDeclarationVisitor;
+import com.sun.mirror.util.Types;
 import com.sun.tools.xjc.api.util.FilerCodeWriter;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.MultiMap;
+import org.jvnet.hk2.config.Attribute;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.ConfigInjector;
 import org.jvnet.hk2.config.ConfigMetadata;
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.Dom;
-import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.Element;
 import org.jvnet.hk2.config.InjectionTarget;
-import org.jvnet.hk2.config.ConfigBeanProxy;
+import org.jvnet.hk2.config.NoopConfigInjector;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -54,6 +57,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.jar.Pack200;
 
 /**
  * Generates {@link ConfigInjector} implementations for {@link Configured} objects
@@ -66,10 +70,15 @@ public class ConfigInjectorGenerator extends SimpleDeclarationVisitor implements
     private JCodeModel cm;
 
     final TypeMath math;
+    /**
+     * Reference to the {@link ConfigBeanProxy} type.
+     */
+    private final TypeDeclaration configBeanProxy;
 
     public ConfigInjectorGenerator(AnnotationProcessorEnvironment env) {
         this.env = env;
         this.math = new TypeMath(env);
+        configBeanProxy = env.getTypeDeclaration(ConfigBeanProxy.class.getName());
     }
 
     public void process() {
@@ -92,14 +101,34 @@ public class ConfigInjectorGenerator extends SimpleDeclarationVisitor implements
      */
     public void visitClassDeclaration(ClassDeclaration clz) {
         try {
-            new ClassGenerator(clz).generate();
+            new ClassGenerator(clz,false).generate();
         } catch (JClassAlreadyExistsException e) {
             env.getMessager().printError(clz.getPosition(),e.toString());
         }
     }
 
+    /**
+     * For each {@link ConfigBeanProxy} annotated with {@link Configured}.
+     */
+    public void visitInterfaceDeclaration(InterfaceDeclaration clz) {
+        try {
+            if(!isSubType(clz,configBeanProxy)) {
+                env.getMessager().printError(clz.getPosition(),
+                    clz.getQualifiedName()+" has @Configured but doesn't extend ConfigBeanProxy");
+            } else
+                new ClassGenerator(clz,true).generate();
+        } catch (JClassAlreadyExistsException e) {
+            env.getMessager().printError(clz.getPosition(),e.toString());
+        }
+    }
+
+    private boolean isSubType(TypeDeclaration subType, TypeDeclaration baseType) {
+        Types u = env.getTypeUtils();
+        return u.isSubtype(u.getDeclaredType(subType),u.getDeclaredType(baseType));
+    }
+
     /*package*/ class ClassGenerator {
-        final ClassDeclaration clz;
+        final TypeDeclaration clz;
         final JDefinedClass injector;
         final JClass targetType;
         final JAnnotationUse service;
@@ -110,9 +139,21 @@ public class ConfigInjectorGenerator extends SimpleDeclarationVisitor implements
          */
         private Property key=null;
 
+        /**
+         * If true, generate a ConfigInjector that extends from {@link NoopConfigInjector}.
+         * This is used as the metadata place holder for {@link ConfigBeanProxy}s.
+         * <p>
+         * If false, generate a real {@link ConfigInjector}.
+         *
+         * <p>
+         * See the test-config test module for this difference in action. 
+         */
+        private final boolean generateNoopConfigInjector;
 
-        public ClassGenerator(ClassDeclaration clz) throws JClassAlreadyExistsException {
+
+        public ClassGenerator(TypeDeclaration clz, boolean generateNoopConfigInjector) throws JClassAlreadyExistsException {
             this.clz = clz;
+            this.generateNoopConfigInjector = generateNoopConfigInjector;
             Configured c = clz.getAnnotation(Configured.class);
 
             String name = clz.getQualifiedName();
@@ -136,20 +177,27 @@ public class ConfigInjectorGenerator extends SimpleDeclarationVisitor implements
 
             service = injector.annotate(Service.class).param("name",elementName);
             injector.annotate(InjectionTarget.class).param("value",targetType);
-            injector._extends(cm.ref(ConfigInjector.class).narrow(targetType));
+            if(generateNoopConfigInjector) {
+                injector._extends(cm.ref(NoopConfigInjector.class));
+                injectAttributeMethod = null;
+                injectMethod = null;
+                injectElementMethod = null;
+            } else {
+                injector._extends(cm.ref(ConfigInjector.class).narrow(targetType));
 
-            // [RESULT]
-            // public void inject(Dom dom, Property target) { ... }
-            injectMethod = injector.method(JMod.PUBLIC, void.class, "inject");
-            injectMethod.param(Dom.class, "dom");
-            injectMethod.param(targetType, "target");
-            injectMethod.body();
+                // [RESULT]
+                // public void inject(Dom dom, Property target) { ... }
+                injectMethod = injector.method(JMod.PUBLIC, void.class, "inject");
+                injectMethod.param(Dom.class, "dom");
+                injectMethod.param(targetType, "target");
+                injectMethod.body();
 
-            injectAttributeMethod = injector.method(JMod.PUBLIC,void.class,"injectAttribute");
-            addReinjectionParam(injectAttributeMethod);
+                injectAttributeMethod = injector.method(JMod.PUBLIC,void.class,"injectAttribute");
+                addReinjectionParam(injectAttributeMethod);
 
-            injectElementMethod = injector.method(JMod.PUBLIC,void.class,"injectElement");
-            addReinjectionParam(injectElementMethod);
+                injectElementMethod = injector.method(JMod.PUBLIC,void.class,"injectElement");
+                addReinjectionParam(injectElementMethod);
+            }
 
             metadata.add(ConfigMetadata.TARGET,name);
 
@@ -238,15 +286,21 @@ public class ConfigInjectorGenerator extends SimpleDeclarationVisitor implements
                 this.xmlName = p.inferName(xmlName);
                 this.p = p;
 
-                JMethod m = injector.method(JMod.PUBLIC,void.class, methodNamePrefix+p.seedName());
-                $dom = m.param(Dom.class,"dom");
-                $target = m.param(targetType,"target");
-                body = m.body();
+                if(generateNoopConfigInjector) {
+                    body = null;
+                    $dom = null;
+                    $target = null;
+                } else {
+                    JMethod m = injector.method(JMod.PUBLIC,void.class, methodNamePrefix+p.seedName());
+                    $dom = m.param(Dom.class,"dom");
+                    $target = m.param(targetType,"target");
+                    body = m.body();
 
-                injectMethod.body().invoke(m).arg($dom).arg($target);
+                    injectMethod.body().invoke(m).arg($dom).arg($target);
 
-                reinjectionMethod.body()._if(JExpr.lit(this.xmlName).invoke("equals").arg(JExpr.ref("name")))
-                    ._then().invoke(m).arg($dom).arg($target);
+                    reinjectionMethod.body()._if(JExpr.lit(this.xmlName).invoke("equals").arg(JExpr.ref("name")))
+                        ._then().invoke(m).arg($dom).arg($target);
+                }
 
                 erasure = erasure(p.type());
                 packer = createPacker(p.type(),erasure);
@@ -270,16 +324,18 @@ public class ConfigInjectorGenerator extends SimpleDeclarationVisitor implements
                 if(!isVariableExpansion() && TO_JTYPE.apply(itemType,null)!=cm.ref(String.class))
                     env.getMessager().printError(p.decl().getPosition(),"variableExpansion=false is only allowed on String");
 
-                JVar value = var(
-                    packer!=null ? cm.ref(List.class).narrow(conv.sourceType()) : conv.sourceType(),getXmlValue());
+                if(!generateNoopConfigInjector) {
+                    JVar value = var(
+                        packer!=null ? cm.ref(List.class).narrow(conv.sourceType()) : conv.sourceType(),getXmlValue());
 
-                if(!isRequired())
-                    body._if(value.eq(JExpr._null()))._then()._return();
+                    if(!isRequired())
+                        body._if(value.eq(JExpr._null()))._then()._return();
 
-                if(packer!=null)
-                    handleMultiValue(value);
-                else
-                    assign(conv.as(value,itemType));
+                    if(packer!=null)
+                        handleMultiValue(value);
+                    else
+                        assign(conv.as(value,itemType));
+                }
 
                 if(p.isKey())
                     addKey();
