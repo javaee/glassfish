@@ -113,7 +113,7 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
             return;
         }        
 
-        ReadableArchive archive = null;
+        ReadableArchive archive;
         try {
             archive = archiveFactory.openArchive(file);
         } catch (IOException e) {
@@ -154,7 +154,7 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
 
             ArchiveHandler archiveHandler = getArchiveHandler(archive);
             if (archiveHandler==null) {
-                report.setMessage(localStrings.getLocalString("deploy.unknownarchivetype","Archive type not recognized"));
+                report.setMessage(localStrings.getLocalString("deploy.unknownarchivetype","Archive type of {0} was not recognized",file.getName()));
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                 return;
             }
