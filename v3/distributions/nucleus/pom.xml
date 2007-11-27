@@ -35,18 +35,6 @@
             <scope>runtime</scope>
         </dependency>
         <dependency>
-            <groupId>org.glassfish.admin</groupId>
-            <artifactId>config-api</artifactId>
-            <version>${glassfish.version}</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.grizzly</groupId>
-            <artifactId>http</artifactId>
-            <version>${grizzly.version}</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
             <groupId>org.glassfish.core</groupId>
             <artifactId>glassfish</artifactId>
             <version>${glassfish.version}</version>
