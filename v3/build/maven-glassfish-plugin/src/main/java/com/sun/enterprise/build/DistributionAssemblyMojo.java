@@ -147,53 +147,49 @@ public class DistributionAssemblyMojo extends AbstractMojo {
         }
     }
 
-    /**
-     * Returns a set of {@link Artifact}s that have the given type.
-     */
-    private Set<Artifact> findArtifactsOfType(Set<Artifact> artifacts, String type) {
+    private interface ArtifactFilter {
+        boolean find(Artifact a);
+    }
+
+    private Set<Artifact> findArtifacts(Set<Artifact> artifacts, ArtifactFilter filter) {
         Set<Artifact> r = new HashSet<Artifact>();
 
         for(Artifact a : artifacts) {
-            String t = a.getType();
-            if(t==null)  t="jar"; // see http://maven.apache.org/pom.html
-            if(!t.equals(type))
-                continue;
-
-            if (getLog().isDebugEnabled()) {
-                getLog().debug("Including " + a.getGroupId() + ":" + a.getArtifactId() + ":"+ a.getVersion());
-                getLog().debug("From dependency trail : ");
-                for (int i=a.getDependencyTrail().size()-1;i>=0;i--) {
-                    getLog().debug(" " + a.getDependencyTrail().get(i).toString());
+            if(filter.find(a)) {
+                if (getLog().isDebugEnabled()) {
+                    getLog().debug("Including " + a.getGroupId() + ":" + a.getArtifactId() + ":"+ a.getVersion());
+                    getLog().debug("From dependency trail : ");
+                    for (int i=a.getDependencyTrail().size()-1;i>=0;i--) {
+                        getLog().debug(" " + a.getDependencyTrail().get(i).toString());
+                    }
+                    getLog().debug("");
                 }
-                getLog().debug("");
+                r.add(a);
             }
-            r.add(a);
         }
 
         return r;
     }
 
-    private Set<Artifact> findArtifactsOfScope(Set<Artifact> artifacts, String scope) {
-        Set<Artifact> r = new HashSet<Artifact>();
-
-        for(Artifact a : artifacts) {
-            String s = a.getScope();
-            if(!s.equals(scope))
-                continue;
-
-
-            if (getLog().isDebugEnabled()) {
-                getLog().debug("Including " + a.getGroupId() + ":" + a.getArtifactId() + ":"+ a.getVersion());
-                getLog().debug("From dependency trail : ");
-                for (int i=a.getDependencyTrail().size()-1;i>=0;i--) {
-                    getLog().debug(" " + a.getDependencyTrail().get(i).toString());
-                }
-                getLog().debug("");
+    /**
+     * Returns a set of {@link Artifact}s that have the given type.
+     */
+    private Set<Artifact> findArtifactsOfType(Set<Artifact> artifacts, final String type) {
+        return findArtifacts(artifacts,new ArtifactFilter() {
+            public boolean find(Artifact a) {
+                String t = a.getType();
+                if(t==null)  t="jar"; // see http://maven.apache.org/pom.html
+                return t.equals(type);
             }
-            
-            r.add(a);
-        }
+        });
+    }
 
-        return r;
+    private Set<Artifact> findArtifactsOfScope(Set<Artifact> artifacts, final String scope) {
+        return findArtifacts(artifacts,new ArtifactFilter() {
+            public boolean find(Artifact a) {
+                String s = a.getScope();
+                return s.equals(scope);
+            }
+        });
     }
 }
