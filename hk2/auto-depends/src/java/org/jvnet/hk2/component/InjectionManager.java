@@ -115,7 +115,8 @@ public abstract class InjectionManager<T extends Annotation> {
             // reflection could trigger additional classloading and resolution, so it can cause linkage error.
             // report more information to assist diagnosis.
             // can't trust component.toString() as the object could be in an inconsistent state.
-            LinkageError x = new LinkageError("Failed to inject " + component.getClass());
+            Class<?> cls = component.getClass();
+            LinkageError x = new LinkageError("Failed to inject " + cls +" from "+cls.getClassLoader());
             x.initCause(e);
             throw x;
         }
