@@ -163,7 +163,7 @@ public class RunMojo extends DistributionAssemblyMojo {
                     Expand exp = new Expand();
                     exp.setProject(new Project());
                     exp.setSrc(baseImage.getFile());
-                    exp.setDest(rootDir);
+                    exp.setDest(rootDir.getParentFile());
                     exp.execute();
                 } catch (BuildException e) {
                     throw new MojoExecutionException("Failed to extract "+baseImage.getFile());
