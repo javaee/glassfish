@@ -43,14 +43,14 @@
                     <licenseFile>pom.xml</licenseFile>
                 </configuration>
             </plugin>
-          <plugin>				
+            <plugin>
                 <groupId>org.glassfish.build</groupId>
                 <artifactId>maven-glassfish-plugin</artifactId>
                 <extensions>true</extensions>
                 <executions>
                     <execution>
-						<id>dashboard</id>
-                    	<phase>site</phase>
+                        <id>dashboard</id>
+                        <phase>site</phase>
                         <goals>
                             <goal>dashboard</goal>
                         </goals>
@@ -58,19 +58,19 @@
                             <finalName>dashboard-${project.build.finalName}.txt</finalName>
                         </configuration>
                     </execution>
-					<execution>
-						<id>contributors</id>
-                    	<phase>site</phase>
+                    <execution>
+                        <id>contributors</id>
+                        <phase>site</phase>
                         <goals>
                             <goal>dashboard</goal>
                         </goals>
-						<configuration>
-							<generatorName>com.sun.enterprise.build.ContributorsWikiGenerator</generatorName>
+                        <configuration>
+                            <generatorName>com.sun.enterprise.build.ContributorsWikiGenerator</generatorName>
                             <finalName>contrib-${project.build.finalName}.txt</finalName>
                         </configuration>
                     </execution>
                 </executions>
-          </plugin>
+            </plugin>
             <!--plugin>
                 <artifactId>maven-antrun-plugin</artifactId>
                 <executions>
