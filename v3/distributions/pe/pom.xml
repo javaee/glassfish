@@ -8,7 +8,7 @@
   </parent>
   
   <artifactId>pe</artifactId>
-  <packaging>zip</packaging>
+  <packaging>glassfish-distribution</packaging>
   <version>${pe.version}</version>
   
   <name>Glassfish PE distribution image</name>
@@ -21,113 +21,10 @@
         <artifactId>maven-glassfish-plugin</artifactId>
         <extensions>true</extensions>
       </plugin>
-       <plugin>
-          <groupId>org.jvnet.maven-antrun-extended-plugin</groupId>
-          <artifactId>maven-antrun-extended-plugin</artifactId>
-          <extensions>true</extensions>
-          <executions>
-            <execution>
-              <!-- no phase element! -->
-              <goals>
-                <goal>run</goal>
-              </goals>
-            </execution>
-          </executions>
-          <configuration>
-            <tasks>
-              <ant dir="." antfile="build.xml" target="create.bundle"></ant>
-            </tasks>
-          </configuration>
-       </plugin>
     </plugins>
   </build>
   
   <dependencies>
-    <!-- dependency with 'runtime' scope will be packaged into the distribution -->
-    <dependency>
-      <groupId>javax.activation</groupId>
-      <artifactId>activation</artifactId>
-      <version>${activation-api.version}</version>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.glassfish.api</groupId>
-      <artifactId>mail</artifactId>
-      <version>${mail.version}</version>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>javax.enterprise.deploy</groupId>
-      <artifactId>deployment-api</artifactId>
-      <version>${deployment-api.version}</version>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>javax.transaction</groupId>
-      <artifactId>transaction-api</artifactId>
-      <version>${transaction-api.version}</version>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>servlet-api</artifactId>
-      <version>${servlet-api.version}</version>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>javax.servlet.jsp</groupId>
-      <artifactId>jsp-api</artifactId>
-      <version>${jsp-api.version}</version>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>javax.ejb</groupId>
-      <artifactId>ejb-api</artifactId>
-      <version>${ejb-api.version}</version>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>javax.persistence</groupId>
-      <artifactId>persistence-api</artifactId>
-      <version>${persistence-api.version}</version>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>javax.resource</groupId>
-      <artifactId>connector-api</artifactId>
-      <version>${connector-api.version}</version>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>javax.management.j2ee</groupId>
-      <artifactId>management-api</artifactId>
-      <version>${management-api.version}</version>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>javax.jms</groupId>
-      <artifactId>jms-api</artifactId>
-      <version>${jms-api.version}</version>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>javax.security</groupId>
-      <artifactId>security-api</artifactId>
-      <version>${security-api.version}</version>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.glassfish.common</groupId>
-      <artifactId>common-util</artifactId>
-      <version>${glassfish.version}</version>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.glassfish.common</groupId>
-      <artifactId>glassfish-api</artifactId>
-      <version>${glassfish.version}</version>
-      <scope>runtime</scope>
-    </dependency>
     <dependency>
       <groupId>org.glassfish.common</groupId>
       <artifactId>annotation-framework</artifactId>
@@ -143,12 +40,6 @@
     <dependency>
       <groupId>org.glassfish.admin</groupId>
       <artifactId>admin-util</artifactId>
-      <version>${glassfish.version}</version>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.glassfish.admin</groupId>
-      <artifactId>config-api</artifactId>
       <version>${glassfish.version}</version>
       <scope>runtime</scope>
     </dependency>
@@ -172,20 +63,8 @@
     </dependency>
     <dependency>
       <groupId>com.sun.grizzly</groupId>
-      <artifactId>http</artifactId>
-      <version>${grizzly.version}</version>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.sun.grizzly</groupId>
       <artifactId>jruby</artifactId>
       <version>${grizzly.version}</version>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.glassfish.core</groupId>
-      <artifactId>glassfish</artifactId>
-      <version>${glassfish.version}</version>
       <scope>runtime</scope>
     </dependency>
     <dependency>
@@ -200,24 +79,12 @@
       <version>${glassfish.version}</version>
       <scope>runtime</scope>
     </dependency>
-	<dependency>
-	  <groupId>toplink.essentials</groupId>
-	  <artifactId>toplink-essentials</artifactId>
-	  <version>2.0-43</version>
-	  <scope>runtime</scope>
-	</dependency>
-    <!--dependency>
-      <groupId>com.sun.enterprise.glassfish</groupId>
-      <artifactId>gf-php-connector</artifactId>
-      <version>${glassfish.version}</version>
-      <scope>runtime</scope>
-    </dependency-->
     <dependency>
-      <groupId>org.glassfish.admin</groupId>
-      <artifactId>admin-cli</artifactId>
-      <version>${glassfish.version}</version>
-      <scope>runtime</scope>
-    </dependency>
+	    <groupId>toplink.essentials</groupId>
+	    <artifactId>toplink-essentials</artifactId>
+	    <version>2.0-43</version>
+	    <scope>runtime</scope>
+  	</dependency>
     <dependency>
       <groupId>org.glassfish.extras</groupId>
       <artifactId>gf-phobos-connector</artifactId>
@@ -230,23 +97,10 @@
       <version>${glassfish.version}</version>
       <scope>runtime</scope>
     </dependency>
-	<dependency>
-		<groupId>javax.javaee</groupId>
-		<artifactId>javaee</artifactId>
-		<version>${javaee-api.version}</version>
-		<scope>runtime</scope>
-	</dependency>
-    <dependency>
-      <groupId>org.glassfish.core</groupId>
-      <artifactId>shared-components</artifactId>
-      <version>${glassfish.version}</version>
-      <scope>runtime</scope>
-    </dependency>
     <dependency>
       <groupId>javadb</groupId>
       <artifactId>javadb</artifactId>
       <version>10.2.2.1-20070823</version>
-      <scope>runtime</scope>
     </dependency>    
     <dependency>
       <!-- base distribution image -->
