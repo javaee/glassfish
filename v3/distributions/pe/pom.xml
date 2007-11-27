@@ -25,6 +25,13 @@
   </build>
   
   <dependencies>
+      <dependency>
+        <!-- we extend on nucleus -->
+        <groupId>org.glassfish.distributions</groupId>
+        <artifactId>nucleus</artifactId>
+        <version>${nucleus.version}</version>
+        <type>glassfish-distribution</type>
+      </dependency>
     <dependency>
       <groupId>org.glassfish.common</groupId>
       <artifactId>annotation-framework</artifactId>
@@ -97,17 +104,12 @@
       <version>${glassfish.version}</version>
       <scope>runtime</scope>
     </dependency>
-    <dependency>
-      <groupId>javadb</groupId>
-      <artifactId>javadb</artifactId>
-      <version>10.2.2.1-20070823</version>
-    </dependency>    
-    <dependency>
-      <!-- base distribution image -->
-      <groupId>org.glassfish.distributions</groupId>
-      <artifactId>nucleus</artifactId>
-      <version>${nucleus.version}</version>
-      <type>zip</type>
-    </dependency>
+      <dependency>
+        <!-- base distribution image -->
+        <groupId>org.glassfish.distributions</groupId>
+        <artifactId>pe-base</artifactId>
+        <version>${pe-base.version}</version>
+        <type>zip</type>
+      </dependency>
   </dependencies>
 </project>

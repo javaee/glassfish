@@ -9,6 +9,7 @@
     <artifactId>pe-base</artifactId>
     <version>${pe-base.version}</version>
     <name>Glassfish PE Base Bundle</name>
+    <packaging>zip</packaging>
     <description>This pom describes how to assemble the Glassfish PE Base Bundle</description>
 
     <build>
@@ -34,5 +35,19 @@
         </plugins>
     </build>
 
+    <dependencies>
+        <dependency>
+            <groupId>javadb</groupId>
+            <artifactId>javadb</artifactId>
+            <version>10.2.2.1-20070823</version>
+        </dependency>
+        <!-- base distribution image -->
+        <dependency>
+          <groupId>org.glassfish.distributions</groupId>
+          <artifactId>nucleus-base</artifactId>
+          <version>${nucleus.version}</version>
+          <type>zip</type>
+        </dependency>
+    </dependencies>
 </project>
 

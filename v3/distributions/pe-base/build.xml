@@ -19,11 +19,8 @@
  own identifying information: Portions Copyright [yyyy]
  [name of copyright owner]
 -->
-<!DOCTYPE project [
-  <!ENTITY commonBuild SYSTEM "../../bootstrap/ant-common.xml">
-]>
 <project name="nucleus-base bundle creation" default="all" basedir=".">
-    <target name="create.bundle" depends="">
+    <target name="create.bundle">
 	<mkdir dir="target/stage"/>
         <resolveArtifact artifactId="javadb" property="javadb.jar"/>
         <unjar src="${javadb.jar}" dest="target"/>
@@ -35,12 +32,12 @@
             </fileset>
             <patternset>
                 <include name="javadb/lib/**"/>
-            </patternset> 
+            </patternset>
         </unzip>
-        <resolveArtifact artifactId="nucleus" property="nucleus.zip"/>
-        <unjar src="${nucleus.zip}" dest="target/stage"/>
-        <zip file="target/pe.zip" 
+        <resolveArtifact artifactId="nucleus-base" property="nucleus-base.zip"/>
+        <unjar src="${nucleus-base.zip}" dest="target/stage"/>
+        <zip file="target/pe-base.zip"
              basedir="target/stage" />
-        <attachArtifact file="target/pe.zip" />
+        <attachArtifact file="target/pe-base.zip" />
     </target>
 </project>

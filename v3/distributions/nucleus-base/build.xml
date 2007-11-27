@@ -19,13 +19,10 @@
  own identifying information: Portions Copyright [yyyy]
  [name of copyright owner]
 -->
-<!DOCTYPE project [
-  <!ENTITY commonBuild SYSTEM "../../bootstrap/ant-common.xml">
-]>
-<project name="nucleus-base bundle creation" default="all" basedir=".">
-    <target name="create.bundle" depends="">
-	<mkdir dir="target/stage"/>
-        <copy todir="target/stage">
+<project name="nucleus-base bundle creation" basedir=".">
+    <target name="create.bundle">
+        <mkdir dir="target/stage/glassfish"/>
+        <copy todir="target/stage/glassfish">
             <fileset dir=".">
                 <include name="*.txt"/>
                 <include name="bin/**"/>
@@ -34,10 +31,10 @@
                 <include name="domains/**"/>
                 <include name="COPYRIGHT"/>
                 <include name="README"/>
-            </fileset> 
+            </fileset>
         </copy>
-        <zip file="target/nucleus-base.zip" 
-             basedir="target/stage" />
-        <attachArtifact file="target/nucleus-base.zip" />
+        <zip file="target/nucleus-base.zip"
+             basedir="target/stage"/>
+        <attachArtifact file="target/nucleus-base.zip"/>
     </target>
 </project>
