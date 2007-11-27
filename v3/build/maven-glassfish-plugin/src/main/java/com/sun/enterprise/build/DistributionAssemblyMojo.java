@@ -73,7 +73,6 @@ public class DistributionAssemblyMojo extends AbstractMojo {
         ZipFileSet zfs = new ZipFileSet();
         zfs.setSrc(baseImage.getFile());
         zfs.setDirMode("755");
-        zfs.setPrefix("glassfish");
         zfs.setFileMode("644"); // work around for http://issues.apache.org/bugzilla/show_bug.cgi?id=42122
         zip.addZipfileset(zfs);
 
