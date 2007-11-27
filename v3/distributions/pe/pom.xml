@@ -42,12 +42,6 @@
         </dependency>
         <!-- and add the following modules -->
         <dependency>
-            <groupId>org.glassfish.common</groupId>
-            <artifactId>annotation-framework</artifactId>
-            <version>${glassfish.version}</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
             <groupId>org.glassfish.admin</groupId>
             <artifactId>admin-util</artifactId>
             <version>${glassfish.version}</version>
