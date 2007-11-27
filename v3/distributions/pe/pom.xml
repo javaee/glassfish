@@ -34,6 +34,14 @@
             <type>glassfish-distribution</type>
         </dependency>
         <dependency>
+            <!-- base distribution image that contains everything except modules -->
+            <groupId>org.glassfish.distributions</groupId>
+            <artifactId>pe-base</artifactId>
+            <version>${pe-base.version}</version>
+            <type>zip</type>
+        </dependency>
+        <!-- and add the following modules -->
+        <dependency>
             <groupId>org.glassfish.common</groupId>
             <artifactId>annotation-framework</artifactId>
             <version>${glassfish.version}</version>
@@ -104,13 +112,6 @@
             <artifactId>ant</artifactId>
             <version>${glassfish.version}</version>
             <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <!-- base distribution image -->
-            <groupId>org.glassfish.distributions</groupId>
-            <artifactId>pe-base</artifactId>
-            <version>${pe-base.version}</version>
-            <type>zip</type>
         </dependency>
     </dependencies>
 </project>
