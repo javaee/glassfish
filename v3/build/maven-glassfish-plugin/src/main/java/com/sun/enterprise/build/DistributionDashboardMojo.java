@@ -51,11 +51,6 @@ public class DistributionDashboardMojo extends AbstractGlassfishMojo {
     /**
      * @component
      */
-    protected MavenProjectBuilder projectBuilder;
-
-    /**
-     * @component
-     */
     protected ArtifactFactory artifactFactory;
 
     /**
@@ -175,7 +170,7 @@ public class DistributionDashboardMojo extends AbstractGlassfishMojo {
             generator.addSize(module.getFile().length());
 
             try {                        
-                MavenProject moduleProject = projectBuilder.buildFromRepository(module, new ArrayList(), module.getRepository());
+                MavenProject moduleProject = loadPom(module);
                 if (moduleProject != null) {
 
                     // get transitive list of repos, project first.
@@ -285,7 +280,7 @@ public class DistributionDashboardMojo extends AbstractGlassfishMojo {
 
             MavenProject moduleProject = null;
             try {
-                moduleProject = projectBuilder.buildFromRepository(module, new ArrayList(), module.getRepository());
+                moduleProject = loadPom(module);
                 List<Dependency> moduleDeps = moduleProject.getModel().getDependencies();
                 if (moduleDeps != null) {
                     for (Dependency moduleDep : moduleDeps) {
@@ -304,7 +299,6 @@ public class DistributionDashboardMojo extends AbstractGlassfishMojo {
             }
         }
     }
-
 
     protected List<Artifact> getImporting(Artifact module) {
         if (dependentsXRef==null) {

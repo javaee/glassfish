@@ -3,6 +3,8 @@ package com.sun.enterprise.build;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
+import org.apache.maven.project.ProjectBuildingException;
+import org.apache.maven.project.MavenProjectBuilder;
 import org.apache.maven.artifact.Artifact;
 import com.sun.enterprise.module.impl.Jar;
 import com.sun.enterprise.module.ManifestConstants;
@@ -25,6 +27,11 @@ abstract class AbstractGlassfishMojo extends AbstractMojo {
      */
     protected MavenProject project;
 
+    /**
+     * @component
+     */
+    protected MavenProjectBuilder projectBuilder;
+
     protected boolean isModule(Artifact a) throws MojoExecutionException {
         try {
             Jar jar = Jar.create(a.getFile());
@@ -37,6 +44,13 @@ abstract class AbstractGlassfishMojo extends AbstractMojo {
         } catch (IOException e) {
             throw new MojoExecutionException("Failed to open "+a.getFile(),e);
         }
+    }
+
+    /**
+     * Resolves the POM of the given artifact and parses it into {@link MavenProject}.
+     */
+    protected MavenProject loadPom(Artifact artifact) throws ProjectBuildingException {
+        return projectBuilder.buildFromRepository(artifact, project.getRemoteArtifactRepositories(), artifact.getRepository());
     }
 
     protected interface ArtifactFilter {
