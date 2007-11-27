@@ -15,8 +15,21 @@ import java.util.Set;
 /**
  * Analyzes dependency declaration and see if there's anything redundantly declared.
  *
- * That is, our goal is to find the explicitly declared dependency X
- * that's also included in the transitive dependency. 
+ * <p>
+ * The common issue we have is that often distribution modules like PE and nucleus
+ * end up containing tons of modules, which makes it unclear as to what functionalities
+ * are really added.
+ *
+ * <p>
+ * This mojo is intended to be used interactively to solve this problem.
+ * The mojo will list up all the dependencies that are declared explicitly in POM,
+ * yet it's also available through transitive dependencies.
+ *
+ * <p>
+ * Those are often modules that aren't top-level modules, and as such one can
+ * consider de-listing them from the module. Since they are parts of the transitive
+ * dependencies anyway, de-listing them won't have any semantic difference; it just
+ * makes POM cleaner.
  *
  * @goal analyze-dependency
  * @requiresProject
