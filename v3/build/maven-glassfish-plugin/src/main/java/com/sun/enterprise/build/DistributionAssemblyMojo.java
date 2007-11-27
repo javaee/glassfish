@@ -27,15 +27,7 @@ import java.util.jar.Attributes;
  *
  * @author Kohsuke Kawaguchi
  */
-public class DistributionAssemblyMojo extends AbstractMojo {
-    /**
-     * The maven project.
-     *
-     * @parameter expression="${project}"
-     * @required
-     * @readonly
-     */
-    protected MavenProject project;
+public class DistributionAssemblyMojo extends AbstractGlassfishMojo {
 
     /**
      * The directory where the final image will be created.
@@ -131,65 +123,5 @@ public class DistributionAssemblyMojo extends AbstractMojo {
             throw new MojoExecutionException("More than one base image zip dependency is specified: "+shortest);
 
         return shortest.iterator().next();
-    }
-
-    private boolean isModule(Artifact a) throws MojoExecutionException {
-        try {
-            Jar jar = Jar.create(a.getFile());
-            if (jar.getManifest()==null) {
-                return false;
-            }
-            Attributes attributes = jar.getManifest().getMainAttributes();
-            String name = attributes.getValue(ManifestConstants.BUNDLE_NAME);
-            return name!=null;
-        } catch (IOException e) {
-            throw new MojoExecutionException("Failed to open "+a.getFile(),e);
-        }
-    }
-
-    private interface ArtifactFilter {
-        boolean find(Artifact a);
-    }
-
-    private Set<Artifact> findArtifacts(Set<Artifact> artifacts, ArtifactFilter filter) {
-        Set<Artifact> r = new HashSet<Artifact>();
-
-        for(Artifact a : artifacts) {
-            if(filter.find(a)) {
-                if (getLog().isDebugEnabled()) {
-                    getLog().debug("Including " + a.getGroupId() + ":" + a.getArtifactId() + ":"+ a.getVersion());
-                    getLog().debug("From dependency trail : ");
-                    for (int i=a.getDependencyTrail().size()-1;i>=0;i--) {
-                        getLog().debug(" " + a.getDependencyTrail().get(i).toString());
-                    }
-                    getLog().debug("");
-                }
-                r.add(a);
-            }
-        }
-
-        return r;
-    }
-
-    /**
-     * Returns a set of {@link Artifact}s that have the given type.
-     */
-    private Set<Artifact> findArtifactsOfType(Set<Artifact> artifacts, final String type) {
-        return findArtifacts(artifacts,new ArtifactFilter() {
-            public boolean find(Artifact a) {
-                String t = a.getType();
-                if(t==null)  t="jar"; // see http://maven.apache.org/pom.html
-                return t.equals(type);
-            }
-        });
-    }
-
-    private Set<Artifact> findArtifactsOfScope(Set<Artifact> artifacts, final String scope) {
-        return findArtifacts(artifacts,new ArtifactFilter() {
-            public boolean find(Artifact a) {
-                String s = a.getScope();
-                return s.equals(scope);
-            }
-        });
     }
 }
