@@ -3,13 +3,10 @@ package com.sun.enterprise.build;
 import com.sun.enterprise.module.ManifestConstants;
 import com.sun.enterprise.module.impl.Jar;
 import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.factory.ArtifactFactory;
-import org.apache.maven.artifact.handler.manager.ArtifactHandlerManager;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.project.MavenProject;
-import org.apache.maven.project.MavenProjectHelper;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.Zip;
 import org.apache.tools.ant.types.ZipFileSet;
@@ -59,12 +56,7 @@ public class DistributionAssemblyMojo extends AbstractMojo {
         Set artifacts = project.getArtifacts();
 
         Set<Artifact> images = findArtifactsOfType(artifacts,"zip");
-        if(images.size()>1)
-            throw new MojoExecutionException("More than one base image zip dependency is specified: "+images);
-        if(images.isEmpty())
-            throw new MojoExecutionException("No base image zip dependency is given");
-
-        Artifact baseImage = images.iterator().next();
+        Artifact baseImage = findBaseImage(images);
 
         // find all maven modules
         Set<Artifact> modules = findArtifactsOfScope(artifacts, "runtime");
@@ -80,7 +72,6 @@ public class DistributionAssemblyMojo extends AbstractMojo {
         // add the base image jar as <zipgroupfileset>
         ZipFileSet zfs = new ZipFileSet();
         zfs.setSrc(baseImage.getFile());
-        zfs.setPrefix("glassfish");
         zfs.setDirMode("755");
         zfs.setFileMode("644"); // work around for http://issues.apache.org/bugzilla/show_bug.cgi?id=42122
         zip.addZipfileset(zfs);
@@ -89,7 +80,7 @@ public class DistributionAssemblyMojo extends AbstractMojo {
         for (Artifact a : modules) {
             zfs = new ZipFileSet();
             zfs.setFile(a.getFile());
-            zfs.setPrefix("glassfish/modules");
+            zfs.setPrefix("glassfish/lib");
             zip.addZipfileset(zfs);
         }
 
@@ -109,6 +100,37 @@ public class DistributionAssemblyMojo extends AbstractMojo {
         // happened with the old incorrect artifact handler, but at least this
         // seems to make the deploy/install phase work.
         project.getArtifact().setArtifactHandler(new DistributionArtifactHandler());
+    }
+
+    /**
+     * Finds the base image ".zip" file from dependency list.
+     *
+     * <p>
+     * The interesting case is let's say where we are building pe, in which
+     * case we see both pe-base and nucleus-base (through nucleus.)
+     * So we look for one with the shortest dependency path. 
+     */
+    private Artifact findBaseImage(Set<Artifact> images) throws MojoExecutionException {
+        if(images.isEmpty())
+            throw new MojoExecutionException("No base image zip dependency is given");
+
+        Set<Artifact> shortest = new HashSet<Artifact>();
+        int shortestLen = Integer.MAX_VALUE;
+
+        for (Artifact a : images) {
+            int l = a.getDependencyTrail().size();
+            if(l<shortestLen) {
+                shortest.clear();
+                shortestLen = l;
+            }
+            if(l==shortestLen)
+                shortest.add(a);
+        }
+
+        if(shortest.size()>1)
+            throw new MojoExecutionException("More than one base image zip dependency is specified: "+shortest);
+
+        return shortest.iterator().next();
     }
 
     private boolean isModule(Artifact a) throws MojoExecutionException {
