@@ -47,12 +47,6 @@
             <scope>runtime</scope>
         </dependency>
         <dependency>
-            <groupId>org.glassfish.common</groupId>
-            <artifactId>common-util</artifactId>
-            <version>${glassfish.version}</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
             <groupId>org.glassfish.admin</groupId>
             <artifactId>monitoring-core</artifactId>
             <version>${glassfish.version}</version>
