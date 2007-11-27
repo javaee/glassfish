@@ -48,12 +48,6 @@
             <scope>runtime</scope>
         </dependency>
         <dependency>
-            <groupId>org.glassfish.common</groupId>
-            <artifactId>dol</artifactId>
-            <version>${glassfish.version}</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
             <groupId>org.glassfish.admin</groupId>
             <artifactId>admin-util</artifactId>
             <version>${glassfish.version}</version>
