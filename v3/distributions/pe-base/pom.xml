@@ -28,7 +28,7 @@
                 </executions>
                 <configuration>
                   <tasks>
-                    <ant dir="." antfile="build.xml" target="create.bundle"></ant>
+                    <ant dir="." antfile="build.xml" target="create.bundle"/>
                   </tasks>
                 </configuration>
              </plugin>
