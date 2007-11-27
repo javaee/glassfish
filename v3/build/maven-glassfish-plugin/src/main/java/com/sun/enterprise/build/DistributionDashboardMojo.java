@@ -1,7 +1,5 @@
 package com.sun.enterprise.build;
 
-import com.sun.enterprise.module.ManifestConstants;
-import com.sun.enterprise.module.impl.Jar;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.repository.ArtifactRepository;
@@ -9,7 +7,6 @@ import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Developer;
 import org.apache.maven.model.License;
 import org.apache.maven.model.MailingList;
-import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.project.MavenProject;
@@ -24,8 +21,11 @@ import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.*;
-import java.util.jar.Attributes;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -40,17 +40,8 @@ import java.util.regex.Pattern;
  *
  * @author Jerome Dochez
  */
-public class DistributionDashboardMojo extends AbstractMojo {
+public class DistributionDashboardMojo extends AbstractGlassfishMojo {
 
-
-    /**
-     * The maven project.
-     *
-     * @parameter expression="${project}"
-     * @required
-     * @readonly
-     */
-    protected MavenProject project;
 
     /**
      * @component
@@ -283,36 +274,6 @@ public class DistributionDashboardMojo extends AbstractMojo {
         }
         return result;
     }
-
-    private boolean isModule(Artifact a) throws MojoExecutionException {
-        try {
-            Jar jar = Jar.create(a.getFile());
-            if (jar.getManifest()==null) {
-                return false;
-            }
-            Attributes attributes = jar.getManifest().getMainAttributes();
-            String name = attributes.getValue(ManifestConstants.BUNDLE_NAME);
-            return name!=null;
-        } catch (IOException e) {
-            throw new MojoExecutionException("Failed to open "+a.getFile(),e);
-        }
-    }
-
-    private Set<Artifact> findArtifactsOfScope(Set<Artifact> artifacts, String scope) {
-        Set<Artifact> r = new HashSet<Artifact>();
-
-        for(Artifact a : artifacts) {
-            String s = a.getScope();
-            if(!s.equals(scope))
-                continue;
-
-            r.add(a);
-        }
-
-        return r;
-    }
-
-
 
     protected Map<String, List<Artifact>> dependentsXRef = null;
 
