@@ -9,7 +9,7 @@
     <artifactId>pe-base</artifactId>
     <version>${pe-base.version}</version>
     <name>Glassfish PE Base Bundle</name>
-    <packaging>zip</packaging>
+    <packaging>distribution-base-zip</packaging>
     <description>This pom describes how to assemble the Glassfish PE Base Bundle</description>
 
     <build>
@@ -17,15 +17,6 @@
             <plugin>
                 <groupId>org.jvnet.maven-antrun-extended-plugin</groupId>
                 <artifactId>maven-antrun-extended-plugin</artifactId>
-                <extensions>true</extensions>
-                <executions>
-                  <execution>
-                    <!-- no phase element! -->
-                    <goals>
-                      <goal>run</goal>
-                    </goals>
-                  </execution>
-                </executions>
                 <configuration>
                   <tasks>
                     <ant dir="." antfile="build.xml" target="create.bundle"/>
