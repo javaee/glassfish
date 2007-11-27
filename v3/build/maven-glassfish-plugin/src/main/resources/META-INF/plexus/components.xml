@@ -1,0 +1,35 @@
+<component-set>
+  <!-- this defines a custom life cycle for glassfish distribution -->
+  <components>
+    <component>
+      <role>org.apache.maven.lifecycle.mapping.LifecycleMapping</role>
+      <role-hint>glassfish-distribution</role-hint>
+      <implementation>org.apache.maven.lifecycle.mapping.DefaultLifecycleMapping</implementation>
+      <configuration>
+        <lifecycles>
+          <lifecycle>
+            <id>default</id>
+            <phases>
+              <!--package>org.glassfish.build:maven-glassfish-plugin:assemble,org.jvnet.poormans-installer:installer-builder:installer</package-->
+              <package>org.glassfish.build:maven-glassfish-plugin:assemble</package>
+              <install>org.apache.maven.plugins:maven-install-plugin:install</install>
+              <deploy>org.apache.maven.plugins:maven-deploy-plugin:deploy</deploy>
+            </phases>
+          </lifecycle>
+        </lifecycles>
+      </configuration>
+    </component>
+    <component>
+      <role>org.apache.maven.artifact.handler.ArtifactHandler</role>
+      <role-hint>glassfish-distribution</role-hint>
+      <implementation>org.apache.maven.artifact.handler.DefaultArtifactHandler</implementation>
+      <configuration>
+        <extension>zip</extension>
+        <type>glassfish-distribution</type>
+        <packaging>glassfish-distribution</packaging>
+        <language>java</language>
+        <addedToClasspath>false</addedToClasspath>
+      </configuration>
+    </component>
+  </components>
+</component-set>
