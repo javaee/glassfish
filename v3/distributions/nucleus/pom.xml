@@ -24,6 +24,13 @@
                 <extensions>true</extensions>
             </plugin>
         </plugins>
+        <extensions>
+            <extension>
+                <groupId>org.glassfish.build</groupId>
+                <artifactId>maven-glassfish-plugin</artifactId>
+                <version>LATEST</version>
+            </extension>
+        </extensions>
     </build>
 
     <dependencies>
