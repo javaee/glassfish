@@ -29,12 +29,6 @@
     <dependencies>
         <!-- dependency with 'runtime' scope will be packaged into the distribution -->
         <dependency>
-            <groupId>javax.activation</groupId>
-            <artifactId>activation</artifactId>
-            <version>${activation-api.version}</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
             <groupId>javax.transaction</groupId>
             <artifactId>transaction-api</artifactId>
             <version>${transaction-api.version}</version>
