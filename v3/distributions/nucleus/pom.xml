@@ -35,21 +35,9 @@
             <scope>runtime</scope>
         </dependency>
         <dependency>
-            <groupId>javax.enterprise.deploy</groupId>
-            <artifactId>deployment-api</artifactId>
-            <version>${deployment-api.version}</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
             <groupId>javax.transaction</groupId>
             <artifactId>transaction-api</artifactId>
             <version>${transaction-api.version}</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>servlet-api</artifactId>
-            <version>${servlet-api.version}</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
@@ -59,39 +47,9 @@
             <scope>runtime</scope>
         </dependency>
         <dependency>
-            <groupId>javax.ejb</groupId>
-            <artifactId>ejb-api</artifactId>
-            <version>${ejb-api.version}</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>javax.persistence</groupId>
-            <artifactId>persistence-api</artifactId>
-            <version>${persistence-api.version}</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>javax.resource</groupId>
-            <artifactId>connector-api</artifactId>
-            <version>${connector-api.version}</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
             <groupId>javax.management.j2ee</groupId>
             <artifactId>management-api</artifactId>
             <version>${management-api.version}</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>javax.jms</groupId>
-            <artifactId>jms-api</artifactId>
-            <version>${jms-api.version}</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>javax.security</groupId>
-            <artifactId>security-api</artifactId>
-            <version>${security-api.version}</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
