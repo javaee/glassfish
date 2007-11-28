@@ -15,16 +15,6 @@
     <name>Glassfish PE distribution image</name>
     <description>This module creates the final distribution image</description>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.glassfish.build</groupId>
-                <artifactId>maven-glassfish-plugin</artifactId>
-                <extensions>true</extensions>
-            </plugin>
-        </plugins>
-    </build>
-
     <dependencies>
         <dependency>
             <!-- we extend on nucleus -->

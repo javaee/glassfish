@@ -16,16 +16,6 @@
     <name>Glassfish Nucleus distribution image</name>
     <description>This module creates the nucleus distribution image</description>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.glassfish.build</groupId>
-                <artifactId>maven-glassfish-plugin</artifactId>
-                <extensions>true</extensions>
-            </plugin>
-        </plugins>
-    </build>
-
     <dependencies>
         <!-- dependency with 'runtime' scope will be packaged into the distribution -->
         <dependency>

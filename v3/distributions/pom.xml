@@ -46,7 +46,6 @@
             <plugin>
                 <groupId>org.glassfish.build</groupId>
                 <artifactId>maven-glassfish-plugin</artifactId>
-                <extensions>true</extensions>
                 <executions>
                     <execution>
                         <id>dashboard</id>
