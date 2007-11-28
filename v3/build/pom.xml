@@ -43,5 +43,9 @@
             <uniqueVersion>false</uniqueVersion>
             <url>sftp://trx2.sun.com:/export/nfs/dlc/maven/glassfish</url>
         </repository>
-    </distributionManagement>    
+    </distributionManagement>
+    <scm>
+        <connection         >scm:svn:https://svn.dev.java.net/svn/glassfish-svn/trunk/v3/build/</connection>
+        <developerConnection>scm:svn:https://svn.dev.java.net/svn/glassfish-svn/trunk/v3/build/</developerConnection>
+    </scm>
 </project>
