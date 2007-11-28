@@ -10,6 +10,7 @@
     <modules>
         <module>legal</module>
         <module>maven-glassfish-plugin</module>
+        <module>maven-glassfish-extension</module>
     </modules>
     <repositories>  
         <repository>

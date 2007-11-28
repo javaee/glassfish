@@ -98,7 +98,7 @@
         <nucleus.version>0.1-SNAPSHOT</nucleus.version>
     </properties>
     <modules>
-    	<module>build/maven-glassfish-plugin</module>
+    	<module>build</module>
     	<module>common</module>
     	<module>admin</module>
     	<module>core</module>
@@ -194,6 +194,13 @@
                 </configuration>
             </plugin>
         </plugins>
+        <extensions>
+            <extension>
+                <groupId>org.glassfish.build</groupId>
+                <artifactId>maven-glassfish-extension</artifactId>
+                <version>1.0-SNAPSHOT</version>
+            </extension>
+        </extensions>
     </build>
     <dependencies>
         <dependency>
