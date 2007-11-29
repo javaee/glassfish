@@ -162,6 +162,13 @@ import com.sun.enterprise.config.serverbeans.Servers;
 
 // V3 imports
 import com.sun.enterprise.v3.server.V3Environment;
+import com.sun.enterprise.v3.web.WebDeployer;
+
+import org.glassfish.api.container.ContainerProvider;
+import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.PostConstruct;
+import org.jvnet.hk2.component.PreDestroy;
 
 import javax.naming.spi.NamingManager;
 import java.lang.reflect.Method;
@@ -174,9 +181,14 @@ import java.lang.reflect.Method;
  * specific functionality is implemented the NSAPIWebContainer subclass
  * in the <code>j2ee-plugin</code> component.
  */
+@Service(name="web")
+@org.glassfish.api.container.Container(type="web", deployerImpl=WebDeployer.class)
 public class WebContainer
         implements Lifecycle,
-        MonitoringLevelListener {
+        MonitoringLevelListener,
+        ContainerProvider, 
+        PostConstruct, 
+        PreDestroy {
                /*ApplicationDeployEventListener,
                ModuleDeployEventListener, {*/
     
@@ -197,6 +209,12 @@ public class WebContainer
     
     // ----------------------------------------------------- Instance Variables
     
+    @Inject
+    Domain domain;
+
+    @Inject
+    ServerContext _serverContext;
+    
     /**
      * The embedded Catalina object.
      */
@@ -210,14 +228,14 @@ public class WebContainer
     /**
      * The server context under which this container was created.
      */
-    protected ServerContext _serverContext = null;
+    //protected ServerContext _serverContext = null;
     
     /**
      * The config context under which this container was created.
      */
     protected ConfigContext _configContext = null;
     
-    protected Domain domain = null;
+    //protected Domain domain = null;
     protected V3Environment instance = null;
     //protected WebModulesManager webModulesManager = null;
     //protected AppsManager appsManager = null;
@@ -524,6 +542,13 @@ public class WebContainer
         return _id;
     }
     
+    public void postConstruct() {    
+    
+    }    
+    
+    public void preDestroy() {
+        
+    }
     // --------------------------------------------------------- HADB Health Status
     
     private HealthChecker _healthChecker = null;

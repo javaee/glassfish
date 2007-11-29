@@ -160,16 +160,6 @@
         </dependency>
         <dependency>
             <groupId>com.sun.enterprise.glassfish</groupId>
-            <artifactId>glassfish</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.enterprise.glassfish</groupId>
-            <artifactId>grizzly-http</artifactId>
-            <version>${grizzly.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.enterprise.glassfish</groupId>
             <artifactId>commons</artifactId>
             <version>${project.version}</version>
         </dependency>
