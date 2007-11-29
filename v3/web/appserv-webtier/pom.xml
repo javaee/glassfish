@@ -123,5 +123,10 @@
             <artifactId>jasper-jsr199</artifactId>
             <version>${jasper-jsr199.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.glassfish.api</groupId>
+            <artifactId>mail</artifactId>
+            <version>${mail.version}</version>
+        </dependency>
     </dependencies>
 </project>
