@@ -1,0 +1,8 @@
+<toy-http-server>
+  <http-listener port="1234">
+    <!--<upper-case>-->
+      <!--<greeter greeting="Konnichiwa, " />-->
+    <!--</upper-case>-->
+    <echo />
+  </http-listener>
+</toy-http-server>
