@@ -10,7 +10,7 @@ import org.jvnet.hk2.component.Wombs;
 
 /**
  * @author Kohsuke Kawaguchi
-*/
+ */
 public class LazyInhabitant<T> implements Inhabitant<T> {
     private final String typeName;
     /**
