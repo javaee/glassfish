@@ -89,7 +89,6 @@
         <jsr223-api.version>1.0</jsr223-api.version>
         <phobos.version>0.5.10</phobos.version>
         <pe.version>10.0-SNAPSHOT</pe.version>
-        <pe-base.version>1.0-SNAPSHOT</pe-base.version>
         <product.name>GlassFish</product.name>
         <build.id>b001</build.id>
         <abbrev_product_name>GlassFish</abbrev_product_name>

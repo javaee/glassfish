@@ -6,7 +6,7 @@
         <version>10.0-SNAPSHOT</version>
     </parent>    
     <artifactId>pe</artifactId>
-    <version>${pe-base.version}</version>
+    <version>${pe.version}</version>
     <name>Glassfish PE Bundle</name>
     <packaging>distribution-base-zip</packaging>
     <description>This pom describes how to assemble the Glassfish PE Bundle</description>
