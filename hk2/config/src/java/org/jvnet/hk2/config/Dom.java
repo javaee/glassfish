@@ -83,9 +83,17 @@ public class Dom extends LazyInhabitant implements InvocationHandler {
      */
     private final DomDocument document;
 
+    /**
+     * @param in
+     *      If provided, this is used to record the source location where this DOM object is loaded from.
+     *      Otherwise this can be null. 
+     */
     public Dom(Habitat habitat, DomDocument document, Dom parent, ConfigModel model, XMLStreamReader in) {
         super(habitat,model.classLoaderHolder,model.targetTypeName,MultiMap.<String,String>emptyMap());
-        this.location =  new LocationImpl(in.getLocation());
+        if(in!=null)
+            this.location =  new LocationImpl(in.getLocation());
+        else
+            this.location = null;
         this.model = model;
         this.document = document;
         this.parent = parent;
