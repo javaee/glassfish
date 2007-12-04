@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!--
+ The contents of this file are subject to the terms
+ of the Common Development and Distribution License
+ (the "License").  You may not use this file except
+ in compliance with the License.
+
+ You can obtain a copy of the license at
+ glassfish/bootstrap/legal/CDDLv1.0.txt or
+ https://glassfish.dev.java.net/public/CDDLv1.0.html.
+ See the License for the specific language governing
+ permissions and limitations under the License.
+
+ When distributing Covered Code, include this CDDL
+ HEADER in each file and include the License file at
+ glassfish/bootstrap/legal/CDDLv1.0.txt.  If applicable,
+ add the following below this CDDL HEADER, with the
+ fields enclosed by brackets "[]" replaced with your
+ own identifying information: Portions Copyright [yyyy]
+ [name of copyright owner]
+-->
+<!DOCTYPE project [
+  <!ENTITY commonBuild SYSTEM "../../bootstrap/ant-common.xml">
+]>
+<project name="nucleus-base bundle creation" default="all" basedir=".">
+    <typedef name="packaging" classname="org.jvnet.maven.plugin.antrun.PackagingCondition"/>
+    <target name="create.bundle" depends="">
+	<mkdir dir="target/stage"/>
+        <resolveArtifact artifactId="javadb" property="javadb.jar"/>
+        <unjar src="${javadb.jar}" dest="target"/>
+        <!-- Note: the current version of the javadb jar file contains a single zip file.
+             As a result, we currently hard code the <unzip/> task to handle this file. -->
+        <unzip dest="target/stage">
+            <fileset dir="target">
+                <include name="*javadb*.zip"/>
+            </fileset>
+            <patternset>
+                <exclude name="javadb/demo/**"/>
+                <exclude name="javadb/bin/**"/>
+                <exclude name="javadb/3RDPARTY.zip"/>
+            </patternset> 
+        </unzip>
+        <resolveAll artifactId="gf-web-connector" todir="target/stage/glassfish/lib/web">
+          <packaging is="jar"/>
+        </resolveAll>
+        <resolveArtifact artifactId="nucleus-base" property="nucleus.zip"/>
+        <unjar src="${nucleus.zip}" dest="target/stage"/>
+        <zip file="target/pe.zip" 
+             basedir="target/stage" />
+        <attachArtifact file="target/pe.zip" />
+    </target>
+</project>

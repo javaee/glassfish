@@ -1,71 +1,48 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.glassfish.distributions</groupId>
         <artifactId>distributions</artifactId>
         <version>10.0-SNAPSHOT</version>
-        <relativePath>../pom.xml</relativePath>
-    </parent>
-
+    </parent>    
     <artifactId>pe</artifactId>
-    <packaging>glassfish-distribution</packaging>
-    <version>${pe.version}</version>
+    <version>${pe-base.version}</version>
+    <name>Glassfish PE Bundle</name>
+    <packaging>distribution-base-zip</packaging>
+    <description>This pom describes how to assemble the Glassfish PE Bundle</description>
 
-    <name>Glassfish PE distribution image</name>
-    <description>This module creates the final distribution image</description>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.jvnet.maven-antrun-extended-plugin</groupId>
+                <artifactId>maven-antrun-extended-plugin</artifactId>
+                <configuration>
+                  <tasks>
+                    <ant dir="." antfile="build.xml" target="create.bundle"/>
+                  </tasks>
+                </configuration>
+             </plugin>
+        </plugins>
+    </build>
 
     <dependencies>
         <dependency>
-            <!-- we extend on nucleus -->
-            <groupId>org.glassfish.distributions</groupId>
-            <artifactId>nucleus</artifactId>
-            <version>${nucleus.version}</version>
-            <type>glassfish-distribution</type>
-        </dependency>
-        <dependency>
-            <!-- base distribution image that contains everything except modules -->
-            <groupId>org.glassfish.distributions</groupId>
-            <artifactId>pe-base</artifactId>
-            <version>${pe-base.version}</version>
-            <type>zip</type>
-        </dependency>
-        <!-- and add the following modules -->
-        <dependency>
-            <groupId>org.glassfish.admin</groupId>
-            <artifactId>jmx-remote</artifactId>
-            <version>${glassfish.version}</version>
-            <scope>runtime</scope>
+            <groupId>javadb</groupId>
+            <artifactId>javadb</artifactId>
+            <version>10.2.2.1-20070823</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.web</groupId>
             <artifactId>gf-web-connector</artifactId>
-            <version>${glassfish.version}</version>
-            <scope>runtime</scope>
+            <version>${pe.version}</version>
         </dependency>
+        <!-- base distribution image -->
         <dependency>
-            <groupId>org.glassfish.extras</groupId>
-            <artifactId>gf-jruby-connector</artifactId>
-            <version>${glassfish.version}</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>toplink.essentials</groupId>
-            <artifactId>toplink-essentials</artifactId>
-            <version>2.0-43</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.extras</groupId>
-            <artifactId>gf-phobos-connector</artifactId>
-            <version>${glassfish.version}</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.external</groupId>
-            <artifactId>ant</artifactId>
-            <version>${glassfish.version}</version>
-            <scope>runtime</scope>
+            <groupId>org.glassfish.distributions</groupId>
+            <artifactId>nucleus-base</artifactId>
+            <version>${nucleus.version}</version>
+            <type>zip</type>
         </dependency>
     </dependencies>
 </project>
+
