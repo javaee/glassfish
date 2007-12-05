@@ -30,7 +30,7 @@
         <unjar src="${javadb.jar}" dest="target"/>
         <!-- Note: the current version of the javadb jar file contains a single zip file.
              As a result, we currently hard code the <unzip/> task to handle this file. -->
-        <unzip dest="target/stage">
+        <unzip dest="target/stage/glassfish">
             <fileset dir="target">
                 <include name="*javadb*.zip"/>
             </fileset>
@@ -45,8 +45,11 @@
         </resolveAll>
         <resolveArtifact artifactId="nucleus-base" property="nucleus.zip"/>
         <unjar src="${nucleus.zip}" dest="target/stage"/>
-        <zip file="target/pe.zip" 
+        <resolveArtifact artifactId="glassfish" property="glassfish.zip"/>
+        <copy file="${glassfish.zip}" todir="target/stage/glassfish/lib"/>
+        <resolveProjectArtifactId property="artifactId"/>
+        <zip file="target/${artifactId}" 
              basedir="target/stage" />
-        <attachArtifact file="target/pe.zip" />
+        <attachArtifact file="target/${artifactId}" />
     </target>
 </project>

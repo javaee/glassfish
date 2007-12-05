@@ -32,6 +32,11 @@
             <version>10.2.2.1-20070823</version>
         </dependency>
         <dependency>
+            <groupId>org.glassfish.core</groupId>
+            <artifactId>glassfish</artifactId>
+            <version>${pe.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.glassfish.web</groupId>
             <artifactId>gf-web-connector</artifactId>
             <version>${pe.version}</version>
