@@ -9,13 +9,15 @@ import org.jvnet.hk2.component.Womb;
 import javax.xml.stream.Location;
 import javax.xml.stream.XMLStreamReader;
 import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.regex.Pattern;
@@ -230,14 +232,66 @@ public class Dom extends LazyInhabitant implements InvocationHandler {
     }
 
     /**
-     * Updates leaf-element values.
+     * Given a master list and the new sub list, replace the items in the master list with the matching items
+     * from the new sub list. This process works even if the length of the new sublist is different.
+     *
+     * <p>
+     * For example, givn:
+     *
+     * <pre>
+     * replace A by A':
+     *   M=[A,B,C], S=[A'] => [A',B,C]
+     *   M=[A,B,A,B,C], S=[A',A'] => [A',B,A',B,C]
+     *
+     * when list length is different:
+     *   M=[A,A,B,C], S=[] => [B,C]
+     *   M=[A,B,C], S=[A',A'] => [A',A',B,C]
+     *   M=[B,C], S=[A',A'] => [B,C,A',A']
+     * </pre>
      */
-    public void leafElement(String name, String... values) {
-        // TODO: implement this method later
-        throw new UnsupportedOperationException();
-        //leafElements.set(name, Arrays.asList(values));
-        //// see attribute(String,String) for the issue with this
-        //getInjector().injectElement(this,name,get());
+    private static void stitchList(List<Child> list, String name, List<? extends Child> newSubList) {
+        // to preserve order, try to put new itesm where old items are found.
+        // if the new list is longer than the current list, we put all the extra
+        // after the last item in the sequence. That is,
+        // given [A,A,B,C] and [A',A',A'], we'll update the list to [A',A',A',B,C]
+        // The 'last' variable remembers the insertion position.
+        int last = list.size();
+
+        ListIterator<Child> itr = list.listIterator();
+        ListIterator<? extends Child> jtr = newSubList.listIterator();
+        while(itr.hasNext()) {
+            Child child = itr.next();
+            if(child.name.equals(name)) {
+                if(jtr.hasNext()) {
+                    itr.set(jtr.next());    // replace
+                    last = itr.nextIndex();
+                } else
+                    itr.remove();   // remove
+            }
+        }
+
+        // new list is longer than the current one
+        if(jtr.hasNext())
+            list.addAll(last,newSubList.subList(jtr.nextIndex(),newSubList.size()));
+    }
+
+    /**
+     * Updates leaf-element values.
+     * <p>
+     * Synchronized so that concurrenct modifications will work correctly. 
+     */
+    public synchronized void leafElement(final String name, String... values) {
+        List<Child> newChildren = new ArrayList<Child>(children);
+
+        LeafChild[] leaves = new LeafChild[values.length];
+        for (int i = 0; i < values.length; i++)
+            leaves[i] = new LeafChild(name,values[i]);
+
+        stitchList(newChildren,name,Arrays.asList(leaves));
+        children = newChildren;
+
+        // see attribute(String,String) for the issue with this
+        getInjector().injectElement(this,name,get());
     }
 
     /**
@@ -249,12 +303,10 @@ public class Dom extends LazyInhabitant implements InvocationHandler {
         List<Child> children = this.children; // fix the snapshot that we'll work with
 
         final List<String> r = new ArrayList<String>();
-        int len = children.size();
-        for( int i=0; i<len; i++ ) {
-            Child child = children.get(i);
-            if(child.name.equals(name)) {
-                // error check on model guarantees that this works.
-                r.add(t(((LeafChild)child).value));
+        for (Child child : children) {
+            if (child.name.equals(name)) {
+                // error check on model guarantees that this cast works.
+                r.add(t(((LeafChild) child).value));
             }
         }
         return r;
@@ -270,12 +322,10 @@ public class Dom extends LazyInhabitant implements InvocationHandler {
         List<Child> children = this.children; // fix the snapshot that we'll work with
 
         final List<String> r = new ArrayList<String>();
-        int len = children.size();
-        for( int i=0; i<len; i++ ) {
-            Child child = children.get(i);
-            if(child.name.equals(name)) {
-                // error check on model guarantees that this works.
-                r.add(((LeafChild)child).value);
+        for (Child child : children) {
+            if (child.name.equals(name)) {
+                // error check on model guarantees that this cast works.
+                r.add(((LeafChild) child).value);
             }
         }
         return r;
