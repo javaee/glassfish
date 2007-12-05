@@ -13,6 +13,7 @@ import javax.management.MBeanInfo;
 import javax.management.MBeanNotificationInfo;
 import javax.management.MBeanOperationInfo;
 import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Proxy;
 import java.lang.reflect.Type;
 import java.util.AbstractList;
 import java.util.ArrayList;
@@ -137,12 +138,16 @@ public final class ConfigModel {
          * @param returnType
          *      The expected type of the returned object.
          *      Valid types are (1) primitive and 'leaf' Java types, such as {@link String},
-         *      (2) {@link ConfigBeanProxy}, (3) and its collections.
+         *      (2) {@link ConfigBeanProxy}, (3) {@link Dom}, and (4) collections of any of above.
          */
         public abstract Object get(Dom dom, Type returnType);
 
         /**
          * Sets the value to {@link Dom}.
+         *
+         * @param arg
+         *      The new value. See the return type of the get method for the discussion of
+         *      possible types.
          */
         public abstract void set(Dom dom, Object arg);
     }
@@ -234,8 +239,16 @@ public final class ConfigModel {
         }
 
         public void set(Dom dom, Object arg) {
-            // TODO
-            throw new UnsupportedOperationException();
+            Dom child;
+            if(arg instanceof Dom) {
+                child = (Dom)arg;
+            } else
+            if(arg instanceof ConfigBeanProxy) {
+                child = (Dom)Proxy.getInvocationHandler(arg);
+            } else
+                throw new IllegalArgumentException("Unexpected type "+arg.getClass()+" for "+xmlName);
+
+            dom.setNodeElements(xmlName,child);
         }
     }
 
@@ -328,7 +341,7 @@ public final class ConfigModel {
             if(arg==null)
                 // TODO: implement remove
                 throw new UnsupportedOperationException();
-            dom.leafElement(xmlName,arg.toString());
+            dom.setLeafElements(xmlName,arg.toString());
         }
     }
 
