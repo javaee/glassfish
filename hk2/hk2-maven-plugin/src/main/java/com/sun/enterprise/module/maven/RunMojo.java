@@ -28,7 +28,8 @@ import java.io.IOException;
  * @goal run
  * @requiresDependencyResolution runtime
  * @phase compile
- *
+ * @execute phase=compile
+ * 
  * @author Kohsuke Kawaguchi
  */
 public class RunMojo extends AbstractMojo {
@@ -88,7 +89,7 @@ public class RunMojo extends AbstractMojo {
         }
 
         // sanity check
-        if(project.getPackaging().equals("hk2-jar") && project.getArtifact()==null) {
+        if(project.getPackaging().equals("hk2-jar") && (project.getArtifact()==null || project.getArtifact().getFile()==null)) {
             getLog().warn("This project isn't compiled yet. Perhaps you meant 'mvn compile hk2:run'?");
         }
     
