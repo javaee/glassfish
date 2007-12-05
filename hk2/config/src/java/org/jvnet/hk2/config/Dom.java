@@ -280,7 +280,7 @@ public class Dom extends LazyInhabitant implements InvocationHandler {
      * <p>
      * Synchronized so that concurrenct modifications will work correctly. 
      */
-    public synchronized void leafElement(final String name, String... values) {
+    public synchronized void setLeafElements(final String name, String... values) {
         List<Child> newChildren = new ArrayList<Child>(children);
 
         LeafChild[] leaves = new LeafChild[values.length];
@@ -346,6 +346,25 @@ public class Dom extends LazyInhabitant implements InvocationHandler {
             }
         }
         return null;
+    }
+
+    /**
+     * Updates node-element values.
+     * <p>
+     * Synchronized so that concurrenct modifications will work correctly.
+     */
+    public synchronized void setNodeElements(final String name, Dom... values) {
+        List<Child> newChildren = new ArrayList<Child>(children);
+
+        NodeChild[] leaves = new NodeChild[values.length];
+        for (int i = 0; i < values.length; i++)
+            leaves[i] = new NodeChild(name,values[i]);
+
+        stitchList(newChildren,name,Arrays.asList(leaves));
+        children = newChildren;
+
+        // see attribute(String,String) for the issue with this
+        getInjector().injectElement(this,name,get());
     }
 
     /**
