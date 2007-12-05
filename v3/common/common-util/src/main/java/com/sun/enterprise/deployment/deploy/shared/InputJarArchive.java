@@ -23,7 +23,7 @@
 
 package com.sun.enterprise.deployment.deploy.shared;
 
-import com.sun.enterprise.deployment.util.DOLUtils;
+import com.sun.logging.LogDomains;
 import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.enterprise.util.io.FileUtils;
 import org.glassfish.api.deployment.archive.ReadableArchive;
@@ -37,6 +37,7 @@ import java.util.jar.JarFile;
 import java.util.jar.JarInputStream;
 import java.util.jar.Manifest;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -50,7 +51,8 @@ import java.net.URISyntaxException;
 @Service(name="jar")
 public class InputJarArchive extends JarArchive implements ReadableArchive {
     
-    
+    final static Logger logger = LogDomains.getLogger(LogDomains.DPL_LOGGER);
+
     // the file we are currently mapped to 
     protected JarFile jarFile=null;
     
@@ -244,7 +246,7 @@ public class InputJarArchive extends JarArchive implements ReadableArchive {
                 jarFile = new JarFile(file);
             }
         } catch(IOException e) {
-            DOLUtils.getDefaultLogger().log(Level.SEVERE, "enterprise.deployment.backend.fileOpenFailure", 
+            logger.log(Level.SEVERE, "enterprise.deployment.backend.fileOpenFailure", 
                     new Object[]{uri});
             // add the additional information about the path
             // since the IOException from jdk doesn't include that info

@@ -155,10 +155,13 @@ public class ArchivistFactory implements ContractProvider {
      * @return
      * @throws IOException
      */
-    Archivist getPrivateArchivistFor(ModuleType moduleType) throws IOException {
-        ArchiveHandler handler = getArchivistForType(moduleType);
-        if (handler!=null && handler instanceof Archivist) {
-            return (Archivist) handler;
+    public Archivist getPrivateArchivistFor(ModuleType moduleType) 
+        throws IOException {
+        for (PrivateArchivist pa : privateArchivists) {
+            Archivist a = Archivist.class.cast(pa);
+            if (a.getModuleType().equals(moduleType)) {
+                return a;
+            }
         }
         return null;
     }
@@ -169,7 +172,8 @@ public class ArchivistFactory implements ContractProvider {
      * @return
      * @throws IOException
      */
-    Archivist getPrivateArchivistFor(ReadableArchive archive) throws IOException {
+    Archivist getPrivateArchivistFor(ReadableArchive archive) 
+        throws IOException {
         //first, check the existence of any deployment descriptors
         for (PrivateArchivist pa : privateArchivists) {
             Archivist a = Archivist.class.cast(pa);
