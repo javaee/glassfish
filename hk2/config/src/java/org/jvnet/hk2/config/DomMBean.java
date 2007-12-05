@@ -59,9 +59,9 @@ final class DomMBean extends AbstractDynamicMBeanImpl {
 
         if(element.isLeaf()) {
             if(element.isCollection())
-                dom.leafElement(name,cast(String.class,value));
+                dom.setLeafElements(name,cast(String.class,value));
             else
-                dom.leafElement(name,cast(String[].class,value));
+                dom.setLeafElements(name,cast(String[].class,value));
             return;
         }
 
