@@ -19,13 +19,10 @@
  own identifying information: Portions Copyright [yyyy]
  [name of copyright owner]
 -->
-<!DOCTYPE project [
-  <!ENTITY commonBuild SYSTEM "../../bootstrap/ant-common.xml">
-]>
-<project name="nucleus-base bundle creation" default="all" basedir=".">
+<project name="nucleus-base bundle creation" default="create.bundle" basedir=".">
     <typedef name="packaging" classname="org.jvnet.maven.plugin.antrun.PackagingCondition"/>
-    <target name="create.bundle" depends="">
-	<mkdir dir="target/stage"/>
+    <target name="create.bundle">
+        <mkdir dir="target/stage"/>
         <resolveArtifact artifactId="javadb" property="javadb.jar"/>
         <unjar src="${javadb.jar}" dest="target"/>
         <!-- Note: the current version of the javadb jar file contains a single zip file.
@@ -38,18 +35,18 @@
                 <exclude name="javadb/demo/**"/>
                 <exclude name="javadb/bin/**"/>
                 <exclude name="javadb/3RDPARTY.zip"/>
-            </patternset> 
+            </patternset>
         </unzip>
         <resolveAll artifactId="gf-web-connector" todir="target/stage/glassfish/lib/web">
-          <packaging is="jar"/>
+            <packaging is="jar"/>
         </resolveAll>
         <resolveArtifact artifactId="nucleus-base" property="nucleus.zip"/>
         <unjar src="${nucleus.zip}" dest="target/stage"/>
         <resolveArtifact artifactId="glassfish" property="glassfish.zip"/>
         <copy file="${glassfish.zip}" todir="target/stage/glassfish/lib"/>
         <resolveProjectArtifactId property="artifactId"/>
-        <zip file="target/${artifactId}" 
-             basedir="target/stage" />
-        <attachArtifact file="target/${artifactId}" />
+        <zip file="target/${artifactId}"
+             basedir="target/stage"/>
+        <attachArtifact file="target/${artifactId}"/>
     </target>
 </project>
