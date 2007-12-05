@@ -162,6 +162,20 @@ public final class ConfigModel {
         public boolean isLeaf() {
             return false;
         }
+
+        /**
+         * Coerce the given type to {@link Dom}.
+         * Only handles those types that are valid to the {@link #set(Dom, Object)} method.
+         */
+        protected final Dom toDom(Object arg) {
+            if(arg==null)
+                return null;
+            if(arg instanceof Dom)
+                return (Dom)arg;
+            if(arg instanceof ConfigBeanProxy)
+                return (Dom) Proxy.getInvocationHandler(arg);
+            throw new IllegalArgumentException("Unexpected type "+arg.getClass()+" for "+xmlName);
+        }
     }
 
     static final class CollectionNode extends Node {
@@ -209,9 +223,17 @@ public final class ConfigModel {
             };
         }
 
-        public void set(Dom dom, Object arg) {
-            // TODO
-            throw new UnsupportedOperationException();
+        public void set(Dom dom, Object _arg) {
+            if(!(_arg instanceof List))
+                throw new IllegalArgumentException("Expecting a list but found "+_arg);
+            List arg = (List)_arg;
+
+            Dom[] values = new Dom[arg.size()];
+            int i=0;
+            for (Object o : arg)
+                values[i++] = toDom(o);
+
+            dom.setNodeElements(xmlName,values);
         }
     }
 
@@ -239,16 +261,12 @@ public final class ConfigModel {
         }
 
         public void set(Dom dom, Object arg) {
-            Dom child;
-            if(arg instanceof Dom) {
-                child = (Dom)arg;
-            } else
-            if(arg instanceof ConfigBeanProxy) {
-                child = (Dom)Proxy.getInvocationHandler(arg);
-            } else
-                throw new IllegalArgumentException("Unexpected type "+arg.getClass()+" for "+xmlName);
+            Dom child = toDom(arg);
 
-            dom.setNodeElements(xmlName,child);
+            if(child==null) // remove
+                dom.setNodeElements(xmlName);
+            else // replace
+                dom.setNodeElements(xmlName,child);
         }
     }
 
