@@ -21,20 +21,18 @@
 -->
 <project name="nucleus-base bundle creation" basedir=".">
     <target name="create.bundle">
-        <mkdir dir="target/stage/glassfish"/>
-        <copy todir="target/stage/glassfish">
-            <fileset dir=".">
+        <mkdir dir="target"/>
+        <zip file="target/nucleus-base.zip">
+            <zipfileset dir="." includes="bin/**" prefix="glassfish" filemode="755" />
+            <zipfileset dir="." prefix="glassfish">
                 <include name="*.txt"/>
-                <include name="bin/**"/>
                 <include name="config/**"/>
                 <include name="lib/**"/>
                 <include name="domains/**"/>
                 <include name="COPYRIGHT"/>
                 <include name="README"/>
-            </fileset>
-        </copy>
-        <zip file="target/nucleus-base.zip"
-             basedir="target/stage"/>
+            </zipfileset>
+        </zip>
         <attachArtifact file="target/nucleus-base.zip"/>
     </target>
 </project>
