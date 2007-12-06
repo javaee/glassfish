@@ -1,0 +1,2 @@
+#!/bin/sh
+exec java -jar `dirname $0`/../lib/admin-cli-10.0-SNAPSHOT.jar "$@"
