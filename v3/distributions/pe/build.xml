@@ -44,6 +44,10 @@
         <unjar src="${nucleus.zip}" dest="target/stage"/>
 
         <resolveAll todir="target/stage/glassfish/lib">
+            <or>
+                <packaging is="hk2-jar" />
+                <packaging is="jar" />
+            </or>
         </resolveAll>
 
         <zip file="target/pe.zip" basedir="target/stage"/>
