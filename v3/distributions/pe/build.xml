@@ -42,11 +42,11 @@
         </resolveAll>
         <resolveArtifact artifactId="nucleus-base" property="nucleus.zip"/>
         <unjar src="${nucleus.zip}" dest="target/stage"/>
+
         <resolveArtifact artifactId="glassfish" property="glassfish.zip"/>
         <copy file="${glassfish.zip}" todir="target/stage/glassfish/lib"/>
-        <resolveProjectArtifactId property="artifactId"/>
-        <zip file="target/${artifactId}"
-             basedir="target/stage"/>
-        <attachArtifact file="target/${artifactId}"/>
+
+        <zip file="target/pe.zip" basedir="target/stage"/>
+        <attachArtifact file="target/pe.zip"/>
     </target>
 </project>
