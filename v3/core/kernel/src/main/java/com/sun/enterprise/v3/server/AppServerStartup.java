@@ -88,6 +88,7 @@ public class AppServerStartup implements ModuleStartup {
         // set the parent class loader to the shared module class loader.
         Module parentModule = systemRegistry.makeModuleFor("org.glassfish.core:shared-components", null);
         if(parentModule==null) {
+            // TODO: print out repository list to assist trouble-shooting
             System.err.println("shared-components module is not found. Aborting");
             return;
         }
