@@ -52,7 +52,7 @@ public class WebImportPolicy implements ImportPolicy {
 
         Module antModule = myModule.getRegistry().makeModuleFor("org.glassfish.external:ant", null);
         if(antModule==null)
-            throw new LinkageError("Unable to locate ant module");
+            throw new LinkageError("Unable to locate ant module, yet it's required on Java5");
         myModule.addImport(antModule);
     }
 }
