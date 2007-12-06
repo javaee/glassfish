@@ -45,7 +45,7 @@
         <!-- base distribution image -->
         <dependency>
             <groupId>org.glassfish.distributions</groupId>
-            <artifactId>nucleus-base</artifactId>
+            <artifactId>nucleus</artifactId>
             <version>${nucleus.version}</version>
             <type>zip</type>
         </dependency>
