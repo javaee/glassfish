@@ -41,7 +41,6 @@
             <packaging is="jar"/>
         </resolveAll>
         <resolveArtifact artifactId="nucleus-base" property="nucleus.zip"/>
-        <unjar src="${nucleus.zip}" dest="target/stage"/>
 
         <resolveAll todir="target/stage/glassfish/lib">
             <or>
@@ -50,7 +49,9 @@
             </or>
         </resolveAll>
 
-        <zip file="target/pe.zip" basedir="target/stage"/>
+        <zip file="target/pe.zip" basedir="target/stage">
+            <zipgroupfileset file="${nucleus.zip}"/>
+        </zip>
         <attachArtifact file="target/pe.zip"/>
     </target>
 </project>
