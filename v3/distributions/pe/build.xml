@@ -40,7 +40,7 @@
         <resolveAll artifactId="gf-web-connector" todir="target/stage/glassfish/lib/web">
             <packaging is="jar"/>
         </resolveAll>
-        <resolveArtifact artifactId="nucleus-base" property="nucleus.zip"/>
+        <resolveArtifact artifactId="nucleus-base" property="nucleus-base.zip"/>
 
         <resolveAll todir="target/stage/glassfish/lib">
             <or>
@@ -50,7 +50,7 @@
         </resolveAll>
 
         <zip file="target/pe.zip" basedir="target/stage">
-            <zipgroupfileset file="${nucleus.zip}"/>
+            <zipgroupfileset file="${nucleus-base.zip}"/>
         </zip>
         <attachArtifact file="target/pe.zip"/>
     </target>
