@@ -23,8 +23,8 @@
     <target name="create.bundle">
         <mkdir dir="target"/>
         <zip file="target/nucleus-base.zip">
-            <zipfileset dir="." includes="bin/**" prefix="glassfish" filemode="755" />
-            <zipfileset dir="." prefix="glassfish">
+            <zipfileset prefix="glassfish" dir="." includes="bin/**" filemode="755" />
+            <zipfileset prefix="glassfish" dir=".">
                 <include name="*.txt"/>
                 <include name="config/**"/>
                 <include name="lib/**"/>
