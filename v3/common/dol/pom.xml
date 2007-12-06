@@ -83,9 +83,9 @@
             <version>${pom.parent.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.ant</groupId>
+            <groupId>org.glassfish.external</groupId>
             <artifactId>ant</artifactId>
-            <version>${ant.version}</version>
+            <version>${pom.parent.version}</version>
         </dependency>
         <!--dependency>
             <groupId>com.sun.xml.ws</groupId>
