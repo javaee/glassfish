@@ -2,8 +2,8 @@ package test3;
 
 import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.ConfigBeanProxy;
-import org.jvnet.hk2.config.Element;
 import org.jvnet.hk2.config.Configured;
+import org.jvnet.hk2.config.Element;
 
 import java.util.List;
 
@@ -29,4 +29,7 @@ public interface JmsHost extends ConfigBeanProxy {
 
     @Element("property")
     List<Property> getProperties();
+
+    @Element("point")
+    List<PointConfig> getPoints();
 }

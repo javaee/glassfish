@@ -340,6 +340,43 @@ public final class ConfigModel {
         }
     }
 
+    static final class AttributeLeaf extends Leaf {
+
+        AttributeLeaf(String xmlName) {
+            super(xmlName);
+        }
+
+        /**
+         * Is multiple values allowed?
+         */
+        public boolean isCollection() {
+            return false;
+        }
+
+        /**
+         * Gets the value from {@link Dom} in the specified type.
+         *
+         * @param dom        The DOM instance to get the value from.
+         * @param returnType The expected type of the returned object.
+         *                   Valid types are (1) primitive and 'leaf' Java types, such as {@link String},
+         *                   (2) {@link ConfigBeanProxy}, (3) and its collections.
+         */
+        public Object get(Dom dom, Type returnType) {
+            String v = dom.attribute(xmlName);
+            return convertLeafValue(Types.erasure(returnType), v);
+        }
+
+        /**
+         * Sets the value to {@link Dom}.
+         */
+        public void set(Dom dom, Object arg) {
+            if(arg==null)
+                // TODO: implement remove
+                throw new UnsupportedOperationException();
+            dom.attribute(xmlName, arg.toString());
+        }
+    }
+
     static final class SingleLeaf extends Leaf {
         SingleLeaf(String xmlName) {
             super(xmlName);
@@ -367,11 +404,11 @@ public final class ConfigModel {
      * @param description
      *      The description of the model as written in {@link InhabitantsFile the inhabitants file}.
      */
-    public ConfigModel(ConfigParser parent, Inhabitant<? extends ConfigInjector> injector, MultiMap<String,String> description) {
+    public ConfigModel(DomDocument document, Inhabitant<? extends ConfigInjector> injector, MultiMap<String,String> description) {
         if(description==null)
             throw new ComponentException("%s doesn't have any metadata",injector.type());
 
-        parent.models.put(injector,this); // register now so that cyclic references are handled correctly.
+        document.models.put(injector,this); // register now so that cyclic references are handled correctly.
         this.injector = injector;
         String targetTypeName=null,indexTypeName=null;
         String key = null;
@@ -381,11 +418,11 @@ public final class ConfigModel {
             if(name.startsWith("@")) {
                 // TODO: handle value.equals("optional") and value.equals("required") distinctively.
                 String attributeName = name.substring(1);
-                attributes.put(attributeName, new SingleLeaf(attributeName));
+                attributes.put(attributeName, new AttributeLeaf(attributeName));
             } else
             if(name.startsWith("<")) {
                 String elementName = name.substring(1, name.length() - 1);
-                elements.put(elementName,parseValue(elementName,parent,value));
+                elements.put(elementName,parseValue(elementName,document,value));
             } else
             if(name.equals(ConfigMetadata.TARGET))
                 targetTypeName = value;
@@ -438,7 +475,7 @@ public final class ConfigModel {
     /**
      * Parses {@link Property} object from a value in the metadata description.
      */
-    private Property parseValue(String elementName, ConfigParser parent, String value) {
+    private Property parseValue(String elementName, DomDocument document, String value) {
         boolean collection = false;
         if(value.startsWith("collection:")) {
             collection = true;
@@ -452,12 +489,12 @@ public final class ConfigModel {
 
         // this element is a reference to another configured inhabitant.
         // figure that out.
-        Inhabitant i = parent.habitat.getInhabitantByAnnotation(InjectionTarget.class, value);
+        Inhabitant i = document.habitat.getInhabitantByAnnotation(InjectionTarget.class, value);
         if(i==null)
             throw new ComponentException(
                 "%s is referenced from %s but its ConfigInjector is not found",value,injector.typeName());
 
-        ConfigModel model = parent.buildModel(i);
+        ConfigModel model = document.buildModel(i);
         if(collection)
             return new CollectionNode(model,elementName);
         else

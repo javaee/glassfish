@@ -567,8 +567,13 @@ public class ConfigInjectorGenerator extends SimpleDeclarationVisitor implements
                 }
 
                 // try to handle it as a reference
-                if(itemType instanceof ClassType) {
-                    ClassDeclaration decl = ((ClassType)itemType).getDeclaration();
+                if (itemType instanceof DeclaredType) {
+                    if (!(itemType instanceof ClassType || itemType instanceof InterfaceType)) {
+                        env.getMessager().printError(p.decl().getPosition(),
+                        "I only inject interfaces or classes,  "+itemType+" is not one of them");
+                        return new NodeConverter();
+                    }
+                    TypeDeclaration decl = ((DeclaredType)itemType).getDeclaration();
                     Configured cfg = decl.getAnnotation(Configured.class);
                     if(cfg!=null) {
                         // node value

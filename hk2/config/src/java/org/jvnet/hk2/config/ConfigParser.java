@@ -31,36 +31,21 @@ public class ConfigParser {
      */
     protected final Habitat habitat;
 
-    protected final Map<Inhabitant<? extends ConfigInjector>,ConfigModel> models = new HashMap<Inhabitant<? extends ConfigInjector>, ConfigModel>();
 
     public ConfigParser(Habitat habitat) {
         this.habitat = habitat;
     }
 
-    /**
-     * Creates {@link ConfigModel} for the given {@link ConfigInjector} if we haven't done so.
-     */
-    /*package*/ ConfigModel buildModel(Inhabitant<? extends ConfigInjector> i) {
-        ConfigModel m = models.get(i);
-        if(m==null)
-            m = new ConfigModel(this,i,i.metadata());
-        return m;
-    }
-
-    /**
-     * Gets the {@link ConfigModel} from the "global" element name.
-     */
-    public ConfigModel getModel(String elementName) {
-        Inhabitant<? extends ConfigInjector> i = habitat.getInhabitant(ConfigInjector.class, elementName);
-        if(i==null) return null;
-        return buildModel(i);
-    }
 
     public DomDocument parse(XMLStreamReader in) throws XMLStreamException {
-        in.nextTag();
-        DomDocument document = new DomDocument();
-        document.root = handleElement(in,document);
+        DomDocument document = new DomDocument(habitat);
+        parse(in, document);
         return document;
+    }
+
+    public void parse(XMLStreamReader in, DomDocument document) throws XMLStreamException {
+        in.nextTag();
+        document.root = handleElement(in,document);
     }
 
     /**
@@ -68,13 +53,18 @@ public class ConfigParser {
      * {@link Dom}s into {@link Habitat} as {@link Inhabitant}s.
      */
     public DomDocument parse(URL source) {
+        return parse(source, new DomDocument(habitat));
+    }
+                                  
+
+    public DomDocument parse(URL source, DomDocument document) {
         try {
-            return parse(xif.createXMLStreamReader(new StreamSource(source.toString())));
+            parse(xif.createXMLStreamReader(new StreamSource(source.toString())), document);
+            return document;
         } catch (XMLStreamException e) {
             throw new ComponentException("Failed to parse "+source,e);
         }
     }
-
     /**
      * Processes a tree.
      *
@@ -84,14 +74,14 @@ public class ConfigParser {
      * @param document
      */
     private Dom handleElement(XMLStreamReader in,DomDocument document) throws XMLStreamException {
-        ConfigModel model = getModel(in.getLocalName());
+        ConfigModel model = document.getModel(in.getLocalName());
         if(model==null)
             throw new XMLStreamException("Unrecognized element "+in.getLocalName(),in.getLocation());
         return handleElement(in,document,null,model);
     }
 
     private Dom handleElement(XMLStreamReader in, DomDocument document, Dom parent, ConfigModel model) throws XMLStreamException {
-        final Dom dom = createDom(in, document, parent, model);
+        final Dom dom = document.make(habitat, in, parent, model);
 
         // read values and fill DOM
         dom.fillAttributes(in);
@@ -131,14 +121,6 @@ public class ConfigParser {
             habitat.addIndex(dom,model.targetTypeName,key);
 
         return dom;
-    }
-
-    /**
-     * Derived classes can create a sub-type of {@link Dom} to enhance
-     * the ability of the DOM tree.
-     */
-    protected Dom createDom(XMLStreamReader in, DomDocument document, Dom parent, ConfigModel model) {
-        return new Dom(habitat,document,parent,model,in);
     }
 
     private static final XMLInputFactory xif = XMLInputFactory.newInstance();
