@@ -12,6 +12,8 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.lang.reflect.Type;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -70,7 +72,7 @@ public class Dom extends LazyInhabitant implements InvocationHandler {
         }
     }
 
-    private Map<String,String> attributes;
+    private Map<String,String> attributes = new HashMap<String, String>();
     /**
      * List of all child elements, both leaves and nodes.
      *
@@ -83,19 +85,20 @@ public class Dom extends LazyInhabitant implements InvocationHandler {
     /**
      * Owner of the DOM tree.
      */
-    private final DomDocument document;
+    protected final DomDocument document;
 
     /**
      * @param in
      *      If provided, this is used to record the source location where this DOM object is loaded from.
-     *      Otherwise this can be null. 
+     *      Otherwise this can be null.
      */
     public Dom(Habitat habitat, DomDocument document, Dom parent, ConfigModel model, XMLStreamReader in) {
         super(habitat,model.classLoaderHolder,model.targetTypeName,MultiMap.<String,String>emptyMap());
-        if(in!=null)
+        if (in!=null) {
             this.location =  new LocationImpl(in.getLocation());
-        else
-            this.location = null;
+        } else {
+            this.location=null;
+        }
         this.model = model;
         this.document = document;
         this.parent = parent;
@@ -278,7 +281,7 @@ public class Dom extends LazyInhabitant implements InvocationHandler {
     /**
      * Updates leaf-element values.
      * <p>
-     * Synchronized so that concurrenct modifications will work correctly. 
+     * Synchronized so that concurrenct modifications will work correctly.
      */
     public synchronized void setLeafElements(final String name, String... values) {
         List<Child> newChildren = new ArrayList<Child>(children);
@@ -509,12 +512,20 @@ public class Dom extends LazyInhabitant implements InvocationHandler {
 
         if(args==null || args.length==0) {
             // getter
-            return p.get(this,method.getGenericReturnType());
+            return getter(p, method.getGenericReturnType());
         } else {
             // setter
-            p.set(this,args[0]);
+            setter(p, args[0]);
             return null;
         }
+    }
+
+    protected Object getter(ConfigModel.Property target, Type t) {
+        return target.get(this, t);
+    }
+
+    protected void setter(ConfigModel.Property target, Object value) {
+        target.set(this, value);
     }
 
     /**
