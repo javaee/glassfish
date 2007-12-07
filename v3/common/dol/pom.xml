@@ -82,11 +82,6 @@
             <artifactId>common-util</artifactId>
             <version>${pom.parent.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.glassfish.external</groupId>
-            <artifactId>ant</artifactId>
-            <version>${pom.parent.version}</version>
-        </dependency>
         <!--dependency>
             <groupId>com.sun.xml.ws</groupId>
             <artifactId>jaxws-rt</artifactId>
