@@ -40,7 +40,7 @@ package com.sun.enterprise.config.serverbeans;
 
 import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.Configured;
-import org.glassfish.api.admin.ConfigBean;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 
 import java.beans.PropertyVetoException;
 import java.io.Serializable;
@@ -52,18 +52,7 @@ import java.io.Serializable;
 
 /* @XmlType(name = "") */
 @Configured
-public class HttpAccessLog
- extends ConfigBean implements Serializable {
-
-    private final static long serialVersionUID = 1L;
-    @Attribute
-
-    protected String logDirectory;
-    @Attribute
-
-    protected String iponly;
-
-
+public interface HttpAccessLog extends ConfigBeanProxy  {
 
     /**
      * Gets the value of the logDirectory property.
@@ -71,13 +60,8 @@ public class HttpAccessLog
      * @return possible object is
      *         {@link String }
      */
-    public String getLogDirectory() {
-        if (logDirectory == null) {
-            return "${com.sun.aas.instanceRoot}/logs/access";
-        } else {
-            return logDirectory;
-        }
-    }
+    @Attribute
+    public String getLogDirectory();
 
     /**
      * Sets the value of the logDirectory property.
@@ -85,11 +69,7 @@ public class HttpAccessLog
      * @param value allowed object is
      *              {@link String }
      */
-    public void setLogDirectory(String value) throws PropertyVetoException {
-        support.fireVetoableChange("logDirectory", this.logDirectory, value);
-
-        this.logDirectory = value;
-    }
+    public void setLogDirectory(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the iponly property.
@@ -97,13 +77,8 @@ public class HttpAccessLog
      * @return possible object is
      *         {@link String }
      */
-    public String getIponly() {
-        if (iponly == null) {
-            return "true";
-        } else {
-            return iponly;
-        }
-    }
+    @Attribute
+    public String getIponly();
 
     /**
      * Sets the value of the iponly property.
@@ -111,11 +86,7 @@ public class HttpAccessLog
      * @param value allowed object is
      *              {@link String }
      */
-    public void setIponly(String value) throws PropertyVetoException {
-        support.fireVetoableChange("iponly", this.iponly, value);
-
-        this.iponly = value;
-    }
+    public void setIponly(String value) throws PropertyVetoException;
 
 
 

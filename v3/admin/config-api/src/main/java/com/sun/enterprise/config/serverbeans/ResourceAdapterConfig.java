@@ -39,12 +39,12 @@
 package com.sun.enterprise.config.serverbeans;
 
 import org.jvnet.hk2.config.Attribute;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.Configured;
-import org.glassfish.api.admin.ConfigBean;
+import org.jvnet.hk2.config.Element;
 
 import java.beans.PropertyVetoException;
 import java.beans.VetoableChangeSupport;
-import java.io.Serializable;
 import java.util.List;
 
 
@@ -56,26 +56,7 @@ import java.util.List;
     "property"
 }) */
 @Configured
-public class ResourceAdapterConfig extends ConfigBean implements Resource, Serializable {
-
-    final transient private VetoableChangeSupport support = new VetoableChangeSupport(this);
-    
-    private final static long serialVersionUID = 1L;
-    @Attribute
-
-    protected String name;
-    @Attribute
-
-    protected String threadPoolIds;
-    @Attribute
-
-    protected String objectType;
-    @Attribute(required = true)
-
-    protected String resourceAdapterName;
-    protected List<Property> property = new ConstrainedList<Property>(this, "property", support);
-
-
+public interface ResourceAdapterConfig extends ConfigBeanProxy, Resource {
 
     /**
      * Gets the value of the name property.
@@ -83,9 +64,8 @@ public class ResourceAdapterConfig extends ConfigBean implements Resource, Seria
      * @return possible object is
      *         {@link String }
      */
-    public String getName() {
-        return name;
-    }
+    @Attribute
+    public String getName();
 
     /**
      * Sets the value of the name property.
@@ -93,11 +73,7 @@ public class ResourceAdapterConfig extends ConfigBean implements Resource, Seria
      * @param value allowed object is
      *              {@link String }
      */
-    public void setName(String value) throws PropertyVetoException {
-        support.fireVetoableChange("name", this.name, value);
-
-        this.name = value;
-    }
+    public void setName(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the threadPoolIds property.
@@ -105,9 +81,8 @@ public class ResourceAdapterConfig extends ConfigBean implements Resource, Seria
      * @return possible object is
      *         {@link String }
      */
-    public String getThreadPoolIds() {
-        return threadPoolIds;
-    }
+    @Attribute
+    public String getThreadPoolIds();
 
     /**
      * Sets the value of the threadPoolIds property.
@@ -115,11 +90,7 @@ public class ResourceAdapterConfig extends ConfigBean implements Resource, Seria
      * @param value allowed object is
      *              {@link String }
      */
-    public void setThreadPoolIds(String value) throws PropertyVetoException {
-        support.fireVetoableChange("threadPoolIds", this.threadPoolIds, value);
-
-        this.threadPoolIds = value;
-    }
+    public void setThreadPoolIds(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the objectType property.
@@ -127,13 +98,8 @@ public class ResourceAdapterConfig extends ConfigBean implements Resource, Seria
      * @return possible object is
      *         {@link String }
      */
-    public String getObjectType() {
-        if (objectType == null) {
-            return "user";
-        } else {
-            return objectType;
-        }
-    }
+    @Attribute
+    public String getObjectType();
 
     /**
      * Sets the value of the objectType property.
@@ -141,11 +107,7 @@ public class ResourceAdapterConfig extends ConfigBean implements Resource, Seria
      * @param value allowed object is
      *              {@link String }
      */
-    public void setObjectType(String value) throws PropertyVetoException {
-        support.fireVetoableChange("objectType", this.objectType, value);
-
-        this.objectType = value;
-    }
+    public void setObjectType(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the resourceAdapterName property.
@@ -153,9 +115,8 @@ public class ResourceAdapterConfig extends ConfigBean implements Resource, Seria
      * @return possible object is
      *         {@link String }
      */
-    public String getResourceAdapterName() {
-        return resourceAdapterName;
-    }
+    @Attribute(required = true)
+    public String getResourceAdapterName();
 
     /**
      * Sets the value of the resourceAdapterName property.
@@ -163,11 +124,7 @@ public class ResourceAdapterConfig extends ConfigBean implements Resource, Seria
      * @param value allowed object is
      *              {@link String }
      */
-    public void setResourceAdapterName(String value) throws PropertyVetoException {
-        support.fireVetoableChange("resourceAdapterName", this.resourceAdapterName, value);
-
-        this.resourceAdapterName = value;
-    }
+    public void setResourceAdapterName(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the property property.
@@ -189,10 +146,8 @@ public class ResourceAdapterConfig extends ConfigBean implements Resource, Seria
      * Objects of the following type(s) are allowed in the list
      * {@link Property }
      */
-    public List<Property> getProperty() {
-
-        return this.property;
-    }
+    @Element("property")
+    public List<Property> getProperty();
 
 
 

@@ -39,11 +39,11 @@
 package com.sun.enterprise.config.serverbeans;
 
 import org.jvnet.hk2.config.Attribute;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.Configured;
-import org.glassfish.api.admin.ConfigBean;
+import org.jvnet.hk2.config.Element;
 
 import java.beans.PropertyVetoException;
-import java.io.Serializable;
 import java.util.List;
 
 
@@ -55,106 +55,7 @@ import java.util.List;
     "property"
 }) */
 @Configured
-public class ModuleLogLevels
- extends ConfigBean implements Serializable {
-
-    private final static long serialVersionUID = 1L;
-    @Attribute
-
-    protected String root;
-    @Attribute
-
-    protected String server;
-    @Attribute
-
-    protected String ejbContainer;
-    @Attribute
-
-    protected String cmpContainer;
-    @Attribute
-
-    protected String mdbContainer;
-    @Attribute
-
-    protected String webContainer;
-    @Attribute
-
-    protected String classloader;
-    @Attribute
-
-    protected String configuration;
-    @Attribute
-
-    protected String naming;
-    @Attribute
-
-    protected String security;
-    @Attribute
-
-    protected String jts;
-    @Attribute
-
-    protected String jta;
-    @Attribute
-
-    protected String admin;
-    @Attribute
-
-    protected String deployment;
-    @Attribute
-
-    protected String verifier;
-    @Attribute
-
-    protected String jaxr;
-    @Attribute
-
-    protected String jaxrpc;
-    @Attribute
-
-    protected String saaj;
-    @Attribute
-
-    protected String corba;
-    @Attribute
-
-    protected String javamail;
-    @Attribute
-
-    protected String jms;
-    @Attribute
-
-    protected String connector;
-    @Attribute
-
-    protected String jdo;
-    @Attribute
-
-    protected String cmp;
-    @Attribute
-
-    protected String util;
-    @Attribute
-
-    protected String resourceAdapter;
-    @Attribute
-
-    protected String synchronization;
-    @Attribute
-
-    protected String nodeAgent;
-    @Attribute
-
-    protected String selfManagement;
-    @Attribute
-
-    protected String groupManagementService;
-    @Attribute
-
-    protected String managementEvent;
-    protected List<Property> property = new ConstrainedList<Property>(this, "property", support);
-
-
+public interface ModuleLogLevels extends ConfigBeanProxy  {
 
     /**
      * Gets the value of the root property.
@@ -162,13 +63,8 @@ public class ModuleLogLevels
      * @return possible object is
      *         {@link String }
      */
-    public String getRoot() {
-        if (root == null) {
-            return "INFO";
-        } else {
-            return root;
-        }
-    }
+    @Attribute
+    public String getRoot();
 
     /**
      * Sets the value of the root property.
@@ -176,11 +72,7 @@ public class ModuleLogLevels
      * @param value allowed object is
      *              {@link String }
      */
-    public void setRoot(String value) throws PropertyVetoException {
-        support.fireVetoableChange("root", this.root, value);
-
-        this.root = value;
-    }
+    public void setRoot(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the server property.
@@ -188,13 +80,8 @@ public class ModuleLogLevels
      * @return possible object is
      *         {@link String }
      */
-    public String getServer() {
-        if (server == null) {
-            return "INFO";
-        } else {
-            return server;
-        }
-    }
+    @Attribute
+    public String getServer();
 
     /**
      * Sets the value of the server property.
@@ -202,11 +89,7 @@ public class ModuleLogLevels
      * @param value allowed object is
      *              {@link String }
      */
-    public void setServer(String value) throws PropertyVetoException {
-        support.fireVetoableChange("server", this.server, value);
-
-        this.server = value;
-    }
+    public void setServer(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the ejbContainer property.
@@ -214,13 +97,8 @@ public class ModuleLogLevels
      * @return possible object is
      *         {@link String }
      */
-    public String getEjbContainer() {
-        if (ejbContainer == null) {
-            return "INFO";
-        } else {
-            return ejbContainer;
-        }
-    }
+    @Attribute
+    public String getEjbContainer();
 
     /**
      * Sets the value of the ejbContainer property.
@@ -228,11 +106,7 @@ public class ModuleLogLevels
      * @param value allowed object is
      *              {@link String }
      */
-    public void setEjbContainer(String value) throws PropertyVetoException {
-        support.fireVetoableChange("ejbContainer", this.ejbContainer, value);
-
-        this.ejbContainer = value;
-    }
+    public void setEjbContainer(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the cmpContainer property.
@@ -240,13 +114,8 @@ public class ModuleLogLevels
      * @return possible object is
      *         {@link String }
      */
-    public String getCmpContainer() {
-        if (cmpContainer == null) {
-            return "INFO";
-        } else {
-            return cmpContainer;
-        }
-    }
+    @Attribute
+    public String getCmpContainer();
 
     /**
      * Sets the value of the cmpContainer property.
@@ -254,11 +123,7 @@ public class ModuleLogLevels
      * @param value allowed object is
      *              {@link String }
      */
-    public void setCmpContainer(String value) throws PropertyVetoException {
-        support.fireVetoableChange("cmpContainer", this.cmpContainer, value);
-
-        this.cmpContainer = value;
-    }
+    public void setCmpContainer(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the mdbContainer property.
@@ -266,13 +131,8 @@ public class ModuleLogLevels
      * @return possible object is
      *         {@link String }
      */
-    public String getMdbContainer() {
-        if (mdbContainer == null) {
-            return "INFO";
-        } else {
-            return mdbContainer;
-        }
-    }
+    @Attribute
+    public String getMdbContainer();
 
     /**
      * Sets the value of the mdbContainer property.
@@ -280,11 +140,7 @@ public class ModuleLogLevels
      * @param value allowed object is
      *              {@link String }
      */
-    public void setMdbContainer(String value) throws PropertyVetoException {
-        support.fireVetoableChange("mdbContainer", this.mdbContainer, value);
-
-        this.mdbContainer = value;
-    }
+    public void setMdbContainer(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the webContainer property.
@@ -292,13 +148,8 @@ public class ModuleLogLevels
      * @return possible object is
      *         {@link String }
      */
-    public String getWebContainer() {
-        if (webContainer == null) {
-            return "INFO";
-        } else {
-            return webContainer;
-        }
-    }
+    @Attribute
+    public String getWebContainer();
 
     /**
      * Sets the value of the webContainer property.
@@ -306,11 +157,7 @@ public class ModuleLogLevels
      * @param value allowed object is
      *              {@link String }
      */
-    public void setWebContainer(String value) throws PropertyVetoException {
-        support.fireVetoableChange("webContainer", this.webContainer, value);
-
-        this.webContainer = value;
-    }
+    public void setWebContainer(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the classloader property.
@@ -318,13 +165,8 @@ public class ModuleLogLevels
      * @return possible object is
      *         {@link String }
      */
-    public String getClassloader() {
-        if (classloader == null) {
-            return "INFO";
-        } else {
-            return classloader;
-        }
-    }
+    @Attribute
+    public String getClassloader();
 
     /**
      * Sets the value of the classloader property.
@@ -332,11 +174,7 @@ public class ModuleLogLevels
      * @param value allowed object is
      *              {@link String }
      */
-    public void setClassloader(String value) throws PropertyVetoException {
-        support.fireVetoableChange("classloader", this.classloader, value);
-
-        this.classloader = value;
-    }
+    public void setClassloader(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the configuration property.
@@ -344,13 +182,8 @@ public class ModuleLogLevels
      * @return possible object is
      *         {@link String }
      */
-    public String getConfiguration() {
-        if (configuration == null) {
-            return "INFO";
-        } else {
-            return configuration;
-        }
-    }
+    @Attribute
+    public String getConfiguration();
 
     /**
      * Sets the value of the configuration property.
@@ -358,11 +191,7 @@ public class ModuleLogLevels
      * @param value allowed object is
      *              {@link String }
      */
-    public void setConfiguration(String value) throws PropertyVetoException {
-        support.fireVetoableChange("configuration", this.configuration, value);
-
-        this.configuration = value;
-    }
+    public void setConfiguration(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the naming property.
@@ -370,13 +199,8 @@ public class ModuleLogLevels
      * @return possible object is
      *         {@link String }
      */
-    public String getNaming() {
-        if (naming == null) {
-            return "INFO";
-        } else {
-            return naming;
-        }
-    }
+    @Attribute
+    public String getNaming();
 
     /**
      * Sets the value of the naming property.
@@ -384,11 +208,7 @@ public class ModuleLogLevels
      * @param value allowed object is
      *              {@link String }
      */
-    public void setNaming(String value) throws PropertyVetoException {
-        support.fireVetoableChange("naming", this.naming, value);
-
-        this.naming = value;
-    }
+    public void setNaming(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the security property.
@@ -396,13 +216,8 @@ public class ModuleLogLevels
      * @return possible object is
      *         {@link String }
      */
-    public String getSecurity() {
-        if (security == null) {
-            return "INFO";
-        } else {
-            return security;
-        }
-    }
+    @Attribute
+    public String getSecurity();
 
     /**
      * Sets the value of the security property.
@@ -410,11 +225,7 @@ public class ModuleLogLevels
      * @param value allowed object is
      *              {@link String }
      */
-    public void setSecurity(String value) throws PropertyVetoException {
-        support.fireVetoableChange("security", this.security, value);
-
-        this.security = value;
-    }
+    public void setSecurity(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the jts property.
@@ -422,13 +233,8 @@ public class ModuleLogLevels
      * @return possible object is
      *         {@link String }
      */
-    public String getJts() {
-        if (jts == null) {
-            return "INFO";
-        } else {
-            return jts;
-        }
-    }
+    @Attribute
+    public String getJts();
 
     /**
      * Sets the value of the jts property.
@@ -436,11 +242,7 @@ public class ModuleLogLevels
      * @param value allowed object is
      *              {@link String }
      */
-    public void setJts(String value) throws PropertyVetoException {
-        support.fireVetoableChange("jts", this.jts, value);
-
-        this.jts = value;
-    }
+    public void setJts(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the jta property.
@@ -448,13 +250,8 @@ public class ModuleLogLevels
      * @return possible object is
      *         {@link String }
      */
-    public String getJta() {
-        if (jta == null) {
-            return "INFO";
-        } else {
-            return jta;
-        }
-    }
+    @Attribute
+    public String getJta();
 
     /**
      * Sets the value of the jta property.
@@ -462,11 +259,7 @@ public class ModuleLogLevels
      * @param value allowed object is
      *              {@link String }
      */
-    public void setJta(String value) throws PropertyVetoException {
-        support.fireVetoableChange("jta", this.jta, value);
-
-        this.jta = value;
-    }
+    public void setJta(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the admin property.
@@ -474,13 +267,8 @@ public class ModuleLogLevels
      * @return possible object is
      *         {@link String }
      */
-    public String getAdmin() {
-        if (admin == null) {
-            return "INFO";
-        } else {
-            return admin;
-        }
-    }
+    @Attribute
+    public String getAdmin();
 
     /**
      * Sets the value of the admin property.
@@ -488,11 +276,7 @@ public class ModuleLogLevels
      * @param value allowed object is
      *              {@link String }
      */
-    public void setAdmin(String value) throws PropertyVetoException {
-        support.fireVetoableChange("admin", this.admin, value);
-
-        this.admin = value;
-    }
+    public void setAdmin(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the deployment property.
@@ -500,13 +284,8 @@ public class ModuleLogLevels
      * @return possible object is
      *         {@link String }
      */
-    public String getDeployment() {
-        if (deployment == null) {
-            return "INFO";
-        } else {
-            return deployment;
-        }
-    }
+    @Attribute
+    public String getDeployment();
 
     /**
      * Sets the value of the deployment property.
@@ -514,11 +293,7 @@ public class ModuleLogLevels
      * @param value allowed object is
      *              {@link String }
      */
-    public void setDeployment(String value) throws PropertyVetoException {
-        support.fireVetoableChange("deployment", this.deployment, value);
-
-        this.deployment = value;
-    }
+    public void setDeployment(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the verifier property.
@@ -526,13 +301,8 @@ public class ModuleLogLevels
      * @return possible object is
      *         {@link String }
      */
-    public String getVerifier() {
-        if (verifier == null) {
-            return "INFO";
-        } else {
-            return verifier;
-        }
-    }
+    @Attribute
+    public String getVerifier();
 
     /**
      * Sets the value of the verifier property.
@@ -540,11 +310,7 @@ public class ModuleLogLevels
      * @param value allowed object is
      *              {@link String }
      */
-    public void setVerifier(String value) throws PropertyVetoException {
-        support.fireVetoableChange("verifier", this.verifier, value);
-
-        this.verifier = value;
-    }
+    public void setVerifier(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the jaxr property.
@@ -552,13 +318,8 @@ public class ModuleLogLevels
      * @return possible object is
      *         {@link String }
      */
-    public String getJaxr() {
-        if (jaxr == null) {
-            return "INFO";
-        } else {
-            return jaxr;
-        }
-    }
+    @Attribute
+    public String getJaxr();
 
     /**
      * Sets the value of the jaxr property.
@@ -566,11 +327,7 @@ public class ModuleLogLevels
      * @param value allowed object is
      *              {@link String }
      */
-    public void setJaxr(String value) throws PropertyVetoException {
-        support.fireVetoableChange("jaxr", this.jaxr, value);
-
-        this.jaxr = value;
-    }
+    public void setJaxr(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the jaxrpc property.
@@ -578,13 +335,8 @@ public class ModuleLogLevels
      * @return possible object is
      *         {@link String }
      */
-    public String getJaxrpc() {
-        if (jaxrpc == null) {
-            return "INFO";
-        } else {
-            return jaxrpc;
-        }
-    }
+    @Attribute
+    public String getJaxrpc();
 
     /**
      * Sets the value of the jaxrpc property.
@@ -592,11 +344,7 @@ public class ModuleLogLevels
      * @param value allowed object is
      *              {@link String }
      */
-    public void setJaxrpc(String value) throws PropertyVetoException {
-        support.fireVetoableChange("jaxrpc", this.jaxrpc, value);
-
-        this.jaxrpc = value;
-    }
+    public void setJaxrpc(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the saaj property.
@@ -604,13 +352,8 @@ public class ModuleLogLevels
      * @return possible object is
      *         {@link String }
      */
-    public String getSaaj() {
-        if (saaj == null) {
-            return "INFO";
-        } else {
-            return saaj;
-        }
-    }
+    @Attribute
+    public String getSaaj();
 
     /**
      * Sets the value of the saaj property.
@@ -618,11 +361,7 @@ public class ModuleLogLevels
      * @param value allowed object is
      *              {@link String }
      */
-    public void setSaaj(String value) throws PropertyVetoException {
-        support.fireVetoableChange("saaj", this.saaj, value);
-
-        this.saaj = value;
-    }
+    public void setSaaj(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the corba property.
@@ -630,13 +369,8 @@ public class ModuleLogLevels
      * @return possible object is
      *         {@link String }
      */
-    public String getCorba() {
-        if (corba == null) {
-            return "INFO";
-        } else {
-            return corba;
-        }
-    }
+    @Attribute
+    public String getCorba();
 
     /**
      * Sets the value of the corba property.
@@ -644,11 +378,7 @@ public class ModuleLogLevels
      * @param value allowed object is
      *              {@link String }
      */
-    public void setCorba(String value) throws PropertyVetoException {
-        support.fireVetoableChange("corba", this.corba, value);
-
-        this.corba = value;
-    }
+    public void setCorba(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the javamail property.
@@ -656,13 +386,8 @@ public class ModuleLogLevels
      * @return possible object is
      *         {@link String }
      */
-    public String getJavamail() {
-        if (javamail == null) {
-            return "INFO";
-        } else {
-            return javamail;
-        }
-    }
+    @Attribute
+    public String getJavamail();
 
     /**
      * Sets the value of the javamail property.
@@ -670,11 +395,7 @@ public class ModuleLogLevels
      * @param value allowed object is
      *              {@link String }
      */
-    public void setJavamail(String value) throws PropertyVetoException {
-        support.fireVetoableChange("javamail", this.javamail, value);
-
-        this.javamail = value;
-    }
+    public void setJavamail(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the jms property.
@@ -682,13 +403,8 @@ public class ModuleLogLevels
      * @return possible object is
      *         {@link String }
      */
-    public String getJms() {
-        if (jms == null) {
-            return "INFO";
-        } else {
-            return jms;
-        }
-    }
+    @Attribute
+    public String getJms();
 
     /**
      * Sets the value of the jms property.
@@ -696,11 +412,7 @@ public class ModuleLogLevels
      * @param value allowed object is
      *              {@link String }
      */
-    public void setJms(String value) throws PropertyVetoException {
-        support.fireVetoableChange("jms", this.jms, value);
-
-        this.jms = value;
-    }
+    public void setJms(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the connector property.
@@ -708,13 +420,8 @@ public class ModuleLogLevels
      * @return possible object is
      *         {@link String }
      */
-    public String getConnector() {
-        if (connector == null) {
-            return "INFO";
-        } else {
-            return connector;
-        }
-    }
+    @Attribute
+    public String getConnector();
 
     /**
      * Sets the value of the connector property.
@@ -722,11 +429,7 @@ public class ModuleLogLevels
      * @param value allowed object is
      *              {@link String }
      */
-    public void setConnector(String value) throws PropertyVetoException {
-        support.fireVetoableChange("connector", this.connector, value);
-
-        this.connector = value;
-    }
+    public void setConnector(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the jdo property.
@@ -734,13 +437,8 @@ public class ModuleLogLevels
      * @return possible object is
      *         {@link String }
      */
-    public String getJdo() {
-        if (jdo == null) {
-            return "INFO";
-        } else {
-            return jdo;
-        }
-    }
+    @Attribute
+    public String getJdo();
 
     /**
      * Sets the value of the jdo property.
@@ -748,11 +446,7 @@ public class ModuleLogLevels
      * @param value allowed object is
      *              {@link String }
      */
-    public void setJdo(String value) throws PropertyVetoException {
-        support.fireVetoableChange("jdo", this.jdo, value);
-
-        this.jdo = value;
-    }
+    public void setJdo(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the cmp property.
@@ -760,13 +454,8 @@ public class ModuleLogLevels
      * @return possible object is
      *         {@link String }
      */
-    public String getCmp() {
-        if (cmp == null) {
-            return "INFO";
-        } else {
-            return cmp;
-        }
-    }
+    @Attribute
+    public String getCmp();
 
     /**
      * Sets the value of the cmp property.
@@ -774,11 +463,7 @@ public class ModuleLogLevels
      * @param value allowed object is
      *              {@link String }
      */
-    public void setCmp(String value) throws PropertyVetoException {
-        support.fireVetoableChange("cmp", this.cmp, value);
-
-        this.cmp = value;
-    }
+    public void setCmp(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the util property.
@@ -786,13 +471,8 @@ public class ModuleLogLevels
      * @return possible object is
      *         {@link String }
      */
-    public String getUtil() {
-        if (util == null) {
-            return "INFO";
-        } else {
-            return util;
-        }
-    }
+    @Attribute
+    public String getUtil();
 
     /**
      * Sets the value of the util property.
@@ -800,11 +480,7 @@ public class ModuleLogLevels
      * @param value allowed object is
      *              {@link String }
      */
-    public void setUtil(String value) throws PropertyVetoException {
-        support.fireVetoableChange("util", this.util, value);
-
-        this.util = value;
-    }
+    public void setUtil(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the resourceAdapter property.
@@ -812,13 +488,8 @@ public class ModuleLogLevels
      * @return possible object is
      *         {@link String }
      */
-    public String getResourceAdapter() {
-        if (resourceAdapter == null) {
-            return "INFO";
-        } else {
-            return resourceAdapter;
-        }
-    }
+    @Attribute
+    public String getResourceAdapter();
 
     /**
      * Sets the value of the resourceAdapter property.
@@ -826,11 +497,7 @@ public class ModuleLogLevels
      * @param value allowed object is
      *              {@link String }
      */
-    public void setResourceAdapter(String value) throws PropertyVetoException {
-        support.fireVetoableChange("resourceAdapter", this.resourceAdapter, value);
-
-        this.resourceAdapter = value;
-    }
+    public void setResourceAdapter(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the synchronization property.
@@ -838,13 +505,8 @@ public class ModuleLogLevels
      * @return possible object is
      *         {@link String }
      */
-    public String getSynchronization() {
-        if (synchronization == null) {
-            return "INFO";
-        } else {
-            return synchronization;
-        }
-    }
+    @Attribute
+    public String getSynchronization();
 
     /**
      * Sets the value of the synchronization property.
@@ -852,11 +514,7 @@ public class ModuleLogLevels
      * @param value allowed object is
      *              {@link String }
      */
-    public void setSynchronization(String value) throws PropertyVetoException {
-        support.fireVetoableChange("synchronization", this.synchronization, value);
-
-        this.synchronization = value;
-    }
+    public void setSynchronization(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the nodeAgent property.
@@ -864,13 +522,8 @@ public class ModuleLogLevels
      * @return possible object is
      *         {@link String }
      */
-    public String getNodeAgent() {
-        if (nodeAgent == null) {
-            return "INFO";
-        } else {
-            return nodeAgent;
-        }
-    }
+    @Attribute
+    public String getNodeAgent();
 
     /**
      * Sets the value of the nodeAgent property.
@@ -878,11 +531,7 @@ public class ModuleLogLevels
      * @param value allowed object is
      *              {@link String }
      */
-    public void setNodeAgent(String value) throws PropertyVetoException {
-        support.fireVetoableChange("nodeAgent", this.nodeAgent, value);
-
-        this.nodeAgent = value;
-    }
+    public void setNodeAgent(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the selfManagement property.
@@ -890,13 +539,8 @@ public class ModuleLogLevels
      * @return possible object is
      *         {@link String }
      */
-    public String getSelfManagement() {
-        if (selfManagement == null) {
-            return "INFO";
-        } else {
-            return selfManagement;
-        }
-    }
+    @Attribute
+    public String getSelfManagement();
 
     /**
      * Sets the value of the selfManagement property.
@@ -904,11 +548,7 @@ public class ModuleLogLevels
      * @param value allowed object is
      *              {@link String }
      */
-    public void setSelfManagement(String value) throws PropertyVetoException {
-        support.fireVetoableChange("selfManagement", this.selfManagement, value);
-
-        this.selfManagement = value;
-    }
+    public void setSelfManagement(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the groupManagementService property.
@@ -916,13 +556,8 @@ public class ModuleLogLevels
      * @return possible object is
      *         {@link String }
      */
-    public String getGroupManagementService() {
-        if (groupManagementService == null) {
-            return "INFO";
-        } else {
-            return groupManagementService;
-        }
-    }
+    @Attribute
+    public String getGroupManagementService();
 
     /**
      * Sets the value of the groupManagementService property.
@@ -930,11 +565,7 @@ public class ModuleLogLevels
      * @param value allowed object is
      *              {@link String }
      */
-    public void setGroupManagementService(String value) throws PropertyVetoException {
-        support.fireVetoableChange("groupManagementService", this.groupManagementService, value);
-
-        this.groupManagementService = value;
-    }
+    public void setGroupManagementService(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the managementEvent property.
@@ -942,13 +573,8 @@ public class ModuleLogLevels
      * @return possible object is
      *         {@link String }
      */
-    public String getManagementEvent() {
-        if (managementEvent == null) {
-            return "INFO";
-        } else {
-            return managementEvent;
-        }
-    }
+    @Attribute
+    public String getManagementEvent();
 
     /**
      * Sets the value of the managementEvent property.
@@ -956,11 +582,7 @@ public class ModuleLogLevels
      * @param value allowed object is
      *              {@link String }
      */
-    public void setManagementEvent(String value) throws PropertyVetoException {
-        support.fireVetoableChange("managementEvent", this.managementEvent, value);
-
-        this.managementEvent = value;
-    }
+    public void setManagementEvent(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the property property.
@@ -972,6 +594,8 @@ public class ModuleLogLevels
      * This is why there is not a <CODE>set</CODE> method for the property property.
      * <p/>
      * <p/>
+     *
+     *
      * For example, to add a new item, do as follows:
      * <pre>
      *    getProperty().add(newItem);
@@ -982,9 +606,10 @@ public class ModuleLogLevels
      * Objects of the following type(s) are allowed in the list
      * {@link Property }
      */
-    public List<Property> getProperty() {
-        return this.property;
-    }
+    @Element("property")
+    public List<Property> getProperty();
+
+
 
 
 

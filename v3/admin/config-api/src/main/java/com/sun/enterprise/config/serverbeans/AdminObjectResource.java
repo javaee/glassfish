@@ -41,7 +41,7 @@ package com.sun.enterprise.config.serverbeans;
 import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.Element;
-import org.glassfish.api.admin.ConfigBean;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 
 import java.beans.PropertyVetoException;
 import java.io.Serializable;
@@ -57,30 +57,7 @@ import java.util.List;
     "property"
 }) */
 @Configured
-public class AdminObjectResource extends ConfigBean implements Resource, Serializable {
-
-    private final static long serialVersionUID = 1L;
-    @Attribute(required = true)
-
-    protected String jndiName;
-    @Attribute(required = true)
-
-    protected String resType;
-    @Attribute(required = true)
-
-    protected String resAdapter;
-    @Attribute
-
-    protected String objectType;
-    @Attribute
-
-    protected String enabled;
-    protected String description;
-
-    @Element
-    protected List<Property> property = new ConstrainedList<Property>(this, "property", support);
-
-
+public interface AdminObjectResource extends ConfigBeanProxy, Resource {
 
     /**
      * Gets the value of the jndiName property.
@@ -88,9 +65,8 @@ public class AdminObjectResource extends ConfigBean implements Resource, Seriali
      * @return possible object is
      *         {@link String }
      */
-    public String getJndiName() {
-        return jndiName;
-    }
+    @Attribute(required = true)
+    public String getJndiName();
 
     /**
      * Sets the value of the jndiName property.
@@ -98,11 +74,7 @@ public class AdminObjectResource extends ConfigBean implements Resource, Seriali
      * @param value allowed object is
      *              {@link String }
      */
-    public void setJndiName(String value) throws PropertyVetoException {
-        support.fireVetoableChange("jndiName", this.jndiName, value);
-
-        this.jndiName = value;
-    }
+    public void setJndiName(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the resType property.
@@ -110,9 +82,8 @@ public class AdminObjectResource extends ConfigBean implements Resource, Seriali
      * @return possible object is
      *         {@link String }
      */
-    public String getResType() {
-        return resType;
-    }
+    @Attribute(required = true)
+    public String getResType();
 
     /**
      * Sets the value of the resType property.
@@ -120,11 +91,7 @@ public class AdminObjectResource extends ConfigBean implements Resource, Seriali
      * @param value allowed object is
      *              {@link String }
      */
-    public void setResType(String value) throws PropertyVetoException {
-        support.fireVetoableChange("resType", this.resType, value);
-
-        this.resType = value;
-    }
+    public void setResType(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the resAdapter property.
@@ -132,9 +99,8 @@ public class AdminObjectResource extends ConfigBean implements Resource, Seriali
      * @return possible object is
      *         {@link String }
      */
-    public String getResAdapter() {
-        return resAdapter;
-    }
+    @Attribute(required = true)
+    public String getResAdapter();
 
     /**
      * Sets the value of the resAdapter property.
@@ -142,11 +108,7 @@ public class AdminObjectResource extends ConfigBean implements Resource, Seriali
      * @param value allowed object is
      *              {@link String }
      */
-    public void setResAdapter(String value) throws PropertyVetoException {
-        support.fireVetoableChange("resAdapter", this.resAdapter, value);
-
-        this.resAdapter = value;
-    }
+    public void setResAdapter(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the objectType property.
@@ -154,13 +116,8 @@ public class AdminObjectResource extends ConfigBean implements Resource, Seriali
      * @return possible object is
      *         {@link String }
      */
-    public String getObjectType() {
-        if (objectType == null) {
-            return "user";
-        } else {
-            return objectType;
-        }
-    }
+    @Attribute    
+    public String getObjectType();
 
     /**
      * Sets the value of the objectType property.
@@ -168,11 +125,7 @@ public class AdminObjectResource extends ConfigBean implements Resource, Seriali
      * @param value allowed object is
      *              {@link String }
      */
-    public void setObjectType(String value) throws PropertyVetoException {
-        support.fireVetoableChange("objectType", this.objectType, value);
-
-        this.objectType = value;
-    }
+    public void setObjectType(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the enabled property.
@@ -180,13 +133,8 @@ public class AdminObjectResource extends ConfigBean implements Resource, Seriali
      * @return possible object is
      *         {@link String }
      */
-    public String getEnabled() {
-        if (enabled == null) {
-            return "true";
-        } else {
-            return enabled;
-        }
-    }
+    @Attribute
+    public String getEnabled();
 
     /**
      * Sets the value of the enabled property.
@@ -194,11 +142,7 @@ public class AdminObjectResource extends ConfigBean implements Resource, Seriali
      * @param value allowed object is
      *              {@link String }
      */
-    public void setEnabled(String value) throws PropertyVetoException {
-        support.fireVetoableChange("enabled", this.enabled, value);
-
-        this.enabled = value;
-    }
+    public void setEnabled(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the description property.
@@ -206,9 +150,8 @@ public class AdminObjectResource extends ConfigBean implements Resource, Seriali
      * @return possible object is
      *         {@link String }
      */
-    public String getDescription() {
-        return description;
-    }
+    @Attribute
+    public String getDescription();
 
     /**
      * Sets the value of the description property.
@@ -216,11 +159,7 @@ public class AdminObjectResource extends ConfigBean implements Resource, Seriali
      * @param value allowed object is
      *              {@link String }
      */
-    public void setDescription(String value) throws PropertyVetoException {
-        support.fireVetoableChange("description", this.description, value);
-
-        this.description = value;
-    }
+    public void setDescription(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the property property.
@@ -242,9 +181,8 @@ public class AdminObjectResource extends ConfigBean implements Resource, Seriali
      * Objects of the following type(s) are allowed in the list
      * {@link Property }
      */
-    public List<Property> getProperty() {
-        return this.property;
-    }
+    @Element    
+    public List<Property> getProperty();
 
 
 

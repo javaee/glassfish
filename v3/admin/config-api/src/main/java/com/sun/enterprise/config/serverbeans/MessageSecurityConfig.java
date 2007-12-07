@@ -41,7 +41,7 @@ package com.sun.enterprise.config.serverbeans;
 import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.Element;
-import org.glassfish.api.admin.ConfigBean;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 
 import java.beans.PropertyVetoException;
 import java.io.Serializable;
@@ -56,23 +56,7 @@ import java.util.List;
     "providerConfig"
 }) */
 @Configured
-public class MessageSecurityConfig
- extends ConfigBean implements Serializable {
-
-    private final static long serialVersionUID = 1L;
-    @Attribute(required = true)
-
-    protected String authLayer;
-    @Attribute
-
-    protected String defaultProvider;
-    @Attribute
-
-    protected String defaultClientProvider;
-    @Element(required=true)
-    protected List<ProviderConfig> providerConfig = new ConstrainedList<ProviderConfig>(this, "providerConfig", support);
-
-
+public interface MessageSecurityConfig extends ConfigBeanProxy  {
 
     /**
      * Gets the value of the authLayer property.
@@ -80,9 +64,8 @@ public class MessageSecurityConfig
      * @return possible object is
      *         {@link String }
      */
-    public String getAuthLayer() {
-        return authLayer;
-    }
+    @Attribute(required = true)
+    public String getAuthLayer();
 
     /**
      * Sets the value of the authLayer property.
@@ -90,11 +73,7 @@ public class MessageSecurityConfig
      * @param value allowed object is
      *              {@link String }
      */
-    public void setAuthLayer(String value) throws PropertyVetoException {
-        support.fireVetoableChange("authLayer", this.authLayer, value);
-
-        this.authLayer = value;
-    }
+    public void setAuthLayer(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the defaultProvider property.
@@ -102,9 +81,8 @@ public class MessageSecurityConfig
      * @return possible object is
      *         {@link String }
      */
-    public String getDefaultProvider() {
-        return defaultProvider;
-    }
+    @Attribute
+    public String getDefaultProvider();
 
     /**
      * Sets the value of the defaultProvider property.
@@ -112,11 +90,7 @@ public class MessageSecurityConfig
      * @param value allowed object is
      *              {@link String }
      */
-    public void setDefaultProvider(String value) throws PropertyVetoException {
-        support.fireVetoableChange("defaultProvider", this.defaultProvider, value);
-
-        this.defaultProvider = value;
-    }
+    public void setDefaultProvider(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the defaultClientProvider property.
@@ -124,9 +98,8 @@ public class MessageSecurityConfig
      * @return possible object is
      *         {@link String }
      */
-    public String getDefaultClientProvider() {
-        return defaultClientProvider;
-    }
+    @Attribute
+    public String getDefaultClientProvider();
 
     /**
      * Sets the value of the defaultClientProvider property.
@@ -134,11 +107,7 @@ public class MessageSecurityConfig
      * @param value allowed object is
      *              {@link String }
      */
-    public void setDefaultClientProvider(String value) throws PropertyVetoException {
-        support.fireVetoableChange("defaultClientProvider", this.defaultClientProvider, value);
-
-        this.defaultClientProvider = value;
-    }
+    public void setDefaultClientProvider(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the providerConfig property.
@@ -160,9 +129,8 @@ public class MessageSecurityConfig
      * Objects of the following type(s) are allowed in the list
      * {@link ProviderConfig }
      */
-    public List<ProviderConfig> getProviderConfig() {
-        return this.providerConfig;
-    }
+    @Element(required=true)
+    public List<ProviderConfig> getProviderConfig();
 
 
 

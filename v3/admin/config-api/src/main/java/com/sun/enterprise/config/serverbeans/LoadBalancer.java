@@ -39,8 +39,9 @@
 package com.sun.enterprise.config.serverbeans;
 
 import org.jvnet.hk2.config.Attribute;
+import org.jvnet.hk2.config.Element;
 import org.jvnet.hk2.config.Configured;
-import org.glassfish.api.admin.ConfigBean;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 
 import java.beans.PropertyVetoException;
 import java.io.Serializable;
@@ -55,22 +56,7 @@ import java.util.List;
     "property"
 }) */
 @Configured
-public class LoadBalancer
- extends ConfigBean implements Serializable {
-
-    private final static long serialVersionUID = 1L;
-    @Attribute(required = true)
-
-    protected String name;
-    @Attribute(required = true)
-
-    protected String lbConfigName;
-    @Attribute
-
-    protected String autoApplyEnabled;
-    protected List<Property> property = new ConstrainedList<Property>(this, "property", support);
-
-
+public interface LoadBalancer extends ConfigBeanProxy  {
 
     /**
      * Gets the value of the name property.
@@ -78,9 +64,8 @@ public class LoadBalancer
      * @return possible object is
      *         {@link String }
      */
-    public String getName() {
-        return name;
-    }
+    @Attribute(required = true)
+    public String getName();
 
     /**
      * Sets the value of the name property.
@@ -88,11 +73,7 @@ public class LoadBalancer
      * @param value allowed object is
      *              {@link String }
      */
-    public void setName(String value) throws PropertyVetoException {
-        support.fireVetoableChange("name", this.name, value);
-
-        this.name = value;
-    }
+    public void setName(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the lbConfigName property.
@@ -100,9 +81,8 @@ public class LoadBalancer
      * @return possible object is
      *         {@link String }
      */
-    public String getLbConfigName() {
-        return lbConfigName;
-    }
+    @Attribute(required = true)
+    public String getLbConfigName();
 
     /**
      * Sets the value of the lbConfigName property.
@@ -110,11 +90,7 @@ public class LoadBalancer
      * @param value allowed object is
      *              {@link String }
      */
-    public void setLbConfigName(String value) throws PropertyVetoException {
-        support.fireVetoableChange("lbConfigName", this.lbConfigName, value);
-
-        this.lbConfigName = value;
-    }
+    public void setLbConfigName(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the autoApplyEnabled property.
@@ -122,13 +98,8 @@ public class LoadBalancer
      * @return possible object is
      *         {@link String }
      */
-    public String getAutoApplyEnabled() {
-        if (autoApplyEnabled == null) {
-            return "false";
-        } else {
-            return autoApplyEnabled;
-        }
-    }
+    @Attribute(required = true)
+    public String getAutoApplyEnabled();
 
     /**
      * Sets the value of the autoApplyEnabled property.
@@ -136,11 +107,7 @@ public class LoadBalancer
      * @param value allowed object is
      *              {@link String }
      */
-    public void setAutoApplyEnabled(String value) throws PropertyVetoException {
-        support.fireVetoableChange("autoApplyEnabled", this.autoApplyEnabled, value);
-
-        this.autoApplyEnabled = value;
-    }
+    public void setAutoApplyEnabled(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the property property.
@@ -162,9 +129,8 @@ public class LoadBalancer
      * Objects of the following type(s) are allowed in the list
      * {@link Property }
      */
-    public List<Property> getProperty() {
-        return this.property;
-    }
+    @Element("property")
+    public List<Property> getProperty();
 
 
 

@@ -36,8 +36,12 @@
  
  package org.glassfish.api.admin;
 
-import java.beans.*;
-import java.lang.reflect.InvocationTargetException;
+import org.jvnet.hk2.config.ConfigBeanProxy;
+import org.jvnet.hk2.config.ConfigModel;
+
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyVetoException;
+import java.lang.reflect.Proxy;
 import java.util.List;
 
  /**
@@ -86,17 +90,28 @@ import java.util.List;
      * @param param config object participating in the transaction
      * @return list of events that represents the modified config elements.
      */
-    public static <T extends ConfigBean> List<PropertyChangeEvent> apply(final SingleConfigCode<T> code, T param)
-        throws PropertyVetoException {
+    public static <T> List<PropertyChangeEvent> apply(final SingleConfigCode<T> code, Object param)
+        throws TransactionFailure {
         
-        ConfigBean[] objects = new ConfigBean[1];
-        objects[0]=param;
+        Object[] objects = new Object[1];
+        objects[0]= param;
         return apply((new ConfigCode() {
-            public boolean run(ConfigBean... objects) throws PropertyVetoException {
+            public boolean run(Object... objects) throws PropertyVetoException, TransactionFailure {
                 return code.run((T) objects[0]);
             }
         }), objects);
     }
+
+     public static <T extends ConfigBeanProxy> T allocate(Object initiator, Class<T> type) throws TransactionFailure {
+         try {
+             ConfigBean bean = (ConfigBean) Proxy.getInvocationHandler(Proxy.class.cast(initiator));
+             return bean.allocate(type);
+         } catch (Exception e) {
+             throw new TransactionFailure(e.getMessage(), e);
+         }
+
+
+     }
     
     /**
      * Executes some logic on some config beans protected by a transaction.
@@ -104,20 +119,31 @@ import java.util.List;
      * @param code code to execute
      * @param objects config beans participating to the transaction
      */
-    public static List<PropertyChangeEvent> apply(ConfigCode code, ConfigBean... objects)
-            throws PropertyVetoException {
+    public static List<PropertyChangeEvent> apply(ConfigCode code, Object... objects)
+            throws TransactionFailure {
         
         // the fools think they operate on the "real" object while I am
         // feeding them with deep copies. Only if the transaction succeed
         // will I apply the "changes" to the real ones.
+        ConfigBean[] originals = new ConfigBean[objects.length];
         ConfigBean[] cheapCopies = new ConfigBean[objects.length];
+        Object[] proxies = new Object[objects.length];
         for (int i=0;i<objects.length;i++) {
             //cheapCopies[i] = SerialClone.clone(objects[i]);
             try {
-                cheapCopies[i] = (ConfigBean) objects[i].clone();
+                // TODO : need to copy these objects...
+                if (objects[i] instanceof Proxy) {
+                    originals[i] = (ConfigBean) Proxy.getInvocationHandler((Proxy) objects[i]);
+                    cheapCopies[i] = (ConfigBean) originals[i].clone();
+                }
+                try {
+                    Class[] interfacesClasses = { objects[i].getClass().getClassLoader().loadClass(cheapCopies[i].model.targetTypeName) };
+                    proxies[i] = Proxy.newProxyInstance(objects[i].getClass().getClassLoader(), interfacesClasses, cheapCopies[i]);
+                } catch (ClassNotFoundException e) {
+                    throw new TransactionFailure(e.getMessage(), e);
+                }
             } catch(CloneNotSupportedException e) {
-                // does not matter as this code will be replaced with
-                // DOLElement clone().
+                throw new TransactionFailure(e.getMessage(), e);
             }
         }
 
@@ -134,7 +160,7 @@ import java.util.List;
         
         List<PropertyChangeEvent> transactionEvents = null;
         try {
-            if (code.run(cheapCopies)) {
+            if (code.run(proxies)) {            
                 try {
                     transactionEvents = t.commit();
                 } catch (RetryableException e) {
@@ -145,7 +171,7 @@ import java.util.List;
                 } catch (TransactionFailure e) {
                     System.out.println("failure, not retryable...");
                     t.rollback();
-                    return null;
+                    throw e;
                 }
 
             } else {
@@ -154,14 +180,14 @@ import java.util.List;
             }
         } catch (PropertyVetoException e) {
             t.rollback();
-            throw e;
+            throw new TransactionFailure(e.getMessage(), e);
         }
 
         // now apply the changes to the "real objects if this was a success
         if (transactionEvents!=null && transactionEvents.size()>0) {
             // now I need to lock the live copies
             Transaction real = new Transaction();
-            for (ConfigBean configBean : objects) {
+            for (ConfigBean configBean : originals) {
                 if (!configBean.join(real)) {
                     // should I wait and retry ?
                     real.rollback();
@@ -177,34 +203,9 @@ import java.util.List;
                     i++;
 
                 if (i<cheapCopies.length) {
-                    ConfigBean source = objects[i];
-                    try {
-                        // TODO : cache those bean info, faster algorithm needed here.
-                        BeanInfo info = Introspector.getBeanInfo(source.getClass());
-                        for (PropertyDescriptor prop : info.getPropertyDescriptors()) {
-                            if (prop.getName().equals(event.getPropertyName())) {
-                                try {
-                                    try {
-                                        // remember that new objects also need to be part of the transaction
-                                        ConfigBean configBean = ConfigBean.class.cast(event.getNewValue());
-                                        configBean.join(real);
-                                    } catch(ClassCastException e) {
-                                        // ignore
-                                    }
-                                    prop.getWriteMethod().invoke(source, event.getNewValue());
-                                } catch (IllegalAccessException e) {
-                                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                                } catch (InvocationTargetException e) {
-                                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                                }
-                            }
-                        }
-
-                    } catch (IntrospectionException e) {
-                        System.out.println("Cannot introspect " + source.getClass() + " : " + e);
-                    }
-
-
+                    ConfigBean source = originals[i];
+                    ConfigModel.Property property = source.model.findIgnoreCase(event.getPropertyName());
+                    property.set(source, event.getNewValue());
                 }                
 
             }
@@ -213,10 +214,13 @@ import java.util.List;
                 return real.commit();
             } catch (RetryableException e) {
                 // should I wait and retry
+                // TODO : add some callback facility if necessary.
+                real.rollback();
+                throw new TransactionFailure("RetryableException thrown ", e);
             } catch (TransactionFailure e) {
-                    System.out.println("failure, not retryable...");
-                    real.rollback();
-                    return null;
+                System.out.println("failure, not retryable...");
+                real.rollback();
+                throw e;
             }
 
         }

@@ -41,7 +41,7 @@ package com.sun.enterprise.config.serverbeans;
 import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.Element;
-import org.glassfish.api.admin.ConfigBean;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 
 import java.beans.PropertyVetoException;
 import java.io.Serializable;
@@ -76,59 +76,7 @@ import java.util.List;
     "property"
 }) */
 @Configured
-public class Config
- extends ConfigBean implements Serializable {
-
-    private final static long serialVersionUID = 1L;
-    @Attribute(required = true)
-
-    protected String name;
-    @Attribute
-
-    protected String dynamicReconfigurationEnabled;
-    @Element(required=true)
-    protected HttpService httpService;
-    @Element(required=true)
-    protected IiopService iiopService;
-    @Element(required=true)
-    protected AdminService adminService;
-    @Element
-    protected ConnectorService connectorService;
-    @Element(required=true)
-    protected WebContainer webContainer;
-    @Element(required=true)
-    protected EjbContainer ejbContainer;
-    @Element(required=true)
-    protected MdbContainer mdbContainer;
-    @Element
-    protected JmsService jmsService;
-    @Element(required=true)
-    protected LogService logService;
-    @Element(required=true)
-    protected SecurityService securityService;
-    @Element(required=true)
-    protected TransactionService transactionService;
-    @Element(required=true)
-    protected MonitoringService monitoringService;
-    @Element
-    protected DiagnosticService diagnosticService;
-    @Element(required=true)
-    protected JavaConfig javaConfig;
-    @Element
-    protected AvailabilityService availabilityService;
-    @Element(required=true)
-    protected ThreadPools threadPools;
-    @Element
-    protected AlertService alertService;
-    @Element
-    protected GroupManagementService groupManagementService;
-    @Element
-    protected ManagementRules managementRules;
-    @Element
-    protected List<SystemProperty> systemProperty = new ConstrainedList<SystemProperty>(this, "systemProperty", support);
-    protected List<Property> property = new ConstrainedList<Property>(this, "property", support);
-
-
+public interface Config extends ConfigBeanProxy  {
 
     /**
      * Gets the value of the name property.
@@ -136,9 +84,8 @@ public class Config
      * @return possible object is
      *         {@link String }
      */
-    public String getName() {
-        return name;
-    }
+    @Attribute(required = true)
+    public String getName();
 
     /**
      * Sets the value of the name property.
@@ -146,11 +93,7 @@ public class Config
      * @param value allowed object is
      *              {@link String }
      */
-    public void setName(String value) throws PropertyVetoException {
-        support.fireVetoableChange("name", this.name, value);
-
-        this.name = value;
-    }
+    public void setName(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the dynamicReconfigurationEnabled property.
@@ -158,13 +101,8 @@ public class Config
      * @return possible object is
      *         {@link String }
      */
-    public String getDynamicReconfigurationEnabled() {
-        if (dynamicReconfigurationEnabled == null) {
-            return "true";
-        } else {
-            return dynamicReconfigurationEnabled;
-        }
-    }
+    @Attribute
+    public String getDynamicReconfigurationEnabled();
 
     /**
      * Sets the value of the dynamicReconfigurationEnabled property.
@@ -172,11 +110,7 @@ public class Config
      * @param value allowed object is
      *              {@link String }
      */
-    public void setDynamicReconfigurationEnabled(String value) throws PropertyVetoException {
-        support.fireVetoableChange("dynamicReconfigurationEnabled", this.dynamicReconfigurationEnabled, value);
-
-        this.dynamicReconfigurationEnabled = value;
-    }
+    public void setDynamicReconfigurationEnabled(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the httpService property.
@@ -184,9 +118,8 @@ public class Config
      * @return possible object is
      *         {@link HttpService }
      */
-    public HttpService getHttpService() {
-        return httpService;
-    }
+    @Element(required=true)
+    public HttpService getHttpService();
 
     /**
      * Sets the value of the httpService property.
@@ -194,11 +127,7 @@ public class Config
      * @param value allowed object is
      *              {@link HttpService }
      */
-    public void setHttpService(HttpService value) throws PropertyVetoException {
-        support.fireVetoableChange("httpService", this.httpService, value);
-
-        this.httpService = value;
-    }
+    public void setHttpService(HttpService value) throws PropertyVetoException;
 
     /**
      * Gets the value of the iiopService property.
@@ -206,9 +135,8 @@ public class Config
      * @return possible object is
      *         {@link IiopService }
      */
-    public IiopService getIiopService() {
-        return iiopService;
-    }
+    @Element(required=true)
+    public IiopService getIiopService();
 
     /**
      * Sets the value of the iiopService property.
@@ -216,11 +144,7 @@ public class Config
      * @param value allowed object is
      *              {@link IiopService }
      */
-    public void setIiopService(IiopService value) throws PropertyVetoException {
-        support.fireVetoableChange("iiopService", this.iiopService, value);
-
-        this.iiopService = value;
-    }
+    public void setIiopService(IiopService value) throws PropertyVetoException;
 
     /**
      * Gets the value of the adminService property.
@@ -228,9 +152,8 @@ public class Config
      * @return possible object is
      *         {@link AdminService }
      */
-    public AdminService getAdminService() {
-        return adminService;
-    }
+    @Element(required=true)
+    public AdminService getAdminService();
 
     /**
      * Sets the value of the adminService property.
@@ -238,11 +161,7 @@ public class Config
      * @param value allowed object is
      *              {@link AdminService }
      */
-    public void setAdminService(AdminService value) throws PropertyVetoException {
-        support.fireVetoableChange("adminService", this.adminService, value);
-
-        this.adminService = value;
-    }
+    public void setAdminService(AdminService value) throws PropertyVetoException;
 
     /**
      * Gets the value of the connectorService property.
@@ -250,9 +169,8 @@ public class Config
      * @return possible object is
      *         {@link ConnectorService }
      */
-    public ConnectorService getConnectorService() {
-        return connectorService;
-    }
+    @Element    
+    public ConnectorService getConnectorService();
 
     /**
      * Sets the value of the connectorService property.
@@ -260,11 +178,7 @@ public class Config
      * @param value allowed object is
      *              {@link ConnectorService }
      */
-    public void setConnectorService(ConnectorService value) throws PropertyVetoException {
-        support.fireVetoableChange("connectorService", this.connectorService, value);
-
-        this.connectorService = value;
-    }
+    public void setConnectorService(ConnectorService value) throws PropertyVetoException;
 
     /**
      * Gets the value of the webContainer property.
@@ -272,9 +186,8 @@ public class Config
      * @return possible object is
      *         {@link WebContainer }
      */
-    public WebContainer getWebContainer() {
-        return webContainer;
-    }
+    @Element(required=true)
+    public WebContainer getWebContainer();
 
     /**
      * Sets the value of the webContainer property.
@@ -282,11 +195,7 @@ public class Config
      * @param value allowed object is
      *              {@link WebContainer }
      */
-    public void setWebContainer(WebContainer value) throws PropertyVetoException {
-        support.fireVetoableChange("webContainer", this.webContainer, value);
-
-        this.webContainer = value;
-    }
+    public void setWebContainer(WebContainer value) throws PropertyVetoException;
 
     /**
      * Gets the value of the ejbContainer property.
@@ -294,9 +203,8 @@ public class Config
      * @return possible object is
      *         {@link EjbContainer }
      */
-    public EjbContainer getEjbContainer() {
-        return ejbContainer;
-    }
+    @Element(required=true)
+    public EjbContainer getEjbContainer();
 
     /**
      * Sets the value of the ejbContainer property.
@@ -304,11 +212,7 @@ public class Config
      * @param value allowed object is
      *              {@link EjbContainer }
      */
-    public void setEjbContainer(EjbContainer value) throws PropertyVetoException {
-        support.fireVetoableChange("ejbContainer", this.ejbContainer, value);
-
-        this.ejbContainer = value;
-    }
+    public void setEjbContainer(EjbContainer value) throws PropertyVetoException;
 
     /**
      * Gets the value of the mdbContainer property.
@@ -316,9 +220,8 @@ public class Config
      * @return possible object is
      *         {@link MdbContainer }
      */
-    public MdbContainer getMdbContainer() {
-        return mdbContainer;
-    }
+    @Element(required=true)
+    public MdbContainer getMdbContainer();
 
     /**
      * Sets the value of the mdbContainer property.
@@ -326,11 +229,7 @@ public class Config
      * @param value allowed object is
      *              {@link MdbContainer }
      */
-    public void setMdbContainer(MdbContainer value) throws PropertyVetoException {
-        support.fireVetoableChange("mdbContainer", this.mdbContainer, value);
-
-        this.mdbContainer = value;
-    }
+    public void setMdbContainer(MdbContainer value) throws PropertyVetoException;
 
     /**
      * Gets the value of the jmsService property.
@@ -338,9 +237,8 @@ public class Config
      * @return possible object is
      *         {@link JmsService }
      */
-    public JmsService getJmsService() {
-        return jmsService;
-    }
+    @Element
+    public JmsService getJmsService();
 
     /**
      * Sets the value of the jmsService property.
@@ -348,11 +246,7 @@ public class Config
      * @param value allowed object is
      *              {@link JmsService }
      */
-    public void setJmsService(JmsService value) throws PropertyVetoException {
-        support.fireVetoableChange("jmsService", this.jmsService, value);
-
-        this.jmsService = value;
-    }
+    public void setJmsService(JmsService value) throws PropertyVetoException;
 
     /**
      * Gets the value of the logService property.
@@ -360,9 +254,8 @@ public class Config
      * @return possible object is
      *         {@link LogService }
      */
-    public LogService getLogService() {
-        return logService;
-    }
+    @Element(required=true)
+    public LogService getLogService();
 
     /**
      * Sets the value of the logService property.
@@ -370,11 +263,7 @@ public class Config
      * @param value allowed object is
      *              {@link LogService }
      */
-    public void setLogService(LogService value) throws PropertyVetoException {
-        support.fireVetoableChange("logService", this.logService, value);
-
-        this.logService = value;
-    }
+    public void setLogService(LogService value) throws PropertyVetoException;
 
     /**
      * Gets the value of the securityService property.
@@ -382,9 +271,8 @@ public class Config
      * @return possible object is
      *         {@link SecurityService }
      */
-    public SecurityService getSecurityService() {
-        return securityService;
-    }
+    @Element(required=true)
+    public SecurityService getSecurityService();
 
     /**
      * Sets the value of the securityService property.
@@ -392,11 +280,7 @@ public class Config
      * @param value allowed object is
      *              {@link SecurityService }
      */
-    public void setSecurityService(SecurityService value) throws PropertyVetoException {
-        support.fireVetoableChange("securityService", this.securityService, value);
-
-        this.securityService = value;
-    }
+    public void setSecurityService(SecurityService value) throws PropertyVetoException;
 
     /**
      * Gets the value of the transactionService property.
@@ -404,9 +288,8 @@ public class Config
      * @return possible object is
      *         {@link TransactionService }
      */
-    public TransactionService getTransactionService() {
-        return transactionService;
-    }
+    @Element(required=true)
+    public TransactionService getTransactionService();
 
     /**
      * Sets the value of the transactionService property.
@@ -414,11 +297,7 @@ public class Config
      * @param value allowed object is
      *              {@link TransactionService }
      */
-    public void setTransactionService(TransactionService value) throws PropertyVetoException {
-        support.fireVetoableChange("transactionService", this.transactionService, value);
-
-        this.transactionService = value;
-    }
+    public void setTransactionService(TransactionService value) throws PropertyVetoException;
 
     /**
      * Gets the value of the monitoringService property.
@@ -426,9 +305,8 @@ public class Config
      * @return possible object is
      *         {@link MonitoringService }
      */
-    public MonitoringService getMonitoringService() {
-        return monitoringService;
-    }
+    @Element(required=true)
+    public MonitoringService getMonitoringService();
 
     /**
      * Sets the value of the monitoringService property.
@@ -436,11 +314,7 @@ public class Config
      * @param value allowed object is
      *              {@link MonitoringService }
      */
-    public void setMonitoringService(MonitoringService value) throws PropertyVetoException {
-        support.fireVetoableChange("monitoringService", this.monitoringService, value);
-
-        this.monitoringService = value;
-    }
+    public void setMonitoringService(MonitoringService value) throws PropertyVetoException;
 
     /**
      * Gets the value of the diagnosticService property.
@@ -448,9 +322,8 @@ public class Config
      * @return possible object is
      *         {@link DiagnosticService }
      */
-    public DiagnosticService getDiagnosticService() {
-        return diagnosticService;
-    }
+    @Element
+    public DiagnosticService getDiagnosticService();
 
     /**
      * Sets the value of the diagnosticService property.
@@ -458,11 +331,7 @@ public class Config
      * @param value allowed object is
      *              {@link DiagnosticService }
      */
-    public void setDiagnosticService(DiagnosticService value) throws PropertyVetoException {
-        support.fireVetoableChange("diagnosticService", this.diagnosticService, value);
-
-        this.diagnosticService = value;
-    }
+    public void setDiagnosticService(DiagnosticService value) throws PropertyVetoException;
 
     /**
      * Gets the value of the javaConfig property.
@@ -470,9 +339,8 @@ public class Config
      * @return possible object is
      *         {@link JavaConfig }
      */
-    public JavaConfig getJavaConfig() {
-        return javaConfig;
-    }
+    @Element(required=true)
+    public JavaConfig getJavaConfig();
 
     /**
      * Sets the value of the javaConfig property.
@@ -480,11 +348,7 @@ public class Config
      * @param value allowed object is
      *              {@link JavaConfig }
      */
-    public void setJavaConfig(JavaConfig value) throws PropertyVetoException {
-        support.fireVetoableChange("javaConfig", this.javaConfig, value);
-
-        this.javaConfig = value;
-    }
+    public void setJavaConfig(JavaConfig value) throws PropertyVetoException;
 
     /**
      * Gets the value of the availabilityService property.
@@ -492,9 +356,8 @@ public class Config
      * @return possible object is
      *         {@link AvailabilityService }
      */
-    public AvailabilityService getAvailabilityService() {
-        return availabilityService;
-    }
+    @Element
+    public AvailabilityService getAvailabilityService();
 
     /**
      * Sets the value of the availabilityService property.
@@ -502,11 +365,7 @@ public class Config
      * @param value allowed object is
      *              {@link AvailabilityService }
      */
-    public void setAvailabilityService(AvailabilityService value) throws PropertyVetoException {
-        support.fireVetoableChange("availabilityService", this.availabilityService, value);
-
-        this.availabilityService = value;
-    }
+    public void setAvailabilityService(AvailabilityService value) throws PropertyVetoException;
 
     /**
      * Gets the value of the threadPools property.
@@ -514,9 +373,8 @@ public class Config
      * @return possible object is
      *         {@link ThreadPools }
      */
-    public ThreadPools getThreadPools() {
-        return threadPools;
-    }
+    @Element(required=true)
+    public ThreadPools getThreadPools();
 
     /**
      * Sets the value of the threadPools property.
@@ -524,11 +382,7 @@ public class Config
      * @param value allowed object is
      *              {@link ThreadPools }
      */
-    public void setThreadPools(ThreadPools value) throws PropertyVetoException {
-        support.fireVetoableChange("threadPools", this.threadPools, value);
-
-        this.threadPools = value;
-    }
+    public void setThreadPools(ThreadPools value) throws PropertyVetoException;
 
     /**
      * Gets the value of the alertService property.
@@ -536,9 +390,8 @@ public class Config
      * @return possible object is
      *         {@link AlertService }
      */
-    public AlertService getAlertService() {
-        return alertService;
-    }
+    @Element
+    public AlertService getAlertService();
 
     /**
      * Sets the value of the alertService property.
@@ -546,11 +399,7 @@ public class Config
      * @param value allowed object is
      *              {@link AlertService }
      */
-    public void setAlertService(AlertService value) throws PropertyVetoException {
-        support.fireVetoableChange("alertService", this.alertService, value);
-
-        this.alertService = value;
-    }
+    public void setAlertService(AlertService value) throws PropertyVetoException;
 
     /**
      * Gets the value of the groupManagementService property.
@@ -558,9 +407,8 @@ public class Config
      * @return possible object is
      *         {@link GroupManagementService }
      */
-    public GroupManagementService getGroupManagementService() {
-        return groupManagementService;
-    }
+    @Element
+    public GroupManagementService getGroupManagementService();
 
     /**
      * Sets the value of the groupManagementService property.
@@ -568,11 +416,7 @@ public class Config
      * @param value allowed object is
      *              {@link GroupManagementService }
      */
-    public void setGroupManagementService(GroupManagementService value) throws PropertyVetoException {
-        support.fireVetoableChange("groupManagementService", this.groupManagementService, value);
-
-        this.groupManagementService = value;
-    }
+    public void setGroupManagementService(GroupManagementService value) throws PropertyVetoException;
 
     /**
      * Gets the value of the managementRules property.
@@ -580,9 +424,8 @@ public class Config
      * @return possible object is
      *         {@link ManagementRules }
      */
-    public ManagementRules getManagementRules() {
-        return managementRules;
-    }
+    @Element
+    public ManagementRules getManagementRules();
 
     /**
      * Sets the value of the managementRules property.
@@ -590,11 +433,7 @@ public class Config
      * @param value allowed object is
      *              {@link ManagementRules }
      */
-    public void setManagementRules(ManagementRules value) throws PropertyVetoException {
-        support.fireVetoableChange("managementRules", this.managementRules, value);
-
-        this.managementRules = value;
-    }
+    public void setManagementRules(ManagementRules value) throws PropertyVetoException;
 
     /**
      * Gets the value of the systemProperty property.
@@ -616,9 +455,8 @@ public class Config
      * Objects of the following type(s) are allowed in the list
      * {@link SystemProperty }
      */
-    public List<SystemProperty> getSystemProperty() {
-        return this.systemProperty;
-    }
+    @Element
+    public List<SystemProperty> getSystemProperty();
 
     /**
      * Gets the value of the property property.
@@ -640,11 +478,7 @@ public class Config
      * Objects of the following type(s) are allowed in the list
      * {@link Property }
      */
-    public List<Property> getProperty() {
-
-        return this.property;
-    }
-
-
+    @Element("property")
+	public List<Property> getProperty();
 
 }

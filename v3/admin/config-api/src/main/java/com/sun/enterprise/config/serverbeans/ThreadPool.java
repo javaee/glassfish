@@ -40,7 +40,7 @@ package com.sun.enterprise.config.serverbeans;
 
 import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.Configured;
-import org.glassfish.api.admin.ConfigBean;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 
 import java.beans.PropertyVetoException;
 import java.io.Serializable;
@@ -52,27 +52,7 @@ import java.io.Serializable;
 
 /* @XmlType(name = "") */
 @Configured
-public class ThreadPool
- extends ConfigBean implements Serializable {
-
-    private final static long serialVersionUID = 1L;
-    @Attribute(required = true)
-
-    protected String threadPoolId;
-    @Attribute
-
-    protected String minThreadPoolSize;
-    @Attribute
-
-    protected String maxThreadPoolSize;
-    @Attribute
-
-    protected String idleThreadTimeoutInSeconds;
-    @Attribute
-
-    protected String numWorkQueues;
-
-
+public interface ThreadPool extends ConfigBeanProxy  {
 
     /**
      * Gets the value of the threadPoolId property.
@@ -80,9 +60,8 @@ public class ThreadPool
      * @return possible object is
      *         {@link String }
      */
-    public String getThreadPoolId() {
-        return threadPoolId;
-    }
+    @Attribute(required = true)
+    public String getThreadPoolId();
 
     /**
      * Sets the value of the threadPoolId property.
@@ -90,11 +69,7 @@ public class ThreadPool
      * @param value allowed object is
      *              {@link String }
      */
-    public void setThreadPoolId(String value) throws PropertyVetoException {
-        support.fireVetoableChange("threadPoolId", this.threadPoolId, value);
-
-        this.threadPoolId = value;
-    }
+    public void setThreadPoolId(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the minThreadPoolSize property.
@@ -102,13 +77,8 @@ public class ThreadPool
      * @return possible object is
      *         {@link String }
      */
-    public String getMinThreadPoolSize() {
-        if (minThreadPoolSize == null) {
-            return "0";
-        } else {
-            return minThreadPoolSize;
-        }
-    }
+    @Attribute
+    public String getMinThreadPoolSize();
 
     /**
      * Sets the value of the minThreadPoolSize property.
@@ -116,11 +86,7 @@ public class ThreadPool
      * @param value allowed object is
      *              {@link String }
      */
-    public void setMinThreadPoolSize(String value) throws PropertyVetoException {
-        support.fireVetoableChange("minThreadPoolSize", this.minThreadPoolSize, value);
-
-        this.minThreadPoolSize = value;
-    }
+    public void setMinThreadPoolSize(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the maxThreadPoolSize property.
@@ -128,13 +94,8 @@ public class ThreadPool
      * @return possible object is
      *         {@link String }
      */
-    public String getMaxThreadPoolSize() {
-        if (maxThreadPoolSize == null) {
-            return "200";
-        } else {
-            return maxThreadPoolSize;
-        }
-    }
+    @Attribute
+    public String getMaxThreadPoolSize();
 
     /**
      * Sets the value of the maxThreadPoolSize property.
@@ -142,11 +103,7 @@ public class ThreadPool
      * @param value allowed object is
      *              {@link String }
      */
-    public void setMaxThreadPoolSize(String value) throws PropertyVetoException {
-        support.fireVetoableChange("maxThreadPoolSize", this.maxThreadPoolSize, value);
-
-        this.maxThreadPoolSize = value;
-    }
+    public void setMaxThreadPoolSize(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the idleThreadTimeoutInSeconds property.
@@ -154,13 +111,8 @@ public class ThreadPool
      * @return possible object is
      *         {@link String }
      */
-    public String getIdleThreadTimeoutInSeconds() {
-        if (idleThreadTimeoutInSeconds == null) {
-            return "120";
-        } else {
-            return idleThreadTimeoutInSeconds;
-        }
-    }
+    @Attribute
+    public String getIdleThreadTimeoutInSeconds();
 
     /**
      * Sets the value of the idleThreadTimeoutInSeconds property.
@@ -168,11 +120,7 @@ public class ThreadPool
      * @param value allowed object is
      *              {@link String }
      */
-    public void setIdleThreadTimeoutInSeconds(String value) throws PropertyVetoException {
-        support.fireVetoableChange("idleThreadTimeoutInSeconds", this.idleThreadTimeoutInSeconds, value);
-
-        this.idleThreadTimeoutInSeconds = value;
-    }
+    public void setIdleThreadTimeoutInSeconds(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the numWorkQueues property.
@@ -180,13 +128,8 @@ public class ThreadPool
      * @return possible object is
      *         {@link String }
      */
-    public String getNumWorkQueues() {
-        if (numWorkQueues == null) {
-            return "1";
-        } else {
-            return numWorkQueues;
-        }
-    }
+    @Attribute
+    public String getNumWorkQueues();
 
     /**
      * Sets the value of the numWorkQueues property.
@@ -194,11 +137,7 @@ public class ThreadPool
      * @param value allowed object is
      *              {@link String }
      */
-    public void setNumWorkQueues(String value) throws PropertyVetoException {
-        support.fireVetoableChange("numWorkQueues", this.numWorkQueues, value);
-
-        this.numWorkQueues = value;
-    }
+    public void setNumWorkQueues(String value) throws PropertyVetoException;
 
 
 

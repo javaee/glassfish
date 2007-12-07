@@ -41,7 +41,7 @@ package com.sun.enterprise.config.serverbeans;
 import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.Element;
-import org.glassfish.api.admin.ConfigBean;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 
 import java.beans.PropertyVetoException;
 import java.io.Serializable;
@@ -59,46 +59,7 @@ import java.util.List;
     "property"
 }) */
 @Configured
-public class AvailabilityService
- extends ConfigBean implements Serializable {
-
-    private final static long serialVersionUID = 1L;
-    @Attribute
-
-    protected String availabilityEnabled;
-    @Attribute
-
-    protected String haAgentHosts;
-    @Attribute
-
-    protected String haAgentPort;
-    @Attribute
-
-    protected String haAgentPassword;
-    @Attribute
-
-    protected String haStoreName;
-    @Attribute
-
-    protected String autoManageHaStore;
-    @Attribute
-
-    protected String storePoolName;
-    @Attribute
-
-    protected String haStoreHealthcheckEnabled;
-    @Attribute
-
-    protected String haStoreHealthcheckIntervalInSeconds;
-    @Element
-    protected WebContainerAvailability webContainerAvailability;
-    @Element
-    protected EjbContainerAvailability ejbContainerAvailability;
-    @Element
-    protected JmsAvailability jmsAvailability;
-    protected List<Property> property = new ConstrainedList<Property>(this, "property", support);
-
-
+public interface AvailabilityService extends ConfigBeanProxy  {
 
     /**
      * Gets the value of the availabilityEnabled property.
@@ -106,13 +67,8 @@ public class AvailabilityService
      * @return possible object is
      *         {@link String }
      */
-    public String getAvailabilityEnabled() {
-        if (availabilityEnabled == null) {
-            return "true";
-        } else {
-            return availabilityEnabled;
-        }
-    }
+    @Attribute
+    public String getAvailabilityEnabled();
 
     /**
      * Sets the value of the availabilityEnabled property.
@@ -120,11 +76,7 @@ public class AvailabilityService
      * @param value allowed object is
      *              {@link String }
      */
-    public void setAvailabilityEnabled(String value) throws PropertyVetoException {
-        support.fireVetoableChange("availabilityEnabled", this.availabilityEnabled, value);
-
-        this.availabilityEnabled = value;
-    }
+    public void setAvailabilityEnabled(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the haAgentHosts property.
@@ -132,9 +84,8 @@ public class AvailabilityService
      * @return possible object is
      *         {@link String }
      */
-    public String getHaAgentHosts() {
-        return haAgentHosts;
-    }
+    @Attribute
+    public String getHaAgentHosts();
 
     /**
      * Sets the value of the haAgentHosts property.
@@ -142,11 +93,7 @@ public class AvailabilityService
      * @param value allowed object is
      *              {@link String }
      */
-    public void setHaAgentHosts(String value) throws PropertyVetoException {
-        support.fireVetoableChange("haAgentHosts", this.haAgentHosts, value);
-
-        this.haAgentHosts = value;
-    }
+    public void setHaAgentHosts(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the haAgentPort property.
@@ -154,9 +101,8 @@ public class AvailabilityService
      * @return possible object is
      *         {@link String }
      */
-    public String getHaAgentPort() {
-        return haAgentPort;
-    }
+    @Attribute
+    public String getHaAgentPort();
 
     /**
      * Sets the value of the haAgentPort property.
@@ -164,11 +110,7 @@ public class AvailabilityService
      * @param value allowed object is
      *              {@link String }
      */
-    public void setHaAgentPort(String value) throws PropertyVetoException {
-        support.fireVetoableChange("haAgentPort", this.haAgentPort, value);
-
-        this.haAgentPort = value;
-    }
+    public void setHaAgentPort(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the haAgentPassword property.
@@ -176,9 +118,8 @@ public class AvailabilityService
      * @return possible object is
      *         {@link String }
      */
-    public String getHaAgentPassword() {
-        return haAgentPassword;
-    }
+    @Attribute
+    public String getHaAgentPassword();
 
     /**
      * Sets the value of the haAgentPassword property.
@@ -186,11 +127,7 @@ public class AvailabilityService
      * @param value allowed object is
      *              {@link String }
      */
-    public void setHaAgentPassword(String value) throws PropertyVetoException {
-        support.fireVetoableChange("haAgentPassword", this.haAgentPassword, value);
-
-        this.haAgentPassword = value;
-    }
+    public void setHaAgentPassword(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the haStoreName property.
@@ -198,9 +135,8 @@ public class AvailabilityService
      * @return possible object is
      *         {@link String }
      */
-    public String getHaStoreName() {
-        return haStoreName;
-    }
+    @Attribute
+    public String getHaStoreName();
 
     /**
      * Sets the value of the haStoreName property.
@@ -208,11 +144,7 @@ public class AvailabilityService
      * @param value allowed object is
      *              {@link String }
      */
-    public void setHaStoreName(String value) throws PropertyVetoException {
-        support.fireVetoableChange("haStoreName", this.haStoreName, value);
-
-        this.haStoreName = value;
-    }
+    public void setHaStoreName(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the autoManageHaStore property.
@@ -220,13 +152,8 @@ public class AvailabilityService
      * @return possible object is
      *         {@link String }
      */
-    public String getAutoManageHaStore() {
-        if (autoManageHaStore == null) {
-            return "false";
-        } else {
-            return autoManageHaStore;
-        }
-    }
+    @Attribute
+    public String getAutoManageHaStore();
 
     /**
      * Sets the value of the autoManageHaStore property.
@@ -234,11 +161,7 @@ public class AvailabilityService
      * @param value allowed object is
      *              {@link String }
      */
-    public void setAutoManageHaStore(String value) throws PropertyVetoException {
-        support.fireVetoableChange("autoManageHaStore", this.autoManageHaStore, value);
-
-        this.autoManageHaStore = value;
-    }
+    public void setAutoManageHaStore(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the storePoolName property.
@@ -246,9 +169,8 @@ public class AvailabilityService
      * @return possible object is
      *         {@link String }
      */
-    public String getStorePoolName() {
-        return storePoolName;
-    }
+    @Attribute
+    public String getStorePoolName();
 
     /**
      * Sets the value of the storePoolName property.
@@ -256,11 +178,7 @@ public class AvailabilityService
      * @param value allowed object is
      *              {@link String }
      */
-    public void setStorePoolName(String value) throws PropertyVetoException {
-        support.fireVetoableChange("storePoolName", this.storePoolName, value);
-
-        this.storePoolName = value;
-    }
+    public void setStorePoolName(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the haStoreHealthcheckEnabled property.
@@ -268,13 +186,8 @@ public class AvailabilityService
      * @return possible object is
      *         {@link String }
      */
-    public String getHaStoreHealthcheckEnabled() {
-        if (haStoreHealthcheckEnabled == null) {
-            return "false";
-        } else {
-            return haStoreHealthcheckEnabled;
-        }
-    }
+    @Attribute
+    public String getHaStoreHealthcheckEnabled();
 
     /**
      * Sets the value of the haStoreHealthcheckEnabled property.
@@ -282,11 +195,7 @@ public class AvailabilityService
      * @param value allowed object is
      *              {@link String }
      */
-    public void setHaStoreHealthcheckEnabled(String value) throws PropertyVetoException {
-        support.fireVetoableChange("haStoreHealthcheckEnabled", this.haStoreHealthcheckEnabled, value);
-
-        this.haStoreHealthcheckEnabled = value;
-    }
+    public void setHaStoreHealthcheckEnabled(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the haStoreHealthcheckIntervalInSeconds property.
@@ -294,13 +203,8 @@ public class AvailabilityService
      * @return possible object is
      *         {@link String }
      */
-    public String getHaStoreHealthcheckIntervalInSeconds() {
-        if (haStoreHealthcheckIntervalInSeconds == null) {
-            return "5";
-        } else {
-            return haStoreHealthcheckIntervalInSeconds;
-        }
-    }
+    @Attribute
+    public String getHaStoreHealthcheckIntervalInSeconds();
 
     /**
      * Sets the value of the haStoreHealthcheckIntervalInSeconds property.
@@ -308,11 +212,7 @@ public class AvailabilityService
      * @param value allowed object is
      *              {@link String }
      */
-    public void setHaStoreHealthcheckIntervalInSeconds(String value) throws PropertyVetoException {
-        support.fireVetoableChange("haStoreHealthcheckIntervalInSeconds", this.haStoreHealthcheckIntervalInSeconds, value);
-
-        this.haStoreHealthcheckIntervalInSeconds = value;
-    }
+    public void setHaStoreHealthcheckIntervalInSeconds(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the webContainerAvailability property.
@@ -320,9 +220,8 @@ public class AvailabilityService
      * @return possible object is
      *         {@link WebContainerAvailability }
      */
-    public WebContainerAvailability getWebContainerAvailability() {
-        return webContainerAvailability;
-    }
+    @Element
+    public WebContainerAvailability getWebContainerAvailability();
 
     /**
      * Sets the value of the webContainerAvailability property.
@@ -330,11 +229,7 @@ public class AvailabilityService
      * @param value allowed object is
      *              {@link WebContainerAvailability }
      */
-    public void setWebContainerAvailability(WebContainerAvailability value) throws PropertyVetoException {
-        support.fireVetoableChange("webContainerAvailability", this.webContainerAvailability, value);
-
-        this.webContainerAvailability = value;
-    }
+    public void setWebContainerAvailability(WebContainerAvailability value) throws PropertyVetoException;
 
     /**
      * Gets the value of the ejbContainerAvailability property.
@@ -342,9 +237,8 @@ public class AvailabilityService
      * @return possible object is
      *         {@link EjbContainerAvailability }
      */
-    public EjbContainerAvailability getEjbContainerAvailability() {
-        return ejbContainerAvailability;
-    }
+    @Element
+    public EjbContainerAvailability getEjbContainerAvailability();
 
     /**
      * Sets the value of the ejbContainerAvailability property.
@@ -352,11 +246,7 @@ public class AvailabilityService
      * @param value allowed object is
      *              {@link EjbContainerAvailability }
      */
-    public void setEjbContainerAvailability(EjbContainerAvailability value) throws PropertyVetoException {
-        support.fireVetoableChange("ejbContainerAvailability", this.ejbContainerAvailability, value);
-
-        this.ejbContainerAvailability = value;
-    }
+    public void setEjbContainerAvailability(EjbContainerAvailability value) throws PropertyVetoException;
 
     /**
      * Gets the value of the jmsAvailability property.
@@ -364,9 +254,8 @@ public class AvailabilityService
      * @return possible object is
      *         {@link JmsAvailability }
      */
-    public JmsAvailability getJmsAvailability() {
-        return jmsAvailability;
-    }
+    @Element
+    public JmsAvailability getJmsAvailability();
 
     /**
      * Sets the value of the jmsAvailability property.
@@ -374,11 +263,7 @@ public class AvailabilityService
      * @param value allowed object is
      *              {@link JmsAvailability }
      */
-    public void setJmsAvailability(JmsAvailability value) throws PropertyVetoException {
-        support.fireVetoableChange("jmsAvailability", this.jmsAvailability, value);
-
-        this.jmsAvailability = value;
-    }
+    public void setJmsAvailability(JmsAvailability value) throws PropertyVetoException;
 
     /**
      * Gets the value of the property property.
@@ -400,9 +285,7 @@ public class AvailabilityService
      * Objects of the following type(s) are allowed in the list
      * {@link Property }
      */
-    public List<Property> getProperty() {
-        return this.property;
-    }
+    public List<Property> getProperty();
 
 
 

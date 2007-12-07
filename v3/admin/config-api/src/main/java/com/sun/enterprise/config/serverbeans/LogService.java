@@ -41,7 +41,7 @@ package com.sun.enterprise.config.serverbeans;
 import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.Element;
-import org.glassfish.api.admin.ConfigBean;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 
 import java.beans.PropertyVetoException;
 import java.io.Serializable;
@@ -57,42 +57,7 @@ import java.util.List;
     "property"
 }) */
 @Configured
-public class LogService
- extends ConfigBean implements Serializable {
-
-    private final static long serialVersionUID = 1L;
-    @Attribute
-
-    protected String file;
-    @Attribute
-
-    protected String useSystemLogging;
-    @Attribute
-
-    protected String logHandler;
-    @Attribute
-
-    protected String logFilter;
-    @Attribute
-
-    protected String logToConsole;
-    @Attribute
-
-    protected String logRotationLimitInBytes;
-    @Attribute
-
-    protected String logRotationTimelimitInMinutes;
-    @Attribute
-
-    protected String alarms;
-    @Attribute
-
-    protected String retainErrorStatisticsForHours;
-    @Element
-    protected ModuleLogLevels moduleLogLevels;
-    protected List<Property> property = new ConstrainedList<Property>(this, "property", support);
-
-
+public interface LogService extends ConfigBeanProxy  {
 
     /**
      * Gets the value of the file property.
@@ -100,9 +65,8 @@ public class LogService
      * @return possible object is
      *         {@link String }
      */
-    public String getFile() {
-        return file;
-    }
+    @Attribute
+    public String getFile();
 
     /**
      * Sets the value of the file property.
@@ -110,11 +74,7 @@ public class LogService
      * @param value allowed object is
      *              {@link String }
      */
-    public void setFile(String value) throws PropertyVetoException {
-        support.fireVetoableChange("file", this.file, value);
-
-        this.file = value;
-    }
+    public void setFile(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the useSystemLogging property.
@@ -122,13 +82,8 @@ public class LogService
      * @return possible object is
      *         {@link String }
      */
-    public String getUseSystemLogging() {
-        if (useSystemLogging == null) {
-            return "false";
-        } else {
-            return useSystemLogging;
-        }
-    }
+    @Attribute
+    public String getUseSystemLogging();
 
     /**
      * Sets the value of the useSystemLogging property.
@@ -136,11 +91,7 @@ public class LogService
      * @param value allowed object is
      *              {@link String }
      */
-    public void setUseSystemLogging(String value) throws PropertyVetoException {
-        support.fireVetoableChange("useSystemLogging", this.useSystemLogging, value);
-
-        this.useSystemLogging = value;
-    }
+    public void setUseSystemLogging(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the logHandler property.
@@ -148,9 +99,8 @@ public class LogService
      * @return possible object is
      *         {@link String }
      */
-    public String getLogHandler() {
-        return logHandler;
-    }
+    @Attribute
+    public String getLogHandler();
 
     /**
      * Sets the value of the logHandler property.
@@ -158,11 +108,7 @@ public class LogService
      * @param value allowed object is
      *              {@link String }
      */
-    public void setLogHandler(String value) throws PropertyVetoException {
-        support.fireVetoableChange("logHandler", this.logHandler, value);
-
-        this.logHandler = value;
-    }
+    public void setLogHandler(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the logFilter property.
@@ -170,9 +116,8 @@ public class LogService
      * @return possible object is
      *         {@link String }
      */
-    public String getLogFilter() {
-        return logFilter;
-    }
+    @Attribute
+    public String getLogFilter();
 
     /**
      * Sets the value of the logFilter property.
@@ -180,11 +125,7 @@ public class LogService
      * @param value allowed object is
      *              {@link String }
      */
-    public void setLogFilter(String value) throws PropertyVetoException {
-        support.fireVetoableChange("logFilter", this.logFilter, value);
-
-        this.logFilter = value;
-    }
+    public void setLogFilter(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the logToConsole property.
@@ -192,13 +133,8 @@ public class LogService
      * @return possible object is
      *         {@link String }
      */
-    public String getLogToConsole() {
-        if (logToConsole == null) {
-            return "false";
-        } else {
-            return logToConsole;
-        }
-    }
+    @Attribute
+    public String getLogToConsole();
 
     /**
      * Sets the value of the logToConsole property.
@@ -206,11 +142,7 @@ public class LogService
      * @param value allowed object is
      *              {@link String }
      */
-    public void setLogToConsole(String value) throws PropertyVetoException {
-        support.fireVetoableChange("logToConsole", this.logToConsole, value);
-
-        this.logToConsole = value;
-    }
+    public void setLogToConsole(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the logRotationLimitInBytes property.
@@ -218,13 +150,8 @@ public class LogService
      * @return possible object is
      *         {@link String }
      */
-    public String getLogRotationLimitInBytes() {
-        if (logRotationLimitInBytes == null) {
-            return "500000";
-        } else {
-            return logRotationLimitInBytes;
-        }
-    }
+    @Attribute
+    public String getLogRotationLimitInBytes();
 
     /**
      * Sets the value of the logRotationLimitInBytes property.
@@ -232,11 +159,7 @@ public class LogService
      * @param value allowed object is
      *              {@link String }
      */
-    public void setLogRotationLimitInBytes(String value) throws PropertyVetoException {
-        support.fireVetoableChange("logRotationLimitInBytes", this.logRotationLimitInBytes, value);
-
-        this.logRotationLimitInBytes = value;
-    }
+    public void setLogRotationLimitInBytes(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the logRotationTimelimitInMinutes property.
@@ -244,13 +167,8 @@ public class LogService
      * @return possible object is
      *         {@link String }
      */
-    public String getLogRotationTimelimitInMinutes() {
-        if (logRotationTimelimitInMinutes == null) {
-            return "0";
-        } else {
-            return logRotationTimelimitInMinutes;
-        }
-    }
+    @Attribute
+    public String getLogRotationTimelimitInMinutes();
 
     /**
      * Sets the value of the logRotationTimelimitInMinutes property.
@@ -258,11 +176,7 @@ public class LogService
      * @param value allowed object is
      *              {@link String }
      */
-    public void setLogRotationTimelimitInMinutes(String value) throws PropertyVetoException {
-        support.fireVetoableChange("logRotationTimelimitInMinutes", this.logRotationTimelimitInMinutes, value);
-
-        this.logRotationTimelimitInMinutes = value;
-    }
+    public void setLogRotationTimelimitInMinutes(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the alarms property.
@@ -270,13 +184,8 @@ public class LogService
      * @return possible object is
      *         {@link String }
      */
-    public String getAlarms() {
-        if (alarms == null) {
-            return "false";
-        } else {
-            return alarms;
-        }
-    }
+    @Attribute
+    public String getAlarms();
 
     /**
      * Sets the value of the alarms property.
@@ -284,11 +193,7 @@ public class LogService
      * @param value allowed object is
      *              {@link String }
      */
-    public void setAlarms(String value) throws PropertyVetoException {
-        support.fireVetoableChange("alarms", this.alarms, value);
-
-        this.alarms = value;
-    }
+    public void setAlarms(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the retainErrorStatisticsForHours property.
@@ -296,13 +201,8 @@ public class LogService
      * @return possible object is
      *         {@link String }
      */
-    public String getRetainErrorStatisticsForHours() {
-        if (retainErrorStatisticsForHours == null) {
-            return "5";
-        } else {
-            return retainErrorStatisticsForHours;
-        }
-    }
+    @Attribute
+    public String getRetainErrorStatisticsForHours();
 
     /**
      * Sets the value of the retainErrorStatisticsForHours property.
@@ -310,11 +210,7 @@ public class LogService
      * @param value allowed object is
      *              {@link String }
      */
-    public void setRetainErrorStatisticsForHours(String value) throws PropertyVetoException {
-        support.fireVetoableChange("retainErrorStatisticsForHours", this.retainErrorStatisticsForHours, value);
-
-        this.retainErrorStatisticsForHours = value;
-    }
+    public void setRetainErrorStatisticsForHours(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the moduleLogLevels property.
@@ -322,9 +218,8 @@ public class LogService
      * @return possible object is
      *         {@link ModuleLogLevels }
      */
-    public ModuleLogLevels getModuleLogLevels() {
-        return moduleLogLevels;
-    }
+    @Attribute
+    public ModuleLogLevels getModuleLogLevels();
 
     /**
      * Sets the value of the moduleLogLevels property.
@@ -332,11 +227,7 @@ public class LogService
      * @param value allowed object is
      *              {@link ModuleLogLevels }
      */
-    public void setModuleLogLevels(ModuleLogLevels value) throws PropertyVetoException {
-        support.fireVetoableChange("moduleLogLevels", this.moduleLogLevels, value);
-
-        this.moduleLogLevels = value;
-    }
+    public void setModuleLogLevels(ModuleLogLevels value) throws PropertyVetoException;
 
     /**
      * Gets the value of the property property.
@@ -358,9 +249,8 @@ public class LogService
      * Objects of the following type(s) are allowed in the list
      * {@link Property }
      */
-    public List<Property> getProperty() {
-        return this.property;
-    }
+    @Element("property")
+    public List<Property> getProperty();
 
 
 

@@ -39,8 +39,9 @@
 package com.sun.enterprise.config.serverbeans;
 
 import org.jvnet.hk2.config.Attribute;
+import org.jvnet.hk2.config.Element;
 import org.jvnet.hk2.config.Configured;
-import org.glassfish.api.admin.ConfigBean;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 
 import java.beans.PropertyVetoException;
 import java.beans.VetoableChangeSupport;
@@ -57,27 +58,7 @@ import java.util.List;
     "property"
 }) */
 @Configured
-public class ConnectorResource extends ConfigBean implements Resource, Serializable {
-
-    final transient private VetoableChangeSupport support = new VetoableChangeSupport(this);
-    
-    private final static long serialVersionUID = 1L;
-    @Attribute(required = true)
-
-    protected String jndiName;
-    @Attribute(required = true)
-
-    protected String poolName;
-    @Attribute
-
-    protected String objectType;
-    @Attribute
-
-    protected String enabled;
-    protected String description;
-    protected List<Property> property = new ConstrainedList<Property>(this, "property", support);
-
-
+public interface ConnectorResource extends ConfigBeanProxy, Resource {
 
     /**
      * Gets the value of the jndiName property.
@@ -85,9 +66,8 @@ public class ConnectorResource extends ConfigBean implements Resource, Serializa
      * @return possible object is
      *         {@link String }
      */
-    public String getJndiName() {
-        return jndiName;
-    }
+    @Attribute(required = true)
+    public String getJndiName();
 
     /**
      * Sets the value of the jndiName property.
@@ -95,11 +75,7 @@ public class ConnectorResource extends ConfigBean implements Resource, Serializa
      * @param value allowed object is
      *              {@link String }
      */
-    public void setJndiName(String value) throws PropertyVetoException {
-        support.fireVetoableChange("jndiName", this.jndiName, value);
-
-        this.jndiName = value;
-    }
+    public void setJndiName(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the poolName property.
@@ -107,9 +83,8 @@ public class ConnectorResource extends ConfigBean implements Resource, Serializa
      * @return possible object is
      *         {@link String }
      */
-    public String getPoolName() {
-        return poolName;
-    }
+    @Attribute(required = true)
+    public String getPoolName();
 
     /**
      * Sets the value of the poolName property.
@@ -117,11 +92,7 @@ public class ConnectorResource extends ConfigBean implements Resource, Serializa
      * @param value allowed object is
      *              {@link String }
      */
-    public void setPoolName(String value) throws PropertyVetoException {
-        support.fireVetoableChange("poolName", this.poolName, value);
-
-        this.poolName = value;
-    }
+    public void setPoolName(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the objectType property.
@@ -129,13 +100,8 @@ public class ConnectorResource extends ConfigBean implements Resource, Serializa
      * @return possible object is
      *         {@link String }
      */
-    public String getObjectType() {
-        if (objectType == null) {
-            return "user";
-        } else {
-            return objectType;
-        }
-    }
+    @Attribute
+    public String getObjectType();
 
     /**
      * Sets the value of the objectType property.
@@ -143,11 +109,7 @@ public class ConnectorResource extends ConfigBean implements Resource, Serializa
      * @param value allowed object is
      *              {@link String }
      */
-    public void setObjectType(String value) throws PropertyVetoException {
-        support.fireVetoableChange("objectType", this.objectType, value);
-
-        this.objectType = value;
-    }
+    public void setObjectType(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the enabled property.
@@ -155,13 +117,8 @@ public class ConnectorResource extends ConfigBean implements Resource, Serializa
      * @return possible object is
      *         {@link String }
      */
-    public String getEnabled() {
-        if (enabled == null) {
-            return "true";
-        } else {
-            return enabled;
-        }
-    }
+    @Attribute
+    public String getEnabled();
 
     /**
      * Sets the value of the enabled property.
@@ -169,11 +126,7 @@ public class ConnectorResource extends ConfigBean implements Resource, Serializa
      * @param value allowed object is
      *              {@link String }
      */
-    public void setEnabled(String value) throws PropertyVetoException {
-        support.fireVetoableChange("enabled", this.enabled, value);
-
-        this.enabled = value;
-    }
+    public void setEnabled(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the description property.
@@ -181,9 +134,8 @@ public class ConnectorResource extends ConfigBean implements Resource, Serializa
      * @return possible object is
      *         {@link String }
      */
-    public String getDescription() {
-        return description;
-    }
+    @Attribute
+    public String getDescription();
 
     /**
      * Sets the value of the description property.
@@ -191,11 +143,7 @@ public class ConnectorResource extends ConfigBean implements Resource, Serializa
      * @param value allowed object is
      *              {@link String }
      */
-    public void setDescription(String value) throws PropertyVetoException {
-        support.fireVetoableChange("description", this.description, value);
-
-        this.description = value;
-    }
+    public void setDescription(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the property property.
@@ -217,9 +165,8 @@ public class ConnectorResource extends ConfigBean implements Resource, Serializa
      * Objects of the following type(s) are allowed in the list
      * {@link Property }
      */
-    public List<Property> getProperty() {
-        return this.property;
-    }
+    @Element("property")
+    public List<Property> getProperty();
 
 
 

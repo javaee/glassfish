@@ -58,7 +58,7 @@ import java.beans.PropertyVetoException;
  *
  * @author Jerome Dochez
  */
-public interface SingleConfigCode<T extends Transactor> {
+public interface SingleConfigCode<T> {
 
 	/**
 	 * Runs the following command passing the configration object. The code will be run
@@ -70,5 +70,5 @@ public interface SingleConfigCode<T extends Transactor> {
      * @throws PropertyVetoException if the changes cannot be applied
      * to the configuration
 	 */
-    public boolean run(T param) throws PropertyVetoException;
+    public boolean run(T param) throws PropertyVetoException, TransactionFailure;
 }

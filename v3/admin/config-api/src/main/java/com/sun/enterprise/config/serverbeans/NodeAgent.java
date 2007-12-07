@@ -41,7 +41,7 @@ package com.sun.enterprise.config.serverbeans;
 import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.Element;
-import org.glassfish.api.admin.ConfigBean;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 
 import java.beans.PropertyVetoException;
 import java.io.Serializable;
@@ -59,28 +59,7 @@ import java.util.List;
     "property"
 }) */
 @Configured
-public class NodeAgent
- extends ConfigBean implements Serializable {
-
-    private final static long serialVersionUID = 1L;
-    @Attribute(required = true)
-
-    protected String name;
-    @Attribute
-
-    protected String systemJmxConnectorName;
-    @Attribute
-
-    protected String startServersInStartup;
-    @Element
-    protected JmxConnector jmxConnector;
-    @Element
-    protected AuthRealm authRealm;
-    @Element(required=true)
-    protected LogService logService;
-    protected List<Property> property = new ConstrainedList<Property>(this, "property", support);
-
-
+public interface NodeAgent extends ConfigBeanProxy  {
 
     /**
      * Gets the value of the name property.
@@ -88,9 +67,8 @@ public class NodeAgent
      * @return possible object is
      *         {@link String }
      */
-    public String getName() {
-        return name;
-    }
+    @Attribute(required = true)
+    public String getName();
 
     /**
      * Sets the value of the name property.
@@ -98,11 +76,7 @@ public class NodeAgent
      * @param value allowed object is
      *              {@link String }
      */
-    public void setName(String value) throws PropertyVetoException {
-        support.fireVetoableChange("name", this.name, value);
-
-        this.name = value;
-    }
+    public void setName(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the systemJmxConnectorName property.
@@ -110,9 +84,8 @@ public class NodeAgent
      * @return possible object is
      *         {@link String }
      */
-    public String getSystemJmxConnectorName() {
-        return systemJmxConnectorName;
-    }
+    @Attribute
+    public String getSystemJmxConnectorName();
 
     /**
      * Sets the value of the systemJmxConnectorName property.
@@ -120,11 +93,7 @@ public class NodeAgent
      * @param value allowed object is
      *              {@link String }
      */
-    public void setSystemJmxConnectorName(String value) throws PropertyVetoException {
-        support.fireVetoableChange("systemJmxConnectorName", this.systemJmxConnectorName, value);
-
-        this.systemJmxConnectorName = value;
-    }
+    public void setSystemJmxConnectorName(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the startServersInStartup property.
@@ -132,13 +101,8 @@ public class NodeAgent
      * @return possible object is
      *         {@link String }
      */
-    public String getStartServersInStartup() {
-        if (startServersInStartup == null) {
-            return "true";
-        } else {
-            return startServersInStartup;
-        }
-    }
+    @Attribute
+    public String getStartServersInStartup();
 
     /**
      * Sets the value of the startServersInStartup property.
@@ -146,11 +110,7 @@ public class NodeAgent
      * @param value allowed object is
      *              {@link String }
      */
-    public void setStartServersInStartup(String value) throws PropertyVetoException {
-        support.fireVetoableChange("startServersInStartup", this.startServersInStartup, value);
-
-        this.startServersInStartup = value;
-    }
+    public void setStartServersInStartup(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the jmxConnector property.
@@ -158,9 +118,8 @@ public class NodeAgent
      * @return possible object is
      *         {@link JmxConnector }
      */
-    public JmxConnector getJmxConnector() {
-        return jmxConnector;
-    }
+    @Element
+    public JmxConnector getJmxConnector();
 
     /**
      * Sets the value of the jmxConnector property.
@@ -168,11 +127,7 @@ public class NodeAgent
      * @param value allowed object is
      *              {@link JmxConnector }
      */
-    public void setJmxConnector(JmxConnector value) throws PropertyVetoException {
-        support.fireVetoableChange("jmxConnector", this.jmxConnector, value);
-
-        this.jmxConnector = value;
-    }
+    public void setJmxConnector(JmxConnector value) throws PropertyVetoException;
 
     /**
      * Gets the value of the authRealm property.
@@ -180,9 +135,8 @@ public class NodeAgent
      * @return possible object is
      *         {@link AuthRealm }
      */
-    public AuthRealm getAuthRealm() {
-        return authRealm;
-    }
+    @Element
+    public AuthRealm getAuthRealm();
 
     /**
      * Sets the value of the authRealm property.
@@ -190,11 +144,7 @@ public class NodeAgent
      * @param value allowed object is
      *              {@link AuthRealm }
      */
-    public void setAuthRealm(AuthRealm value) throws PropertyVetoException {
-        support.fireVetoableChange("authRealm", this.authRealm, value);
-
-        this.authRealm = value;
-    }
+    public void setAuthRealm(AuthRealm value) throws PropertyVetoException;
 
     /**
      * Gets the value of the logService property.
@@ -202,9 +152,8 @@ public class NodeAgent
      * @return possible object is
      *         {@link LogService }
      */
-    public LogService getLogService() {
-        return logService;
-    }
+    @Element(required=true)
+    public LogService getLogService();
 
     /**
      * Sets the value of the logService property.
@@ -212,11 +161,7 @@ public class NodeAgent
      * @param value allowed object is
      *              {@link LogService }
      */
-    public void setLogService(LogService value) throws PropertyVetoException {
-        support.fireVetoableChange("logService", this.logService, value);
-
-        this.logService = value;
-    }
+    public void setLogService(LogService value) throws PropertyVetoException;
 
     /**
      * Gets the value of the property property.
@@ -238,9 +183,8 @@ public class NodeAgent
      * Objects of the following type(s) are allowed in the list
      * {@link Property }
      */
-    public List<Property> getProperty() {
-        return this.property;
-    }
+    @Element("property")
+    public List<Property> getProperty();
 
 
 

@@ -40,7 +40,7 @@ package com.sun.enterprise.config.serverbeans;
 
 import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.Configured;
-import org.glassfish.api.admin.ConfigBean;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 
 import java.beans.PropertyVetoException;
 import java.io.Serializable;
@@ -52,15 +52,7 @@ import java.io.Serializable;
 
 /* @XmlType(name = "") */
 @Configured
-public class ConnectorService
- extends ConfigBean implements Serializable {
-
-    private final static long serialVersionUID = 1L;
-    @Attribute
-
-    protected String shutdownTimeoutInSeconds;
-
-
+public interface ConnectorService extends ConfigBeanProxy  {
 
     /**
      * Gets the value of the shutdownTimeoutInSeconds property.
@@ -68,13 +60,8 @@ public class ConnectorService
      * @return possible object is
      *         {@link String }
      */
-    public String getShutdownTimeoutInSeconds() {
-        if (shutdownTimeoutInSeconds == null) {
-            return "30";
-        } else {
-            return shutdownTimeoutInSeconds;
-        }
-    }
+    @Attribute
+    public String getShutdownTimeoutInSeconds();
 
     /**
      * Sets the value of the shutdownTimeoutInSeconds property.
@@ -82,11 +69,7 @@ public class ConnectorService
      * @param value allowed object is
      *              {@link String }
      */
-    public void setShutdownTimeoutInSeconds(String value) throws PropertyVetoException {
-        support.fireVetoableChange("shutdownTimeoutInSeconds", this.shutdownTimeoutInSeconds, value);
-
-        this.shutdownTimeoutInSeconds = value;
-    }
+    public void setShutdownTimeoutInSeconds(String value) throws PropertyVetoException;
 
 
 

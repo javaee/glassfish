@@ -41,7 +41,7 @@ package com.sun.enterprise.config.serverbeans;
 import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.Element;
-import org.glassfish.api.admin.ConfigBean;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 
 import java.beans.PropertyVetoException;
 import java.io.Serializable;
@@ -58,20 +58,7 @@ import java.util.List;
     "iiopListener"
 }) */
 @Configured
-public class IiopService
- extends ConfigBean implements Serializable {
-
-    private final static long serialVersionUID = 1L;
-    @Attribute
-
-    protected String clientAuthenticationRequired;
-    @Element(required=true)
-    protected Orb orb;
-    @Element
-    protected SslClientConfig sslClientConfig;
-    @Element
-    protected List<IiopListener> iiopListener = new ConstrainedList<IiopListener>(this, "iiopListener", support);
-
+public interface IiopService extends ConfigBeanProxy  {
 
 
     /**
@@ -80,13 +67,8 @@ public class IiopService
      * @return possible object is
      *         {@link String }
      */
-    public String getClientAuthenticationRequired() {
-        if (clientAuthenticationRequired == null) {
-            return "false";
-        } else {
-            return clientAuthenticationRequired;
-        }
-    }
+    @Attribute
+    public String getClientAuthenticationRequired();
 
     /**
      * Sets the value of the clientAuthenticationRequired property.
@@ -94,11 +76,7 @@ public class IiopService
      * @param value allowed object is
      *              {@link String }
      */
-    public void setClientAuthenticationRequired(String value) throws PropertyVetoException {
-        support.fireVetoableChange("clientAuthenticationRequired", this.clientAuthenticationRequired, value);
-
-        this.clientAuthenticationRequired = value;
-    }
+    public void setClientAuthenticationRequired(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the orb property.
@@ -106,9 +84,8 @@ public class IiopService
      * @return possible object is
      *         {@link Orb }
      */
-    public Orb getOrb() {
-        return orb;
-    }
+    @Element(required=true)
+    public Orb getOrb();
 
     /**
      * Sets the value of the orb property.
@@ -116,11 +93,7 @@ public class IiopService
      * @param value allowed object is
      *              {@link Orb }
      */
-    public void setOrb(Orb value) throws PropertyVetoException {
-        support.fireVetoableChange("orb", this.orb, value);
-
-        this.orb = value;
-    }
+    public void setOrb(Orb value) throws PropertyVetoException;
 
     /**
      * Gets the value of the sslClientConfig property.
@@ -128,9 +101,8 @@ public class IiopService
      * @return possible object is
      *         {@link SslClientConfig }
      */
-    public SslClientConfig getSslClientConfig() {
-        return sslClientConfig;
-    }
+    @Element
+    public SslClientConfig getSslClientConfig();
 
     /**
      * Sets the value of the sslClientConfig property.
@@ -138,11 +110,7 @@ public class IiopService
      * @param value allowed object is
      *              {@link SslClientConfig }
      */
-    public void setSslClientConfig(SslClientConfig value) throws PropertyVetoException {
-        support.fireVetoableChange("sslClientConfig", this.sslClientConfig, value);
-
-        this.sslClientConfig = value;
-    }
+    public void setSslClientConfig(SslClientConfig value) throws PropertyVetoException;
 
     /**
      * Gets the value of the iiopListener property.
@@ -164,9 +132,8 @@ public class IiopService
      * Objects of the following type(s) are allowed in the list
      * {@link IiopListener }
      */
-    public List<IiopListener> getIiopListener() {
-        return this.iiopListener;
-    }
+    @Element
+    public List<IiopListener> getIiopListener();
 
 
 

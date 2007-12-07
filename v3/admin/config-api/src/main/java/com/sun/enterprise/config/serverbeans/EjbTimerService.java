@@ -39,11 +39,11 @@
 package com.sun.enterprise.config.serverbeans;
 
 import org.jvnet.hk2.config.Attribute;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.Configured;
-import org.glassfish.api.admin.ConfigBean;
+import org.jvnet.hk2.config.Element;
 
 import java.beans.PropertyVetoException;
-import java.io.Serializable;
 import java.util.List;
 
 
@@ -55,25 +55,7 @@ import java.util.List;
     "property"
 }) */
 @Configured
-public class EjbTimerService
- extends ConfigBean implements Serializable {
-
-    private final static long serialVersionUID = 1L;
-    @Attribute
-
-    protected String minimumDeliveryIntervalInMillis;
-    @Attribute
-
-    protected String maxRedeliveries;
-    @Attribute
-
-    protected String timerDatasource;
-    @Attribute
-
-    protected String redeliveryIntervalInternalInMillis;
-    protected List<Property> property = new ConstrainedList<Property>(this, "property", support);
-
-
+public interface EjbTimerService extends ConfigBeanProxy  {
 
     /**
      * Gets the value of the minimumDeliveryIntervalInMillis property.
@@ -81,13 +63,8 @@ public class EjbTimerService
      * @return possible object is
      *         {@link String }
      */
-    public String getMinimumDeliveryIntervalInMillis() {
-        if (minimumDeliveryIntervalInMillis == null) {
-            return "7000";
-        } else {
-            return minimumDeliveryIntervalInMillis;
-        }
-    }
+    @Attribute
+    public String getMinimumDeliveryIntervalInMillis();
 
     /**
      * Sets the value of the minimumDeliveryIntervalInMillis property.
@@ -95,11 +72,7 @@ public class EjbTimerService
      * @param value allowed object is
      *              {@link String }
      */
-    public void setMinimumDeliveryIntervalInMillis(String value) throws PropertyVetoException {
-        support.fireVetoableChange("minimumDeliveryIntervalInMillis", this.minimumDeliveryIntervalInMillis, value);
-
-        this.minimumDeliveryIntervalInMillis = value;
-    }
+    public void setMinimumDeliveryIntervalInMillis(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the maxRedeliveries property.
@@ -107,13 +80,8 @@ public class EjbTimerService
      * @return possible object is
      *         {@link String }
      */
-    public String getMaxRedeliveries() {
-        if (maxRedeliveries == null) {
-            return "1";
-        } else {
-            return maxRedeliveries;
-        }
-    }
+    @Attribute
+    public String getMaxRedeliveries();
 
     /**
      * Sets the value of the maxRedeliveries property.
@@ -121,11 +89,7 @@ public class EjbTimerService
      * @param value allowed object is
      *              {@link String }
      */
-    public void setMaxRedeliveries(String value) throws PropertyVetoException {
-        support.fireVetoableChange("maxRedeliveries", this.maxRedeliveries, value);
-
-        this.maxRedeliveries = value;
-    }
+    public void setMaxRedeliveries(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the timerDatasource property.
@@ -133,9 +97,8 @@ public class EjbTimerService
      * @return possible object is
      *         {@link String }
      */
-    public String getTimerDatasource() {
-        return timerDatasource;
-    }
+    @Attribute
+    public String getTimerDatasource();
 
     /**
      * Sets the value of the timerDatasource property.
@@ -143,11 +106,7 @@ public class EjbTimerService
      * @param value allowed object is
      *              {@link String }
      */
-    public void setTimerDatasource(String value) throws PropertyVetoException {
-        support.fireVetoableChange("timerDatasource", this.timerDatasource, value);
-
-        this.timerDatasource = value;
-    }
+    public void setTimerDatasource(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the redeliveryIntervalInternalInMillis property.
@@ -155,13 +114,8 @@ public class EjbTimerService
      * @return possible object is
      *         {@link String }
      */
-    public String getRedeliveryIntervalInternalInMillis() {
-        if (redeliveryIntervalInternalInMillis == null) {
-            return "5000";
-        } else {
-            return redeliveryIntervalInternalInMillis;
-        }
-    }
+    @Attribute
+    public String getRedeliveryIntervalInternalInMillis();
 
     /**
      * Sets the value of the redeliveryIntervalInternalInMillis property.
@@ -169,11 +123,7 @@ public class EjbTimerService
      * @param value allowed object is
      *              {@link String }
      */
-    public void setRedeliveryIntervalInternalInMillis(String value) throws PropertyVetoException {
-        support.fireVetoableChange("redeliveryIntervalInternalInMillis", this.redeliveryIntervalInternalInMillis, value);
-
-        this.redeliveryIntervalInternalInMillis = value;
-    }
+    public void setRedeliveryIntervalInternalInMillis(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the property property.
@@ -195,9 +145,8 @@ public class EjbTimerService
      * Objects of the following type(s) are allowed in the list
      * {@link Property }
      */
-    public List<Property> getProperty() {
-        return this.property;
-    }
+    @Element("property")
+    public List<Property> getProperty();
 
 
 

@@ -39,8 +39,9 @@
 package com.sun.enterprise.config.serverbeans;
 
 import org.jvnet.hk2.config.Attribute;
+import org.jvnet.hk2.config.Element;
 import org.jvnet.hk2.config.Configured;
-import org.glassfish.api.admin.ConfigBean;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 
 import java.beans.PropertyVetoException;
 import java.io.Serializable;
@@ -55,22 +56,7 @@ import java.util.List;
     "property"
 }) */
 @Configured
-public class JaccProvider
- extends ConfigBean implements Serializable {
-
-    private final static long serialVersionUID = 1L;
-    @Attribute(required = true)
-
-    protected String name;
-    @Attribute(required = true)
-
-    protected String policyProvider;
-    @Attribute(required = true)
-
-    protected String policyConfigurationFactoryProvider;
-    protected List<Property> property = new ConstrainedList<Property>(this, "property", support);
-
-
+public interface JaccProvider extends ConfigBeanProxy  {
 
     /**
      * Gets the value of the name property.
@@ -78,9 +64,8 @@ public class JaccProvider
      * @return possible object is
      *         {@link String }
      */
-    public String getName() {
-        return name;
-    }
+    @Attribute(required = true)
+    public String getName();
 
     /**
      * Sets the value of the name property.
@@ -88,11 +73,7 @@ public class JaccProvider
      * @param value allowed object is
      *              {@link String }
      */
-    public void setName(String value) throws PropertyVetoException {
-        support.fireVetoableChange("name", this.name, value);
-
-        this.name = value;
-    }
+    public void setName(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the policyProvider property.
@@ -100,9 +81,8 @@ public class JaccProvider
      * @return possible object is
      *         {@link String }
      */
-    public String getPolicyProvider() {
-        return policyProvider;
-    }
+    @Attribute(required = true)
+    public String getPolicyProvider();
 
     /**
      * Sets the value of the policyProvider property.
@@ -110,11 +90,7 @@ public class JaccProvider
      * @param value allowed object is
      *              {@link String }
      */
-    public void setPolicyProvider(String value) throws PropertyVetoException {
-        support.fireVetoableChange("policyProvider", this.policyProvider, value);
-
-        this.policyProvider = value;
-    }
+    public void setPolicyProvider(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the policyConfigurationFactoryProvider property.
@@ -122,9 +98,8 @@ public class JaccProvider
      * @return possible object is
      *         {@link String }
      */
-    public String getPolicyConfigurationFactoryProvider() {
-        return policyConfigurationFactoryProvider;
-    }
+    @Attribute(required = true)
+    public String getPolicyConfigurationFactoryProvider();
 
     /**
      * Sets the value of the policyConfigurationFactoryProvider property.
@@ -132,11 +107,7 @@ public class JaccProvider
      * @param value allowed object is
      *              {@link String }
      */
-    public void setPolicyConfigurationFactoryProvider(String value) throws PropertyVetoException {
-        support.fireVetoableChange("policyConfigurationFactoryProvider", this.policyConfigurationFactoryProvider, value);
-
-        this.policyConfigurationFactoryProvider = value;
-    }
+    public void setPolicyConfigurationFactoryProvider(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the property property.
@@ -158,9 +129,8 @@ public class JaccProvider
      * Objects of the following type(s) are allowed in the list
      * {@link Property }
      */
-    public List<Property> getProperty() {
-        return this.property;
-    }
+    @Element("property")
+    public List<Property> getProperty();
 
 
 

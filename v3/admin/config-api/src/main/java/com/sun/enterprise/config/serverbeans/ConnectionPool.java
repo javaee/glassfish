@@ -40,7 +40,7 @@ package com.sun.enterprise.config.serverbeans;
 
 import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.Configured;
-import org.glassfish.api.admin.ConfigBean;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 
 import java.beans.PropertyVetoException;
 import java.io.Serializable;
@@ -52,24 +52,7 @@ import java.io.Serializable;
 
 /* @XmlType(name = "") */
 @Configured
-public class ConnectionPool
- extends ConfigBean implements Serializable {
-
-    private final static long serialVersionUID = 1L;
-    @Attribute
-
-    protected String queueSizeInBytes;
-    @Attribute
-
-    protected String maxPendingCount;
-    @Attribute
-
-    protected String receiveBufferSizeInBytes;
-    @Attribute
-
-    protected String sendBufferSizeInBytes;
-
-
+public interface ConnectionPool extends ConfigBeanProxy  {
 
     /**
      * Gets the value of the queueSizeInBytes property.
@@ -77,13 +60,8 @@ public class ConnectionPool
      * @return possible object is
      *         {@link String }
      */
-    public String getQueueSizeInBytes() {
-        if (queueSizeInBytes == null) {
-            return "4096";
-        } else {
-            return queueSizeInBytes;
-        }
-    }
+    @Attribute
+    public String getQueueSizeInBytes();
 
     /**
      * Sets the value of the queueSizeInBytes property.
@@ -91,11 +69,7 @@ public class ConnectionPool
      * @param value allowed object is
      *              {@link String }
      */
-    public void setQueueSizeInBytes(String value) throws PropertyVetoException {
-        support.fireVetoableChange("queueSizeInBytes", this.queueSizeInBytes, value);
-
-        this.queueSizeInBytes = value;
-    }
+    public void setQueueSizeInBytes(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the maxPendingCount property.
@@ -103,13 +77,8 @@ public class ConnectionPool
      * @return possible object is
      *         {@link String }
      */
-    public String getMaxPendingCount() {
-        if (maxPendingCount == null) {
-            return "4096";
-        } else {
-            return maxPendingCount;
-        }
-    }
+    @Attribute
+    public String getMaxPendingCount();
 
     /**
      * Sets the value of the maxPendingCount property.
@@ -117,11 +86,7 @@ public class ConnectionPool
      * @param value allowed object is
      *              {@link String }
      */
-    public void setMaxPendingCount(String value) throws PropertyVetoException {
-        support.fireVetoableChange("maxPendingCount", this.maxPendingCount, value);
-
-        this.maxPendingCount = value;
-    }
+    public void setMaxPendingCount(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the receiveBufferSizeInBytes property.
@@ -129,13 +94,8 @@ public class ConnectionPool
      * @return possible object is
      *         {@link String }
      */
-    public String getReceiveBufferSizeInBytes() {
-        if (receiveBufferSizeInBytes == null) {
-            return "4096";
-        } else {
-            return receiveBufferSizeInBytes;
-        }
-    }
+    @Attribute
+    public String getReceiveBufferSizeInBytes();
 
     /**
      * Sets the value of the receiveBufferSizeInBytes property.
@@ -143,11 +103,7 @@ public class ConnectionPool
      * @param value allowed object is
      *              {@link String }
      */
-    public void setReceiveBufferSizeInBytes(String value) throws PropertyVetoException {
-        support.fireVetoableChange("receiveBufferSizeInBytes", this.receiveBufferSizeInBytes, value);
-
-        this.receiveBufferSizeInBytes = value;
-    }
+    public void setReceiveBufferSizeInBytes(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the sendBufferSizeInBytes property.
@@ -155,13 +111,8 @@ public class ConnectionPool
      * @return possible object is
      *         {@link String }
      */
-    public String getSendBufferSizeInBytes() {
-        if (sendBufferSizeInBytes == null) {
-            return "8192";
-        } else {
-            return sendBufferSizeInBytes;
-        }
-    }
+    @Attribute
+    public String getSendBufferSizeInBytes();
 
     /**
      * Sets the value of the sendBufferSizeInBytes property.
@@ -169,12 +120,5 @@ public class ConnectionPool
      * @param value allowed object is
      *              {@link String }
      */
-    public void setSendBufferSizeInBytes(String value) throws PropertyVetoException {
-        support.fireVetoableChange("sendBufferSizeInBytes", this.sendBufferSizeInBytes, value);
-
-        this.sendBufferSizeInBytes = value;
-    }
-
-
-
+    public void setSendBufferSizeInBytes(String value) throws PropertyVetoException;
 }

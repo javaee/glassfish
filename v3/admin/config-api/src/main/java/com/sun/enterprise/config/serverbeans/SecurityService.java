@@ -41,7 +41,7 @@ package com.sun.enterprise.config.serverbeans;
 import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.Element;
-import org.glassfish.api.admin.ConfigBean;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 
 import java.beans.PropertyVetoException;
 import java.io.Serializable;
@@ -60,48 +60,7 @@ import java.util.List;
     "property"
 }) */
 @Configured
-public class SecurityService
- extends ConfigBean implements Serializable {
-
-    private final static long serialVersionUID = 1L;
-    @Attribute
-
-    protected String defaultRealm;
-    @Attribute
-
-    protected String defaultPrincipal;
-    @Attribute
-
-    protected String defaultPrincipalPassword;
-    @Attribute
-
-    protected String anonymousRole;
-    @Attribute
-
-    protected String auditEnabled;
-    @Attribute
-
-    protected String jacc;
-    @Attribute
-
-    protected String auditModules;
-    @Attribute
-
-    protected String activateDefaultPrincipalToRoleMapping;
-    @Attribute
-
-    protected String mappedPrincipalClass;
-    @Element(required=true)
-    protected List<AuthRealm> authRealm = new ConstrainedList<AuthRealm>(this, "authRealm", support);
-    @Element(required=true)
-    protected List<JaccProvider> jaccProvider = new ConstrainedList<JaccProvider>(this, "jaccProvider", support);
-    @Element
-    protected List<AuditModule> auditModule = new ConstrainedList<AuditModule>(this, "auditModule", support);
-    @Element
-    protected List<MessageSecurityConfig> messageSecurityConfig = new ConstrainedList<MessageSecurityConfig>(this, "messageSecurityConfig", support);
-    protected List<Property> property = new ConstrainedList<Property>(this, "property", support);
-
-
+public interface SecurityService extends ConfigBeanProxy  {
 
     /**
      * Gets the value of the defaultRealm property.
@@ -109,13 +68,8 @@ public class SecurityService
      * @return possible object is
      *         {@link String }
      */
-    public String getDefaultRealm() {
-        if (defaultRealm == null) {
-            return "file";
-        } else {
-            return defaultRealm;
-        }
-    }
+    @Attribute
+    public String getDefaultRealm();
 
     /**
      * Sets the value of the defaultRealm property.
@@ -123,11 +77,7 @@ public class SecurityService
      * @param value allowed object is
      *              {@link String }
      */
-    public void setDefaultRealm(String value) throws PropertyVetoException {
-        support.fireVetoableChange("defaultRealm", this.defaultRealm, value);
-
-        this.defaultRealm = value;
-    }
+    public void setDefaultRealm(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the defaultPrincipal property.
@@ -135,9 +85,8 @@ public class SecurityService
      * @return possible object is
      *         {@link String }
      */
-    public String getDefaultPrincipal() {
-        return defaultPrincipal;
-    }
+    @Attribute
+    public String getDefaultPrincipal();
 
     /**
      * Sets the value of the defaultPrincipal property.
@@ -145,11 +94,7 @@ public class SecurityService
      * @param value allowed object is
      *              {@link String }
      */
-    public void setDefaultPrincipal(String value) throws PropertyVetoException {
-        support.fireVetoableChange("defaultPrincipal", this.defaultPrincipal, value);
-
-        this.defaultPrincipal = value;
-    }
+    public void setDefaultPrincipal(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the defaultPrincipalPassword property.
@@ -157,9 +102,8 @@ public class SecurityService
      * @return possible object is
      *         {@link String }
      */
-    public String getDefaultPrincipalPassword() {
-        return defaultPrincipalPassword;
-    }
+    @Attribute
+    public String getDefaultPrincipalPassword();
 
     /**
      * Sets the value of the defaultPrincipalPassword property.
@@ -167,11 +111,7 @@ public class SecurityService
      * @param value allowed object is
      *              {@link String }
      */
-    public void setDefaultPrincipalPassword(String value) throws PropertyVetoException {
-        support.fireVetoableChange("defaultPrincipalPassword", this.defaultPrincipalPassword, value);
-
-        this.defaultPrincipalPassword = value;
-    }
+    public void setDefaultPrincipalPassword(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the anonymousRole property.
@@ -179,13 +119,8 @@ public class SecurityService
      * @return possible object is
      *         {@link String }
      */
-    public String getAnonymousRole() {
-        if (anonymousRole == null) {
-            return "AttributeDeprecated";
-        } else {
-            return anonymousRole;
-        }
-    }
+    @Attribute
+    public String getAnonymousRole();
 
     /**
      * Sets the value of the anonymousRole property.
@@ -193,11 +128,7 @@ public class SecurityService
      * @param value allowed object is
      *              {@link String }
      */
-    public void setAnonymousRole(String value) throws PropertyVetoException {
-        support.fireVetoableChange("anonymousRole", this.anonymousRole, value);
-
-        this.anonymousRole = value;
-    }
+    public void setAnonymousRole(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the auditEnabled property.
@@ -205,13 +136,8 @@ public class SecurityService
      * @return possible object is
      *         {@link String }
      */
-    public String getAuditEnabled() {
-        if (auditEnabled == null) {
-            return "false";
-        } else {
-            return auditEnabled;
-        }
-    }
+    @Attribute
+    public String getAuditEnabled();
 
     /**
      * Sets the value of the auditEnabled property.
@@ -219,11 +145,7 @@ public class SecurityService
      * @param value allowed object is
      *              {@link String }
      */
-    public void setAuditEnabled(String value) throws PropertyVetoException {
-        support.fireVetoableChange("auditEnabled", this.auditEnabled, value);
-
-        this.auditEnabled = value;
-    }
+    public void setAuditEnabled(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the jacc property.
@@ -231,13 +153,8 @@ public class SecurityService
      * @return possible object is
      *         {@link String }
      */
-    public String getJacc() {
-        if (jacc == null) {
-            return "default";
-        } else {
-            return jacc;
-        }
-    }
+    @Attribute
+    public String getJacc();
 
     /**
      * Sets the value of the jacc property.
@@ -245,11 +162,7 @@ public class SecurityService
      * @param value allowed object is
      *              {@link String }
      */
-    public void setJacc(String value) throws PropertyVetoException {
-        support.fireVetoableChange("jacc", this.jacc, value);
-
-        this.jacc = value;
-    }
+    public void setJacc(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the auditModules property.
@@ -257,13 +170,8 @@ public class SecurityService
      * @return possible object is
      *         {@link String }
      */
-    public String getAuditModules() {
-        if (auditModules == null) {
-            return "default";
-        } else {
-            return auditModules;
-        }
-    }
+    @Attribute
+    public String getAuditModules();
 
     /**
      * Sets the value of the auditModules property.
@@ -271,11 +179,7 @@ public class SecurityService
      * @param value allowed object is
      *              {@link String }
      */
-    public void setAuditModules(String value) throws PropertyVetoException {
-        support.fireVetoableChange("auditModules", this.auditModules, value);
-
-        this.auditModules = value;
-    }
+    public void setAuditModules(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the activateDefaultPrincipalToRoleMapping property.
@@ -283,13 +187,8 @@ public class SecurityService
      * @return possible object is
      *         {@link String }
      */
-    public String getActivateDefaultPrincipalToRoleMapping() {
-        if (activateDefaultPrincipalToRoleMapping == null) {
-            return "false";
-        } else {
-            return activateDefaultPrincipalToRoleMapping;
-        }
-    }
+    @Attribute
+    public String getActivateDefaultPrincipalToRoleMapping();
 
     /**
      * Sets the value of the activateDefaultPrincipalToRoleMapping property.
@@ -297,11 +196,7 @@ public class SecurityService
      * @param value allowed object is
      *              {@link String }
      */
-    public void setActivateDefaultPrincipalToRoleMapping(String value) throws PropertyVetoException {
-        support.fireVetoableChange("activateDefaultPrincipalToRoleMapping", this.activateDefaultPrincipalToRoleMapping, value);
-
-        this.activateDefaultPrincipalToRoleMapping = value;
-    }
+    public void setActivateDefaultPrincipalToRoleMapping(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the mappedPrincipalClass property.
@@ -309,9 +204,8 @@ public class SecurityService
      * @return possible object is
      *         {@link String }
      */
-    public String getMappedPrincipalClass() {
-        return mappedPrincipalClass;
-    }
+    @Attribute
+    public String getMappedPrincipalClass();
 
     /**
      * Sets the value of the mappedPrincipalClass property.
@@ -319,11 +213,7 @@ public class SecurityService
      * @param value allowed object is
      *              {@link String }
      */
-    public void setMappedPrincipalClass(String value) throws PropertyVetoException {
-        support.fireVetoableChange("mappedPrincipalClass", this.mappedPrincipalClass, value);
-
-        this.mappedPrincipalClass = value;
-    }
+    public void setMappedPrincipalClass(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the authRealm property.
@@ -345,9 +235,8 @@ public class SecurityService
      * Objects of the following type(s) are allowed in the list
      * {@link AuthRealm }
      */
-    public List<AuthRealm> getAuthRealm() {
-        return this.authRealm;
-    }
+    @Element(required=true)
+    public List<AuthRealm> getAuthRealm();
 
     /**
      * Gets the value of the jaccProvider property.
@@ -369,9 +258,8 @@ public class SecurityService
      * Objects of the following type(s) are allowed in the list
      * {@link JaccProvider }
      */
-    public List<JaccProvider> getJaccProvider() {
-        return this.jaccProvider;
-    }
+    @Element(required=true)
+    public List<JaccProvider> getJaccProvider();
 
     /**
      * Gets the value of the auditModule property.
@@ -393,9 +281,8 @@ public class SecurityService
      * Objects of the following type(s) are allowed in the list
      * {@link AuditModule }
      */
-    public List<AuditModule> getAuditModule() {
-        return this.auditModule;
-    }
+    @Element
+    public List<AuditModule> getAuditModule();
 
     /**
      * Gets the value of the messageSecurityConfig property.
@@ -417,9 +304,8 @@ public class SecurityService
      * Objects of the following type(s) are allowed in the list
      * {@link MessageSecurityConfig }
      */
-    public List<MessageSecurityConfig> getMessageSecurityConfig() {
-        return this.messageSecurityConfig;
-    }
+    @Element
+    public List<MessageSecurityConfig> getMessageSecurityConfig();
 
     /**
      * Gets the value of the property property.
@@ -441,9 +327,8 @@ public class SecurityService
      * Objects of the following type(s) are allowed in the list
      * {@link Property }
      */
-    public List<Property> getProperty() {
-        return this.property;
-    }
+    @Element("property")
+    public List<Property> getProperty();
 
 
 

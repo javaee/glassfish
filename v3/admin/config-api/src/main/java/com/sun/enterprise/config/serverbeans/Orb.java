@@ -39,11 +39,11 @@
 package com.sun.enterprise.config.serverbeans;
 
 import org.jvnet.hk2.config.Attribute;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.Configured;
-import org.glassfish.api.admin.ConfigBean;
+import org.jvnet.hk2.config.Element;
 
 import java.beans.PropertyVetoException;
-import java.io.Serializable;
 import java.util.List;
 
 
@@ -55,22 +55,7 @@ import java.util.List;
     "property"
 }) */
 @Configured
-public class Orb
- extends ConfigBean implements Serializable {
-
-    private final static long serialVersionUID = 1L;
-    @Attribute(required = true)
-
-    protected String useThreadPoolIds;
-    @Attribute
-
-    protected String messageFragmentSize;
-    @Attribute
-
-    protected String maxConnections;
-    protected List<Property> property = new ConstrainedList<Property>(this, "property", support);
-
-
+public interface Orb extends ConfigBeanProxy  {
 
     /**
      * Gets the value of the useThreadPoolIds property.
@@ -78,9 +63,8 @@ public class Orb
      * @return possible object is
      *         {@link String }
      */
-    public String getUseThreadPoolIds() {
-        return useThreadPoolIds;
-    }
+    @Attribute(required = true)
+    public String getUseThreadPoolIds();
 
     /**
      * Sets the value of the useThreadPoolIds property.
@@ -88,11 +72,7 @@ public class Orb
      * @param value allowed object is
      *              {@link String }
      */
-    public void setUseThreadPoolIds(String value) throws PropertyVetoException {
-        support.fireVetoableChange("useThreadPoolIds", this.useThreadPoolIds, value);
-
-        this.useThreadPoolIds = value;
-    }
+    public void setUseThreadPoolIds(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the messageFragmentSize property.
@@ -100,13 +80,8 @@ public class Orb
      * @return possible object is
      *         {@link String }
      */
-    public String getMessageFragmentSize() {
-        if (messageFragmentSize == null) {
-            return "1024";
-        } else {
-            return messageFragmentSize;
-        }
-    }
+    @Attribute
+    public String getMessageFragmentSize();
 
     /**
      * Sets the value of the messageFragmentSize property.
@@ -114,11 +89,7 @@ public class Orb
      * @param value allowed object is
      *              {@link String }
      */
-    public void setMessageFragmentSize(String value) throws PropertyVetoException {
-        support.fireVetoableChange("messageFragmentSize", this.messageFragmentSize, value);
-
-        this.messageFragmentSize = value;
-    }
+    public void setMessageFragmentSize(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the maxConnections property.
@@ -126,13 +97,8 @@ public class Orb
      * @return possible object is
      *         {@link String }
      */
-    public String getMaxConnections() {
-        if (maxConnections == null) {
-            return "1024";
-        } else {
-            return maxConnections;
-        }
-    }
+    @Attribute
+    public String getMaxConnections();
 
     /**
      * Sets the value of the maxConnections property.
@@ -140,11 +106,7 @@ public class Orb
      * @param value allowed object is
      *              {@link String }
      */
-    public void setMaxConnections(String value) throws PropertyVetoException {
-        support.fireVetoableChange("maxConnections", this.maxConnections, value);
-
-        this.maxConnections = value;
-    }
+    public void setMaxConnections(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the property property.
@@ -166,9 +128,8 @@ public class Orb
      * Objects of the following type(s) are allowed in the list
      * {@link Property }
      */
-    public List<Property> getProperty() {
-        return this.property;
-    }
+    @Element("property")
+    public List<Property> getProperty();
 
 
 

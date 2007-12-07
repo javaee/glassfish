@@ -40,7 +40,7 @@ package com.sun.enterprise.config.serverbeans;
 
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.Element;
-import org.glassfish.api.admin.ConfigBean;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 
 import java.beans.PropertyVetoException;
 import java.io.Serializable;
@@ -63,31 +63,7 @@ import java.util.List;
     "property"
 }) */
 @Configured
-public class HttpService
- extends ConfigBean implements Serializable {
-
-    private final static long serialVersionUID = 1L;
-    @Element
-    protected AccessLog accessLog;
-    @Element(required=true)
-    protected List<HttpListener> httpListener = new ConstrainedList<HttpListener>(this, "httpListener", support);
-    @Element(required=true)
-    protected List<VirtualServer> virtualServer = new ConstrainedList<VirtualServer>(this, "virtualServer", support);
-    @Element
-    protected RequestProcessing requestProcessing;
-    @Element
-    protected KeepAlive keepAlive;
-    @Element
-    protected ConnectionPool connectionPool;
-    @Element
-    protected HttpProtocol httpProtocol;
-    @Element
-    protected HttpFileCache httpFileCache;
-
-    @Element
-    protected List<Property> property = new ConstrainedList<Property>(this, "property", support);
-
-
+public interface HttpService extends ConfigBeanProxy  {
 
     /**
      * Gets the value of the accessLog property.
@@ -95,9 +71,8 @@ public class HttpService
      * @return possible object is
      *         {@link AccessLog }
      */
-    public AccessLog getAccessLog() {
-        return accessLog;
-    }
+    @Element
+    public AccessLog getAccessLog();
 
     /**
      * Sets the value of the accessLog property.
@@ -105,11 +80,7 @@ public class HttpService
      * @param value allowed object is
      *              {@link AccessLog }
      */
-    public void setAccessLog(AccessLog value) throws PropertyVetoException {
-        support.fireVetoableChange("accessLog", this.accessLog, value);
-
-        this.accessLog = value;
-    }
+    public void setAccessLog(AccessLog value) throws PropertyVetoException;
 
     /**
      * Gets the value of the httpListener property.
@@ -131,9 +102,8 @@ public class HttpService
      * Objects of the following type(s) are allowed in the list
      * {@link HttpListener }
      */
-    public List<HttpListener> getHttpListener() {
-        return this.httpListener;
-    }
+    @Element(required=true)
+    public List<HttpListener> getHttpListener();
 
     /**
      * Gets the value of the virtualServer property.
@@ -155,9 +125,8 @@ public class HttpService
      * Objects of the following type(s) are allowed in the list
      * {@link VirtualServer }
      */
-    public List<VirtualServer> getVirtualServer() {
-        return this.virtualServer;
-    }
+    @Element(required=true)
+    public List<VirtualServer> getVirtualServer();
 
     /**
      * Gets the value of the requestProcessing property.
@@ -165,9 +134,8 @@ public class HttpService
      * @return possible object is
      *         {@link RequestProcessing }
      */
-    public RequestProcessing getRequestProcessing() {
-        return requestProcessing;
-    }
+    @Element
+    public RequestProcessing getRequestProcessing();
 
     /**
      * Sets the value of the requestProcessing property.
@@ -175,11 +143,7 @@ public class HttpService
      * @param value allowed object is
      *              {@link RequestProcessing }
      */
-    public void setRequestProcessing(RequestProcessing value) throws PropertyVetoException {
-        support.fireVetoableChange("requestProcessing", this.requestProcessing, value);
-
-        this.requestProcessing = value;
-    }
+    public void setRequestProcessing(RequestProcessing value) throws PropertyVetoException;
 
     /**
      * Gets the value of the keepAlive property.
@@ -187,9 +151,8 @@ public class HttpService
      * @return possible object is
      *         {@link KeepAlive }
      */
-    public KeepAlive getKeepAlive() {
-        return keepAlive;
-    }
+    @Element
+    public KeepAlive getKeepAlive();
 
     /**
      * Sets the value of the keepAlive property.
@@ -197,11 +160,7 @@ public class HttpService
      * @param value allowed object is
      *              {@link KeepAlive }
      */
-    public void setKeepAlive(KeepAlive value) throws PropertyVetoException {
-        support.fireVetoableChange("keepAlive", this.keepAlive, value);
-
-        this.keepAlive = value;
-    }
+    public void setKeepAlive(KeepAlive value) throws PropertyVetoException;
 
     /**
      * Gets the value of the connectionPool property.
@@ -209,9 +168,8 @@ public class HttpService
      * @return possible object is
      *         {@link ConnectionPool }
      */
-    public ConnectionPool getConnectionPool() {
-        return connectionPool;
-    }
+    @Element
+    public ConnectionPool getConnectionPool();
 
     /**
      * Sets the value of the connectionPool property.
@@ -219,11 +177,7 @@ public class HttpService
      * @param value allowed object is
      *              {@link ConnectionPool }
      */
-    public void setConnectionPool(ConnectionPool value) throws PropertyVetoException {
-        support.fireVetoableChange("connectionPool", this.connectionPool, value);
-
-        this.connectionPool = value;
-    }
+    public void setConnectionPool(ConnectionPool value) throws PropertyVetoException;
 
     /**
      * Gets the value of the httpProtocol property.
@@ -231,9 +185,8 @@ public class HttpService
      * @return possible object is
      *         {@link HttpProtocol }
      */
-    public HttpProtocol getHttpProtocol() {
-        return httpProtocol;
-    }
+    @Element
+    public HttpProtocol getHttpProtocol();
 
     /**
      * Sets the value of the httpProtocol property.
@@ -241,11 +194,7 @@ public class HttpService
      * @param value allowed object is
      *              {@link HttpProtocol }
      */
-    public void setHttpProtocol(HttpProtocol value) throws PropertyVetoException {
-        support.fireVetoableChange("httpProtocol", this.httpProtocol, value);
-
-        this.httpProtocol = value;
-    }
+    public void setHttpProtocol(HttpProtocol value) throws PropertyVetoException;
 
     /**
      * Gets the value of the httpFileCache property.
@@ -253,9 +202,8 @@ public class HttpService
      * @return possible object is
      *         {@link HttpFileCache }
      */
-    public HttpFileCache getHttpFileCache() {
-        return httpFileCache;
-    }
+    @Element
+    public HttpFileCache getHttpFileCache();
 
     /**
      * Sets the value of the httpFileCache property.
@@ -263,11 +211,7 @@ public class HttpService
      * @param value allowed object is
      *              {@link HttpFileCache }
      */
-    public void setHttpFileCache(HttpFileCache value) throws PropertyVetoException {
-        support.fireVetoableChange("httpFileCache", this.httpFileCache, value);
-
-        this.httpFileCache = value;
-    }
+    public void setHttpFileCache(HttpFileCache value) throws PropertyVetoException;
 
     /**
      * Gets the value of the property property.
@@ -289,9 +233,8 @@ public class HttpService
      * Objects of the following type(s) are allowed in the list
      * {@link Property }
      */
-    public List<Property> getProperty() {
-        return this.property;
-    }
+    @Element("property")
+    public List<Property> getProperty();
 
 
 

@@ -39,8 +39,9 @@
 package com.sun.enterprise.config.serverbeans;
 
 import org.jvnet.hk2.config.Attribute;
+import org.jvnet.hk2.config.Element;
 import org.jvnet.hk2.config.Configured;
-import org.glassfish.api.admin.ConfigBean;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 
 import java.beans.PropertyVetoException;
 import java.io.Serializable;
@@ -56,53 +57,7 @@ import java.util.List;
     "property"
 }) */
 @Configured
-public class HttpListener
- extends ConfigBean implements Serializable {
-
-    private final static long serialVersionUID = 1L;
-    @Attribute(required = true)
-
-    protected String id;
-    @Attribute(required = true)
-
-    protected String address;
-    @Attribute(required = true)
-
-    protected String port;
-    @Attribute
-
-    protected String externalPort;
-    @Attribute
-
-    protected String family;
-    @Attribute
-
-    protected String blockingEnabled;
-    @Attribute
-
-    protected String acceptorThreads;
-    @Attribute
-
-    protected String securityEnabled;
-    @Attribute(required = true)
-
-    protected String defaultVirtualServer;
-    @Attribute(required = true)
-
-    protected String serverName;
-    @Attribute
-
-    protected String redirectPort;
-    @Attribute
-
-    protected String xpoweredBy;
-    @Attribute
-
-    protected String enabled;
-    protected Ssl ssl;
-    protected List<Property> property = new ConstrainedList<Property>(this, "property", support);
-
-
+public interface HttpListener extends ConfigBeanProxy  {
 
     /**
      * Gets the value of the id property.
@@ -110,9 +65,8 @@ public class HttpListener
      * @return possible object is
      *         {@link String }
      */
-    public String getId() {
-        return id;
-    }
+    @Attribute(required = true)
+    public String getId();
 
     /**
      * Sets the value of the id property.
@@ -120,11 +74,7 @@ public class HttpListener
      * @param value allowed object is
      *              {@link String }
      */
-    public void setId(String value) throws PropertyVetoException {
-        support.fireVetoableChange("id", this.id, value);
-
-        this.id = value;
-    }
+    public void setId(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the address property.
@@ -132,9 +82,8 @@ public class HttpListener
      * @return possible object is
      *         {@link String }
      */
-    public String getAddress() {
-        return address;
-    }
+    @Attribute(required = true)
+    public String getAddress();
 
     /**
      * Sets the value of the address property.
@@ -142,11 +91,7 @@ public class HttpListener
      * @param value allowed object is
      *              {@link String }
      */
-    public void setAddress(String value) throws PropertyVetoException {
-        support.fireVetoableChange("address", this.address, value);
-
-        this.address = value;
-    }
+    public void setAddress(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the port property.
@@ -154,9 +99,8 @@ public class HttpListener
      * @return possible object is
      *         {@link String }
      */
-    public String getPort() {
-        return port;
-    }
+    @Attribute(required = true)
+    public String getPort();
 
     /**
      * Sets the value of the port property.
@@ -164,11 +108,7 @@ public class HttpListener
      * @param value allowed object is
      *              {@link String }
      */
-    public void setPort(String value) throws PropertyVetoException {
-        support.fireVetoableChange("port", this.port, value);
-
-        this.port = value;
-    }
+    public void setPort(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the externalPort property.
@@ -176,9 +116,8 @@ public class HttpListener
      * @return possible object is
      *         {@link String }
      */
-    public String getExternalPort() {
-        return externalPort;
-    }
+    @Attribute
+    public String getExternalPort();
 
     /**
      * Sets the value of the externalPort property.
@@ -186,11 +125,7 @@ public class HttpListener
      * @param value allowed object is
      *              {@link String }
      */
-    public void setExternalPort(String value) throws PropertyVetoException {
-        support.fireVetoableChange("externalPort", this.externalPort, value);
-
-        this.externalPort = value;
-    }
+    public void setExternalPort(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the family property.
@@ -198,13 +133,8 @@ public class HttpListener
      * @return possible object is
      *         {@link String }
      */
-    public String getFamily() {
-        if (family == null) {
-            return "inet";
-        } else {
-            return family;
-        }
-    }
+    @Attribute
+    public String getFamily();
 
     /**
      * Sets the value of the family property.
@@ -212,11 +142,7 @@ public class HttpListener
      * @param value allowed object is
      *              {@link String }
      */
-    public void setFamily(String value) throws PropertyVetoException {
-        support.fireVetoableChange("family", this.family, value);
-
-        this.family = value;
-    }
+    public void setFamily(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the blockingEnabled property.
@@ -224,13 +150,8 @@ public class HttpListener
      * @return possible object is
      *         {@link String }
      */
-    public String getBlockingEnabled() {
-        if (blockingEnabled == null) {
-            return "false";
-        } else {
-            return blockingEnabled;
-        }
-    }
+    @Attribute
+    public String getBlockingEnabled();
 
     /**
      * Sets the value of the blockingEnabled property.
@@ -238,11 +159,7 @@ public class HttpListener
      * @param value allowed object is
      *              {@link String }
      */
-    public void setBlockingEnabled(String value) throws PropertyVetoException {
-        support.fireVetoableChange("blockingEnabled", this.blockingEnabled, value);
-
-        this.blockingEnabled = value;
-    }
+    public void setBlockingEnabled(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the acceptorThreads property.
@@ -250,13 +167,8 @@ public class HttpListener
      * @return possible object is
      *         {@link String }
      */
-    public String getAcceptorThreads() {
-        if (acceptorThreads == null) {
-            return "1";
-        } else {
-            return acceptorThreads;
-        }
-    }
+    @Attribute
+    public String getAcceptorThreads();
 
     /**
      * Sets the value of the acceptorThreads property.
@@ -264,11 +176,7 @@ public class HttpListener
      * @param value allowed object is
      *              {@link String }
      */
-    public void setAcceptorThreads(String value) throws PropertyVetoException {
-        support.fireVetoableChange("acceptorThreads", this.acceptorThreads, value);
-
-        this.acceptorThreads = value;
-    }
+    public void setAcceptorThreads(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the securityEnabled property.
@@ -276,13 +184,8 @@ public class HttpListener
      * @return possible object is
      *         {@link String }
      */
-    public String getSecurityEnabled() {
-        if (securityEnabled == null) {
-            return "false";
-        } else {
-            return securityEnabled;
-        }
-    }
+    @Attribute
+    public String getSecurityEnabled();
 
     /**
      * Sets the value of the securityEnabled property.
@@ -290,11 +193,7 @@ public class HttpListener
      * @param value allowed object is
      *              {@link String }
      */
-    public void setSecurityEnabled(String value) throws PropertyVetoException {
-        support.fireVetoableChange("securityEnabled", this.securityEnabled, value);
-
-        this.securityEnabled = value;
-    }
+    public void setSecurityEnabled(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the defaultVirtualServer property.
@@ -302,9 +201,8 @@ public class HttpListener
      * @return possible object is
      *         {@link String }
      */
-    public String getDefaultVirtualServer() {
-        return defaultVirtualServer;
-    }
+    @Attribute(required = true)
+    public String getDefaultVirtualServer();
 
     /**
      * Sets the value of the defaultVirtualServer property.
@@ -312,11 +210,7 @@ public class HttpListener
      * @param value allowed object is
      *              {@link String }
      */
-    public void setDefaultVirtualServer(String value) throws PropertyVetoException {
-        support.fireVetoableChange("defaultVirtualServer", this.defaultVirtualServer, value);
-
-        this.defaultVirtualServer = value;
-    }
+    public void setDefaultVirtualServer(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the serverName property.
@@ -324,9 +218,8 @@ public class HttpListener
      * @return possible object is
      *         {@link String }
      */
-    public String getServerName() {
-        return serverName;
-    }
+    @Attribute(required = true)
+    public String getServerName();
 
     /**
      * Sets the value of the serverName property.
@@ -334,11 +227,7 @@ public class HttpListener
      * @param value allowed object is
      *              {@link String }
      */
-    public void setServerName(String value) throws PropertyVetoException {
-        support.fireVetoableChange("serverName", this.serverName, value);
-
-        this.serverName = value;
-    }
+    public void setServerName(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the redirectPort property.
@@ -346,9 +235,8 @@ public class HttpListener
      * @return possible object is
      *         {@link String }
      */
-    public String getRedirectPort() {
-        return redirectPort;
-    }
+    @Attribute
+    public String getRedirectPort();
 
     /**
      * Sets the value of the redirectPort property.
@@ -356,11 +244,7 @@ public class HttpListener
      * @param value allowed object is
      *              {@link String }
      */
-    public void setRedirectPort(String value) throws PropertyVetoException {
-        support.fireVetoableChange("redirectPort", this.redirectPort, value);
-
-        this.redirectPort = value;
-    }
+    public void setRedirectPort(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the xpoweredBy property.
@@ -368,13 +252,8 @@ public class HttpListener
      * @return possible object is
      *         {@link String }
      */
-    public String getXpoweredBy() {
-        if (xpoweredBy == null) {
-            return "true";
-        } else {
-            return xpoweredBy;
-        }
-    }
+    @Attribute
+    public String getXpoweredBy();
 
     /**
      * Sets the value of the xpoweredBy property.
@@ -382,11 +261,7 @@ public class HttpListener
      * @param value allowed object is
      *              {@link String }
      */
-    public void setXpoweredBy(String value) throws PropertyVetoException {
-        support.fireVetoableChange("xpoweredBy", this.xpoweredBy, value);
-
-        this.xpoweredBy = value;
-    }
+    public void setXpoweredBy(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the enabled property.
@@ -394,13 +269,8 @@ public class HttpListener
      * @return possible object is
      *         {@link String }
      */
-    public String getEnabled() {
-        if (enabled == null) {
-            return "true";
-        } else {
-            return enabled;
-        }
-    }
+    @Attribute
+    public String getEnabled();
 
     /**
      * Sets the value of the enabled property.
@@ -408,11 +278,7 @@ public class HttpListener
      * @param value allowed object is
      *              {@link String }
      */
-    public void setEnabled(String value) throws PropertyVetoException {
-        support.fireVetoableChange("enabled", this.enabled, value);
-
-        this.enabled = value;
-    }
+    public void setEnabled(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the ssl property.
@@ -420,9 +286,8 @@ public class HttpListener
      * @return possible object is
      *         {@link Ssl }
      */
-    public Ssl getSsl() {
-        return ssl;
-    }
+    @Element
+    public Ssl getSsl();
 
     /**
      * Sets the value of the ssl property.
@@ -430,11 +295,7 @@ public class HttpListener
      * @param value allowed object is
      *              {@link Ssl }
      */
-    public void setSsl(Ssl value) throws PropertyVetoException {
-        support.fireVetoableChange("ssl", this.ssl, value);
-
-        this.ssl = value;
-    }
+    public void setSsl(Ssl value) throws PropertyVetoException;
 
     /**
      * Gets the value of the property property.
@@ -456,10 +317,8 @@ public class HttpListener
      * Objects of the following type(s) are allowed in the list
      * {@link Property }
      */
-    public List<Property> getProperty() {
-
-        return this.property;
-    }
+    @Element("property")
+    public List<Property> getProperty();
 
 
 

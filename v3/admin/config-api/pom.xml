@@ -31,22 +31,6 @@
                 </includes>
             </resource>
         </resources>
-        <!--plugins>
-            <plugin>
-                <groupId>com.sun.enterprise</groupId>
-                <artifactId>hk2-maven-plugin</artifactId>
-                <version>0.2-SNAPSHOT</version>
-                <extensions>true</extensions>
-                <executions>
-                    <execution>
-                        <phase>test</phase>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins-->
     </build>
     <dependencies>
         <dependency>

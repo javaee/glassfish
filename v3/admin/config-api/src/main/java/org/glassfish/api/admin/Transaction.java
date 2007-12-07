@@ -36,7 +36,10 @@
 package org.glassfish.api.admin;
 
 import java.beans.PropertyChangeEvent;
+import java.beans.PropertyVetoException;
+import java.beans.VetoableChangeListener;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -48,8 +51,9 @@ import java.util.List;
 public class Transaction {
 
     final LinkedList<Transactor> participants = new LinkedList<Transactor>();
+    final TransactionListener listener = new TransactionListener();
 
-	/**
+    /**
 	 * Enlists a new participant in this transaction
      *
      * @param t new participant to this transaction
@@ -57,6 +61,13 @@ public class Transaction {
 	 */
     synchronized void addParticipant(Transactor t) {    	
       	participants.addLast(t);
+        try {
+            ConstrainedBean.class.cast(t).addVetoableChangeListener(listener);
+        } catch(ClassCastException e) {
+            // ignore, this is not a real problem, we can still apply transaction
+            // to this participants but we won't be able to get the list of changes.
+        }
+
     }
 
 	/**
@@ -64,6 +75,9 @@ public class Transaction {
 	 */
     public synchronized void rollback() {
         for (Transactor t : participants) {
+            try {
+                ConstrainedBean.class.cast(t).removeVetoableChangeListener(listener);
+            } catch(ClassCastException e) { }
             t.abort(this);
         }
     }
@@ -85,13 +99,35 @@ public class Transaction {
                 throw new RetryableException();
             }
         }
-        List<PropertyChangeEvent> events = new ArrayList<PropertyChangeEvent>();
         for (Transactor t : participants) {
-            events.addAll(t.getTransactionEvents());
-        }
-        for (Transactor t : participants) {
+            try {
+                ConstrainedBean.class.cast(t).removeVetoableChangeListener(listener);
+            } catch(ClassCastException e) { }
             t.commit(this);            
         }
-        return events;
+        return listener.events;
     }
+
+    /**
+     * Utility class to register change events during a transaction
+     */
+    private class TransactionListener implements VetoableChangeListener {
+
+        final List<PropertyChangeEvent> events = Collections.synchronizedList(new LinkedList<PropertyChangeEvent>());
+
+        /**
+         * This method gets called when a constrained property is changed.
+         *
+         * @param evt a <code>PropertyChangeEvent</code> object describing the
+         *            event source and the property that has changed.
+         * @throws java.beans.PropertyVetoException
+         *          if the recipient wishes the property
+         *          change to be rolled back.
+         */
+        public void vetoableChange(PropertyChangeEvent evt) throws PropertyVetoException {
+            events.add(evt);
+        }
+
+    }
+    
 }

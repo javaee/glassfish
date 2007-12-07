@@ -40,7 +40,7 @@ package com.sun.enterprise.config.serverbeans;
 
 import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.Configured;
-import org.glassfish.api.admin.ConfigBean;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 
 import java.beans.PropertyVetoException;
 import java.io.Serializable;
@@ -52,27 +52,7 @@ import java.io.Serializable;
 
 /* @XmlType(name = "") */
 @Configured
-public class AccessLog extends ConfigBean
-        implements Serializable {
-
-    private final static long serialVersionUID = 1L;
-    @Attribute
-
-    protected String format;
-    @Attribute
-
-    protected String rotationPolicy;
-    @Attribute
-
-    protected String rotationIntervalInMinutes;
-    @Attribute
-
-    protected String rotationSuffix;
-    @Attribute
-
-    protected String rotationEnabled;
-
-
+public interface AccessLog extends ConfigBeanProxy {
 
     /**
      * Gets the value of the format property.
@@ -80,13 +60,8 @@ public class AccessLog extends ConfigBean
      * @return possible object is
      *         {@link String }
      */
-    public String getFormat() {
-        if (format == null) {
-            return "%client.name% %auth-user-name% %datetime% %request% %status% %response.length%";
-        } else {
-            return format;
-        }
-    }
+    @Attribute
+    public String getFormat();
 
     /**
      * Sets the value of the format property.
@@ -94,11 +69,7 @@ public class AccessLog extends ConfigBean
      * @param value allowed object is
      *              {@link String }
      */
-    public void setFormat(String value) throws PropertyVetoException {
-        support.fireVetoableChange("format", this.format, value);
-
-        this.format = value;
-    }
+    public void setFormat(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the rotationPolicy property.
@@ -106,13 +77,8 @@ public class AccessLog extends ConfigBean
      * @return possible object is
      *         {@link String }
      */
-    public String getRotationPolicy() {
-        if (rotationPolicy == null) {
-            return "time";
-        } else {
-            return rotationPolicy;
-        }
-    }
+    @Attribute
+    public String getRotationPolicy();
 
     /**
      * Sets the value of the rotationPolicy property.
@@ -120,11 +86,7 @@ public class AccessLog extends ConfigBean
      * @param value allowed object is
      *              {@link String }
      */
-    public void setRotationPolicy(String value) throws PropertyVetoException {
-        support.fireVetoableChange("rotationPolicy", this.rotationPolicy, value);
-
-        this.rotationPolicy = value;
-    }
+    public void setRotationPolicy(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the rotationIntervalInMinutes property.
@@ -132,13 +94,8 @@ public class AccessLog extends ConfigBean
      * @return possible object is
      *         {@link String }
      */
-    public String getRotationIntervalInMinutes() {
-        if (rotationIntervalInMinutes == null) {
-            return "1440";
-        } else {
-            return rotationIntervalInMinutes;
-        }
-    }
+    @Attribute
+    public String getRotationIntervalInMinutes();
 
     /**
      * Sets the value of the rotationIntervalInMinutes property.
@@ -146,11 +103,7 @@ public class AccessLog extends ConfigBean
      * @param value allowed object is
      *              {@link String }
      */
-    public void setRotationIntervalInMinutes(String value) throws PropertyVetoException {
-        support.fireVetoableChange("rotationIntervalInMinutes", this.rotationIntervalInMinutes, value);
-
-        this.rotationIntervalInMinutes = value;
-    }
+    public void setRotationIntervalInMinutes(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the rotationSuffix property.
@@ -158,13 +111,8 @@ public class AccessLog extends ConfigBean
      * @return possible object is
      *         {@link String }
      */
-    public String getRotationSuffix() {
-        if (rotationSuffix == null) {
-            return "yyyyMMdd-HH'h'mm'm'ss's'";
-        } else {
-            return rotationSuffix;
-        }
-    }
+    @Attribute
+    public String getRotationSuffix();
 
     /**
      * Sets the value of the rotationSuffix property.
@@ -172,11 +120,7 @@ public class AccessLog extends ConfigBean
      * @param value allowed object is
      *              {@link String }
      */
-    public void setRotationSuffix(String value) throws PropertyVetoException {
-        support.fireVetoableChange("rotationSuffix", this.rotationSuffix, value);
-
-        this.rotationSuffix = value;
-    }
+    public void setRotationSuffix(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the rotationEnabled property.
@@ -184,13 +128,8 @@ public class AccessLog extends ConfigBean
      * @return possible object is
      *         {@link String }
      */
-    public String getRotationEnabled() {
-        if (rotationEnabled == null) {
-            return "true";
-        } else {
-            return rotationEnabled;
-        }
-    }
+    @Attribute
+    public String getRotationEnabled();
 
     /**
      * Sets the value of the rotationEnabled property.
@@ -198,10 +137,6 @@ public class AccessLog extends ConfigBean
      * @param value allowed object is
      *              {@link String }
      */
-    public void setRotationEnabled(String value) throws PropertyVetoException {
-        support.fireVetoableChange("rotationEnabled", this.rotationEnabled, value);
-
-        this.rotationEnabled = value;
-    }
+    public void setRotationEnabled(String value) throws PropertyVetoException;
 
 }

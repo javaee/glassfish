@@ -40,7 +40,7 @@ package com.sun.enterprise.config.serverbeans;
 
 import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.Configured;
-import org.glassfish.api.admin.ConfigBean;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 
 import java.beans.PropertyVetoException;
 import java.io.Serializable;
@@ -52,24 +52,7 @@ import java.io.Serializable;
 
 /* @XmlType(name = "") */
 @Configured
-public class TransformationRule
- extends ConfigBean implements Serializable {
-
-    private final static long serialVersionUID = 1L;
-    @Attribute(required = true)
-
-    protected String name;
-    @Attribute
-
-    protected String enabled;
-    @Attribute
-
-    protected String applyTo;
-    @Attribute(required = true)
-
-    protected String ruleFileLocation;
-
-
+public interface TransformationRule extends ConfigBeanProxy  {
 
     /**
      * Gets the value of the name property.
@@ -77,9 +60,8 @@ public class TransformationRule
      * @return possible object is
      *         {@link String }
      */
-    public String getName() {
-        return name;
-    }
+    @Attribute(required = true)
+    public String getName();
 
     /**
      * Sets the value of the name property.
@@ -87,11 +69,7 @@ public class TransformationRule
      * @param value allowed object is
      *              {@link String }
      */
-    public void setName(String value) throws PropertyVetoException {
-        support.fireVetoableChange("name", this.name, value);
-
-        this.name = value;
-    }
+    public void setName(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the enabled property.
@@ -99,13 +77,8 @@ public class TransformationRule
      * @return possible object is
      *         {@link String }
      */
-    public String getEnabled() {
-        if (enabled == null) {
-            return "true";
-        } else {
-            return enabled;
-        }
-    }
+    @Attribute
+    public String getEnabled();
 
     /**
      * Sets the value of the enabled property.
@@ -113,11 +86,7 @@ public class TransformationRule
      * @param value allowed object is
      *              {@link String }
      */
-    public void setEnabled(String value) throws PropertyVetoException {
-        support.fireVetoableChange("enabled", this.enabled, value);
-
-        this.enabled = value;
-    }
+    public void setEnabled(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the applyTo property.
@@ -125,13 +94,8 @@ public class TransformationRule
      * @return possible object is
      *         {@link String }
      */
-    public String getApplyTo() {
-        if (applyTo == null) {
-            return "request";
-        } else {
-            return applyTo;
-        }
-    }
+    @Attribute
+    public String getApplyTo();
 
     /**
      * Sets the value of the applyTo property.
@@ -139,11 +103,7 @@ public class TransformationRule
      * @param value allowed object is
      *              {@link String }
      */
-    public void setApplyTo(String value) throws PropertyVetoException {
-        support.fireVetoableChange("applyTo", this.applyTo, value);
-
-        this.applyTo = value;
-    }
+    public void setApplyTo(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the ruleFileLocation property.
@@ -151,9 +111,8 @@ public class TransformationRule
      * @return possible object is
      *         {@link String }
      */
-    public String getRuleFileLocation() {
-        return ruleFileLocation;
-    }
+    @Attribute(required = true)
+    public String getRuleFileLocation();
 
     /**
      * Sets the value of the ruleFileLocation property.
@@ -161,11 +120,7 @@ public class TransformationRule
      * @param value allowed object is
      *              {@link String }
      */
-    public void setRuleFileLocation(String value) throws PropertyVetoException {
-        support.fireVetoableChange("ruleFileLocation", this.ruleFileLocation, value);
-
-        this.ruleFileLocation = value;
-    }
+    public void setRuleFileLocation(String value) throws PropertyVetoException;
 
 
 

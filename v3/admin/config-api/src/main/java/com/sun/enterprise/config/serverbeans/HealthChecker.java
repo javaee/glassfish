@@ -40,7 +40,7 @@ package com.sun.enterprise.config.serverbeans;
 
 import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.Configured;
-import org.glassfish.api.admin.ConfigBean;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 
 import java.beans.PropertyVetoException;
 import java.io.Serializable;
@@ -52,21 +52,7 @@ import java.io.Serializable;
 
 /* @XmlType(name = "") */
 @Configured
-public class HealthChecker
- extends ConfigBean implements Serializable {
-
-    private final static long serialVersionUID = 1L;
-    @Attribute
-
-    protected String url;
-    @Attribute
-
-    protected String intervalInSeconds;
-    @Attribute
-
-    protected String timeoutInSeconds;
-
-
+public interface HealthChecker extends ConfigBeanProxy  {
 
     /**
      * Gets the value of the url property.
@@ -74,13 +60,8 @@ public class HealthChecker
      * @return possible object is
      *         {@link String }
      */
-    public String getUrl() {
-        if (url == null) {
-            return "/";
-        } else {
-            return url;
-        }
-    }
+    @Attribute
+    public String getUrl();
 
     /**
      * Sets the value of the url property.
@@ -88,11 +69,7 @@ public class HealthChecker
      * @param value allowed object is
      *              {@link String }
      */
-    public void setUrl(String value) throws PropertyVetoException {
-        support.fireVetoableChange("url", this.url, value);
-
-        this.url = value;
-    }
+    public void setUrl(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the intervalInSeconds property.
@@ -100,13 +77,8 @@ public class HealthChecker
      * @return possible object is
      *         {@link String }
      */
-    public String getIntervalInSeconds() {
-        if (intervalInSeconds == null) {
-            return "30";
-        } else {
-            return intervalInSeconds;
-        }
-    }
+    @Attribute
+    public String getIntervalInSeconds();
 
     /**
      * Sets the value of the intervalInSeconds property.
@@ -114,11 +86,7 @@ public class HealthChecker
      * @param value allowed object is
      *              {@link String }
      */
-    public void setIntervalInSeconds(String value) throws PropertyVetoException {
-        support.fireVetoableChange("intervalInSeconds", this.intervalInSeconds, value);
-
-        this.intervalInSeconds = value;
-    }
+    public void setIntervalInSeconds(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the timeoutInSeconds property.
@@ -126,13 +94,8 @@ public class HealthChecker
      * @return possible object is
      *         {@link String }
      */
-    public String getTimeoutInSeconds() {
-        if (timeoutInSeconds == null) {
-            return "10";
-        } else {
-            return timeoutInSeconds;
-        }
-    }
+    @Attribute
+    public String getTimeoutInSeconds();
 
     /**
      * Sets the value of the timeoutInSeconds property.
@@ -140,11 +103,7 @@ public class HealthChecker
      * @param value allowed object is
      *              {@link String }
      */
-    public void setTimeoutInSeconds(String value) throws PropertyVetoException {
-        support.fireVetoableChange("timeoutInSeconds", this.timeoutInSeconds, value);
-
-        this.timeoutInSeconds = value;
-    }
+    public void setTimeoutInSeconds(String value) throws PropertyVetoException;
 
 
 

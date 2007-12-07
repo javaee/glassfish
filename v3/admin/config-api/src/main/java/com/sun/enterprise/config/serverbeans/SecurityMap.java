@@ -41,7 +41,7 @@ package com.sun.enterprise.config.serverbeans;
 import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.Element;
-import org.glassfish.api.admin.ConfigBean;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 
 import java.beans.PropertyVetoException;
 import java.io.Serializable;
@@ -58,24 +58,7 @@ import java.util.List;
     "backendPrincipal"
 }) */
 @Configured
-public class SecurityMap
- extends ConfigBean implements Serializable {
-
-    private final static long serialVersionUID = 1L;
-    @Attribute(required = true)
-
-    protected String name;
-
-    @Element
-    List<String> principal = new ConstrainedList<String>(this, "principal = new ArrayList<String>()", support);
-
-    @Element
-    List<String> userGroup  = new ConstrainedList<String>(this, "userGroup = new ArrayList<String>()", support);
-
-    @Element(required=true)
-    protected BackendPrincipal backendPrincipal;
-    
-
+public interface SecurityMap extends ConfigBeanProxy  {
 
     /**
      * Gets the value of the name property.
@@ -83,9 +66,8 @@ public class SecurityMap
      * @return possible object is
      *         {@link String }
      */
-    public String getName() {
-        return name;
-    }
+    @Attribute(required = true)
+    public String getName();
 
     /**
      * Sets the value of the name property.
@@ -93,38 +75,13 @@ public class SecurityMap
      * @param value allowed object is
      *              {@link String }
      */
-    public void setName(String value) throws PropertyVetoException {
-        support.fireVetoableChange("name", this.name, value);
-
-        this.name = value;
-    }
-
-    public void addPrincipal(String principal) {
-        this.principal.add(principal);
-    }
-
-    public List<String>  getPrincipal() {
-        return principal;
-    }
-
-    public void addUserGroup(String userGroup) {          
-        this.userGroup.add(userGroup);
-    }
-
-    public List<String>  getUserGroup() {
-        return userGroup;
-    }
-
+    public void setName(String value) throws PropertyVetoException;
 
     /**
      * Backward compatibility API
      */
-    public List<String> getPrincipalOrUserGroup() {
-        List<String> bag = new ArrayList<String>();
-        bag.addAll(principal);
-        bag.addAll(userGroup);
-        return bag;
-    }
+    @Element
+    public List<String> getPrincipalOrUserGroup();
 
     /**
      * Gets the value of the backendPrincipal property.
@@ -132,9 +89,8 @@ public class SecurityMap
      * @return possible object is
      *         {@link BackendPrincipal }
      */
-    public BackendPrincipal getBackendPrincipal() {
-        return backendPrincipal;
-    }
+    @Element(required=true)
+    public BackendPrincipal getBackendPrincipal();
 
     /**
      * Sets the value of the backendPrincipal property.
@@ -142,11 +98,7 @@ public class SecurityMap
      * @param value allowed object is
      *              {@link BackendPrincipal }
      */
-    public void setBackendPrincipal(BackendPrincipal value) throws PropertyVetoException {
-        support.fireVetoableChange("backendPrincipal", this.backendPrincipal, value);
-
-        this.backendPrincipal = value;
-    }
+    public void setBackendPrincipal(BackendPrincipal value) throws PropertyVetoException;
 
 
 

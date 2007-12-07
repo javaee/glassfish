@@ -41,7 +41,7 @@ package com.sun.enterprise.config.serverbeans;
 import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.Element;
-import org.glassfish.api.admin.ConfigBean;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 
 import java.beans.PropertyVetoException;
 import java.io.Serializable;
@@ -58,26 +58,7 @@ import java.util.List;
     "property"
 }) */
 @Configured
-public class ProviderConfig
- extends ConfigBean implements Serializable {
-
-    private final static long serialVersionUID = 1L;
-    @Attribute(required = true)
-
-    protected String providerId;
-    @Attribute(required = true)
-
-    protected String providerType;
-    @Attribute(required = true)
-
-    protected String className;
-    @Element
-    protected RequestPolicy requestPolicy;
-    @Element
-    protected ResponsePolicy responsePolicy;
-    protected List<Property> property = new ConstrainedList<Property>(this, "property", support);
-
-
+public interface ProviderConfig extends ConfigBeanProxy  {
 
     /**
      * Gets the value of the providerId property.
@@ -85,9 +66,8 @@ public class ProviderConfig
      * @return possible object is
      *         {@link String }
      */
-    public String getProviderId() {
-        return providerId;
-    }
+    @Attribute(required = true)
+    public String getProviderId();
 
     /**
      * Sets the value of the providerId property.
@@ -95,11 +75,7 @@ public class ProviderConfig
      * @param value allowed object is
      *              {@link String }
      */
-    public void setProviderId(String value) throws PropertyVetoException {
-        support.fireVetoableChange("providerId", this.providerId, value);
-
-        this.providerId = value;
-    }
+    public void setProviderId(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the providerType property.
@@ -107,9 +83,8 @@ public class ProviderConfig
      * @return possible object is
      *         {@link String }
      */
-    public String getProviderType() {
-        return providerType;
-    }
+    @Attribute(required = true)
+    public String getProviderType();
 
     /**
      * Sets the value of the providerType property.
@@ -117,11 +92,7 @@ public class ProviderConfig
      * @param value allowed object is
      *              {@link String }
      */
-    public void setProviderType(String value) throws PropertyVetoException {
-        support.fireVetoableChange("providerType", this.providerType, value);
-
-        this.providerType = value;
-    }
+    public void setProviderType(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the className property.
@@ -129,9 +100,8 @@ public class ProviderConfig
      * @return possible object is
      *         {@link String }
      */
-    public String getClassName() {
-        return className;
-    }
+    @Attribute(required = true)
+    public String getClassName();
 
     /**
      * Sets the value of the className property.
@@ -139,11 +109,7 @@ public class ProviderConfig
      * @param value allowed object is
      *              {@link String }
      */
-    public void setClassName(String value) throws PropertyVetoException {
-        support.fireVetoableChange("className", this.className, value);
-
-        this.className = value;
-    }
+    public void setClassName(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the requestPolicy property.
@@ -151,9 +117,8 @@ public class ProviderConfig
      * @return possible object is
      *         {@link RequestPolicy }
      */
-    public RequestPolicy getRequestPolicy() {
-        return requestPolicy;
-    }
+    @Element
+    public RequestPolicy getRequestPolicy();
 
     /**
      * Sets the value of the requestPolicy property.
@@ -161,11 +126,7 @@ public class ProviderConfig
      * @param value allowed object is
      *              {@link RequestPolicy }
      */
-    public void setRequestPolicy(RequestPolicy value) throws PropertyVetoException {
-        support.fireVetoableChange("requestPolicy", this.requestPolicy, value);
-
-        this.requestPolicy = value;
-    }
+    public void setRequestPolicy(RequestPolicy value) throws PropertyVetoException;
 
     /**
      * Gets the value of the responsePolicy property.
@@ -173,9 +134,8 @@ public class ProviderConfig
      * @return possible object is
      *         {@link ResponsePolicy }
      */
-    public ResponsePolicy getResponsePolicy() {
-        return responsePolicy;
-    }
+    @Element
+    public ResponsePolicy getResponsePolicy();
 
     /**
      * Sets the value of the responsePolicy property.
@@ -183,11 +143,7 @@ public class ProviderConfig
      * @param value allowed object is
      *              {@link ResponsePolicy }
      */
-    public void setResponsePolicy(ResponsePolicy value) throws PropertyVetoException {
-        support.fireVetoableChange("responsePolicy", this.responsePolicy, value);
-
-        this.responsePolicy = value;
-    }
+    public void setResponsePolicy(ResponsePolicy value) throws PropertyVetoException;
 
     /**
      * Gets the value of the property property.
@@ -209,9 +165,8 @@ public class ProviderConfig
      * Objects of the following type(s) are allowed in the list
      * {@link Property }
      */
-    public List<Property> getProperty() {
-        return this.property;
-    }
+    @Element("property")
+    public List<Property> getProperty();
 
 
 

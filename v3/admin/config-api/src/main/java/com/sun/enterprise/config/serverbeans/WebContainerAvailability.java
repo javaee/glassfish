@@ -39,11 +39,11 @@
 package com.sun.enterprise.config.serverbeans;
 
 import org.jvnet.hk2.config.Attribute;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.Configured;
-import org.glassfish.api.admin.ConfigBean;
+import org.jvnet.hk2.config.Element;
 
 import java.beans.PropertyVetoException;
-import java.io.Serializable;
 import java.util.List;
 
 
@@ -55,34 +55,7 @@ import java.util.List;
     "property"
 }) */
 @Configured
-public class WebContainerAvailability
- extends ConfigBean implements Serializable {
-
-    private final static long serialVersionUID = 1L;
-    @Attribute
-
-    protected String availabilityEnabled;
-    @Attribute
-
-    protected String persistenceType;
-    @Attribute
-
-    protected String persistenceFrequency;
-    @Attribute
-
-    protected String persistenceScope;
-    @Attribute
-
-    protected String persistenceStoreHealthCheckEnabled;
-    @Attribute
-
-    protected String ssoFailoverEnabled;
-    @Attribute
-
-    protected String httpSessionStorePoolName;
-    protected List<Property> property = new ConstrainedList<Property>(this, "property", support);
-
-
+public interface WebContainerAvailability extends ConfigBeanProxy  {
 
     /**
      * Gets the value of the availabilityEnabled property.
@@ -90,9 +63,8 @@ public class WebContainerAvailability
      * @return possible object is
      *         {@link String }
      */
-    public String getAvailabilityEnabled() {
-        return availabilityEnabled;
-    }
+    @Attribute
+    public String getAvailabilityEnabled();
 
     /**
      * Sets the value of the availabilityEnabled property.
@@ -100,11 +72,7 @@ public class WebContainerAvailability
      * @param value allowed object is
      *              {@link String }
      */
-    public void setAvailabilityEnabled(String value) throws PropertyVetoException {
-        support.fireVetoableChange("availabilityEnabled", this.availabilityEnabled, value);
-
-        this.availabilityEnabled = value;
-    }
+    public void setAvailabilityEnabled(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the persistenceType property.
@@ -112,13 +80,8 @@ public class WebContainerAvailability
      * @return possible object is
      *         {@link String }
      */
-    public String getPersistenceType() {
-        if (persistenceType == null) {
-            return "memory";
-        } else {
-            return persistenceType;
-        }
-    }
+    @Attribute
+    public String getPersistenceType();
 
     /**
      * Sets the value of the persistenceType property.
@@ -126,11 +89,7 @@ public class WebContainerAvailability
      * @param value allowed object is
      *              {@link String }
      */
-    public void setPersistenceType(String value) throws PropertyVetoException {
-        support.fireVetoableChange("persistenceType", this.persistenceType, value);
-
-        this.persistenceType = value;
-    }
+    public void setPersistenceType(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the persistenceFrequency property.
@@ -138,9 +97,8 @@ public class WebContainerAvailability
      * @return possible object is
      *         {@link String }
      */
-    public String getPersistenceFrequency() {
-        return persistenceFrequency;
-    }
+    @Attribute
+    public String getPersistenceFrequency();
 
     /**
      * Sets the value of the persistenceFrequency property.
@@ -148,11 +106,7 @@ public class WebContainerAvailability
      * @param value allowed object is
      *              {@link String }
      */
-    public void setPersistenceFrequency(String value) throws PropertyVetoException {
-        support.fireVetoableChange("persistenceFrequency", this.persistenceFrequency, value);
-
-        this.persistenceFrequency = value;
-    }
+    public void setPersistenceFrequency(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the persistenceScope property.
@@ -160,9 +114,8 @@ public class WebContainerAvailability
      * @return possible object is
      *         {@link String }
      */
-    public String getPersistenceScope() {
-        return persistenceScope;
-    }
+    @Attribute
+    public String getPersistenceScope();
 
     /**
      * Sets the value of the persistenceScope property.
@@ -170,11 +123,7 @@ public class WebContainerAvailability
      * @param value allowed object is
      *              {@link String }
      */
-    public void setPersistenceScope(String value) throws PropertyVetoException {
-        support.fireVetoableChange("persistenceScope", this.persistenceScope, value);
-
-        this.persistenceScope = value;
-    }
+    public void setPersistenceScope(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the persistenceStoreHealthCheckEnabled property.
@@ -182,13 +131,8 @@ public class WebContainerAvailability
      * @return possible object is
      *         {@link String }
      */
-    public String getPersistenceStoreHealthCheckEnabled() {
-        if (persistenceStoreHealthCheckEnabled == null) {
-            return "false";
-        } else {
-            return persistenceStoreHealthCheckEnabled;
-        }
-    }
+    @Attribute
+    public String getPersistenceStoreHealthCheckEnabled();
 
     /**
      * Sets the value of the persistenceStoreHealthCheckEnabled property.
@@ -196,11 +140,7 @@ public class WebContainerAvailability
      * @param value allowed object is
      *              {@link String }
      */
-    public void setPersistenceStoreHealthCheckEnabled(String value) throws PropertyVetoException {
-        support.fireVetoableChange("persistenceStoreHealthCheckEnabled", this.persistenceStoreHealthCheckEnabled, value);
-
-        this.persistenceStoreHealthCheckEnabled = value;
-    }
+    public void setPersistenceStoreHealthCheckEnabled(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the ssoFailoverEnabled property.
@@ -208,13 +148,8 @@ public class WebContainerAvailability
      * @return possible object is
      *         {@link String }
      */
-    public String getSsoFailoverEnabled() {
-        if (ssoFailoverEnabled == null) {
-            return "false";
-        } else {
-            return ssoFailoverEnabled;
-        }
-    }
+    @Attribute
+    public String getSsoFailoverEnabled();
 
     /**
      * Sets the value of the ssoFailoverEnabled property.
@@ -222,11 +157,7 @@ public class WebContainerAvailability
      * @param value allowed object is
      *              {@link String }
      */
-    public void setSsoFailoverEnabled(String value) throws PropertyVetoException {
-        support.fireVetoableChange("ssoFailoverEnabled", this.ssoFailoverEnabled, value);
-
-        this.ssoFailoverEnabled = value;
-    }
+    public void setSsoFailoverEnabled(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the httpSessionStorePoolName property.
@@ -234,9 +165,8 @@ public class WebContainerAvailability
      * @return possible object is
      *         {@link String }
      */
-    public String getHttpSessionStorePoolName() {
-        return httpSessionStorePoolName;
-    }
+    @Attribute
+    public String getHttpSessionStorePoolName();
 
     /**
      * Sets the value of the httpSessionStorePoolName property.
@@ -244,11 +174,7 @@ public class WebContainerAvailability
      * @param value allowed object is
      *              {@link String }
      */
-    public void setHttpSessionStorePoolName(String value) throws PropertyVetoException {
-        support.fireVetoableChange("httpSessionStorePoolName", this.httpSessionStorePoolName, value);
-
-        this.httpSessionStorePoolName = value;
-    }
+    public void setHttpSessionStorePoolName(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the property property.
@@ -270,9 +196,8 @@ public class WebContainerAvailability
      * Objects of the following type(s) are allowed in the list
      * {@link Property }
      */
-    public List<Property> getProperty() {
-        return this.property;
-    }
+    @Element("property")
+    public List<Property> getProperty();
 
 
 

@@ -45,5 +45,5 @@ public class ConstrainedList<T> extends ArrayList<T> {
     public Object clone() {
         System.out.println(this + " is being cloned");
         return super.clone();
-    }    
+    }
 }

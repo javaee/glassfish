@@ -39,11 +39,11 @@
 package com.sun.enterprise.config.serverbeans;
 
 import org.jvnet.hk2.config.Attribute;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.Configured;
-import org.glassfish.api.admin.ConfigBean;
+import org.jvnet.hk2.config.Element;
 
 import java.beans.PropertyVetoException;
-import java.io.Serializable;
 import java.util.List;
 
 
@@ -55,31 +55,7 @@ import java.util.List;
     "property"
 }) */
 @Configured
-public class TransactionService
- extends ConfigBean implements Serializable {
-
-    private final static long serialVersionUID = 1L;
-    @Attribute
-
-    protected String automaticRecovery;
-    @Attribute
-
-    protected String timeoutInSeconds;
-    @Attribute
-
-    protected String txLogDir;
-    @Attribute
-
-    protected String heuristicDecision;
-    @Attribute
-
-    protected String retryTimeoutInSeconds;
-    @Attribute
-
-    protected String keypointInterval;
-    protected List<Property> property = new ConstrainedList<Property>(this, "property", support);
-
-
+public interface TransactionService extends ConfigBeanProxy  {
 
     /**
      * Gets the value of the automaticRecovery property.
@@ -87,13 +63,8 @@ public class TransactionService
      * @return possible object is
      *         {@link String }
      */
-    public String getAutomaticRecovery() {
-        if (automaticRecovery == null) {
-            return "false";
-        } else {
-            return automaticRecovery;
-        }
-    }
+    @Attribute
+    public String getAutomaticRecovery();
 
     /**
      * Sets the value of the automaticRecovery property.
@@ -101,11 +72,7 @@ public class TransactionService
      * @param value allowed object is
      *              {@link String }
      */
-    public void setAutomaticRecovery(String value) throws PropertyVetoException {
-        support.fireVetoableChange("automaticRecovery", this.automaticRecovery, value);
-
-        this.automaticRecovery = value;
-    }
+    public void setAutomaticRecovery(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the timeoutInSeconds property.
@@ -113,13 +80,8 @@ public class TransactionService
      * @return possible object is
      *         {@link String }
      */
-    public String getTimeoutInSeconds() {
-        if (timeoutInSeconds == null) {
-            return "0";
-        } else {
-            return timeoutInSeconds;
-        }
-    }
+    @Attribute
+    public String getTimeoutInSeconds();
 
     /**
      * Sets the value of the timeoutInSeconds property.
@@ -127,11 +89,7 @@ public class TransactionService
      * @param value allowed object is
      *              {@link String }
      */
-    public void setTimeoutInSeconds(String value) throws PropertyVetoException {
-        support.fireVetoableChange("timeoutInSeconds", this.timeoutInSeconds, value);
-
-        this.timeoutInSeconds = value;
-    }
+    public void setTimeoutInSeconds(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the txLogDir property.
@@ -139,9 +97,8 @@ public class TransactionService
      * @return possible object is
      *         {@link String }
      */
-    public String getTxLogDir() {
-        return txLogDir;
-    }
+    @Attribute
+    public String getTxLogDir();
 
     /**
      * Sets the value of the txLogDir property.
@@ -149,11 +106,7 @@ public class TransactionService
      * @param value allowed object is
      *              {@link String }
      */
-    public void setTxLogDir(String value) throws PropertyVetoException {
-        support.fireVetoableChange("txLogDir", this.txLogDir, value);
-
-        this.txLogDir = value;
-    }
+    public void setTxLogDir(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the heuristicDecision property.
@@ -161,13 +114,8 @@ public class TransactionService
      * @return possible object is
      *         {@link String }
      */
-    public String getHeuristicDecision() {
-        if (heuristicDecision == null) {
-            return "rollback";
-        } else {
-            return heuristicDecision;
-        }
-    }
+    @Attribute
+    public String getHeuristicDecision();
 
     /**
      * Sets the value of the heuristicDecision property.
@@ -175,11 +123,7 @@ public class TransactionService
      * @param value allowed object is
      *              {@link String }
      */
-    public void setHeuristicDecision(String value) throws PropertyVetoException {
-        support.fireVetoableChange("heuristicDecision", this.heuristicDecision, value);
-
-        this.heuristicDecision = value;
-    }
+    public void setHeuristicDecision(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the retryTimeoutInSeconds property.
@@ -187,13 +131,8 @@ public class TransactionService
      * @return possible object is
      *         {@link String }
      */
-    public String getRetryTimeoutInSeconds() {
-        if (retryTimeoutInSeconds == null) {
-            return "600";
-        } else {
-            return retryTimeoutInSeconds;
-        }
-    }
+    @Attribute
+    public String getRetryTimeoutInSeconds();
 
     /**
      * Sets the value of the retryTimeoutInSeconds property.
@@ -201,11 +140,7 @@ public class TransactionService
      * @param value allowed object is
      *              {@link String }
      */
-    public void setRetryTimeoutInSeconds(String value) throws PropertyVetoException {
-        support.fireVetoableChange("retryTimeoutInSeconds", this.retryTimeoutInSeconds, value);
-
-        this.retryTimeoutInSeconds = value;
-    }
+    public void setRetryTimeoutInSeconds(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the keypointInterval property.
@@ -213,13 +148,8 @@ public class TransactionService
      * @return possible object is
      *         {@link String }
      */
-    public String getKeypointInterval() {
-        if (keypointInterval == null) {
-            return "2048";
-        } else {
-            return keypointInterval;
-        }
-    }
+    @Attribute
+    public String getKeypointInterval();
 
     /**
      * Sets the value of the keypointInterval property.
@@ -227,11 +157,7 @@ public class TransactionService
      * @param value allowed object is
      *              {@link String }
      */
-    public void setKeypointInterval(String value) throws PropertyVetoException {
-        support.fireVetoableChange("keypointInterval", this.keypointInterval, value);
-
-        this.keypointInterval = value;
-    }
+    public void setKeypointInterval(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the property property.
@@ -253,9 +179,8 @@ public class TransactionService
      * Objects of the following type(s) are allowed in the list
      * {@link Property }
      */
-    public List<Property> getProperty() {
-        return this.property;
-    }
+    @Element("property")
+    public List<Property> getProperty();
 
 
 

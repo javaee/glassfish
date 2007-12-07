@@ -163,7 +163,12 @@ public class Main {
     private static void processMessage(Manifest m)  {
         String exitCode = m.getMainAttributes().getValue("exit-code");
         String message = m.getMainAttributes().getValue("message");
-        System.out.println(exitCode + " : " + message);
+
+        if (exitCode!=null) {
+            System.out.println(exitCode + " : " + message);
+        } else {
+            System.out.println(message);
+        }
         if (!exitCode.equalsIgnoreCase("Success")) {
             return;
         }

@@ -40,7 +40,7 @@ package com.sun.enterprise.config.serverbeans;
 
 import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.Configured;
-import org.glassfish.api.admin.ConfigBean;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 
 import java.beans.PropertyVetoException;
 import java.io.Serializable;
@@ -52,21 +52,7 @@ import java.io.Serializable;
 
 /* @XmlType(name = "") */
 @Configured
-public class KeepAlive
- extends ConfigBean implements Serializable {
-
-    private final static long serialVersionUID = 1L;
-    @Attribute
-
-    protected String threadCount;
-    @Attribute
-
-    protected String maxConnections;
-    @Attribute
-
-    protected String timeoutInSeconds;
-
-
+public interface KeepAlive extends ConfigBeanProxy  {
 
     /**
      * Gets the value of the threadCount property.
@@ -74,13 +60,8 @@ public class KeepAlive
      * @return possible object is
      *         {@link String }
      */
-    public String getThreadCount() {
-        if (threadCount == null) {
-            return "1";
-        } else {
-            return threadCount;
-        }
-    }
+    @Attribute
+    public String getThreadCount();
 
     /**
      * Sets the value of the threadCount property.
@@ -88,11 +69,7 @@ public class KeepAlive
      * @param value allowed object is
      *              {@link String }
      */
-    public void setThreadCount(String value) throws PropertyVetoException {
-        support.fireVetoableChange("threadCount", this.threadCount, value);
-
-        this.threadCount = value;
-    }
+    public void setThreadCount(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the maxConnections property.
@@ -100,13 +77,8 @@ public class KeepAlive
      * @return possible object is
      *         {@link String }
      */
-    public String getMaxConnections() {
-        if (maxConnections == null) {
-            return "256";
-        } else {
-            return maxConnections;
-        }
-    }
+    @Attribute
+    public String getMaxConnections();
 
     /**
      * Sets the value of the maxConnections property.
@@ -114,11 +86,7 @@ public class KeepAlive
      * @param value allowed object is
      *              {@link String }
      */
-    public void setMaxConnections(String value) throws PropertyVetoException {
-        support.fireVetoableChange("maxConnections", this.maxConnections, value);
-
-        this.maxConnections = value;
-    }
+    public void setMaxConnections(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the timeoutInSeconds property.
@@ -126,13 +94,8 @@ public class KeepAlive
      * @return possible object is
      *         {@link String }
      */
-    public String getTimeoutInSeconds() {
-        if (timeoutInSeconds == null) {
-            return "30";
-        } else {
-            return timeoutInSeconds;
-        }
-    }
+    @Attribute
+    public String getTimeoutInSeconds();
 
     /**
      * Sets the value of the timeoutInSeconds property.
@@ -140,11 +103,7 @@ public class KeepAlive
      * @param value allowed object is
      *              {@link String }
      */
-    public void setTimeoutInSeconds(String value) throws PropertyVetoException {
-        support.fireVetoableChange("timeoutInSeconds", this.timeoutInSeconds, value);
-
-        this.timeoutInSeconds = value;
-    }
+    public void setTimeoutInSeconds(String value) throws PropertyVetoException;
 
 
 

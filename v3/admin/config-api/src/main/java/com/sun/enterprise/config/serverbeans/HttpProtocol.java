@@ -40,7 +40,7 @@ package com.sun.enterprise.config.serverbeans;
 
 import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.Configured;
-import org.glassfish.api.admin.ConfigBean;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 
 import java.beans.PropertyVetoException;
 import java.io.Serializable;
@@ -52,33 +52,7 @@ import java.io.Serializable;
 
 /* @XmlType(name = "") */
 @Configured
-public class HttpProtocol
- extends ConfigBean implements Serializable {
-
-    private final static long serialVersionUID = 1L;
-    @Attribute
-
-    protected String version;
-    @Attribute
-
-    protected String dnsLookupEnabled;
-    @Attribute
-
-    protected String forcedType;
-    @Attribute
-
-    protected String defaultType;
-    @Attribute
-
-    protected String forcedResponseType;
-    @Attribute
-
-    protected String defaultResponseType;
-    @Attribute
-
-    protected String sslEnabled;
-
-
+public interface HttpProtocol extends ConfigBeanProxy  {
 
     /**
      * Gets the value of the version property.
@@ -86,13 +60,8 @@ public class HttpProtocol
      * @return possible object is
      *         {@link String }
      */
-    public String getVersion() {
-        if (version == null) {
-            return "HTTP/1.1";
-        } else {
-            return version;
-        }
-    }
+    @Attribute
+    public String getVersion();
 
     /**
      * Sets the value of the version property.
@@ -100,11 +69,7 @@ public class HttpProtocol
      * @param value allowed object is
      *              {@link String }
      */
-    public void setVersion(String value) throws PropertyVetoException {
-        support.fireVetoableChange("version", this.version, value);
-
-        this.version = value;
-    }
+    public void setVersion(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the dnsLookupEnabled property.
@@ -112,13 +77,8 @@ public class HttpProtocol
      * @return possible object is
      *         {@link String }
      */
-    public String getDnsLookupEnabled() {
-        if (dnsLookupEnabled == null) {
-            return "false";
-        } else {
-            return dnsLookupEnabled;
-        }
-    }
+    @Attribute
+    public String getDnsLookupEnabled();
 
     /**
      * Sets the value of the dnsLookupEnabled property.
@@ -126,11 +86,7 @@ public class HttpProtocol
      * @param value allowed object is
      *              {@link String }
      */
-    public void setDnsLookupEnabled(String value) throws PropertyVetoException {
-        support.fireVetoableChange("dnsLookupEnabled", this.dnsLookupEnabled, value);
-
-        this.dnsLookupEnabled = value;
-    }
+    public void setDnsLookupEnabled(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the forcedType property.
@@ -138,13 +94,8 @@ public class HttpProtocol
      * @return possible object is
      *         {@link String }
      */
-    public String getForcedType() {
-        if (forcedType == null) {
-            return "text/html; charset=iso-8859-1";
-        } else {
-            return forcedType;
-        }
-    }
+    @Attribute
+    public String getForcedType();
 
     /**
      * Sets the value of the forcedType property.
@@ -152,11 +103,7 @@ public class HttpProtocol
      * @param value allowed object is
      *              {@link String }
      */
-    public void setForcedType(String value) throws PropertyVetoException {
-        support.fireVetoableChange("forcedType", this.forcedType, value);
-
-        this.forcedType = value;
-    }
+    public void setForcedType(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the defaultType property.
@@ -164,13 +111,8 @@ public class HttpProtocol
      * @return possible object is
      *         {@link String }
      */
-    public String getDefaultType() {
-        if (defaultType == null) {
-            return "text/html; charset=iso-8859-1";
-        } else {
-            return defaultType;
-        }
-    }
+    @Attribute
+    public String getDefaultType();
 
     /**
      * Sets the value of the defaultType property.
@@ -178,11 +120,7 @@ public class HttpProtocol
      * @param value allowed object is
      *              {@link String }
      */
-    public void setDefaultType(String value) throws PropertyVetoException {
-        support.fireVetoableChange("defaultType", this.defaultType, value);
-
-        this.defaultType = value;
-    }
+    public void setDefaultType(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the forcedResponseType property.
@@ -190,13 +128,8 @@ public class HttpProtocol
      * @return possible object is
      *         {@link String }
      */
-    public String getForcedResponseType() {
-        if (forcedResponseType == null) {
-            return "AttributeDeprecated";
-        } else {
-            return forcedResponseType;
-        }
-    }
+    @Attribute
+    public String getForcedResponseType();
 
     /**
      * Sets the value of the forcedResponseType property.
@@ -204,11 +137,7 @@ public class HttpProtocol
      * @param value allowed object is
      *              {@link String }
      */
-    public void setForcedResponseType(String value) throws PropertyVetoException {
-        support.fireVetoableChange("forcedResponseType", this.forcedResponseType, value);
-
-        this.forcedResponseType = value;
-    }
+    public void setForcedResponseType(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the defaultResponseType property.
@@ -216,13 +145,8 @@ public class HttpProtocol
      * @return possible object is
      *         {@link String }
      */
-    public String getDefaultResponseType() {
-        if (defaultResponseType == null) {
-            return "AttributeDeprecated";
-        } else {
-            return defaultResponseType;
-        }
-    }
+    @Attribute
+    public String getDefaultResponseType();
 
     /**
      * Sets the value of the defaultResponseType property.
@@ -230,11 +154,7 @@ public class HttpProtocol
      * @param value allowed object is
      *              {@link String }
      */
-    public void setDefaultResponseType(String value) throws PropertyVetoException {
-        support.fireVetoableChange("defaultResponseType", this.defaultResponseType, value);
-
-        this.defaultResponseType = value;
-    }
+    public void setDefaultResponseType(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the sslEnabled property.
@@ -242,13 +162,8 @@ public class HttpProtocol
      * @return possible object is
      *         {@link String }
      */
-    public String getSslEnabled() {
-        if (sslEnabled == null) {
-            return "true";
-        } else {
-            return sslEnabled;
-        }
-    }
+    @Attribute
+    public String getSslEnabled();
 
     /**
      * Sets the value of the sslEnabled property.
@@ -256,11 +171,7 @@ public class HttpProtocol
      * @param value allowed object is
      *              {@link String }
      */
-    public void setSslEnabled(String value) throws PropertyVetoException {
-        support.fireVetoableChange("sslEnabled", this.sslEnabled, value);
-
-        this.sslEnabled = value;
-    }
+    public void setSslEnabled(String value) throws PropertyVetoException;
 
 
 

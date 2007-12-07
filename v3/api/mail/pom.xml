@@ -47,7 +47,15 @@
                     </goals>
                   </execution>
                 </executions>
-              </plugin>                                 
+              </plugin>    
+              <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <configuration>
+          <javadocDirectory>${basedire}/src/main/java</javadocDirectory>
+        </configuration>
+      </plugin>
+              
         </plugins>
         <resources>
             <resource>
@@ -71,7 +79,17 @@
             </resource>
         </resources>
     </build>
-
+  <reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <configuration>
+          <javadocDirectory>src/main/java</javadocDirectory>
+        </configuration>
+      </plugin>
+    </plugins>
+  </reporting>
     <dependencies>
         <dependency>
             <groupId>javax.activation</groupId>

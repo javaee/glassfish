@@ -41,7 +41,7 @@ package com.sun.enterprise.config.serverbeans;
 import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.Element;
-import org.glassfish.api.admin.ConfigBean;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 
 import java.beans.PropertyVetoException;
 import java.io.Serializable;
@@ -55,32 +55,16 @@ import java.io.Serializable;
     "healthChecker"
 }) */
 @Configured
-public class ClusterRef extends ConfigBean implements Ref, Serializable {
+public interface ClusterRef extends ConfigBeanProxy, Ref  {
     
-    private final static long serialVersionUID = 1L;
-    @Attribute(required = true)
-
-    protected String ref;
-    @Attribute
-
-    protected String lbPolicy;
-    @Attribute
-
-    protected String lbPolicyModule;
-    @Element
-    protected HealthChecker healthChecker;
-
-
-
     /**
      * Gets the value of the ref property.
      *
      * @return possible object is
      *         {@link String }
      */
-    public String getRef() {
-        return ref;
-    }
+    @Attribute(required = true)
+    public String getRef();
 
     /**
      * Sets the value of the ref property.
@@ -88,11 +72,7 @@ public class ClusterRef extends ConfigBean implements Ref, Serializable {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setRef(String value) throws PropertyVetoException {
-        support.fireVetoableChange("ref", this.ref, value);
-
-        this.ref = value;
-    }
+    public void setRef(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the lbPolicy property.
@@ -100,13 +80,8 @@ public class ClusterRef extends ConfigBean implements Ref, Serializable {
      * @return possible object is
      *         {@link String }
      */
-    public String getLbPolicy() {
-        if (lbPolicy == null) {
-            return "round-robin";
-        } else {
-            return lbPolicy;
-        }
-    }
+    @Attribute
+    public String getLbPolicy();
 
     /**
      * Sets the value of the lbPolicy property.
@@ -114,11 +89,7 @@ public class ClusterRef extends ConfigBean implements Ref, Serializable {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setLbPolicy(String value) throws PropertyVetoException {
-        support.fireVetoableChange("lbPolicy", this.lbPolicy, value);
-
-        this.lbPolicy = value;
-    }
+    public void setLbPolicy(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the lbPolicyModule property.
@@ -126,9 +97,8 @@ public class ClusterRef extends ConfigBean implements Ref, Serializable {
      * @return possible object is
      *         {@link String }
      */
-    public String getLbPolicyModule() {
-        return lbPolicyModule;
-    }
+    @Attribute
+    public String getLbPolicyModule();
 
     /**
      * Sets the value of the lbPolicyModule property.
@@ -136,11 +106,7 @@ public class ClusterRef extends ConfigBean implements Ref, Serializable {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setLbPolicyModule(String value) throws PropertyVetoException {
-        support.fireVetoableChange("lbPolicyModule", this.lbPolicyModule, value);
-
-        this.lbPolicyModule = value;
-    }
+    public void setLbPolicyModule(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the healthChecker property.
@@ -148,9 +114,8 @@ public class ClusterRef extends ConfigBean implements Ref, Serializable {
      * @return possible object is
      *         {@link HealthChecker }
      */
-    public HealthChecker getHealthChecker() {
-        return healthChecker;
-    }
+    @Element
+    public HealthChecker getHealthChecker();
 
     /**
      * Sets the value of the healthChecker property.
@@ -158,11 +123,7 @@ public class ClusterRef extends ConfigBean implements Ref, Serializable {
      * @param value allowed object is
      *              {@link HealthChecker }
      */
-    public void setHealthChecker(HealthChecker value) throws PropertyVetoException {
-        support.fireVetoableChange("healthChecker", this.healthChecker, value);
-
-        this.healthChecker = value;
-    }
+    public void setHealthChecker(HealthChecker value) throws PropertyVetoException;
 
 
 

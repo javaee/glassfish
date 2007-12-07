@@ -39,11 +39,11 @@
 package com.sun.enterprise.config.serverbeans;
 
 import org.jvnet.hk2.config.Attribute;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.Configured;
-import org.glassfish.api.admin.ConfigBean;
+import org.jvnet.hk2.config.Element;
 
 import java.beans.PropertyVetoException;
-import java.io.Serializable;
 import java.util.List;
 
 
@@ -55,19 +55,7 @@ import java.util.List;
     "property"
 }) */
 @Configured
-public class StoreProperties
- extends ConfigBean implements Serializable {
-
-    private final static long serialVersionUID = 1L;
-    @Attribute
-
-    protected String directory;
-    @Attribute
-
-    protected String reapIntervalInSeconds;
-    protected List<Property> property = new ConstrainedList<Property>(this, "property", support);
-
-
+public interface StoreProperties extends ConfigBeanProxy  {
 
     /**
      * Gets the value of the directory property.
@@ -75,9 +63,8 @@ public class StoreProperties
      * @return possible object is
      *         {@link String }
      */
-    public String getDirectory() {
-        return directory;
-    }
+    @Attribute
+    public String getDirectory();
 
     /**
      * Sets the value of the directory property.
@@ -85,11 +72,7 @@ public class StoreProperties
      * @param value allowed object is
      *              {@link String }
      */
-    public void setDirectory(String value) throws PropertyVetoException {
-        support.fireVetoableChange("directory", this.directory, value);
-
-        this.directory = value;
-    }
+    public void setDirectory(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the reapIntervalInSeconds property.
@@ -97,9 +80,8 @@ public class StoreProperties
      * @return possible object is
      *         {@link String }
      */
-    public String getReapIntervalInSeconds() {
-        return reapIntervalInSeconds;
-    }
+    @Attribute
+    public String getReapIntervalInSeconds();
 
     /**
      * Sets the value of the reapIntervalInSeconds property.
@@ -107,11 +89,7 @@ public class StoreProperties
      * @param value allowed object is
      *              {@link String }
      */
-    public void setReapIntervalInSeconds(String value) throws PropertyVetoException {
-        support.fireVetoableChange("reapIntervalInSeconds", this.reapIntervalInSeconds, value);
-
-        this.reapIntervalInSeconds = value;
-    }
+    public void setReapIntervalInSeconds(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the property property.
@@ -133,9 +111,8 @@ public class StoreProperties
      * Objects of the following type(s) are allowed in the list
      * {@link Property }
      */
-    public List<Property> getProperty() {
-        return this.property;
-    }
+    @Element("property")
+    public List<Property> getProperty();
 
 
 

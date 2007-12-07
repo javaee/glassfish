@@ -40,7 +40,7 @@ package com.sun.enterprise.config.serverbeans;
 
 import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.Configured;
-import org.glassfish.api.admin.ConfigBean;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 
 import java.beans.PropertyVetoException;
 import java.io.Serializable;
@@ -52,42 +52,7 @@ import java.io.Serializable;
 
 /* @XmlType(name = "") */
 @Configured
-public class HttpFileCache
- extends ConfigBean implements Serializable {
-
-    private final static long serialVersionUID = 1L;
-    @Attribute
-
-    protected String globallyEnabled;
-    @Attribute
-
-    protected String fileCachingEnabled;
-    @Attribute
-
-    protected String maxAgeInSeconds;
-    @Attribute
-
-    protected String mediumFileSizeLimitInBytes;
-    @Attribute
-
-    protected String mediumFileSpaceInBytes;
-    @Attribute
-
-    protected String smallFileSizeLimitInBytes;
-    @Attribute
-
-    protected String smallFileSpaceInBytes;
-    @Attribute
-
-    protected String fileTransmissionEnabled;
-    @Attribute
-
-    protected String maxFilesCount;
-    @Attribute
-
-    protected String hashInitSize;
-
-
+public interface HttpFileCache extends ConfigBeanProxy  {
 
     /**
      * Gets the value of the globallyEnabled property.
@@ -95,13 +60,8 @@ public class HttpFileCache
      * @return possible object is
      *         {@link String }
      */
-    public String getGloballyEnabled() {
-        if (globallyEnabled == null) {
-            return "true";
-        } else {
-            return globallyEnabled;
-        }
-    }
+    @Attribute
+    public String getGloballyEnabled();
 
     /**
      * Sets the value of the globallyEnabled property.
@@ -109,11 +69,7 @@ public class HttpFileCache
      * @param value allowed object is
      *              {@link String }
      */
-    public void setGloballyEnabled(String value) throws PropertyVetoException {
-        support.fireVetoableChange("globallyEnabled", this.globallyEnabled, value);
-
-        this.globallyEnabled = value;
-    }
+    public void setGloballyEnabled(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the fileCachingEnabled property.
@@ -121,13 +77,8 @@ public class HttpFileCache
      * @return possible object is
      *         {@link String }
      */
-    public String getFileCachingEnabled() {
-        if (fileCachingEnabled == null) {
-            return "on";
-        } else {
-            return fileCachingEnabled;
-        }
-    }
+    @Attribute
+    public String getFileCachingEnabled();
 
     /**
      * Sets the value of the fileCachingEnabled property.
@@ -135,11 +86,7 @@ public class HttpFileCache
      * @param value allowed object is
      *              {@link String }
      */
-    public void setFileCachingEnabled(String value) throws PropertyVetoException {
-        support.fireVetoableChange("fileCachingEnabled", this.fileCachingEnabled, value);
-
-        this.fileCachingEnabled = value;
-    }
+    public void setFileCachingEnabled(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the maxAgeInSeconds property.
@@ -147,13 +94,8 @@ public class HttpFileCache
      * @return possible object is
      *         {@link String }
      */
-    public String getMaxAgeInSeconds() {
-        if (maxAgeInSeconds == null) {
-            return "30";
-        } else {
-            return maxAgeInSeconds;
-        }
-    }
+    @Attribute
+    public String getMaxAgeInSeconds();
 
     /**
      * Sets the value of the maxAgeInSeconds property.
@@ -161,11 +103,7 @@ public class HttpFileCache
      * @param value allowed object is
      *              {@link String }
      */
-    public void setMaxAgeInSeconds(String value) throws PropertyVetoException {
-        support.fireVetoableChange("maxAgeInSeconds", this.maxAgeInSeconds, value);
-
-        this.maxAgeInSeconds = value;
-    }
+    public void setMaxAgeInSeconds(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the mediumFileSizeLimitInBytes property.
@@ -173,13 +111,8 @@ public class HttpFileCache
      * @return possible object is
      *         {@link String }
      */
-    public String getMediumFileSizeLimitInBytes() {
-        if (mediumFileSizeLimitInBytes == null) {
-            return "537600";
-        } else {
-            return mediumFileSizeLimitInBytes;
-        }
-    }
+    @Attribute
+    public String getMediumFileSizeLimitInBytes();
 
     /**
      * Sets the value of the mediumFileSizeLimitInBytes property.
@@ -187,11 +120,7 @@ public class HttpFileCache
      * @param value allowed object is
      *              {@link String }
      */
-    public void setMediumFileSizeLimitInBytes(String value) throws PropertyVetoException {
-        support.fireVetoableChange("mediumFileSizeLimitInBytes", this.mediumFileSizeLimitInBytes, value);
-
-        this.mediumFileSizeLimitInBytes = value;
-    }
+    public void setMediumFileSizeLimitInBytes(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the mediumFileSpaceInBytes property.
@@ -199,13 +128,8 @@ public class HttpFileCache
      * @return possible object is
      *         {@link String }
      */
-    public String getMediumFileSpaceInBytes() {
-        if (mediumFileSpaceInBytes == null) {
-            return "10485760";
-        } else {
-            return mediumFileSpaceInBytes;
-        }
-    }
+    @Attribute
+    public String getMediumFileSpaceInBytes();
 
     /**
      * Sets the value of the mediumFileSpaceInBytes property.
@@ -213,11 +137,7 @@ public class HttpFileCache
      * @param value allowed object is
      *              {@link String }
      */
-    public void setMediumFileSpaceInBytes(String value) throws PropertyVetoException {
-        support.fireVetoableChange("mediumFileSpaceInBytes", this.mediumFileSpaceInBytes, value);
-
-        this.mediumFileSpaceInBytes = value;
-    }
+    public void setMediumFileSpaceInBytes(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the smallFileSizeLimitInBytes property.
@@ -225,13 +145,8 @@ public class HttpFileCache
      * @return possible object is
      *         {@link String }
      */
-    public String getSmallFileSizeLimitInBytes() {
-        if (smallFileSizeLimitInBytes == null) {
-            return "2048";
-        } else {
-            return smallFileSizeLimitInBytes;
-        }
-    }
+    @Attribute
+    public String getSmallFileSizeLimitInBytes();
 
     /**
      * Sets the value of the smallFileSizeLimitInBytes property.
@@ -239,11 +154,7 @@ public class HttpFileCache
      * @param value allowed object is
      *              {@link String }
      */
-    public void setSmallFileSizeLimitInBytes(String value) throws PropertyVetoException {
-        support.fireVetoableChange("smallFileSizeLimitInBytes", this.smallFileSizeLimitInBytes, value);
-
-        this.smallFileSizeLimitInBytes = value;
-    }
+    public void setSmallFileSizeLimitInBytes(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the smallFileSpaceInBytes property.
@@ -251,13 +162,8 @@ public class HttpFileCache
      * @return possible object is
      *         {@link String }
      */
-    public String getSmallFileSpaceInBytes() {
-        if (smallFileSpaceInBytes == null) {
-            return "1048576";
-        } else {
-            return smallFileSpaceInBytes;
-        }
-    }
+    @Attribute
+    public String getSmallFileSpaceInBytes();
 
     /**
      * Sets the value of the smallFileSpaceInBytes property.
@@ -265,11 +171,7 @@ public class HttpFileCache
      * @param value allowed object is
      *              {@link String }
      */
-    public void setSmallFileSpaceInBytes(String value) throws PropertyVetoException {
-        support.fireVetoableChange("smallFileSpaceInBytes", this.smallFileSpaceInBytes, value);
-
-        this.smallFileSpaceInBytes = value;
-    }
+    public void setSmallFileSpaceInBytes(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the fileTransmissionEnabled property.
@@ -277,13 +179,8 @@ public class HttpFileCache
      * @return possible object is
      *         {@link String }
      */
-    public String getFileTransmissionEnabled() {
-        if (fileTransmissionEnabled == null) {
-            return "false";
-        } else {
-            return fileTransmissionEnabled;
-        }
-    }
+    @Attribute
+    public String getFileTransmissionEnabled();
 
     /**
      * Sets the value of the fileTransmissionEnabled property.
@@ -291,11 +188,7 @@ public class HttpFileCache
      * @param value allowed object is
      *              {@link String }
      */
-    public void setFileTransmissionEnabled(String value) throws PropertyVetoException {
-        support.fireVetoableChange("fileTransmissionEnabled", this.fileTransmissionEnabled, value);
-
-        this.fileTransmissionEnabled = value;
-    }
+    public void setFileTransmissionEnabled(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the maxFilesCount property.
@@ -303,13 +196,8 @@ public class HttpFileCache
      * @return possible object is
      *         {@link String }
      */
-    public String getMaxFilesCount() {
-        if (maxFilesCount == null) {
-            return "1024";
-        } else {
-            return maxFilesCount;
-        }
-    }
+    @Attribute
+    public String getMaxFilesCount();
 
     /**
      * Sets the value of the maxFilesCount property.
@@ -317,11 +205,7 @@ public class HttpFileCache
      * @param value allowed object is
      *              {@link String }
      */
-    public void setMaxFilesCount(String value) throws PropertyVetoException {
-        support.fireVetoableChange("maxFilesCount", this.maxFilesCount, value);
-
-        this.maxFilesCount = value;
-    }
+    public void setMaxFilesCount(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the hashInitSize property.
@@ -329,13 +213,8 @@ public class HttpFileCache
      * @return possible object is
      *         {@link String }
      */
-    public String getHashInitSize() {
-        if (hashInitSize == null) {
-            return "0";
-        } else {
-            return hashInitSize;
-        }
-    }
+    @Attribute
+    public String getHashInitSize();
 
     /**
      * Sets the value of the hashInitSize property.
@@ -343,11 +222,7 @@ public class HttpFileCache
      * @param value allowed object is
      *              {@link String }
      */
-    public void setHashInitSize(String value) throws PropertyVetoException {
-        support.fireVetoableChange("hashInitSize", this.hashInitSize, value);
-
-        this.hashInitSize = value;
-    }
+    public void setHashInitSize(String value) throws PropertyVetoException;
 
 
 

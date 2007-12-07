@@ -40,7 +40,7 @@ package com.sun.enterprise.config.serverbeans;
 
 import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.Configured;
-import org.glassfish.api.admin.ConfigBean;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 
 import java.beans.PropertyVetoException;
 import java.io.Serializable;
@@ -52,27 +52,7 @@ import java.io.Serializable;
 
 /* @XmlType(name = "") */
 @Configured
-public class RequestProcessing
- extends ConfigBean implements Serializable {
-
-    private final static long serialVersionUID = 1L;
-    @Attribute
-
-    protected String threadCount;
-    @Attribute
-
-    protected String initialThreadCount;
-    @Attribute
-
-    protected String threadIncrement;
-    @Attribute
-
-    protected String requestTimeoutInSeconds;
-    @Attribute
-
-    protected String headerBufferLengthInBytes;
-
-
+public interface RequestProcessing extends ConfigBeanProxy  {
 
     /**
      * Gets the value of the threadCount property.
@@ -80,13 +60,8 @@ public class RequestProcessing
      * @return possible object is
      *         {@link String }
      */
-    public String getThreadCount() {
-        if (threadCount == null) {
-            return "128";
-        } else {
-            return threadCount;
-        }
-    }
+    @Attribute
+    public String getThreadCount();
 
     /**
      * Sets the value of the threadCount property.
@@ -94,11 +69,7 @@ public class RequestProcessing
      * @param value allowed object is
      *              {@link String }
      */
-    public void setThreadCount(String value) throws PropertyVetoException {
-        support.fireVetoableChange("threadCount", this.threadCount, value);
-
-        this.threadCount = value;
-    }
+    public void setThreadCount(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the initialThreadCount property.
@@ -106,13 +77,8 @@ public class RequestProcessing
      * @return possible object is
      *         {@link String }
      */
-    public String getInitialThreadCount() {
-        if (initialThreadCount == null) {
-            return "48";
-        } else {
-            return initialThreadCount;
-        }
-    }
+    @Attribute
+    public String getInitialThreadCount();
 
     /**
      * Sets the value of the initialThreadCount property.
@@ -120,11 +86,7 @@ public class RequestProcessing
      * @param value allowed object is
      *              {@link String }
      */
-    public void setInitialThreadCount(String value) throws PropertyVetoException {
-        support.fireVetoableChange("initialThreadCount", this.initialThreadCount, value);
-
-        this.initialThreadCount = value;
-    }
+    public void setInitialThreadCount(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the threadIncrement property.
@@ -132,13 +94,8 @@ public class RequestProcessing
      * @return possible object is
      *         {@link String }
      */
-    public String getThreadIncrement() {
-        if (threadIncrement == null) {
-            return "10";
-        } else {
-            return threadIncrement;
-        }
-    }
+    @Attribute
+    public String getThreadIncrement();
 
     /**
      * Sets the value of the threadIncrement property.
@@ -146,11 +103,7 @@ public class RequestProcessing
      * @param value allowed object is
      *              {@link String }
      */
-    public void setThreadIncrement(String value) throws PropertyVetoException {
-        support.fireVetoableChange("threadIncrement", this.threadIncrement, value);
-
-        this.threadIncrement = value;
-    }
+    public void setThreadIncrement(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the requestTimeoutInSeconds property.
@@ -158,13 +111,8 @@ public class RequestProcessing
      * @return possible object is
      *         {@link String }
      */
-    public String getRequestTimeoutInSeconds() {
-        if (requestTimeoutInSeconds == null) {
-            return "30";
-        } else {
-            return requestTimeoutInSeconds;
-        }
-    }
+    @Attribute
+    public String getRequestTimeoutInSeconds();
 
     /**
      * Sets the value of the requestTimeoutInSeconds property.
@@ -172,11 +120,7 @@ public class RequestProcessing
      * @param value allowed object is
      *              {@link String }
      */
-    public void setRequestTimeoutInSeconds(String value) throws PropertyVetoException {
-        support.fireVetoableChange("requestTimeoutInSeconds", this.requestTimeoutInSeconds, value);
-
-        this.requestTimeoutInSeconds = value;
-    }
+    public void setRequestTimeoutInSeconds(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the headerBufferLengthInBytes property.
@@ -184,13 +128,8 @@ public class RequestProcessing
      * @return possible object is
      *         {@link String }
      */
-    public String getHeaderBufferLengthInBytes() {
-        if (headerBufferLengthInBytes == null) {
-            return "4096";
-        } else {
-            return headerBufferLengthInBytes;
-        }
-    }
+    @Attribute
+    public String getHeaderBufferLengthInBytes();
 
     /**
      * Sets the value of the headerBufferLengthInBytes property.
@@ -198,11 +137,7 @@ public class RequestProcessing
      * @param value allowed object is
      *              {@link String }
      */
-    public void setHeaderBufferLengthInBytes(String value) throws PropertyVetoException {
-        support.fireVetoableChange("headerBufferLengthInBytes", this.headerBufferLengthInBytes, value);
-
-        this.headerBufferLengthInBytes = value;
-    }
+    public void setHeaderBufferLengthInBytes(String value) throws PropertyVetoException;
 
 
 

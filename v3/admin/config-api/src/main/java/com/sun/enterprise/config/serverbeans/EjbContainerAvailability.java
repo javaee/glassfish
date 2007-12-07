@@ -39,8 +39,9 @@
 package com.sun.enterprise.config.serverbeans;
 
 import org.jvnet.hk2.config.Attribute;
+import org.jvnet.hk2.config.Element;
 import org.jvnet.hk2.config.Configured;
-import org.glassfish.api.admin.ConfigBean;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 
 import java.beans.PropertyVetoException;
 import java.io.Serializable;
@@ -55,41 +56,16 @@ import java.util.List;
     "property"
 }) */
 @Configured
-public class EjbContainerAvailability
- extends ConfigBean implements Serializable {
-
-    private final static long serialVersionUID = 1L;
-    @Attribute
-
-    protected String availabilityEnabled;
-    @Attribute
-
-    protected String sfsbHaPersistenceType;
-    @Attribute
-
-    protected String sfsbPersistenceType;
-    @Attribute
-
-    protected String sfsbCheckpointEnabled;
-    @Attribute
-
-    protected String sfsbQuickCheckpointEnabled;
-    @Attribute
-
-    protected String sfsbStorePoolName;
-    protected List<Property> property = new ConstrainedList<Property>(this, "property", support);
-
-
-
+public interface EjbContainerAvailability extends ConfigBeanProxy  {
+    
     /**
      * Gets the value of the availabilityEnabled property.
      *
      * @return possible object is
      *         {@link String }
      */
-    public String getAvailabilityEnabled() {
-        return availabilityEnabled;
-    }
+    @Attribute
+    public String getAvailabilityEnabled();
 
     /**
      * Sets the value of the availabilityEnabled property.
@@ -97,11 +73,7 @@ public class EjbContainerAvailability
      * @param value allowed object is
      *              {@link String }
      */
-    public void setAvailabilityEnabled(String value) throws PropertyVetoException {
-        support.fireVetoableChange("availabilityEnabled", this.availabilityEnabled, value);
-
-        this.availabilityEnabled = value;
-    }
+    public void setAvailabilityEnabled(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the sfsbHaPersistenceType property.
@@ -109,13 +81,8 @@ public class EjbContainerAvailability
      * @return possible object is
      *         {@link String }
      */
-    public String getSfsbHaPersistenceType() {
-        if (sfsbHaPersistenceType == null) {
-            return "ha";
-        } else {
-            return sfsbHaPersistenceType;
-        }
-    }
+    @Attribute
+    public String getSfsbHaPersistenceType();
 
     /**
      * Sets the value of the sfsbHaPersistenceType property.
@@ -123,11 +90,7 @@ public class EjbContainerAvailability
      * @param value allowed object is
      *              {@link String }
      */
-    public void setSfsbHaPersistenceType(String value) throws PropertyVetoException {
-        support.fireVetoableChange("sfsbHaPersistenceType", this.sfsbHaPersistenceType, value);
-
-        this.sfsbHaPersistenceType = value;
-    }
+    public void setSfsbHaPersistenceType(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the sfsbPersistenceType property.
@@ -135,13 +98,8 @@ public class EjbContainerAvailability
      * @return possible object is
      *         {@link String }
      */
-    public String getSfsbPersistenceType() {
-        if (sfsbPersistenceType == null) {
-            return "file";
-        } else {
-            return sfsbPersistenceType;
-        }
-    }
+    @Attribute
+    public String getSfsbPersistenceType();
 
     /**
      * Sets the value of the sfsbPersistenceType property.
@@ -149,11 +107,7 @@ public class EjbContainerAvailability
      * @param value allowed object is
      *              {@link String }
      */
-    public void setSfsbPersistenceType(String value) throws PropertyVetoException {
-        support.fireVetoableChange("sfsbPersistenceType", this.sfsbPersistenceType, value);
-
-        this.sfsbPersistenceType = value;
-    }
+    public void setSfsbPersistenceType(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the sfsbCheckpointEnabled property.
@@ -161,9 +115,8 @@ public class EjbContainerAvailability
      * @return possible object is
      *         {@link String }
      */
-    public String getSfsbCheckpointEnabled() {
-        return sfsbCheckpointEnabled;
-    }
+    @Attribute
+    public String getSfsbCheckpointEnabled();
 
     /**
      * Sets the value of the sfsbCheckpointEnabled property.
@@ -171,11 +124,7 @@ public class EjbContainerAvailability
      * @param value allowed object is
      *              {@link String }
      */
-    public void setSfsbCheckpointEnabled(String value) throws PropertyVetoException {
-        support.fireVetoableChange("sfsbCheckpointEnabled", this.sfsbCheckpointEnabled, value);
-
-        this.sfsbCheckpointEnabled = value;
-    }
+    public void setSfsbCheckpointEnabled(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the sfsbQuickCheckpointEnabled property.
@@ -183,9 +132,8 @@ public class EjbContainerAvailability
      * @return possible object is
      *         {@link String }
      */
-    public String getSfsbQuickCheckpointEnabled() {
-        return sfsbQuickCheckpointEnabled;
-    }
+    @Attribute
+    public String getSfsbQuickCheckpointEnabled();
 
     /**
      * Sets the value of the sfsbQuickCheckpointEnabled property.
@@ -193,11 +141,7 @@ public class EjbContainerAvailability
      * @param value allowed object is
      *              {@link String }
      */
-    public void setSfsbQuickCheckpointEnabled(String value) throws PropertyVetoException {
-        support.fireVetoableChange("sfsbQuickCheckpointEnabled", this.sfsbQuickCheckpointEnabled, value);
-
-        this.sfsbQuickCheckpointEnabled = value;
-    }
+    public void setSfsbQuickCheckpointEnabled(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the sfsbStorePoolName property.
@@ -205,9 +149,8 @@ public class EjbContainerAvailability
      * @return possible object is
      *         {@link String }
      */
-    public String getSfsbStorePoolName() {
-        return sfsbStorePoolName;
-    }
+    @Attribute
+    public String getSfsbStorePoolName();
 
     /**
      * Sets the value of the sfsbStorePoolName property.
@@ -215,11 +158,7 @@ public class EjbContainerAvailability
      * @param value allowed object is
      *              {@link String }
      */
-    public void setSfsbStorePoolName(String value) throws PropertyVetoException {
-        support.fireVetoableChange("sfsbStorePoolName", this.sfsbStorePoolName, value);
-
-        this.sfsbStorePoolName = value;
-    }
+    public void setSfsbStorePoolName(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the property property.
@@ -241,9 +180,8 @@ public class EjbContainerAvailability
      * Objects of the following type(s) are allowed in the list
      * {@link Property }
      */
-    public List<Property> getProperty() {
-        return this.property;
-    }
+    @Element("property")
+    public List<Property> getProperty();
 
 
 

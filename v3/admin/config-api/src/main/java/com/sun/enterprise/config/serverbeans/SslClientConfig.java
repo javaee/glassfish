@@ -40,7 +40,7 @@ package com.sun.enterprise.config.serverbeans;
 
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.Element;
-import org.glassfish.api.admin.ConfigBean;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 
 import java.beans.PropertyVetoException;
 import java.io.Serializable;
@@ -54,14 +54,7 @@ import java.io.Serializable;
     "ssl"
 }) */
 @Configured
-public class SslClientConfig
- extends ConfigBean implements Serializable {
-
-    private final static long serialVersionUID = 1L;
-    @Element(required=true)
-    protected Ssl ssl;
-
-
+public interface SslClientConfig extends ConfigBeanProxy  {
 
     /**
      * Gets the value of the ssl property.
@@ -69,9 +62,8 @@ public class SslClientConfig
      * @return possible object is
      *         {@link Ssl }
      */
-    public Ssl getSsl() {
-        return ssl;
-    }
+    @Element(required=true)
+    public Ssl getSsl();
 
     /**
      * Sets the value of the ssl property.
@@ -79,11 +71,7 @@ public class SslClientConfig
      * @param value allowed object is
      *              {@link Ssl }
      */
-    public void setSsl(Ssl value) throws PropertyVetoException {
-        support.fireVetoableChange("ssl", this.ssl, value);
-
-        this.ssl = value;
-    }
+    public void setSsl(Ssl value) throws PropertyVetoException;
 
 
 

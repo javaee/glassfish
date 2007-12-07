@@ -40,7 +40,7 @@ package com.sun.enterprise.config.serverbeans;
 
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.Element;
-import org.glassfish.api.admin.ConfigBean;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 
 import java.beans.PropertyVetoException;
 import java.io.Serializable;
@@ -56,15 +56,7 @@ import java.util.List;
     "property"
 }) */
 @Configured
-public class MonitoringService
- extends ConfigBean implements Serializable {
-
-    private final static long serialVersionUID = 1L;
-    @Element
-    protected ModuleMonitoringLevels moduleMonitoringLevels;
-    protected List<Property> property = new ConstrainedList<Property>(this, "property", support);
-
-
+public interface MonitoringService extends ConfigBeanProxy  {
 
     /**
      * Gets the value of the moduleMonitoringLevels property.
@@ -72,9 +64,8 @@ public class MonitoringService
      * @return possible object is
      *         {@link ModuleMonitoringLevels }
      */
-    public ModuleMonitoringLevels getModuleMonitoringLevels() {
-        return moduleMonitoringLevels;
-    }
+    @Element
+    public ModuleMonitoringLevels getModuleMonitoringLevels();
 
     /**
      * Sets the value of the moduleMonitoringLevels property.
@@ -82,11 +73,7 @@ public class MonitoringService
      * @param value allowed object is
      *              {@link ModuleMonitoringLevels }
      */
-    public void setModuleMonitoringLevels(ModuleMonitoringLevels value) throws PropertyVetoException {
-        support.fireVetoableChange("moduleMonitoringLevels", this.moduleMonitoringLevels, value);
-
-        this.moduleMonitoringLevels = value;
-    }
+    public void setModuleMonitoringLevels(ModuleMonitoringLevels value) throws PropertyVetoException;
 
     /**
      * Gets the value of the property property.
@@ -108,9 +95,8 @@ public class MonitoringService
      * Objects of the following type(s) are allowed in the list
      * {@link Property }
      */
-    public List<Property> getProperty() {
-        return this.property;
-    }
+    @Element("property")
+    public List<Property> getProperty();
 
 
 

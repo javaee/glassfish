@@ -41,7 +41,7 @@ package com.sun.enterprise.config.serverbeans;
 import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.Element;
-import org.glassfish.api.admin.ConfigBean;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 
 import java.beans.PropertyVetoException;
 import java.io.Serializable;
@@ -56,19 +56,7 @@ import java.io.Serializable;
     "filterConfig"
 }) */
 @Configured
-public class AlertSubscription
- extends ConfigBean implements Serializable {
-
-    private final static long serialVersionUID = 1L;
-    @Attribute(required = true)
-
-    protected String name;
-    @Element(required=true)
-    protected ListenerConfig listenerConfig;
-    @Element
-    protected FilterConfig filterConfig;
-
-
+public interface AlertSubscription extends ConfigBeanProxy  {
 
     /**
      * Gets the value of the name property.
@@ -76,9 +64,8 @@ public class AlertSubscription
      * @return possible object is
      *         {@link String }
      */
-    public String getName() {
-        return name;
-    }
+    @Attribute(required = true)
+    public String getName();
 
     /**
      * Sets the value of the name property.
@@ -86,11 +73,7 @@ public class AlertSubscription
      * @param value allowed object is
      *              {@link String }
      */
-    public void setName(String value) throws PropertyVetoException {
-        support.fireVetoableChange("name", this.name, value);
-
-        this.name = value;
-    }
+    public void setName(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the listenerConfig property.
@@ -98,9 +81,8 @@ public class AlertSubscription
      * @return possible object is
      *         {@link ListenerConfig }
      */
-    public ListenerConfig getListenerConfig() {
-        return listenerConfig;
-    }
+    @Attribute(required = true)
+    public ListenerConfig getListenerConfig();
 
     /**
      * Sets the value of the listenerConfig property.
@@ -108,11 +90,7 @@ public class AlertSubscription
      * @param value allowed object is
      *              {@link ListenerConfig }
      */
-    public void setListenerConfig(ListenerConfig value) throws PropertyVetoException {
-        support.fireVetoableChange("listenerConfig", this.listenerConfig, value);
-
-        this.listenerConfig = value;
-    }
+    public void setListenerConfig(ListenerConfig value) throws PropertyVetoException;
 
     /**
      * Gets the value of the filterConfig property.
@@ -120,9 +98,8 @@ public class AlertSubscription
      * @return possible object is
      *         {@link FilterConfig }
      */
-    public FilterConfig getFilterConfig() {
-        return filterConfig;
-    }
+    @Element
+    public FilterConfig getFilterConfig();
 
     /**
      * Sets the value of the filterConfig property.
@@ -130,11 +107,7 @@ public class AlertSubscription
      * @param value allowed object is
      *              {@link FilterConfig }
      */
-    public void setFilterConfig(FilterConfig value) throws PropertyVetoException {
-        support.fireVetoableChange("filterConfig", this.filterConfig, value);
-
-        this.filterConfig = value;
-    }
+    public void setFilterConfig(FilterConfig value) throws PropertyVetoException;
 
 
 

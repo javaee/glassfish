@@ -40,7 +40,7 @@ package com.sun.enterprise.config.serverbeans;
 
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.Element;
-import org.glassfish.api.admin.ConfigBean;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 
 import java.beans.PropertyVetoException;
 import java.io.Serializable;
@@ -56,15 +56,7 @@ import java.util.List;
     "property"
 }) */
 @Configured
-public class WebContainer
- extends ConfigBean implements Serializable {
-
-    private final static long serialVersionUID = 1L;
-    @Element
-    protected SessionConfig sessionConfig;
-    protected List<Property> property = new ConstrainedList<Property>(this, "property", support);
-
-
+public interface WebContainer extends ConfigBeanProxy  {
 
     /**
      * Gets the value of the sessionConfig property.
@@ -72,9 +64,8 @@ public class WebContainer
      * @return possible object is
      *         {@link SessionConfig }
      */
-    public SessionConfig getSessionConfig() {
-        return sessionConfig;
-    }
+    @Element
+    public SessionConfig getSessionConfig();
 
     /**
      * Sets the value of the sessionConfig property.
@@ -82,11 +73,7 @@ public class WebContainer
      * @param value allowed object is
      *              {@link SessionConfig }
      */
-    public void setSessionConfig(SessionConfig value) throws PropertyVetoException {
-        support.fireVetoableChange("sessionConfig", this.sessionConfig, value);
-
-        this.sessionConfig = value;
-    }
+    public void setSessionConfig(SessionConfig value) throws PropertyVetoException;
 
     /**
      * Gets the value of the property property.
@@ -108,9 +95,8 @@ public class WebContainer
      * Objects of the following type(s) are allowed in the list
      * {@link Property }
      */
-    public List<Property> getProperty() {
-        return this.property;
-    }
+    @Element("property")
+    public List<Property> getProperty();
 
 
 

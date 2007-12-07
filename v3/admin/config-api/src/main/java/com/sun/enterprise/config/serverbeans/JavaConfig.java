@@ -41,7 +41,7 @@ package com.sun.enterprise.config.serverbeans;
 import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.Element;
-import org.glassfish.api.admin.ConfigBean;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 
 import java.beans.PropertyVetoException;
 import java.io.Serializable;
@@ -58,59 +58,7 @@ import java.util.List;
     "jvmOptionsOrProperty"
 }) */
 @Configured
-public class JavaConfig
- extends ConfigBean implements Serializable {
-
-    private final static long serialVersionUID = 1L;
-    @Attribute
-
-    protected String javaHome;
-    @Attribute
-
-    protected String debugEnabled;
-    @Attribute
-
-    protected String debugOptions;
-    @Attribute
-
-    protected String rmicOptions;
-    @Attribute
-
-    protected String javacOptions;
-    @Attribute
-
-    protected String classpathPrefix;
-    @Attribute
-
-    protected String classpathSuffix;
-    @Attribute
-
-    protected String serverClasspath;
-    @Attribute
-
-    protected String systemClasspath;
-    @Attribute
-
-    protected String nativeLibraryPathPrefix;
-    @Attribute
-
-    protected String nativeLibraryPathSuffix;
-    @Attribute
-
-    protected String bytecodePreprocessors;
-    @Attribute
-
-    protected String envClasspathIgnored;
-    protected Profiler profiler;
-
-    @Element
-    List<String> jvmOptions = new ConstrainedList<String>(this, "jvmOptions", support);
-
-    @Element("property")
-    protected List<Property> properties = new ConstrainedList<Property>(this, "properties", support);
-    
-
-
+public interface JavaConfig extends ConfigBeanProxy  {
 
     /**
      * Gets the value of the javaHome property.
@@ -118,13 +66,8 @@ public class JavaConfig
      * @return possible object is
      *         {@link String }
      */
-    public String getJavaHome() {
-        if (javaHome == null) {
-            return "${com.sun.aas.javaRoot}";
-        } else {
-            return javaHome;
-        }
-    }
+    @Attribute
+    public String getJavaHome();
 
     /**
      * Sets the value of the javaHome property.
@@ -132,11 +75,7 @@ public class JavaConfig
      * @param value allowed object is
      *              {@link String }
      */
-    public void setJavaHome(String value) throws PropertyVetoException {
-        support.fireVetoableChange("javaHome", this.javaHome, value);
-
-        this.javaHome = value;
-    }
+    public void setJavaHome(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the debugEnabled property.
@@ -144,13 +83,8 @@ public class JavaConfig
      * @return possible object is
      *         {@link String }
      */
-    public String getDebugEnabled() {
-        if (debugEnabled == null) {
-            return "false";
-        } else {
-            return debugEnabled;
-        }
-    }
+    @Attribute
+    public String getDebugEnabled();
 
     /**
      * Sets the value of the debugEnabled property.
@@ -158,11 +92,7 @@ public class JavaConfig
      * @param value allowed object is
      *              {@link String }
      */
-    public void setDebugEnabled(String value) throws PropertyVetoException {
-        support.fireVetoableChange("debugEnabled", this.debugEnabled, value);
-
-        this.debugEnabled = value;
-    }
+    public void setDebugEnabled(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the debugOptions property.
@@ -170,13 +100,8 @@ public class JavaConfig
      * @return possible object is
      *         {@link String }
      */
-    public String getDebugOptions() {
-        if (debugOptions == null) {
-            return "-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n";
-        } else {
-            return debugOptions;
-        }
-    }
+    @Attribute
+    public String getDebugOptions();
 
     /**
      * Sets the value of the debugOptions property.
@@ -184,11 +109,7 @@ public class JavaConfig
      * @param value allowed object is
      *              {@link String }
      */
-    public void setDebugOptions(String value) throws PropertyVetoException {
-        support.fireVetoableChange("debugOptions", this.debugOptions, value);
-
-        this.debugOptions = value;
-    }
+    public void setDebugOptions(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the rmicOptions property.
@@ -196,13 +117,8 @@ public class JavaConfig
      * @return possible object is
      *         {@link String }
      */
-    public String getRmicOptions() {
-        if (rmicOptions == null) {
-            return "-iiop -poa -alwaysgenerate -keepgenerated -g";
-        } else {
-            return rmicOptions;
-        }
-    }
+    @Attribute
+    public String getRmicOptions();
 
     /**
      * Sets the value of the rmicOptions property.
@@ -210,11 +126,7 @@ public class JavaConfig
      * @param value allowed object is
      *              {@link String }
      */
-    public void setRmicOptions(String value) throws PropertyVetoException {
-        support.fireVetoableChange("rmicOptions", this.rmicOptions, value);
-
-        this.rmicOptions = value;
-    }
+    public void setRmicOptions(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the javacOptions property.
@@ -222,13 +134,8 @@ public class JavaConfig
      * @return possible object is
      *         {@link String }
      */
-    public String getJavacOptions() {
-        if (javacOptions == null) {
-            return "-g";
-        } else {
-            return javacOptions;
-        }
-    }
+    @Attribute
+    public String getJavacOptions();
 
     /**
      * Sets the value of the javacOptions property.
@@ -236,11 +143,7 @@ public class JavaConfig
      * @param value allowed object is
      *              {@link String }
      */
-    public void setJavacOptions(String value) throws PropertyVetoException {
-        support.fireVetoableChange("javacOptions", this.javacOptions, value);
-
-        this.javacOptions = value;
-    }
+    public void setJavacOptions(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the classpathPrefix property.
@@ -248,9 +151,8 @@ public class JavaConfig
      * @return possible object is
      *         {@link String }
      */
-    public String getClasspathPrefix() {
-        return classpathPrefix;
-    }
+    @Attribute
+    public String getClasspathPrefix();
 
     /**
      * Sets the value of the classpathPrefix property.
@@ -258,11 +160,7 @@ public class JavaConfig
      * @param value allowed object is
      *              {@link String }
      */
-    public void setClasspathPrefix(String value) throws PropertyVetoException {
-        support.fireVetoableChange("classpathPrefix", this.classpathPrefix, value);
-
-        this.classpathPrefix = value;
-    }
+    public void setClasspathPrefix(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the classpathSuffix property.
@@ -270,9 +168,8 @@ public class JavaConfig
      * @return possible object is
      *         {@link String }
      */
-    public String getClasspathSuffix() {
-        return classpathSuffix;
-    }
+    @Attribute
+    public String getClasspathSuffix();
 
     /**
      * Sets the value of the classpathSuffix property.
@@ -280,11 +177,7 @@ public class JavaConfig
      * @param value allowed object is
      *              {@link String }
      */
-    public void setClasspathSuffix(String value) throws PropertyVetoException {
-        support.fireVetoableChange("classpathSuffix", this.classpathSuffix, value);
-
-        this.classpathSuffix = value;
-    }
+    public void setClasspathSuffix(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the serverClasspath property.
@@ -292,9 +185,8 @@ public class JavaConfig
      * @return possible object is
      *         {@link String }
      */
-    public String getServerClasspath() {
-        return serverClasspath;
-    }
+    @Attribute
+    public String getServerClasspath();
 
     /**
      * Sets the value of the serverClasspath property.
@@ -302,11 +194,7 @@ public class JavaConfig
      * @param value allowed object is
      *              {@link String }
      */
-    public void setServerClasspath(String value) throws PropertyVetoException {
-        support.fireVetoableChange("serverClasspath", this.serverClasspath, value);
-
-        this.serverClasspath = value;
-    }
+    public void setServerClasspath(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the systemClasspath property.
@@ -314,9 +202,8 @@ public class JavaConfig
      * @return possible object is
      *         {@link String }
      */
-    public String getSystemClasspath() {
-        return systemClasspath;
-    }
+    @Attribute
+    public String getSystemClasspath();
 
     /**
      * Sets the value of the systemClasspath property.
@@ -324,11 +211,7 @@ public class JavaConfig
      * @param value allowed object is
      *              {@link String }
      */
-    public void setSystemClasspath(String value) throws PropertyVetoException {
-        support.fireVetoableChange("systemClasspath", this.systemClasspath, value);
-
-        this.systemClasspath = value;
-    }
+    public void setSystemClasspath(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the nativeLibraryPathPrefix property.
@@ -336,9 +219,8 @@ public class JavaConfig
      * @return possible object is
      *         {@link String }
      */
-    public String getNativeLibraryPathPrefix() {
-        return nativeLibraryPathPrefix;
-    }
+    @Attribute
+    public String getNativeLibraryPathPrefix();
 
     /**
      * Sets the value of the nativeLibraryPathPrefix property.
@@ -346,11 +228,7 @@ public class JavaConfig
      * @param value allowed object is
      *              {@link String }
      */
-    public void setNativeLibraryPathPrefix(String value) throws PropertyVetoException {
-        support.fireVetoableChange("nativeLibraryPathPrefix", this.nativeLibraryPathPrefix, value);
-
-        this.nativeLibraryPathPrefix = value;
-    }
+    public void setNativeLibraryPathPrefix(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the nativeLibraryPathSuffix property.
@@ -358,9 +236,8 @@ public class JavaConfig
      * @return possible object is
      *         {@link String }
      */
-    public String getNativeLibraryPathSuffix() {
-        return nativeLibraryPathSuffix;
-    }
+    @Attribute
+    public String getNativeLibraryPathSuffix();
 
     /**
      * Sets the value of the nativeLibraryPathSuffix property.
@@ -368,11 +245,7 @@ public class JavaConfig
      * @param value allowed object is
      *              {@link String }
      */
-    public void setNativeLibraryPathSuffix(String value) throws PropertyVetoException {
-        support.fireVetoableChange("nativeLibraryPathSuffix", this.nativeLibraryPathSuffix, value);
-
-        this.nativeLibraryPathSuffix = value;
-    }
+    public void setNativeLibraryPathSuffix(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the bytecodePreprocessors property.
@@ -380,9 +253,8 @@ public class JavaConfig
      * @return possible object is
      *         {@link String }
      */
-    public String getBytecodePreprocessors() {
-        return bytecodePreprocessors;
-    }
+    @Attribute
+    public String getBytecodePreprocessors();
 
     /**
      * Sets the value of the bytecodePreprocessors property.
@@ -390,11 +262,7 @@ public class JavaConfig
      * @param value allowed object is
      *              {@link String }
      */
-    public void setBytecodePreprocessors(String value) throws PropertyVetoException {
-        support.fireVetoableChange("bytecodePreprocessors", this.bytecodePreprocessors, value);
-
-        this.bytecodePreprocessors = value;
-    }
+    public void setBytecodePreprocessors(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the envClasspathIgnored property.
@@ -402,13 +270,8 @@ public class JavaConfig
      * @return possible object is
      *         {@link String }
      */
-    public String getEnvClasspathIgnored() {
-        if (envClasspathIgnored == null) {
-            return "true";
-        } else {
-            return envClasspathIgnored;
-        }
-    }
+    @Attribute
+    public String getEnvClasspathIgnored();
 
     /**
      * Sets the value of the envClasspathIgnored property.
@@ -416,11 +279,7 @@ public class JavaConfig
      * @param value allowed object is
      *              {@link String }
      */
-    public void setEnvClasspathIgnored(String value) throws PropertyVetoException {
-        support.fireVetoableChange("envClasspathIgnored", this.envClasspathIgnored, value);
-
-        this.envClasspathIgnored = value;
-    }
+    public void setEnvClasspathIgnored(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the profiler property.
@@ -428,9 +287,8 @@ public class JavaConfig
      * @return possible object is
      *         {@link Profiler }
      */
-    public Profiler getProfiler() {
-        return profiler;
-    }
+    @Element
+    public Profiler getProfiler();
 
     /**
      * Sets the value of the profiler property.
@@ -438,39 +296,19 @@ public class JavaConfig
      * @param value allowed object is
      *              {@link Profiler }
      */
-    public void setProfiler(Profiler value) throws PropertyVetoException {
-        support.fireVetoableChange("profiler", this.profiler, value);
-
-        this.profiler = value;
-    }
+    public void setProfiler(Profiler value) throws PropertyVetoException;
 
 
-    public void addProperty(Property property) {
-        properties.add(property);
-    }
+    @Element("property")
+    public List<Property>  getProperty();
 
-    public List<Property>  getProperty() {
-        return properties;
-    }
-
-    public void addJvmOption(String option) {
-        jvmOptions.add(option);
-    }
-
-    public List<String> getJvmOptions() {
-        return jvmOptions;
-    }
+    @Element
+    public List<String> getJvmOptions();
 
     /**
      * Backward compatibility API
      */
-    public List<Object> getJvmOptionsOrProperty() {
-        ArrayList bag = new ArrayList<Object>();
-        bag.addAll(jvmOptions);
-        bag.addAll(properties);
-        return bag;
-
-    }
+    public List<Object> getJvmOptionsOrProperty();
 
 
 

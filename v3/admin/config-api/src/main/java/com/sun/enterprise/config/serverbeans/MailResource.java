@@ -39,12 +39,12 @@
 package com.sun.enterprise.config.serverbeans;
 
 import org.jvnet.hk2.config.Attribute;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.Configured;
-import org.glassfish.api.admin.ConfigBean;
+import org.jvnet.hk2.config.Element;
 
 import java.beans.PropertyVetoException;
 import java.beans.VetoableChangeSupport;
-import java.io.Serializable;
 import java.util.List;
 
 
@@ -57,48 +57,7 @@ import java.util.List;
     "property"
 }) */
 @Configured
-public class MailResource extends ConfigBean implements Resource, Serializable {
-
-    final transient private VetoableChangeSupport support = new VetoableChangeSupport(this);
-    
-    private final static long serialVersionUID = 1L;
-    @Attribute(required = true)
-
-    protected String jndiName;
-    @Attribute
-
-    protected String storeProtocol;
-    @Attribute
-
-    protected String storeProtocolClass;
-    @Attribute
-
-    protected String transportProtocol;
-    @Attribute
-
-    protected String transportProtocolClass;
-    @Attribute(required = true)
-
-    protected String host;
-    @Attribute(required = true)
-
-    protected String user;
-    @Attribute(required = true)
-
-    protected String from;
-    @Attribute
-
-    protected String debug;
-    @Attribute
-
-    protected String objectType;
-    @Attribute
-
-    protected String enabled;
-    protected String description;
-    protected List<Property> property = new ConstrainedList<Property>(this, "property", support);
-
-
+public interface MailResource extends ConfigBeanProxy, Resource {
 
     /**
      * Gets the value of the jndiName property.
@@ -106,9 +65,8 @@ public class MailResource extends ConfigBean implements Resource, Serializable {
      * @return possible object is
      *         {@link String }
      */
-    public String getJndiName() {
-        return jndiName;
-    }
+    @Attribute(required = true)
+    public String getJndiName();
 
     /**
      * Sets the value of the jndiName property.
@@ -116,11 +74,7 @@ public class MailResource extends ConfigBean implements Resource, Serializable {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setJndiName(String value) throws PropertyVetoException {
-        support.fireVetoableChange("jndiName", this.jndiName, value);
-
-        this.jndiName = value;
-    }
+    public void setJndiName(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the storeProtocol property.
@@ -128,13 +82,8 @@ public class MailResource extends ConfigBean implements Resource, Serializable {
      * @return possible object is
      *         {@link String }
      */
-    public String getStoreProtocol() {
-        if (storeProtocol == null) {
-            return "imap";
-        } else {
-            return storeProtocol;
-        }
-    }
+    @Attribute
+    public String getStoreProtocol();
 
     /**
      * Sets the value of the storeProtocol property.
@@ -142,11 +91,7 @@ public class MailResource extends ConfigBean implements Resource, Serializable {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setStoreProtocol(String value) throws PropertyVetoException {
-        support.fireVetoableChange("storeProtocol", this.storeProtocol, value);
-
-        this.storeProtocol = value;
-    }
+    public void setStoreProtocol(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the storeProtocolClass property.
@@ -154,13 +99,8 @@ public class MailResource extends ConfigBean implements Resource, Serializable {
      * @return possible object is
      *         {@link String }
      */
-    public String getStoreProtocolClass() {
-        if (storeProtocolClass == null) {
-            return "com.sun.mail.imap.IMAPStore";
-        } else {
-            return storeProtocolClass;
-        }
-    }
+    @Attribute
+    public String getStoreProtocolClass();
 
     /**
      * Sets the value of the storeProtocolClass property.
@@ -168,11 +108,7 @@ public class MailResource extends ConfigBean implements Resource, Serializable {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setStoreProtocolClass(String value) throws PropertyVetoException {
-        support.fireVetoableChange("storeProtocolClass", this.storeProtocolClass, value);
-
-        this.storeProtocolClass = value;
-    }
+    public void setStoreProtocolClass(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the transportProtocol property.
@@ -180,13 +116,8 @@ public class MailResource extends ConfigBean implements Resource, Serializable {
      * @return possible object is
      *         {@link String }
      */
-    public String getTransportProtocol() {
-        if (transportProtocol == null) {
-            return "smtp";
-        } else {
-            return transportProtocol;
-        }
-    }
+    @Attribute
+    public String getTransportProtocol();
 
     /**
      * Sets the value of the transportProtocol property.
@@ -194,11 +125,7 @@ public class MailResource extends ConfigBean implements Resource, Serializable {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setTransportProtocol(String value) throws PropertyVetoException {
-        support.fireVetoableChange("transportProtocol", this.transportProtocol, value);
-
-        this.transportProtocol = value;
-    }
+    public void setTransportProtocol(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the transportProtocolClass property.
@@ -206,13 +133,8 @@ public class MailResource extends ConfigBean implements Resource, Serializable {
      * @return possible object is
      *         {@link String }
      */
-    public String getTransportProtocolClass() {
-        if (transportProtocolClass == null) {
-            return "com.sun.mail.smtp.SMTPTransport";
-        } else {
-            return transportProtocolClass;
-        }
-    }
+    @Attribute
+    public String getTransportProtocolClass();
 
     /**
      * Sets the value of the transportProtocolClass property.
@@ -220,11 +142,7 @@ public class MailResource extends ConfigBean implements Resource, Serializable {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setTransportProtocolClass(String value) throws PropertyVetoException {
-        support.fireVetoableChange("transportProtocolClass", this.transportProtocolClass, value);
-
-        this.transportProtocolClass = value;
-    }
+    public void setTransportProtocolClass(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the host property.
@@ -232,9 +150,8 @@ public class MailResource extends ConfigBean implements Resource, Serializable {
      * @return possible object is
      *         {@link String }
      */
-    public String getHost() {
-        return host;
-    }
+    @Attribute(required = true)
+    public String getHost();
 
     /**
      * Sets the value of the host property.
@@ -242,11 +159,7 @@ public class MailResource extends ConfigBean implements Resource, Serializable {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setHost(String value) throws PropertyVetoException {
-        support.fireVetoableChange("host", this.host, value);
-
-        this.host = value;
-    }
+    public void setHost(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the user property.
@@ -254,9 +167,8 @@ public class MailResource extends ConfigBean implements Resource, Serializable {
      * @return possible object is
      *         {@link String }
      */
-    public String getUser() {
-        return user;
-    }
+    @Attribute(required = true)
+    public String getUser();
 
     /**
      * Sets the value of the user property.
@@ -264,11 +176,7 @@ public class MailResource extends ConfigBean implements Resource, Serializable {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setUser(String value) throws PropertyVetoException {
-        support.fireVetoableChange("user", this.user, value);
-
-        this.user = value;
-    }
+    public void setUser(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the from property.
@@ -276,9 +184,8 @@ public class MailResource extends ConfigBean implements Resource, Serializable {
      * @return possible object is
      *         {@link String }
      */
-    public String getFrom() {
-        return from;
-    }
+    @Attribute(required = true)
+    public String getFrom();
 
     /**
      * Sets the value of the from property.
@@ -286,11 +193,7 @@ public class MailResource extends ConfigBean implements Resource, Serializable {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setFrom(String value) throws PropertyVetoException {
-        support.fireVetoableChange("from", this.from, value);
-
-        this.from = value;
-    }
+    public void setFrom(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the debug property.
@@ -298,13 +201,8 @@ public class MailResource extends ConfigBean implements Resource, Serializable {
      * @return possible object is
      *         {@link String }
      */
-    public String getDebug() {
-        if (debug == null) {
-            return "false";
-        } else {
-            return debug;
-        }
-    }
+    @Attribute
+    public String getDebug();
 
     /**
      * Sets the value of the debug property.
@@ -312,11 +210,7 @@ public class MailResource extends ConfigBean implements Resource, Serializable {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setDebug(String value) throws PropertyVetoException {
-        support.fireVetoableChange("debug", this.debug, value);
-
-        this.debug = value;
-    }
+    public void setDebug(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the objectType property.
@@ -324,13 +218,8 @@ public class MailResource extends ConfigBean implements Resource, Serializable {
      * @return possible object is
      *         {@link String }
      */
-    public String getObjectType() {
-        if (objectType == null) {
-            return "user";
-        } else {
-            return objectType;
-        }
-    }
+    @Attribute
+    public String getObjectType();
 
     /**
      * Sets the value of the objectType property.
@@ -338,11 +227,7 @@ public class MailResource extends ConfigBean implements Resource, Serializable {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setObjectType(String value) throws PropertyVetoException {
-        support.fireVetoableChange("objectType", this.objectType, value);
-
-        this.objectType = value;
-    }
+    public void setObjectType(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the enabled property.
@@ -350,13 +235,8 @@ public class MailResource extends ConfigBean implements Resource, Serializable {
      * @return possible object is
      *         {@link String }
      */
-    public String getEnabled() {
-        if (enabled == null) {
-            return "true";
-        } else {
-            return enabled;
-        }
-    }
+    @Attribute
+    public String getEnabled();
 
     /**
      * Sets the value of the enabled property.
@@ -364,11 +244,7 @@ public class MailResource extends ConfigBean implements Resource, Serializable {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setEnabled(String value) throws PropertyVetoException {
-        support.fireVetoableChange("enabled", this.enabled, value);
-
-        this.enabled = value;
-    }
+    public void setEnabled(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the description property.
@@ -376,9 +252,8 @@ public class MailResource extends ConfigBean implements Resource, Serializable {
      * @return possible object is
      *         {@link String }
      */
-    public String getDescription() {
-        return description;
-    }
+    @Attribute
+    public String getDescription();
 
     /**
      * Sets the value of the description property.
@@ -386,11 +261,7 @@ public class MailResource extends ConfigBean implements Resource, Serializable {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setDescription(String value) throws PropertyVetoException {
-        support.fireVetoableChange("description", this.description, value);
-
-        this.description = value;
-    }
+    public void setDescription(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the property property.
@@ -412,9 +283,8 @@ public class MailResource extends ConfigBean implements Resource, Serializable {
      * Objects of the following type(s) are allowed in the list
      * {@link Property }
      */
-    public List<Property> getProperty() {
-        return this.property;
-    }
+    @Element("property")
+    public List<Property> getProperty();
 
 
 

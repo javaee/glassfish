@@ -40,7 +40,7 @@ package com.sun.enterprise.config.serverbeans;
 
 import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.Configured;
-import org.glassfish.api.admin.ConfigBean;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 
 import java.beans.PropertyVetoException;
 import java.io.Serializable;
@@ -52,28 +52,16 @@ import java.io.Serializable;
 
 /* @XmlType(name = "") */
 @Configured
-public class RequestPolicy
- extends ConfigBean implements Serializable {
-
-    private final static long serialVersionUID = 1L;
-    @Attribute
-
-    protected String authSource;
-    @Attribute
-
-    protected String authRecipient;
-
-
-
+public interface RequestPolicy extends ConfigBeanProxy  {
+    
     /**
      * Gets the value of the authSource property.
      *
      * @return possible object is
      *         {@link String }
      */
-    public String getAuthSource() {
-        return authSource;
-    }
+    @Attribute
+    public String getAuthSource();
 
     /**
      * Sets the value of the authSource property.
@@ -81,11 +69,7 @@ public class RequestPolicy
      * @param value allowed object is
      *              {@link String }
      */
-    public void setAuthSource(String value) throws PropertyVetoException {
-        support.fireVetoableChange("authSource", this.authSource, value);
-
-        this.authSource = value;
-    }
+    public void setAuthSource(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the authRecipient property.
@@ -93,9 +77,8 @@ public class RequestPolicy
      * @return possible object is
      *         {@link String }
      */
-    public String getAuthRecipient() {
-        return authRecipient;
-    }
+    @Attribute
+    public String getAuthRecipient();
 
     /**
      * Sets the value of the authRecipient property.
@@ -103,11 +86,7 @@ public class RequestPolicy
      * @param value allowed object is
      *              {@link String }
      */
-    public void setAuthRecipient(String value) throws PropertyVetoException {
-        support.fireVetoableChange("authRecipient", this.authRecipient, value);
-
-        this.authRecipient = value;
-    }
+    public void setAuthRecipient(String value) throws PropertyVetoException;
 
 
 

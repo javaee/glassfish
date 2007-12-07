@@ -39,8 +39,9 @@
 package com.sun.enterprise.config.serverbeans;
 
 import org.jvnet.hk2.config.Attribute;
+import org.jvnet.hk2.config.Element;
 import org.jvnet.hk2.config.Configured;
-import org.glassfish.api.admin.ConfigBean;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 
 import java.beans.PropertyVetoException;
 import java.io.Serializable;
@@ -55,28 +56,7 @@ import java.util.List;
     "property"
 }) */
 @Configured
-public class JmsHost
- extends ConfigBean implements Serializable {
-
-    private final static long serialVersionUID = 1L;
-    @Attribute(required = true)
-
-    protected String name;
-    @Attribute
-
-    protected String host;
-    @Attribute
-
-    protected String port;
-    @Attribute
-
-    protected String adminUserName;
-    @Attribute
-
-    protected String adminPassword;
-    protected List<Property> property = new ConstrainedList<Property>(this, "property", support);
-
-
+public interface JmsHost extends ConfigBeanProxy  {
 
     /**
      * Gets the value of the name property.
@@ -84,9 +64,8 @@ public class JmsHost
      * @return possible object is
      *         {@link String }
      */
-    public String getName() {
-        return name;
-    }
+    @Attribute(required = true)
+    public String getName();
 
     /**
      * Sets the value of the name property.
@@ -94,11 +73,7 @@ public class JmsHost
      * @param value allowed object is
      *              {@link String }
      */
-    public void setName(String value) throws PropertyVetoException {
-        support.fireVetoableChange("name", this.name, value);
-
-        this.name = value;
-    }
+    public void setName(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the host property.
@@ -106,9 +81,8 @@ public class JmsHost
      * @return possible object is
      *         {@link String }
      */
-    public String getHost() {
-        return host;
-    }
+    @Attribute
+    public String getHost();
 
     /**
      * Sets the value of the host property.
@@ -116,11 +90,7 @@ public class JmsHost
      * @param value allowed object is
      *              {@link String }
      */
-    public void setHost(String value) throws PropertyVetoException {
-        support.fireVetoableChange("host", this.host, value);
-
-        this.host = value;
-    }
+    public void setHost(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the port property.
@@ -128,13 +98,8 @@ public class JmsHost
      * @return possible object is
      *         {@link String }
      */
-    public String getPort() {
-        if (port == null) {
-            return "7676";
-        } else {
-            return port;
-        }
-    }
+    @Attribute
+    public String getPort();
 
     /**
      * Sets the value of the port property.
@@ -142,11 +107,7 @@ public class JmsHost
      * @param value allowed object is
      *              {@link String }
      */
-    public void setPort(String value) throws PropertyVetoException {
-        support.fireVetoableChange("port", this.port, value);
-
-        this.port = value;
-    }
+    public void setPort(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the adminUserName property.
@@ -154,13 +115,8 @@ public class JmsHost
      * @return possible object is
      *         {@link String }
      */
-    public String getAdminUserName() {
-        if (adminUserName == null) {
-            return "admin";
-        } else {
-            return adminUserName;
-        }
-    }
+    @Attribute
+    public String getAdminUserName();
 
     /**
      * Sets the value of the adminUserName property.
@@ -168,11 +124,7 @@ public class JmsHost
      * @param value allowed object is
      *              {@link String }
      */
-    public void setAdminUserName(String value) throws PropertyVetoException {
-        support.fireVetoableChange("adminUserName", this.adminUserName, value);
-
-        this.adminUserName = value;
-    }
+    public void setAdminUserName(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the adminPassword property.
@@ -180,13 +132,8 @@ public class JmsHost
      * @return possible object is
      *         {@link String }
      */
-    public String getAdminPassword() {
-        if (adminPassword == null) {
-            return "admin";
-        } else {
-            return adminPassword;
-        }
-    }
+    @Attribute
+    public String getAdminPassword();
 
     /**
      * Sets the value of the adminPassword property.
@@ -194,11 +141,7 @@ public class JmsHost
      * @param value allowed object is
      *              {@link String }
      */
-    public void setAdminPassword(String value) throws PropertyVetoException {
-        support.fireVetoableChange("adminPassword", this.adminPassword, value);
-
-        this.adminPassword = value;
-    }
+    public void setAdminPassword(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the property property.
@@ -220,9 +163,8 @@ public class JmsHost
      * Objects of the following type(s) are allowed in the list
      * {@link Property }
      */
-    public List<Property> getProperty() {
-        return this.property;
-    }
+    @Element("property")
+    public List<Property> getProperty();
 
 
 

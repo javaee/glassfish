@@ -41,7 +41,7 @@ package com.sun.enterprise.config.serverbeans;
 import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.Element;
-import org.glassfish.api.admin.ConfigBean;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 
 import java.beans.PropertyVetoException;
 import java.io.Serializable;
@@ -57,28 +57,7 @@ import java.util.List;
     "transformationRule"
 }) */
 @Configured
-public class WebServiceEndpoint
- extends ConfigBean implements Serializable {
-
-    private final static long serialVersionUID = 1L;
-    @Attribute(required = true)
-
-    protected String name;
-    @Attribute
-
-    protected String monitoring;
-    @Attribute
-
-    protected String maxHistorySize;
-    @Attribute
-
-    protected String jbiEnabled;
-    @Element
-    protected List<RegistryLocation> registryLocation = new ConstrainedList<RegistryLocation>(this, "registryLocation", support);
-    @Element
-    protected List<TransformationRule> transformationRule = new ConstrainedList<TransformationRule>(this, "transformationRule", support);
-
-
+public interface WebServiceEndpoint extends ConfigBeanProxy  {
 
     /**
      * Gets the value of the name property.
@@ -86,9 +65,8 @@ public class WebServiceEndpoint
      * @return possible object is
      *         {@link String }
      */
-    public String getName() {
-        return name;
-    }
+    @Attribute(required = true)
+    public String getName();
 
     /**
      * Sets the value of the name property.
@@ -96,11 +74,7 @@ public class WebServiceEndpoint
      * @param value allowed object is
      *              {@link String }
      */
-    public void setName(String value) throws PropertyVetoException {
-        support.fireVetoableChange("name", this.name, value);
-
-        this.name = value;
-    }
+    public void setName(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the monitoring property.
@@ -108,13 +82,8 @@ public class WebServiceEndpoint
      * @return possible object is
      *         {@link String }
      */
-    public String getMonitoring() {
-        if (monitoring == null) {
-            return "OFF";
-        } else {
-            return monitoring;
-        }
-    }
+    @Attribute
+    public String getMonitoring();
 
     /**
      * Sets the value of the monitoring property.
@@ -122,11 +91,7 @@ public class WebServiceEndpoint
      * @param value allowed object is
      *              {@link String }
      */
-    public void setMonitoring(String value) throws PropertyVetoException {
-        support.fireVetoableChange("monitoring", this.monitoring, value);
-
-        this.monitoring = value;
-    }
+    public void setMonitoring(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the maxHistorySize property.
@@ -134,13 +99,8 @@ public class WebServiceEndpoint
      * @return possible object is
      *         {@link String }
      */
-    public String getMaxHistorySize() {
-        if (maxHistorySize == null) {
-            return "25";
-        } else {
-            return maxHistorySize;
-        }
-    }
+    @Attribute
+    public String getMaxHistorySize();
 
     /**
      * Sets the value of the maxHistorySize property.
@@ -148,11 +108,7 @@ public class WebServiceEndpoint
      * @param value allowed object is
      *              {@link String }
      */
-    public void setMaxHistorySize(String value) throws PropertyVetoException {
-        support.fireVetoableChange("maxHistorySize", this.maxHistorySize, value);
-
-        this.maxHistorySize = value;
-    }
+    public void setMaxHistorySize(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the jbiEnabled property.
@@ -160,13 +116,8 @@ public class WebServiceEndpoint
      * @return possible object is
      *         {@link String }
      */
-    public String getJbiEnabled() {
-        if (jbiEnabled == null) {
-            return "false";
-        } else {
-            return jbiEnabled;
-        }
-    }
+    @Attribute
+    public String getJbiEnabled();
 
     /**
      * Sets the value of the jbiEnabled property.
@@ -174,11 +125,7 @@ public class WebServiceEndpoint
      * @param value allowed object is
      *              {@link String }
      */
-    public void setJbiEnabled(String value) throws PropertyVetoException {
-        support.fireVetoableChange("jbiEnabled", this.jbiEnabled, value);
-
-        this.jbiEnabled = value;
-    }
+    public void setJbiEnabled(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the registryLocation property.
@@ -200,9 +147,8 @@ public class WebServiceEndpoint
      * Objects of the following type(s) are allowed in the list
      * {@link RegistryLocation }
      */
-    public List<RegistryLocation> getRegistryLocation() {
-        return this.registryLocation;
-    }
+    @Element
+    public List<RegistryLocation> getRegistryLocation();
 
     /**
      * Gets the value of the transformationRule property.
@@ -224,9 +170,8 @@ public class WebServiceEndpoint
      * Objects of the following type(s) are allowed in the list
      * {@link TransformationRule }
      */
-    public List<TransformationRule> getTransformationRule() {
-        return this.transformationRule;
-    }
+    @Element
+    public List<TransformationRule> getTransformationRule();
 
 
 

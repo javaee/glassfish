@@ -39,11 +39,11 @@
 package com.sun.enterprise.config.serverbeans;
 
 import org.jvnet.hk2.config.Attribute;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.Configured;
-import org.glassfish.api.admin.ConfigBean;
+import org.jvnet.hk2.config.Element;
 
 import java.beans.PropertyVetoException;
-import java.io.Serializable;
 import java.util.List;
 
 
@@ -55,16 +55,7 @@ import java.util.List;
     "property"
 }) */
 @Configured
-public class SessionProperties
- extends ConfigBean implements Serializable {
-
-    private final static long serialVersionUID = 1L;
-    @Attribute
-
-    protected String timeoutInSeconds;
-    protected List<Property> property = new ConstrainedList<Property>(this, "property", support);
-
-
+public interface SessionProperties extends ConfigBeanProxy  {
 
     /**
      * Gets the value of the timeoutInSeconds property.
@@ -72,9 +63,8 @@ public class SessionProperties
      * @return possible object is
      *         {@link String }
      */
-    public String getTimeoutInSeconds() {
-        return timeoutInSeconds;
-    }
+    @Attribute
+    public String getTimeoutInSeconds();
 
     /**
      * Sets the value of the timeoutInSeconds property.
@@ -82,11 +72,7 @@ public class SessionProperties
      * @param value allowed object is
      *              {@link String }
      */
-    public void setTimeoutInSeconds(String value) throws PropertyVetoException {
-        support.fireVetoableChange("timeoutInSeconds", this.timeoutInSeconds, value);
-
-        this.timeoutInSeconds = value;
-    }
+    public void setTimeoutInSeconds(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the property property.
@@ -108,9 +94,8 @@ public class SessionProperties
      * Objects of the following type(s) are allowed in the list
      * {@link Property }
      */
-    public List<Property> getProperty() {
-        return this.property;
-    }
+    @Element("property")
+    public List<Property> getProperty();
 
 
 

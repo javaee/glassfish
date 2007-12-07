@@ -45,36 +45,17 @@ import java.beans.PropertyVetoException;
  * 
  * @author Jerome Dochez
  */
-public interface ConfigListener {
-
-	/**
-	 * A new configuration object was added. 
-	 *
-	 * @param owner is the configuration object to which the new config was added to. 
-	 * @param propertyName is the name of the added configuration object as known to the
-	 * owner configuration.
-	 * @param added is the new configuration object added to the owner configuration.
-     * @throws PropertyVetoException if the listener wish to veto the changes
-	 */
-    public void configAdded(Object owner, String propertyName, Object added) throws PropertyVetoException;
+public interface ConfigListener<T> {
 
 	/**
 	 * A configuration object has change (maybe multiple times)
 	 *
-	 * @param evt is the array of changes description
-     * @throws PropertyVetoException if the listener wish to veto the changes
+     * @param oldValue is the old configuration object
+     * @param newValue is the new configuration object
+	 * @param evt is the array of changes events describing what has changed between the
+     * oldValue and the newValue
+     * @throws ChangeNotAcceptedException if the listener cannot process the changes
 	 */
-    public void changed(PropertyChangeEvent... evt) throws PropertyVetoException;
-
-	/**
-	 * A configuration object was removed.
-	 *
-	 * @param owner is the configuration object owning the removed configuration
-	 * @param propertyName is the name of the removed configuration as known to 
-	 * the owner configuiration.
-	 * @param removed is the removed configuration.
-     * @throws PropertyVetoException if the listener wish to veto the changes
-	 */
-    public void configRemoved(Object owner, String propertyName, Object removed) throws PropertyVetoException;
+    public void changed(T oldValue, T newValue, PropertyChangeEvent... evt) throws ChangeNotAcceptedException;
     
 }

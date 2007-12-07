@@ -41,7 +41,7 @@ package com.sun.enterprise.config.serverbeans;
 import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.Element;
-import org.glassfish.api.admin.ConfigBean;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 
 import java.beans.PropertyVetoException;
 import java.io.Serializable;
@@ -57,48 +57,7 @@ import java.util.List;
     "property"
 }) */
 @Configured
-public class EjbContainer
- extends ConfigBean implements Serializable {
-
-    private final static long serialVersionUID = 1L;
-    @Attribute
-
-    protected String steadyPoolSize;
-    @Attribute
-
-    protected String poolResizeQuantity;
-    @Attribute
-
-    protected String maxPoolSize;
-    @Attribute
-
-    protected String cacheResizeQuantity;
-    @Attribute
-
-    protected String maxCacheSize;
-    @Attribute
-
-    protected String poolIdleTimeoutInSeconds;
-    @Attribute
-
-    protected String cacheIdleTimeoutInSeconds;
-    @Attribute
-
-    protected String removalTimeoutInSeconds;
-    @Attribute
-
-    protected String victimSelectionPolicy;
-    @Attribute
-
-    protected String commitOption;
-    @Attribute
-
-    protected String sessionStore;
-    @Element
-    protected EjbTimerService ejbTimerService;
-    protected List<Property> property = new ConstrainedList<Property>(this, "property", support);
-
-
+public interface EjbContainer extends ConfigBeanProxy  {
 
     /**
      * Gets the value of the steadyPoolSize property.
@@ -106,13 +65,8 @@ public class EjbContainer
      * @return possible object is
      *         {@link String }
      */
-    public String getSteadyPoolSize() {
-        if (steadyPoolSize == null) {
-            return "32";
-        } else {
-            return steadyPoolSize;
-        }
-    }
+    @Attribute
+    public String getSteadyPoolSize();
 
     /**
      * Sets the value of the steadyPoolSize property.
@@ -120,11 +74,7 @@ public class EjbContainer
      * @param value allowed object is
      *              {@link String }
      */
-    public void setSteadyPoolSize(String value) throws PropertyVetoException {
-        support.fireVetoableChange("steadyPoolSize", this.steadyPoolSize, value);
-
-        this.steadyPoolSize = value;
-    }
+    public void setSteadyPoolSize(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the poolResizeQuantity property.
@@ -132,13 +82,8 @@ public class EjbContainer
      * @return possible object is
      *         {@link String }
      */
-    public String getPoolResizeQuantity() {
-        if (poolResizeQuantity == null) {
-            return "16";
-        } else {
-            return poolResizeQuantity;
-        }
-    }
+    @Attribute
+    public String getPoolResizeQuantity();
 
     /**
      * Sets the value of the poolResizeQuantity property.
@@ -146,11 +91,7 @@ public class EjbContainer
      * @param value allowed object is
      *              {@link String }
      */
-    public void setPoolResizeQuantity(String value) throws PropertyVetoException {
-        support.fireVetoableChange("poolResizeQuantity", this.poolResizeQuantity, value);
-
-        this.poolResizeQuantity = value;
-    }
+    public void setPoolResizeQuantity(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the maxPoolSize property.
@@ -158,13 +99,8 @@ public class EjbContainer
      * @return possible object is
      *         {@link String }
      */
-    public String getMaxPoolSize() {
-        if (maxPoolSize == null) {
-            return "64";
-        } else {
-            return maxPoolSize;
-        }
-    }
+    @Attribute
+    public String getMaxPoolSize();
 
     /**
      * Sets the value of the maxPoolSize property.
@@ -172,11 +108,7 @@ public class EjbContainer
      * @param value allowed object is
      *              {@link String }
      */
-    public void setMaxPoolSize(String value) throws PropertyVetoException {
-        support.fireVetoableChange("maxPoolSize", this.maxPoolSize, value);
-
-        this.maxPoolSize = value;
-    }
+    public void setMaxPoolSize(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the cacheResizeQuantity property.
@@ -184,13 +116,8 @@ public class EjbContainer
      * @return possible object is
      *         {@link String }
      */
-    public String getCacheResizeQuantity() {
-        if (cacheResizeQuantity == null) {
-            return "32";
-        } else {
-            return cacheResizeQuantity;
-        }
-    }
+    @Attribute
+    public String getCacheResizeQuantity();
 
     /**
      * Sets the value of the cacheResizeQuantity property.
@@ -198,11 +125,7 @@ public class EjbContainer
      * @param value allowed object is
      *              {@link String }
      */
-    public void setCacheResizeQuantity(String value) throws PropertyVetoException {
-        support.fireVetoableChange("cacheResizeQuantity", this.cacheResizeQuantity, value);
-
-        this.cacheResizeQuantity = value;
-    }
+    public void setCacheResizeQuantity(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the maxCacheSize property.
@@ -210,13 +133,8 @@ public class EjbContainer
      * @return possible object is
      *         {@link String }
      */
-    public String getMaxCacheSize() {
-        if (maxCacheSize == null) {
-            return "512";
-        } else {
-            return maxCacheSize;
-        }
-    }
+    @Attribute
+    public String getMaxCacheSize();
 
     /**
      * Sets the value of the maxCacheSize property.
@@ -224,11 +142,7 @@ public class EjbContainer
      * @param value allowed object is
      *              {@link String }
      */
-    public void setMaxCacheSize(String value) throws PropertyVetoException {
-        support.fireVetoableChange("maxCacheSize", this.maxCacheSize, value);
-
-        this.maxCacheSize = value;
-    }
+    public void setMaxCacheSize(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the poolIdleTimeoutInSeconds property.
@@ -236,13 +150,8 @@ public class EjbContainer
      * @return possible object is
      *         {@link String }
      */
-    public String getPoolIdleTimeoutInSeconds() {
-        if (poolIdleTimeoutInSeconds == null) {
-            return "600";
-        } else {
-            return poolIdleTimeoutInSeconds;
-        }
-    }
+    @Attribute
+    public String getPoolIdleTimeoutInSeconds();
 
     /**
      * Sets the value of the poolIdleTimeoutInSeconds property.
@@ -250,11 +159,7 @@ public class EjbContainer
      * @param value allowed object is
      *              {@link String }
      */
-    public void setPoolIdleTimeoutInSeconds(String value) throws PropertyVetoException {
-        support.fireVetoableChange("poolIdleTimeoutInSeconds", this.poolIdleTimeoutInSeconds, value);
-
-        this.poolIdleTimeoutInSeconds = value;
-    }
+    public void setPoolIdleTimeoutInSeconds(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the cacheIdleTimeoutInSeconds property.
@@ -262,13 +167,8 @@ public class EjbContainer
      * @return possible object is
      *         {@link String }
      */
-    public String getCacheIdleTimeoutInSeconds() {
-        if (cacheIdleTimeoutInSeconds == null) {
-            return "600";
-        } else {
-            return cacheIdleTimeoutInSeconds;
-        }
-    }
+    @Attribute
+    public String getCacheIdleTimeoutInSeconds();
 
     /**
      * Sets the value of the cacheIdleTimeoutInSeconds property.
@@ -276,11 +176,7 @@ public class EjbContainer
      * @param value allowed object is
      *              {@link String }
      */
-    public void setCacheIdleTimeoutInSeconds(String value) throws PropertyVetoException {
-        support.fireVetoableChange("cacheIdleTimeoutInSeconds", this.cacheIdleTimeoutInSeconds, value);
-
-        this.cacheIdleTimeoutInSeconds = value;
-    }
+    public void setCacheIdleTimeoutInSeconds(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the removalTimeoutInSeconds property.
@@ -288,13 +184,8 @@ public class EjbContainer
      * @return possible object is
      *         {@link String }
      */
-    public String getRemovalTimeoutInSeconds() {
-        if (removalTimeoutInSeconds == null) {
-            return "5400";
-        } else {
-            return removalTimeoutInSeconds;
-        }
-    }
+    @Attribute
+    public String getRemovalTimeoutInSeconds();
 
     /**
      * Sets the value of the removalTimeoutInSeconds property.
@@ -302,11 +193,7 @@ public class EjbContainer
      * @param value allowed object is
      *              {@link String }
      */
-    public void setRemovalTimeoutInSeconds(String value) throws PropertyVetoException {
-        support.fireVetoableChange("removalTimeoutInSeconds", this.removalTimeoutInSeconds, value);
-
-        this.removalTimeoutInSeconds = value;
-    }
+    public void setRemovalTimeoutInSeconds(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the victimSelectionPolicy property.
@@ -314,13 +201,8 @@ public class EjbContainer
      * @return possible object is
      *         {@link String }
      */
-    public String getVictimSelectionPolicy() {
-        if (victimSelectionPolicy == null) {
-            return "nru";
-        } else {
-            return victimSelectionPolicy;
-        }
-    }
+    @Attribute
+    public String getVictimSelectionPolicy();
 
     /**
      * Sets the value of the victimSelectionPolicy property.
@@ -328,11 +210,7 @@ public class EjbContainer
      * @param value allowed object is
      *              {@link String }
      */
-    public void setVictimSelectionPolicy(String value) throws PropertyVetoException {
-        support.fireVetoableChange("victimSelectionPolicy", this.victimSelectionPolicy, value);
-
-        this.victimSelectionPolicy = value;
-    }
+    public void setVictimSelectionPolicy(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the commitOption property.
@@ -340,13 +218,8 @@ public class EjbContainer
      * @return possible object is
      *         {@link String }
      */
-    public String getCommitOption() {
-        if (commitOption == null) {
-            return "B";
-        } else {
-            return commitOption;
-        }
-    }
+    @Attribute
+    public String getCommitOption();
 
     /**
      * Sets the value of the commitOption property.
@@ -354,11 +227,7 @@ public class EjbContainer
      * @param value allowed object is
      *              {@link String }
      */
-    public void setCommitOption(String value) throws PropertyVetoException {
-        support.fireVetoableChange("commitOption", this.commitOption, value);
-
-        this.commitOption = value;
-    }
+    public void setCommitOption(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the sessionStore property.
@@ -366,9 +235,8 @@ public class EjbContainer
      * @return possible object is
      *         {@link String }
      */
-    public String getSessionStore() {
-        return sessionStore;
-    }
+    @Attribute
+    public String getSessionStore();
 
     /**
      * Sets the value of the sessionStore property.
@@ -376,11 +244,7 @@ public class EjbContainer
      * @param value allowed object is
      *              {@link String }
      */
-    public void setSessionStore(String value) throws PropertyVetoException {
-        support.fireVetoableChange("sessionStore", this.sessionStore, value);
-
-        this.sessionStore = value;
-    }
+    public void setSessionStore(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the ejbTimerService property.
@@ -388,9 +252,8 @@ public class EjbContainer
      * @return possible object is
      *         {@link EjbTimerService }
      */
-    public EjbTimerService getEjbTimerService() {
-        return ejbTimerService;
-    }
+    @Element
+    public EjbTimerService getEjbTimerService();
 
     /**
      * Sets the value of the ejbTimerService property.
@@ -398,11 +261,7 @@ public class EjbContainer
      * @param value allowed object is
      *              {@link EjbTimerService }
      */
-    public void setEjbTimerService(EjbTimerService value) throws PropertyVetoException {
-        support.fireVetoableChange("ejbTimerService", this.ejbTimerService, value);
-
-        this.ejbTimerService = value;
-    }
+    public void setEjbTimerService(EjbTimerService value) throws PropertyVetoException;
 
     /**
      * Gets the value of the property property.
@@ -424,9 +283,8 @@ public class EjbContainer
      * Objects of the following type(s) are allowed in the list
      * {@link Property }
      */
-    public List<Property> getProperty() {
-        return this.property;
-    }
+    @Element("property")
+    public List<Property> getProperty();
 
 
 

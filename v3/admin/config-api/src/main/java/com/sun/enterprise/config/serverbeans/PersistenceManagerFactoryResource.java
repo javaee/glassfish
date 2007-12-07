@@ -39,12 +39,12 @@
 package com.sun.enterprise.config.serverbeans;
 
 import org.jvnet.hk2.config.Attribute;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.Configured;
-import org.glassfish.api.admin.ConfigBean;
+import org.jvnet.hk2.config.Element;
 
 import java.beans.PropertyVetoException;
 import java.beans.VetoableChangeSupport;
-import java.io.Serializable;
 import java.util.List;
 
 
@@ -57,30 +57,7 @@ import java.util.List;
     "property"
 }) */
 @Configured
-public class PersistenceManagerFactoryResource extends ConfigBean implements Resource, Serializable {
-
-    final transient private VetoableChangeSupport support = new VetoableChangeSupport(this);
-    
-    private final static long serialVersionUID = 1L;
-    @Attribute(required = true)
-
-    protected String jndiName;
-    @Attribute
-
-    protected String factoryClass;
-    @Attribute
-
-    protected String jdbcResourceJndiName;
-    @Attribute
-
-    protected String objectType;
-    @Attribute
-
-    protected String enabled;
-    protected String description;
-    protected List<Property> property = new ConstrainedList<Property>(this, "property", support);
-
-
+public interface PersistenceManagerFactoryResource extends ConfigBeanProxy, Resource {
 
     /**
      * Gets the value of the jndiName property.
@@ -88,9 +65,8 @@ public class PersistenceManagerFactoryResource extends ConfigBean implements Res
      * @return possible object is
      *         {@link String }
      */
-    public String getJndiName() {
-        return jndiName;
-    }
+    @Attribute(required = true)
+    public String getJndiName();
 
     /**
      * Sets the value of the jndiName property.
@@ -98,11 +74,7 @@ public class PersistenceManagerFactoryResource extends ConfigBean implements Res
      * @param value allowed object is
      *              {@link String }
      */
-    public void setJndiName(String value) throws PropertyVetoException {
-        support.fireVetoableChange("jndiName", this.jndiName, value);
-
-        this.jndiName = value;
-    }
+    public void setJndiName(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the factoryClass property.
@@ -110,13 +82,8 @@ public class PersistenceManagerFactoryResource extends ConfigBean implements Res
      * @return possible object is
      *         {@link String }
      */
-    public String getFactoryClass() {
-        if (factoryClass == null) {
-            return "com.sun.jdo.spi.persistence.support.sqlstore.impl.PersistenceManagerFactoryImpl";
-        } else {
-            return factoryClass;
-        }
-    }
+    @Attribute
+    public String getFactoryClass();
 
     /**
      * Sets the value of the factoryClass property.
@@ -124,11 +91,7 @@ public class PersistenceManagerFactoryResource extends ConfigBean implements Res
      * @param value allowed object is
      *              {@link String }
      */
-    public void setFactoryClass(String value) throws PropertyVetoException {
-        support.fireVetoableChange("factoryClass", this.factoryClass, value);
-
-        this.factoryClass = value;
-    }
+    public void setFactoryClass(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the jdbcResourceJndiName property.
@@ -136,9 +99,8 @@ public class PersistenceManagerFactoryResource extends ConfigBean implements Res
      * @return possible object is
      *         {@link String }
      */
-    public String getJdbcResourceJndiName() {
-        return jdbcResourceJndiName;
-    }
+    @Attribute
+    public String getJdbcResourceJndiName();
 
     /**
      * Sets the value of the jdbcResourceJndiName property.
@@ -146,11 +108,7 @@ public class PersistenceManagerFactoryResource extends ConfigBean implements Res
      * @param value allowed object is
      *              {@link String }
      */
-    public void setJdbcResourceJndiName(String value) throws PropertyVetoException {
-        support.fireVetoableChange("jdbcResourceJndiName", this.jdbcResourceJndiName, value);
-
-        this.jdbcResourceJndiName = value;
-    }
+    public void setJdbcResourceJndiName(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the objectType property.
@@ -158,13 +116,8 @@ public class PersistenceManagerFactoryResource extends ConfigBean implements Res
      * @return possible object is
      *         {@link String }
      */
-    public String getObjectType() {
-        if (objectType == null) {
-            return "user";
-        } else {
-            return objectType;
-        }
-    }
+    @Attribute
+    public String getObjectType();
 
     /**
      * Sets the value of the objectType property.
@@ -172,11 +125,7 @@ public class PersistenceManagerFactoryResource extends ConfigBean implements Res
      * @param value allowed object is
      *              {@link String }
      */
-    public void setObjectType(String value) throws PropertyVetoException {
-        support.fireVetoableChange("objectType", this.objectType, value);
-
-        this.objectType = value;
-    }
+    public void setObjectType(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the enabled property.
@@ -184,13 +133,8 @@ public class PersistenceManagerFactoryResource extends ConfigBean implements Res
      * @return possible object is
      *         {@link String }
      */
-    public String getEnabled() {
-        if (enabled == null) {
-            return "true";
-        } else {
-            return enabled;
-        }
-    }
+    @Attribute
+    public String getEnabled();
 
     /**
      * Sets the value of the enabled property.
@@ -198,11 +142,7 @@ public class PersistenceManagerFactoryResource extends ConfigBean implements Res
      * @param value allowed object is
      *              {@link String }
      */
-    public void setEnabled(String value) throws PropertyVetoException {
-        support.fireVetoableChange("enabled", this.enabled, value);
-
-        this.enabled = value;
-    }
+    public void setEnabled(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the description property.
@@ -210,9 +150,8 @@ public class PersistenceManagerFactoryResource extends ConfigBean implements Res
      * @return possible object is
      *         {@link String }
      */
-    public String getDescription() {
-        return description;
-    }
+    @Attribute
+    public String getDescription();
 
     /**
      * Sets the value of the description property.
@@ -220,11 +159,7 @@ public class PersistenceManagerFactoryResource extends ConfigBean implements Res
      * @param value allowed object is
      *              {@link String }
      */
-    public void setDescription(String value) throws PropertyVetoException {
-        support.fireVetoableChange("description", this.description, value);
-
-        this.description = value;
-    }
+    public void setDescription(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the property property.
@@ -246,9 +181,8 @@ public class PersistenceManagerFactoryResource extends ConfigBean implements Res
      * Objects of the following type(s) are allowed in the list
      * {@link Property }
      */
-    public List<Property> getProperty() {
-        return this.property;
-    }
+    @Element("property")
+    public List<Property> getProperty();
 
 
 

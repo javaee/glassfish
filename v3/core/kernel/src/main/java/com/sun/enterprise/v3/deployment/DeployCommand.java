@@ -84,7 +84,7 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
     String virtualservers = null;
 
 
-    @Param(primary=true)
+    @Param(primary=true, shortName = "p")
     public void setPath(String path) {
         this.path = path;
     }
@@ -179,7 +179,9 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
                 }
             }
 
-            ClassLoader cloader = archiveHandler.getClassLoader(null ,archive);
+
+            // TO DO : proper lookup of the parent class loader, need to write an extensible CL.
+            ClassLoader cloader = archiveHandler.getClassLoader(getClass().getClassLoader().getParent(),archive);
 
             Collection<Sniffer> appSniffers = getSniffers(archive, cloader);
             if (appSniffers.size()==0) {

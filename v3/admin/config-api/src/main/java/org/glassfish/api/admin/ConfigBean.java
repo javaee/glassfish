@@ -35,54 +35,38 @@
  */
 package org.glassfish.api.admin;
 
-import org.jvnet.hk2.component.PostConstruct;
-import java.beans.*;
-import java.io.Serializable;
+import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.config.ConfigBeanProxy;
+import org.jvnet.hk2.config.ConfigModel;
+import org.jvnet.hk2.config.Dom;
+import org.jvnet.hk2.config.DomDocument;
+
+import javax.xml.stream.XMLStreamReader;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyVetoException;
+import java.beans.VetoableChangeListener;
+import java.beans.VetoableChangeSupport;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.sun.enterprise.config.serverbeans.ConstrainedBean;
-
 /**
- * Parent class for our config-api beans. Config-api beans do not
+ * Subclass of our standard DOM element handler with more muscle :
+ *  - can fire property change events when attributes or elements are changed
+ *  - supports Transaction access to attributes and elements.
  *
  * @author Jerome Dochez
  */
-public class ConfigBean implements Serializable, Cloneable, ConstrainedBean, PostConstruct, Transactor {
+public class ConfigBean extends Dom implements ConstrainedBean, Cloneable, Transactor {
+                                
 
-
-    transient Transaction currentTx=null;
-    transient BeanTransactionListener listener=null;
-
+    private Transaction currentTx=null;
     protected VetoableChangeSupport support=new TypedVetoableChangeSupport(this);
 
-    /**
-     * HK2 component lifecyle
-     * Adds the necessary VetoableChangeListener so changes cannot be made on this
-     * instance without first associating it with a transaction.
-     */
-    public void postConstruct() {
-
-        // add a safeguard to check that any property change is done under a transaction scheme
-        support.addVetoableChangeListener(new VetoableChangeListener() {
-
-            public void vetoableChange(PropertyChangeEvent evt) throws PropertyVetoException {
-                if (currentTx==null) {
-                    throw new PropertyVetoException("Change not part of a transaction", evt);
-                }
-                // check that if we are setting a new value object, that this value is also part of
-                // the same transaction
-                try {
-                    ConfigBean isIt = ConfigBean.class.cast(evt.getNewValue());
-                    if (!isIt.canCommit(currentTx)) {
-                        throw new PropertyVetoException("New value of type " + evt.getNewValue().getClass() + " is not part " +
-                                "of this ConfigBean transaction, use allocate(Class<T>) instead of new() to allocate new config objects", evt);
-                    }
-                } catch(ClassCastException e) {
-                    // ignore
-                }
-            }
-        });
+    public ConfigBean(Habitat habitat, DomDocument domDocument, Dom dom, ConfigModel configModel, XMLStreamReader xmlStreamReader) {
+        super(habitat, domDocument, dom, configModel, xmlStreamReader);   
     }
 
     /**
@@ -126,9 +110,6 @@ public class ConfigBean implements Serializable, Cloneable, ConstrainedBean, Pos
             // set up our transaction and add ourself to the transaction
             currentTx = t;
             t.addParticipant(this);
-            // start recording our transaction change events
-            listener = new BeanTransactionListener();
-            support.addVetoableChangeListener(listener);
             return true;
         }
         return false;
@@ -156,13 +137,7 @@ public class ConfigBean implements Serializable, Cloneable, ConstrainedBean, Pos
     public synchronized void commit(Transaction t) throws TransactionFailure {
         if (currentTx==t) {
             currentTx=null;
-            support.removeVetoableChangeListener(listener);
-            listener = null;
         } 
-    }
-
-    public List<PropertyChangeEvent> getTransactionEvents() {
-        return listener.getEvents();
     }
 
 	/**
@@ -171,13 +146,7 @@ public class ConfigBean implements Serializable, Cloneable, ConstrainedBean, Pos
 	 * @param t the aborting transaction
 	 */    
     public synchronized void abort(Transaction t) {
-
-        support.removeVetoableChangeListener(listener);
-        
-        // housekeeping first
         currentTx=null;
-        listener=null;
-
     }
 
     /**
@@ -189,22 +158,17 @@ public class ConfigBean implements Serializable, Cloneable, ConstrainedBean, Pos
      * @return the propertly constructed configuration object
      */
 
-    public <T extends ConfigBean> T allocate(Class<T> type) {
+    public <T extends ConfigBeanProxy> T allocate(Class<T> type) {
         if (currentTx==null) {
             throw new RuntimeException("Not part of a transaction");
         }
-        T instance;
-        try {
-            instance = type.newInstance();
-        } catch (InstantiationException e) {
-            return null;
-        } catch (IllegalAccessException e) {
-            return null;
-        }
+        ConfigBean instance;
+        instance = new ConfigBean(habitat, document, this, document.getModel(type), null);
+        
         instance.join(currentTx);
-        instance.postConstruct();
-        return instance;
+        return instance.createProxy(type);
    }
+
 
     /**
      * Implementation of clone to support working on copies.
@@ -217,7 +181,6 @@ public class ConfigBean implements Serializable, Cloneable, ConstrainedBean, Pos
         try {
             ConfigBean o = (ConfigBean) super.clone();
             o.support=new TypedVetoableChangeSupport(o);
-            o.postConstruct();
             return o;
         }
         catch (CloneNotSupportedException e) {
@@ -226,28 +189,57 @@ public class ConfigBean implements Serializable, Cloneable, ConstrainedBean, Pos
     }
 
     /**
-     * Utility class to register change events during a transaction
+     * {@link java.lang.reflect.InvocationHandler} implementation that allows strongly-typed access
+     * to the configuration.
+     *
+     * <p>
+     * TODO: it might be a great performance improvement to have APT generate
+     * code that does this during the development time by looking at the interface.
      */
-    private class BeanTransactionListener implements VetoableChangeListener {
-
-        final LinkedList<PropertyChangeEvent> events = new LinkedList<PropertyChangeEvent>();
-        
-        /**
-         * This method gets called when a constrained property is changed.
-         *
-         * @param evt a <code>PropertyChangeEvent</code> object describing the
-         *            event source and the property that has changed.
-         * @throws java.beans.PropertyVetoException
-         *          if the recipient wishes the property
-         *          change to be rolled back.
-         */
-        public void vetoableChange(PropertyChangeEvent evt) throws PropertyVetoException {
-            events.addLast(evt);
+    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+        // serve java.lang.Object methods by ourselves
+        if(method.getDeclaringClass()==Object.class) {
+            try {
+                return method.invoke(this,args);
+            } catch (InvocationTargetException e) {
+                throw e.getTargetException();
+            }
         }
 
-        private List<PropertyChangeEvent> getEvents() {
-            return events;
+        ConfigModel.Property p = toProperty(method);
+        if(p==null)
+            throw new IllegalArgumentException("No corresponding property found for method: "+method);
+
+        if(args==null || args.length==0) {
+            // getter
+            return getter(p, method.getGenericReturnType());
+        } else {
+            // setter
+            Object oldValue = getter(p, method.getGenericParameterTypes()[0]);
+            PropertyChangeEvent evt = new PropertyChangeEvent(proxy,p.xmlName(), oldValue, args[0]);
+            if (currentTx==null) {
+                throw new PropertyVetoException("No transaction associated with " + this, evt);
+            }
+            // check that if we are setting a new value object, that this value is also part of
+            // the same transaction
+            try {
+                Proxy valueProxy = Proxy.class.cast(evt.getNewValue());
+                if (valueProxy!=null) {
+                    ConfigBean isIt = (ConfigBean) Proxy.getInvocationHandler(valueProxy);
+                    if (!isIt.canCommit(currentTx)) {
+                        throw new PropertyVetoException("New value of type " + evt.getNewValue().getClass() + " is not part " +
+                            "of this ConfigBean transaction, use allocate(Class<T>) instead of new() to allocate new config objects", evt);
+                    }
+                }
+            } catch(ClassCastException e) {
+                // ignore
+            }
+            // this will generate a PropertyVetoException if any of the listener disagree
+            support.fireVetoableChange(p.xmlName(), oldValue, args[0]);
+
+            // so far so good, nobody objects to the new value being set on the object
+            setter(p, args[0]);
+            return null;
         }
     }
-
 }

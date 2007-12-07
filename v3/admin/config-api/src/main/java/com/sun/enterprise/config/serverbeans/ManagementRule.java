@@ -41,7 +41,7 @@ package com.sun.enterprise.config.serverbeans;
 import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.Element;
-import org.glassfish.api.admin.ConfigBean;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 
 import java.beans.PropertyVetoException;
 import java.io.Serializable;
@@ -57,22 +57,7 @@ import java.io.Serializable;
     "description"
 }) */
 @Configured
-public class ManagementRule
- extends ConfigBean implements Serializable {
-
-    private final static long serialVersionUID = 1L;
-    @Attribute(required = true)
-
-    protected String name;
-    @Attribute
-
-    protected String enabled;
-    @Element(required=true)
-    protected Event event;
-    protected Action action;
-    protected String description;
-
-
+public interface ManagementRule extends ConfigBeanProxy  {
 
     /**
      * Gets the value of the name property.
@@ -80,9 +65,8 @@ public class ManagementRule
      * @return possible object is
      *         {@link String }
      */
-    public String getName() {
-        return name;
-    }
+    @Attribute(required = true)
+    public String getName();
 
     /**
      * Sets the value of the name property.
@@ -90,11 +74,7 @@ public class ManagementRule
      * @param value allowed object is
      *              {@link String }
      */
-    public void setName(String value) throws PropertyVetoException {
-        support.fireVetoableChange("name", this.name, value);
-
-        this.name = value;
-    }
+    public void setName(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the enabled property.
@@ -102,13 +82,8 @@ public class ManagementRule
      * @return possible object is
      *         {@link String }
      */
-    public String getEnabled() {
-        if (enabled == null) {
-            return "true";
-        } else {
-            return enabled;
-        }
-    }
+    @Attribute
+    public String getEnabled();
 
     /**
      * Sets the value of the enabled property.
@@ -116,11 +91,7 @@ public class ManagementRule
      * @param value allowed object is
      *              {@link String }
      */
-    public void setEnabled(String value) throws PropertyVetoException {
-        support.fireVetoableChange("enabled", this.enabled, value);
-
-        this.enabled = value;
-    }
+    public void setEnabled(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the event property.
@@ -128,9 +99,8 @@ public class ManagementRule
      * @return possible object is
      *         {@link Event }
      */
-    public Event getEvent() {
-        return event;
-    }
+    @Element(required=true)
+    public Event getEvent();
 
     /**
      * Sets the value of the event property.
@@ -138,11 +108,7 @@ public class ManagementRule
      * @param value allowed object is
      *              {@link Event }
      */
-    public void setEvent(Event value) throws PropertyVetoException {
-        support.fireVetoableChange("event", this.event, value);
-
-        this.event = value;
-    }
+    public void setEvent(Event value) throws PropertyVetoException;
 
     /**
      * Gets the value of the action property.
@@ -150,9 +116,8 @@ public class ManagementRule
      * @return possible object is
      *         {@link Action }
      */
-    public Action getAction() {
-        return action;
-    }
+    @Element
+    public Action getAction();
 
     /**
      * Sets the value of the action property.
@@ -160,11 +125,7 @@ public class ManagementRule
      * @param value allowed object is
      *              {@link Action }
      */
-    public void setAction(Action value) throws PropertyVetoException {
-        support.fireVetoableChange("action", this.action, value);
-
-        this.action = value;
-    }
+    public void setAction(Action value) throws PropertyVetoException;
 
     /**
      * Gets the value of the description property.
@@ -172,9 +133,8 @@ public class ManagementRule
      * @return possible object is
      *         {@link String }
      */
-    public String getDescription() {
-        return description;
-    }
+    @Element
+    public String getDescription();
 
     /**
      * Sets the value of the description property.
@@ -182,11 +142,7 @@ public class ManagementRule
      * @param value allowed object is
      *              {@link String }
      */
-    public void setDescription(String value) throws PropertyVetoException {
-        support.fireVetoableChange("description", this.description, value);
-
-        this.description = value;
-    }
+    public void setDescription(String value) throws PropertyVetoException;
 
 
 

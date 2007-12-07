@@ -38,10 +38,10 @@
 
 package com.sun.enterprise.config.serverbeans;
 
+import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.Configured;
-import org.glassfish.api.admin.ConfigBean;
+import org.jvnet.hk2.config.Element;
 
-import java.io.Serializable;
 import java.util.List;
 
 
@@ -53,13 +53,7 @@ import java.util.List;
     "server"
 }) */
 @Configured
-public class Servers
- extends ConfigBean implements Serializable {
-
-    private final static long serialVersionUID = 1L;
-    protected List<Server> server = new ConstrainedList<Server>(this, "server", support);
-
-
+public interface Servers extends ConfigBeanProxy  {
 
     /**
      * Gets the value of the server property.
@@ -81,9 +75,8 @@ public class Servers
      * Objects of the following type(s) are allowed in the list
      * {@link Server }
      */
-    public List<Server> getServer() {
-        return this.server;
-    }
+    @Element
+    public List<Server> getServer();
 
 
 

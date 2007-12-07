@@ -40,7 +40,7 @@ package com.sun.enterprise.config.serverbeans;
 
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.Element;
-import org.glassfish.api.admin.ConfigBean;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 
 import java.io.Serializable;
 import java.util.List;
@@ -54,14 +54,7 @@ import java.util.List;
     "nodeAgent"
 }) */
 @Configured
-public class NodeAgents
- extends ConfigBean implements Serializable {
-
-    private final static long serialVersionUID = 1L;
-    @Element
-    protected List<NodeAgent> nodeAgent = new ConstrainedList<NodeAgent>(this, "nodeAgent", support);
-
-
+public interface NodeAgents extends ConfigBeanProxy  {
 
     /**
      * Gets the value of the nodeAgent property.
@@ -83,9 +76,8 @@ public class NodeAgents
      * Objects of the following type(s) are allowed in the list
      * {@link NodeAgent }
      */
-    public List<NodeAgent> getNodeAgent() {
-        return this.nodeAgent;
-    }
+    @Element
+    public List<NodeAgent> getNodeAgent();
 
 
 

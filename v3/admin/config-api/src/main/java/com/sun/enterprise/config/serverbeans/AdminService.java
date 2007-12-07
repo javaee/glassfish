@@ -41,7 +41,7 @@ package com.sun.enterprise.config.serverbeans;
 import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.Element;
-import org.glassfish.api.admin.ConfigBean;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 
 import java.beans.PropertyVetoException;
 import java.io.Serializable;
@@ -58,22 +58,7 @@ import java.util.List;
     "property"
 }) */
 @Configured
-public class AdminService extends ConfigBean implements Serializable {
-
-    private final static long serialVersionUID = 1L;
-    @Attribute
-
-    protected String type;
-    @Attribute
-
-    protected String systemJmxConnectorName;
-    @Element
-    protected List<JmxConnector> jmxConnector = new ConstrainedList<JmxConnector>(this, "jmxConnector", support);
-    @Element
-    protected DasConfig dasConfig;
-    protected List<Property> property = new ConstrainedList<Property>(this, "property", support);
-
-
+public interface AdminService extends ConfigBeanProxy  {
 
     /**
      * Gets the value of the type property.
@@ -81,13 +66,8 @@ public class AdminService extends ConfigBean implements Serializable {
      * @return possible object is
      *         {@link String }
      */
-    public String getType() {
-        if (type == null) {
-            return "server";
-        } else {
-            return type;
-        }
-    }
+    @Attribute
+    public String getType();
 
     /**
      * Sets the value of the type property.
@@ -95,11 +75,7 @@ public class AdminService extends ConfigBean implements Serializable {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setType(String value) throws PropertyVetoException {
-        support.fireVetoableChange("type", this.type, value);
-
-        this.type = value;
-    }
+    public void setType(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the systemJmxConnectorName property.
@@ -107,9 +83,8 @@ public class AdminService extends ConfigBean implements Serializable {
      * @return possible object is
      *         {@link String }
      */
-    public String getSystemJmxConnectorName() {
-        return systemJmxConnectorName;
-    }
+    @Attribute
+    public String getSystemJmxConnectorName();
 
     /**
      * Sets the value of the systemJmxConnectorName property.
@@ -117,35 +92,15 @@ public class AdminService extends ConfigBean implements Serializable {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setSystemJmxConnectorName(String value) throws PropertyVetoException {
-        support.fireVetoableChange("systemJmxConnectorName", this.systemJmxConnectorName, value);
-
-        this.systemJmxConnectorName = value;
-    }
+    public void setSystemJmxConnectorName(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the jmxConnector property.
-     * <p/>
-     * <p/>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the jmxConnector property.
-     * <p/>
-     * <p/>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getJmxConnector().add(newItem);
-     * </pre>
-     * <p/>
-     * <p/>
-     * <p/>
      * Objects of the following type(s) are allowed in the list
      * {@link JmxConnector }
      */
-    public List<JmxConnector> getJmxConnector() {
-        return this.jmxConnector;
-    }
+    @Element("jmx-connector")
+    public List<JmxConnector> getJmxConnector();
 
     /**
      * Gets the value of the dasConfig property.
@@ -153,9 +108,8 @@ public class AdminService extends ConfigBean implements Serializable {
      * @return possible object is
      *         {@link DasConfig }
      */
-    public DasConfig getDasConfig() {
-        return dasConfig;
-    }
+    @Element("das-config")
+    public DasConfig getDasConfig();
 
     /**
      * Sets the value of the dasConfig property.
@@ -163,35 +117,15 @@ public class AdminService extends ConfigBean implements Serializable {
      * @param value allowed object is
      *              {@link DasConfig }
      */
-    public void setDasConfig(DasConfig value) throws PropertyVetoException {
-        support.fireVetoableChange("dasConfig", this.dasConfig, value);
-
-        this.dasConfig = value;
-    }
+    public void setDasConfig(DasConfig value) throws PropertyVetoException;
 
     /**
      * Gets the value of the property property.
-     * <p/>
-     * <p/>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the property property.
-     * <p/>
-     * <p/>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getProperty().add(newItem);
-     * </pre>
-     * <p/>
-     * <p/>
-     * <p/>
      * Objects of the following type(s) are allowed in the list
      * {@link Property }
      */
-    public List<Property> getProperty() {
-        return this.property;
-    }
+    @Element("property")
+    public List<Property> getProperty();
 
 
 

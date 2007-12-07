@@ -23,9 +23,9 @@
 
 package com.sun.enterprise.config.serverbeans;
 
-import org.glassfish.api.admin.ConfigBean;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 
-public class ServerTags extends ConfigBean {
+public class ServerTags  {
     // Tags for Element domain
     static public final String DOMAIN = "domain";
     static public final String APPLICATION_ROOT = "application-root";

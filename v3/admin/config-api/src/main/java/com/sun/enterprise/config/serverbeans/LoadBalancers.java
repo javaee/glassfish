@@ -40,7 +40,7 @@ package com.sun.enterprise.config.serverbeans;
 
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.Element;
-import org.glassfish.api.admin.ConfigBean;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 
 import java.io.Serializable;
 import java.util.List;
@@ -54,14 +54,7 @@ import java.util.List;
     "loadBalancer"
 }) */
 @Configured
-public class LoadBalancers
- extends ConfigBean implements Serializable {
-
-    private final static long serialVersionUID = 1L;
-    @Element
-    protected List<LoadBalancer> loadBalancer = new ConstrainedList<LoadBalancer>(this, "loadBalancer", support);
-
-
+public interface LoadBalancers extends ConfigBeanProxy  {
 
     /**
      * Gets the value of the loadBalancer property.
@@ -83,9 +76,8 @@ public class LoadBalancers
      * Objects of the following type(s) are allowed in the list
      * {@link LoadBalancer }
      */
-    public List<LoadBalancer> getLoadBalancer() {
-        return this.loadBalancer;
-    }
+    @Element
+    public List<LoadBalancer> getLoadBalancer();
 
 
 

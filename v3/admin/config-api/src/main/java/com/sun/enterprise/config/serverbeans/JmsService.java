@@ -41,7 +41,7 @@ package com.sun.enterprise.config.serverbeans;
 import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.Element;
-import org.glassfish.api.admin.ConfigBean;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 
 import java.beans.PropertyVetoException;
 import java.io.Serializable;
@@ -57,48 +57,7 @@ import java.util.List;
     "property"
 }) */
 @Configured
-public class JmsService
- extends ConfigBean implements Serializable {
-
-    private final static long serialVersionUID = 1L;
-    @Attribute
-
-    protected String initTimeoutInSeconds;
-    @Attribute(required = true)
-
-    protected String type;
-    @Attribute
-
-    protected String startArgs;
-    @Attribute
-
-    protected String defaultJmsHost;
-    @Attribute
-
-    protected String reconnectIntervalInSeconds;
-    @Attribute
-
-    protected String reconnectAttempts;
-    @Attribute
-
-    protected String reconnectEnabled;
-    @Attribute
-
-    protected String addresslistBehavior;
-    @Attribute
-
-    protected String addresslistIterations;
-    @Attribute
-
-    protected String mqScheme;
-    @Attribute
-
-    protected String mqService;
-    @Element
-    protected List<JmsHost> jmsHost = new ConstrainedList<JmsHost>(this, "jmsHost", support);
-    protected List<Property> property = new ConstrainedList<Property>(this, "property", support);
-
-
+public interface JmsService extends ConfigBeanProxy  {
 
     /**
      * Gets the value of the initTimeoutInSeconds property.
@@ -106,13 +65,8 @@ public class JmsService
      * @return possible object is
      *         {@link String }
      */
-    public String getInitTimeoutInSeconds() {
-        if (initTimeoutInSeconds == null) {
-            return "60";
-        } else {
-            return initTimeoutInSeconds;
-        }
-    }
+    @Attribute
+    public String getInitTimeoutInSeconds();
 
     /**
      * Sets the value of the initTimeoutInSeconds property.
@@ -120,11 +74,7 @@ public class JmsService
      * @param value allowed object is
      *              {@link String }
      */
-    public void setInitTimeoutInSeconds(String value) throws PropertyVetoException {
-        support.fireVetoableChange("initTimeoutInSeconds", this.initTimeoutInSeconds, value);
-
-        this.initTimeoutInSeconds = value;
-    }
+    public void setInitTimeoutInSeconds(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the type property.
@@ -132,9 +82,8 @@ public class JmsService
      * @return possible object is
      *         {@link String }
      */
-    public String getType() {
-        return type;
-    }
+    @Attribute(required = true)
+    public String getType();
 
     /**
      * Sets the value of the type property.
@@ -142,11 +91,7 @@ public class JmsService
      * @param value allowed object is
      *              {@link String }
      */
-    public void setType(String value) throws PropertyVetoException {
-        support.fireVetoableChange("type", this.type, value);
-
-        this.type = value;
-    }
+    public void setType(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the startArgs property.
@@ -154,9 +99,8 @@ public class JmsService
      * @return possible object is
      *         {@link String }
      */
-    public String getStartArgs() {
-        return startArgs;
-    }
+    @Attribute
+    public String getStartArgs();
 
     /**
      * Sets the value of the startArgs property.
@@ -164,11 +108,7 @@ public class JmsService
      * @param value allowed object is
      *              {@link String }
      */
-    public void setStartArgs(String value) throws PropertyVetoException {
-        support.fireVetoableChange("startArgs", this.startArgs, value);
-
-        this.startArgs = value;
-    }
+    public void setStartArgs(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the defaultJmsHost property.
@@ -176,9 +116,8 @@ public class JmsService
      * @return possible object is
      *         {@link String }
      */
-    public String getDefaultJmsHost() {
-        return defaultJmsHost;
-    }
+    @Attribute
+    public String getDefaultJmsHost();
 
     /**
      * Sets the value of the defaultJmsHost property.
@@ -186,11 +125,7 @@ public class JmsService
      * @param value allowed object is
      *              {@link String }
      */
-    public void setDefaultJmsHost(String value) throws PropertyVetoException {
-        support.fireVetoableChange("defaultJmsHost", this.defaultJmsHost, value);
-
-        this.defaultJmsHost = value;
-    }
+    public void setDefaultJmsHost(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the reconnectIntervalInSeconds property.
@@ -198,13 +133,8 @@ public class JmsService
      * @return possible object is
      *         {@link String }
      */
-    public String getReconnectIntervalInSeconds() {
-        if (reconnectIntervalInSeconds == null) {
-            return "5";
-        } else {
-            return reconnectIntervalInSeconds;
-        }
-    }
+    @Attribute
+    public String getReconnectIntervalInSeconds();
 
     /**
      * Sets the value of the reconnectIntervalInSeconds property.
@@ -212,11 +142,7 @@ public class JmsService
      * @param value allowed object is
      *              {@link String }
      */
-    public void setReconnectIntervalInSeconds(String value) throws PropertyVetoException {
-        support.fireVetoableChange("reconnectIntervalInSeconds", this.reconnectIntervalInSeconds, value);
-
-        this.reconnectIntervalInSeconds = value;
-    }
+    public void setReconnectIntervalInSeconds(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the reconnectAttempts property.
@@ -224,13 +150,8 @@ public class JmsService
      * @return possible object is
      *         {@link String }
      */
-    public String getReconnectAttempts() {
-        if (reconnectAttempts == null) {
-            return "3";
-        } else {
-            return reconnectAttempts;
-        }
-    }
+    @Attribute
+    public String getReconnectAttempts();
 
     /**
      * Sets the value of the reconnectAttempts property.
@@ -238,11 +159,7 @@ public class JmsService
      * @param value allowed object is
      *              {@link String }
      */
-    public void setReconnectAttempts(String value) throws PropertyVetoException {
-        support.fireVetoableChange("reconnectAttempts", this.reconnectAttempts, value);
-
-        this.reconnectAttempts = value;
-    }
+    public void setReconnectAttempts(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the reconnectEnabled property.
@@ -250,13 +167,8 @@ public class JmsService
      * @return possible object is
      *         {@link String }
      */
-    public String getReconnectEnabled() {
-        if (reconnectEnabled == null) {
-            return "true";
-        } else {
-            return reconnectEnabled;
-        }
-    }
+    @Attribute
+    public String getReconnectEnabled();
 
     /**
      * Sets the value of the reconnectEnabled property.
@@ -264,11 +176,7 @@ public class JmsService
      * @param value allowed object is
      *              {@link String }
      */
-    public void setReconnectEnabled(String value) throws PropertyVetoException {
-        support.fireVetoableChange("reconnectEnabled", this.reconnectEnabled, value);
-
-        this.reconnectEnabled = value;
-    }
+    public void setReconnectEnabled(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the addresslistBehavior property.
@@ -276,13 +184,8 @@ public class JmsService
      * @return possible object is
      *         {@link String }
      */
-    public String getAddresslistBehavior() {
-        if (addresslistBehavior == null) {
-            return "random";
-        } else {
-            return addresslistBehavior;
-        }
-    }
+    @Attribute
+    public String getAddresslistBehavior();
 
     /**
      * Sets the value of the addresslistBehavior property.
@@ -290,11 +193,7 @@ public class JmsService
      * @param value allowed object is
      *              {@link String }
      */
-    public void setAddresslistBehavior(String value) throws PropertyVetoException {
-        support.fireVetoableChange("addresslistBehavior", this.addresslistBehavior, value);
-
-        this.addresslistBehavior = value;
-    }
+    public void setAddresslistBehavior(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the addresslistIterations property.
@@ -302,13 +201,8 @@ public class JmsService
      * @return possible object is
      *         {@link String }
      */
-    public String getAddresslistIterations() {
-        if (addresslistIterations == null) {
-            return "3";
-        } else {
-            return addresslistIterations;
-        }
-    }
+    @Attribute
+    public String getAddresslistIterations();
 
     /**
      * Sets the value of the addresslistIterations property.
@@ -316,11 +210,7 @@ public class JmsService
      * @param value allowed object is
      *              {@link String }
      */
-    public void setAddresslistIterations(String value) throws PropertyVetoException {
-        support.fireVetoableChange("addresslistIterations", this.addresslistIterations, value);
-
-        this.addresslistIterations = value;
-    }
+    public void setAddresslistIterations(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the mqScheme property.
@@ -328,9 +218,8 @@ public class JmsService
      * @return possible object is
      *         {@link String }
      */
-    public String getMqScheme() {
-        return mqScheme;
-    }
+    @Attribute
+    public String getMqScheme();
 
     /**
      * Sets the value of the mqScheme property.
@@ -338,11 +227,7 @@ public class JmsService
      * @param value allowed object is
      *              {@link String }
      */
-    public void setMqScheme(String value) throws PropertyVetoException {
-        support.fireVetoableChange("mqScheme", this.mqScheme, value);
-
-        this.mqScheme = value;
-    }
+    public void setMqScheme(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the mqService property.
@@ -350,9 +235,8 @@ public class JmsService
      * @return possible object is
      *         {@link String }
      */
-    public String getMqService() {
-        return mqService;
-    }
+    @Attribute
+    public String getMqService();
 
     /**
      * Sets the value of the mqService property.
@@ -360,11 +244,7 @@ public class JmsService
      * @param value allowed object is
      *              {@link String }
      */
-    public void setMqService(String value) throws PropertyVetoException {
-        support.fireVetoableChange("mqService", this.mqService, value);
-
-        this.mqService = value;
-    }
+    public void setMqService(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the jmsHost property.
@@ -386,9 +266,8 @@ public class JmsService
      * Objects of the following type(s) are allowed in the list
      * {@link JmsHost }
      */
-    public List<JmsHost> getJmsHost() {
-        return this.jmsHost;
-    }
+    @Element
+    public List<JmsHost> getJmsHost();
 
     /**
      * Gets the value of the property property.
@@ -410,9 +289,8 @@ public class JmsService
      * Objects of the following type(s) are allowed in the list
      * {@link Property }
      */
-    public List<Property> getProperty() {
-        return this.property;
-    }
+    @Element("property")
+    public List<Property> getProperty();
 
 
 

@@ -41,7 +41,7 @@ package com.sun.enterprise.config.serverbeans;
 import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.Element;
-import org.glassfish.api.admin.ConfigBean;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 
 import java.beans.PropertyVetoException;
 import java.io.Serializable;
@@ -65,37 +65,7 @@ import java.util.List;
     "property"
 }) */
 @Configured
-public class Domain
- extends ConfigBean implements Serializable {
-
-    private final static long serialVersionUID = 1L;
-    @Attribute
-
-    protected String applicationRoot;
-    @Attribute
-
-    protected String logRoot;
-    @Attribute
-
-    protected String locale;
-    protected Applications applications;
-    protected Resources resources;
-    @Element(required=true)
-    protected Configs configs;
-    @Element(required=true)
-    protected Servers servers;
-    protected Clusters clusters;
-    @Element
-    protected NodeAgents nodeAgents;
-    @Element
-    protected LbConfigs lbConfigs;
-    @Element
-    protected LoadBalancers loadBalancers;
-    @Element
-    protected List<SystemProperty> systemProperty = new ConstrainedList<SystemProperty>(this, "systemProperty", support);
-    protected List<Property> property = new ConstrainedList<Property>(this, "property", support);
-
-
+public interface Domain extends ConfigBeanProxy  {
 
     /**
      * Gets the value of the applicationRoot property.
@@ -103,9 +73,8 @@ public class Domain
      * @return possible object is
      *         {@link String }
      */
-    public String getApplicationRoot() {
-        return applicationRoot;
-    }
+    @Attribute
+    public String getApplicationRoot();
 
     /**
      * Sets the value of the applicationRoot property.
@@ -113,11 +82,7 @@ public class Domain
      * @param value allowed object is
      *              {@link String }
      */
-    public void setApplicationRoot(String value) throws PropertyVetoException {
-        support.fireVetoableChange("applicationRoot", this.applicationRoot, value);
-
-        this.applicationRoot = value;
-    }
+    public void setApplicationRoot(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the logRoot property.
@@ -125,9 +90,8 @@ public class Domain
      * @return possible object is
      *         {@link String }
      */
-    public String getLogRoot() {
-        return logRoot;
-    }
+    @Attribute
+    public String getLogRoot();
 
     /**
      * Sets the value of the logRoot property.
@@ -135,11 +99,7 @@ public class Domain
      * @param value allowed object is
      *              {@link String }
      */
-    public void setLogRoot(String value) throws PropertyVetoException {
-        support.fireVetoableChange("logRoot", this.logRoot, value);
-
-        this.logRoot = value;
-    }
+    public void setLogRoot(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the locale property.
@@ -147,9 +107,8 @@ public class Domain
      * @return possible object is
      *         {@link String }
      */
-    public String getLocale() {
-        return locale;
-    }
+    @Attribute
+    public String getLocale();
 
     /**
      * Sets the value of the locale property.
@@ -157,11 +116,7 @@ public class Domain
      * @param value allowed object is
      *              {@link String }
      */
-    public void setLocale(String value) throws PropertyVetoException {
-        support.fireVetoableChange("locale", this.locale, value);
-
-        this.locale = value;
-    }
+    public void setLocale(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the applications property.
@@ -169,9 +124,8 @@ public class Domain
      * @return possible object is
      *         {@link Applications }
      */
-    public Applications getApplications() {
-        return applications;
-    }
+    @Element
+    public Applications getApplications();
 
     /**
      * Sets the value of the applications property.
@@ -179,11 +133,7 @@ public class Domain
      * @param value allowed object is
      *              {@link Applications }
      */
-    public void setApplications(Applications value) throws PropertyVetoException {
-        support.fireVetoableChange("applications", this.applications, value);
-
-        this.applications = value;
-    }
+    public void setApplications(Applications value) throws PropertyVetoException;
 
     /**
      * Gets the value of the resources property.
@@ -191,9 +141,8 @@ public class Domain
      * @return possible object is
      *         {@link Resources }
      */
-    public Resources getResources() {
-        return resources;
-    }
+    @Element
+    public Resources getResources();
 
     /**
      * Sets the value of the resources property.
@@ -201,11 +150,7 @@ public class Domain
      * @param value allowed object is
      *              {@link Resources }
      */
-    public void setResources(Resources value) throws PropertyVetoException {
-        support.fireVetoableChange("resources", this.resources, value);
-
-        this.resources = value;
-    }
+    public void setResources(Resources value) throws PropertyVetoException;
 
     /**
      * Gets the value of the configs property.
@@ -213,9 +158,8 @@ public class Domain
      * @return possible object is
      *         {@link Configs }
      */
-    public Configs getConfigs() {
-        return configs;
-    }
+    @Element(required=true)
+    public Configs getConfigs();
 
     /**
      * Sets the value of the configs property.
@@ -223,11 +167,7 @@ public class Domain
      * @param value allowed object is
      *              {@link Configs }
      */
-    public void setConfigs(Configs value) throws PropertyVetoException {
-        support.fireVetoableChange("configs", this.configs, value);
-
-        this.configs = value;
-    }
+    public void setConfigs(Configs value) throws PropertyVetoException;
 
     /**
      * Gets the value of the servers property.
@@ -235,9 +175,8 @@ public class Domain
      * @return possible object is
      *         {@link Servers }
      */
-    public Servers getServers() {
-        return servers;
-    }
+    @Element(required=true)
+    public Servers getServers();
 
     /**
      * Sets the value of the servers property.
@@ -245,11 +184,7 @@ public class Domain
      * @param value allowed object is
      *              {@link Servers }
      */
-    public void setServers(Servers value) throws PropertyVetoException {
-        support.fireVetoableChange("servers", this.servers, value);
-
-        this.servers = value;
-    }
+    public void setServers(Servers value) throws PropertyVetoException;
 
     /**
      * Gets the value of the clusters property.
@@ -257,9 +192,8 @@ public class Domain
      * @return possible object is
      *         {@link Clusters }
      */
-    public Clusters getClusters() {
-        return clusters;
-    }
+    @Element
+    public Clusters getClusters();
 
     /**
      * Sets the value of the clusters property.
@@ -267,11 +201,7 @@ public class Domain
      * @param value allowed object is
      *              {@link Clusters }
      */
-    public void setClusters(Clusters value) throws PropertyVetoException {
-        support.fireVetoableChange("clusters", this.clusters, value);
-
-        this.clusters = value;
-    }
+    public void setClusters(Clusters value) throws PropertyVetoException;
 
     /**
      * Gets the value of the nodeAgents property.
@@ -279,9 +209,8 @@ public class Domain
      * @return possible object is
      *         {@link NodeAgents }
      */
-    public NodeAgents getNodeAgents() {
-        return nodeAgents;
-    }
+    @Element
+    public NodeAgents getNodeAgents();
 
     /**
      * Sets the value of the nodeAgents property.
@@ -289,11 +218,7 @@ public class Domain
      * @param value allowed object is
      *              {@link NodeAgents }
      */
-    public void setNodeAgents(NodeAgents value) throws PropertyVetoException {
-        support.fireVetoableChange("nodeAgents", this.nodeAgents, value);
-
-        this.nodeAgents = value;
-    }
+    public void setNodeAgents(NodeAgents value) throws PropertyVetoException;
 
     /**
      * Gets the value of the lbConfigs property.
@@ -301,9 +226,8 @@ public class Domain
      * @return possible object is
      *         {@link LbConfigs }
      */
-    public LbConfigs getLbConfigs() {
-        return lbConfigs;
-    }
+    @Element
+    public LbConfigs getLbConfigs();
 
     /**
      * Sets the value of the lbConfigs property.
@@ -311,11 +235,7 @@ public class Domain
      * @param value allowed object is
      *              {@link LbConfigs }
      */
-    public void setLbConfigs(LbConfigs value) throws PropertyVetoException {
-        support.fireVetoableChange("lbConfigs", this.lbConfigs, value);
-
-        this.lbConfigs = value;
-    }
+    public void setLbConfigs(LbConfigs value) throws PropertyVetoException;
 
     /**
      * Gets the value of the loadBalancers property.
@@ -323,9 +243,8 @@ public class Domain
      * @return possible object is
      *         {@link LoadBalancers }
      */
-    public LoadBalancers getLoadBalancers() {
-        return loadBalancers;
-    }
+    @Element
+    public LoadBalancers getLoadBalancers();
 
     /**
      * Sets the value of the loadBalancers property.
@@ -333,11 +252,7 @@ public class Domain
      * @param value allowed object is
      *              {@link LoadBalancers }
      */
-    public void setLoadBalancers(LoadBalancers value) throws PropertyVetoException {
-        support.fireVetoableChange("loadBalancers", this.loadBalancers, value);
-
-        this.loadBalancers = value;
-    }
+    public void setLoadBalancers(LoadBalancers value) throws PropertyVetoException;
 
     /**
      * Gets the value of the systemProperty property.
@@ -359,9 +274,8 @@ public class Domain
      * Objects of the following type(s) are allowed in the list
      * {@link SystemProperty }
      */
-    public List<SystemProperty> getSystemProperty() {
-        return this.systemProperty;
-    }
+    @Element
+    public List<SystemProperty> getSystemProperty();
 
     /**
      * Gets the value of the property property.
@@ -383,9 +297,7 @@ public class Domain
      * Objects of the following type(s) are allowed in the list
      * {@link Property }
      */
-    public List<Property> getProperty() {
-        return this.property;
-    }
+    public List<Property> getProperty();
 
 
 

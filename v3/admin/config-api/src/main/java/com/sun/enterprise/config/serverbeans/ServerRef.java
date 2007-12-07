@@ -41,7 +41,7 @@ package com.sun.enterprise.config.serverbeans;
 import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.Element;
-import org.glassfish.api.admin.ConfigBean;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 
 import java.beans.PropertyVetoException;
 import java.beans.VetoableChangeSupport;
@@ -56,27 +56,7 @@ import java.io.Serializable;
     "healthChecker"
 }) */
 @Configured
-public class ServerRef extends ConfigBean implements Ref, Serializable {
-
-    final transient private VetoableChangeSupport support = new VetoableChangeSupport(this);
-    
-    private final static long serialVersionUID = 1L;
-    @Attribute(required = true)
-
-    protected String ref;
-    @Attribute
-
-    protected String disableTimeoutInMinutes;
-    @Attribute
-
-    protected String lbEnabled;
-    @Attribute
-
-    protected String enabled;
-    @Element
-    protected HealthChecker healthChecker;
-
-
+public interface ServerRef extends ConfigBeanProxy  {
 
     /**
      * Gets the value of the ref property.
@@ -84,9 +64,8 @@ public class ServerRef extends ConfigBean implements Ref, Serializable {
      * @return possible object is
      *         {@link String }
      */
-    public String getRef() {
-        return ref;
-    }
+    @Attribute(required = true)
+    public String getRef();
 
     /**
      * Sets the value of the ref property.
@@ -94,11 +73,7 @@ public class ServerRef extends ConfigBean implements Ref, Serializable {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setRef(String value) throws PropertyVetoException {
-        support.fireVetoableChange("ref", this.ref, value);
-
-        this.ref = value;
-    }
+    public void setRef(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the disableTimeoutInMinutes property.
@@ -106,13 +81,8 @@ public class ServerRef extends ConfigBean implements Ref, Serializable {
      * @return possible object is
      *         {@link String }
      */
-    public String getDisableTimeoutInMinutes() {
-        if (disableTimeoutInMinutes == null) {
-            return "30";
-        } else {
-            return disableTimeoutInMinutes;
-        }
-    }
+    @Attribute
+    public String getDisableTimeoutInMinutes();
 
     /**
      * Sets the value of the disableTimeoutInMinutes property.
@@ -120,11 +90,7 @@ public class ServerRef extends ConfigBean implements Ref, Serializable {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setDisableTimeoutInMinutes(String value) throws PropertyVetoException {
-        support.fireVetoableChange("disableTimeoutInMinutes", this.disableTimeoutInMinutes, value);
-
-        this.disableTimeoutInMinutes = value;
-    }
+    public void setDisableTimeoutInMinutes(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the lbEnabled property.
@@ -132,13 +98,8 @@ public class ServerRef extends ConfigBean implements Ref, Serializable {
      * @return possible object is
      *         {@link String }
      */
-    public String getLbEnabled() {
-        if (lbEnabled == null) {
-            return "false";
-        } else {
-            return lbEnabled;
-        }
-    }
+    @Attribute
+    public String getLbEnabled();
 
     /**
      * Sets the value of the lbEnabled property.
@@ -146,11 +107,7 @@ public class ServerRef extends ConfigBean implements Ref, Serializable {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setLbEnabled(String value) throws PropertyVetoException {
-        support.fireVetoableChange("lbEnabled", this.lbEnabled, value);
-
-        this.lbEnabled = value;
-    }
+    public void setLbEnabled(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the enabled property.
@@ -158,13 +115,8 @@ public class ServerRef extends ConfigBean implements Ref, Serializable {
      * @return possible object is
      *         {@link String }
      */
-    public String getEnabled() {
-        if (enabled == null) {
-            return "true";
-        } else {
-            return enabled;
-        }
-    }
+    @Attribute
+    public String getEnabled();
 
     /**
      * Sets the value of the enabled property.
@@ -172,11 +124,7 @@ public class ServerRef extends ConfigBean implements Ref, Serializable {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setEnabled(String value) throws PropertyVetoException {
-        support.fireVetoableChange("enabled", this.enabled, value);
-
-        this.enabled = value;
-    }
+    public void setEnabled(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the healthChecker property.
@@ -184,9 +132,8 @@ public class ServerRef extends ConfigBean implements Ref, Serializable {
      * @return possible object is
      *         {@link HealthChecker }
      */
-    public HealthChecker getHealthChecker() {
-        return healthChecker;
-    }
+    @Element("health-checker")
+    public HealthChecker getHealthChecker();
 
     /**
      * Sets the value of the healthChecker property.
@@ -194,11 +141,7 @@ public class ServerRef extends ConfigBean implements Ref, Serializable {
      * @param value allowed object is
      *              {@link HealthChecker }
      */
-    public void setHealthChecker(HealthChecker value) throws PropertyVetoException {
-        support.fireVetoableChange("healthChecker", this.healthChecker, value);
-
-        this.healthChecker = value;
-    }
+    public void setHealthChecker(HealthChecker value) throws PropertyVetoException;
 
 
 

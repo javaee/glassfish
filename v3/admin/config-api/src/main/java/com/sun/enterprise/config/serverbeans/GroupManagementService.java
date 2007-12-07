@@ -39,8 +39,9 @@
 package com.sun.enterprise.config.serverbeans;
 
 import org.jvnet.hk2.config.Attribute;
+import org.jvnet.hk2.config.Element;
 import org.jvnet.hk2.config.Configured;
-import org.glassfish.api.admin.ConfigBean;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 
 import java.beans.PropertyVetoException;
 import java.io.Serializable;
@@ -55,31 +56,7 @@ import java.util.List;
     "property"
 }) */
 @Configured
-public class GroupManagementService
- extends ConfigBean implements Serializable {
-
-    private final static long serialVersionUID = 1L;
-    @Attribute
-
-    protected String fdProtocolMaxTries;
-    @Attribute
-
-    protected String fdProtocolTimeoutInMillis;
-    @Attribute
-
-    protected String mergeProtocolMaxIntervalInMillis;
-    @Attribute
-
-    protected String mergeProtocolMinIntervalInMillis;
-    @Attribute
-
-    protected String pingProtocolTimeoutInMillis;
-    @Attribute
-
-    protected String vsProtocolTimeoutInMillis;
-    protected List<Property> property = new ConstrainedList<Property>(this, "property", support);
-
-
+public interface GroupManagementService extends ConfigBeanProxy  {
 
     /**
      * Gets the value of the fdProtocolMaxTries property.
@@ -87,13 +64,8 @@ public class GroupManagementService
      * @return possible object is
      *         {@link String }
      */
-    public String getFdProtocolMaxTries() {
-        if (fdProtocolMaxTries == null) {
-            return "3";
-        } else {
-            return fdProtocolMaxTries;
-        }
-    }
+    @Attribute
+    public String getFdProtocolMaxTries();
 
     /**
      * Sets the value of the fdProtocolMaxTries property.
@@ -101,11 +73,7 @@ public class GroupManagementService
      * @param value allowed object is
      *              {@link String }
      */
-    public void setFdProtocolMaxTries(String value) throws PropertyVetoException {
-        support.fireVetoableChange("fdProtocolMaxTries", this.fdProtocolMaxTries, value);
-
-        this.fdProtocolMaxTries = value;
-    }
+    public void setFdProtocolMaxTries(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the fdProtocolTimeoutInMillis property.
@@ -113,13 +81,8 @@ public class GroupManagementService
      * @return possible object is
      *         {@link String }
      */
-    public String getFdProtocolTimeoutInMillis() {
-        if (fdProtocolTimeoutInMillis == null) {
-            return "2000";
-        } else {
-            return fdProtocolTimeoutInMillis;
-        }
-    }
+    @Attribute
+    public String getFdProtocolTimeoutInMillis();
 
     /**
      * Sets the value of the fdProtocolTimeoutInMillis property.
@@ -127,11 +90,7 @@ public class GroupManagementService
      * @param value allowed object is
      *              {@link String }
      */
-    public void setFdProtocolTimeoutInMillis(String value) throws PropertyVetoException {
-        support.fireVetoableChange("fdProtocolTimeoutInMillis", this.fdProtocolTimeoutInMillis, value);
-
-        this.fdProtocolTimeoutInMillis = value;
-    }
+    public void setFdProtocolTimeoutInMillis(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the mergeProtocolMaxIntervalInMillis property.
@@ -139,13 +98,8 @@ public class GroupManagementService
      * @return possible object is
      *         {@link String }
      */
-    public String getMergeProtocolMaxIntervalInMillis() {
-        if (mergeProtocolMaxIntervalInMillis == null) {
-            return "10000";
-        } else {
-            return mergeProtocolMaxIntervalInMillis;
-        }
-    }
+    @Attribute
+    public String getMergeProtocolMaxIntervalInMillis();
 
     /**
      * Sets the value of the mergeProtocolMaxIntervalInMillis property.
@@ -153,11 +107,7 @@ public class GroupManagementService
      * @param value allowed object is
      *              {@link String }
      */
-    public void setMergeProtocolMaxIntervalInMillis(String value) throws PropertyVetoException {
-        support.fireVetoableChange("mergeProtocolMaxIntervalInMillis", this.mergeProtocolMaxIntervalInMillis, value);
-
-        this.mergeProtocolMaxIntervalInMillis = value;
-    }
+    public void setMergeProtocolMaxIntervalInMillis(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the mergeProtocolMinIntervalInMillis property.
@@ -165,13 +115,8 @@ public class GroupManagementService
      * @return possible object is
      *         {@link String }
      */
-    public String getMergeProtocolMinIntervalInMillis() {
-        if (mergeProtocolMinIntervalInMillis == null) {
-            return "5000";
-        } else {
-            return mergeProtocolMinIntervalInMillis;
-        }
-    }
+    @Attribute
+    public String getMergeProtocolMinIntervalInMillis();
 
     /**
      * Sets the value of the mergeProtocolMinIntervalInMillis property.
@@ -179,11 +124,7 @@ public class GroupManagementService
      * @param value allowed object is
      *              {@link String }
      */
-    public void setMergeProtocolMinIntervalInMillis(String value) throws PropertyVetoException {
-        support.fireVetoableChange("mergeProtocolMinIntervalInMillis", this.mergeProtocolMinIntervalInMillis, value);
-
-        this.mergeProtocolMinIntervalInMillis = value;
-    }
+    public void setMergeProtocolMinIntervalInMillis(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the pingProtocolTimeoutInMillis property.
@@ -191,13 +132,8 @@ public class GroupManagementService
      * @return possible object is
      *         {@link String }
      */
-    public String getPingProtocolTimeoutInMillis() {
-        if (pingProtocolTimeoutInMillis == null) {
-            return "2000";
-        } else {
-            return pingProtocolTimeoutInMillis;
-        }
-    }
+    @Attribute
+    public String getPingProtocolTimeoutInMillis();
 
     /**
      * Sets the value of the pingProtocolTimeoutInMillis property.
@@ -205,11 +141,7 @@ public class GroupManagementService
      * @param value allowed object is
      *              {@link String }
      */
-    public void setPingProtocolTimeoutInMillis(String value) throws PropertyVetoException {
-        support.fireVetoableChange("pingProtocolTimeoutInMillis", this.pingProtocolTimeoutInMillis, value);
-
-        this.pingProtocolTimeoutInMillis = value;
-    }
+    public void setPingProtocolTimeoutInMillis(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the vsProtocolTimeoutInMillis property.
@@ -217,13 +149,8 @@ public class GroupManagementService
      * @return possible object is
      *         {@link String }
      */
-    public String getVsProtocolTimeoutInMillis() {
-        if (vsProtocolTimeoutInMillis == null) {
-            return "1500";
-        } else {
-            return vsProtocolTimeoutInMillis;
-        }
-    }
+    @Attribute
+    public String getVsProtocolTimeoutInMillis();
 
     /**
      * Sets the value of the vsProtocolTimeoutInMillis property.
@@ -231,11 +158,7 @@ public class GroupManagementService
      * @param value allowed object is
      *              {@link String }
      */
-    public void setVsProtocolTimeoutInMillis(String value) throws PropertyVetoException {
-        support.fireVetoableChange("vsProtocolTimeoutInMillis", this.vsProtocolTimeoutInMillis, value);
-
-        this.vsProtocolTimeoutInMillis = value;
-    }
+    public void setVsProtocolTimeoutInMillis(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the property property.
@@ -257,9 +180,8 @@ public class GroupManagementService
      * Objects of the following type(s) are allowed in the list
      * {@link Property }
      */
-    public List<Property> getProperty() {
-        return this.property;
-    }
+    @Element("property")
+    public List<Property> getProperty();
 
 
 

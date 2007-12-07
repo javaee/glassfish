@@ -39,8 +39,9 @@
 package com.sun.enterprise.config.serverbeans;
 
 import org.jvnet.hk2.config.Attribute;
+import org.jvnet.hk2.config.Element;
 import org.jvnet.hk2.config.Configured;
-import org.glassfish.api.admin.ConfigBean;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 
 import java.beans.PropertyVetoException;
 import java.beans.VetoableChangeSupport;
@@ -57,99 +58,7 @@ import java.util.List;
     "property"
 }) */
 @Configured
-public class JdbcConnectionPool extends ConfigBean implements Resource, Serializable {
-
-    final transient private VetoableChangeSupport support = new VetoableChangeSupport(this);
-    
-    private final static long serialVersionUID = 1L;
-    @Attribute(required = true)
-
-    protected String name;
-    @Attribute(required = true)
-
-    protected String datasourceClassname;
-    @Attribute
-
-    protected String resType;
-    @Attribute
-
-    protected String steadyPoolSize;
-    @Attribute
-
-    protected String maxPoolSize;
-    @Attribute
-
-    protected String maxWaitTimeInMillis;
-    @Attribute
-
-    protected String poolResizeQuantity;
-    @Attribute
-
-    protected String idleTimeoutInSeconds;
-    @Attribute
-
-    protected String transactionIsolationLevel;
-    @Attribute
-
-    protected String isIsolationLevelGuaranteed;
-    @Attribute
-
-    protected String isConnectionValidationRequired;
-    @Attribute
-
-    protected String connectionValidationMethod;
-    @Attribute
-
-    protected String validationTableName;
-    @Attribute
-
-    protected String failAllConnections;
-    @Attribute
-
-    protected String nonTransactionalConnections;
-    @Attribute
-
-    protected String allowNonComponentCallers;
-    @Attribute
-
-    protected String validateAtmostOncePeriodInSeconds;
-    @Attribute
-
-    protected String connectionLeakTimeoutInSeconds;
-    @Attribute
-
-    protected String connectionLeakReclaim;
-    @Attribute
-
-    protected String connectionCreationRetryAttempts;
-    @Attribute
-
-    protected String connectionCreationRetryIntervalInSeconds;
-    @Attribute
-
-    protected String statementTimeoutInSeconds;
-    @Attribute
-
-    protected String lazyConnectionEnlistment;
-    @Attribute
-
-    protected String lazyConnectionAssociation;
-    @Attribute
-
-    protected String associateWithThread;
-    @Attribute
-
-    protected String matchConnections;
-    @Attribute
-
-    protected String maxConnectionUsageCount;
-    @Attribute
-
-    protected String wrapJdbcObjects;
-    protected String description;
-    protected List<Property> property = new ConstrainedList<Property>(this, "property", support);
-
-
+public interface JdbcConnectionPool extends ConfigBeanProxy, Resource {
 
     /**
      * Gets the value of the name property.
@@ -157,9 +66,8 @@ public class JdbcConnectionPool extends ConfigBean implements Resource, Serializ
      * @return possible object is
      *         {@link String }
      */
-    public String getName() {
-        return name;
-    }
+    @Attribute(required = true)
+    public String getName();
 
     /**
      * Sets the value of the name property.
@@ -167,11 +75,7 @@ public class JdbcConnectionPool extends ConfigBean implements Resource, Serializ
      * @param value allowed object is
      *              {@link String }
      */
-    public void setName(String value) throws PropertyVetoException {
-        support.fireVetoableChange("name", this.name, value);
-
-        this.name = value;
-    }
+    public void setName(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the datasourceClassname property.
@@ -179,9 +83,8 @@ public class JdbcConnectionPool extends ConfigBean implements Resource, Serializ
      * @return possible object is
      *         {@link String }
      */
-    public String getDatasourceClassname() {
-        return datasourceClassname;
-    }
+    @Attribute(required = true)
+    public String getDatasourceClassname();
 
     /**
      * Sets the value of the datasourceClassname property.
@@ -189,11 +92,7 @@ public class JdbcConnectionPool extends ConfigBean implements Resource, Serializ
      * @param value allowed object is
      *              {@link String }
      */
-    public void setDatasourceClassname(String value) throws PropertyVetoException {
-        support.fireVetoableChange("datasourceClassname", this.datasourceClassname, value);
-
-        this.datasourceClassname = value;
-    }
+    public void setDatasourceClassname(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the resType property.
@@ -201,9 +100,8 @@ public class JdbcConnectionPool extends ConfigBean implements Resource, Serializ
      * @return possible object is
      *         {@link String }
      */
-    public String getResType() {
-        return resType;
-    }
+    @Attribute
+    public String getResType();
 
     /**
      * Sets the value of the resType property.
@@ -211,11 +109,7 @@ public class JdbcConnectionPool extends ConfigBean implements Resource, Serializ
      * @param value allowed object is
      *              {@link String }
      */
-    public void setResType(String value) throws PropertyVetoException {
-        support.fireVetoableChange("resType", this.resType, value);
-
-        this.resType = value;
-    }
+    public void setResType(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the steadyPoolSize property.
@@ -223,13 +117,8 @@ public class JdbcConnectionPool extends ConfigBean implements Resource, Serializ
      * @return possible object is
      *         {@link String }
      */
-    public String getSteadyPoolSize() {
-        if (steadyPoolSize == null) {
-            return "8";
-        } else {
-            return steadyPoolSize;
-        }
-    }
+    @Attribute
+    public String getSteadyPoolSize();
 
     /**
      * Sets the value of the steadyPoolSize property.
@@ -237,11 +126,7 @@ public class JdbcConnectionPool extends ConfigBean implements Resource, Serializ
      * @param value allowed object is
      *              {@link String }
      */
-    public void setSteadyPoolSize(String value) throws PropertyVetoException {
-        support.fireVetoableChange("steadyPoolSize", this.steadyPoolSize, value);
-
-        this.steadyPoolSize = value;
-    }
+    public void setSteadyPoolSize(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the maxPoolSize property.
@@ -249,13 +134,8 @@ public class JdbcConnectionPool extends ConfigBean implements Resource, Serializ
      * @return possible object is
      *         {@link String }
      */
-    public String getMaxPoolSize() {
-        if (maxPoolSize == null) {
-            return "32";
-        } else {
-            return maxPoolSize;
-        }
-    }
+    @Attribute
+    public String getMaxPoolSize();
 
     /**
      * Sets the value of the maxPoolSize property.
@@ -263,11 +143,7 @@ public class JdbcConnectionPool extends ConfigBean implements Resource, Serializ
      * @param value allowed object is
      *              {@link String }
      */
-    public void setMaxPoolSize(String value) throws PropertyVetoException {
-        support.fireVetoableChange("maxPoolSize", this.maxPoolSize, value);
-
-        this.maxPoolSize = value;
-    }
+    public void setMaxPoolSize(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the maxWaitTimeInMillis property.
@@ -275,13 +151,8 @@ public class JdbcConnectionPool extends ConfigBean implements Resource, Serializ
      * @return possible object is
      *         {@link String }
      */
-    public String getMaxWaitTimeInMillis() {
-        if (maxWaitTimeInMillis == null) {
-            return "60000";
-        } else {
-            return maxWaitTimeInMillis;
-        }
-    }
+    @Attribute
+    public String getMaxWaitTimeInMillis();
 
     /**
      * Sets the value of the maxWaitTimeInMillis property.
@@ -289,11 +160,7 @@ public class JdbcConnectionPool extends ConfigBean implements Resource, Serializ
      * @param value allowed object is
      *              {@link String }
      */
-    public void setMaxWaitTimeInMillis(String value) throws PropertyVetoException {
-        support.fireVetoableChange("maxWaitTimeInMillis", this.maxWaitTimeInMillis, value);
-
-        this.maxWaitTimeInMillis = value;
-    }
+    public void setMaxWaitTimeInMillis(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the poolResizeQuantity property.
@@ -301,13 +168,8 @@ public class JdbcConnectionPool extends ConfigBean implements Resource, Serializ
      * @return possible object is
      *         {@link String }
      */
-    public String getPoolResizeQuantity() {
-        if (poolResizeQuantity == null) {
-            return "2";
-        } else {
-            return poolResizeQuantity;
-        }
-    }
+    @Attribute
+    public String getPoolResizeQuantity();
 
     /**
      * Sets the value of the poolResizeQuantity property.
@@ -315,11 +177,7 @@ public class JdbcConnectionPool extends ConfigBean implements Resource, Serializ
      * @param value allowed object is
      *              {@link String }
      */
-    public void setPoolResizeQuantity(String value) throws PropertyVetoException {
-        support.fireVetoableChange("poolResizeQuantity", this.poolResizeQuantity, value);
-
-        this.poolResizeQuantity = value;
-    }
+    public void setPoolResizeQuantity(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the idleTimeoutInSeconds property.
@@ -327,13 +185,8 @@ public class JdbcConnectionPool extends ConfigBean implements Resource, Serializ
      * @return possible object is
      *         {@link String }
      */
-    public String getIdleTimeoutInSeconds() {
-        if (idleTimeoutInSeconds == null) {
-            return "300";
-        } else {
-            return idleTimeoutInSeconds;
-        }
-    }
+    @Attribute
+    public String getIdleTimeoutInSeconds();
 
     /**
      * Sets the value of the idleTimeoutInSeconds property.
@@ -341,11 +194,7 @@ public class JdbcConnectionPool extends ConfigBean implements Resource, Serializ
      * @param value allowed object is
      *              {@link String }
      */
-    public void setIdleTimeoutInSeconds(String value) throws PropertyVetoException {
-        support.fireVetoableChange("idleTimeoutInSeconds", this.idleTimeoutInSeconds, value);
-
-        this.idleTimeoutInSeconds = value;
-    }
+    public void setIdleTimeoutInSeconds(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the transactionIsolationLevel property.
@@ -353,9 +202,8 @@ public class JdbcConnectionPool extends ConfigBean implements Resource, Serializ
      * @return possible object is
      *         {@link String }
      */
-    public String getTransactionIsolationLevel() {
-        return transactionIsolationLevel;
-    }
+    @Attribute
+    public String getTransactionIsolationLevel();
 
     /**
      * Sets the value of the transactionIsolationLevel property.
@@ -363,11 +211,7 @@ public class JdbcConnectionPool extends ConfigBean implements Resource, Serializ
      * @param value allowed object is
      *              {@link String }
      */
-    public void setTransactionIsolationLevel(String value) throws PropertyVetoException {
-        support.fireVetoableChange("transactionIsolationLevel", this.transactionIsolationLevel, value);
-
-        this.transactionIsolationLevel = value;
-    }
+    public void setTransactionIsolationLevel(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the isIsolationLevelGuaranteed property.
@@ -375,13 +219,8 @@ public class JdbcConnectionPool extends ConfigBean implements Resource, Serializ
      * @return possible object is
      *         {@link String }
      */
-    public String getIsIsolationLevelGuaranteed() {
-        if (isIsolationLevelGuaranteed == null) {
-            return "true";
-        } else {
-            return isIsolationLevelGuaranteed;
-        }
-    }
+    @Attribute
+    public String getIsIsolationLevelGuaranteed();
 
     /**
      * Sets the value of the isIsolationLevelGuaranteed property.
@@ -389,11 +228,7 @@ public class JdbcConnectionPool extends ConfigBean implements Resource, Serializ
      * @param value allowed object is
      *              {@link String }
      */
-    public void setIsIsolationLevelGuaranteed(String value) throws PropertyVetoException {
-        support.fireVetoableChange("isIsolationLevelGuaranteed", this.isIsolationLevelGuaranteed, value);
-
-        this.isIsolationLevelGuaranteed = value;
-    }
+    public void setIsIsolationLevelGuaranteed(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the isConnectionValidationRequired property.
@@ -401,13 +236,8 @@ public class JdbcConnectionPool extends ConfigBean implements Resource, Serializ
      * @return possible object is
      *         {@link String }
      */
-    public String getIsConnectionValidationRequired() {
-        if (isConnectionValidationRequired == null) {
-            return "false";
-        } else {
-            return isConnectionValidationRequired;
-        }
-    }
+    @Attribute
+    public String getIsConnectionValidationRequired();
 
     /**
      * Sets the value of the isConnectionValidationRequired property.
@@ -415,11 +245,7 @@ public class JdbcConnectionPool extends ConfigBean implements Resource, Serializ
      * @param value allowed object is
      *              {@link String }
      */
-    public void setIsConnectionValidationRequired(String value) throws PropertyVetoException {
-        support.fireVetoableChange("isConnectionValidationRequired", this.isConnectionValidationRequired, value);
-
-        this.isConnectionValidationRequired = value;
-    }
+    public void setIsConnectionValidationRequired(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the connectionValidationMethod property.
@@ -427,13 +253,8 @@ public class JdbcConnectionPool extends ConfigBean implements Resource, Serializ
      * @return possible object is
      *         {@link String }
      */
-    public String getConnectionValidationMethod() {
-        if (connectionValidationMethod == null) {
-            return "auto-commit";
-        } else {
-            return connectionValidationMethod;
-        }
-    }
+    @Attribute
+    public String getConnectionValidationMethod();
 
     /**
      * Sets the value of the connectionValidationMethod property.
@@ -441,11 +262,7 @@ public class JdbcConnectionPool extends ConfigBean implements Resource, Serializ
      * @param value allowed object is
      *              {@link String }
      */
-    public void setConnectionValidationMethod(String value) throws PropertyVetoException {
-        support.fireVetoableChange("connectionValidationMethod", this.connectionValidationMethod, value);
-
-        this.connectionValidationMethod = value;
-    }
+    public void setConnectionValidationMethod(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the validationTableName property.
@@ -453,9 +270,8 @@ public class JdbcConnectionPool extends ConfigBean implements Resource, Serializ
      * @return possible object is
      *         {@link String }
      */
-    public String getValidationTableName() {
-        return validationTableName;
-    }
+    @Attribute
+    public String getValidationTableName();
 
     /**
      * Sets the value of the validationTableName property.
@@ -463,11 +279,7 @@ public class JdbcConnectionPool extends ConfigBean implements Resource, Serializ
      * @param value allowed object is
      *              {@link String }
      */
-    public void setValidationTableName(String value) throws PropertyVetoException {
-        support.fireVetoableChange("validationTableName", this.validationTableName, value);
-
-        this.validationTableName = value;
-    }
+    public void setValidationTableName(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the failAllConnections property.
@@ -475,13 +287,8 @@ public class JdbcConnectionPool extends ConfigBean implements Resource, Serializ
      * @return possible object is
      *         {@link String }
      */
-    public String getFailAllConnections() {
-        if (failAllConnections == null) {
-            return "false";
-        } else {
-            return failAllConnections;
-        }
-    }
+    @Attribute
+    public String getFailAllConnections();
 
     /**
      * Sets the value of the failAllConnections property.
@@ -489,11 +296,7 @@ public class JdbcConnectionPool extends ConfigBean implements Resource, Serializ
      * @param value allowed object is
      *              {@link String }
      */
-    public void setFailAllConnections(String value) throws PropertyVetoException {
-        support.fireVetoableChange("failAllConnections", this.failAllConnections, value);
-
-        this.failAllConnections = value;
-    }
+    public void setFailAllConnections(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the nonTransactionalConnections property.
@@ -501,13 +304,8 @@ public class JdbcConnectionPool extends ConfigBean implements Resource, Serializ
      * @return possible object is
      *         {@link String }
      */
-    public String getNonTransactionalConnections() {
-        if (nonTransactionalConnections == null) {
-            return "false";
-        } else {
-            return nonTransactionalConnections;
-        }
-    }
+    @Attribute
+    public String getNonTransactionalConnections();
 
     /**
      * Sets the value of the nonTransactionalConnections property.
@@ -515,11 +313,7 @@ public class JdbcConnectionPool extends ConfigBean implements Resource, Serializ
      * @param value allowed object is
      *              {@link String }
      */
-    public void setNonTransactionalConnections(String value) throws PropertyVetoException {
-        support.fireVetoableChange("nonTransactionalConnections", this.nonTransactionalConnections, value);
-
-        this.nonTransactionalConnections = value;
-    }
+    public void setNonTransactionalConnections(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the allowNonComponentCallers property.
@@ -527,13 +321,8 @@ public class JdbcConnectionPool extends ConfigBean implements Resource, Serializ
      * @return possible object is
      *         {@link String }
      */
-    public String getAllowNonComponentCallers() {
-        if (allowNonComponentCallers == null) {
-            return "false";
-        } else {
-            return allowNonComponentCallers;
-        }
-    }
+    @Attribute
+    public String getAllowNonComponentCallers();
 
     /**
      * Sets the value of the allowNonComponentCallers property.
@@ -541,11 +330,7 @@ public class JdbcConnectionPool extends ConfigBean implements Resource, Serializ
      * @param value allowed object is
      *              {@link String }
      */
-    public void setAllowNonComponentCallers(String value) throws PropertyVetoException {
-        support.fireVetoableChange("allowNonComponentCallers", this.allowNonComponentCallers, value);
-
-        this.allowNonComponentCallers = value;
-    }
+    public void setAllowNonComponentCallers(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the validateAtmostOncePeriodInSeconds property.
@@ -553,13 +338,8 @@ public class JdbcConnectionPool extends ConfigBean implements Resource, Serializ
      * @return possible object is
      *         {@link String }
      */
-    public String getValidateAtmostOncePeriodInSeconds() {
-        if (validateAtmostOncePeriodInSeconds == null) {
-            return "0";
-        } else {
-            return validateAtmostOncePeriodInSeconds;
-        }
-    }
+    @Attribute
+    public String getValidateAtmostOncePeriodInSeconds();
 
     /**
      * Sets the value of the validateAtmostOncePeriodInSeconds property.
@@ -567,11 +347,7 @@ public class JdbcConnectionPool extends ConfigBean implements Resource, Serializ
      * @param value allowed object is
      *              {@link String }
      */
-    public void setValidateAtmostOncePeriodInSeconds(String value) throws PropertyVetoException {
-        support.fireVetoableChange("validateAtmostOncePeriodInSeconds", this.validateAtmostOncePeriodInSeconds, value);
-
-        this.validateAtmostOncePeriodInSeconds = value;
-    }
+    public void setValidateAtmostOncePeriodInSeconds(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the connectionLeakTimeoutInSeconds property.
@@ -579,13 +355,8 @@ public class JdbcConnectionPool extends ConfigBean implements Resource, Serializ
      * @return possible object is
      *         {@link String }
      */
-    public String getConnectionLeakTimeoutInSeconds() {
-        if (connectionLeakTimeoutInSeconds == null) {
-            return "0";
-        } else {
-            return connectionLeakTimeoutInSeconds;
-        }
-    }
+    @Attribute
+    public String getConnectionLeakTimeoutInSeconds();
 
     /**
      * Sets the value of the connectionLeakTimeoutInSeconds property.
@@ -593,11 +364,7 @@ public class JdbcConnectionPool extends ConfigBean implements Resource, Serializ
      * @param value allowed object is
      *              {@link String }
      */
-    public void setConnectionLeakTimeoutInSeconds(String value) throws PropertyVetoException {
-        support.fireVetoableChange("connectionLeakTimeoutInSeconds", this.connectionLeakTimeoutInSeconds, value);
-
-        this.connectionLeakTimeoutInSeconds = value;
-    }
+    public void setConnectionLeakTimeoutInSeconds(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the connectionLeakReclaim property.
@@ -605,13 +372,8 @@ public class JdbcConnectionPool extends ConfigBean implements Resource, Serializ
      * @return possible object is
      *         {@link String }
      */
-    public String getConnectionLeakReclaim() {
-        if (connectionLeakReclaim == null) {
-            return "false";
-        } else {
-            return connectionLeakReclaim;
-        }
-    }
+    @Attribute
+    public String getConnectionLeakReclaim();
 
     /**
      * Sets the value of the connectionLeakReclaim property.
@@ -619,11 +381,7 @@ public class JdbcConnectionPool extends ConfigBean implements Resource, Serializ
      * @param value allowed object is
      *              {@link String }
      */
-    public void setConnectionLeakReclaim(String value) throws PropertyVetoException {
-        support.fireVetoableChange("connectionLeakReclaim", this.connectionLeakReclaim, value);
-
-        this.connectionLeakReclaim = value;
-    }
+    public void setConnectionLeakReclaim(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the connectionCreationRetryAttempts property.
@@ -631,13 +389,8 @@ public class JdbcConnectionPool extends ConfigBean implements Resource, Serializ
      * @return possible object is
      *         {@link String }
      */
-    public String getConnectionCreationRetryAttempts() {
-        if (connectionCreationRetryAttempts == null) {
-            return "0";
-        } else {
-            return connectionCreationRetryAttempts;
-        }
-    }
+    @Attribute
+    public String getConnectionCreationRetryAttempts();
 
     /**
      * Sets the value of the connectionCreationRetryAttempts property.
@@ -645,11 +398,7 @@ public class JdbcConnectionPool extends ConfigBean implements Resource, Serializ
      * @param value allowed object is
      *              {@link String }
      */
-    public void setConnectionCreationRetryAttempts(String value) throws PropertyVetoException {
-        support.fireVetoableChange("connectionCreationRetryAttempts", this.connectionCreationRetryAttempts, value);
-
-        this.connectionCreationRetryAttempts = value;
-    }
+    public void setConnectionCreationRetryAttempts(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the connectionCreationRetryIntervalInSeconds property.
@@ -657,13 +406,8 @@ public class JdbcConnectionPool extends ConfigBean implements Resource, Serializ
      * @return possible object is
      *         {@link String }
      */
-    public String getConnectionCreationRetryIntervalInSeconds() {
-        if (connectionCreationRetryIntervalInSeconds == null) {
-            return "10";
-        } else {
-            return connectionCreationRetryIntervalInSeconds;
-        }
-    }
+    @Attribute
+    public String getConnectionCreationRetryIntervalInSeconds();
 
     /**
      * Sets the value of the connectionCreationRetryIntervalInSeconds property.
@@ -671,11 +415,7 @@ public class JdbcConnectionPool extends ConfigBean implements Resource, Serializ
      * @param value allowed object is
      *              {@link String }
      */
-    public void setConnectionCreationRetryIntervalInSeconds(String value) throws PropertyVetoException {
-        support.fireVetoableChange("connectionCreationRetryIntervalInSeconds", this.connectionCreationRetryIntervalInSeconds, value);
-
-        this.connectionCreationRetryIntervalInSeconds = value;
-    }
+    public void setConnectionCreationRetryIntervalInSeconds(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the statementTimeoutInSeconds property.
@@ -683,13 +423,8 @@ public class JdbcConnectionPool extends ConfigBean implements Resource, Serializ
      * @return possible object is
      *         {@link String }
      */
-    public String getStatementTimeoutInSeconds() {
-        if (statementTimeoutInSeconds == null) {
-            return "-1";
-        } else {
-            return statementTimeoutInSeconds;
-        }
-    }
+    @Attribute
+    public String getStatementTimeoutInSeconds();
 
     /**
      * Sets the value of the statementTimeoutInSeconds property.
@@ -697,11 +432,7 @@ public class JdbcConnectionPool extends ConfigBean implements Resource, Serializ
      * @param value allowed object is
      *              {@link String }
      */
-    public void setStatementTimeoutInSeconds(String value) throws PropertyVetoException {
-        support.fireVetoableChange("statementTimeoutInSeconds", this.statementTimeoutInSeconds, value);
-
-        this.statementTimeoutInSeconds = value;
-    }
+    public void setStatementTimeoutInSeconds(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the lazyConnectionEnlistment property.
@@ -709,13 +440,8 @@ public class JdbcConnectionPool extends ConfigBean implements Resource, Serializ
      * @return possible object is
      *         {@link String }
      */
-    public String getLazyConnectionEnlistment() {
-        if (lazyConnectionEnlistment == null) {
-            return "false";
-        } else {
-            return lazyConnectionEnlistment;
-        }
-    }
+    @Attribute
+    public String getLazyConnectionEnlistment();
 
     /**
      * Sets the value of the lazyConnectionEnlistment property.
@@ -723,11 +449,7 @@ public class JdbcConnectionPool extends ConfigBean implements Resource, Serializ
      * @param value allowed object is
      *              {@link String }
      */
-    public void setLazyConnectionEnlistment(String value) throws PropertyVetoException {
-        support.fireVetoableChange("lazyConnectionEnlistment", this.lazyConnectionEnlistment, value);
-
-        this.lazyConnectionEnlistment = value;
-    }
+    public void setLazyConnectionEnlistment(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the lazyConnectionAssociation property.
@@ -735,13 +457,8 @@ public class JdbcConnectionPool extends ConfigBean implements Resource, Serializ
      * @return possible object is
      *         {@link String }
      */
-    public String getLazyConnectionAssociation() {
-        if (lazyConnectionAssociation == null) {
-            return "false";
-        } else {
-            return lazyConnectionAssociation;
-        }
-    }
+    @Attribute
+    public String getLazyConnectionAssociation();
 
     /**
      * Sets the value of the lazyConnectionAssociation property.
@@ -749,11 +466,7 @@ public class JdbcConnectionPool extends ConfigBean implements Resource, Serializ
      * @param value allowed object is
      *              {@link String }
      */
-    public void setLazyConnectionAssociation(String value) throws PropertyVetoException {
-        support.fireVetoableChange("lazyConnectionAssociation", this.lazyConnectionAssociation, value);
-
-        this.lazyConnectionAssociation = value;
-    }
+    public void setLazyConnectionAssociation(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the associateWithThread property.
@@ -761,13 +474,8 @@ public class JdbcConnectionPool extends ConfigBean implements Resource, Serializ
      * @return possible object is
      *         {@link String }
      */
-    public String getAssociateWithThread() {
-        if (associateWithThread == null) {
-            return "false";
-        } else {
-            return associateWithThread;
-        }
-    }
+    @Attribute
+    public String getAssociateWithThread();
 
     /**
      * Sets the value of the associateWithThread property.
@@ -775,11 +483,7 @@ public class JdbcConnectionPool extends ConfigBean implements Resource, Serializ
      * @param value allowed object is
      *              {@link String }
      */
-    public void setAssociateWithThread(String value) throws PropertyVetoException {
-        support.fireVetoableChange("associateWithThread", this.associateWithThread, value);
-
-        this.associateWithThread = value;
-    }
+    public void setAssociateWithThread(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the matchConnections property.
@@ -787,13 +491,8 @@ public class JdbcConnectionPool extends ConfigBean implements Resource, Serializ
      * @return possible object is
      *         {@link String }
      */
-    public String getMatchConnections() {
-        if (matchConnections == null) {
-            return "false";
-        } else {
-            return matchConnections;
-        }
-    }
+    @Attribute
+    public String getMatchConnections();
 
     /**
      * Sets the value of the matchConnections property.
@@ -801,11 +500,7 @@ public class JdbcConnectionPool extends ConfigBean implements Resource, Serializ
      * @param value allowed object is
      *              {@link String }
      */
-    public void setMatchConnections(String value) throws PropertyVetoException {
-        support.fireVetoableChange("matchConnections", this.matchConnections, value);
-
-        this.matchConnections = value;
-    }
+    public void setMatchConnections(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the maxConnectionUsageCount property.
@@ -813,13 +508,8 @@ public class JdbcConnectionPool extends ConfigBean implements Resource, Serializ
      * @return possible object is
      *         {@link String }
      */
-    public String getMaxConnectionUsageCount() {
-        if (maxConnectionUsageCount == null) {
-            return "0";
-        } else {
-            return maxConnectionUsageCount;
-        }
-    }
+    @Attribute
+    public String getMaxConnectionUsageCount();
 
     /**
      * Sets the value of the maxConnectionUsageCount property.
@@ -827,11 +517,7 @@ public class JdbcConnectionPool extends ConfigBean implements Resource, Serializ
      * @param value allowed object is
      *              {@link String }
      */
-    public void setMaxConnectionUsageCount(String value) throws PropertyVetoException {
-        support.fireVetoableChange("maxConnectionUsageCount", this.maxConnectionUsageCount, value);
-
-        this.maxConnectionUsageCount = value;
-    }
+    public void setMaxConnectionUsageCount(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the wrapJdbcObjects property.
@@ -839,13 +525,8 @@ public class JdbcConnectionPool extends ConfigBean implements Resource, Serializ
      * @return possible object is
      *         {@link String }
      */
-    public String getWrapJdbcObjects() {
-        if (wrapJdbcObjects == null) {
-            return "false";
-        } else {
-            return wrapJdbcObjects;
-        }
-    }
+    @Attribute
+    public String getWrapJdbcObjects();
 
     /**
      * Sets the value of the wrapJdbcObjects property.
@@ -853,11 +534,7 @@ public class JdbcConnectionPool extends ConfigBean implements Resource, Serializ
      * @param value allowed object is
      *              {@link String }
      */
-    public void setWrapJdbcObjects(String value) throws PropertyVetoException {
-        support.fireVetoableChange("wrapJdbcObjects", this.wrapJdbcObjects, value);
-
-        this.wrapJdbcObjects = value;
-    }
+    public void setWrapJdbcObjects(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the description property.
@@ -865,9 +542,8 @@ public class JdbcConnectionPool extends ConfigBean implements Resource, Serializ
      * @return possible object is
      *         {@link String }
      */
-    public String getDescription() {
-        return description;
-    }
+    @Attribute
+    public String getDescription();
 
     /**
      * Sets the value of the description property.
@@ -875,11 +551,7 @@ public class JdbcConnectionPool extends ConfigBean implements Resource, Serializ
      * @param value allowed object is
      *              {@link String }
      */
-    public void setDescription(String value) throws PropertyVetoException {
-        support.fireVetoableChange("description", this.description, value);
-
-        this.description = value;
-    }
+    public void setDescription(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the property property.
@@ -901,9 +573,8 @@ public class JdbcConnectionPool extends ConfigBean implements Resource, Serializ
      * Objects of the following type(s) are allowed in the list
      * {@link Property }
      */
-    public List<Property> getProperty() {
-        return this.property;
-    }
+    @Element("property")
+    public List<Property> getProperty();
 
 
 

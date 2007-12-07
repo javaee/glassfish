@@ -39,8 +39,9 @@
 package com.sun.enterprise.config.serverbeans;
 
 import org.jvnet.hk2.config.Attribute;
+import org.jvnet.hk2.config.Element;
 import org.jvnet.hk2.config.Configured;
-import org.glassfish.api.admin.ConfigBean;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 
 import java.beans.PropertyVetoException;
 import java.io.Serializable;
@@ -56,29 +57,7 @@ import java.util.List;
     "property"
 }) */
 @Configured
-public class IiopListener
- extends ConfigBean implements Serializable {
-
-    private final static long serialVersionUID = 1L;
-    @Attribute(required = true)
-
-    protected String id;
-    @Attribute(required = true)
-
-    protected String address;
-    @Attribute
-
-    protected String port;
-    @Attribute
-
-    protected String securityEnabled;
-    @Attribute
-
-    protected String enabled;
-    protected Ssl ssl;
-    protected List<Property> property = new ConstrainedList<Property>(this, "property", support);
-
-
+public interface IiopListener extends ConfigBeanProxy  {
 
     /**
      * Gets the value of the id property.
@@ -86,9 +65,8 @@ public class IiopListener
      * @return possible object is
      *         {@link String }
      */
-    public String getId() {
-        return id;
-    }
+    @Attribute(required = true)
+    public String getId();
 
     /**
      * Sets the value of the id property.
@@ -96,11 +74,7 @@ public class IiopListener
      * @param value allowed object is
      *              {@link String }
      */
-    public void setId(String value) throws PropertyVetoException {
-        support.fireVetoableChange("id", this.id, value);
-
-        this.id = value;
-    }
+    public void setId(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the address property.
@@ -108,9 +82,8 @@ public class IiopListener
      * @return possible object is
      *         {@link String }
      */
-    public String getAddress() {
-        return address;
-    }
+    @Attribute(required = true)
+    public String getAddress();
 
     /**
      * Sets the value of the address property.
@@ -118,11 +91,7 @@ public class IiopListener
      * @param value allowed object is
      *              {@link String }
      */
-    public void setAddress(String value) throws PropertyVetoException {
-        support.fireVetoableChange("address", this.address, value);
-
-        this.address = value;
-    }
+    public void setAddress(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the port property.
@@ -130,13 +99,8 @@ public class IiopListener
      * @return possible object is
      *         {@link String }
      */
-    public String getPort() {
-        if (port == null) {
-            return "1072";
-        } else {
-            return port;
-        }
-    }
+    @Attribute
+    public String getPort();
 
     /**
      * Sets the value of the port property.
@@ -144,11 +108,7 @@ public class IiopListener
      * @param value allowed object is
      *              {@link String }
      */
-    public void setPort(String value) throws PropertyVetoException {
-        support.fireVetoableChange("port", this.port, value);
-
-        this.port = value;
-    }
+    public void setPort(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the securityEnabled property.
@@ -156,13 +116,8 @@ public class IiopListener
      * @return possible object is
      *         {@link String }
      */
-    public String getSecurityEnabled() {
-        if (securityEnabled == null) {
-            return "false";
-        } else {
-            return securityEnabled;
-        }
-    }
+    @Attribute
+    public String getSecurityEnabled();
 
     /**
      * Sets the value of the securityEnabled property.
@@ -170,11 +125,7 @@ public class IiopListener
      * @param value allowed object is
      *              {@link String }
      */
-    public void setSecurityEnabled(String value) throws PropertyVetoException {
-        support.fireVetoableChange("securityEnabled", this.securityEnabled, value);
-
-        this.securityEnabled = value;
-    }
+    public void setSecurityEnabled(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the enabled property.
@@ -182,13 +133,8 @@ public class IiopListener
      * @return possible object is
      *         {@link String }
      */
-    public String getEnabled() {
-        if (enabled == null) {
-            return "true";
-        } else {
-            return enabled;
-        }
-    }
+    @Attribute
+    public String getEnabled();
 
     /**
      * Sets the value of the enabled property.
@@ -196,11 +142,7 @@ public class IiopListener
      * @param value allowed object is
      *              {@link String }
      */
-    public void setEnabled(String value) throws PropertyVetoException {
-        support.fireVetoableChange("enabled", this.enabled, value);
-
-        this.enabled = value;
-    }
+    public void setEnabled(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the ssl property.
@@ -208,9 +150,8 @@ public class IiopListener
      * @return possible object is
      *         {@link Ssl }
      */
-    public Ssl getSsl() {
-        return ssl;
-    }
+    @Element
+    public Ssl getSsl();
 
     /**
      * Sets the value of the ssl property.
@@ -218,11 +159,7 @@ public class IiopListener
      * @param value allowed object is
      *              {@link Ssl }
      */
-    public void setSsl(Ssl value) throws PropertyVetoException {
-        support.fireVetoableChange("ssl", this.ssl, value);
-
-        this.ssl = value;
-    }
+    public void setSsl(Ssl value) throws PropertyVetoException;
 
     /**
      * Gets the value of the property property.
@@ -244,9 +181,8 @@ public class IiopListener
      * Objects of the following type(s) are allowed in the list
      * {@link Property }
      */
-    public List<Property> getProperty() {
-        return this.property;
-    }
+    @Element("property")
+    public List<Property> getProperty();
 
 
 

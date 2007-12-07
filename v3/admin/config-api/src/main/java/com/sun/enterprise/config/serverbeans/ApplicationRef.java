@@ -40,7 +40,7 @@ package com.sun.enterprise.config.serverbeans;
 
 import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.Configured;
-import org.glassfish.api.admin.ConfigBean;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 
 import java.beans.PropertyVetoException;
 import java.io.Serializable;
@@ -52,27 +52,7 @@ import java.io.Serializable;
 
 /* @XmlType(name = "") */
 @Configured
-public class ApplicationRef
- extends ConfigBean implements Serializable {
-
-    private final static long serialVersionUID = 1L;
-    @Attribute
-
-    protected String enabled;
-    @Attribute
-
-    protected String virtualServers;
-    @Attribute
-
-    protected String lbEnabled;
-    @Attribute
-
-    protected String disableTimeoutInMinutes;
-    @Attribute(required = true)
-
-    protected String ref;
-
-
+public interface ApplicationRef extends ConfigBeanProxy  {
 
     /**
      * Gets the value of the enabled property.
@@ -80,13 +60,8 @@ public class ApplicationRef
      * @return possible object is
      *         {@link String }
      */
-    public String getEnabled() {
-        if (enabled == null) {
-            return "true";
-        } else {
-            return enabled;
-        }
-    }
+    @Attribute    
+    public String getEnabled();
 
     /**
      * Sets the value of the enabled property.
@@ -94,11 +69,7 @@ public class ApplicationRef
      * @param value allowed object is
      *              {@link String }
      */
-    public void setEnabled(String value) throws PropertyVetoException {
-        support.fireVetoableChange("enabled", this.enabled, value);
-
-        this.enabled = value;
-    }
+    public void setEnabled(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the virtualServers property.
@@ -106,9 +77,8 @@ public class ApplicationRef
      * @return possible object is
      *         {@link String }
      */
-    public String getVirtualServers() {
-        return virtualServers;
-    }
+    @Attribute
+    public String getVirtualServers();
 
     /**
      * Sets the value of the virtualServers property.
@@ -116,11 +86,7 @@ public class ApplicationRef
      * @param value allowed object is
      *              {@link String }
      */
-    public void setVirtualServers(String value) throws PropertyVetoException {
-        support.fireVetoableChange("virtualServers", this.virtualServers, value);
-
-        this.virtualServers = value;
-    }
+    public void setVirtualServers(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the lbEnabled property.
@@ -128,13 +94,8 @@ public class ApplicationRef
      * @return possible object is
      *         {@link String }
      */
-    public String getLbEnabled() {
-        if (lbEnabled == null) {
-            return "false";
-        } else {
-            return lbEnabled;
-        }
-    }
+    @Attribute
+    public String getLbEnabled();
 
     /**
      * Sets the value of the lbEnabled property.
@@ -142,11 +103,7 @@ public class ApplicationRef
      * @param value allowed object is
      *              {@link String }
      */
-    public void setLbEnabled(String value) throws PropertyVetoException {
-        support.fireVetoableChange("lbEnabled", this.lbEnabled, value);
-
-        this.lbEnabled = value;
-    }
+    public void setLbEnabled(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the disableTimeoutInMinutes property.
@@ -154,13 +111,8 @@ public class ApplicationRef
      * @return possible object is
      *         {@link String }
      */
-    public String getDisableTimeoutInMinutes() {
-        if (disableTimeoutInMinutes == null) {
-            return "30";
-        } else {
-            return disableTimeoutInMinutes;
-        }
-    }
+    @Attribute
+    public String getDisableTimeoutInMinutes();
 
     /**
      * Sets the value of the disableTimeoutInMinutes property.
@@ -168,11 +120,7 @@ public class ApplicationRef
      * @param value allowed object is
      *              {@link String }
      */
-    public void setDisableTimeoutInMinutes(String value) throws PropertyVetoException {
-        support.fireVetoableChange("disableTimeoutInMinutes", this.disableTimeoutInMinutes, value);
-
-        this.disableTimeoutInMinutes = value;
-    }
+    public void setDisableTimeoutInMinutes(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the ref property.
@@ -180,9 +128,8 @@ public class ApplicationRef
      * @return possible object is
      *         {@link String }
      */
-    public String getRef() {
-        return ref;
-    }
+    @Attribute(required = true)    
+    public String getRef();
 
     /**
      * Sets the value of the ref property.
@@ -190,11 +137,7 @@ public class ApplicationRef
      * @param value allowed object is
      *              {@link String }
      */
-    public void setRef(String value) throws PropertyVetoException {
-        support.fireVetoableChange("ref", this.ref, value);
-
-        this.ref = value;
-    }
+    public void setRef(String value) throws PropertyVetoException;
 
 
 

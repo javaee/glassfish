@@ -40,7 +40,7 @@ package com.sun.enterprise.config.serverbeans;
 
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.Element;
-import org.glassfish.api.admin.ConfigBean;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 
 import java.io.Serializable;
 import java.util.List;
@@ -54,15 +54,9 @@ import java.util.List;
     "cluster"
 }) */
 @Configured
-public class Clusters extends ConfigBean
-        implements Serializable {
+public interface Clusters extends ConfigBeanProxy {
 
-    private final static long serialVersionUID = 1L;
-    
-    @Element
-    protected List<Cluster> cluster = new ConstrainedList<Cluster>(this, "cluster", support);
-
-    /**
+     /**
      * Gets the value of the cluster property.
      * <p/>
      * <p/>
@@ -82,7 +76,6 @@ public class Clusters extends ConfigBean
      * Objects of the following type(s) are allowed in the list
      * {@link Cluster }
      */
-    public List<Cluster> getCluster() {
-        return this.cluster;
-    }
+    @Element
+    public List<Cluster> getCluster();
 }

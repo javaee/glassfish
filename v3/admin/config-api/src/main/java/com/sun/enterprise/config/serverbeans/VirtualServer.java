@@ -41,7 +41,7 @@ package com.sun.enterprise.config.serverbeans;
 import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.Element;
-import org.glassfish.api.admin.ConfigBean;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 
 import java.beans.PropertyVetoException;
 import java.io.Serializable;
@@ -57,38 +57,7 @@ import java.util.List;
     "property"
 }) */
 @Configured
-public class VirtualServer
- extends ConfigBean implements Serializable {
-
-    private final static long serialVersionUID = 1L;
-    @Attribute(required = true)
-
-    protected String id;
-    @Attribute
-
-    protected String httpListeners;
-    @Attribute
-
-    protected String defaultWebModule;
-    @Attribute(required = true)
-
-    protected String hosts;
-    @Attribute
-
-    protected String state;
-    @Attribute
-
-    protected String docroot;
-    @Attribute
-
-    protected String logFile;
-    @Element
-    protected HttpAccessLog httpAccessLog;
-
-    @Element
-    protected List<Property> property = new ConstrainedList<Property>(this, "property", support);
-
-
+public interface VirtualServer extends ConfigBeanProxy  {
 
     /**
      * Gets the value of the id property.
@@ -96,9 +65,8 @@ public class VirtualServer
      * @return possible object is
      *         {@link String }
      */
-    public String getId() {
-        return id;
-    }
+    @Attribute(required = true)
+    public String getId();
 
     /**
      * Sets the value of the id property.
@@ -106,11 +74,7 @@ public class VirtualServer
      * @param value allowed object is
      *              {@link String }
      */
-    public void setId(String value) throws PropertyVetoException {
-        support.fireVetoableChange("id", this.id, value);
-
-        this.id = value;
-    }
+    public void setId(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the httpListeners property.
@@ -118,9 +82,8 @@ public class VirtualServer
      * @return possible object is
      *         {@link String }
      */
-    public String getHttpListeners() {
-        return httpListeners;
-    }
+    @Attribute
+    public String getHttpListeners();
 
     /**
      * Sets the value of the httpListeners property.
@@ -128,11 +91,7 @@ public class VirtualServer
      * @param value allowed object is
      *              {@link String }
      */
-    public void setHttpListeners(String value) throws PropertyVetoException {
-        support.fireVetoableChange("httpListeners", this.httpListeners, value);
-
-        this.httpListeners = value;
-    }
+    public void setHttpListeners(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the defaultWebModule property.
@@ -140,9 +99,8 @@ public class VirtualServer
      * @return possible object is
      *         {@link String }
      */
-    public String getDefaultWebModule() {
-        return defaultWebModule;
-    }
+    @Attribute
+    public String getDefaultWebModule();
 
     /**
      * Sets the value of the defaultWebModule property.
@@ -150,11 +108,7 @@ public class VirtualServer
      * @param value allowed object is
      *              {@link String }
      */
-    public void setDefaultWebModule(String value) throws PropertyVetoException {
-        support.fireVetoableChange("defaultWebModule", this.defaultWebModule, value);
-
-        this.defaultWebModule = value;
-    }
+    public void setDefaultWebModule(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the hosts property.
@@ -162,9 +116,8 @@ public class VirtualServer
      * @return possible object is
      *         {@link String }
      */
-    public String getHosts() {
-        return hosts;
-    }
+    @Attribute(required = true)
+    public String getHosts();
 
     /**
      * Sets the value of the hosts property.
@@ -172,11 +125,7 @@ public class VirtualServer
      * @param value allowed object is
      *              {@link String }
      */
-    public void setHosts(String value) throws PropertyVetoException {
-        support.fireVetoableChange("hosts", this.hosts, value);
-
-        this.hosts = value;
-    }
+    public void setHosts(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the state property.
@@ -184,13 +133,8 @@ public class VirtualServer
      * @return possible object is
      *         {@link String }
      */
-    public String getState() {
-        if (state == null) {
-            return "on";
-        } else {
-            return state;
-        }
-    }
+    @Attribute
+    public String getState();
 
     /**
      * Sets the value of the state property.
@@ -198,11 +142,7 @@ public class VirtualServer
      * @param value allowed object is
      *              {@link String }
      */
-    public void setState(String value) throws PropertyVetoException {
-        support.fireVetoableChange("state", this.state, value);
-
-        this.state = value;
-    }
+    public void setState(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the docroot property.
@@ -210,9 +150,8 @@ public class VirtualServer
      * @return possible object is
      *         {@link String }
      */
-    public String getDocroot() {
-        return docroot;
-    }
+    @Attribute
+    public String getDocroot();
 
     /**
      * Sets the value of the docroot property.
@@ -220,11 +159,7 @@ public class VirtualServer
      * @param value allowed object is
      *              {@link String }
      */
-    public void setDocroot(String value) throws PropertyVetoException {
-        support.fireVetoableChange("docroot", this.docroot, value);
-
-        this.docroot = value;
-    }
+    public void setDocroot(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the logFile property.
@@ -232,13 +167,8 @@ public class VirtualServer
      * @return possible object is
      *         {@link String }
      */
-    public String getLogFile() {
-        if (logFile == null) {
-            return "${com.sun.aas.instanceRoot}/logs/server.log";
-        } else {
-            return logFile;
-        }
-    }
+    @Attribute
+    public String getLogFile();
 
     /**
      * Sets the value of the logFile property.
@@ -246,11 +176,7 @@ public class VirtualServer
      * @param value allowed object is
      *              {@link String }
      */
-    public void setLogFile(String value) throws PropertyVetoException {
-        support.fireVetoableChange("logFile", this.logFile, value);
-
-        this.logFile = value;
-    }
+    public void setLogFile(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the httpAccessLog property.
@@ -258,9 +184,8 @@ public class VirtualServer
      * @return possible object is
      *         {@link HttpAccessLog }
      */
-    public HttpAccessLog getHttpAccessLog() {
-        return httpAccessLog;
-    }
+    @Element
+    public HttpAccessLog getHttpAccessLog();
 
     /**
      * Sets the value of the httpAccessLog property.
@@ -268,11 +193,7 @@ public class VirtualServer
      * @param value allowed object is
      *              {@link HttpAccessLog }
      */
-    public void setHttpAccessLog(HttpAccessLog value) throws PropertyVetoException {
-        support.fireVetoableChange("httpAccessLog", this.httpAccessLog, value);
-
-        this.httpAccessLog = value;
-    }
+    public void setHttpAccessLog(HttpAccessLog value) throws PropertyVetoException;
 
     /**
      * Gets the value of the property property.
@@ -294,9 +215,8 @@ public class VirtualServer
      * Objects of the following type(s) are allowed in the list
      * {@link Property }
      */
-    public List<Property> getProperty() {
-        return this.property;
-    }
+    @Element("property")
+    public List<Property> getProperty();
 
 
 

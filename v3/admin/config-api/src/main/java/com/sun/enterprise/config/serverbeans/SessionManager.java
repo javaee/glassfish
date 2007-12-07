@@ -40,7 +40,7 @@ package com.sun.enterprise.config.serverbeans;
 
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.Element;
-import org.glassfish.api.admin.ConfigBean;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 
 import java.beans.PropertyVetoException;
 import java.io.Serializable;
@@ -55,16 +55,7 @@ import java.io.Serializable;
     "storeProperties"
 }) */
 @Configured
-public class SessionManager
- extends ConfigBean implements Serializable {
-
-    private final static long serialVersionUID = 1L;
-    @Element
-    protected ManagerProperties managerProperties;
-    @Element
-    protected StoreProperties storeProperties;
-
-
+public interface SessionManager extends ConfigBeanProxy  {
 
     /**
      * Gets the value of the managerProperties property.
@@ -72,9 +63,8 @@ public class SessionManager
      * @return possible object is
      *         {@link ManagerProperties }
      */
-    public ManagerProperties getManagerProperties() {
-        return managerProperties;
-    }
+    @Element
+    public ManagerProperties getManagerProperties();
 
     /**
      * Sets the value of the managerProperties property.
@@ -82,11 +72,7 @@ public class SessionManager
      * @param value allowed object is
      *              {@link ManagerProperties }
      */
-    public void setManagerProperties(ManagerProperties value) throws PropertyVetoException {
-        support.fireVetoableChange("managerProperties", this.managerProperties, value);
-
-        this.managerProperties = value;
-    }
+    public void setManagerProperties(ManagerProperties value) throws PropertyVetoException;
 
     /**
      * Gets the value of the storeProperties property.
@@ -94,9 +80,8 @@ public class SessionManager
      * @return possible object is
      *         {@link StoreProperties }
      */
-    public StoreProperties getStoreProperties() {
-        return storeProperties;
-    }
+    @Element
+    public StoreProperties getStoreProperties();
 
     /**
      * Sets the value of the storeProperties property.
@@ -104,11 +89,7 @@ public class SessionManager
      * @param value allowed object is
      *              {@link StoreProperties }
      */
-    public void setStoreProperties(StoreProperties value) throws PropertyVetoException {
-        support.fireVetoableChange("storeProperties", this.storeProperties, value);
-
-        this.storeProperties = value;
-    }
+    public void setStoreProperties(StoreProperties value) throws PropertyVetoException;
 
 
 

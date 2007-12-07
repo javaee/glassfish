@@ -33,44 +33,15 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
-
-
-package com.sun.enterprise.config.serverbeans;
-
-import org.jvnet.hk2.config.Attribute;
-import org.jvnet.hk2.config.Configured;
-import org.jvnet.hk2.config.ConfigBeanProxy;
-
-import java.beans.PropertyVetoException;
-import java.io.Serializable;
-
+package org.glassfish.api.admin;
 
 /**
+ * Simple exception for tagging configuration changes that are not accepted by the runtime
+ * Changes are usually not accepted because the runtime cannot change the current configuration
+ * into the new one. It is usually an indication that the Java runtime needs to be restarsted
+ * for this new configuration to be in effect.
  *
+ * @author Jerome Dochez
  */
-
-/* @XmlType(name = "") */
-@Configured
-public interface RegistryLocation extends ConfigBeanProxy  {
-
-    /**
-     * Gets the value of the connectorResourceJndiName property.
-     *
-     * @return possible object is
-     *         {@link String }
-     */
-    @Attribute(required = true)
-    public String getConnectorResourceJndiName();
-
-    /**
-     * Sets the value of the connectorResourceJndiName property.
-     *
-     * @param value allowed object is
-     *              {@link String }
-     */
-    public void setConnectorResourceJndiName(String value) throws PropertyVetoException;
-
-
-
+public class ChangeNotAcceptedException extends Exception {
 }

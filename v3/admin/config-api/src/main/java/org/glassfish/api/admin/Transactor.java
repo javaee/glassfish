@@ -83,8 +83,4 @@ public interface Transactor {
 	 * @param t the aborting transaction
 	 */
     public void abort(Transaction t);
-
-	// todo: is this useful here, maybe move this to the Transaction itself.
-    public List<PropertyChangeEvent> getTransactionEvents();
-
 }

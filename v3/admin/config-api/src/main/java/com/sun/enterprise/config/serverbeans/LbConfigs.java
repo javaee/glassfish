@@ -40,7 +40,7 @@ package com.sun.enterprise.config.serverbeans;
 
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.Element;
-import org.glassfish.api.admin.ConfigBean;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 
 import java.io.Serializable;
 import java.util.List;
@@ -54,13 +54,7 @@ import java.util.List;
     "lbConfig"
 }) */
 @Configured
-public class LbConfigs
- extends ConfigBean implements Serializable {
-
-    private final static long serialVersionUID = 1L;
-    @Element
-    protected List<LbConfig> lbConfig = new ConstrainedList<LbConfig>(this, "lbConfig", support);
-
+public interface LbConfigs extends ConfigBeanProxy  {
 
 
     /**
@@ -83,9 +77,8 @@ public class LbConfigs
      * Objects of the following type(s) are allowed in the list
      * {@link LbConfig }
      */
-    public List<LbConfig> getLbConfig() {
-        return this.lbConfig;
-    }
+    @Element
+    public List<LbConfig> getLbConfig();
 
 
 

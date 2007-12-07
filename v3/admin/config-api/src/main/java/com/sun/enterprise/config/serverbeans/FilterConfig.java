@@ -39,8 +39,9 @@
 package com.sun.enterprise.config.serverbeans;
 
 import org.jvnet.hk2.config.Attribute;
+import org.jvnet.hk2.config.Element;
 import org.jvnet.hk2.config.Configured;
-import org.glassfish.api.admin.ConfigBean;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 
 import java.beans.PropertyVetoException;
 import java.io.Serializable;
@@ -55,16 +56,7 @@ import java.util.List;
     "property"
 }) */
 @Configured
-public class FilterConfig
- extends ConfigBean implements Serializable {
-
-    private final static long serialVersionUID = 1L;
-    @Attribute(required = true)
-
-    protected String filterClassName;
-    protected List<Property> property = new ConstrainedList<Property>(this, "property", support);
-
-
+public interface FilterConfig extends ConfigBeanProxy  {
 
     /**
      * Gets the value of the filterClassName property.
@@ -72,9 +64,8 @@ public class FilterConfig
      * @return possible object is
      *         {@link String }
      */
-    public String getFilterClassName() {
-        return filterClassName;
-    }
+    @Attribute(required = true)
+    public String getFilterClassName();
 
     /**
      * Sets the value of the filterClassName property.
@@ -82,11 +73,7 @@ public class FilterConfig
      * @param value allowed object is
      *              {@link String }
      */
-    public void setFilterClassName(String value) throws PropertyVetoException {
-        support.fireVetoableChange("filterClassName", this.filterClassName, value);
-
-        this.filterClassName = value;
-    }
+    public void setFilterClassName(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the property property.
@@ -108,9 +95,8 @@ public class FilterConfig
      * Objects of the following type(s) are allowed in the list
      * {@link Property }
      */
-    public List<Property> getProperty() {
-        return this.property;
-    }
+    @Element("property")
+    public List<Property> getProperty();
 
 
 

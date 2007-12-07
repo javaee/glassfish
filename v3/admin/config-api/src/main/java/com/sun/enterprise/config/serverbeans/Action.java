@@ -40,7 +40,7 @@ package com.sun.enterprise.config.serverbeans;
 
 import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.Configured;
-import org.glassfish.api.admin.ConfigBean;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 
 import java.beans.PropertyVetoException;
 import java.io.Serializable;
@@ -52,14 +52,7 @@ import java.io.Serializable;
 
 /* @XmlType(name = "") */
 @Configured
-public class Action extends ConfigBean implements Serializable {
-
-    private final static long serialVersionUID = 1L;
-    @Attribute(required = true)
-
-    protected String actionMbeanName;
-
-
+public interface Action extends ConfigBeanProxy {
 
     /**
      * Gets the value of the actionMbeanName property.
@@ -67,9 +60,8 @@ public class Action extends ConfigBean implements Serializable {
      * @return possible object is
      *         {@link String }
      */
-    public String getActionMbeanName() {
-        return actionMbeanName;
-    }
+    @Attribute(required = true)    
+    public String getActionMbeanName();
 
     /**
      * Sets the value of the actionMbeanName property.
@@ -77,11 +69,7 @@ public class Action extends ConfigBean implements Serializable {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setActionMbeanName(String value) throws PropertyVetoException {
-        support.fireVetoableChange("actionMbeanName", this.actionMbeanName, value);
-
-        this.actionMbeanName = value;
-    }
+    public void setActionMbeanName(String value) throws PropertyVetoException;
 
 
 

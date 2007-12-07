@@ -36,6 +36,7 @@
 
 package com.sun.enterprise.configapi.tests;
 
+import com.sun.enterprise.config.serverbeans.GlassFishDocument;
 import com.sun.enterprise.module.bootstrap.Populator;
 import com.sun.hk2.component.Holder;
 import com.sun.hk2.component.InhabitantsParser;
@@ -87,7 +88,7 @@ public class Utils {
                 return null;
             }
 
-            Habitat habitat = new Habitat();
+            final Habitat habitat = new Habitat();
 
             while (resources.hasMoreElements()) {
                 URL resource = resources.nextElement();
@@ -102,7 +103,7 @@ public class Utils {
                         long now = System.currentTimeMillis();
                         URL url = getClass().getClassLoader().getResource(fileName + ".xml");
                         if (url!=null) {
-                            DomDocument document = parser.parse(url);
+                            DomDocument document = parser.parse(url, new GlassFishDocument(habitat));
                             Logger.getAnonymousLogger().fine("time to parse domain.xml : " + String.valueOf(System.currentTimeMillis() - now));
                         }
                     }

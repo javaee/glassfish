@@ -40,7 +40,7 @@ package com.sun.enterprise.config.serverbeans;
 
 import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.Configured;
-import org.glassfish.api.admin.ConfigBean;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 
 import java.beans.PropertyVetoException;
 import java.io.Serializable;
@@ -52,36 +52,7 @@ import java.io.Serializable;
 
 /* @XmlType(name = "") */
 @Configured
-public class Ssl
- extends ConfigBean implements Serializable {
-
-    private final static long serialVersionUID = 1L;
-    @Attribute(required = true)
-
-    protected String certNickname;
-    @Attribute
-
-    protected String ssl2Enabled;
-    @Attribute
-
-    protected String ssl2Ciphers;
-    @Attribute
-
-    protected String ssl3Enabled;
-    @Attribute
-
-    protected String ssl3TlsCiphers;
-    @Attribute
-
-    protected String tlsEnabled;
-    @Attribute
-
-    protected String tlsRollbackEnabled;
-    @Attribute
-
-    protected String clientAuthEnabled;
-
-
+public interface Ssl extends ConfigBeanProxy  {
 
     /**
      * Gets the value of the certNickname property.
@@ -89,9 +60,8 @@ public class Ssl
      * @return possible object is
      *         {@link String }
      */
-    public String getCertNickname() {
-        return certNickname;
-    }
+    @Attribute(required = true)
+    public String getCertNickname();
 
     /**
      * Sets the value of the certNickname property.
@@ -99,11 +69,7 @@ public class Ssl
      * @param value allowed object is
      *              {@link String }
      */
-    public void setCertNickname(String value) throws PropertyVetoException {
-        support.fireVetoableChange("certNickname", this.certNickname, value);
-
-        this.certNickname = value;
-    }
+    public void setCertNickname(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the ssl2Enabled property.
@@ -111,13 +77,8 @@ public class Ssl
      * @return possible object is
      *         {@link String }
      */
-    public String getSsl2Enabled() {
-        if (ssl2Enabled == null) {
-            return "false";
-        } else {
-            return ssl2Enabled;
-        }
-    }
+    @Attribute
+    public String getSsl2Enabled();
 
     /**
      * Sets the value of the ssl2Enabled property.
@@ -125,11 +86,7 @@ public class Ssl
      * @param value allowed object is
      *              {@link String }
      */
-    public void setSsl2Enabled(String value) throws PropertyVetoException {
-        support.fireVetoableChange("ssl2Enabled", this.ssl2Enabled, value);
-
-        this.ssl2Enabled = value;
-    }
+    public void setSsl2Enabled(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the ssl2Ciphers property.
@@ -137,9 +94,8 @@ public class Ssl
      * @return possible object is
      *         {@link String }
      */
-    public String getSsl2Ciphers() {
-        return ssl2Ciphers;
-    }
+    @Attribute
+    public String getSsl2Ciphers();
 
     /**
      * Sets the value of the ssl2Ciphers property.
@@ -147,11 +103,7 @@ public class Ssl
      * @param value allowed object is
      *              {@link String }
      */
-    public void setSsl2Ciphers(String value) throws PropertyVetoException {
-        support.fireVetoableChange("ssl2Ciphers", this.ssl2Ciphers, value);
-
-        this.ssl2Ciphers = value;
-    }
+    public void setSsl2Ciphers(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the ssl3Enabled property.
@@ -159,13 +111,8 @@ public class Ssl
      * @return possible object is
      *         {@link String }
      */
-    public String getSsl3Enabled() {
-        if (ssl3Enabled == null) {
-            return "true";
-        } else {
-            return ssl3Enabled;
-        }
-    }
+    @Attribute
+    public String getSsl3Enabled();
 
     /**
      * Sets the value of the ssl3Enabled property.
@@ -173,11 +120,7 @@ public class Ssl
      * @param value allowed object is
      *              {@link String }
      */
-    public void setSsl3Enabled(String value) throws PropertyVetoException {
-        support.fireVetoableChange("ssl3Enabled", this.ssl3Enabled, value);
-
-        this.ssl3Enabled = value;
-    }
+    public void setSsl3Enabled(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the ssl3TlsCiphers property.
@@ -185,9 +128,8 @@ public class Ssl
      * @return possible object is
      *         {@link String }
      */
-    public String getSsl3TlsCiphers() {
-        return ssl3TlsCiphers;
-    }
+    @Attribute
+    public String getSsl3TlsCiphers();
 
     /**
      * Sets the value of the ssl3TlsCiphers property.
@@ -195,11 +137,7 @@ public class Ssl
      * @param value allowed object is
      *              {@link String }
      */
-    public void setSsl3TlsCiphers(String value) throws PropertyVetoException {
-        support.fireVetoableChange("ssl3TlsCiphers", this.ssl3TlsCiphers, value);
-
-        this.ssl3TlsCiphers = value;
-    }
+    public void setSsl3TlsCiphers(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the tlsEnabled property.
@@ -207,13 +145,8 @@ public class Ssl
      * @return possible object is
      *         {@link String }
      */
-    public String getTlsEnabled() {
-        if (tlsEnabled == null) {
-            return "true";
-        } else {
-            return tlsEnabled;
-        }
-    }
+    @Attribute
+    public String getTlsEnabled();
 
     /**
      * Sets the value of the tlsEnabled property.
@@ -221,11 +154,7 @@ public class Ssl
      * @param value allowed object is
      *              {@link String }
      */
-    public void setTlsEnabled(String value) throws PropertyVetoException {
-        support.fireVetoableChange("tlsEnabled", this.tlsEnabled, value);
-
-        this.tlsEnabled = value;
-    }
+    public void setTlsEnabled(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the tlsRollbackEnabled property.
@@ -233,13 +162,8 @@ public class Ssl
      * @return possible object is
      *         {@link String }
      */
-    public String getTlsRollbackEnabled() {
-        if (tlsRollbackEnabled == null) {
-            return "true";
-        } else {
-            return tlsRollbackEnabled;
-        }
-    }
+    @Attribute
+    public String getTlsRollbackEnabled();
 
     /**
      * Sets the value of the tlsRollbackEnabled property.
@@ -247,11 +171,7 @@ public class Ssl
      * @param value allowed object is
      *              {@link String }
      */
-    public void setTlsRollbackEnabled(String value) throws PropertyVetoException {
-        support.fireVetoableChange("tlsRollbackEnabled", this.tlsRollbackEnabled, value);
-
-        this.tlsRollbackEnabled = value;
-    }
+    public void setTlsRollbackEnabled(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the clientAuthEnabled property.
@@ -259,13 +179,8 @@ public class Ssl
      * @return possible object is
      *         {@link String }
      */
-    public String getClientAuthEnabled() {
-        if (clientAuthEnabled == null) {
-            return "false";
-        } else {
-            return clientAuthEnabled;
-        }
-    }
+    @Attribute
+    public String getClientAuthEnabled();
 
     /**
      * Sets the value of the clientAuthEnabled property.
@@ -273,11 +188,7 @@ public class Ssl
      * @param value allowed object is
      *              {@link String }
      */
-    public void setClientAuthEnabled(String value) throws PropertyVetoException {
-        support.fireVetoableChange("clientAuthEnabled", this.clientAuthEnabled, value);
-
-        this.clientAuthEnabled = value;
-    }
+    public void setClientAuthEnabled(String value) throws PropertyVetoException;
 
 
 

@@ -40,7 +40,7 @@ package com.sun.enterprise.config.serverbeans;
 
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.Element;
-import org.glassfish.api.admin.ConfigBean;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 
 import java.beans.PropertyVetoException;
 import java.io.Serializable;
@@ -55,16 +55,7 @@ import java.io.Serializable;
     "sessionProperties"
 }) */
 @Configured
-public class SessionConfig
- extends ConfigBean implements Serializable {
-
-    private final static long serialVersionUID = 1L;
-    @Element
-    protected SessionManager sessionManager;
-    @Element
-    protected SessionProperties sessionProperties;
-
-
+public interface SessionConfig extends ConfigBeanProxy  {
 
     /**
      * Gets the value of the sessionManager property.
@@ -72,9 +63,8 @@ public class SessionConfig
      * @return possible object is
      *         {@link SessionManager }
      */
-    public SessionManager getSessionManager() {
-        return sessionManager;
-    }
+    @Element
+    public SessionManager getSessionManager();
 
     /**
      * Sets the value of the sessionManager property.
@@ -82,11 +72,7 @@ public class SessionConfig
      * @param value allowed object is
      *              {@link SessionManager }
      */
-    public void setSessionManager(SessionManager value) throws PropertyVetoException {
-        support.fireVetoableChange("sessionManager", this.sessionManager, value);
-
-        this.sessionManager = value;
-    }
+    public void setSessionManager(SessionManager value) throws PropertyVetoException;
 
     /**
      * Gets the value of the sessionProperties property.
@@ -94,9 +80,8 @@ public class SessionConfig
      * @return possible object is
      *         {@link SessionProperties }
      */
-    public SessionProperties getSessionProperties() {
-        return sessionProperties;
-    }
+    @Element
+    public SessionProperties getSessionProperties();
 
     /**
      * Sets the value of the sessionProperties property.
@@ -104,11 +89,7 @@ public class SessionConfig
      * @param value allowed object is
      *              {@link SessionProperties }
      */
-    public void setSessionProperties(SessionProperties value) throws PropertyVetoException {
-        support.fireVetoableChange("sessionProperties", this.sessionProperties, value);
-
-        this.sessionProperties = value;
-    }
+    public void setSessionProperties(SessionProperties value) throws PropertyVetoException;
 
 
 

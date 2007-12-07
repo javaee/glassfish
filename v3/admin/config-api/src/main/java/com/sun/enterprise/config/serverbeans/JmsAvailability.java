@@ -39,8 +39,9 @@
 package com.sun.enterprise.config.serverbeans;
 
 import org.jvnet.hk2.config.Attribute;
+import org.jvnet.hk2.config.Element;
 import org.jvnet.hk2.config.Configured;
-import org.glassfish.api.admin.ConfigBean;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 
 import java.beans.PropertyVetoException;
 import java.io.Serializable;
@@ -55,19 +56,7 @@ import java.util.List;
     "property"
 }) */
 @Configured
-public class JmsAvailability
- extends ConfigBean implements Serializable {
-
-    private final static long serialVersionUID = 1L;
-    @Attribute
-
-    protected String availabilityEnabled;
-    @Attribute
-
-    protected String mqStorePoolName;
-    protected List<Property> property = new ConstrainedList<Property>(this, "property", support);
-
-
+public interface JmsAvailability extends ConfigBeanProxy  {
 
     /**
      * Gets the value of the availabilityEnabled property.
@@ -75,13 +64,8 @@ public class JmsAvailability
      * @return possible object is
      *         {@link String }
      */
-    public String getAvailabilityEnabled() {
-        if (availabilityEnabled == null) {
-            return "false";
-        } else {
-            return availabilityEnabled;
-        }
-    }
+    @Attribute
+    public String getAvailabilityEnabled();
 
     /**
      * Sets the value of the availabilityEnabled property.
@@ -89,11 +73,7 @@ public class JmsAvailability
      * @param value allowed object is
      *              {@link String }
      */
-    public void setAvailabilityEnabled(String value) throws PropertyVetoException {
-        support.fireVetoableChange("availabilityEnabled", this.availabilityEnabled, value);
-
-        this.availabilityEnabled = value;
-    }
+    public void setAvailabilityEnabled(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the mqStorePoolName property.
@@ -101,9 +81,8 @@ public class JmsAvailability
      * @return possible object is
      *         {@link String }
      */
-    public String getMqStorePoolName() {
-        return mqStorePoolName;
-    }
+    @Attribute
+    public String getMqStorePoolName();
 
     /**
      * Sets the value of the mqStorePoolName property.
@@ -111,11 +90,7 @@ public class JmsAvailability
      * @param value allowed object is
      *              {@link String }
      */
-    public void setMqStorePoolName(String value) throws PropertyVetoException {
-        support.fireVetoableChange("mqStorePoolName", this.mqStorePoolName, value);
-
-        this.mqStorePoolName = value;
-    }
+    public void setMqStorePoolName(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the property property.
@@ -137,9 +112,8 @@ public class JmsAvailability
      * Objects of the following type(s) are allowed in the list
      * {@link Property }
      */
-    public List<Property> getProperty() {
-        return this.property;
-    }
+    @Element("property")
+    public List<Property> getProperty();
 
 
 

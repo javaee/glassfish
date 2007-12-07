@@ -39,8 +39,9 @@
 package com.sun.enterprise.config.serverbeans;
 
 import org.jvnet.hk2.config.Attribute;
+import org.jvnet.hk2.config.Element;
 import org.jvnet.hk2.config.Configured;
-import org.glassfish.api.admin.ConfigBean;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 
 import java.beans.PropertyVetoException;
 import java.io.Serializable;
@@ -56,33 +57,16 @@ import java.util.List;
     "property"
 }) */
 @Configured
-public class Event
- extends ConfigBean implements Serializable {
-
-    private final static long serialVersionUID = 1L;
-    @Attribute(required = true)
-
-    protected String type;
-    @Attribute
-
-    protected String recordEvent;
-    @Attribute
-
-    protected String level;
-    protected String description;
-    protected List<Property> property = new ConstrainedList<Property>(this, "property", support);
-
-
-
+public interface Event extends ConfigBeanProxy  {
+    
     /**
      * Gets the value of the type property.
      *
      * @return possible object is
      *         {@link String }
      */
-    public String getType() {
-        return type;
-    }
+    @Attribute(required = true)
+    public String getType();
 
     /**
      * Sets the value of the type property.
@@ -90,11 +74,7 @@ public class Event
      * @param value allowed object is
      *              {@link String }
      */
-    public void setType(String value) throws PropertyVetoException {
-        support.fireVetoableChange("type", this.type, value);
-
-        this.type = value;
-    }
+    public void setType(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the recordEvent property.
@@ -102,13 +82,8 @@ public class Event
      * @return possible object is
      *         {@link String }
      */
-    public String getRecordEvent() {
-        if (recordEvent == null) {
-            return "true";
-        } else {
-            return recordEvent;
-        }
-    }
+    @Attribute
+    public String getRecordEvent();
 
     /**
      * Sets the value of the recordEvent property.
@@ -116,11 +91,7 @@ public class Event
      * @param value allowed object is
      *              {@link String }
      */
-    public void setRecordEvent(String value) throws PropertyVetoException {
-        support.fireVetoableChange("recordEvent", this.recordEvent, value);
-
-        this.recordEvent = value;
-    }
+    public void setRecordEvent(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the level property.
@@ -128,13 +99,8 @@ public class Event
      * @return possible object is
      *         {@link String }
      */
-    public String getLevel() {
-        if (level == null) {
-            return "INFO";
-        } else {
-            return level;
-        }
-    }
+    @Attribute
+    public String getLevel();
 
     /**
      * Sets the value of the level property.
@@ -142,11 +108,7 @@ public class Event
      * @param value allowed object is
      *              {@link String }
      */
-    public void setLevel(String value) throws PropertyVetoException {
-        support.fireVetoableChange("level", this.level, value);
-
-        this.level = value;
-    }
+    public void setLevel(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the description property.
@@ -154,9 +116,8 @@ public class Event
      * @return possible object is
      *         {@link String }
      */
-    public String getDescription() {
-        return description;
-    }
+    @Attribute
+    public String getDescription();
 
     /**
      * Sets the value of the description property.
@@ -164,11 +125,7 @@ public class Event
      * @param value allowed object is
      *              {@link String }
      */
-    public void setDescription(String value) throws PropertyVetoException {
-        support.fireVetoableChange("description", this.description, value);
-
-        this.description = value;
-    }
+    public void setDescription(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the property property.
@@ -190,9 +147,8 @@ public class Event
      * Objects of the following type(s) are allowed in the list
      * {@link Property }
      */
-    public List<Property> getProperty() {
-        return this.property;
-    }
+    @Element("property")
+    public List<Property> getProperty();
 
 
 

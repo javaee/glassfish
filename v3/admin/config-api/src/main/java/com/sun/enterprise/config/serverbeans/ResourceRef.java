@@ -40,7 +40,7 @@ package com.sun.enterprise.config.serverbeans;
 
 import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.Configured;
-import org.glassfish.api.admin.ConfigBean;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 
 import java.beans.PropertyVetoException;
 import java.io.Serializable;
@@ -52,18 +52,7 @@ import java.io.Serializable;
 
 /* @XmlType(name = "") */
 @Configured
-public class ResourceRef
- extends ConfigBean implements Serializable {
-
-    private final static long serialVersionUID = 1L;
-    @Attribute
-
-    protected String enabled;
-    @Attribute(required = true)
-
-    protected String ref;
-
-
+public interface ResourceRef extends ConfigBeanProxy  {
 
     /**
      * Gets the value of the enabled property.
@@ -71,13 +60,8 @@ public class ResourceRef
      * @return possible object is
      *         {@link String }
      */
-    public String getEnabled() {
-        if (enabled == null) {
-            return "true";
-        } else {
-            return enabled;
-        }
-    }
+    @Attribute
+    public String getEnabled();
 
     /**
      * Sets the value of the enabled property.
@@ -85,11 +69,7 @@ public class ResourceRef
      * @param value allowed object is
      *              {@link String }
      */
-    public void setEnabled(String value) throws PropertyVetoException {
-        support.fireVetoableChange("enabled", this.enabled, value);
-
-        this.enabled = value;
-    }
+    public void setEnabled(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the ref property.
@@ -97,9 +77,8 @@ public class ResourceRef
      * @return possible object is
      *         {@link String }
      */
-    public String getRef() {
-        return ref;
-    }
+    @Attribute(required = true)
+    public String getRef();
 
     /**
      * Sets the value of the ref property.
@@ -107,11 +86,7 @@ public class ResourceRef
      * @param value allowed object is
      *              {@link String }
      */
-    public void setRef(String value) throws PropertyVetoException {
-        support.fireVetoableChange("ref", this.ref, value);
-
-        this.ref = value;
-    }
+    public void setRef(String value) throws PropertyVetoException;
 
 
 

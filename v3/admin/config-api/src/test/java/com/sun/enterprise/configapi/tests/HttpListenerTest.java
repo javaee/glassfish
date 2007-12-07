@@ -39,6 +39,7 @@ package com.sun.enterprise.configapi.tests;
 import com.sun.enterprise.config.serverbeans.HttpListener;
 import com.sun.enterprise.config.serverbeans.HttpService;
 import org.glassfish.api.admin.SingleConfigCode;
+import org.glassfish.api.admin.TransactionFailure;
 import org.glassfish.api.admin.TransactionHelper;
 import static org.junit.Assert.assertTrue;
 import org.junit.Before;
@@ -72,7 +73,7 @@ public class HttpListenerTest extends ConfigApiTest {
         }
 
         logger.fine("listener = " + listener);
-        assertTrue(listener!=null);
+        assertTrue(listener!=null);                 
 
     }
     
@@ -83,7 +84,7 @@ public class HttpListenerTest extends ConfigApiTest {
     }
 
     @Test
-    public void validTransaction() throws PropertyVetoException {
+    public void validTransaction() throws TransactionFailure {
         
         TransactionHelper.apply((new SingleConfigCode<HttpListener>() {
             public boolean run(HttpListener okToChange) throws PropertyVetoException {

@@ -34,43 +34,23 @@
  * holder.
  */
 
+package org.glassfish.api.admin;
 
-
-package com.sun.enterprise.config.serverbeans;
-
-import org.jvnet.hk2.config.Attribute;
-import org.jvnet.hk2.config.Configured;
-import org.jvnet.hk2.config.ConfigBeanProxy;
-
-import java.beans.PropertyVetoException;
-import java.io.Serializable;
-
+import java.beans.VetoableChangeSupport;
+import java.beans.VetoableChangeListener;
 
 /**
+ * Beans that support vetoable change listener should implement that interface
  *
+ * @author Jerome Dochez
  */
+public interface ConstrainedBean {
+    
+    public void addVetoableChangeListener(VetoableChangeListener listener);
 
-/* @XmlType(name = "") */
-@Configured
-public interface RegistryLocation extends ConfigBeanProxy  {
+    public void addVetoableChangeListener(String propertyName, VetoableChangeListener listener);
 
-    /**
-     * Gets the value of the connectorResourceJndiName property.
-     *
-     * @return possible object is
-     *         {@link String }
-     */
-    @Attribute(required = true)
-    public String getConnectorResourceJndiName();
+    public void removeVetoableChangeListener(String propertyName, VetoableChangeListener listener);
 
-    /**
-     * Sets the value of the connectorResourceJndiName property.
-     *
-     * @param value allowed object is
-     *              {@link String }
-     */
-    public void setConnectorResourceJndiName(String value) throws PropertyVetoException;
-
-
-
+    public void removeVetoableChangeListener(VetoableChangeListener listener);
 }

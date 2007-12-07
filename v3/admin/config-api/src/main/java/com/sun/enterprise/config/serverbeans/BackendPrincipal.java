@@ -40,7 +40,7 @@ package com.sun.enterprise.config.serverbeans;
 
 import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.Configured;
-import org.glassfish.api.admin.ConfigBean;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 
 import java.beans.PropertyVetoException;
 import java.io.Serializable;
@@ -52,18 +52,7 @@ import java.io.Serializable;
 
 /* @XmlType(name = "") */
 @Configured
-public class BackendPrincipal
- extends ConfigBean implements Serializable {
-
-    private final static long serialVersionUID = 1L;
-    @Attribute(required = true)
-
-    protected String userName;
-    @Attribute
-
-    protected String password;
-
-
+public interface BackendPrincipal extends ConfigBeanProxy  {
 
     /**
      * Gets the value of the userName property.
@@ -71,9 +60,8 @@ public class BackendPrincipal
      * @return possible object is
      *         {@link String }
      */
-    public String getUserName() {
-        return userName;
-    }
+    @Attribute(required = true)
+    public String getUserName();
 
     /**
      * Sets the value of the userName property.
@@ -81,11 +69,7 @@ public class BackendPrincipal
      * @param value allowed object is
      *              {@link String }
      */
-    public void setUserName(String value) throws PropertyVetoException {
-        support.fireVetoableChange("userName", this.userName, value);
-
-        this.userName = value;
-    }
+    public void setUserName(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the password property.
@@ -93,9 +77,8 @@ public class BackendPrincipal
      * @return possible object is
      *         {@link String }
      */
-    public String getPassword() {
-        return password;
-    }
+    @Attribute
+    public String getPassword();
 
     /**
      * Sets the value of the password property.
@@ -103,11 +86,7 @@ public class BackendPrincipal
      * @param value allowed object is
      *              {@link String }
      */
-    public void setPassword(String value) throws PropertyVetoException {
-        support.fireVetoableChange("password", this.password, value);
-
-        this.password = value;
-    }
+    public void setPassword(String value) throws PropertyVetoException;
 
 
 

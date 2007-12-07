@@ -41,7 +41,7 @@ package com.sun.enterprise.config.serverbeans;
 import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.Element;
 import org.jvnet.hk2.config.Configured;
-import org.glassfish.api.admin.ConfigBean;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 
 import java.beans.PropertyVetoException;
 import java.beans.VetoableChangeSupport;
@@ -58,38 +58,7 @@ import java.util.List;
     "property"
 }) */
 @Configured
-public class LifecycleModule extends ConfigBean implements Module, Serializable {
-
-    final transient private VetoableChangeSupport support = new VetoableChangeSupport(this);
-    
-    private final static long serialVersionUID = 1L;
-    @Attribute(required = true)
-
-    protected String name;
-    @Attribute(required = true)
-
-    protected String className;
-    @Attribute
-
-    protected String classpath;
-    @Attribute
-
-    protected String loadOrder;
-    @Attribute
-
-    protected String isFailureFatal;
-    @Attribute
-
-    protected String objectType;
-    @Attribute
-
-    protected String enabled;
-
-    @Element
-    protected String description;
-    protected List<Property> property = new ConstrainedList<Property>(this, "property", support);
-
-
+public interface LifecycleModule extends ConfigBeanProxy, Module {
 
     /**
      * Gets the value of the name property.
@@ -97,9 +66,8 @@ public class LifecycleModule extends ConfigBean implements Module, Serializable 
      * @return possible object is
      *         {@link String }
      */
-    public String getName() {
-        return name;
-    }
+    @Attribute(required = true)
+    public String getName();
 
     /**
      * Sets the value of the name property.
@@ -107,11 +75,7 @@ public class LifecycleModule extends ConfigBean implements Module, Serializable 
      * @param value allowed object is
      *              {@link String }
      */
-    public void setName(String value) throws PropertyVetoException {
-        support.fireVetoableChange("name", this.name, value);
-
-        this.name = value;
-    }
+    public void setName(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the className property.
@@ -119,9 +83,8 @@ public class LifecycleModule extends ConfigBean implements Module, Serializable 
      * @return possible object is
      *         {@link String }
      */
-    public String getClassName() {
-        return className;
-    }
+    @Attribute(required = true)
+    public String getClassName();
 
     /**
      * Sets the value of the className property.
@@ -129,11 +92,7 @@ public class LifecycleModule extends ConfigBean implements Module, Serializable 
      * @param value allowed object is
      *              {@link String }
      */
-    public void setClassName(String value) throws PropertyVetoException {
-        support.fireVetoableChange("className", this.className, value);
-
-        this.className = value;
-    }
+    public void setClassName(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the classpath property.
@@ -141,9 +100,8 @@ public class LifecycleModule extends ConfigBean implements Module, Serializable 
      * @return possible object is
      *         {@link String }
      */
-    public String getClasspath() {
-        return classpath;
-    }
+    @Attribute
+    public String getClasspath();
 
     /**
      * Sets the value of the classpath property.
@@ -151,11 +109,7 @@ public class LifecycleModule extends ConfigBean implements Module, Serializable 
      * @param value allowed object is
      *              {@link String }
      */
-    public void setClasspath(String value) throws PropertyVetoException {
-        support.fireVetoableChange("classpath", this.classpath, value);
-
-        this.classpath = value;
-    }
+    public void setClasspath(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the loadOrder property.
@@ -163,9 +117,8 @@ public class LifecycleModule extends ConfigBean implements Module, Serializable 
      * @return possible object is
      *         {@link String }
      */
-    public String getLoadOrder() {
-        return loadOrder;
-    }
+    @Attribute
+    public String getLoadOrder();
 
     /**
      * Sets the value of the loadOrder property.
@@ -173,11 +126,7 @@ public class LifecycleModule extends ConfigBean implements Module, Serializable 
      * @param value allowed object is
      *              {@link String }
      */
-    public void setLoadOrder(String value) throws PropertyVetoException {
-        support.fireVetoableChange("loadOrder", this.loadOrder, value);
-
-        this.loadOrder = value;
-    }
+    public void setLoadOrder(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the isFailureFatal property.
@@ -185,13 +134,8 @@ public class LifecycleModule extends ConfigBean implements Module, Serializable 
      * @return possible object is
      *         {@link String }
      */
-    public String getIsFailureFatal() {
-        if (isFailureFatal == null) {
-            return "false";
-        } else {
-            return isFailureFatal;
-        }
-    }
+    @Attribute
+    public String getIsFailureFatal();
 
     /**
      * Sets the value of the isFailureFatal property.
@@ -199,11 +143,7 @@ public class LifecycleModule extends ConfigBean implements Module, Serializable 
      * @param value allowed object is
      *              {@link String }
      */
-    public void setIsFailureFatal(String value) throws PropertyVetoException {
-        support.fireVetoableChange("isFailureFatal", this.isFailureFatal, value);
-
-        this.isFailureFatal = value;
-    }
+    public void setIsFailureFatal(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the objectType property.
@@ -211,13 +151,8 @@ public class LifecycleModule extends ConfigBean implements Module, Serializable 
      * @return possible object is
      *         {@link String }
      */
-    public String getObjectType() {
-        if (objectType == null) {
-            return "user";
-        } else {
-            return objectType;
-        }
-    }
+    @Attribute
+    public String getObjectType();
 
     /**
      * Sets the value of the objectType property.
@@ -225,11 +160,7 @@ public class LifecycleModule extends ConfigBean implements Module, Serializable 
      * @param value allowed object is
      *              {@link String }
      */
-    public void setObjectType(String value) throws PropertyVetoException {
-        support.fireVetoableChange("objectType", this.objectType, value);
-
-        this.objectType = value;
-    }
+    public void setObjectType(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the enabled property.
@@ -237,13 +168,8 @@ public class LifecycleModule extends ConfigBean implements Module, Serializable 
      * @return possible object is
      *         {@link String }
      */
-    public String getEnabled() {
-        if (enabled == null) {
-            return "true";
-        } else {
-            return enabled;
-        }
-    }
+    @Attribute
+    public String getEnabled();
 
     /**
      * Sets the value of the enabled property.
@@ -251,11 +177,7 @@ public class LifecycleModule extends ConfigBean implements Module, Serializable 
      * @param value allowed object is
      *              {@link String }
      */
-    public void setEnabled(String value) throws PropertyVetoException {
-        support.fireVetoableChange("enabled", this.enabled, value);
-
-        this.enabled = value;
-    }
+    public void setEnabled(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the description property.
@@ -263,9 +185,8 @@ public class LifecycleModule extends ConfigBean implements Module, Serializable 
      * @return possible object is
      *         {@link String }
      */
-    public String getDescription() {
-        return description;
-    }
+    @Element
+    public String getDescription();
 
     /**
      * Sets the value of the description property.
@@ -273,11 +194,7 @@ public class LifecycleModule extends ConfigBean implements Module, Serializable 
      * @param value allowed object is
      *              {@link String }
      */
-    public void setDescription(String value) throws PropertyVetoException {
-        support.fireVetoableChange("description", this.description, value);
-
-        this.description = value;
-    }
+    public void setDescription(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the property property.
@@ -299,10 +216,8 @@ public class LifecycleModule extends ConfigBean implements Module, Serializable 
      * Objects of the following type(s) are allowed in the list
      * {@link Property }
      */
-    public List<Property> getProperty() {
-
-        return this.property;
-    }
+    @Element("property")
+    public List<Property> getProperty();
 
 
 

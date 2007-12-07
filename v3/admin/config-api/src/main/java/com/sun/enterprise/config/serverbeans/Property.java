@@ -40,7 +40,7 @@ package com.sun.enterprise.config.serverbeans;
 
 import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.Configured;
-import org.glassfish.api.admin.ConfigBean;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 
 import java.beans.PropertyVetoException;
 import java.io.Serializable;
@@ -54,19 +54,7 @@ import java.io.Serializable;
     "description"
 }) */
 @Configured
-public class Property extends ConfigBean implements Serializable {
-
-    private final static long serialVersionUID = 1L;
-
-    @Attribute(required = true)
-    protected String name;
-
-    @Attribute(required = true)
-    protected String value;
-    
-    protected String description;
-
-
+public interface Property extends ConfigBeanProxy  {
 
     /**
      * Gets the value of the name property.
@@ -74,9 +62,8 @@ public class Property extends ConfigBean implements Serializable {
      * @return possible object is
      *         {@link String }
      */
-    public String getName() {
-        return name;
-    }
+    @Attribute(required = true)
+    public String getName();
 
     /**
      * Sets the value of the name property.
@@ -84,11 +71,7 @@ public class Property extends ConfigBean implements Serializable {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setName(String value) throws PropertyVetoException {
-        support.fireVetoableChange("name", this.name, value);
-
-        this.name = value;
-    }
+    public void setName(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the value property.
@@ -96,9 +79,8 @@ public class Property extends ConfigBean implements Serializable {
      * @return possible object is
      *         {@link String }
      */
-    public String getValue() {
-        return value;
-    }
+    @Attribute(required = true)
+    public String getValue();
 
     /**
      * Sets the value of the value property.
@@ -106,11 +88,7 @@ public class Property extends ConfigBean implements Serializable {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setValue(String value) throws PropertyVetoException {
-        support.fireVetoableChange("value", this.value, value);
-
-        this.value = value;
-    }
+    public void setValue(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the description property.
@@ -118,9 +96,8 @@ public class Property extends ConfigBean implements Serializable {
      * @return possible object is
      *         {@link String }
      */
-    public String getDescription() {
-        return description;
-    }
+    @Attribute
+    public String getDescription();
 
     /**
      * Sets the value of the description property.
@@ -128,11 +105,7 @@ public class Property extends ConfigBean implements Serializable {
      * @param value allowed object is
      *              {@link String }
      */
-    public void setDescription(String value) throws PropertyVetoException {
-        support.fireVetoableChange("description", this.description, value);
-
-        this.description = value;
-    }
+    public void setDescription(String value) throws PropertyVetoException;
 
 
 

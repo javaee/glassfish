@@ -41,7 +41,7 @@ package com.sun.enterprise.config.serverbeans;
 import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.Element;
-import org.glassfish.api.admin.ConfigBean;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 
 import java.beans.PropertyVetoException;
 import java.io.Serializable;
@@ -56,17 +56,7 @@ import java.util.List;
     "managementRule"
 }) */
 @Configured
-public class ManagementRules
- extends ConfigBean implements Serializable {
-
-    private final static long serialVersionUID = 1L;
-    @Attribute
-
-    protected String enabled;
-    @Element
-    protected List<ManagementRule> managementRule = new ConstrainedList<ManagementRule>(this, "managementRule", support);
-
-
+public interface ManagementRules extends ConfigBeanProxy  {
 
     /**
      * Gets the value of the enabled property.
@@ -74,13 +64,8 @@ public class ManagementRules
      * @return possible object is
      *         {@link String }
      */
-    public String getEnabled() {
-        if (enabled == null) {
-            return "true";
-        } else {
-            return enabled;
-        }
-    }
+    @Attribute
+    public String getEnabled();
 
     /**
      * Sets the value of the enabled property.
@@ -88,11 +73,7 @@ public class ManagementRules
      * @param value allowed object is
      *              {@link String }
      */
-    public void setEnabled(String value) throws PropertyVetoException {
-        support.fireVetoableChange("enabled", this.enabled, value);
-
-        this.enabled = value;
-    }
+    public void setEnabled(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the managementRule property.
@@ -114,9 +95,8 @@ public class ManagementRules
      * Objects of the following type(s) are allowed in the list
      * {@link ManagementRule }
      */
-    public List<ManagementRule> getManagementRule() {
-        return this.managementRule;
-    }
+    @Element
+    public List<ManagementRule> getManagementRule();
 
 
 

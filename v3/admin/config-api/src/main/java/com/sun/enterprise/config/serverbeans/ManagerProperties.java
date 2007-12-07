@@ -39,8 +39,9 @@
 package com.sun.enterprise.config.serverbeans;
 
 import org.jvnet.hk2.config.Attribute;
+import org.jvnet.hk2.config.Element;
 import org.jvnet.hk2.config.Configured;
-import org.glassfish.api.admin.ConfigBean;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 
 import java.beans.PropertyVetoException;
 import java.io.Serializable;
@@ -55,24 +56,7 @@ import java.util.List;
     "property"
 }) */
 @Configured
-public class ManagerProperties
- extends ConfigBean implements Serializable {
-
-    private final static long serialVersionUID = 1L;
-    @Attribute
-
-    protected String sessionFileName;
-    @Attribute
-
-    protected String reapIntervalInSeconds;
-    @Attribute
-
-    protected String maxSessions;
-    @Attribute
-
-    protected String sessionIdGeneratorClassname;
-    protected List<Property> property = new ConstrainedList<Property>(this, "property", support);
-
+public interface ManagerProperties extends ConfigBeanProxy  {
 
 
     /**
@@ -81,9 +65,8 @@ public class ManagerProperties
      * @return possible object is
      *         {@link String }
      */
-    public String getSessionFileName() {
-        return sessionFileName;
-    }
+    @Attribute
+    public String getSessionFileName();
 
     /**
      * Sets the value of the sessionFileName property.
@@ -91,11 +74,7 @@ public class ManagerProperties
      * @param value allowed object is
      *              {@link String }
      */
-    public void setSessionFileName(String value) throws PropertyVetoException {
-        support.fireVetoableChange("sessionFileName", this.sessionFileName, value);
-
-        this.sessionFileName = value;
-    }
+    public void setSessionFileName(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the reapIntervalInSeconds property.
@@ -103,9 +82,8 @@ public class ManagerProperties
      * @return possible object is
      *         {@link String }
      */
-    public String getReapIntervalInSeconds() {
-        return reapIntervalInSeconds;
-    }
+    @Attribute
+    public String getReapIntervalInSeconds();
 
     /**
      * Sets the value of the reapIntervalInSeconds property.
@@ -113,11 +91,7 @@ public class ManagerProperties
      * @param value allowed object is
      *              {@link String }
      */
-    public void setReapIntervalInSeconds(String value) throws PropertyVetoException {
-        support.fireVetoableChange("reapIntervalInSeconds", this.reapIntervalInSeconds, value);
-
-        this.reapIntervalInSeconds = value;
-    }
+    public void setReapIntervalInSeconds(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the maxSessions property.
@@ -125,9 +99,8 @@ public class ManagerProperties
      * @return possible object is
      *         {@link String }
      */
-    public String getMaxSessions() {
-        return maxSessions;
-    }
+    @Attribute
+    public String getMaxSessions();
 
     /**
      * Sets the value of the maxSessions property.
@@ -135,11 +108,7 @@ public class ManagerProperties
      * @param value allowed object is
      *              {@link String }
      */
-    public void setMaxSessions(String value) throws PropertyVetoException {
-        support.fireVetoableChange("maxSessions", this.maxSessions, value);
-
-        this.maxSessions = value;
-    }
+    public void setMaxSessions(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the sessionIdGeneratorClassname property.
@@ -147,9 +116,8 @@ public class ManagerProperties
      * @return possible object is
      *         {@link String }
      */
-    public String getSessionIdGeneratorClassname() {
-        return sessionIdGeneratorClassname;
-    }
+    @Attribute
+    public String getSessionIdGeneratorClassname();
 
     /**
      * Sets the value of the sessionIdGeneratorClassname property.
@@ -157,11 +125,7 @@ public class ManagerProperties
      * @param value allowed object is
      *              {@link String }
      */
-    public void setSessionIdGeneratorClassname(String value) throws PropertyVetoException {
-        support.fireVetoableChange("sessionIdGeneratorClassname", this.sessionIdGeneratorClassname, value);
-
-        this.sessionIdGeneratorClassname = value;
-    }
+    public void setSessionIdGeneratorClassname(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the property property.
@@ -183,9 +147,8 @@ public class ManagerProperties
      * Objects of the following type(s) are allowed in the list
      * {@link Property }
      */
-    public List<Property> getProperty() {
-        return this.property;
-    }
+    @Element("property")
+    public List<Property> getProperty();
 
 
 

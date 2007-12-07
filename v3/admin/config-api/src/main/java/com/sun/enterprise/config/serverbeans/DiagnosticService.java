@@ -38,9 +38,11 @@
 
 package com.sun.enterprise.config.serverbeans;
 
+
 import org.jvnet.hk2.config.Attribute;
+import org.jvnet.hk2.config.Element;
 import org.jvnet.hk2.config.Configured;
-import org.glassfish.api.admin.ConfigBean;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 
 import java.beans.PropertyVetoException;
 import java.io.Serializable;
@@ -55,37 +57,7 @@ import java.util.List;
     "property"
 }) */
 @Configured
-public class DiagnosticService
- extends ConfigBean implements Serializable {
-
-    private final static long serialVersionUID = 1L;
-    @Attribute
-
-    protected String computeChecksum;
-    @Attribute
-
-    protected String verifyConfig;
-    @Attribute
-
-    protected String captureInstallLog;
-    @Attribute
-
-    protected String captureSystemInfo;
-    @Attribute
-
-    protected String captureHadbInfo;
-    @Attribute
-
-    protected String captureAppDd;
-    @Attribute
-
-    protected String minLogLevel;
-    @Attribute
-
-    protected String maxLogEntries;
-    protected List<Property> property = new ConstrainedList<Property>(this, "property", support);
-
-
+public interface DiagnosticService extends ConfigBeanProxy  {
 
     /**
      * Gets the value of the computeChecksum property.
@@ -93,13 +65,8 @@ public class DiagnosticService
      * @return possible object is
      *         {@link String }
      */
-    public String getComputeChecksum() {
-        if (computeChecksum == null) {
-            return "true";
-        } else {
-            return computeChecksum;
-        }
-    }
+    @Attribute
+    public String getComputeChecksum();
 
     /**
      * Sets the value of the computeChecksum property.
@@ -107,11 +74,7 @@ public class DiagnosticService
      * @param value allowed object is
      *              {@link String }
      */
-    public void setComputeChecksum(String value) throws PropertyVetoException {
-        support.fireVetoableChange("computeChecksum", this.computeChecksum, value);
-
-        this.computeChecksum = value;
-    }
+    public void setComputeChecksum(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the verifyConfig property.
@@ -119,13 +82,8 @@ public class DiagnosticService
      * @return possible object is
      *         {@link String }
      */
-    public String getVerifyConfig() {
-        if (verifyConfig == null) {
-            return "true";
-        } else {
-            return verifyConfig;
-        }
-    }
+    @Attribute
+    public String getVerifyConfig();
 
     /**
      * Sets the value of the verifyConfig property.
@@ -133,11 +91,7 @@ public class DiagnosticService
      * @param value allowed object is
      *              {@link String }
      */
-    public void setVerifyConfig(String value) throws PropertyVetoException {
-        support.fireVetoableChange("verifyConfig", this.verifyConfig, value);
-
-        this.verifyConfig = value;
-    }
+    public void setVerifyConfig(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the captureInstallLog property.
@@ -145,13 +99,8 @@ public class DiagnosticService
      * @return possible object is
      *         {@link String }
      */
-    public String getCaptureInstallLog() {
-        if (captureInstallLog == null) {
-            return "true";
-        } else {
-            return captureInstallLog;
-        }
-    }
+    @Attribute
+    public String getCaptureInstallLog();
 
     /**
      * Sets the value of the captureInstallLog property.
@@ -159,11 +108,7 @@ public class DiagnosticService
      * @param value allowed object is
      *              {@link String }
      */
-    public void setCaptureInstallLog(String value) throws PropertyVetoException {
-        support.fireVetoableChange("captureInstallLog", this.captureInstallLog, value);
-
-        this.captureInstallLog = value;
-    }
+    public void setCaptureInstallLog(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the captureSystemInfo property.
@@ -171,13 +116,8 @@ public class DiagnosticService
      * @return possible object is
      *         {@link String }
      */
-    public String getCaptureSystemInfo() {
-        if (captureSystemInfo == null) {
-            return "true";
-        } else {
-            return captureSystemInfo;
-        }
-    }
+    @Attribute
+    public String getCaptureSystemInfo();
 
     /**
      * Sets the value of the captureSystemInfo property.
@@ -185,11 +125,7 @@ public class DiagnosticService
      * @param value allowed object is
      *              {@link String }
      */
-    public void setCaptureSystemInfo(String value) throws PropertyVetoException {
-        support.fireVetoableChange("captureSystemInfo", this.captureSystemInfo, value);
-
-        this.captureSystemInfo = value;
-    }
+    public void setCaptureSystemInfo(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the captureHadbInfo property.
@@ -197,13 +133,8 @@ public class DiagnosticService
      * @return possible object is
      *         {@link String }
      */
-    public String getCaptureHadbInfo() {
-        if (captureHadbInfo == null) {
-            return "true";
-        } else {
-            return captureHadbInfo;
-        }
-    }
+    @Attribute
+    public String getCaptureHadbInfo();
 
     /**
      * Sets the value of the captureHadbInfo property.
@@ -211,11 +142,7 @@ public class DiagnosticService
      * @param value allowed object is
      *              {@link String }
      */
-    public void setCaptureHadbInfo(String value) throws PropertyVetoException {
-        support.fireVetoableChange("captureHadbInfo", this.captureHadbInfo, value);
-
-        this.captureHadbInfo = value;
-    }
+    public void setCaptureHadbInfo(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the captureAppDd property.
@@ -223,13 +150,8 @@ public class DiagnosticService
      * @return possible object is
      *         {@link String }
      */
-    public String getCaptureAppDd() {
-        if (captureAppDd == null) {
-            return "true";
-        } else {
-            return captureAppDd;
-        }
-    }
+    @Attribute
+    public String getCaptureAppDd();
 
     /**
      * Sets the value of the captureAppDd property.
@@ -237,11 +159,7 @@ public class DiagnosticService
      * @param value allowed object is
      *              {@link String }
      */
-    public void setCaptureAppDd(String value) throws PropertyVetoException {
-        support.fireVetoableChange("captureAppDd", this.captureAppDd, value);
-
-        this.captureAppDd = value;
-    }
+    public void setCaptureAppDd(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the minLogLevel property.
@@ -249,13 +167,8 @@ public class DiagnosticService
      * @return possible object is
      *         {@link String }
      */
-    public String getMinLogLevel() {
-        if (minLogLevel == null) {
-            return "INFO";
-        } else {
-            return minLogLevel;
-        }
-    }
+    @Attribute
+    public String getMinLogLevel();
 
     /**
      * Sets the value of the minLogLevel property.
@@ -263,11 +176,7 @@ public class DiagnosticService
      * @param value allowed object is
      *              {@link String }
      */
-    public void setMinLogLevel(String value) throws PropertyVetoException {
-        support.fireVetoableChange("minLogLevel", this.minLogLevel, value);
-
-        this.minLogLevel = value;
-    }
+    public void setMinLogLevel(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the maxLogEntries property.
@@ -275,13 +184,8 @@ public class DiagnosticService
      * @return possible object is
      *         {@link String }
      */
-    public String getMaxLogEntries() {
-        if (maxLogEntries == null) {
-            return "500";
-        } else {
-            return maxLogEntries;
-        }
-    }
+    @Attribute
+    public String getMaxLogEntries();
 
     /**
      * Sets the value of the maxLogEntries property.
@@ -289,11 +193,7 @@ public class DiagnosticService
      * @param value allowed object is
      *              {@link String }
      */
-    public void setMaxLogEntries(String value) throws PropertyVetoException {
-        support.fireVetoableChange("maxLogEntries", this.maxLogEntries, value);
-
-        this.maxLogEntries = value;
-    }
+    public void setMaxLogEntries(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the property property.
@@ -315,9 +215,8 @@ public class DiagnosticService
      * Objects of the following type(s) are allowed in the list
      * {@link Property }
      */
-    public List<Property> getProperty() {
-        return this.property;
-    }
+    @Element("property")
+    public List<Property> getProperty();
 
 
 

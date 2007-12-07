@@ -39,11 +39,11 @@
 package com.sun.enterprise.config.serverbeans;
 
 import org.jvnet.hk2.config.Attribute;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.Configured;
-import org.glassfish.api.admin.ConfigBean;
+import org.jvnet.hk2.config.Element;
 
 import java.beans.PropertyVetoException;
-import java.io.Serializable;
 import java.util.List;
 
 
@@ -55,46 +55,7 @@ import java.util.List;
     "property"
 }) */
 @Configured
-public class ModuleMonitoringLevels
- extends ConfigBean implements Serializable {
-
-    private final static long serialVersionUID = 1L;
-    @Attribute
-
-    protected String threadPool;
-    @Attribute
-
-    protected String orb;
-    @Attribute
-
-    protected String ejbContainer;
-    @Attribute
-
-    protected String webContainer;
-    @Attribute
-
-    protected String transactionService;
-    @Attribute
-
-    protected String httpService;
-    @Attribute
-
-    protected String jdbcConnectionPool;
-    @Attribute
-
-    protected String connectorConnectionPool;
-    @Attribute
-
-    protected String connectorService;
-    @Attribute
-
-    protected String jmsService;
-    @Attribute
-
-    protected String jvm;
-    protected List<Property> property = new ConstrainedList<Property>(this, "property", support);
-
-
+public interface ModuleMonitoringLevels extends ConfigBeanProxy  {
 
     /**
      * Gets the value of the threadPool property.
@@ -102,13 +63,8 @@ public class ModuleMonitoringLevels
      * @return possible object is
      *         {@link String }
      */
-    public String getThreadPool() {
-        if (threadPool == null) {
-            return "OFF";
-        } else {
-            return threadPool;
-        }
-    }
+    @Attribute
+    public String getThreadPool();
 
     /**
      * Sets the value of the threadPool property.
@@ -116,11 +72,7 @@ public class ModuleMonitoringLevels
      * @param value allowed object is
      *              {@link String }
      */
-    public void setThreadPool(String value) throws PropertyVetoException {
-        support.fireVetoableChange("threadPool", this.threadPool, value);
-
-        this.threadPool = value;
-    }
+    public void setThreadPool(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the orb property.
@@ -128,13 +80,8 @@ public class ModuleMonitoringLevels
      * @return possible object is
      *         {@link String }
      */
-    public String getOrb() {
-        if (orb == null) {
-            return "OFF";
-        } else {
-            return orb;
-        }
-    }
+    @Attribute
+    public String getOrb();
 
     /**
      * Sets the value of the orb property.
@@ -142,11 +89,7 @@ public class ModuleMonitoringLevels
      * @param value allowed object is
      *              {@link String }
      */
-    public void setOrb(String value) throws PropertyVetoException {
-        support.fireVetoableChange("orb", this.orb, value);
-
-        this.orb = value;
-    }
+    public void setOrb(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the ejbContainer property.
@@ -154,13 +97,8 @@ public class ModuleMonitoringLevels
      * @return possible object is
      *         {@link String }
      */
-    public String getEjbContainer() {
-        if (ejbContainer == null) {
-            return "OFF";
-        } else {
-            return ejbContainer;
-        }
-    }
+    @Attribute
+    public String getEjbContainer();
 
     /**
      * Sets the value of the ejbContainer property.
@@ -168,11 +106,7 @@ public class ModuleMonitoringLevels
      * @param value allowed object is
      *              {@link String }
      */
-    public void setEjbContainer(String value) throws PropertyVetoException {
-        support.fireVetoableChange("ejbContainer", this.ejbContainer, value);
-
-        this.ejbContainer = value;
-    }
+    public void setEjbContainer(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the webContainer property.
@@ -180,13 +114,8 @@ public class ModuleMonitoringLevels
      * @return possible object is
      *         {@link String }
      */
-    public String getWebContainer() {
-        if (webContainer == null) {
-            return "OFF";
-        } else {
-            return webContainer;
-        }
-    }
+    @Attribute
+    public String getWebContainer();
 
     /**
      * Sets the value of the webContainer property.
@@ -194,11 +123,7 @@ public class ModuleMonitoringLevels
      * @param value allowed object is
      *              {@link String }
      */
-    public void setWebContainer(String value) throws PropertyVetoException {
-        support.fireVetoableChange("webContainer", this.webContainer, value);
-
-        this.webContainer = value;
-    }
+    public void setWebContainer(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the transactionService property.
@@ -206,13 +131,8 @@ public class ModuleMonitoringLevels
      * @return possible object is
      *         {@link String }
      */
-    public String getTransactionService() {
-        if (transactionService == null) {
-            return "OFF";
-        } else {
-            return transactionService;
-        }
-    }
+    @Attribute
+    public String getTransactionService();
 
     /**
      * Sets the value of the transactionService property.
@@ -220,11 +140,7 @@ public class ModuleMonitoringLevels
      * @param value allowed object is
      *              {@link String }
      */
-    public void setTransactionService(String value) throws PropertyVetoException {
-        support.fireVetoableChange("transactionService", this.transactionService, value);
-
-        this.transactionService = value;
-    }
+    public void setTransactionService(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the httpService property.
@@ -232,13 +148,8 @@ public class ModuleMonitoringLevels
      * @return possible object is
      *         {@link String }
      */
-    public String getHttpService() {
-        if (httpService == null) {
-            return "OFF";
-        } else {
-            return httpService;
-        }
-    }
+    @Attribute
+    public String getHttpService();
 
     /**
      * Sets the value of the httpService property.
@@ -246,11 +157,7 @@ public class ModuleMonitoringLevels
      * @param value allowed object is
      *              {@link String }
      */
-    public void setHttpService(String value) throws PropertyVetoException {
-        support.fireVetoableChange("httpService", this.httpService, value);
-
-        this.httpService = value;
-    }
+    public void setHttpService(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the jdbcConnectionPool property.
@@ -258,13 +165,8 @@ public class ModuleMonitoringLevels
      * @return possible object is
      *         {@link String }
      */
-    public String getJdbcConnectionPool() {
-        if (jdbcConnectionPool == null) {
-            return "OFF";
-        } else {
-            return jdbcConnectionPool;
-        }
-    }
+    @Attribute
+    public String getJdbcConnectionPool();
 
     /**
      * Sets the value of the jdbcConnectionPool property.
@@ -272,11 +174,7 @@ public class ModuleMonitoringLevels
      * @param value allowed object is
      *              {@link String }
      */
-    public void setJdbcConnectionPool(String value) throws PropertyVetoException {
-        support.fireVetoableChange("jdbcConnectionPool", this.jdbcConnectionPool, value);
-
-        this.jdbcConnectionPool = value;
-    }
+    public void setJdbcConnectionPool(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the connectorConnectionPool property.
@@ -284,13 +182,8 @@ public class ModuleMonitoringLevels
      * @return possible object is
      *         {@link String }
      */
-    public String getConnectorConnectionPool() {
-        if (connectorConnectionPool == null) {
-            return "OFF";
-        } else {
-            return connectorConnectionPool;
-        }
-    }
+    @Attribute
+    public String getConnectorConnectionPool();
 
     /**
      * Sets the value of the connectorConnectionPool property.
@@ -298,11 +191,7 @@ public class ModuleMonitoringLevels
      * @param value allowed object is
      *              {@link String }
      */
-    public void setConnectorConnectionPool(String value) throws PropertyVetoException {
-        support.fireVetoableChange("connectorConnectionPool", this.connectorConnectionPool, value);
-
-        this.connectorConnectionPool = value;
-    }
+    public void setConnectorConnectionPool(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the connectorService property.
@@ -310,13 +199,8 @@ public class ModuleMonitoringLevels
      * @return possible object is
      *         {@link String }
      */
-    public String getConnectorService() {
-        if (connectorService == null) {
-            return "OFF";
-        } else {
-            return connectorService;
-        }
-    }
+    @Attribute
+    public String getConnectorService();
 
     /**
      * Sets the value of the connectorService property.
@@ -324,11 +208,7 @@ public class ModuleMonitoringLevels
      * @param value allowed object is
      *              {@link String }
      */
-    public void setConnectorService(String value) throws PropertyVetoException {
-        support.fireVetoableChange("connectorService", this.connectorService, value);
-
-        this.connectorService = value;
-    }
+    public void setConnectorService(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the jmsService property.
@@ -336,13 +216,8 @@ public class ModuleMonitoringLevels
      * @return possible object is
      *         {@link String }
      */
-    public String getJmsService() {
-        if (jmsService == null) {
-            return "OFF";
-        } else {
-            return jmsService;
-        }
-    }
+    @Attribute
+    public String getJmsService();
 
     /**
      * Sets the value of the jmsService property.
@@ -350,11 +225,7 @@ public class ModuleMonitoringLevels
      * @param value allowed object is
      *              {@link String }
      */
-    public void setJmsService(String value) throws PropertyVetoException {
-        support.fireVetoableChange("jmsService", this.jmsService, value);
-
-        this.jmsService = value;
-    }
+    public void setJmsService(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the jvm property.
@@ -362,13 +233,8 @@ public class ModuleMonitoringLevels
      * @return possible object is
      *         {@link String }
      */
-    public String getJvm() {
-        if (jvm == null) {
-            return "OFF";
-        } else {
-            return jvm;
-        }
-    }
+    @Attribute
+    public String getJvm();
 
     /**
      * Sets the value of the jvm property.
@@ -376,11 +242,7 @@ public class ModuleMonitoringLevels
      * @param value allowed object is
      *              {@link String }
      */
-    public void setJvm(String value) throws PropertyVetoException {
-        support.fireVetoableChange("jvm", this.jvm, value);
-
-        this.jvm = value;
-    }
+    public void setJvm(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the property property.
@@ -402,9 +264,8 @@ public class ModuleMonitoringLevels
      * Objects of the following type(s) are allowed in the list
      * {@link Property }
      */
-    public List<Property> getProperty() {
-        return this.property;
-    }
+    @Element("property")
+    public List<Property> getProperty();
 
 
 

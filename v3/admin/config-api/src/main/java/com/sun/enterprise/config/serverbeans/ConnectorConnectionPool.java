@@ -11,7 +11,7 @@ package com.sun.enterprise.config.serverbeans;
 import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.Element;
-import org.glassfish.api.admin.ConfigBean;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 
 import java.beans.PropertyVetoException;
 import java.beans.VetoableChangeSupport;
@@ -29,80 +29,7 @@ import java.util.List;
     "property"
 }) */
 @Configured
-public class ConnectorConnectionPool extends ConfigBean implements Resource, Serializable {
-
-    final transient private VetoableChangeSupport support = new VetoableChangeSupport(this);
-
-    private final static long serialVersionUID = 1L;
-    @Attribute(required = true)
-
-    protected String name;
-    @Attribute(required = true)
-
-    protected String resourceAdapterName;
-    @Attribute(required = true)
-
-    protected String connectionDefinitionName;
-    @Attribute
-
-    protected String steadyPoolSize;
-    @Attribute
-
-    protected String maxPoolSize;
-    @Attribute
-
-    protected String maxWaitTimeInMillis;
-    @Attribute
-
-    protected String poolResizeQuantity;
-    @Attribute
-
-    protected String idleTimeoutInSeconds;
-    @Attribute
-
-    protected String failAllConnections;
-    @Attribute
-
-    protected String transactionSupport;
-    @Attribute
-
-    protected String isConnectionValidationRequired;
-    @Attribute
-
-    protected String validateAtmostOncePeriodInSeconds;
-    @Attribute
-
-    protected String connectionLeakTimeoutInSeconds;
-    @Attribute
-
-    protected String connectionLeakReclaim;
-    @Attribute
-
-    protected String connectionCreationRetryAttempts;
-    @Attribute
-
-    protected String connectionCreationRetryIntervalInSeconds;
-    @Attribute
-
-    protected String lazyConnectionEnlistment;
-    @Attribute
-
-    protected String lazyConnectionAssociation;
-    @Attribute
-
-    protected String associateWithThread;
-    @Attribute
-
-    protected String matchConnections;
-    @Attribute
-
-    protected String maxConnectionUsageCount;
-    protected String description;
-    @Element
-    protected List<SecurityMap> securityMap = new ConstrainedList<SecurityMap>(this, "securityMap", support);
-    protected List<Property> property = new ConstrainedList<Property>(this, "property", support);
-
-
+public interface ConnectorConnectionPool extends ConfigBeanProxy, Resource {
 
     /**
      * Gets the value of the name property.
@@ -110,9 +37,8 @@ public class ConnectorConnectionPool extends ConfigBean implements Resource, Ser
      * @return possible object is
      *         {@link String }
      */
-    public String getName() {
-        return name;
-    }
+    @Attribute(required = true)
+    public String getName();
 
     /**
      * Sets the value of the name property.
@@ -120,11 +46,7 @@ public class ConnectorConnectionPool extends ConfigBean implements Resource, Ser
      * @param value allowed object is
      *              {@link String }
      */
-    public void setName(String value) throws PropertyVetoException {
-        support.fireVetoableChange("name", this.name, value);
-
-        this.name = value;
-    }
+    public void setName(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the resourceAdapterName property.
@@ -132,9 +54,8 @@ public class ConnectorConnectionPool extends ConfigBean implements Resource, Ser
      * @return possible object is
      *         {@link String }
      */
-    public String getResourceAdapterName() {
-        return resourceAdapterName;
-    }
+    @Attribute(required = true)
+    public String getResourceAdapterName();
 
     /**
      * Sets the value of the resourceAdapterName property.
@@ -142,11 +63,7 @@ public class ConnectorConnectionPool extends ConfigBean implements Resource, Ser
      * @param value allowed object is
      *              {@link String }
      */
-    public void setResourceAdapterName(String value) throws PropertyVetoException {
-        support.fireVetoableChange("resourceAdapterName", this.resourceAdapterName, value);
-
-        this.resourceAdapterName = value;
-    }
+    public void setResourceAdapterName(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the connectionDefinitionName property.
@@ -154,9 +71,8 @@ public class ConnectorConnectionPool extends ConfigBean implements Resource, Ser
      * @return possible object is
      *         {@link String }
      */
-    public String getConnectionDefinitionName() {
-        return connectionDefinitionName;
-    }
+    @Attribute(required = true)
+    public String getConnectionDefinitionName();
 
     /**
      * Sets the value of the connectionDefinitionName property.
@@ -164,11 +80,7 @@ public class ConnectorConnectionPool extends ConfigBean implements Resource, Ser
      * @param value allowed object is
      *              {@link String }
      */
-    public void setConnectionDefinitionName(String value) throws PropertyVetoException {
-        support.fireVetoableChange("connectionDefinitionName", this.connectionDefinitionName, value);
-
-        this.connectionDefinitionName = value;
-    }
+    public void setConnectionDefinitionName(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the steadyPoolSize property.
@@ -176,13 +88,8 @@ public class ConnectorConnectionPool extends ConfigBean implements Resource, Ser
      * @return possible object is
      *         {@link String }
      */
-    public String getSteadyPoolSize() {
-        if (steadyPoolSize == null) {
-            return "8";
-        } else {
-            return steadyPoolSize;
-        }
-    }
+    @Attribute
+    public String getSteadyPoolSize();
 
     /**
      * Sets the value of the steadyPoolSize property.
@@ -190,11 +97,7 @@ public class ConnectorConnectionPool extends ConfigBean implements Resource, Ser
      * @param value allowed object is
      *              {@link String }
      */
-    public void setSteadyPoolSize(String value) throws PropertyVetoException {
-        support.fireVetoableChange("steadyPoolSize", this.steadyPoolSize, value);
-
-        this.steadyPoolSize = value;
-    }
+    public void setSteadyPoolSize(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the maxPoolSize property.
@@ -202,13 +105,8 @@ public class ConnectorConnectionPool extends ConfigBean implements Resource, Ser
      * @return possible object is
      *         {@link String }
      */
-    public String getMaxPoolSize() {
-        if (maxPoolSize == null) {
-            return "32";
-        } else {
-            return maxPoolSize;
-        }
-    }
+    @Attribute
+    public String getMaxPoolSize();
 
     /**
      * Sets the value of the maxPoolSize property.
@@ -216,11 +114,7 @@ public class ConnectorConnectionPool extends ConfigBean implements Resource, Ser
      * @param value allowed object is
      *              {@link String }
      */
-    public void setMaxPoolSize(String value) throws PropertyVetoException {
-        support.fireVetoableChange("maxPoolSize", this.maxPoolSize, value);
-
-        this.maxPoolSize = value;
-    }
+    public void setMaxPoolSize(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the maxWaitTimeInMillis property.
@@ -228,13 +122,8 @@ public class ConnectorConnectionPool extends ConfigBean implements Resource, Ser
      * @return possible object is
      *         {@link String }
      */
-    public String getMaxWaitTimeInMillis() {
-        if (maxWaitTimeInMillis == null) {
-            return "60000";
-        } else {
-            return maxWaitTimeInMillis;
-        }
-    }
+    @Attribute
+    public String getMaxWaitTimeInMillis();
 
     /**
      * Sets the value of the maxWaitTimeInMillis property.
@@ -242,11 +131,7 @@ public class ConnectorConnectionPool extends ConfigBean implements Resource, Ser
      * @param value allowed object is
      *              {@link String }
      */
-    public void setMaxWaitTimeInMillis(String value) throws PropertyVetoException {
-        support.fireVetoableChange("maxWaitTimeInMillis", this.maxWaitTimeInMillis, value);
-
-        this.maxWaitTimeInMillis = value;
-    }
+    public void setMaxWaitTimeInMillis(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the poolResizeQuantity property.
@@ -254,13 +139,8 @@ public class ConnectorConnectionPool extends ConfigBean implements Resource, Ser
      * @return possible object is
      *         {@link String }
      */
-    public String getPoolResizeQuantity() {
-        if (poolResizeQuantity == null) {
-            return "2";
-        } else {
-            return poolResizeQuantity;
-        }
-    }
+    @Attribute
+    public String getPoolResizeQuantity();
 
     /**
      * Sets the value of the poolResizeQuantity property.
@@ -268,11 +148,7 @@ public class ConnectorConnectionPool extends ConfigBean implements Resource, Ser
      * @param value allowed object is
      *              {@link String }
      */
-    public void setPoolResizeQuantity(String value) throws PropertyVetoException {
-        support.fireVetoableChange("poolResizeQuantity", this.poolResizeQuantity, value);
-
-        this.poolResizeQuantity = value;
-    }
+    public void setPoolResizeQuantity(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the idleTimeoutInSeconds property.
@@ -280,13 +156,8 @@ public class ConnectorConnectionPool extends ConfigBean implements Resource, Ser
      * @return possible object is
      *         {@link String }
      */
-    public String getIdleTimeoutInSeconds() {
-        if (idleTimeoutInSeconds == null) {
-            return "300";
-        } else {
-            return idleTimeoutInSeconds;
-        }
-    }
+    @Attribute
+    public String getIdleTimeoutInSeconds();
 
     /**
      * Sets the value of the idleTimeoutInSeconds property.
@@ -294,11 +165,7 @@ public class ConnectorConnectionPool extends ConfigBean implements Resource, Ser
      * @param value allowed object is
      *              {@link String }
      */
-    public void setIdleTimeoutInSeconds(String value) throws PropertyVetoException {
-        support.fireVetoableChange("idleTimeoutInSeconds", this.idleTimeoutInSeconds, value);
-
-        this.idleTimeoutInSeconds = value;
-    }
+    public void setIdleTimeoutInSeconds(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the failAllConnections property.
@@ -306,13 +173,8 @@ public class ConnectorConnectionPool extends ConfigBean implements Resource, Ser
      * @return possible object is
      *         {@link String }
      */
-    public String getFailAllConnections() {
-        if (failAllConnections == null) {
-            return "false";
-        } else {
-            return failAllConnections;
-        }
-    }
+    @Attribute
+    public String getFailAllConnections();
 
     /**
      * Sets the value of the failAllConnections property.
@@ -320,11 +182,7 @@ public class ConnectorConnectionPool extends ConfigBean implements Resource, Ser
      * @param value allowed object is
      *              {@link String }
      */
-    public void setFailAllConnections(String value) throws PropertyVetoException {
-        support.fireVetoableChange("failAllConnections", this.failAllConnections, value);
-
-        this.failAllConnections = value;
-    }
+    public void setFailAllConnections(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the transactionSupport property.
@@ -332,9 +190,8 @@ public class ConnectorConnectionPool extends ConfigBean implements Resource, Ser
      * @return possible object is
      *         {@link String }
      */
-    public String getTransactionSupport() {
-        return transactionSupport;
-    }
+    @Attribute
+    public String getTransactionSupport();
 
     /**
      * Sets the value of the transactionSupport property.
@@ -342,11 +199,7 @@ public class ConnectorConnectionPool extends ConfigBean implements Resource, Ser
      * @param value allowed object is
      *              {@link String }
      */
-    public void setTransactionSupport(String value) throws PropertyVetoException {
-        support.fireVetoableChange("transactionSupport", this.transactionSupport, value);
-
-        this.transactionSupport = value;
-    }
+    public void setTransactionSupport(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the isConnectionValidationRequired property.
@@ -354,13 +207,8 @@ public class ConnectorConnectionPool extends ConfigBean implements Resource, Ser
      * @return possible object is
      *         {@link String }
      */
-    public String getIsConnectionValidationRequired() {
-        if (isConnectionValidationRequired == null) {
-            return "false";
-        } else {
-            return isConnectionValidationRequired;
-        }
-    }
+    @Attribute
+    public String getIsConnectionValidationRequired();
 
     /**
      * Sets the value of the isConnectionValidationRequired property.
@@ -368,11 +216,7 @@ public class ConnectorConnectionPool extends ConfigBean implements Resource, Ser
      * @param value allowed object is
      *              {@link String }
      */
-    public void setIsConnectionValidationRequired(String value) throws PropertyVetoException {
-        support.fireVetoableChange("isConnectionValidationRequired", this.isConnectionValidationRequired, value);
-
-        this.isConnectionValidationRequired = value;
-    }
+    public void setIsConnectionValidationRequired(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the validateAtmostOncePeriodInSeconds property.
@@ -380,13 +224,8 @@ public class ConnectorConnectionPool extends ConfigBean implements Resource, Ser
      * @return possible object is
      *         {@link String }
      */
-    public String getValidateAtmostOncePeriodInSeconds() {
-        if (validateAtmostOncePeriodInSeconds == null) {
-            return "0";
-        } else {
-            return validateAtmostOncePeriodInSeconds;
-        }
-    }
+    @Attribute
+    public String getValidateAtmostOncePeriodInSeconds();
 
     /**
      * Sets the value of the validateAtmostOncePeriodInSeconds property.
@@ -394,11 +233,7 @@ public class ConnectorConnectionPool extends ConfigBean implements Resource, Ser
      * @param value allowed object is
      *              {@link String }
      */
-    public void setValidateAtmostOncePeriodInSeconds(String value) throws PropertyVetoException {
-        support.fireVetoableChange("validateAtmostOncePeriodInSeconds", this.validateAtmostOncePeriodInSeconds, value);
-
-        this.validateAtmostOncePeriodInSeconds = value;
-    }
+    public void setValidateAtmostOncePeriodInSeconds(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the connectionLeakTimeoutInSeconds property.
@@ -406,13 +241,8 @@ public class ConnectorConnectionPool extends ConfigBean implements Resource, Ser
      * @return possible object is
      *         {@link String }
      */
-    public String getConnectionLeakTimeoutInSeconds() {
-        if (connectionLeakTimeoutInSeconds == null) {
-            return "0";
-        } else {
-            return connectionLeakTimeoutInSeconds;
-        }
-    }
+    @Attribute
+    public String getConnectionLeakTimeoutInSeconds();
 
     /**
      * Sets the value of the connectionLeakTimeoutInSeconds property.
@@ -420,11 +250,7 @@ public class ConnectorConnectionPool extends ConfigBean implements Resource, Ser
      * @param value allowed object is
      *              {@link String }
      */
-    public void setConnectionLeakTimeoutInSeconds(String value) throws PropertyVetoException {
-        support.fireVetoableChange("connectionLeakTimeoutInSeconds", this.connectionLeakTimeoutInSeconds, value);
-
-        this.connectionLeakTimeoutInSeconds = value;
-    }
+    public void setConnectionLeakTimeoutInSeconds(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the connectionLeakReclaim property.
@@ -432,13 +258,8 @@ public class ConnectorConnectionPool extends ConfigBean implements Resource, Ser
      * @return possible object is
      *         {@link String }
      */
-    public String getConnectionLeakReclaim() {
-        if (connectionLeakReclaim == null) {
-            return "false";
-        } else {
-            return connectionLeakReclaim;
-        }
-    }
+    @Attribute
+    public String getConnectionLeakReclaim();
 
     /**
      * Sets the value of the connectionLeakReclaim property.
@@ -446,11 +267,7 @@ public class ConnectorConnectionPool extends ConfigBean implements Resource, Ser
      * @param value allowed object is
      *              {@link String }
      */
-    public void setConnectionLeakReclaim(String value) throws PropertyVetoException {
-        support.fireVetoableChange("connectionLeakReclaim", this.connectionLeakReclaim, value);
-
-        this.connectionLeakReclaim = value;
-    }
+    public void setConnectionLeakReclaim(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the connectionCreationRetryAttempts property.
@@ -458,13 +275,8 @@ public class ConnectorConnectionPool extends ConfigBean implements Resource, Ser
      * @return possible object is
      *         {@link String }
      */
-    public String getConnectionCreationRetryAttempts() {
-        if (connectionCreationRetryAttempts == null) {
-            return "0";
-        } else {
-            return connectionCreationRetryAttempts;
-        }
-    }
+    @Attribute
+    public String getConnectionCreationRetryAttempts();
 
     /**
      * Sets the value of the connectionCreationRetryAttempts property.
@@ -472,11 +284,7 @@ public class ConnectorConnectionPool extends ConfigBean implements Resource, Ser
      * @param value allowed object is
      *              {@link String }
      */
-    public void setConnectionCreationRetryAttempts(String value) throws PropertyVetoException {
-        support.fireVetoableChange("connectionCreationRetryAttempts", this.connectionCreationRetryAttempts, value);
-
-        this.connectionCreationRetryAttempts = value;
-    }
+    public void setConnectionCreationRetryAttempts(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the connectionCreationRetryIntervalInSeconds property.
@@ -484,13 +292,8 @@ public class ConnectorConnectionPool extends ConfigBean implements Resource, Ser
      * @return possible object is
      *         {@link String }
      */
-    public String getConnectionCreationRetryIntervalInSeconds() {
-        if (connectionCreationRetryIntervalInSeconds == null) {
-            return "10";
-        } else {
-            return connectionCreationRetryIntervalInSeconds;
-        }
-    }
+    @Attribute
+    public String getConnectionCreationRetryIntervalInSeconds();
 
     /**
      * Sets the value of the connectionCreationRetryIntervalInSeconds property.
@@ -498,11 +301,7 @@ public class ConnectorConnectionPool extends ConfigBean implements Resource, Ser
      * @param value allowed object is
      *              {@link String }
      */
-    public void setConnectionCreationRetryIntervalInSeconds(String value) throws PropertyVetoException {
-        support.fireVetoableChange("connectionCreationRetryIntervalInSeconds", this.connectionCreationRetryIntervalInSeconds, value);
-
-        this.connectionCreationRetryIntervalInSeconds = value;
-    }
+    public void setConnectionCreationRetryIntervalInSeconds(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the lazyConnectionEnlistment property.
@@ -510,13 +309,8 @@ public class ConnectorConnectionPool extends ConfigBean implements Resource, Ser
      * @return possible object is
      *         {@link String }
      */
-    public String getLazyConnectionEnlistment() {
-        if (lazyConnectionEnlistment == null) {
-            return "false";
-        } else {
-            return lazyConnectionEnlistment;
-        }
-    }
+    @Attribute
+    public String getLazyConnectionEnlistment();
 
     /**
      * Sets the value of the lazyConnectionEnlistment property.
@@ -524,11 +318,7 @@ public class ConnectorConnectionPool extends ConfigBean implements Resource, Ser
      * @param value allowed object is
      *              {@link String }
      */
-    public void setLazyConnectionEnlistment(String value) throws PropertyVetoException {
-        support.fireVetoableChange("lazyConnectionEnlistment", this.lazyConnectionEnlistment, value);
-
-        this.lazyConnectionEnlistment = value;
-    }
+    public void setLazyConnectionEnlistment(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the lazyConnectionAssociation property.
@@ -536,13 +326,8 @@ public class ConnectorConnectionPool extends ConfigBean implements Resource, Ser
      * @return possible object is
      *         {@link String }
      */
-    public String getLazyConnectionAssociation() {
-        if (lazyConnectionAssociation == null) {
-            return "false";
-        } else {
-            return lazyConnectionAssociation;
-        }
-    }
+    @Attribute
+    public String getLazyConnectionAssociation();
 
     /**
      * Sets the value of the lazyConnectionAssociation property.
@@ -550,11 +335,7 @@ public class ConnectorConnectionPool extends ConfigBean implements Resource, Ser
      * @param value allowed object is
      *              {@link String }
      */
-    public void setLazyConnectionAssociation(String value) throws PropertyVetoException {
-        support.fireVetoableChange("lazyConnectionAssociation", this.lazyConnectionAssociation, value);
-
-        this.lazyConnectionAssociation = value;
-    }
+    public void setLazyConnectionAssociation(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the associateWithThread property.
@@ -562,13 +343,8 @@ public class ConnectorConnectionPool extends ConfigBean implements Resource, Ser
      * @return possible object is
      *         {@link String }
      */
-    public String getAssociateWithThread() {
-        if (associateWithThread == null) {
-            return "false";
-        } else {
-            return associateWithThread;
-        }
-    }
+    @Attribute
+    public String getAssociateWithThread();
 
     /**
      * Sets the value of the associateWithThread property.
@@ -576,11 +352,7 @@ public class ConnectorConnectionPool extends ConfigBean implements Resource, Ser
      * @param value allowed object is
      *              {@link String }
      */
-    public void setAssociateWithThread(String value) throws PropertyVetoException {
-        support.fireVetoableChange("associateWithThread", this.associateWithThread, value);
-
-        this.associateWithThread = value;
-    }
+    public void setAssociateWithThread(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the matchConnections property.
@@ -588,13 +360,8 @@ public class ConnectorConnectionPool extends ConfigBean implements Resource, Ser
      * @return possible object is
      *         {@link String }
      */
-    public String getMatchConnections() {
-        if (matchConnections == null) {
-            return "true";
-        } else {
-            return matchConnections;
-        }
-    }
+    @Attribute
+    public String getMatchConnections();
 
     /**
      * Sets the value of the matchConnections property.
@@ -602,11 +369,7 @@ public class ConnectorConnectionPool extends ConfigBean implements Resource, Ser
      * @param value allowed object is
      *              {@link String }
      */
-    public void setMatchConnections(String value) throws PropertyVetoException {
-        support.fireVetoableChange("matchConnections", this.matchConnections, value);
-
-        this.matchConnections = value;
-    }
+    public void setMatchConnections(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the maxConnectionUsageCount property.
@@ -614,13 +377,8 @@ public class ConnectorConnectionPool extends ConfigBean implements Resource, Ser
      * @return possible object is
      *         {@link String }
      */
-    public String getMaxConnectionUsageCount() {
-        if (maxConnectionUsageCount == null) {
-            return "0";
-        } else {
-            return maxConnectionUsageCount;
-        }
-    }
+    @Attribute
+    public String getMaxConnectionUsageCount();
 
     /**
      * Sets the value of the maxConnectionUsageCount property.
@@ -628,11 +386,7 @@ public class ConnectorConnectionPool extends ConfigBean implements Resource, Ser
      * @param value allowed object is
      *              {@link String }
      */
-    public void setMaxConnectionUsageCount(String value) throws PropertyVetoException {
-        support.fireVetoableChange("maxConnectionUsageCount", this.maxConnectionUsageCount, value);
-
-        this.maxConnectionUsageCount = value;
-    }
+    public void setMaxConnectionUsageCount(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the description property.
@@ -640,9 +394,8 @@ public class ConnectorConnectionPool extends ConfigBean implements Resource, Ser
      * @return possible object is
      *         {@link String }
      */
-    public String getDescription() {
-        return description;
-    }
+    @Attribute
+    public String getDescription();
 
     /**
      * Sets the value of the description property.
@@ -650,11 +403,7 @@ public class ConnectorConnectionPool extends ConfigBean implements Resource, Ser
      * @param value allowed object is
      *              {@link String }
      */
-    public void setDescription(String value) throws PropertyVetoException {
-        support.fireVetoableChange("description", this.description, value);
-
-        this.description = value;
-    }
+    public void setDescription(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the securityMap property.
@@ -676,9 +425,8 @@ public class ConnectorConnectionPool extends ConfigBean implements Resource, Ser
      * Objects of the following type(s) are allowed in the list
      * {@link SecurityMap }
      */
-    public List<SecurityMap> getSecurityMap() {
-        return this.securityMap;
-    }
+    @Element
+    public List<SecurityMap> getSecurityMap();
 
     /**
      * Gets the value of the property property.
@@ -700,9 +448,8 @@ public class ConnectorConnectionPool extends ConfigBean implements Resource, Ser
      * Objects of the following type(s) are allowed in the list
      * {@link Property }
      */
-    public List<Property> getProperty() {
-        return this.property;
-    }
+    @Element("property")
+    public List<Property> getProperty();
 
 
 

@@ -39,8 +39,9 @@
 package com.sun.enterprise.config.serverbeans;
 
 import org.jvnet.hk2.config.Attribute;
+import org.jvnet.hk2.config.Element;
 import org.jvnet.hk2.config.Configured;
-import org.glassfish.api.admin.ConfigBean;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 
 import java.beans.PropertyVetoException;
 import java.io.Serializable;
@@ -55,19 +56,7 @@ import java.util.List;
     "property"
 }) */
 @Configured
-public class ListenerConfig
- extends ConfigBean implements Serializable {
-
-    private final static long serialVersionUID = 1L;
-    @Attribute(required = true)
-
-    protected String listenerClassName;
-    @Attribute(required = true)
-
-    protected String subscribeListenerWith;
-    protected List<Property> property = new ConstrainedList<Property>(this, "property", support);
-
-
+public interface ListenerConfig extends ConfigBeanProxy  {
 
     /**
      * Gets the value of the listenerClassName property.
@@ -75,9 +64,8 @@ public class ListenerConfig
      * @return possible object is
      *         {@link String }
      */
-    public String getListenerClassName() {
-        return listenerClassName;
-    }
+    @Attribute(required = true)
+    public String getListenerClassName();
 
     /**
      * Sets the value of the listenerClassName property.
@@ -85,11 +73,7 @@ public class ListenerConfig
      * @param value allowed object is
      *              {@link String }
      */
-    public void setListenerClassName(String value) throws PropertyVetoException {
-        support.fireVetoableChange("listenerClassName", this.listenerClassName, value);
-
-        this.listenerClassName = value;
-    }
+    public void setListenerClassName(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the subscribeListenerWith property.
@@ -97,9 +81,8 @@ public class ListenerConfig
      * @return possible object is
      *         {@link String }
      */
-    public String getSubscribeListenerWith() {
-        return subscribeListenerWith;
-    }
+    @Attribute(required = true)
+    public String getSubscribeListenerWith();
 
     /**
      * Sets the value of the subscribeListenerWith property.
@@ -107,11 +90,7 @@ public class ListenerConfig
      * @param value allowed object is
      *              {@link String }
      */
-    public void setSubscribeListenerWith(String value) throws PropertyVetoException {
-        support.fireVetoableChange("subscribeListenerWith", this.subscribeListenerWith, value);
-
-        this.subscribeListenerWith = value;
-    }
+    public void setSubscribeListenerWith(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the property property.
@@ -133,9 +112,8 @@ public class ListenerConfig
      * Objects of the following type(s) are allowed in the list
      * {@link Property }
      */
-    public List<Property> getProperty() {
-        return this.property;
-    }
+    @Element("property")
+    public List<Property> getProperty();
 
 
 

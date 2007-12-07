@@ -41,7 +41,7 @@ package com.sun.enterprise.config.serverbeans;
 import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.Element;
-import org.glassfish.api.admin.ConfigBean;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 
 import java.beans.PropertyVetoException;
 import java.io.Serializable;
@@ -59,31 +59,7 @@ import java.util.List;
     "property"
 }) */
 @Configured
-public class Server
- extends ConfigBean implements Serializable {
-
-    private final static long serialVersionUID = 1L;
-    @Attribute(required = true)
-
-    protected String name;
-    @Attribute
-
-    protected String configRef;
-    @Attribute
-
-    protected String nodeAgentRef;
-    @Attribute
-
-    protected String lbWeight;
-    @Element
-    protected List<ApplicationRef> applicationRef = new ConstrainedList<ApplicationRef>(this, "applicationRef", support);
-    @Element
-    protected List<ResourceRef> resourceRef = new ConstrainedList<ResourceRef>(this, "resourceRef", support);
-    @Element
-    protected List<SystemProperty> systemProperty = new ConstrainedList<SystemProperty>(this, "systemProperty", support);
-    protected List<Property> property = new ConstrainedList<Property>(this, "property", support);
-
-
+public interface Server extends ConfigBeanProxy  {
 
     /**
      * Gets the value of the name property.
@@ -91,9 +67,8 @@ public class Server
      * @return possible object is
      *         {@link String }
      */
-    public String getName() {
-        return name;
-    }
+    @Attribute(required = true)
+    public String getName();
 
     /**
      * Sets the value of the name property.
@@ -101,11 +76,7 @@ public class Server
      * @param value allowed object is
      *              {@link String }
      */
-    public void setName(String value) throws PropertyVetoException {
-        support.fireVetoableChange("name", this.name, value);
-
-        this.name = value;
-    }
+    public void setName(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the configRef property.
@@ -113,9 +84,8 @@ public class Server
      * @return possible object is
      *         {@link String }
      */
-    public String getConfigRef() {
-        return configRef;
-    }
+    @Attribute
+    public String getConfigRef();
 
     /**
      * Sets the value of the configRef property.
@@ -123,11 +93,7 @@ public class Server
      * @param value allowed object is
      *              {@link String }
      */
-    public void setConfigRef(String value) throws PropertyVetoException {
-        support.fireVetoableChange("configRef", this.configRef, value);
-
-        this.configRef = value;
-    }
+    public void setConfigRef(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the nodeAgentRef property.
@@ -135,9 +101,8 @@ public class Server
      * @return possible object is
      *         {@link String }
      */
-    public String getNodeAgentRef() {
-        return nodeAgentRef;
-    }
+    @Attribute
+    public String getNodeAgentRef();
 
     /**
      * Sets the value of the nodeAgentRef property.
@@ -145,11 +110,7 @@ public class Server
      * @param value allowed object is
      *              {@link String }
      */
-    public void setNodeAgentRef(String value) throws PropertyVetoException {
-        support.fireVetoableChange("nodeAgentRef", this.nodeAgentRef, value);
-
-        this.nodeAgentRef = value;
-    }
+    public void setNodeAgentRef(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the lbWeight property.
@@ -157,13 +118,8 @@ public class Server
      * @return possible object is
      *         {@link String }
      */
-    public String getLbWeight() {
-        if (lbWeight == null) {
-            return "100";
-        } else {
-            return lbWeight;
-        }
-    }
+    @Attribute
+    public String getLbWeight();
 
     /**
      * Sets the value of the lbWeight property.
@@ -171,11 +127,7 @@ public class Server
      * @param value allowed object is
      *              {@link String }
      */
-    public void setLbWeight(String value) throws PropertyVetoException {
-        support.fireVetoableChange("lbWeight", this.lbWeight, value);
-
-        this.lbWeight = value;
-    }
+    public void setLbWeight(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the applicationRef property.
@@ -197,9 +149,8 @@ public class Server
      * Objects of the following type(s) are allowed in the list
      * {@link ApplicationRef }
      */
-    public List<ApplicationRef> getApplicationRef() {
-        return this.applicationRef;
-    }
+    @Element
+    public List<ApplicationRef> getApplicationRef();
 
     /**
      * Gets the value of the resourceRef property.
@@ -221,9 +172,8 @@ public class Server
      * Objects of the following type(s) are allowed in the list
      * {@link ResourceRef }
      */
-    public List<ResourceRef> getResourceRef() {
-        return this.resourceRef;
-    }
+    @Element
+    public List<ResourceRef> getResourceRef();
 
     /**
      * Gets the value of the systemProperty property.
@@ -245,9 +195,8 @@ public class Server
      * Objects of the following type(s) are allowed in the list
      * {@link SystemProperty }
      */
-    public List<SystemProperty> getSystemProperty() {
-        return this.systemProperty;
-    }
+    @Element
+    public List<SystemProperty> getSystemProperty();
 
     /**
      * Gets the value of the property property.
@@ -269,9 +218,8 @@ public class Server
      * Objects of the following type(s) are allowed in the list
      * {@link Property }
      */
-    public List<Property> getProperty() {
-        return this.property;
-    }
+    @Element("property")
+    public List<Property> getProperty();
 
 
 

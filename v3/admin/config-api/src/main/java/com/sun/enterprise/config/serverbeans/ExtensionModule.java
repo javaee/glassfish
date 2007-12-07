@@ -39,8 +39,9 @@
 package com.sun.enterprise.config.serverbeans;
 
 import org.jvnet.hk2.config.Attribute;
+import org.jvnet.hk2.config.Element;
 import org.jvnet.hk2.config.Configured;
-import org.glassfish.api.admin.ConfigBean;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 
 import java.beans.PropertyVetoException;
 import java.beans.VetoableChangeSupport;
@@ -57,39 +58,7 @@ import java.util.List;
     "property"
 }) */
 @Configured
-public class ExtensionModule extends ConfigBean implements Module, Serializable {
-
-    final transient private VetoableChangeSupport support = new VetoableChangeSupport(this);    
-
-    private final static long serialVersionUID = 1L;
-    @Attribute(required = true)
-
-    protected String name;
-    @Attribute(required = true)
-
-    protected String location;
-    @Attribute(required = true)
-
-    protected String moduleType;
-    @Attribute
-
-    protected String objectType;
-    @Attribute
-
-    protected String enabled;
-    @Attribute
-
-    protected String libraries;
-    @Attribute
-
-    protected String availabilityEnabled;
-    @Attribute
-
-    protected String directoryDeployed;
-    protected String description;
-    protected List<Property> property = new ConstrainedList<Property>(this, "property", support);
-
-
+public interface ExtensionModule extends ConfigBeanProxy, Module {
 
     /**
      * Gets the value of the name property.
@@ -97,9 +66,8 @@ public class ExtensionModule extends ConfigBean implements Module, Serializable 
      * @return possible object is
      *         {@link String }
      */
-    public String getName() {
-        return name;
-    }
+    @Attribute(required = true)
+    public String getName();
 
     /**
      * Sets the value of the name property.
@@ -107,11 +75,7 @@ public class ExtensionModule extends ConfigBean implements Module, Serializable 
      * @param value allowed object is
      *              {@link String }
      */
-    public void setName(String value) throws PropertyVetoException {
-        support.fireVetoableChange("name", this.name, value);
-
-        this.name = value;
-    }
+    public void setName(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the location property.
@@ -119,9 +83,8 @@ public class ExtensionModule extends ConfigBean implements Module, Serializable 
      * @return possible object is
      *         {@link String }
      */
-    public String getLocation() {
-        return location;
-    }
+    @Attribute(required = true)
+    public String getLocation();
 
     /**
      * Sets the value of the location property.
@@ -129,11 +92,7 @@ public class ExtensionModule extends ConfigBean implements Module, Serializable 
      * @param value allowed object is
      *              {@link String }
      */
-    public void setLocation(String value) throws PropertyVetoException {
-        support.fireVetoableChange("location", this.location, value);
-
-        this.location = value;
-    }
+    public void setLocation(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the moduleType property.
@@ -141,9 +100,8 @@ public class ExtensionModule extends ConfigBean implements Module, Serializable 
      * @return possible object is
      *         {@link String }
      */
-    public String getModuleType() {
-        return moduleType;
-    }
+    @Attribute(required = true)
+    public String getModuleType();
 
     /**
      * Sets the value of the moduleType property.
@@ -151,11 +109,7 @@ public class ExtensionModule extends ConfigBean implements Module, Serializable 
      * @param value allowed object is
      *              {@link String }
      */
-    public void setModuleType(String value) throws PropertyVetoException {
-        support.fireVetoableChange("moduleType", this.moduleType, value);
-
-        this.moduleType = value;
-    }
+    public void setModuleType(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the objectType property.
@@ -163,13 +117,8 @@ public class ExtensionModule extends ConfigBean implements Module, Serializable 
      * @return possible object is
      *         {@link String }
      */
-    public String getObjectType() {
-        if (objectType == null) {
-            return "user";
-        } else {
-            return objectType;
-        }
-    }
+    @Attribute
+    public String getObjectType();
 
     /**
      * Sets the value of the objectType property.
@@ -177,11 +126,7 @@ public class ExtensionModule extends ConfigBean implements Module, Serializable 
      * @param value allowed object is
      *              {@link String }
      */
-    public void setObjectType(String value) throws PropertyVetoException {
-        support.fireVetoableChange("objectType", this.objectType, value);
-
-        this.objectType = value;
-    }
+    public void setObjectType(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the enabled property.
@@ -189,13 +134,8 @@ public class ExtensionModule extends ConfigBean implements Module, Serializable 
      * @return possible object is
      *         {@link String }
      */
-    public String getEnabled() {
-        if (enabled == null) {
-            return "true";
-        } else {
-            return enabled;
-        }
-    }
+    @Attribute
+    public String getEnabled();
 
     /**
      * Sets the value of the enabled property.
@@ -203,11 +143,7 @@ public class ExtensionModule extends ConfigBean implements Module, Serializable 
      * @param value allowed object is
      *              {@link String }
      */
-    public void setEnabled(String value) throws PropertyVetoException {
-        support.fireVetoableChange("enabled", this.enabled, value);
-
-        this.enabled = value;
-    }
+    public void setEnabled(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the libraries property.
@@ -215,9 +151,8 @@ public class ExtensionModule extends ConfigBean implements Module, Serializable 
      * @return possible object is
      *         {@link String }
      */
-    public String getLibraries() {
-        return libraries;
-    }
+    @Attribute
+    public String getLibraries();
 
     /**
      * Sets the value of the libraries property.
@@ -225,11 +160,7 @@ public class ExtensionModule extends ConfigBean implements Module, Serializable 
      * @param value allowed object is
      *              {@link String }
      */
-    public void setLibraries(String value) throws PropertyVetoException {
-        support.fireVetoableChange("libraries", this.libraries, value);
-
-        this.libraries = value;
-    }
+    public void setLibraries(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the availabilityEnabled property.
@@ -237,13 +168,8 @@ public class ExtensionModule extends ConfigBean implements Module, Serializable 
      * @return possible object is
      *         {@link String }
      */
-    public String getAvailabilityEnabled() {
-        if (availabilityEnabled == null) {
-            return "false";
-        } else {
-            return availabilityEnabled;
-        }
-    }
+    @Attribute
+    public String getAvailabilityEnabled();
 
     /**
      * Sets the value of the availabilityEnabled property.
@@ -251,11 +177,7 @@ public class ExtensionModule extends ConfigBean implements Module, Serializable 
      * @param value allowed object is
      *              {@link String }
      */
-    public void setAvailabilityEnabled(String value) throws PropertyVetoException {
-        support.fireVetoableChange("availabilityEnabled", this.availabilityEnabled, value);
-
-        this.availabilityEnabled = value;
-    }
+    public void setAvailabilityEnabled(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the directoryDeployed property.
@@ -263,13 +185,8 @@ public class ExtensionModule extends ConfigBean implements Module, Serializable 
      * @return possible object is
      *         {@link String }
      */
-    public String getDirectoryDeployed() {
-        if (directoryDeployed == null) {
-            return "false";
-        } else {
-            return directoryDeployed;
-        }
-    }
+    @Attribute
+    public String getDirectoryDeployed();
 
     /**
      * Sets the value of the directoryDeployed property.
@@ -277,11 +194,7 @@ public class ExtensionModule extends ConfigBean implements Module, Serializable 
      * @param value allowed object is
      *              {@link String }
      */
-    public void setDirectoryDeployed(String value) throws PropertyVetoException {
-        support.fireVetoableChange("directoryDeployed", this.directoryDeployed, value);
-
-        this.directoryDeployed = value;
-    }
+    public void setDirectoryDeployed(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the description property.
@@ -289,9 +202,8 @@ public class ExtensionModule extends ConfigBean implements Module, Serializable 
      * @return possible object is
      *         {@link String }
      */
-    public String getDescription() {
-        return description;
-    }
+    @Attribute
+    public String getDescription();
 
     /**
      * Sets the value of the description property.
@@ -299,11 +211,7 @@ public class ExtensionModule extends ConfigBean implements Module, Serializable 
      * @param value allowed object is
      *              {@link String }
      */
-    public void setDescription(String value) throws PropertyVetoException {
-        support.fireVetoableChange("description", this.description, value);
-
-        this.description = value;
-    }
+    public void setDescription(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the property property.
@@ -325,9 +233,8 @@ public class ExtensionModule extends ConfigBean implements Module, Serializable 
      * Objects of the following type(s) are allowed in the list
      * {@link Property }
      */
-    public List<Property> getProperty() {
-        return this.property;
-    }
+    @Element("property")
+    public List<Property> getProperty();
 
 
 

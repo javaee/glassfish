@@ -40,7 +40,7 @@ package com.sun.enterprise.config.serverbeans;
 
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.Element;
-import org.glassfish.api.admin.ConfigBean;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 
 import java.io.Serializable;
 import java.util.List;
@@ -55,15 +55,7 @@ import java.util.List;
     "property"
 }) */
 @Configured
-public class AlertService
- extends ConfigBean implements Serializable {
-
-    private final static long serialVersionUID = 1L;
-    @Element
-    protected List<AlertSubscription> alertSubscription = new ConstrainedList<AlertSubscription>(this, "alertSubscription", support);
-    protected List<Property> property = new ConstrainedList<Property>(this, "property", support);
-
-
+public interface AlertService extends ConfigBeanProxy  {
 
     /**
      * Gets the value of the alertSubscription property.
@@ -85,9 +77,8 @@ public class AlertService
      * Objects of the following type(s) are allowed in the list
      * {@link AlertSubscription }
      */
-    public List<AlertSubscription> getAlertSubscription() {
-        return this.alertSubscription;
-    }
+    @Element
+    public List<AlertSubscription> getAlertSubscription();
 
     /**
      * Gets the value of the property property.
@@ -109,9 +100,8 @@ public class AlertService
      * Objects of the following type(s) are allowed in the list
      * {@link Property }
      */
-    public List<Property> getProperty() {
-        return this.property;
-    }
+    @Element    
+    public List<Property> getProperty();
 
 
 

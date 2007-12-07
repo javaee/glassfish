@@ -41,7 +41,7 @@ package com.sun.enterprise.config.serverbeans;
 import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.Element;
-import org.glassfish.api.admin.ConfigBean;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 
 import java.beans.PropertyVetoException;
 import java.io.Serializable;
@@ -60,34 +60,7 @@ import java.util.List;
     "property"
 }) */
 @Configured
-public class Cluster
- extends ConfigBean implements Serializable {
-
-    private final static long serialVersionUID = 1L;
-    @Attribute(required = true)
-
-    protected String name;
-    @Attribute(required = true)
-
-    protected String configRef;
-    @Attribute
-
-    protected String heartbeatEnabled;
-    @Attribute
-
-    protected String heartbeatPort;
-    @Attribute
-
-    protected String heartbeatAddress;
-    @Element
-    protected List<ServerRef> serverRef = new ConstrainedList<ServerRef>(this, "serverRef", support);
-    @Element
-    protected List<ResourceRef> resourceRef = new ConstrainedList<ResourceRef>(this, "resourceRef", support);
-    @Element
-    protected List<ApplicationRef> applicationRef = new ConstrainedList<ApplicationRef>(this, "applicationRef", support);
-    @Element
-    protected List<SystemProperty> systemProperty = new ConstrainedList<SystemProperty>(this, "systemProperty", support);
-    protected List<Property> property = new ConstrainedList<Property>(this, "property", support);
+public interface Cluster extends ConfigBeanProxy  {
 
     /**
      * Gets the value of the name property.
@@ -95,9 +68,8 @@ public class Cluster
      * @return possible object is
      *         {@link String }
      */
-    public String getName() {
-        return name;
-    }
+    @Attribute(required = true)
+    public String getName();
 
     /**
      * Sets the value of the name property.
@@ -105,11 +77,7 @@ public class Cluster
      * @param value allowed object is
      *              {@link String }
      */
-    public void setName(String value) throws PropertyVetoException {
-        support.fireVetoableChange("name", this.name, value);
-
-        this.name = value;
-    }
+    public void setName(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the configRef property.
@@ -117,9 +85,8 @@ public class Cluster
      * @return possible object is
      *         {@link String }
      */
-    public String getConfigRef() {
-        return configRef;
-    }
+    @Attribute(required = true)
+    public String getConfigRef();
 
     /**
      * Sets the value of the configRef property.
@@ -127,11 +94,7 @@ public class Cluster
      * @param value allowed object is
      *              {@link String }
      */
-    public void setConfigRef(String value) throws PropertyVetoException {
-        support.fireVetoableChange("configRef", this.configRef, value);
-
-        this.configRef = value;
-    }
+    public void setConfigRef(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the heartbeatEnabled property.
@@ -139,13 +102,8 @@ public class Cluster
      * @return possible object is
      *         {@link String }
      */
-    public String getHeartbeatEnabled() {
-        if (heartbeatEnabled == null) {
-            return "true";
-        } else {
-            return heartbeatEnabled;
-        }
-    }
+    @Attribute
+    public String getHeartbeatEnabled();
 
     /**
      * Sets the value of the heartbeatEnabled property.
@@ -153,11 +111,7 @@ public class Cluster
      * @param value allowed object is
      *              {@link String }
      */
-    public void setHeartbeatEnabled(String value) throws PropertyVetoException {
-        support.fireVetoableChange("heartbeatEnabled", this.heartbeatEnabled, value);
-
-        this.heartbeatEnabled = value;
-    }
+    public void setHeartbeatEnabled(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the heartbeatPort property.
@@ -165,9 +119,8 @@ public class Cluster
      * @return possible object is
      *         {@link String }
      */
-    public String getHeartbeatPort() {
-        return heartbeatPort;
-    }
+    @Attribute
+    public String getHeartbeatPort();
 
     /**
      * Sets the value of the heartbeatPort property.
@@ -175,11 +128,7 @@ public class Cluster
      * @param value allowed object is
      *              {@link String }
      */
-    public void setHeartbeatPort(String value) throws PropertyVetoException {
-        support.fireVetoableChange("heartbeatPort", this.heartbeatPort, value);
-
-        this.heartbeatPort = value;
-    }
+    public void setHeartbeatPort(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the heartbeatAddress property.
@@ -187,9 +136,8 @@ public class Cluster
      * @return possible object is
      *         {@link String }
      */
-    public String getHeartbeatAddress() {
-        return heartbeatAddress;
-    }
+    @Attribute
+    public String getHeartbeatAddress();
 
     /**
      * Sets the value of the heartbeatAddress property.
@@ -197,11 +145,7 @@ public class Cluster
      * @param value allowed object is
      *              {@link String }
      */
-    public void setHeartbeatAddress(String value) throws PropertyVetoException {
-        support.fireVetoableChange("heartbeatAddress", this.heartbeatAddress, value);
-
-        this.heartbeatAddress = value;
-    }
+    public void setHeartbeatAddress(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the serverRef property.
@@ -223,9 +167,8 @@ public class Cluster
      * Objects of the following type(s) are allowed in the list
      * {@link ServerRef }
      */
-    public List<ServerRef> getServerRef() {
-        return this.serverRef;
-    }
+    @Element
+    public List<ServerRef> getServerRef();
 
     /**
      * Gets the value of the resourceRef property.
@@ -247,9 +190,8 @@ public class Cluster
      * Objects of the following type(s) are allowed in the list
      * {@link ResourceRef }
      */
-    public List<ResourceRef> getResourceRef() {
-        return this.resourceRef;
-    }
+    @Element
+    public List<ResourceRef> getResourceRef();
 
     /**
      * Gets the value of the applicationRef property.
@@ -271,9 +213,8 @@ public class Cluster
      * Objects of the following type(s) are allowed in the list
      * {@link ApplicationRef }
      */
-    public List<ApplicationRef> getApplicationRef() {
-        return this.applicationRef;
-    }
+    @Element
+    public List<ApplicationRef> getApplicationRef();
 
     /**
      * Gets the value of the systemProperty property.
@@ -295,9 +236,8 @@ public class Cluster
      * Objects of the following type(s) are allowed in the list
      * {@link SystemProperty }
      */
-    public List<SystemProperty> getSystemProperty() {
-        return this.systemProperty;
-    }
+    @Element
+    public List<SystemProperty> getSystemProperty();
 
     /**
      * Gets the value of the property property.
@@ -319,9 +259,8 @@ public class Cluster
      * Objects of the following type(s) are allowed in the list
      * {@link Property }
      */
-    public List<Property> getProperty() {
-        return this.property;
-    }
+    @Element("property")
+	public List<Property> getProperty();
 
 
 

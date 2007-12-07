@@ -40,11 +40,11 @@ package com.sun.enterprise.config.serverbeans;
 
 import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.Configured;
-import org.glassfish.api.admin.ConfigBean;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 
 import java.beans.PropertyVetoException;
-import java.io.Serializable;
 import java.util.List;
+import org.jvnet.hk2.config.Element;
 
 
 /**
@@ -55,19 +55,7 @@ import java.util.List;
     "property"
 }) */
 @Configured
-public class AuthRealm
- extends ConfigBean implements Serializable {
-
-    private final static long serialVersionUID = 1L;
-    @Attribute(required = true)
-
-    protected String name;
-    @Attribute(required = true)
-
-    protected String classname;
-    protected List<Property> property = new ConstrainedList<Property>(this, "property", support);
-
-
+public interface AuthRealm extends ConfigBeanProxy  {
 
     /**
      * Gets the value of the name property.
@@ -75,9 +63,8 @@ public class AuthRealm
      * @return possible object is
      *         {@link String }
      */
-    public String getName() {
-        return name;
-    }
+    @Attribute(required = true)    
+    public String getName();
 
     /**
      * Sets the value of the name property.
@@ -85,11 +72,7 @@ public class AuthRealm
      * @param value allowed object is
      *              {@link String }
      */
-    public void setName(String value) throws PropertyVetoException {
-        support.fireVetoableChange("name", this.name, value);
-
-        this.name = value;
-    }
+    public void setName(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the classname property.
@@ -97,9 +80,8 @@ public class AuthRealm
      * @return possible object is
      *         {@link String }
      */
-    public String getClassname() {
-        return classname;
-    }
+    @Attribute(required = true)
+    public String getClassname();
 
     /**
      * Sets the value of the classname property.
@@ -107,11 +89,7 @@ public class AuthRealm
      * @param value allowed object is
      *              {@link String }
      */
-    public void setClassname(String value) throws PropertyVetoException {
-        support.fireVetoableChange("classname", this.classname, value);
-
-        this.classname = value;
-    }
+    public void setClassname(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the property property.
@@ -133,9 +111,8 @@ public class AuthRealm
      * Objects of the following type(s) are allowed in the list
      * {@link Property }
      */
-    public List<Property> getProperty() {
-        return this.property;
-    }
+    @Element("*")
+    public List<Property> getProperty();
 
 
 

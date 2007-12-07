@@ -39,8 +39,9 @@
 package com.sun.enterprise.config.serverbeans;
 
 import org.jvnet.hk2.config.Attribute;
+import org.jvnet.hk2.config.Element;
 import org.jvnet.hk2.config.Configured;
-import org.glassfish.api.admin.ConfigBean;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 
 import java.beans.PropertyVetoException;
 import java.io.Serializable;
@@ -55,40 +56,7 @@ import java.util.List;
     "property"
 }) */
 @Configured
-public class DasConfig
- extends ConfigBean implements Serializable {
-
-    private final static long serialVersionUID = 1L;
-    @Attribute
-
-    protected String dynamicReloadEnabled;
-    @Attribute
-
-    protected String dynamicReloadPollIntervalInSeconds;
-    @Attribute
-
-    protected String autodeployEnabled;
-    @Attribute
-
-    protected String autodeployPollingIntervalInSeconds;
-    @Attribute
-
-    protected String autodeployDir;
-    @Attribute
-
-    protected String autodeployVerifierEnabled;
-    @Attribute
-
-    protected String autodeployJspPrecompilationEnabled;
-    @Attribute
-
-    protected String deployXmlValidation;
-    @Attribute
-
-    protected String adminSessionTimeoutInMinutes;
-    protected List<Property> property = new ConstrainedList<Property>(this, "property", support);
-
-
+public interface DasConfig extends ConfigBeanProxy  {
 
     /**
      * Gets the value of the dynamicReloadEnabled property.
@@ -96,13 +64,8 @@ public class DasConfig
      * @return possible object is
      *         {@link String }
      */
-    public String getDynamicReloadEnabled() {
-        if (dynamicReloadEnabled == null) {
-            return "false";
-        } else {
-            return dynamicReloadEnabled;
-        }
-    }
+    @Attribute
+    public String getDynamicReloadEnabled();
 
     /**
      * Sets the value of the dynamicReloadEnabled property.
@@ -110,11 +73,7 @@ public class DasConfig
      * @param value allowed object is
      *              {@link String }
      */
-    public void setDynamicReloadEnabled(String value) throws PropertyVetoException {
-        support.fireVetoableChange("dynamicReloadEnabled", this.dynamicReloadEnabled, value);
-
-        this.dynamicReloadEnabled = value;
-    }
+    public void setDynamicReloadEnabled(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the dynamicReloadPollIntervalInSeconds property.
@@ -122,13 +81,8 @@ public class DasConfig
      * @return possible object is
      *         {@link String }
      */
-    public String getDynamicReloadPollIntervalInSeconds() {
-        if (dynamicReloadPollIntervalInSeconds == null) {
-            return "2";
-        } else {
-            return dynamicReloadPollIntervalInSeconds;
-        }
-    }
+    @Attribute
+    public String getDynamicReloadPollIntervalInSeconds();
 
     /**
      * Sets the value of the dynamicReloadPollIntervalInSeconds property.
@@ -136,11 +90,7 @@ public class DasConfig
      * @param value allowed object is
      *              {@link String }
      */
-    public void setDynamicReloadPollIntervalInSeconds(String value) throws PropertyVetoException {
-        support.fireVetoableChange("dynamicReloadPollIntervalInSeconds", this.dynamicReloadPollIntervalInSeconds, value);
-
-        this.dynamicReloadPollIntervalInSeconds = value;
-    }
+    public void setDynamicReloadPollIntervalInSeconds(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the autodeployEnabled property.
@@ -148,13 +98,8 @@ public class DasConfig
      * @return possible object is
      *         {@link String }
      */
-    public String getAutodeployEnabled() {
-        if (autodeployEnabled == null) {
-            return "false";
-        } else {
-            return autodeployEnabled;
-        }
-    }
+    @Attribute
+    public String getAutodeployEnabled();
 
     /**
      * Sets the value of the autodeployEnabled property.
@@ -162,11 +107,7 @@ public class DasConfig
      * @param value allowed object is
      *              {@link String }
      */
-    public void setAutodeployEnabled(String value) throws PropertyVetoException {
-        support.fireVetoableChange("autodeployEnabled", this.autodeployEnabled, value);
-
-        this.autodeployEnabled = value;
-    }
+    public void setAutodeployEnabled(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the autodeployPollingIntervalInSeconds property.
@@ -174,13 +115,8 @@ public class DasConfig
      * @return possible object is
      *         {@link String }
      */
-    public String getAutodeployPollingIntervalInSeconds() {
-        if (autodeployPollingIntervalInSeconds == null) {
-            return "2";
-        } else {
-            return autodeployPollingIntervalInSeconds;
-        }
-    }
+    @Attribute
+    public String getAutodeployPollingIntervalInSeconds();
 
     /**
      * Sets the value of the autodeployPollingIntervalInSeconds property.
@@ -188,11 +124,7 @@ public class DasConfig
      * @param value allowed object is
      *              {@link String }
      */
-    public void setAutodeployPollingIntervalInSeconds(String value) throws PropertyVetoException {
-        support.fireVetoableChange("autodeployPollingIntervalInSeconds", this.autodeployPollingIntervalInSeconds, value);
-
-        this.autodeployPollingIntervalInSeconds = value;
-    }
+    public void setAutodeployPollingIntervalInSeconds(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the autodeployDir property.
@@ -200,13 +132,8 @@ public class DasConfig
      * @return possible object is
      *         {@link String }
      */
-    public String getAutodeployDir() {
-        if (autodeployDir == null) {
-            return "autodeploy";
-        } else {
-            return autodeployDir;
-        }
-    }
+    @Attribute
+    public String getAutodeployDir();
 
     /**
      * Sets the value of the autodeployDir property.
@@ -214,11 +141,7 @@ public class DasConfig
      * @param value allowed object is
      *              {@link String }
      */
-    public void setAutodeployDir(String value) throws PropertyVetoException {
-        support.fireVetoableChange("autodeployDir", this.autodeployDir, value);
-
-        this.autodeployDir = value;
-    }
+    public void setAutodeployDir(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the autodeployVerifierEnabled property.
@@ -226,13 +149,8 @@ public class DasConfig
      * @return possible object is
      *         {@link String }
      */
-    public String getAutodeployVerifierEnabled() {
-        if (autodeployVerifierEnabled == null) {
-            return "false";
-        } else {
-            return autodeployVerifierEnabled;
-        }
-    }
+    @Attribute
+    public String getAutodeployVerifierEnabled();
 
     /**
      * Sets the value of the autodeployVerifierEnabled property.
@@ -240,11 +158,7 @@ public class DasConfig
      * @param value allowed object is
      *              {@link String }
      */
-    public void setAutodeployVerifierEnabled(String value) throws PropertyVetoException {
-        support.fireVetoableChange("autodeployVerifierEnabled", this.autodeployVerifierEnabled, value);
-
-        this.autodeployVerifierEnabled = value;
-    }
+    public void setAutodeployVerifierEnabled(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the autodeployJspPrecompilationEnabled property.
@@ -252,13 +166,8 @@ public class DasConfig
      * @return possible object is
      *         {@link String }
      */
-    public String getAutodeployJspPrecompilationEnabled() {
-        if (autodeployJspPrecompilationEnabled == null) {
-            return "false";
-        } else {
-            return autodeployJspPrecompilationEnabled;
-        }
-    }
+    @Attribute
+    public String getAutodeployJspPrecompilationEnabled();
 
     /**
      * Sets the value of the autodeployJspPrecompilationEnabled property.
@@ -266,11 +175,7 @@ public class DasConfig
      * @param value allowed object is
      *              {@link String }
      */
-    public void setAutodeployJspPrecompilationEnabled(String value) throws PropertyVetoException {
-        support.fireVetoableChange("autodeployJspPrecompilationEnabled", this.autodeployJspPrecompilationEnabled, value);
-
-        this.autodeployJspPrecompilationEnabled = value;
-    }
+    public void setAutodeployJspPrecompilationEnabled(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the deployXmlValidation property.
@@ -278,13 +183,8 @@ public class DasConfig
      * @return possible object is
      *         {@link String }
      */
-    public String getDeployXmlValidation() {
-        if (deployXmlValidation == null) {
-            return "full";
-        } else {
-            return deployXmlValidation;
-        }
-    }
+    @Attribute
+    public String getDeployXmlValidation();
 
     /**
      * Sets the value of the deployXmlValidation property.
@@ -292,11 +192,7 @@ public class DasConfig
      * @param value allowed object is
      *              {@link String }
      */
-    public void setDeployXmlValidation(String value) throws PropertyVetoException {
-        support.fireVetoableChange("deployXmlValidation", this.deployXmlValidation, value);
-
-        this.deployXmlValidation = value;
-    }
+    public void setDeployXmlValidation(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the adminSessionTimeoutInMinutes property.
@@ -304,13 +200,8 @@ public class DasConfig
      * @return possible object is
      *         {@link String }
      */
-    public String getAdminSessionTimeoutInMinutes() {
-        if (adminSessionTimeoutInMinutes == null) {
-            return "60";
-        } else {
-            return adminSessionTimeoutInMinutes;
-        }
-    }
+    @Attribute
+    public String getAdminSessionTimeoutInMinutes();
 
     /**
      * Sets the value of the adminSessionTimeoutInMinutes property.
@@ -318,11 +209,7 @@ public class DasConfig
      * @param value allowed object is
      *              {@link String }
      */
-    public void setAdminSessionTimeoutInMinutes(String value) throws PropertyVetoException {
-        support.fireVetoableChange("adminSessionTimeoutInMinutes", this.adminSessionTimeoutInMinutes, value);
-
-        this.adminSessionTimeoutInMinutes = value;
-    }
+    public void setAdminSessionTimeoutInMinutes(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the property property.
@@ -344,9 +231,8 @@ public class DasConfig
      * Objects of the following type(s) are allowed in the list
      * {@link Property }
      */
-    public List<Property> getProperty() {
-        return this.property;
-    }
+    @Element("property")
+    public List<Property> getProperty();
 
 
 

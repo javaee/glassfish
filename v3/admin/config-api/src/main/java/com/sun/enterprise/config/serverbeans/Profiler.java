@@ -41,7 +41,7 @@ package com.sun.enterprise.config.serverbeans;
 import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.Element;
-import org.glassfish.api.admin.ConfigBean;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 
 import java.beans.PropertyVetoException;
 import java.io.Serializable;
@@ -57,29 +57,7 @@ import java.util.List;
     "jvmOptionsOrProperty"
 }) */
 @Configured
-public class Profiler
- extends ConfigBean implements Serializable {
-
-    private final static long serialVersionUID = 1L;
-    @Attribute(required = true)
-
-    protected String name;
-    @Attribute
-
-    protected String classpath;
-    @Attribute
-
-    protected String nativeLibraryPath;
-    @Attribute
-
-    protected String enabled;
-
-    @Element
-    List<String> jvmOptions = new ConstrainedList<String>(this, "jvmOptions = new ArrayList<String>()", support);
-
-    protected List<Property> properties = new ConstrainedList<Property>(this, "properties = new ArrayList<Property>()", support);
-
-
+public interface Profiler extends ConfigBeanProxy  {
 
     /**
      * Gets the value of the name property.
@@ -87,9 +65,8 @@ public class Profiler
      * @return possible object is
      *         {@link String }
      */
-    public String getName() {
-        return name;
-    }
+    @Attribute(required = true)
+    public String getName();
 
     /**
      * Sets the value of the name property.
@@ -97,11 +74,7 @@ public class Profiler
      * @param value allowed object is
      *              {@link String }
      */
-    public void setName(String value) throws PropertyVetoException {
-        support.fireVetoableChange("name", this.name, value);
-
-        this.name = value;
-    }
+    public void setName(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the classpath property.
@@ -109,9 +82,8 @@ public class Profiler
      * @return possible object is
      *         {@link String }
      */
-    public String getClasspath() {
-        return classpath;
-    }
+    @Attribute
+    public String getClasspath();
 
     /**
      * Sets the value of the classpath property.
@@ -119,11 +91,7 @@ public class Profiler
      * @param value allowed object is
      *              {@link String }
      */
-    public void setClasspath(String value) throws PropertyVetoException {
-        support.fireVetoableChange("classpath", this.classpath, value);
-
-        this.classpath = value;
-    }
+    public void setClasspath(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the nativeLibraryPath property.
@@ -131,9 +99,8 @@ public class Profiler
      * @return possible object is
      *         {@link String }
      */
-    public String getNativeLibraryPath() {
-        return nativeLibraryPath;
-    }
+    @Attribute
+    public String getNativeLibraryPath();
 
     /**
      * Sets the value of the nativeLibraryPath property.
@@ -141,11 +108,7 @@ public class Profiler
      * @param value allowed object is
      *              {@link String }
      */
-    public void setNativeLibraryPath(String value) throws PropertyVetoException {
-        support.fireVetoableChange("nativeLibraryPath", this.nativeLibraryPath, value);
-
-        this.nativeLibraryPath = value;
-    }
+    public void setNativeLibraryPath(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the enabled property.
@@ -153,13 +116,8 @@ public class Profiler
      * @return possible object is
      *         {@link String }
      */
-    public String getEnabled() {
-        if (enabled == null) {
-            return "true";
-        } else {
-            return enabled;
-        }
-    }
+    @Attribute
+    public String getEnabled();
 
     /**
      * Sets the value of the enabled property.
@@ -167,38 +125,13 @@ public class Profiler
      * @param value allowed object is
      *              {@link String }
      */
-    public void setEnabled(String value) throws PropertyVetoException {
-        support.fireVetoableChange("enabled", this.enabled, value);
+    public void setEnabled(String value) throws PropertyVetoException;
 
-        this.enabled = value;
-    }
+    @Element
+    public List<Property>  getProperty();
 
-    /**
-     * Backward compatibility API
-     */
-    public List<Object> getJvmOptionsOrProperty() {
-        ArrayList bag = new ArrayList<Object>();
-        bag.addAll(jvmOptions);
-        bag.addAll(properties);
-        return bag;
-
-    }
-
-    public void addProperty(Property property) {
-        properties.add(property);
-    }
-
-    public List<Property>  getProperty() {
-        return properties;
-    }
-
-    public void addJvmOption(String option) {
-        jvmOptions.add(option);
-    }
-
-    public List<String> getJvmOptions() {
-        return jvmOptions;
-    }    
+    @Element
+    public List<String> getJvmOptions();
 
 
 

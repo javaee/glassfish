@@ -41,7 +41,7 @@ package com.sun.enterprise.config.serverbeans;
 import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.Element;
-import org.glassfish.api.admin.ConfigBean;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 
 import java.beans.PropertyVetoException;
 import java.io.Serializable;
@@ -57,35 +57,7 @@ import java.util.List;
     "property"
 }) */
 @Configured
-public class LbConfig
- extends ConfigBean implements Serializable {
-
-    private final static long serialVersionUID = 1L;
-
-    @Attribute(required = true)
-    protected String name;
-
-    @Attribute
-    protected String responseTimeoutInSeconds;
-
-    @Attribute
-    protected String httpsRouting;
-
-    @Attribute
-    protected String reloadPollIntervalInSeconds;
-
-    @Attribute
-    protected String monitoringEnabled;
-
-    @Attribute
-    protected String routeCookieEnabled;
-
-    @Element("*")
-    protected List<Ref> clusterRefOrServerRef = new ConstrainedList<Ref>(this, "clusterRefOrServerRef", support);
-
-
-    protected List<Property> property = new ConstrainedList<Property>(this, "property", support);
-
+public interface LbConfig extends ConfigBeanProxy  {
 
     /**
      * Gets the value of the name property.
@@ -93,9 +65,8 @@ public class LbConfig
      * @return possible object is
      *         {@link String }
      */
-    public String getName() {
-        return name;
-    }
+    @Attribute(required = true)
+    public String getName();
 
     /**
      * Sets the value of the name property.
@@ -103,11 +74,7 @@ public class LbConfig
      * @param value allowed object is
      *              {@link String }
      */
-    public void setName(String value) throws PropertyVetoException {
-        support.fireVetoableChange("name", this.name, value);
-
-        this.name = value;
-    }
+    public void setName(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the responseTimeoutInSeconds property.
@@ -115,13 +82,8 @@ public class LbConfig
      * @return possible object is
      *         {@link String }
      */
-    public String getResponseTimeoutInSeconds() {
-        if (responseTimeoutInSeconds == null) {
-            return "60";
-        } else {
-            return responseTimeoutInSeconds;
-        }
-    }
+    @Attribute
+    public String getResponseTimeoutInSeconds();
 
     /**
      * Sets the value of the responseTimeoutInSeconds property.
@@ -129,11 +91,7 @@ public class LbConfig
      * @param value allowed object is
      *              {@link String }
      */
-    public void setResponseTimeoutInSeconds(String value) throws PropertyVetoException {
-        support.fireVetoableChange("responseTimeoutInSeconds", this.responseTimeoutInSeconds, value);
-
-        this.responseTimeoutInSeconds = value;
-    }
+    public void setResponseTimeoutInSeconds(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the httpsRouting property.
@@ -141,13 +99,8 @@ public class LbConfig
      * @return possible object is
      *         {@link String }
      */
-    public String getHttpsRouting() {
-        if (httpsRouting == null) {
-            return "false";
-        } else {
-            return httpsRouting;
-        }
-    }
+    @Attribute
+    public String getHttpsRouting();
 
     /**
      * Sets the value of the httpsRouting property.
@@ -155,11 +108,7 @@ public class LbConfig
      * @param value allowed object is
      *              {@link String }
      */
-    public void setHttpsRouting(String value) throws PropertyVetoException {
-        support.fireVetoableChange("httpsRouting", this.httpsRouting, value);
-
-        this.httpsRouting = value;
-    }
+    public void setHttpsRouting(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the reloadPollIntervalInSeconds property.
@@ -167,13 +116,8 @@ public class LbConfig
      * @return possible object is
      *         {@link String }
      */
-    public String getReloadPollIntervalInSeconds() {
-        if (reloadPollIntervalInSeconds == null) {
-            return "60";
-        } else {
-            return reloadPollIntervalInSeconds;
-        }
-    }
+    @Attribute
+    public String getReloadPollIntervalInSeconds();
 
     /**
      * Sets the value of the reloadPollIntervalInSeconds property.
@@ -181,11 +125,7 @@ public class LbConfig
      * @param value allowed object is
      *              {@link String }
      */
-    public void setReloadPollIntervalInSeconds(String value) throws PropertyVetoException {
-        support.fireVetoableChange("reloadPollIntervalInSeconds", this.reloadPollIntervalInSeconds, value);
-
-        this.reloadPollIntervalInSeconds = value;
-    }
+    public void setReloadPollIntervalInSeconds(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the monitoringEnabled property.
@@ -193,13 +133,8 @@ public class LbConfig
      * @return possible object is
      *         {@link String }
      */
-    public String getMonitoringEnabled() {
-        if (monitoringEnabled == null) {
-            return "false";
-        } else {
-            return monitoringEnabled;
-        }
-    }
+    @Attribute
+    public String getMonitoringEnabled();
 
     /**
      * Sets the value of the monitoringEnabled property.
@@ -207,11 +142,7 @@ public class LbConfig
      * @param value allowed object is
      *              {@link String }
      */
-    public void setMonitoringEnabled(String value) throws PropertyVetoException {
-        support.fireVetoableChange("monitoringEnabled", this.monitoringEnabled, value);
-
-        this.monitoringEnabled = value;
-    }
+    public void setMonitoringEnabled(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the routeCookieEnabled property.
@@ -219,13 +150,8 @@ public class LbConfig
      * @return possible object is
      *         {@link String }
      */
-    public String getRouteCookieEnabled() {
-        if (routeCookieEnabled == null) {
-            return "true";
-        } else {
-            return routeCookieEnabled;
-        }
-    }
+    @Attribute
+    public String getRouteCookieEnabled();
 
     /**
      * Sets the value of the routeCookieEnabled property.
@@ -233,11 +159,7 @@ public class LbConfig
      * @param value allowed object is
      *              {@link String }
      */
-    public void setRouteCookieEnabled(String value) throws PropertyVetoException {
-        support.fireVetoableChange("routeCookieEnabled", this.routeCookieEnabled, value);
-
-        this.routeCookieEnabled = value;
-    }
+    public void setRouteCookieEnabled(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the clusterRefOrServerRef property.
@@ -260,10 +182,8 @@ public class LbConfig
      * {@link ClusterRef }
      * {@link ServerRef }
      */
-    public List<Ref> getClusterRefOrServerRef() {
-
-        return this.clusterRefOrServerRef;
-    }
+    @Element("*")    
+    public List<Ref> getClusterRefOrServerRef();
 
     /**
      * Gets the value of the property property.
@@ -285,9 +205,7 @@ public class LbConfig
      * Objects of the following type(s) are allowed in the list
      * {@link Property }
      */
-    public List<Property> getProperty() {
-        return this.property;
-    }
+    public List<Property> getProperty();
 
 
 

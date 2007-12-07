@@ -39,8 +39,9 @@
 package com.sun.enterprise.config.serverbeans;
 
 import org.jvnet.hk2.config.Attribute;
+import org.jvnet.hk2.config.Element;
 import org.jvnet.hk2.config.Configured;
-import org.glassfish.api.admin.ConfigBean;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 
 import java.beans.PropertyVetoException;
 import java.io.Serializable;
@@ -55,24 +56,7 @@ import java.util.List;
     "property"
 }) */
 @Configured
-public class MdbContainer
- extends ConfigBean implements Serializable {
-
-    private final static long serialVersionUID = 1L;
-    @Attribute
-
-    protected String steadyPoolSize;
-    @Attribute
-
-    protected String poolResizeQuantity;
-    @Attribute
-
-    protected String maxPoolSize;
-    @Attribute
-
-    protected String idleTimeoutInSeconds;
-    protected List<Property> property = new ConstrainedList<Property>(this, "property", support);
-
+public interface MdbContainer extends ConfigBeanProxy  {
 
 
     /**
@@ -81,13 +65,8 @@ public class MdbContainer
      * @return possible object is
      *         {@link String }
      */
-    public String getSteadyPoolSize() {
-        if (steadyPoolSize == null) {
-            return "10";
-        } else {
-            return steadyPoolSize;
-        }
-    }
+    @Attribute
+    public String getSteadyPoolSize();
 
     /**
      * Sets the value of the steadyPoolSize property.
@@ -95,11 +74,7 @@ public class MdbContainer
      * @param value allowed object is
      *              {@link String }
      */
-    public void setSteadyPoolSize(String value) throws PropertyVetoException {
-        support.fireVetoableChange("steadyPoolSize", this.steadyPoolSize, value);
-
-        this.steadyPoolSize = value;
-    }
+    public void setSteadyPoolSize(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the poolResizeQuantity property.
@@ -107,13 +82,8 @@ public class MdbContainer
      * @return possible object is
      *         {@link String }
      */
-    public String getPoolResizeQuantity() {
-        if (poolResizeQuantity == null) {
-            return "2";
-        } else {
-            return poolResizeQuantity;
-        }
-    }
+    @Attribute
+    public String getPoolResizeQuantity();
 
     /**
      * Sets the value of the poolResizeQuantity property.
@@ -121,11 +91,7 @@ public class MdbContainer
      * @param value allowed object is
      *              {@link String }
      */
-    public void setPoolResizeQuantity(String value) throws PropertyVetoException {
-        support.fireVetoableChange("poolResizeQuantity", this.poolResizeQuantity, value);
-
-        this.poolResizeQuantity = value;
-    }
+    public void setPoolResizeQuantity(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the maxPoolSize property.
@@ -133,13 +99,8 @@ public class MdbContainer
      * @return possible object is
      *         {@link String }
      */
-    public String getMaxPoolSize() {
-        if (maxPoolSize == null) {
-            return "60";
-        } else {
-            return maxPoolSize;
-        }
-    }
+    @Attribute
+    public String getMaxPoolSize();
 
     /**
      * Sets the value of the maxPoolSize property.
@@ -147,11 +108,7 @@ public class MdbContainer
      * @param value allowed object is
      *              {@link String }
      */
-    public void setMaxPoolSize(String value) throws PropertyVetoException {
-        support.fireVetoableChange("maxPoolSize", this.maxPoolSize, value);
-
-        this.maxPoolSize = value;
-    }
+    public void setMaxPoolSize(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the idleTimeoutInSeconds property.
@@ -159,13 +116,8 @@ public class MdbContainer
      * @return possible object is
      *         {@link String }
      */
-    public String getIdleTimeoutInSeconds() {
-        if (idleTimeoutInSeconds == null) {
-            return "600";
-        } else {
-            return idleTimeoutInSeconds;
-        }
-    }
+    @Attribute
+    public String getIdleTimeoutInSeconds();
 
     /**
      * Sets the value of the idleTimeoutInSeconds property.
@@ -173,11 +125,7 @@ public class MdbContainer
      * @param value allowed object is
      *              {@link String }
      */
-    public void setIdleTimeoutInSeconds(String value) throws PropertyVetoException {
-        support.fireVetoableChange("idleTimeoutInSeconds", this.idleTimeoutInSeconds, value);
-
-        this.idleTimeoutInSeconds = value;
-    }
+    public void setIdleTimeoutInSeconds(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the property property.
@@ -199,9 +147,8 @@ public class MdbContainer
      * Objects of the following type(s) are allowed in the list
      * {@link Property }
      */
-    public List<Property> getProperty() {
-        return this.property;
-    }
+    @Element("property")
+    public List<Property> getProperty();
 
 
 
