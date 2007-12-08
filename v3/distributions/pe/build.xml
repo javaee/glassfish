@@ -37,9 +37,6 @@
                 <exclude name="javadb/3RDPARTY.zip"/>
             </patternset>
         </unzip>
-        <resolveAll artifactId="gf-web-connector" todir="target/stage/glassfish/lib/web">
-            <packaging is="jar"/>
-        </resolveAll>
         <resolveArtifact artifactId="nucleus-base" property="nucleus-base.zip"/>
 
         <resolveAll todir="target/stage/glassfish/lib">
