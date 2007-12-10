@@ -26,7 +26,7 @@ package com.sun.enterprise.v3.web;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.server.ServerContext;
 import com.sun.enterprise.util.StringUtils;
-import com.sun.enterprise.v3.deployment.AbstractDeployer;
+import org.glassfish.javaee.core.deployment.JavaEEDeployer;
 import com.sun.enterprise.v3.deployment.DeployCommand;
 import com.sun.enterprise.v3.server.V3Environment;
 import com.sun.enterprise.v3.services.impl.GrizzlyAdapter;
@@ -64,7 +64,7 @@ import java.io.IOException;
  * @author Jerome Dochez
  */
 @Service
-public class WebDeployer extends AbstractDeployer implements Deployer<WebContainer, WebApplication> {
+public class WebDeployer extends JavaEEDeployer implements Deployer<WebContainer, WebApplication> {
 
     @Inject
     ServerContext sc;
@@ -74,15 +74,6 @@ public class WebDeployer extends AbstractDeployer implements Deployer<WebContain
 
     @Inject
     V3Environment env;
-
-    @Inject
-    ArchiveFactory archiveFactory;
-                                                                                
-    @Inject
-    ArchivistFactory archivistFactory;
-                                                                                
-    @Inject
-    ApplicationFactory applicationFactory;
 
     @Inject
     GrizzlyAdapter grizzlyAdapter;
@@ -109,47 +100,14 @@ public class WebDeployer extends AbstractDeployer implements Deployer<WebContain
         return "web";
     }
 
-    /**
-     * Prepares the application bits for running in the application server.
-     * For certain cases, this is exploding the jar file to a format the
-     * ContractProvider instance is expecting, generating non portable artifacts and
-     * other application specific tasks.
-     * Failure to prepare should throw an exception which will cause the overall     * deployment to fail.
-     *
-     * @param dc deployment context
-     *                TODO : @return something meaningful
-     */
-    public void prepare(DeploymentContext dc) {
-        try {
-            ReadableArchive sourceArchive = dc.getSource();
-            ClassLoader cl = dc.getClassLoader();
-
-            Archivist archivist = archivistFactory.getArchivist(
-                sourceArchive, cl);
-            archivist.setAnnotationProcessingRequested(true);
-
-            archivist.setDefaultBundleDescriptor(
-                getDefaultWebXMLBundleDescriptor());
-
-            Application application = applicationFactory.openArchive(
-                archivist, sourceArchive, true);
-
-            archivist.validate(cl);
-
-            dc.addModuleMetaData(getModuleType(),
-                application.getStandaloneBundleDescriptor());
-        } catch (Exception ex) {
-            // re-throw all the exceptions as runtime exceptions
-            RuntimeException re = new RuntimeException(ex.getMessage());
-            re.initCause(ex);
-            throw re;
-        }
+    protected WebBundleDescriptor getDefaultBundleDescriptor() {
+        return getDefaultWebXMLBundleDescriptor();
     }
 
     public WebApplication load(WebContainer container, DeploymentContext dc) {
 
-        WebBundleDescriptor wbd = dc.getModuleMetaData(getModuleType(), 
-            WebBundleDescriptor.class);
+        WebBundleDescriptor wbd = (WebBundleDescriptor)dc.getModuleMetaData(
+            getModuleType(), Application.class).getStandaloneBundleDescriptor();
 
         ReadableArchive source = dc.getSource();
 
