@@ -54,7 +54,6 @@ import com.sun.enterprise.deployment.util.DescriptorVisitor;
 import com.sun.enterprise.deployment.util.ModuleDescriptor;
 import com.sun.enterprise.deployment.runtime.JavaWebStartAccessDescriptor;
 import javax.enterprise.deploy.shared.ModuleType;
-import org.glassfish.api.naming.JNDIBinding;
     /**
     * I represent all the deployment information about
     * an application client [{0}].
@@ -298,11 +297,6 @@ public class ApplicationClientDescriptor extends BundleDescriptor
     public InjectionInfo getInjectionInfoByClass(String className) {
         return getInjectionInfoByClass(className, this);
     }
-
-    public Collection<JNDIBinding> getJNDIBindings() {
-        return getJNDIBindings(this);
-    }
-
 
     public Set getServiceReferenceDescriptors() {
         if( this.serviceReferences == null ) {

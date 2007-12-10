@@ -46,8 +46,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.LinkedList;
 import java.util.Set;
-import java.util.Collection;
-import org.glassfish.api.naming.JNDIBinding;
 
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.deployment.types.EjbReference;
@@ -426,10 +424,6 @@ public abstract class JndiEnvironmentRefsGroupDescriptor extends Descriptor
     }    
 
     public InjectionInfo getInjectionInfoByClass(String className) {
-        throw new UnsupportedOperationException();
-    }
-
-    public Collection<JNDIBinding> getJNDIBindings() {
         throw new UnsupportedOperationException();
     }
 }

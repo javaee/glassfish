@@ -46,8 +46,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
 
-import org.glassfish.api.naming.JNDIBinding;
-
 /**
  * I am an abstract class representing all the deployment information common
  * to all component container structures held by an application.
@@ -446,90 +444,6 @@ public abstract class BundleDescriptor extends RootDeploymentDescriptor implemen
 
         return injectables;
     }
-
-    protected Collection<JNDIBinding> getJNDIBindings
-            (JndiNameEnvironment env) {
-
-        Collection<JNDIBinding> jndiBindings = new ArrayList<JNDIBinding>();
-
-        for (Iterator itr = env.getEnvironmentProperties().iterator();
-             itr.hasNext();) {
-            EnvironmentProperty next = (EnvironmentProperty) itr.next();
-            // Only env-entries that have been assigned a value are
-            // eligible for look up
-            if (next.hasAValue()) {
-                EnvironmentPropertyJNDIBinding binding = 
-                    new EnvironmentPropertyJNDIBinding(next);
-                jndiBindings.add(binding);
-            }
-        }
-
-        for (Iterator itr = 
-             env.getJmsDestinationReferenceDescriptors().iterator();
-             itr.hasNext();) {
-            JmsDestinationReferenceDescriptor next =
-                (JmsDestinationReferenceDescriptor) itr.next();
-            JmsDestinationJNDIBinding binding = 
-                new JmsDestinationJNDIBinding(next);
-            jndiBindings.add(binding);
-        }
-
-/*
-//TODO:
-        for (Iterator itr = env.getEjbReferenceDescriptors().iterator();
-             itr.hasNext();) {
-            EjbReferenceDescriptor next = (EjbReferenceDescriptor) itr.next();
-            EjbReferenceJNDIBinding binding = new EjbReferenceJNDIBinding(next);
-            jndiBindings.add(binding);
-        }
-
-*/
-        for (Iterator itr = env.getMessageDestinationReferenceDescriptors().
-                 iterator(); itr.hasNext();) {
-            MessageDestinationReferenceDescriptor next =
-                (MessageDestinationReferenceDescriptor) itr.next();
-            MessageDestinationJNDIBinding binding = 
-                new MessageDestinationJNDIBinding(next);
-            jndiBindings.add(binding);
-        }
-
-        for (Iterator itr = env.getResourceReferenceDescriptors().iterator();
-            itr.hasNext();) {
-            ResourceReferenceDescriptor next =
-                (ResourceReferenceDescriptor) itr.next();
-            ResourceReferenceJNDIBinding binding = 
-                new ResourceReferenceJNDIBinding(next);
-            jndiBindings.add(binding);
-        }
-
-/*
-//TODO:
-        for (Iterator itr = env.getServiceReferenceDescriptors().iterator();
-             itr.hasNext();) {
-            ServiceReferenceDescriptor next =
-                (ServiceReferenceDescriptor) itr.next();
-            DefaultJNDIBinding binding = new DefaultJNDIBinding(next);
-            jndiBindings.add(binding);
-        }
-
-        for (EntityManagerFactoryReferenceDescriptor next :
-                 env.getEntityManagerFactoryReferenceDescriptors()) {
-            EntityManagerFactoryJNDIBinding binding = 
-                new EntityManagerFactoryJNDIBinding(next);
-            jndiBindings.add(binding);
-         }
-
-         for (EntityManagerReferenceDescriptor next :
-             env.getEntityManagerReferenceDescriptors()) {
-            EntityManagerJNDIBinding binding = 
-                new EntityManagerJNDIBinding(next);
-            jndiBindings.add(binding);
-         }
-*/
-
-        return jndiBindings;
-    }
-
 
     /**
      * @return the class loader associated with this module

@@ -41,8 +41,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Field;
 import java.util.logging.*;
 
-import org.glassfish.api.naming.JNDIBinding;
-
 import com.sun.logging.*;
 
 import static com.sun.enterprise.deployment.LifecycleCallbackDescriptor.CallbackType;
@@ -1719,10 +1717,6 @@ public abstract class EjbDescriptor extends EjbAbstractDescriptor
 
     public InjectionInfo getInjectionInfoByClass(String className) {
         return bundleDescriptor.getInjectionInfoByClass(className, this);
-    }
-
-    public Collection<JNDIBinding> getJNDIBindings() {
-        return bundleDescriptor.getJNDIBindings(this);
     }
 
     /**
