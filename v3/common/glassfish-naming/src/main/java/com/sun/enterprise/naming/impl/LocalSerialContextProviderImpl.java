@@ -20,17 +20,14 @@
  * 
  * Copyright 2006 Sun Microsystems, Inc. All rights reserved.
  */
-package com.sun.enterprise.naming;
+package com.sun.enterprise.naming.impl;
 
 import com.sun.enterprise.naming.util.LogFacade;
 import com.sun.enterprise.naming.util.NamingUtilsImpl;
-import org.jvnet.hk2.annotations.Inject;
 
-import javax.naming.CompositeName;
 import javax.naming.NamingException;
 import javax.naming.Reference;
 import java.rmi.RemoteException;
-import java.util.Hashtable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 

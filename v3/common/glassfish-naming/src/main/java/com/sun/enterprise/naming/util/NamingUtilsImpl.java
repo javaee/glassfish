@@ -22,9 +22,11 @@
  */
 package com.sun.enterprise.naming.util;
 
-import org.glassfish.api.naming.NamingUtils;
-import org.jvnet.hk2.annotations.Service;
+import com.sun.enterprise.naming.spi.NamingObjectFactory;
+import com.sun.enterprise.naming.spi.NamingUtils;
 import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.Singleton;
 
 import java.io.*;
 import java.util.logging.Level;
@@ -35,20 +37,43 @@ import java.util.logging.Logger;
  */
 
 @Service
+@Scoped(Singleton.class)
 public class NamingUtilsImpl
     implements NamingUtils {
 
     static Logger _logger = LogFacade.getLogger();
 
-    /**
-     * method to make a copy of the object.
-     */
+    public NamingObjectFactory createSimpleNamingObjectFactory(String name,
+        Object value) {
+        return new SimpleNamingObjectFactory(name, value);
+    }
 
+    public NamingObjectFactory createLazyNamingObjectFactory(String name,
+        String jndiName, boolean cacheResult) {
+        return new JndiNamingObjectFactory(name, jndiName, cacheResult);
+    }
+
+    public NamingObjectFactory createCloningNamingObjectFactory(String name,
+        Object value) {
+        return new CloningNamingObjectFactory(name, value);
+    }
+
+    public NamingObjectFactory createCloningNamingObjectFactory(String name,
+        NamingObjectFactory delegate) {
+        return new CloningNamingObjectFactory(name, delegate);
+    }
+
+    public NamingObjectFactory createDelegatingNamingObjectFactory(String name,
+        NamingObjectFactory delegate, boolean cacheResult) {
+        return new DelegatingNamingObjectFactory(name, delegate, cacheResult);
+    }
+    
     public Object makeCopyOfObject(Object obj) {
-
-
         if (obj instanceof Serializable) {
-            _logger.log(Level.FINE, "** makeCopyOfObject:: " + obj);
+            if(_logger.isLoggable(Level.FINE)) {
+                _logger.log(Level.FINE, "** makeCopyOfObject:: " + obj);
+            }
+            
             try {
                 // first serialize the object
                 ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -80,5 +105,9 @@ public class NamingUtilsImpl
             // XXX no copy ?
             return obj;
         }
+    }
+
+    public OutputStream getMailLogOutputStream() {
+        return new MailLogOutputStream();
     }
 }

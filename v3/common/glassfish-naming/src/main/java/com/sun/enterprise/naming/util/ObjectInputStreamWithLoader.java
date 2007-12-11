@@ -22,14 +22,17 @@
  */
 package com.sun.enterprise.naming.util;
 
-import java.io.*;
+import org.jvnet.hk2.annotations.Service;
 
+import java.io.*;
 import java.lang.reflect.Array;
 
 /**
  * This subclass of ObjectInputStream delegates loading of classes to
  * an existing ClassLoader.
  */
+
+@Service
 public class ObjectInputStreamWithLoader extends ObjectInputStream {
     protected ClassLoader loader;
 

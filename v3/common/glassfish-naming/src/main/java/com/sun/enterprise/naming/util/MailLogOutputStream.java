@@ -23,8 +23,7 @@
 
 package com.sun.enterprise.naming.util;
 
-import java.util.logging.*;
-
+import java.util.logging.Level;
 
 /**
  * Capture JavaMail debug output.

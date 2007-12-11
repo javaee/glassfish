@@ -20,7 +20,7 @@
  * 
  * Copyright 2006 Sun Microsystems, Inc. All rights reserved.
  */
-package com.sun.enterprise.naming;
+package com.sun.enterprise.naming.impl;
 
 import com.sun.enterprise.naming.util.LogFacade;
 

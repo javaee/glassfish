@@ -1,43 +1,24 @@
-/*
- * The contents of this file are subject to the terms 
- * of the Common Development and Distribution License 
- * (the License).  You may not use this file except in
- * compliance with the License.
- * 
- * You can obtain a copy of the license at 
- * https://glassfish.dev.java.net/public/CDDLv1.0.html or
- * glassfish/bootstrap/legal/CDDLv1.0.txt.
- * See the License for the specific language governing 
- * permissions and limitations under the License.
- * 
- * When distributing Covered Code, include this CDDL 
- * Header Notice in each file and include the License file 
- * at glassfish/bootstrap/legal/CDDLv1.0.txt.  
- * If applicable, add the following below the CDDL Header, 
- * with the fields enclosed by brackets [] replaced by
- * you own identifying information: 
- * "Portions Copyrighted [year] [name of copyright owner]"
- * 
- * Copyright 2006 Sun Microsystems, Inc. All rights reserved.
- */
+package com.sun.enterprise.naming.impl;
 
-package com.sun.enterprise.naming;
-
-import com.sun.enterprise.naming.util.LogFacade;
-import org.glassfish.api.invocation.ComponentInvocation;
-import org.glassfish.api.invocation.InvocationManager;
-import org.glassfish.api.naming.JNDIBinding;
-import org.glassfish.api.naming.NamingManager;
-import org.glassfish.api.naming.NamingObjectFactory;
-import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.annotations.Inject;
+
 import org.jvnet.hk2.component.Singleton;
 
+import org.glassfish.api.invocation.InvocationManager;
+import org.glassfish.api.invocation.ComponentInvocation;
+
+import com.sun.enterprise.naming.spi.GlassfishNamingManager;
+import com.sun.enterprise.naming.spi.JNDIBinding;
+import com.sun.enterprise.naming.spi.NamingObjectFactory;
+
+import com.sun.enterprise.naming.util.LogFacade;
+
 import javax.naming.*;
-import java.util.*;
-import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.logging.Level;
+import java.util.*;
 
 /**
  * This is the manager that handles all naming operations including
@@ -47,8 +28,8 @@ import java.util.logging.Logger;
 
 @Service
 @Scoped(Singleton.class)
-public final class GlassfishNamingManager
-        implements NamingManager {
+public final class  GlassfishNamingManagerImpl
+        implements GlassfishNamingManager {
 
     static Logger _logger = LogFacade.getLogger();
 
@@ -68,7 +49,7 @@ public final class GlassfishNamingManager
     private Hashtable namespaces;
 
 
-    public GlassfishNamingManager() throws NamingException {
+    public GlassfishNamingManagerImpl() throws NamingException {
         this(new InitialContext());
     }
 
@@ -80,7 +61,7 @@ public final class GlassfishNamingManager
     /**
      * Create the naming manager. Creates a new initial context.
      */
-    public GlassfishNamingManager(InitialContext ic)
+    public GlassfishNamingManagerImpl(InitialContext ic)
             throws NamingException {
         initialContext = ic;
         namespaces = new Hashtable();
@@ -121,7 +102,7 @@ public final class GlassfishNamingManager
      * @param name   Name that the object is bound as.
      * @param obj    Object that needs to be bound.
      * @param rebind flag
-     * @throws NamingException if there is a naming exception.
+     * @throws javax.naming.NamingException if there is a naming exception.
      */
     public void publishObject(String name, Object obj, boolean rebind)
             throws NamingException {
@@ -135,7 +116,7 @@ public final class GlassfishNamingManager
      * @param name   Name that the object is bound as.
      * @param obj    Object that needs to be bound.
      * @param rebind flag
-     * @throws NamingException if there is a naming exception.
+     * @throws javax.naming.NamingException if there is a naming exception.
      */
     public void publishObject(Name name, Object obj, boolean rebind)
             throws NamingException {
@@ -486,55 +467,13 @@ public final class GlassfishNamingManager
 
 }
 
-// Class for enumerating name/class pairs
-class NamePairsEnum implements NamingEnumeration {
-    GlassfishNamingManager nm;
-
-    Iterator names;
-
-    NamePairsEnum(GlassfishNamingManager nm, Iterator names) {
-        this.nm = nm;
-        this.names = names;
-    }
-
-    public boolean hasMoreElements() {
-        return names.hasNext();
-    }
-
-    public boolean hasMore() throws NamingException {
-        return hasMoreElements();
-    }
-
-    public Object nextElement() {
-        if (names.hasNext()) {
-            try {
-                String name = (String) names.next();
-                String className = nm.lookup(name).getClass().getName();
-                return new NameClassPair(name, className);
-            } catch (Exception ex) {
-                throw new RuntimeException("Exception during lookup: " + ex);
-            }
-        } else
-            return null;
-    }
-
-    public Object next() throws NamingException {
-        return nextElement();
-    }
-
-    // New API for JNDI 1.2
-    public void close() throws NamingException {
-        throw new OperationNotSupportedException("close() not implemented");
-    }
-}
-
 // Class for enumerating bindings
 class BindingsIterator implements NamingEnumeration {
-    GlassfishNamingManager nm;
+    GlassfishNamingManagerImpl nm;
 
     Iterator names;
 
-    BindingsIterator(GlassfishNamingManager nm, Iterator names) {
+    BindingsIterator(GlassfishNamingManagerImpl nm, Iterator names) {
         this.nm = nm;
         this.names = names;
     }
@@ -568,4 +507,3 @@ class BindingsIterator implements NamingEnumeration {
         throw new OperationNotSupportedException("close() not implemented");
     }
 }
-

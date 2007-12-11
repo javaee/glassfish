@@ -20,9 +20,10 @@
  * 
  * Copyright 2006 Sun Microsystems, Inc. All rights reserved.
  */
-package com.sun.enterprise.naming;
+package com.sun.enterprise.naming.impl;
 
 import com.sun.enterprise.naming.util.LogFacade;
+import com.sun.enterprise.naming.impl.GlassfishNamingManagerImpl;
 
 import javax.naming.*;
 import java.util.Hashtable;
@@ -54,7 +55,7 @@ public final class JavaURLContext implements Context, Cloneable {
 
     private static final boolean debug = false;
 
-    private static GlassfishNamingManager namingManager;
+    private static GlassfishNamingManagerImpl namingManager;
 
     private Hashtable myEnv;
     //private Context ctx; XXX not needed ?
@@ -89,7 +90,7 @@ public final class JavaURLContext implements Context, Cloneable {
         this.serialContext = serialContext;
     }
 
-    static void setNamingManager(GlassfishNamingManager mgr) {
+    static void setNamingManager(GlassfishNamingManagerImpl mgr) {
         namingManager = mgr;
     }
 

@@ -20,70 +20,23 @@
  * 
  * Copyright 2006 Sun Microsystems, Inc. All rights reserved.
  */
-package com.sun.enterprise.naming;
+package com.sun.enterprise.naming.impl;
 
-import com.sun.enterprise.naming.util.LogFacade;
+import java.util.*;
+import javax.naming.*;
+import java.rmi.*;
 
-import javax.naming.Context;
-import javax.naming.NamingException;
-import java.rmi.RemoteException;
-import java.util.Hashtable;
-import java.util.logging.Logger;
-
-public class SerialContextProviderImpl implements SerialContextProvider {
-
-    static Logger _logger = LogFacade.getLogger();
-
-    private TransientContext rootContext;
-
-
-    protected SerialContextProviderImpl(TransientContext rootContext)
-            throws RemoteException {
-        this.rootContext = rootContext;
-    }
+public interface SerialContextProvider extends Remote {
 
     /**
      * Lookup the specified name.
      *
-     * @return the object orK context bound to the name.
+     * @return the object or context bound to the name.
      * @throws NamingException if there is a naming exception.
      * @throws if              there is an RMI exception.
      */
-
     public Object lookup(String name)
-            throws NamingException, RemoteException {
-        try {
-            _logger.fine(" SerialContextProviderImpl :: lookup " + name);
-
-            Object obj = rootContext.lookup(name);
-            return obj;
-        } catch (NamingException ne) {
-            boolean isLoaded = checkAndLoadResource(name);
-            _logger.fine("CheckAndLoad Resource of " + name + " was " + isLoaded);
-            if (isLoaded) {
-                Object i = rootContext.lookup(name);
-                return i;
-            }
-            throw ne;
-        } catch (Exception e) {
-            _logger.severe("Exception occurred : " + e.getMessage());
-            RemoteException re = new RemoteException("", e);
-            throw re;
-
-        }
-    }
-
-    private boolean checkAndLoadResource(String name) {
-        boolean res = false;
-        /*
-        ConnectorRuntime connectorRuntime = ConnectorRuntime.getRuntime();
-        if(connectorRuntime.isServer()) {
-            res = connectorRuntime.checkAndLoadResource(name);
-        }
-        */
-        return res;
-    }
-
+            throws NamingException, RemoteException;
 
     /**
      * Bind the object to the specified name.
@@ -91,12 +44,8 @@ public class SerialContextProviderImpl implements SerialContextProvider {
      * @throws NamingException if there is a naming exception.
      * @throws if              there is an RMI exception.
      */
-
     public void bind(String name, Object obj)
-            throws NamingException, RemoteException {
-
-        rootContext.bind(name, obj);
-    }
+            throws NamingException, RemoteException;
 
     /**
      * Rebind the object to the specified name.
@@ -104,12 +53,8 @@ public class SerialContextProviderImpl implements SerialContextProvider {
      * @throws NamingException if there is a naming exception.
      * @throws if              there is an RMI exception.
      */
-
     public void rebind(String name, Object obj)
-            throws NamingException, RemoteException {
-
-        rootContext.rebind(name, obj);
-    }
+            throws NamingException, RemoteException;
 
     /**
      * Unbind the specified object.
@@ -117,12 +62,8 @@ public class SerialContextProviderImpl implements SerialContextProvider {
      * @throws NamingException if there is a naming exception.
      * @throws if              there is an RMI exception.
      */
-
     public void unbind(String name)
-            throws NamingException, RemoteException {
-
-        rootContext.unbind(name);
-    }
+            throws NamingException, RemoteException;
 
     /**
      * Rename the bound object.
@@ -130,17 +71,10 @@ public class SerialContextProviderImpl implements SerialContextProvider {
      * @throws NamingException if there is a naming exception.
      * @throws if              there is an RMI exception.
      */
-
     public void rename(String oldname, String newname)
-            throws NamingException, RemoteException {
+            throws NamingException, RemoteException;
 
-        rootContext.rename(oldname, newname);
-    }
-
-    public Hashtable list() throws RemoteException {
-
-        return rootContext.list();
-    }
+    public Hashtable list() throws RemoteException;
 
     /**
      * List the contents of the specified context.
@@ -148,11 +82,7 @@ public class SerialContextProviderImpl implements SerialContextProvider {
      * @throws NamingException if there is a naming exception.
      * @throws if              there is an RMI exception.
      */
-
-    public Hashtable list(String name) throws NamingException, RemoteException {
-        Hashtable ne = rootContext.listContext(name);
-        return ne;
-    }
+    public Hashtable list(String name) throws NamingException, RemoteException;
 
     /**
      * Create a subcontext with the specified name.
@@ -161,13 +91,8 @@ public class SerialContextProviderImpl implements SerialContextProvider {
      * @throws NamingException if there is a naming exception.
      * @throws if              there is an RMI exception.
      */
-
     public Context createSubcontext(String name)
-            throws NamingException, RemoteException {
-
-        Context ctx = rootContext.createSubcontext(name);
-        return ctx;
-    }
+            throws NamingException, RemoteException;
 
     /**
      * Destroy the subcontext with the specified name.
@@ -175,17 +100,8 @@ public class SerialContextProviderImpl implements SerialContextProvider {
      * @throws NamingException if there is a naming exception.
      * @throws if              there is an RMI exception.
      */
-
     public void destroySubcontext(String name)
-            throws NamingException, RemoteException {
-
-        rootContext.destroySubcontext(name);
-    }
-
+            throws NamingException, RemoteException;
 }
-
-
-
-
 
 

@@ -1,4 +1,4 @@
-package com.sun.enterprise.naming;
+package com.sun.enterprise.naming.impl;
 
 import java.util.Hashtable;
 

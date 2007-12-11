@@ -1,14 +1,15 @@
-package com.sun.enterprise.naming;
+package com.sun.enterprise.naming.impl;
 
-import org.glassfish.api.invocation.ComponentInvocation;
-import org.glassfish.api.invocation.InvocationManager;
-import org.glassfish.api.invocation.InvocationManagerImpl;
-import org.glassfish.api.naming.JNDIBinding;
-import org.glassfish.api.naming.NamingManager;
-import org.glassfish.api.naming.NamingObjectFactory;
+import com.sun.enterprise.naming.spi.GlassfishNamingManager;
+import com.sun.enterprise.naming.spi.JNDIBinding;
+import com.sun.enterprise.naming.spi.NamingObjectFactory;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
+import org.glassfish.api.invocation.ComponentInvocation;
+import org.glassfish.api.invocation.InvocationException;
+import org.glassfish.api.invocation.InvocationManager;
+import org.glassfish.api.invocation.InvocationManagerImpl;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -54,10 +55,10 @@ public class AppTest
     }
 
     public void testBind() {
-        NamingManager nm = null;
+        GlassfishNamingManager nm = null;
         try {
             InvocationManager im = new InvocationManagerImpl();
-            nm = new GlassfishNamingManager();
+            nm = new GlassfishNamingManagerImpl();
             nm.publishObject("foo", "Hello: foo", false);
             InitialContext ic = new InitialContext();
             System.out.println("**lookup() ==> " + ic.lookup("foo"));
@@ -75,10 +76,10 @@ public class AppTest
     }
 
     public void testCachingNamingObjectFactory() {
-        NamingManager nm = null;
+        GlassfishNamingManager nm = null;
         try {
             InvocationManager im = new InvocationManagerImpl();
-            nm = new GlassfishNamingManager();
+            nm = new GlassfishNamingManagerImpl();
             nm.publishObject("foo", "Hello: foo", false);
             InitialContext ic = new InitialContext();
             System.out.println("**lookup() ==> " + ic.lookup("foo"));
@@ -139,11 +140,11 @@ public class AppTest
     }
 
     public void testNonCachingNamingObjectFactory() {
-        GlassfishNamingManager nm = null;
+        GlassfishNamingManagerImpl nm = null;
         InvocationManager im = new InvocationManagerImpl();
         ComponentInvocation inv = null;
         try {
-            nm = new GlassfishNamingManager();
+            nm = new GlassfishNamingManagerImpl();
             nm.setInvocationManager(im);
 
             List<Binding> bindings =
@@ -169,10 +170,9 @@ public class AppTest
 
             nm.bindToComponentNamespace("app1", "comp1", bindings);
 
-            inv = new ComponentInvocation(
+            inv = new ComponentInvocation("comp1",
                     ComponentInvocation.ComponentInvocationType.EJB_INVOCATION,
-                    null, null, "comp1"
-            );
+                    null, null, null);
             im.preInvoke(inv);
             InitialContext ic = new InitialContext();
             System.out.println("**lookup(java:comp/env/conf/area) ==> " + ic.lookup("java:comp/env/conf/area"));
@@ -200,15 +200,17 @@ public class AppTest
 
             nm.bindToComponentNamespace("app1", "comp2", bindings2);
 
-            inv = new ComponentInvocation(
+            inv = new ComponentInvocation("comp2",
                     ComponentInvocation.ComponentInvocationType.EJB_INVOCATION,
-                    null, null, "comp2"
-            );
+                    null, null, null);
             im.preInvoke(inv);
             System.out.println("**lookup(java:comp/env/conf/area) ==> " + ic.lookup("java:comp/env/conf/area"));
             System.out.println("**lookup(java:comp/env/conf/location) ==> " + ic.lookup("java:comp/env/conf/location"));
 
             assert (true);
+        } catch (InvocationException inEx) {
+            inEx.printStackTrace();
+            assert(false);
         } catch (Exception ex) {
             ex.printStackTrace();
             assert (false);
@@ -216,6 +218,8 @@ public class AppTest
             try {
                 im.postInvoke(inv);
                 nm.unbindObjects("comp1");
+            } catch (InvocationException inEx) {
+                
             } catch (Exception ex) {
 
             }
