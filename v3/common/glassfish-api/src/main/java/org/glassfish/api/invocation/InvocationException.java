@@ -22,6 +22,11 @@
  */
 package org.glassfish.api.invocation;
 
+import org.jvnet.hk2.annotations.Contract;
+import org.jvnet.hk2.annotations.Service;
+
+@Service
+@Contract
 public class InvocationException extends RuntimeException {
 
     private Exception ex;

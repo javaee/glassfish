@@ -45,16 +45,14 @@ public class InvocationManagerImpl
                     */
                     if (parentInv.getInvocationType() == ComponentInvocationType.SERVLET_INVOCATION) {
 
-                        ComponentInvocation inv = new ComponentInvocation(parentInv.getInvocationType(),
+                        ComponentInvocation inv = new ComponentInvocation(null, parentInv.getInvocationType(),
                                 null, parentInv.getContainer(), null);
                         result.add(inv);
                     } else if (parentInv.getInvocationType() != ComponentInvocationType.EJB_INVOCATION) {
                         // Push a copy of invocation onto the new result
                         // ArrayList
-                        ComponentInvocation cpy = new ComponentInvocation(parentInv.getInvocationType(),
-                                parentInv.getInstance(), parentInv.getContainer(),
-                                parentInv.getComponentId());
-                        cpy.setTransaction(parentInv.getTransaction());
+                        ComponentInvocation cpy = new ComponentInvocation(parentInv.getComponentId(), parentInv.getInvocationType(),
+                                parentInv.getInstance(), parentInv.getContainer(), parentInv.getTransaction());
                         result.add(cpy);
                     }
 

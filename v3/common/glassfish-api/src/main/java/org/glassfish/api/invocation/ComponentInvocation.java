@@ -1,5 +1,13 @@
 package org.glassfish.api.invocation;
 
+import org.jvnet.hk2.annotations.Contract;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.PerLookup;
+
+@Scoped(PerLookup.class)
+@Service
+@Contract
 public class ComponentInvocation {
 
     public enum ComponentInvocationType {
@@ -22,13 +30,15 @@ public class ComponentInvocation {
 
     private Object transaction;
 
-    public ComponentInvocation(ComponentInvocationType invocationType,
-                               Object instance, Object container,
-                               String componentId) {
+    public ComponentInvocation(String componentId,
+            ComponentInvocationType invocationType,
+            Object instance, Object container,
+            Object transaction) {
+        this.componentId = componentId;
         this.invocationType = invocationType;
         this.instance = instance;
         this.container = container;
-        this.componentId = componentId;
+        this.transaction = transaction;
     }
 
     public ComponentInvocationType getInvocationType() {
