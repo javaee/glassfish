@@ -63,6 +63,11 @@
             <version>${javaee-api.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.glassfish.api</groupId>
+            <artifactId>mail</artifactId>
+            <version>${mail.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.glassfish.common</groupId>
             <artifactId>common-util</artifactId>
             <version>${project.parent.version}</version>
