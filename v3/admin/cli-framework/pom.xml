@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+
+    <parent>
+        <groupId>org.glassfish.admin</groupId>
+        <artifactId>admin</artifactId>
+        <version>10.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>cli-framework</artifactId>
+    <packaging>hk2-jar</packaging>
+    <name>CLI Framework</name>
+    <description>Private APIs for CLI Framework within Glassfish V3</description>
+    
+    <developers>
+        <developer>
+            <id>janey</id>
+            <name>Jane Young</name>
+            <url>http://blogs.sun.com/janeyoung</url>
+            <organization>Sun Microsystems, Inc.</organization>
+            <roles>
+                <role>lead</role>
+                <role>developer</role>
+            </roles>
+        </developer>
+    </developers>
+    <build>
+	<resources>
+            <resource>
+                <directory>src/main/java</directory>
+                <includes>
+                    <include>**/*.properties</include>
+                    <include>**/*.xsd</include>
+                </includes>
+            </resource>
+        </resources>
+    </build>
+    <dependencies>
+    </dependencies>
+</project>
