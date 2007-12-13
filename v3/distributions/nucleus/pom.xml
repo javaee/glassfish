@@ -43,6 +43,12 @@
             <scope>runtime</scope>
         </dependency>
         <dependency>
+            <groupId>org.glassfish.admin</groupId>
+            <artifactId>cli-framework</artifactId>
+            <version>${glassfish.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
             <groupId>javax.javaee</groupId>
             <artifactId>javaee</artifactId>
             <version>${javaee-api.version}</version>
