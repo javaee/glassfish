@@ -15,6 +15,8 @@ import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
+import com.sun.enterprise.cli.framework.*;
+
 
 /**
  * my v3 main, basically some throw away code
@@ -22,6 +24,28 @@ import java.util.jar.Manifest;
 public class Main {
     public static void main(String[] args) {
 
+        try 
+        {
+            new CLIMain().invokeCommand(args);
+            return;
+        }
+        catch (InvalidCommandException ice)
+        {
+            if (TRACE) {
+                System.out.println("REMOTE COMMAND!!!");
+            }
+            handleRemoteCommand(args);
+        }
+        catch (Throwable ex) 
+        {
+            CLILogger.getInstance().printExceptionStackTrace(ex);
+            CLILogger.getInstance().printError(ex.getLocalizedMessage());
+            System.exit(1);
+        }
+    }
+    
+
+    private static void handleRemoteCommand(final String[] args) {
         if (args.length==0) {
             System.err.println("usage : asadmin <command> [parameters]");
             return;
