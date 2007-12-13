@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<CommandsAndOptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="CLISpecification.xsd">
+    <CommandProperties defaultcommand="multimode" helpclass="com.sun.enterprise.cli.commands.HelpCommand">
+	<CommandProperty name="base-package" value="com.sun.enterprise.admin.cli"/>
+	<CommandProperty name="property-file-name" value="LocalStrings"/>
+	<CommandProperty name="environment-prefix" value="AS_ADMIN_"/>
+    </CommandProperties>
+    <Options>
+	<Option name="verbose" type="boolean" value-required="false" default="false">
+	    <shortoption>v</shortoption>
+	</Option>
+    </Options>
+    <Commands>
+	<Command name="dummy" classname="com.sun.enterprise.admin.cli.DummyCommand" numberofoperands="?" usage-text="dummy">
+	</Command>
+	<Command name="start-domain" classname="com.sun.enterprise.admin.cli.StartDomainCommand" numberofoperands="?" usage-text="start-domain">
+	    <ValidOption name="verbose"/>
+	</Command>
+    </Commands>
+</CommandsAndOptions>
