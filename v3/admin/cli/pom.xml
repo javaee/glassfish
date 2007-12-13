@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.glassfish.admin</groupId>
+        <artifactId>admin</artifactId>
+        <version>10.0-SNAPSHOT</version>
+    </parent>
+    
+    <artifactId>admin-cli</artifactId>
+    <packaging>hk2-jar</packaging>
+    <name>Admin CLI for v3</name>
+
+    <developers>
+        <developer>
+            <id>jyoung</id>
+            <name>Jane Young</name>
+            <organization>Sun Microsystems, Inc.</organization>
+            <roles>
+                <role>lead</role>
+                <role>developer</role>
+            </roles>
+        </developer>
+        <developer>
+            <id>abbagani</id>
+            <name>Prashanth Abbagani</name>
+            <organization>Sun Microsystems, Inc.</organization>
+            <roles>
+                <role>lead</role>
+                <role>developer</role>
+            </roles>
+        </developer>
+    </developers>
+    <build>
+	<resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>**/*.xml</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>src/main/java</directory>
+                <includes>
+                    <include>**/*.properties</include>
+                </includes>
+            </resource>
+        </resources>
+        <plugins>
+          <!--plugin>
+               <artifactId>maven-antrun-plugin</artifactId>
+               <executions>
+                   <execution>
+                       <phase>generate-sources</phase>
+                       <configuration>
+                           <tasks>
+                               <copy todir="${glassfish.home}/bin">
+                                   <fileset dir="src/resources"/>
+                               </copy>
+                                <chmod file="${glassfish.home}/bin/*" perm="ugo+rx"/>
+                           </tasks>
+                       </configuration>
+                       <goals>
+                           <goal>run</goal>
+                       </goals>
+                   </execution>
+               </executions>
+           </plugin-->             
+            <plugin>
+                <groupId>com.sun.enterprise</groupId>
+                <artifactId>hk2-maven-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>com.sun.enterprise.admin.cli.Main</mainClass>
+                        </manifest>
+		    </archive>
+		</configuration>
+            </plugin>		
+	</plugins>
+    </build>
+    <dependencies>
+        <dependency>
+            <groupId>org.glassfish.admin</groupId>
+            <artifactId>cli-framework</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.common</groupId>
+            <artifactId>common-util</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.core</groupId>
+            <artifactId>glassfish</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+    </dependencies>
+</project>
