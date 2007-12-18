@@ -59,6 +59,15 @@ public final class ConfigModel {
     final Set<String> symoblSpaces;
 
     /**
+     * The element name of this model itself, if this element can appear globally.
+     * Otherwise null.
+     * <p>
+     * Note that in many circumstances the tag name is determined by the parent element,
+     * even if a {@link ConfigModel} has a tag name.
+     */
+    final String tagName;
+
+    /**
      * Deferred reference to the class loader that loaded the injector.
      * This classloader can also load the configurable object.
      */
@@ -443,6 +452,7 @@ public final class ConfigModel {
         this.key = key;
         this.contracts = description.get(ConfigMetadata.TARGET_CONTRACTS);
         this.symoblSpaces = new HashSet<String>(description.get("symbolSpaces"));
+        this.tagName = description.getOne(InhabitantsFile.INDEX_KEY);
     }
 
     /**
