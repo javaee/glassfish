@@ -2,6 +2,7 @@ package org.jvnet.hk2.component;
 
 import com.sun.hk2.component.Holder;
 import com.sun.hk2.component.ScopeInstance;
+import org.jvnet.hk2.annotations.Service;
 
 /**
  * @author Kohsuke Kawaguchi
@@ -39,6 +40,7 @@ public interface Inhabitant<T> extends Holder<T> {
      *
      * @return
      *      can be empty but never null. The values are read-only.
+     * @see Service#metadata() 
      */
     MultiMap<String,String> metadata();
 
