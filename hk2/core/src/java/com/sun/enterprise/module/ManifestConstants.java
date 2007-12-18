@@ -133,4 +133,11 @@ public class ManifestConstants {
      * and puts its name, provided that the class has @{@link Service} annotation.
      */
     public static final String LIFECYLE_POLICY = "Module-Lifecycle-Policy";
+
+    /**
+     * <p>
+     * List of repositories that should be set up before launching the main module
+     * </p>
+     */
+    public static final String REPOSITORIES = "Repositories";
 }
