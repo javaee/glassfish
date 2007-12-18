@@ -44,15 +44,23 @@ public class InhabitantsParser {
             Inhabitant i = new LazyInhabitant(habitat, classLoader, className,metadata);
             habitat.add(i);
 
-            // register them to the index
             for (String v : kvpp.findAll(INDEX_KEY)) {
+                // store index information to metadata
+                if(metadata==null)
+                    metadata = new MultiMap<String,String>();
+                metadata.add(INDEX_KEY,v);
+
+                // register inhabitant to the index
                 int idx = v.indexOf(':');
                 if(idx==-1) {
                     // no name
                     habitat.addIndex(i,v,null);
                 } else {
                     // v=contract:name
-                    habitat.addIndex(i,v.substring(0,idx),v.substring(idx+1));
+                    String contract = v.substring(0, idx);
+                    String name = v.substring(idx + 1);
+                    habitat.addIndex(i, contract, name);
+                    metadata.add(contract,name);
                 }
             }
         }
