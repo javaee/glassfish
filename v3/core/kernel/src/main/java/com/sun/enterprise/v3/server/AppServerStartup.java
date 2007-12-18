@@ -23,13 +23,11 @@
 
 package com.sun.enterprise.v3.server;
 
-import com.sun.enterprise.module.ManifestConstants;
-import com.sun.enterprise.module.Module;
-import com.sun.enterprise.module.ModuleDefinition;
-import com.sun.enterprise.module.ModulesRegistry;
+import com.sun.enterprise.module.*;
 import com.sun.enterprise.module.bootstrap.ModuleStartup;
 import com.sun.enterprise.module.bootstrap.StartupContext;
 import com.sun.enterprise.module.impl.CookedModuleDefinition;
+import com.sun.enterprise.module.impl.DirectoryBasedRepository;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.Startup;
 import org.jvnet.hk2.annotations.Inject;
@@ -38,7 +36,11 @@ import org.jvnet.hk2.component.Habitat;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.FileNotFoundException;
 import java.net.URI;
+import java.net.URLClassLoader;
+import java.net.URL;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -85,14 +87,11 @@ public class AppServerStartup implements ModuleStartup {
         Module mainModule = Module.find(this.getClass());
         ModulesRegistry systemRegistry = mainModule.getRegistry();
 
-        // set the parent class loader to the shared module class loader.
+        // set the parent class loader to the shared module class loader, if packaged
         Module parentModule = systemRegistry.makeModuleFor("org.glassfish.core:shared-components", null);
-        if(parentModule==null) {
-            // TODO: print out repository list to assist trouble-shooting
-            System.err.println("shared-components module is not found. Aborting");
-            return;
+        if(parentModule!=null) {
+            systemRegistry.setParentClassLoader(parentModule.getClassLoader());
         }
-        systemRegistry.setParentClassLoader(parentModule.getClassLoader());
         
         // prepare the global variables
         habitat.addComponent(null, systemRegistry);
@@ -114,38 +113,5 @@ public class AppServerStartup implements ModuleStartup {
                     + (Calendar.getInstance().getTimeInMillis() - context.getCreationTime()) + " ms");
 
         
-    }
-
-
-    // todo : remove and reorganize
-    private ModuleDefinition setupSharedModule(File rootLocation, ModuleDefinition def)
-        throws IOException {
-
-        Attributes sharedAttr = def.getManifest().getMainAttributes();
-        sharedAttr.putValue(ManifestConstants.BUNDLE_NAME.toString(), "shared");
-        CookedModuleDefinition shared = new CookedModuleDefinition(
-                new File(def.getLocations()[0]), sharedAttr);
-
-        List<URI> sharedClassPath = new ArrayList<URI>();
-
-        File lib = new File(rootLocation,"lib");
-            // shared librairies
-        File sharedLib = new File(lib, "shared");
-        if (sharedLib.exists()) {
-            for (File sharedFile : sharedLib.listFiles()) {
-                sharedClassPath.add(sharedFile.toURI());
-            }
-        }
-
-            // derby database
-        File derbyLib = new File(rootLocation, "javadb");
-        derbyLib = new File(derbyLib, "lib");
-        File derby = new File(derbyLib, "derby.jar");
-        sharedClassPath.add(derby.toURI());
-        File derbyclient = new File(derbyLib, "derbyclient.jar");
-        sharedClassPath.add(derbyclient.toURI());
-
-        shared.add(sharedClassPath);
-        return shared;
     }
 }

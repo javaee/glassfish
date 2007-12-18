@@ -37,9 +37,12 @@
                 <exclude name="javadb/3RDPARTY.zip"/>
             </patternset>
         </unzip>
+        <resolveAll artifactId="gf-web-connector" todir="target/stage/glassfish/modules">
+            <packaging is="jar"/>
+        </resolveAll>
         <resolveArtifact artifactId="nucleus-base" property="nucleus-base.zip"/>
 
-        <resolveAll todir="target/stage/glassfish/lib">
+        <resolveAll todir="target/stage/glassfish/modules">
             <or>
                 <packaging is="hk2-jar" />
                 <packaging is="jar" />

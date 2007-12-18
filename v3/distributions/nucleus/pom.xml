@@ -1,71 +1,62 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <relativePath>../pom.xml</relativePath>
-        <groupId>org.glassfish.distributions</groupId>
-        <artifactId>distributions</artifactId>
-        <version>10.0-SNAPSHOT</version>
-    </parent>
+        xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+   <modelVersion>4.0.0</modelVersion>
+   <parent>
+       <relativePath>../pom.xml</relativePath>
+       <groupId>org.glassfish.distributions</groupId>
+       <artifactId>distributions</artifactId>
+       <version>10.0-SNAPSHOT</version>
+   </parent>
 
-    <artifactId>nucleus</artifactId>
-    <!-- the real artifact is created by distribution-builder plugin -->
-    <packaging>glassfish-distribution</packaging>
-    <version>${nucleus.version}</version>
+   <artifactId>nucleus</artifactId>
+   <version>${nucleus.version}</version>
 
-    <name>Glassfish Nucleus distribution image</name>
-    <description>This module creates the nucleus distribution image</description>
+   <name>Glassfish Nucleus distribution image</name>
+   <description>This pom describes how to assemble the Glassfish Nucleus Bundle</description>
+   <packaging>distribution-base-zip</packaging>
 
-    <dependencies>
-        <!-- dependency with 'runtime' scope will be packaged into the distribution -->
-        <dependency>
-            <groupId>org.glassfish.admin</groupId>
-            <artifactId>monitoring-core</artifactId>
-            <version>${glassfish.version}</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.core</groupId>
-            <artifactId>glassfish</artifactId>
-            <version>${glassfish.version}</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.core</groupId>
-            <artifactId>kernel</artifactId>
-            <version>${glassfish.version}</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.admin</groupId>
-            <artifactId>admin-cli</artifactId>
-            <version>${glassfish.version}</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.admin</groupId>
-            <artifactId>cli-framework</artifactId>
-            <version>${glassfish.version}</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>javax.javaee</groupId>
-            <artifactId>javaee</artifactId>
-            <version>${javaee-api.version}</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.core</groupId>
-            <artifactId>shared-components</artifactId>
-            <version>${glassfish.version}</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <!-- base distribution image -->
-            <groupId>org.glassfish.distributions</groupId>
-            <artifactId>nucleus-base</artifactId>
-            <version>${nucleus.version}</version>
-            <type>zip</type>
-        </dependency>
-    </dependencies>
+   <build>
+       <plugins>
+           <plugin>
+               <groupId>org.jvnet.maven-antrun-extended-plugin</groupId>
+               <artifactId>maven-antrun-extended-plugin</artifactId>
+               <version>1.10</version>
+               <configuration>
+                 <tasks>
+                   <ant dir="." antfile="build.xml" target="create.bundle"/>
+                 </tasks>
+               </configuration>
+            </plugin>
+       </plugins>
+   </build>
+
+   <dependencies>
+       <!-- dependency with 'runtime' scope will be packaged into the distribution -->
+       <dependency>
+           <groupId>org.glassfish.core</groupId>
+           <artifactId>glassfish</artifactId>
+           <version>${glassfish.version}</version>
+           <scope>runtime</scope>
+       </dependency>
+       <dependency>
+           <groupId>org.glassfish.core</groupId>
+           <artifactId>kernel</artifactId>
+           <version>${glassfish.version}</version>
+           <scope>runtime</scope>
+       </dependency>
+       <dependency>
+           <groupId>org.glassfish.admin</groupId>
+           <artifactId>admin-cli</artifactId>
+           <version>${glassfish.version}</version>
+           <scope>runtime</scope>
+       </dependency>
+       <dependency>
+           <!-- base distribution image -->
+           <groupId>org.glassfish.distributions</groupId>
+           <artifactId>nucleus-base</artifactId>
+           <version>${nucleus.version}</version>
+           <type>zip</type>
+       </dependency>
+   </dependencies>
 </project>
+

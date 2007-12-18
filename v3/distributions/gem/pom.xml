@@ -39,48 +39,12 @@
             </configuration>
           </execution>
           <execution>
-            <id>copy-modules</id>
             <phase>generate-resources</phase>
             <goals>
-              <goal>copy</goal>
+              <goal>copy-dependencies</goal>
             </goals>
             <configuration>
-              <artifactItems>
-                <artifactItem>
-                  <groupId>org.glassfish.extras</groupId>
-                  <artifactId>gf-jruby-connector</artifactId>
-                  <version>${pe.version}</version>
-                  <type>jar</type>
-                  <overWrite>true</overWrite>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>org.glassfish.external</groupId>
-                  <artifactId>grizzly-jruby</artifactId>
-                  <version>${grizzly.version}</version>
-                  <type>jar</type>
-                  <overWrite>true</overWrite>
-                </artifactItem>
-              </artifactItems>
-			  <outputDirectory>${project.build.directory}/dependency/glassfish/lib</outputDirectory>
-            </configuration>
-          </execution>
-          <execution>
-            <id>copy-librairies</id>
-            <phase>generate-resources</phase>
-            <goals>
-              <goal>copy</goal>
-            </goals>
-            <configuration>
-              <artifactItems>
-                <artifactItem>
-			      <groupId>com.sun.grizzly</groupId>
-			      <artifactId>jruby</artifactId>
-			      <version>${grizzly.version}</version>
-                  <type>jar</type>
-                  <overWrite>true</overWrite>
-                </artifactItem>
-              </artifactItems>
-			  <outputDirectory>${project.build.directory}/dependency/glassfish/lib/jars</outputDirectory>
+			  <outputDirectory>${project.build.directory}/dependency/glassfish/modules</outputDirectory>
             </configuration>
           </execution>
         </executions>
@@ -93,7 +57,7 @@
                   <configuration>
                       <tasks>
                           <copy file="glassfish_rails" todir="target/dependency/glassfish/bin"/>
-						  <copy file="glassfish.rb" todir="target/dependency/glassfish/lib"/>
+						  <copy file="glassfish.rb" todir="target/dependency/glassfish/modules"/>
 						  <concat destfile="target/dependency/glassfish/config/asenv.conf" append="true">jruby.home=../../../../../../..
 						  </concat>
                       </tasks>
@@ -125,8 +89,9 @@
 				  s.homepage = "http://glassfish.dev.java.net"
 				  s.platform = Gem::Platform::CURRENT
 				  s.summary = "GlassFish V3 Application Server for JRuby"
-				  s.files = FileList["{bin,lib,config,javadb,domains,ext}/**/*"].to_a
+				  s.files = FileList["{bin,lib,modules,config,javadb,domains,ext}/**/*"].to_a
 				  s.bindir = "bin"
+				  s.require_paths = ["modules"]
 				  s.executables = ["glassfish_rails", "asadmin", "asadmin.bat"]
 				  s.default_executable = "glassfish_rails"
 				  s.autorequire = "GlassFish"
@@ -193,5 +158,10 @@
   </build>
   
   <dependencies>
+  	<dependency>
+         <groupId>org.glassfish.extras</groupId>
+         <artifactId>gf-jruby-connector</artifactId>
+    	<version>${pe.version}</version>
+     </dependency>
   </dependencies>
 </project>

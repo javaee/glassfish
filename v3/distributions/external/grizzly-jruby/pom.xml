@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <parent>
+        <groupId>org.glassfish.external</groupId>
+        <artifactId>external</artifactId>
+        <version>10.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>grizzly-jruby</artifactId>
+    <packaging>hk2-jar</packaging>
+    <version>${grizzly.version}</version>
+    <name>Module packaging for JRuby grizzly adapter for V3</name>
+    <description>JRUBY grizzly adapter for GlassFish v3</description>
+
+    <developers>
+        <developer>
+            <id>pramodgo</id>
+            <name>Pramod Gopinath</name>
+            <url>http://blogs.sun.com/NetbeansJavascriptDebugging/entry/enabling_netbeans_javascript_debugging</url>
+            <organization>Sun Microsystems, Inc.</organization>
+            <roles>
+                <role>lead</role>
+                <role>developer</role>
+            </roles>
+        </developer>
+        <developer>
+            <id>dochez</id>
+            <name>Jerome Dochez</name>
+            <url>http://blogs.sun.com/dochez</url>
+            <organization>Sun Microsystems, Inc.</organization>
+            <roles>
+                <role>developer</role>
+            </roles>
+        </developer>
+        <developer>
+            <id>takai</id>
+            <name>Naoto Takai</name>
+            <url>http://recompile.net/</url>
+            <organization>Recompile.net</organization>
+            <roles>
+                <role>developer</role>
+            </roles>
+        </developer>
+    </developers>       
+    <dependencies>
+        <dependency>
+            <groupId>com.sun.grizzly</groupId>
+             <artifactId>jruby</artifactId>
+             <version>${grizzly.version}</version>
+             <exclusions>
+                 <exclusion>
+                    <groupId>org.jruby</groupId>
+                     <artifactId>jruby-complete</artifactId>
+                 </exclusion>
+                 <exclusion>
+                     <groupId>backport-util-concurrent</groupId>
+                     <artifactId>backport-util-concurrent</artifactId>                    
+                 </exclusion>
+                 <exclusion>
+                     <groupId>asm</groupId>
+                     <artifactId>asm</artifactId>                     
+                 </exclusion>
+                 <exclusion>
+                     <groupId>com.sun.grizzly</groupId>
+                     <artifactId>http</artifactId>                     
+                 </exclusion>
+             </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.external</groupId>
+            <artifactId>grizzly-http</artifactId>
+            <version>${grizzly.version}</version>
+        </dependency>
+    </dependencies>
+</project>

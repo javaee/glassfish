@@ -1,6 +1,7 @@
 #!/bin/sh
 AS_INSTALL=`dirname $0`/..
+AS_INSTALL_LIB=$AS_INSTALL/modules
 
-exec java -Dcom.sun.aas.installRoot=$AS_INSTALL -cp "$AS_INSTALL/lib/admin-cli-10.0-SNAPSHOT.jar":"$AS_INSTALL/lib/cli-framework-10.0-SNAPSHOT.jar":"$AS_INSTALL/lib/glassfish-10.0-SNAPSHOT.jar" com.sun.enterprise.admin.cli.Main "$@"
+exec java -Dcom.sun.aas.installRoot=$AS_INSTALL -cp "$AS_INSTALL_LIB/admin-cli-10.0-SNAPSHOT.jar":"$AS_INSTALL_LIB/cli-framework-10.0-SNAPSHOT.jar":"$AS_INSTALL_LIB/glassfish-10.0-SNAPSHOT.jar" com.sun.enterprise.admin.cli.Main "$@"
 
 

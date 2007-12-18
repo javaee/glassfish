@@ -95,6 +95,7 @@
         <major_version>10</major_version>
         <minor_version>0</minor_version>
         <nucleus.version>0.1-SNAPSHOT</nucleus.version>
+        <jruby.version>1.0.2</jruby.version>
     </properties>
     <modules>
     	<module>build</module>
@@ -207,6 +208,7 @@
             <artifactId>junit</artifactId>
             <version>4.3.1</version>
             <scope>test</scope>
+            <optional>true</optional>
       </dependency>
     </dependencies>
 </project>

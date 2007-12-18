@@ -89,7 +89,7 @@ public class ContainerStarter {
             // which is in <Root Installation>/lib/containerName
             String root = System.getProperty("com.sun.aas.installRoot");
             File location = new File(root);
-            location = new File(location, "lib");
+            location = new File(location, "modules");
             location = new File(location, containerName);
             containerHome = location.getAbsolutePath();
             System.setProperty(containerName + ".home", containerHome);
@@ -135,13 +135,13 @@ public class ContainerStarter {
 
             // now we are looking for the connector module. The connector module
             // will be searched in the following location in the specified order :
-            //  1. in the containerHome/lib directory
+            //  1. in the containerHome/modules directory
             //  2. in the connectors directory of the application server
             //  3. in the current list of modules we know about
             //  4. anywhere in the containerHome directory (can be slow)
             //
-            // let's find the jar file in the container lib installation file system
-            File jarLocation = new File(containerHome, "lib");
+            // let's find the jar file in the container modules installation file system
+            File jarLocation = new File(containerHome, "modules");
             jarLocation = new File(jarLocation, jarFileName);
 
             ModuleDefinition moduleDef=null;
@@ -251,131 +251,6 @@ public class ContainerStarter {
         return null;
     }
 
-    private File installContainer(String containerName, ModuleDefinition def) {
-
-        Attributes attr = def.getManifest().getMainAttributes();
-        if (attr==null) {
-            logger.severe("No container installation attributes provided in manifest");
-            return null;
-        }
-
-
-        String remoteRepo = attr.getValue("RemoteRepository");
-        if (remoteRepo==null) {
-            logger.severe("ContractProvider is not installed and RemoteRepository to download it from is not provided");
-            return null;
-        }
-
-        URI repoURI;
-        try {
-            repoURI = new URI(remoteRepo);
-        } catch (URISyntaxException e) {
-            logger.log(Level.SEVERE, "Invalid remote repository location : " + e.getMessage(), e );
-            return null;
-        }
-        RepositoryFactory factory = RepositoryFactories.getInstance().getFactoryFor(repoURI.getScheme());
-        if (factory==null) {
-            logger.log(Level.SEVERE, "Cannot handle repositories of type " + repoURI.getScheme());
-            return null;
-        }
-        URI uri=null;
-        try {
-            uri = new URI(repoURI.getSchemeSpecificPart());
-        } catch (URISyntaxException e) {
-            logger.log(Level.SEVERE, "Invalid repository location " + repoURI.getSchemeSpecificPart(),e);
-            return null;
-        }
-
-        Repository repo = factory.createRepository(containerName, uri);
-        if (repo==null) {
-            logger.log(Level.SEVERE, "Cannot instantiate repository " + repoURI.getSchemeSpecificPart());
-            return null;
-        }
-        String remoteBundleName = attr.getValue("RemoteBundleName");
-        if (remoteBundleName.indexOf(",")!=-1) {
-            // there is more than one dependency from the connector, panic !
-            logger.severe(containerName + " connector has too many dependencies " + remoteBundleName);
-        }
-        String remoteBundleVersion = attr.getValue("RemoteBundleVersion");
-        ModuleDefinition remoteModuleDef = repo.find(remoteBundleName, remoteBundleVersion);
-        if (remoteModuleDef==null) {
-            logger.severe("Cannot find "+ remoteBundleName +" from " + repo.getName());
-            return null;
-        }
-        Manifest remoteManifest = remoteModuleDef.getManifest();
-        String installType = remoteManifest.getMainAttributes().getValue("InstallationType");
-        if (installType==null) {
-            installType="Explode";
-        }
-        // TODO : have an installation pluggability story
-        // TODO : support main-class attribute which would be an installer type ?
-        if (installType.equalsIgnoreCase("Explode")) {
-
-            // let's create the target repository
-            String root = System.getProperty("com.sun.aas.installRoot");
-            File repository = new File(root);
-            repository = new File(repository, "lib");
-            repository = new File(repository, containerName);
-
-            repository.mkdirs();
-
-            // take the remote module location and exploded it locally
-            for (URI location : remoteModuleDef.getLocations()) {
-                InputStream is=null;
-                FileOutputStream os=null;
-                File outFile=null;
-                try {
-                    is = location.toURL().openStream();
-                    ReadableByteChannel channel = Channels.newChannel(is);
-                    // this naming scheme may need to be reworked...
-                    outFile = new File(System.getProperty("java.io.tmpdir"), containerName + ".jar");
-                    os = new FileOutputStream(outFile);
-                    FileChannel outChannel = os.getChannel();
-                    long bytes;
-                    long transferedBytes=0;
-                    do {
-                        bytes = outChannel.transferFrom(channel,transferedBytes , 4096);
-                        transferedBytes+=bytes;
-                    } while (bytes==4096);
-                } catch(MalformedURLException e) {
-                } catch(IOException e) {
-                    
-                } finally {
-                    try {
-                        if (is!=null)
-                            is.close();
-                    } catch(IOException e) {
-                        // ignore
-                    }
-                    try {
-                        if (os!=null)
-                            os.close();
-                    } catch(IOException e) {
-                        // ignore
-                    }
-                }
-
-                // now we have downloaded the remote bundle, explode it locally
-                if (outFile!=null) {
-
-                    try {
-                        explodeJar(outFile, repository);
-                    } catch(IOException e) {
-                        logger.log(Level.SEVERE, "Cannot expand downloaded container : ", e);
-                        return null;
-                    }
-                    // delete the downloaded file
-                    if (!outFile.delete()) {
-                        logger.log(Level.INFO, "Cannot delete the downloaded container file : " + outFile.getAbsolutePath());
-                    }
-                    return repository;
-                }
-
-            }
-            
-        }
-        return null;
-    }
 
     public static void explodeJar(File source, File destination) throws IOException {
 

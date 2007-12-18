@@ -72,7 +72,7 @@ public class DistributionAssemblyMojo extends AbstractGlassfishMojo {
         for (Artifact a : modules) {
             zfs = new ZipFileSet();
             zfs.setFile(a.getFile());
-            zfs.setPrefix("glassfish/lib");
+            zfs.setPrefix("glassfish/modules");
             zip.addZipfileset(zfs);
         }
 
@@ -100,7 +100,7 @@ public class DistributionAssemblyMojo extends AbstractGlassfishMojo {
      * <p>
      * The interesting case is let's say where we are building pe, in which
      * case we see both pe-base and nucleus-base (through nucleus.)
-     * So we look for one with the shortest dependency path. 
+     * So we look for one with the shortest dependency path.
      */
     private Artifact findBaseImage(Set<Artifact> images) throws MojoExecutionException {
         if(images.isEmpty())

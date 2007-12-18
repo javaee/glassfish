@@ -51,7 +51,7 @@ public class StartDomainCommand extends Command
         return new String [] {
             System.getProperty("java.home")+File.separator+"bin"+File.separator+"java",
             "-jar",
-            root+File.separator+"lib"+File.separator+GLASSFISH_V3_JAR
+            root+File.separator+"modules"+File.separator+GLASSFISH_V3_JAR
             };
     }
 }

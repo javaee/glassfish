@@ -45,12 +45,6 @@
             <scope>test</scope>
         </dependency>        
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.3.1</version>
-            <scope>test</scope>
-      </dependency>
-        <dependency>
             <groupId>com.sun.xml.stream</groupId>
             <artifactId>sjsxp</artifactId>
             <version>1.0</version>
