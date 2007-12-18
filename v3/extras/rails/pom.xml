@@ -63,6 +63,12 @@
             <version>${grizzly.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.glassfish.external</groupId>
+            <artifactId>grizzly-http</artifactId>
+            <version>${grizzly.version}</version>
+            <scope>compile</scope>
+        </dependency>         
+        <dependency>
           <groupId>org.jruby</groupId>
           <artifactId>jruby-complete</artifactId>
           <version>${jruby.version}</version>
