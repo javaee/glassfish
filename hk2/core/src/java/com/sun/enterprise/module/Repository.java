@@ -101,10 +101,31 @@ public interface Repository {
     public Module newModule(ModulesRegistry registry, ModuleDefinition moduleDef);
 
     /**
-     * This module adds a new Module Definition to the repository.
+     * Returns the plain jar files installed in this repository. Plain jar files
+     * are not modules, they do not have the module's metadata and can only be used
+     * when referenced from a module dependency list or when added to a class
+     * loader directly
      *
-     * @param definition is the module definition
-     * @return true if the addition was successful
+     * @return jar files location stored in this repository.
      */
-    //public void add(ModuleDefinition definition) throws IOException;
+    public List<URI> getJarLocations();
+
+    /**
+     * Add a listener to changes happening to this repository. Repository can
+     * change during the lifetime of an execution (files added/removed/changed)
+     *
+     * @param listener implementation listening to this repository changes
+     * @return true if the listener was added successfully
+     */
+    public boolean addListener(RepositoryChangeListener listener);
+
+    /**
+     * Removes a previously registered listener
+     *
+     * @param listener the previously registered listener
+     * @return true if the listener was successfully unregistered
+     */
+    public boolean removeListener(RepositoryChangeListener listener);
+
 }
+

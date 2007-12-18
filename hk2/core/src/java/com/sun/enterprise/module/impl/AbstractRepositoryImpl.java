@@ -1,21 +1,10 @@
 package com.sun.enterprise.module.impl;
 
-import com.sun.enterprise.module.ManifestConstants;
-import com.sun.enterprise.module.Module;
-import com.sun.enterprise.module.ModuleDefinition;
-import com.sun.enterprise.module.ModulesRegistry;
-import com.sun.enterprise.module.Repository;
+import com.sun.enterprise.module.*;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
@@ -31,6 +20,9 @@ public abstract class AbstractRepositoryImpl implements Repository {
     private final String name;
     private final URI location;
     private Map<String,ModuleDefinition> moduleDefs;
+    private List<URI> libraries;
+    protected List<RepositoryChangeListener> listeners;
+
     /**
      * {@link #moduleDefs}'s values in a read-only list.
      */
@@ -63,14 +55,18 @@ public abstract class AbstractRepositoryImpl implements Repository {
     }
 
     public void initialize() throws IOException {
-        moduleDefs = loadModuleDefs();
+        moduleDefs = new HashMap<String, ModuleDefinition>();
+        libraries = new ArrayList<URI>();
+        loadModuleDefs(moduleDefs, libraries);
+
         allModules = Collections.unmodifiableList(new ArrayList<ModuleDefinition>(moduleDefs.values()));
     }
 
     /**
-     * Called from {@link #initialize()} to load all {@link ModuleDefinition}s.
+     * Called from {@link #initialize()} to load all {@link ModuleDefinition}s and libraries defintions
      */
-    protected abstract Map<String, ModuleDefinition> loadModuleDefs() throws IOException;
+    protected abstract void loadModuleDefs(Map<String, ModuleDefinition> moduleDefs,
+                                           List<URI> libraries) throws IOException;
 
     /**
      * Loads a jar file and builds a {@link ModuleDefinition}.
@@ -129,6 +125,22 @@ public abstract class AbstractRepositoryImpl implements Repository {
         return null;
     }
 
+    protected void add(ModuleDefinition def) {
+        moduleDefs.put(def.getName(), def);
+    }
+
+    protected void remove(ModuleDefinition def) {
+        moduleDefs.remove(def.getName());
+    }
+
+    protected void addLibrary(URI location) {
+        libraries.add(location);
+    }
+
+    protected void removeLibrary(URI location) {
+        libraries.remove(location);
+    }
+
     public void shutdown() throws IOException {
         // nothing to do
     }
@@ -143,6 +155,45 @@ public abstract class AbstractRepositoryImpl implements Repository {
 
     public Module newModule(ModulesRegistry registry, ModuleDefinition def) {
         return new Module(registry,def);
+    }
+
+    /**
+     * Returns the plain jar files installed in this repository. Plain jar files
+     * are not modules, they do not have the module's metadata and can only be used
+     * when referenced from a module dependency list or when added to a class
+     * loader directly
+     *
+     * @return jar files location stored in this repository.
+     */
+    public List<URI> getJarLocations() {
+        return Collections.unmodifiableList(libraries);
+    }
+
+    /**
+     * Add a listener to changes happening to this repository. Repository can
+     * change during the lifetime of an execution (files added/removed/changed)
+     *
+     * @param listener implementation listening to this repository changes
+     * @return true if the listener was added successfully
+     */
+    public synchronized boolean addListener(RepositoryChangeListener listener) {
+        if (listeners==null) {
+            listeners = new ArrayList<RepositoryChangeListener>();
+        }
+        return listeners.add(listener);
+    }
+
+    /**
+     * Removes a previously registered listener
+     *
+     * @param listener the previously registered listener
+     * @return true if the listener was successfully unregistered
+     */
+    public synchronized boolean removeListener(RepositoryChangeListener listener) {
+        if (listeners==null) {
+            return false;
+        }
+        return listeners.remove(listeners);
     }
 
     /**

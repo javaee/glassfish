@@ -13,6 +13,7 @@ import com.sun.enterprise.module.ManifestConstants;
 import com.sun.enterprise.module.Module;
 import com.sun.enterprise.module.ModuleMetadata.InhabitantsDescriptor;
 import com.sun.enterprise.module.ModulesRegistry;
+import com.sun.enterprise.module.Repository;
 import com.sun.enterprise.module.impl.DirectoryBasedRepository;
 import com.sun.hk2.component.ExistingSingletonInhabitant;
 import static com.sun.hk2.component.InhabitantsFile.CLASS_KEY;
@@ -23,11 +24,16 @@ import org.jvnet.hk2.component.Habitat;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.FileNotFoundException;
 import java.net.JarURLConnection;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.StringTokenizer;
+import java.util.Properties;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
@@ -128,24 +134,105 @@ public class Main {
 
         // get the ModuleStartup implementation.
         ModulesRegistry mr = ModulesRegistry.createRegistry();
-        createRepository(root,mr);
+        Manifest mf = null;
+        try {
+            mf = (new JarFile(bootstrap)).getManifest();
+        } catch (IOException e) {
+            mf=null;
+        }
 
+        createRepository(root,mf, mr);
+        setParentClassLoader(mr);
         launch(mr, targetModule, root, args);
     }
 
+
+    protected void setParentClassLoader(ModulesRegistry mr) throws BootException {
+        mr.setParentClassLoader(this.getClass().getClassLoader());
+    }
+    
     /**
      * Creates repositories needed for the launch and 
      * adds the repositories to {@link ModulesRegistry}
      */
-    protected void createRepository(File root, ModulesRegistry mr) throws BootException {
-        try {
-            DirectoryBasedRepository lib = new DirectoryBasedRepository("lib", root);
-            lib.initialize();
-            mr.addRepository(lib);
-            mr.setParentClassLoader(this.getClass().getClassLoader());
-        } catch(IOException ioe) {
-            throw new BootException("Error while initializing lib repository at : "+root, ioe);
+    protected void createRepository(File root, Manifest mf, ModulesRegistry mr) throws BootException {
+        String repos = mf.getMainAttributes().getValue(ManifestConstants.REPOSITORIES);
+        if (repos!=null) {
+            StringTokenizer st = new StringTokenizer(repos);
+            while (st.hasMoreTokens()) {
+                final String repoId = st.nextToken();
+                final String repoKey = "Repository-"+repoId;
+                final String repoInfo;
+                try {
+                    repoInfo = mf.getMainAttributes().getValue(repoKey);
+                } catch (Exception e) {
+                    throw new BootException("Invalid repository id " + repoId, e);
+                }
+                if (repoInfo!=null) {
+                    addRepo(root, repoId, repoInfo, mr);
+                }
+            }
+        } else {
+            // by default, adding the boot archive directory
+            addRepo(root, "lib", "uri=. type=directory", mr);
         }
+    }
+
+    private void addRepo(File root, String repoId, String repoInfo, ModulesRegistry mr) throws BootException {
+
+        StringTokenizer st = new StringTokenizer(repoInfo);
+        Properties props = new Properties();
+        Pattern p = Pattern.compile("([^=]*)=(.*)");
+        
+        while(st.hasMoreTokens()) {
+            Matcher m = p.matcher(st.nextToken());
+            if (m.matches()) {
+                props.put(m.group(1), m.group(2));
+            }
+        }
+
+        String uri = props.getProperty("uri");
+        if (uri==null) {
+            uri = ".";
+        }
+        String type = props.getProperty("type");
+        String weight = props.getProperty("weight");
+
+        // need a plugability layer here...
+        Repository repo=null;
+
+        if ("directory".equalsIgnoreCase(type)) {
+
+            File location = new File(uri);
+            if (!location.isAbsolute()) {
+                location = new File(root, uri);
+            }
+            try {
+                repo = new DirectoryBasedRepository(repoId, location);
+                addRepo(repo, mr, weight);
+            } catch (IOException e) {
+                throw new BootException("Exception while adding " + repoId + " repository", e);
+
+            }
+        } else {
+            throw new BootException("Invalid attributes for modules repository " + repoId + " : " + repoInfo);
+        }
+    }
+
+    protected void addRepo(Repository repo, ModulesRegistry mr, String weight)
+        throws IOException {
+        
+        repo.initialize();
+        int iWeight=50;
+        if (weight!=null) {
+            try {
+                iWeight = Integer.parseInt(weight);
+            } catch (NumberFormatException e) {
+                // ignore
+            }
+        }
+        repo.initialize();
+        mr.addRepository(repo, iWeight);
     }
 
     /**
@@ -255,7 +342,7 @@ public class Main {
         try {
             JarFile jarFile = new JarFile(bootstrap);
             Manifest manifest = jarFile.getManifest();
-
+                          
             Attributes attr = manifest.getMainAttributes();
             targetModule = attr.getValue(ManifestConstants.BUNDLE_IMPORT_NAME);
             if (targetModule==null) {

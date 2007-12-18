@@ -24,6 +24,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.net.URI;
 
 /**
  * {@link Repository} implementation that loads modules
@@ -80,12 +81,11 @@ public class MavenProjectRepository extends AbstractRepositoryImpl {
     }
 
     @Override
-    protected Map<String, ModuleDefinition> loadModuleDefs() throws IOException {
-        Map<String, ModuleDefinition> moduleDefs = new HashMap<String, ModuleDefinition>();
+    protected void loadModuleDefs(Map<String, ModuleDefinition> moduleDefs, List<URI> libraries) throws IOException {
 
         logger.info("Loading modules list from "+project.getFile());
 
-        MavenModuleDefinition main = buildModule(project.getArtifact(), moduleDefs);
+        MavenModuleDefinition main = buildModule(project.getArtifact(), moduleDefs, libraries);
         if(main!=null) {
             // artifact from the main project, in case those are not compiled yet
             main.addClasspath(new File(project.getBuild().getOutputDirectory()));
@@ -94,20 +94,21 @@ public class MavenProjectRepository extends AbstractRepositoryImpl {
         }
 
         for (Artifact a : (List<Artifact>) project.getAttachedArtifacts()) {
-            buildModule(a, moduleDefs);
+            buildModule(a, moduleDefs, libraries);
         }
 
         for (Artifact a : (Set<Artifact>) project.getArtifacts()) {
-            buildModule(a, moduleDefs);
+            buildModule(a, moduleDefs, libraries);
         }
 
         if(moduleDefs.isEmpty())
             throw new Error("No modules found");// should this error check be done by the caller of loadModuleDefs?
 
-        return moduleDefs;
     }
 
-    private MavenModuleDefinition buildModule(Artifact a, Map<String, ModuleDefinition> moduleDefs) throws IOException {
+    private MavenModuleDefinition buildModule(Artifact a, Map<String, ModuleDefinition> moduleDefs, List<URI> libraries)
+            throws IOException {
+
         File jarFile = a.getFile();
         if(jarFile==null || (!jarFile.getName().endsWith(".jar") && !jarFile.isDirectory()))
             // between the compile phase and the package phase, the main artifact is
@@ -118,8 +119,7 @@ public class MavenProjectRepository extends AbstractRepositoryImpl {
         if(moduleDef.getManifest().getMainAttributes().getValue(ManifestConstants.BUNDLE_NAME)==null)
             // project.getArtifacts() pick up all the transitive dependencies,
             // including to the normal jar files through modules.
-            // we don't want to create modules from those jar files, so we need to ignore non-modules.
-            return null;
+            libraries.add(jarFile.toURI());
 
         if(logger.isLoggable(Level.CONFIG))
             logger.config("Adding module "+a.getId()+" trail: "+a.getDependencyTrail());

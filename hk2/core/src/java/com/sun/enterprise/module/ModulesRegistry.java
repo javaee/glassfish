@@ -195,6 +195,23 @@ public class ModulesRegistry implements ModuleChangeListener {
             }
         }
     }
+
+    /**
+     * Get a repository from the list of attached repositories
+     * 
+     * @param name name of the repository to return
+     * @return the repository or null if not found
+     */
+    public synchronized Repository getRepository(String name) {
+        for (Integer weight : repositories.keySet()) {
+            Repository repo = repositories.get(weight);
+            if (repo.getName().equals(name)) {
+                return repo;
+            }
+        }
+        return null;
+    }
+
     /**
      * Returns the <code>Module</code> instance giving a name and version 
      * constraints.

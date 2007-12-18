@@ -9,23 +9,17 @@
 
 package com.sun.enterprise.module.impl;
 
-import com.sun.enterprise.module.ManifestConstants;
+import com.sun.enterprise.module.RepositoryChangeListener;
 import com.sun.enterprise.module.ModuleDefinition;
+import com.sun.enterprise.module.ManifestConstants;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
+import java.util.*;
+import java.util.logging.Logger;
 import java.net.URI;
+import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
-import java.nio.channels.ReadableByteChannel;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.jar.Attributes;
-import java.util.jar.Manifest;
 
 /**
  * This class is a directory based repository implementation. This mean that all jar
@@ -39,6 +33,7 @@ import java.util.jar.Manifest;
 public class DirectoryBasedRepository extends AbstractRepositoryImpl {
     
     private final File repository;
+    private final int intervalInMs = Integer.getInteger("hk2.file.directory.changeIntervalTimer", 10);
 
     /** Creates a new instance of DirectoryBasedRepository */
     public DirectoryBasedRepository(String name, File repository) throws FileNotFoundException {
@@ -46,13 +41,36 @@ public class DirectoryBasedRepository extends AbstractRepositoryImpl {
         this.repository = repository;
     }
 
+
     @Override
-    protected Map<String, ModuleDefinition> loadModuleDefs() throws IOException {
+    public synchronized boolean addListener(RepositoryChangeListener listener) {
+
+        final boolean returnValue = super.addListener(listener);
+        if (returnValue) {
+            Timer timer = new Timer();
+            timer.schedule(new TimerTask() {
+                long lastModified = repository.lastModified();
+                public void run() {
+                    synchronized(this) {
+                        if (lastModified<repository.lastModified()) {
+                            lastModified = repository.lastModified();
+                            // something has changed, look into this...
+                            directoryChanged();
+                        }
+                    }
+                }
+            }, intervalInMs, intervalInMs);
+            timer.purge();
+        }
+        return returnValue;        
+    }
+
+    @Override
+    protected void loadModuleDefs(Map<String, ModuleDefinition> moduleDefs, List<URI> libraries) throws IOException {
         if (!repository.exists()) {
             throw new FileNotFoundException(repository.getAbsolutePath());
         }
 
-        Map<String, ModuleDefinition> moduleDefs = new HashMap<String, ModuleDefinition>();
 
         try {
             File[] files = repository.listFiles();
@@ -61,11 +79,12 @@ public class DirectoryBasedRepository extends AbstractRepositoryImpl {
                     ModuleDefinition moduleDef = loadJar(aFile);
                     if (moduleDef!=null) {
                         moduleDefs.put(moduleDef.getName(), moduleDef);
+                    } else {
+                        libraries.add(aFile.toURI());
                     }
                 }
             }
 
-            return moduleDefs;
         } catch (IOException e) {
             IOException x = new IOException("Failed to load modules from " + repository);
             x.initCause(e);
@@ -73,81 +92,53 @@ public class DirectoryBasedRepository extends AbstractRepositoryImpl {
         }
     }
 
-    /**
-     * This module adds a new Module Definition to the repository.
-     *
-     * @param definition is the module definition
-     * @return true if the addition was successful
-     */
-    public void add(ModuleDefinition definition) throws IOException {
+    private synchronized void directoryChanged() {
 
-        // we need to copy all locations as found in the definition to our repository.
-        for (URI location : definition.getLocations()) {
-            InputStream is=null;
-            FileOutputStream os=null;
-            try {
-                is = location.toURL().openStream();
-                ReadableByteChannel channel = Channels.newChannel(is);
-                // this naming scheme may need to be reworked...
-                File outFile = new File(repository, definition.getName() + ".jar");
-                os = new FileOutputStream(outFile);
-                FileChannel outChannel = os.getChannel();
-                long bytes;
-                long transferedBytes=0;
-                do {
-                    bytes = outChannel.transferFrom(channel,transferedBytes , 4096);
-                    transferedBytes+=bytes;
-                } while (bytes==4096);
-            } finally {
-                try {
-                    if (is!=null)
-                        is.close();
-                } catch(IOException e) {
-                    // ignore
-                }
-                try {
-                    if (os!=null)
-                        os.close();
-                } catch(IOException e) {
-                    // ignore
-                }                
-            }
-        }
+        // not the most efficient implementation, could be revisited later
+        HashMap<String, ModuleDefinition> newModuleDefs = new HashMap<String, ModuleDefinition>();
+        List<URI> libraries = new ArrayList<URI>();
 
-        // we also need to save the definition as an external manifest file since
-        // the defintion may have been expressed with different means than our
-        // manifest entries.
-        Manifest manifest = definition.getManifest();
-        if (manifest!=null) {
-            if (manifest.getMainAttributes().getValue(ManifestConstants.BUNDLE_NAME)!=null) {
-                return;
-            }
-        }
-        // write the external manifest file
-        // TODO : have some plugability here where we separate the Manifest IO from
-        // the definition and the respository
-        File manifestFile = new File(repository, definition.getName() + ".mf");
-        manifest = new Manifest();
-        Attributes attr = manifest.getMainAttributes();
-        // name
-        attr.put(ManifestConstants.BUNDLE_NAME, definition.getName());
-        // list of imported bundle
-        StringBuffer buffer = new StringBuffer();
-        for (URI location : definition.getLocations()) {
-            if (buffer.length()>0) {
-                buffer.append(", ");
-            }
-            String fileName = location.getPath().substring(location.getPath().lastIndexOf('/'));
-            buffer.append(fileName);
-        }
-        attr.put(ManifestConstants.BUNDLE_IMPORT_NAME, buffer.toString());
-        FileOutputStream os = null;
         try {
-            os = new FileOutputStream(manifestFile);
-            manifest.write(new BufferedOutputStream(os));
-        } finally {
-            if (os!=null) {
-                os.close();
+            loadModuleDefs(newModuleDefs, libraries);
+        } catch(IOException ioe) {
+            // we probably need to wait until the jar has finished being copied
+            // XXX add some form of retry
+        }
+        for(ModuleDefinition def : newModuleDefs.values()) {
+            if (find(def.getName(), def.getVersion())==null) {
+                add(def);
+                for (RepositoryChangeListener listener : listeners) {
+                    listener.moduleAdded(def);
+                }
+            }
+        }
+        for (ModuleDefinition def : findAll()) {
+            if (!newModuleDefs.containsKey(def.getName())) {
+                remove(def);
+                for (RepositoryChangeListener listener : listeners) {
+                    listener.moduleRemoved(def);
+                }
+            }
+        }
+        List<URI> originalLibraries = super.getJarLocations();
+        for (URI location : libraries) {
+            if (!originalLibraries.contains(location)) {
+                addLibrary(location);
+                for (RepositoryChangeListener listener : listeners) {
+                    listener.jarAdded(location);
+                }
+            }
+        }
+        if (originalLibraries.size()>0) {
+            List<URI> copy = new ArrayList<URI>(originalLibraries.size());
+            copy.addAll(originalLibraries);
+            for (URI originalLocation : copy) {
+                if (!libraries.contains(originalLocation)) {
+                    removeLibrary(originalLocation);
+                    for (RepositoryChangeListener listener : listeners) {
+                        listener.jarRemoved(originalLocation);
+                    }
+                }
             }
         }
     }
