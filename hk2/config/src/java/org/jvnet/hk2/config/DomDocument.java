@@ -4,6 +4,8 @@ import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
 
 import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.XMLStreamWriter;
+import javax.xml.stream.XMLStreamException;
 import java.util.Map;
 import java.util.HashMap;
 
@@ -79,5 +81,19 @@ public class DomDocument {
 
     public Dom make(Habitat habitat, XMLStreamReader in, Dom parent, ConfigModel model) {
         return new Dom(habitat,this,parent,model,in);
+    }
+
+    /**
+     * Writes back the whole DOM tree as an XML document.
+     *
+     * <p>
+     * To support writing a subtree, this method doesn't invoke the start/endDocument
+     * events. Those are the responsibility of the caller.
+     *
+     * @param w
+     *      Receives XML infoset stream.
+     */
+    public void writeTo(XMLStreamWriter w) throws XMLStreamException {
+        root.writeTo(null,w);
     }
 }

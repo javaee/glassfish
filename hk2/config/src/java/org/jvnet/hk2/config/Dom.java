@@ -7,13 +7,14 @@ import org.jvnet.hk2.component.MultiMap;
 import org.jvnet.hk2.component.Womb;
 
 import javax.xml.stream.Location;
+import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.XMLStreamWriter;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.lang.reflect.Type;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -46,12 +47,17 @@ public class Dom extends LazyInhabitant implements InvocationHandler {
 
     private Dom parent;
 
-    static class Child {
+    static abstract class Child {
         final String name;
 
         Child(String name) {
             this.name = name;
         }
+
+        /**
+         * Writes this node to XML.
+         */
+        protected abstract void writeTo(XMLStreamWriter w) throws XMLStreamException;
     }
 
     static final class NodeChild extends Child {
@@ -61,17 +67,33 @@ public class Dom extends LazyInhabitant implements InvocationHandler {
             super(name);
             this.dom = dom;
         }
+
+        protected void writeTo(XMLStreamWriter w) throws XMLStreamException {
+            dom.writeTo(name,w);
+        }
     }
 
     static final class LeafChild extends Child {
+        /**
+         * Raw element text value before {@link Translator} processing.
+         */
         final String value;
 
         LeafChild(String name, String value) {
             super(name);
             this.value = value;
         }
+
+        protected void writeTo(XMLStreamWriter w) throws XMLStreamException {
+            w.writeStartElement(name);
+            w.writeCharacters(value);
+            w.writeEndElement();
+        }
     }
 
+    /**
+     * All attributes and their raw values before {@link Translator} processing.
+     */
     private Map<String,String> attributes = new HashMap<String, String>();
     /**
      * List of all child elements, both leaves and nodes.
@@ -609,5 +631,30 @@ public class Dom extends LazyInhabitant implements InvocationHandler {
      */
     /*package*/ void setChildren(List<Child> children) {
        this.children = children;
+    }
+
+    /**
+     * Writes back this element.
+     *
+     * @param tagName
+     *      The tag name of this element to be written. If null, this DOM node
+     *      must be a global element and its tag name will be used.
+     * @param w
+     *      Receives XML infoset stream.
+     */
+    public void writeTo(String tagName, XMLStreamWriter w) throws XMLStreamException {
+        if(tagName==null)
+            tagName = model.tagName;
+        if(tagName==null)
+            throw new IllegalArgumentException("Trying t write a local element "+this+" w/o a tag name");
+        w.writeStartElement(tagName);
+
+        for (Map.Entry<String, String> a : attributes.entrySet())
+            w.writeAttribute(a.getKey(),a.getValue());
+
+        for (Child c : children)
+            c.writeTo(w);
+        
+        w.writeEndElement();
     }
 }
