@@ -22,5 +22,11 @@
             <artifactId>tiger-types</artifactId>
             <version>RELEASE</version>
         </dependency>
+      <dependency>
+            <groupId>com.sun.xml.stream</groupId>
+            <artifactId>sjsxp</artifactId>
+            <version>1.0</version>
+            <scope>runtime</scope>
+      </dependency>
     </dependencies>
 </project>
