@@ -119,18 +119,13 @@
         </dependency>
         <dependency>
             <groupId>org.glassfish.external</groupId>
-            <artifactId>grizzly-http</artifactId>
+            <artifactId>grizzly-module</artifactId>
             <version>${grizzly.version}</version>
         </dependency>
         <dependency>
             <groupId>jasper-jsr199</groupId>
             <artifactId>jasper-jsr199</artifactId>
             <version>${jasper-jsr199.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.api</groupId>
-            <artifactId>mail</artifactId>
-            <version>${mail.version}</version>
         </dependency>
     </dependencies>
 </project>

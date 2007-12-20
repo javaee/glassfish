@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+		<groupId>org.glassfish.extras</groupId>
+    	<artifactId>extras</artifactId>
+        <version>10.0-SNAPSHOT</version>
+    </parent>
+    
+    <artifactId>gf-phobos-connector</artifactId>
+    <packaging>hk2-jar</packaging>
+    <name>Phobos connector for Glassfish V3</name>
+
+    <developers>
+        <developer>
+            <id>robc</id>
+            <name>Roberto Chinnici</name>
+            <url>http://weblogs.java.net/blog/robc/</url>
+            <organization>Sun Microsystems, Inc.</organization>
+            <roles>
+                <role>lead</role>
+                <role>developer</role>
+            </roles>
+        </developer>
+    </developers>
+
+    <build>
+        <resources>
+            <resource>
+                <directory>src/java/</directory>
+                <excludes>
+                    <exclude>**/*.java</exclude>
+                </excludes>
+            </resource>
+        </resources>
+    </build>
+    <dependencies>
+        <dependency>
+            <groupId>org.glassfish.common</groupId>
+            <artifactId>glassfish-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>	
+        <dependency>
+            <groupId>com.sun.enterprise</groupId>
+            <artifactId>hk2</artifactId>
+            <version>${hk2.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.external</groupId>
+            <artifactId>grizzly-module</artifactId>
+            <version>${grizzly.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.core</groupId>
+            <artifactId>kernel</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.phobos</groupId>
+            <artifactId>phobos-runtime</artifactId>
+            <version>${phobos.version}</version>
+			<scope>compile</scope>
+			<optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.phobos</groupId>
+            <artifactId>jsr223-api</artifactId>
+            <version>${jsr223-api.version}</version>
+			<scope>compile</scope>
+			<optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.commons</groupId>
+            <artifactId>logging-api</artifactId>
+            <version>${com.sun.commons.logging.version}</version>
+        </dependency>        
+    </dependencies>
+</project>

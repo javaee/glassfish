@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.glassfish.core</groupId>
+        <artifactId>core</artifactId>
+        <version>10.0-SNAPSHOT</version>
+    </parent>
+    <artifactId>kernel</artifactId>
+    <packaging>hk2-jar</packaging>
+    <name>Core Classes</name>
+
+    <developers>
+        <developer>
+            <id>dochez</id>
+            <name>Jerome Dochez</name>
+            <url>http://blogs.sun.com/dochez</url>
+            <organization>Sun Microsystems, Inc.</organization>
+            <roles>
+                <role>lead</role>
+                <role>developer</role>
+            </roles>
+        </developer>
+    </developers>
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>process-sources</phase>
+                        <configuration>
+                            <tasks>
+                                <delete file="src/main/java/com/sun/appserv/server/util/Version.java"/>
+                                <copy file="src/main/java/com/sun/appserv/server/util/VersionTemplate"
+                                      tofile="src/main/java/com/sun/appserv/server/util/Version.java">
+                                    <filterset>
+                                        <filter token="BRAND_NAME" value="${brand_name}"/>
+                                        <filter token="PRODUCT_NAME" value="${product.name}"/>
+                                        <filter token="ABBREV_PRODUCT_NAME" value="${abbrev_product_name}"/>
+                                        <filter token="FULL_VERSION" value="${pe.version}"/>
+                                        <filter token="MAJOR_VERSION" value="${major_version}"/>
+                                        <filter token="MINOR_VERSION" value="${minor_version}"/>
+                                        <filter token="BUILD_ID" value="${build.id}"/>
+                                    </filterset>
+                                </copy>
+                            </tasks>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+        <resources>
+            <resource>
+                <targetPath>META-INF/services</targetPath>
+                <directory>target/generated</directory>
+            </resource>
+            <resource>
+                <directory>src/main/java</directory>
+                <includes>
+                    <include>com/sun/enterprise/deployment/backend/*.properties</include>
+                    <include>com/sun/enterprise/v3/**/*.properties</include>
+                </includes>
+            </resource>
+        </resources>
+    </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.glassfish.common</groupId>
+            <artifactId>glassfish-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.admin</groupId>
+            <artifactId>config-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.enterprise</groupId>
+            <artifactId>hk2</artifactId>
+            <version>${hk2.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.external</groupId>
+            <artifactId>grizzly-module</artifactId>
+            <version>${grizzly.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.common</groupId>
+            <artifactId>common-util</artifactId>
+            <version>${project.version}</version>
+        </dependency>       
+    </dependencies>
+</project>

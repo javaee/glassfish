@@ -64,7 +64,7 @@
         </dependency>
         <dependency>
             <groupId>org.glassfish.external</groupId>
-            <artifactId>grizzly-http</artifactId>
+            <artifactId>grizzly-module</artifactId>
             <version>${grizzly.version}</version>
             <scope>compile</scope>
         </dependency>         
