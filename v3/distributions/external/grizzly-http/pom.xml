@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <parent>
+        <groupId>org.glassfish.external</groupId>
+        <artifactId>external</artifactId>
+        <version>10.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>grizzly-http</artifactId>
+    <packaging>hk2-jar</packaging>
+    <version>${grizzly.version}</version>
+    <name>Module packaging for Grizzly</name>
+    <description>Grizzly HTTP Module for GlassFish v3</description>
+
+    <developers>
+        <developer>
+            <id>jfarcand/</id>
+            <name>Jean Francois Arcand</name>
+            <url>http://weblogs.java.net/blog/jfarcand/</url>
+            <organization>Sun Microsystems, Inc.</organization>
+            <roles>
+                <role>lead</role>
+                <role>developer</role>
+            </roles>
+        </developer>
+        <developer>
+            <id>oleksiys</id>
+            <name>Oleksiy Stashok</name>
+            <url>http://blogs.sun.com/dochez</url>
+            <organization>Sun Microsystems, Inc.</organization>
+            <roles>
+                <role>developer</role>
+            </roles>
+        </developer>
+    </developers>
+    <dependencies>
+        <dependency>
+            <groupId>com.sun.grizzly</groupId>
+             <artifactId>grizzly-http</artifactId>
+             <version>${grizzly.version}</version>
+        </dependency>
+    </dependencies>
+</project>

@@ -45,7 +45,7 @@
     <dependencies>
         <dependency>
             <groupId>com.sun.grizzly</groupId>
-             <artifactId>jruby</artifactId>
+             <artifactId>grizzly-jruby</artifactId>
              <version>${grizzly.version}</version>
              <exclusions>
                  <exclusion>
@@ -62,7 +62,7 @@
                  </exclusion>
                  <exclusion>
                      <groupId>com.sun.grizzly</groupId>
-                     <artifactId>http</artifactId>                     
+                     <artifactId>grizzly-http</artifactId>                     
                  </exclusion>
              </exclusions>
         </dependency>
