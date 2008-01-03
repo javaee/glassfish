@@ -5,7 +5,17 @@ import com.sun.hk2.component.ScopeInstance;
 import org.jvnet.hk2.annotations.Service;
 
 /**
+ * Represents a component in the world of {@link Habitat}.
+ *
+ * <p>
+ * {@link Inhabitant} extends from {@link Holder}, as one of its
+ * purposes is to encapsulate how we obtain an instance of a component.
+ * On topf of that, {@link Inhabitant} enhances {@link Holder} by
+ * adding more metadata that {@link Habitat} uses for finding
+ * components and hooking them up together.
+ *
  * @author Kohsuke Kawaguchi
+ * @see Inhabitant
  */
 public interface Inhabitant<T> extends Holder<T> {
     /**
