@@ -24,20 +24,19 @@ import org.jvnet.hk2.component.Habitat;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.FileNotFoundException;
 import java.net.JarURLConnection;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.StringTokenizer;
 import java.util.Properties;
-import java.util.regex.Pattern;
-import java.util.regex.Matcher;
+import java.util.StringTokenizer;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * CLI entry point that will setup the module subsystem and delegate the
