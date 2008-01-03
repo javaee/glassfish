@@ -61,7 +61,7 @@
           
           We then finally compute the set of modules and jars that are not in X by one more subtraction.
         -->
-        <resolveAll todir="target/stage/glassfish/web">
+        <resolveAll todir="target/stage/glassfish/modules">
             <scope level="runtime">
                 <subtract>
                     <subGraph artifactId="gf-web-connector" />
