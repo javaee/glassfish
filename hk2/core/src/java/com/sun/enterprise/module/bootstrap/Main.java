@@ -140,7 +140,7 @@ public class Main {
             throw new BootException("Failed to read manifest from "+bootstrap);
         }
 
-        createRepository(root,mf, mr);
+        createRepository(root,bootstrap,mf,mr);
         setParentClassLoader(mr);
         launch(mr, targetModule, root, args);
     }
@@ -153,8 +153,11 @@ public class Main {
     /**
      * Creates repositories needed for the launch and 
      * adds the repositories to {@link ModulesRegistry}
+     *
+     * @param bootstrapJar
+     *      The file from which manifest entries are loaded. Used for error reporting
      */
-    protected void createRepository(File root, Manifest mf, ModulesRegistry mr) throws BootException {
+    protected void createRepository(File root, File bootstrapJar, Manifest mf, ModulesRegistry mr) throws BootException {
         String repos = mf.getMainAttributes().getValue(ManifestConstants.REPOSITORIES);
         if (repos!=null) {
             StringTokenizer st = new StringTokenizer(repos);
@@ -165,7 +168,7 @@ public class Main {
                 try {
                     repoInfo = mf.getMainAttributes().getValue(repoKey);
                 } catch (Exception e) {
-                    throw new BootException("Invalid repository id " + repoId, e);
+                    throw new BootException("Invalid repository id " + repoId+" in "+bootstrapJar, e);
                 }
                 if (repoInfo!=null) {
                     addRepo(root, repoId, repoInfo, mr);
@@ -204,6 +207,9 @@ public class Main {
             if (!location.isAbsolute()) {
                 location = new File(root, uri);
             }
+            if (!location.exists())
+                throw new BootException("Non-existent directory: "+location);
+            
             try {
                 Repository repo = new DirectoryBasedRepository(repoId, location);
                 addRepo(repo, mr, weight);
