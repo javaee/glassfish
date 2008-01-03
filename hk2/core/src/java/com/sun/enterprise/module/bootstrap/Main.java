@@ -198,8 +198,6 @@ public class Main {
         String weight = props.getProperty("weight");
 
         // need a plugability layer here...
-        Repository repo;
-
         if ("directory".equalsIgnoreCase(type)) {
 
             File location = new File(uri);
@@ -207,7 +205,7 @@ public class Main {
                 location = new File(root, uri);
             }
             try {
-                repo = new DirectoryBasedRepository(repoId, location);
+                Repository repo = new DirectoryBasedRepository(repoId, location);
                 addRepo(repo, mr, weight);
             } catch (IOException e) {
                 throw new BootException("Exception while adding " + repoId + " repository", e);
