@@ -198,7 +198,7 @@ public class Main {
         String weight = props.getProperty("weight");
 
         // need a plugability layer here...
-        Repository repo=null;
+        Repository repo;
 
         if ("directory".equalsIgnoreCase(type)) {
 
