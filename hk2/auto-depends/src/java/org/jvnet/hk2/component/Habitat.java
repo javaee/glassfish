@@ -213,7 +213,9 @@ public class Habitat {
      * one of them. 
      */
     public <T> T getByContract(Class<T> contractType) {
-        return getBy(contractType, byType);
+        List<NamedInhabitant> l = byContract.get(contractType.getName());
+        if(l.isEmpty())     return null;
+        else                return (T)l.get(0).inhabitant.get();
     }
 
     private <T> T getBy(Class<T> implType, MultiMap<String, Inhabitant> index) {
