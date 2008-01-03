@@ -70,7 +70,7 @@ public class Main extends com.sun.enterprise.module.bootstrap.Main {
 
             cl = new MaskingClassLoader(
                 cl,
-                urls.toArray(new URL[0]),
+                urls.toArray(new URL[urls.size()]),
                 "javax.xml.bind.",
                 "javax.xml.ws.",
                 "com.sun.xml."
