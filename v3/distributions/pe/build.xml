@@ -20,7 +20,6 @@
  [name of copyright owner]
 -->
 <project name="nucleus-base bundle creation" default="create.bundle" basedir=".">
-    <typedef name="packaging" classname="org.jvnet.maven.plugin.antrun.PackagingCondition"/>
     <target name="create.bundle">
         <mkdir dir="target/stage"/>
         <resolveArtifact artifactId="javadb" property="javadb.jar"/>
@@ -37,16 +36,42 @@
                 <exclude name="javadb/3RDPARTY.zip"/>
             </patternset>
         </unzip>
-        <resolveAll artifactId="gf-web-connector" todir="target/stage/glassfish/modules">
-            <packaging is="jar"/>
-        </resolveAll>
         <resolveArtifact artifactId="nucleus-base" property="nucleus-base.zip"/>
 
         <resolveAll todir="target/stage/glassfish/modules">
-            <or>
-                <packaging is="hk2-jar" />
-                <packaging is="jar" />
-            </or>
+            <excludeArtifactsTransitively>
+                <scope level="runtime"/>
+                <artifact artifactId="gf-web-connector" />
+            </excludeArtifactsTransitively>
+        </resolveAll>
+        <delete dir="target/stage/glassfish/modules" includes="*.zip" />
+        
+        <!--
+          This filtering definition obtains a set of HK2 modules that are retained by gf-web-connector
+          (that is, set of modules that won't be in the dependency list if gf-web-connector is not a part of the dependency;
+          IOW, a dependency only reachable through gf-web-connector) and all its non-module dependencies
+          (that is, normal jars.)
+          
+          The formula to compute this is non-trivial. We first compute a subgraph X which represents
+          nodes that we *don't* want. That is, all HK2 modules that are reachable without going through
+          gf-web-connector. I use <packaging not="..."/> so that it includes transitive dependencies
+          through distribution zips. Also note that all non-module normal jars need to be excluded from
+          X because if a module that ends up in /web depends on normal jars, those jars also need to be
+          in /web.
+          
+          We then finally compute the set of modules and jars that are not in X by one more subtraction.
+        -->
+        <resolveAll todir="target/stage/glassfish/web">
+            <scope level="runtime">
+                <subtract>
+                    <subGraph artifactId="gf-web-connector" />
+                    <packaging not="jar"><!-- = subgraph X -->
+                        <excludeArtifactsTransitively>
+                            <artifact artifactId="gf-web-connector" />
+                        </excludeArtifactsTransitively>
+                    </packaging>
+                </subtract>
+            </scope>
         </resolveAll>
 
         <zip file="target/pe.zip" basedir="target/stage">

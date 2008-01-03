@@ -20,18 +20,15 @@ own identifying information: Portions Copyright [yyyy]
 [name of copyright owner]
 -->
 <project name="nucleus-base bundle creation" default="create.bundle" basedir=".">
-   <typedef name="packaging" classname="org.jvnet.maven.plugin.antrun.PackagingCondition"/>
    <target name="create.bundle">
        <mkdir dir="target/stage"/>
 
        <resolveArtifact artifactId="nucleus-base" property="nucleus-base.zip"/>
 
        <resolveAll todir="target/stage/glassfish/modules">
-           <or>
-               <packaging is="hk2-jar" />
-               <packaging is="jar" />
-           </or>
+           <scope level="runtime" />
        </resolveAll>
+       <delete dir="target/stage/glassfish/modules" includes="*.zip" />
 
        <zip file="target/nucleus.zip" basedir="target/stage">
            <zipgroupfileset file="${nucleus-base.zip}"/>
