@@ -64,7 +64,7 @@ public class Main extends com.sun.enterprise.module.bootstrap.Main {
                 try {
                     urls.add(location.toURL());
                 } catch (MalformedURLException e) {
-                    new BootException("Cannot set up masking class loader", e);
+                    throw new BootException("Cannot set up masking class loader", e);
                 }
             }
 
