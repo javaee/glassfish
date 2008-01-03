@@ -133,11 +133,11 @@ public class Main {
 
         // get the ModuleStartup implementation.
         ModulesRegistry mr = ModulesRegistry.createRegistry();
-        Manifest mf = null;
+        Manifest mf;
         try {
             mf = (new JarFile(bootstrap)).getManifest();
         } catch (IOException e) {
-            mf=null;
+            throw new BootException("Failed to read manifest from "+bootstrap);
         }
 
         createRepository(root,mf, mr);
