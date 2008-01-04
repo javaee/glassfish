@@ -215,7 +215,10 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
         } catch(Exception e) {
             if (expansionDir!=null) {
                FileUtils.whack(expansionDir);
-            }            
+            }
+            logger.log(Level.SEVERE, "Error during deployment ", e);
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            report.setMessage(e.getMessage());
         } finally {
             try {
                 archive.close();

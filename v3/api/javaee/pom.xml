@@ -10,7 +10,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>javaee</artifactId>
 	<version>${javaee-api.version}</version>
-    <packaging>jar</packaging>
+    <packaging>hk2-jar</packaging>
     <name>Java(TM) EE Specification APIs</name>
     <developers>
         <developer>
@@ -114,13 +114,11 @@
             <groupId>javax.transaction</groupId>
             <artifactId>transaction-api</artifactId>
             <version>${transaction-api.version}</version>
-            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>javax.servlet.jsp</groupId>
             <artifactId>jsp-api</artifactId>
             <version>${jsp-api.version}</version>
-            <scope>runtime</scope>
         </dependency>
     </dependencies>
 </project>

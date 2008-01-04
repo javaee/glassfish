@@ -97,7 +97,7 @@
 				  s.autorequire = "GlassFish"
 				  s.test_files = FileList["{test}/**/*test.rb"].to_a
 				  s.has_rdoc = false
-				  s.extra_rdoc_files = ["README","LICENSE.txt","CDDLHeader.txt","CDDLv1.0.txt","COPYRIGHT"]
+				  s.extra_rdoc_files = ["README","LICENSE.txt","COPYRIGHT"]
 				end
 
 				# Create the gem distribution package

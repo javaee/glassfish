@@ -27,6 +27,7 @@ import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.v3.data.ApplicationInfo;
 import com.sun.enterprise.v3.data.ContainerInfo;
 import com.sun.enterprise.v3.data.ContainerRegistry;
+import com.sun.enterprise.module.Module;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.glassfish.api.admin.AdminCommand;
@@ -35,7 +36,6 @@ import org.glassfish.api.container.Sniffer;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
-import org.jvnet.hk2.component.Singleton;
 
 /**
  * This admin command list the containers currentely running within that
@@ -69,7 +69,6 @@ public class ListContainersCommand implements AdminCommand {
                     "No container currently configured"));
         } else {
             for (Sniffer sniffer : sniffers) {
-                boolean foundOne = false;
                 ActionReport.MessagePart container = top.addChild();
                 container.setMessage(sniffer.getModuleType());
                 container.addProperty(localStrings.getLocalString("contractprovider", "ContractProvider"),
@@ -80,9 +79,10 @@ public class ListContainersCommand implements AdminCommand {
                     container.addProperty(
                             localStrings.getLocalString("status", "Status"),
                             localStrings.getLocalString("started", "Started"));
-                    container.addProperty(localStrings.getLocalString("connector", "Connector"), 
-                            containerInfo.getConnector().getModuleDefinition().getName() +
-                            ":" + containerInfo.getConnector().getModuleDefinition().getVersion());
+                    Module connectorModule = Module.find(containerInfo.getContainer().getClass());
+                    container.addProperty(localStrings.getLocalString("connector", "Connector"),
+                            connectorModule.getModuleDefinition().getName() +
+                            ":" + connectorModule.getModuleDefinition().getVersion());
                     container.addProperty(localStrings.getLocalString("implementation", "Implementation"),
                             containerInfo.getContainer().getClass().toString());
                     Iterable<ApplicationInfo> apps = containerInfo.getApplications();

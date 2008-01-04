@@ -24,7 +24,8 @@
 package com.sun.enterprise.v3.services.impl;
 
 import com.sun.enterprise.config.serverbeans.*;
-import com.sun.enterprise.module.ModulesRegistry;
+import com.sun.enterprise.config.serverbeans.Module;
+import com.sun.enterprise.module.*;
 import com.sun.enterprise.module.impl.Utils;
 import com.sun.enterprise.v3.data.ContainerInfo;
 import com.sun.enterprise.v3.data.ContainerRegistry;
@@ -504,7 +505,9 @@ public class GrizzlyAdapter implements Startup, com.sun.grizzly.tcp.Adapter, Pos
                     services = modulesRegistry.getProvidersClass(FileServer.class);
                 } else {
                     containerRegistry.addContainer(containerInfo);
-                    services = containerInfo.getConnector().getProvidersClass(FileServer.class);
+                    com.sun.enterprise.module.Module connectorModule = com.sun.enterprise.module.Module.find(containerInfo.getContainer().getClass());
+                    
+                    services = connectorModule.getProvidersClass(FileServer.class);
                 }
                 for (Class<? extends FileServer> service :services) {
                     WebRequestHandler annotation = service.getAnnotation(WebRequestHandler.class);

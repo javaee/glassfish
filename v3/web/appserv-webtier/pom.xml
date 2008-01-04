@@ -77,6 +77,11 @@
             <version>${project.parent.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.glassfish.common</groupId>
+            <artifactId>common-ee-util</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+        <dependency>
             <!--
               since our minimum requirement is still JDK5,
               we need this dependency. When we we switch

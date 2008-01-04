@@ -33,8 +33,8 @@ import java.io.IOException;
 import java.util.logging.Logger;
 
 /**
- * this is necessary as long as the web container is not moved to the web subdirectory
- *
+ * Implementation of the Sniffer for the web container.
+ * 
  * @author Jerome Dochez
  */
 @Service(name="web")
@@ -47,20 +47,7 @@ public class WebSniffer  extends GenericSniffer implements Sniffer {
     
     public WebSniffer(String containerName, String appStigma, String urlPattern) {
         super(containerName, appStigma, urlPattern);
-    }
-
-    /**
-     * Sets up the container libraries so that any imported bundle from the
-     * connector jar file will now be known to the module subsystem
-     * @param containerHome is where the container implementation resides
-     * @param logger the logger to use
-     * @throws java.io.IOException exception if something goes sour
-     */
-    @Override
-    public void setup(String containerHome, Logger logger) throws IOException {
-        // do nothing, we are embedded in GFv3 for now
-    }
-    
+    }    
 
     final String[] deployers = { "com.sun.enterprise.v3.web.WebDeployer" };
         

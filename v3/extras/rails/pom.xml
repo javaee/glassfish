@@ -31,21 +31,6 @@
             </roles>
         </developer>
     </developers>
-    <build>
-		<plugins>
-        <plugin>
-            <groupId>com.sun.enterprise</groupId>
-            <artifactId>hk2-maven-plugin</artifactId>
-            <configuration>
-                <archive>
-                    <manifestEntries>
-                        <Module-Import-Policy>com.sun.enterprise.rails.RailsImportPolicy</Module-Import-Policy>
-                    </manifestEntries>
-				</archive>
-			</configuration>
-        </plugin>
-	</plugins>
-	</build>
     <dependencies>
         <dependency>
             <groupId>org.glassfish.common</groupId>
@@ -59,7 +44,7 @@
         </dependency>
         <dependency>
             <groupId>org.glassfish.external</groupId>
-            <artifactId>grizzly-jruby</artifactId>
+            <artifactId>grizzly-jruby-module</artifactId>
             <version>${grizzly.version}</version>
         </dependency>
         <dependency>

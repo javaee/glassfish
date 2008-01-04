@@ -33,14 +33,9 @@
     </developers>    
     <dependencies>
         <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>servlet-api</artifactId>
-            <version>${servlet-api.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>javax.servlet.jsp</groupId>
-            <artifactId>jsp-api</artifactId>
-            <version>${jsp-api.version}</version>
+            <groupId>javax.javaee</groupId>
+            <artifactId>javaee-api</artifactId>
+            <version>${javaee-api.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.common</groupId>
@@ -164,22 +159,7 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.sun.enterprise.glassfish</groupId>
-            <artifactId>dol</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.enterprise.glassfish</groupId>
-            <artifactId>monitoring-core</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.enterprise.glassfish</groupId>
-            <artifactId>v3-core</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.enterprise.glassfish</groupId>
+            <groupId>org.glassfish.web</groupId>
             <artifactId>webtier-extensions</artifactId>
             <version>${project.version}</version>
         </dependency>

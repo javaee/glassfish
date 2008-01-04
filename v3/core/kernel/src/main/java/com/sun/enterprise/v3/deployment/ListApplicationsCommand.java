@@ -30,6 +30,7 @@ import org.glassfish.api.admin.AdminCommandContext;
 import com.sun.enterprise.v3.data.ContainerRegistry;
 import com.sun.enterprise.v3.data.ContainerInfo;
 import com.sun.enterprise.v3.data.ApplicationInfo;
+import com.sun.enterprise.module.Module;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
 
@@ -55,14 +56,15 @@ public class ListApplicationsCommand implements AdminCommand {
         for (ContainerInfo containerInfo : containerRegistry.getContainers()) {
             ActionReport.MessagePart containerChild = part.addChild();
             containerChild.setMessage(containerInfo.getSniffer().getModuleType() + " ContractProvider");
-            containerChild.addProperty("Connector module", containerInfo.getConnector().getModuleDefinition().getName());
+            Module connectorModule = Module.find(containerInfo.getContainer().getClass());            
+            containerChild.addProperty("Connector module", connectorModule.getModuleDefinition().getName());
             containerChild.addProperty("Sniffer module", containerInfo.getSniffer().getClass().toString());
             containerChild.setChildrenType("Application");
             Iterable<ApplicationInfo> apps  = containerInfo.getApplications();            
             for (ApplicationInfo info : apps) {
                 ActionReport.MessagePart appPart = containerChild.addChild();
                 appPart.setMessage(info.getName());
-                appPart.getProps().put("Source", info.getSource());
+                appPart.getProps().put("Source", info.getSource().getURI());
             }
         }
     }

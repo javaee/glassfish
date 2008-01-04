@@ -39,6 +39,11 @@
         </dependency>
         <dependency>
             <groupId>org.glassfish.web</groupId>
+            <artifactId>war-util</artifactId>
+            <version>${pe.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.web</groupId>
             <artifactId>gf-web-connector</artifactId>
             <version>${pe.version}</version>
         </dependency>
@@ -51,6 +56,11 @@
             <groupId>org.glassfish.extras</groupId>
             <artifactId>gf-phobos-connector</artifactId>
             <version>${pe.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.javaee</groupId>
+            <artifactId>javaee</artifactId>
+            <version>${javaee-api.version}</version>
         </dependency>
         <!-- base distribution image -->
         <dependency>

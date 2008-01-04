@@ -33,6 +33,7 @@ import org.glassfish.api.container.ContainerProvider;
 import org.glassfish.api.container.Sniffer;
 import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.component.Inhabitant;
 
 import java.io.*;
 import java.net.MalformedURLException;
@@ -86,7 +87,7 @@ public class ContainerStarter {
         String containerHome = Utils.getProperty(containerName + ".home");
         if (containerHome==null) {
             // the container could be installed at the default location
-            // which is in <Root Installation>/lib/containerName
+            // which is in <Root Installation>/modules/containerName
             String root = System.getProperty("com.sun.aas.installRoot");
             File location = new File(root);
             location = new File(location, "modules");
@@ -112,97 +113,21 @@ public class ContainerStarter {
 
         }
 
-        // first try, we get the glue code from our repositories.
-        Module glueModule=null;
-        try {
-            // TODO : this is really bad hack jerome
-            glueModule = modulesRegistry.makeModuleFor("org.glassfish.extras:" + bundleName, version);
-            if (glueModule==null) {
-                glueModule = modulesRegistry.makeModuleFor("org.glassfish.web:" + bundleName, version); 
-            }
-        } catch(ResolveError e) {
-            logger.log(Level.SEVERE, "Resolution Error ", e);
-            return null;
-        } catch(Exception e) {
-            // various bad things can happen here, log and return
-            logger.severe(e.getMessage());
-            return null;
-        }
-        if (glueModule==null) {
-            // ok we don't know about the connector module yet, let's try to
-            // find it.
-            Repository connector = habitat.getComponent(Repository.class, "connectors");
-
-            // now we are looking for the connector module. The connector module
-            // will be searched in the following location in the specified order :
-            //  1. in the containerHome/modules directory
-            //  2. in the connectors directory of the application server
-            //  3. in the current list of modules we know about
-            //  4. anywhere in the containerHome directory (can be slow)
-            //
-            // let's find the jar file in the container modules installation file system
-            File jarLocation = new File(containerHome, "modules");
-            jarLocation = new File(jarLocation, jarFileName);
-
-            ModuleDefinition moduleDef=null;
-
-            try {
-
-                if (jarLocation.exists()) {
-                    // option 1
-                    moduleDef = new CookedModuleDefinition(jarLocation, null);
-
-                } else {
-
-                    // option 2
-                    if (connector!=null) {
-                        moduleDef = connector.find(bundleName, version);
-                    }
-                    if (moduleDef==null) {
-                        // option 3
-                        glueModule= modulesRegistry.makeModuleFor(bundleName, version);
-                        if (glueModule==null) {
-                            // option 4
-                            jarLocation = findFile(jarFileName, new File(containerHome));
-                            if (jarLocation!=null) {
-                                moduleDef = new CookedModuleDefinition(jarLocation, null);
-                            }
-                        }
-                    }
-                }
-
-            } catch(IOException e) {
-                logger.severe("container installation failed, aborting");
-                return null;
-            }
-
-            if (glueModule==null) {
-                // we must have a module definition
-                if (moduleDef!=null) {
-                    // TODO : we need to compare the moduleDef version and the passed parameter version
-
-                    modulesRegistry.add(moduleDef);
-                    glueModule = modulesRegistry.makeModuleFor(moduleDef.getName(), moduleDef.getVersion());
-                    if (glueModule==null) {
-                        logger.log(Level.SEVERE, "connector module " + bundleName + " not found in " + containerHome);
-                         // TODO : throw ResolveError
-                         return null;
-                    }
-                } else {
-                    logger.severe("Cannot find connector module " + jarFileName);
-                    return null;                    
-                }
-            }
-
-        }
-
         // first the right container from that module.
         ClassLoader cl = Thread.currentThread().getContextClassLoader();
         try {
-            Thread.currentThread().setContextClassLoader(glueModule.getClassLoader());
-            ContainerProvider container = habitat.getComponent(ContainerProvider.class, sniffer.getModuleType());
+            //Thread.currentThread().setContextClassLoader(glueModule.getClassLoader());
+            Inhabitant<? extends ContainerProvider> provider = habitat.getInhabitant(ContainerProvider.class, sniffer.getModuleType());
+            if (provider==null) {
+                logger.severe("Cannot find ContainerProvider named " + sniffer.getModuleType());
+                logger.severe("Cannot start " + sniffer.getModuleType() + " container");
+                return null;
+            }
+            Thread.currentThread().setContextClassLoader(provider.type().getClassLoader());
+            ContainerProvider container = provider.get();
+            //ContainerProvider container = habitat.getComponent(ContainerProvider.class, sniffer.getModuleType());
             if (container!=null) {
-                ContainerInfo info = new ContainerInfo(container, sniffer, glueModule);
+                ContainerInfo info = new ContainerInfo(container, sniffer);
 
                 ContainerRegistry registry = habitat.getComponent(ContainerRegistry.class);
                 registry.addContainer(info);
@@ -219,7 +144,7 @@ public class ContainerStarter {
         // that could be ok as there may not be an application container associated
         // with this module type but only a request handler.
         
-        return new ContainerInfo(null, sniffer, glueModule);
+        return new ContainerInfo(null, sniffer);
     }
 
     /**

@@ -7,9 +7,9 @@
         <version>10.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>common-util</artifactId>
+    <artifactId>common-ee-util</artifactId>
     <packaging>hk2-jar</packaging>
-    <name>Common Utilities</name>
+    <name>Common Utilities for Java EE implementations</name>
 
     <developers>
         <developer>
@@ -39,7 +39,21 @@
             <groupId>org.glassfish.common</groupId>
             <artifactId>glassfish-api</artifactId>
             <version>${project.parent.version}</version>
+        </dependency> 
+	    <dependency>
+            <groupId>org.glassfish.common</groupId>
+            <artifactId>common-util</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>         
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+            <version>${servlet-api.version}</version>
         </dependency>
-       
+        <dependency>
+            <groupId>javax.persistence</groupId>
+            <artifactId>persistence-api</artifactId>
+            <version>${persistence-api.version}</version>
+        </dependency>         
    </dependencies>
 </project>

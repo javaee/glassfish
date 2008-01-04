@@ -29,9 +29,6 @@ import org.glassfish.api.container.Sniffer;
 import org.glassfish.api.deployment.Deployer;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.annotations.Scoped;
-import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.Singleton;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -73,7 +70,7 @@ public abstract class GenericSniffer implements Sniffer {
      */
     public boolean handles(ReadableArchive location, ClassLoader loader) {
         if (appStigma != null) {
-            InputStream is = null;
+            InputStream is;
             try {
                 is = location.getEntry(appStigma);
                 if (is != null) {
@@ -119,25 +116,6 @@ public abstract class GenericSniffer implements Sniffer {
      * @throws IOException exception if something goes sour
      */
     public void setup(String containerHome, Logger logger) throws IOException {
-        // In most cases, the location of the jar files for a
-        // particular container is in <containerHome>/lib.
-        if (!(new File(containerHome).exists())) {
-            throw new FileNotFoundException(getModuleType() + " container not found at " + containerHome);
-        }
-        try {
-            File libDirectory = new File(containerHome, "lib");
-            if (!libDirectory.exists()) {
-                logger.warning(getModuleType() + " container does not have a lib directory");
-                return;
-            }
-            DirectoryBasedRepository containerRepo = new DirectoryBasedRepository(getModuleType(),
-                    libDirectory);
-            containerRepo.initialize();
-            modulesRegistry.addRepository(containerRepo);
-        } catch (FileNotFoundException e) {
-            logger.log(Level.SEVERE, "Cannot set up the repository for the container", e);
-            throw e;
-        }
     }
 
     /**
@@ -146,9 +124,6 @@ public abstract class GenericSniffer implements Sniffer {
      * 
      */
     public void tearDown() {
-        
-        modulesRegistry.removeRepository(getModuleType());
-        
     }
     
     /**
@@ -170,17 +145,17 @@ public abstract class GenericSniffer implements Sniffer {
                 validDeployers.add(Deployer.class.cast(c.newInstance()));
             } catch (ClassNotFoundException e) {
                 if (logger!=null) {
-                    logger.log(Level.SEVERE, "Invalid phobos installation, cannot find the deployer");
+                    logger.log(Level.SEVERE, "Invalid " + getModuleType() + " installation, cannot find the deployer");
                 }
                 return null;
             } catch (IllegalAccessException e) {
                 if (logger!=null) {
-                    logger.log(Level.SEVERE, "Invalid phobos installation, cannot find the deployer", e);
+                    logger.log(Level.SEVERE, "Invalid " + getModuleType() + " installation, cannot find the deployer", e);
                 }
                 return null;
             } catch (InstantiationException e) {
                 if (logger!=null) {
-                    logger.log(Level.SEVERE, "Invalid phobos installation, cannot instantiate the deployer", e);
+                    logger.log(Level.SEVERE, "Invalid " + getModuleType() + " installation, cannot instantiate the deployer", e);
                 }
                 return null;
             }

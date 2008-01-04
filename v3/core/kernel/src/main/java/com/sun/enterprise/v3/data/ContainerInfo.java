@@ -47,8 +47,6 @@ public class ContainerInfo<T, U extends ApplicationContainer> {
 
     final T container;
     final Sniffer sniffer;
-    final Module connector;
-    final ClassLoader connectorCL;
     ContainerRegistry registry = null;
     Map<String, ApplicationInfo> deployedApps = new HashMap<String, ApplicationInfo>();
     Map<WeakReference<Thread>, Set<Integer>> addedThreadLocals = new HashMap();
@@ -60,13 +58,10 @@ public class ContainerInfo<T, U extends ApplicationContainer> {
      *
      * @param container instance of the container
      * @param sniffer sniffer associated with that container
-     * @param connector module implementing the container's ContractProvider/Deployer services
      */
-    public ContainerInfo(T container, Sniffer sniffer, Module connector) {
+    public ContainerInfo(T container, Sniffer sniffer) {
         this.container = container;
         this.sniffer = sniffer;
-        this.connector = connector;
-        this.connectorCL = connector.getClassLoader();
     }
 
     /**
@@ -83,22 +78,6 @@ public class ContainerInfo<T, U extends ApplicationContainer> {
      */
     public Sniffer getSniffer() {
         return sniffer;
-    }
-
-    /**
-     * Return the connector module implementing the ContractProvider/Deployer services
-     * @return the connector module
-     */
-    public Module getConnector() {
-        return connector;
-    }
-
-    /**
-     * Return the connector module public class loader
-     * @return the connector's class loader
-     */
-    public ClassLoader getConnectorCL() {
-        return connectorCL;
     }
 
     /**

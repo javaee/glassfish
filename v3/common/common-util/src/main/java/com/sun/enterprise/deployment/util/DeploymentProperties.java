@@ -47,7 +47,7 @@ import java.util.Iterator;
 import java.util.HashMap;
 import java.util.Map;
 import java.io.File;
-import javax.enterprise.deploy.shared.ModuleType;
+//import javax.enterprise.deploy.shared.ModuleType
 
 /**
  * This properties are used to transfer information between
@@ -322,20 +322,6 @@ public class DeploymentProperties extends Properties {
         if(resTargetList != null) {
             setProperty(RESOURCE_TARGET_LIST, resTargetList);
         }
-    }
-
-    public void setType(ModuleType type) {
-        if (type != null) {
-            setProperty(TYPE, String.valueOf(type.getValue()));
-        }
-    }
-
-    public ModuleType getType() {
-        String t = getProperty(TYPE, null);
-        if ( t != null ) {
-            return ModuleType.getModuleType((Integer.valueOf(t)).intValue());
-        }
-        return null;
     }
 
     public void setUpload(boolean uploadEnabled) {

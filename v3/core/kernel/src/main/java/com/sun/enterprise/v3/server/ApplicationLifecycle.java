@@ -25,6 +25,7 @@ package com.sun.enterprise.v3.server;
 
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import com.sun.enterprise.module.ModulesRegistry;
+import com.sun.enterprise.module.Module;
 import com.sun.enterprise.v3.data.*;
 import com.sun.enterprise.v3.deployment.DeployCommand;
 import com.sun.enterprise.v3.deployment.DeploymentContextImpl;
@@ -192,7 +193,8 @@ abstract public class ApplicationLifecycle {
 
             ClassLoader currentCL = Thread.currentThread().getContextClassLoader();
             try {
-                Thread.currentThread().setContextClassLoader(containerInfo.getConnectorCL());
+                Module connectorModule = Module.find(containerInfo.getContainer().getClass());
+                Thread.currentThread().setContextClassLoader(connectorModule.getClassLoader());
                 try {
                     preparedDeployers.add(deployer);
                     deployer.prepare(context);
@@ -219,7 +221,8 @@ abstract public class ApplicationLifecycle {
 
             ClassLoader currentCL = Thread.currentThread().getContextClassLoader();
             try {
-                Thread.currentThread().setContextClassLoader(containerInfo.getConnectorCL());
+                Module connectorModule = Module.find(containerInfo.getContainer().getClass());
+                Thread.currentThread().setContextClassLoader(connectorModule.getClassLoader());
                 try {
                     ApplicationContainer appCtr = deployer.load(containerInfo.getContainer(), context);
                     ModuleInfo moduleInfo = new ModuleInfo(containerInfo, appCtr, context.getModuleMetaData(sniffer.getModuleType(), Object.class));

@@ -24,6 +24,7 @@
 package com.sun.enterprise.glassfish.bootstrap;
 
 import com.sun.enterprise.module.*;
+import com.sun.enterprise.module.impl.DirectoryBasedRepository;
 import com.sun.enterprise.module.bootstrap.BootException;
 
 import java.net.URLClassLoader;
@@ -32,8 +33,13 @@ import java.net.URI;
 import java.net.MalformedURLException;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.jar.Manifest;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.io.File;
+import java.io.FileFilter;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
 /**
  * Tag Main to get the manifest file 
@@ -85,6 +91,39 @@ public class Main extends com.sun.enterprise.module.bootstrap.Main {
 
         // finally
         mr.setParentClassLoader(cl);
+    }
+
+    /**
+     * Gets the shared repository and add all subdirectories as Repository
+     *
+     * @param root installation root
+     * @param mf main module manifest
+     * @param mr modules registry
+     * @throws BootException
+     */
+    @Override
+    protected void createRepository(File root, Manifest mf, ModulesRegistry mr) throws BootException {
+
+        super.createRepository(root, mf, mr);
+        Repository repo = mr.getRepository("shared");
+        File repoLocation = new File(repo.getLocation());
+        for (File file : repoLocation.listFiles(
+                new FileFilter() {
+                    public boolean accept(File pathname) {
+                        return pathname.isDirectory();
+                    }
+                }))
+        {
+            try {
+                Repository newRepo = new DirectoryBasedRepository(file.getName(), file);
+                newRepo.initialize();
+                mr.addRepository(newRepo);
+            } catch(FileNotFoundException e) {
+                
+            } catch(IOException e) {
+                logger.log(Level.SEVERE, "Cannot initialize repository at " + file.getAbsolutePath(), e);
+            }
+        }
     }
 
     private ClassLoader setupSharedCL(ClassLoader parent, Repository sharedRepo) {
