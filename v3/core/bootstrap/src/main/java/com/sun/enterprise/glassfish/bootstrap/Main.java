@@ -97,14 +97,16 @@ public class Main extends com.sun.enterprise.module.bootstrap.Main {
      * Gets the shared repository and add all subdirectories as Repository
      *
      * @param root installation root
+     * @param bootstrapJar
+     *      The file from which manifest entries are loaded. Used for error reporting
      * @param mf main module manifest
      * @param mr modules registry
      * @throws BootException
      */
     @Override
-    protected void createRepository(File root, Manifest mf, ModulesRegistry mr) throws BootException {
+    protected void createRepository(File root, File bootstrapJar, Manifest mf, ModulesRegistry mr) throws BootException {
 
-        super.createRepository(root, mf, mr);
+        super.createRepository(root, bootstrapJar, mf, mr);
         Repository repo = mr.getRepository("shared");
         File repoLocation = new File(repo.getLocation());
         for (File file : repoLocation.listFiles(
