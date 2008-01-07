@@ -80,7 +80,7 @@ public class ModulesRegistry implements ModuleChangeListener {
     private final Map<String,Module> providers = new HashMap<String,Module>();
 
     /**
-     * Creates and return a new top-level registry instance
+     * Creates and returns a new top-level registry instance
      * @return the new registry
      */
     public static ModulesRegistry createRegistry() {
@@ -546,7 +546,7 @@ public class ModulesRegistry implements ModuleChangeListener {
     }
 
     /**
-     * Shutdowns this module's registry, apply housekeeping tasks
+     * Shuts down this module's registry, apply housekeeping tasks
      *
      */
     public void shutdown() {
