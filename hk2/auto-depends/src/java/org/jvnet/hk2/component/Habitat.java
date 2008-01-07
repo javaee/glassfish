@@ -82,6 +82,25 @@ public class Habitat {
     }
 
     /**
+     * Gets the object of the given type.
+     *
+     * @return
+     *      can be empty but never null.
+     */
+    public <T> Collection<T> getAllByType(Class<T> implType) {
+        final List<Inhabitant> l = byType.get(implType.getName());
+        return new AbstractList<T>() {
+            public T get(int index) {
+                return (T)l.get(index).get();
+            }
+
+            public int size() {
+                return l.size();
+            }
+        };
+    }
+
+    /**
      * Add an already instantiated component to this manager. The component has
      * been instantiated by external code, however dependency injection, PostConstruct
      * invocation and dependency extraction will be performed on this instance before
