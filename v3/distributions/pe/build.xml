@@ -61,7 +61,7 @@
           
           We then finally compute the set of modules and jars that are not in X by one more subtraction.
         -->
-        <resolveAll todir="target/stage/glassfish/modules/web">
+        <graphDef id="web-modules">
             <scope level="runtime">
                 <subtract>
                     <subGraph artifactId="gf-web-connector" />
@@ -72,7 +72,20 @@
                     </packaging>
                 </subtract>
             </scope>
+        </graphDef>
+        
+        <resolveAll todir="target/stage/glassfish/web">
+            <graphRef refid="web-modules"/>
         </resolveAll>
+        
+        <graphDef id="generate-picture">
+            <visualize file="modules.png">
+                <scope level="runtime" />
+                <subGraph color="red">
+                    <graphRef refid="web-modules"/>
+                </subGraph>
+            </visualize>
+        </graphDef>
 
         <zip file="target/pe.zip" basedir="target/stage">
             <zipgroupfileset file="${nucleus-base.zip}"/>

@@ -16,7 +16,7 @@
             <plugin>
                 <groupId>org.jvnet.maven-antrun-extended-plugin</groupId>
                 <artifactId>maven-antrun-extended-plugin</artifactId>
-                <version>1.12</version>
+                <version>1.13</version>
                 <configuration>
                   <tasks>
                     <ant dir="." antfile="build.xml" target="create.bundle"/>
@@ -31,11 +31,6 @@
             <groupId>javadb</groupId>
             <artifactId>javadb</artifactId>
             <version>10.2.2.1-20070823</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.core</groupId>
-            <artifactId>glassfish</artifactId>
-            <version>${pe.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.web</groupId>
