@@ -46,6 +46,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Logger;
+import java.util.logging.Level;
 
 /**
  * The Modules Registry maintains the registry of all available module.
@@ -542,6 +543,22 @@ public class ModulesRegistry implements ModuleChangeListener {
         List r = runningServices.get(serviceClass);
         if(r!=null)     return r;
         return Collections.emptyList();
+    }
+
+    /**
+     * Shutdowns this module's registry, apply housekeeping tasks
+     *
+     */
+    public void shutdown() {
+        detachAll();
+        for (Repository repo : repositories.values()) {
+            try {
+                repo.shutdown();
+            } catch(Exception e) {
+                Logger.getAnonymousLogger().log(Level.SEVERE, "Error while closing repository " + repo, e);
+                // swallows
+            }
+        }
     }
 
     /**

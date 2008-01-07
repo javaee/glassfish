@@ -34,6 +34,7 @@ public class DirectoryBasedRepository extends AbstractRepositoryImpl {
     
     private final File repository;
     private final int intervalInMs = Integer.getInteger("hk2.file.directory.changeIntervalTimer", 10);
+    private Timer timer;
 
     /** Creates a new instance of DirectoryBasedRepository */
     public DirectoryBasedRepository(String name, File repository) throws FileNotFoundException {
@@ -46,8 +47,8 @@ public class DirectoryBasedRepository extends AbstractRepositoryImpl {
     public synchronized boolean addListener(RepositoryChangeListener listener) {
 
         final boolean returnValue = super.addListener(listener);
-        if (returnValue) {
-            Timer timer = new Timer();
+        if (returnValue && timer==null) {
+            timer = new Timer();
             timer.schedule(new TimerTask() {
                 long lastModified = repository.lastModified();
                 public void run() {
@@ -64,6 +65,15 @@ public class DirectoryBasedRepository extends AbstractRepositoryImpl {
         }
         return returnValue;        
     }
+
+    @Override
+    public void shutdown() throws IOException {
+        if (timer!=null) {
+            timer.cancel();
+            timer = null;
+        }
+    }
+    
 
     @Override
     protected void loadModuleDefs(Map<String, ModuleDefinition> moduleDefs, List<URI> libraries) throws IOException {
