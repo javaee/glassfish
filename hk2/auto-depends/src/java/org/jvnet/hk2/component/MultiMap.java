@@ -95,6 +95,17 @@ public class MultiMap<K,V> {
         return buf.toString();
     }
 
+    /**
+     * Creates a copy of the map that contains the exact same key and value set.
+     * Keys and values won't cloned.
+     */
+    public MultiMap<K,V> clone() {
+        MultiMap<K,V> m = new MultiMap<K,V>();
+        for (Entry<K, List<V>> e : store.entrySet())
+            m.store.put(e.getKey(),new ArrayList<V>(e.getValue()));
+        return m;
+    }
+
     private static final MultiMap EMPTY = new MultiMap(Collections.emptyMap());
 
     /**
