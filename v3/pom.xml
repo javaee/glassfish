@@ -161,6 +161,12 @@
             <uniqueVersion>false</uniqueVersion>
             <url>sftp://trx2.sun.com:/export/nfs/dlc/maven/glassfish</url>
         </repository>
+        <snapshotRepository>
+	    <!-- just the copy of the above -->
+            <id>glassfish-repository</id>
+            <uniqueVersion>false</uniqueVersion>
+            <url>sftp://trx2.sun.com:/export/nfs/dlc/maven/glassfish</url>
+        </snapshotRepository>
     </distributionManagement>
     <build>
         <defaultGoal>install</defaultGoal>
