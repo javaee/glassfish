@@ -54,25 +54,19 @@ public class ConstructorWomb<T> extends AbstractWombImpl<T> {
                 if (type.isArray()) {
                     Class<?> ct = type.getComponentType();
 
-                    Contract ctr = ct.getAnnotation(Contract.class);
-                    if(ctr!=null) {
-                        Collection instances = habitat.getAllByContract(ct);
-                        return instances.toArray((Object[]) Array.newInstance(ct, instances.size()));
-                    }
+                    Collection instances = habitat.getAllByContract(ct);
+                    return instances.toArray((Object[]) Array.newInstance(ct, instances.size()));
                 } else {
                     Annotation ctr = type.getAnnotation(Contract.class);
                     if(ctr!=null)
                         // service lookup injection
-
                         return habitat.getComponent(type, target.getAnnotation(Inject.class).name());
 
                     // ideally we should check if type has @Service or @Configured
 
                     // component injection
                     return habitat.getByType(type);
-
                 }
-                throw new ComponentException("%s cannot be injected: it's neither a contract nor a service",type);
             }
         }).inject(t, Inject.class);
 
