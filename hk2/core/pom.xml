@@ -8,7 +8,7 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
     
-    <artifactId>hk2</artifactId>
+    <artifactId>hk2-core</artifactId>
     <name>HK2 core module</name>
 
     <dependencies>
@@ -23,4 +23,5 @@
           <version>1.0-2</version>
       </dependency>
     </dependencies>
+
 </project>
