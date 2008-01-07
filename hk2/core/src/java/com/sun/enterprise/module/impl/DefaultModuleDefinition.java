@@ -31,10 +31,12 @@ import com.sun.enterprise.module.ModuleMetadata;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
+import java.util.logging.Logger;
 
 /**
  * {@link ModuleDefinition} implementation that picks up most of the module
@@ -140,8 +142,28 @@ public class DefaultModuleDefinition implements ModuleDefinition {
                 }
             } else
                 result = ref.toURI();
+
+            assert testClassPath(result);
+
             classPath.add(result);
         }
+    }
+
+    /**
+     * Optional error diagnostics performed during the development time
+     * to check if the URL pointed by the path actually exists.
+     */
+    private boolean testClassPath(URI uri) {
+        try {
+            if(uri.getScheme().equals("file")) {
+                URLConnection c = uri.toURL().openConnection();
+                if(c.getContentLength()==-1)
+                    LOGGER.warning(uri+" pointed from "+name+" in classpath doesn't exist");
+            }
+        } catch (IOException e) {
+            throw new AssertionError(e); // file is a valid URL
+        }
+        return true; // assertion should always succeed.
     }
 
     /**
@@ -239,4 +261,6 @@ public class DefaultModuleDefinition implements ModuleDefinition {
     }
 
     private static final Manifest EMPTY_MANIFEST = new Manifest();
+
+    private static final Logger LOGGER = Logger.getLogger(DefaultModuleDefinition.class.getName());
 }
