@@ -54,7 +54,12 @@ public class ConstructorWomb<T> extends AbstractWombImpl<T> {
                 if (type.isArray()) {
                     Class<?> ct = type.getComponentType();
 
-                    Collection instances = habitat.getAllByContract(ct);
+                    Contract ctr = ct.getAnnotation(Contract.class);
+                    Collection instances;
+                    if(ctr!=null)
+                        instances = habitat.getAllByContract(ct);
+                    else
+                        instances = habitat.getAllByType(ct);
                     return instances.toArray((Object[]) Array.newInstance(ct, instances.size()));
                 } else {
                     Annotation ctr = type.getAnnotation(Contract.class);
