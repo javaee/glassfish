@@ -48,18 +48,10 @@
     </build>
     <dependencies>
         <dependency>
+            <!-- explicit dependency needed so that this jar can be used as the boot jar -->
+            <!-- if we depend on com.sun.enterprise:hk2 we'll clobber Import-Bunldes that we write above -->
             <groupId>com.sun.enterprise</groupId>
-            <artifactId>hk2</artifactId>
-            <version>${hk2.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.enterprise</groupId>
-            <artifactId>config</artifactId>
-            <version>${hk2.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.enterprise</groupId>
-            <artifactId>auto-depends</artifactId>
+            <artifactId>hk2-core</artifactId>
             <version>${hk2.version}</version>
         </dependency>
         <dependency>
