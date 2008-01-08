@@ -26,6 +26,8 @@ public class FactoryWomb<T> extends AbstractWombImpl<T> {
         Factory f = habitat.getByType(factory);
         if(f==null)
            throw new ComponentException("Failed to look up %s for creating %s",f,type);
-        return type.cast(f.getObject());
+        T t = type.cast(f.getObject());
+        inject(habitat,t);
+        return t;
     }
 }

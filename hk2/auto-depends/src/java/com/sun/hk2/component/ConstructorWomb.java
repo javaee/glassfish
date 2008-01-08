@@ -53,43 +53,7 @@ public class ConstructorWomb<T> extends AbstractWombImpl<T> {
         Scoped scoped = t.getClass().getAnnotation(Scoped.class);
         ScopeInstance si = (scoped==null?singletonScope:getScope(scoped));
 
-
-        (new InjectionManager<Inject>() {
-            public boolean isOptional(Inject annotation) {
-                return annotation.optional();
-            }
-
-            /**
-             * Obtains the value to inject, based on the type and {@link Inject} annotation.
-             */
-            @SuppressWarnings("unchecked")
-            protected Object getValue(AnnotatedElement target, Class type) throws ComponentException {
-                if (type.isArray()) {
-                    Class<?> ct = type.getComponentType();
-
-                    Collection instances;
-                    if(habitat.isContract(ct))
-                        instances = habitat.getAllByContract(ct);
-                    else
-                        instances = habitat.getAllByType(ct);
-                    return instances.toArray((Object[]) Array.newInstance(ct, instances.size()));
-                } else {
-                    if(habitat.isContract(type))
-                        // service lookup injection
-                        return habitat.getComponent(type, target.getAnnotation(Inject.class).name());
-
-                    // ideally we should check if type has @Service or @Configured
-
-                    // component injection
-                    return habitat.getByType(type);
-                }
-            }
-        }).inject(t, Inject.class);
-
-        // postContruct call if any
-        if(t instanceof PostConstruct)
-            ((PostConstruct)t).postConstruct();
-
+        inject(habitat, t);
 
         if(si!=null)
             // extraction amounts to no-op if this is prototype scope. so skip that.
