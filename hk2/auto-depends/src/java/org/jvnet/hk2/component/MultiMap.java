@@ -65,6 +65,13 @@ public class MultiMap<K,V> {
     }
 
     /**
+     * Checks if the map contains the given key.
+     */
+    public boolean containsKey(K key) {
+        return !get(key).isEmpty();
+    }
+
+    /**
      * Gets the first value if any, or null.
      */
     public final V getOne(K k) {
