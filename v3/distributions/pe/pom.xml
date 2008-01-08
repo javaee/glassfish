@@ -38,10 +38,20 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>org.glassfish.common</groupId>
+            <artifactId>dol</artifactId>
+            <version>${pe.version}</version>
+        </dependency>        
+        <dependency>
             <groupId>org.glassfish.web</groupId>
             <artifactId>war-util</artifactId>
             <version>${pe.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.glassfish.ejb</groupId>
+            <artifactId>gf-ejb-connector</artifactId>
+            <version>${pe.version}</version>
+        </dependency>        
         <dependency>
             <groupId>org.glassfish.web</groupId>
             <artifactId>gf-web-connector</artifactId>

@@ -34,41 +34,46 @@
  * holder.
  */
 
+package com.sun.enterprise.configapi.tests;
 
+import com.sun.enterprise.config.serverbeans.HttpListener;
+import com.sun.enterprise.config.serverbeans.HttpService;
+import com.sun.enterprise.config.serverbeans.Module;
+import com.sun.enterprise.config.serverbeans.Applications;
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.assertTrue;
+import org.jvnet.hk2.component.Inhabitant;
 
-package com.sun.enterprise.config.serverbeans;
-
-import org.jvnet.hk2.config.Configured;
-import org.jvnet.hk2.config.Element;
-import org.jvnet.hk2.config.ConfigBeanProxy;
-
-import java.io.Serializable;
 import java.util.List;
-
+import java.util.Collection;
 
 /**
- *
+ * Modules related tests
  */
+public class ModulesTest extends ConfigApiTest {
 
-/* @XmlType(name = "", propOrder = {
-    "lifecycleModuleOrJ2EeApplicationOrEjbModuleOrWebModuleOrConnectorModuleOrAppclientModuleOrMbeanOrExtensionModule"
-}) */
-@Configured
-public interface Applications extends ConfigBeanProxy  {
 
-    /**
-     * Gets the value of the lifecycleModuleOrJ2EeApplicationOrEjbModuleOrWebModuleOrConnectorModuleOrAppclientModuleOrMbeanOrExtensionModule property.
-     * Objects of the following type(s) are allowed in the list
-     * {@link LifecycleModule }
-     * {@link J2EeApplication }
-     * {@link EjbModule }
-     * {@link WebModule }
-     * {@link ConnectorModule }
-     * {@link AppclientModule }
-     * {@link Mbean }
-     * {@link ExtensionModule }
-     */
-    @Element("*")
-    public List<Module> getModules();
+    public String getFileName() {
+        return "DomainTest";
+    }
 
+    Collection<? extends Module> modules = null;
+
+    @Before
+    public void setup() {
+        Applications apps = getHabitat().getComponent(Applications.class);
+        assertTrue(apps!=null);
+        modules = apps.getModules();
+        assertTrue(modules!=null);
+
+    }
+
+    @Test
+    public void modulesTest() {
+        for (Module module : modules) {
+            logger.fine("Found module " + module.getName());
+            assertTrue(module.getName()!=null);
+        }
+    }
 }

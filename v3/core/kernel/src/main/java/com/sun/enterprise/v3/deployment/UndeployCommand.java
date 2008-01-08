@@ -24,6 +24,7 @@
 package com.sun.enterprise.v3.deployment;
 
 import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.v3.data.ApplicationInfo;
 import com.sun.enterprise.v3.data.ApplicationRegistry;
 import com.sun.enterprise.v3.server.ApplicationLifecycle;
@@ -89,7 +90,7 @@ public class UndeployCommand extends ApplicationLifecycle implements AdminComman
 
         DeploymentContextImpl deploymentContext = new DeploymentContextImpl(logger, info.getSource(), parameters, env);        
 
-        unload(name, deploymentContext, report);
+        undeploy(name, deploymentContext, report);
         if (report.getActionExitCode().equals(ActionReport.ExitCode.SUCCESS)) {
             deleteContainerMetaInfo(info, deploymentContext);
             report.setMessage(localStrings.getLocalString("redeploy.command.sucess",
@@ -107,24 +108,6 @@ public class UndeployCommand extends ApplicationLifecycle implements AdminComman
                 context.getCommandParameters().getProperty(DeployCommand.NAME));
 
         // recursively delete...
-        deleteDirectory(generatedAppRoot);
-               
+        FileUtils.whack(generatedAppRoot);               
     }
-    
-    /**
-     * delete all content of a given directory
-     * @param dir the directory to wipe out
-     */
-    public static void deleteDirectory(File dir) {
-	File[] files = dir.listFiles();
-	if (files != null) {
-        for (File child : files) {
-    		if(child.isDirectory()) {
-	    	    deleteDirectory(child);
-    		}
-	    	child.delete();
-	    }
-	}
-	dir.delete();
-    }    
 }

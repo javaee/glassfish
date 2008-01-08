@@ -104,6 +104,7 @@
     	<module>admin</module>
     	<module>core</module>
     	<module>web</module>
+    	<module>ejb</module>
     	<module>extras</module>
     	<module>distributions</module>
     </modules> 

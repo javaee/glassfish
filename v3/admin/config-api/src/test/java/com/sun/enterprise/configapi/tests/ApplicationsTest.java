@@ -34,41 +34,39 @@
  * holder.
  */
 
+package com.sun.enterprise.configapi.tests;
 
+import org.junit.Test;
+import static org.junit.Assert.assertTrue;
+import com.sun.enterprise.config.serverbeans.Applications;
+import com.sun.enterprise.config.serverbeans.Module;
 
-package com.sun.enterprise.config.serverbeans;
-
-import org.jvnet.hk2.config.Configured;
-import org.jvnet.hk2.config.Element;
-import org.jvnet.hk2.config.ConfigBeanProxy;
-
-import java.io.Serializable;
 import java.util.List;
 
-
 /**
- *
+ * Applications related tests
+ * @author Jerome Dochez
  */
+public class ApplicationsTest extends ConfigApiTest {
 
-/* @XmlType(name = "", propOrder = {
-    "lifecycleModuleOrJ2EeApplicationOrEjbModuleOrWebModuleOrConnectorModuleOrAppclientModuleOrMbeanOrExtensionModule"
-}) */
-@Configured
-public interface Applications extends ConfigBeanProxy  {
 
-    /**
-     * Gets the value of the lifecycleModuleOrJ2EeApplicationOrEjbModuleOrWebModuleOrConnectorModuleOrAppclientModuleOrMbeanOrExtensionModule property.
-     * Objects of the following type(s) are allowed in the list
-     * {@link LifecycleModule }
-     * {@link J2EeApplication }
-     * {@link EjbModule }
-     * {@link WebModule }
-     * {@link ConnectorModule }
-     * {@link AppclientModule }
-     * {@link Mbean }
-     * {@link ExtensionModule }
-     */
-    @Element("*")
-    public List<Module> getModules();
+    public String getFileName() {
+        return "DomainTest";
+    }
 
+    @Test
+    public void appsExistTest() {
+        Applications apps = getHabitat().getComponent(Applications.class);
+        assertTrue(apps!=null);
+    }
+
+    @Test
+    public void getModulesTest() {
+        Applications apps = getHabitat().getComponent(Applications.class);
+        List<Module> modules = apps.getModules();
+        for (Module module : modules) {
+            logger.fine("Module = " + module.getName());
+        }
+        assertTrue(modules!=null);
+    }
 }

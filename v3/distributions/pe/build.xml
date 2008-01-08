@@ -42,8 +42,10 @@
             <excludeArtifactsTransitively>
                 <scope level="runtime"/>
                 <artifact artifactId="gf-web-connector" />
+                <artifact artifactId="gf-ejb-connector" />
             </excludeArtifactsTransitively>
         </resolveAll>
+       
         <delete dir="target/stage/glassfish/modules" includes="*.zip" />
         
         <!--
@@ -76,6 +78,23 @@
         
         <resolveAll todir="target/stage/glassfish/modules/web">
             <graphRef refid="web-modules"/>
+        </resolveAll>
+
+        <graphDef id="ejb-modules">
+            <scope level="runtime">
+                <subtract>
+                    <subGraph artifactId="gf-ejb-connector" />
+                    <packaging not="jar"><!-- = subgraph X -->
+                        <excludeArtifactsTransitively>
+                            <artifact artifactId="gf-ejb-connector" />
+                        </excludeArtifactsTransitively>
+                    </packaging>
+                </subtract>
+            </scope>
+        </graphDef>
+
+        <resolveAll todir="target/stage/glassfish/modules/ejb">
+            <graphRef refid="ejb-modules"/>
         </resolveAll>
         
         <graphDef id="generate-picture">

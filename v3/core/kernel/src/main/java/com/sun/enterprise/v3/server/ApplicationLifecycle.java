@@ -210,7 +210,6 @@ abstract public class ApplicationLifecycle {
         }
 
         // this is the end of the prepare phase, on to the load phase.
-        List<ApplicationContainer> loadedContainers = new ArrayList<ApplicationContainer>();
         List<ModuleInfo> modules = new ArrayList<ModuleInfo>();
         for (Sniffer sniffer : sniffers) {
             final String appType = sniffer.getModuleType();
@@ -367,18 +366,27 @@ abstract public class ApplicationLifecycle {
         }*/
     }
 
-    protected void unload(String appName, DeploymentContext context, ActionReport report) {
+    protected ApplicationInfo unload(String appName, DeploymentContext context, ActionReport report) {
 
         ApplicationInfo info = appRegistry.get(appName);
         if (info==null) {
             failure(context.getLogger(), "Application " + appName + " not registered", null, report);
-            return;
+            return null;
 
         }
         for (ModuleInfo moduleInfo : info.getModuleInfos()) {
             unloadModule(moduleInfo, info, context, report);
+            moduleInfo.getContainerInfo().remove(info);
         }
 
+        appRegistry.remove(appName);
+        return info;
+
+    }
+
+    protected void undeploy(String appName, DeploymentContext context, ActionReport report) {
+        
+        ApplicationInfo info =unload(appName, context, report);
         if (report.getActionExitCode().equals(ActionReport.ExitCode.SUCCESS)) {
             for (ModuleInfo moduleInfo : info.getModuleInfos()) {
                 try {
@@ -387,10 +395,8 @@ abstract public class ApplicationLifecycle {
                     failure(context.getLogger(), "Exception while cleaning application artifacts", e, report);
                     return;
                 }
-                moduleInfo.getContainerInfo().remove(info);
             }
         }
-        appRegistry.remove(appName);
     }
     
     protected void failure(Logger logger, String message, Throwable e, ActionReport report) {

@@ -39,7 +39,7 @@ public final class ConfigBeansUtilities {
 
     public static <T> List<T> getModules(Class<T> type, Applications apps) {
         List<T> modules = new ArrayList<T>();
-        for (Object module : apps.getLifecycleModuleOrJ2EeApplicationOrEjbModuleOrWebModuleOrConnectorModuleOrAppclientModuleOrMbeanOrExtensionModule()) {
+        for (Object module : apps.getModules()) {
             if (module.getClass().getName().equals(type.getClass().getName())) {
                 modules.add((T) module);
             }
@@ -53,7 +53,7 @@ public final class ConfigBeansUtilities {
             return null;
         }
 
-        for (Object module : apps.getLifecycleModuleOrJ2EeApplicationOrEjbModuleOrWebModuleOrConnectorModuleOrAppclientModuleOrMbeanOrExtensionModule()) {
+        for (Object module : apps.getModules()) {
             if (module.getClass().getName().equals(type.getClass().getName())) {
                 Method m;
                 try {

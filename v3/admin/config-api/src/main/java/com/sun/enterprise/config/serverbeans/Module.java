@@ -1,5 +1,8 @@
 package com.sun.enterprise.config.serverbeans;
 
+import org.jvnet.hk2.config.Configured;
+import org.jvnet.hk2.config.ConfigBeanProxy;
+
 import java.beans.PropertyVetoException;
 
 /**
@@ -7,7 +10,8 @@ import java.beans.PropertyVetoException;
  *
  * @author Jerome Dochez
  */
-public interface Module {
+@Configured
+public interface Module extends ConfigBeanProxy {
 
     /**
      * Gets the value of the name property.
