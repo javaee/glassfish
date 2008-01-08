@@ -347,9 +347,9 @@ public class Main {
             Manifest manifest = jarFile.getManifest();
                           
             Attributes attr = manifest.getMainAttributes();
-            targetModule = attr.getValue(ManifestConstants.BUNDLE_IMPORT_NAME);
+            targetModule = attr.getValue(ManifestConstants.MAIN_BUNDLE);
             if (targetModule==null) {
-                throw new BootException("No Import-Bundles module found in manifest of " + bootstrap.getAbsoluteFile());
+                throw new BootException("No Main-Bundle module found in manifest of " + bootstrap.getAbsoluteFile());
             }
         } catch(IOException ioe) {
             throw new BootException("Cannot get manifest from " + bootstrap.getAbsolutePath(), ioe);
