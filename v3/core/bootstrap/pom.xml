@@ -39,7 +39,7 @@
                             <Repositories>shared lib</Repositories>
                             <Repository-shared>uri=. weight=35 type=directory</Repository-shared>
                             <Repository-lib>uri=../lib weight=10 type=directory</Repository-lib>
-                            <Import-Bundles>org.glassfish.core:kernel</Import-Bundles>
+                            <Main-Bundle>org.glassfish.core:kernel</Main-Bundle>
                         </manifestEntries>
                     </archive>
                 </configuration>
@@ -48,8 +48,7 @@
     </build>
     <dependencies>
         <dependency>
-            <!-- explicit dependency needed so that this jar can be used as the boot jar -->
-            <!-- if we depend on com.sun.enterprise:hk2 we'll clobber Import-Bunldes that we write above -->
+            <!-- can't depend on com.sun.enterprise:hk2 because that would remove hk2 jars from Class-Path, so our Main class will fail to load. -->
             <groupId>com.sun.enterprise</groupId>
             <artifactId>hk2-core</artifactId>
             <version>${hk2.version}</version>
