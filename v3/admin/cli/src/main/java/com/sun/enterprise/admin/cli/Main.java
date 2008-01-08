@@ -23,27 +23,20 @@ import com.sun.enterprise.cli.framework.*;
  */
 public class Main {
     public static void main(String[] args) {
-
-        try 
-        {
+        try {
             new CLIMain().invokeCommand(args);
-            return;
-        }
-        catch (InvalidCommandException ice)
-        {
+        } catch (InvalidCommandException ice) {
             if (TRACE) {
                 System.out.println("REMOTE COMMAND!!!");
             }
             handleRemoteCommand(args);
-        }
-        catch (Throwable ex) 
-        {
+        } catch (Throwable ex) {
             CLILogger.getInstance().printExceptionStackTrace(ex);
             CLILogger.getInstance().printError(ex.getLocalizedMessage());
             System.exit(1);
         }
     }
-    
+
 
     private static void handleRemoteCommand(final String[] args) {
         if (args.length==0) {
