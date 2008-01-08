@@ -15,14 +15,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Map;
-import java.util.StringTokenizer;
+import java.util.*;
 import java.util.regex.Pattern;
 
 /**
@@ -416,8 +409,8 @@ public class Dom extends LazyInhabitant implements InvocationHandler {
      *
      * Used to implement {@code FromElement("*")}.
      */
-    public <T> List<T> nodeByTypeElements(Class<T> baseType) {
-        List<T> r = new ArrayList<T>();
+    public  List<Dom> domNodeByTypeElements(Class baseType) {
+        List<Dom> r = new ArrayList<Dom>();
 
         int len = children.size();
         for( int i=0; i<len; i++ ) {
@@ -427,10 +420,22 @@ public class Dom extends LazyInhabitant implements InvocationHandler {
                 if(model.elements.containsKey(nc.name))
                     continue;   // match with named
                 if(baseType.isAssignableFrom(nc.dom.type()))
-                    r.add(baseType.cast(nc.dom.get()));
+                    r.add(nc.dom);
             }
         }
         return r;
+    }
+
+    public <T> List<T> nodeByTypeElements(final Class<T> baseType) {
+        final List<Dom> elements = domNodeByTypeElements(baseType);
+        return new AbstractList<T>() {
+            public T get(int index) {
+                return baseType.cast(elements.get(index).get());
+            }
+            public int size() {
+                return elements.size();
+            }
+        };
     }
 
     public <T> T nodeByTypeElement(Class<T> baseType) {

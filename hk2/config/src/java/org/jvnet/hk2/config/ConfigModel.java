@@ -198,10 +198,13 @@ public final class ConfigModel {
 
         public Object get(Dom dom, Type returnType) {
             // TODO: perhaps support more collection types?
-            final List<Dom> v = dom.nodeElements(xmlName);
+
+
             if(!(returnType instanceof ParameterizedType))
                 throw new IllegalArgumentException("List needs to be parameterized");
             final Class itemType = Types.erasure(Types.getTypeArgument(returnType,0));
+
+            final List<Dom> v = ("*".equals(xmlName)?dom.domNodeByTypeElements(itemType):dom.nodeElements(xmlName));
 
             if(itemType==Dom.class)
                 // TODO: this returns a view, not a live list
