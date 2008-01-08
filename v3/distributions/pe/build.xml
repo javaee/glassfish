@@ -74,7 +74,7 @@
             </scope>
         </graphDef>
         
-        <resolveAll todir="target/stage/glassfish/web">
+        <resolveAll todir="target/stage/glassfish/modules/web">
             <graphRef refid="web-modules"/>
         </resolveAll>
         
