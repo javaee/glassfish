@@ -3,6 +3,7 @@ package org.jvnet.hk2.component;
 import com.sun.hk2.component.ExistingSingletonInhabitant;
 import com.sun.hk2.component.ScopeInstance;
 import org.jvnet.hk2.annotations.Contract;
+import org.jvnet.hk2.annotations.ContractProvided;
 
 import java.lang.annotation.Annotation;
 import java.util.AbstractList;
@@ -60,6 +61,29 @@ public class Habitat {
      */
     public void addIndex(Inhabitant i, String index, String name) {
         byContract.add(index,new NamedInhabitant(name,i));
+    }
+
+    /**
+     * Checks if the given type is a contract interface that has some implementations in this {@link Habitat}.
+     *
+     * <p>
+     * There are two ways for a type to be marked as a contract.
+     * Either it has {@link Contract}, or it's marked by {@link ContractProvided} from the implementation.
+     *
+     * <p>
+     * Note that just having {@link Contract} is not enough to make this method return true.
+     * It can still return false if the contract has no implementation in this habitat.
+     *
+     * <p>
+     * This method is useful during the injection to determine what lookup to perform,
+     * and it handles the case correctly when the type is marked as a contract by {@link ContractProvided}.
+     */
+    public boolean isContract(Class<?> type) {
+        return byContract.containsKey(type.getName());
+    }
+
+    public boolean isContract(String fullyQualifiedClassName) {
+        return byContract.containsKey(fullyQualifiedClassName);
     }
 
     /**

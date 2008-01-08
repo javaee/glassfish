@@ -1,10 +1,23 @@
 package com.sun.hk2.component;
 
-import org.jvnet.hk2.annotations.*;
-import org.jvnet.hk2.component.*;
+import org.jvnet.hk2.annotations.Extract;
+import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.component.ComponentException;
+import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.component.Inhabitant;
+import org.jvnet.hk2.component.InjectionManager;
+import org.jvnet.hk2.component.MultiMap;
+import org.jvnet.hk2.component.PerLookup;
+import org.jvnet.hk2.component.PostConstruct;
+import org.jvnet.hk2.component.Scope;
+import org.jvnet.hk2.component.Singleton;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.*;
+import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Array;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Collection;
 
 /**
@@ -54,16 +67,14 @@ public class ConstructorWomb<T> extends AbstractWombImpl<T> {
                 if (type.isArray()) {
                     Class<?> ct = type.getComponentType();
 
-                    Contract ctr = ct.getAnnotation(Contract.class);
                     Collection instances;
-                    if(ctr!=null)
+                    if(habitat.isContract(ct))
                         instances = habitat.getAllByContract(ct);
                     else
                         instances = habitat.getAllByType(ct);
                     return instances.toArray((Object[]) Array.newInstance(ct, instances.size()));
                 } else {
-                    Annotation ctr = type.getAnnotation(Contract.class);
-                    if(ctr!=null)
+                    if(habitat.isContract(type))
                         // service lookup injection
                         return habitat.getComponent(type, target.getAnnotation(Inject.class).name());
 
