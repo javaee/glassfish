@@ -191,7 +191,7 @@ public final class Module {
      * @return a descriptive String about myself
      */
     public String toString() {
-        return "Module :" + moduleDef.getName() + "::" + (privateCL==null?"none":privateCL.toString());
+        return "Module: " + moduleDef.getName() + "::" + (privateCL==null?"none":privateCL.toString());
     }
     
     /**
