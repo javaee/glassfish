@@ -24,6 +24,7 @@
 package com.sun.enterprise.module;
 
 import org.jvnet.hk2.annotations.Service;
+import com.sun.enterprise.module.bootstrap.ModuleStartup;
 
 /**
  * Constants used in the module manifest.
@@ -46,6 +47,15 @@ public class ManifestConstants {
      * Maven's <tt>hk2-module</tt> packaging type uses GROUPID:ARTIFACTID for this.
      */
     public static final String BUNDLE_NAME = "Bundle-Name";
+
+    /**
+     * Module name that we'll launch.
+     * <p>
+     * This is equivalent of "Main-Class" for us. We'll find {@link ModuleStartup}
+     * from this module.
+     */
+    public static final String MAIN_BUNDLE = "Main-Bundle";
+
     /**
      * Exported package list.
      * <p>
