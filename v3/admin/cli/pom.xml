@@ -65,7 +65,7 @@
                        </goals>
                    </execution>
                </executions>
-           </plugin-->             
+           </plugin-->
             <plugin>
                 <groupId>com.sun.enterprise</groupId>
                 <artifactId>hk2-maven-plugin</artifactId>
@@ -74,10 +74,10 @@
                         <manifest>
                             <mainClass>com.sun.enterprise.admin.cli.Main</mainClass>
                         </manifest>
-		    </archive>
-		</configuration>
-            </plugin>		
-	</plugins>
+                    </archive>
+                </configuration>
+            </plugin>
+        </plugins>
     </build>
     <dependencies>
         <dependency>
