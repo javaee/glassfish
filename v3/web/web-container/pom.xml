@@ -6,7 +6,7 @@
     	<artifactId>web</artifactId>
         <version>10.0-SNAPSHOT</version>
     </parent>
-    <artifactId>web-container</artifactId>
+    <artifactId>gf-web-connector</artifactId>
     <packaging>hk2-jar</packaging>
     <name>Web Container for Glassfish</name>
     <developers>

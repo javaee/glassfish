@@ -303,7 +303,7 @@ public class WebContainer implements ContainerProvider, PostConstruct, PreDestro
         String docroot =
             ConfigBeansUtilities.getPropertyValueByName(vsBean, "docroot");
         
-        Host vs = _embedded.createHost(vsBean.getId(), docroot);
+        Host vs = _embedded.createHost(vsBean.getId(), vsBean, docroot, null, null);
 
         // Configure the virtual server with the port numbers of its
         // associated HTTP listeners
@@ -1596,13 +1596,13 @@ public class WebContainer implements ContainerProvider, PostConstruct, PreDestro
         } else {
             docBase = wmInfo.getLocation();
         }
-        ctx = (WebModule) _embedded.createContext(wmContextPath,
-                docBase);
-                /*
+        
+        ctx = (WebModule) _embedded.createContext(wmContextPath,                
+                docBase,
                 vs.getDefaultContextXmlLocation(),
                 vs.getDefaultWebXmlLocation(),
                 useDOLforDeployment,
-                wmInfo.getDescriptor());*/
+                wmInfo.getDescriptor());
         
         // Set JSR 77 object name and attributes
         String engineName = vs.getParent().getName();
@@ -1853,6 +1853,7 @@ public class WebContainer implements ContainerProvider, PostConstruct, PreDestro
         return exception;
     }
     
+    
     protected WebModule loadWebModule(VirtualServer vs, DeploymentContext dc,
             String j2eeApplication) {
         
@@ -1954,13 +1955,13 @@ public class WebContainer implements ContainerProvider, PostConstruct, PreDestro
             ReadableArchive source = dc.getSource();
             docBase = source.getURI().getSchemeSpecificPart();
         }
+        
         ctx = (WebModule) _embedded.createContext(wmContextPath,
-                docBase);
-                /*
+                docBase,
                 vs.getDefaultContextXmlLocation(),
                 vs.getDefaultWebXmlLocation(),
                 useDOLforDeployment,
-                wmInfo.getDescriptor());*/
+                wbd);
         
         // Set JSR 77 object name and attributes
         String engineName = vs.getParent().getName();
@@ -2016,6 +2017,18 @@ public class WebContainer implements ContainerProvider, PostConstruct, PreDestro
         } else {
             ctx.setModuleName(Constants.DEFAULT_WEB_MODULE_NAME);
         }
+        
+        // configure class loader
+        ClassLoader parentLoader = dc.getClassLoader();
+        if (parentLoader == null) {
+            // Use the shared classloader as the parent for all
+            // standalone web-modules
+            parentLoader = _serverContext.getSharedClassLoader();
+        }
+        ctx.setParentClassLoader(parentLoader);
+        WebappLoader loader = (WebappLoader)
+        _embedded.createLoader(ctx.getParentClassLoader());
+        ctx.setLoader(loader);
         
         Throwable exception = null;
         

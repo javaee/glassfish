@@ -131,7 +131,8 @@ public final class EmbeddedWebContainer extends Embedded {
                     String vsLogFile,
                     MimeMap vsMimeMap) {
 
-        VirtualServer vs = webContainerFeatureFactory.getVirtualServer();
+        //VirtualServer vs = webContainerFeatureFactory.getVirtualServer();
+        VirtualServer vs = new VirtualServer();
         vs.setDebug(debug);
         vs.setAppBase(vsDocroot);
         vs.setName(vsID);
