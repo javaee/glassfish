@@ -90,7 +90,7 @@ public abstract class JavaEEDeployer extends AbstractDeployer {
         }
     }
 
-    protected void parseModuleMetaData(DeploymentContext dc) 
+    protected Application parseModuleMetaData(DeploymentContext dc)
         throws Exception {
         ReadableArchive sourceArchive = dc.getSource();
         ClassLoader cl = dc.getClassLoader();
@@ -108,6 +108,7 @@ public abstract class JavaEEDeployer extends AbstractDeployer {
         archivist.validate(cl);
 
         dc.addModuleMetaData(getModuleType(), application);
+        return application;
     }
 
     protected void generateArtifacts(DeploymentContext dc) {

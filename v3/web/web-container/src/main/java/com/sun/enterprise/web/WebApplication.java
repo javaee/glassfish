@@ -41,7 +41,7 @@ public class WebApplication implements ApplicationContainer {
     }
 
     public boolean stop() {
-        return false;
+        return true;
     }
 
     /**

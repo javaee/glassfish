@@ -111,6 +111,27 @@ public class WebDeployer extends JavaEEDeployer implements Deployer<WebContainer
         return getDefaultWebXMLBundleDescriptor();
     }
 
+    @Override
+    protected Application parseModuleMetaData(DeploymentContext dc) throws Exception {
+        Application app = super.parseModuleMetaData(dc);
+        if (app.isVirtual()) {
+
+            WebBundleDescriptor wbd = (WebBundleDescriptor) app.getStandaloneBundleDescriptor(); 
+            // TO DO : this will need to be revisited to handle context root property
+            Properties params = dc.getCommandParameters();
+            if (params.getProperty(DeployCommand.CONTEXT_ROOT)!=null) {
+                wbd.setContextRoot("/" + params.getProperty(DeployCommand.CONTEXT_ROOT));    
+            } else {
+                if (wbd.getContextRoot()==null || wbd.getContextRoot().length()==0) {
+                   wbd.setContextRoot("/" + params.getProperty(DeployCommand.NAME)); 
+                }
+            }
+            wbd.setName(params.getProperty(DeployCommand.NAME));
+        }
+
+        return app;
+    }
+
     private WebModuleConfig loadWebModuleConfig(com.sun.enterprise.config.serverbeans.WebModule wm, 
         DeploymentContext dc) {
 
@@ -169,7 +190,6 @@ public class WebDeployer extends JavaEEDeployer implements Deployer<WebContainer
         String docBase = source.getURI().getSchemeSpecificPart();
 
         Properties params = dc.getCommandParameters();
-        String ctxtRoot = "/" + params.getProperty(DeployCommand.NAME);
         List<String> targets = StringUtils.parseStringList(
             params.getProperty(DeployCommand.VIRTUAL_SERVERS), " ,");
         boolean loadToAll = (targets == null) || (targets.size() == 0);
@@ -190,7 +210,7 @@ public class WebDeployer extends JavaEEDeployer implements Deployer<WebContainer
                 
                 StandardContext ctx = container.loadWebModule(vs, dc, "null");     
                 webApplication = new WebApplication(container, ctx);      
-                registerEndpoint(container, vs, ctx.getName(), dc, webApplication);
+                registerEndpoint(container, vs, wbd.getContextRoot(), dc, webApplication);
                 //loadAtLeastToOne = true;
                        
             }

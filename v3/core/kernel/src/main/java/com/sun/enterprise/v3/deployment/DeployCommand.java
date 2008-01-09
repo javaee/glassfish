@@ -64,6 +64,7 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(DeployCommand.class);    
     public static final String NAME = "name";
     public static final String VIRTUAL_SERVERS = "virtualservers";
+    public static final String CONTEXT_ROOT = "contextRoot";
 
     @Inject
     V3Environment env;
@@ -78,6 +79,9 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
 
     @Param(name = NAME, optional=true)
     String name = null;
+
+    @Param(name = CONTEXT_ROOT, optional=true)
+    String contextRoot = null;
 
     @Param(optional=true)
     @I18n("virtualservers")
