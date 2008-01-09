@@ -49,7 +49,7 @@ public class WebSniffer  extends GenericSniffer implements Sniffer {
         super(containerName, appStigma, urlPattern);
     }    
 
-    final String[] deployers = { "com.sun.enterprise.v3.web.WebDeployer" };
+    final String[] deployers = { "com.sun.enterprise.web.WebDeployer" };
         
     public String[] getDeployersNames() {
         return deployers;
