@@ -40,8 +40,8 @@
     </build>    
     <package>com.sun</package>    
     <logo>http://java.sun.com/j2ee</logo>
-    <description>SJSAS 9.0 Glassfish project.</description>
-    <shortDescription>Glassfish 9.0</shortDescription>
+    <description>GlassFish project.</description>
+    <shortDescription>JMX Remote Proprietary Implementation</shortDescription>
     <url>http://java.sun.com/j2ee</url>
     <issueTrackingUrl>Bugster</issueTrackingUrl>
     <siteAddress>http://bugster</siteAddress>

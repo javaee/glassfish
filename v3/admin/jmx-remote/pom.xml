@@ -25,6 +25,15 @@
                 <role>developer</role>
             </roles>
         </developer>
+        <developer>
+            <id>km</id>
+            <name>Kedar Mhaswade</name>
+            <url>http://blogs.sun.com/bloggerkedar</url>
+            <organization>Sun Microsystems, Inc.</organization>
+            <roles>
+                <role>developer</role>
+            </roles>
+        </developer>
     </developers>
     <build>
 	<resources>
