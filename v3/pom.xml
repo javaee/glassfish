@@ -96,7 +96,7 @@
         <major_version>10</major_version>
         <minor_version>0</minor_version>
         <nucleus.version>0.1-SNAPSHOT</nucleus.version>
-        <jruby.version>1.0.2</jruby.version>
+        <jruby.version>1.0.3</jruby.version>
     </properties>
     <modules>
     	<module>build</module>
