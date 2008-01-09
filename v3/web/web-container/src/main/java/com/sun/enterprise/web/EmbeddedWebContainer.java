@@ -69,7 +69,7 @@ import com.sun.enterprise.server.pluggable.WebContainerFeatureFactory;
 import com.sun.enterprise.config.serverbeans.Property;
 import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
 
-import org.openide.util.Lookup;
+//import org.openide.util.Lookup;
 import org.jvnet.hk2.component.Habitat;
 
 /**
@@ -249,8 +249,8 @@ public final class EmbeddedWebContainer extends Embedded {
         
 //        context.addContainerListener(new WebContainerListener());
 
-        context.addInstanceListener(
-            "com.sun.enterprise.admin.monitor.callflow.WebContainerListener");
+        //context.addInstanceListener(
+        //    "com.sun.enterprise.admin.monitor.callflow.WebContainerListener");
         
         return context;
     }
@@ -404,11 +404,11 @@ public final class EmbeddedWebContainer extends Embedded {
         engine.setLogger(logger);       // Inherited by all children
         engine.setRealm(null);         // Inherited by all children
         
-        ContainerListener listener = loadListener
-            ("com.sun.enterprise.admin.monitor.callflow.WebContainerListener");
-        if ( listener != null ) {
-            engine.addContainerListener(listener);
-        }
+        //ContainerListener listener = loadListener
+        //    ("com.sun.enterprise.admin.monitor.callflow.WebContainerListener");
+        //if ( listener != null ) {
+        //    engine.addContainerListener(listener);
+        //}
         return (engine);
 
     }
@@ -436,10 +436,11 @@ public final class EmbeddedWebContainer extends Embedded {
          */
         protected void startChildren() {
 
+            /*
             new File(webContainer.getAppsWorkRoot()).mkdirs();
             new File(webContainer.getModulesWorkRoot()).mkdirs();
             
-            /*ArrayList<LifecycleStarter> starters
+            ArrayList<LifecycleStarter> starters
                 = new ArrayList<LifecycleStarter>();
 
             Container children[] = findChildren();

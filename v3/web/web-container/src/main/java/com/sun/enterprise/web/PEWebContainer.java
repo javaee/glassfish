@@ -63,8 +63,8 @@ import org.apache.catalina.core.StandardHost;
 import org.apache.coyote.tomcat5.CoyoteConnector;
 import org.apache.tomcat.util.IntrospectionUtils;
 
-import com.sun.enterprise.config.ConfigContext;
-import com.sun.enterprise.config.ConfigException;
+//import com.sun.enterprise.config.ConfigContext;
+//import com.sun.enterprise.config.ConfigException;
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
 import com.sun.enterprise.config.serverbeans.ConnectionPool;
@@ -119,8 +119,8 @@ import com.sun.enterprise.security.CipherInfo;
 /**
  * Represents the web container for PE and EE (since 9.0)
  */
-public class PEWebContainer extends WebContainer
-    implements MonitoringLevelListener {
+public class PEWebContainer extends WebContainer {
+    //implements MonitoringLevelListener {
 
     private PECoyoteConnector jkConnector;
  
@@ -164,7 +164,7 @@ public class PEWebContainer extends WebContainer
      */
     protected PEWebContainer(String id, ServerContext context) {
 
-        super(id, context);
+        //super(id, context);
     }
 
     /**
@@ -432,8 +432,8 @@ public class PEWebContainer extends WebContainer
      */
     public void createHost(
                     com.sun.enterprise.config.serverbeans.VirtualServer vse,
-                    ConfigContext configContext,
-                    boolean enableMonitoring) throws ConfigException{
+                    //ConfigContext configContext,
+                    boolean enableMonitoring) { // throws ConfigException{
         
         Config config = _serverContext.getDefaultHabitat().getComponent(Config.class);
 
@@ -744,8 +744,9 @@ public class PEWebContainer extends WebContainer
      */
     public void startInstance() throws ServerLifecycleException {
         _logger.log(Level.INFO, "pewebcontainer.start");
+/*
         try {
-            super.start();
+            //super.start();
          } catch (LifecycleException le) {
 
              // check if there is an embedded exception, if so, throw that
@@ -756,7 +757,7 @@ public class PEWebContainer extends WebContainer
              String msg = _rb.getString("webcontainer.startError");
              throw new ServerLifecycleException(msg, ex);
         }
-
+*/
         // the server has started up, now enable monitoring.
         enableVirtualServerMonitoring();
         enableHttpMonitoring();
@@ -1892,10 +1893,8 @@ public class PEWebContainer extends WebContainer
                         connectors[k];
                     if (oldPorts[i] == conn.getPort()) {
                         try {
-                            /* XXX
                              conn.getMapperListener().unregisterHost(
                                 virtualServer.getJmxName());
-                             */
                         } catch (Exception e) {
                             throw new LifecycleException(e);
                         }
@@ -1929,10 +1928,8 @@ public class PEWebContainer extends WebContainer
                                 conn.getName());
                         }
                         try {
-                            /* XXX
                             conn.getMapperListener().registerHost(
                                 virtualServer.getJmxName());
-                             */
                         } catch (Exception e) {
                             throw new LifecycleException(e);
                         }

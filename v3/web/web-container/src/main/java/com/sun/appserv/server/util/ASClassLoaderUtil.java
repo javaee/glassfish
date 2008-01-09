@@ -43,8 +43,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.*;
-import com.sun.enterprise.config.ConfigContext;
-import com.sun.enterprise.config.ConfigException;
+//import com.sun.enterprise.config.ConfigContext;
+//import com.sun.enterprise.config.ConfigException;
 import com.sun.enterprise.config.serverbeans.Applications;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.WebModule;
@@ -128,6 +128,7 @@ public class ASClassLoaderUtil {
      * ID is equals to the passed one
      */
     private static <T> T getModule(Class<T> type, String moduleId) {
+        /*
         for (Object app : getApplications().getLifecycleModuleOrJ2EeApplicationOrEjbModuleOrWebModuleOrConnectorModuleOrAppclientModuleOrMbeanOrExtensionModule()) {
             if (app.getClass().getName().equals(type.getName())) {
                 try {
@@ -142,7 +143,7 @@ public class ASClassLoaderUtil {
                     return null;
                 }
             }
-        }
+        }*/
         return null;
     }
     

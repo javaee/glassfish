@@ -48,7 +48,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.ResourceBundle;
 import javax.servlet.ServletException;
-import com.sun.enterprise.config.ConfigBean;
+//import com.sun.enterprise.config.ConfigBean;
+import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
 import com.sun.enterprise.deployment.runtime.web.CookieProperties;
 import com.sun.enterprise.deployment.runtime.web.SessionConfig;
 import com.sun.enterprise.deployment.runtime.web.SessionManager;
@@ -1067,7 +1068,7 @@ public class WebModule extends PwcWebModule {
                         // XXX need error message
                     }
                 } else if (name.equalsIgnoreCase("enableCookies")) {
-                    setCookies(ConfigBean.toBoolean(value));
+                    setCookies(ConfigBeansUtilities.toBoolean(value));
                 } else {
                     Object[] params = { name };
                     logger.log(Level.INFO, "webcontainer.notYet", params);

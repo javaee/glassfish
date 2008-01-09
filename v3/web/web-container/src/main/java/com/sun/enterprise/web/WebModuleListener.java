@@ -74,7 +74,7 @@ import com.sun.appserv.BytecodePreprocessor;
 //import com.sun.enterprise.server.PersistenceUnitLoaderImpl;
 //import com.sun.enterprise.server.PersistenceUnitLoader;
 import com.sun.enterprise.loader.InstrumentableClassLoader;
-import com.sun.enterprise.config.ConfigException;
+//import com.sun.enterprise.config.ConfigException;
 
 /**
  * Startup event listener for a <b>Context</b> that configures the properties

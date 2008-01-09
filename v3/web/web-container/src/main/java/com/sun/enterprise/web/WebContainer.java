@@ -1,47 +1,38 @@
 /*
- * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
- *
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
- *
- * The contents of this file are subject to the terms of either the GNU
- * General Public License Version 2 only ("GPL") or the Common Development
- * and Distribution License("CDDL") (collectively, the "License").  You
- * may not use this file except in compliance with the License. You can obtain
- * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
- * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
- * language governing permissions and limitations under the License.
- *
- * When distributing the software, include this License Header Notice in each
- * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
- * Sun designates this particular file as subject to the "Classpath" exception
- * as provided by Sun in the GPL Version 2 section of the License file that
- * accompanied this code.  If applicable, add the following below the License
- * Header, with the fields enclosed by brackets [] replaced by your own
- * identifying information: "Portions Copyrighted [year]
- * [name of copyright owner]"
- *
- * Contributor(s):
- *
- * If you wish your version of this file to be governed by only the CDDL or
- * only the GPL Version 2, indicate your decision by adding "[Contributor]
- * elects to include this software in this distribution under the [CDDL or GPL
- * Version 2] license."  If you don't indicate a single choice of license, a
- * recipient has the option to distribute your version of this file under
- * either the CDDL, the GPL Version 2 or to extend the choice of license to
- * its licensees as provided above.  However, if you add GPL Version 2 code
- * and therefore, elected the GPL Version 2 license, then the option applies
- * only if the new code is made subject to such option by the copyright
- * holder.
+ * The contents of this file are subject to the terms 
+ * of the Common Development and Distribution License 
+ * (the License).  You may not use this file except in
+ * compliance with the License.
+ * 
+ * You can obtain a copy of the license at 
+ * https://glassfish.dev.java.net/public/CDDLv1.0.html or
+ * glassfish/bootstrap/legal/CDDLv1.0.txt.
+ * See the License for the specific language governing 
+ * permissions and limitations under the License.
+ * 
+ * When distributing Covered Code, include this CDDL 
+ * Header Notice in each file and include the License file 
+ * at glassfish/bootstrap/legal/CDDLv1.0.txt.  
+ * If applicable, add the following below the CDDL Header, 
+ * with the fields enclosed by brackets [] replaced by
+ * you own identifying information: 
+ * "Portions Copyrighted [year] [name of copyright owner]"
+ * 
+ * Copyright 2006 Sun Microsystems, Inc. All rights reserved.
  */
+
 
 package com.sun.enterprise.web;
 
 //import com.sun.enterprise.admin.event.EventListenerRegistry;
 import com.sun.enterprise.util.OS;
+import com.sun.enterprise.module.Module;
 
 import java.beans.PropertyVetoException;
 import java.io.File;
+import java.net.InetAddress;
 import java.net.MalformedURLException;
+import java.net.UnknownHostException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.text.MessageFormat;
@@ -66,11 +57,13 @@ import org.apache.catalina.Container;
 import org.apache.catalina.Context;
 import org.apache.catalina.Deployer;
 import org.apache.catalina.Engine;
+import org.apache.catalina.Host;
 import org.apache.catalina.Loader;
 import org.apache.catalina.Lifecycle;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.LifecycleListener;
 import org.apache.catalina.core.StandardContext;
+import org.apache.catalina.core.StandardEngine;
 import org.apache.catalina.core.StandardHost;
 import org.apache.catalina.loader.WebappLoader;
 import org.apache.catalina.util.LifecycleSupport;
@@ -79,12 +72,14 @@ import org.apache.catalina.startup.TldConfig;
 import org.apache.catalina.startup.DigesterFactory;
 import org.apache.jasper.compiler.TldLocationsCache;
 import org.apache.jasper.xmlparser.ParserUtils;
+import org.apache.coyote.tomcat5.CoyoteAdapter;
 import org.apache.coyote.tomcat5.CoyoteRequest;
 
+import com.sun.grizzly.tcp.Adapter;
 import com.sun.grizzly.util.http.mapper.Mapper;
 
-import com.sun.enterprise.config.ConfigContext;
-import com.sun.enterprise.config.ConfigException;
+//import com.sun.enterprise.config.ConfigContext;
+//import com.sun.enterprise.config.ConfigException;
 import com.sun.enterprise.config.serverbeans.Applications;
 import com.sun.enterprise.config.serverbeans.J2EeApplication;
 import com.sun.enterprise.config.serverbeans.ApplicationRef;
@@ -94,6 +89,7 @@ import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.DasConfig;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.config.serverbeans.HttpService;
+import com.sun.enterprise.config.serverbeans.HttpListener;
 import com.sun.enterprise.config.serverbeans.HttpProtocol;
 import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
 //import com.sun.enterprise.server.StandaloneWebModulesManager;
@@ -112,8 +108,13 @@ import com.sun.enterprise.util.StringUtils;
 import com.sun.enterprise.web.logger.IASLogger;
 import com.sun.enterprise.web.connector.coyote.PECoyoteConnector;
 
+
 //import com.sun.enterprise.security.SecurityUtil;
 
+import com.sun.enterprise.deployment.Application;
+import org.glassfish.api.deployment.archive.ReadableArchive;
+import java.util.Properties;
+import com.sun.enterprise.v3.deployment.DeployCommand;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.WebServicesDescriptor;
 import com.sun.enterprise.deployment.WebServiceEndpoint;
@@ -162,9 +163,10 @@ import com.sun.enterprise.config.serverbeans.Servers;
 
 // V3 imports
 import com.sun.enterprise.v3.server.V3Environment;
-import com.sun.enterprise.v3.web.WebDeployer;
+import com.sun.enterprise.web.WebDeployer;
 
 import org.glassfish.api.container.ContainerProvider;
+import org.glassfish.api.deployment.DeploymentContext;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PostConstruct;
@@ -174,23 +176,172 @@ import javax.naming.spi.NamingManager;
 import java.lang.reflect.Method;
 
 /**
- * Web container implementation for the Sun ONE Application Server.
+ * Web container service
  *
- * This class is intended for use in versions of the application server
- * that *do not* have web-core as well as in versions that do. NSAPI
- * specific functionality is implemented the NSAPIWebContainer subclass
- * in the <code>j2ee-plugin</code> component.
+ * @author jluehe
+ * @author amyroh
  */
 @Service(name="web")
 @org.glassfish.api.container.Container(type="web", deployerImpl=WebDeployer.class)
-public class WebContainer
-        implements Lifecycle,
-        MonitoringLevelListener,
-        ContainerProvider, 
-        PostConstruct, 
-        PreDestroy {
-               /*ApplicationDeployEventListener,
-               ModuleDeployEventListener, {*/
+public class WebContainer implements ContainerProvider, PostConstruct, PreDestroy {
+        //MonitoringLevelListener {
+
+    @Inject
+    Domain domain;
+
+    @Inject
+    ServerContext _serverContext;
+
+    HashMap<String, Integer> portMap = new HashMap<String, Integer>();
+    HashMap<Integer, Adapter> adapterMap = new HashMap<Integer, Adapter>();
+    
+    EmbeddedWebContainer _embedded;
+    Engine engine;
+    String instanceName;
+    String defaultWebXml;
+
+    /**
+     * The id of this web container object.
+     */
+    private String _id = null;
+    
+    /**
+     * The logger to use for logging ALL web container related messages.
+     */
+    protected static final Logger _logger = LogDomains.getLogger(
+            LogDomains.WEB_LOGGER);
+    
+    public void postConstruct() {
+        
+        defaultWebXml = System.getProperty("AS_DEF_DOMAINS_PATH");
+        if (defaultWebXml != null) {
+            defaultWebXml += File.separator + "domain1"
+                + File.separator + "config" + File.separator
+                + "default-web.xml";
+            _logger.info("Using default-web.xml " + defaultWebXml);
+        }
+
+        String root = System.getProperty("com.sun.aas.installRoot");
+        File libRoot = new File(root, "lib");
+        File schemas = new File(libRoot, "schemas");
+        File dtds = new File(libRoot, "dtds");
+
+        try {
+            DigesterFactory.setSchemaResourcePrefix(schemas.toURL().toString());
+            DigesterFactory.setDtdResourcePrefix(dtds.toURL().toString());
+        } catch(MalformedURLException e) {
+            _logger.log(Level.SEVERE, "Exception setting the schemas/dtds location", e);
+        }
+
+        instanceName = _serverContext.getInstanceName();
+
+        //_embedded = new Embedded();
+        _embedded = new EmbeddedWebContainer(_logger, _serverContext.getDefaultHabitat(), this, null);
+        Module module = Module.find(EmbeddedWebContainer.class);
+        engine = _embedded.createEngine();
+        engine.setParentClassLoader(module.getClassLoader());
+        _embedded.addEngine(engine);
+        ((StandardEngine) engine).setDomain("com.sun.appserv");
+
+        List<Config> configs = domain.getConfigs().getConfig();
+        for (Config aConfig : configs) {
+
+            HttpService httpService = aConfig.getHttpService();
+
+            // Configure HTTP listeners
+            List<HttpListener> httpListeners = httpService.getHttpListener();
+            for (HttpListener httpListener : httpListeners) {
+                if ("admin-listener".equals(httpListener.getId())) {
+                    // XXX TBD
+                    continue;
+                } else {
+                    createHttpListener(httpListener);
+                    _logger.info("Created HTTP listener "
+                                        + httpListener.getId());
+                }
+            }
+
+            // Configure virtual servers
+            List<com.sun.enterprise.config.serverbeans.VirtualServer> virtualServers = httpService.getVirtualServer();
+            for (com.sun.enterprise.config.serverbeans.VirtualServer vs : virtualServers) {
+                createVirtualServer(vs);
+                _logger.info("Created virtual server " + vs.getId());
+            }
+        }
+
+        try {
+            _embedded.start();
+        } catch (LifecycleException le) {
+            _logger.log(Level.SEVERE,
+                               "Unable to start web container", le);
+            return;
+        }        
+    }    
+    
+    public void preDestroy() {
+        
+    }
+
+
+    private void createHttpListener(HttpListener hListener) {
+
+        portMap.put(hListener.getId(),
+                    Integer.valueOf(hListener.getPort()));
+
+        WebConnector webConnector = new WebConnector();
+        webConnector.setPort(Integer.parseInt(hListener.getPort()));
+        webConnector.setDefaultHost(hListener.getDefaultVirtualServer());
+        _embedded.addConnector(webConnector);
+
+        CoyoteAdapter coyoteAdapter = new CoyoteAdapter(webConnector);
+        adapterMap.put(Integer.valueOf(hListener.getPort()), coyoteAdapter);
+    }
+
+    private void createVirtualServer(
+                com.sun.enterprise.config.serverbeans.VirtualServer vsBean) {
+        
+        String docroot =
+            ConfigBeansUtilities.getPropertyValueByName(vsBean, "docroot");
+        
+        Host vs = _embedded.createHost(vsBean.getId(), docroot);
+
+        // Configure the virtual server with the port numbers of its
+        // associated HTTP listeners
+        List listeners =
+            StringUtils.parseStringList(vsBean.getHttpListeners(), ",");
+        if (listeners != null) {
+            int[] ports = new int[listeners.size()];
+            int i = 0;
+            ListIterator<String> iter = listeners.listIterator();
+            while (iter.hasNext()) {
+                Integer port = portMap.get(iter.next());
+                if (port != null) {
+                    ports[i++] = port.intValue();
+                }
+	    }
+            vs.setPorts(ports);
+        }
+
+        // Set Host alias names
+        List<String> aliasNames =
+            StringUtils.parseStringList(vsBean.getHosts(), ",");
+        for (String alias: aliasNames){
+            // XXX remove once ${com.sun.aas.hostName} has been properly
+            // resolved thru parametric replacement
+            if ("${com.sun.aas.hostName}".equals(alias)) {
+                try {
+                    alias = InetAddress.getLocalHost().getHostName();
+                } catch (UnknownHostException e) {
+                    _logger.log(Level.SEVERE,
+                                       "Unable to get local host name",
+                                       e);
+                }
+            }
+            vs.addAlias(alias);
+        }
+
+        engine.addChild(vs);
+    }
     
     // ------------------------------------------------------------ Constants
     
@@ -209,16 +360,10 @@ public class WebContainer
     
     // ----------------------------------------------------- Instance Variables
     
-    @Inject
-    Domain domain;
-
-    @Inject
-    ServerContext _serverContext;
-    
     /**
      * The embedded Catalina object.
      */
-    protected EmbeddedWebContainer _embedded = null;
+    //protected EmbeddedWebContainer _embedded = null;
     
     /**
      * The parent/top-level container in <code>_embedded</code> for virtual
@@ -233,7 +378,7 @@ public class WebContainer
     /**
      * The config context under which this container was created.
      */
-    protected ConfigContext _configContext = null;
+    //protected ConfigContext _configContext = null;
     
     //protected Domain domain = null;
     protected V3Environment instance = null;
@@ -245,16 +390,6 @@ public class WebContainer
      */
     private Server _serverBean = null;
     
-    /**
-     * The id of this web container object.
-     */
-    private String _id = null;
-    
-    /**
-     * The logger to use for logging ALL web container related messages.
-     */
-    protected static final Logger _logger = LogDomains.getLogger(
-            LogDomains.WEB_LOGGER);
     
     /**
      * The resource bundle containing the message strings for _logger.
@@ -334,7 +469,7 @@ public class WebContainer
     /**
      * The lifecycle event support for this component.
      */
-    private LifecycleSupport _lifecycle = new LifecycleSupport(this);
+    //private LifecycleSupport _lifecycle = new LifecycleSupport(this);
     
     /**
      * Has this component been started yet?
@@ -352,7 +487,7 @@ public class WebContainer
     //private WebSecurityManagerFactory webSecurityManagerFactory
     //       = WebSecurityManagerFactory.getInstance();
     
-    private EjbWebServiceRegistryListener ejbWebServiceRegistryListener;
+    //private EjbWebServiceRegistryListener ejbWebServiceRegistryListener;
     
     protected WebContainerFeatureFactory webFeatureFactory;
     
@@ -395,17 +530,17 @@ public class WebContainer
     /**
      * This creates the embedded Catalina/Jasper container and sets the config
      * properties on the container.
-     */
+     *
     protected WebContainer(String id, ServerContext context) {
         
         _id = id;
         _serverContext = context;
-        
+     
         _configContext = _serverContext.getConfigContext();
         
         String rootDir = _serverContext.getInstallRoot();
         String name = _serverContext.getInstanceName();
-        instance = (V3Environment) context.getDefaultHabitat().getComponent(V3Environment.class);
+        instance = (V3Environment) _serverContext.getDefaultHabitat().getComponent(V3Environment.class);
         //instance = new InstanceEnvironment(rootDir, name);
         _modulesWorkRoot = instance.getWebModuleCompileJspPath();
         _appsWorkRoot = instance.getApplicationCompileJspPath();
@@ -413,15 +548,15 @@ public class WebContainer
         
         instanceClassPath = getInstanceClassPath(instance);
         
-        ejbWebServiceRegistryListener = new EjbWebServiceRegistryListener(this);
+        //ejbWebServiceRegistryListener = new EjbWebServiceRegistryListener(this);
         
         // START S1AS 6178005
         modulesStubRoot = instance.getModuleStubPath();
         appsStubRoot = instance.getApplicationStubPath();
         // END S1AS 6178005
         
-        /*webFeatureFactory = _serverContext.getPluggableFeatureFactory().getWebContainerFeatureFactory();
-        
+        webFeatureFactory = _serverContext.getPluggableFeatureFactory().getWebContainerFeatureFactory();
+         
          try {
             webModulesManager = new WebModulesManager(instance);
             appsManager = new AppsManager(instance);
@@ -429,17 +564,16 @@ public class WebContainer
             _logger.log(Level.WARNING,
                 "Error in creating web modules manager: ", cx);
         }
-         */
-        
+         
         setNoTldScan();
         
         LogService logService = null;
         
         try {
-            domain = context.getDefaultHabitat().getComponent(Domain.class);
-            _serverBean = context.getDefaultHabitat().getComponent(Server.class);
+            domain = _serverContext.getDefaultHabitat().getComponent(Domain.class);
+            _serverBean = _serverContext.getDefaultHabitat().getComponent(Server.class);
             
-            Config cfg = context.getDefaultHabitat().getComponent(Config.class);
+            Config cfg = _serverContext.getDefaultHabitat().getComponent(Config.class);
             getDynamicReloadingSettings(cfg.getAdminService().getDasConfig());
             logService = cfg.getLogService();
             initLogLevel(logService);
@@ -472,8 +606,13 @@ public class WebContainer
         if (logService != null) {
             logServiceFile = logService.getFile();
         }
-        _embedded = new EmbeddedWebContainer(_logger, context.getDefaultHabitat(), this,
+        _embedded = new EmbeddedWebContainer(_logger, _serverContext.getDefaultHabitat(), this,
                 logServiceFile);
+        Module module = Module.find(EmbeddedWebContainer.class);
+        Engine engine = _embedded.createEngine();
+        engine.setParentClassLoader(module.getClassLoader());
+        _embedded.addEngine(engine);
+        
         _embedded.setUseNaming(false);
         if (_debug > 1)
             _embedded.setDebug(_debug);
@@ -492,6 +631,7 @@ public class WebContainer
          * reasons, in which case they would set the value of the
          * product.name system property to the empty string.
          */
+        /*
         String serverInfo = System.getProperty("product.name");
         if (serverInfo != null) {
             ServerInfo.setServerInfo(serverInfo);
@@ -514,7 +654,83 @@ public class WebContainer
         }
         //added for internal monitoring
         //END HERCULES:add
-    }
+        
+        if (System.getProperty(DOC_BUILDER_FACTORY_PROPERTY) == null) {
+            System.setProperty(DOC_BUILDER_FACTORY_PROPERTY,
+                    DOC_BUILDER_FACTORY_IMPL);
+        }
+        
+        initInstanceSessionProperties();
+        
+        //HERCULES:mod
+        //registerAdminEvents();
+        registerMonitoringLevelEvents();
+        initHealthChecker();
+        if(isNativeReplicationEnabled()) {
+            initReplicationReceiver();
+        }
+        long btime = 0L;
+        if (_logger.isLoggable(Level.FINE)) {
+            _logger.fine("before schema check");
+            btime = System.currentTimeMillis();
+        }
+        doSchemaCheck();
+        if (_logger.isLoggable(Level.FINE)) {
+            _logger.fine("after schema check time: " + (System.currentTimeMillis() - btime));
+        }
+        //end HERCULES:mod
+        
+        //ejbWebServiceRegistryListener.register(_serverContext.getDefaultHabitat());
+        
+        Engine[] engines =  _embedded.getEngines();
+        
+        for (int j=0; j<engines.length; j++) {
+            Container[] vsList = engines[j].findChildren();
+            for (int i = 0; i < vsList.length; i++) {
+                // Load all the standalone web modules for each VS
+                loadWebModules((VirtualServer)vsList[i]);
+            }
+        }
+        
+        // Load the web modules specified in each j2ee-application
+        loadAllJ2EEApplicationWebModules(true);
+        
+        loadDefaultWebModules();
+        
+        //_lifecycle.fireLifecycleEvent(START_EVENT, null);
+        _started = true;
+        // start the embedded container
+        try {
+            _embedded.start();
+        } catch (LifecycleException le) {
+            _logger.log(Level.SEVERE,
+                               "Unable to start web container", le);
+        }
+        if (_reloadingEnabled) {
+            // Enable dynamic reloading (via the .reload file) for all
+            // standalone web-modules that are marked as enabled
+            
+            /*Applications appsBean = null;
+            try {
+                appsBean = ServerBeansFactory.getApplicationsBean(_configContext);
+            } catch (ConfigException e) {
+               String msg = _rb.getString("webcontainer.appsConfigError");
+               _logger.log(Level.SEVERE, msg, e);
+            }
+             
+            _reloadManager = new StandaloneWebModulesManager(_id,
+                                                             _modulesRoot,
+                                                             _pollInterval);
+            if (appsBean != null) {
+                com.sun.enterprise.config.serverbeans.WebModule[] wmBeans = appsBean.getWebModule();
+                if (wmBeans != null && wmBeans.length > 0) {
+                    _reloadManager.addWebModules(wmBeans);
+                }
+            }
+             
+        }
+        enableAllWSEndpoints();
+    }**/
     
     //HERCULES:add
     //added for monitoring
@@ -542,13 +758,6 @@ public class WebContainer
         return _id;
     }
     
-    public void postConstruct() {    
-    
-    }    
-    
-    public void preDestroy() {
-        
-    }
     // --------------------------------------------------------- HADB Health Status
     
     private HealthChecker _healthChecker = null;
@@ -590,7 +799,7 @@ public class WebContainer
     // --------------------------------------------------------- end HADB Health Status
     
     // --------------------------------------------------------- start Replication
-    
+    /*
     private ReplicationReceiver _replicationReceiver = null;
     public ReplicationReceiver getReplicationReceiver() {
         return _replicationReceiver;
@@ -632,10 +841,10 @@ public class WebContainer
             _logger.finest("NATIVE REPLICATION ENABLED:" + lookup.isNativeReplicationEnabledFromConfig());
         }
         return lookup.isGMSEnabled() && lookup.isNativeReplicationEnabledFromConfig();
-         */
-        // XXX
+         
         return false;
     }
+     **/
     
     // --------------------------------------------------------- end Replication
     
@@ -706,7 +915,7 @@ public class WebContainer
      */
     
     // -------------------------------------- Monitoring Level Event Processing
-    
+    /*
     public void registerMonitoringLevelEvents() {
         MonitoringRegistry monitoringRegistry =
                 _serverContext.getDefaultHabitat().getComponent(MonitoringRegistry.class);
@@ -743,7 +952,7 @@ public class WebContainer
      * Returns the current monitoring level.
      *
      * @return The current monitoring level
-     */
+     *
     public static MonitoringLevel getMonitoringLevel() {
         return monitoringLevel;
     }
@@ -752,7 +961,7 @@ public class WebContainer
      * Returns true if monitoring is enabled, false otherwise.
      *
      * @return true if monitoring is enabled, false otherwise
-     */
+     *
     public static boolean isMonitoringEnabled() {
         return (!MonitoringLevel.OFF.equals(monitoringLevel));
     }
@@ -762,7 +971,7 @@ public class WebContainer
                 _serverContext.getDefaultHabitat().getComponent(MonitoringRegistry.class));
     }
     
-    
+    */
     // -------------------------------------------------------- Public Methods
     
     /**
@@ -776,6 +985,7 @@ public class WebContainer
             HttpProtocol httpProtocol) {
         
         // Initialize the docroot
+        //VirtualServer vs = (VirtualServer) _embedded.createHost(vsBean.getId(), docroot);
         VirtualServer vs = (VirtualServer) _embedded.createHost(vsID,
                 vsBean,
                 docroot,
@@ -799,7 +1009,7 @@ public class WebContainer
      * Add a lifecycle event listener to this component.
      *
      * @param listener The listener to add
-     */
+     *
     public void addLifecycleListener(LifecycleListener listener) {
         _lifecycle.addLifecycleListener(listener);
     }
@@ -809,11 +1019,11 @@ public class WebContainer
      * Remove a lifecycle event listener from this component.
      *
      * @param listener The listener to remove
-     */
+     *
     public void removeLifecycleListener(LifecycleListener listener) {
         _lifecycle.removeLifecycleListener(listener);
     }
-    
+    */
     private void doSchemaCheck() {
         SchemaUpdater schemaUpdater = null;
         try {
@@ -843,7 +1053,7 @@ public class WebContainer
      *  started
      * @exception LifecycleException if this component detects a fatal error
      *  that prevents this component from being used
-     */
+     *
     public void start() throws LifecycleException {
         if (_started) {
             String msg = _rb.getString("webcontainer.alreadyStarted");
@@ -875,7 +1085,7 @@ public class WebContainer
         }
         //end HERCULES:mod
         
-        ejbWebServiceRegistryListener.register(_serverContext.getDefaultHabitat());
+        //ejbWebServiceRegistryListener.register(_serverContext.getDefaultHabitat());
         
         Engine[] engines =  _embedded.getEngines();
         
@@ -918,10 +1128,10 @@ public class WebContainer
                     _reloadManager.addWebModules(wmBeans);
                 }
             }
-             **/
+             **
         }
         enableAllWSEndpoints();
-    }
+    }*/
     
     /**
      * Gracefully terminate the active use of the public methods of this
@@ -939,11 +1149,11 @@ public class WebContainer
             throw new LifecycleException(msg);
         }
         
-        ejbWebServiceRegistryListener.unregister(_serverContext.getDefaultHabitat());
+        //ejbWebServiceRegistryListener.unregister(_serverContext.getDefaultHabitat());
         
         //HERCULES:mod
         //unregisterAdminEvents();
-        unregisterMonitoringLevelEvents();
+        //unregisterMonitoringLevelEvents();
         stopHealthChecker();
         WebContainerStartStopOperation startStopOperation =
                 this.getWebContainerStartStopOperation();
@@ -987,7 +1197,7 @@ public class WebContainer
         WebContainerStartStopOperation startStopOperation =
                 webFeatureFactory.getWebContainerStartStopOperation();
         
-        startStopOperation.init(_embedded);
+        //startStopOperation.init(_embedded);
         return startStopOperation;
     }
     
@@ -1033,6 +1243,7 @@ public class WebContainer
      * a default context for the virtual server, based on the virtual server's
      * docroot.
      */
+    
     protected void loadDefaultWebModules() {
         
         Engine[] engines =  _embedded.getEngines();
@@ -1187,7 +1398,7 @@ public class WebContainer
     protected boolean isEnabled(String moduleName) {
         // TODO dochez : optimize
         Domain domain = (Domain) _serverContext.getDefaultHabitat().getComponent(Domain.class);
-        List applications = domain.getApplications().getLifecycleModuleOrJ2EeApplicationOrEjbModuleOrWebModuleOrConnectorModuleOrAppclientModuleOrMbeanOrExtensionModule();
+        /* applications = domain.getApplications().getLifecycleModuleOrJ2EeApplicationOrEjbModuleOrWebModuleOrConnectorModuleOrAppclientModuleOrMbeanOrExtensionModule();
         com.sun.enterprise.config.serverbeans.WebModule webModule = null;
         for (Object module : applications) {
             if (module instanceof WebModule) {
@@ -1214,6 +1425,8 @@ public class WebContainer
         
         return ((webModule != null && Boolean.getBoolean(webModule.getEnabled())) &&
                 (appRef != null && Boolean.getBoolean(appRef.getEnabled())));
+         */
+        return true;
     }
     
     /**
@@ -1347,10 +1560,10 @@ public class WebContainer
                  * loaded
                  */
                 unloadWebModule(wmContextPath,
-                                ctx.getJ2EEApplication(),
-                                vs.getName(),
-                                null,
-                                true);
+                        ctx.getJ2EEApplication(),
+                        vs.getName(),
+                        null,
+                        true);
             } else if (!ctx.getAvailable()){
                 /*
                  * Context has been marked unavailable by a previous
@@ -1384,11 +1597,12 @@ public class WebContainer
             docBase = wmInfo.getLocation();
         }
         ctx = (WebModule) _embedded.createContext(wmContextPath,
-                docBase,
+                docBase);
+                /*
                 vs.getDefaultContextXmlLocation(),
                 vs.getDefaultWebXmlLocation(),
                 useDOLforDeployment,
-                wmInfo.getDescriptor());
+                wmInfo.getDescriptor());*/
         
         // Set JSR 77 object name and attributes
         String engineName = vs.getParent().getName();
@@ -1639,6 +1853,191 @@ public class WebContainer
         return exception;
     }
     
+    protected WebModule loadWebModule(VirtualServer vs, DeploymentContext dc,
+            String j2eeApplication) {
+        
+        WebBundleDescriptor wbd = (WebBundleDescriptor)dc.getModuleMetaData(
+            "web", Application.class).getStandaloneBundleDescriptor();
+        
+        String wmName = wbd.getName();
+        String wmContextPath = wbd.getContextRoot();
+        
+        /*
+        if (wmContextPath.equals("") && vs.getDefaultWebModuleID() != null) {
+            _logger.log(Level.WARNING, "webcontainer.defaultWebModuleConflict",
+                    new Object[] { wmName, wmContextPath, vs.getID() });
+            return null;
+        }
+        
+        if (wmName.indexOf(Constants.NAME_SEPARATOR) != -1) {
+            wmInfo.setWorkDirBase(_appsWorkRoot);
+            // START S1AS 6178005
+            wmInfo.setStubBaseDir(appsStubRoot);
+            // END S1AS 6178005
+        } else {
+            wmInfo.setWorkDirBase(_modulesWorkRoot);
+            // START S1AS 6178005
+            wmInfo.setStubBaseDir(modulesStubRoot);
+            // END S1AS 6178005
+        }*/
+        
+        String displayContextPath = null;
+        if (wmContextPath.equals(""))
+            displayContextPath = "/";
+        else
+            displayContextPath = wmContextPath;
+        
+        HashMap adHocPaths = null;
+        HashMap adHocSubtrees = null;
+        WebModule ctx = (WebModule)vs.findChild(wmContextPath);
+        if (ctx != null) {
+            if (ctx instanceof AdHocWebModule) {
+                /*
+                 * Found ad-hoc web module which has been created by web
+                 * container in order to store mappings for ad-hoc paths
+                 * and subtrees.
+                 * All these mappings must be propagated to the context
+                 * that is being deployed.
+                 */
+                if (ctx.hasAdHocPaths()) {
+                    adHocPaths = ctx.getAdHocPaths();
+                }
+                if (ctx.hasAdHocSubtrees()) {
+                    adHocSubtrees = ctx.getAdHocSubtrees();
+                }
+                vs.removeChild(ctx);
+            } else if (Constants.DEFAULT_WEB_MODULE_NAME
+                    .equals(ctx.getModuleName())) {
+                /*
+                 * Dummy context that was created just off of a docroot,
+                 * (see
+                 * VirtualServer.createSystemDefaultWebModuleIfNecessary()).
+                 * Unload it so it can be replaced with the web module to be
+                 * loaded
+                 */
+                unloadWebModule(wmContextPath,
+                        ctx.getJ2EEApplication(),
+                        vs.getName(),
+                        null,
+                        true);
+            } else if (!ctx.getAvailable()){
+                /*
+                 * Context has been marked unavailable by a previous
+                 * call to disableWebModule. Mark the context as available and
+                 * return
+                 */
+                ctx.setAvailable(true);
+                return null;
+            } else {
+                Object[] params = { vs.getID(), displayContextPath, wmName };
+                _logger.log(Level.WARNING, "webcontainer.duplicateContextRoot",
+                        params);
+                return null;
+            }
+        }
+        
+        if (_logger.isLoggable(Level.FINEST)) {
+            Object[] params = { wmName, vs.getID(), displayContextPath };
+            _logger.log(Level.FINEST, "webcontainer.loadModule", params);
+        }
+        
+        String docBase = null;
+        if (JWS_APPCLIENT_MODULE_NAME.equals(wmName)) {
+            File installRootFile = new File(System.getProperty("com.sun.aas.installRoot"));
+            String path = installRootFile.toURI().getPath();
+            if (OS.isWindows()) {
+                path = path.substring(1); // On Windows, skip the slash before the device
+            }
+            docBase = path;
+        } else {
+            //docBase = wmInfo.getLocation();
+            ReadableArchive source = dc.getSource();
+            docBase = source.getURI().getSchemeSpecificPart();
+        }
+        ctx = (WebModule) _embedded.createContext(wmContextPath,
+                docBase);
+                /*
+                vs.getDefaultContextXmlLocation(),
+                vs.getDefaultWebXmlLocation(),
+                useDOLforDeployment,
+                wmInfo.getDescriptor());*/
+        
+        // Set JSR 77 object name and attributes
+        String engineName = vs.getParent().getName();
+        String j2eeServer = _serverContext.getInstanceName();
+        String domain = _serverContext.getDefaultDomainName();
+        String server = domain + ":j2eeType=J2EEServer,name=" + j2eeServer;
+//        String[] javaVMs = J2EEModuleUtil.getjavaVMs();
+        ctx.setDomain(domain);
+        
+        ctx.setJ2EEServer(j2eeServer);
+        ctx.setJ2EEApplication(j2eeApplication);
+        ctx.setEngineName(engineName);
+        ctx.setServer(server);
+        //       ctx.setJavaVMs(javaVMs);
+        ctx.setCachingAllowed(false);
+        ctx.setCacheControls(vs.getCacheControls());
+        //ctx.setBean(wmInfo.getBean());
+        
+        //ctx.cconfigureAlternateDocBases(wmInfo.getAlternateDocBasesMap());
+        
+        
+        if (adHocPaths != null) {
+            ctx.addAdHocPaths(adHocPaths);
+        }
+        if (adHocSubtrees != null) {
+            ctx.addAdHocSubtrees(adHocSubtrees);
+        }
+        
+        // Object containing web.xml information
+        //WebBundleDescriptor wbd = wmInfo.getDescriptor();
+        
+        //Set the context root
+        Properties params = dc.getCommandParameters();
+        String ctxtRoot = "/" + params.getProperty(DeployCommand.NAME);
+        ctx.setContextRoot(ctxtRoot);
+        if (wbd != null) {
+            wbd.setContextRoot(ctxtRoot);
+        }
+        
+        if (wbd != null && wbd.getApplication() != null) {
+            // no dummy web module
+            
+            String moduleName;
+            // S1AS BEGIN WORKAROUND FOR 6174360
+            if (wbd.getApplication().isVirtual()) {
+                // this is a standalone module
+                moduleName = wbd.getApplication().getRegistrationName();
+            } else {
+                moduleName = wbd.getModuleDescriptor().getArchiveUri();
+            }
+            // S1AS END WORKAROUND FOR 6174360
+            ctx.setModuleName(moduleName);
+        } else {
+            ctx.setModuleName(Constants.DEFAULT_WEB_MODULE_NAME);
+        }
+        
+        Throwable exception = null;
+        
+        try {
+            vs.addChild(ctx);
+        } catch (Throwable ex){
+            exception = ex;
+        }
+        
+        if (exception != null){
+            ctx.setAvailable(false);
+            
+            String msg = _rb.getString("webcontainer.webModuleDisabled");
+            msg = MessageFormat.format(msg,
+                    new Object[] { wmName });
+            _logger.log(Level.SEVERE, msg, exception);
+            
+        }
+        
+        enableWSMonitoring(wbd, j2eeServer);
+        return ctx;
+    }
     
     /*
      * Updates the given virtual server with the given default path.
@@ -2249,8 +2648,8 @@ public class WebContainer
     * @param logserviceBean The log service bean from which to retrieve the
     *        web container log level
     */
-    private void initLogLevel(LogService logserviceBean)
-    throws ConfigException {
+    private void initLogLevel(LogService logserviceBean) {
+    //throws ConfigException {
         
         Level level = Level.SEVERE;
         setLogLevel(level);
@@ -2355,7 +2754,7 @@ public class WebContainer
      *
      * @return virtual servers as a string (separated by space or comma)
      */
-    private String getVirtualServers(String appName, ConfigContext configCtx) {
+    /*private String getVirtualServers(String appName, ConfigContext configCtx) {
         
         Server server = _serverContext.getDefaultHabitat().getComponent(Server.class);
         for (ApplicationRef ref : server.getApplicationRef()) {
@@ -2363,7 +2762,7 @@ public class WebContainer
                 return ref.getVirtualServers();          }
         }
         return null;
-    }
+    }*/
     
     /**
      * Adds the given mime mappings to those of the specified context, unless
@@ -3309,12 +3708,12 @@ public class WebContainer
         if (spBean == null || spBean.getProperty() == null) {
             return;
         }
-        
+         
         List<Property> props = spBean.getProperty();
         if (props == null) {
             return;
         }
-        
+         
         for (Property prop : props) {
             String propName = prop.getName();
             String propValue = prop.getValue();
@@ -3322,7 +3721,7 @@ public class WebContainer
                 throw new IllegalArgumentException(
                         _rb.getString("webcontainer.nullWebProperty"));
             }
-            
+         
             if (propName.equalsIgnoreCase("enableCookies")) {
                 instanceEnableCookies = ConfigBeansUtilities.toBoolean(propValue);
             } else {
@@ -3332,4 +3731,3 @@ public class WebContainer
         }*/
     }
 }
-

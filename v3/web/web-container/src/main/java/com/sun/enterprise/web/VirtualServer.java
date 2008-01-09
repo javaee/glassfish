@@ -81,7 +81,7 @@ import com.sun.enterprise.config.serverbeans.WebModule;
 import com.sun.enterprise.v3.data.ApplicationInfo;
 import com.sun.enterprise.v3.data.ModuleInfo;
 import com.sun.enterprise.v3.data.ApplicationRegistry;
-import com.sun.enterprise.v3.web.WebDeployer;
+import com.sun.enterprise.web.WebDeployer;
 
 import com.sun.enterprise.security.web.SingleSignOn;
 import com.sun.enterprise.server.pluggable.WebContainerFeatureFactory;
@@ -475,12 +475,11 @@ public class VirtualServer extends StandardHost {
     protected List getWebModules(Server serverBean, String modulesRoot) {
 
         List modules = new Vector();
-      
-        //ROB: config changes
-        //Applications appsBean = serverBean.getApplications();
+
         Domain domain = com.sun.enterprise.v3.server.Globals.getGlobals().getDefaultHabitat().getComponent(Domain.class);
         Applications appsBean = domain.getApplications();
 
+        /*
         if (appsBean != null) {
             List apps = appsBean.getLifecycleModuleOrJ2EeApplicationOrEjbModuleOrWebModuleOrConnectorModuleOrAppclientModuleOrMbeanOrExtensionModule();
             for (Object app : apps) {
@@ -528,7 +527,10 @@ public class VirtualServer extends StandardHost {
                 }
             }
         }
+        
         return modules;
+         */
+        return null;
     }
 
     /**
@@ -608,6 +610,7 @@ public class VirtualServer extends StandardHost {
     protected WebModuleConfig createSystemDefaultWebModuleIfNecessary() {
 
         WebModuleConfig wmInfo = null;
+        /*
         //
         // Add a default context only if one hasn't already been loaded
         // and then too only if docroot is not null
@@ -639,7 +642,7 @@ public class VirtualServer extends StandardHost {
                 wbd.setApplication(application);
             }
         }
-
+        */
         return wmInfo;
     }
 
@@ -782,7 +785,7 @@ public class VirtualServer extends StandardHost {
     protected WebModuleConfig findWebModuleInJ2eeApp(Applications appsBean,
                                                    String id) {
         WebModuleConfig wmInfo = null;
-
+        /*
         int length = id.length();
         // Check for ':' separator
         int separatorIndex = id.indexOf(Constants.NAME_SEPARATOR);
@@ -846,6 +849,7 @@ public class VirtualServer extends StandardHost {
                             params);
             }
         }
+         */
         return wmInfo;
     }
     

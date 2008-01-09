@@ -45,7 +45,7 @@ import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 //import com.sun.enterprise.deployment.backend.DeploymentUtils;
 import com.sun.enterprise.config.serverbeans.WebModule;
-import com.sun.enterprise.config.ConfigException;
+//import com.sun.enterprise.config.ConfigException;
 import com.sun.enterprise.util.io.FileUtils;
 
 /**

@@ -66,7 +66,7 @@ public class PECoyoteResponse extends CoyoteResponse {
      *
      * @return The cookie's string representation
      */
-    protected String getCookieString(Cookie cookie) {
+    /*protected String getCookieString(Cookie cookie) {
 
         PwcWebModule wm = (PwcWebModule) getContext();
         boolean encodeCookies = false;
@@ -75,6 +75,6 @@ public class PECoyoteResponse extends CoyoteResponse {
         }
 
         return getCookieString(cookie, encodeCookies);
-    }
+    }*/
     // END GlassFish 898
 }

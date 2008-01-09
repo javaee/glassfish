@@ -78,7 +78,7 @@ import com.sun.enterprise.server.pluggable.WebContainerFeatureFactory;
 import com.sun.enterprise.v3.server.V3Environment;
 
 import com.sun.logging.LogDomains;
-import org.openide.util.Lookup;
+//import org.openide.util.Lookup;
 
 /**
  * <p>Implementation of the <b>Valve</b> interface that generates a web server
