@@ -29,11 +29,17 @@
     	<module>external</module>
     	<module>nucleus-base</module>
     	<module>nucleus</module>
-        <module>pe</module>
+        <module>web</module>
+        <module>glassfish</module>
     </modules>
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.jvnet.maven-antrun-extended-plugin</groupId>
+                <artifactId>maven-antrun-extended-plugin</artifactId>
+                <version>1.14</version>
+            </plugin>
             <plugin>
                 <groupId>org.jvnet.poormans-installer</groupId>
                 <artifactId>installer-builder</artifactId>

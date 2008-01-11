@@ -1,0 +1,51 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.glassfish.distributions</groupId>
+        <artifactId>distributions</artifactId>
+        <version>10.0-SNAPSHOT</version>
+    </parent>    
+    <artifactId>glassfish</artifactId>
+    <version>${dist.version}</version>
+    <name>Glassfish Full Bundle</name>
+    <packaging>distribution-base-zip</packaging>
+    <description>GlassFish web bundle + EJB, ACC, and etc.</description>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.jvnet.maven-antrun-extended-plugin</groupId>
+                <artifactId>maven-antrun-extended-plugin</artifactId>
+                <configuration>
+                  <tasks>
+                    <ant dir="." antfile="build.xml" target="create.bundle"/>
+                  </tasks>
+                </configuration>
+             </plugin>
+        </plugins>
+    </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.glassfish.ejb</groupId>
+            <artifactId>gf-ejb-connector</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <!-- base distribution image -->
+        <dependency>
+            <groupId>org.glassfish.distributions</groupId>
+            <artifactId>pe</artifactId>
+            <version>${pe.version}</version>
+            <type>zip</type>
+        </dependency>
+        <dependency>
+            <!-- and its dist bundling script -->
+            <groupId>org.glassfish.distributions</groupId>
+            <artifactId>web</artifactId>
+            <version>${pe.version}</version>
+            <classifier>build</classifier>
+            <type>xml</type>
+        </dependency>
+    </dependencies>
+</project>
+

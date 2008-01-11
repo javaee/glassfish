@@ -5,7 +5,7 @@
         <artifactId>distributions</artifactId>
         <version>10.0-SNAPSHOT</version>
     </parent>    
-    <artifactId>pe</artifactId>
+    <artifactId>web</artifactId>
     <version>${pe.version}</version>
     <name>Glassfish PE Bundle</name>
     <packaging>distribution-base-zip</packaging>
@@ -16,7 +16,6 @@
             <plugin>
                 <groupId>org.jvnet.maven-antrun-extended-plugin</groupId>
                 <artifactId>maven-antrun-extended-plugin</artifactId>
-                <version>1.13</version>
                 <configuration>
                   <tasks>
                     <ant dir="." antfile="build.xml" target="create.bundle"/>
@@ -31,11 +30,6 @@
             <groupId>javadb</groupId>
             <artifactId>javadb</artifactId>
             <version>10.2.2.1-20070823</version>
-            <!--
-                Marked as test scope to avoid inclusion into the final image.
-                This is used in build.xml to create a distribution, and it's required for a build process.
-            -->
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.glassfish.common</groupId>
