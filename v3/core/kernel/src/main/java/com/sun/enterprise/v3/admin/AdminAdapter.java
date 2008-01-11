@@ -33,6 +33,7 @@ import com.sun.logging.LogDomains;
 import com.sun.grizzly.tcp.Request;
 import com.sun.grizzly.tcp.Response;
 import com.sun.grizzly.tcp.http11.InternalOutputBuffer;
+import com.sun.grizzly.util.buf.ByteChunk;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.Async;
 import org.glassfish.api.I18n;
@@ -49,6 +50,11 @@ import org.jvnet.hk2.component.UnsatisfiedDepedencyException;
 
 import java.io.ByteArrayOutputStream;
 import java.io.UnsupportedEncodingException;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.BufferedOutputStream;
+import java.io.InputStream;
+import java.io.IOException;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -68,6 +74,9 @@ public class AdminAdapter implements Adapter {
     public final static String PREFIX_URI="/__asadmin";
     public final static Logger logger = LogDomains.getLogger(LogDomains.ADMIN_LOGGER);
     public final static LocalStringManagerImpl adminStrings = new LocalStringManagerImpl(AdminAdapter.class);
+    public final static String GFV3 = "gfv3";
+    private final static String GET = "GET";
+    private final static String POST = "POST";    
 
     @Inject
     Habitat habitat;
@@ -157,10 +166,26 @@ public class AdminAdapter implements Adapter {
             for (Object key : parameters.keySet()) {
               logger.finer("Key " + key + " = " + parameters.getProperty((String) key));
             }
-        }        
-
-        doCommand(command, parameters, report);
-
+        }
+        if (req.method().toString().equalsIgnoreCase(GET)) {
+            logger.info("***** AdminAdapter GET  *****");
+            doCommand(command, parameters, report);            
+        }
+        else if (req.method().toString().equalsIgnoreCase(POST)) {
+            logger.info("***** AdminAdapter POST *****");
+            if (parameters.get("path")!=null) {
+                try {
+                    final String uploadFile = doUploadFile(req, report, parameters.getProperty("path"));
+                    parameters.setProperty("path", uploadFile);
+                    doCommand(command, parameters, report);
+                }
+                catch (IOException ioe) {
+                    logger.log(Level.WARNING, ioe.getMessage());
+                        //log the exception message to server log
+                        //client recieves error message embedded in report object
+                }
+            }
+        }
     }
 
     public void doCommand(final String commandName, final Properties parameters, final ActionReport report) {
@@ -380,5 +405,57 @@ public class AdminAdapter implements Adapter {
         return command;
     }
 
+    /**
+     * uploads request from client and save the content in <os temp dir>/gfv3/<fileName>
+     * @param request to process
+     * @param report back to the client
+     * @param fileName to save client request
+     * @return <os temp dir>/gfv3/<fileName>
+     * @throws IOException if upload file cannot be created
+     */
+    private String doUploadFile(final Request req, final ActionReport report, final String fileName)
+        throws IOException
+    {
+        final String localTmpDir = System.getProperty("java.io.tmpdir");
+        final File gfv3Folder = new File (localTmpDir, GFV3);
+        File uploadFile = null;
+        FileOutputStream fos = null;
+        String uploadFilePath = null;
 
+        try {
+            if (!gfv3Folder.exists()) {
+                gfv3Folder.mkdirs();
+            }
+            uploadFile = new File (gfv3Folder, fileName);
+                //check for pre-existing file
+            if (uploadFile.exists()) {
+                if (!uploadFile.delete()) {
+                    report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                    report.setMessage("cannot delete existing file: " + uploadFile);
+                    throw new IOException("cannot delete existing file: " + uploadFile);
+                }
+            }
+            
+            uploadFilePath = uploadFile.getCanonicalPath();
+            fos = new FileOutputStream(uploadFile);
+            ByteChunk bc = new ByteChunk(1024*64);
+            com.sun.grizzly.tcp.InputBuffer ib = req.getInputBuffer();
+            for (int ii=req.doRead(bc); ii>0; ii=req.doRead(bc)) {
+                fos.write(bc.getBytes(), bc.getOffset(), ii);
+            }
+            report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
+            report.setMessage("upload file successful: " + uploadFilePath);
+        }
+        catch (Exception e) {
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            report.setMessage("upload file failed: " + uploadFilePath);
+            report.setFailureCause(e);
+            throw new IOException("upload file failed: " + uploadFilePath);
+        }
+        finally {
+           if (fos != null) fos.close();
+        }
+        return uploadFilePath;
+    }
+    
 }
