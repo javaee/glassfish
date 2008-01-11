@@ -62,17 +62,6 @@
         </dependency>
 
         <dependency>
-            <groupId>com.sun.enterprise</groupId>
-            <artifactId>auto-depends-plugin</artifactId>
-            <version>${hk2.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.enterprise</groupId>
-            <artifactId>hk2</artifactId>
-            <version>${hk2.version}</version>
-        </dependency>
-
-        <dependency>
             <groupId>org.glassfish.admin</groupId>
             <artifactId>admin-core</artifactId>
             <version>${project.version}</version>
@@ -80,11 +69,6 @@
         <dependency>
             <groupId>org.glassfish.admin</groupId>
             <artifactId>admin-util</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.admin</groupId>
-            <artifactId>config-api</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
