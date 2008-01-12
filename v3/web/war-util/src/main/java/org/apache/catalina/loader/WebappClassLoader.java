@@ -651,7 +651,7 @@ public class WebappClassLoader
     }
 
 
-    synchronized void addJar(String jar, JarFile jarFile, File file)
+    synchronized public void addJar(String jar, JarFile jarFile, File file)
         throws IOException {
 
         if (jar == null)
