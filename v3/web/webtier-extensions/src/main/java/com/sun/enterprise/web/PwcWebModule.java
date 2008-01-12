@@ -320,7 +320,7 @@ public abstract class PwcWebModule extends StandardContext {
      * @return true if this WebModule has a web.xml deployment descriptor,
      * false otherwise
      */
-    boolean hasWebXml() {
+    public boolean hasWebXml() {
         return hasWebXml;
     }
 
