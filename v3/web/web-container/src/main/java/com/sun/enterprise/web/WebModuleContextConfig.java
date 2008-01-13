@@ -252,18 +252,19 @@ public class WebModuleContextConfig extends ContextConfig {
         ok = true;
 
         authenticatorConfig();
-        if (ok) {
+        // XXX realm not ready yet
+        //if (ok) {
             managerConfig();
-        }
+        //}
         
-        if (ok) {
+        //if (ok) {
             context.setConfigured(true);
-        } else {
-            context.setConfigured(false);
+        //} else {
+        /*    context.setConfigured(false);
             logger.log(Level.SEVERE,
                        "webModuleContextConfig.webModuleDisabledNoException",
                        new Object[] { context.getName() });
-        }
+        }*/
     }
     
     

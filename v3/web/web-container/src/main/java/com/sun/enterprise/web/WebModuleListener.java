@@ -435,6 +435,8 @@ final class WebModuleListener
      */
     private String getJasperLogLevel() {
         Level level = _logger.getLevel();
+        if (level == null )
+            return "warning";
         if (level.equals(Level.WARNING))
             return "warning";
         else if (level.equals(Level.FINE))

@@ -246,9 +246,9 @@ public final class EmbeddedWebContainer extends Embedded {
         context.addLifecycleListener(new WebModuleListener(
                 webContainer.getInstanceClassPath(), location, wbd));
 
-        context.addInstanceListener(Constants.J2EE_INSTANCE_LISTENER);
+        //context.addInstanceListener(Constants.J2EE_INSTANCE_LISTENER);
         
-//        context.addContainerListener(new WebContainerListener());
+        //context.addContainerListener(new WebContainerListener());
 
         //context.addInstanceListener(
         //    "com.sun.enterprise.admin.monitor.callflow.WebContainerListener");
@@ -434,10 +434,10 @@ public final class EmbeddedWebContainer extends Embedded {
         /**
          * Starts the children (virtual servers) of this StandardEngine
          * concurrently.
-         */
+         *
         protected void startChildren() {
 
-            /*
+            
             new File(webContainer.getAppsWorkRoot()).mkdirs();
             new File(webContainer.getModulesWorkRoot()).mkdirs();
             
@@ -462,7 +462,7 @@ public final class EmbeddedWebContainer extends Embedded {
                     msg = MessageFormat.format(msg, new Object[] { container });
                     _logger.log(Level.SEVERE, msg, t);
                 }
-            }*/
-        }
+            }
+        }*/
     }
 }

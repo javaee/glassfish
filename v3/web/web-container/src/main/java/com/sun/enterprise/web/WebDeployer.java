@@ -132,71 +132,57 @@ public class WebDeployer extends JavaEEDeployer implements Deployer<WebContainer
         return app;
     }
 
-    private WebModuleConfig loadWebModuleConfig(com.sun.enterprise.config.serverbeans.WebModule wm, 
-        DeploymentContext dc) {
+    private WebModuleConfig loadWebModuleConfig(DeploymentContext dc) {
+        
+        WebModuleConfig wmInfo = null;
+        
+        try {
+            parseModuleMetaData(dc);
 
-        WebModuleConfig wmInfo = new WebModuleConfig();
-
-        if (wm != null) {
+            ReadableArchive source = dc.getSource();
+            String docBase = source.getURI().getSchemeSpecificPart();
+            Properties params = dc.getCommandParameters();
+            String virtualServers = params.getProperty(DeployCommand.VIRTUAL_SERVERS);
+        
+            wmInfo = new WebModuleConfig();
+            
+            WebBundleDescriptor wbd = (WebBundleDescriptor)dc.getModuleMetaData(
+                getModuleType(), Application.class).getStandaloneBundleDescriptor();
+        
+            String contextRoot = wbd.getContextRoot();
+            String name = wbd.getName();
+        
+            com.sun.enterprise.config.serverbeans.WebModule wm = 
+                    new WebModuleImpl(name, contextRoot);
+        
+            wm.setLocation(docBase);
             wmInfo.setBean(wm);
-            String wmID = wm.getName();
-            String location = wm.getLocation();
-        }
-            
-        WebBundleDescriptor wbd = (WebBundleDescriptor)dc.getModuleMetaData(
-            getModuleType(), Application.class).getStandaloneBundleDescriptor();
+            wmInfo.setDescriptor(wbd);
+            wmInfo.setVirtualServers(virtualServers);
         
-        wmInfo.setDescriptor(wbd);
-        
-        /*
-        List<Server> servers = domain.getServers().getServer();
-        Server thisServer = null;
-        for (Server server : servers) {
-            if (sc.getInstanceName().equals(server.getName())) {
-                thisServer = server;
-            }
+        } catch (Exception ex) {
+            dc.getLogger().log(Level.WARNING, "loadWebModuleConfig", ex);
         }
         
-        List<ApplicationRef> appRefs = thisServer.getApplicationRef();
-        ApplicationRef appRef = null;
-        for (ApplicationRef ar : appRefs) {
-            //if (ar.getRef().equals(wmID)) {
-            if (ar.getRef().equals(wbd.getName())) {
-                appRef = ar;
-            }
-        }
-            
-        String vsIDs = appRef.getVirtualServers();
-        wmInfo.setVirtualServers(vsIDs);
-         */
-       
         return wmInfo;
         
     } 
          
     public WebApplication load(WebContainer container, DeploymentContext dc) {
         
-        // WebModule config-api not available yet
-        WebModuleConfig wmInfo = loadWebModuleConfig(null, dc);
+        WebModuleConfig wmInfo = loadWebModuleConfig(dc);    
+        WebBundleDescriptor wbd = wmInfo.getDescriptor();   
         
         String vsIDs = wmInfo.getVirtualServers();
-        List vsList = StringUtils.parseStringList(vsIDs, " ,");
+        List vsList = StringUtils.parseStringList(vsIDs, " ,");        
         
-        WebBundleDescriptor wbd = (WebBundleDescriptor)dc.getModuleMetaData(
-            getModuleType(), Application.class).getStandaloneBundleDescriptor();
-
-        ReadableArchive source = dc.getSource();
-
-        String docBase = source.getURI().getSchemeSpecificPart();
-
-        Properties params = dc.getCommandParameters();
-        List<String> targets = StringUtils.parseStringList(
-            params.getProperty(DeployCommand.VIRTUAL_SERVERS), " ,");
-        boolean loadToAll = (targets == null) || (targets.size() == 0);
+        boolean loadToAll = (vsList == null) || (vsList.size() == 0);
+        boolean loadAtLeastToOne = false;
         
         WebApplication webApplication = null;
         Engine[] engines = container.getEngines();
         Container[] hosts = engines[0].findChildren();
+        
         for (int i=0; i<hosts.length; i++) {
             VirtualServer vs = (VirtualServer) hosts[i];
 
@@ -205,70 +191,29 @@ public class WebDeployer extends JavaEEDeployer implements Deployer<WebContainer
                 continue;
             }
 
-            if (loadToAll || targets.contains(vs.getName())
-                    || isAliasMatched(targets,vs)) {
+            if (loadToAll || vsList.contains(vs.getName())
+                    || isAliasMatched(vsList,vs)) {
                 
-                StandardContext ctx = container.loadWebModule(vs, dc, "null");     
+                StandardContext ctx = container.loadWebModule(vs, wmInfo, "null");     
                 webApplication = new WebApplication(container, ctx);      
                 registerEndpoint(container, vs, wbd.getContextRoot(), dc, webApplication);
-                //loadAtLeastToOne = true;
+                loadAtLeastToOne = true;
                        
             }
         }
-       
-        /*    
-        List applications = domain.getApplications().getLifecycleModuleOrJ2EeApplicationOrEjbModuleOrWebModuleOrConnectorModuleOrAppclientModuleOrMbeanOrExtensionModule();
-        com.sun.enterprise.config.serverbeans.WebModule webModule = null;
-        for (Object module : applications) {
-            if (module instanceof WebModule) {
-                webModule = (com.sun.enterprise.config.serverbeans.WebModule) module;
-            }
-        }
-        WebApplication webApplication = null;
-        String location = webModule.getLocation();
-        
-        // If module root is relative then prefix it with the 
-        // location of where all the standalone modules for 
-        // this server instance are deployed
-        File moduleBase = new File(location);
-        String modulesRoot = container.getModulesRoot();
-        if (!moduleBase.isAbsolute()) {
-            location = modulesRoot+File.separator+location;
-            try {
-                webModule.setLocation(location);
-            } catch (java.beans.PropertyVetoException ex) {
                 
-            }
-        }
-        
-        WebModuleConfig wmInfo = loadWebModuleConfig(webModule, dc);
-         
-        
         if (!loadAtLeastToOne) {
             Object[] params = {wmInfo.getName(), vsIDs};
-            container._logger.log(Level.SEVERE, "webcontainer.moduleNotLoadedToVS",
+            dc.getLogger().log(Level.SEVERE, "webcontainer.moduleNotLoadedToVS",
                     params);
-        }*/
-      
+        }
+        
         return webApplication;
         
     }
 
     
     public void unload(WebApplication webApplication, DeploymentContext dc) {
-
-        /*
-        List applications = domain.getApplications().getLifecycleModuleOrJ2EeApplicationOrEjbModuleOrWebModuleOrConnectorModuleOrAppclientModuleOrMbeanOrExtensionModule();
-        com.sun.enterprise.config.serverbeans.WebModule webModule = null;
-        for (Object module : applications) {
-            if (module instanceof WebModule) {
-                webModule = (com.sun.enterprise.config.serverbeans.WebModule) module;
-            }
-        }
-        
-        WebApplication webApplication = null;
-        String location = webModule.getLocation();
-        */
         
         Properties params = dc.getCommandParameters();
         String ctxtRoot = params.getProperty(DeployCommand.NAME);
@@ -315,7 +260,7 @@ public class WebDeployer extends JavaEEDeployer implements Deployer<WebContainer
         }
     }
     
-
+        
     private void registerEndpoint(WebContainer container,
                                   Host vs,
                                   String ctxtRoot,
@@ -353,8 +298,8 @@ public class WebDeployer extends JavaEEDeployer implements Deployer<WebContainer
                                 + " from port " + ports[i]);
         }
     }
+     
     
-        
     /*
      * @return true if the list of target virtual server names matches an
      * alias name of the given virtual server, and false otherwise

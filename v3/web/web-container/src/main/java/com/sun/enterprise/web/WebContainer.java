@@ -4,7 +4,7 @@
  * (the License).  You may not use this file except in
  * compliance with the License.
  * 
- * You can obtain a copy of the license at 
+ * You can obtain a copy of the license at
  * https://glassfish.dev.java.net/public/CDDLv1.0.html or
  * glassfish/bootstrap/legal/CDDLv1.0.txt.
  * See the License for the specific language governing 
@@ -196,6 +196,7 @@ public class WebContainer implements ContainerProvider, PostConstruct, PreDestro
     HashMap<Integer, Adapter> adapterMap = new HashMap<Integer, Adapter>();
     
     EmbeddedWebContainer _embedded;
+    //Embedded _embedded;
     Engine engine;
     String instanceName;
     String defaultWebXml;
@@ -304,7 +305,8 @@ public class WebContainer implements ContainerProvider, PostConstruct, PreDestro
             ConfigBeansUtilities.getPropertyValueByName(vsBean, "docroot");
         
         Host vs = _embedded.createHost(vsBean.getId(), vsBean, docroot, null, null);
-
+        //Host vs = _embedded.createHost(vsBean.getId(), docroot);
+        
         // Configure the virtual server with the port numbers of its
         // associated HTTP listeners
         List listeners =
@@ -317,6 +319,7 @@ public class WebContainer implements ContainerProvider, PostConstruct, PreDestro
                 Integer port = portMap.get(iter.next());
                 if (port != null) {
                     ports[i++] = port.intValue();
+                    _logger.info("Virtual Server "+vsBean.getId()+" set port "+port.intValue());
                 }
 	    }
             vs.setPorts(ports);
@@ -771,7 +774,7 @@ public class WebContainer implements ContainerProvider, PostConstruct, PreDestro
                 _serverContext.getDefaultHabitat().getComponent(WebContainerFeatureFactory.class);
         HealthChecker healthChecker = null;
         try {
-            healthChecker = webFeatureFactory.getHADBHealthChecker(this);
+            healthChecker = webContainerFeatureFactory.getHADBHealthChecker(this);
         } catch (NoClassDefFoundError ex) {
             _logger.log(Level.WARNING,
                     "hadbhealthchecker.hadbClientJarsMissing");
@@ -1195,7 +1198,7 @@ public class WebContainer implements ContainerProvider, PostConstruct, PreDestro
             return null;
         }
         WebContainerStartStopOperation startStopOperation =
-                webFeatureFactory.getWebContainerStartStopOperation();
+                webContainerFeatureFactory.getWebContainerStartStopOperation();
         
         //startStopOperation.init(_embedded);
         return startStopOperation;
@@ -1467,10 +1470,11 @@ public class WebContainer implements ContainerProvider, PostConstruct, PreDestro
                             || vsList.contains(vs.getID())
                             || verifyAlias(vsList,vs)){
                         
-                        Throwable t = loadWebModule(vs, wmInfo, j2eeApplication);
+                        loadWebModule(vs, wmInfo, j2eeApplication);
+                        /*Throwable t = loadWebModule(vs, wmInfo, j2eeApplication);
                         if (t != null) {
                             throwables.add(t);
-                        }
+                        }*/
                         loadAtLeastToOne = true;
                     }
                 }
@@ -1501,7 +1505,7 @@ public class WebContainer implements ContainerProvider, PostConstruct, PreDestro
      * Creates and configures a web module and adds it to the specified
      * virtual server.
      */
-    protected Throwable loadWebModule(VirtualServer vs, WebModuleConfig wmInfo,
+    protected WebModule loadWebModule(VirtualServer vs, WebModuleConfig wmInfo,
             String j2eeApplication) {
         
         String wmName = wmInfo.getName();
@@ -1850,207 +1854,11 @@ public class WebContainer implements ContainerProvider, PostConstruct, PreDestro
         }
         
         enableWSMonitoring(wbd, j2eeServer);
-        return exception;
-    }
-    
-    
-    protected WebModule loadWebModule(VirtualServer vs, DeploymentContext dc,
-            String j2eeApplication) {
-        
-        WebBundleDescriptor wbd = (WebBundleDescriptor)dc.getModuleMetaData(
-            "web", Application.class).getStandaloneBundleDescriptor();
-        
-        String wmName = wbd.getName();
-        String wmContextPath = wbd.getContextRoot();
-        
-        /*
-        if (wmContextPath.equals("") && vs.getDefaultWebModuleID() != null) {
-            _logger.log(Level.WARNING, "webcontainer.defaultWebModuleConflict",
-                    new Object[] { wmName, wmContextPath, vs.getID() });
-            return null;
-        }
-        
-        if (wmName.indexOf(Constants.NAME_SEPARATOR) != -1) {
-            wmInfo.setWorkDirBase(_appsWorkRoot);
-            // START S1AS 6178005
-            wmInfo.setStubBaseDir(appsStubRoot);
-            // END S1AS 6178005
-        } else {
-            wmInfo.setWorkDirBase(_modulesWorkRoot);
-            // START S1AS 6178005
-            wmInfo.setStubBaseDir(modulesStubRoot);
-            // END S1AS 6178005
-        }*/
-        
-        String displayContextPath = null;
-        if (wmContextPath.equals(""))
-            displayContextPath = "/";
-        else
-            displayContextPath = wmContextPath;
-        
-        HashMap adHocPaths = null;
-        HashMap adHocSubtrees = null;
-        WebModule ctx = (WebModule)vs.findChild(wmContextPath);
-        if (ctx != null) {
-            if (ctx instanceof AdHocWebModule) {
-                /*
-                 * Found ad-hoc web module which has been created by web
-                 * container in order to store mappings for ad-hoc paths
-                 * and subtrees.
-                 * All these mappings must be propagated to the context
-                 * that is being deployed.
-                 */
-                if (ctx.hasAdHocPaths()) {
-                    adHocPaths = ctx.getAdHocPaths();
-                }
-                if (ctx.hasAdHocSubtrees()) {
-                    adHocSubtrees = ctx.getAdHocSubtrees();
-                }
-                vs.removeChild(ctx);
-            } else if (Constants.DEFAULT_WEB_MODULE_NAME
-                    .equals(ctx.getModuleName())) {
-                /*
-                 * Dummy context that was created just off of a docroot,
-                 * (see
-                 * VirtualServer.createSystemDefaultWebModuleIfNecessary()).
-                 * Unload it so it can be replaced with the web module to be
-                 * loaded
-                 */
-                unloadWebModule(wmContextPath,
-                        ctx.getJ2EEApplication(),
-                        vs.getName(),
-                        null,
-                        true);
-            } else if (!ctx.getAvailable()){
-                /*
-                 * Context has been marked unavailable by a previous
-                 * call to disableWebModule. Mark the context as available and
-                 * return
-                 */
-                ctx.setAvailable(true);
-                return null;
-            } else {
-                Object[] params = { vs.getID(), displayContextPath, wmName };
-                _logger.log(Level.WARNING, "webcontainer.duplicateContextRoot",
-                        params);
-                return null;
-            }
-        }
-        
-        if (_logger.isLoggable(Level.FINEST)) {
-            Object[] params = { wmName, vs.getID(), displayContextPath };
-            _logger.log(Level.FINEST, "webcontainer.loadModule", params);
-        }
-        
-        String docBase = null;
-        if (JWS_APPCLIENT_MODULE_NAME.equals(wmName)) {
-            File installRootFile = new File(System.getProperty("com.sun.aas.installRoot"));
-            String path = installRootFile.toURI().getPath();
-            if (OS.isWindows()) {
-                path = path.substring(1); // On Windows, skip the slash before the device
-            }
-            docBase = path;
-        } else {
-            //docBase = wmInfo.getLocation();
-            ReadableArchive source = dc.getSource();
-            docBase = source.getURI().getSchemeSpecificPart();
-        }
-        
-        ctx = (WebModule) _embedded.createContext(wmContextPath,
-                docBase,
-                vs.getDefaultContextXmlLocation(),
-                vs.getDefaultWebXmlLocation(),
-                useDOLforDeployment,
-                wbd);
-        
-        // Set JSR 77 object name and attributes
-        String engineName = vs.getParent().getName();
-        String j2eeServer = _serverContext.getInstanceName();
-        String domain = _serverContext.getDefaultDomainName();
-        String server = domain + ":j2eeType=J2EEServer,name=" + j2eeServer;
-//        String[] javaVMs = J2EEModuleUtil.getjavaVMs();
-        ctx.setDomain(domain);
-        
-        ctx.setJ2EEServer(j2eeServer);
-        ctx.setJ2EEApplication(j2eeApplication);
-        ctx.setEngineName(engineName);
-        ctx.setServer(server);
-        //       ctx.setJavaVMs(javaVMs);
-        ctx.setCachingAllowed(false);
-        ctx.setCacheControls(vs.getCacheControls());
-        //ctx.setBean(wmInfo.getBean());
-        
-        //ctx.cconfigureAlternateDocBases(wmInfo.getAlternateDocBasesMap());
-        
-        
-        if (adHocPaths != null) {
-            ctx.addAdHocPaths(adHocPaths);
-        }
-        if (adHocSubtrees != null) {
-            ctx.addAdHocSubtrees(adHocSubtrees);
-        }
-        
-        // Object containing web.xml information
-        //WebBundleDescriptor wbd = wmInfo.getDescriptor();
-        
-        //Set the context root
-        Properties params = dc.getCommandParameters();
-        String ctxtRoot = "/" + params.getProperty(DeployCommand.NAME);
-        ctx.setContextRoot(ctxtRoot);
-        if (wbd != null) {
-            wbd.setContextRoot(ctxtRoot);
-        }
-        
-        if (wbd != null && wbd.getApplication() != null) {
-            // no dummy web module
-            
-            String moduleName;
-            // S1AS BEGIN WORKAROUND FOR 6174360
-            if (wbd.getApplication().isVirtual()) {
-                // this is a standalone module
-                moduleName = wbd.getApplication().getRegistrationName();
-            } else {
-                moduleName = wbd.getModuleDescriptor().getArchiveUri();
-            }
-            // S1AS END WORKAROUND FOR 6174360
-            ctx.setModuleName(moduleName);
-        } else {
-            ctx.setModuleName(Constants.DEFAULT_WEB_MODULE_NAME);
-        }
-        
-        // configure class loader
-        ClassLoader parentLoader = dc.getClassLoader();
-        if (parentLoader == null) {
-            // Use the shared classloader as the parent for all
-            // standalone web-modules
-            parentLoader = _serverContext.getSharedClassLoader();
-        }
-        ctx.setParentClassLoader(parentLoader);
-        WebappLoader loader = (WebappLoader)
-        _embedded.createLoader(ctx.getParentClassLoader());
-        ctx.setLoader(loader);
-        
-        Throwable exception = null;
-        
-        try {
-            vs.addChild(ctx);
-        } catch (Throwable ex){
-            exception = ex;
-        }
-        
-        if (exception != null){
-            ctx.setAvailable(false);
-            
-            String msg = _rb.getString("webcontainer.webModuleDisabled");
-            msg = MessageFormat.format(msg,
-                    new Object[] { wmName });
-            _logger.log(Level.SEVERE, msg, exception);
-            
-        }
-        
-        enableWSMonitoring(wbd, j2eeServer);
+        //return exception;
         return ctx;
+        
     }
+    
     
     /*
      * Updates the given virtual server with the given default path.
@@ -2898,7 +2706,7 @@ public class WebContainer implements ContainerProvider, PostConstruct, PreDestro
      * @param vsId  The engine that is currently loading the webmodule
      */
     void enableMonitoring(WebModule ctx, String vsId) {
-        
+        /*  XXX not yet
         if (!ctx.hasWebXml()) {
             // Ad-hoc module
             return;
@@ -2920,6 +2728,7 @@ public class WebContainer implements ContainerProvider, PostConstruct, PreDestro
                         children[i].getName(), null);
             }
         }
+         */
     }
     
     
@@ -2927,7 +2736,7 @@ public class WebContainer implements ContainerProvider, PostConstruct, PreDestro
      * Disables monitoring on the given web module.
      */
     protected void disableMonitoring(WebModule ctx, String vsId) {
-        
+        /*
         if (!ctx.hasWebXml()) {
             // Ad-hoc module
             return;
@@ -2936,7 +2745,7 @@ public class WebContainer implements ContainerProvider, PostConstruct, PreDestro
         /*
          * Standalone webmodules are loaded with the application name set to
          * the string "null"
-         */
+         *
         String appName = ctx.getJ2EEApplication();
         if ("null".equalsIgnoreCase(appName)) {
             appName = null;
@@ -2954,6 +2763,7 @@ public class WebContainer implements ContainerProvider, PostConstruct, PreDestro
         // Unregister web module stats
         unregisterWebModuleStats(appName, ctx.getModuleName(),
                 ctx.getEncodedPath(), vsId);
+         */
         
     }
     
@@ -3193,7 +3003,6 @@ public class WebContainer implements ContainerProvider, PostConstruct, PreDestro
                     "Fail to register WebModuleStats for "
                     + ctx.getModuleName() + " deployed on " + vsId, e);
         }
-        
         return webStats;
     }
     
@@ -3743,4 +3552,5 @@ public class WebContainer implements ContainerProvider, PostConstruct, PreDestro
             }
         }*/
     }
+    
 }

@@ -49,7 +49,7 @@ import com.sun.enterprise.config.serverbeans.Applications;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.WebModule;
 //import com.sun.enterprise.server.ApplicationServer;
-//import com.sun.enterprise.server.PELaunch;
+import com.sun.enterprise.server.PELaunch;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.v3.server.Globals;
 
@@ -73,7 +73,7 @@ public class ASClassLoaderUtil {
             		"for module Id : " + moduleId);
             }
 
-        /*synchronized(ASClassLoaderUtil.class) {
+        synchronized(ASClassLoaderUtil.class) {
             if (sharedClasspathForWebModule == null) {
             	final StringBuilder tmpString = new StringBuilder();
             if (Boolean.getBoolean(PELaunch.USE_NEW_CLASSLOADER_PROPERTY)) {
@@ -93,7 +93,7 @@ public class ASClassLoaderUtil {
     	        //for every other invocation
     	        sharedClasspathForWebModule = tmpString.toString();
             }
-            }*/
+        }
 
             StringBuilder classpath = new StringBuilder(sharedClasspathForWebModule);
             
@@ -253,9 +253,9 @@ public class ASClassLoaderUtil {
     /**
      * Returns the shared class loader
      * @return ClassLoader
-     */
+     *
     public static synchronized ClassLoader getSharedClassLoader() {
         //XXX return ApplicationServer.getServerContext().getSharedClassLoader();
         return null;
-    }
+    }*/
 }
