@@ -38,7 +38,7 @@
             <plugin>
                 <groupId>org.jvnet.maven-antrun-extended-plugin</groupId>
                 <artifactId>maven-antrun-extended-plugin</artifactId>
-                <version>1.16</version>
+                <version>1.17</version>
             </plugin>
             <plugin>
                 <groupId>org.jvnet.poormans-installer</groupId>
