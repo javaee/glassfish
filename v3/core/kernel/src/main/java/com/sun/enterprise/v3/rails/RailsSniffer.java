@@ -35,7 +35,7 @@ public class RailsSniffer extends GenericSniffer implements Sniffer {
     }
     
 
-    final String[] deployers = { "com.sun.enterprise.rails.RailsDeployer" };
+    final String[] containers = { "com.sun.enterprise.rails.RailsContainer" };
 
     /**
      * Sets up the container libraries so that any imported bundle from the
@@ -98,7 +98,7 @@ public class RailsSniffer extends GenericSniffer implements Sniffer {
         }
     }
 
-    public String[] getDeployersNames() {
-        return deployers;
-    }    
+    public String[] getContainersNames() {
+        return containers;
+    }
 }

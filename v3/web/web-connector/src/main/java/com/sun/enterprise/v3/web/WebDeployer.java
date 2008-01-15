@@ -64,7 +64,7 @@ import java.io.IOException;
  * @author Jerome Dochez
  */
 @Service
-public class WebDeployer extends JavaEEDeployer implements Deployer<WebContainer, WebApplication> {
+public class WebDeployer extends JavaEEDeployer<WebContainer, WebApplication> {
 
     @Inject
     ServerContext sc;
@@ -199,7 +199,6 @@ public class WebDeployer extends JavaEEDeployer implements Deployer<WebContainer
     }
 
 
-    
     private void registerEndpoint(WebContainer container,
                                   Host vs,
                                   String ctxtRoot,

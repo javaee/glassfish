@@ -49,9 +49,9 @@ public class WebSniffer  extends GenericSniffer implements Sniffer {
         super(containerName, appStigma, urlPattern);
     }    
 
-    final String[] deployers = { "com.sun.enterprise.web.WebDeployer" };
+    final String[] containers = { "com.sun.enterprise.web.WebContainer" };
         
-    public String[] getDeployersNames() {
-        return deployers;
+    public String[] getContainersNames() {
+        return containers;
     }    
 }

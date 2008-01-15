@@ -24,11 +24,9 @@
 package com.sun.enterprise.v3.server;
 
 import com.sun.enterprise.module.*;
-import com.sun.enterprise.module.impl.CookedModuleDefinition;
 import com.sun.enterprise.v3.admin.Utils;
 import com.sun.enterprise.v3.data.ContainerInfo;
 import com.sun.enterprise.v3.data.ContainerRegistry;
-import org.glassfish.api.container.Container;
 import org.glassfish.api.container.ContainerProvider;
 import org.glassfish.api.container.Sniffer;
 import org.jvnet.hk2.component.ComponentException;
@@ -36,17 +34,15 @@ import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
 
 import java.io.*;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
 import java.util.Enumeration;
-import java.util.jar.Attributes;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-import java.util.jar.Manifest;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -70,7 +66,7 @@ public class ContainerStarter {
         this.logger = logger;
     }
 
-    public ContainerInfo startContainer(Sniffer sniffer) {
+    public Collection<ContainerInfo> startContainer(Sniffer sniffer) {
 
         assert sniffer!=null;
         String containerName = sniffer.getModuleType();
@@ -115,65 +111,34 @@ public class ContainerStarter {
 
         // first the right container from that module.
         ClassLoader cl = Thread.currentThread().getContextClassLoader();
-        try {
-            //Thread.currentThread().setContextClassLoader(glueModule.getClassLoader());
-            Inhabitant<? extends ContainerProvider> provider = habitat.getInhabitant(ContainerProvider.class, sniffer.getModuleType());
-            if (provider==null) {
-                logger.severe("Cannot find ContainerProvider named " + sniffer.getModuleType());
-                logger.severe("Cannot start " + sniffer.getModuleType() + " container");
+        List<ContainerInfo> containers = new ArrayList<ContainerInfo>();
+        for (String name : sniffer.getContainersNames()) {
+
+            try {
+                Inhabitant<? extends ContainerProvider> provider = habitat.getInhabitant(ContainerProvider.class, name);
+                if (provider==null) {
+                    logger.severe("Cannot find ContainerProvider named " + sniffer.getModuleType());
+                    logger.severe("Cannot start " + sniffer.getModuleType() + " container");
+                    return null;
+                }
+                Thread.currentThread().setContextClassLoader(provider.type().getClassLoader());
+                ContainerProvider container = provider.get();
+                if (container!=null) {
+                    ContainerInfo info = new ContainerInfo(container, sniffer);
+
+                    ContainerRegistry registry = habitat.getComponent(ContainerRegistry.class);
+                    registry.addContainer(name, info);
+                    containers.add(info);
+                }
+            } catch (ComponentException e) {
+                logger.log(Level.SEVERE, "Cannot create or inject Container", e);
                 return null;
+            } finally {
+                Thread.currentThread().setContextClassLoader(cl);
             }
-            Thread.currentThread().setContextClassLoader(provider.type().getClassLoader());
-            ContainerProvider container = provider.get();
-            //ContainerProvider container = habitat.getComponent(ContainerProvider.class, sniffer.getModuleType());
-            if (container!=null) {
-                ContainerInfo info = new ContainerInfo(container, sniffer);
 
-                ContainerRegistry registry = habitat.getComponent(ContainerRegistry.class);
-                registry.addContainer(info);
-                return info;
-            }
-        } catch (ComponentException e) {
-            logger.log(Level.SEVERE, "Cannot create or inject Container", e);
-            return null;
-        } finally {
-            Thread.currentThread().setContextClassLoader(cl);
         }
-
-        // there is no container implementation satisfying the sniffer's module type.
-        // that could be ok as there may not be an application container associated
-        // with this module type but only a request handler.
-        
-        return new ContainerInfo(null, sniffer);
-    }
-
-    /**
-     * Finds a file on the file system starting at a location, this
-     * can be potentially slow, do not call this method unless you
-     * really have to.
-     *
-     * @param jarFileName
-     * @param location
-     * @return  the file location on the file system
-     */
-    private File findFile(String jarFileName, File location) {
-        File[] files = location.listFiles();
-        if (files==null) {
-            return null;
-        }
-        for (File file : files) {
-            if (file.isDirectory()) {
-                File l = findFile(jarFileName, file);
-                if (l!=null) {
-                    return l;
-                }
-            } else {
-                if (file.getName().equals(jarFileName)) {
-                    return file;
-                }
-            }
-        }
-        return null;
+        return containers;
     }
 
 

@@ -46,7 +46,8 @@ import org.jvnet.hk2.annotations.Service;
 public class RailsDeployer implements Deployer<RailsContainer, RailsApplication> {
     
 
-    public void prepare(DeploymentContext context) {
+    public boolean prepare(DeploymentContext context) {
+        return true;
     }
     
     /**

@@ -401,13 +401,18 @@ public abstract class Archivist<T extends RootDeploymentDescriptor> {
             return null;
         }
 
-        Scanner scanner = null;
+        Scanner<T> scanner = null;
         try {
             scanner = habitat.getComponent(Scanner.class, getModuleType().toString());
+            if (scanner==null) {
+                logger.log(Level.SEVERE, "Cannot find scanner for " + this.getManifest());
+            }
         } catch (ComponentException e) {
             // XXX To do
             logger.log(Level.SEVERE, "Cannot find scanner for " + this.getModuleType(), e);
         }
+
+        scanner.process(new File(archive.getURI()), bundleDesc, classLoader);
 
         if (!scanner.getElements().isEmpty()) {
             if (bundleDesc.isDDWithNoAnnotationAllowed()) {

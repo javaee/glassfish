@@ -57,4 +57,12 @@ public class WebApplication implements ApplicationContainer {
         return container;
     }
 
+    /**
+     * Returns the deployment descriptor associated with this application
+     *
+     * @return deployment descriptor if they exist or null if not
+     */
+    public Object getDescriptor() {
+        return null;
+    }
 }

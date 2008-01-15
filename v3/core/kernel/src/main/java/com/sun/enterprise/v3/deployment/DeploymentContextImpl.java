@@ -83,7 +83,7 @@ public class DeploymentContextImpl implements DeploymentContext {
      * @link {org.jvnet.glassfish.apu.deployment.archive.ArchiveHandler.getClassLoader()}
      */
     public ClassLoader getClassLoader() {
-        return null; 
+        return cloader; 
     }
 
     /**

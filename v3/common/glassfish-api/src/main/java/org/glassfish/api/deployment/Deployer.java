@@ -23,6 +23,8 @@
 
 package org.glassfish.api.deployment;
 
+import org.glassfish.api.container.ContainerProvider;
+
 /**
  * A deployer is capable of deploying one type of applications.
  *
@@ -37,7 +39,7 @@ package org.glassfish.api.deployment;
  * @param U is the ApplicationContainer implementation for this deployer
  * @author Jerome Dochez
  */
-public interface Deployer<T, U extends ApplicationContainer> {
+public interface Deployer<T extends ContainerProvider, U extends ApplicationContainer> {
 
 
     /**
@@ -55,9 +57,9 @@ public interface Deployer<T, U extends ApplicationContainer> {
      * deployment to fail.
      *
      * @param context of the deployment
-     * TODO : @return something meaningful
+     * @return true if the prepare phase executed successfully
      */
-    public void prepare(DeploymentContext context);
+    public boolean prepare(DeploymentContext context);
     
     /**
      * Loads a previously prepared application in its execution environment and 

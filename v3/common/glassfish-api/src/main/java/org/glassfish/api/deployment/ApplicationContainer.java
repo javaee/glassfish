@@ -30,7 +30,14 @@ package org.glassfish.api.deployment;
  * @author Jerome Dochez
  */
 
-public abstract interface ApplicationContainer {
+public abstract interface ApplicationContainer<T> {
+
+    /**
+     * Returns the deployment descriptor associated with this application
+     * 
+     * @return deployment descriptor if they exist or null if not
+     */
+    public T getDescriptor();
     
     /**
      * Starts an application container. 

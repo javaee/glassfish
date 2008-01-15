@@ -168,11 +168,11 @@ public class AdminAdapter implements Adapter {
             }
         }
         if (req.method().toString().equalsIgnoreCase(GET)) {
-            logger.info("***** AdminAdapter GET  *****");
+            logger.fine("***** AdminAdapter GET  *****");
             doCommand(command, parameters, report);            
         }
         else if (req.method().toString().equalsIgnoreCase(POST)) {
-            logger.info("***** AdminAdapter POST *****");
+            logger.fine("***** AdminAdapter POST *****");
             if (parameters.get("path")!=null) {
                 try {
                     final String uploadFile = doUploadFile(req, report, parameters.getProperty("path"));

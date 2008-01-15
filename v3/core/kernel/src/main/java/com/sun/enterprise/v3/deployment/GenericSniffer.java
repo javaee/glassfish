@@ -24,19 +24,12 @@
 package com.sun.enterprise.v3.deployment;
 
 import com.sun.enterprise.module.ModulesRegistry;
-import com.sun.enterprise.module.impl.DirectoryBasedRepository;
 import org.glassfish.api.container.Sniffer;
-import org.glassfish.api.deployment.Deployer;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.jvnet.hk2.annotations.Inject;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
@@ -125,47 +118,4 @@ public abstract class GenericSniffer implements Sniffer {
      */
     public void tearDown() {
     }
-    
-    /**
-     * Returns the list of Deployers that this Sniffer
-     *
-     * @return Deployers for this sniffer
-     */
-    public Deployer[] getDeployers(Logger logger) {
-        
-        String deployersNames[] = getDeployersNames();
-        if (deployersNames==null || deployersNames.length==0) {
-            return null;
-        }
-        
-        List<Deployer> validDeployers = new ArrayList<Deployer>();
-        for (String deployerName : deployersNames) {            
-            try {
-                Class c = Class.forName(deployerName);
-                validDeployers.add(Deployer.class.cast(c.newInstance()));
-            } catch (ClassNotFoundException e) {
-                if (logger!=null) {
-                    logger.log(Level.SEVERE, "Invalid " + getModuleType() + " installation, cannot find the deployer");
-                }
-                return null;
-            } catch (IllegalAccessException e) {
-                if (logger!=null) {
-                    logger.log(Level.SEVERE, "Invalid " + getModuleType() + " installation, cannot find the deployer", e);
-                }
-                return null;
-            } catch (InstantiationException e) {
-                if (logger!=null) {
-                    logger.log(Level.SEVERE, "Invalid " + getModuleType() + " installation, cannot instantiate the deployer", e);
-                }
-                return null;
-            }
-        }
-        return validDeployers.toArray(new Deployer[validDeployers.size()]);
-    }   
-    
-    /**
-     * Returns the list of deployer class names
-     * @return the deployer class names
-     */
-    public abstract String[] getDeployersNames();
 }

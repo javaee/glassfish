@@ -14,20 +14,10 @@ public class ModuleInfo<T> {
 
     final private ContainerInfo ctrInfo;
     final private ApplicationContainer appCtr;
-    final private T descriptor;
-    
-    public ModuleInfo(ContainerInfo container, ApplicationContainer appCtr, T descriptor) {
+
+    public ModuleInfo(ContainerInfo container, ApplicationContainer appCtr) {
         this.ctrInfo = container;
         this.appCtr = appCtr;
-        this.descriptor = descriptor;
-    }
-
-   /**
-    * Returns the descriptor associated with this application if any
-    * @return the associated descriptor
-    */
-    public T getDescriptor() {
-        return descriptor;
     }
 
     /**

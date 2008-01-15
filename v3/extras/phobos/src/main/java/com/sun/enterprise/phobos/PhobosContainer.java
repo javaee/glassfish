@@ -23,8 +23,8 @@
 
 package com.sun.enterprise.phobos;
 
-import org.glassfish.api.ContractProvider;
-import org.glassfish.api.container.Container;
+import org.glassfish.api.deployment.Deployer;
+import org.glassfish.api.container.ContainerProvider;
 import org.jvnet.hk2.annotations.Service;
 
 /**
@@ -32,9 +32,15 @@ import org.jvnet.hk2.annotations.Service;
  *
  * @author dochez
  */
-@Service
-@Container(type="phobos", deployerImpl=PhobosDeployer.class, infoSite="http://phobos.dev.java.net")
-public class PhobosContainer implements ContractProvider {
+@Service(name="com.sun.enterprise.phobos.PhobosContainer")
+public class PhobosContainer implements ContainerProvider {
 
     // so far in phobos, the container is empty as we start an engine for each application.
+    public Class<? extends Deployer> getDeployer() {
+        return PhobosDeployer.class;
+    }
+
+    public String getName() {
+        return "Phobos";
+    }
 }

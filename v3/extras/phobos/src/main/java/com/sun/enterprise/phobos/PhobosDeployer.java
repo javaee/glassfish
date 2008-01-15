@@ -23,10 +23,10 @@
 
 package com.sun.enterprise.phobos;
 
-import com.sun.enterprise.v3.deployment.AbstractDeployer;
 import com.sun.enterprise.v3.deployment.DeployCommand;
 import org.glassfish.api.deployment.Deployer;
 import org.glassfish.api.deployment.DeploymentContext;
+import org.glassfish.api.deployment.MetaData;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.jvnet.hk2.annotations.Service;
 
@@ -40,10 +40,41 @@ import java.util.Properties;
  * @author Jerome Dochez
  */
 @Service
-public class PhobosDeployer extends AbstractDeployer
-        implements Deployer<PhobosContainer, GlassFishPhobosAdapter> {
+public class PhobosDeployer implements Deployer<PhobosContainer, GlassFishPhobosAdapter> {
 
-    
+    /**
+     * Returns the meta data assocated with this Deployer
+     *
+     * @return the meta data for this Deployer
+     */
+    public MetaData getMetaData() {
+        return null;
+    }
+
+    /**
+     * Prepares the application bits for running in the application server.
+     * For certain cases, this is generating non portable artifacts and
+     * other application specific tasks.
+     * Failure to prepare should throw an exception which will cause the overall
+     * deployment to fail.
+     *
+     * @param context of the deployment
+     * @return return 
+     */
+    public boolean prepare(DeploymentContext context) {
+        return true;
+    }
+
+    /**
+     * Clean any files and artifacts that were created during the execution
+     * of the prepare method.
+     *
+     * @param context deployment context
+     */
+    public void clean(DeploymentContext context) {
+        
+    }
+
     /**
      * Loads the phobos container for a new phobos application.
      */

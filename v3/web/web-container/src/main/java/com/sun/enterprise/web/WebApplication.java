@@ -25,15 +25,19 @@ package com.sun.enterprise.web;
 
 import org.glassfish.api.deployment.ApplicationContainer;
 import org.apache.catalina.core.StandardContext;
+import com.sun.enterprise.deployment.WebBundleDescriptor;
 
-public class WebApplication implements ApplicationContainer {
+public class WebApplication implements ApplicationContainer<WebBundleDescriptor> {
 
-    WebContainer container;
-    StandardContext ctx;
 
-    public WebApplication(WebContainer container, StandardContext ctx) {
+    final WebContainer container;
+    final StandardContext ctx;
+    final WebBundleDescriptor wbd;
+
+    public WebApplication(WebContainer container, StandardContext ctx, WebBundleDescriptor wbd) {
         this.container = container;
         this.ctx = ctx;
+        this.wbd = wbd;
     }
 
     public boolean start() {
@@ -57,4 +61,12 @@ public class WebApplication implements ApplicationContainer {
         return container;
     }
 
+    /**
+     * Returns the deployment descriptor associated with this application
+     *
+     * @return deployment descriptor if they exist or null if not
+     */
+    public WebBundleDescriptor getDescriptor() {
+        return wbd;
+    }
 }

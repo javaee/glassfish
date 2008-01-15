@@ -4,6 +4,8 @@ import org.glassfish.api.deployment.archive.ArchiveHandler;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.jvnet.hk2.annotations.Service;
 import org.apache.catalina.loader.WebappClassLoader;
+import org.apache.catalina.LifecycleException;
+import org.apache.naming.resources.FileDirContext;
 
 import java.io.*;
 import java.net.MalformedURLException;
@@ -38,9 +40,17 @@ public class WarHandler extends AbstractArchiveHandler implements ArchiveHandler
     public ClassLoader getClassLoader(ClassLoader parent, ReadableArchive archive) {
         WebappClassLoader cloader = new WebappClassLoader(parent);
         try {
-            cloader.addRepository(archive.getURI().toURL().toString());
+            FileDirContext r = new FileDirContext();
+            r.setDocBase(new File(archive.getURI()).getAbsolutePath());
+            cloader.setResources(r);
+            cloader.addRepository("WEB-INF/classes/", new File(archive.getURI().toURL().toString() + "WEB-INF/classes/"));
         } catch (MalformedURLException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+        try {
+            cloader.start();
+        } catch (LifecycleException e) {
+            throw new RuntimeException(e);
         }
         return cloader;
     }

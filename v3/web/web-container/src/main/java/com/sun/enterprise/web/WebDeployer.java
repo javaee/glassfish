@@ -41,6 +41,8 @@ import com.sun.enterprise.util.StringUtils;
 import com.sun.enterprise.v3.deployment.DeployCommand;
 import com.sun.enterprise.v3.server.V3Environment;
 import com.sun.enterprise.v3.services.impl.GrizzlyAdapter;
+import com.sun.enterprise.module.ModuleDefinition;
+import com.sun.enterprise.module.Module;
 import com.sun.logging.LogDomains;
 import org.apache.catalina.Container;
 import org.apache.catalina.Engine;
@@ -48,7 +50,6 @@ import org.apache.catalina.Host;
 import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.core.StandardHost;
 import com.sun.grizzly.tcp.Adapter;
-import org.glassfish.api.deployment.Deployer;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.MetaData;
 import org.glassfish.api.deployment.archive.ReadableArchive;
@@ -71,7 +72,7 @@ import java.io.IOException;
  * @author Jerome Dochez
  */
 @Service
-public class WebDeployer extends JavaEEDeployer implements Deployer<WebContainer, WebApplication>{
+public class WebDeployer extends JavaEEDeployer<WebContainer, WebApplication>{
 
     
     @Inject
@@ -106,6 +107,24 @@ public class WebDeployer extends JavaEEDeployer implements Deployer<WebContainer
     protected String getModuleType () {
         return "web";
     }
+
+    /**
+     * Returns the meta data assocated with this Deployer
+     *
+     * @return the meta data for this Deployer
+     */
+    public MetaData getMetaData() {
+        List<ModuleDefinition> apis = new ArrayList<ModuleDefinition>();
+        Module module = modulesRegistry.makeModuleFor("javax.javaee:javaee", "5.0");
+        if (module!=null) {
+            apis.add(module.getModuleDefinition());
+        }
+        module = modulesRegistry.makeModuleFor("org.glassfish.web:webtier", null);
+        if (module!=null) {
+            apis.add(module.getModuleDefinition());
+        }
+        return new MetaData(false, apis.toArray(new ModuleDefinition[apis.size()]));
+    }    
 
     protected WebBundleDescriptor getDefaultBundleDescriptor() {
         return getDefaultWebXMLBundleDescriptor();
@@ -195,7 +214,7 @@ public class WebDeployer extends JavaEEDeployer implements Deployer<WebContainer
                     || isAliasMatched(vsList,vs)) {
                 
                 StandardContext ctx = container.loadWebModule(vs, wmInfo, "null");     
-                webApplication = new WebApplication(container, ctx);      
+                webApplication = new WebApplication(container, ctx, wbd);      
                 registerEndpoint(container, vs, wbd.getContextRoot(), dc, webApplication);
                 loadAtLeastToOne = true;
                        

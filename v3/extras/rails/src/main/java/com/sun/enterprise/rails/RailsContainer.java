@@ -27,7 +27,7 @@ package com.sun.enterprise.rails;
 import org.jvnet.hk2.annotations.Service;
 import com.sun.grizzly.jruby.RubyObjectPool;
 import org.glassfish.api.ContractProvider;
-import org.glassfish.api.container.Container;
+import org.glassfish.api.deployment.Deployer;
 import org.glassfish.api.container.ContainerProvider;
 import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.PreDestroy;
@@ -43,8 +43,7 @@ import java.util.logging.Logger;
  *
  * @author Jerome Dochez
  */
-@Service(name="jruby")
-@Container(type="jruby", deployerImpl=RailsDeployer.class, infoSite="http://jruby.dev.java.net")
+@Service(name="com.sun.enterprise.rails.RailsContainer")
 public class RailsContainer implements ContainerProvider, PostConstruct, PreDestroy {
 
     private Logger logger = LogDomains.getLogger(LogDomains.DPL_LOGGER);
@@ -108,6 +107,14 @@ public class RailsContainer implements ContainerProvider, PostConstruct, PreDest
         } catch (MalformedURLException ex) {
             return null;
         }
+    }
+
+    public Class<? extends Deployer> getDeployer() {
+        return RailsDeployer.class;
+    }
+
+    public String getName() {
+        return "Rails";
     }
 
     public void preDestroy() {

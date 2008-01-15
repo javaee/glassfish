@@ -30,6 +30,9 @@ import com.sun.enterprise.v3.contract.ApplicationMetaDataPersistence;
 import com.sun.enterprise.v3.data.ApplicationInfo;
 import com.sun.enterprise.v3.server.ApplicationLifecycle;
 import com.sun.enterprise.v3.server.V3Environment;
+import com.sun.enterprise.module.Module;
+import com.sun.enterprise.module.ModuleDefinition;
+import com.sun.enterprise.module.ClassLoaderProxy;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
@@ -46,8 +49,7 @@ import org.jvnet.hk2.component.PerLookup;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collection;
-import java.util.Properties;
+import java.util.*;
 import java.util.logging.Level;
 
 
@@ -98,6 +100,7 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
      */
     public void execute(AdminCommandContext context) {
 
+        long operationStartTime = Calendar.getInstance().getTimeInMillis();
         
         Properties parameters = context.getCommandParameters();
         ActionReport report = context.getActionReport();
@@ -138,7 +141,7 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
 
         // check this application is not already registered.
         try {
-            ApplicationInfo appInfo = habitat.getComponent(ApplicationInfo.class, name);
+            ApplicationInfo appInfo = appRegistry.get(name);
             if (appInfo!=null) {
                 report.setMessage(localStrings.getLocalString("application.alreadyreg",
                     "Application {0} already registered", name));
@@ -183,9 +186,10 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
                 }
             }
 
-
-            // TO DO : proper lookup of the parent class loader, need to write an extensible CL.
-            ClassLoader cloader = archiveHandler.getClassLoader(getClass().getClassLoader().getParent(),archive);
+            // create the parent class loader
+            ClassLoader parentCL = createSnifferParentCL(null, Arrays.asList(sniffers));
+            // now the archive class loader, this will only be used for the sniffers.handles() method
+            ClassLoader cloader = archiveHandler.getClassLoader(parentCL, archive);
 
             Collection<Sniffer> appSniffers = getSniffers(archive, cloader);
             if (appSniffers.size()==0) {
@@ -196,8 +200,6 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
 
             DeploymentContextImpl deploymentContext = new DeploymentContextImpl(logger,
                     archive, parameters, env);
-
-            deploymentContext.setClassLoader(cloader);
 
             ApplicationInfo appInfo = load(appSniffers, deploymentContext, report);
             if (report.getActionExitCode().equals(ActionReport.ExitCode.SUCCESS)) {
@@ -230,6 +232,10 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
                 logger.log(Level.INFO, "Error while closing deployable artifact : " + file.getAbsolutePath(), e);
             }
         }
-
+        if (report.getActionExitCode().equals(ActionReport.ExitCode.SUCCESS)) {
+            logger.info("Deployment of " + name + " done is "
+                        + (Calendar.getInstance().getTimeInMillis() - operationStartTime) + " ms");
+    }
+        
     }        
 }

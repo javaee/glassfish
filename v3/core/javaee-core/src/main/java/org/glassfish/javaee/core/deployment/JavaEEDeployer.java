@@ -25,7 +25,10 @@ package org.glassfish.javaee.core.deployment;
 
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.MetaData;
+import org.glassfish.api.deployment.Deployer;
+import org.glassfish.api.deployment.ApplicationContainer;
 import org.glassfish.api.deployment.archive.ReadableArchive;
+import org.glassfish.api.container.ContainerProvider;
 import com.sun.enterprise.v3.server.V3Environment;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.util.zip.ZipItem;
@@ -39,32 +42,54 @@ import com.sun.enterprise.deployment.util.DeploymentProperties;
 import com.sun.enterprise.deployment.interfaces.DeploymentImplConstants;
 import com.sun.enterprise.deployment.backend.ClientJarMakerThread;
 import com.sun.enterprise.deployment.backend.IASDeploymentException;
-import com.sun.enterprise.v3.deployment.AbstractDeployer;
+import com.sun.enterprise.module.Module;
+import com.sun.enterprise.module.ModulesRegistry;
+import com.sun.enterprise.module.ModuleDefinition;
 import org.jvnet.hk2.annotations.Inject;
 
 import java.io.File;
 import java.util.Properties;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  * Convenient superclass for JavaEE Deployer implementations.
  *
  */
-public abstract class JavaEEDeployer extends AbstractDeployer {
+public abstract class JavaEEDeployer<T extends ContainerProvider, U extends ApplicationContainer>
+        implements Deployer<T, U> {
 
     @Inject
     protected V3Environment env;
 
     @Inject
-    ArchiveFactory archiveFactory;
+    protected ArchiveFactory archiveFactory;
 
     @Inject
-    ArchivistFactory archivistFactory;
+    protected ArchivistFactory archivistFactory;
                                       
     @Inject
-    ApplicationFactory applicationFactory;
+    protected ApplicationFactory applicationFactory;
+
+    @Inject
+    protected ModulesRegistry modulesRegistry;
 
     private static String CLIENT_JAR_MAKER_CHOICE = System.getProperty(
         DeploymentImplConstants.CLIENT_JAR_MAKER_CHOICE);
+
+    /**
+     * Returns the meta data assocated with this Deployer
+     *
+     * @return the meta data for this Deployer
+     */
+    public MetaData getMetaData() {
+        List<ModuleDefinition> apis = new ArrayList<ModuleDefinition>();
+        Module module = modulesRegistry.makeModuleFor("javax.javaee:javaee", "5.0");
+        if (module!=null) {
+            apis.add(module.getModuleDefinition());
+        }
+        return new MetaData(false, apis.toArray(new ModuleDefinition[apis.size()]));
+    }    
 
     /**
      * Prepares the application bits for running in the application server.
@@ -75,13 +100,19 @@ public abstract class JavaEEDeployer extends AbstractDeployer {
      * deployment to fail.
      *
      * @param dc deployment context
-     *                TODO : @return something meaningful
+     * @return true if the prepare phase was successful
+     *
      */
-    public void prepare(DeploymentContext dc) {
+    public boolean prepare(DeploymentContext dc) {
         try {
-            parseModuleMetaData(dc);
+            if (parseModuleMetaData(dc)==null) {
+                // hopefully the DOL gave a good message of the failure...
+                dc.getLogger().severe("Failed to load deployment descriptor, aborting");
+                return false;
+            }
             generateArtifacts(dc);
             createClientJar(dc);
+            return true;
         } catch (Exception ex) {
             // re-throw all the exceptions as runtime exceptions
             RuntimeException re = new RuntimeException(ex.getMessage());
@@ -92,22 +123,24 @@ public abstract class JavaEEDeployer extends AbstractDeployer {
 
     protected Application parseModuleMetaData(DeploymentContext dc)
         throws Exception {
+
         ReadableArchive sourceArchive = dc.getSource();
         ClassLoader cl = dc.getClassLoader();
 
         Archivist archivist = archivistFactory.getArchivist(
-            sourceArchive, cl);
+                sourceArchive, cl);
         archivist.setAnnotationProcessingRequested(true);
 
         archivist.setDefaultBundleDescriptor(
-            getDefaultBundleDescriptor());
+                getDefaultBundleDescriptor());
 
-         Application application = applicationFactory.openArchive(
-            archivist, sourceArchive, true);
+        Application application = applicationFactory.openArchive(
+                archivist, sourceArchive, true);
 
-        archivist.validate(cl);
-
-        dc.addModuleMetaData(getModuleType(), application);
+        if (application!=null) {
+            archivist.validate(cl);
+            dc.addModuleMetaData(getModuleType(), application);
+        }
         return application;
     }
 
@@ -155,6 +188,17 @@ public abstract class JavaEEDeployer extends AbstractDeployer {
             clientJarThread.start();
         }
     }
+
+
+    /**
+     * Clean any files and artifacts that were created during the execution
+     * of the prepare method.
+     *
+     * @param context deployment context
+     */
+    public void clean(DeploymentContext context) {
+    }
+        
 
     abstract protected RootDeploymentDescriptor getDefaultBundleDescriptor();
     abstract protected String getModuleType();

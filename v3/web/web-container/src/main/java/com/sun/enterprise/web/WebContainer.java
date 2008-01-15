@@ -28,7 +28,6 @@ package com.sun.enterprise.web;
 import com.sun.enterprise.util.OS;
 import com.sun.enterprise.module.Module;
 
-import java.beans.PropertyVetoException;
 import java.io.File;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
@@ -181,8 +180,7 @@ import java.lang.reflect.Method;
  * @author jluehe
  * @author amyroh
  */
-@Service(name="web")
-@org.glassfish.api.container.Container(type="web", deployerImpl=WebDeployer.class)
+@Service(name="com.sun.enterprise.web.WebContainer")
 public class WebContainer implements ContainerProvider, PostConstruct, PreDestroy {
         //MonitoringLevelListener {
 
@@ -281,6 +279,14 @@ public class WebContainer implements ContainerProvider, PostConstruct, PreDestro
     
     public void preDestroy() {
         
+    }
+
+    public String getName() {
+        return "Web";
+    }
+
+    public Class<? extends org.glassfish.api.deployment.Deployer> getDeployer() {
+        return WebDeployer.class;
     }
 
 

@@ -81,9 +81,9 @@ public class PhobosSniffer extends GenericSniffer implements Sniffer {
         }
     }
 
-    final String[] deployers = { "com.sun.enterprise.phobos.PhobosDeployer" };
+    final String[] containers = { "com.sun.enterprise.phobos.PhobosContainer" };
         
-    public String[] getDeployersNames() {
-        return deployers;
+    public String[] getContainersNames() {
+        return containers;
     }
 }

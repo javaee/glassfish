@@ -35,6 +35,7 @@ import com.sun.enterprise.v3.server.V3Environment;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.Startup;
 import org.glassfish.api.container.Sniffer;
+import org.glassfish.api.container.ContainerProvider;
 import org.glassfish.api.deployment.ApplicationContainer;
 import org.glassfish.api.deployment.Deployer;
 import org.glassfish.api.deployment.DeploymentContext;
@@ -260,11 +261,11 @@ public class ApplicationLoaderService extends ApplicationLifecycle
     }
 
     @Override
-    protected Deployer getDeployer(ContainerInfo containerInfo) {
-        final Deployer deployer = containerInfo.getDeployer();
+    protected <T extends ContainerProvider, U extends ApplicationContainer> Deployer getDeployer(ContainerInfo<T, U> containerInfo) {
+        final Deployer<T, U> deployer = containerInfo.getDeployer();
         assert deployer!=null;
 
-        return new Deployer() {
+        return new Deployer<T,U>() {
 
             /**
              * Prepares the application bits for running in the application server.
@@ -275,10 +276,10 @@ public class ApplicationLoaderService extends ApplicationLifecycle
              * deployment to fail.
              *
              * @param context of the deployment
-             *                TODO : @return something meaningful
+             * @return true if the prepare phase was successful
              */
-            public void prepare(DeploymentContext context) {
-                // nothig to do
+            public boolean prepare(DeploymentContext context) {
+                return true;
             }
 
             /**
@@ -291,7 +292,7 @@ public class ApplicationLoaderService extends ApplicationLifecycle
              * @return an ApplicationContainer instance identifying the running application
              */
             @SuppressWarnings("unchecked")
-            public ApplicationContainer load(Object container, DeploymentContext context) {
+            public U load(T container, DeploymentContext context) {
                 return deployer.load(container, context);
             }
 
@@ -304,7 +305,7 @@ public class ApplicationLoaderService extends ApplicationLifecycle
              * @param context      of the undeployment
              */
             @SuppressWarnings("unchecked")
-            public void unload(ApplicationContainer appContainer, DeploymentContext context) {
+            public void unload(U appContainer, DeploymentContext context) {
                 deployer.unload(appContainer, context);
             }
 

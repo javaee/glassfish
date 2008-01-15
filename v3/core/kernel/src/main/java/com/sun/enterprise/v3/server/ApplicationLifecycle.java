@@ -26,6 +26,8 @@ package com.sun.enterprise.v3.server;
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.module.Module;
+import com.sun.enterprise.module.ResolveError;
+import com.sun.enterprise.module.ModuleDefinition;
 import com.sun.enterprise.v3.data.*;
 import com.sun.enterprise.v3.deployment.DeployCommand;
 import com.sun.enterprise.v3.deployment.DeploymentContextImpl;
@@ -33,8 +35,8 @@ import com.sun.enterprise.v3.services.impl.GrizzlyAdapter;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.container.Adapter;
-import org.glassfish.api.container.Container;
 import org.glassfish.api.container.Sniffer;
+import org.glassfish.api.container.ContainerProvider;
 import org.glassfish.api.deployment.ApplicationContainer;
 import org.glassfish.api.deployment.Deployer;
 import org.glassfish.api.deployment.DeploymentContext;
@@ -74,7 +76,7 @@ abstract public class ApplicationLifecycle {
     protected ApplicationRegistry appRegistry;
 
     @Inject
-    ModulesRegistry modulesRegistry;
+    protected ModulesRegistry modulesRegistry;
 
     @Inject
     GrizzlyAdapter adapter;
@@ -84,8 +86,8 @@ abstract public class ApplicationLifecycle {
 
     protected Logger logger = LogDomains.getLogger(LogDomains.DPL_LOGGER);
 
-    protected Deployer getDeployer(ContainerInfo container) {
-        return container.getDeployer();
+    protected <T extends ContainerProvider, U extends ApplicationContainer> Deployer<T, U> getDeployer(ContainerInfo<T, U> containerInfo) {
+        return containerInfo.getDeployer();
     }
 
     public Sniffer getSniffer(String appType) {
@@ -115,6 +117,57 @@ abstract public class ApplicationLifecycle {
     }
 
     /**
+     * Sets up the parent class loader for the application class loader.
+     * Application class loader are under the control of the ArchiveHandler since
+     * a special archive file format will require a specific class loader.
+     *
+     * However GlassFish needs to be able to add capabilities to the application
+     * like adding APIs accessibility, this is done through its parent class loader
+     * which we create and maintain.
+     *
+     * @param parent the parent class loader
+     * @param deployers list of elligible deployers for this deployment.
+     * @return class loader capable of loading public APIs identified by the deployers
+     * @throws ResolveError if one of the deployer's public API module is not found.
+     */
+    protected ClassLoader createApplicationParentCL(ClassLoader parent, Collection<Deployer> deployers)
+        throws ResolveError {
+
+        List<ModuleDefinition> defs = new ArrayList<ModuleDefinition>();
+        for (Deployer deployer : deployers) {
+            if (deployer.getMetaData()!=null && deployer.getMetaData().getPublicAPIs()!=null) {
+                for (ModuleDefinition def : deployer.getMetaData().getPublicAPIs()) {
+                    defs.add(def);
+                }
+            }
+        }
+        return modulesRegistry.getModulesClassLoader(parent, defs);
+    }
+
+    /**
+     * Sets up a parent classloader that will be used to create a temporary application
+     * class loader to load classes from the archive before the Deployers are available.
+     * Sniffer.handles() method takes a class loader as a parameter and this class loader
+     * needs to be able to load any class the sniffer load themselves.
+     *
+     * @param parent parent class loader for this class loader
+     * @param sniffers sniffer instances
+     * @return a class loader with visibility on all classes loadable by classloaders.
+     */
+    protected ClassLoader createSnifferParentCL(ClassLoader parent, Collection<Sniffer> sniffers) {
+        // Use the sniffers class loaders as the delegates to the parent class loader.
+        // This will allow any class loadable by the sniffer (therefore visible to the sniffer
+        // class loader) to be also loadable by the archive's class loader.
+        List<ModuleDefinition> snifferDefs = new ArrayList<ModuleDefinition>();
+        for (Sniffer sniffer : sniffers) {
+            Module module = Module.find(sniffer.getClass());
+            snifferDefs.add(module.getModuleDefinition());
+        }
+        return modulesRegistry.getModulesClassLoader(parent, snifferDefs);
+        
+    }
+
+    /**
      * Returns a collection of sniffers that recognized some parts of the
      * passed archive as components their container handle.
      *
@@ -140,24 +193,29 @@ abstract public class ApplicationLifecycle {
 
         List<ContainerInfo> startedContainers = new ArrayList<ContainerInfo>();
         for (Sniffer sniffer : sniffers) {
-            final String appType = sniffer.getModuleType();
-
+            if (sniffer.getContainersNames()==null || sniffer.getContainersNames().length==0) {
+                failure(logger, "no container associated with application of type : " + sniffer.getModuleType(), null, report);
+                return null;
+            }
             // start all the containers associated with sniffers.
-            ContainerInfo containerInfo = containerRegistry.getContainer(appType);
+            ContainerInfo containerInfo = containerRegistry.getContainer(sniffer.getContainersNames()[0]);
             if (containerInfo == null) {
-                containerInfo = startContainer(sniffer, logger, report);
-                if (containerInfo==null) {
+                Collection<ContainerInfo> containersInfo = startContainer(sniffer, logger, report);
+                if (containersInfo==null || containersInfo.size()==0) {
                     stopContainers(logger, startedContainers);
-                    failure(logger, "Cannot start container associated to application of type : " + sniffer.getModuleType(), null, report);
+                    failure(logger, "Cannot start container(s) associated to application of type : " + sniffer.getModuleType(), null, report);
                     return null;
                 }
-                startedContainers.add(containerInfo);
+                startedContainers.addAll(containersInfo);
+                break;
             }
+
         }
 
         // all containers that have recognized parts of the application being deployed
         // have now been successfully started. Start the deployment process.
         List<Deployer> preparedDeployers = new ArrayList<Deployer>();
+        List<Deployer> deployers = new ArrayList<Deployer>();
 
         // first we need to run the deployers which may invalidate the class loader
         // we use for deployment. This is true for technologies like JPA where they need
@@ -165,18 +223,24 @@ abstract public class ApplicationLifecycle {
         LinkedList<ContainerInfo> sortedModuleInfos = new LinkedList<ContainerInfo>();
         boolean atLeastOne=false;
         for (Sniffer sniffer : sniffers) {
-            final String appType = sniffer.getModuleType();
-
-            // get the container.
-            ContainerInfo containerInfo = containerRegistry.getContainer(appType);
-            Deployer deployer = getDeployer(containerInfo);
-            if (deployer.getMetaData().invalidatesClassLoader()) {
-                atLeastOne=true;
-                sortedModuleInfos.addFirst(containerInfo);
-            } else {
-                sortedModuleInfos.addLast(containerInfo);
+            for (String containerName : sniffer.getContainersNames()) {
+                ContainerInfo containerInfo = containerRegistry.getContainer(containerName);
+                Deployer deployer = getDeployer(containerInfo);
+                deployers.add(deployer);
+                if (deployer.getMetaData().invalidatesClassLoader()) {
+                    atLeastOne=true;
+                    sortedModuleInfos.addFirst(containerInfo);
+                } else {
+                    sortedModuleInfos.addLast(containerInfo);
+                }
             }
         }
+
+        // Ok we now have all we need to create the parent class loader for our application
+        // which will be stored in the deployment context.
+        ClassLoader parentCL = createApplicationParentCL(null, deployers);
+        ArchiveHandler handler = getArchiveHandler(context.getSource());
+        context.setClassLoader(handler.getClassLoader(parentCL, context.getSource()));
 
         for (ContainerInfo containerInfo : sortedModuleInfos) {
 
@@ -187,8 +251,7 @@ abstract public class ApplicationLifecycle {
             // bits in case we ran all the prepare() methods of the invalidating
             // deployers.
             if (atLeastOne && !deployer.getMetaData().invalidatesClassLoader()) {
-                ArchiveHandler handler = getArchiveHandler(context.getSource());
-                context.setClassLoader(handler.getClassLoader(null, context.getSource()));
+                context.setClassLoader(handler.getClassLoader(parentCL, context.getSource()));
             }
 
             ClassLoader currentCL = Thread.currentThread().getContextClassLoader();
@@ -211,12 +274,10 @@ abstract public class ApplicationLifecycle {
 
         // this is the end of the prepare phase, on to the load phase.
         List<ModuleInfo> modules = new ArrayList<ModuleInfo>();
-        for (Sniffer sniffer : sniffers) {
-            final String appType = sniffer.getModuleType();
+        for (ContainerInfo containerInfo : sortedModuleInfos) {
 
             // get the container.
-            ContainerInfo containerInfo = containerRegistry.getContainer(appType);
-            Deployer deployer = getDeployer(containerInfo);
+            Deployer deployer = containerInfo.getDeployer();
 
             ClassLoader currentCL = Thread.currentThread().getContextClassLoader();
             try {
@@ -224,7 +285,7 @@ abstract public class ApplicationLifecycle {
                 Thread.currentThread().setContextClassLoader(connectorModule.getClassLoader());
                 try {
                     ApplicationContainer appCtr = deployer.load(containerInfo.getContainer(), context);
-                    ModuleInfo moduleInfo = new ModuleInfo(containerInfo, appCtr, context.getModuleMetaData(sniffer.getModuleType(), Object.class));
+                    ModuleInfo moduleInfo = new ModuleInfo(containerInfo, appCtr);
                     modules.add(moduleInfo);
                 } catch(Exception e) {
                     failure(logger, "Exception while invoking " + deployer.getClass() + " prepare method",e, report);
@@ -307,36 +368,34 @@ abstract public class ApplicationLifecycle {
         }
     }
 
-    protected ContainerInfo startContainer(Sniffer sniffer, Logger logger, ActionReport report) {
+    protected Collection<ContainerInfo> startContainer(Sniffer sniffer, Logger logger, ActionReport report) {
 
         ContainerStarter starter = new ContainerStarter(modulesRegistry, habitat, logger);
-        ContainerInfo containerInfo = starter.startContainer(sniffer);
-        if (containerInfo == null) {
-            failure(logger, "Cannot start container associated to application of type : " + sniffer.getModuleType(), null, report);
+        Collection<ContainerInfo> containersInfo = starter.startContainer(sniffer);
+        if (containersInfo == null || containersInfo.size()==0) {
+            failure(logger, "Cannot start container(s) associated to application of type : " + sniffer.getModuleType(), null, report);
             return null;
         }
 
-        Object container = containerInfo.getContainer();
-        Class<? extends Deployer> deployerClass = container.getClass().getAnnotation(Container.class).deployerImpl();
-        Deployer deployer;
-        try {
-            deployer = habitat.getComponent(deployerClass);
-            containerInfo.setDeployer(deployer);
-        } catch (ComponentException e) {
-            failure(logger, "Cannot instantiate or inject "+deployerClass, e, report);
-            stopContainer(logger, containerInfo);
-            return null;
-        } catch (ClassCastException e) {
-            stopContainer(logger, containerInfo);
-            failure(logger, deployerClass+" does not implement " +
-                    " the org.jvnet.glassfish.api.deployment.Deployer interface", e, report);
-            return null;
+        for (ContainerInfo containerInfo : containersInfo) {
+            ContainerProvider container = containerInfo.getContainer();
+            Class<? extends Deployer> deployerClass = container.getDeployer();
+            Deployer deployer;
+            try {
+                deployer = habitat.getComponent(deployerClass);
+                containerInfo.setDeployer(deployer);
+            } catch (ComponentException e) {
+                failure(logger, "Cannot instantiate or inject "+deployerClass, e, report);
+                stopContainer(logger, containerInfo);
+                return null;
+            } catch (ClassCastException e) {
+                stopContainer(logger, containerInfo);
+                failure(logger, deployerClass+" does not implement " +
+                        " the org.jvnet.glassfish.api.deployment.Deployer interface", e, report);
+                return null;
+            }
         }
-
-        assert containerInfo != null;
-
-        containerRegistry.addContainer(containerInfo);
-        return containerInfo;
+        return containersInfo;
     }
 
     protected void stopContainers(Logger logger, Iterable<ContainerInfo> ctrInfos) {
@@ -351,9 +410,10 @@ abstract public class ApplicationLifecycle {
     }
 
     // Todo : switch info to use inhabitant
-    protected void stopContainer(Logger logger, ContainerInfo info) {
-      /*try {
-            if (info.getDeployer()!=null) {
+    protected void stopContainer(Logger logger, ContainerInfo info)
+    {
+        /*if (info.getDeployer()!=null) {
+
                 componentMgr.releaseComponent(info.getDeployer());
             }
         } catch(ComponentException e) {
@@ -376,7 +436,6 @@ abstract public class ApplicationLifecycle {
         }
         for (ModuleInfo moduleInfo : info.getModuleInfos()) {
             unloadModule(moduleInfo, info, context, report);
-            moduleInfo.getContainerInfo().remove(info);
         }
 
         appRegistry.remove(appName);

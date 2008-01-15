@@ -36,8 +36,8 @@ import org.apache.catalina.core.StandardEngine;
 import org.apache.catalina.startup.DigesterFactory;
 import org.apache.catalina.startup.Embedded;
 import org.apache.coyote.tomcat5.CoyoteAdapter;
-import org.glassfish.api.container.Container;
 import org.glassfish.api.container.ContainerProvider;
+import org.glassfish.api.deployment.Deployer;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PostConstruct;
@@ -59,7 +59,6 @@ import java.util.logging.Logger;
  * @author jluehe
  */
 @Service(name="web")
-@Container(type="web", deployerImpl=WebDeployer.class)
 public class WebContainer implements ContainerProvider, PostConstruct, PreDestroy {
 
     @Inject
@@ -209,5 +208,12 @@ public class WebContainer implements ContainerProvider, PostConstruct, PreDestro
 
         engine.addChild(vs);
     }
-    
+
+    public Class<? extends Deployer> getDeployer() {
+        return WebDeployer.class;
+    }
+
+    public String getName() {
+        return "tomcat";
+    }
 }

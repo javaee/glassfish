@@ -142,4 +142,13 @@ public class GlassFishPhobosAdapter extends GrizzlyPhobosAdapter implements Appl
     public String getContextRoot() {
         return contextRoot;
     }
+
+    /**
+     * Returns the deployment descriptor associated with this application
+     *
+     * @return deployment descriptor if they exist or null if not
+     */
+    public Object getDescriptor() {
+        return null;
+    }
 }

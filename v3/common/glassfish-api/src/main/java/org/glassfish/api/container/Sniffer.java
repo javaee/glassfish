@@ -82,10 +82,10 @@ public interface Sniffer {
     public void tearDown();
 
     /**
-     * Returns the list of Deployers that this Sniffer
+     * Returns the list of Containers that this Sniffer enables
      *
-     * @return Deployers for this sniffer
+     * @return list of container names known to the habitat for this sniffer
      */
-    public Deployer[] getDeployers(Logger logger);
+    public String[] getContainersNames();
 
 }

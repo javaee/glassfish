@@ -75,6 +75,7 @@ import org.apache.catalina.util.StringManager;
 import org.apache.naming.JndiPermission;
 import org.apache.naming.resources.Resource;
 import org.apache.naming.resources.ResourceAttributes;
+import org.apache.naming.resources.FileDirContext;
 
 import com.sun.appserv.server.util.PreprocessorUtil;
 
@@ -1101,7 +1102,6 @@ public class WebappClassLoader
         return result.elements();
 
     }
-
 
     /**
      * Find the resource with the given name.  A resource is some data

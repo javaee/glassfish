@@ -44,8 +44,8 @@ public class ContainerRegistry {
 
     Map<String, ContainerInfo> containers = new HashMap<String, ContainerInfo>();
 
-    public void addContainer(ContainerInfo info) {
-        containers.put(info.getSniffer().getModuleType(), info);
+    public void addContainer(String name, ContainerInfo info) {
+        containers.put(name, info);
         info.setRegistry(this);
     }
 

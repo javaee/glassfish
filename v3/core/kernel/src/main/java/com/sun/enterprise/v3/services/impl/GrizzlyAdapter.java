@@ -496,7 +496,8 @@ public class GrizzlyAdapter implements Startup, com.sun.grizzly.tcp.Adapter, Pos
                 ContainerInfo containerInfo = containerRegistry.getContainer(sniffer.getModuleType());
                 if (containerInfo==null) {
                     ContainerStarter starter = new ContainerStarter(modulesRegistry, habitat, logger);
-                    containerInfo = starter.startContainer(sniffer);
+                    Collection<ContainerInfo> containersInfo = starter.startContainer(sniffer);
+                    containerInfo = containersInfo.iterator().next();
                 }
                 Iterable<Class<? extends FileServer>> services;
 
@@ -504,7 +505,7 @@ public class GrizzlyAdapter implements Startup, com.sun.grizzly.tcp.Adapter, Pos
                     // last ditch, maybe an implementation of the FileServer interface
                     services = modulesRegistry.getProvidersClass(FileServer.class);
                 } else {
-                    containerRegistry.addContainer(containerInfo);
+                    containerRegistry.addContainer(sniffer.getContainersNames()[0], containerInfo);
                     com.sun.enterprise.module.Module connectorModule = com.sun.enterprise.module.Module.find(containerInfo.getContainer().getClass());
                     
                     services = connectorModule.getProvidersClass(FileServer.class);
