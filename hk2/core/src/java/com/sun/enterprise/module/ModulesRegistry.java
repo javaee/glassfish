@@ -47,6 +47,7 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Logger;
 import java.util.logging.Level;
+import java.net.URL;
 
 /**
  * The Modules Registry maintains the registry of all available module.
@@ -543,6 +544,30 @@ public class ModulesRegistry implements ModuleChangeListener {
         List r = runningServices.get(serviceClass);
         if(r!=null)     return r;
         return Collections.emptyList();
+    }
+
+    /**
+     * Returns a ClassLoader capable of loading classes from a set of modules indentified
+     * by their module definition
+     *
+     * @param parent the parent class loader for the returned class loader instance
+     * @param defs module definitions for all modules this classloader should be capable of loading
+     * classes from
+     * @return class loader instance
+     * @throws ResolveError if one of the provided module definition cannot be resolved 
+     */
+    public ClassLoader getModulesClassLoader(ClassLoader parent, Collection<ModuleDefinition> defs)
+        throws ResolveError {
+
+        if (parent==null) {
+            parent = getParentClassLoader();
+        }
+        ClassLoaderProxy cl = new ClassLoaderProxy(new URL[0], parent);
+        for (ModuleDefinition def : defs) {
+            Module module = this.makeModuleFor(def.getName(), def.getVersion());
+            cl.addDelegate(module.getClassLoader());
+        }
+        return cl;
     }
 
     /**
