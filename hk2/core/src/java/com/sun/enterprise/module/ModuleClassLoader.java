@@ -41,10 +41,8 @@ import java.util.Vector;
  *
  * @author dochez
  */
-final class ModuleClassLoader extends URLClassLoader {
+final class ModuleClassLoader extends ClassLoaderProxy {
     
-    private final List<ClassLoader> surrogates = Collections.synchronizedList(new ArrayList<ClassLoader>());
-    private final List<ClassLoaderFacade> facadeSurrogates = Collections.synchronizedList(new ArrayList<ClassLoaderFacade>());
     private final Module module;
 
     /**
@@ -63,7 +61,6 @@ final class ModuleClassLoader extends URLClassLoader {
     protected void finalize() throws Throwable {
         super.finalize();
         Utils.getDefaultLogger().info("ModuleClassLoader gc'ed " + module.getModuleDefinition().getName());
-        stop();
     }
 
 
@@ -163,14 +160,14 @@ final class ModuleClassLoader extends URLClassLoader {
      * called by the facade class loader when it is garbage collected. 
      * this is a good time to see if this module should be unloaded.
      */
+    @Override
     public void stop() {
         
         // we should only detach if the sticky flag is not set
         if (!module.isSticky()) {
             
             Utils.getDefaultLogger().info("ModuleClassLoader stopped " + module.getModuleDefinition().getName());
-            surrogates.clear();
-            facadeSurrogates.clear();
+            super.stop();
             module.stop();
         }
     }
@@ -179,118 +176,12 @@ final class ModuleClassLoader extends URLClassLoader {
         return module;
     }
 
-    
-    protected Class<?> findClass(String name) throws ClassNotFoundException {
-        try {
-            Class c=null;
-            synchronized(facadeSurrogates) {
-                for (ClassLoaderFacade classLoader : facadeSurrogates) {
-                    try {
-                        c = classLoader.getClass(name);
-                    } catch(ClassNotFoundException e) {
-                        // ignored.
-                    }
-                    if (c!=null) {
-                        return c;
-                    }
-                }
-            }
-            synchronized(surrogates) {
-                for (ClassLoader classLoader : surrogates) {
-                    try {
-                        c = classLoader.loadClass(name);
-                    } catch(ClassNotFoundException e) {
-                        // ignored.
-                    }
-                    if (c!=null) {
-                        return c;
-                    }
-                }
-            }
-            return findClassDirect(name);
-        } catch (ClassNotFoundException e) {
-            // check if this for service loader punch-in, and if so, let it through
-            Module m = getOwner().getRegistry().getProvidingModule(name);
-            if(m!=null)
-                return m.getPrivateClassLoader().findClassDirect(name);
-            throw e;
-        }
-    }
 
-    /**
-     * {@link #findClass(String)} except the classloader punch-in hack.
-     */
-    private Class findClassDirect(String name) throws ClassNotFoundException {
-        Class c = findLoadedClass(name);
-        if(c!=null) return c;
-        return super.findClass(name);
-    }
 
-    public URL findResource(String name) {
-        synchronized(facadeSurrogates) {
-            for (ClassLoaderFacade classLoader : facadeSurrogates) {
-
-                URL url = classLoader.findResource(name);
-                if (url!=null) {
-                    return url;
-                }
-            }
-        }
-        synchronized(surrogates) {
-            for (ClassLoader classLoader : surrogates) {
-
-                URL url = classLoader.getResource(name);
-                if (url!=null) {
-                    return url;
-                }
-            }
-        }
-        return super.findResource(name);
-        
-    }
-    
-    public Enumeration<URL> findResources(String name) throws IOException {
-
-        for (ClassLoaderFacade classLoader : facadeSurrogates) {
-            
-            Enumeration<URL> enumerat = classLoader.getResources(name);
-            if (enumerat!=null && enumerat.hasMoreElements()) {
-                return enumerat;
-            }
-        }
-        for (ClassLoader classLoader : surrogates) {
-            Enumeration<URL> enumerat = classLoader.getResources(name);
-            if (enumerat!=null && enumerat.hasMoreElements()) {
-                return enumerat;
-            }
-            
-        }
-        return super.findResources(name);
-    }
-    
-    public void addDelegate(ClassLoader cl) {
-        if (cl instanceof ClassLoaderFacade) {
-            facadeSurrogates.add((ClassLoaderFacade) cl);
-        } else {
-            surrogates.add(cl);
-        }                    
-    }
-                                                                            
-    public void removeDelegate(ClassLoader cl) {
-        if (cl instanceof ClassLoaderFacade) {
-            facadeSurrogates.remove(cl);
-        } else {
-            surrogates.remove(cl);
-        }
-    }
-    
-    public Collection<ClassLoader> getDelegates() {
-        return new ArrayList<ClassLoader>(surrogates);
-    }
-    
     public String toString() {
         StringBuffer s= new StringBuffer(); 
-        s.append(super.toString()).append("(name=").append(module.getName());
+        s.append("ModuleClassLoader(name=").append(module.getName());
+        s.append(", parent=").append(super.toString());
         s.append(",init=").append(initialized);
         s.append(",URls[]=");
         for (URL url : getURLs()) {
@@ -298,7 +189,7 @@ final class ModuleClassLoader extends URLClassLoader {
         }
         s.append(")");
                
-        for (ClassLoader surrogate : surrogates) {
+        for (ClassLoader surrogate : super.getDelegates()) {
             s.append("\n ref : ").append(surrogate.toString());
         }
         return s.toString();
