@@ -92,6 +92,9 @@ public class RunMojo extends AbstractMojo {
         if(project.getPackaging().equals("hk2-jar") && (project.getArtifact()==null || project.getArtifact().getFile()==null)) {
             getLog().warn("This project isn't compiled yet. Perhaps you meant 'mvn compile hk2:run'?");
         }
+
+        if(rootDir==null)
+            rootDir = project.getBasedir();
     
         try {
             if(mainModule==null)
