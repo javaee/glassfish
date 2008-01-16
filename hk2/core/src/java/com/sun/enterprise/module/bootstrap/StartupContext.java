@@ -30,7 +30,7 @@ public class StartupContext {
 
     /** Creates a new instance of StartupContext */
     public StartupContext(File root, String[] args) {
-        this.root = root;
+        this.root = root.getAbsoluteFile();
         this.args = new HashMap<String, String>();
         for (int i=0;i<args.length;i++) {
             if (args[i].startsWith("-")) {
@@ -46,6 +46,9 @@ public class StartupContext {
 
     /**
      * Gets the "root" directory where the data files are stored.
+     *
+     * <p>
+     * This path is always absolutized.
      *
      * TODO: in case of Glassfish, this is the domain directory?
      */
