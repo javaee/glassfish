@@ -82,7 +82,10 @@ public interface Sniffer {
     public void tearDown();
 
     /**
-     * Returns the list of Containers that this Sniffer enables
+     * Returns the list of Containers that this Sniffer enables.
+     *
+     * The runtime will look up each container implementing
+     * using the names provided in the habitat.
      *
      * @return list of container names known to the habitat for this sniffer
      */

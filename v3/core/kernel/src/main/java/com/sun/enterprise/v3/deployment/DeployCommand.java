@@ -219,10 +219,7 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
                 metaData.save(name, moduleProps);
             }
         } catch(Exception e) {
-            if (expansionDir!=null) {
-               FileUtils.whack(expansionDir);
-            }
-            logger.log(Level.SEVERE, "Error during deployment ", e);
+            logger.log(Level.SEVERE, "Error during deployment : ", e);
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setMessage(e.getMessage());
         } finally {
@@ -231,11 +228,15 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
             } catch(IOException e) {
                 logger.log(Level.INFO, "Error while closing deployable artifact : " + file.getAbsolutePath(), e);
             }
-        }
-        if (report.getActionExitCode().equals(ActionReport.ExitCode.SUCCESS)) {
-            logger.info("Deployment of " + name + " done is "
+            if (report.getActionExitCode().equals(ActionReport.ExitCode.SUCCESS)) {
+                logger.info("Deployment of " + name + " done is "
                         + (Calendar.getInstance().getTimeInMillis() - operationStartTime) + " ms");
-    }
+            } else {
+                if (expansionDir!=null) {
+                   FileUtils.whack(expansionDir);
+                }                
+            }
+        }
         
     }        
 }

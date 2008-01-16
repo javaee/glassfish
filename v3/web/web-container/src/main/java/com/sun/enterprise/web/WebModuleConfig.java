@@ -88,6 +88,10 @@ public class WebModuleConfig {
     // END S1AS 6178005
 
 
+
+    private ClassLoader _appClassLoader = null;
+
+
    /**
      * The string manager for this package.
      */
@@ -96,6 +100,14 @@ public class WebModuleConfig {
 
     // ------------------------------------------------------------- Properties
 
+    public ClassLoader getAppClassLoader() {
+        return _appClassLoader;
+    }
+
+    public void setAppClassLoader(ClassLoader _appClassLoader) {
+        this._appClassLoader = _appClassLoader;
+    }
+    
     /**
      * Set the elements of information specified in the web-module element
      * in server.xml.

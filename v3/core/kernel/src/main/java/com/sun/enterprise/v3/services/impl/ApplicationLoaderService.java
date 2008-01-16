@@ -35,7 +35,7 @@ import com.sun.enterprise.v3.server.V3Environment;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.Startup;
 import org.glassfish.api.container.Sniffer;
-import org.glassfish.api.container.ContainerProvider;
+import org.glassfish.api.container.Container;
 import org.glassfish.api.deployment.ApplicationContainer;
 import org.glassfish.api.deployment.Deployer;
 import org.glassfish.api.deployment.DeploymentContext;
@@ -261,7 +261,7 @@ public class ApplicationLoaderService extends ApplicationLifecycle
     }
 
     @Override
-    protected <T extends ContainerProvider, U extends ApplicationContainer> Deployer getDeployer(ContainerInfo<T, U> containerInfo) {
+    protected <T extends Container, U extends ApplicationContainer> Deployer getDeployer(ContainerInfo<T, U> containerInfo) {
         final Deployer<T, U> deployer = containerInfo.getDeployer();
         assert deployer!=null;
 

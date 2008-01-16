@@ -5,7 +5,7 @@ import com.sun.enterprise.module.impl.CookedModuleDefinition;
 import com.sun.enterprise.module.Module;
 import com.sun.enterprise.module.ModuleDependency;
 import org.glassfish.api.container.Sniffer;
-import org.glassfish.api.container.ContainerProvider;
+import org.glassfish.api.container.Container;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
@@ -48,7 +48,7 @@ public class RailsSniffer extends GenericSniffer implements Sniffer {
     public void setup(String containerHome, Logger logger) throws IOException {
         super.setup(containerHome, logger);
 
-        Inhabitant<? extends ContainerProvider> railsContainer = habitat.getInhabitant(ContainerProvider.class, getModuleType());
+        Inhabitant<? extends Container> railsContainer = habitat.getInhabitant(Container.class, getModuleType());
         Module glueModule = Module.find(railsContainer.type());
         if (glueModule!=null) {
 

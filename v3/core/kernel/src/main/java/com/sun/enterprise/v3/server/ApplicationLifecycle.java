@@ -36,7 +36,7 @@ import com.sun.logging.LogDomains;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.container.Adapter;
 import org.glassfish.api.container.Sniffer;
-import org.glassfish.api.container.ContainerProvider;
+import org.glassfish.api.container.Container;
 import org.glassfish.api.deployment.ApplicationContainer;
 import org.glassfish.api.deployment.Deployer;
 import org.glassfish.api.deployment.DeploymentContext;
@@ -86,7 +86,7 @@ abstract public class ApplicationLifecycle {
 
     protected Logger logger = LogDomains.getLogger(LogDomains.DPL_LOGGER);
 
-    protected <T extends ContainerProvider, U extends ApplicationContainer> Deployer<T, U> getDeployer(ContainerInfo<T, U> containerInfo) {
+    protected <T extends Container, U extends ApplicationContainer> Deployer<T, U> getDeployer(ContainerInfo<T, U> containerInfo) {
         return containerInfo.getDeployer();
     }
 
@@ -285,6 +285,15 @@ abstract public class ApplicationLifecycle {
                 Thread.currentThread().setContextClassLoader(connectorModule.getClassLoader());
                 try {
                     ApplicationContainer appCtr = deployer.load(containerInfo.getContainer(), context);
+                    if (appCtr==null) {
+                        failure(logger, "Cannot load application in " + containerInfo.getContainer().getName() + " container",
+                            null, report);
+
+                        unload(modules, context);
+                        clean(preparedDeployers, context);
+                        stopContainers(logger, startedContainers);
+                        return null;
+                    }
                     ModuleInfo moduleInfo = new ModuleInfo(containerInfo, appCtr);
                     modules.add(moduleInfo);
                 } catch(Exception e) {
@@ -378,7 +387,7 @@ abstract public class ApplicationLifecycle {
         }
 
         for (ContainerInfo containerInfo : containersInfo) {
-            ContainerProvider container = containerInfo.getContainer();
+            Container container = containerInfo.getContainer();
             Class<? extends Deployer> deployerClass = container.getDeployer();
             Deployer deployer;
             try {

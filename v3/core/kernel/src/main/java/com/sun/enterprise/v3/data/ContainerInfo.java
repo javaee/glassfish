@@ -24,11 +24,10 @@
 package com.sun.enterprise.v3.data;
 
 import org.glassfish.api.container.Sniffer;
-import org.glassfish.api.container.ContainerProvider;
+import org.glassfish.api.container.Container;
 import org.glassfish.api.deployment.Deployer;
 import org.glassfish.api.deployment.ApplicationContainer;
 import com.sun.enterprise.v3.data.ApplicationInfo;
-import com.sun.enterprise.module.Module;
 
 
 import java.util.*;
@@ -44,7 +43,7 @@ import java.lang.reflect.InvocationTargetException;
  *
  * @author Jerome Dochez 
  */
-public class ContainerInfo<T extends ContainerProvider, U extends ApplicationContainer> {
+public class ContainerInfo<T extends Container, U extends ApplicationContainer> {
 
     final T container;
     final Sniffer sniffer;

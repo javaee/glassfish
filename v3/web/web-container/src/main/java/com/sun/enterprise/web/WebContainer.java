@@ -46,33 +46,24 @@ import java.util.logging.Logger;
 import java.util.logging.Level;
 import java.util.ResourceBundle;
 import java.util.Vector;
-import javax.naming.NamingException;
+
 import org.apache.catalina.Connector;
-import org.apache.catalina.ContainerListener;
-import org.apache.catalina.InstanceListener;
-import org.apache.catalina.core.ContainerBase;
-import org.apache.catalina.startup.Embedded;
-import org.apache.catalina.Container;
 import org.apache.catalina.Context;
 import org.apache.catalina.Deployer;
 import org.apache.catalina.Engine;
 import org.apache.catalina.Host;
 import org.apache.catalina.Loader;
-import org.apache.catalina.Lifecycle;
+import org.apache.catalina.Container;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.LifecycleListener;
 import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.core.StandardEngine;
 import org.apache.catalina.core.StandardHost;
 import org.apache.catalina.loader.WebappLoader;
-import org.apache.catalina.util.LifecycleSupport;
-import org.apache.catalina.util.ServerInfo;
 import org.apache.catalina.startup.TldConfig;
 import org.apache.catalina.startup.DigesterFactory;
 import org.apache.jasper.compiler.TldLocationsCache;
-import org.apache.jasper.xmlparser.ParserUtils;
 import org.apache.coyote.tomcat5.CoyoteAdapter;
-import org.apache.coyote.tomcat5.CoyoteRequest;
 
 import com.sun.grizzly.tcp.Adapter;
 import com.sun.grizzly.util.http.mapper.Mapper;
@@ -82,7 +73,6 @@ import com.sun.grizzly.util.http.mapper.Mapper;
 import com.sun.enterprise.config.serverbeans.Applications;
 import com.sun.enterprise.config.serverbeans.J2EeApplication;
 import com.sun.enterprise.config.serverbeans.ApplicationRef;
-import com.sun.enterprise.config.serverbeans.Property;
 import com.sun.enterprise.config.serverbeans.LogService;
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.DasConfig;
@@ -104,16 +94,11 @@ import com.sun.enterprise.deployment.util.WebBundleVisitor;
 //import com.sun.enterprise.management.util.J2EEModuleUtil;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.util.StringUtils;
-import com.sun.enterprise.web.logger.IASLogger;
 import com.sun.enterprise.web.connector.coyote.PECoyoteConnector;
 
 
 //import com.sun.enterprise.security.SecurityUtil;
 
-import com.sun.enterprise.deployment.Application;
-import org.glassfish.api.deployment.archive.ReadableArchive;
-import java.util.Properties;
-import com.sun.enterprise.v3.deployment.DeployCommand;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.WebServicesDescriptor;
 import com.sun.enterprise.deployment.WebServiceEndpoint;
@@ -122,7 +107,6 @@ import com.sun.enterprise.deployment.WebServiceEndpoint;
 //import com.sun.enterprise.Switch;
 //import com.sun.appserv.server.ServerLifecycleException;
 import com.sun.appserv.server.util.ASClassLoaderUtil;
-import com.sun.appserv.server.util.Version;
 import com.sun.logging.LogDomains;
 
 //import com.sun.web.security.WebSecurityManager;
@@ -131,7 +115,6 @@ import com.sun.logging.LogDomains;
 
 // monitoring imports
 import java.util.HashSet;
-import javax.management.j2ee.statistics.Stats;
 
 import com.sun.enterprise.admin.monitor.stats.ServletStats;
 import com.sun.enterprise.web.stats.ServletStatsImpl;
@@ -143,7 +126,6 @@ import com.sun.enterprise.web.monitor.impl.PwcWebModuleStatsImpl;
 import com.sun.enterprise.admin.monitor.registry.MonitoringRegistry;
 import com.sun.enterprise.admin.monitor.registry.MonitoringLevel;
 import com.sun.enterprise.admin.monitor.registry.MonitoringLevelListener;
-import com.sun.enterprise.admin.monitor.registry.MonitoredObjectType;
 import com.sun.enterprise.config.serverbeans.MonitoringService;
 import com.sun.enterprise.config.serverbeans.ModuleMonitoringLevels;
 
@@ -162,10 +144,7 @@ import com.sun.enterprise.config.serverbeans.Servers;
 
 // V3 imports
 import com.sun.enterprise.v3.server.V3Environment;
-import com.sun.enterprise.web.WebDeployer;
 
-import org.glassfish.api.container.ContainerProvider;
-import org.glassfish.api.deployment.DeploymentContext;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PostConstruct;
@@ -181,7 +160,7 @@ import java.lang.reflect.Method;
  * @author amyroh
  */
 @Service(name="com.sun.enterprise.web.WebContainer")
-public class WebContainer implements ContainerProvider, PostConstruct, PreDestroy {
+public class WebContainer implements org.glassfish.api.container.Container, PostConstruct, PreDestroy {
         //MonitoringLevelListener {
 
     @Inject
@@ -1613,6 +1592,9 @@ public class WebContainer implements ContainerProvider, PostConstruct, PreDestro
                 vs.getDefaultWebXmlLocation(),
                 useDOLforDeployment,
                 wmInfo.getDescriptor());
+
+        // for now disable JNDI
+        ctx.setUseNaming(false);
         
         // Set JSR 77 object name and attributes
         String engineName = vs.getParent().getName();
@@ -1977,7 +1959,7 @@ public class WebContainer implements ContainerProvider, PostConstruct, PreDestro
         } else {
             loader.setDelegate(true);
         }
-        
+                
         // START S1AS 6178005
         String stubPath = wmInfo.getStubPath();
         if (stubPath != null) {
@@ -2004,7 +1986,8 @@ public class WebContainer implements ContainerProvider, PostConstruct, PreDestro
             }
         }
         // END PE 4985680
-        
+
+        loader = new V3WebappLoader(loader, wmInfo.getAppClassLoader());
         ctx.setLoader(loader);
         
         return loader;
@@ -3559,4 +3542,21 @@ public class WebContainer implements ContainerProvider, PostConstruct, PreDestro
         }*/
     }
     
+}
+
+class V3WebappLoader extends WebappLoader {
+
+    final WebappLoader decorated;
+    final ClassLoader cl;
+
+    V3WebappLoader(WebappLoader decorated, ClassLoader cl) {
+        this.decorated = decorated;
+        this.cl = cl;
+    }
+
+    @Override
+    protected ClassLoader createClassLoader() throws Exception {
+        return cl;
+    }
+
 }

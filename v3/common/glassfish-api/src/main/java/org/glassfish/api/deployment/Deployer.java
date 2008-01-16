@@ -23,7 +23,7 @@
 
 package org.glassfish.api.deployment;
 
-import org.glassfish.api.container.ContainerProvider;
+import org.glassfish.api.container.Container;
 
 /**
  * A deployer is capable of deploying one type of applications.
@@ -39,7 +39,7 @@ import org.glassfish.api.container.ContainerProvider;
  * @param U is the ApplicationContainer implementation for this deployer
  * @author Jerome Dochez
  */
-public interface Deployer<T extends ContainerProvider, U extends ApplicationContainer> {
+public interface Deployer<T extends Container, U extends ApplicationContainer> {
 
 
     /**

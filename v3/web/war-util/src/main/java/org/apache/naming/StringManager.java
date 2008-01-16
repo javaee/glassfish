@@ -89,7 +89,8 @@ public class StringManager {
 
     private StringManager(String packageName) {
 	String bundleName = packageName + ".LocalStrings";
-	bundle = ResourceBundle.getBundle(bundleName);
+        ClassLoader cl = this.getClass().getClassLoader();
+    bundle = ResourceBundle.getBundle(bundleName, Locale.getDefault(), cl);
     }
 
     /**

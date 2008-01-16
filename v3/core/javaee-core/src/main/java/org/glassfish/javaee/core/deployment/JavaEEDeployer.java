@@ -28,7 +28,7 @@ import org.glassfish.api.deployment.MetaData;
 import org.glassfish.api.deployment.Deployer;
 import org.glassfish.api.deployment.ApplicationContainer;
 import org.glassfish.api.deployment.archive.ReadableArchive;
-import org.glassfish.api.container.ContainerProvider;
+import org.glassfish.api.container.Container;
 import com.sun.enterprise.v3.server.V3Environment;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.util.zip.ZipItem;
@@ -56,7 +56,7 @@ import java.util.ArrayList;
  * Convenient superclass for JavaEE Deployer implementations.
  *
  */
-public abstract class JavaEEDeployer<T extends ContainerProvider, U extends ApplicationContainer>
+public abstract class JavaEEDeployer<T extends Container, U extends ApplicationContainer>
         implements Deployer<T, U> {
 
     @Inject

@@ -27,7 +27,7 @@ import com.sun.enterprise.module.*;
 import com.sun.enterprise.v3.admin.Utils;
 import com.sun.enterprise.v3.data.ContainerInfo;
 import com.sun.enterprise.v3.data.ContainerRegistry;
-import org.glassfish.api.container.ContainerProvider;
+import org.glassfish.api.container.Container;
 import org.glassfish.api.container.Sniffer;
 import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.Habitat;
@@ -115,14 +115,14 @@ public class ContainerStarter {
         for (String name : sniffer.getContainersNames()) {
 
             try {
-                Inhabitant<? extends ContainerProvider> provider = habitat.getInhabitant(ContainerProvider.class, name);
+                Inhabitant<? extends Container> provider = habitat.getInhabitant(Container.class, name);
                 if (provider==null) {
-                    logger.severe("Cannot find ContainerProvider named " + sniffer.getModuleType());
+                    logger.severe("Cannot find Container named " + sniffer.getModuleType());
                     logger.severe("Cannot start " + sniffer.getModuleType() + " container");
                     return null;
                 }
                 Thread.currentThread().setContextClassLoader(provider.type().getClassLoader());
-                ContainerProvider container = provider.get();
+                Container container = provider.get();
                 if (container!=null) {
                     ContainerInfo info = new ContainerInfo(container, sniffer);
 

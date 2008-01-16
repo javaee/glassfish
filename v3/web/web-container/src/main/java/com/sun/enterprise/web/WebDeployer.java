@@ -210,13 +210,17 @@ public class WebDeployer extends JavaEEDeployer<WebContainer, WebApplication>{
                 continue;
             }
 
+            wmInfo.setAppClassLoader(dc.getClassLoader());
+
             if (loadToAll || vsList.contains(vs.getName())
                     || isAliasMatched(vsList,vs)) {
                 
-                StandardContext ctx = container.loadWebModule(vs, wmInfo, "null");     
-                webApplication = new WebApplication(container, ctx, wbd);      
-                registerEndpoint(container, vs, wbd.getContextRoot(), dc, webApplication);
-                loadAtLeastToOne = true;
+                StandardContext ctx = container.loadWebModule(vs, wmInfo, "null");
+                if (ctx.getAvailable()) {
+                    webApplication = new WebApplication(container, ctx, wbd);
+                    registerEndpoint(container, vs, wbd.getContextRoot(), dc, webApplication);
+                    loadAtLeastToOne = true;
+                }
                        
             }
         }

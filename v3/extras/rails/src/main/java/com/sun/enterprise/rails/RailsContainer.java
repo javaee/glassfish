@@ -26,9 +26,8 @@ package com.sun.enterprise.rails;
 
 import org.jvnet.hk2.annotations.Service;
 import com.sun.grizzly.jruby.RubyObjectPool;
-import org.glassfish.api.ContractProvider;
 import org.glassfish.api.deployment.Deployer;
-import org.glassfish.api.container.ContainerProvider;
+import org.glassfish.api.container.Container;
 import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.PreDestroy;
 import com.sun.logging.LogDomains;
@@ -44,7 +43,7 @@ import java.util.logging.Logger;
  * @author Jerome Dochez
  */
 @Service(name="com.sun.enterprise.rails.RailsContainer")
-public class RailsContainer implements ContainerProvider, PostConstruct, PreDestroy {
+public class RailsContainer implements Container, PostConstruct, PreDestroy {
 
     private Logger logger = LogDomains.getLogger(LogDomains.DPL_LOGGER);
     private String jrubyLib = null;
