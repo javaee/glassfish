@@ -8,6 +8,7 @@ package org.jvnet.hk2.component;
  * but it carries an additional meaning.
  *
  * @author Kohsuke Kawaguchi
+ * @see Wombs
  */
 public interface Womb<T> extends Inhabitant<T> {
 

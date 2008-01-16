@@ -2,8 +2,10 @@ package org.jvnet.hk2.component;
 
 import com.sun.hk2.component.ExistingSingletonInhabitant;
 import com.sun.hk2.component.ScopeInstance;
+import com.sun.hk2.component.FactoryWomb;
 import org.jvnet.hk2.annotations.Contract;
 import org.jvnet.hk2.annotations.ContractProvided;
+import org.jvnet.hk2.annotations.FactoryFor;
 
 import java.lang.annotation.Annotation;
 import java.util.AbstractList;
@@ -59,8 +61,19 @@ public class Habitat {
      *      Name that identifies the inhabitant among other inhabitants
      *      in the same index. Can be null for unnamed inhabitants.
      */
-    public void addIndex(Inhabitant i, String index, String name) {
+    public void addIndex(Inhabitant<?> i, String index, String name) {
         byContract.add(index,new NamedInhabitant(name,i));
+
+        // TODO: do this in the listener
+
+        // for each FactoryFor component, insert inhabitant for components created by the factory
+        if(index.equals(FactoryFor.class.getName())) {
+            FactoryFor ff = i.type().getAnnotation(FactoryFor.class);
+            Class<?> targetClass = ff.value();
+            FactoryWomb target = new FactoryWomb((Class) targetClass, i, this, MultiMap.emptyMap());
+            add(target);
+            addIndex(target, targetClass.getName(), null);
+        }
     }
 
     /**
@@ -192,6 +205,22 @@ public class Habitat {
      */
     public <T> Inhabitant<? extends T> getInhabitant(Class<T> contract, String name) throws ComponentException {
         return _getInhabitant(contract, name);
+    }
+
+    /**
+     * Gets a lazy reference to the component.
+     * 
+     * <p>
+     * This method defers the actual instantiation of the component
+     * until {@link Inhabitant#get()} is invoked.
+     *
+     * @return null
+     *      if no such component is found.
+     */
+    public <T> Inhabitant<T> getInhabitantByType(Class<T> implType) {
+        List<Inhabitant> list = byType.get(implType.getName());
+        if(list.isEmpty())  return null;
+        return list.get(0);
     }
 
     /**

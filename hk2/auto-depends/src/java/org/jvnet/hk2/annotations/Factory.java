@@ -18,6 +18,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * does, after the factory returns the object.
  *
  * @author Kohsuke Kawaguchi
+ * @see FactoryFor
  */
 // this needed to be separated from @Service so that @Configured can use this
 @Retention(RUNTIME)
