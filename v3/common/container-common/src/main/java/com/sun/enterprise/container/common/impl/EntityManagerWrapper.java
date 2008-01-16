@@ -102,6 +102,9 @@ public class EntityManagerWrapper implements EntityManager, Serializable {
                  + unitName);
         }
 
+        //TODO: init TxManager
+        //init containerUtil
+
     }
 
     private void doTransactionScopedTxCheck() {

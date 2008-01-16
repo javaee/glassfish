@@ -11,6 +11,8 @@ import java.util.Collection;
 @Contract
 public interface ComponentEnvManager {
 
+    public JndiNameEnvironment getJndiNameEnvironment(String componentId);
+    
     public Collection<? extends JNDIBinding> getJNDIBindings(JndiNameEnvironment env);
 
 }

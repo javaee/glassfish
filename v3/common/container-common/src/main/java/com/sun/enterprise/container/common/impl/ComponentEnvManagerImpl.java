@@ -54,15 +54,14 @@ public class ComponentEnvManagerImpl
         if (inv != null) {
             JavaEEContainer cc = (JavaEEContainer) inv.getContainer();
             if (cc != null) {
-                 desc = ((JavaEEContainer) cc).getDescriptor();
+                 desc = cc.getDescriptor();
             }
         }
 
         return desc;
     }
 
-    public Collection<JNDIBinding> getJNDIBindings
-            (JndiNameEnvironment env) {
+    public Collection<JNDIBinding> getJNDIBindings(JndiNameEnvironment env) {
 
         Collection<JNDIBinding> jndiBindings = new ArrayList<JNDIBinding>();
 
