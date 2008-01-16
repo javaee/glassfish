@@ -21,14 +21,27 @@ public class ComponentInvocation {
 
 
     // the component instance, type Servlet, Filter or EnterpriseBean
-    private Object instance;
+    public Object instance;
 
     // ServletContext for servlet, Container for EJB
-    private Object container;
+    public Object container;
 
-    private String componentId;
+    public String componentId;
 
-    private Object transaction;
+    public Object transaction;
+
+    public ComponentInvocation() {
+        
+    }
+
+    public ComponentInvocation(String componentId,
+            ComponentInvocationType invocationType,
+            Object container) {
+        this.componentId = componentId;
+        this.invocationType = invocationType;
+        this.container = container;
+    }
+
 
     public ComponentInvocation(String componentId,
             ComponentInvocationType invocationType,
@@ -45,6 +58,9 @@ public class ComponentInvocation {
         return invocationType;
     }
 
+    public void setComponentInvocationType(ComponentInvocationType t) {
+        this.invocationType = t;
+    }
 
     public Object getInstance() {
         return instance;
@@ -58,11 +74,11 @@ public class ComponentInvocation {
         return container;
     }
 
-    public <T> T getTransaction() {
-        return (T) transaction;
+    public Object getTransaction() {
+        return transaction;
     }
 
-    public <T> void setTransaction(T t) {
+    public void setTransaction(Object t) {
         this.transaction = t;
     }
 
