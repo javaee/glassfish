@@ -47,9 +47,13 @@ import java.lang.annotation.Target;
  *
  * <h2>Contract annotation</h2>
  * <p>
- * TBD.
+ * This annotation can be used as a meta-annotation on another annotation (let's say X),
+ * along with {@link Index} annotation on one of its property. What happens
+ * in this case is that when X is placed on classes, those classes will be
+ * marked as implementations of the contract. 
  *
  * @author Jerome Dochez
+ * @see Index
  */
 @Retention(RUNTIME)
 @Target({TYPE,ANNOTATION_TYPE})
