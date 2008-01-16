@@ -23,6 +23,9 @@ import java.util.ArrayList;
  * <p>
  * This class also maintains the model of various elements in the configuration file.
  *
+ * <p>
+ * This class can be sub-classed to create a {@link ConfigParser} with a custom non-standard behavior.
+ *
  * @author Kohsuke Kawaguchi
  */
 public class ConfigParser {
@@ -65,22 +68,50 @@ public class ConfigParser {
             throw new ComponentException("Failed to parse "+source,e);
         }
     }
+
     /**
-     * Processes a tree.
+     * Parses a whole XML tree and builds a {@link Dom} tree.
+     *
+     * <p>
+     * This is the entry point for the root element of a configuration tree.
      *
      * @param in
      *      pre-condition:  'in' is at the start element.
      *      post-condition: 'in' is at the end element.
      * @param document
+     *      The document that we are building right now.
+     *      Newly created {@link Dom} will belong to this document.
+     * @return
+     *      Null if the XML element didn't yield anything (which can happen if the element is skipped.)
+     *      Otherwise fully parsed valid {@link Dom} object.
      */
-    private Dom handleElement(XMLStreamReader in,DomDocument document) throws XMLStreamException {
+    protected Dom handleElement(XMLStreamReader in,DomDocument document) throws XMLStreamException {
         ConfigModel model = document.getModel(in.getLocalName());
         if(model==null)
             throw new XMLStreamException("Unrecognized element "+in.getLocalName(),in.getLocation());
         return handleElement(in,document,null,model);
     }
 
-    private Dom handleElement(XMLStreamReader in, DomDocument document, Dom parent, ConfigModel model) throws XMLStreamException {
+    /**
+     * Parses a whole XML tree and builds a {@link Dom} tree, by using the given model
+     * for the top-level element.
+     *
+     * <p>
+     * This is the entry point for recursively parsing inside a configuration tree.
+     * Since not every element is global, you don't always want to infer the model
+     * just from the element name (as is the case with {@link #handleElement(XMLStreamReader, DomDocument)}.
+     * 
+     * @param in
+     *      pre-condition:  'in' is at the start element.
+     *      post-condition: 'in' is at the end element.
+     * @param document
+     *      The document that we are building right now.
+     *      Newly created {@link Dom} will belong to this document.
+     * @return
+     *      Null if the XML element didn't yield anything (which can happen if the element is skipped.)
+     *      Otherwise fully parsed valid {@link Dom} object.
+     */
+    protected Dom handleElement(XMLStreamReader in, DomDocument document, Dom parent, ConfigModel model) throws XMLStreamException {
         final Dom dom = document.make(habitat, in, parent, model);
 
         // read values and fill DOM
@@ -97,12 +128,16 @@ public class ConfigParser {
 
             if(a==null) {
                 // global look up
-                children.add(new Dom.NodeChild(name,handleElement(in,document)));
+                Dom child = handleElement(in, document);
+                if(child!=null)
+                    children.add(new Dom.NodeChild(name, child));
             } else
             if(a.isLeaf()) {
                 children.add(new Dom.LeafChild(name,in.getElementText()));
             } else {
-                children.add(new Dom.NodeChild(name,handleElement(in,document,dom,((ConfigModel.Node)a).model)));
+                Dom child = handleElement(in, document, dom, ((ConfigModel.Node) a).model);
+                if(child!=null)
+                    children.add(new Dom.NodeChild(name, child));
             }
         }
 
