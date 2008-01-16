@@ -11,10 +11,8 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.stream.StreamSource;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Parses configuration files, builds {@link Inhabitant}s,
