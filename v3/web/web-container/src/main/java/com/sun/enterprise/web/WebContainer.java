@@ -215,6 +215,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
         //_embedded = new Embedded();
         _embedded = new EmbeddedWebContainer(_logger, _serverContext.getDefaultHabitat(), this, null);
+        _embedded.setUseNaming(false);
         Module module = Module.find(EmbeddedWebContainer.class);
         engine = _embedded.createEngine();
         engine.setParentClassLoader(module.getClassLoader());
