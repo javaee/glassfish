@@ -2,6 +2,7 @@ package org.jvnet.hk2.annotations;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
+import java.lang.annotation.Documented;
 import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
@@ -23,6 +24,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 // this needed to be separated from @Service so that @Configured can use this
 @Retention(RUNTIME)
 @Target(TYPE)
+@Documented
 public @interface Factory {
     Class<? extends org.jvnet.hk2.component.Factory> value();
 }

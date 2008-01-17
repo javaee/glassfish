@@ -31,6 +31,7 @@ import static java.lang.annotation.ElementType.TYPE;
 import java.lang.annotation.Retention;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import java.lang.annotation.Target;
+import java.lang.annotation.Documented;
 
 /**
  * Marker interface for service implementation. A service is defined by 
@@ -44,6 +45,7 @@ import java.lang.annotation.Target;
  */
 @Retention(RUNTIME)
 @Target(TYPE)
+@Documented
 @InhabitantAnnotation("default")
 public @interface Service {
 

@@ -4,6 +4,7 @@ import static java.lang.annotation.ElementType.METHOD;
 import java.lang.annotation.Retention;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import java.lang.annotation.Target;
+import java.lang.annotation.Documented;
 
 /**
  * Marks the index property of the {@link Contract} annotations.
@@ -17,4 +18,5 @@ import java.lang.annotation.Target;
  */
 @Retention(RUNTIME)
 @Target(METHOD)
+@Documented
 public @interface Index {}
