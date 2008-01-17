@@ -9,7 +9,8 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * Indicates that the component serves as a factory for the specified type.
  *
  * <p>
- * This annotation is useful to plug existing factory-created objects into HK2.  
+ * This annotation is useful to plug existing factory-created objects into HK2.
+ * Normally goes with {@link Service} annotation.
  *
  * @see Factory
  * @author Kohsuke Kawaguchi
