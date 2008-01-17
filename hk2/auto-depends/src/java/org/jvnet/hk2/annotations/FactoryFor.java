@@ -11,7 +11,8 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  *
  * <p>
  * This annotation is useful to plug existing factory-created objects into HK2.
- * Normally goes with {@link Service} annotation.
+ * Normally goes with {@link Service} annotation, and this annotation must be placed
+ * on a class that implements {@link org.jvnet.hk2.component.Factory}
  *
  * @see Factory
  * @author Kohsuke Kawaguchi
