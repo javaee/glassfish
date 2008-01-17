@@ -28,7 +28,7 @@ public class Main extends Assert implements ModuleStartup {
 
     public void run() {
         assertNotNull(foo);
-        foo.e.printStackTrace();
+        // foo.e.printStackTrace(); // could be useful to find out where foo is created.
         assertEquals(80,foo.httpPort);
         assertEquals(foo.bar,"qwerty");
 
