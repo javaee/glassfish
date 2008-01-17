@@ -3,10 +3,10 @@ package factoryBy;
 /**
  * @author Kohsuke Kawaguchi
  */
-public interface Pig {
-    public static Pig BABE = new Pig() {
+public enum Pig {
+    BABE {
         public String toString() {
             return "Babe";
         }
-    };
+    }
 }
