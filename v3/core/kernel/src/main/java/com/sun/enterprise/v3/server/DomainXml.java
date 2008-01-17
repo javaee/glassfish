@@ -4,16 +4,20 @@ import com.sun.enterprise.config.serverbeans.GlassFishDocument;
 import com.sun.enterprise.module.bootstrap.Populator;
 import com.sun.enterprise.module.bootstrap.StartupContext;
 import com.sun.hk2.component.ExistingSingletonInhabitant;
+import org.glassfish.api.Absolutized;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.config.ConfigParser;
 
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import javax.xml.transform.stream.StreamSource;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.LineNumberReader;
-import java.net.MalformedURLException;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -21,9 +25,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Identify where our configuration lives.
+ * Locates and parses the portion of <tt>domain.xml</tt> that we care.
  *
  * @author Jerome Dochez
+ * @author Kohsuke Kawaguchi
  */
 @Service
 public class DomainXml implements Populator {
@@ -37,9 +42,16 @@ public class DomainXml implements Populator {
     @Inject
     Habitat habitat;
 
+    @Inject
+    XMLInputFactory xif;
+
+    /**
+     * Root of GlassFish installation.
+     */
+    @Absolutized
+    File glassFishRoot;
 
     public void run(ConfigParser parser) {
-
         if (context == null) {
             System.err.println("Startup context not provided, cannot continue");
         }
@@ -50,28 +62,49 @@ public class DomainXml implements Populator {
         // our bootstrap directory is <appserver>/lib, need to calculate
         // our real root installation from there.
         File bootstrapDirectory = context.getRootDirectory();
-        String root = bootstrapDirectory.getParentFile().getAbsolutePath();
+        glassFishRoot = bootstrapDirectory.getParentFile();
+        if (!glassFishRoot.exists()) {
+            throw new BootError("No such path exists " + glassFishRoot);
+        }
 
+        parseAsEnv(glassFishRoot);
+
+        // which domain are we starting ?
+        File domainRoot = getDomainRoot();
+
+        V3Environment env = new V3Environment(domainRoot.getPath(), context);
+        habitat.add(new ExistingSingletonInhabitant(V3Environment.class, env));
+        File domainXml = new File(env.getConfigDirPath(), V3Environment.kConfigXMLFileName);
+
+        parseDomainXml(parser, domainXml);
+    }
+
+    /**
+     * Parses <tt>domain.xml</tt>
+     */
+    protected void parseDomainXml(ConfigParser parser, final File domainXml) {
+        try {
+            // TODO: in reality we need to get the server name from somewhere
+            final String serverName = "server";
+
+            DomainXmlReader xsr = new DomainXmlReader(domainXml, serverName);
+            parser.parse(xsr, new GlassFishDocument(habitat));
+            xsr.close();
+            if(!xsr.foundConfig)
+                throw new BootError("No <config> seen for name="+xsr.configName);
+        } catch (XMLStreamException e) {
+            throw new BootError("Failed to parse "+domainXml,e);
+        }
+    }
+
+    protected void parseAsEnv(File installRootFile) {
         Properties asenvProps = new Properties();
         asenvProps.putAll(System.getProperties());
-        asenvProps.put("com.sun.aas.installRoot", root);
-
-
-        File installRootFile = new File(root);
-        if (!installRootFile.exists()) {
-            logger.severe("Invalid root installation " + installRootFile.getAbsolutePath());
-            return;
-        }
+        asenvProps.put("com.sun.aas.installRoot", glassFishRoot.getPath());
 
         // let's read the asenv.conf
         File configDir = new File(installRootFile, "config");
-        File asenv;
-        String osName = System.getProperty("os.name");
-        if (osName.indexOf("Windows") == -1) {
-            asenv = new File(configDir, "asenv.conf");
-        } else {
-            asenv = new File(configDir, "asenv.bat");
-        }
+        File asenv = getAsEnvConf(configDir);
 
         LineNumberReader lnReader = null;
         try {
@@ -98,8 +131,7 @@ public class DomainXml implements Populator {
                 line = lnReader.readLine();
             }
         } catch (IOException ioe) {
-            logger.log(Level.SEVERE, "Error opening asenv.conf : ", ioe);
-            return;
+            throw new BootError("Error opening asenv.conf : ", ioe);
         } finally {
             try {
                 if (lnReader != null)
@@ -111,15 +143,34 @@ public class DomainXml implements Populator {
 
         // install the new system properties
         System.setProperties(asenvProps);
+    }
 
-        // which domain are we starting ?
+    /**
+     * Figures out the asenv.conf file to load.
+     */
+    protected File getAsEnvConf(File configDir) {
+        String osName = System.getProperty("os.name");
+        if (osName.indexOf("Windows") == -1) {
+            return new File(configDir, "asenv.conf");
+        } else {
+            return new File(configDir, "asenv.bat");
+        }
+    }
+
+    /**
+     * Determines the root directory of the domain that we'll start.
+     */
+    @Absolutized
+    protected File getDomainRoot() {
         File domainRoot = new File(System.getProperty("AS_DEF_DOMAINS_PATH"));
         String domainName = context.getArguments().get("-domain");
         if (domainName == null) {
             File[] domainFiles = domainRoot.listFiles();
+            if (domainFiles==null) {
+                throw new BootError("No such directory exists: "+domainName);
+            }
             if (domainFiles.length == 0) {
-                logger.severe("No domain found at " + domainRoot.getAbsolutePath());
-                return;
+                throw new BootError("No domain found at " + domainRoot);
             }
             int i = 0;
             while (domainName == null) {
@@ -128,29 +179,104 @@ public class DomainXml implements Populator {
                 }
                 i++;
                 if (i > domainFiles.length) {
-                    logger.severe("No domain found at " + domainRoot.getAbsolutePath());
-                    return;
+                    throw new BootError("No domain found at " + domainRoot);
                 }
             }
         }
 
         domainRoot = new File(domainRoot, domainName);
         if (!domainRoot.exists()) {
-            logger.severe("Domain " + domainName + " does not exist at " + domainRoot);
-            return;
-        }
-        V3Environment env = new V3Environment(domainRoot.getAbsolutePath(), context);
-        habitat.add(new ExistingSingletonInhabitant(V3Environment.class, env));
-        File domainXml = new File(env.getConfigDirPath(), V3Environment.kConfigXMLFileName);
-        System.setProperty("com.sun.aas.instanceRoot", domainRoot.getAbsoluteFile().getAbsolutePath() );        
-
-        try {
-            parser.parse(domainXml.toURL(), new GlassFishDocument(habitat));
-        } catch (MalformedURLException e) {
-            logger.log(Level.SEVERE, e.getMessage(), e);
+            throw new BootError("Domain " + domainName + " does not exist at " + domainRoot);
         }
 
-
+        System.setProperty("com.sun.aas.instanceRoot", domainRoot.getPath() );
+        return domainRoot;
     }
 
+
+    /**
+     * {@link XMLStreamReader} that skips irrelvant &lt;config> elements that we shouldn't see.
+     */
+    private class DomainXmlReader extends XMLStreamReaderFilter {
+        /**
+         * We need to figure out the configuration name from the server name.
+         * Once we find that out, it'll be set here.
+         */
+        private String configName;
+        private final File domainXml;
+        private final String serverName;
+
+        /**
+         * If we find a matching config, set to true. Used for error detection in case
+         * we don't see any config for us.
+         */
+        private boolean foundConfig;
+
+        public DomainXmlReader(File domainXml, String serverName) throws XMLStreamException {
+            super(xif.createXMLStreamReader(new StreamSource(domainXml)));
+            this.domainXml = domainXml;
+            this.serverName = serverName;
+        }
+
+        boolean filterOut() throws XMLStreamException {
+            checkConfigRef(getParent());
+
+            if(getLocalName().equals("config")) {
+                if(configName==null) {
+                    // we've hit <config> element before we've seen <server>,
+                    // so we still don't know which config element to look for.
+                    // For us to make this work, we need to parse the file twice
+                    parse2ndTime();
+                    assert configName!=null;
+                }
+
+                // if <config name="..."> didn't match what we are looking for, filter it out
+                if(configName.equals(getAttributeValue(null, "name"))) {
+                    foundConfig = true;
+                    return false;
+                }
+                return true;
+            }
+
+            // we'll read everything else
+            return false;
+        }
+
+        private void parse2ndTime() throws XMLStreamException {
+            logger.info("Forced to parse "+ domainXml +" twice because we didn't see <server> before <config>");
+            XMLStreamReader xsr = xif.createXMLStreamReader(new StreamSource(domainXml));
+            while(configName==null) {
+                switch(xsr.next()) {
+                case START_ELEMENT:
+                    checkConfigRef(xsr);
+                    break;
+                case END_DOCUMENT:
+                    break;
+                }
+            }
+            xsr.close();
+            if(configName==null)
+                throw new BootError(domainXml +" contains no <server> element that matches "+ serverName);
+        }
+
+        private void checkConfigRef(XMLStreamReader xsr) {
+            String ln = xsr.getLocalName();
+
+            if(configName==null && ln.equals("server")) {
+                // is this our <server> element?
+                if(serverName.equals(xsr.getAttributeValue(null, "name"))) {
+                    configName = xsr.getAttributeValue(null,"config-ref");
+                    if(configName==null)
+                        throw new BootError("<server> element is missing @config-ref at "+formatLocation(xsr));
+                }
+            }
+        }
+
+        /**
+         * Convenience method to return a human-readable location of the parser.
+         */
+        private String formatLocation(XMLStreamReader xsr) {
+            return "line "+xsr.getLocation().getLineNumber()+" at "+xsr.getLocation().getSystemId();
+        }
+    }
 }
