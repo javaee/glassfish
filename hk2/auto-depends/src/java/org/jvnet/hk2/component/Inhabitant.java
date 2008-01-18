@@ -1,5 +1,6 @@
 package org.jvnet.hk2.component;
 
+import com.sun.hk2.component.AbstractWombInhabitantImpl;
 import com.sun.hk2.component.Holder;
 import com.sun.hk2.component.ScopeInstance;
 import org.jvnet.hk2.annotations.Service;
@@ -65,7 +66,28 @@ public interface Inhabitant<T> extends Holder<T> {
      * returns a different object.
      */
     T get();
-    
+
+    /**
+     * Returns the instance of this inhabitant.
+     *
+     * <p>
+     * <b>THIS METHOD SHOULD BE ONLY USED BY HK2 IMPLEMENTATION</b>.
+     *
+     * <p>
+     * {@link Inhabitant}s are often used with the decorator pattern
+     * (see {@link AbstractWombInhabitantImpl} for example), yet during
+     * the object initializtion inside the {@link #get()} method, we often
+     * need the reference to the outer-most {@link Inhabitant} registered to
+     * the {@link Habitat} (for example so that we can request the injection
+     * of {link Inhabita} that represents itself, or to inject companions.)
+     *
+     * <p>
+     * So this overloaded version of the get method takes the outer-most
+     * {@link Inhabitant}. This method is only invoked from within HK2
+     * where the decorator pattern is used.
+     */
+    // TODO: this and the lead/companions method make you wonder whether we should
+    // define Inhabitant as an abstract class.
     T get(Inhabitant onBehalfOf);
 
     /**
