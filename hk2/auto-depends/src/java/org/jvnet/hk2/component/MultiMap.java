@@ -73,6 +73,12 @@ public class MultiMap<K,V> {
 
     /**
      * Gets the first value if any, or null.
+     * <p>
+     * This is useful when you know the given key only has one value and you'd like
+     * to get to that value.
+     *
+     * @return
+     *      null if the key has no values or it has a value but the value is null.
      */
     public final V getOne(K k) {
         List<V> lst = store.get(k);
