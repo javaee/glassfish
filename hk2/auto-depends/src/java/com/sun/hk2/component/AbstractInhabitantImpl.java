@@ -1,34 +1,34 @@
 package com.sun.hk2.component;
 
+import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
-import org.jvnet.hk2.component.Womb;
-import org.jvnet.hk2.component.PreDestroy;
-import org.jvnet.hk2.component.MultiMap;
+
+import java.util.Collection;
+import java.util.Collections;
 
 /**
+ * Partial implementation of {@link Inhabitant} that defines methods whose
+ * semantics is fixed by {@link Habitat}.
+ *
  * @author Kohsuke Kawaguchi
  */
-abstract class AbstractInhabitantImpl<T> implements Inhabitant<T> {
-    protected final Womb<T> womb;
+public abstract class AbstractInhabitantImpl<T> implements Inhabitant<T>  {
+    private Collection<Inhabitant> companions;
 
-    protected AbstractInhabitantImpl(Womb<T> womb) {
-        this.womb = womb;
+    public final T get() {
+        return get(this);
     }
 
-    public final String typeName() {
-        return womb.typeName();
+    public Inhabitant lead() {
+        return null;
     }
 
-    public final Class<T> type() {
-        return womb.type();
+    public final Collection<Inhabitant> companions() {
+        if(companions==null)    return Collections.emptyList();
+        else                    return companions;
     }
 
-    public MultiMap<String, String> metadata() {
-        return womb.metadata();
-    }
-
-    protected final void dispose(T object) {
-        if (object instanceof PreDestroy)
-            ((PreDestroy)object).preDestroy();
+    public final void setCompanions(Collection<Inhabitant> companions) {
+        this.companions = companions;
     }
 }

@@ -3,6 +3,8 @@ package org.jvnet.hk2.config;
 import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.Womb;
 import org.jvnet.hk2.component.MultiMap;
+import org.jvnet.hk2.component.Inhabitant;
+import com.sun.hk2.component.AbstractInhabitantImpl;
 
 /**
  * {@link Womb} decorator that uses {@link ConfigInjector} to set values to objects
@@ -10,7 +12,7 @@ import org.jvnet.hk2.component.MultiMap;
  *
  * @author Kohsuke Kawaguchi
  */
-class ConfiguredWomb<T> implements Womb<T> {
+class ConfiguredWomb<T> extends AbstractInhabitantImpl<T> implements Womb<T> {
     private final Womb<T> core;
     private final Dom dom;
 
@@ -27,19 +29,19 @@ class ConfiguredWomb<T> implements Womb<T> {
         return core.type();
     }
 
-    public T get() {
-        T t = create();
-        initialize(t);
+    public T get(Inhabitant onBehalfOf) {
+        T t = create(onBehalfOf);
+        initialize(t,onBehalfOf);
         return t;
     }
 
-    public T create() throws ComponentException {
-        return core.create();
+    public T create(Inhabitant onBehalfOf) throws ComponentException {
+        return core.create(onBehalfOf);
     }
 
-    public void initialize(T t) throws ComponentException {
+    public void initialize(T t, Inhabitant onBehalfOf) throws ComponentException {
         injectConfig(t);
-        core.initialize(t);
+        core.initialize(t,onBehalfOf);
     }
 
     private void injectConfig(T t) {

@@ -4,6 +4,7 @@ import com.sun.hk2.component.AbstractWombImpl;
 import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.MultiMap;
 import org.jvnet.hk2.component.Womb;
+import org.jvnet.hk2.component.Inhabitant;
 
 /**
  * {@link Womb} that returns a typed proxy to {@link Dom}.
@@ -18,7 +19,7 @@ final class DomProxyWomb<T extends ConfigBeanProxy> extends AbstractWombImpl<T> 
         this.dom = dom;
     }
 
-    public T create() throws ComponentException {
+    public T create(Inhabitant onBehalfOf) throws ComponentException {
         return dom.createProxy(type());
     }
 }

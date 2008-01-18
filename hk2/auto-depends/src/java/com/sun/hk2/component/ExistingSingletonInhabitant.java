@@ -9,7 +9,7 @@ import org.jvnet.hk2.component.MultiMap;
  *
  * @author Kohsuke Kawaguchi
  */
-public class ExistingSingletonInhabitant<T> implements Inhabitant<T> {
+public class ExistingSingletonInhabitant<T> extends AbstractInhabitantImpl<T> {
     private final T object;
     private final Class<T> type;
     private final MultiMap<String,String> metadata;
@@ -40,7 +40,7 @@ public class ExistingSingletonInhabitant<T> implements Inhabitant<T> {
         return metadata;
     }
 
-    public T get() throws ComponentException {
+    public T get(Inhabitant onBehalfOf) throws ComponentException {
         return object;
     }
 

@@ -26,14 +26,15 @@ public interface Womb<T> extends Inhabitant<T> {
     /**
      * Creates a new instance.
      *
-     * The caller is supposed to call the {@link #initialize(Object)}
+     * The caller is supposed to call the {@link #initialize(T, Inhabitant)}
      * right away. This 2-phase initialization allows us to handle
      * cycle references correctly.
+     * @param onBehalfOf
      */
-    T create() throws ComponentException;
+    T create(Inhabitant onBehalfOf) throws ComponentException;
 
     /**
      * Performs initialization of object, such as dependency injection.
      */
-    void initialize(T t) throws ComponentException;
+    void initialize(T t, Inhabitant onBehalfOf) throws ComponentException;
 }

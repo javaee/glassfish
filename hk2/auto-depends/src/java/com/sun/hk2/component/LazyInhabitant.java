@@ -11,7 +11,7 @@ import org.jvnet.hk2.component.Wombs;
 /**
  * @author Kohsuke Kawaguchi
  */
-public class LazyInhabitant<T> implements Inhabitant<T> {
+public class LazyInhabitant<T> extends AbstractInhabitantImpl<T> {
     private final String typeName;
     /**
      * Real {@link Inhabitant} object. Lazily created.
@@ -27,6 +27,7 @@ public class LazyInhabitant<T> implements Inhabitant<T> {
     private final MultiMap<String,String> metadata;
 
     public LazyInhabitant(Habitat habitat, Holder<ClassLoader> cl, String typeName, MultiMap<String,String> metadata) {
+        assert metadata!=null;
         this.habitat = habitat;
         this.classLoader = cl;
         this.typeName = typeName;
@@ -65,9 +66,9 @@ public class LazyInhabitant<T> implements Inhabitant<T> {
         return Wombs.create(c,habitat,metadata);
     }
 
-    public T get() throws ComponentException {
+    public T get(Inhabitant onBehalfOf) throws ComponentException {
         fetch();
-        return real.get();
+        return real.get(onBehalfOf);
     }
 
     public void release() {

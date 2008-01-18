@@ -6,7 +6,9 @@ import org.jvnet.hk2.component.Womb;
 import org.jvnet.hk2.component.InjectionManager;
 import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Lead;
 
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Array;
@@ -15,7 +17,7 @@ import java.util.Collection;
 /**
  * @author Kohsuke Kawaguchi
  */
-public abstract class AbstractWombImpl<T> implements Womb<T> {
+public abstract class AbstractWombImpl<T> extends AbstractInhabitantImpl<T> implements Womb<T> {
     protected final Class<T> type;
     private final MultiMap<String,String> metadata;
 
@@ -32,13 +34,13 @@ public abstract class AbstractWombImpl<T> implements Womb<T> {
         return type;
     }
 
-    public final T get() throws ComponentException {
-        T o = create();
-        initialize(o);
+    public final T get(Inhabitant onBehalfOf) throws ComponentException {
+        T o = create(onBehalfOf);
+        initialize(o,onBehalfOf);
         return o;
     }
 
-    public void initialize(T t) throws ComponentException {
+    public void initialize(T t, Inhabitant onBehalfOf) throws ComponentException {
         // default is no-op
     }
 
@@ -57,7 +59,8 @@ public abstract class AbstractWombImpl<T> implements Womb<T> {
      * <p>
      * This method is an utility method for subclasses for performing injection.
      */
-    protected void inject(final Habitat habitat, T t) {
+    protected void inject(final Habitat habitat, T t, final Inhabitant onBehalfOf) {
+        // TODO: make it a field of Habitat to avoid unnecessary InjectionManager allocations
         (new InjectionManager<Inject>() {
             public boolean isOptional(Inject annotation) {
                 return annotation.optional();
@@ -67,7 +70,7 @@ public abstract class AbstractWombImpl<T> implements Womb<T> {
              * Obtains the value to inject, based on the type and {@link Inject} annotation.
              */
             @SuppressWarnings("unchecked")
-            protected Object getValue(AnnotatedElement target, Class type) throws ComponentException {
+            protected Object getValue(Object component, AnnotatedElement target, Class type) throws ComponentException {
                 if (type.isArray()) {
                     Class<?> ct = type.getComponentType();
 
@@ -89,6 +92,22 @@ public abstract class AbstractWombImpl<T> implements Womb<T> {
                 }
             }
         }).inject(t, Inject.class);
+
+        (new InjectionManager<Lead>() {
+            protected Object getValue(Object component, AnnotatedElement target, Class type) throws ComponentException {
+                Inhabitant lead = onBehalfOf.lead();
+                if(lead==null)
+                    // TODO: we should be able to check this error at APT, too.
+                    throw new ComponentException(component.getClass()+" requested @Lead injection but this is not a companion");
+
+                if(type==Inhabitant.class) {
+                    return lead;
+                }
+
+                // otherwise inject the target object
+                return lead.get();
+            }
+        }).inject(t, Lead.class);
 
         // postContruct call if any
         if(t instanceof PostConstruct)

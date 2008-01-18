@@ -1,24 +1,18 @@
 package com.sun.hk2.component;
 
 import org.jvnet.hk2.annotations.Extract;
-import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
-import org.jvnet.hk2.component.InjectionManager;
 import org.jvnet.hk2.component.MultiMap;
 import org.jvnet.hk2.component.PerLookup;
-import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.Scope;
 import org.jvnet.hk2.component.Singleton;
 
-import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Collection;
 
 /**
  * Creates an object from its constructor.
@@ -35,7 +29,7 @@ public class ConstructorWomb<T> extends AbstractWombImpl<T> {
         singletonScope = habitat.singletonScope;
     }
 
-    public T create() throws ComponentException {
+    public T create(Inhabitant onBehalfOf) throws ComponentException {
         try {
             return type.newInstance();
         } catch (InstantiationException e) {
@@ -48,12 +42,12 @@ public class ConstructorWomb<T> extends AbstractWombImpl<T> {
     }
 
 
-    public void initialize(T t) throws ComponentException {
+    public void initialize(T t, Inhabitant onBehalfOf) throws ComponentException {
 
         Scoped scoped = t.getClass().getAnnotation(Scoped.class);
         ScopeInstance si = (scoped==null?singletonScope:getScope(scoped));
 
-        inject(habitat, t);
+        inject(habitat, t, onBehalfOf);
 
         if(si!=null)
             // extraction amounts to no-op if this is prototype scope. so skip that.
@@ -158,7 +152,7 @@ public class ConstructorWomb<T> extends AbstractWombImpl<T> {
         // TODO: name support. Wouldn't it be nice if Map<String,Object> extracts to named objects?
         // or recognize the "Named" interface?
         Inhabitant<T> i = new AbstractWombImpl<T>((Class<T>)o.getClass(),MultiMap.<String,String>emptyMap()) {
-            public T create() throws ComponentException {
+            public T create(Inhabitant onBehalfOf) throws ComponentException {
                 // only look at objects already available in the scope.
                 // TODO: this obviously can return null. think about how to reconcile this semantics with the rest
                 return si.get(this);

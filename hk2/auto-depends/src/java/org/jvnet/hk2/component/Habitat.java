@@ -1,18 +1,27 @@
 package org.jvnet.hk2.component;
 
+import com.sun.hk2.component.CompanionSeed;
 import com.sun.hk2.component.ExistingSingletonInhabitant;
-import com.sun.hk2.component.ScopeInstance;
 import com.sun.hk2.component.FactoryWomb;
+import com.sun.hk2.component.Holder;
+import static com.sun.hk2.component.InhabitantsFile.COMPANION_CLASS_KEY;
+import static com.sun.hk2.component.InhabitantsFile.INDEX_KEY;
+import com.sun.hk2.component.LazyInhabitant;
+import com.sun.hk2.component.ScopeInstance;
 import org.jvnet.hk2.annotations.Contract;
 import org.jvnet.hk2.annotations.ContractProvided;
 import org.jvnet.hk2.annotations.FactoryFor;
 
 import java.lang.annotation.Annotation;
 import java.util.AbstractList;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.NoSuchElementException;
 
 /**
  * A set of templates that constitute a world of objects.
@@ -48,8 +57,61 @@ public class Habitat {
     /**
      * Adds a new inhabitant.
      */
-    public void add(Inhabitant i) {
-        byType.add(i.typeName(),i);
+    public void add(final Inhabitant<?> i) {
+        String name = i.typeName();
+        byType.add(name,i);
+
+        // TODO: do this in the listener
+        // for each companion, create an inhabitat that goes with the lead and hook them up
+        List<Inhabitant> companions=null;
+        for(final Inhabitant<?> c : getInhabitantsByAnnotation(CompanionSeed.class,name)) {
+            if(companions==null)
+                companions = new ArrayList<Inhabitant>();
+            companions.add(createCompanion(i, c));
+        }
+        i.setCompanions(companions);
+
+        // and if a companion seed is added to something else, make sure
+        // existing lead inhabitants will get this as a companion
+        assert i.metadata()!=null;
+        for (String index : i.metadata().get(INDEX_KEY)) {
+            if(index.startsWith(COMPANION_SEED_KEY)) {
+                index = index.substring(COMPANION_SEED_KEY.length());
+                for (Inhabitant lead : byType.get(index))
+                    lead.setCompanions(cons(lead.companions(),createCompanion(lead,i)));
+            }
+        }
+    }
+
+    private static final String COMPANION_SEED_KEY = CompanionSeed.class.getName()+':';
+
+    /**
+     * Creates a companion inhabitant from the inhabitant of a {@link CompanionSeed},
+     * to be associated with a lead component.
+     */
+    private LazyInhabitant createCompanion(final Inhabitant<?> lead, final Inhabitant<?> seed) {
+        Holder<ClassLoader> cl = new Holder<ClassLoader>() {
+                public ClassLoader get() {
+                    return seed.type().getClassLoader();
+                }
+            };
+        LazyInhabitant ci = new LazyInhabitant(this, cl, seed.metadata().getOne(COMPANION_CLASS_KEY), MultiMap.<String,String>emptyMap()) {
+            public Inhabitant lead() {
+                return lead;
+            }
+        };
+        add(ci);
+        return ci;
+    }
+
+    /**
+     * Allocates a new read-only list by adding one more element.
+     */
+    private <T> List<T> cons(Collection<T> list, T oneMore) {
+        int sz = list.size();
+        Object[] a = list.toArray(new Object[sz+1]);
+        a[sz]=oneMore;
+        return (List)Arrays.asList(a);
     }
 
     /**
@@ -253,6 +315,13 @@ public class Habitat {
         };
     }
 
+    /**
+     * Gets all the inhabitants that has the given contract.
+     */
+    public <T> Collection<Inhabitant<T>> getInhabitantsByType(Class<T> implType) throws ComponentException {
+        return (Collection)byType.get(implType.getName());
+    }
+
     private Inhabitant _getInhabitant(Class contract, String name) {
         // TODO: faster implementation needed
         for (NamedInhabitant i : byContract.get(contract.getName())) {
@@ -260,6 +329,69 @@ public class Habitat {
                 return i.inhabitant;
         }
         return null;
+    }
+
+    /**
+     * Gets all the inhabitants that has the given contract and the given name
+     *
+     * <p>
+     * This method defers the actual instantiation of the component
+     * until {@link Inhabitant#get()} is invoked.
+     *
+     * @return
+     *      Can be empty but never null.
+     */
+    public <T> Iterable<Inhabitant<? extends T>> getInhabitants(Class<T> contract, String name) throws ComponentException {
+        return _getInhabitants(contract,name);
+    }
+
+    /**
+     * Gets all the inhabitants that has the given contract annotation and the given name.
+     *
+     * <p>
+     * This method defers the actual instantiation of the component
+     * until {@link Inhabitant#get()} is invoked.
+     *
+     * @return
+     *      Can be empty but never null.
+     */
+    public Iterable<Inhabitant<?>> getInhabitantsByAnnotation(Class<? extends Annotation> contract, String name) throws ComponentException {
+        return _getInhabitants(contract, name);
+    }
+
+    // intentionally not generified so that the getInhabitants methods can choose the right signature w/o error
+    private Iterable _getInhabitants(final Class contract, final String name) {
+        return new Iterable<Inhabitant>() {
+            private final Iterable<NamedInhabitant> base = byContract.get(contract.getName());
+
+            public Iterator<Inhabitant> iterator() {
+                return new Iterator<Inhabitant>() {
+                    private Inhabitant i = null;
+                    private final Iterator<NamedInhabitant> itr = base.iterator();
+
+                    public boolean hasNext() {
+                        while(i==null && itr.hasNext()) {
+                            NamedInhabitant ni = itr.next();
+                            if(ni.name.equals(name))
+                                i = ni.inhabitant;
+                        }
+                        return i!=null;
+                    }
+
+                    public Inhabitant next() {
+                        if(i==null)
+                            throw new NoSuchElementException();
+                        Inhabitant r = i;
+                        i = null;
+                        return r;
+                    }
+
+                    public void remove() {
+                        throw new UnsupportedOperationException();
+                    }
+                };
+            }
+        };
     }
 
     private static boolean eq(String a, String b) {

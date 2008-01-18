@@ -4,6 +4,8 @@ import com.sun.hk2.component.Holder;
 import com.sun.hk2.component.ScopeInstance;
 import org.jvnet.hk2.annotations.Service;
 
+import java.util.Collection;
+
 /**
  * Represents a component in the world of {@link Habitat}.
  *
@@ -13,6 +15,10 @@ import org.jvnet.hk2.annotations.Service;
  * On topf of that, {@link Inhabitant} enhances {@link Holder} by
  * adding more metadata that {@link Habitat} uses for finding
  * components and hooking them up together.
+ *
+ * <p>
+ * All the methods exept {@link #get()} are immutable, meaning
+ * they never change the value they return.
  *
  * @author Kohsuke Kawaguchi
  * @see Inhabitant
@@ -59,6 +65,8 @@ public interface Inhabitant<T> extends Holder<T> {
      * returns a different object.
      */
     T get();
+    
+    T get(Inhabitant onBehalfOf);
 
     /**
      * Gets the metadata associated with this inhabitant.
@@ -88,4 +96,35 @@ public interface Inhabitant<T> extends Holder<T> {
      * is invoked.
      */
     void release();
+
+//
+// methods below here are more or less used for book-keeping purpose by Habitat,
+// and implementations of Inhabitat should implement them just by using
+// AbstractInhabitantImpl
+//
+
+    /**
+     * If this inhabitant is a companion to another inhabitant (called "lead"),
+     * This method returns that inhabitant. Otherwise null.
+     */
+    Inhabitant lead();
+
+    /**
+     * Returns the companion inhabitants associated with this inhabitant.
+     *
+     * <p>
+     * This method works with the {@link #lead()} method in pairs, such
+     * that the following condition always holds:
+     *
+     * <pre>x.companions().contains(y) &lt;-> y.lead()==x</pre>
+     *
+     * @return
+     *      Can be empty but never null.
+     */
+    Collection<Inhabitant> companions();
+
+    /**
+     * This method is only meant to be invoked by {@link Habitat}.
+     */
+    void setCompanions(Collection<Inhabitant> companions);
 }
