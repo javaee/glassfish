@@ -10,7 +10,7 @@ import java.util.Set;
 
 /**
  * Map from a key to multiple values.
- * Order is significant among values.
+ * Order is significant among values, and null values are allowed, although null keys are not.
  * 
  * @author Kohsuke Kawaguchi
  */
