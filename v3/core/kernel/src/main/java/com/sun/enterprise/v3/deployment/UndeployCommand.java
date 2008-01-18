@@ -29,7 +29,7 @@ import com.sun.enterprise.v3.data.ApplicationInfo;
 import com.sun.enterprise.v3.data.ApplicationRegistry;
 import com.sun.enterprise.v3.server.ApplicationLifecycle;
 import com.sun.enterprise.v3.server.V3Environment;
-import com.sun.enterprise.v3.services.impl.GrizzlyAdapter;
+import com.sun.enterprise.v3.services.impl.GrizzlyService;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
@@ -62,7 +62,7 @@ public class UndeployCommand extends ApplicationLifecycle implements AdminComman
     ApplicationRegistry appRegistry;
 
     @Inject
-    GrizzlyAdapter adapter;
+    GrizzlyService adapter;
 
     @Param(primary = true, name=DeployCommand.NAME)
     String name=null;
@@ -93,6 +93,7 @@ public class UndeployCommand extends ApplicationLifecycle implements AdminComman
         undeploy(name, deploymentContext, report);
         if (report.getActionExitCode().equals(ActionReport.ExitCode.SUCCESS)) {
             deleteContainerMetaInfo(info, deploymentContext);
+            FileUtils.whack(new File(info.getSource().getURI()));
             report.setMessage(localStrings.getLocalString("redeploy.command.sucess",
                     "{0} undeployed successfully", name));
             report.setActionExitCode(ActionReport.ExitCode.SUCCESS);

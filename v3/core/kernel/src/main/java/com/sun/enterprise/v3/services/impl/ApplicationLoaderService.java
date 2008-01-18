@@ -68,7 +68,7 @@ public class ApplicationLoaderService extends ApplicationLifecycle
         implements Startup, PreDestroy, PostConstruct {
     
     @Inject
-    GrizzlyAdapter adapter;
+    GrizzlyService adapter;
 
     @Inject
     ModulesRegistry modulesRegistry;

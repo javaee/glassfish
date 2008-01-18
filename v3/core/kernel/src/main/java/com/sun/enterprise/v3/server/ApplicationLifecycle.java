@@ -31,7 +31,7 @@ import com.sun.enterprise.module.ModuleDefinition;
 import com.sun.enterprise.v3.data.*;
 import com.sun.enterprise.v3.deployment.DeployCommand;
 import com.sun.enterprise.v3.deployment.DeploymentContextImpl;
-import com.sun.enterprise.v3.services.impl.GrizzlyAdapter;
+import com.sun.enterprise.v3.services.impl.GrizzlyService;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.container.Adapter;
@@ -79,7 +79,7 @@ abstract public class ApplicationLifecycle {
     protected ModulesRegistry modulesRegistry;
 
     @Inject
-    GrizzlyAdapter adapter;
+    GrizzlyService adapter;
 
     @Inject
     ArchiveFactory archiveFactory;
@@ -319,7 +319,7 @@ abstract public class ApplicationLifecycle {
                 // add the endpoint
                 try {
                     Adapter appAdapter = Adapter.class.cast(module.getApplicationContainer());
-                    adapter.registerEndpoint(appAdapter.getContextRoot(), appAdapter, module.getApplicationContainer());
+                    adapter.registerEndpoint(appAdapter.getContextRoot(), null, appAdapter, module.getApplicationContainer());
                 } catch (ClassCastException e) {
                     // ignore the application may not publish endpoints.
                 }
@@ -487,7 +487,7 @@ abstract public class ApplicationLifecycle {
         // remove any endpoints if exists.
         try {
             final Adapter appAdapter = Adapter.class.cast(module.getApplicationContainer());
-            adapter.unregisterEndpoint(appAdapter.getContextRoot());
+            adapter.unregisterEndpoint(appAdapter.getContextRoot(), module.getApplicationContainer());
         } catch(ClassCastException e) {
             // do nothing the application did not have an adapter
         }

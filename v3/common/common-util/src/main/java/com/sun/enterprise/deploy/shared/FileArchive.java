@@ -28,6 +28,8 @@ import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.archive.WritableArchive;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.component.PerLookup;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -45,6 +47,7 @@ import java.net.URI;
  * @author Jerome Dochez
  */
 @Service(name="file")
+@Scoped(PerLookup.class)
 public class FileArchive implements ReadableArchive, WritableArchive {
 
     @Inject

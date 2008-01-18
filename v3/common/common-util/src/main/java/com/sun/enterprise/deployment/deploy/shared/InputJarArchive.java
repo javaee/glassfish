@@ -28,6 +28,8 @@ import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.enterprise.util.io.FileUtils;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.component.PerLookup;
 
 import java.io.*;
 import java.util.Enumeration;
@@ -49,6 +51,7 @@ import java.net.URISyntaxException;
  * @author Jerome Dochez
  */
 @Service(name="jar")
+@Scoped(PerLookup.class)
 public class InputJarArchive extends JarArchive implements ReadableArchive {
     
     final static Logger logger = LogDomains.getLogger(LogDomains.DPL_LOGGER);

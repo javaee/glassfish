@@ -144,6 +144,7 @@ import com.sun.enterprise.config.serverbeans.Servers;
 
 // V3 imports
 import com.sun.enterprise.v3.server.V3Environment;
+import com.sun.enterprise.v3.common.Result;
 
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
@@ -1425,7 +1426,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
      * If no virtual servers are specified, then the web module is
      * loaded on EVERY virtual server.
      */
-    public List<Throwable> loadWebModule(
+    public List<Result<WebModule>> loadWebModule(
             WebModuleConfig wmInfo, String j2eeApplication) {
         
         String vsIDs = wmInfo.getVirtualServers();
@@ -1435,7 +1436,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         
         Engine[] engines =  _embedded.getEngines();
         
-        List<Throwable> throwables = new ArrayList();
+        List<Result<WebModule>> results = new ArrayList<Result<WebModule>>();
         for (int j=0; j<engines.length; j++) {
             Container[] vsArray = engines[j].findChildren();
             for (int i = 0; i < vsArray.length; i++) {
@@ -1456,11 +1457,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                             || vsList.contains(vs.getID())
                             || verifyAlias(vsList,vs)){
                         
-                        loadWebModule(vs, wmInfo, j2eeApplication);
-                        /*Throwable t = loadWebModule(vs, wmInfo, j2eeApplication);
-                        if (t != null) {
-                            throwables.add(t);
-                        }*/
+                        results.add(loadWebModule(vs, wmInfo, j2eeApplication));
                         loadAtLeastToOne = true;
                     }
                 }
@@ -1471,7 +1468,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             _logger.log(Level.SEVERE, "webcontainer.moduleNotLoadedToVS",
                     params);
         }
-        return throwables;
+        return results;
     }
     
     
@@ -1491,7 +1488,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
      * Creates and configures a web module and adds it to the specified
      * virtual server.
      */
-    protected WebModule loadWebModule(VirtualServer vs, WebModuleConfig wmInfo,
+    protected Result<WebModule> loadWebModule(VirtualServer vs, WebModuleConfig wmInfo,
             String j2eeApplication) {
         
         String wmName = wmInfo.getName();
@@ -1831,7 +1828,8 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         } catch (Throwable ex){
             exception = ex;
         }
-        
+
+        Result<WebModule> result;
         if (exception != null){
             ctx.setAvailable(false);
             
@@ -1839,12 +1837,14 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             msg = MessageFormat.format(msg,
                     new Object[] { wmName });
             _logger.log(Level.SEVERE, msg, exception);
-            
+            result = new Result(exception);
+        } else {
+            result = new Result(ctx);
         }
         
         enableWSMonitoring(wbd, j2eeServer);
         //return exception;
-        return ctx;
+        return result;
         
     }
     

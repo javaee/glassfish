@@ -145,7 +145,9 @@ public class ArchivistFactory implements ContractProvider {
     public Archivist getArchivist(ReadableArchive archive, 
         ClassLoader cl) throws IOException {
         Archivist archivist = getPrivateArchivistFor(archive);
-        archivist.setClassLoader(cl);
+        if (archivist!=null) {
+            archivist.setClassLoader(cl);
+        }
         return archivist;
     }
 

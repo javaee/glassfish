@@ -86,7 +86,6 @@ public class ReDeployCommand extends ApplicationLifecycle implements AdminComman
 
         unload(appName, depContext, report);
 
-
         if (report.getActionExitCode().equals(ActionReport.ExitCode.SUCCESS)) {
             load(appInfo.getSniffers(), depContext, report);
         }

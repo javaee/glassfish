@@ -52,8 +52,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.BufferedOutputStream;
-import java.io.InputStream;
 import java.io.IOException;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
@@ -219,6 +217,8 @@ public class AdminAdapter implements Adapter {
                     // this is the primary parameter for the command
                     String value = parameters.getProperty("DEFAULT");
                     if (value!=null) {
+                        // let's also copy this value to the command with a real name.
+                        parameters.setProperty(getParamName(param, target), value);
                         return value;
                     }
                 }
@@ -407,7 +407,7 @@ public class AdminAdapter implements Adapter {
 
     /**
      * uploads request from client and save the content in <os temp dir>/gfv3/<fileName>
-     * @param request to process
+     * @param req to process
      * @param report back to the client
      * @param fileName to save client request
      * @return <os temp dir>/gfv3/<fileName>

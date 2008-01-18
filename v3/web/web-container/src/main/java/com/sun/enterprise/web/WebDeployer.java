@@ -23,30 +23,21 @@
 
 package com.sun.enterprise.web;
 
-//import com.sun.enterprise.config.ConfigException;
-import com.sun.enterprise.config.serverbeans.ApplicationRef;
-import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
+
 import com.sun.enterprise.config.serverbeans.Domain;
-import com.sun.enterprise.config.serverbeans.Server;
-import com.sun.enterprise.config.serverbeans.WebModule;
-import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
-import com.sun.enterprise.deployment.archivist.ApplicationFactory;
-import com.sun.enterprise.deployment.archivist.ArchivistFactory;
-import com.sun.enterprise.deployment.archivist.Archivist;
 import com.sun.enterprise.deployment.io.WebDeploymentDescriptorFile;
 import com.sun.enterprise.server.ServerContext;
 import com.sun.enterprise.util.StringUtils;
 import com.sun.enterprise.v3.deployment.DeployCommand;
 import com.sun.enterprise.v3.server.V3Environment;
-import com.sun.enterprise.v3.services.impl.GrizzlyAdapter;
+import com.sun.enterprise.v3.services.impl.GrizzlyService;
+import com.sun.enterprise.v3.common.Result;
 import com.sun.enterprise.module.ModuleDefinition;
 import com.sun.enterprise.module.Module;
 import com.sun.logging.LogDomains;
 import org.apache.catalina.Container;
-import org.apache.catalina.Engine;
-import org.apache.catalina.Host;
 import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.core.StandardHost;
 import com.sun.grizzly.tcp.Adapter;
@@ -57,9 +48,7 @@ import org.glassfish.javaee.core.deployment.JavaEEDeployer;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 import java.util.logging.Level;
 import java.io.File;
 import java.io.FileInputStream;
@@ -85,7 +74,7 @@ public class WebDeployer extends JavaEEDeployer<WebContainer, WebApplication>{
     V3Environment env;
 
     @Inject
-    GrizzlyAdapter grizzlyAdapter;
+    GrizzlyService grizzlyAdapter;
 
     
     private static final String ADMIN_VS = "__asadmin";
@@ -156,8 +145,6 @@ public class WebDeployer extends JavaEEDeployer<WebContainer, WebApplication>{
         WebModuleConfig wmInfo = null;
         
         try {
-            parseModuleMetaData(dc);
-
             ReadableArchive source = dc.getSource();
             String docBase = source.getURI().getSchemeSpecificPart();
             Properties params = dc.getCommandParameters();
@@ -193,53 +180,41 @@ public class WebDeployer extends JavaEEDeployer<WebContainer, WebApplication>{
         WebBundleDescriptor wbd = wmInfo.getDescriptor();   
         
         String vsIDs = wmInfo.getVirtualServers();
-        List vsList = StringUtils.parseStringList(vsIDs, " ,");        
-        
+        List<String> vsList = StringUtils.parseStringList(vsIDs, " ,");
+
+        WebApplication application = new WebApplication(container, wbd, dc.getClassLoader());
+        wmInfo.setAppClassLoader(dc.getClassLoader());
         boolean loadToAll = (vsList == null) || (vsList.size() == 0);
-        boolean loadAtLeastToOne = false;
-        
-        WebApplication webApplication = null;
-        Engine[] engines = container.getEngines();
-        Container[] hosts = engines[0].findChildren();
-        
-        for (int i=0; i<hosts.length; i++) {
-            VirtualServer vs = (VirtualServer) hosts[i];
 
-            if (loadToAll && ADMIN_VS.equals(vs.getName())) {
-                // Do not load to __asadmin
-                continue;
-            }
+        // TODO : dochez : add action report here...
+        List<Result<com.sun.enterprise.web.WebModule>> results = container.loadWebModule(wmInfo, "null");
 
-            wmInfo.setAppClassLoader(dc.getClassLoader());
-
-            if (loadToAll || vsList.contains(vs.getName())
-                    || isAliasMatched(vsList,vs)) {
-                
-                StandardContext ctx = container.loadWebModule(vs, wmInfo, "null");
-                if (ctx.getAvailable()) {
-                    webApplication = new WebApplication(container, ctx, wbd);
-                    registerEndpoint(container, vs, wbd.getContextRoot(), dc, webApplication);
-                    loadAtLeastToOne = true;
+        dc.getLogger().info("Loading application " + dc.getCommandParameters().getProperty(DeployCommand.NAME)
+                + " at " + wbd.getContextRoot());
+        for (Result<com.sun.enterprise.web.WebModule> result : results) {
+            if (result.isSuccess()) {
+                VirtualServer vs = (VirtualServer) result.result().getParent();
+                final Collection<String> c = new HashSet<String>();
+                c.add(vs.getID());
+                if (loadToAll || vsList.contains(vs.getName())
+                        || isAliasMatched(vsList,vs)) {
+                    for (int port : vs.getPorts()) {
+                        Adapter adapter = container.adapterMap.get(Integer.valueOf(port));
+                        grizzlyAdapter.registerEndpoint(wbd.getContextRoot(), c, adapter, application);
+                    }
                 }
-                       
+            } else {
+                dc.getLogger().log(Level.SEVERE, "Error while deploying", result.exception());
             }
         }
-                
-        if (!loadAtLeastToOne) {
-            Object[] params = {wmInfo.getName(), vsIDs};
-            dc.getLogger().log(Level.SEVERE, "webcontainer.moduleNotLoadedToVS",
-                    params);
-        }
-        
-        return webApplication;
-        
+        return application;
     }
 
     
     public void unload(WebApplication webApplication, DeploymentContext dc) {
         
         Properties params = dc.getCommandParameters();
-        String ctxtRoot = params.getProperty(DeployCommand.NAME);
+        String ctxtRoot = webApplication.getDescriptor().getContextRoot();
         if (!ctxtRoot.equals("") && !ctxtRoot.startsWith("/") ) {
             ctxtRoot = "/" + ctxtRoot;
         } else if ("/".equals(ctxtRoot)) {
@@ -277,51 +252,12 @@ public class WebDeployer extends JavaEEDeployer<WebContainer, WebApplication>{
                     dc.getLogger().info("Undeployed web module " + ctxt
                                         + " from virtual server "
                                         + vs.getName());
-                    unregisterEndpoint(webApplication.getContainer(), vs, ctxtRoot, dc);
+                    // ToDo : dochez : not good, we unregister from everywhere...
+                    grizzlyAdapter.unregisterEndpoint(ctxtRoot, webApplication);
 		}
             }
         }
-    }
-    
-        
-    private void registerEndpoint(WebContainer container,
-                                  Host vs,
-                                  String ctxtRoot,
-                                  DeploymentContext dc, WebApplication webApp) {
-
-        int[] ports = vs.getPorts();
-        if (ports == null) {
-            return;
-        }
-
-        for (int i=0; i<ports.length; i++) {
-            Adapter adapter = container.adapterMap.get(Integer.valueOf(ports[i]));
-            grizzlyAdapter.registerEndpoint(ctxtRoot, adapter, webApp);
-            dc.getLogger().info("Registered adapter " + adapter
-                                + " for web endpoint " + ctxtRoot
-                                + " at port " + ports[i]);
-        }
-    }
-
-
-    private void unregisterEndpoint(WebContainer container,
-                                    Host vs,
-                                    String ctxtRoot,
-                                    DeploymentContext dc) {
-
-        int[] ports = vs.getPorts();
-        if (ports == null) {
-            return;
-        }
-
-        for (int i=0; i<ports.length; i++) {
-            Adapter adapter = container.adapterMap.get(Integer.valueOf(ports[i]));
-            grizzlyAdapter.unregisterEndpoint(ctxtRoot);
-            dc.getLogger().info("Unregistered web endpoint " + ctxtRoot
-                                + " from port " + ports[i]);
-        }
-    }
-     
+    }               
     
     /*
      * @return true if the list of target virtual server names matches an

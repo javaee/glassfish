@@ -55,6 +55,7 @@ import org.xml.sax.SAXParseException;
 
 import javax.enterprise.deploy.shared.ModuleType;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
@@ -239,8 +240,39 @@ public class WebArchivist extends Archivist<WebBundleDescriptor>
         final String LIB_DIR = "WEB-INF/lib/";
         final String JAR_EXT = ".jar";
         try {
+            ReadableArchive libArchive = archive.getSubArchive(LIB_DIR);
+            if (libArchive!=null) {
+                Enumeration<String> libEntries = libArchive.entries();
+                while(libEntries.hasMoreElements()) {
+                    String path = libEntries.nextElement();
+                    if (path.endsWith(JAR_EXT)) {
+                        if(path.indexOf('/') == -1) { // to avoid WEB-INF/lib/foo/bar.jar
+                            // this jarFile is directly inside WEB-INF/lib directory
+                            subArchives.put(LIB_DIR+"/"+path, archive.getSubArchive(path));
+                        } else {
+                            if(logger.isLoggable(Level.FINE)) {
+                                logger.logp(Level.FINE, "WebArchivist",
+                                        "readPersistenceDeploymentDescriptors",
+                                        "skipping {0} as it exists inside a directory in {1}.",
+                                        new Object[]{path, LIB_DIR});
+                            }
+                            continue;
+                        }
+
+                    }
+
+                }
+            }
+            
             final String pathOfPersistenceXMLInsideClassesDir =
                     CLASSES_DIR+DescriptorConstants.PERSISTENCE_DD_ENTRY;
+            InputStream is = archive.getEntry(pathOfPersistenceXMLInsideClassesDir);
+            if (is!=null) {
+                is.close();
+                subArchives.put(CLASSES_DIR, archive.getSubArchive(CLASSES_DIR));
+            }
+
+            /** ToDo : mitesh, debug replacement code above and clean this old version
             while(entries.hasMoreElements()){
                 final String nextEntry = String.class.cast(entries.nextElement());
                 if(pathOfPersistenceXMLInsideClassesDir.equals(nextEntry)) {
@@ -261,6 +293,7 @@ public class WebArchivist extends Archivist<WebBundleDescriptor>
                     }
                 }
             }
+             */
             for(Map.Entry<String, ReadableArchive> pathToArchiveEntry : subArchives.entrySet()) {
                 readPersistenceDeploymentDescriptor(pathToArchiveEntry.getValue(), pathToArchiveEntry.getKey(), descriptor);
             }

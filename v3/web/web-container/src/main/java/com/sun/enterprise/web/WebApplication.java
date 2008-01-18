@@ -31,13 +31,13 @@ public class WebApplication implements ApplicationContainer<WebBundleDescriptor>
 
 
     final WebContainer container;
-    final StandardContext ctx;
     final WebBundleDescriptor wbd;
+    final ClassLoader cl;
 
-    public WebApplication(WebContainer container, StandardContext ctx, WebBundleDescriptor wbd) {
+    public WebApplication(WebContainer container, WebBundleDescriptor wbd, ClassLoader cl) {
         this.container = container;
-        this.ctx = ctx;
         this.wbd = wbd;
+        this.cl = cl;  
     }
 
     public boolean start() {
@@ -54,7 +54,7 @@ public class WebApplication implements ApplicationContainer<WebBundleDescriptor>
      * @return ClassLoader for this app
      */
     public ClassLoader getClassLoader() {
-        return ctx.getLoader().getClassLoader();
+        return cl;
     }
 
     WebContainer getContainer() {

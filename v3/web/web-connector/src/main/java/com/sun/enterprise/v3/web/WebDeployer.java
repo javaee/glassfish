@@ -29,7 +29,7 @@ import com.sun.enterprise.util.StringUtils;
 import org.glassfish.javaee.core.deployment.JavaEEDeployer;
 import com.sun.enterprise.v3.deployment.DeployCommand;
 import com.sun.enterprise.v3.server.V3Environment;
-import com.sun.enterprise.v3.services.impl.GrizzlyAdapter;
+import com.sun.enterprise.v3.services.impl.GrizzlyService;
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
@@ -52,6 +52,8 @@ import org.jvnet.hk2.annotations.Service;
 
 import java.util.List;
 import java.util.Properties;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.logging.Level;
 import java.io.File;
 import java.io.FileInputStream;
@@ -76,7 +78,7 @@ public class WebDeployer extends JavaEEDeployer<WebContainer, WebApplication> {
     V3Environment env;
 
     @Inject
-    GrizzlyAdapter grizzlyAdapter;
+    GrizzlyService grizzlyAdapter;
 
     
     private static final String ADMIN_VS = "__asadmin";
@@ -145,7 +147,12 @@ public class WebDeployer extends JavaEEDeployer<WebContainer, WebApplication> {
                 dc.getLogger().info("Deployed web module " + ctx
                                     + " to virtual server " + vs.getName());
 
-                registerEndpoint(container, (Host) vs, ctxtRoot, dc, webApplication);
+                Collection<String> c = new HashSet<String>();
+                c.add(vs.getName());
+                for (int port : vs.getPorts()) {
+                    Adapter adapter = container.adapterMap.get(Integer.valueOf(port));                    
+                    grizzlyAdapter.registerEndpoint(ctxtRoot, c, adapter, webApplication);
+                }
             }
         }
         return webApplication;
@@ -160,6 +167,7 @@ public class WebDeployer extends JavaEEDeployer<WebContainer, WebApplication> {
         } else if ("/".equals(ctxtRoot)) {
             ctxtRoot = "";
         }
+        grizzlyAdapter.unregisterEndpoint(ctxtRoot, webApplication);
 
         List<String> targets = StringUtils.parseStringList(
             params.getProperty(DeployCommand.VIRTUAL_SERVERS), " ,");
@@ -192,48 +200,10 @@ public class WebDeployer extends JavaEEDeployer<WebContainer, WebApplication> {
                     dc.getLogger().info("Undeployed web module " + ctxt
                                         + " from virtual server "
                                         + vs.getName());
-                    unregisterEndpoint(webApplication.getContainer(), vs, ctxtRoot, dc);
+                    // ToDo : dochez : not good, we unregister from everywhere.
+                    grizzlyAdapter.unregisterEndpoint(ctxtRoot, webApplication);
 		}
             }
-        }
-    }
-
-
-    private void registerEndpoint(WebContainer container,
-                                  Host vs,
-                                  String ctxtRoot,
-                                  DeploymentContext dc, WebApplication webApp) {
-
-        int[] ports = vs.getPorts();
-        if (ports == null) {
-            return;
-        }
-
-        for (int i=0; i<ports.length; i++) {
-            Adapter adapter = container.adapterMap.get(Integer.valueOf(ports[i]));
-            grizzlyAdapter.registerEndpoint(ctxtRoot, adapter, webApp);
-            dc.getLogger().info("Registered adapter " + adapter
-                                + " for web endpoint " + ctxtRoot
-                                + " at port " + ports[i]);
-        }
-    }
-
-
-    private void unregisterEndpoint(WebContainer container,
-                                    Host vs,
-                                    String ctxtRoot,
-                                    DeploymentContext dc) {
-
-        int[] ports = vs.getPorts();
-        if (ports == null) {
-            return;
-        }
-
-        for (int i=0; i<ports.length; i++) {
-            Adapter adapter = container.adapterMap.get(Integer.valueOf(ports[i]));
-            grizzlyAdapter.unregisterEndpoint(ctxtRoot);
-            dc.getLogger().info("Unregistered web endpoint " + ctxtRoot
-                                + " from port " + ports[i]);
         }
     }
 
@@ -256,7 +226,7 @@ public class WebDeployer extends JavaEEDeployer<WebContainer, WebApplication> {
     /**
      * @return a copy of default WebBundleDescriptor populated from
      * default-web.xml
-     */
+     */                                                                
     public WebBundleDescriptor getDefaultWebXMLBundleDescriptor() {
         initDefaultWebXMLBundleDescriptor();
 
