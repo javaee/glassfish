@@ -17,18 +17,23 @@
     <dependencies>
         <dependency>
             <groupId>com.sun.enterprise</groupId>
-            <artifactId>hk2</artifactId>
-            <version>${project.version}</version>            
+            <artifactId>hk2-core</artifactId>
+            <version>${project.version}</version>
         </dependency>
-      <dependency>
-          <groupId>com.sun.istack</groupId>
-          <artifactId>istack-commons-test</artifactId>
-          <version>1.0</version>            
-      </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.3.1</version>
         </dependency>
+        <dependency>
+            <groupId>ant</groupId>
+            <artifactId>ant</artifactId>
+            <version>1.6.5</version>
+        </dependency>
+      <dependency>
+          <groupId>com.sun.istack</groupId>
+          <artifactId>istack-commons-test</artifactId>
+          <version>1.0</version>
+      </dependency>
     </dependencies>
 </project>
