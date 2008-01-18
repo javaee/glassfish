@@ -125,7 +125,7 @@
         <module>hk2</module>
         <module>hk2-maven</module>
         <module>hk2-maven-plugin</module>
-        <!--module>test-harness</module-->
+        <module>test-harness</module>
     </modules>
 
     <dependencies>
