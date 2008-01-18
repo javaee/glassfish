@@ -2,11 +2,12 @@ package com.sun.hk2.component;
 
 import org.jvnet.hk2.component.Scope;
 import org.jvnet.hk2.component.Womb;
+import org.jvnet.hk2.component.Inhabitant;
 
 /**
  * @author Kohsuke Kawaguchi
  */
-public class ScopedInhabitant<T> extends AbstractInhabitantImpl<T> {
+public class ScopedInhabitant<T> extends AbstractWombInhabitantImpl<T> {
     private final Scope scope;
 
     public ScopedInhabitant(Womb<T> womb, Scope scope) {
@@ -14,7 +15,7 @@ public class ScopedInhabitant<T> extends AbstractInhabitantImpl<T> {
         this.scope = scope;
     }
 
-    public T get() {
+    public T get(Inhabitant onBehalfOf) {
         ScopeInstance store = scope.current();
         // scope is extension point, so beware for the broken implementation
         assert store!=null : scope+" returned null";
@@ -26,7 +27,7 @@ public class ScopedInhabitant<T> extends AbstractInhabitantImpl<T> {
                 // verify no one else created one in the mean time
                 o = store.get(this);
                 if(o==null) {
-                    o = womb.get();
+                    o = womb.get(onBehalfOf);
                     store.put(this,o);
                 }
             }

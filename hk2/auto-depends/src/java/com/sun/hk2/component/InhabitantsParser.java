@@ -24,7 +24,7 @@ public class InhabitantsParser {
     public void parse(InhabitantsScanner scanner, Holder<ClassLoader> classLoader) throws IOException {
         for( KeyValuePairParser kvpp : scanner) {
             String className=null;
-            MultiMap<String,String> metadata=null;
+            MultiMap<String,String> metadata=new MultiMap<String, String>();
 
             while(kvpp.hasNext()) {
                 kvpp.parseNext();
@@ -33,11 +33,6 @@ public class InhabitantsParser {
                     className = kvpp.getValue();
                     continue;
                 }
-                if(kvpp.getKey().equals(INDEX_KEY))
-                    continue; // will process this after creating Inhabitant
-
-                if(metadata==null)
-                    metadata = new MultiMap<String,String>();
                 metadata.add(kvpp.getKey(),kvpp.getValue());
             }
 
@@ -45,11 +40,6 @@ public class InhabitantsParser {
             habitat.add(i);
 
             for (String v : kvpp.findAll(INDEX_KEY)) {
-                // store index information to metadata
-                if(metadata==null)
-                    metadata = new MultiMap<String,String>();
-                metadata.add(INDEX_KEY,v);
-
                 // register inhabitant to the index
                 int idx = v.indexOf(':');
                 if(idx==-1) {

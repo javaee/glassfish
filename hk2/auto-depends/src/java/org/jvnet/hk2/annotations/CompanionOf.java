@@ -19,7 +19,8 @@ import java.lang.annotation.Documented;
 @Documented
 @Retention(RUNTIME)
 @Target({TYPE})
-public @interface Companion {
+@InhabitantAnnotation("default")
+public @interface CompanionOf {
     /**
      * Specifies the target of the companion.
      */

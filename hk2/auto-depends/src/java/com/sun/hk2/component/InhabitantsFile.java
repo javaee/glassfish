@@ -62,4 +62,9 @@ public class InhabitantsFile {
 
     public static final String CLASS_KEY = "class";
     public static final String INDEX_KEY = "index";
+    /**
+     * Used as a metadata for inhabitants of {@link CompanionSeed},
+     * to indicate what is the actual companion class. 
+     */
+    public static final String COMPANION_CLASS_KEY = "companionClass";
 }

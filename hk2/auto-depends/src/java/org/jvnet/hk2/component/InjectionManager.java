@@ -61,7 +61,7 @@ public abstract class InjectionManager<T extends Annotation> {
 
                     Class fieldType = field.getType();
                     try {
-                        Object value = getValue(field, fieldType);
+                        Object value = getValue(component, field, fieldType);
                         if (value != null) {
                             field.setAccessible(true);
                             field.set(component, value);
@@ -95,7 +95,7 @@ public abstract class InjectionManager<T extends Annotation> {
                     }
 
                     try {
-                        Object value = getValue(method, paramTypes[0]);
+                        Object value = getValue(component, method, paramTypes[0]);
                         if (value != null) {
                             method.setAccessible(true);
                             method.invoke(component, value);
@@ -122,7 +122,9 @@ public abstract class InjectionManager<T extends Annotation> {
         }
     }
 
-    protected abstract boolean isOptional(T annotation);
+    protected boolean isOptional(T annotation) {
+        return false;
+    }
 
-    protected abstract Object getValue(AnnotatedElement annotated, Class type) throws ComponentException;
+    protected abstract Object getValue(Object component, AnnotatedElement annotated, Class type) throws ComponentException;
 }

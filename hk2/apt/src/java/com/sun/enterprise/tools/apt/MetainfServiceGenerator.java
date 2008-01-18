@@ -26,6 +26,7 @@ package com.sun.enterprise.tools.apt;
 import com.sun.mirror.apt.AnnotationProcessor;
 import com.sun.mirror.apt.AnnotationProcessorEnvironment;
 import com.sun.mirror.apt.AnnotationProcessorFactory;
+import com.sun.mirror.apt.AnnotationProcessors;
 import com.sun.mirror.declaration.AnnotationTypeDeclaration;
 
 import java.util.Arrays;
@@ -71,10 +72,9 @@ public class MetainfServiceGenerator implements AnnotationProcessorFactory {
 
         list.loadExisting(env);
 
-        return new InhabitantsGenerator(env,list);
-            //return AnnotationProcessors.getCompositeAnnotationProcessor(
-            //    // new ServiceAnnotationProcessor(env), // no longer needed
-            //    new InhabitantsGenerator(env));
+        return AnnotationProcessors.getCompositeAnnotationProcessor(
+                new CompanionSeedGenerator(env),
+                new InhabitantsGenerator(env,list));
         
     }
 }

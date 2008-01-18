@@ -27,9 +27,9 @@ public class FactoryWomb<T> extends AbstractWombImpl<T> {
         this.habitat = habitat;
     }
 
-    public T create() throws ComponentException {
+    public T create(Inhabitant onBehalfOf) throws ComponentException {
         T t = type.cast(factory.get().getObject());
-        inject(habitat,t);
+        inject(habitat,t,onBehalfOf);
         return t;
     }
 }
