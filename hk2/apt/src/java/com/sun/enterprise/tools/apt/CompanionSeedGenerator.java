@@ -1,9 +1,5 @@
 package com.sun.enterprise.tools.apt;
 
-import com.sun.codemodel.internal.JAnnotationUse;
-import com.sun.codemodel.internal.JClassAlreadyExistsException;
-import com.sun.codemodel.internal.JCodeModel;
-import com.sun.codemodel.internal.JDefinedClass;
 import com.sun.hk2.component.CompanionSeed;
 import static com.sun.hk2.component.InhabitantsFile.COMPANION_CLASS_KEY;
 import com.sun.mirror.apt.AnnotationProcessor;
@@ -13,7 +9,11 @@ import com.sun.mirror.declaration.ClassDeclaration;
 import com.sun.mirror.declaration.Declaration;
 import com.sun.mirror.util.SimpleDeclarationVisitor;
 import com.sun.mirror.type.MirroredTypeException;
-import com.sun.tools.internal.xjc.api.util.FilerCodeWriter;
+import com.sun.codemodel.JCodeModel;
+import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JAnnotationUse;
+import com.sun.codemodel.JClassAlreadyExistsException;
+import com.sun.tools.xjc.api.util.FilerCodeWriter;
 import org.jvnet.hk2.annotations.CompanionOf;
 
 import java.io.IOException;
