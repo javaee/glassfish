@@ -14,7 +14,7 @@ public class ConfigMetadata {
     /**
      * Contracts that the target type implements.
      */
-    public static final String TARGET_CONTRACTS = "target-constracts";
+    public static final String TARGET_CONTRACTS = "target-contracts";
 
     /**
      * If the {@link #TARGET target type} is keyed, the FQCN that defines
