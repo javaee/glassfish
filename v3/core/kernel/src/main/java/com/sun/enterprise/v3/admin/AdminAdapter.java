@@ -29,11 +29,11 @@ import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.v3.common.ActionReporter;
 import com.sun.enterprise.v3.common.HTMLActionReporter;
 import com.sun.enterprise.v3.common.PropsFileActionReporter;
-import com.sun.logging.LogDomains;
 import com.sun.grizzly.tcp.Request;
 import com.sun.grizzly.tcp.Response;
 import com.sun.grizzly.tcp.http11.InternalOutputBuffer;
 import com.sun.grizzly.util.buf.ByteChunk;
+import com.sun.logging.LogDomains;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.Async;
 import org.glassfish.api.I18n;
@@ -49,10 +49,10 @@ import org.jvnet.hk2.component.InjectionManager;
 import org.jvnet.hk2.component.UnsatisfiedDepedencyException;
 
 import java.io.ByteArrayOutputStream;
-import java.io.UnsupportedEncodingException;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -210,7 +210,7 @@ public class AdminAdapter implements Adapter {
                 return annotation.optional();
             }
 
-            protected Object getValue(AnnotatedElement target, Class type) throws ComponentException {
+            protected Object getValue(Object component, AnnotatedElement target, Class type) throws ComponentException {
                 // look for the name in the list of parameters passed.
                 Param param = target.getAnnotation(Param.class);
                 if (param.primary()) {
