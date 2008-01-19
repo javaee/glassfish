@@ -14,7 +14,7 @@
         <module>war-util</module>
         <module>pwc-commons</module>
         <module>appserv-webtier</module>
-        <module>web-connector</module>
+        <module>tomcat-connector</module>
         <module>web-container</module>
         <module>webtier-extensions</module>
     </modules>
