@@ -187,7 +187,7 @@ public class JMXHTTPAdapter implements Adapter {
                 return annotation.optional();
             }
 
-            protected Object getValue(AnnotatedElement target, Class type) throws ComponentException {
+            protected Object getValue(Object component, AnnotatedElement target, Class type) throws ComponentException {
                 // look for the name in the list of parameters passed.
                 Param param = target.getAnnotation(Param.class);
                 if (param.primary()) {
