@@ -49,7 +49,7 @@ import com.sun.enterprise.config.serverbeans.Applications;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.WebModule;
 //import com.sun.enterprise.server.ApplicationServer;
-import com.sun.enterprise.server.PELaunch;
+//import com.sun.enterprise.server.PELaunch;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.v3.server.Globals;
 
@@ -58,6 +58,11 @@ public class ASClassLoaderUtil {
     private static final Logger _logger = Logger.getAnonymousLogger();
 
     private static String sharedClasspathForWebModule = null;
+    
+    //The new ClassLoader Hierarchy would be enabled only when this system 
+    //property is set. 
+    private static final String USE_NEW_CLASSLOADER_PROPERTY 
+                                    = "com.sun.aas.useNewClassLoader";
     
     /**
      * Gets the classpath associated with a web module, suffixing libraries defined 
@@ -76,11 +81,11 @@ public class ASClassLoaderUtil {
         synchronized(ASClassLoaderUtil.class) {
             if (sharedClasspathForWebModule == null) {
             	final StringBuilder tmpString = new StringBuilder();
-            if (Boolean.getBoolean(PELaunch.USE_NEW_CLASSLOADER_PROPERTY)) {
+            if (Boolean.getBoolean(USE_NEW_CLASSLOADER_PROPERTY)) {
     	        	final List<String> tmpList = new ArrayList<String>();
-    	            tmpList.addAll(PELaunch.getSharedClasspath());
+    	            tmpList.addAll(getSharedClasspath());
                 //include addon jars as well now that they are not part of shared classpath. 
-    	            tmpList.addAll(PELaunch.getAddOnsClasspath());
+    	            tmpList.addAll(getAddOnsClasspath());
                 
     	            for(final String s:tmpList){
     	                tmpString.append(s);
@@ -253,9 +258,24 @@ public class ASClassLoaderUtil {
     /**
      * Returns the shared class loader
      * @return ClassLoader
-     *
+     */
     public static synchronized ClassLoader getSharedClassLoader() {
         //XXX return ApplicationServer.getServerContext().getSharedClassLoader();
         return null;
-    }*/
+    }
+    
+    public static ClassLoader getSharedChain(){
+        // not yet implemented
+        return null;
+    }    
+    
+    public static synchronized List<String> getSharedClasspath() {
+    	return null;
+    }
+    
+    public static synchronized List<String> getAddOnsClasspath() {
+        // not yet implemented
+    	return null;
+    }
+    
 }

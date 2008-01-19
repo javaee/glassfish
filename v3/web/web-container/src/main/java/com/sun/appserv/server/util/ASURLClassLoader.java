@@ -36,7 +36,7 @@
 
 package com.sun.appserv.server.util;
 
-import com.sun.enterprise.server.PELaunch;
+//import com.sun.enterprise.server.PELaunch;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Collections;
@@ -88,7 +88,7 @@ public class ASURLClassLoader extends URLClassLoader {
         //is either the SystemClassLoader (if shared chain is null!) 
         //or the Shared Chain.
         //super(urls, PELaunch.getSharedChain());
-        super(urls, PELaunch.getSharedChain()!=null ?PELaunch.getSharedChain()
+        super(urls, ASClassLoaderUtil.getSharedChain()!=null ?ASClassLoaderUtil.getSharedChain()
                 : ClassLoader.getSystemClassLoader());
         this.parentChain = parent;
         
