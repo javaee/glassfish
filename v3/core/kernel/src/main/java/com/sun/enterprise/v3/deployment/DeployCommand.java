@@ -67,6 +67,7 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
     public static final String NAME = "name";
     public static final String VIRTUAL_SERVERS = "virtualservers";
     public static final String CONTEXT_ROOT = "contextRoot";
+    public static final String LIBRARIES = "libraries";
 
     @Inject
     V3Environment env;
@@ -88,6 +89,9 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
     @Param(optional=true)
     @I18n("virtualservers")
     String virtualservers = null;
+
+    @Param(optional=true)
+    String libraries = null;
 
 
     @Param(primary=true, shortName = "p")
@@ -200,6 +204,7 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
 
             DeploymentContextImpl deploymentContext = new DeploymentContextImpl(logger,
                     archive, parameters, env);
+            deploymentContext.setClassLoader(cloader);
 
             ApplicationInfo appInfo = load(appSniffers, deploymentContext, report);
             if (report.getActionExitCode().equals(ActionReport.ExitCode.SUCCESS)) {
