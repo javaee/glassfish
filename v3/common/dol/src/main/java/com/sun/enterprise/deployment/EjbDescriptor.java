@@ -54,7 +54,7 @@ import com.sun.enterprise.deployment.types.MessageDestinationReference;
 import com.sun.enterprise.deployment.types.MessageDestinationReferencer;
 import com.sun.enterprise.deployment.types.MessageDestinationReferenceContainer;
 
-import com.sun.enterprise.util.BeanMethodCalculator;
+import com.sun.enterprise.deployment.util.BeanMethodCalculator;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.deployment.util.LogDomains;
 

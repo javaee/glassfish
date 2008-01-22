@@ -39,7 +39,6 @@ package com.sun.enterprise.deployment.util;
 import com.sun.enterprise.deployment.ServiceReferenceDescriptor;
 import com.sun.enterprise.deployment.WebService;
 import org.glassfish.api.deployment.archive.ReadableArchive;
-import com.sun.enterprise.util.FileUtil;
 
 import javax.xml.ws.WebServiceClient;
 import javax.xml.namespace.QName;
