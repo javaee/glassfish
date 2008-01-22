@@ -44,7 +44,7 @@ public class WarHandler extends AbstractArchiveHandler implements ArchiveHandler
             File base = new File(archive.getURI());
             r.setDocBase(base.getAbsolutePath());
             cloader.setResources(r);
-            cloader.addRepository("WEB-INF/classes/", new File(archive.getURI().toURL().toString() + "WEB-INF/classes/"));
+            cloader.addRepository("WEB-INF/classes/", new File(base, "WEB-INF/classes/"));
             File libDir = new File(base, "WEB-INF/lib");
             if (libDir.exists()) {
                 for (File file : libDir.listFiles(
