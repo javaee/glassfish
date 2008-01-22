@@ -1196,7 +1196,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
     /**
      * Loads all the standalone web-modules that are hosted (as specified by
      * the server configuration) under the specified virtual server.
-     */
+     *
     protected void loadWebModules(VirtualServer vs) {
         WebModuleConfig wmInfo = null;
         
@@ -1223,7 +1223,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                 }
             }
         }
-    }
+    }*/
     
     /**
      * Configures a default web module for each virtual server.
