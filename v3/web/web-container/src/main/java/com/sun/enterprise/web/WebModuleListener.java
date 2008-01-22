@@ -66,7 +66,7 @@ import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.PersistenceUnitDescriptor;
 import com.sun.enterprise.deployment.util.WebValidatorWithCL;
 import com.sun.enterprise.deployment.util.WebBundleVisitor;
-
+import com.sun.enterprise.server.ServerContext;
 import com.sun.logging.LogDomains;
 import com.sun.appserv.web.cache.CacheManager;
 import com.sun.appserv.server.util.ASClassLoaderUtil;
@@ -112,6 +112,8 @@ final class WebModuleListener
      * Note this is not the generated location.
      */
     private String explodedLocation;
+    
+    private ServerContext serverContext;
 
     /**
      * Constructor.
@@ -123,9 +125,11 @@ final class WebModuleListener
      * @param explodedLocation The location where this web module is exploded
      * @param wbd descriptor for this module.
      */
-    public WebModuleListener(String instanceClassPath,
+    public WebModuleListener(ServerContext serverContext,
+                             String instanceClassPath,
                              String explodedLocation,
                              WebBundleDescriptor wbd) {
+        this.serverContext = serverContext;
         this.instanceClassPath = instanceClassPath;
         this.wbd = wbd;
         this.explodedLocation = explodedLocation;
@@ -414,7 +418,8 @@ final class WebModuleListener
                                      "com.sun.enterprise.web.jsp.ResourceInjectorImpl");
 
             // START SJSAS 6311155
-            String sysClassPath = ASClassLoaderUtil.getWebModuleClassPath(webModule.getID());
+            String sysClassPath = ASClassLoaderUtil.getWebModuleClassPath(
+                    serverContext.getDefaultHabitat(), webModule.getID());
             if (_logger.isLoggable(Level.FINE)) {
                 _logger.fine(" sysClasspath for " + webModule.getID() + " is \n" 
                                                                + sysClassPath + "\n");

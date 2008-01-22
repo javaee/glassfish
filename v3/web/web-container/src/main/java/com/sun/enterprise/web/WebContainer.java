@@ -215,7 +215,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         instanceName = _serverContext.getInstanceName();
 
         //_embedded = new Embedded();
-        _embedded = new EmbeddedWebContainer(_logger, _serverContext.getDefaultHabitat(), this, null);
+        _embedded = new EmbeddedWebContainer(_logger, _serverContext, this, null);
         _embedded.setUseNaming(false);
         Module module = Module.find(EmbeddedWebContainer.class);
         engine = _embedded.createEngine();
@@ -3281,7 +3281,8 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
      */
     private void addLibs(Loader loader, WebModule ctx) {
         
-        String list = ASClassLoaderUtil.getLibrariesForModule(WebModule.class, ctx.getID());
+        String list = ASClassLoaderUtil.getLibrariesForModule(
+                _serverContext.getDefaultHabitat(), WebModule.class, ctx.getID());
         if (list == null) {
             return;
         }

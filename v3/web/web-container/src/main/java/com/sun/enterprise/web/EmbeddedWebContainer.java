@@ -65,6 +65,7 @@ import org.apache.tomcat.util.IntrospectionUtils;
 import com.sun.enterprise.deployment.WebBundleDescriptor; 
 import com.sun.enterprise.web.connector.coyote.PECoyoteConnector;
 //import com.sun.web.server.WebContainerListener;
+import com.sun.enterprise.server.ServerContext;
 import com.sun.enterprise.server.pluggable.WebContainerFeatureFactory;
 import com.sun.enterprise.config.serverbeans.Property;
 import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
@@ -91,6 +92,8 @@ public final class EmbeddedWebContainer extends Embedded {
     private WebContainerFeatureFactory webContainerFeatureFactory;
 
     private WebContainer webContainer;
+    
+    private ServerContext serverContext;
 
     /*
      * The value of the 'file' attribute of the log-service element
@@ -101,14 +104,17 @@ public final class EmbeddedWebContainer extends Embedded {
     // ------------------------------------------------------------ Constructor
 
     public EmbeddedWebContainer(Logger webLogger,
-                                Habitat habitat,
+                                ServerContext serverContext,
                                 WebContainer webContainer,
                                 String logServiceFile) {
         super();
         _logger = webLogger;
         this.webContainer = webContainer;
         this.logServiceFile = logServiceFile;
-        webContainerFeatureFactory = habitat.getByContract(WebContainerFeatureFactory.class);      
+        this.serverContext = serverContext;
+        webContainerFeatureFactory = serverContext.getDefaultHabitat().getByContract(
+                WebContainerFeatureFactory.class);      
+        
     }
     
 
@@ -243,7 +249,7 @@ public final class EmbeddedWebContainer extends Embedded {
         config.setDefaultWebXml(defaultWebXmlLocation);
         ((Lifecycle) context).addLifecycleListener(config);
 
-        context.addLifecycleListener(new WebModuleListener(
+        context.addLifecycleListener(new WebModuleListener(serverContext, 
                 webContainer.getInstanceClassPath(), location, wbd));
 
         //context.addInstanceListener(Constants.J2EE_INSTANCE_LISTENER);

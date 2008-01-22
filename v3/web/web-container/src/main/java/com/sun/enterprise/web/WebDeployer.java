@@ -81,15 +81,12 @@ public class WebDeployer extends JavaEEDeployer<WebContainer, WebApplication>{
 
     private static final String DEFAULT_WEB_XML = "default-web.xml";
 
-    //private WebModuleListener webModuleListener;
-
     private static WebBundleDescriptor defaultWebXMLWbd = null;
 
     /**
      * Constructor
      */
     public WebDeployer() {
-        //webModuleListener = new WebModuleListener();
     }
     
 

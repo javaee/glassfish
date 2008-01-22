@@ -46,12 +46,14 @@ import java.util.logging.*;
 //import com.sun.enterprise.config.ConfigContext;
 //import com.sun.enterprise.config.ConfigException;
 import com.sun.enterprise.config.serverbeans.Applications;
+import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.WebModule;
 //import com.sun.enterprise.server.ApplicationServer;
 //import com.sun.enterprise.server.PELaunch;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.v3.server.Globals;
+import org.jvnet.hk2.component.Habitat;
 
 public class ASClassLoaderUtil {
 
@@ -72,26 +74,27 @@ public class ASClassLoaderUtil {
      * for the passed in web module, including the module specified "libraries"
      * defined for the web module.
      */
-    public static String getWebModuleClassPath(String moduleId) {
-            if (_logger.isLoggable(Level.FINE)) {
+    public static String getWebModuleClassPath(Habitat habitat, String moduleId) {
+        
+        if (_logger.isLoggable(Level.FINE)) {
             _logger.log(Level.FINE, "ASClassLoaderUtil.getWebModuleClassPath " +
             		"for module Id : " + moduleId);
-            }
+        }
 
         synchronized(ASClassLoaderUtil.class) {
             if (sharedClasspathForWebModule == null) {
             	final StringBuilder tmpString = new StringBuilder();
-            if (Boolean.getBoolean(USE_NEW_CLASSLOADER_PROPERTY)) {
-    	        	final List<String> tmpList = new ArrayList<String>();
+                if (Boolean.getBoolean(USE_NEW_CLASSLOADER_PROPERTY)) {
+                    final List<String> tmpList = new ArrayList<String>();
     	            tmpList.addAll(getSharedClasspath());
-                //include addon jars as well now that they are not part of shared classpath. 
+                    //include addon jars as well now that they are not part of shared classpath. 
     	            tmpList.addAll(getAddOnsClasspath());
                 
     	            for(final String s:tmpList){
     	                tmpString.append(s);
     	                tmpString.append(File.pathSeparatorChar);
-                }
-            } else {
+                    }
+                } else {
     	            tmpString.append(System.getProperty("java.class.path"));
     	        }
     	        //set sharedClasspathForWebModule so that it doesn't need to be recomputed
@@ -100,58 +103,34 @@ public class ASClassLoaderUtil {
             }
         }
 
-            StringBuilder classpath = new StringBuilder(sharedClasspathForWebModule);
+        StringBuilder classpath = new StringBuilder(sharedClasspathForWebModule);
             
-            classpath.append(System.getProperty("java.class.path"));
+        classpath.append(System.getProperty("java.class.path"));
             
             
-            if (moduleId != null) {
-            final String specifiedLibraries = getLibrariesForWebModule(moduleId);
+        if (moduleId != null) {
+            final String specifiedLibraries = getLibrariesForWebModule(habitat, moduleId);
             final URL[] libs = getLibraries(specifiedLibraries);
-                if (libs == null)  {
-                    if (_logger.isLoggable(Level.FINE)) {
-                        _logger.log(Level.FINE, "classpath: " + classpath.toString());
-                    }
-                    return classpath.toString();
+            if (libs == null)  {
+                if (_logger.isLoggable(Level.FINE)) {
+                    _logger.log(Level.FINE, "classpath: " + classpath.toString());
                 }
+                return classpath.toString();
+            }
   
-                for (final URL u : libs) {
-                    classpath.append(u + File.pathSeparator);
-                }
+            for (final URL u : libs) {
+                classpath.append(u + File.pathSeparator);
             }
+        }
 
-            if (_logger.isLoggable(Level.FINE)) {
-                _logger.log(Level.FINE, "Final classpath: " + classpath.toString());    
-            }
+        if (_logger.isLoggable(Level.FINE)) {
+            _logger.log(Level.FINE, "Final classpath: " + classpath.toString());    
+        }
         
-            return classpath.toString();
+        return classpath.toString();
+        
     }
-    
-    
-    /**
-     * Returns the config api bean for the module of type T and which module 
-     * ID is equals to the passed one
-     */
-    private static <T> T getModule(Class<T> type, String moduleId) {
-        /*
-        for (Object app : getApplications().getLifecycleModuleOrJ2EeApplicationOrEjbModuleOrWebModuleOrConnectorModuleOrAppclientModuleOrMbeanOrExtensionModule()) {
-            if (app.getClass().getName().equals(type.getName())) {
-                try {
-                    Method m = type.getMethod("getName");
-                    if (m!=null) {
-                        String result = (String) m.invoke(app);
-                        if (moduleId.equals(result)) {
-                            return (T) app;
-                        }
-                    }
-                } catch(Exception e) {
-                    return null;
-                }
-            }
-        }*/
-        return null;
-    }
-    
+ 
     /**
      * Gets the deploy-time "libraries" attribute specified for module
      * @param the module type
@@ -159,8 +138,9 @@ public class ASClassLoaderUtil {
      * @return A comma separated list representing the libraries
      * specified by the deployer.
      */    
-    public static <T> String getLibrariesForModule(Class<T> type, String moduleId) {
-        T app = getModule(type, moduleId);
+    public static <T> String getLibrariesForModule(Habitat habitat, Class<T> type, String moduleId) {
+        
+        T app = ConfigBeansUtilities.getModule(type, getApplications(habitat), moduleId);
         if (app==null) return null;
         
         String librariesStr=null;
@@ -177,6 +157,7 @@ public class ASClassLoaderUtil {
             _logger.log(Level.SEVERE, "Cannot get libraries for module " + moduleId, e);
         }
         return librariesStr;
+        
     }
     
     /**
@@ -185,30 +166,25 @@ public class ASClassLoaderUtil {
      * @return A comma separated list representing the libraries
      * specified by the deployer.
      */
-    public static String getLibrariesForWebModule(String moduleId) {
-        /*
-        WebModule app = null;
-        try {
-            app = getApplications().getWebModuleByName(moduleId);
-            if(app == null) return null;
-        } catch(ConfigException malEx) {
-            _logger.log(Level.WARNING, "loader.cannot_convert_classpath_into_url",
-                                                                                           moduleId);
-            _logger.log(Level.WARNING,"loader.exception", malEx);            
-        }
+    public static String getLibrariesForWebModule(Habitat habitat, String moduleId) {
+            
+        WebModule module = ConfigBeansUtilities.getModule(WebModule.class, 
+                getApplications(habitat), moduleId);
+        if(module == null) 
+            return null;
 
-        String librariesStr  = app.getLibraries();
+        String librariesStr  = module.getLibraries();
         if (_logger.isLoggable(Level.FINE)) {
-            _logger.log(Level.FINE, "app = " +  app + " library = " + librariesStr);
+            _logger.log(Level.FINE, "moduleId = " +  moduleId + " library = " + librariesStr);
         }
+        
         return librariesStr;
-         */
-        return "";
+        
     }
     
     //Gets the Applications config bean from the application server's configcontext
-    private static Applications getApplications() {
-        Domain domain = Globals.getGlobals().getDefaultHabitat().getComponent(Domain.class);
+    private static Applications getApplications(Habitat habitat) {
+        Domain domain = habitat.getComponent(Domain.class);
         return domain.getApplications();
     }
     

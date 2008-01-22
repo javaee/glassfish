@@ -471,15 +471,15 @@ public class VirtualServer extends StandardHost {
      *
      * @return     The list of WebModuleConfig objects for all enabled
      *             web-modules hosted under the specified virtual server.
-     */
+     *
+    
     protected List getWebModules(Server serverBean, String modulesRoot) {
 
         List modules = new Vector();
 
         Domain domain = com.sun.enterprise.v3.server.Globals.getGlobals().getDefaultHabitat().getComponent(Domain.class);
         Applications appsBean = domain.getApplications();
-
-        /*
+        
         if (appsBean != null) {
             List apps = appsBean.getLifecycleModuleOrJ2EeApplicationOrEjbModuleOrWebModuleOrConnectorModuleOrAppclientModuleOrMbeanOrExtensionModule();
             for (Object app : apps) {
@@ -529,9 +529,8 @@ public class VirtualServer extends StandardHost {
         }
         
         return modules;
-         */
-        return null;
-    }
+        
+    }*/
 
     /**
      * Gets the context root of the web module that the user/configuration
@@ -1782,10 +1781,9 @@ public class VirtualServer extends StandardHost {
     /**
      * Starts the children (web contexts) of this virtual server
      * concurrently.
-     */
+     *
     protected void startChildren() {
-
-        /*
+     
         ArrayList<LifecycleStarter> starters
             = new ArrayList<LifecycleStarter>();
 
@@ -1810,6 +1808,6 @@ public class VirtualServer extends StandardHost {
                                                           getID() });
                 _logger.log(Level.SEVERE, msg, t);
             }
-        }*/
-    }
+        }
+    }*/
 }
