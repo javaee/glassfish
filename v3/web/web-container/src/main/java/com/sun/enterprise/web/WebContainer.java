@@ -192,6 +192,19 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
     
     public void postConstruct() {
         
+        instance = (V3Environment) _serverContext.getDefaultHabitat().getComponent(V3Environment.class);
+        _modulesWorkRoot = instance.getWebModuleCompileJspPath();
+        _appsWorkRoot = instance.getApplicationCompileJspPath();
+        _modulesRoot = instance.getModuleRepositoryPath();        
+        instanceClassPath = getInstanceClassPath(instance);
+        
+        setNoTldScan();
+        
+        // START S1AS 6178005
+        modulesStubRoot = instance.getModuleStubPath();
+        appsStubRoot = instance.getApplicationStubPath();
+        // END S1AS 6178005
+        
         defaultWebXml = System.getProperty("AS_DEF_DOMAINS_PATH");
         if (defaultWebXml != null) {
             defaultWebXml += File.separator + "domain1"

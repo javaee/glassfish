@@ -54,7 +54,10 @@ public class V3Environment  {
     public static final String kConfigDirName		= "config";    
     
     /** init file name */
-    public static final String kInitFileName                = "init.conf";    
+    public static final String kInitFileName                = "init.conf";   
+    
+    /** folder where the compiled JSP pages reside */
+    public static final String kCompileJspDirName		= "jsp";
 
     // TODO: this should be File
     final private String root;
@@ -107,11 +110,37 @@ public class V3Environment  {
     public String getApplicationGeneratedXMLPath() {
         return null;
     }
-
+    
+    /**
+        Returns the path for compiled JSP Pages from an J2EE application
+        that is deployed on this instance. By default all such compiled JSPs
+        should lie in the same folder.
+    */
     public String getApplicationCompileJspPath() {
-        return null;
+        String[] onlyFolderNames = new String[] {root,
+            kGeneratedDirName, kCompileJspDirName, kApplicationDirName};
+        return StringUtils.makeFilePath(onlyFolderNames, false);
     }
 
+    /**
+        Returns the path for compiled JSP Pages from an Web application
+        that is deployed standalone on this instance. By default all such compiled JSPs
+        should lie in the same folder.
+    */
+    public String getWebModuleCompileJspPath() {        
+        String[] onlyFolderNames = new String[] {root,
+            kGeneratedDirName, kCompileJspDirName, kModuleDirName};
+        return StringUtils.makeFilePath(onlyFolderNames, false);
+    }
+   
+    /**
+        Returns the absolute path for location where all the deployed
+        standalone modules are stored for this Server Instance.
+    */
+    public String getModuleRepositoryPath() {        
+        return null;
+    }
+    
     public String getJavaWebStartPath() {
         return null;
     }
@@ -119,14 +148,6 @@ public class V3Environment  {
     public String getApplicationBackupRepositoryPath() {
         return null;
     }    
-    
-    public String getWebModuleCompileJspPath() {
-        return null;
-    }
-    
-    public String getModuleRepositoryPath() {
-        return null;
-    }
     
     public String getInstanceClassPath() {
         return null;
