@@ -32,7 +32,7 @@ import com.sun.enterprise.v3.server.ApplicationLifecycle;
 import com.sun.enterprise.v3.server.V3Environment;
 import com.sun.enterprise.module.Module;
 import com.sun.enterprise.module.ModuleDefinition;
-import com.sun.enterprise.module.ClassLoaderProxy;
+import com.sun.enterprise.module.impl.ClassLoaderProxy;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;

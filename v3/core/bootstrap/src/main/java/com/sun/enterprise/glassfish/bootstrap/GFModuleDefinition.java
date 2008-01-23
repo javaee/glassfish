@@ -2,7 +2,7 @@ package com.sun.enterprise.glassfish.bootstrap;
 
 import com.sun.enterprise.module.ManifestConstants;
 import com.sun.enterprise.module.ModuleDefinition;
-import com.sun.enterprise.module.impl.DefaultModuleDefinition;
+import com.sun.enterprise.module.common_impl.DefaultModuleDefinition;
 
 import java.io.File;
 import java.io.IOException;

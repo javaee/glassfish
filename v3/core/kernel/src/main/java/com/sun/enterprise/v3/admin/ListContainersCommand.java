@@ -28,6 +28,7 @@ import com.sun.enterprise.v3.data.ApplicationInfo;
 import com.sun.enterprise.v3.data.ContainerInfo;
 import com.sun.enterprise.v3.data.ContainerRegistry;
 import com.sun.enterprise.module.Module;
+import com.sun.enterprise.module.impl.ModuleImpl;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.glassfish.api.admin.AdminCommand;
@@ -79,7 +80,8 @@ public class ListContainersCommand implements AdminCommand {
                     container.addProperty(
                             localStrings.getLocalString("status", "Status"),
                             localStrings.getLocalString("started", "Started"));
-                    Module connectorModule = Module.find(containerInfo.getContainer().getClass());
+                    // TODO (Sahoo): Stop using ModuleImpl
+                    Module connectorModule = ModuleImpl.find(containerInfo.getContainer().getClass());
                     container.addProperty(localStrings.getLocalString("connector", "Connector"),
                             connectorModule.getModuleDefinition().getName() +
                             ":" + connectorModule.getModuleDefinition().getVersion());

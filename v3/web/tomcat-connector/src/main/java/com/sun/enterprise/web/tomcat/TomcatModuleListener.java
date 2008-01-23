@@ -55,14 +55,14 @@ public class TomcatModuleListener implements LifecycleListener {
 
     public TomcatModuleListener() {
 
-        Module module = Module.find(LifecycleListener.class);
+        Module module = com.sun.enterprise.module.impl.ModuleImpl.find(LifecycleListener.class);
         ModuleDefinition moduleDef = module.getModuleDefinition();
         URI[] uris = moduleDef.getLocations();
         javacClassPath = uris[0].getPath() + File.pathSeparator;
         for (int i=1; i<uris.length; i++) {
             javacClassPath += uris[i].getPath() + File.pathSeparator;
         }
-        module = Module.find(Servlet.class);
+        module = com.sun.enterprise.module.impl.ModuleImpl.find(Servlet.class);
         moduleDef = module.getModuleDefinition();
         uris = moduleDef.getLocations();
         for (int i=0; i<uris.length; i++) {

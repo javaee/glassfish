@@ -28,6 +28,7 @@ import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.module.Module;
 import com.sun.enterprise.module.ResolveError;
 import com.sun.enterprise.module.ModuleDefinition;
+import com.sun.enterprise.module.impl.ModuleImpl;
 import com.sun.enterprise.v3.data.*;
 import com.sun.enterprise.v3.deployment.DeployCommand;
 import com.sun.enterprise.v3.deployment.DeploymentContextImpl;
@@ -160,7 +161,8 @@ abstract public class ApplicationLifecycle {
         // class loader) to be also loadable by the archive's class loader.
         List<ModuleDefinition> snifferDefs = new ArrayList<ModuleDefinition>();
         for (Sniffer sniffer : sniffers) {
-            Module module = Module.find(sniffer.getClass());
+            // TODO (Sahoo): Stop using ModuleImpl
+            Module module = ModuleImpl.find(sniffer.getClass());
             snifferDefs.add(module.getModuleDefinition());
         }
         return modulesRegistry.getModulesClassLoader(parent, snifferDefs);
@@ -256,7 +258,8 @@ abstract public class ApplicationLifecycle {
 
             ClassLoader currentCL = Thread.currentThread().getContextClassLoader();
             try {
-                Module connectorModule = Module.find(containerInfo.getContainer().getClass());
+                // TODO (Sahoo): Stop using ModuleImpl
+                Module connectorModule = ModuleImpl.find(containerInfo.getContainer().getClass());
                 Thread.currentThread().setContextClassLoader(connectorModule.getClassLoader());
                 try {
                     preparedDeployers.add(deployer);
@@ -281,7 +284,8 @@ abstract public class ApplicationLifecycle {
 
             ClassLoader currentCL = Thread.currentThread().getContextClassLoader();
             try {
-                Module connectorModule = Module.find(containerInfo.getContainer().getClass());
+                // TODO (Sahoo): Stop using ModuleImpl
+                Module connectorModule = ModuleImpl.find(containerInfo.getContainer().getClass());
                 Thread.currentThread().setContextClassLoader(connectorModule.getClassLoader());
                 try {
                     ApplicationContainer appCtr = deployer.load(containerInfo.getContainer(), context);

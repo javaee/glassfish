@@ -103,7 +103,7 @@ public class TomcatContainer implements Container, PostConstruct, PreDestroy {
         instanceName = sc.getInstanceName();
 
         embedded = new Embedded();
-        Module module = Module.find(Embedded.class);
+        Module module = com.sun.enterprise.module.impl.ModuleImpl.find(Embedded.class);
         System.out.println(module.getModuleDefinition());
         engine = embedded.createEngine();
         engine.setParentClassLoader(module.getClassLoader());

@@ -2,6 +2,7 @@ package com.sun.enterprise.v3.rails;
 
 import com.sun.enterprise.v3.deployment.GenericSniffer;
 import com.sun.enterprise.module.impl.CookedModuleDefinition;
+import com.sun.enterprise.module.impl.ModuleImpl;
 import com.sun.enterprise.module.Module;
 import com.sun.enterprise.module.ModuleDependency;
 import org.glassfish.api.container.Sniffer;
@@ -49,7 +50,8 @@ public class RailsSniffer extends GenericSniffer implements Sniffer {
         super.setup(containerHome, logger);
 
         Inhabitant<? extends Container> railsContainer = habitat.getInhabitant(Container.class, getModuleType());
-        Module glueModule = Module.find(railsContainer.type());
+        // TODO (Sahoo): Stop using ModuleImpl
+        Module glueModule = ModuleImpl.find(railsContainer.type());
         if (glueModule!=null) {
 
             File rootLocation = new File(containerHome);

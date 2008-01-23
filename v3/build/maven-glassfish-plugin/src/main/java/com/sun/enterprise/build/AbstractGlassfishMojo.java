@@ -6,7 +6,7 @@ import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.ProjectBuildingException;
 import org.apache.maven.project.MavenProjectBuilder;
 import org.apache.maven.artifact.Artifact;
-import com.sun.enterprise.module.impl.Jar;
+import com.sun.enterprise.module.common_impl.Jar;
 import com.sun.enterprise.module.ManifestConstants;
 
 import java.util.jar.Attributes;

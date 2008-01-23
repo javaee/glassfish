@@ -230,7 +230,8 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         //_embedded = new Embedded();
         _embedded = new EmbeddedWebContainer(_logger, _serverContext, this, null);
         _embedded.setUseNaming(false);
-        Module module = Module.find(EmbeddedWebContainer.class);
+        // TODO (Sahoo): Stop using ModuleImpl
+        Module module = com.sun.enterprise.module.impl.ModuleImpl.find(EmbeddedWebContainer.class);
         engine = _embedded.createEngine();
         engine.setParentClassLoader(module.getClassLoader());
         _embedded.addEngine(engine);

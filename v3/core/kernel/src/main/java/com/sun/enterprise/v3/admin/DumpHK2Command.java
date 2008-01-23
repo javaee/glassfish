@@ -1,6 +1,7 @@
 package com.sun.enterprise.v3.admin;
 
 import com.sun.enterprise.module.ModulesRegistry;
+import com.sun.enterprise.module.impl.ModulesRegistryImpl;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.ActionReport.ExitCode;
 import org.glassfish.api.admin.AdminCommand;
@@ -21,7 +22,8 @@ import java.io.PrintStream;
 @Service(name="dump-hk2")
 public class DumpHK2Command implements AdminCommand {
     public void execute(AdminCommandContext context) {
-        ModulesRegistry r = ModulesRegistry.find(getClass());
+        // TODO (Sahoo): Stop using ModulesRegistryImpl
+        ModulesRegistry r = ModulesRegistryImpl.find(getClass());
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
 

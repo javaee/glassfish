@@ -24,7 +24,8 @@
 package com.sun.enterprise.glassfish.bootstrap;
 
 import com.sun.enterprise.module.*;
-import com.sun.enterprise.module.impl.DirectoryBasedRepository;
+import com.sun.enterprise.module.impl.ModulesRegistryImpl;
+import com.sun.enterprise.module.common_impl.DirectoryBasedRepository;
 import com.sun.enterprise.module.bootstrap.BootException;
 
 import java.net.URLClassLoader;
@@ -52,8 +53,6 @@ public class Main extends com.sun.enterprise.module.bootstrap.Main {
         (new Main()).run(args);   
     }
 
-
-    @Override
     protected void setParentClassLoader(ModulesRegistry mr) throws BootException {
 
         ClassLoader cl = this.getClass().getClassLoader();

@@ -1,7 +1,7 @@
 package com.sun.enterprise.build;
 
 import com.sun.enterprise.module.ManifestConstants;
-import com.sun.enterprise.module.impl.Jar;
+import com.sun.enterprise.module.common_impl.Jar;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;

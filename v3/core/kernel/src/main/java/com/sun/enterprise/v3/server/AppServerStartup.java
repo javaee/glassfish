@@ -27,7 +27,9 @@ import com.sun.enterprise.module.*;
 import com.sun.enterprise.module.bootstrap.ModuleStartup;
 import com.sun.enterprise.module.bootstrap.StartupContext;
 import com.sun.enterprise.module.impl.CookedModuleDefinition;
-import com.sun.enterprise.module.impl.DirectoryBasedRepository;
+import com.sun.enterprise.module.common_impl.DirectoryBasedRepository;
+import com.sun.enterprise.module.impl.ModuleImpl;
+import com.sun.enterprise.module.impl.ModulesRegistryImpl;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.Startup;
 import org.jvnet.hk2.annotations.Inject;
@@ -84,7 +86,7 @@ public class AppServerStartup implements ModuleStartup {
         }
 
         // get the system registry
-        Module mainModule = Module.find(this.getClass());
+        Module mainModule = ModuleImpl.find(this.getClass());
         ModulesRegistry systemRegistry = mainModule.getRegistry();
 
         // set the parent class loader to the shared module class loader, if packaged
@@ -92,7 +94,7 @@ public class AppServerStartup implements ModuleStartup {
         if(parentModule!=null) {
             systemRegistry.setParentClassLoader(parentModule.getClassLoader());
         }
-        
+
         // prepare the global variables
         habitat.addComponent(null, systemRegistry);
         habitat.addComponent(LogDomains.CORE_LOGGER, logger);

@@ -31,6 +31,7 @@ import com.sun.enterprise.v3.data.ContainerRegistry;
 import com.sun.enterprise.v3.data.ContainerInfo;
 import com.sun.enterprise.v3.data.ApplicationInfo;
 import com.sun.enterprise.module.Module;
+import com.sun.enterprise.module.impl.ModuleImpl;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
 
@@ -56,7 +57,8 @@ public class ListApplicationsCommand implements AdminCommand {
         for (ContainerInfo containerInfo : containerRegistry.getContainers()) {
             ActionReport.MessagePart containerChild = part.addChild();
             containerChild.setMessage(containerInfo.getSniffer().getModuleType() + " ContractProvider");
-            Module connectorModule = Module.find(containerInfo.getContainer().getClass());            
+            // TODO (Sahoo): Stop using ModuleImpl
+            Module connectorModule = ModuleImpl.find(containerInfo.getContainer().getClass());            
             containerChild.addProperty("Connector module", connectorModule.getModuleDefinition().getName());
             containerChild.addProperty("Sniffer module", containerInfo.getSniffer().getClass().toString());
             containerChild.setChildrenType("Application");
