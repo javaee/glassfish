@@ -10,7 +10,7 @@ import javax.naming.NamingException;
 @Service
 @Scoped(PerLookup.class)
 public class NamingObjectProxy
-        implements NamingObjectFactory {
+        {
 
     private String name;
 
