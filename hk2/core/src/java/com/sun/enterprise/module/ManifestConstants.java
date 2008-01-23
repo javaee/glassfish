@@ -34,6 +34,10 @@ import com.sun.enterprise.module.bootstrap.ModuleStartup;
  * @author Kohsuke Kawaguchi
  */
 public class ManifestConstants {
+    /*
+     * TODO(Sahoo): Prefix all headers by HK2 to avoid name collision - Sahoo
+     */
+
     // No instanciation allowed.
     private ManifestConstants() {
     }
@@ -46,7 +50,7 @@ public class ManifestConstants {
      * <p>
      * Maven's <tt>hk2-module</tt> packaging type uses GROUPID:ARTIFACTID for this.
      */
-    public static final String BUNDLE_NAME = "Bundle-Name";
+    public static final String BUNDLE_NAME = "Bundle-Name"; 
 
     /**
      * Module name that we'll launch.
@@ -68,7 +72,7 @@ public class ManifestConstants {
      * <p>
      * TODO: expand Maven's <tt>hk2-module</tt> packaging to generate this.
      */
-    public static final String PKG_EXPORT_NAME = "Export-Package";
+    public static final String PKG_EXPORT_NAME = "HK2-Export-Package";
 
     /**
      * List of modules that this module depends on.
