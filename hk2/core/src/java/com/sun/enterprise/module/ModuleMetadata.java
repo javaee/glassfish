@@ -49,9 +49,9 @@ public final class ModuleMetadata {
         }
     }
 
-    /*package*/ static final class Entry {
-        /*package*/ final List<String> providerNames = new ArrayList<String>();
-        /*package*/ final List<URL> resources = new ArrayList<URL>();
+    public static final class Entry {
+        public final List<String> providerNames = new ArrayList<String>();
+        public final List<URL> resources = new ArrayList<URL>();
 
         /**
          * Loads a single service file.
@@ -78,13 +78,15 @@ public final class ModuleMetadata {
      */
     private final Map<String,Entry> entries = new HashMap<String, Entry>();
 
-    /*package*/ Entry getEntry(String serviceName) {
+    /*package*/
+    public Entry getEntry(String serviceName) {
         Entry e = entries.get(serviceName);
         if(e==null) e = NULL_ENTRY;
         return e;
     }
 
-    /*package*/ Iterable<Entry> getEntries() {
+    /*package*/
+    public Iterable<Entry> getEntries() {
         return entries.values();
     }
 

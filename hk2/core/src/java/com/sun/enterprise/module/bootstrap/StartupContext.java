@@ -9,7 +9,6 @@
 
 package com.sun.enterprise.module.bootstrap;
 
-import com.sun.enterprise.module.Module;
 import org.jvnet.hk2.annotations.Service;
 
 import java.io.File;

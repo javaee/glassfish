@@ -10,11 +10,15 @@
 package com.sun.enterprise.module.bootstrap;
 
 import com.sun.enterprise.module.ManifestConstants;
-import com.sun.enterprise.module.Module;
+import com.sun.enterprise.module.impl.ModuleImpl;
 import com.sun.enterprise.module.ModuleMetadata.InhabitantsDescriptor;
-import com.sun.enterprise.module.ModulesRegistry;
+import com.sun.enterprise.module.impl.ModulesRegistryImpl;
+import com.sun.enterprise.module.impl.HK2Factory;
 import com.sun.enterprise.module.Repository;
-import com.sun.enterprise.module.impl.DirectoryBasedRepository;
+import com.sun.enterprise.module.ModulesRegistry;
+import com.sun.enterprise.module.Module;
+import com.sun.enterprise.module.common_impl.DirectoryBasedRepository;
+import com.sun.enterprise.module.common_impl.AbstractFactory;
 import com.sun.hk2.component.ExistingSingletonInhabitant;
 import static com.sun.hk2.component.InhabitantsFile.CLASS_KEY;
 import static com.sun.hk2.component.InhabitantsFile.INDEX_KEY;
@@ -50,6 +54,10 @@ public class Main {
 
     public static void main(final String[] args) {
         (new Main()).run(args);       
+    }
+
+    public Main() {
+        HK2Factory.initialize();
     }
 
     public void run(final String[] args) {
@@ -132,7 +140,7 @@ public class Main {
         String targetModule = findMainModuleName(bootstrap);
 
         // get the ModuleStartup implementation.
-        ModulesRegistry mr = ModulesRegistry.createRegistry();
+        ModulesRegistry mr = AbstractFactory.getInstance().createModulesRegistry();
         Manifest mf;
         try {
             mf = (new JarFile(bootstrap)).getManifest();
@@ -277,6 +285,8 @@ public class Main {
         Habitat mgr = registry.newHabitat();
         mgr.add(new ExistingSingletonInhabitant<StartupContext>(context));
         mgr.add(new ExistingSingletonInhabitant<Logger>(Logger.global));
+        // the root registry must be added as other components sometimes inject it 
+        mgr.add(new ExistingSingletonInhabitant(ModulesRegistry.class, registry));
         ClassLoader oldCL = Thread.currentThread().getContextClassLoader();
         Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
         try {
@@ -327,13 +337,13 @@ public class Main {
                 Iterator<ModuleStartup> itr = startups.iterator();
                 ModuleStartup a = itr.next();
                 ModuleStartup b = itr.next();
-                Module am = Module.find(a.getClass());
-                Module bm = Module.find(b.getClass());
+                Module am = ModuleImpl.find(a.getClass());
+                Module bm = ModuleImpl.find(b.getClass());
                 throw new BootException(String.format("Multiple ModuleStartup found: %s from %s and %s from %s",a,am,b,bm));
             }
 
             startupCode = startups.iterator().next();
-            mainModule = Module.find(startupCode.getClass());
+            mainModule = ModuleImpl.find(startupCode.getClass());
         }
 
         mainModule.setSticky(true);

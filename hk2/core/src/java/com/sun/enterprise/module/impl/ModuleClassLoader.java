@@ -21,17 +21,15 @@
  * Copyright 2006 Sun Microsystems, Inc. All rights reserved.
  */
 
-package com.sun.enterprise.module;
+package com.sun.enterprise.module.impl;
 
-import com.sun.enterprise.module.impl.Utils;
+import com.sun.enterprise.module.Module;
+import com.sun.enterprise.module.ModuleState;
+import com.sun.enterprise.module.ModulesRegistry;
 
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.URL;
-import java.net.URLClassLoader;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Vector;
@@ -43,7 +41,7 @@ import java.util.Vector;
  */
 final class ModuleClassLoader extends ClassLoaderProxy {
     
-    private final Module module;
+    private final ModuleImpl module;
 
     /**
      * Module will be initialized when this classloader is consulted for the first time.
@@ -53,7 +51,7 @@ final class ModuleClassLoader extends ClassLoaderProxy {
     private String initializerClassName;
 
     /** Creates a new instance of ClassLoader */
-    public ModuleClassLoader(Module owner, URL[] shared, ClassLoader parent) {
+    public ModuleClassLoader(ModuleImpl owner, URL[] shared, ClassLoader parent) {
         super(shared, parent);
         this.module = owner;
     }
@@ -93,7 +91,7 @@ final class ModuleClassLoader extends ClassLoaderProxy {
             // so check for those
             if(name.endsWith(".class")) {
                 String className = name.replace('/', '.').substring(0, name.length() - 6);
-                Module m = module.getRegistry().getProvidingModule(className);
+                ModuleImpl m = module.getRegistry().getProvidingModule(className);
                 if(m!=null)
                     return m.getPrivateClassLoader().getResource(name);
             }
@@ -172,7 +170,7 @@ final class ModuleClassLoader extends ClassLoaderProxy {
         }
     }
         
-    public Module getOwner() {
+    public ModuleImpl getOwner() {
         return module;
     }
 

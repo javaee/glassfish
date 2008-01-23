@@ -21,7 +21,7 @@
  * Copyright 2006 Sun Microsystems, Inc. All rights reserved.
  */
 
-package com.sun.enterprise.module.impl;
+package com.sun.enterprise.module.common_impl;
 
 import com.sun.enterprise.module.ManifestConstants;
 import com.sun.enterprise.module.ModuleDefinition;
@@ -69,8 +69,9 @@ public class DefaultModuleDefinition implements ModuleDefinition {
     public DefaultModuleDefinition(File location) throws IOException {
         this(location, null);
     }
-    
-    protected DefaultModuleDefinition(File location, Attributes attr) throws IOException {
+
+    // Sahoo changed it to public so that it can be used by osgi-adapter
+    public DefaultModuleDefinition(File location, Attributes attr) throws IOException {
 
         classPath.add(location.toURI());
         

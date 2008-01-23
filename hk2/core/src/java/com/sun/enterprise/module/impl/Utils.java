@@ -23,8 +23,8 @@
 
 package com.sun.enterprise.module.impl;
 
-import com.sun.enterprise.module.Module;
 import com.sun.enterprise.module.ModuleDependency;
+import com.sun.enterprise.module.Module;
 import com.sun.enterprise.module.ModulesRegistry;
 
 import java.util.Vector;
@@ -49,7 +49,7 @@ public class Utils {
         return false;
     }
 
-    public static void identifyCyclicDependency(Module m, Logger logger) {
+    public static void identifyCyclicDependency(ModuleImpl m, Logger logger) {
 
         StringBuffer tree = new StringBuffer();
         tree.append(m.getName());
@@ -65,7 +65,7 @@ public class Utils {
         }
     }
 
-    static private boolean traverseAndFind(Module toTraverse, Module toFind, Vector<Module> traversed) {
+    static private boolean traverseAndFind(Module toTraverse, ModuleImpl toFind, Vector<Module> traversed) {
 
         traversed.add(toTraverse);
         for (ModuleDependency md : toTraverse.getModuleDefinition().getDependencies())  {
