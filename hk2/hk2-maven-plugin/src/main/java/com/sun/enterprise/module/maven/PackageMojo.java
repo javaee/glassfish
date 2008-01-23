@@ -124,7 +124,7 @@ public class PackageMojo extends AbstractMojo {
 
         try {
             new Packager().configureManifet(project,archive,classesDirectory);
-//            new OSGiPackager().configureOSGiManifest(project,archive,classesDirectory);
+            new OSGiPackager().configureOSGiManifest(project,archive,classesDirectory);
 
             File contentDirectory = classesDirectory;
             if (!contentDirectory.exists()) {

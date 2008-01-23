@@ -107,6 +107,11 @@ public class OSGiPackager {
             entries.put(BUNDLE_MANIFESTVERSION, "2");
         }
 
+        if (entries.get(BUNDLE_NAME) == null) {
+            // Bundle-Name is a human readable localizable name that can contain spaces
+            entries.put(BUNDLE_NAME, pom.getName());
+        }
+
         if (entries.get(BUNDLE_SYMBOLICNAME) == null) {
             // OSGi convention is to use reverse domain name for SymbolicName, hence use .
             entries.put(BUNDLE_SYMBOLICNAME, pom.getGroupId()+'.'+pom.getArtifactId());
@@ -293,16 +298,18 @@ public class OSGiPackager {
             Collection<ExportedPackage> packages, String version) {
         // Export-Packages=a.b.c;version=1.0.0.SNAPSHOT,p.q.r;x.y.z;version=2.0
 
-        // TODO: Make use of version attribute and uses directive
         if (packages.isEmpty()) {
             return "";
         }
         StringBuilder sb = new StringBuilder();
         for(ExportedPackage p : packages) {
             if(sb.length()>0) {
-                sb.append(",");
+                sb.append(","); // exclude the first one
             }
             sb.append(p.packageName);
+
+            // TODO: Make use of uses directive
+
             if (version!=null) {
                 sb.append(";").append(VERSION_ATTRIBUTE).append("=").append(version);
             }
