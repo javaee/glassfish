@@ -1,6 +1,7 @@
-package com.sun.enterprise.module.impl;
+package com.sun.enterprise.module.common_impl;
 
 import com.sun.enterprise.module.ModuleMetadata;
+import com.sun.enterprise.module.impl.Utils;
 import com.sun.enterprise.module.ModuleMetadata.InhabitantsDescriptor;
 import com.sun.hk2.component.InhabitantsFile;
 

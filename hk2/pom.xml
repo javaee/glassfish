@@ -6,6 +6,12 @@
     <packaging>pom</packaging>
     
     <version>0.2-SNAPSHOT</version>
+    <properties>
+       <!-- Sice OSGi versioning scheme differs from Maven versioning scheme,
+            every time we change Maven version, we need to change the OSGi
+            version (below property) as well. -->
+       <hk2-osgi-version>0.2.0.SNAPSHOT</hk2-osgi-version>
+    </properties>
     <name>Modules Subsystem</name>
     <description>Generic Modules subsystem</description>
     <developers>
@@ -25,6 +31,15 @@
             <organization>Sun Microsystems, Inc.</organization>
             <roles>
                 <role>lead</role>
+                <role>developer</role>
+            </roles>
+        </developer>
+        <developer>
+            <id>ss141213</id>
+            <name>Sanjeeb Sahoo</name>
+            <url>http://weblogs.java.net/ss141213</url>
+            <organization>Sun Microsystems, Inc.</organization>
+            <roles>
                 <role>developer</role>
             </roles>
         </developer>
@@ -125,6 +140,7 @@
         <module>hk2</module>
         <module>hk2-maven</module>
         <module>hk2-maven-plugin</module>
+        <module>osgi-adapter</module>
         <module>test-harness</module>
     </modules>
 

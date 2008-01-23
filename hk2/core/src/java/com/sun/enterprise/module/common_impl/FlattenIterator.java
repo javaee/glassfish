@@ -1,4 +1,4 @@
-package com.sun.enterprise.module.impl;
+package com.sun.enterprise.module.common_impl;
 
 import java.util.Collections;
 import java.util.Iterator;

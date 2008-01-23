@@ -1,6 +1,11 @@
-package com.sun.enterprise.module.impl;
+package com.sun.enterprise.module.common_impl;
 
-import com.sun.enterprise.module.*;
+import com.sun.enterprise.module.Repository;
+import com.sun.enterprise.module.ModuleDefinition;
+import com.sun.enterprise.module.RepositoryChangeListener;
+import com.sun.enterprise.module.ManifestConstants;
+import com.sun.enterprise.module.Module;
+import com.sun.enterprise.module.ModulesRegistry;
 
 import java.io.*;
 import java.net.URI;
@@ -15,6 +20,7 @@ import java.util.jar.Manifest;
  *
  * @author Kohsuke Kawaguchi
  * @author Jerome Dochez
+ * @author Sanjeeb.Sahoo@Sun.COM
  */
 public abstract class AbstractRepositoryImpl implements Repository {
     private final String name;
@@ -153,8 +159,11 @@ public abstract class AbstractRepositoryImpl implements Repository {
         return s.toString();
     }
 
-    public Module newModule(ModulesRegistry registry, ModuleDefinition def) {
-        return new Module(registry,def);
+    public Module newModule(
+            ModulesRegistry registry, ModuleDefinition moduleDef) {
+        // TODO (Sahoo): Should newModule be really a part of Repository i/f?
+        // Check with Jerome
+        return AbstractFactory.getInstance().createModule(registry, moduleDef);
     }
 
     /**
@@ -207,4 +216,5 @@ public abstract class AbstractRepositoryImpl implements Repository {
     protected ModuleDefinition newModuleDefinition(File jar, Attributes attr) throws IOException {
         return new DefaultModuleDefinition(jar, attr);
     }
+
 }

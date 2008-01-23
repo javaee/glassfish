@@ -7,25 +7,27 @@
  * and open the template in the editor.
  */
 
-package com.sun.enterprise.module.impl;
+package com.sun.enterprise.module.common_impl;
 
-import com.sun.enterprise.module.RepositoryChangeListener;
 import com.sun.enterprise.module.ModuleDefinition;
-import com.sun.enterprise.module.ManifestConstants;
+import com.sun.enterprise.module.RepositoryChangeListener;
 
-import java.io.*;
-import java.util.*;
-import java.util.logging.Logger;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.net.URI;
-import java.nio.channels.ReadableByteChannel;
-import java.nio.channels.Channels;
-import java.nio.channels.FileChannel;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * This class is a directory based repository implementation. This mean that all jar
- * file residing a particular directory will be elligible to be added to this 
+ * file residing a particular directory will be elligible to be added to this
  * repository instance. Jar File will need to be compliant with the module definition
- * spec which mean have a manifest file with the correct elements OR a separate 
+ * spec which mean have a manifest file with the correct elements OR a separate
  * manifest file with the same file name with a .mf extension.
  *
  * @author Jerome Dochez
@@ -37,11 +39,10 @@ public class DirectoryBasedRepository extends AbstractRepositoryImpl {
     private Timer timer;
 
     /** Creates a new instance of DirectoryBasedRepository */
-    public DirectoryBasedRepository(String name, File repository) throws FileNotFoundException {
+    public DirectoryBasedRepository(String name, File repository) {
         super(name,repository.toURI());
         this.repository = repository;
     }
-
 
     @Override
     public synchronized boolean addListener(RepositoryChangeListener listener) {
@@ -75,7 +76,6 @@ public class DirectoryBasedRepository extends AbstractRepositoryImpl {
     }
     
 
-    @Override
     protected void loadModuleDefs(Map<String, ModuleDefinition> moduleDefs, List<URI> libraries) throws IOException {
         if (!repository.exists()) {
             throw new FileNotFoundException(repository.getAbsolutePath());

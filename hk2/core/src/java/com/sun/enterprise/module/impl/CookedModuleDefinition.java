@@ -24,6 +24,8 @@
 package com.sun.enterprise.module.impl;
 
 import com.sun.enterprise.module.ModuleDependency;
+import com.sun.enterprise.module.common_impl.DefaultModuleDefinition;
+import com.sun.enterprise.module.common_impl.DefaultModuleDefinition;
 
 import java.io.File;
 import java.io.IOException;

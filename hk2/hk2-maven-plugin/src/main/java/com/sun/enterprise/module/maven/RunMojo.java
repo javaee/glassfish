@@ -1,10 +1,11 @@
 package com.sun.enterprise.module.maven;
 
-import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.module.bootstrap.BootException;
 import com.sun.enterprise.module.bootstrap.Main;
 import com.sun.enterprise.module.bootstrap.StartupContext;
 import com.sun.enterprise.module.bootstrap.ModuleStartup;
+import com.sun.enterprise.module.common_impl.AbstractFactory;
+import com.sun.enterprise.module.ModulesRegistry;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -112,7 +113,7 @@ public class RunMojo extends AbstractMojo {
      * Creates a fully configured module registry.
      */
     protected ModulesRegistry createModuleRegistry() throws IOException {
-        ModulesRegistry r = ModulesRegistry.createRegistry();
+        ModulesRegistry r = AbstractFactory.getInstance().createModulesRegistry();
         r.setParentClassLoader(this.getClass().getClassLoader());
         MavenProjectRepository lib = new MavenProjectRepository(project,artifactResolver,localRepository,artifactFactory);
         r.addRepository(lib);

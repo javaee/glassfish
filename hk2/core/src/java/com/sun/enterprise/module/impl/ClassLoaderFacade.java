@@ -21,7 +21,7 @@
  * Copyright 2006 Sun Microsystems, Inc. All rights reserved.
  */
 
-package com.sun.enterprise.module;
+package com.sun.enterprise.module.impl;
 
 import com.sun.enterprise.module.impl.Utils;
 
