@@ -12,6 +12,23 @@
     <name>Module packaging for JRuby grizzly adapter for V3</name>
     <description>JRUBY grizzly adapter for GlassFish v3</description>
 
+    <build>
+        <plugins>
+            <plugin>
+                <!-- This is needed because the pom version 1.7.0_01
+                     is not compatible with OSGi. -->
+                <groupId>com.sun.enterprise</groupId>
+                <artifactId>hk2-maven-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifestEntries>
+                            <Bundle-Version>1.7.0-01</Bundle-Version>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
     <developers>
         <developer>
             <id>pramodgo</id>
@@ -41,7 +58,7 @@
                 <role>developer</role>
             </roles>
         </developer>
-    </developers>       
+    </developers>
     <dependencies>
         <dependency>
             <groupId>com.sun.grizzly</groupId>
@@ -54,15 +71,15 @@
                  </exclusion>
                  <exclusion>
                      <groupId>backport-util-concurrent</groupId>
-                     <artifactId>backport-util-concurrent</artifactId>                    
+                     <artifactId>backport-util-concurrent</artifactId>
                  </exclusion>
                  <exclusion>
                      <groupId>asm</groupId>
-                     <artifactId>asm</artifactId>                     
+                     <artifactId>asm</artifactId>
                  </exclusion>
                  <exclusion>
                      <groupId>com.sun.grizzly</groupId>
-                     <artifactId>grizzly-http</artifactId>                     
+                     <artifactId>grizzly-http</artifactId>
                  </exclusion>
              </exclusions>
         </dependency>
