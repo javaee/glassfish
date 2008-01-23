@@ -1,52 +1,34 @@
 package org.glassfish.api.naming;
 
-import org.jvnet.hk2.annotations.Scoped;
-import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.PerLookup;
+import org.jvnet.hk2.annotations.Contract;
 
 import javax.naming.Context;
 import javax.naming.NamingException;
 
-@Service
-@Scoped(PerLookup.class)
-public class NamingObjectProxy
-        {
+/**
+ * A proxy object that can be bound to GlassfishNamingManager. Concrete
+ *  implementation of this contract will take appropriate action when
+ *  the proxy is lookedup. Typically, this can be used to lazily
+ *  instantiate an Object at lookup time than at bind time.
+ *
+ * Again, it is upto the implementation to cache the result (inside
+ *  the proxy implementation so that subsequent lookup can obtain the
+ *  same cacheed object. Or the implementation can choose to return
+ *  different object every time.
+ *
+ * @author Mahesh Kannan
+ *
+ */
 
-    private String name;
+@Contract
+public interface NamingObjectProxy {
 
-    private String jndiName;
-
-    private boolean cacheResult;
-
-    private Object value;
-
-    public NamingObjectProxy(String name, String jndiName,
-                             boolean cacheResult) {
-        this.name = name;
-        this.jndiName = jndiName;
-        this.cacheResult = cacheResult;
-    }
-
-    public boolean isCreateResultCacheable() {
-        return true;
-    }
-
-    public Object create(Context ic)
-            throws NamingException {
-        Object result = null;
-        if (cacheResult && value != null) {
-            result = value;
-        }
-
-        if (result == null) {
-            result = ic.lookup(jndiName);
-            if (cacheResult) {
-                value = result;
-            }
-        }
-
-        return result;
-    }
+    /**
+     * Create and return an object.
+     *
+     * @return an object
+     */
+    public Object getObject(Context ic)
+            throws NamingException;
 
 }
-
