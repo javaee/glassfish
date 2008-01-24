@@ -11,6 +11,9 @@
     <packaging>pom</packaging>
     <name>GlassFish Common modules</name>  
     <modules>
+        <module>mbeanserver</module>
+        <module>amx-api</module>
+        <module>amx-impl</module>
         <module>glassfish-api</module>
         <module>annotation-framework</module>
         <module>common-util</module>
