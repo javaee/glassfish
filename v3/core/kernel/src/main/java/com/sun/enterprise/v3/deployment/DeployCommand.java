@@ -68,6 +68,7 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
     public static final String VIRTUAL_SERVERS = "virtualservers";
     public static final String CONTEXT_ROOT = "contextRoot";
     public static final String LIBRARIES = "libraries";
+    public static final String DIRECTORY_DEPLOYED = "DirectoryDeployed";
 
     @Inject
     V3Environment env;
@@ -170,7 +171,9 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
                 return;
             }
             File source = new File(archive.getURI().getSchemeSpecificPart());
+            boolean isDirectoryDeployed = true;
             if (!source.isDirectory()) {
+                isDirectoryDeployed = false;
                 expansionDir = new File(env.getApplicationRepositoryPath(), name);
                 if (!expansionDir.mkdirs()) {
                     report.setMessage(localStrings.getLocalString("deploy.cannotcreateexpansiondir", "Error while creating directory for jar expansion: {0}",expansionDir));
@@ -220,7 +223,7 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
                 }
                 moduleProps.setProperty("Type", sb.toString());
                 moduleProps.setProperty("Source", deploymentContext.getSource().getURI().toString());
-
+                moduleProps.setProperty(DIRECTORY_DEPLOYED, String.valueOf(isDirectoryDeployed));
                 metaData.save(name, moduleProps);
             }
         } catch(Exception e) {

@@ -25,6 +25,7 @@ package com.sun.enterprise.v3.deployment;
 
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.io.FileUtils;
+import com.sun.enterprise.v3.contract.ApplicationMetaDataPersistence;
 import com.sun.enterprise.v3.data.ApplicationInfo;
 import com.sun.enterprise.v3.data.ApplicationRegistry;
 import com.sun.enterprise.v3.server.ApplicationLifecycle;
@@ -62,6 +63,9 @@ public class UndeployCommand extends ApplicationLifecycle implements AdminComman
     ApplicationRegistry appRegistry;
 
     @Inject
+    ApplicationMetaDataPersistence metaData;
+
+    @Inject
     GrizzlyService adapter;
 
     @Param(primary = true, name=DeployCommand.NAME)
@@ -92,8 +96,18 @@ public class UndeployCommand extends ApplicationLifecycle implements AdminComman
 
         undeploy(name, deploymentContext, report);
         if (report.getActionExitCode().equals(ActionReport.ExitCode.SUCCESS)) {
+                //check if deployment is from directory
+            Properties props = metaData.load(name);
+            boolean isDirectoryDeployed = false;
+            if (props!=null) {
+                isDirectoryDeployed = Boolean.valueOf(props.getProperty(DeployCommand.DIRECTORY_DEPLOYED));
+            }
+                //remove context from generated
             deleteContainerMetaInfo(info, deploymentContext);
-            FileUtils.whack(new File(info.getSource().getURI()));
+                //if directory deployment then do no remove the directory
+            if (!isDirectoryDeployed) {
+                FileUtils.whack(new File(info.getSource().getURI()));
+            }
             report.setMessage(localStrings.getLocalString("redeploy.command.sucess",
                     "{0} undeployed successfully", name));
             report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
