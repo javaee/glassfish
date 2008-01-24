@@ -11,7 +11,7 @@ import org.glassfish.api.invocation.ComponentInvocation;
 
 import com.sun.enterprise.naming.spi.GlassfishNamingManager;
 import com.sun.enterprise.naming.spi.JNDIBinding;
-import com.sun.enterprise.naming.spi.NamingObjectFactory;
+import org.glassfish.api.naming.NamingObjectProxy;
 
 import com.sun.enterprise.naming.util.LogFacade;
 
@@ -377,16 +377,9 @@ public final class  GlassfishNamingManagerImpl
         if (obj == null)
             throw new NameNotFoundException("No object bound to name " + name);
 
-        if (obj instanceof NamingObjectFactory) {
-            NamingObjectFactory factory = (NamingObjectFactory) obj;
-            obj = factory.create(ic);
-            if (obj != null) {
-                if (factory.isCreateResultCacheable()) {
-                    namespace.put(name, obj);
-                }
-            } else {
-                // TODO::
-            }
+        if (obj instanceof NamingObjectProxy) {
+            NamingObjectProxy namingProxy = (NamingObjectProxy) obj;
+            obj = namingProxy.create(ic);
         }
 
         return obj;
