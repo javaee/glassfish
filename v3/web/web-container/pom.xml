@@ -73,11 +73,6 @@
         </dependency>
         <dependency>
             <groupId>org.glassfish.admin</groupId>
-            <artifactId>jmx-remote</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.admin</groupId>
             <artifactId>monitoring-core</artifactId>
             <version>${project.version}</version>
         </dependency>
