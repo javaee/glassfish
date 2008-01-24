@@ -79,7 +79,6 @@
             <groupId>org.glassfish.common</groupId>
             <artifactId>amx-impl</artifactId>
             <version>${pe.version}</version>
-            <type>zip</type>
         </dependency>
 
     </dependencies>
