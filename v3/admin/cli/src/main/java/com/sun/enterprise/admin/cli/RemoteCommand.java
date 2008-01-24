@@ -100,6 +100,10 @@ public class RemoteCommand {
                 httpConnection = httpConnection + "?DEFAULT=" + URLEncoder.encode(operand, "UTF-8");
             }
 
+            if (fileName != null && fileName.isDirectory()) {
+                uploadFile = false;
+            }
+
             if (TRACE) {
                 System.out.println("Connecting to " + httpConnection);
             }
