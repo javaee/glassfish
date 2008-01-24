@@ -28,13 +28,14 @@ import java.lang.management.ManagementFactory;
 
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.component.PerLookup;
 
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.glassfish.api.ActionReport.ExitCode;
-
 
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.management.mbeanserver.GlassfishMBeanServerFactory;
@@ -47,7 +48,7 @@ import com.sun.enterprise.management.mbeanserver.GlassfishMBeanServerFactory;
 @Service(name="amx")
 @I18n("amx.command")
 // perhaps scope should be persistent if this command is to initialize
-@Scope(PerLookup.class)
+@Scoped(PerLookup.class)
 public class AMXCommand implements AdminCommand {
     private static final LocalStringManagerImpl localStrings = new LocalStringManagerImpl(AMXCommand.class);
     
@@ -60,6 +61,7 @@ public class AMXCommand implements AdminCommand {
         
         try {
            GlassfishMBeanServerFactory.getMBeanServer();
+           System.out.println( "GlassfishMBeanServerFactory.getMBeanServer OK" ); 
         }
         catch ( Throwable t ) {
             System.out.println( t );
