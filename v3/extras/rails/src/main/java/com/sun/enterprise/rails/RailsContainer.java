@@ -58,6 +58,8 @@ public class RailsContainer implements Container, PostConstruct, PreDestroy {
         String jrubyHome = System.getProperty("jruby.home");
         String jrubyShell = System.getProperty("jruby.shell");
         String jrubyScript = System.getProperty("jruby.script");
+        String jrubyRuntime = System.getProperty("jruby.runtime");
+        String railsEnv = System.getProperty("RAILS_ENV");
 
         if (jrubyHome == null) {
             logger.severe("jruby.home cannot be null");
@@ -72,11 +74,32 @@ public class RailsContainer implements Container, PostConstruct, PreDestroy {
         if (jrubyScript == null) {
             jrubyScript = "";
         }
+        
+        // For now using the numberOfRuntimes provided by the user as is, later
+        // this would be tied to the mode of deployment production/development/test
+        // In the near future provide a jruby-container element in the domain.xml
+        // that could have all the jruby related information as part of it.
+        if (jrubyRuntime != null) {
+            try {
+                numberOfRuntime = Integer.parseInt(jrubyRuntime);
+            } catch (NumberFormatException ex) {
+                // For now ignoring the exception and setting the default
+            }
+        }
+        if ((railsEnv != null && railsEnv.equalsIgnoreCase("production")) &&
+            (jrubyRuntime == null)) {
+            // By default if the user has defined a production environment and
+            // not provided the number of runtimes to start we start with a 
+            // default value of '3'. Why '3' (have no idea, just a number that 
+            // I decided on).
+            numberOfRuntime = 3;
+        }
         System.setProperty("jruby.script", jrubyScript);
         System.setProperty("jruby.shell", jrubyShell);
         System.setProperty("jruby.base", jrubyBase);
-               
-        
+        // Do we really need to set system property for this
+        // System.setProperty("jruby.runtime", Integer.valueOf(numberOfRuntime).toString());
+
         jrubyLib = System.getProperty("jruby.lib");
 
         if (jrubyLib == null) {
