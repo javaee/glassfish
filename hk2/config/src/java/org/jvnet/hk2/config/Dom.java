@@ -17,6 +17,7 @@ import java.lang.reflect.Proxy;
 import java.lang.reflect.Type;
 import java.util.*;
 import java.util.regex.Pattern;
+import java.beans.PropertyVetoException;
 
 /**
  * {@link Inhabitant} that loads configuration from XML.
@@ -551,7 +552,7 @@ public class Dom extends LazyInhabitant implements InvocationHandler {
         return target.get(this, t);
     }
 
-    protected void setter(ConfigModel.Property target, Object value) {
+    protected void setter(ConfigModel.Property target, Object value) throws Exception {
         target.set(this, value);
     }
 
