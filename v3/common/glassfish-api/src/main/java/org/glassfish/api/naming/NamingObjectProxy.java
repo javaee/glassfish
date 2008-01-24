@@ -28,7 +28,7 @@ public interface NamingObjectProxy {
      *
      * @return an object
      */
-    public Object getObject(Context ic)
+    public Object create(Context ic)
             throws NamingException;
 
 }
