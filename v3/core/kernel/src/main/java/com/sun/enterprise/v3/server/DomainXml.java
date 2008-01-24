@@ -1,6 +1,6 @@
 package com.sun.enterprise.v3.server;
 
-import com.sun.enterprise.config.serverbeans.GlassFishDocument;
+import org.glassfish.config.support.GlassFishDocument;
 import com.sun.enterprise.module.bootstrap.Populator;
 import com.sun.enterprise.module.bootstrap.StartupContext;
 import com.sun.hk2.component.ExistingSingletonInhabitant;

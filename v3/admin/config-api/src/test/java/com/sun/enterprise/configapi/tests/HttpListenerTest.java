@@ -38,9 +38,9 @@ package com.sun.enterprise.configapi.tests;
 
 import com.sun.enterprise.config.serverbeans.HttpListener;
 import com.sun.enterprise.config.serverbeans.HttpService;
-import org.glassfish.api.admin.SingleConfigCode;
-import org.glassfish.api.admin.TransactionFailure;
-import org.glassfish.api.admin.TransactionHelper;
+import org.jvnet.hk2.config.SingleConfigCode;
+import org.jvnet.hk2.config.TransactionFailure;
+import org.jvnet.hk2.config.TransactionHelper;
 import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;

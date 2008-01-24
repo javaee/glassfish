@@ -1,4 +1,4 @@
-package org.glassfish.api.admin;
+package org.glassfish.config.support;
 
 import java.beans.PropertyChangeEvent;
 

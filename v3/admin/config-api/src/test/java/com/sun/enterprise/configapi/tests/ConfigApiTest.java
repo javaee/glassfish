@@ -41,6 +41,7 @@ import org.junit.Ignore;
 import org.jvnet.hk2.component.Habitat;
 
 import java.util.logging.Logger;
+import java.util.logging.Level;
 
 /**
  * Super class for all config-api related tests, give access to a configured habitat
@@ -56,7 +57,7 @@ public class ConfigApiTest {
      *
      * @return the configuration file name
      */
-    public String getFileName() {
+    public String getFileName() {        
         return getClass().getName().substring(getClass().getName().lastIndexOf('.')+1);
     }
 

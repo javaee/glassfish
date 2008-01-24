@@ -38,9 +38,9 @@ package com.sun.enterprise.configapi.tests;
 
 import com.sun.enterprise.config.serverbeans.HttpService;
 import com.sun.enterprise.config.serverbeans.KeepAlive;
-import org.glassfish.api.admin.SingleConfigCode;
-import org.glassfish.api.admin.TransactionFailure;
-import org.glassfish.api.admin.TransactionHelper;
+import org.jvnet.hk2.config.SingleConfigCode;
+import org.jvnet.hk2.config.TransactionFailure;
+import org.jvnet.hk2.config.TransactionHelper;
 import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
@@ -79,18 +79,18 @@ public class HttpServiceTest extends ConfigApiTest {
 
         TransactionHelper.apply((new SingleConfigCode<HttpService>() {
             public boolean run(HttpService okToChange) throws PropertyVetoException, TransactionFailure {
-                KeepAlive newKeepAlive = TransactionHelper.allocate(okToChange, KeepAlive.class);
+                    KeepAlive newKeepAlive = TransactionHelper.createChildOf(okToChange, KeepAlive.class);
                 newKeepAlive.setMaxConnections(httpService.getKeepAlive().getMaxConnections());
                 newKeepAlive.setThreadCount("3");
                 newKeepAlive.setTimeoutInSeconds("65");
-//                okToChange.setKeepAlive(newKeepAlive);
+                okToChange.setKeepAlive(newKeepAlive);
                 return true;
             }
         }), httpService);
 
         TransactionHelper.apply((new SingleConfigCode<KeepAlive>() {
             public boolean run(KeepAlive param) throws PropertyVetoException, TransactionFailure {
-                param.setThreadCount("3");
+                param.setThreadCount("7");
                 return false;  //To change body of implemented methods use File | Settings | File Templates.
             }
         }), httpService.getKeepAlive());
@@ -110,11 +110,11 @@ public class HttpServiceTest extends ConfigApiTest {
 
             TransactionHelper.apply((new SingleConfigCode<HttpService>() {
             public boolean run(HttpService okToChange) throws PropertyVetoException, TransactionFailure {
-                KeepAlive newKeepAlive = TransactionHelper.allocate(okToChange,KeepAlive.class);
+                KeepAlive newKeepAlive = TransactionHelper.createChildOf(okToChange,KeepAlive.class);
                 newKeepAlive.setMaxConnections("500");
                 newKeepAlive.setThreadCount("5");
                 newKeepAlive.setTimeoutInSeconds("65");
-//                okToChange.setKeepAlive(newKeepAlive);
+                okToChange.setKeepAlive(newKeepAlive);
                 // this should fail
                 okToChange.getHttpProtocol().setDefaultType("text/css");
                 return true;

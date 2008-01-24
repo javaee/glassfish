@@ -1,6 +1,6 @@
 package com.sun.enterprise.config.serverbeans;
 
-import org.glassfish.api.admin.TypedChangeEvent;
+import org.glassfish.config.support.TypedChangeEvent;
 
 import java.beans.VetoableChangeSupport;
 import java.beans.PropertyVetoException;

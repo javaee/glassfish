@@ -1,10 +1,10 @@
-package com.sun.enterprise.config.serverbeans;
+package org.glassfish.config.support;
 
 import org.jvnet.hk2.config.DomDocument;
 import org.jvnet.hk2.config.Dom;
 import org.jvnet.hk2.config.ConfigModel;
 import org.jvnet.hk2.component.Habitat;
-import org.glassfish.api.admin.ConfigBean;
+import org.jvnet.hk2.config.ConfigBean;
 
 import javax.xml.stream.XMLStreamReader;
 

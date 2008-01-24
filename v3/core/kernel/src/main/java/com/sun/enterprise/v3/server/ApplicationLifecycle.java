@@ -41,6 +41,7 @@ import org.glassfish.api.container.Container;
 import org.glassfish.api.deployment.ApplicationContainer;
 import org.glassfish.api.deployment.Deployer;
 import org.glassfish.api.deployment.DeploymentContext;
+import org.glassfish.api.deployment.MetaData;
 import org.glassfish.api.deployment.archive.ArchiveHandler;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.jvnet.hk2.annotations.Inject;
@@ -136,9 +137,13 @@ abstract public class ApplicationLifecycle {
 
         List<ModuleDefinition> defs = new ArrayList<ModuleDefinition>();
         for (Deployer deployer : deployers) {
-            if (deployer.getMetaData()!=null && deployer.getMetaData().getPublicAPIs()!=null) {
-                for (ModuleDefinition def : deployer.getMetaData().getPublicAPIs()) {
-                    defs.add(def);
+            final MetaData deployMetadata = deployer.getMetaData();
+            if (deployMetadata!=null) {
+                ModuleDefinition[] moduleDefs = deployMetadata.getPublicAPIs();
+                if (defs!=null) {
+                    for (ModuleDefinition def : moduleDefs) {
+                        defs.add(def);
+                    }
                 }
             }
         }

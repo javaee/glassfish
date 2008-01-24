@@ -36,7 +36,7 @@
 
 package com.sun.enterprise.configapi.tests;
 
-import com.sun.enterprise.config.serverbeans.GlassFishDocument;
+import org.glassfish.config.support.GlassFishDocument;
 import com.sun.enterprise.module.bootstrap.Populator;
 import com.sun.hk2.component.Holder;
 import com.sun.hk2.component.InhabitantsParser;
@@ -64,7 +64,7 @@ public class Utils {
     Map<String, Habitat> habitats = new HashMap<String, Habitat>();
     static Utils instance;
 
-    static {
+    static {        
         instance = new Utils();
     }
 
