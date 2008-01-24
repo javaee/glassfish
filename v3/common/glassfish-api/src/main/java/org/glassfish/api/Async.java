@@ -29,8 +29,8 @@ import java.lang.annotation.Target;
 import java.lang.annotation.ElementType;
 
 /**
- * Execution artifacts like Service or Admin Commnd implementations can use
- * this annotation to generate an asynchronous exececution of their logic.
+ * Execution artifacts like Service or Admin Command implementations can use
+ * this annotation to generate an asynchronous execution of their logic.
  *
  * @author Jerome Dochez
  * 
@@ -39,5 +39,5 @@ import java.lang.annotation.ElementType;
 @Target(ElementType.TYPE)
 public @interface Async {
 
-    int prioriy() default Thread.NORM_PRIORITY;
+    int priority() default Thread.NORM_PRIORITY;
 }

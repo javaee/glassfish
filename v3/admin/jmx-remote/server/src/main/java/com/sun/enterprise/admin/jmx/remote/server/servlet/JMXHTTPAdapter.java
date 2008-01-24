@@ -258,7 +258,7 @@ public class JMXHTTPAdapter implements Adapter {
                     }
                 }
             };
-            t.setPriority(async.prioriy());
+            t.setPriority(async.priority());
             t.start();
             report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
             report.setMessage(
