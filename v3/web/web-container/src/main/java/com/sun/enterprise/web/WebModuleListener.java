@@ -44,13 +44,10 @@ import java.util.Enumeration;
 import java.util.Collection;
 import java.text.MessageFormat;
 import java.lang.instrument.IllegalClassFormatException;
-import java.net.URI;
 import java.net.URLClassLoader;
 import java.net.URL;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import javax.servlet.Servlet;
 import javax.servlet.ServletContext;
 import javax.persistence.spi.ClassTransformer;
 import javax.persistence.EntityManagerFactory;
@@ -62,8 +59,6 @@ import org.apache.catalina.LifecycleListener;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.Wrapper;
 import org.apache.catalina.loader.WebappClassLoader;
-import org.apache.jasper.runtime.HttpJspBase;
-import org.glassfish.api.deployment.MetaData;
 import com.sun.enterprise.deployment.runtime.web.SunWebApp;
 import com.sun.enterprise.deployment.runtime.web.WebProperty;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
@@ -80,8 +75,6 @@ import com.sun.appserv.BytecodePreprocessor;
 //import com.sun.enterprise.server.PersistenceUnitLoader;
 import com.sun.enterprise.loader.InstrumentableClassLoader;
 //import com.sun.enterprise.config.ConfigException;
-import com.sun.enterprise.module.Module;
-import com.sun.enterprise.module.ModuleDefinition;
 
 /**
  * Startup event listener for a <b>Context</b> that configures the properties
@@ -121,8 +114,6 @@ final class WebModuleListener
     private String explodedLocation;
     
     private ServerContext serverContext;
-    
-    private String javacClassPath= "";
 
     /**
      * Constructor.
@@ -142,19 +133,6 @@ final class WebModuleListener
         this.instanceClassPath = instanceClassPath;
         this.wbd = wbd;
         this.explodedLocation = explodedLocation;
-        
-        WebDeployer webDeployer = serverContext.getDefaultHabitat().
-                getComponent(WebDeployer.class);
-        ModuleDefinition[] moduleDefs = webDeployer.getMetaData().getPublicAPIs();
-        URI[] uris = null;
-        for (int i=0; i<moduleDefs.length; i++) {
-            uris = moduleDefs[i].getLocations();
-            for (int j=0; j<uris.length; j++) {
-                javacClassPath += uris[j].getPath() + File.pathSeparator;
-            }
-        }
-                
-        javacClassPath += ".";
     }
 
 
@@ -449,10 +427,6 @@ final class WebModuleListener
             if (instanceClassPath != null
                     && instanceClassPath.length() > 0) {
                 sysClassPath += instanceClassPath;
-            }
-            if (javacClassPath != null
-                    && javacClassPath.length() > 0) {
-                sysClassPath += javacClassPath;
             }
             wrapper.addInitParameter("com.sun.appserv.jsp.classpath",
                                      sysClassPath);
