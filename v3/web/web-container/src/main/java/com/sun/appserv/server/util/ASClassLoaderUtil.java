@@ -39,6 +39,7 @@ package com.sun.appserv.server.util;
 import java.io.File;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -50,9 +51,11 @@ import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.WebModule;
 import com.sun.enterprise.deployment.util.FileUtil;
+import com.sun.enterprise.module.ModuleDefinition;
 //import com.sun.enterprise.server.ApplicationServer;
 //import com.sun.enterprise.server.PELaunch;
 import com.sun.enterprise.util.SystemPropertyConstants;
+import com.sun.enterprise.web.WebDeployer;
 import com.sun.enterprise.v3.server.Globals;
 import org.jvnet.hk2.component.Habitat;
 
@@ -99,6 +102,18 @@ public class ASClassLoaderUtil {
     	            tmpString.append(FileUtil.getAbsolutePath(System.getProperty("java.class.path")));
                     tmpString.append(File.pathSeparatorChar);
     	        }
+
+                WebDeployer webDeployer = habitat.getComponent(WebDeployer.class);
+                ModuleDefinition[] moduleDefs = webDeployer.getMetaData().getPublicAPIs();
+                if (moduleDefs != null) {
+                    for (ModuleDefinition moduleDef : moduleDefs) {
+                        URI[] uris = moduleDef.getLocations();
+                        for (URI uri : uris) {
+                            tmpString.append(uri.getPath());
+                            tmpString.append(File.pathSeparator);
+                        }
+                    }
+                }     
     	        //set sharedClasspathForWebModule so that it doesn't need to be recomputed
     	        //for every other invocation
     	        sharedClasspathForWebModule = tmpString.toString();
