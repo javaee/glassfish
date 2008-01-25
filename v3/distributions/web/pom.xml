@@ -21,6 +21,10 @@
                     <ant dir="." antfile="build.xml" target="create.bundle"/>
                   </tasks>
                 </configuration>
+                <dependencies>
+                    <!-- TODO: add installer builder jars -->
+                    <!-- see http://kohsuke.sfbay/hudson/job/poormans-installer/ -->
+                </dependencies>
              </plugin>
         </plugins>
     </build>
