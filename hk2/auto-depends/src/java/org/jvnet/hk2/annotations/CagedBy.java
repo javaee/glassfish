@@ -14,10 +14,13 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * the component goes into a habitat.
  *
  * <p>
- * This annotation can be used either as a normal annotation, or a meta-annotation.
+ * This annotation can be used either as a normal annotation on a component
+ * or a meta-annotation. A common usage of this is to put this along with
+ * {@link Contract} annotation so that all the implementations of a contract
+ * receives some infrastructure service.
  *
  * <p>
- * If used as a normal annotation on the contract, all the services of this
+ * If used as a normal annotation on the contract type, all the services of this
  * contract is subject to the registration hook processing &mdash; that is,
  * the specified {@link CageBuilder} is invoked whenever those services
  * are entered into the habitat, to be given an opportunity to perform
@@ -26,7 +29,8 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * <p>
  * This can be also used as a meta-annotation.
  * Suppose this annotation is placed on annotation X, which in turn is placed
- * on class Y. In this case, {@link CageBuilder} is invoked for every Ys entered into habitat.
+ * on class Y. In this case, {@link CageBuilder} is invoked for every Ys entered into habitat
+ * (again, the common case is where X also has {@link Contract} annotation.)
  *
  * <p>
  * This is the interception point for providing additional infrastructure service
