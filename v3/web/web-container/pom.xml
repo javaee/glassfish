@@ -134,5 +134,10 @@
             <artifactId>webtier-extensions</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+        	<groupId>javax.faces</groupId>
+        	<artifactId>jsf-impl</artifactId>
+        	<version>${jsf-api.version}</version>
+        </dependency>
     </dependencies>
 </project>
