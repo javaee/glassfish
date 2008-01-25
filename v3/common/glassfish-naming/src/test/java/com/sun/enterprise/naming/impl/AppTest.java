@@ -1,7 +1,7 @@
 package com.sun.enterprise.naming.impl;
 
-import com.sun.enterprise.naming.spi.GlassfishNamingManager;
-import com.sun.enterprise.naming.spi.JNDIBinding;
+import org.glassfish.api.naming.GlassfishNamingManager;
+import org.glassfish.api.naming.JNDIBinding;
 import com.sun.enterprise.naming.spi.NamingObjectFactory;
 import junit.framework.Test;
 import junit.framework.TestCase;
@@ -13,6 +13,8 @@ import org.glassfish.api.invocation.InvocationManagerImpl;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import javax.naming.spi.NamingManager;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,7 +35,8 @@ public class AppTest
     /**
      * @return the suite of tests being tested
      */
-    public static Test suite() {
+    public static Test suite() throws NamingException {
+        NamingManager.setInitialContextFactoryBuilder(new GFInitialContextFactoryBuilder());
         return new TestSuite(AppTest.class);
     }
 

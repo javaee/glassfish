@@ -21,14 +21,10 @@ public class SerialInitContextFactory implements InitialContextFactory {
     /**
      * Default constructor. Creates an ORB if one is not already created.
      */
-    public SerialInitContextFactory() {
+    public SerialInitContextFactory(Hashtable environemnt) {
 
-        if (useS1ASCtxFactory) {
-            //A big TODO
-        } else {
-            // create a default env
-            defaultEnv = new Hashtable();
-        }
+        this.defaultEnv = environemnt;
+
     }
 
     /**

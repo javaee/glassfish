@@ -19,5 +19,6 @@
         <module>common-util</module>
         <module>common-ee-util</module>
         <module>dol</module>
+        <module>glassfish-naming</module>        
     </modules>
 </project>
