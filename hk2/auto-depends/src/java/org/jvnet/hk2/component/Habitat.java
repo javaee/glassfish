@@ -96,7 +96,7 @@ public class Habitat {
         if(index.equals(FactoryFor.class.getName())) {
             FactoryFor ff = i.type().getAnnotation(FactoryFor.class);
             Class<?> targetClass = ff.value();
-            FactoryWomb target = new FactoryWomb((Class) targetClass, i, this, MultiMap.emptyMap());
+            FactoryWomb target = new FactoryWomb(targetClass, (Inhabitant)i, this, MultiMap.<String,String>emptyMap());
             add(target);
             addIndex(target, targetClass.getName(), null);
         }
