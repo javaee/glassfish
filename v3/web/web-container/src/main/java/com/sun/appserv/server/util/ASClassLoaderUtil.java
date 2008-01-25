@@ -49,6 +49,7 @@ import com.sun.enterprise.config.serverbeans.Applications;
 import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.WebModule;
+import com.sun.enterprise.deployment.util.FileUtil;
 //import com.sun.enterprise.server.ApplicationServer;
 //import com.sun.enterprise.server.PELaunch;
 import com.sun.enterprise.util.SystemPropertyConstants;
@@ -95,7 +96,8 @@ public class ASClassLoaderUtil {
     	                tmpString.append(File.pathSeparatorChar);
                     }
                 } else {
-    	            tmpString.append(System.getProperty("java.class.path"));
+    	            tmpString.append(FileUtil.getAbsolutePath(System.getProperty("java.class.path")));
+                    tmpString.append(File.pathSeparatorChar);
     	        }
     	        //set sharedClasspathForWebModule so that it doesn't need to be recomputed
     	        //for every other invocation
@@ -105,7 +107,7 @@ public class ASClassLoaderUtil {
 
         StringBuilder classpath = new StringBuilder(sharedClasspathForWebModule);
             
-        classpath.append(System.getProperty("java.class.path"));
+        classpath.append(FileUtil.getAbsolutePath(System.getProperty("java.class.path")));
             
             
         if (moduleId != null) {
