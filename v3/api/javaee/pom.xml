@@ -101,5 +101,10 @@
             <artifactId>jsp-api</artifactId>
             <version>${jsp-api.version}</version>
         </dependency>
+        <dependency>
+            <groupId>javax.faces</groupId>
+            <artifactId>jsf-api</artifactId>
+            <version>${jsf-api.version}</version>        	
+        </dependency>
     </dependencies>
 </project>
