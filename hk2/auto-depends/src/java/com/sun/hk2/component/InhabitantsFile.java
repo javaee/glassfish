@@ -2,6 +2,7 @@ package com.sun.hk2.component;
 
 import org.jvnet.hk2.annotations.InhabitantAnnotation;
 import org.jvnet.hk2.annotations.Contract;
+import org.jvnet.hk2.component.CageBuilder;
 
 /**
  * Inhabitants file.
@@ -67,4 +68,8 @@ public class InhabitantsFile {
      * to indicate what is the actual companion class. 
      */
     public static final String COMPANION_CLASS_KEY = "companionClass";
+    /**
+     * Used to point to {@link CageBuilder} for this component.
+     */
+    public static final String CAGE_BUILDER_KEY = "cageBuilder";
 }

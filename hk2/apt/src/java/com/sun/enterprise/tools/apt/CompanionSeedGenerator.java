@@ -1,18 +1,17 @@
 package com.sun.enterprise.tools.apt;
 
+import com.sun.codemodel.JAnnotationUse;
+import com.sun.codemodel.JClassAlreadyExistsException;
+import com.sun.codemodel.JCodeModel;
+import com.sun.codemodel.JDefinedClass;
 import com.sun.hk2.component.CompanionSeed;
-import static com.sun.hk2.component.InhabitantsFile.COMPANION_CLASS_KEY;
 import com.sun.mirror.apt.AnnotationProcessor;
 import com.sun.mirror.apt.AnnotationProcessorEnvironment;
 import com.sun.mirror.declaration.AnnotationTypeDeclaration;
 import com.sun.mirror.declaration.ClassDeclaration;
 import com.sun.mirror.declaration.Declaration;
-import com.sun.mirror.util.SimpleDeclarationVisitor;
 import com.sun.mirror.type.MirroredTypeException;
-import com.sun.codemodel.JCodeModel;
-import com.sun.codemodel.JDefinedClass;
-import com.sun.codemodel.JAnnotationUse;
-import com.sun.codemodel.JClassAlreadyExistsException;
+import com.sun.mirror.util.SimpleDeclarationVisitor;
 import com.sun.tools.xjc.api.util.FilerCodeWriter;
 import org.jvnet.hk2.annotations.CompanionOf;
 
@@ -63,7 +62,7 @@ public class CompanionSeedGenerator extends SimpleDeclarationVisitor implements 
             JAnnotationUse a = seed.annotate(CompanionSeed.class);
 
             a.param("lead",cm.ref(lead));
-            a.param("metadata",COMPANION_CLASS_KEY+'='+clz.getQualifiedName());
+            a.param("companion",cm.ref(clz.getQualifiedName()));
         } catch (JClassAlreadyExistsException e) {
             env.getMessager().printError(clz.getPosition(),e.toString());
         }
