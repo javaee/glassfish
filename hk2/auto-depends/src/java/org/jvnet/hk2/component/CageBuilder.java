@@ -10,7 +10,7 @@ import org.jvnet.hk2.annotations.CagedBy;
  * <p>
  * The concrete registration hook classes are instanciated as components
  * themselves, so in that way sub-classes can obtain contextual information,
- * such as {@link Habitat}. 
+ * such as {@link Habitat}, via injection. 
  *
  * @author Kohsuke Kawaguchi
  * @see CagedBy
