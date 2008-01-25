@@ -44,6 +44,9 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Retention(RUNTIME)
 @Target({ANNOTATION_TYPE,TYPE})
 public @interface CagedBy {
+    /**
+     * Designates the {@link CageBuilder} that intercepts incoming inhabitants.
+     */
     // this value is captured in metadata so that at runtime
     // we can check the registration hook easily.
     @InhabitantMetadata("cageBuilder")
