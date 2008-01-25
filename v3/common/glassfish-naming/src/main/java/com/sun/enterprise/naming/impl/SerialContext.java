@@ -225,7 +225,7 @@ public class SerialContext implements Context {
             } else {
                 Object obj = getProvider().lookup(name);
                 if (obj instanceof NamingObjectProxy) {
-                    return ((NamingObjectProxy) obj).create(null);
+                    return ((NamingObjectProxy) obj).create(this);
                 }
                 if (obj instanceof Context) {
                     resetSticky();
