@@ -1,12 +1,10 @@
 package org.jvnet.hk2.component;
 
 import com.sun.hk2.component.CompanionSeed;
+import static com.sun.hk2.component.CompanionSeed.Registerer.createCompanion;
 import com.sun.hk2.component.ExistingSingletonInhabitant;
 import com.sun.hk2.component.FactoryWomb;
-import com.sun.hk2.component.Holder;
-import static com.sun.hk2.component.InhabitantsFile.COMPANION_CLASS_KEY;
-import static com.sun.hk2.component.InhabitantsFile.INDEX_KEY;
-import com.sun.hk2.component.LazyInhabitant;
+import static com.sun.hk2.component.InhabitantsFile.CAGE_BUILDER_KEY;
 import com.sun.hk2.component.ScopeInstance;
 import org.jvnet.hk2.annotations.Contract;
 import org.jvnet.hk2.annotations.ContractProvided;
@@ -15,7 +13,6 @@ import org.jvnet.hk2.annotations.FactoryFor;
 import java.lang.annotation.Annotation;
 import java.util.AbstractList;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -52,6 +49,9 @@ public class Habitat {
 
         // make the habitat itself available
         add(new ExistingSingletonInhabitant<Habitat>(Habitat.class,this));
+
+        add(new ExistingSingletonInhabitant<CompanionSeed.Registerer>(CompanionSeed.Registerer.class,
+                new CompanionSeed.Registerer(this)));
     }
 
     /**
@@ -61,57 +61,21 @@ public class Habitat {
         String name = i.typeName();
         byType.add(name,i);
 
-        // TODO: do this in the listener
         // for each companion, create an inhabitat that goes with the lead and hook them up
         List<Inhabitant> companions=null;
-        for(final Inhabitant<?> c : getInhabitantsByAnnotation(CompanionSeed.class,name)) {
+        for(Inhabitant<?> c : getInhabitantsByAnnotation(CompanionSeed.class,name)) {
             if(companions==null)
                 companions = new ArrayList<Inhabitant>();
-            companions.add(createCompanion(i, c));
+            companions.add(createCompanion(this,i,c));
         }
         i.setCompanions(companions);
 
-        // and if a companion seed is added to something else, make sure
-        // existing lead inhabitants will get this as a companion
-        assert i.metadata()!=null;
-        for (String index : i.metadata().get(INDEX_KEY)) {
-            if(index.startsWith(COMPANION_SEED_KEY)) {
-                index = index.substring(COMPANION_SEED_KEY.length());
-                for (Inhabitant lead : byType.get(index))
-                    lead.setCompanions(cons(lead.companions(),createCompanion(lead,i)));
-            }
+        String cageBuilderName = i.metadata().getOne(CAGE_BUILDER_KEY);
+        if(cageBuilderName!=null) {
+            Inhabitant cageBuilder = byType.getOne(cageBuilderName);
+            if(cageBuilder!=null)
+                ((CageBuilder)cageBuilder.get()).onEntered(i);
         }
-    }
-
-    private static final String COMPANION_SEED_KEY = CompanionSeed.class.getName()+':';
-
-    /**
-     * Creates a companion inhabitant from the inhabitant of a {@link CompanionSeed},
-     * to be associated with a lead component.
-     */
-    private LazyInhabitant createCompanion(final Inhabitant<?> lead, final Inhabitant<?> seed) {
-        Holder<ClassLoader> cl = new Holder<ClassLoader>() {
-                public ClassLoader get() {
-                    return seed.type().getClassLoader();
-                }
-            };
-        LazyInhabitant ci = new LazyInhabitant(this, cl, seed.metadata().getOne(COMPANION_CLASS_KEY), MultiMap.<String,String>emptyMap()) {
-            public Inhabitant lead() {
-                return lead;
-            }
-        };
-        add(ci);
-        return ci;
-    }
-
-    /**
-     * Allocates a new read-only list by adding one more element.
-     */
-    private <T> List<T> cons(Collection<T> list, T oneMore) {
-        int sz = list.size();
-        Object[] a = list.toArray(new Object[sz+1]);
-        a[sz]=oneMore;
-        return (List)Arrays.asList(a);
     }
 
     /**
@@ -316,10 +280,17 @@ public class Habitat {
     }
 
     /**
-     * Gets all the inhabitants that has the given contract.
+     * Gets all the inhabitants that has the given implementation type.
      */
     public <T> Collection<Inhabitant<T>> getInhabitantsByType(Class<T> implType) throws ComponentException {
         return (Collection)byType.get(implType.getName());
+    }
+
+    /**
+     * Gets all the inhabitants that has the given implementation type name.
+     */
+    public Collection<Inhabitant<?>> getInhabitantsByType(String fullyQualifiedClassName) {
+        return (Collection)byType.get(fullyQualifiedClassName);
     }
 
     private Inhabitant _getInhabitant(Class contract, String name) {
@@ -440,7 +411,7 @@ public class Habitat {
             for (Inhabitant i : e.getValue())
                 i.release();
     }
-    
+
     private static final class NamedInhabitant {
         final String name;
         final Inhabitant inhabitant;

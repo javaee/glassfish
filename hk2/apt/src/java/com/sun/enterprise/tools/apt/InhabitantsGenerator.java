@@ -23,11 +23,14 @@ import org.jvnet.hk2.annotations.ContractProvided;
 import org.jvnet.hk2.annotations.Index;
 import org.jvnet.hk2.annotations.InhabitantAnnotation;
 import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.annotations.InhabitantMetadata;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.Map;
+import java.util.HashMap;
 
 /**
  * Generates <tt>/META-INF/inhabitants/*</tt>
@@ -38,6 +41,8 @@ public class InhabitantsGenerator implements AnnotationProcessor, RoundCompleteL
     private final AnnotationProcessorEnvironment env;
     private final boolean debug;
     private final DescriptorList list;
+
+    private final InhabitantMetadataProcessor inhabitantMetadataProcessor = new InhabitantMetadataProcessor();
 
     public InhabitantsGenerator(AnnotationProcessorEnvironment env, DescriptorList list) {
         this.env = env;
@@ -141,11 +146,22 @@ public class InhabitantsGenerator implements AnnotationProcessor, RoundCompleteL
             for (String contract : indices)
                 buf.append(',').append(InhabitantsFile.INDEX_KEY).append('=').append(contract);
 
+            findInhabitantMetadata(d, buf);
+
+            // TODO: should be deprecated and replaced with InhabitantMetadata
             String metadata = getStringValue(a,"metadata");
             if(metadata!=null && metadata.length()>0)
                 buf.append(',').append(metadata);
 
             descriptor.put(d.getQualifiedName(),buf.toString());
+        }
+
+        /**
+         * Locates all {@link InhabitantMetadata} and add to the metadata.
+         */
+        private void findInhabitantMetadata(ClassDeclaration d, StringBuilder buf) {
+            for (Map.Entry<String, String> e : inhabitantMetadataProcessor.process(d).entrySet())
+                buf.append(',').append(e.getKey()).append('=').append(e.getValue());
         }
 
         private String geIndexValue(AnnotationMirror a) {
@@ -163,12 +179,13 @@ public class InhabitantsGenerator implements AnnotationProcessor, RoundCompleteL
         }
 
         /**
-         * Gets the name() value of the given annotation.
+         * Given a use of annotation like <tt>@abc(def="ghi",jkl="mno")</tt> and a property name 'def',
+         * obtain the value of the annotation (in this example "ghi")
          */
-        private String getStringValue(AnnotationMirror a, String annotationElementName) {
+        private String getStringValue(AnnotationMirror a, String name) {
             AnnotationTypeDeclaration decl = a.getAnnotationType().getDeclaration();
             for(AnnotationTypeElementDeclaration e : decl.getMethods()) {
-                if(e.getSimpleName().equals(annotationElementName)) {
+                if(e.getSimpleName().equals(name)) {
                     AnnotationValue v = a.getElementValues().get(e);
                     if(v!=null) // explicitly given
                         return v.getValue().toString();
