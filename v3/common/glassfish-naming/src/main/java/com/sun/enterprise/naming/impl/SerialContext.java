@@ -23,6 +23,7 @@
 package com.sun.enterprise.naming.impl;
 
 import com.sun.enterprise.naming.util.LogFacade;
+import org.glassfish.api.naming.NamingObjectProxy;
 
 import javax.naming.*;
 import java.rmi.RemoteException;
@@ -223,6 +224,9 @@ public class SerialContext implements Context {
                 return javaUrlContext.lookup(name);
             } else {
                 Object obj = getProvider().lookup(name);
+                if (obj instanceof NamingObjectProxy) {
+                    return ((NamingObjectProxy) obj).create(null);
+                }
                 if (obj instanceof Context) {
                     resetSticky();
                     return new SerialContext(name, myEnv);
