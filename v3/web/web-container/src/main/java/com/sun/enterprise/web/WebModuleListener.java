@@ -150,35 +150,10 @@ final class WebModuleListener
         for (int i=0; i<moduleDefs.length; i++) {
             uris = moduleDefs[i].getLocations();
             for (int j=0; j<uris.length; j++) {
-                javacClassPath += uris[i].getPath() + File.pathSeparator;
+                javacClassPath += uris[j].getPath() + File.pathSeparator;
             }
         }
-        
-        Module module = com.sun.enterprise.module.impl.ModuleImpl.find(Servlet.class);
-        ModuleDefinition moduleDef = module.getModuleDefinition();
-        uris = moduleDef.getLocations();
-        javacClassPath = uris[0].getPath() + File.pathSeparator;
-        for (int i=0; i<uris.length; i++) {
-            javacClassPath += uris[i].getPath() + File.pathSeparator;
-        }
-        
-        module = com.sun.enterprise.module.impl.ModuleImpl.find(javax.servlet.jsp.JspPage.class);
-        moduleDef = module.getModuleDefinition();
-        uris = moduleDef.getLocations();
-        javacClassPath = uris[0].getPath() + File.pathSeparator;
-        for (int i=0; i<uris.length; i++) {
-            javacClassPath += uris[i].getPath() + File.pathSeparator;
-        }
-        
-        module = com.sun.enterprise.module.impl.ModuleImpl.find(org.apache.jasper.runtime.HttpJspBase.class);
-        moduleDef = module.getModuleDefinition();
-        uris = moduleDef.getLocations();
-        javacClassPath = uris[0].getPath() + File.pathSeparator;
-        for (int i=0; i<uris.length; i++) {
-            javacClassPath += uris[i].getPath() + File.pathSeparator;
-        }
-        
-        
+                
         javacClassPath += ".";
     }
 
