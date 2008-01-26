@@ -843,7 +843,7 @@ public final class JMXUtil
 		
 		for( int i = 0; i < strings.length; ++i )
 		{
-			strings[ i ]	= objectNames[ i ].toString();
+			strings[ i ]	= ObjectNameStringifier.DEFAULT.stringify( objectNames[ i ] );
 		}
 		
 		return( strings );
