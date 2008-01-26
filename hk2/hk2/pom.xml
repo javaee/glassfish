@@ -19,59 +19,6 @@
                 <artifactId>hk2-maven-plugin</artifactId>
                 <version>${project.version}</version>
                 <extensions>true</extensions>
-                <configuration>
-                  <archive>
-                    <manifestEntries> <!-- Make it an OSGi bundle -->
-                      <Bundle-ManifestVersion>2</Bundle-ManifestVersion>
-                      <Bundle-Name>${pom.name}</Bundle-Name>
-                      <Bundle-SymbolicName>${pom.groupId}.${pom.artifactId}</Bundle-SymbolicName>
-                      <!-- Note OSGi version uses .SNAPSHOT instead of -SNAPSHOT -->
-                      <Bundle-Version>${hk2-osgi-version}</Bundle-Version>
-                      <Export-Package>
-                          org.jvnet.hk2.component;
-                          org.jvnet.hk2.annotations;
-                          com.sun.hk2.component;
-                          org.jvnet.hk2.config;
-                          com.sun.enterprise.module;
-                          com.sun.enterprise.module.bootstrap;
-                          com.sun.enterprise.module.common_impl;
-                          com.sun.enterprise.module.impl;
-                          version=${hk2-osgi-version}
-                      </Export-Package>
-                    </manifestEntries>
-                  </archive>
-                </configuration>
-
-            </plugin>
-            <plugin>
-                <!-- Copy all the classes from individuals modules
-                     TODO (Sahoo):
-                     There got to be a better way of assembling modules
-                     (e.g. maven-assembly-plugin)
-                     which I don't know how to use. So, for the moment
-                     just copy classes from other modules/target/classes
-                     using an Ant task -->
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <executions>
-                  <execution>
-                    <id>assemble-jar</id>
-                    <phase>process-classes</phase>
-                    <goals>
-                      <goal>run</goal>
-                    </goals>
-                    <configuration>
-                        <tasks>
-                            <mkdir dir="target/classes"/>
-                            <copy todir="target/classes">
-                                <fileset dir="../auto-depends/target/classes"/>
-                                <fileset dir="../config/target/classes"/>
-                                <fileset dir="../core/target/classes"/>
-                            </copy>
-                        </tasks>
-                    </configuration>
-                  </execution>
-                </executions>
             </plugin>
         </plugins>
     </build>
