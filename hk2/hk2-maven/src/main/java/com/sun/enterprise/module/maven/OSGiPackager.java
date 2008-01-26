@@ -184,8 +184,8 @@ public class OSGiPackager {
                 attributes = manifest.getMainAttributes();
                 name = attributes.getValue(BUNDLE_SYMBOLICNAME);
             }
-            if (name != null) {
-                // this is a OSGi module
+            if (name != null && attributes.getValue(FRAGMENT_HOST)==null) {
+                // this is a OSGi host module 
                 BundleDependency bd = new BundleDependency();
                 bd.bundleSymbolicName = name;
 

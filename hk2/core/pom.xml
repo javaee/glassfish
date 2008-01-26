@@ -11,6 +11,50 @@
     <artifactId>hk2-core</artifactId>
     <name>HK2 core module</name>
 
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifestEntries><!-- Make it an OSGi Fragment bundle -->
+                            <Bundle-ManifestVersion>2</Bundle-ManifestVersion>
+                            <Bundle-SymbolicName>
+                            ${pom.groupId}.${pom.artifactId}
+                            </Bundle-SymbolicName>
+                            <Bundle-Name>${pom.name}</Bundle-Name>
+                            <Bundle-Version>${hk2-osgi-version}</Bundle-Version>
+                            <!-- Fragment-Host specifies the host bundle
+                            this fragment attaches to, which
+                            in our case is hk2 bundle -->
+                            <Fragment-Host>
+                            ${pom.groupId}.hk2;bundle-version="[${hk2-osgi-version}, ${hk2-osgi-version}]"
+                            </Fragment-Host>
+                            <Export-Package>
+                            com.sun.enterprise.module;
+                            com.sun.enterprise.module.bootstrap;
+                            com.sun.enterprise.module.common_impl;
+                            com.sun.enterprise.module.impl;version=${hk2-osgi-version}
+                            </Export-Package>
+                            <Import-Package>
+                            com.sun.enterprise.module;
+                            com.sun.enterprise.module.bootstrap;
+                            com.sun.enterprise.module.common_impl;
+                            com.sun.enterprise.module.impl;
+                            org.jvnet.hk2.config;
+                            com.sun.hk2.component;
+                            org.jvnet.hk2.component;
+                            org.jvnet.hk2.annotations;
+                            version="[${hk2-osgi-version}, ${hk2-osgi-version}]"
+                            </Import-Package>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
     <dependencies>
         <dependency>
             <groupId>com.sun.enterprise</groupId>

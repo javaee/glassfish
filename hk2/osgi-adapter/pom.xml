@@ -24,8 +24,14 @@
               <Bundle-SymbolicName>${pom.groupId}.${pom.artifactId}</Bundle-SymbolicName>
               <Bundle-Version>${hk2-osgi-version}</Bundle-Version>
               <Bundle-Activator>org.jvnet.hk2.osgiadapter.HK2Main</Bundle-Activator>
-              <Import-Package>org.osgi.framework; org.osgi.util.tracker</Import-Package>
-              <Require-Bundle>${pom.groupId}.hk2;bundle-version=${hk2-osgi-version}</Require-Bundle>
+              <Import-Package>
+              org.osgi.framework; org.osgi.util.tracker,
+              org.jvnet.hk2.component;
+              com.sun.hk2.component;
+              com.sun.enterprise.module;
+              com.sun.enterprise.module.bootstrap;
+              com.sun.enterprise.module.common_impl;version:="[${hk2-osgi-version}, ${hk2-osgi-version}]"
+              </Import-Package>
             </manifestEntries>
           </archive>
         </configuration>
