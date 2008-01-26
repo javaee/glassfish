@@ -24,6 +24,18 @@
         </developer>
     </developers>
 
+   <build>
+        <resources>
+            <resource>
+                <directory>src/main/java</directory>
+                <includes>
+                    <include>com/sun/enterprise/management/cmd/*.properties</include>
+                </includes>
+            </resource>
+        </resources>
+    </build>
+
+
     <dependencies>
     
         <dependency>
