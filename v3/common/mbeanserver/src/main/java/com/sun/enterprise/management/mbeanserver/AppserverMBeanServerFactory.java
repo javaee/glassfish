@@ -56,11 +56,11 @@ import org.jvnet.hk2.annotations.FactoryFor;
     PlatformMBeanServer (default), but instead another MBeanServer entirely to avoid startup
     incompatibilities.
  */
-@Service(name="GlassfishMBeanServerFactory")
+@Service(name="AppserverMBeanServerFactory")
 //@FactoryFor(MBeanServer.class)
-public final class GlassfishMBeanServerFactory
+public final class AppserverMBeanServerFactory
 {
-    private GlassfishMBeanServerFactory() {/*disallow*/}
+    private AppserverMBeanServerFactory() {/*disallow*/}
     
     private static final MBeanServer INSTANCE = ManagementFactory.getPlatformMBeanServer();
     
