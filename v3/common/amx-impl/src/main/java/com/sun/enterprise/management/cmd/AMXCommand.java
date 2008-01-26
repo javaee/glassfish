@@ -20,16 +20,20 @@
  * 
  * Copyright 2006 Sun Microsystems, Inc. All rights reserved.
  */
+package com.sun.enterprise.management.cmd;
 
-package com.sun.enterprise.v3.admin;
+import java.util.Set;
+import java.util.List;
+import java.util.Collections;
 
 import javax.management.MBeanServer;
+import javax.management.ObjectName;
+import javax.management.JMException;
+
 import java.lang.management.ManagementFactory;
 
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.annotations.Scoped;
-import org.jvnet.hk2.component.PerLookup;
 
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
@@ -37,44 +41,69 @@ import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.glassfish.api.ActionReport.ExitCode;
 
-import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.enterprise.management.mbeanserver.GlassfishMBeanServerFactory;
+import com.sun.appserv.management.util.jmx.JMXUtil;
+import com.sun.appserv.management.util.misc.StringUtil;
+import com.sun.appserv.management.util.misc.TimingDelta;
+
+import com.sun.enterprise.management.support.LoadAMX;
+
 
 /**
- * Return the version and build number
- *
- * @author llc
+    Command 'amx' initializes AMX and returns a status page. If already initialized it does nothing.
+    Unlike most commands, this one is intentionally stateful (instantiated onlly once)
  */
-@Service(name="amx")
+@Service(name="amx")   // must match the value of amx.command in LocalStrings.properties
 @I18n("amx.command")
-// perhaps scope should be persistent if this command is to initialize
-@Scoped(PerLookup.class)
-public class AMXCommand implements AdminCommand {
-    private static final LocalStringManagerImpl localStrings = new LocalStringManagerImpl(AMXCommand.class);
+public class AMXCommand extends AMXCommandBase implements AdminCommand
+{
+    private boolean mInitialized;
+    private volatile ObjectName mAMXLoaderObjectName;
     
-//@Inject(name=GlassfishMBeanServerFactory.GLASSFISH_MBEANSERVER)
-    private  MBeanServer mMBeanServer;
-    
-    public AMXCommand() {
-        System.out.println( "AMXCommand.AMXCommand" );
-        mMBeanServer = ManagementFactory.getPlatformMBeanServer();
-        
-        try {
-           GlassfishMBeanServerFactory.getMBeanServer();
-           System.out.println( "GlassfishMBeanServerFactory.getMBeanServer OK" ); 
-        }
-        catch ( Throwable t ) {
-            System.out.println( t );
-        }
-    
-        //mMBeanServer = ManagementFactory.getPlatformMBeanServer();
+    public AMXCommand()
+    {
+    }
+     
+        private void
+    initialize()
+    {
+        final ObjectName loaderObjectName = LoadAMX.loadAMX( getMBeanServer() );
     }
     
-    public void execute(AdminCommandContext context) {
-        ActionReport report = context.getActionReport();
+    protected final String getCmdName() { return getLocalString("amx.command"); }
+    
+    /**
+        Synchronized because this command initializes only once (singleton), but can be invoked
+        repeatedly.
+     */
+    public final synchronized void _execute(AdminCommandContext context)
+    {
+        String timingMsg = "";
+        
+        if ( ! mInitialized ) {
+            final TimingDelta delta = new TimingDelta();
+            initialize();
+            mInitialized    = true;
+            timingMsg = " (" + delta.elapsedMillis() + " ms)";
+        }
+        else
+        {
+            timingMsg = " (previously initialized)";
+        }
+        
+        final ActionReport report = getActionReport();
         report.setActionExitCode(ExitCode.SUCCESS);
-        report.setMessage( "AMXCommand " + localStrings.getLocalString("amx.command","amx") +
-            " executed successfully at: " + new java.util.Date() );
+        
+        // get a nice sorted list of all AMX MBean ObjectNames
+        final ObjectName amxPattern = JMXUtil.newObjectName( "amx:*" );
+        final Set<ObjectName> mbeans = JMXUtil.queryNames(getMBeanServer(), amxPattern, null);
+        final List<String> mbeanList = JMXUtil.objectNamesToStrings( mbeans );
+        Collections.sort(mbeanList);
+        
+        report.setMessage( "AMX initialized and ready for use." + timingMsg );
+        for( final String on : mbeanList )
+        {
+            report.getTopMessagePart().addChild().setMessage( on );
+        }
     }
 }
 
