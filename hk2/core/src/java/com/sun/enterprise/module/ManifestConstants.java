@@ -35,7 +35,7 @@ import com.sun.enterprise.module.bootstrap.ModuleStartup;
  */
 public class ManifestConstants {
     /*
-     * TODO(Sahoo): Prefix all headers by HK2 to avoid name collision - Sahoo
+     * All headers are prefixed by HK2 to avoid name collision. By Sahoo
      */
 
     // No instanciation allowed.
@@ -50,7 +50,7 @@ public class ManifestConstants {
      * <p>
      * Maven's <tt>hk2-module</tt> packaging type uses GROUPID:ARTIFACTID for this.
      */
-    public static final String BUNDLE_NAME = "Bundle-Name"; 
+    public static final String BUNDLE_NAME = "HK2-Bundle-Name";
 
     /**
      * Module name that we'll launch.
@@ -58,7 +58,7 @@ public class ManifestConstants {
      * This is equivalent of "Main-Class" for us. We'll find {@link ModuleStartup}
      * from this module.
      */
-    public static final String MAIN_BUNDLE = "Main-Bundle";
+    public static final String MAIN_BUNDLE = "HK2-Main-Bundle";
 
     /**
      * Exported package list.
@@ -88,7 +88,7 @@ public class ManifestConstants {
      *
      * TODO: expand this field to support version specifier.
      */
-    public static final String BUNDLE_IMPORT_NAME = "Import-Bundles";
+    public static final String BUNDLE_IMPORT_NAME = "HK2-Import-Bundles";
 
     /**
      * List of other jar files in this module.
@@ -122,7 +122,7 @@ public class ManifestConstants {
      *
      * @see #CLASS_PATH
      */
-    public static final String CLASS_PATH_ID = "Class-Path-Id";
+    public static final String CLASS_PATH_ID = "HK2-Class-Path-Id";
 
     /**
      * See {@link ImportPolicy}.
@@ -134,7 +134,7 @@ public class ManifestConstants {
      * Maven's <tt>hk2-module</tt> packaging automatically finds such a class
      * and puts its name, provided that the class has @{@link Service} annotation.
      */
-    public static final String IMPORT_POLICY = "Module-Import-Policy";
+    public static final String IMPORT_POLICY = "HK2-Module-Import-Policy";
 
     /**
      * See {@link LifecyclePolicy}.
@@ -146,12 +146,12 @@ public class ManifestConstants {
      * Maven's <tt>hk2-module</tt> packaging automatically finds such a class
      * and puts its name, provided that the class has @{@link Service} annotation.
      */
-    public static final String LIFECYLE_POLICY = "Module-Lifecycle-Policy";
+    public static final String LIFECYLE_POLICY = "HK2-Module-Lifecycle-Policy";
 
     /**
      * <p>
      * List of repositories that should be set up before launching the main module
      * </p>
      */
-    public static final String REPOSITORIES = "Repositories";
+    public static final String REPOSITORIES = "HK2-Repositories";
 }

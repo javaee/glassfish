@@ -171,7 +171,7 @@ public class Main {
             StringTokenizer st = new StringTokenizer(repos);
             while (st.hasMoreTokens()) {
                 final String repoId = st.nextToken();
-                final String repoKey = "Repository-"+repoId;
+                final String repoKey = "HK2-Repository-"+repoId;
                 final String repoInfo;
                 try {
                     repoInfo = mf.getMainAttributes().getValue(repoKey);
