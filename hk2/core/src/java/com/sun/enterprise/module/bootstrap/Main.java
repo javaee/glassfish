@@ -14,6 +14,7 @@ import com.sun.enterprise.module.impl.ModuleImpl;
 import com.sun.enterprise.module.ModuleMetadata.InhabitantsDescriptor;
 import com.sun.enterprise.module.impl.ModulesRegistryImpl;
 import com.sun.enterprise.module.impl.HK2Factory;
+import com.sun.enterprise.module.impl.Utils;
 import com.sun.enterprise.module.Repository;
 import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.module.Module;
@@ -359,7 +360,9 @@ public class Main {
             Attributes attr = manifest.getMainAttributes();
             targetModule = attr.getValue(ManifestConstants.MAIN_BUNDLE);
             if (targetModule==null) {
-                throw new BootException("No Main-Bundle module found in manifest of " + bootstrap.getAbsoluteFile());
+                Utils.getDefaultLogger().warning(
+                        "No Main-Bundle module found in manifest of " +
+                        bootstrap.getAbsoluteFile());
             }
         } catch(IOException ioe) {
             throw new BootException("Cannot get manifest from " + bootstrap.getAbsolutePath(), ioe);
