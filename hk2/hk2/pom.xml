@@ -19,6 +19,13 @@
                 <artifactId>hk2-maven-plugin</artifactId>
                 <version>${project.version}</version>
                 <extensions>true</extensions>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>com.sun.enterprise.module.bootstrap.Main</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
             </plugin>
         </plugins>
     </build>
