@@ -25,6 +25,7 @@ package com.sun.enterprise.web;
 
 import org.apache.catalina.LifecycleException;
 import org.apache.coyote.tomcat5.CoyoteConnector;
+import com.sun.enterprise.web.connector.coyote.PECoyoteConnector;
 
 /**
  * A CoyoteConnector subclass which "wraps around" an existing Grizzly
@@ -39,7 +40,7 @@ import org.apache.coyote.tomcat5.CoyoteConnector;
  *
  * @author jluehe
  */ 
-public class WebConnector extends CoyoteConnector {
+public class WebConnector extends PECoyoteConnector {
 
     public void start() throws LifecycleException {
         mapperListener.setPort(getPort());
