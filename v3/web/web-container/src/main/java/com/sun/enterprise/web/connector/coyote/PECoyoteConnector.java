@@ -55,7 +55,7 @@ public class PECoyoteConnector extends CoyoteConnector{
                 "com.sun.enterprise.web.connector.useCoyoteConnector";
 
     private static final String GRIZZLY_CONNECTOR = 
-                "com.sun.enterprise.v3.web.connector.grizzly.GrizzlyConnectorLauncher";
+                "com.sun.enterprise.web.connector.grizzly.GrizzlyConnectorLauncher";
 
    
     /**
