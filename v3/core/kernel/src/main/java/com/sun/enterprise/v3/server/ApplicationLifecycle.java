@@ -140,7 +140,7 @@ abstract public class ApplicationLifecycle {
             final MetaData deployMetadata = deployer.getMetaData();
             if (deployMetadata!=null) {
                 ModuleDefinition[] moduleDefs = deployMetadata.getPublicAPIs();
-                if (defs!=null) {
+                if (moduleDefs!=null) {
                     for (ModuleDefinition def : moduleDefs) {
                         defs.add(def);
                     }

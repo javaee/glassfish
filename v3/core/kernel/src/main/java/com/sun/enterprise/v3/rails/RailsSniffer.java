@@ -49,7 +49,7 @@ public class RailsSniffer extends GenericSniffer implements Sniffer {
     public void setup(String containerHome, Logger logger) throws IOException {
         super.setup(containerHome, logger);
 
-        Inhabitant<? extends Container> railsContainer = habitat.getInhabitant(Container.class, getModuleType());
+        Inhabitant<? extends Container> railsContainer = habitat.getInhabitant(Container.class, containers[0]);
         // TODO (Sahoo): Stop using ModuleImpl
         Module glueModule = ModuleImpl.find(railsContainer.type());
         if (glueModule!=null) {
