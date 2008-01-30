@@ -23,11 +23,26 @@
             </roles>
         </developer>
     </developers>
-	<dependencies>
-    <dependency>
-        <groupId>org.glassfish.common</groupId>
-        <artifactId>dol</artifactId>
-        <version>${pom.parent.version}</version>
-    </dependency>
-	</dependencies>
+    <dependencies>
+        <dependency>
+            <groupId>org.glassfish.common</groupId>
+            <artifactId>dol</artifactId>
+            <version>${pom.parent.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.core</groupId>
+            <artifactId>kernel</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.core</groupId>
+            <artifactId>javaee-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.admin</groupId>
+            <artifactId>config-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
 </project>
