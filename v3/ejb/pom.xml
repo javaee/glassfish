@@ -6,7 +6,7 @@
         <artifactId>glassfish-parent</artifactId>
         <version>10.0-SNAPSHOT</version>
     </parent>
-	<groupId>org.glassfish.ejb</groupId>
+    <groupId>org.glassfish.ejb</groupId>
     <artifactId>ejb</artifactId>
     <packaging>pom</packaging>
     <name>GlassFish EJB container related modules</name>  
