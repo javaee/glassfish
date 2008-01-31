@@ -34,7 +34,7 @@
  * holder.
  */
 
-package com.sun.enterprise.deployment.interfaces;
+package com.sun.enterprise.deployment.backend;
 
 import java.util.Properties;
 

@@ -39,7 +39,7 @@ import com.sun.enterprise.deployment.archivist.ApplicationFactory;
 import com.sun.enterprise.deployment.archivist.ArchivistFactory;
 import com.sun.enterprise.deployment.archivist.Archivist;
 import org.glassfish.deployment.common.DeploymentProperties;
-import com.sun.enterprise.deployment.interfaces.DeploymentImplConstants;
+import com.sun.enterprise.deployment.backend.DeploymentImplConstants;
 import com.sun.enterprise.deployment.backend.ClientJarMakerThread;
 import org.glassfish.deployment.common.IASDeploymentException;
 import com.sun.enterprise.module.Module;

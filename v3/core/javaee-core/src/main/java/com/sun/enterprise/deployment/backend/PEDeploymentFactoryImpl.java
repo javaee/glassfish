@@ -37,9 +37,9 @@ package com.sun.enterprise.deployment.backend;
 
 import java.util.Properties;
 
-import com.sun.enterprise.deployment.interfaces.DeploymentFactory;
-import com.sun.enterprise.deployment.interfaces.DeploymentImplConstants;
-import com.sun.enterprise.deployment.interfaces.ClientJarMaker;
+import com.sun.enterprise.deployment.backend.DeploymentFactory;
+import com.sun.enterprise.deployment.backend.DeploymentImplConstants;
+import com.sun.enterprise.deployment.backend.ClientJarMaker;
 
 /**
  *  Implementation of the pluggabilty layers factory for PE.

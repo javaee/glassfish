@@ -53,7 +53,7 @@ import com.sun.enterprise.deployment.archivist.Archivist;
 import com.sun.enterprise.deployment.archivist.ArchivistFactory;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.archive.WritableArchive;
-import com.sun.enterprise.deployment.interfaces.ClientJarMaker;
+import com.sun.enterprise.deployment.backend.ClientJarMaker;
 import com.sun.enterprise.deployment.RootDeploymentDescriptor;
 import com.sun.enterprise.deployment.util.ModuleDescriptor;
 import com.sun.enterprise.util.zip.ZipItem;

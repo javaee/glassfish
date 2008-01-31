@@ -34,7 +34,7 @@
  * holder.
  */
 
-package com.sun.enterprise.deployment.interfaces;
+package com.sun.enterprise.deployment.backend;
 
 /**
  * Constants used in different parts of the deployment implementation
