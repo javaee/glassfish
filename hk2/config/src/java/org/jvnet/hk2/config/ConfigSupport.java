@@ -38,11 +38,8 @@
 
 import org.jvnet.hk2.annotations.Service;
 
-import java.beans.PropertyChangeEvent;
 import java.beans.PropertyVetoException;
 import java.lang.reflect.Proxy;
-import java.util.List;
-import java.util.ArrayList;
 
 /**
   * <p>
@@ -67,11 +64,11 @@ import java.util.ArrayList;
   *     httpListener.setPort("8989"); // will generate a PropertyVetoException
   *
   *     // instead he needs to use a transaction and can use the helper services
-  *     TransactionHelper.apply(new SingleConfigCode<HttpListener>() {
-  *         public boolean run(HttpListener okToChange) throws PropertyException {
+  *     ConfigSupport.apply(new SingleConfigCode<HttpListener>() {
+  *         public Object run(HttpListener okToChange) throws PropertyException {
   *             okToChange.setPort("8989"); // good...
   *             httpListener.setPort("7878"); // not good, exceptions still raised...
-  *             return true;
+  *             return null;
   *         });
   *
   *     // Note that after this code
@@ -82,7 +79,7 @@ import java.util.ArrayList;
   * @author Jerome Dochez
   */
 @Service
-public class TransactionHelper {
+public class ConfigSupport {
  
     /**
      * Execute§ some logic on one config bean of type T protected by a transaction
@@ -92,19 +89,30 @@ public class TransactionHelper {
      * @return list of events that represents the modified config elements.
      * @throws TransactionFailure when code did not run successfully
      */
-    public static <T extends ConfigBeanProxy> List<PropertyChangeEvent> apply(final SingleConfigCode<T> code, T param)
+    public static <T extends ConfigBeanProxy> Object apply(final SingleConfigCode<T> code, T param)
         throws TransactionFailure {
         
         ConfigBeanProxy[] objects = { param };
         return apply((new ConfigCode() {
             @SuppressWarnings("unchecked")
-            public boolean run(ConfigBeanProxy... objects) throws PropertyVetoException, TransactionFailure {
+            public Object run(ConfigBeanProxy... objects) throws PropertyVetoException, TransactionFailure {
                 return code.run((T) objects[0]);
             }
         }), objects);
     }
 
+    /**
+     * Creates a new child of a parent configured object
+     *
+     * @param parent the parent configured object
+     * @param type type of the child
+     * @return new child instance of the provided type
+     * @throws TransactionFailure if the child cannot be created
+     */
      public static <T extends ConfigBeanProxy> T createChildOf(Object parent, Class<T> type) throws TransactionFailure {
+         if (parent==null) {
+             throw new IllegalArgumentException("parent cannot be null");
+         }
          try {
              WriteableView bean = WriteableView.class.cast(Proxy.getInvocationHandler(Proxy.class.cast(parent)));
              return bean.allocateProxy(type);
@@ -124,7 +132,7 @@ public class TransactionHelper {
      * @throws TransactionFailure when the code did run successfully due to a
      * transaction exception
      */
-    public static List<PropertyChangeEvent> apply(ConfigCode code, ConfigBeanProxy... objects)
+    public static Object apply(ConfigCode code, ConfigBeanProxy... objects)
             throws TransactionFailure {
         
         // the fools think they operate on the "real" object while I am
@@ -136,7 +144,7 @@ public class TransactionHelper {
 
         // create writeable views.
         for (int i=0;i<objects.length;i++) {
-            proxies[i] = WriteableView.getWriteableView(objects[i]);
+            proxies[i] = getWriteableView(objects[i]);
             views[i] = (WriteableView) Proxy.getInvocationHandler(proxies[i]);
         }
 
@@ -152,34 +160,85 @@ public class TransactionHelper {
         }
         
         try {
-            if (code.run(proxies)) {            
-                try {
-                    return t.commit();
-                } catch (RetryableException e) {
-                    System.out.println("Retryable...");
-                    // TODO : do something meaninful here
-                    t.rollback();
-                    return null;
-                } catch (TransactionFailure e) {
-                    System.out.println("failure, not retryable...");
-                    t.rollback();
-                    throw e;
+            final Object toReturn = code.run(proxies);
+            try {
+                t.commit();
+                if (toReturn instanceof WriteableView) {
+                    return ((WriteableView) toReturn).getMasterView();
+                } else {
+                    return toReturn;
                 }
-
-            } else {
+            } catch (RetryableException e) {
+                System.out.println("Retryable...");
+                // TODO : do something meaninful here
                 t.rollback();
                 return null;
+            } catch (TransactionFailure e) {
+                System.out.println("failure, not retryable...");
+                t.rollback();
+                throw e;
             }
+
         } catch (PropertyVetoException e) {
             t.rollback();
             throw new TransactionFailure(e.getMessage(), e);
+        } catch(TransactionFailure e) {
+            t.rollback();
+            throw e;
         }
 
     }
 
-    static final List<TransactionListener> listeners = new ArrayList<TransactionListener>();
+    static <T extends ConfigBeanProxy> WriteableView getWriteableView(T s, ConfigBean sourceBean) {
 
-    public static void listenToAllTransactions(TransactionListener listener) {
-        listeners.add(listener);
+        WriteableView f = new WriteableView(s);
+        if (sourceBean.getLock().tryLock()) {
+            return f;
+        }
+        return null;
+    }
+
+    /**
+     * Returns a writeable view of a configuration object
+     * @param source the configured interface implementation
+     * @return the new interface implementation providing write access
+     */
+    public static <T extends ConfigBeanProxy> T getWriteableView(final T source) {
+
+        Transformer writeableTransformer = new Transformer() {
+
+            @SuppressWarnings("unchecked")
+            public <T extends ConfigBeanProxy> T transform(T s) {
+                ConfigView sourceBean = (ConfigView) Proxy.getInvocationHandler(s);
+                WriteableView writeableView = new WriteableView(source);
+                return (T) writeableView.getProxy(sourceBean.getProxyType());
+            }
+        };
+        return getView(writeableTransformer, source);
+    }
+
+    /**
+     * Generic api to create a new view based on a transformer and a source object
+     * @param t transformer responsible for changing the source object into a new view.
+     * @param source the source object to adapt
+     * @return the adapted view of the source object
+     */
+    public static <T extends ConfigBeanProxy> T getView(Transformer t, T source) {
+        return t.transform(source);
+    }
+
+    /**
+     * Return the main implementation bean for a proxy.
+     * @param source configuration interface proxy
+     */
+    public static Object getImpl(ConfigBeanProxy source) {
+
+        Object bean = Proxy.getInvocationHandler(source);
+        if (bean instanceof ConfigView) {
+            return ((ConfigView) bean).getMasterView();
+        } else {
+            return bean;
+        }
+        
     }
  }

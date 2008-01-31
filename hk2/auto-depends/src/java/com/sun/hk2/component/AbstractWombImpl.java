@@ -40,7 +40,7 @@ public abstract class AbstractWombImpl<T> extends AbstractInhabitantImpl<T> impl
         return o;
     }
 
-    public void initialize(T t, Inhabitant onBehalfOf) throws ComponentException {
+    public void  initialize(T t, Inhabitant onBehalfOf) throws ComponentException {
         // default is no-op
     }
 

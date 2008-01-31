@@ -35,19 +35,31 @@
  */
 package org.jvnet.hk2.config;
 
+import java.beans.PropertyChangeEvent;
+
 /**
- * Transfomer can transform a source object into a destination object, usually providing a different
- * view of the original object.
+ * Any object injected with Configured object and willing to receive notifications
+ * of changes should implement this interface. The injection manager will hook up
+ * automatically the injected resources with this listener implementation.
+ *
+ * public class Example implements ConfigListener {
+ *
+ *  @Inject
+ *  MyConfiguredObject o;
+ *
+ *  public void changed(PropertyChangeEvent[] events) {
+ *      // notification that o changed.
+ *  }
+ * }
  *
  * @author Jerome Dochez
  */
-public interface Transformer {
+public interface ConfigListener {
 
     /**
-     * Returns a different view of the source object.
+     * Notification that @Configured objects that were injected have changed
      *
-     * @param source the source object to transform
-     * @return the transformed view
+     * @param events list of changes
      */
-    public <T extends ConfigBeanProxy> T transform(T source);
+    public void changed(PropertyChangeEvent[] events);
 }

@@ -1,24 +1,50 @@
+/*
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+ *
+ * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ *
+ * The contents of this file are subject to the terms of either the GNU
+ * General Public License Version 2 only ("GPL") or the Common Development
+ * and Distribution License("CDDL") (collectively, the "License").  You
+ * may not use this file except in compliance with the License. You can obtain
+ * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
+ * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
+ * language governing permissions and limitations under the License.
+ *
+ * When distributing the software, include this License Header Notice in each
+ * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
+ * Sun designates this particular file as subject to the "Classpath" exception
+ * as provided by Sun in the GPL Version 2 section of the License file that
+ * accompanied this code.  If applicable, add the following below the License
+ * Header, with the fields enclosed by brackets [] replaced by your own
+ * identifying information: "Portions Copyrighted [year]
+ * [name of copyright owner]"
+ *
+ * Contributor(s):
+ *
+ * If you wish your version of this file to be governed by only the CDDL or
+ * only the GPL Version 2, indicate your decision by adding "[Contributor]
+ * elects to include this software in this distribution under the [CDDL or GPL
+ * Version 2] license."  If you don't indicate a single choice of license, a
+ * recipient has the option to distribute your version of this file under
+ * either the CDDL, the GPL Version 2 or to extend the choice of license to
+ * its licensees as provided above.  However, if you add GPL Version 2 code
+ * and therefore, elected the GPL Version 2 license, then the option applies
+ * only if the new code is made subject to such option by the copyright
+ * holder.
+ */
 package org.jvnet.hk2.config;
 
 import com.sun.hk2.component.LazyInhabitant;
-import org.jvnet.hk2.component.Habitat;
-import org.jvnet.hk2.component.Inhabitant;
-import org.jvnet.hk2.component.MultiMap;
-import org.jvnet.hk2.component.Womb;
+import org.jvnet.hk2.component.*;
 
 import javax.xml.stream.Location;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
-import java.lang.reflect.Type;
+import java.lang.reflect.*;
 import java.util.*;
 import java.util.regex.Pattern;
-import java.beans.PropertyVetoException;
-
 /**
  * {@link Inhabitant} that loads configuration from XML.
  *
@@ -33,7 +59,7 @@ import java.beans.PropertyVetoException;
  *
  * @author Kohsuke Kawaguchi
  */
-public class Dom extends LazyInhabitant implements InvocationHandler {
+public class Dom extends LazyInhabitant implements InvocationHandler, ObservableBean {
     /**
      * Model drives the interpretation of this DOM.
      */
@@ -516,6 +542,14 @@ public class Dom extends LazyInhabitant implements InvocationHandler {
         return proxyType.cast(Proxy.newProxyInstance(proxyType.getClassLoader(),new Class[]{proxyType},this));
     }
 
+    public <T extends ConfigBeanProxy> Class<T> getProxyType() {
+        try {
+            return (Class<T>) model.classLoaderHolder.get().loadClass(model.targetTypeName);
+        } catch (ClassNotFoundException e) {
+            return null;
+        }
+    }
+
     /**
      * {@link InvocationHandler} implementation that allows strongly-typed access
      * to the configuration.
@@ -532,6 +566,10 @@ public class Dom extends LazyInhabitant implements InvocationHandler {
             } catch (InvocationTargetException e) {
                 throw e.getTargetException();
             }
+        }
+        if (method.getDeclaringClass().getName().equals(Injectable.class.getName())) {
+            injectInto(this, args[0]);
+            return null;
         }
 
         ConfigModel.Property p = toProperty(method);
@@ -662,5 +700,35 @@ public class Dom extends LazyInhabitant implements InvocationHandler {
             c.writeTo(w);
         
         w.writeEndElement();
+    }
+
+    protected void injectInto(Dom injectable, Object target) {
+        for (Class intf : target.getClass().getInterfaces()) {
+            if (ConfigListener.class.isAssignableFrom(intf)) {
+                ConfigListener listener = (ConfigListener) target;
+                addListener(listener);
+                return;
+            }
+        }
+    }
+
+    @Override
+    public void release() {
+        listeners.clear();
+        super.release();
+    }
+
+    Set<ConfigListener> listeners = new HashSet<ConfigListener>();
+
+    public void addListener(ConfigListener listener) {
+        listeners.add(listener);
+    }
+
+    public boolean removeListener(ConfigListener listener) {
+        return listeners.remove(listener);
+    }
+
+    Collection<ConfigListener> getListeners() {
+        return listeners;
     }
 }
