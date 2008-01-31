@@ -33,6 +33,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import java.lang.instrument.IllegalClassFormatException;
+import java.lang.instrument.ClassFileTransformer;
 import java.net.JarURLConnection;
 
 import java.net.MalformedURLException;
@@ -74,7 +75,6 @@ import com.sun.enterprise.util.Print;
 import com.sun.logging.LogDomains;
 import com.sun.enterprise.util.i18n.StringManager;
 
-import javax.persistence.spi.ClassTransformer;
 import java.util.zip.ZipEntry;
 
 /**
@@ -112,8 +112,8 @@ public class EJBClassLoader
     /** streams opened by this loader */
     private Vector<SentinelInputStream> streams = null;
 
-    private ArrayList<ClassTransformer> transformers =
-            new ArrayList<ClassTransformer>(1);
+    private ArrayList<ClassFileTransformer> transformers =
+            new ArrayList<ClassFileTransformer>(1);
 
     private static StringManager sm = 
         StringManager.getManager(EJBClassLoader.class);
@@ -357,7 +357,7 @@ public class EJBClassLoader
 //        }
     }
 
-    public synchronized void addTransformer(ClassTransformer transformer) {
+    public synchronized void addTransformer(ClassFileTransformer transformer) {
         transformers.add(transformer);
     }
 
@@ -650,8 +650,8 @@ public class EJBClassLoader
 
         // Loop though the transformers here!!
         try {
-            ArrayList<ClassTransformer> xformers = (ArrayList<ClassTransformer>) transformers.clone();
-            for (ClassTransformer transformer : xformers) {
+            ArrayList<ClassFileTransformer> xformers = (ArrayList<ClassFileTransformer>) transformers.clone();
+            for (ClassFileTransformer transformer : xformers) {
 
                 // see javadocs of transform().
                 // It expects class name as java/lang/Object
@@ -795,7 +795,7 @@ public class EJBClassLoader
      *Looks up the key in the logger's resource bundle and substitutes any
      *arguments provided into the looked-up string.
      *@param key the key to look up in the resource bundle
-     *@param args... optional arguments to plug into the string found in the bundle
+     *@param args optional arguments to plug into the string found in the bundle
      *@return the formatted string
      */
     private static String formatMsg(String key, Object... args) {

@@ -42,6 +42,7 @@ import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.Element;
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.ConfigBeanProxy;
+import org.jvnet.hk2.component.Injectable;
 
 import java.beans.PropertyVetoException;
 import java.beans.VetoableChangeSupport;
@@ -58,7 +59,7 @@ import java.util.List;
     "property"
 }) */
 @Configured
-public interface CustomResource extends ConfigBeanProxy, Resource {
+public interface CustomResource extends ConfigBeanProxy, Injectable, Resource {
 
     /**
      * Gets the value of the jndiName property.

@@ -42,6 +42,7 @@ import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.Element;
 import org.jvnet.hk2.config.ConfigBeanProxy;
+import org.jvnet.hk2.component.Injectable;
 
 import java.beans.PropertyVetoException;
 import java.io.Serializable;
@@ -56,7 +57,7 @@ import java.util.List;
     "providerConfig"
 }) */
 @Configured
-public interface MessageSecurityConfig extends ConfigBeanProxy  {
+public interface MessageSecurityConfig extends ConfigBeanProxy, Injectable  {
 
     /**
      * Gets the value of the authLayer property.

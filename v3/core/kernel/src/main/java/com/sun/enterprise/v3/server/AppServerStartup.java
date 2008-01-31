@@ -70,6 +70,9 @@ public class AppServerStartup implements ModuleStartup {
     Habitat habitat;
 
     @Inject
+    ModulesRegistry systemRegistry;
+
+    @Inject
     public void setStartupContext(StartupContext context) {
         this.context = context;
     }
@@ -84,10 +87,6 @@ public class AppServerStartup implements ModuleStartup {
         if (logger.isLoggable(Level.FINE)) {
             logger.fine("Startup class : " + this.getClass().getName());
         }
-
-        // get the system registry
-        Module mainModule = ModuleImpl.find(this.getClass());
-        ModulesRegistry systemRegistry = mainModule.getRegistry();
 
         // set the parent class loader to the shared module class loader, if packaged
         Module parentModule = systemRegistry.makeModuleFor("org.glassfish.core:shared-components", null);

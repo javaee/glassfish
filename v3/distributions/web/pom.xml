@@ -7,7 +7,7 @@
     </parent>    
     <artifactId>web</artifactId>
     <version>${pe.version}</version>
-    <name>Glassfish PE Bundle</name>
+    <name>Glassfish Web Bundle</name>
     <packaging>distribution-base-zip</packaging>
     <description>This pom describes how to assemble the Glassfish PE Bundle</description>
 

@@ -40,6 +40,7 @@ package com.sun.enterprise.config.serverbeans;
 
 import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.ConfigBeanProxy;
+import org.jvnet.hk2.component.Injectable;
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.Element;
 
@@ -55,7 +56,7 @@ import java.util.List;
     "property"
 }) */
 @Configured
-public interface AuditModule extends ConfigBeanProxy  {
+public interface AuditModule extends ConfigBeanProxy, Injectable  {
 
     /**
      * Gets the value of the name property.

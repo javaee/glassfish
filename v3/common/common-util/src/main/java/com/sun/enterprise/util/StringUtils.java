@@ -493,4 +493,37 @@ public class StringUtils
 
         return tokens;
     }
+
+    /**
+     * Get a system propety given a property name, possibly trying all combination
+     * of upercase, nane mangling to get a value.
+     *
+     * @param propName the approximate system property name
+     * @return the property value if found, null otherwise
+     */
+    public static String getProperty(String propName) {
+        // xxx.yyy
+        String value = System.getProperty(propName);
+        if (value!=null) {
+            return value;
+        }
+        // XXX.YYY
+        value = System.getProperty(propName.toUpperCase());
+        if (value!=null) {
+            System.setProperty(propName, value);
+            return value;
+        }
+        // xxx_yyy
+        value = System.getProperty(propName.replace('.', '_'));
+        if (value!=null) {
+            System.setProperty(propName, value);
+            return value;
+        }
+        // XXX_YYY
+        value = System.getProperty(propName.toUpperCase().replace('.','_'));
+        if (value!=null) {
+            System.setProperty(propName, value);
+        }
+        return value;
+    }        
 }

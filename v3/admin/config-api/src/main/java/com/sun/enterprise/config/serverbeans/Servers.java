@@ -39,6 +39,7 @@
 package com.sun.enterprise.config.serverbeans;
 
 import org.jvnet.hk2.config.ConfigBeanProxy;
+import org.jvnet.hk2.component.Injectable;
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.Element;
 
@@ -53,7 +54,7 @@ import java.util.List;
     "server"
 }) */
 @Configured
-public interface Servers extends ConfigBeanProxy  {
+public interface Servers extends ConfigBeanProxy, Injectable  {
 
     /**
      * Gets the value of the server property.

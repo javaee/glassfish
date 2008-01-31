@@ -41,6 +41,7 @@ package com.sun.enterprise.config.serverbeans;
 import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.ConfigBeanProxy;
+import org.jvnet.hk2.component.Injectable;
 
 import java.beans.PropertyVetoException;
 import java.util.List;
@@ -55,7 +56,7 @@ import org.jvnet.hk2.config.Element;
     "property"
 }) */
 @Configured
-public interface AuthRealm extends ConfigBeanProxy  {
+public interface AuthRealm extends ConfigBeanProxy, Injectable  {
 
     /**
      * Gets the value of the name property.

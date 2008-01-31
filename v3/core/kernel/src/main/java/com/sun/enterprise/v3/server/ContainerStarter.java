@@ -24,9 +24,9 @@
 package com.sun.enterprise.v3.server;
 
 import com.sun.enterprise.module.*;
-import com.sun.enterprise.v3.admin.Utils;
 import com.sun.enterprise.v3.data.ContainerInfo;
 import com.sun.enterprise.v3.data.ContainerRegistry;
+import com.sun.enterprise.util.StringUtils;
 import org.glassfish.api.container.Container;
 import org.glassfish.api.container.Sniffer;
 import org.jvnet.hk2.component.ComponentException;
@@ -80,7 +80,7 @@ public class ContainerStarter {
         String jarFileName = bundleName + ".jar";
 
         // get the container installation
-        String containerHome = Utils.getProperty(containerName + ".home");
+        String containerHome = StringUtils.getProperty(containerName + ".home");
         if (containerHome==null) {
             // the container could be installed at the default location
             // which is in <Root Installation>/modules/containerName

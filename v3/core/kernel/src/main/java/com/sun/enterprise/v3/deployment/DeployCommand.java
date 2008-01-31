@@ -33,6 +33,7 @@ import com.sun.enterprise.v3.server.V3Environment;
 import com.sun.enterprise.module.Module;
 import com.sun.enterprise.module.ModuleDefinition;
 import com.sun.enterprise.module.impl.ClassLoaderProxy;
+import com.sun.enterprise.config.serverbeans.Domain;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
@@ -93,6 +94,9 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
 
     @Param(optional=true)
     String libraries = null;
+
+    @Inject
+    Domain domain;
 
 
     @Param(primary=true, shortName = "p")
@@ -173,7 +177,7 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
             boolean isDirectoryDeployed = true;
             if (!source.isDirectory()) {
                 isDirectoryDeployed = false;
-                expansionDir = new File(env.getApplicationRepositoryPath(), name);
+                expansionDir = new File(domain.getApplicationRoot(), name);
                 if (!expansionDir.mkdirs()) {
                     report.setMessage(localStrings.getLocalString("deploy.cannotcreateexpansiondir", "Error while creating directory for jar expansion: {0}",expansionDir));
                     report.setActionExitCode(ActionReport.ExitCode.FAILURE);

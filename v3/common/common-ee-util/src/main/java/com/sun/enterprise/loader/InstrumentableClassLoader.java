@@ -22,7 +22,8 @@
  */
 package com.sun.enterprise.loader;
 
-import javax.persistence.spi.ClassTransformer;
+import java.lang.instrument.ClassFileTransformer;
+
 
 /**
  * This interface is implemented by the Container and
@@ -50,5 +51,5 @@ public interface InstrumentableClassLoader {
      * @param transformer The transformer to register with the loader
      * @see java.lang.instrument.Instrumentation#addTransformer
      */
-    public void addTransformer(ClassTransformer transformer);
+    public void addTransformer(ClassFileTransformer transformer);
 }

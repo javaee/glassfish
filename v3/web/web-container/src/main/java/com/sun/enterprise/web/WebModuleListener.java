@@ -44,6 +44,7 @@ import java.util.Enumeration;
 import java.util.Collection;
 import java.text.MessageFormat;
 import java.lang.instrument.IllegalClassFormatException;
+import java.lang.instrument.ClassFileTransformer;
 import java.net.URLClassLoader;
 import java.net.URL;
 import java.io.IOException;
@@ -293,7 +294,7 @@ final class WebModuleListener
             return new URLClassLoader(webappClassLoader.getURLs(), getParent());
         }
 
-        public void addTransformer(final ClassTransformer transformer) {
+        public void addTransformer(final ClassFileTransformer transformer) {
             webappClassLoader.addByteCodePreprocessor(new BytecodePreprocessor(){
                 /*
                  * This class adapts ClassFileTransformer to ByteCodePreprocessor that

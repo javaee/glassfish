@@ -2,9 +2,7 @@ package com.sun.enterprise.configapi.tests;
 
 import com.sun.enterprise.config.serverbeans.HttpService;
 import com.sun.enterprise.config.serverbeans.KeepAlive;
-import org.junit.Before;
 import org.junit.Test;
-import org.junit.Ignore;
 import static org.junit.Assert.assertTrue;
 import org.jvnet.hk2.config.*;
 
@@ -30,41 +28,41 @@ public class TransactionListenerTest extends ConfigApiTest {
     List<PropertyChangeEvent> events = null;
 
     @Test
-    @Ignore
     public void transactionEvents() throws TransactionFailure {
         httpService = getHabitat().getComponent(HttpService.class);
-        Transactions.get().listenToAllTransactions(new TransactionListener() {
-            public void transactionCommited(List<PropertyChangeEvent> changes) {
-                events = changes;
-            }
-        });
-        assertTrue(httpService!=null);
-
-        logger.fine("Max connections = " + httpService.getKeepAlive().getMaxConnections());
-        TransactionHelper.apply(new SingleConfigCode<KeepAlive>() {
-
-            public boolean run(KeepAlive param) throws PropertyVetoException, TransactionFailure {
-                param.setMaxConnections("500");
-                return true;
-            }
-        }, httpService.getKeepAlive());
-        assertTrue(httpService.getKeepAlive().getMaxConnections().equals("500"));
-
-        for (int i=0;i<10;i++) {
-            if (Transactions.get().pendingTransactionEvents()) {
-                try {
-                    Thread.currentThread().wait(10);
-                } catch (InterruptedException e) {
+        final TransactionListener listener = new TransactionListener() {
+                public void transactionCommited(List<PropertyChangeEvent> changes) {
+                    events = changes;
                 }
-            } else {
-                break;
+            };
+
+        try {
+            Transactions.get().addTransactionsListener(listener);
+            assertTrue(httpService!=null);
+
+            logger.fine("Max connections = " + httpService.getKeepAlive().getMaxConnections());
+            ConfigSupport.apply(new SingleConfigCode<KeepAlive>() {
+
+                public Object run(KeepAlive param) throws PropertyVetoException, TransactionFailure {
+                    param.setMaxConnections("500");
+                    return null;
+                }
+            }, httpService.getKeepAlive());
+            assertTrue(httpService.getKeepAlive().getMaxConnections().equals("500"));
+
+            while (Transactions.get().pendingTransactionEvents()) {
+                // wait until all events are delivered
             }
+            assertTrue(events!=null);
+            logger.fine("Number of events " + events.size());
+            assertTrue(events.size()==1);
+            PropertyChangeEvent event = events.iterator().next();
+            assertTrue("max-connections".equals(event.getPropertyName()));
+            assertTrue("500".equals(event.getNewValue().toString()));
+            assertTrue("250".equals(event.getOldValue().toString()));
+        } finally {
+            Transactions.get().removeTransactionsListener(listener);
         }
-        assertTrue(events!=null);
-        assertTrue(events.size()==1);
-        PropertyChangeEvent event = events.iterator().next();
-        assertTrue("max-connections".equals(event.getPropertyName()));
-        assertTrue("500".equals(event.getNewValue().toString()));
-        assertTrue("250".equals(event.getOldValue().toString()));
+
     }
 }

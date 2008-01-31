@@ -40,7 +40,7 @@ import com.sun.enterprise.config.serverbeans.HttpService;
 import com.sun.enterprise.config.serverbeans.KeepAlive;
 import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.TransactionFailure;
-import org.jvnet.hk2.config.TransactionHelper;
+import org.jvnet.hk2.config.ConfigSupport;
 import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
@@ -77,23 +77,27 @@ public class HttpServiceTest extends ConfigApiTest {
     public void validTransaction() throws TransactionFailure {
         logger.fine("before..." +httpService.getKeepAlive().getThreadCount() );
 
-        TransactionHelper.apply((new SingleConfigCode<HttpService>() {
-            public boolean run(HttpService okToChange) throws PropertyVetoException, TransactionFailure {
-                    KeepAlive newKeepAlive = TransactionHelper.createChildOf(okToChange, KeepAlive.class);
+        ConfigSupport.apply((new SingleConfigCode<HttpService>() {
+            public Object run(HttpService okToChange) throws PropertyVetoException, TransactionFailure {
+                    KeepAlive newKeepAlive = ConfigSupport.createChildOf(okToChange, KeepAlive.class);
                 newKeepAlive.setMaxConnections(httpService.getKeepAlive().getMaxConnections());
                 newKeepAlive.setThreadCount("3");
                 newKeepAlive.setTimeoutInSeconds("65");
                 okToChange.setKeepAlive(newKeepAlive);
-                return true;
+                return newKeepAlive;
             }
         }), httpService);
 
-        TransactionHelper.apply((new SingleConfigCode<KeepAlive>() {
-            public boolean run(KeepAlive param) throws PropertyVetoException, TransactionFailure {
-                param.setThreadCount("7");
-                return false;  //To change body of implemented methods use File | Settings | File Templates.
-            }
-        }), httpService.getKeepAlive());
+        try {
+            ConfigSupport.apply((new SingleConfigCode<KeepAlive>() {
+                public Object run(KeepAlive param) throws PropertyVetoException, TransactionFailure {
+                    param.setThreadCount("7");
+                    throw new TransactionFailure("Sorry, changed my mind", null);
+                }
+            }), httpService.getKeepAlive());
+        } catch(TransactionFailure e) {
+            logger.fine("good, got my exception about changing my mind");
+        }
         logger.fine("after..." +httpService.getKeepAlive().getThreadCount() );
         // let's try an invalid set
         try {
@@ -108,16 +112,16 @@ public class HttpServiceTest extends ConfigApiTest {
     @Test(expected=TransactionFailure.class)
     public void invalidTransaction() throws TransactionFailure {
 
-            TransactionHelper.apply((new SingleConfigCode<HttpService>() {
-            public boolean run(HttpService okToChange) throws PropertyVetoException, TransactionFailure {
-                KeepAlive newKeepAlive = TransactionHelper.createChildOf(okToChange,KeepAlive.class);
+            ConfigSupport.apply((new SingleConfigCode<HttpService>() {
+            public Object run(HttpService okToChange) throws PropertyVetoException, TransactionFailure {
+                KeepAlive newKeepAlive = ConfigSupport.createChildOf(okToChange,KeepAlive.class);
                 newKeepAlive.setMaxConnections("500");
                 newKeepAlive.setThreadCount("5");
                 newKeepAlive.setTimeoutInSeconds("65");
                 okToChange.setKeepAlive(newKeepAlive);
                 // this should fail
                 okToChange.getHttpProtocol().setDefaultType("text/css");
-                return true;
+                return newKeepAlive;
             }
         }), httpService);
         assertTrue(httpService.getKeepAlive().getThreadCount().equals("3"));

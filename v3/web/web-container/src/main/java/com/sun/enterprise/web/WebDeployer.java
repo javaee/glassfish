@@ -25,6 +25,7 @@ package com.sun.enterprise.web;
 
 
 import com.sun.enterprise.config.serverbeans.Domain;
+import com.sun.enterprise.config.serverbeans.Applications;
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.io.WebDeploymentDescriptorFile;
@@ -47,12 +48,16 @@ import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.javaee.core.deployment.JavaEEDeployer;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.config.ConfigSupport;
+import org.jvnet.hk2.config.SingleConfigCode;
+import org.jvnet.hk2.config.TransactionFailure;
 
 import java.util.*;
 import java.util.logging.Level;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.beans.PropertyVetoException;
 
 /**
  * Web module deployer.
@@ -75,6 +80,9 @@ public class WebDeployer extends JavaEEDeployer<WebContainer, WebApplication>{
 
     @Inject
     GrizzlyService grizzlyAdapter;
+
+    @Inject
+    Applications applications;
 
     
     private static final String ADMIN_VS = "__asadmin";
@@ -143,7 +151,7 @@ public class WebDeployer extends JavaEEDeployer<WebContainer, WebApplication>{
         
         try {
             ReadableArchive source = dc.getSource();
-            String docBase = source.getURI().getSchemeSpecificPart();
+            final String docBase = source.getURI().getSchemeSpecificPart();
             Properties params = dc.getCommandParameters();
             String virtualServers = params.getProperty(DeployCommand.VIRTUAL_SERVERS);
         
@@ -152,13 +160,33 @@ public class WebDeployer extends JavaEEDeployer<WebContainer, WebApplication>{
             WebBundleDescriptor wbd = (WebBundleDescriptor)dc.getModuleMetaData(
                 getModuleType(), Application.class).getStandaloneBundleDescriptor();
         
-            String contextRoot = wbd.getContextRoot();
-            String name = wbd.getName();
+            final String contextRoot = wbd.getContextRoot();
+            final String name = wbd.getName();
+
+            // TODO : dochez : need to move this code to the DeploymentBack end.
+            com.sun.enterprise.config.serverbeans.WebModule wm = (com.sun.enterprise.config.serverbeans.WebModule)
+                ConfigSupport.apply(new SingleConfigCode<Applications>() {
+                    /**
+                     * Runs the following command passing the configration object. The code will be run
+                     * within a transaction, returning true will commit the transaction, false will abort
+                     * it.
+                     *
+                     * @param param is the configuration object protected by the transaction
+                     * @return true if the changes on param should be commited or false for abort.
+                     * @throws java.beans.PropertyVetoException
+                     *          if the changes cannot be applied
+                     *          to the configuration
+                     */
+                    public Object run(Applications param) throws PropertyVetoException, TransactionFailure {
+                        com.sun.enterprise.config.serverbeans.WebModule wm = ConfigSupport.createChildOf(param, com.sun.enterprise.config.serverbeans.WebModule.class);
+                        wm.setName(name);
+                        wm.setContextRoot(contextRoot);
+                        wm.setLocation(docBase);
+                        return wm;
+                    }
+                }, applications);
+
         
-            com.sun.enterprise.config.serverbeans.WebModule wm = 
-                    new WebModuleImpl(name, contextRoot);
-        
-            wm.setLocation(docBase);
             wmInfo.setBean(wm);
             wmInfo.setDescriptor(wbd);
             wmInfo.setVirtualServers(virtualServers);

@@ -40,7 +40,7 @@ import com.sun.enterprise.config.serverbeans.HttpListener;
 import com.sun.enterprise.config.serverbeans.HttpService;
 import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.TransactionFailure;
-import org.jvnet.hk2.config.TransactionHelper;
+import org.jvnet.hk2.config.ConfigSupport;
 import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
@@ -86,11 +86,11 @@ public class HttpListenerTest extends ConfigApiTest {
     @Test
     public void validTransaction() throws TransactionFailure {
         
-        TransactionHelper.apply((new SingleConfigCode<HttpListener>() {
-            public boolean run(HttpListener okToChange) throws PropertyVetoException {
+        ConfigSupport.apply((new SingleConfigCode<HttpListener>() {
+            public Object run(HttpListener okToChange) throws PropertyVetoException {
                 okToChange.setAcceptorThreads("2");
                 logger.fine("ID inside the transaction is " + okToChange.getId());
-                return true;
+                return null;
             }
         }), listener);
         logger.fine("ID outside the transaction is " + listener.getId());

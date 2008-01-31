@@ -39,12 +39,12 @@ import com.sun.enterprise.admin.monitor.callflow.Agent;
 import com.sun.enterprise.server.ServerContext;
 import com.sun.enterprise.util.StringUtils;
 import com.sun.enterprise.util.io.FileUtils;
-import com.sun.enterprise.v3.admin.Utils;
 import com.sun.enterprise.v3.common.BooleanLatch;
 import com.sun.enterprise.v3.logging.AgentFormatterDelegate;
 import com.sun.enterprise.v3.server.V3Environment;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.logging.Task;
+import org.glassfish.config.support.TranslatedConfigView;
 import org.jvnet.hk2.annotations.ContractProvided;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
@@ -156,7 +156,7 @@ public class FileandSyslogHandler extends StreamHandler implements PostConstruct
         LogManager manager = LogManager.getLogManager();
         String cname = getClass().getName();
         
-        String fileName = Utils.decode(manager.getProperty(cname + ".file"));
+        String fileName = TranslatedConfigView.getTranslatedValue(manager.getProperty(cname + ".file")).toString();
         File serverLog = new File(fileName);
         if (!serverLog.isAbsolute()) {
             serverLog = new File(env.getDomainRoot(), fileName);

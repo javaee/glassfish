@@ -63,7 +63,7 @@ public class VsAdapter extends AbstractAdapter implements Adapter {
 
     public VsAdapter(VirtualServer vs) {
         this.vs = vs;
-        this.docRoot = com.sun.enterprise.v3.admin.Utils.decode(getDocRoot(vs));
+        this.docRoot = getDocRoot(vs);
         hostsNames = new HashSet(StringUtils.parseStringList(vs.getHosts(), ","));
     }
 
