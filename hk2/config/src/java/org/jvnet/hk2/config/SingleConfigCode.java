@@ -54,7 +54,7 @@ import java.beans.PropertyVetoException;
  *			}
  *		};
  *  }
- * This new SingleConfigCode can then be used with in the TransactionHelper utilities to 
+ * This new SingleConfigCode can then be used with in the ConfigSupport utilities to
  * run this code within a Transaction freeing the developer to know/care about Transaction
  * APIs and semantics.
  *
@@ -68,9 +68,9 @@ public interface SingleConfigCode<T extends ConfigBeanProxy> {
 	 * it.
 	 * 
 	 * @param param is the configuration object protected by the transaction
-     * @return true if the changes on param should be commited or false for abort.
+     * @return any object that should be returned from within the transaction code
      * @throws PropertyVetoException if the changes cannot be applied
      * to the configuration
 	 */
-    public boolean run(T param) throws PropertyVetoException, TransactionFailure;
+    public Object run(T param) throws PropertyVetoException, TransactionFailure;
 }

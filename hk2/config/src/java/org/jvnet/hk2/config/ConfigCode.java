@@ -58,5 +58,5 @@ public interface ConfigCode {
      * @throws PropertyVetoException if the changes cannot be applied
      * to the configuration
 	 */
-    public boolean run(ConfigBeanProxy... params) throws PropertyVetoException, TransactionFailure;
+    public Object run(ConfigBeanProxy... params) throws PropertyVetoException, TransactionFailure;
 }

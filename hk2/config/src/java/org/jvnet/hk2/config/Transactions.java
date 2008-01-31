@@ -1,41 +1,121 @@
+/*
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+ *
+ * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ *
+ * The contents of this file are subject to the terms of either the GNU
+ * General Public License Version 2 only ("GPL") or the Common Development
+ * and Distribution License("CDDL") (collectively, the "License").  You
+ * may not use this file except in compliance with the License. You can obtain
+ * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
+ * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
+ * language governing permissions and limitations under the License.
+ *
+ * When distributing the software, include this License Header Notice in each
+ * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
+ * Sun designates this particular file as subject to the "Classpath" exception
+ * as provided by Sun in the GPL Version 2 section of the License file that
+ * accompanied this code.  If applicable, add the following below the License
+ * Header, with the fields enclosed by brackets [] replaced by your own
+ * identifying information: "Portions Copyrighted [year]
+ * [name of copyright owner]"
+ *
+ * Contributor(s):
+ *
+ * If you wish your version of this file to be governed by only the CDDL or
+ * only the GPL Version 2, indicate your decision by adding "[Contributor]
+ * elects to include this software in this distribution under the [CDDL or GPL
+ * Version 2] license."  If you don't indicate a single choice of license, a
+ * recipient has the option to distribute your version of this file under
+ * either the CDDL, the GPL Version 2 or to extend the choice of license to
+ * its licensees as provided above.  However, if you add GPL Version 2 code
+ * and therefore, elected the GPL Version 2 license, then the option applies
+ * only if the new code is made subject to such option by the copyright
+ * holder.
+ */
 package org.jvnet.hk2.config;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.locks.Condition;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ArrayBlockingQueue;
-import java.util.logging.LogRecord;
 import java.beans.PropertyChangeEvent;
+import java.lang.reflect.Proxy;
 
 /**
- * Created by IntelliJ IDEA.
- * User: dochez
- * Date: Jan 23, 2008
- * Time: 10:31:45 PM
- * To change this template use File | Settings | File Templates.
+ * Transactions is a singleton service that receives transaction notifications and dispatch these
+ * notifications asynchronously to listeners.
+ *
+ * @author Jerome Dochez
  */
 public class Transactions {
 
-    final static Transactions t = new Transactions();
+    final private static Transactions t = new Transactions();
     final List<TransactionListener> listeners = new ArrayList<TransactionListener>();
+    // Use a blocking queue out of conveniene, in fact the synchornization is done with the Lock and condition below
     final private BlockingQueue<List<PropertyChangeEvent>> pendingRecords = new ArrayBlockingQueue<List<PropertyChangeEvent>>(5);
     Thread pump;
 
+    /**
+     * Lock and Condition to be able to monitor that all events have been
+     * dispatched to all listeners before declaring the events backlog is empty
+     */
+    final Lock lock = new ReentrantLock();
+    final Condition notEmpty = lock.newCondition();
+
+    /**
+     * Returns the singleton service
+     *
+     * @return  the singleton service
+     */
     public static Transactions get() {
         return t;
     }
 
-    public synchronized void listenToAllTransactions(TransactionListener listener) {
-        if (listeners.size()==0) {
+    /**
+     * add a new listener to all transaction events.
+     *
+     * @param listener to be added.
+     */
+    public synchronized void addTransactionsListener(TransactionListener listener) {
+        if (listeners.size() == 0) {
             start();
         }
         listeners.add(listener);
     }
 
-    public void addTransaction(List<PropertyChangeEvent> events) {
-        pendingRecords.add(events);
+    /**
+     * Removes an existing listener for transaction events
+     * @param listener the registered listener
+     * @return true if the listener unregistration was successful
+     */
+    public synchronized boolean removeTransactionsListener(TransactionListener listener) {
+        return listeners.remove(listener); 
     }
 
+    /**
+     * Notification of a new transation completion
+     *
+     * @param events accumulated list of changes
+     */
+    void addTransaction(List<PropertyChangeEvent> events) {
+        lock.lock();
+        try {
+            pendingRecords.add(events);
+            notEmpty.signalAll();
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    /**
+     * Returns true if there are transaction events yet to be received by listeners
+     *
+     * @return true if the are pending events notifications.
+     */
     public boolean pendingTransactionEvents() {
         return !pendingRecords.isEmpty();
     }
@@ -44,13 +124,37 @@ public class Transactions {
         pump = new Thread() {
             public void run() {
                 while (true) {
+                    lock.lock();
                     try {
-                        List<PropertyChangeEvent> events = pendingRecords.take();
+                        // I am waiting here on the notEmpty condition for events to appear in the list
+                        // this is better than waiting on the blocking queue since I don't want to remove
+                        // elements from the queue until I know all listeners have been notified.
+                        if (pendingRecords.isEmpty()) {
+                            notEmpty.await();
+                        }
+                        List<PropertyChangeEvent> events = pendingRecords.peek();
                         for (TransactionListener listener : listeners) {
                             listener.transactionCommited(events);
                         }
+                        for (PropertyChangeEvent evt : events) {
+                            Dom dom = (Dom) ((ConfigView) Proxy.getInvocationHandler(evt.getSource())).getMasterView();
+                            if (dom.getListeners() != null) {
+                                for (ConfigListener listener : dom.getListeners()) {
+                                    try {
+                                        listener.changed(events.toArray(new PropertyChangeEvent[events.size()]));
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            }
+                        }
+                        // remove it from the list
+                        pendingRecords.take();
+
                     } catch (InterruptedException e) {
 
+                    } finally {
+                        lock.unlock();
                     }
                 }
             }

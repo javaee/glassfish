@@ -65,6 +65,15 @@ public abstract class InjectionManager<T extends Annotation> {
                         if (value != null) {
                             field.setAccessible(true);
                             field.set(component, value);
+                            Injectable injectable;
+                            try {
+                                injectable = Injectable.class.cast(value);
+                                if (injectable!=null) {
+                                    injectable.injectedInto(component);
+                                }
+                            } catch (Exception e) {
+                            }
+
                         } else {
                             if(!isOptional(inject))
                                 throw new UnsatisfiedDepedencyException(field);
@@ -99,6 +108,13 @@ public abstract class InjectionManager<T extends Annotation> {
                         if (value != null) {
                             method.setAccessible(true);
                             method.invoke(component, value);
+                            try {
+                                Injectable injectable = Injectable.class.cast(value);
+                                if (injectable!=null) {
+                                    injectable.injectedInto(component);
+                                }
+                            } catch (Exception e) {
+                            }
                         } else {
                             if (!isOptional(inject))
                                 throw new UnsatisfiedDepedencyException(method);
