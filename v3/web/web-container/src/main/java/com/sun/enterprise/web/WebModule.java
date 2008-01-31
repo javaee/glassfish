@@ -63,6 +63,7 @@ import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.web.ServletFilterMapping;
 import com.sun.enterprise.config.serverbeans.Property;
 import com.sun.enterprise.deployment.runtime.web.WebProperty;
+import com.sun.enterprise.web.pwc.PwcWebModule;
 import com.sun.enterprise.web.session.PersistenceType;
 import com.sun.enterprise.web.session.SessionCookieConfig;
 //import com.sun.enterprise.webservice.ClientPipeCloser;

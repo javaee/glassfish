@@ -39,7 +39,7 @@ package com.sun.enterprise.web.connector.coyote;
 import java.util.logging.Logger;
 import javax.servlet.http.Cookie;
 import org.apache.coyote.tomcat5.CoyoteResponse;
-import com.sun.enterprise.web.PwcWebModule;
+import com.sun.enterprise.web.pwc.PwcWebModule;
 import com.sun.enterprise.web.logging.pwc.LogDomains;
 
 /**

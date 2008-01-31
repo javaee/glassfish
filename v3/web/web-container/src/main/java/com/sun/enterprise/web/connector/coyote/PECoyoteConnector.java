@@ -36,6 +36,7 @@
 
 package com.sun.enterprise.web.connector.coyote;
 
+import com.sun.enterprise.web.pwc.connector.coyote.PwcCoyoteRequest;
 import com.sun.enterprise.web.connector.extension.GrizzlyConfig;
 import java.lang.reflect.Method;
 import java.util.logging.Level;
