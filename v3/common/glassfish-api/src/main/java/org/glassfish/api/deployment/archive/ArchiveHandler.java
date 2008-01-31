@@ -42,6 +42,17 @@ public interface ArchiveHandler {
 
     public String getArchiveType();
 
+    /**
+     * Returns the default name by which the specified archive can be 
+     * identified.
+     * <p>
+     * The default name is used, for example, during deployment if no name
+     * was specified explicitly as part of the deployment request.  
+     * @param archive the archive for which to provide the default name
+     * @return the default name for identifying the specified archive
+     */
+    public String getDefaultApplicationName(ReadableArchive archive);
+    
     public boolean handles(ReadableArchive archive);
 
     public ClassLoader getClassLoader(ClassLoader parent, ReadableArchive archive);

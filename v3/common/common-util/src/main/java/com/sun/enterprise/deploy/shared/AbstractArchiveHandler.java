@@ -1,6 +1,8 @@
 package com.sun.enterprise.deploy.shared;
 
 
+import java.io.File;
+import java.net.URI;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.archive.WritableArchive;
 import java.io.IOException;
@@ -45,5 +47,33 @@ public class AbstractArchiveHandler {
                 }
             }
         }
+    }
+    
+    /**
+     * Returns the default application name usable for identifying the archive.
+     * <p>
+     * The default application name is the name portion (without the file type) of 
+     * the archive's URI.  A concrete subclass should override this method if it
+     * needs to provide an alternative way of deriving the default 
+     * application name.
+     * 
+     * @param archive the archive for which the default name is needed
+     * @return the default application name for the specified archive
+     */
+    public String getDefaultApplicationName(ReadableArchive archive) {
+        String name = null;
+        URI uri = archive.getURI();
+        String path = uri.getPath();
+        if (path != null) {
+            /*
+             * Strip the path up to and including the last slash, if there is one.
+             * Then the name is the part of that stripped path up to the last dot.
+             */
+            name = path.substring(path.lastIndexOf('/') + 1);
+            if (name.lastIndexOf(".")!=-1) {
+                name = name.substring(0, name.lastIndexOf("."));
+            }
+        }
+        return name;
     }
 }

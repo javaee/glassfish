@@ -134,33 +134,6 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             return;
         }
-        // get an application name
-        if (name==null) {
-            if (file.getName().lastIndexOf(".")!=-1) {
-                name = file.getName().substring(0, file.getName().lastIndexOf("."));
-            } else {
-                name = file.getName();
-            }
-            parameters.put(NAME, name);
-        }
-
-        // check this application is not already registered.
-        try {
-            ApplicationInfo appInfo = appRegistry.get(name);
-            if (appInfo!=null) {
-                report.setMessage(localStrings.getLocalString("application.alreadyreg",
-                    "Application {0} already registered", name));
-                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-                return;
-            }
-
-        } catch(ComponentException e) {
-            report.setMessage(e.getMessage());
-            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            return;
-
-        }
-
         File expansionDir=null;
         try {
 
@@ -170,6 +143,32 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                 return;
             }
+            // get an application name
+            if (name==null) {
+                // Archive handlers know how to construct default app names.
+                name = archiveHandler.getDefaultApplicationName(archive);
+                // For the autodeployer in particular the name must be set in the 
+                // command context parameters for later use.
+                parameters.put(NAME, name);
+            }
+
+            // check this application is not already registered.
+            try {
+                ApplicationInfo appInfo = appRegistry.get(name);
+                if (appInfo!=null) {
+                    report.setMessage(localStrings.getLocalString("application.alreadyreg",
+                        "Application {0} already registered", name));
+                    report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                    return;
+                }
+
+            } catch(ComponentException e) {
+                report.setMessage(e.getMessage());
+                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                return;
+
+            }
+
             File source = new File(archive.getURI().getSchemeSpecificPart());
             boolean isDirectoryDeployed = true;
             if (!source.isDirectory()) {
@@ -192,7 +191,7 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
                     
                 }
             }
-
+            
             // create the parent class loader
             ClassLoader parentCL = createSnifferParentCL(null, Arrays.asList(sniffers));
             // now the archive class loader, this will only be used for the sniffers.handles() method
@@ -245,6 +244,5 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
                 }                
             }
         }
-        
-    }        
+    }  
 }
