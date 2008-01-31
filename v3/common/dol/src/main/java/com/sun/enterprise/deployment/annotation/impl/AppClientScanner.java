@@ -35,6 +35,7 @@
  */
 package com.sun.enterprise.deployment.annotation.impl;
 
+import org.glassfish.apf.impl.AnnotationUtils;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;

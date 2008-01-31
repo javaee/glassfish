@@ -35,9 +35,10 @@
  */
 package com.sun.enterprise.deployment.annotation.factory;
 
-import com.sun.enterprise.deployment.annotation.AnnotationHandler;
-import com.sun.enterprise.deployment.annotation.AnnotationProcessor;
-import com.sun.enterprise.deployment.annotation.impl.AnnotationProcessorImpl;
+import org.glassfish.apf.factory.Factory;
+import org.glassfish.apf.AnnotationHandler;
+import org.glassfish.apf.AnnotationProcessor;
+import org.glassfish.apf.impl.AnnotationProcessorImpl;
 import org.glassfish.api.ContractProvider;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;

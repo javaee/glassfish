@@ -35,6 +35,7 @@
  */
 package com.sun.enterprise.deployment.annotation.impl;
 
+import org.glassfish.apf.impl.AnnotationUtils;
 import com.sun.enterprise.deployment.*;
 import org.jvnet.hk2.annotations.Service;
 

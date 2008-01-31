@@ -35,6 +35,7 @@
  */
 package com.sun.enterprise.deployment.backend;
 
+import org.glassfish.deployment.common.IASDeploymentException;
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.ApplicationClientDescriptor;
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
@@ -44,7 +45,7 @@ import com.sun.enterprise.deployment.interfaces.ClientJarMaker;
 import com.sun.enterprise.deployment.interfaces.DeploymentImplConstants;
 import com.sun.enterprise.deployment.RootDeploymentDescriptor;
 import com.sun.enterprise.deployment.util.ModuleDescriptor;
-import com.sun.enterprise.deployment.util.DeploymentProperties;
+import org.glassfish.deployment.common.DeploymentProperties;
 import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.util.zip.ZipItem;
