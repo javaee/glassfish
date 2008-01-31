@@ -77,8 +77,7 @@ public final class Constants {
      * The separator character between an application name and the web
      * module name within the application.
      */
-    public static final String NAME_SEPARATOR = 
-             com.sun.enterprise.server.Constants.NAME_SEPARATOR;
+    public static final String NAME_SEPARATOR = ":";
 
     /**
      * The string to prefix to the name of the web module when a web module

@@ -84,7 +84,7 @@ import com.sun.enterprise.v3.data.ApplicationRegistry;
 import com.sun.enterprise.web.WebDeployer;
 
 import com.sun.enterprise.security.web.SingleSignOn;
-import com.sun.enterprise.server.pluggable.WebContainerFeatureFactory;
+import com.sun.enterprise.web.pluggable.WebContainerFeatureFactory;
 import com.sun.enterprise.util.StringUtils;
 import com.sun.enterprise.util.io.FileUtils;
 

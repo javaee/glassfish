@@ -34,7 +34,7 @@
  * holder.
  */
 
-package com.sun.enterprise.server.pluggable;
+package com.sun.enterprise.web.pluggable;
 
 import com.sun.enterprise.admin.monitor.stats.WebModuleStats;
 import com.sun.enterprise.web.EmbeddedWebContainer;

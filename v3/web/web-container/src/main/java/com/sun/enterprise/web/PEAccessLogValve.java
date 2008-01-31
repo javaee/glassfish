@@ -74,8 +74,8 @@ import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.HttpProtocol;
 import com.sun.enterprise.config.serverbeans.HttpService;
 import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
-import com.sun.enterprise.server.pluggable.WebContainerFeatureFactory;
 import com.sun.enterprise.v3.server.V3Environment;
+import com.sun.enterprise.web.pluggable.WebContainerFeatureFactory;
 
 import com.sun.logging.LogDomains;
 //import org.openide.util.Lookup;

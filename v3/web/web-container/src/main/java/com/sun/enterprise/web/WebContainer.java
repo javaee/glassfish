@@ -83,7 +83,6 @@ import com.sun.enterprise.config.serverbeans.HttpProtocol;
 import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
 //import com.sun.enterprise.server.StandaloneWebModulesManager;
 import com.sun.enterprise.server.ServerContext;
-import com.sun.enterprise.server.pluggable.WebContainerFeatureFactory;
 import com.sun.enterprise.deployment.runtime.web.SunWebApp;
 import com.sun.enterprise.deployment.runtime.web.ManagerProperties;
 import com.sun.enterprise.deployment.runtime.web.SessionManager;
@@ -95,6 +94,7 @@ import com.sun.enterprise.deployment.util.WebBundleVisitor;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.util.StringUtils;
 import com.sun.enterprise.web.connector.coyote.PECoyoteConnector;
+import com.sun.enterprise.web.pluggable.WebContainerFeatureFactory;
 
 
 //import com.sun.enterprise.security.SecurityUtil;
