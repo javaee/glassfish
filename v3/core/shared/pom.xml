@@ -36,38 +36,35 @@
 * holder. 
 */ 
 --> 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <parent>
-        <groupId>org.glassfish.common</groupId>
-        <artifactId>common</artifactId>
+        <groupId>org.glassfish.core</groupId>
+        <artifactId>core</artifactId>
         <version>10.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>amx-api</artifactId>
+    <artifactId>shared-components</artifactId>
     <packaging>hk2-jar</packaging>
-    <name>AMX API</name>
-    <version>${amx-api.version}</version>
-    <description>Appserver Management Extensions (AMX) interfaces and utilities</description>
-    
+    <name>Shared Module for GlassFish</name>
+    <description>Shared Module for GlassFish v3, parent class loader of all modules</description>
+
     <developers>
         <developer>
-            <id>llc</id>
-            <name>Lloyd Chambers</name>
-            <url>http://blogs.sun.com/lchambers</url>
+            <id>dochez</id>
+            <name>Jerome Dochez</name>
+            <url>http://blogs.sun.com/dochez</url>
             <organization>Sun Microsystems, Inc.</organization>
             <roles>
                 <role>lead</role>
                 <role>developer</role>
             </roles>
         </developer>
-    </developers>
-
+    </developers>    
     <dependencies>
         <dependency>
-            <groupId>javax.management.j2ee</groupId>
-            <artifactId>management-api</artifactId>
-            <version>${management-api.version}</version>
+            <groupId>javax.javaee</groupId>
+            <artifactId>javaee</artifactId>
+            <version>${javaee-api.version}</version>
         </dependency>
     </dependencies>
 </project>

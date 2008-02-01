@@ -38,23 +38,22 @@
 --> 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.glassfish.common</groupId>
         <artifactId>common</artifactId>
         <version>10.0-SNAPSHOT</version>
     </parent>
-    <modelVersion>4.0.0</modelVersion>
-    <artifactId>amx-api</artifactId>
+
+    <artifactId>annotation-framework</artifactId>
     <packaging>hk2-jar</packaging>
-    <name>AMX API</name>
-    <version>${amx-api.version}</version>
-    <description>Appserver Management Extensions (AMX) interfaces and utilities</description>
-    
+    <name>GlassFish Java EE Annotation Framework</name>
+
     <developers>
         <developer>
-            <id>llc</id>
-            <name>Lloyd Chambers</name>
-            <url>http://blogs.sun.com/lchambers</url>
+            <id>dochez</id>
+            <name>Jerome Dochez</name>
+            <url>http://blogs.sun.com/dochez</url>
             <organization>Sun Microsystems, Inc.</organization>
             <roles>
                 <role>lead</role>
@@ -62,12 +61,21 @@
             </roles>
         </developer>
     </developers>
-
-    <dependencies>
-        <dependency>
-            <groupId>javax.management.j2ee</groupId>
-            <artifactId>management-api</artifactId>
-            <version>${management-api.version}</version>
-        </dependency>
-    </dependencies>
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/java</directory>
+                <includes>
+                    <include>com/sun/enterprise/deployment/annotation/skip-annotation-class-list</include>
+                </includes>
+            </resource>
+        </resources>
+    </build>
+	<dependencies>
+    <dependency>
+        <groupId>com.sun.enterprise</groupId>
+        <artifactId>hk2</artifactId>
+        <version>${hk2.version}</version>
+    </dependency>
+	</dependencies>
 </project>

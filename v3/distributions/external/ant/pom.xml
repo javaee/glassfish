@@ -36,25 +36,22 @@
 * holder. 
 */ 
 --> 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <parent>
-        <groupId>org.glassfish.common</groupId>
-        <artifactId>common</artifactId>
+        <groupId>org.glassfish.external</groupId>
+        <artifactId>external</artifactId>
         <version>10.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>amx-api</artifactId>
+    <artifactId>ant</artifactId>
     <packaging>hk2-jar</packaging>
-    <name>AMX API</name>
-    <version>${amx-api.version}</version>
-    <description>Appserver Management Extensions (AMX) interfaces and utilities</description>
-    
+    <name>Ant repackaging</name>
+    <description>Repackaging of Ant as a module</description>
+
     <developers>
         <developer>
-            <id>llc</id>
-            <name>Lloyd Chambers</name>
-            <url>http://blogs.sun.com/lchambers</url>
+            <id>chung</id>
+            <name>Kin-Man Chung</name>
             <organization>Sun Microsystems, Inc.</organization>
             <roles>
                 <role>lead</role>
@@ -62,12 +59,12 @@
             </roles>
         </developer>
     </developers>
-
     <dependencies>
+        <!-- for javac dependency -->
         <dependency>
-            <groupId>javax.management.j2ee</groupId>
-            <artifactId>management-api</artifactId>
-            <version>${management-api.version}</version>
+            <groupId>org.apache.ant</groupId>
+            <artifactId>ant</artifactId>
+            <version>1.7.0</version>
         </dependency>
     </dependencies>
 </project>

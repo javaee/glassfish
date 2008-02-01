@@ -36,38 +36,29 @@
 * holder. 
 */ 
 --> 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-    <parent>
-        <groupId>org.glassfish.common</groupId>
-        <artifactId>common</artifactId>
-        <version>10.0-SNAPSHOT</version>
-    </parent>
+<!--
+  External repackaging modules.
+  
+  These modules are used to provide hk2 module 'facade' to external (possibly 3rd party) jar files.
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>amx-api</artifactId>
-    <packaging>hk2-jar</packaging>
-    <name>AMX API</name>
-    <version>${amx-api.version}</version>
-    <description>Appserver Management Extensions (AMX) interfaces and utilities</description>
+    <parent>
+      <groupId>org.glassfish</groupId>
+      <artifactId>glassfish-parent</artifactId>
+      <version>10.0-SNAPSHOT</version>
+    </parent>
     
-    <developers>
-        <developer>
-            <id>llc</id>
-            <name>Lloyd Chambers</name>
-            <url>http://blogs.sun.com/lchambers</url>
-            <organization>Sun Microsystems, Inc.</organization>
-            <roles>
-                <role>lead</role>
-                <role>developer</role>
-            </roles>
-        </developer>
-    </developers>
+    <packaging>pom</packaging>
+    <groupId>org.glassfish.external</groupId>
+    <artifactId>external</artifactId>
+    <name>Repackaged external modules</name>
 
-    <dependencies>
-        <dependency>
-            <groupId>javax.management.j2ee</groupId>
-            <artifactId>management-api</artifactId>
-            <version>${management-api.version}</version>
-        </dependency>
-    </dependencies>
+    <modules>
+        <module>ant</module>
+	    <module>jaxb</module>
+	    <module>grizzly-http</module>
+	    <module>grizzly-jruby</module>        
+    </modules>
 </project>
+

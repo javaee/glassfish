@@ -38,36 +38,49 @@
 --> 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-    <parent>
-        <groupId>org.glassfish.common</groupId>
-        <artifactId>common</artifactId>
+   <parent>
+        <groupId>org.glassfish.admin</groupId>
+        <artifactId>admin</artifactId>
         <version>10.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>amx-api</artifactId>
+    <artifactId>monitoring-core</artifactId>
     <packaging>hk2-jar</packaging>
-    <name>AMX API</name>
-    <version>${amx-api.version}</version>
-    <description>Appserver Management Extensions (AMX) interfaces and utilities</description>
-    
+    <name>Appserver Monitoring Infrastructure</name>
+    <description>Glassfish Appserver Admin Monitoring Infrastructure</description>
+
     <developers>
         <developer>
-            <id>llc</id>
-            <name>Lloyd Chambers</name>
-            <url>http://blogs.sun.com/lchambers</url>
+            <id>sirajg</id>
+            <name>Siraj Ghaffar</name>
+            <url>http://blogs.sun.com/sirajg/</url>
             <organization>Sun Microsystems, Inc.</organization>
             <roles>
                 <role>lead</role>
                 <role>developer</role>
             </roles>
         </developer>
-    </developers>
-
+    </developers>    
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/java</directory>
+                <includes>
+                    <include>**/*.properties</include>
+                </includes>
+            </resource>
+        </resources>
+    </build>
     <dependencies>
         <dependency>
             <groupId>javax.management.j2ee</groupId>
             <artifactId>management-api</artifactId>
             <version>${management-api.version}</version>
         </dependency>
-    </dependencies>
+        <dependency>
+            <groupId>org.glassfish.common</groupId>
+            <artifactId>common-util</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+   </dependencies>
 </project>
