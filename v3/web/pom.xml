@@ -55,6 +55,8 @@
         <module>tomcat-connector</module>
         <module>web-container</module>
         <module>webtier-extensions</module>
-	<module>jstl</module>
+		<!--module>jstl</module-->
     </modules>
+
 </project>
+
