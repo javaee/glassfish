@@ -43,7 +43,7 @@ import com.sun.enterprise.deployment.InjectionInfo;
 import com.sun.enterprise.deployment.InjectionTarget;
 import com.sun.enterprise.deployment.JndiNameEnvironment;
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.logging.LogDomains;
+
 import org.glassfish.api.invocation.ComponentInvocation;
 import org.glassfish.api.invocation.InvocationManager;
 import org.jvnet.hk2.annotations.Inject;
@@ -68,7 +68,8 @@ import java.util.logging.Logger;
 @Service
 public class InjectionManagerImpl implements InjectionManager {
 
-    static Logger _logger=LogDomains.getLogger(LogDomains.UTIL_LOGGER);
+    @Inject
+    private Logger _logger;
 
     static private LocalStringManagerImpl localStrings =
         new LocalStringManagerImpl(InjectionManagerImpl.class);
