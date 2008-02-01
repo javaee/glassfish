@@ -106,5 +106,10 @@
             <artifactId>jsf-api</artifactId>
             <version>${jsf-api.version}</version>        	
         </dependency>
+        <dependency>
+            <groupId>javax.servlet.jsp.jstl</groupId>
+            <artifactId>jstl-api</artifactId>
+            <version>${jstl-api.version}</version>        	
+        </dependency>        
     </dependencies>
 </project>
