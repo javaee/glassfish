@@ -20,7 +20,6 @@ public class ConfigListenerTest extends ConfigApiTest {
     }
 
     @Test
-    @Ignore
     public void changedTest() throws TransactionFailure {
 
         ConstructorWomb<HttpListenerContainer> womb = new ConstructorWomb<HttpListenerContainer>(HttpListenerContainer.class, super.getHabitat(), null);
@@ -34,25 +33,22 @@ public class ConfigListenerTest extends ConfigApiTest {
             }
         }, container.httpListener);
 
-        if (!container.received) {
-            for (int i=0;i<200;i++) {
-                if (Transactions.get().pendingTransactionEvents()) {
-                // do nothing, ensure the events are processed
-                    try {
-                        Thread.currentThread().wait(10);
-                    } catch (InterruptedException e) {
-
-                    }
-                }
-            }
-        }
+        Transactions.get().waitForDrain();
         assertTrue(container.received);
         ObservableBean bean = (ObservableBean) ConfigSupport.getImpl(container.httpListener);
         bean.removeListener(container);
+
+        // put back the right values in the domain to avoid test collisions
+        ConfigSupport.apply(new SingleConfigCode<HttpListener>() {
+
+            public Object run(HttpListener param) throws PropertyVetoException, TransactionFailure {
+                param.setPort("8989");
+                return null;
+            }
+        }, container.httpListener);
     }
 
     @Test
-    @Ignore
     public void removeListenerTest() throws TransactionFailure {
 
         ConstructorWomb<HttpListenerContainer> womb = new ConstructorWomb<HttpListenerContainer>(HttpListenerContainer.class, super.getHabitat(), null);
@@ -69,9 +65,16 @@ public class ConfigListenerTest extends ConfigApiTest {
             }
         }, container.httpListener);
 
-        while (Transactions.get().pendingTransactionEvents()) {
-            // do nothing, ensure the events are processed
-        }
+        Transactions.get().waitForDrain();
         assertFalse(container.received);
+
+        // put back the right values in the domain to avoid test collisions        
+        ConfigSupport.apply(new SingleConfigCode<HttpListener>() {
+
+            public Object run(HttpListener param) throws PropertyVetoException, TransactionFailure {
+                param.setPort("8080");
+                return null;
+            }
+        }, container.httpListener);
     }
 }

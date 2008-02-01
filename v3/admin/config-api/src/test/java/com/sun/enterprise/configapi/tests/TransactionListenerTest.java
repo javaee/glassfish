@@ -50,9 +50,8 @@ public class TransactionListenerTest extends ConfigApiTest {
             }, httpService.getKeepAlive());
             assertTrue(httpService.getKeepAlive().getMaxConnections().equals("500"));
 
-            while (Transactions.get().pendingTransactionEvents()) {
-                // wait until all events are delivered
-            }
+            Transactions.get().waitForDrain();
+            
             assertTrue(events!=null);
             logger.fine("Number of events " + events.size());
             assertTrue(events.size()==1);
@@ -63,6 +62,15 @@ public class TransactionListenerTest extends ConfigApiTest {
         } finally {
             Transactions.get().removeTransactionsListener(listener);
         }
+
+        // put back the right values in the domain to avoid test collisions
+        ConfigSupport.apply(new SingleConfigCode<KeepAlive>() {
+
+            public Object run(KeepAlive param) throws PropertyVetoException, TransactionFailure {
+                param.setMaxConnections("250");
+                return null;
+            }
+        }, httpService.getKeepAlive());
 
     }
 }
