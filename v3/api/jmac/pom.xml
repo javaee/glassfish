@@ -1,0 +1,25 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<parent>
+		<groupId>org.glassfish.api</groupId>
+		<artifactId>api</artifactId>
+		<version>10.0-SNAPSHOT</version>
+		<relativePath>../pom.xml</relativePath>    
+	</parent>
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>javax.security.auth.message</groupId>
+	<artifactId>jmac</artifactId>
+	<packaging>jar</packaging>
+	<version>${jmac-api.version}</version>
+	<name>Java Message Authentication SPI for Containers</name>
+	<developers>
+		<developer>
+			<id>kumarjayanti</id>
+			<name>V.B. Kumar Jayanti</name>
+			<organization>Sun Microsystems, Inc.</organization>
+			<roles>
+				<role>developer</role>
+			</roles>
+		</developer>
+	</developers>
+</project>
