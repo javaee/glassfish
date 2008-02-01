@@ -42,6 +42,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.Semaphore;
 import java.beans.PropertyChangeEvent;
 import java.lang.reflect.Proxy;
 
@@ -63,9 +64,7 @@ public class Transactions {
      * Lock and Condition to be able to monitor that all events have been
      * dispatched to all listeners before declaring the events backlog is empty
      */
-    final Lock lock = new ReentrantLock();
-    final Condition notEmpty = lock.newCondition();
-
+    final Semaphore semaphore = new Semaphore(100);
     /**
      * Returns the singleton service
      *
@@ -81,9 +80,6 @@ public class Transactions {
      * @param listener to be added.
      */
     public synchronized void addTransactionsListener(TransactionListener listener) {
-        if (listeners.size() == 0) {
-            start();
-        }
         listeners.add(listener);
     }
 
@@ -102,13 +98,13 @@ public class Transactions {
      * @param events accumulated list of changes
      */
     void addTransaction(List<PropertyChangeEvent> events) {
-        lock.lock();
+        System.out.println("Adding events");
         try {
-            pendingRecords.add(events);
-            notEmpty.signalAll();
-        } finally {
-            lock.unlock();
+            semaphore.acquire();
+        } catch (InterruptedException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
+        pendingRecords.add(events);
     }
 
     /**
@@ -117,22 +113,20 @@ public class Transactions {
      * @return true if the are pending events notifications.
      */
     public boolean pendingTransactionEvents() {
-        return !pendingRecords.isEmpty();
+        return 100!=semaphore.availablePermits();
     }
 
-    private void start() {
+    public void waitForDrain() {
+        while (pendingTransactionEvents());
+    }
+
+    private Transactions() {
         pump = new Thread() {
             public void run() {
                 while (true) {
-                    lock.lock();
                     try {
-                        // I am waiting here on the notEmpty condition for events to appear in the list
-                        // this is better than waiting on the blocking queue since I don't want to remove
-                        // elements from the queue until I know all listeners have been notified.
-                        if (pendingRecords.isEmpty()) {
-                            notEmpty.await();
-                        }
-                        List<PropertyChangeEvent> events = pendingRecords.peek();
+                        List<PropertyChangeEvent> events = pendingRecords.take();
+                        System.out.println("processing events" + events);
                         for (TransactionListener listener : listeners) {
                             listener.transactionCommited(events);
                         }
@@ -148,13 +142,9 @@ public class Transactions {
                                 }
                             }
                         }
-                        // remove it from the list
-                        pendingRecords.take();
-
+                        semaphore.release();
                     } catch (InterruptedException e) {
-
-                    } finally {
-                        lock.unlock();
+                        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                     }
                 }
             }
