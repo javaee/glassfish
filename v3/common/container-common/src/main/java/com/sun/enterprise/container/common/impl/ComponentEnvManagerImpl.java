@@ -2,22 +2,25 @@ package com.sun.enterprise.container.common.impl;
 
 import com.sun.enterprise.container.common.spi.JavaEEContainer;
 import com.sun.enterprise.container.common.spi.util.ComponentEnvManager;
-
 import com.sun.enterprise.deployment.*;
-import com.sun.enterprise.naming.spi.JNDIBinding;
 import com.sun.enterprise.naming.spi.NamingObjectFactory;
 import com.sun.enterprise.naming.spi.NamingUtils;
 import org.glassfish.api.invocation.ComponentInvocation;
 import org.glassfish.api.invocation.InvocationManager;
+import org.glassfish.api.naming.GlassfishNamingManager;
+import org.glassfish.api.naming.JNDIBinding;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 
+import javax.naming.NamingException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @Service
 public class ComponentEnvManagerImpl
@@ -26,6 +29,12 @@ public class ComponentEnvManagerImpl
     private static final String JAVA_COMP_STRING = "java:comp/env/";
 
     private static final String EIS_STRING = "/eis/";
+
+    @Inject
+    private Logger _logger;
+
+    @Inject
+    GlassfishNamingManager namingManager;
 
     @Inject
     private NamingUtils namingUtils;
@@ -59,6 +68,19 @@ public class ComponentEnvManagerImpl
         }
 
         return desc;
+    }
+
+    public String bindToComponentNamespace(JndiNameEnvironment env)
+        throws NamingException {
+        String compEnvId = getComponentEnvId(env);
+        Collection<JNDIBinding> bindings = getJNDIBindings(env);
+        namingManager.bindToComponentNamespace(getApplicationName(env), compEnvId, bindings);
+        return compEnvId;
+    }
+
+    public void unbindFromComponentNamespace(JndiNameEnvironment env)
+        throws NamingException {
+        namingManager.unbindObjects(getComponentEnvId(env));
     }
 
     public Collection<JNDIBinding> getJNDIBindings(JndiNameEnvironment env) {
@@ -185,6 +207,94 @@ public class ComponentEnvManagerImpl
 
         Object value = namingUtils.createLazyNamingObjectFactory(name, physicalJndiName, true);
             return new CompEnvBinding(name, value);
+    }
+
+
+    /**
+     * Generate the name of an environment property in the java:comp/env
+     * namespace.  This is the lookup string used by a component to access
+     * its environment.
+     */
+    private String descriptorToLogicalJndiName(Descriptor descriptor) {
+        return JAVA_COMP_STRING + descriptor.getName();
+    }
+
+
+    private static final String ID_SEPARATOR = "_";
+
+    /**
+     * Generate a unique id name for each J2EE component.
+     */
+    private String getComponentEnvId(JndiNameEnvironment env) {
+	    String id = null;
+
+        if (env instanceof EjbDescriptor) {
+            // EJB component
+	        EjbDescriptor ejbEnv = (EjbDescriptor) env;
+
+            // Make jndi name flat so it won't result in the creation of
+            // a bunch of sub-contexts.
+            String flattedJndiName = ejbEnv.getJndiName().replace('/', '.');
+
+            EjbBundleDescriptor ejbBundle = ejbEnv.getEjbBundleDescriptor();
+	        id = ejbEnv.getApplication().getName() + ID_SEPARATOR +
+                ejbBundle.getModuleDescriptor().getArchiveUri()
+                + ID_SEPARATOR +
+                ejbEnv.getName() + ID_SEPARATOR + flattedJndiName +
+                ejbEnv.getUniqueId();
+        } else if(env instanceof WebBundleDescriptor) {
+            WebBundleDescriptor webEnv = (WebBundleDescriptor) env;
+	    id = webEnv.getApplication().getName() + ID_SEPARATOR +
+                webEnv.getContextRoot();
+        } else if (env instanceof ApplicationClientDescriptor) {
+            ApplicationClientDescriptor appEnv =
+		(ApplicationClientDescriptor) env;
+	    id = "client" + ID_SEPARATOR + appEnv.getName() +
+                ID_SEPARATOR + appEnv.getMainClassName();
+        }
+
+        if(_logger.isLoggable(Level.FINE)) {
+            _logger.log(Level.FINE, getApplicationName(env)
+                + "Component Id: " + id);
+        }
+        return id;
+    }
+
+    private String getApplicationName(JndiNameEnvironment env) {
+        String appName = "";
+        String moduleName = "";
+
+        if (env instanceof EjbDescriptor) {
+            // EJB component
+	    EjbDescriptor ejbEnv = (EjbDescriptor) env;
+            EjbBundleDescriptor ejbBundle = ejbEnv.getEjbBundleDescriptor();
+	    appName = "ejb ["+
+                ejbEnv.getApplication().getRegistrationName();
+            moduleName = ejbEnv.getName();
+            if (moduleName == null || moduleName.equals("")) {
+                appName = appName+"]";
+            }
+            else {
+                appName = appName+":"+ejbEnv.getName()+"]";
+            }
+        } else if (env instanceof WebBundleDescriptor) {
+            WebBundleDescriptor webEnv = (WebBundleDescriptor) env;
+	    appName = "web module ["+
+                webEnv.getApplication().getRegistrationName();
+            moduleName = webEnv.getContextRoot();
+            if (moduleName == null || moduleName.equals("")) {
+                appName = appName+"]";
+            }
+            else {
+                appName = appName+":"+webEnv.getContextRoot()+"]";
+            }
+        } else if (env instanceof ApplicationClientDescriptor) {
+            ApplicationClientDescriptor appEnv =
+		(ApplicationClientDescriptor) env;
+	    appName =  "client ["+appEnv.getName() +
+                ":" + appEnv.getMainClassName()+"]";
+        }
+        return appName;
     }
 
     private static boolean isConnector(String logicalJndiName){
