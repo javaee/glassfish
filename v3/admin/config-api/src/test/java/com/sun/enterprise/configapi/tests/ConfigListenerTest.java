@@ -52,6 +52,7 @@ public class ConfigListenerTest extends ConfigApiTest {
     }
 
     @Test
+    @Ignore
     public void removeListenerTest() throws TransactionFailure {
 
         ConstructorWomb<HttpListenerContainer> womb = new ConstructorWomb<HttpListenerContainer>(HttpListenerContainer.class, super.getHabitat(), null);
