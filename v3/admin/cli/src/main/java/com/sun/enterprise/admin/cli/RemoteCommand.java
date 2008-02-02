@@ -44,14 +44,16 @@ public class RemoteCommand {
             if (TRACE) {
                 System.out.println("RemoteCommandParser: " + rcp);
             }
-            Map<String, String> params = rcp.getOptions();
-                //upload option  for deploy command is default to true
-            boolean uploadFile = false;
-            if (params.get("upload")==null && rcp.getCommandName().equals("deploy"))
-                uploadFile = true;
-            else if (params.get("upload") != null)
-                uploadFile = Boolean.parseBoolean(params.get("upload"));
+            final Map<String, String> params = rcp.getOptions();
+            final Vector operands = rcp.getOperands();
             
+                //upload option  for deploy command is default to true
+                //operand takes precedence over --path option
+            final boolean uploadFile = getUploadFile((String)params.get("upload"),
+                                                     rcp.getCommandName(),
+                                                     operands.size()>0?
+                                                     (String)operands.firstElement():
+                                                     (String)params.get("path"));
             File fileName = null;
             String httpConnection;
             final String hostName = (params.get("host") == null ? "localhost" : params.get("host"));
@@ -69,16 +71,9 @@ public class RemoteCommand {
                         // let's check if I am passing a valid path...
                     if (paramName.equals("path")) {
                         fileName = new File(paramValue);
-                        if (fileName.exists()) {
-                            if (!fileName.isAbsolute()) {
-                                fileName = new File(System.getProperty("user.dir"), paramValue);
-                            }
-                            if (uploadFile) {
-                                paramValue = fileName.getName();
-                            } else {
-                                paramValue = fileName.getAbsolutePath();
-                            }
-                        }
+                            //get new paramValue since it may be
+                            //absoluate path if uploadFile=false
+                        paramValue = getFileParam(uploadFile, fileName);
                     }
                     httpConnection = httpConnection + "?" + paramName + "=" + URLEncoder.encode(paramValue, "UTF-8");
                 } catch (UnsupportedEncodingException e) {
@@ -87,21 +82,16 @@ public class RemoteCommand {
             }
         
             //add operands
-            final Vector operands = rcp.getOperands();
             for (int ii=0; ii<operands.size(); ii++) {
                 final String operand = (String)operands.get(ii);
-                if (uploadFile) {
+                if (rcp.getCommandName().equals("deploy")) {
                     fileName = new File(operand);
-                        //there should only be one operand if upload=true
-                    httpConnection = httpConnection + "?path=" + URLEncoder.encode(fileName.getName(),
-                                                                                      "UTF-8");
+                    final String fileParam = getFileParam(uploadFile, fileName);
+                        //there should only be one operand for deploy command
+                    httpConnection = httpConnection + "?path=" + URLEncoder.encode(fileParam, "UTF-8");
                     break;
                 }
                 httpConnection = httpConnection + "?DEFAULT=" + URLEncoder.encode(operand, "UTF-8");
-            }
-
-            if (fileName != null && fileName.isDirectory()) {
-                uploadFile = false;
             }
 
             if (TRACE) {
@@ -135,6 +125,79 @@ public class RemoteCommand {
         }
     }
 
+        /**
+         * Returns either the name of the file/directory or the canonical form
+         * of the file/directory.  If <code>uploadFile</code> is
+         * <code>false</code> and file/directory exists on the client then the
+         * canonical form is returned else the file/directory name is returned.
+         *
+         * @param uploadFile    indicates if file is to be uploaded to the
+         *                      server.
+         * @param fileName      name of the file/directory.
+         * @return              returns either the file name or the canonical
+         *                      form of the file/directory.
+         *                      returns <code>null</code> if
+         *                      <code>fileName</code> equals <code>null</code>.
+         */
+    String getFileParam(final boolean uploadFile, final File fileName) {
+        if (fileName == null) return null;
+        String paramValue = fileName.getName();
+        if (fileName.exists() && !uploadFile) {
+            try {
+                paramValue = fileName.getCanonicalPath();
+            }
+            catch(IOException ioe) {
+                paramValue = fileName.getAbsolutePath();
+            }
+        }
+        return paramValue;
+    }
+
+    
+        /**
+         * Returns the <code>uploadFile</code> value.
+         * If <code>uploadFile</code> is <code>true</code>, then HTTP
+         * Post connect is established to upload file to server side.
+         * <p>
+         * <code>uploadFile</code> is determined by the following cases:
+         * (1) if <code>uploadOption</code> is <code>null</code>,
+         *     <code>commandName</code> is deploy and <code>fileName</code>
+         *     is valid then <code>uploadFile</code> is always <code>true</code>.
+         * (2) if <code>commandName</code> is deploy and <code>fileName</code>
+         *     is a directory, regardless of <code>uploadOption</code>,
+         *     <code>uploadFile</code> is always <code>false</code>.
+         * (3) if <code>uploadOption</code> is not <code>true</code> or
+         *     <code>null</code> and <code>commandName</code> is not
+         *     deploy then <code>uploadFile</code> is always <code>false</code>.
+         * (4) if <code>uploadOption</code> is <code>true</code> (not case
+         *     sensitive) and <code>commandName</code> is not deploy then
+         *     <code>uploadFile</code> is always <code>true</code>.
+         *
+         * @param uploadOption    upload option value specified on the
+         *                        command line.
+         * @param commandName     command name specified on the command line.
+         * @fileName              fileName specified on the command line.
+         * @return                <code>true</code> or <code>false</code>
+         */
+    boolean getUploadFile(final String uploadOption,
+                          final String commandName,
+                          final String fileName) {
+        
+        boolean uploadFile = Boolean.parseBoolean(uploadOption);
+        if (fileName != null && commandName.equals("deploy")) {
+            if (new File(fileName).isDirectory()) {
+                //for directory deployment uploadFile is always false.
+                uploadFile = false;
+            }
+            else if (uploadOption == null) {
+                //to be compatible with GFv2, upload option is default
+                //to true for deploy command
+                uploadFile = true;
+            }
+        }
+        return uploadFile;
+    }
+    
     
     private void handleResponse(Map<String, String> params,
                                 InputStream in, int code) throws IOException {
