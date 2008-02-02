@@ -10,7 +10,11 @@ import java.util.Collection;
 @Contract
 public interface ComponentEnvManager {
 
+    //Remove once WebContainer sets JndiNameEnvironment on every "new ComponentInvocation()"
     public JndiNameEnvironment getJndiNameEnvironment(String componentId);
+
+    //Remove once WebContainer sets JndiNameEnvironment on every "new ComponentInvocation()"
+    public JndiNameEnvironment getCurrentJndiNameEnvironment();
 
     public String bindToComponentNamespace(JndiNameEnvironment env)
         throws NamingException;
