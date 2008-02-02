@@ -75,12 +75,16 @@ public class ComponentEnvManagerImpl
         String compEnvId = getComponentEnvId(env);
         Collection<JNDIBinding> bindings = getJNDIBindings(env);
         namingManager.bindToComponentNamespace(getApplicationName(env), compEnvId, bindings);
+        this.register(compEnvId, env);
         return compEnvId;
     }
 
     public void unbindFromComponentNamespace(JndiNameEnvironment env)
         throws NamingException {
-        namingManager.unbindObjects(getComponentEnvId(env));
+
+        String compEnvId = getComponentEnvId(env);
+        namingManager.unbindObjects(compEnvId);
+        this.unregister(compEnvId);
     }
 
     public Collection<JNDIBinding> getJNDIBindings(JndiNameEnvironment env) {
