@@ -49,7 +49,7 @@
   <!-- the real artifact is created by distribution-builder plugin -->
   <version>${pe.version}</version>
   
-  <name>Glassfish Gem distribution</name>
+  <name>Glassfish JRuby Gem distribution</name>
   <description>This module creates the jruby gem distribution image</description>
   
   <build>
