@@ -26,6 +26,9 @@ public class ComponentInvocation {
     // ServletContext for servlet, Container for EJB
     public Object container;
 
+    public Object jndiEnvironment;
+
+
     public String componentId;
 
     public Object transaction;
