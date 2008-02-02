@@ -37,6 +37,7 @@ public class ComponentInvocation {
         
     }
 
+    
     public ComponentInvocation(String componentId,
             ComponentInvocationType invocationType,
             Object container) {
@@ -74,6 +75,10 @@ public class ComponentInvocation {
     }
 
     public Object getContainer() {
+        return container;
+    }
+
+    public Object getContainerContext() {
         return container;
     }
 
