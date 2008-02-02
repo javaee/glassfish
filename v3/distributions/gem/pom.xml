@@ -50,6 +50,7 @@
   <version>${pe.version}</version>
   
   <name>Glassfish JRuby Gem distribution</name>
+  <packaging>distribution-base-zip</packaging>
   <description>This module creates the jruby gem distribution image</description>
   
   <build>
