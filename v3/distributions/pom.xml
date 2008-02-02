@@ -68,7 +68,6 @@
     	<module>nucleus</module>
         <module>web</module>
         <module>glassfish</module>
-        <module>gem</module>
     </modules>
 
     <build>
