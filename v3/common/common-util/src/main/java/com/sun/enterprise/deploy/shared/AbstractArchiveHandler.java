@@ -61,18 +61,30 @@ public class AbstractArchiveHandler {
      * @return the default application name for the specified archive
      */
     public String getDefaultApplicationName(ReadableArchive archive) {
+        return getDefaultApplicationName(archive.getURI());
+    }
+    
+    String getDefaultApplicationName(URI uri) {
         String name = null;
-        URI uri = archive.getURI();
         String path = uri.getPath();
         if (path != null) {
             /*
              * Strip the path up to and including the last slash, if there is one.
+             * A directory URI may end with a slash; ignore such a slash in 
+             * finding the name. 
+             * 
              * Then the name is the part of that stripped path up to the last dot.
              */
-            name = path.substring(path.lastIndexOf('/') + 1);
-            if (name.lastIndexOf(".")!=-1) {
-                name = name.substring(0, name.lastIndexOf("."));
+            if (path.endsWith("/")) {
+                path = path.substring(0, path.length() - 1);
             }
+            int startOfName = path.lastIndexOf('/') + 1;
+            int endOfName = path.length();
+            int lastDot = path.lastIndexOf('.');
+            if (lastDot != -1) {
+                endOfName = lastDot;
+            }
+            name = path.substring(startOfName, endOfName);
         }
         return name;
     }
