@@ -1960,8 +1960,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
         com.sun.enterprise.deployment.runtime.web.ClassLoader clBean = null;
 
-        WebappLoader loader = (WebappLoader)
-        _embedded.createLoader(wmInfo.getAppClassLoader());
+        WebappLoader loader = new V3WebappLoader(wmInfo.getAppClassLoader());
 
         loader.setUseMyFaces(ctx.isUseMyFaces());
 
@@ -3555,6 +3554,22 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                 _logger.log(Level.INFO, "webcontainer.notYet", params);
             }
         }*/
+    }
+
+}
+
+class V3WebappLoader extends WebappLoader {
+
+    final ClassLoader cl;
+
+    V3WebappLoader(ClassLoader cl) {
+        super();
+        this.cl = cl;
+    }
+
+    @Override
+    protected ClassLoader createClassLoader() throws Exception {
+        return cl;
     }
 
 }
