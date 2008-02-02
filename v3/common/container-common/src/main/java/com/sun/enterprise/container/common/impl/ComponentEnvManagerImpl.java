@@ -57,13 +57,12 @@ public class ComponentEnvManagerImpl
         return this.compId2Env.get(componentId);
     }
 
-    public Object getCurrentDescriptor() {
-        Object desc = null;
+    public JndiNameEnvironment getCurrentJndiNameEnvironment() {
+        JndiNameEnvironment desc = null;
         ComponentInvocation inv = invMgr.getCurrentInvocation();
         if (inv != null) {
-            JavaEEContainer cc = (JavaEEContainer) inv.getContainer();
-            if (cc != null) {
-                 desc = cc.getDescriptor();
+            if (inv.componentId != null) {
+                desc = compId2Env.get(inv.componentId);
             }
         }
 
