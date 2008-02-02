@@ -35,63 +35,62 @@
  */
  
 /*
+ * $Header: /cvs/glassfish/admin/mbeanapi-impl/src/java/com/sun/enterprise/management/config/AdminServiceConfigImpl.java,v 1.8 2007/05/05 05:23:16 tcfujii Exp $
+ * $Revision: 1.8 $
+ * $Date: 2007/05/05 05:23:16 $
  */
 
-package com.sun.enterprise.management.support;
 
-import javax.management.MBeanServer;
+package com.sun.enterprise.management.config;
+
+import java.util.Map;
+
 import javax.management.ObjectName;
-import javax.management.JMException;
+import com.sun.appserv.management.base.XTypes;
+import com.sun.appserv.management.base.Util;
 
-import com.sun.enterprise.util.Issues;
+import com.sun.appserv.management.config.JMXConnectorConfig;
+import com.sun.appserv.management.config.AdminServiceConfig;
 
-import com.sun.appserv.management.util.jmx.JMXUtil;
-
-
-import com.sun.appserv.management.util.misc.TimingDelta;
+import com.sun.enterprise.management.config.AMXConfigImplBase;
+import com.sun.enterprise.management.support.Delegate;
 
 /**
-	Used internally to work around problems with cascaded MBeans.
+	Configuration for the &lt;admin-service&gt; element.
  */
-public final class LoadAMX
+public final class AdminServiceConfigImpl extends AMXConfigImplBase
+	implements ConfigFactoryCallback
 {
-    private LoadAMX() {}
-    private static ObjectName LOADER_OBJECTNAME = null;
-    
-    private static final String AMX_LOADER_DEFAULT_OBJECTNAME    =
-        "amx-support:name=mbean-loader";
+		public
+	AdminServiceConfigImpl( final Delegate delegate )
+	{
+		super( delegate );
+	}  
 
-        public static synchronized ObjectName
-    loadAMX( final MBeanServer mbeanServer )
-    {
-        if ( LOADER_OBJECTNAME == null )
-        {
-            final boolean inDAS = true;
-            Issues.getAMXIssues().notDone( "LoadAMX.loadAMX(): determine if this is the DAS" );
-            
-        final TimingDelta delta = new TimingDelta();
-            TypeInfos.getInstance();
-        System.out.println( "TypeInfos.getInstance(): " + delta.elapsedMillis()  );
-            
-            if ( inDAS )
-            {
-                final Loader loader = new Loader();
-                
-                final ObjectName tempObjectName  = JMXUtil.newObjectName( AMX_LOADER_DEFAULT_OBJECTNAME );
-                
-                try
-                {
-                    LOADER_OBJECTNAME  =
-                        mbeanServer.registerMBean( loader, tempObjectName ).getObjectName();
-        System.out.println( "LoadAMX - register loader(): " + delta.elapsedMillis()  );
-                }
-                catch( JMException e )
-                {
-                    throw new RuntimeException(e);
-                }
-            }
-        }
-        return LOADER_OBJECTNAME;
-    }
+	/**
+	    @deprecated
+	 */
+		public ObjectName
+	createJMXConnectorConfig(
+	    final String name,
+	    final String address, 
+		final int port,
+		final String authRealmName,
+		final Map<String,String> optional )
+	{
+	    final String    portString  = "" + port;
+	    
+	    final JMXConnectorConfig    config  = ((AdminServiceConfig)getSelf()).createJMXConnectorConfig(
+                name, address, portString, authRealmName, optional ); 
+        return Util.getObjectName( config );
+	}
+	
+
 }
+
+
+
+
+
+
 

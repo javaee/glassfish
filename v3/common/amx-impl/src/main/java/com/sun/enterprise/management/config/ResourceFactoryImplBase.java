@@ -33,65 +33,76 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
- 
-/*
- */
+package com.sun.enterprise.management.config;
 
-package com.sun.enterprise.management.support;
+import java.util.Set;
+import java.util.Collections;
 
-import javax.management.MBeanServer;
 import javax.management.ObjectName;
-import javax.management.JMException;
 
-import com.sun.enterprise.util.Issues;
+import com.sun.appserv.management.base.Util;
+import com.sun.appserv.management.config.Description;
 
-import com.sun.appserv.management.util.jmx.JMXUtil;
+import com.sun.appserv.management.util.misc.GSetUtil;
 
+import com.sun.appserv.management.config.ResourceConfigKeys;
+import com.sun.appserv.management.config.ResourceRefConfig;
+import com.sun.appserv.management.config.ResourceRefConfigReferent;
 
-import com.sun.appserv.management.util.misc.TimingDelta;
+import com.sun.appserv.management.helper.RefHelper;
 
+	
 /**
-	Used internally to work around problems with cascaded MBeans.
  */
-public final class LoadAMX
-{
-    private LoadAMX() {}
-    private static ObjectName LOADER_OBJECTNAME = null;
-    
-    private static final String AMX_LOADER_DEFAULT_OBJECTNAME    =
-        "amx-support:name=mbean-loader";
 
-        public static synchronized ObjectName
-    loadAMX( final MBeanServer mbeanServer )
-    {
-        if ( LOADER_OBJECTNAME == null )
-        {
-            final boolean inDAS = true;
-            Issues.getAMXIssues().notDone( "LoadAMX.loadAMX(): determine if this is the DAS" );
-            
-        final TimingDelta delta = new TimingDelta();
-            TypeInfos.getInstance();
-        System.out.println( "TypeInfos.getInstance(): " + delta.elapsedMillis()  );
-            
-            if ( inDAS )
-            {
-                final Loader loader = new Loader();
-                
-                final ObjectName tempObjectName  = JMXUtil.newObjectName( AMX_LOADER_DEFAULT_OBJECTNAME );
-                
-                try
-                {
-                    LOADER_OBJECTNAME  =
-                        mbeanServer.registerMBean( loader, tempObjectName ).getObjectName();
-        System.out.println( "LoadAMX - register loader(): " + delta.elapsedMillis()  );
-                }
-                catch( JMException e )
-                {
-                    throw new RuntimeException(e);
-                }
-            }
-        }
-        return LOADER_OBJECTNAME;
+abstract class ResourceFactoryImplBase extends ConfigFactory
+{
+		public
+	ResourceFactoryImplBase( final ConfigFactoryCallback	callbacks )
+	{
+		super( callbacks );
+	}
+	
+	
+	public static final String	RESOURCE_TYPE_KEY			= "ResType";
+	public static final String	RESOURCE_ADAPTER_KEY		= "ResAdapter";
+	
+	
+		public final void
+	internalRemove( final ObjectName objectName )
+	{
+		final String	name	= Util.getName( objectName );
+		removeByName( name );
     }
+    
+    protected abstract void	removeByName( final String name );
+
+
+	private final Set<String>	RESOURCE_DEFAULT_LEGAL_OPTIONAL_KEYS	= 
+		GSetUtil.newUnmodifiableStringSet(
+		Description.DESCRIPTION_KEY,
+		ResourceConfigKeys.ENABLED_KEY
+	);
+	
+	
+	/**
+		  By default, assume there are no optional keys.
+	 */
+	    protected Set<String>
+	getLegalOptionalCreateKeys()
+	{
+		return( RESOURCE_DEFAULT_LEGAL_OPTIONAL_KEYS );
+	}
+	
+	    protected Set<ResourceRefConfig>
+	findAllRefConfigs(
+	    final String j2eeType,
+	    final String name )
+	{
+	    final ResourceRefConfigReferent item    = (ResourceRefConfigReferent)
+	        requireItem( j2eeType, name );
+	    
+	    return RefHelper.findAllRefConfigs( item );
+	}
 }
 

@@ -33,65 +33,54 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
- 
-/*
- */
+package com.sun.enterprise.management.config;
+	
+import com.sun.appserv.management.base.DottedNames;
 
-package com.sun.enterprise.management.support;
-
-import javax.management.MBeanServer;
-import javax.management.ObjectName;
-import javax.management.JMException;
-
-import com.sun.enterprise.util.Issues;
-
-import com.sun.appserv.management.util.jmx.JMXUtil;
+import com.sun.enterprise.management.support.DottedNamesBase;
 
 
-import com.sun.appserv.management.util.misc.TimingDelta;
-
-/**
-	Used internally to work around problems with cascaded MBeans.
- */
-public final class LoadAMX
+public class ConfigDottedNamesImpl  extends DottedNamesBase
+	implements DottedNames
 {
-    private LoadAMX() {}
-    private static ObjectName LOADER_OBJECTNAME = null;
-    
-    private static final String AMX_LOADER_DEFAULT_OBJECTNAME    =
-        "amx-support:name=mbean-loader";
-
-        public static synchronized ObjectName
-    loadAMX( final MBeanServer mbeanServer )
-    {
-        if ( LOADER_OBJECTNAME == null )
-        {
-            final boolean inDAS = true;
-            Issues.getAMXIssues().notDone( "LoadAMX.loadAMX(): determine if this is the DAS" );
-            
-        final TimingDelta delta = new TimingDelta();
-            TypeInfos.getInstance();
-        System.out.println( "TypeInfos.getInstance(): " + delta.elapsedMillis()  );
-            
-            if ( inDAS )
-            {
-                final Loader loader = new Loader();
-                
-                final ObjectName tempObjectName  = JMXUtil.newObjectName( AMX_LOADER_DEFAULT_OBJECTNAME );
-                
-                try
-                {
-                    LOADER_OBJECTNAME  =
-                        mbeanServer.registerMBean( loader, tempObjectName ).getObjectName();
-        System.out.println( "LoadAMX - register loader(): " + delta.elapsedMillis()  );
-                }
-                catch( JMException e )
-                {
-                    throw new RuntimeException(e);
-                }
-            }
-        }
-        return LOADER_OBJECTNAME;
-    }
+		public
+	ConfigDottedNamesImpl()
+	{
+	}
+		public String
+	getGroup()
+	{
+		return( GROUP_CONFIGURATION );
+	}
+	
+		public Object[]
+	dottedNameGet( String[] names )
+	{
+		return( getOldDottedNames().dottedNameGet( names ) );
+	}
+	
+		public Object
+	dottedNameGet( String name )
+	{
+		return( getOldDottedNames().dottedNameGet( name ) );
+	}
+	
+		public Object[]
+	dottedNameList( String[] names )
+	{
+		return( getOldDottedNames().dottedNameList( names ) );
+	}
+	
+		public Object[]
+	dottedNameSet( String[] nameValuePairs )
+	{
+		return( getOldDottedNames().dottedNameSet( nameValuePairs ) );
+	}
+	
+		protected boolean
+	isWriteableDottedName( String name )
+	{
+		return( true );
+	}
 }
 

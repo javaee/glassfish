@@ -35,63 +35,61 @@
  */
  
 /*
+ * $Header: /cvs/glassfish/admin/mbeanapi-impl/src/java/com/sun/enterprise/management/config/HTTPProtocolConfigImpl.java,v 1.6 2007/06/04 20:27:21 llc Exp $
+ * $Revision: 1.6 $
+ * $Date: 2007/06/04 20:27:21 $
  */
 
-package com.sun.enterprise.management.support;
 
-import javax.management.MBeanServer;
-import javax.management.ObjectName;
-import javax.management.JMException;
-
-import com.sun.enterprise.util.Issues;
-
-import com.sun.appserv.management.util.jmx.JMXUtil;
+package com.sun.enterprise.management.config;
 
 
-import com.sun.appserv.management.util.misc.TimingDelta;
+import com.sun.enterprise.management.config.AMXConfigImplBase;
+import com.sun.appserv.management.config.HTTPProtocolConfig;
+import com.sun.enterprise.management.support.Delegate;
+
 
 /**
-	Used internally to work around problems with cascaded MBeans.
+	Configuration for the &lt;http-protocol&gt; element.
  */
-public final class LoadAMX
+public final class HTTPProtocolConfigImpl extends AMXConfigImplBase
 {
-    private LoadAMX() {}
-    private static ObjectName LOADER_OBJECTNAME = null;
-    
-    private static final String AMX_LOADER_DEFAULT_OBJECTNAME    =
-        "amx-support:name=mbean-loader";
+	public HTTPProtocolConfigImpl(final Delegate delegate)
+	{
+		super(delegate );
+	}
 
-        public static synchronized ObjectName
-    loadAMX( final MBeanServer mbeanServer )
+        private HTTPProtocolConfig
+    getProxy()
     {
-        if ( LOADER_OBJECTNAME == null )
-        {
-            final boolean inDAS = true;
-            Issues.getAMXIssues().notDone( "LoadAMX.loadAMX(): determine if this is the DAS" );
-            
-        final TimingDelta delta = new TimingDelta();
-            TypeInfos.getInstance();
-        System.out.println( "TypeInfos.getInstance(): " + delta.elapsedMillis()  );
-            
-            if ( inDAS )
-            {
-                final Loader loader = new Loader();
-                
-                final ObjectName tempObjectName  = JMXUtil.newObjectName( AMX_LOADER_DEFAULT_OBJECTNAME );
-                
-                try
-                {
-                    LOADER_OBJECTNAME  =
-                        mbeanServer.registerMBean( loader, tempObjectName ).getObjectName();
-        System.out.println( "LoadAMX - register loader(): " + delta.elapsedMillis()  );
-                }
-                catch( JMException e )
-                {
-                    throw new RuntimeException(e);
-                }
-            }
-        }
-        return LOADER_OBJECTNAME;
+        return getProxy( getObjectName(), HTTPProtocolConfig.class);
+    }
+    
+    // backward compatibility: Attribute was renamed and deprecated
+	public String	getDefaultResponseType()
+    {
+        return getProxy().getDefaultType();
+    }
+    
+    // backward compatibility: Attribute was renamed and deprecated
+	public void	setDefaultResponseType( final String value )
+    {
+        getProxy().setDefaultType(value);
+    }
+
+    
+    // backward compatibility: Attribute was renamed and deprecated
+	public String	getForcedResponseType()
+    {
+        return getProxy().getForcedType();
+    }
+    
+    // backward compatibility: Attribute was renamed and deprecated
+	public void	setForcedResponseType( final String value )
+    {
+        getProxy().setForcedType(value);
     }
 }
+
+
 

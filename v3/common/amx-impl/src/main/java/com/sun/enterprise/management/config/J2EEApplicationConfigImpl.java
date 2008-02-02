@@ -33,65 +33,50 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
- 
-/*
- */
+package com.sun.enterprise.management.config;
 
-package com.sun.enterprise.management.support;
-
-import javax.management.MBeanServer;
 import javax.management.ObjectName;
-import javax.management.JMException;
+import java.util.Map;
 
-import com.sun.enterprise.util.Issues;
-
-import com.sun.appserv.management.util.jmx.JMXUtil;
-
-
-import com.sun.appserv.management.util.misc.TimingDelta;
+import com.sun.enterprise.management.support.Delegate;
+import com.sun.appserv.management.util.misc.ExceptionUtil;
+import com.sun.appserv.management.base.XTypes;
 
 /**
-	Used internally to work around problems with cascaded MBeans.
- */
-public final class LoadAMX
+*/
+public final class J2EEApplicationConfigImpl extends DeployedItemConfigBase
+	// implements J2EEApplicationConfig
 {
-    private LoadAMX() {}
-    private static ObjectName LOADER_OBJECTNAME = null;
-    
-    private static final String AMX_LOADER_DEFAULT_OBJECTNAME    =
-        "amx-support:name=mbean-loader";
+		public
+	J2EEApplicationConfigImpl( final Delegate delegate )
+	{
+		super( delegate );
+	}
+	
+    /**
+	    A troublesome Attribute which may not exist, hence we need to supply
+	    a default value. If it doesn't exist, the Delegate will return null.
+	 */
+	    public boolean
+	getJavaWebStartEnabled()
+	{
+	    final Object value = delegateGetAttributeNoThrow( "JavaWebStartEnabled" );
+	    return Boolean.parseBoolean( "" + value );
+	}
 
-        public static synchronized ObjectName
-    loadAMX( final MBeanServer mbeanServer )
-    {
-        if ( LOADER_OBJECTNAME == null )
-        {
-            final boolean inDAS = true;
-            Issues.getAMXIssues().notDone( "LoadAMX.loadAMX(): determine if this is the DAS" );
-            
-        final TimingDelta delta = new TimingDelta();
-            TypeInfos.getInstance();
-        System.out.println( "TypeInfos.getInstance(): " + delta.elapsedMillis()  );
-            
-            if ( inDAS )
-            {
-                final Loader loader = new Loader();
-                
-                final ObjectName tempObjectName  = JMXUtil.newObjectName( AMX_LOADER_DEFAULT_OBJECTNAME );
-                
-                try
-                {
-                    LOADER_OBJECTNAME  =
-                        mbeanServer.registerMBean( loader, tempObjectName ).getObjectName();
-        System.out.println( "LoadAMX - register loader(): " + delta.elapsedMillis()  );
-                }
-                catch( JMException e )
-                {
-                    throw new RuntimeException(e);
-                }
-            }
-        }
-        return LOADER_OBJECTNAME;
-    }
+    /*
+     public Map getWebServiceEndpointConfigObjectNameMap() {
+          return(getContaineeObjectNameMap(XTypes.WEB_SERVICE_ENDPOINT_CONFIG));
+     }
+     */
+
 }
+
+
+
+
+
+
+
+
 

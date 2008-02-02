@@ -73,6 +73,7 @@ import com.sun.appserv.management.j2ee.J2EETypes;
 
 import com.sun.enterprise.util.FeatureAvailability;
 
+import com.sun.appserv.management.util.misc.TimingDelta;
 
 /**
 	Maps j2eeType to the AMX interface and implementation class for all AMX
@@ -98,10 +99,13 @@ public final class TypeInfos
 	{
 		mTypeToInfoMap		= new HashMap<String,TypeInfo>();
 
+        final TimingDelta delta = new TimingDelta();
 		initMap( );
+        System.out.println( "TypeInfos.initMap(): " + delta.elapsedMillis()  );
         
         mMBeanInfos = new HashMap<Class, MBeanInfo>();
         populateMBeanInfos();
+        System.out.println( "TypeInfos.populateMBeanInfos(): " + delta.elapsedMillis()  );
 	}
     
         private void
@@ -438,7 +442,7 @@ new MiscChild( DOMAIN_ROOT, null, null ),
 
 new DomainRootChild( SYSTEM_INFO  ),
 new DomainRootChild( UPLOAD_DOWNLOAD_MGR ),
-//new DomainRootChild( DOMAIN_CONFIG ),
+new DomainRootChild( DOMAIN_CONFIG ),
 new DomainRootChild( NOTIFICATION_SERVICE_MGR  ),
 //new DomainRootChild( DEPLOYMENT_MGR ),
 new DomainRootChild( QUERY_MGR ),

@@ -42,6 +42,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.lang.reflect.Field;
 
+import com.sun.appserv.management.base.AMX;
+
 import com.sun.appserv.management.util.misc.ArrayUtil;
 import com.sun.appserv.management.util.misc.TimingDelta;
 
@@ -54,59 +56,31 @@ import com.sun.appserv.management.util.misc.TimingDelta;
  */
 public class TypesMapper
 {
-	private final Map<String,Class>	mMap;
-	
-		public
-	TypesMapper( final Class[] interfaces )
+	private final Map<String,Class<? extends AMX>>	mTypeToInterface;
+    
+    /**
+        Array[i] should be the type, [i+1] should be the interface, [i+2] the impl class
+     */
+        public
+	TypesMapper( final Object[] typesAndInterfaces )
 	{
-        mMap = init( interfaces );
-	}
-	
-	/**
-		Map all types to interfaces.
-	 */
-		private Map<String,Class>
-	init( final Class[] interfaces )
-	{
-		final Map<String,Class>	m	= new HashMap<String,Class>();
-
-		for( int i = 0; i < interfaces.length; ++i )
-		{
-			final Class	theInterface	= interfaces[ i ];
-			
-			try
-			{
-				final Field	field	= theInterface.getField( "J2EE_TYPE" );
-				final String value	= (String)field.get( theInterface );
-				if ( m.containsKey( value ) )
-				{
-					final String	msg	=
-						"TypesMapper: key already present: " +
-						value + " for " + theInterface.getName();
-					
-					assert(  false ): msg;
-					throw new RuntimeException( msg );
-				}
-				m.put( value, theInterface );
-			}
-			catch( Exception e )
-			{
-				e.printStackTrace();
-				assert( false );
-				throw new IllegalArgumentException( theInterface.getName() );
-			}
-		}
-		
-		return( m );
+		mTypeToInterface	= new HashMap<String,Class<? extends AMX>>();
+        
+        for( int i = 0; i < typesAndInterfaces.length; i +=2  )
+        {
+            final String j2eeType = (String)typesAndInterfaces[i];
+            final Class<? extends AMX>          intf = (Class<? extends AMX>)typesAndInterfaces[i+1];
+            mTypeToInterface.put( j2eeType, intf );
+        }
 	}
 	
 	/**
 		Return the Class associated with a given type.
 	 */
-		public Class
+		public Class<? extends AMX>
 	getInterfaceForType( final String type )
 	{
-		final Class theClass	= mMap.get( type );
+		final Class theClass	= mTypeToInterface.get( type );
 		
 		return( theClass );
 	}
@@ -114,14 +88,14 @@ public class TypesMapper
 	    public Set<String>
 	getJ2EETypes()
 	{
-	    return Collections.unmodifiableSet( mMap.keySet() );
+	    return Collections.unmodifiableSet( mTypeToInterface.keySet() );
 	}
 	
-	    public Set<Class>
+	    public Set<Class<? extends AMX>>
 	getClasses()
 	{
-	    final Set<Class>    classes = new HashSet<Class>();
-	    classes.addAll( mMap.values() );
+	    final Set<Class<? extends AMX>>    classes = new HashSet<Class<? extends AMX>>();
+	    classes.addAll( mTypeToInterface.values() );
 	    return Collections.unmodifiableSet( classes );
 	}
 }

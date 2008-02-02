@@ -35,63 +35,43 @@
  */
  
 /*
+ * $Header: /cvs/glassfish/admin/mbeanapi-impl/src/java/com/sun/enterprise/management/config/ConfigFactoryCallback.java,v 1.5 2007/05/05 05:23:17 tcfujii Exp $
+ * $Revision: 1.5 $
+ * $Date: 2007/05/05 05:23:17 $
  */
+package com.sun.enterprise.management.config;
 
-package com.sun.enterprise.management.support;
+import java.util.logging.Logger;
 
-import javax.management.MBeanServer;
 import javax.management.ObjectName;
-import javax.management.JMException;
+import javax.management.MBeanServer;
 
-import com.sun.enterprise.util.Issues;
+import com.sun.appserv.management.client.ProxyFactory;
+import com.sun.appserv.management.base.Container;
+import com.sun.appserv.management.DomainRoot;
 
-import com.sun.appserv.management.util.jmx.JMXUtil;
+import com.sun.enterprise.management.support.Delegate;
+import com.sun.enterprise.management.support.LoaderMBean;
+//import com.sun.enterprise.management.support.oldconfig.OldConfigProxies;
 
-
-import com.sun.appserv.management.util.misc.TimingDelta;
 
 /**
-	Used internally to work around problems with cascaded MBeans.
  */
-public final class LoadAMX
+public interface ConfigFactoryCallback
 {
-    private LoadAMX() {}
-    private static ObjectName LOADER_OBJECTNAME = null;
-    
-    private static final String AMX_LOADER_DEFAULT_OBJECTNAME    =
-        "amx-support:name=mbean-loader";
-
-        public static synchronized ObjectName
-    loadAMX( final MBeanServer mbeanServer )
-    {
-        if ( LOADER_OBJECTNAME == null )
-        {
-            final boolean inDAS = true;
-            Issues.getAMXIssues().notDone( "LoadAMX.loadAMX(): determine if this is the DAS" );
-            
-        final TimingDelta delta = new TimingDelta();
-            TypeInfos.getInstance();
-        System.out.println( "TypeInfos.getInstance(): " + delta.elapsedMillis()  );
-            
-            if ( inDAS )
-            {
-                final Loader loader = new Loader();
-                
-                final ObjectName tempObjectName  = JMXUtil.newObjectName( AMX_LOADER_DEFAULT_OBJECTNAME );
-                
-                try
-                {
-                    LOADER_OBJECTNAME  =
-                        mbeanServer.registerMBean( loader, tempObjectName ).getObjectName();
-        System.out.println( "LoadAMX - register loader(): " + delta.elapsedMillis()  );
-                }
-                catch( JMException e )
-                {
-                    throw new RuntimeException(e);
-                }
-            }
-        }
-        return LOADER_OBJECTNAME;
-    }
+	public DomainRoot		getDomainRoot();
+	public Container		getFactoryContainer();
+	public Logger			getLogger();
+	public MBeanServer		getMBeanServer();
+	public LoaderMBean		getLoader();
+	public String			getConfigName();
+	//public OldConfigProxies getOldConfigProxies();
+	public void				sendConfigCreatedNotification( ObjectName amxObjectName );
+	public void				sendConfigRemovedNotification( ObjectName amxObjectName );
+	public ProxyFactory		getProxyFactory();
+	public Delegate         getDelegate();
 }
+
+
+
 

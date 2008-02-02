@@ -35,63 +35,63 @@
  */
  
 /*
+ * $Header: /cvs/glassfish/admin/mbeanapi-impl/src/java/com/sun/enterprise/management/config/IIOPServiceConfigImpl.java,v 1.7 2007/05/05 05:23:18 tcfujii Exp $
+ * $Revision: 1.7 $
+ * $Date: 2007/05/05 05:23:18 $
  */
 
-package com.sun.enterprise.management.support;
 
-import javax.management.MBeanServer;
+package com.sun.enterprise.management.config;
+
+import java.util.Set;
 import javax.management.ObjectName;
-import javax.management.JMException;
+import javax.management.AttributeList;
 
-import com.sun.enterprise.util.Issues;
+import com.sun.appserv.management.base.XTypes;
+import com.sun.appserv.management.util.misc.GSetUtil;
 
-import com.sun.appserv.management.util.jmx.JMXUtil;
+import com.sun.enterprise.management.support.Delegate;
+import com.sun.enterprise.management.config.AMXConfigImplBase;
 
-
-import com.sun.appserv.management.util.misc.TimingDelta;
 
 /**
-	Used internally to work around problems with cascaded MBeans.
+	Configuration for the &lt;iiop-service&gt; element.
  */
-public final class LoadAMX
-{
-    private LoadAMX() {}
-    private static ObjectName LOADER_OBJECTNAME = null;
-    
-    private static final String AMX_LOADER_DEFAULT_OBJECTNAME    =
-        "amx-support:name=mbean-loader";
+import com.sun.appserv.management.config.IIOPServiceConfig;
 
-        public static synchronized ObjectName
-    loadAMX( final MBeanServer mbeanServer )
-    {
-        if ( LOADER_OBJECTNAME == null )
-        {
-            final boolean inDAS = true;
-            Issues.getAMXIssues().notDone( "LoadAMX.loadAMX(): determine if this is the DAS" );
+public final class IIOPServiceConfigImpl  extends AMXConfigImplBase
+	// implements IIOPServiceConfig
+	implements /*SSLConfigFactory.CreateRemoveHook,*/ ConfigFactoryCallback
+{
+		public
+	IIOPServiceConfigImpl( final Delegate delegate )
+	{
+		super( delegate );
+	}
+
+    /**
+        Special-case: name is not derivable from XTypes.SSL_CONFIG
+     */
+		public ObjectName
+	getIIOPSSLClientConfigObjectName()
+	{
+		return( getContaineeObjectName( XTypes.SSL_CONFIG ) );
+	}
+	
+
+	private static final Set<String> NOT_SUPERFLUOUS =
+	    GSetUtil.newUnmodifiableStringSet(
+    	    "getIIOPSSLClientConfigObjectName"
+        );
             
-        final TimingDelta delta = new TimingDelta();
-            TypeInfos.getInstance();
-        System.out.println( "TypeInfos.getInstance(): " + delta.elapsedMillis()  );
             
-            if ( inDAS )
-            {
-                final Loader loader = new Loader();
-                
-                final ObjectName tempObjectName  = JMXUtil.newObjectName( AMX_LOADER_DEFAULT_OBJECTNAME );
-                
-                try
-                {
-                    LOADER_OBJECTNAME  =
-                        mbeanServer.registerMBean( loader, tempObjectName ).getObjectName();
-        System.out.println( "LoadAMX - register loader(): " + delta.elapsedMillis()  );
-                }
-                catch( JMException e )
-                {
-                    throw new RuntimeException(e);
-                }
-            }
-        }
-        return LOADER_OBJECTNAME;
-    }
+	    protected final Set<String>
+	getNotSuperfluousMethods()
+	{
+	    return GSetUtil.newSet( super.getNotSuperfluousMethods(), NOT_SUPERFLUOUS );
+	}
+	
 }
+
+
 

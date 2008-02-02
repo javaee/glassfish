@@ -500,26 +500,6 @@ public class QueryMgrImpl extends AMXNonConfigImplBase
 		
 		return( checked(result) );
 	}
-	
-
-	
-	/**
-		Return the Class associated with a given type or null if none.
-	 */
-		private static synchronized Class
-	interfaceForJ2EEType( final String j2eeType )
-	{
-		Class theClass	= XTypesMapper.getInstance().getInterfaceForType( j2eeType );
-		
-		if ( theClass == null )
-		{
-			theClass	= J2EETypesMapper.getInstance().getInterfaceForType( j2eeType );
-		}
-		
-		return( theClass );
-	}
-	
-	
 }
 
 

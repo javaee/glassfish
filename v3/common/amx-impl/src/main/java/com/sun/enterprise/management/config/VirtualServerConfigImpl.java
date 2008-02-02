@@ -33,65 +33,44 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
- 
-/*
- */
-
-package com.sun.enterprise.management.support;
-
-import javax.management.MBeanServer;
-import javax.management.ObjectName;
-import javax.management.JMException;
-
-import com.sun.enterprise.util.Issues;
-
-import com.sun.appserv.management.util.jmx.JMXUtil;
-
-
-import com.sun.appserv.management.util.misc.TimingDelta;
 
 /**
-	Used internally to work around problems with cascaded MBeans.
- */
-public final class LoadAMX
-{
-    private LoadAMX() {}
-    private static ObjectName LOADER_OBJECTNAME = null;
-    
-    private static final String AMX_LOADER_DEFAULT_OBJECTNAME    =
-        "amx-support:name=mbean-loader";
+	Generated: Fri Jan 30 18:44:42 PST 2004
+	Generated from:
+	com.sun.appserv:type=virtual-server,id=__asadmin,config=server-config,category=config
+	com.sun.appserv:type=virtual-server,id=server,config=server-config,category=config
+*/
 
-        public static synchronized ObjectName
-    loadAMX( final MBeanServer mbeanServer )
-    {
-        if ( LOADER_OBJECTNAME == null )
-        {
-            final boolean inDAS = true;
-            Issues.getAMXIssues().notDone( "LoadAMX.loadAMX(): determine if this is the DAS" );
-            
-        final TimingDelta delta = new TimingDelta();
-            TypeInfos.getInstance();
-        System.out.println( "TypeInfos.getInstance(): " + delta.elapsedMillis()  );
-            
-            if ( inDAS )
-            {
-                final Loader loader = new Loader();
-                
-                final ObjectName tempObjectName  = JMXUtil.newObjectName( AMX_LOADER_DEFAULT_OBJECTNAME );
-                
-                try
-                {
-                    LOADER_OBJECTNAME  =
-                        mbeanServer.registerMBean( loader, tempObjectName ).getObjectName();
-        System.out.println( "LoadAMX - register loader(): " + delta.elapsedMillis()  );
-                }
-                catch( JMException e )
-                {
-                    throw new RuntimeException(e);
-                }
-            }
-        }
-        return LOADER_OBJECTNAME;
-    }
+package com.sun.enterprise.management.config;
+
+import com.sun.enterprise.management.config.AMXConfigImplBase;
+import com.sun.enterprise.management.support.Delegate;
+import com.sun.enterprise.management.support.AMXAttributeNameMapper;
+
+
+/**
+	Configuration for the &lt;virtual-server&gt; element.
+*/
+public final class VirtualServerConfigImpl  extends AMXConfigImplBase
+	implements ConfigFactoryCallback
+{
+		public
+	VirtualServerConfigImpl( final Delegate delegate )
+	{
+		super( delegate );
+	}
+
+		protected void
+	addCustomMappings( final AMXAttributeNameMapper mapper )
+	{
+	    super.addCustomMappings( mapper );
+	    
+		//mapper.addMapping( "docroot", "DocRoot" );
+		mapper.matchName( "Name", "Id" );
+	}
+
 }
+
+
+
 

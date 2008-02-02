@@ -35,63 +35,72 @@
  */
  
 /*
+ * $Header: /cvs/glassfish/admin/mbeanapi-impl/src/java/com/sun/enterprise/management/config/ModuleMonitoringLevelsConfigImpl.java,v 1.9 2007/05/05 05:23:19 tcfujii Exp $
+ * $Revision: 1.9 $
+ * $Date: 2007/05/05 05:23:19 $
  */
+package com.sun.enterprise.management.config;
 
-package com.sun.enterprise.management.support;
+import java.util.Map;
+import java.util.HashMap;
 
-import javax.management.MBeanServer;
-import javax.management.ObjectName;
-import javax.management.JMException;
+import javax.management.Attribute;
+import javax.management.AttributeList;
 
-import com.sun.enterprise.util.Issues;
-
+import com.sun.appserv.management.config.ModuleMonitoringLevelsConfig;
 import com.sun.appserv.management.util.jmx.JMXUtil;
-
-
-import com.sun.appserv.management.util.misc.TimingDelta;
+import com.sun.enterprise.management.config.AMXConfigImplBase;
+import com.sun.enterprise.management.support.Delegate;
 
 /**
-	Used internally to work around problems with cascaded MBeans.
- */
-public final class LoadAMX
-{
-    private LoadAMX() {}
-    private static ObjectName LOADER_OBJECTNAME = null;
-    
-    private static final String AMX_LOADER_DEFAULT_OBJECTNAME    =
-        "amx-support:name=mbean-loader";
 
-        public static synchronized ObjectName
-    loadAMX( final MBeanServer mbeanServer )
-    {
-        if ( LOADER_OBJECTNAME == null )
-        {
-            final boolean inDAS = true;
-            Issues.getAMXIssues().notDone( "LoadAMX.loadAMX(): determine if this is the DAS" );
-            
-        final TimingDelta delta = new TimingDelta();
-            TypeInfos.getInstance();
-        System.out.println( "TypeInfos.getInstance(): " + delta.elapsedMillis()  );
-            
-            if ( inDAS )
-            {
-                final Loader loader = new Loader();
-                
-                final ObjectName tempObjectName  = JMXUtil.newObjectName( AMX_LOADER_DEFAULT_OBJECTNAME );
-                
-                try
-                {
-                    LOADER_OBJECTNAME  =
-                        mbeanServer.registerMBean( loader, tempObjectName ).getObjectName();
-        System.out.println( "LoadAMX - register loader(): " + delta.elapsedMillis()  );
-                }
-                catch( JMException e )
-                {
-                    throw new RuntimeException(e);
-                }
-            }
-        }
-        return LOADER_OBJECTNAME;
-    }
+ */
+public final class ModuleMonitoringLevelsConfigImpl  extends AMXConfigImplBase
+{
+		public
+	ModuleMonitoringLevelsConfigImpl( final Delegate delegate )
+	{
+		super( delegate );
+	}
+
+	private static final String[] MODULES	=
+	{
+		"ConnectorConnectionPool",
+		"ThreadPool",
+		"HTTPService",
+		"JDBCConnectionPool",
+		"ORB",
+		"JVM",
+		"JMSService",
+		"ConnectorService",
+		"TransactionService",
+		"WebContainer",
+		"EJBContainer",
+	};
+	
+		public Map<String,String>
+	getAllLevels()
+	{
+		final AttributeList	attrs	= getAttributes( MODULES );
+		
+		assert ( attrs.size() == MODULES.length ) :
+			"Missing some monitoring levels, have: " + toString( attrs );
+		
+		return( JMXUtil.attributeListToStringMap( attrs ) );
+	}
+	
+		public void
+	changeAll( final String state )
+	{
+		final AttributeList	allAttrs	= new AttributeList();
+		
+		for( int i = 0; i < MODULES.length; ++i )
+		{
+			allAttrs.add( new Attribute( MODULES[ i ], state ) );
+		}
+		
+		setAttributes( allAttrs );
+	}
+
 }
 

@@ -35,63 +35,34 @@
  */
  
 /*
+ * $Header: /cvs/glassfish/admin/mbeanapi-impl/src/java/com/sun/enterprise/management/config/ClusteredServerConfigImpl.java,v 1.6 2007/05/05 05:23:17 tcfujii Exp $
+ * $Revision: 1.6 $
+ * $Date: 2007/05/05 05:23:17 $
  */
-
-package com.sun.enterprise.management.support;
-
-import javax.management.MBeanServer;
-import javax.management.ObjectName;
-import javax.management.JMException;
-
-import com.sun.enterprise.util.Issues;
-
-import com.sun.appserv.management.util.jmx.JMXUtil;
+package com.sun.enterprise.management.config;
 
 
-import com.sun.appserv.management.util.misc.TimingDelta;
+import com.sun.enterprise.management.config.AMXConfigImplBase;
+import com.sun.enterprise.management.support.Delegate;
+
+import com.sun.enterprise.management.config.AMXConfigImplBase;
+
+
+import com.sun.appserv.management.config.ClusteredServerConfig;
+import com.sun.appserv.management.base.XTypes;
+
 
 /**
-	Used internally to work around problems with cascaded MBeans.
  */
-public final class LoadAMX
+public final class ClusteredServerConfigImpl extends ServerConfigBase
+	// implements ClusteredServerConfig
 {
-    private LoadAMX() {}
-    private static ObjectName LOADER_OBJECTNAME = null;
-    
-    private static final String AMX_LOADER_DEFAULT_OBJECTNAME    =
-        "amx-support:name=mbean-loader";
-
-        public static synchronized ObjectName
-    loadAMX( final MBeanServer mbeanServer )
-    {
-        if ( LOADER_OBJECTNAME == null )
-        {
-            final boolean inDAS = true;
-            Issues.getAMXIssues().notDone( "LoadAMX.loadAMX(): determine if this is the DAS" );
-            
-        final TimingDelta delta = new TimingDelta();
-            TypeInfos.getInstance();
-        System.out.println( "TypeInfos.getInstance(): " + delta.elapsedMillis()  );
-            
-            if ( inDAS )
-            {
-                final Loader loader = new Loader();
-                
-                final ObjectName tempObjectName  = JMXUtil.newObjectName( AMX_LOADER_DEFAULT_OBJECTNAME );
-                
-                try
-                {
-                    LOADER_OBJECTNAME  =
-                        mbeanServer.registerMBean( loader, tempObjectName ).getObjectName();
-        System.out.println( "LoadAMX - register loader(): " + delta.elapsedMillis()  );
-                }
-                catch( JMException e )
-                {
-                    throw new RuntimeException(e);
-                }
-            }
-        }
-        return LOADER_OBJECTNAME;
-    }
+		public
+	ClusteredServerConfigImpl(final Delegate		delegate )
+	{
+		super( XTypes.CLUSTERED_SERVER_CONFIG, delegate );
+	}
+	
 }
+
 

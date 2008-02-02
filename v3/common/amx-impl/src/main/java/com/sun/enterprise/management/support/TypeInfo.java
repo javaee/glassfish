@@ -60,6 +60,10 @@ import com.sun.appserv.management.util.stringifier.SmartStringifier;
 import com.sun.appserv.management.ext.support.ExtendedAMX;
 import com.sun.appserv.management.ext.support.SupportUtil;
 
+import com.sun.enterprise.util.Issues;
+import com.sun.appserv.management.util.misc.TimingDelta;
+
+import com.sun.appserv.management.base.SystemInfo.*;
 
 /**
 	Information mapping a j2eeType to other necessary information.
@@ -134,9 +138,22 @@ public final class TypeInfo
 		"com.sun.enterprise.management",
 	};
 	
+    
+	    private Class
+    findClass( final String classname )
+    {
+        try
+        {
+            return this.getClass().getClassLoader().loadClass( classname );
+        }
+        catch( ClassNotFoundException e )
+        {
+            return null;
+        }
+    }
+
 	private final static String IMPL    = "Impl";
-	
-		private static Class
+		private Class
 	locateImplClass(
 		final String	packageName,
 		final String	baseName )
@@ -151,7 +168,7 @@ public final class TypeInfo
 		Class	implClass	= null;
 		try
 		{
-			implClass	= Class.forName( implClassname );
+			implClass	= this.getClass().getClassLoader().loadClass( implClassname );
 		}
 		catch( ClassNotFoundException e )
 		{
@@ -162,91 +179,101 @@ public final class TypeInfo
 	}
 	
     /**
-        Individual cases.
+        Map containing interface to implementation mapping.
      */
-        private static Map<String,String>
+        private static Map<Class,Class>
     getInterfaceToImplMap()
     {
-        final Map<String,String>    m   = new HashMap<String,String>();
+        final Map<Class,Class>    m   = new HashMap<Class,Class>();
         
-        m.put( "com.sun.appserv.management.DomainRoot", "com.sun.enterprise.management.DomainRootImpl" );
-        m.put( "com.sun.appserv.management.ext.logging.Logging", "com.sun.enterprise.management.ext.logging.LoggingImpl" );
-        m.put( "com.sun.appserv.management.deploy.DeploymentMgr", "com.sun.enterprise.management.deploy.DeploymentMgrImpl" );
-        m.put( "com.sun.appserv.management.ext.lb.LoadBalancer", "com.sun.enterprise.management.ext.lb.LoadBalancerImpl" );
-        m.put( "com.sun.appserv.management.ext.wsmgmt.WebServiceMgr", "com.sun.enterprise.management.ext.wsmgmt.WebServiceMgrImpl" );
-        m.put( "com.sun.appserv.management.ext.update.UpdateStatus", "com.sun.enterprise.management.ext.update.UpdateStatusImpl" );
+        m.put( com.sun.appserv.management.DomainRoot.class, com.sun.enterprise.management.DomainRootImpl.class );
+        m.put( com.sun.appserv.management.ext.logging.Logging.class, com.sun.enterprise.management.ext.logging.LoggingImpl.class );
+        m.put( com.sun.appserv.management.base.SystemInfo.class, com.sun.enterprise.management.support.SystemInfoImpl.class );
+        m.put( com.sun.appserv.management.base.QueryMgr.class, com.sun.enterprise.management.support.QueryMgrImpl.class );
+        m.put( com.sun.appserv.management.base.BulkAccess.class, com.sun.enterprise.management.support.BulkAccessImpl.class );
+        m.put( com.sun.appserv.management.base.UploadDownloadMgr.class, com.sun.enterprise.management.support.UploadDownloadMgrImpl.class );
+        m.put( com.sun.appserv.management.base.NotificationServiceMgr.class, com.sun.enterprise.management.support.NotificationServiceMgrImpl.class );
+        m.put( com.sun.appserv.management.base.NotificationService.class, com.sun.enterprise.management.support.NotificationServiceImpl.class );
+        m.put( com.sun.appserv.management.base.NotificationEmitterService.class, com.sun.enterprise.management.support.NotificationEmitterServiceImpl.class );
+        m.put( com.sun.appserv.management.base.Sample.class, com.sun.enterprise.management.support.SampleImpl.class );
         
-
-//        AMXSupportExtensionFeature amxExt = AMXExtensionFeatureFactory.getAMXPluggableFeature();
-        ExtendedAMX amxExt = SupportUtil.getExtendedAMX();
-
-        if (amxExt != null) {
-            Map<String,String> ifImpls = amxExt.getInterfaceImpls();
-
-            for (String key: ifImpls.keySet())
-                m.put( key, ifImpls.get(key));
-        }
+        m.put( com.sun.appserv.management.monitor.JMXMonitorMgr.class, com.sun.enterprise.management.monitor.JMXMonitorMgrImpl.class );
+        m.put( com.sun.appserv.management.monitor.AMXCounterMonitor.class, com.sun.enterprise.management.monitor.AMXCounterMonitorImpl.class );
+        m.put( com.sun.appserv.management.monitor.AMXGaugeMonitor.class, com.sun.enterprise.management.monitor.AMXGaugeMonitorImpl.class );
+        m.put( com.sun.appserv.management.monitor.AMXStringMonitor.class, com.sun.enterprise.management.monitor.AMXStringMonitorImpl.class );
+        
+        // need to be ported to V3
+        Issues.getAMXIssues().notDone( "TypeInfo.getInterfaceToImplMap(): various types are missing" );
+        //m.put( com.sun.appserv.management.deploy.DeploymentMgr.class, com.sun.enterprise.management.deploy.DeploymentMgrImpl.class );
+        //m.put( com.sun.appserv.management.ext.lb.LoadBalancer.class, com.sun.enterprise.management.ext.lb.LoadBalancerImpl.class );
+       // m.put( com.sun.appserv.management.ext.wsmgmt.WebServiceMgr.class, com.sun.enterprise.management.ext.wsmgmt.WebServiceMgrImpl.class );
+        //m.put( com.sun.appserv.management.ext.update.UpdateStatus.class, com.sun.enterprise.management.ext.update.UpdateStatusImpl.class );
 
         return Collections.unmodifiableMap( m );
     }
-    private static final Map<String,String> INTERFACE_TO_IMPL   = getInterfaceToImplMap();
+    private static final Map<Class,Class> INTERFACE_TO_IMPL   = getInterfaceToImplMap();
         
-		private static Class
+        
+		private Class
 	deriveImplClass( final Class mbeanInterface )
 		throws ClassNotFoundException
 	{
-        final String fullyQualifiedName = mbeanInterface.getName();
-		final String shortName	= getBaseName( fullyQualifiedName );
-        
 		Class	implClass	= null;
         
         // optimize for speed, calling locateImplClass() is very expensive
         // (4-5ms per class on a really fast machine)
-        if ( fullyQualifiedName.startsWith( "com.sun.appserv.management.config" ) )
-        {
-            implClass   = locateImplClass( "com.sun.enterprise.management.config", shortName );
-        }
-        else if ( fullyQualifiedName.startsWith( "com.sun.appserv.management.monitor" ) )
-        {
-            implClass   = locateImplClass( "com.sun.enterprise.management.monitor", shortName );
-        }
-        else if ( fullyQualifiedName.startsWith( "com.sun.appserv.management.j2ee" ) )
-        {
-            implClass   = locateImplClass( "com.sun.enterprise.management.j2ee", shortName );
-        }
-        else if ( fullyQualifiedName.startsWith( "com.sun.appserv.management.base" ) )
-        {
-            implClass   = locateImplClass( "com.sun.enterprise.management.support", shortName );
-        }
-        else if ( INTERFACE_TO_IMPL.containsKey( fullyQualifiedName ) )
-        {
-            //implClass   = Class.forName( INTERFACE_TO_IMPL.get( fullyQualifiedName ) );
-            //System.out.println( "Locating: " + fullyQualifiedName + " for " + mbeanInterface.getName() );
-            implClass   = Class.forName( INTERFACE_TO_IMPL.get( fullyQualifiedName ) );
-        }
-        else
-        { 
-           System.out.println( "NEEDED: " + mbeanInterface.getName() );
-        }
-		
+        implClass   = INTERFACE_TO_IMPL.get( mbeanInterface );
         if ( implClass == null )
         {
-            for( int i = 0; i < IMPL_PACKAGES.length; ++i )
+            System.out.println( "NON-OPTIMIZED IMPL: " + mbeanInterface.getName() );
+        }
+        
+        if ( implClass == null )
+        {
+            final String fullyQualifiedName = mbeanInterface.getName();
+            final String shortName	= getBaseName( fullyQualifiedName );
+            
+            if ( fullyQualifiedName.startsWith( "com.sun.appserv.management.config" ) )
             {
-                implClass	= locateImplClass( IMPL_PACKAGES[ i ], shortName );
-                
-                if ( implClass != null )
+                implClass   = locateImplClass( "com.sun.enterprise.management.config", shortName );
+            }
+            else if ( fullyQualifiedName.startsWith( "com.sun.appserv.management.monitor" ) )
+            {
+                implClass   = locateImplClass( "com.sun.enterprise.management.monitor", shortName );
+            }
+            else if ( fullyQualifiedName.startsWith( "com.sun.appserv.management.j2ee" ) )
+            {
+                implClass   = locateImplClass( "com.sun.enterprise.management.j2ee", shortName );
+            }
+            else if ( fullyQualifiedName.startsWith( "com.sun.appserv.management.base" ) )
+            {
+                implClass   = locateImplClass( "com.sun.enterprise.management.support", shortName );
+            }
+            else
+            { 
+               System.out.println( "NEEDED: " + mbeanInterface.getName() );
+            }
+		
+            if ( implClass == null )
+            {
+            System.out.println( "MANUALLY searching for implementation class for " + fullyQualifiedName );
+                for( int i = 0; i < IMPL_PACKAGES.length; ++i )
                 {
-                    break;
+                    implClass	= locateImplClass( IMPL_PACKAGES[ i ], shortName );
+                    
+                    if ( implClass != null )
+                    {
+                        break;
+                    }
+                }
+		
+                if ( implClass == null )
+                {
+                    throw new ClassNotFoundException(
+                        "Expected to find implementation class " + shortName + IMPL );
                 }
             }
         }
-		
-		if ( implClass == null )
-		{
-			throw new ClassNotFoundException(
-			    "Expected to find implementation class " + shortName + IMPL );
-		}
 		
 		return( implClass );
 	}

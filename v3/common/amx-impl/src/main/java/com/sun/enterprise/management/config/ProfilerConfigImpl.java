@@ -33,65 +33,55 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
- 
-/*
- */
-
-package com.sun.enterprise.management.support;
+package com.sun.enterprise.management.config;
 
 import javax.management.MBeanServer;
+import javax.management.AttributeList;
 import javax.management.ObjectName;
-import javax.management.JMException;
-
-import com.sun.enterprise.util.Issues;
+import javax.management.AttributeNotFoundException;
 
 import com.sun.appserv.management.util.jmx.JMXUtil;
 
-
-import com.sun.appserv.management.util.misc.TimingDelta;
+import com.sun.enterprise.management.config.AMXConfigImplBase;
+import com.sun.enterprise.management.support.Delegate;
 
 /**
-	Used internally to work around problems with cascaded MBeans.
- */
-public final class LoadAMX
-{
-    private LoadAMX() {}
-    private static ObjectName LOADER_OBJECTNAME = null;
-    
-    private static final String AMX_LOADER_DEFAULT_OBJECTNAME    =
-        "amx-support:name=mbean-loader";
+	Configuration for the &lt;profiler&gt; element.
+*/
 
-        public static synchronized ObjectName
-    loadAMX( final MBeanServer mbeanServer )
-    {
-        if ( LOADER_OBJECTNAME == null )
+
+public final class ProfilerConfigImpl  extends AMXConfigImplBase
+{
+    final Delegate mUnwrappedDelegate;  // wrapped one refuses access to "missing" attribute
+    
+		public
+	ProfilerConfigImpl( final Delegate delegate )
+	{
+		super( delegate );
+        
+        mUnwrappedDelegate    = delegate;
+	}
+    
+		protected ObjectName
+	preRegisterModifyName(
+		final MBeanServer	server,
+		final ObjectName	nameIn )
+	{
+        final ObjectName objectName = super.preRegisterModifyName( server, nameIn );
+       
+        ObjectName actualObjectName = null;
+        try
         {
-            final boolean inDAS = true;
-            Issues.getAMXIssues().notDone( "LoadAMX.loadAMX(): determine if this is the DAS" );
+            final String name = (String)mUnwrappedDelegate.getAttribute( "name" );
             
-        final TimingDelta delta = new TimingDelta();
-            TypeInfos.getInstance();
-        System.out.println( "TypeInfos.getInstance(): " + delta.elapsedMillis()  );
-            
-            if ( inDAS )
-            {
-                final Loader loader = new Loader();
-                
-                final ObjectName tempObjectName  = JMXUtil.newObjectName( AMX_LOADER_DEFAULT_OBJECTNAME );
-                
-                try
-                {
-                    LOADER_OBJECTNAME  =
-                        mbeanServer.registerMBean( loader, tempObjectName ).getObjectName();
-        System.out.println( "LoadAMX - register loader(): " + delta.elapsedMillis()  );
-                }
-                catch( JMException e )
-                {
-                    throw new RuntimeException(e);
-                }
-            }
+            actualObjectName   = JMXUtil.setKeyProperty( objectName, NAME_KEY, name );
         }
-        return LOADER_OBJECTNAME;
+        catch( AttributeNotFoundException e )
+        {
+            throw new RuntimeException(e);
+        }
+        
+        
+        return actualObjectName;
     }
 }
-

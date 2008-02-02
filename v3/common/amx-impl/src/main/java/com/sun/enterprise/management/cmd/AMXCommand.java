@@ -46,6 +46,9 @@ import com.sun.appserv.management.util.misc.StringUtil;
 import com.sun.appserv.management.util.misc.TimingDelta;
 
 import com.sun.enterprise.management.support.LoadAMX;
+import com.sun.enterprise.management.support.XTypesMapper;
+import com.sun.enterprise.management.support.J2EETypesMapper;
+import com.sun.enterprise.management.support.AllTypesMapper;
 
 
 /**
@@ -78,12 +81,22 @@ public class AMXCommand extends AMXCommandBase implements AdminCommand
     public final synchronized void _execute(AdminCommandContext context)
     {
         String timingMsg = "";
+        final TimingDelta allDelta = new TimingDelta();
+        final TimingDelta delta = new TimingDelta();
+        
+        final Class c = XTypesMapper.class;
+        System.out.println( "Reference XTypesMapper: " + delta.elapsedMillis()  + " " + c.getName() );
+        XTypesMapper.getInstance();
+        System.out.println( "Load XTypesMapper: " + delta.elapsedMillis() );
+        J2EETypesMapper.getInstance();
+        System.out.println( "Load J2EETypesMapper: " + delta.elapsedMillis() );
+        AllTypesMapper.getInstance();
+        System.out.println( "Load AllTypesMapper: " + delta.elapsedMillis() );
         
         if ( ! mInitialized ) {
-            final TimingDelta delta = new TimingDelta();
             initialize();
             mInitialized    = true;
-            timingMsg = " (" + delta.elapsedMillis() + " ms)";
+            timingMsg = " (" + allDelta.elapsedMillis() + " ms)";
         }
         else
         {

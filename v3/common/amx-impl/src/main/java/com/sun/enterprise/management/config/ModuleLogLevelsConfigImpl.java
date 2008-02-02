@@ -33,65 +33,99 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
- 
-/*
- */
 
-package com.sun.enterprise.management.support;
+/**
+	Generated: Fri Jan 30 18:44:42 PST 2004
+	Generated from:
+	com.sun.appserv:type=module-log-levels,config=server-config,category=config
+*/
 
-import javax.management.MBeanServer;
-import javax.management.ObjectName;
-import javax.management.JMException;
+package com.sun.enterprise.management.config;
 
-import com.sun.enterprise.util.Issues;
+import java.util.Map;
 
+import javax.management.Attribute;
+import javax.management.AttributeList;
+
+import com.sun.enterprise.management.config.AMXConfigImplBase;
+import com.sun.enterprise.management.support.Delegate;
+	
 import com.sun.appserv.management.util.jmx.JMXUtil;
 
 
-import com.sun.appserv.management.util.misc.TimingDelta;
-
 /**
-	Used internally to work around problems with cascaded MBeans.
- */
-public final class LoadAMX
+	Configuration for the &lt;module-log-levels&gt; element.
+*/
+
+import com.sun.appserv.management.config.ModuleLogLevelsConfig;
+
+public final class ModuleLogLevelsConfigImpl  extends AMXConfigImplBase
 {
-    private LoadAMX() {}
-    private static ObjectName LOADER_OBJECTNAME = null;
-    
-    private static final String AMX_LOADER_DEFAULT_OBJECTNAME    =
-        "amx-support:name=mbean-loader";
+		public
+	ModuleLogLevelsConfigImpl( final Delegate delegate )
+	{
+		super( delegate );
+	}
+	
+	private static final String[] MODULES	=
+	{
+		"Admin",
+		"Classloader",
+		"CMP",
+		"Configuration",
+		"Connector",
+		"CORBA",
+		"Deployment",
+		"EJBContainer",
+		"Javamail",
+		"JAXR",
+		"JAXRPC",
+		"JDO",
+		"JMS",
+		"JTA",
+		"JTS",
+		"MDBContainer",
+		"Naming",
+		"ResourceAdapter",
+		"Root",
+		"SAAJ",
+		"Security",
+		"Server",
+		"Verifier",
+		"WebContainer",
+		
+		// 9.0 
+		"Util",
+		"Synchronization",
+		"NodeAgent",
+		"SelfManagement",
+		"GroupManagementService",
+	};
+	
+		public Map
+	getAllLevels()
+	{
+		final AttributeList	attrs	= getAttributes( MODULES );
+		
+		assert ( attrs.size() == MODULES.length ) :
+			"Missing some log levels, have: " + toString( attrs );
+		
+		return( JMXUtil.attributeListToValueMap( attrs ) );
+	}
+	
+		public void
+	changeAll( final String level )
+	{
+		final AttributeList	allAttrs	= new AttributeList();
+		
+		for( int i = 0; i < MODULES.length; ++i )
+		{
+			allAttrs.add( new Attribute( MODULES[ i ], level ) );
+		}
+		
+		setAttributes( allAttrs );
+	}
 
-        public static synchronized ObjectName
-    loadAMX( final MBeanServer mbeanServer )
-    {
-        if ( LOADER_OBJECTNAME == null )
-        {
-            final boolean inDAS = true;
-            Issues.getAMXIssues().notDone( "LoadAMX.loadAMX(): determine if this is the DAS" );
-            
-        final TimingDelta delta = new TimingDelta();
-            TypeInfos.getInstance();
-        System.out.println( "TypeInfos.getInstance(): " + delta.elapsedMillis()  );
-            
-            if ( inDAS )
-            {
-                final Loader loader = new Loader();
-                
-                final ObjectName tempObjectName  = JMXUtil.newObjectName( AMX_LOADER_DEFAULT_OBJECTNAME );
-                
-                try
-                {
-                    LOADER_OBJECTNAME  =
-                        mbeanServer.registerMBean( loader, tempObjectName ).getObjectName();
-        System.out.println( "LoadAMX - register loader(): " + delta.elapsedMillis()  );
-                }
-                catch( JMException e )
-                {
-                    throw new RuntimeException(e);
-                }
-            }
-        }
-        return LOADER_OBJECTNAME;
-    }
+	
+
 }
-

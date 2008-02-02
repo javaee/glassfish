@@ -66,7 +66,7 @@ public final class AllTypesMapper extends TypesMapper
 		private
 	AllTypesMapper()
 	{
-		super( new Class[ 0 ] );
+		super( new Object[ 0 ] );
 	}
 	
 	
@@ -74,10 +74,10 @@ public final class AllTypesMapper extends TypesMapper
 		@param type the j2eeType
 		@return the interface class associated with a given j2eeType.
 	 */
-		public Class<?>
+		public Class<? extends AMX>
 	getInterfaceForType( final String type )
 	{
-		Class<?> theClass	= XTypesMapper.getInstance().getInterfaceForType( type );
+		Class<? extends AMX> theClass	= XTypesMapper.getInstance().getInterfaceForType( type );
 		 
 		if ( theClass == null )
 		{
@@ -95,5 +95,8 @@ public final class AllTypesMapper extends TypesMapper
 		return( theClass );
 	}
 	
-	
 }
+
+
+
+

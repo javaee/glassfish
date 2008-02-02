@@ -33,65 +33,86 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
- 
-/*
- */
+package com.sun.enterprise.management.config;
 
-package com.sun.enterprise.management.support;
+import java.util.Map;
+import java.util.Set;
 
-import javax.management.MBeanServer;
-import javax.management.ObjectName;
-import javax.management.JMException;
+import com.sun.enterprise.management.config.AMXConfigImplBase;
+
+import com.sun.enterprise.management.support.Delegate;
+import com.sun.enterprise.management.support.AMXAttributeNameMapper;
 
 import com.sun.enterprise.util.Issues;
 
-import com.sun.appserv.management.util.jmx.JMXUtil;
-
-
-import com.sun.appserv.management.util.misc.TimingDelta;
-
 /**
-	Used internally to work around problems with cascaded MBeans.
  */
-public final class LoadAMX
+public class ServerConfigBase extends AMXConfigImplBase
 {
-    private LoadAMX() {}
-    private static ObjectName LOADER_OBJECTNAME = null;
-    
-    private static final String AMX_LOADER_DEFAULT_OBJECTNAME    =
-        "amx-support:name=mbean-loader";
+		public
+	ServerConfigBase(
+		final String 		j2eeType,
+		final Delegate		delegate )
+	{
+		super( delegate);
+		
+	}
 
-        public static synchronized ObjectName
-    loadAMX( final MBeanServer mbeanServer )
-    {
-        if ( LOADER_OBJECTNAME == null )
-        {
-            final boolean inDAS = true;
-            Issues.getAMXIssues().notDone( "LoadAMX.loadAMX(): determine if this is the DAS" );
-            
-        final TimingDelta delta = new TimingDelta();
-            TypeInfos.getInstance();
-        System.out.println( "TypeInfos.getInstance(): " + delta.elapsedMillis()  );
-            
-            if ( inDAS )
-            {
-                final Loader loader = new Loader();
-                
-                final ObjectName tempObjectName  = JMXUtil.newObjectName( AMX_LOADER_DEFAULT_OBJECTNAME );
-                
-                try
-                {
-                    LOADER_OBJECTNAME  =
-                        mbeanServer.registerMBean( loader, tempObjectName ).getObjectName();
-        System.out.println( "LoadAMX - register loader(): " + delta.elapsedMillis()  );
-                }
-                catch( JMException e )
-                {
-                    throw new RuntimeException(e);
-                }
-            }
-        }
-        return LOADER_OBJECTNAME;
-    }
+		protected void
+	addCustomMappings( final AMXAttributeNameMapper mapper )
+	{
+	    super.addCustomMappings( mapper );
+	    
+		// these require custom mappings due to different names...
+		mapper.matchName( "ReferencedConfigName", "ConfigRef");
+		mapper.matchName( "ReferencedNodeAgentName", "NodeAgentRef" );
+	}
+
+
+	private static final String	TEMPLATE_PREFIX	= "${";
+		public boolean
+	isTemplateString( final String s )
+	{
+		// at least one character must be between the {} 
+		return( s != null &&
+			s.startsWith( TEMPLATE_PREFIX ) &&
+			s.indexOf( "}" ) >= TEMPLATE_PREFIX.length() + 1 );
+	}
+	
+		public String
+	resolveTemplateString( final String template )
+	{
+		String	result	= template;
+		
+        Issues.getAMXIssues().notDone( "ServerConfigBase.resolveTemplateString(): support for ${...} template resolution" );
+        
+		if ( isTemplateString( template ) )
+		{
+            /*
+			final String			myName		= getName();
+			final OldDomainMBean	oldDomain	= getOldConfigProxies().getOldDomainMBean();
+			
+   			try
+   			{
+   				result	= oldDomain.resolveTokens( template, myName);
+   			}
+   			catch( Exception e )
+   			{
+   				getMBeanLogger().warning( "Can't resolve: " + template + ", " + e);
+   				e.printStackTrace();
+   				throw new IllegalArgumentException( template );
+   			}
+            */
+		}
+		return( result );
+	}
+	
 }
+
+
+
+
+
+
+
 
