@@ -49,7 +49,7 @@ public class InvocationManagerImpl
                         inv.componentId = null;
                         inv.setComponentInvocationType(parentInv.getInvocationType());
                         inv.instance = null;
-                        inv.containerOrContext = parentInv.getContainerContext();
+                        inv.container = parentInv.getContainerContext();
                         inv.transaction = null;
                         result.add(inv);
                     } else if (parentInv.getInvocationType() != ComponentInvocationType.EJB_INVOCATION) {
@@ -59,7 +59,7 @@ public class InvocationManagerImpl
                         cpy.componentId = parentInv.getComponentId();
                         cpy.setComponentInvocationType(parentInv.getInvocationType());
                         cpy.instance = parentInv.getInstance();
-                        cpy.containerOrContext = parentInv.getContainerContext();
+                        cpy.container = parentInv.getContainerContext();
                         cpy.transaction = parentInv.getTransaction();
                         result.add(cpy);
                     }
