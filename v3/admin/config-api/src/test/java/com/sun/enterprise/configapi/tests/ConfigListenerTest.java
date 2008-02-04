@@ -42,7 +42,7 @@ public class ConfigListenerTest extends ConfigApiTest {
         ConfigSupport.apply(new SingleConfigCode<HttpListener>() {
 
             public Object run(HttpListener param) throws PropertyVetoException, TransactionFailure {
-                param.setPort("8989");
+                param.setPort("8080");
                 return null;
             }
         }, container.httpListener);
