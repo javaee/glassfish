@@ -46,7 +46,9 @@ import com.sun.enterprise.config.*;
 import com.sun.enterprise.server.*;
 import com.sun.enterprise.security.auth.realm.Realm;
 import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.Singleton;
 
 /**
  * Process realm initial configuration.
@@ -57,6 +59,7 @@ import org.jvnet.hk2.annotations.Service;
  *
  */
 @Service
+@Scoped(Singleton.class)
 public class RealmConfig
 {
     private static Logger logger =

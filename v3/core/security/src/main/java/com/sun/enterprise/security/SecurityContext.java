@@ -55,9 +55,9 @@ import com.sun.enterprise.security.auth.login.DistinguishedPrincipalCredential;
 import com.sun.enterprise.server.ServerContext;
 import com.sun.web.security.PrincipalGroupFactory;
 import com.sun.logging.*;
-import javax.annotation.PostConstruct;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.PostConstruct;
 
 /**
 * This  class that extends AbstractSecurityContext that gets 
@@ -76,7 +76,7 @@ import org.jvnet.hk2.annotations.Service;
  * @author Harpreet Singh
  */
 @Service
-public class SecurityContext extends AbstractSecurityContext {
+public class SecurityContext extends AbstractSecurityContext implements PostConstruct {
 
     @Inject
     private ServerContext serverContext; 
@@ -172,7 +172,6 @@ public class SecurityContext extends AbstractSecurityContext {
        
     }
     
-    @PostConstruct
     private void initDefaultCallerPrincipal() {
          if (this.initiator == null) {
             this.initiator = getDefaultCallerPrincipal(serverContext);
@@ -414,5 +413,9 @@ public class SecurityContext extends AbstractSecurityContext {
 
     public Set getPrincipalSet() {
         return subject.getPrincipals();       
+    }
+
+    public void postConstruct() {
+        initDefaultCallerPrincipal();
     }
 }

@@ -48,7 +48,9 @@ import com.sun.enterprise.server.ServerContext;
 import com.sun.enterprise.util.i18n.StringManager;
 import java.util.List;
 import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.Singleton;
 
 /**
  * Loads the Default Policy File into the system.
@@ -58,6 +60,7 @@ import org.jvnet.hk2.annotations.Service;
  *
  */
 @Service
+@Scoped(Singleton.class)
 public class PolicyLoader{
 
     @Inject
@@ -83,19 +86,21 @@ public class PolicyLoader{
         "com.sun.enterprise.jaccprovider.property.";
     private static boolean isPolicyInstalled = false;
 
-    private static PolicyLoader _policyLoader = null;
-    
+    //V3:Commented private static PolicyLoader _policyLoader = null;
+    /* V3:Commented: Not sure if this is right way to do it (it can remain VM wide Singleton?)
     private PolicyLoader(){
-    }
-    /** 
+    }*/
+    
+    /**V3:Commented
      *  gets the PolicyLoader instance
-     */
+     
     public static synchronized PolicyLoader getInstance(){
         if(_policyLoader == null){
             _policyLoader = new PolicyLoader();
         }
         return _policyLoader;
-    }
+    }*/
+    
     /**
      * Attempts to install the policy-provider. The policy-provider
      * element in domain.xml is consulted for the class to use. Note

@@ -61,9 +61,10 @@ import com.sun.enterprise.security.AppservAccessController;
 import com.sun.enterprise.server.ServerContext;
 //import com.sun.enterprise.Switch;
 import com.sun.logging.*;
-import javax.annotation.PostConstruct;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.PostConstruct;
+
 
 /** This Object maintains  a mapping of users and groups to application
  * specific Roles.
@@ -73,7 +74,7 @@ import org.jvnet.hk2.annotations.Service;
  * @author Harpreet Singh
  */
 @Service
-public class RoleMapper implements Serializable, SecurityRoleMapper {
+public class RoleMapper implements Serializable, SecurityRoleMapper, PostConstruct {
 
     @Inject
     private  ServerContext serverContext;
@@ -125,7 +126,6 @@ public class RoleMapper implements Serializable, SecurityRoleMapper {
         defaultP2RMappingClassName = getDefaultP2RMappingClassName();
     }
    
-    @PostConstruct
     private  synchronized void initDefaultRole() {
 
          if (!isEJBContainer(serverContext)) {
@@ -753,4 +753,9 @@ public class RoleMapper implements Serializable, SecurityRoleMapper {
             }
         }
     }
+
+    public void postConstruct() {
+       initDefaultRole();
+    }
+
 }
