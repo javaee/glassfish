@@ -54,6 +54,5 @@
 	<module>kernel</module>
         <module>shared</module>
         <module>javaee-core</module>
-        <module>security</module>
     </modules>
 </project>
