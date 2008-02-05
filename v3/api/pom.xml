@@ -99,6 +99,7 @@
         <module>persistence</module>
     	<module>transaction</module>
 	<module>jstl</module>
+        <module>jmac</module>
     </modules>
     <repositories>
         <repository>
