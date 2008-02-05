@@ -33,6 +33,11 @@ public class ComponentInvocation {
 
     public Object transaction;
 
+    //  security context coming in a call
+    // security context changes on a runas call - on a run as call
+    // the old logged in security context is stored in here.
+    public Object oldSecurityContext;
+    
     public ComponentInvocation() {
         
     }
@@ -88,6 +93,20 @@ public class ComponentInvocation {
 
     public void setTransaction(Object t) {
         this.transaction = t;
+    }
+    
+    /** 
+     * Sets the security context of the call coming in
+     */
+    public void setOldSecurityContext (Object sc){
+	this.oldSecurityContext = sc;
+    }
+    /**
+     * gets the security context of the call that came in
+     * before a new context for runas is made
+     */
+    public Object getOldSecurityContext (){
+	return oldSecurityContext;
     }
 
 }
