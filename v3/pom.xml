@@ -206,7 +206,8 @@
             <id>java-dev-repository</id>
             <name>Maven 1.x java.dev Snapshot Repository</name>
             <layout>legacy</layout>
-            <url>http://download.java.net/maven/1</url>
+            <!-- url>http://download.java.net/maven/1</url -->
+	<url>https://maven-repository.dev.java.net/nonav/repository</url>
         </repository>
         <repository>
             <id>repo1.maven.org</id>
@@ -216,7 +217,8 @@
         <repository>
             <id>maven2.java.net</id>
             <name>Java.net Repository for Maven 2</name>
-            <url>http://download.java.net/maven/2</url>
+            <!-- url>http://download.java.net/maven/2</url -->
+	<url>https://maven2-repository.dev.java.net/nonav/repository</url>
         </repository>
     </repositories>
     <pluginRepositories>
