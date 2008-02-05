@@ -42,18 +42,11 @@ import com.sun.logging.LogDomains;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.security.GeneralSecurityException;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
-import java.security.cert.X509Certificate;
 import java.util.Comparator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.net.SocketFactory;
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
 import java.net.InetAddress;
 
 

@@ -37,8 +37,6 @@
 package com.sun.enterprise.security.jmac.config;
 
 import java.lang.reflect.Constructor;
-import java.security.Security;
-import java.security.SecurityPermission;
 
 import java.util.ArrayList;
 import java.util.Collection;

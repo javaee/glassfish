@@ -45,7 +45,6 @@ import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.web.LoginConfiguration;
 import com.sun.enterprise.deployment.runtime.web.SunWebApp;
 import com.sun.enterprise.security.auth.realm.certificate.CertificateRealm;
-import com.sun.enterprise.security.jmac.config.GFAuthConfigFactory;
 import com.sun.enterprise.security.jmac.config.GFServerConfigProvider;
 import com.sun.enterprise.security.jmac.config.HandlerContext;
 import com.sun.web.security.WebSecurityManager;

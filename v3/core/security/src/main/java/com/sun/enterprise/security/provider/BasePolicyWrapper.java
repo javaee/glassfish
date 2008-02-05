@@ -54,11 +54,8 @@ import javax.management.MBeanPermission;
 import java.io.File;
 import java.net.URI;
 import java.net.URL;
-import java.util.Collection;
 import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.logging.*; 
-import java.lang.*;
 import com.sun.logging.LogDomains;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 /**

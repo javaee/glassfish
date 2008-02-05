@@ -36,8 +36,7 @@
 package com.sun.enterprise.security;
 
 import java.security.Permission;
-import com.sun.enterprise.security.CachedPermission;
-import com.sun.enterprise.security.PermissionCache;
+
 /**
  * This class is 
  * @author Ron Monzillo

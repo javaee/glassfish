@@ -38,17 +38,11 @@ package com.sun.enterprise.security;
 import java.security.CodeSource;
 import java.security.Permission;
 import java.security.Policy;
-import java.security.PrivilegedExceptionAction;
-import java.security.PrivilegedActionException;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import javax.security.jacc.PolicyContext;
 import com.sun.enterprise.J2EESecurityManager;
 
-import com.sun.logging.LogDomains;
 
 /**
  * This class is the factory for creating and managing PermissionCache.

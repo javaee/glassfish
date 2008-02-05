@@ -44,7 +44,6 @@ package com.sun.web.security;
 
 import com.sun.enterprise.deployment.PrincipalImpl;
 import com.sun.enterprise.deployment.Group;
-import com.sun.web.security.WebSecurityManager;
 /**
  *
  * @author  Harpreet Singh

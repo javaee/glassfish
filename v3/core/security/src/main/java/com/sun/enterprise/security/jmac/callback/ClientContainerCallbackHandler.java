@@ -82,6 +82,7 @@ final class ClientContainerCallbackHandler
     ClientContainerCallbackHandler() {
     }
 
+    //TODO:V3 trying to read system properties here
     protected void handleSupportedCallbacks(Callback[] callbacks) 
             throws IOException, UnsupportedCallbackException {
 

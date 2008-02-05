@@ -38,16 +38,12 @@ package com.sun.enterprise.security.auth.realm.solaris;
 
 import java.util.*;
 
-import java.util.logging.Logger;
 import java.util.logging.Level;
-import com.sun.logging.LogDomains;
 
-import com.sun.enterprise.security.acl.RoleMapper;
 import com.sun.enterprise.security.auth.realm.IASRealm;
 import com.sun.enterprise.security.auth.realm.BadRealmException;
 import com.sun.enterprise.security.auth.realm.NoSuchUserException;
 import com.sun.enterprise.security.auth.realm.NoSuchRealmException;
-import com.sun.enterprise.security.auth.realm.AuthenticationHandler;
 import com.sun.enterprise.security.auth.realm.InvalidOperationException;
 
 

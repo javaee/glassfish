@@ -56,7 +56,6 @@ import javax.security.auth.message.config.ServerAuthConfig;
 import javax.security.auth.message.config.ServerAuthContext;
 import javax.security.auth.message.config.AuthConfigFactory.RegistrationContext;
 
-import com.sun.enterprise.security.AppservAccessController;
 import com.sun.enterprise.security.jmac.AuthMessagePolicy;
 import com.sun.enterprise.security.jmac.config.HandlerContext;
 

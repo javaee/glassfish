@@ -37,11 +37,6 @@
 package com.sun.enterprise.security.authorize;
 
 import java.security.SecurityPermission;
-import java.util.Iterator;
-import java.util.Set;
-import java.util.Map;
-import java.util.HashMap;
-import javax.servlet.http.HttpServletRequest;
 import javax.security.jacc.PolicyContextHandler;
 
 /**

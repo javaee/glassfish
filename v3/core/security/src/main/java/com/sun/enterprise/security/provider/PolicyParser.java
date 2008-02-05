@@ -37,11 +37,7 @@
 package com.sun.enterprise.security.provider;
 
 import java.io.*;
-import java.lang.RuntimePermission;
-import java.net.SocketPermission;
-import java.net.URL;
 import java.util.Enumeration;
-import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.ListIterator;
 import java.util.Vector;

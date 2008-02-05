@@ -46,13 +46,10 @@ import javax.net.ssl.X509KeyManager;
 import javax.security.auth.Subject;
 
 //import com.sun.enterprise.Switch;
-import org.glassfish.api.invocation.InvocationManager;
-import org.glassfish.api.invocation.ComponentInvocation;
 import com.sun.enterprise.appclient.AppContainer;
 import com.sun.enterprise.security.ClientSecurityContext;
 import com.sun.enterprise.security.auth.login.X509CertificateCredential;
 import com.sun.enterprise.security.auth.LoginContextDriver;
-import org.glassfish.api.invocation.InvocationException;
 import java.util.logging.*;
 import com.sun.logging.*;
 

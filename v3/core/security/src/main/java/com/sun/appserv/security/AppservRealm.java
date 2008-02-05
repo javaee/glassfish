@@ -41,7 +41,6 @@ import java.util.*;
 import com.sun.enterprise.security.auth.realm.*;
 
 import java.util.logging.Logger;
-import java.util.logging.Level;
 import com.sun.logging.LogDomains;
 import com.sun.enterprise.util.i18n.StringManager;
 

@@ -36,8 +36,6 @@
 
 package com.sun.enterprise.security.jmac;
 
-import java.io.IOException;
-import java.security.PrivilegedAction;
 import java.security.PrivilegedExceptionAction;
 import java.security.PrivilegedActionException;
 import java.util.ArrayList;

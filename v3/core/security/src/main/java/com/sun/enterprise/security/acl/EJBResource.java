@@ -35,7 +35,6 @@
  */
 package com.sun.enterprise.security.acl;
 
-import java.security.Principal;
 
 import java.lang.reflect.Method;
 

@@ -60,6 +60,8 @@ import java.util.logging.Level;
 import com.sun.logging.LogDomains;
 
 import java.util.Properties;
+//TODO:V3 The Appclient is temporarily here in SecurityModule to satisfy some of
+//its dependencies. It will need to be removed once we have the Appclient Module.
 /**
  * This is the application client container. It performs tasks such as
  * user login and other initialization based on the deployment descriptor

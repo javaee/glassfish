@@ -34,8 +34,6 @@
  * holder.
  */
 package com.sun.enterprise.security.acl;
-
-import java.security.Principal;
 /**
  * @author Harish Prabandham
  */

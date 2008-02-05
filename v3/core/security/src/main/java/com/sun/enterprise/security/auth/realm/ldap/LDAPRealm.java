@@ -36,11 +36,8 @@
 
 package com.sun.enterprise.security.auth.realm.ldap;
 
-import com.sun.enterprise.security.SSLUtils;
 import java.util.*;
-import java.util.logging.Logger;
 import java.util.logging.Level;
-import java.security.Principal;
 import javax.naming.CompositeName;
 import javax.naming.Context;
 import javax.naming.NamingEnumeration;
@@ -50,27 +47,17 @@ import javax.naming.directory.DirContext;
 import javax.naming.directory.InitialDirContext;
 import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
-import javax.security.auth.x500.X500Principal;
 import javax.security.auth.login.LoginException;
 
 // imported from the ldap booster pack
 //V3:Commented till we publish ldapbp to maven
 //import com.sun.jndi.ldap.obj.GroupOfURLs;
 
-import com.sun.logging.LogDomains;
-import com.sun.enterprise.security.acl.RoleMapper;
-import com.sun.enterprise.security.auth.realm.User;
-import com.sun.enterprise.security.auth.realm.Realm;
 import com.sun.enterprise.security.auth.realm.BadRealmException;
 import com.sun.enterprise.security.auth.realm.NoSuchUserException;
 import com.sun.enterprise.security.auth.realm.NoSuchRealmException;
-import com.sun.enterprise.security.auth.realm.AuthenticationHandler;
 import com.sun.enterprise.security.auth.realm.InvalidOperationException;
 
-import com.sun.enterprise.security.RealmConfig;
 import com.sun.enterprise.security.auth.realm.IASRealm;
 
 

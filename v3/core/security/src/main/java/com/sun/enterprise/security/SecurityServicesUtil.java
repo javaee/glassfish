@@ -5,9 +5,7 @@
 
 package com.sun.enterprise.security;
 
-import com.sun.enterprise.server.ServerContext;
 import com.sun.enterprise.server.pluggable.SecuritySupport;
-import org.glassfish.api.invocation.InvocationManager;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 

@@ -45,7 +45,6 @@ import java.security.KeyStore;
 import java.security.Provider;
 
 //V3:Commented import com.sun.enterprise.config.ConfigContext;
-import com.sun.enterprise.security.SSLUtils;
 import com.sun.enterprise.server.pluggable.SecuritySupport;
 import com.sun.logging.LogDomains;
 import org.jvnet.hk2.annotations.Service;

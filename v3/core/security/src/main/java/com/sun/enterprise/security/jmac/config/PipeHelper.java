@@ -94,7 +94,7 @@ public class PipeHelper extends ConfigHelper {
             AuditManagerFactory.getAuditManagerInstance();
 
     protected static final LocalStringManagerImpl localStrings = 
-        new LocalStringManagerImpl(PipeConstants.class);
+        new LocalStringManagerImpl(PipeHelper.class);
      
     //TODO:V3 code this method correctly later
     private static  boolean isAppclientContainer() {

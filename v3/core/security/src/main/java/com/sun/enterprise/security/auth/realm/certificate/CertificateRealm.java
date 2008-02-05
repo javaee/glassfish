@@ -39,7 +39,6 @@ package com.sun.enterprise.security.auth.realm.certificate;
 import java.lang.*;
 import java.util.*;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.io.*;
 import java.security.*;
 
@@ -48,14 +47,9 @@ import javax.security.auth.Subject;
 
 import com.sun.enterprise.deployment.Group;
 import com.sun.enterprise.security.SecurityContext;
-import com.sun.enterprise.security.auth.Privilege;
-import com.sun.enterprise.security.auth.PrivilegeImpl;
-import com.sun.enterprise.security.auth.realm.User;
-import com.sun.enterprise.security.auth.realm.Realm;
 import com.sun.enterprise.security.auth.realm.BadRealmException;
 import com.sun.enterprise.security.auth.realm.NoSuchUserException;
 import com.sun.enterprise.security.auth.realm.NoSuchRealmException;
-import com.sun.enterprise.security.auth.realm.AuthenticationHandler;
 import com.sun.enterprise.security.auth.realm.InvalidOperationException;
 
 import com.sun.enterprise.server.*;

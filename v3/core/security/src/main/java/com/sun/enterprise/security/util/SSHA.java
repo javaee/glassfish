@@ -36,7 +36,6 @@
 
 package com.sun.enterprise.security.util;
 
-import java.lang.*;
 import java.io.*;
 import java.util.*;
 import java.security.*;

@@ -36,7 +36,6 @@
 
 package com.sun.enterprise.security.jmac.config;
 
-import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.security.Principal; 
 import java.security.PrivilegedAction; 

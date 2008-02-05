@@ -36,7 +36,6 @@
 package com.sun.enterprise.security;
 
 import java.security.Permission;
-import com.sun.enterprise.security.PermissionCache;
 
 /**
  * This class is 

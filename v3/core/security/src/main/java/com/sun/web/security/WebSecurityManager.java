@@ -42,7 +42,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.Collections;
-import java.lang.*;
 import java.net.URL;
 
 import javax.servlet.http.HttpServletRequest;
@@ -52,7 +51,6 @@ import java.util.logging.*;
 import java.util.HashMap;
 import java.util.Map;
 import com.sun.logging.LogDomains;
-import com.sun.web.security.WebPermissionUtil;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.security.AppservAccessController;
 import com.sun.enterprise.security.authorize.*;

@@ -35,7 +35,6 @@
  */
 package com.sun.enterprise.security;
 
-import java.lang.*;
 import java.security.*;
 import java.lang.reflect.*;
 

@@ -39,7 +39,6 @@ import java.net.SocketPermission;
 import java.util.PropertyPermission;
 import com.sun.enterprise.security.CachedPermissionImpl;
 import com.sun.enterprise.security.PermissionCache;
-import com.sun.enterprise.security.PermissionCacheFactory;
 
 import java.util.*;
 // IASRI 4660742 START
@@ -98,22 +97,26 @@ public class J2EESecurityManager extends java.rmi.RMISecurityManager {
     }
 */
 
+    @Override
    public void checkAccess(ThreadGroup t) {
        super.checkAccess(t);
        checkPermission(new java.lang.RuntimePermission("modifyThreadGroup"));
    }
     
+    @Override
     public void checkPackageAccess(final String pkgname) {
 	// Remove this once 1.2.2 SecurityManager/ClassLoader bug is fixed.
 	if(!pkgname.startsWith("sun."))
 	    super.checkPackageAccess(pkgname);
     }
 
+    @Override
     public void checkExit(int status) {
         // Verify exit permission
         super.checkExit(status);
     }
 
+    @Override
     public void checkConnect(String host, int port) {
 	if (checkConnectPermission()) {
 	    return;
@@ -121,6 +124,7 @@ public class J2EESecurityManager extends java.rmi.RMISecurityManager {
 	super.checkConnect(host, port);
     }
 
+    @Override
     public void checkConnect(String host, int port, Object context) {
 	if (checkConnectPermission()) {
 	    return;
@@ -128,6 +132,7 @@ public class J2EESecurityManager extends java.rmi.RMISecurityManager {
 	super.checkConnect(host, port, context);
     }
 
+    @Override
     public void checkPropertyAccess(String key) {
 	if (checkProperty(key)) {
 	    return;

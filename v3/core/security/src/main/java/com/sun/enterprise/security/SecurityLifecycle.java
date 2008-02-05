@@ -48,8 +48,6 @@ import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.PreDestroy;
 
 import com.sun.enterprise.J2EESecurityManager;
-import com.sun.enterprise.security.PolicyLoader;
-import com.sun.enterprise.security.RealmConfig;
 import com.sun.enterprise.security.authorize.PolicyContextHandlerImpl;
 import com.sun.enterprise.security.audit.AuditManagerFactory;
 import com.sun.enterprise.security.jmac.config.GFAuthConfigFactory;

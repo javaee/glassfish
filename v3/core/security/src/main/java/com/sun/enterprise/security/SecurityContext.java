@@ -35,8 +35,6 @@
  */
 package com.sun.enterprise.security;
 
-import java.lang.System;
-import java.lang.SecurityManager;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 

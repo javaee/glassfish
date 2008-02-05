@@ -39,7 +39,6 @@ import java.security.PrivilegedAction;
 
 import com.sun.enterprise.security.auth.login.ClientPasswordLoginModule;
 import com.sun.enterprise.security.auth.LoginContextDriver;
-import com.sun.enterprise.util.LocalStringManagerImpl;
 import java.util.logging.*;
 import com.sun.logging.*;
 

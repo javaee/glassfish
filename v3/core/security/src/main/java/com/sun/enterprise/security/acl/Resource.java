@@ -35,8 +35,6 @@
  */
 package com.sun.enterprise.security.acl;
 
-import java.security.Principal;
-
 /**
  * Abstract resource ..
  * @author Harish Prabandham

@@ -37,8 +37,6 @@ package com.sun.enterprise.security.ssl;
 
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 import java.security.Principal;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;

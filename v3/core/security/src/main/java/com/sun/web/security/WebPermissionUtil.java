@@ -36,7 +36,6 @@
 
 package com.sun.web.security;
 
-import java.io.File;
 import java.util.*;
 import javax.security.jacc.PolicyConfiguration;
 import javax.security.jacc.WebResourcePermission;

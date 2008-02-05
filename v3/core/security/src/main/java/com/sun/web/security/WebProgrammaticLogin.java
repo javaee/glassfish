@@ -50,8 +50,6 @@ import org.apache.catalina.Session;
 import org.apache.catalina.Context;
 import org.apache.catalina.Manager;
 
-import com.sun.web.security.WebPrincipal;
-
 import com.sun.logging.LogDomains;
 
 import com.sun.enterprise.security.auth.LoginContextDriver;

@@ -35,7 +35,6 @@
  */
 package com.sun.enterprise.security;
 
-import java.security.AccessControlContext;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.security.PrivilegedActionException;
