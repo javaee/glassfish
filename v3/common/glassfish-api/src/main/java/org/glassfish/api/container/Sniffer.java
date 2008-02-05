@@ -31,6 +31,8 @@ import java.io.IOException;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
+import com.sun.enterprise.module.Module;
+
 /**
  * A sniffer implementation is responsible for identifying a particular
  * application type and/or a particular file type.
@@ -65,7 +67,7 @@ public interface Sniffer {
      */
     public String getModuleType();
 
-   /**
+   /**                                          
      * Sets up the container libraries so that any imported bundle from the
      * connector jar file will now be known to the module subsystem
      * @param containerHome is where the container implementation resides

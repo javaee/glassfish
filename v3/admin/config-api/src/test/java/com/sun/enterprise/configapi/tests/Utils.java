@@ -104,6 +104,7 @@ public class Utils {
                         URL url = getClass().getClassLoader().getResource(fileName + ".xml");
                         if (url!=null) {
                             DomDocument document = parser.parse(url, new GlassFishDocument(habitat));
+                            habitat.addComponent("document", document);
                             Logger.getAnonymousLogger().fine("time to parse domain.xml : " + String.valueOf(System.currentTimeMillis() - now));
                         }
                     }

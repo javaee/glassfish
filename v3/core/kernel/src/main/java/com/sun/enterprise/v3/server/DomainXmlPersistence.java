@@ -33,48 +33,66 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.config.support;
+package com.sun.enterprise.v3.server;
 
-import org.jvnet.hk2.config.*;
-import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.config.DomDocument;
+import org.jvnet.hk2.component.Singleton;
+import org.glassfish.config.support.ConfigurationPersistence;
 
-import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamWriter;
 import javax.xml.stream.XMLStreamException;
-import java.beans.PropertyChangeEvent;
-import java.util.List;
 import java.io.IOException;
+import java.io.File;
+import java.io.BufferedOutputStream;
+import java.io.FileOutputStream;
 
 /**
- * plug our Dom implementation
+ * domain.xml persistence.
  *
  * @author Jerome Dochez
- * 
  */
-public class GlassFishDocument extends DomDocument {
+//@Service
+//@Scoped(Singleton.class)
+public class DomainXmlPersistence implements ConfigurationPersistence {
 
-    public GlassFishDocument(Habitat habitat) {
-        super(habitat);
-    }
+    @Inject
+    V3Environment env;
+    
+    public synchronized void save(DomDocument doc) throws IOException {
 
-    public Dom make(final Habitat habitat, XMLStreamReader xmlStreamReader, Dom dom, ConfigModel configModel) {
-
-        // hook up transactions for now
-        final DomDocument doc = this;
-        Transactions.get().addTransactionsListener(new TransactionListener() {
-            public void transactionCommited(List<PropertyChangeEvent> changes) {
-                for (ConfigurationPersistence pers : habitat.getAllByContract(ConfigurationPersistence.class)) {
-                    try {
-                        pers.save(doc);
-                    } catch (IOException e) {
-                        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                    } catch (XMLStreamException e) {
-                        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                    }
+        // get a temporary file
+        File f = File.createTempFile("domain", ".xml");
+        if (f==null) {
+            throw new IOException("Cannot create temporary file when saving domain.xml");    
+        }
+        // write to the temporary file
+        XMLOutputFactory xmlFactory = XMLOutputFactory.newInstance();
+        XMLStreamWriter writer = null;
+        try {
+            writer = xmlFactory.createXMLStreamWriter(new BufferedOutputStream(new FileOutputStream(f)));
+            doc.writeTo(writer);
+        } catch (XMLStreamException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        } finally {
+            if (writer!=null) {
+                try {
+                    writer.close();
+                } catch (XMLStreamException e) {
+                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                 }
             }
-        });
-
-        // by default, people get the translated view.
-        return new GlassFishConfigBean(habitat,this, dom, configModel, xmlStreamReader);
+        }
+        
+        // backup the current file
+        File destination = new File(env.getConfigDirPath(), "domain.xml");
+        File backup = new File(env.getConfigDirPath(), "domain.bak");
+        destination.renameTo(backup);
+        // save the temp file to domain.xml
+        f.renameTo(destination);
     }
+
 }

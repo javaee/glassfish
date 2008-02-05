@@ -29,6 +29,7 @@ import com.sun.enterprise.module.Module;
 import com.sun.enterprise.module.ResolveError;
 import com.sun.enterprise.module.ModuleDefinition;
 import com.sun.enterprise.module.impl.ModuleImpl;
+import com.sun.enterprise.module.impl.ClassLoaderProxy;
 import com.sun.enterprise.v3.data.*;
 import com.sun.enterprise.v3.deployment.DeployCommand;
 import com.sun.enterprise.v3.deployment.DeploymentContextImpl;
@@ -54,6 +55,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.net.URL;
 
 /**
  * Application Loader is providing utitily methods to load applications
@@ -165,12 +167,11 @@ abstract public class ApplicationLifecycle {
         // This will allow any class loadable by the sniffer (therefore visible to the sniffer
         // class loader) to be also loadable by the archive's class loader.
         List<ModuleDefinition> snifferDefs = new ArrayList<ModuleDefinition>();
+        ClassLoaderProxy cl = new ClassLoaderProxy(new URL[0], parent);
         for (Sniffer sniffer : sniffers) {
-            // TODO (Sahoo): Stop using ModuleImpl
-            Module module = ModuleImpl.find(sniffer.getClass());
-            snifferDefs.add(module.getModuleDefinition());
+            cl.addDelegate(sniffer.getClass().getClassLoader());
         }
-        return modulesRegistry.getModulesClassLoader(parent, snifferDefs);
+        return cl;
         
     }
 
@@ -263,9 +264,7 @@ abstract public class ApplicationLifecycle {
 
             ClassLoader currentCL = Thread.currentThread().getContextClassLoader();
             try {
-                // TODO (Sahoo): Stop using ModuleImpl
-                Module connectorModule = ModuleImpl.find(containerInfo.getContainer().getClass());
-                Thread.currentThread().setContextClassLoader(connectorModule.getClassLoader());
+                Thread.currentThread().setContextClassLoader(containerInfo.getContainer().getClass().getClassLoader());
                 try {
                     preparedDeployers.add(deployer);
                     deployer.prepare(context);
@@ -289,9 +288,7 @@ abstract public class ApplicationLifecycle {
 
             ClassLoader currentCL = Thread.currentThread().getContextClassLoader();
             try {
-                // TODO (Sahoo): Stop using ModuleImpl
-                Module connectorModule = ModuleImpl.find(containerInfo.getContainer().getClass());
-                Thread.currentThread().setContextClassLoader(connectorModule.getClassLoader());
+                Thread.currentThread().setContextClassLoader(containerInfo.getContainer().getClass().getClassLoader());
                 try {
                     ApplicationContainer appCtr = deployer.load(containerInfo.getContainer(), context);
                     if (appCtr==null) {

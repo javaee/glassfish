@@ -7,6 +7,7 @@ import org.glassfish.api.ActionReport.ExitCode;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.Inject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -21,13 +22,15 @@ import java.io.PrintStream;
  */
 @Service(name="dump-hk2")
 public class DumpHK2Command implements AdminCommand {
+
+    @Inject
+    ModulesRegistry modulesRegistry;
+    
     public void execute(AdminCommandContext context) {
-        // TODO (Sahoo): Stop using ModulesRegistryImpl
-        ModulesRegistry r = ModulesRegistryImpl.find(getClass());
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-        r.dumpState(new PrintStream(baos));
+        modulesRegistry.dumpState(new PrintStream(baos));
 
         ActionReport report = context.getActionReport();
         report.setActionExitCode(ExitCode.SUCCESS);

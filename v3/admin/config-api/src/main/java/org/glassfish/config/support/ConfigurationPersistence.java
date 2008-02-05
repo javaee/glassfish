@@ -35,61 +35,19 @@
  */
 package org.glassfish.config.support;
 
-import org.jvnet.hk2.config.ConfigView;
-import org.jvnet.hk2.config.ConfigBeanProxy;
+import org.jvnet.hk2.annotations.Contract;
+import org.jvnet.hk2.config.DomDocument;
 
-import java.util.regex.Pattern;
-import java.util.regex.Matcher;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
+import javax.xml.stream.XMLStreamException;
+import java.io.IOException;
 
 /**
- * View that translate configured attributes containing properties like ${foo.bar}
- * into system properties values.
+ * Contract defining services capable to persist the configuration.
  *
  * @author Jerome Dochez
  */
-public class TranslatedConfigView implements ConfigView {
+@Contract
+public interface ConfigurationPersistence {
 
-    final static Pattern p = Pattern.compile("([^\\$]*)\\$\\{([^\\}]*)\\}([^\\$]*)");
-
-    public static Object getTranslatedValue(Object value) {
-        if (value!=null && value instanceof String) {
-            String stringValue = value.toString();
-            Matcher m = p.matcher(stringValue);
-            while (m.find()) {
-                stringValue = m.replaceFirst( m.group(1)+System.getProperty(m.group(2).trim())+m.group(3));
-                m.reset(stringValue);
-            }
-            return stringValue;
-        }
-        return value;
-    }
-
-    final ConfigView masterView;
-
-    TranslatedConfigView(ConfigView master) {
-        this.masterView = master;
-    }
-
-    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        return getTranslatedValue(masterView.invoke(proxy, method, args));
-    }
-
-    public ConfigView getMasterView() {
-        return masterView;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    public void setMasterView(ConfigView view) {
-        // immutable implementation
-    }
-
-    public <T extends ConfigBeanProxy> Class<T> getProxyType() {
-        return masterView.getProxyType();
-    }
-
-    public <T extends ConfigBeanProxy> T getProxy(Class<T> proxyType) {
-        return proxyType.cast(Proxy.newProxyInstance(getClass().getClassLoader(), new Class[]{proxyType},
-                 this));
-    }
+    public void save(DomDocument doc) throws IOException, XMLStreamException;
 }
