@@ -79,10 +79,15 @@
         <site>
             <url>file:../www/</url>
         </site>
-        <repository>
+        <!--repository>
             <uniqueVersion>false</uniqueVersion>
             <id>glassfish-repository</id>
             <url>sftp://trx2.sun.com:/export/nfs/dlc/maven/glassfish</url>
+        </repository-->
+        <repository>
+            <uniqueVersion>false</uniqueVersion>
+            <id>glassfish-repository-wsinterop</id>
+            <url>scp://wsinterop.sun.com:/home/hudson/maven/mirrors/glassfish</url>
         </repository>
     </distributionManagement>
     <repositories>
@@ -136,7 +141,7 @@
         <module>core</module>
         <module>config</module>
         <module>config-generator</module>
-        <module>toy-http-server</module>
+        <!--module>toy-http-server</module-->
         <module>hk2</module>
         <module>hk2-maven</module>
         <module>hk2-maven-plugin</module>
