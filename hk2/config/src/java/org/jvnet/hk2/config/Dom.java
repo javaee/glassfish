@@ -595,6 +595,13 @@ public class Dom extends LazyInhabitant implements InvocationHandler, Observable
         return proxyType.cast(Proxy.newProxyInstance(proxyType.getClassLoader(),new Class[]{proxyType},this));
     }
 
+    /**
+     * Creates a strongly-typed proxy to access values in this {@link Dom} object,
+     */
+    public <T extends ConfigBeanProxy> T createProxy() {
+        return createProxy(this.<T>getProxyType());
+    }
+
     public <T extends ConfigBeanProxy> Class<T> getProxyType() {
         try {
             return (Class<T>) model.classLoaderHolder.get().loadClass(model.targetTypeName);
