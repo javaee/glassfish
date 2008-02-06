@@ -77,9 +77,14 @@
     <distributionManagement>
         <repository>
             <!-- the ID maps to ~/.m2/settings.xml, so don't change the ID -->
+            <!-- switching to back up while the main server is down 
             <id>glassfish-repository</id>
             <uniqueVersion>false</uniqueVersion>
-            <url>sftp://trx2.sun.com:/export/nfs/dlc/maven/glassfish</url>
+            <url>sftp://trx2.sun.com:/export/nfs/dlc/maven/glassfish</url-->
+            
+            <id>glassfish-repository-wsinterop</id>
+            <uniqueVersion>false</uniqueVersion>
+            <url>scp://wsinterop.sun.com:/home/hudson/maven/mirrors/glassfish</url>
         </repository>
     </distributionManagement>
     <scm>
