@@ -32,9 +32,21 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation to define a required resource for a componnent. 
- * Runtime will inject all instance variable annotated with 
- * @Requires as well as setter methods. 
+ * Annotation to define a required resource for a component. 
+ * The HK2 runtime injects all instance variables annotated with 
+ * @Inject as well as setter methods.
+ <p>
+ * Examples:<br>
+<pre>
+        @Inject("GlassfishMBeanServer")
+        MBeanServer mbeanserver;
+        
+        @Inject  // unnamed
+        MBeanServer mbeanserver;
+</pre>
+ *
+ * @see org.jvnet.hk2.annotations.Extract
+ * @see org.jvnet.hk2.component.Habitat
  *
  * @author Jerome Dochez
  */
@@ -42,14 +54,15 @@ import java.lang.annotation.Target;
 @Target({METHOD,FIELD})
 public @interface Inject {
     /**
-     * Returns name of the required resource
-     * @return name of the required resource
+     * Returns the name.
+     * @return name of the resource
      */
     public String name() default "";
 
     /**
-     * Indicates that it's not an error even if a component
-     * to be injected doesn't exist.
+     * When true, it is not an error if not present.
+     * When false, a failure occurs when not present.
+     @return true if optional, false otherwise
      */
     public boolean optional() default false;
 }
