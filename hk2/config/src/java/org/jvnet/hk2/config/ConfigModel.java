@@ -15,6 +15,7 @@ import javax.management.MBeanOperationInfo;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Proxy;
 import java.lang.reflect.Type;
+import java.lang.reflect.InvocationHandler;
 import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -214,6 +215,20 @@ public final class ConfigModel {
                 return new AbstractList<Object>() {
                     public Object get(int index) {
                         return v.get(index).createProxy(itemType);
+                    }
+
+                    private Dom unwrap(ConfigBeanProxy proxy) {
+                        InvocationHandler ih = Proxy.getInvocationHandler(proxy);
+                        if(ih==null)    throw new IllegalArgumentException();
+                        return (Dom)ih;
+                    }
+
+                    public void add(int index, Object element) {
+                        v.add(index,unwrap((ConfigBeanProxy)element));
+                    }
+
+                    public Object set(int index, Object element) {
+                        return v.set(index,unwrap((ConfigBeanProxy)element)).createProxy(itemType);
                     }
 
                     public int size() {
