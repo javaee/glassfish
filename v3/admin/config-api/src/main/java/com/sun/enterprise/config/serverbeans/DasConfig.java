@@ -179,6 +179,23 @@ public interface DasConfig extends ConfigBeanProxy, Injectable  {
     public void setAutodeployJspPrecompilationEnabled(String value) throws PropertyVetoException;
 
     /**
+     * Gets the value of the autodeployJspPrecompilationEnabled property.
+     *
+     * @return possible object is
+     *         {@link String }
+     */
+    @Attribute
+    public String getAutodeployRetryTimeout();
+
+    /**
+     * Sets the value of the autodeployJspPrecompilationEnabled property.
+     *
+     * @param value allowed object is
+     *              {@link String }
+     */
+    public void setAutodeployRetryTimeout(String value) throws PropertyVetoException;
+
+    /**
      * Gets the value of the deployXmlValidation property.
      *
      * @return possible object is
