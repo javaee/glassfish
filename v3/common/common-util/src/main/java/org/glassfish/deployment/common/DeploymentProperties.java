@@ -335,7 +335,14 @@ public class DeploymentProperties extends Properties {
     public void setExternallyManaged(boolean isExternallyManaged) {
         setProperty(EXTERNALLY_MANAGED, Boolean.toString(isExternallyManaged));
     }
-                                                                                
+              
+    public void setPath(String path) {
+        setProperty(PATH, path);
+    }
+    
+    public String getPath() {
+        return getProperty(PATH);
+    }
     public boolean getExternallyManaged() {
         return Boolean.valueOf(getProperty(EXTERNALLY_MANAGED, DEFAULT_EXTERNALLY_MANAGED)).booleanValue();
     }
@@ -456,6 +463,7 @@ public class DeploymentProperties extends Properties {
     public static final String CLIENTJARREQUESTED = "clientJarRequested";
     public static final String UPLOAD = "upload";
     public static final String EXTERNALLY_MANAGED = "externallyManaged";
+    public static final String PATH = "path";
     
     ////////////////////////////////////////////////
     // list of properties from server to client
