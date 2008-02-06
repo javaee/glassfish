@@ -214,7 +214,7 @@ public final class ConfigModel {
                 // return a live list
                 return new AbstractList<Object>() {
                     public Object get(int index) {
-                        return v.get(index).createProxy(itemType);
+                        return v.get(index).createProxy();
                     }
 
                     private Dom unwrap(ConfigBeanProxy proxy) {
@@ -233,7 +233,7 @@ public final class ConfigModel {
                     public Object set(int index, Object element) {
                         Dom child = unwrap((ConfigBeanProxy) element);
                         dom.replaceChild( v.get(index), xmlName, child );
-                        return v.set(index,child).createProxy(itemType);
+                        return v.set(index,child).createProxy();
                     }
 
                     public int size() {
@@ -287,7 +287,7 @@ public final class ConfigModel {
 
             Class rt = Types.erasure(returnType);
             if(ConfigBeanProxy.class.isAssignableFrom(rt))
-                return v.createProxy(rt);
+                return v.createProxy();
 
             throw new IllegalArgumentException("Invalid type "+returnType+" for "+xmlName);
         }
