@@ -16,6 +16,7 @@
 
     <modules>
         <module>core</module>
+        <module>war</module>
         <module>jdbc</module>
     </modules>
 
