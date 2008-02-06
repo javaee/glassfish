@@ -25,17 +25,30 @@ package org.jvnet.hk2.annotations;
 
 import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.ElementType.METHOD;
-import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
-import java.lang.annotation.ElementType;
+
 import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 
 /**
- * Annotation marks instances of object which are labeled as 
- * exported by a component.
+ * Marks  variables to be exported into the
+ * {@link org.jvnet.hk2.component.Habitat}.
+ * <p>Care should be taken to use a name that is meangingful (self-documenting) as well as
+ * one unlikely to conflict with names used by other components.  Extracted fields that are not
+ * named are essentially globals, intended for use by "singleton" services.
+ * <p>
+ * Example:<br>
+<pre>
+        @Extract(name="GlassfishMBeanServer")
+        final MBeanServer mbeanServer;
+        
+        @Extract
+        final MBeanServer mbeanServer;
+</pre>
+ *
+ * @see org.jvnet.hk2.annotations.Inject
+ * @see org.jvnet.hk2.component.Habitat
  *
  * @author Jerome Dochez
  */
@@ -44,8 +57,8 @@ import java.lang.annotation.Target;
 public @interface Extract {
 
     /**
-     * Returns namme of the provided resource
-     * @return name of the provided resource
+     * Returns the name.
+     * @return name of the resource
      */
     public String name() default "";
 }
