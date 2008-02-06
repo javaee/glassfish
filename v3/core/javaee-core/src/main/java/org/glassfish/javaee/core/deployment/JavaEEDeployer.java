@@ -93,8 +93,7 @@ public abstract class JavaEEDeployer<T extends Container, U extends ApplicationC
 
     /**
      * Prepares the application bits for running in the application server.
-     * For certain cases, this is exploding the jar file to a format the
-     * ContractProvider instance is expecting, generating non portable 
+     * For certain cases, this is generating non portable 
      * artifacts and other application specific tasks.
      * Failure to prepare should throw an exception which will cause the overall
      * deployment to fail.
@@ -139,15 +138,17 @@ public abstract class JavaEEDeployer<T extends Container, U extends ApplicationC
 
         if (application!=null) {
             archivist.validate(cl);
-            dc.addModuleMetaData(getModuleType(), application);
+            dc.addModuleMetaData(application);
         }
         return application;
     }
 
-    protected void generateArtifacts(DeploymentContext dc) {
+    protected void generateArtifacts(DeploymentContext dc) 
+        throws IASDeploymentException {
     }
 
-    protected void createClientJar(DeploymentContext dc) {
+    protected void createClientJar(DeploymentContext dc)
+        throws IASDeploymentException {
     }
 
     protected final void createClientJar(DeploymentContext dc, 
@@ -158,10 +159,10 @@ public abstract class JavaEEDeployer<T extends Container, U extends ApplicationC
             props.getProperty(DeploymentProperties.CLIENTJARREQUESTED);
 
         // destination file for the client jar file
-        File appDirectory = dc.getScratchDir();
+        File appDirectory = dc.getScratchDir("xml");
 
         // upgrade scenario
-        if (!FileUtils.safeIsDirectory(dc.getScratchDir())) {
+        if (!FileUtils.safeIsDirectory(dc.getScratchDir("xml"))) {
             appDirectory = dc.getSourceDir(); 
         }
 

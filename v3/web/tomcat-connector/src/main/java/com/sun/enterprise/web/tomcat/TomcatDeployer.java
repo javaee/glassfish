@@ -109,7 +109,7 @@ public class TomcatDeployer extends JavaEEDeployer<TomcatContainer, TomcatApplic
     public TomcatApplication load(TomcatContainer container, DeploymentContext dc) {
 
         WebBundleDescriptor wbd = (WebBundleDescriptor)dc.getModuleMetaData(
-            getModuleType(), Application.class).getStandaloneBundleDescriptor();
+            Application.class).getStandaloneBundleDescriptor();
 
         ReadableArchive source = dc.getSource();
 

@@ -69,12 +69,15 @@ public interface DeploymentContext extends ExecutionContext {
 
     /**
      * Returns a scratch directory that can be used to store things in.
-     * The scratch directory will be persisted accross server restart but not accross
-     * redeployment of the same application
+     * The scratch directory will be persisted accross server restart but not 
+     * accross redeployment of the same application
      *
-     * @return the scratch directory for this application.
+     * @param subDirName the sub directory name of the scratch dir
+     * @return the specific scratch subdirectory for this application based on 
+     *         passed in subDirName. Returns the root scratch dir if the 
+     *         passed in value is null.      
      */
-    public File getScratchDir();
+    public File getScratchDir(String subDirName);
     
     /**
      * Returns the directory where the original applications bits should be 
@@ -91,19 +94,17 @@ public interface DeploymentContext extends ExecutionContext {
      * mean that any modification to it will not be available at the next
      * server restart and will need to be reset.
      *
-     * @param moduleType type of container to used a key to the metadata
      * @param metaData the meta data itself
      */
-    public void addModuleMetaData(String moduleType, Object metaData);
+    public void addModuleMetaData(Object metaData);
 
     /**
      * Returns the meta data associated with a module type.
      *
-     * @param moduleType name of the container which created that module type
      * @param metadataType type of the meta date.
      * @return
      */
-    public <T> T getModuleMetaData(String moduleType, Class<T> metadataType);
+    public <T> T getModuleMetaData(Class<T> metadataType);
 
     /**
      * Returns the properties that will be persisted as a key value pair at

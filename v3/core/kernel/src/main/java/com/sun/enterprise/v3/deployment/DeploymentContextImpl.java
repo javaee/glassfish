@@ -98,14 +98,22 @@ public class DeploymentContextImpl implements DeploymentContext {
 
     /**
      * Returns a scratch directory that can be used to store things in.
-     * The scratch directory will be persisted accross server restart but not accross
-     * redeployment of the same application
+     * The scratch directory will be persisted accross server restart but 
+     * not accross redeployment of the same application
      *
-     * @return the scratch directory for this application.
+     * @param subDirName the sub directory name of the scratch dir
+     * @return the scratch directory for this application based on
+     *         passed in subDirName. Returns the root scratch dir if the
+     *         passed in value is null.
      */
-    public File getScratchDir() {
+    public File getScratchDir(String subDirName) {
         final String appName = parameters.getProperty(DeployCommand.NAME);
-        return new File(env.getApplicationStubPath(), appName);
+        File rootScratchDir  = new File(env.getApplicationStubPath(), appName);
+        if (subDirName == null ) {
+            return rootScratchDir;
+        } else {
+            return new File(rootScratchDir, subDirName);
+        }   
     }
 
     /**
@@ -122,12 +130,12 @@ public class DeploymentContextImpl implements DeploymentContext {
 
     }
 
-    public void addModuleMetaData(String moduleType, Object metaData) {
-        modulesMetaData.put(moduleType, metaData);
+    public void addModuleMetaData(Object metaData) {
+        modulesMetaData.put(metaData.getClass().getName(), metaData);
     }
 
-    public <T> T getModuleMetaData(String moduleType, Class<T> metadataType) {
-        Object moduleMetaData = modulesMetaData.get(moduleType);
+    public <T> T getModuleMetaData(Class<T> metadataType) {
+        Object moduleMetaData = modulesMetaData.get(metadataType.getName());
         if (moduleMetaData != null) {
             return metadataType.cast(moduleMetaData); 
         } else {

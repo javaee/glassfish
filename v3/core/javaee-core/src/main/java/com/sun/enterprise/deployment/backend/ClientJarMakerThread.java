@@ -130,7 +130,7 @@ public class ClientJarMakerThread extends Thread {
             
             RootDeploymentDescriptor descriptor;
 
-            Application app = dc.getModuleMetaData("app", Application.class);
+            Application app = dc.getModuleMetaData(Application.class);
  
             if (app.isVirtual()) {
                 descriptor = app.getStandaloneBundleDescriptor();
@@ -150,9 +150,9 @@ public class ClientJarMakerThread extends Thread {
             // copy xml files from generated directory archive to original 
             // directory archive so the created client jar contain 
             // processed xml files.
-            if (FileUtils.safeIsDirectory(dc.getScratchDir())) {
+            if (FileUtils.safeIsDirectory(dc.getScratchDir("xml"))) {
                 ReadableArchive source2 = archiveFactory.openArchive(
-                    dc.getScratchDir());
+                    dc.getScratchDir("xml"));
                 jarMaker.create(descriptor, source, source2, target, 
                     clientStubs, null);
                 source2.close();
@@ -198,7 +198,7 @@ public class ClientJarMakerThread extends Thread {
         (DeploymentContext dc, RootDeploymentDescriptor descriptor) {
 
         // create appclient format for standalone appclient module
-        if (dc.getModuleMetaData("app", Application.class).isVirtual()) {
+        if (dc.getModuleMetaData(Application.class).isVirtual()) {
             return true;
         }
 

@@ -162,7 +162,7 @@ public class WebDeployer extends JavaEEDeployer<WebContainer, WebApplication>{
             wmInfo = new WebModuleConfig();
             
             WebBundleDescriptor wbd = (WebBundleDescriptor)dc.getModuleMetaData(
-                getModuleType(), Application.class).getStandaloneBundleDescriptor();
+                Application.class).getStandaloneBundleDescriptor();
         
             final String contextRoot = wbd.getContextRoot();
             final String name = wbd.getName();
