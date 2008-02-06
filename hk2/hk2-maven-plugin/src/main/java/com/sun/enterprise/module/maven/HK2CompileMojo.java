@@ -16,6 +16,9 @@ import java.util.Collections;
 import java.util.List;
 
 /**
+ * Replacement of the default javac mojo that uses APT, so that we can not only
+ * compile source code but also generate HK2 related metadata at the same time.
+ *
  * @goal hk2-compile
  * @phase compile
  * @author Kohsuke Kawaguchi
