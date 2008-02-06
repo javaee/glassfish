@@ -35,19 +35,20 @@
 * only if the new code is made subject to such option by the copyright 
 * holder. 
 */ 
---> 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-		<groupId>org.glassfish.webservices</groupId>
-    	<artifactId>webservices</artifactId>
+        <groupId>org.glassfish.webservices</groupId>
+        <artifactId>webservices</artifactId>
         <version>10.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>jsr109-impl</artifactId>
     <packaging>hk2-jar</packaging>
     <name>JSR-109 implementation to deploy Metro</name>
-    
+
     <developers>
         <developer>
             <id>bhaktimehta</id>
@@ -55,15 +56,46 @@
             <organization>Sun Microsystems, Inc.</organization>
             <roles>
                 <role>developer</role>
-				<role>lead</role>
+                <role>lead</role>
             </roles>
         </developer>
-    </developers>    
+    </developers>
     <dependencies>
         <dependency>
             <groupId>org.glassfish.core</groupId>
             <artifactId>kernel</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.glassfish.common</groupId>
+            <artifactId>dol</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.common</groupId>
+            <artifactId>common-util</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.common</groupId>
+            <artifactId>glassfish-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+           <groupId>org.glassfish.core</groupId>
+            <artifactId>javaee-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+           <groupId>org.glassfish.web</groupId>
+            <artifactId>webtier</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+         <dependency>
+           <groupId>org.glassfish.web</groupId>
+            <artifactId>web</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        
     </dependencies>
 </project>
