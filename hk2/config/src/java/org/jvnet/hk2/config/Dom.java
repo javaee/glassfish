@@ -260,6 +260,59 @@ public class Dom extends LazyInhabitant implements InvocationHandler, Observable
     }
 
     /**
+     * Inserts a new {@link Dom} node right after the given DOM element.
+     *
+     * @param reference
+     *      If null, the new element will be inserted at the very beginning.
+     * @param name
+     *      The element name of the newly inserted item. "*" to indicate that the element
+     *      name be determined by the model of the new node.
+     */
+    public synchronized void insertAfter(Dom reference, String name, Dom newNode) {
+        // TODO: reparent newNode
+        if(name.equals("*"))    name=newNode.model.tagName;
+        NodeChild newChild = new NodeChild(name, newNode);
+        
+        if(reference==null) {
+            children.add(0, newChild);
+            return;
+        }
+
+        ListIterator<Child> itr = children.listIterator();
+        while(itr.hasNext()) {
+            Child child = itr.next();
+            if (child instanceof NodeChild) {
+                NodeChild nc = (NodeChild) child;
+                if(nc.dom==reference) {
+                    itr.add(newChild);
+                    return;
+                }
+            }
+        }
+        throw new IllegalArgumentException(reference+" is not a valid child of "+this+". Children="+children);
+    }
+
+    /**
+     * Replaces an existing {@link NodeChild} with another one.
+     *
+     * @see #insertAfter(Dom, String, Dom)
+     */
+    public synchronized void replaceChild(Dom reference, String name, Dom newNode) {
+        ListIterator<Child> itr = children.listIterator();
+        while(itr.hasNext()) {
+            Child child = itr.next();
+            if (child instanceof NodeChild) {
+                NodeChild nc = (NodeChild) child;
+                if(nc.dom==reference) {
+                    itr.set(new NodeChild(name,newNode));
+                    return;
+                }
+            }
+        }
+        throw new IllegalArgumentException(reference+" is not a valid child of "+this+". Children="+children);
+    }
+
+    /**
      * Picks up one leaf-element value without variable expansion.
      */
     public String rawLeafElement(String name) {

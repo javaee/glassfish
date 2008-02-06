@@ -197,7 +197,7 @@ public final class ConfigModel {
             return true;
         }
 
-        public Object get(Dom dom, Type returnType) {
+        public Object get(final Dom dom, Type returnType) {
             // TODO: perhaps support more collection types?
 
 
@@ -224,11 +224,16 @@ public final class ConfigModel {
                     }
 
                     public void add(int index, Object element) {
-                        v.add(index,unwrap((ConfigBeanProxy)element));
+                        // update the master children list, as well as this view 'v'
+                        Dom child = unwrap((ConfigBeanProxy) element);
+                        dom.insertAfter( index==0 ? null : v.get(index-1), xmlName, child);
+                        v.add(index,child);
                     }
 
                     public Object set(int index, Object element) {
-                        return v.set(index,unwrap((ConfigBeanProxy)element)).createProxy(itemType);
+                        Dom child = unwrap((ConfigBeanProxy) element);
+                        dom.replaceChild( v.get(index), xmlName, child );
+                        return v.set(index,child).createProxy(itemType);
                     }
 
                     public int size() {
