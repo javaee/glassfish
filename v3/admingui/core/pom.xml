@@ -21,14 +21,23 @@
       <version>3.8.1</version>
       <scope>test</scope>
     </dependency>
-
     <dependency>
-		<groupId>com.sun.jsftemplating</groupId>
-		<artifactId>jsftemplating</artifactId>
-		<version>1.2-SNAPSHOT</version>
+	<groupId>com.sun.jsftemplating</groupId>
+	<artifactId>jsftemplating-dt</artifactId>
+	<version>1.2-SNAPSHOT</version>
     </dependency>
-
+    <dependency>
+	<groupId>com.sun.jsftemplating</groupId>
+	<artifactId>jsftemplating</artifactId>
+	<version>1.2-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+	<groupId>javax.faces</groupId>
+	<artifactId>jsf-api</artifactId>
+	<version>1.2_07</version>
+    </dependency>
   </dependencies>
+
   <build>
     <finalName>admingui</finalName>
   </build>
