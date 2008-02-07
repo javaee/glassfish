@@ -15,7 +15,6 @@ import javax.management.MBeanOperationInfo;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Proxy;
 import java.lang.reflect.Type;
-import java.lang.reflect.InvocationHandler;
 import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -217,21 +216,15 @@ public final class ConfigModel {
                         return v.get(index).createProxy();
                     }
 
-                    private Dom unwrap(ConfigBeanProxy proxy) {
-                        InvocationHandler ih = Proxy.getInvocationHandler(proxy);
-                        if(ih==null)    throw new IllegalArgumentException();
-                        return (Dom)ih;
-                    }
-
                     public void add(int index, Object element) {
                         // update the master children list, as well as this view 'v'
-                        Dom child = unwrap((ConfigBeanProxy) element);
+                        Dom child = Dom.unwrap((ConfigBeanProxy) element);
                         dom.insertAfter( index==0 ? null : v.get(index-1), xmlName, child);
                         v.add(index,child);
                     }
 
                     public Object set(int index, Object element) {
-                        Dom child = unwrap((ConfigBeanProxy) element);
+                        Dom child = Dom.unwrap((ConfigBeanProxy) element);
                         dom.replaceChild( v.get(index), xmlName, child );
                         return v.set(index,child).createProxy();
                     }
