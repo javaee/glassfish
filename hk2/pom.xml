@@ -86,8 +86,8 @@
         </repository-->
         <repository>
             <uniqueVersion>false</uniqueVersion>
-            <id>glassfish-repository-wsinterop</id>
-            <url>scp://wsinterop.sun.com:/home/hudson/maven/mirrors/glassfish</url>
+            <id>glassfish-repository-internal</id>
+            <url>scp://rator.sfbay/files/hudson/repositories/glassfish</url>
         </repository>
     </distributionManagement>
     <repositories>
