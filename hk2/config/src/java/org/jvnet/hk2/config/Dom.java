@@ -152,6 +152,13 @@ public class Dom extends LazyInhabitant implements InvocationHandler, Observable
     }
 
     /**
+     * Constructor for the case parent is known to be non-null.
+     */
+    public Dom(Habitat habitat, Dom parent, Class<? extends ConfigBeanProxy> proxyType) {
+        this(habitat, parent.document, parent, parent.document.buildModel(proxyType), null);
+    }
+
+    /**
      * Unwraps the proxy and returns the underlying {@link Dom} object.
      *
      * @return

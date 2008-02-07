@@ -85,15 +85,15 @@ public class Main extends Assert implements ModuleStartup {
         assertEquals(56,listener.acceptorThreads);
 
         {// test update
-            Dom dom = Dom.unwrap(jms);
-            DomDocument doc = dom.document;
-            Dom pointConfig = new Dom(habitat, doc, dom, doc.buildModel(PointConfig.class));
+            // TODO: we should have the add method in the config API 
+            Dom pointConfig = new Dom(habitat, Dom.unwrap(jms), PointConfig.class);
             pointConfig.attribute("x","100");
             pointConfig.attribute("y","-100");
             jms.getPoints().add((PointConfig)pointConfig.createProxy());
 
             try {
                 // dump for visual inspection
+                DomDocument doc = Dom.unwrap(jms).document;
                 doc.writeTo(new IndentingXMLStreamWriter(xof.createXMLStreamWriter(System.out)));
 
                 // make sure it's there
