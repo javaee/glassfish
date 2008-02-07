@@ -73,8 +73,7 @@ public class LocalSerialContextProviderImpl
     public void bind(String name, Object obj)
             throws NamingException, RemoteException {
 
-        Object copyOfObj = namingUtils.makeCopyOfObject(obj);
-        super.bind(name, copyOfObj);
+        super.bind(name, obj);
     }
 
 
@@ -89,8 +88,7 @@ public class LocalSerialContextProviderImpl
     public void rebind(String name, Object obj)
             throws NamingException, RemoteException {
 
-        Object copyOfObj = namingUtils.makeCopyOfObject(obj);
-        super.rebind(name, copyOfObj);
+        super.rebind(name, obj);
     }
 
     public Object lookup(String name)
@@ -111,7 +109,7 @@ public class LocalSerialContextProviderImpl
                 }
                 */
             }
-            return namingUtils.makeCopyOfObject(obj);
+            return obj;
         //} catch (RemoteException re) {
             //throw re;
         } catch (Exception e) {
