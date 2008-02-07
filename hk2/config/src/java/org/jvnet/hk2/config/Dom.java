@@ -147,6 +147,23 @@ public class Dom extends LazyInhabitant implements InvocationHandler, Observable
         assert parent==null || parent.document==document; // all the nodes in the tree must belong to the same document
     }
 
+    public Dom(Habitat habitat, DomDocument document, Dom parent, ConfigModel model) {
+        this(habitat, document, parent, model, null);
+    }
+
+    /**
+     * Unwraps the proxy and returns the underlying {@link Dom} object.
+     *
+     * @return
+     *      null if the given instance is not actually a proxy to a DOM.
+     */
+    public static Dom unwrap(ConfigBeanProxy proxy) {
+        InvocationHandler ih = Proxy.getInvocationHandler(proxy);
+        if (ih instanceof Dom)
+            return (Dom) ih;
+        return null;
+    }
+
     /**
      * Obtains the actual key value from this {@link Dom}.
      */
@@ -620,14 +637,15 @@ public class Dom extends LazyInhabitant implements InvocationHandler, Observable
      */
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         // serve java.lang.Object methods by ourselves
-        if(method.getDeclaringClass()==Object.class) {
+        Class<?> clazz = method.getDeclaringClass();
+        if(clazz ==Object.class) {
             try {
                 return method.invoke(this,args);
             } catch (InvocationTargetException e) {
                 throw e.getTargetException();
             }
         }
-        if (method.getDeclaringClass().getName().equals(Injectable.class.getName())) {
+        if (clazz==Injectable.class) {
             injectInto(this, args[0]);
             return null;
         }
