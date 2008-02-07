@@ -137,11 +137,7 @@ public class WebDeployer extends JavaEEDeployer<WebContainer, WebApplication>{
             // TO DO : this will need to be revisited to handle context root property
             Properties params = dc.getCommandParameters();
             if (params.getProperty(DeployCommand.CONTEXT_ROOT)!=null) {
-                if (params.getProperty(DeployCommand.CONTEXT_ROOT).startsWith("/")) {
-                    wbd.setContextRoot(params.getProperty(DeployCommand.CONTEXT_ROOT));
-                } else {
-                    wbd.setContextRoot("/" + params.getProperty(DeployCommand.CONTEXT_ROOT));   
-                }
+                wbd.setContextRoot("/" + params.getProperty(DeployCommand.CONTEXT_ROOT));   
             } else {
                 if (wbd.getContextRoot()==null || wbd.getContextRoot().length()==0) {
                    wbd.setContextRoot("/" + params.getProperty(DeployCommand.NAME)); 
