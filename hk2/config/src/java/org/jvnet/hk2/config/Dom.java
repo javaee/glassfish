@@ -127,7 +127,7 @@ public class Dom extends LazyInhabitant implements InvocationHandler, Observable
     /**
      * Owner of the DOM tree.
      */
-    protected final DomDocument document;
+    public final DomDocument document;
 
     /**
      * @param in
