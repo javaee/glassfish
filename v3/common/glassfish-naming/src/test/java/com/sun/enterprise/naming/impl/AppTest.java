@@ -125,7 +125,7 @@ public class AppTest
         Object value;
 
         public Binding(String logicalName, Object value) {
-            this.logicalName = logicalName;
+            this.logicalName = "java:comp/env/" + logicalName;
             this.value = value;
         }
 
