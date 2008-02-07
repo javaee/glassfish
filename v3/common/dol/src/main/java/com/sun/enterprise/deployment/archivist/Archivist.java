@@ -1592,18 +1592,25 @@ public abstract class Archivist<T extends RootDeploymentDescriptor> {
         archive.close();
     }
 
-    public static void copyAnEntry(ReadableArchive in,
-                                   WritableArchive out, String entryName) throws IOException {
+    // only copy the entry if the destination archive does not have this entry
+    public void copyAnEntry(ReadableArchive in,
+                                   WritableArchive out, String entryName) 
+        throws IOException {
         InputStream is = null;
         InputStream is2 = null;
+        ReadableArchive in2 = archiveFactory.openArchive(out.getURI());
         try {
             is = in.getEntry(entryName);
-            OutputStream os = out.putNextEntry(entryName);
-            ArchivistUtils.copyWithoutClose(is, os);
+            is2 = in2.getEntry(entryName);
+            if (is != null && is2 == null) {
+                OutputStream os = out.putNextEntry(entryName);
+                ArchivistUtils.copyWithoutClose(is, os);
+            }
         } finally {
             /*
              *Close any streams that were opened.
              */
+            in2.close();
             if (is != null) {
                 is.close();
             }
@@ -1634,7 +1641,7 @@ public abstract class Archivist<T extends RootDeploymentDescriptor> {
     }
 
     // copy wsdl and mapping files etc 
-    public static void copyExtraElements(ReadableArchive in,
+    public void copyExtraElements(ReadableArchive in,
                                          WritableArchive out) throws IOException {
         Enumeration entries = in.entries();
         if (entries != null) {

@@ -139,7 +139,7 @@ class ClientJarMakerImpl implements ClientJarMaker {
         if (descriptor.isApplication()) {
             Application app = (Application) descriptor;
             for (ModuleDescriptor md : app.getModules()) {
-                Archivist moduleArchivist = archivistFactory.getPrivateArchivistFor(md.getModuleType());
+                Archivist moduleArchivist = archivistFactory.getArchivist(md.getModuleType());
                 
                 ReadableArchive subSource = source.getSubArchive(md.getArchiveUri());
                 ReadableArchive subSource2 = source2.getSubArchive(md.getArchiveUri());
@@ -230,7 +230,7 @@ class ClientJarMakerImpl implements ClientJarMaker {
         // standalone modules and .ear file level entries fall back here, we
         // just need to copy the original archive file elements at the root level
         // of the target application client container jar file.
-        Archivist archivist = archivistFactory.getPrivateArchivistFor(descriptor.getModuleType());
+        Archivist archivist = archivistFactory.getArchivist(descriptor.getModuleType());
 
         // because of the backend layout, the appclient jar file appears in the list of files
         // in the source archive (which is the exploded directory where we started writing

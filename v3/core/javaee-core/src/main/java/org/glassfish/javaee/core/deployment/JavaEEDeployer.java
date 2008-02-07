@@ -28,6 +28,7 @@ import org.glassfish.api.deployment.MetaData;
 import org.glassfish.api.deployment.Deployer;
 import org.glassfish.api.deployment.ApplicationContainer;
 import org.glassfish.api.deployment.archive.ReadableArchive;
+import org.glassfish.api.deployment.archive.WritableArchive;
 import org.glassfish.api.container.Container;
 import com.sun.enterprise.v3.server.V3Environment;
 import com.sun.enterprise.util.io.FileUtils;
@@ -38,6 +39,8 @@ import com.sun.enterprise.deployment.RootDeploymentDescriptor;
 import com.sun.enterprise.deployment.archivist.ApplicationFactory;
 import com.sun.enterprise.deployment.archivist.ArchivistFactory;
 import com.sun.enterprise.deployment.archivist.Archivist;
+import com.sun.enterprise.deployment.archivist.ApplicationArchivist;
+import com.sun.enterprise.deployment.archivist.DescriptorArchivist;
 import org.glassfish.deployment.common.DeploymentProperties;
 import com.sun.enterprise.deployment.backend.DeploymentImplConstants;
 import com.sun.enterprise.deployment.backend.ClientJarMakerThread;
@@ -48,6 +51,7 @@ import com.sun.enterprise.module.ModuleDefinition;
 import org.jvnet.hk2.annotations.Inject;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Properties;
 import java.util.List;
 import java.util.ArrayList;
@@ -70,6 +74,12 @@ public abstract class JavaEEDeployer<T extends Container, U extends ApplicationC
                                       
     @Inject
     protected ApplicationFactory applicationFactory;
+
+    @Inject
+    protected DescriptorArchivist descriptorArchivist;
+
+    @Inject
+    protected ApplicationArchivist applicationArchivist;
 
     @Inject
     protected ModulesRegistry modulesRegistry;
@@ -104,6 +114,7 @@ public abstract class JavaEEDeployer<T extends Container, U extends ApplicationC
      */
     public boolean prepare(DeploymentContext dc) {
         try {
+            prepareScratchDirs(dc);
             if (parseModuleMetaData(dc)==null) {
                 // hopefully the DOL gave a good message of the failure...
                 dc.getLogger().severe("Failed to load deployment descriptor, aborting");
@@ -200,6 +211,26 @@ public abstract class JavaEEDeployer<T extends Container, U extends ApplicationC
     public void clean(DeploymentContext context) {
     }
         
+    protected void saveAppDescriptor(DeploymentContext context) 
+        throws IOException {
+        Application application = 
+            context.getModuleMetaData(Application.class);
+        ReadableArchive archive = archiveFactory.openArchive(
+            context.getSourceDir());
+        WritableArchive archive2 = archiveFactory.createArchive(
+            context.getScratchDir("xml"));
+        descriptorArchivist.write(application, archive, archive2);
+
+        // copy the additional webservice elements etc
+        applicationArchivist.copyExtraElements(archive, archive2);
+    }
+
+    protected void prepareScratchDirs(DeploymentContext context) 
+        throws IOException {
+        context.getScratchDir("ejb").mkdirs();
+        context.getScratchDir("xml").mkdirs();
+        context.getScratchDir("jsp").mkdirs();
+    }
 
     abstract protected RootDeploymentDescriptor getDefaultBundleDescriptor();
     abstract protected String getModuleType();

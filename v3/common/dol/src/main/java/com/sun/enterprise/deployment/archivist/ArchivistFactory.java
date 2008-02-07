@@ -58,9 +58,6 @@ import java.io.IOException;
 @Scoped(Singleton.class)
 public class ArchivistFactory implements ContractProvider {
     
-    @Inject
-    ArchiveHandler[] archivists;
-
     // TODO: right now the ApplicationArchivist is not in the list
     // to avoid circular injection
     @Inject
@@ -68,79 +65,6 @@ public class ArchivistFactory implements ContractProvider {
 
     @Inject
     ArchiveFactory archiveFactory;
-
-
-    /**
-     * @return a new Archivist implementation for the type passed. 
-     * Supported types are defined in the application.xml DTD 
-     */
-    public ArchiveHandler getArchivistForType(ModuleType type) {
-
-        return getArchivistForType(type.toString());
-    }
-
-    /**
-     * @return a new Archivist implementation for the type passed.
-     * Supported types are defined in the application.xml DTD
-     */
-    public ArchiveHandler getArchivistForType(String type) {
-        for (ArchiveHandler archivist : archivists) {
-           Service service = archivist.getClass().getAnnotation(Service.class);
-           if (type.equals(service.name())) {
-               return archivist;
-           }
-        }
-        return null;
-    }
-    /**
-     * @return a new Archivist implementation for the archive file type
-     * Supported J2EE modules are defined in the J2EE platform spec
-     */
-    public ArchiveHandler getArchivist(File jarFileOrDirectory) throws IOException {
-        ReadableArchive archive = archiveFactory.openArchive(jarFileOrDirectory);
-        if (archive!=null) {
-            return getArchivist(archive);
-        }
-        return null;
-    }
-    
-    /** 
-     * @return a new Archivist implementation for the archive file type
-     * Supported J2EE modules are defined in the J2EE platform spec
-     */
-    public ArchiveHandler getArchivist(String path) throws IOException {
-
-        File f = new File(path);
-        if (!f.exists()) {
-            throw new FileNotFoundException(path);
-        }
-        return getArchivist(f);
-    }
-        
-    /** 
-     * @return a new Archivist implementation for the archive file type
-     * Supported J2EE modules are defined in the J2EE platform spec
-     */
-    public ArchiveHandler getArchivist(ReadableArchive archive) throws IOException {
-        for (ArchiveHandler a : archivists) {
-            if (a.handles(archive)) {
-                return a;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Returns an archivist for this handler
-     * TODO : need a much cleaner relationship between handlers and archivists.
-     */
-    public Archivist getArchivist(ArchiveHandler handler) {
-        if (handler!=null && handler instanceof Archivist) {
-            return (Archivist) handler;
-        }
-        return null;
-        
-    }
 
     public Archivist getArchivist(ReadableArchive archive, 
         ClassLoader cl) throws IOException {
@@ -151,13 +75,19 @@ public class ArchivistFactory implements ContractProvider {
         return archivist;
     }
 
+
+    public Archivist getArchivist(ModuleType moduleType)
+        throws IOException {
+        return getPrivateArchivistFor(moduleType);
+    }
+
     /**
      * Only archivists should have access to this API. we'll see how it works,
      * @param moduleType
      * @return
      * @throws IOException
      */
-    public Archivist getPrivateArchivistFor(ModuleType moduleType) 
+    Archivist getPrivateArchivistFor(ModuleType moduleType) 
         throws IOException {
         for (PrivateArchivist pa : privateArchivists) {
             Archivist a = Archivist.class.cast(pa);
