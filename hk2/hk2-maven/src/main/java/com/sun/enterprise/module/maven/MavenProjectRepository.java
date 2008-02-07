@@ -4,7 +4,6 @@ import com.sun.enterprise.module.ManifestConstants;
 import com.sun.enterprise.module.ModuleDefinition;
 import com.sun.enterprise.module.Repository;
 import com.sun.enterprise.module.common_impl.AbstractRepositoryImpl;
-import com.sun.enterprise.module.common_impl.AbstractRepositoryImpl;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.repository.ArtifactRepository;
@@ -16,6 +15,7 @@ import org.apache.maven.project.MavenProject;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.List;
@@ -25,7 +25,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.net.URI;
 
 /**
  * {@link Repository} implementation that loads modules
@@ -117,10 +116,12 @@ public class MavenProjectRepository extends AbstractRepositoryImpl {
             return null;
 
         MavenModuleDefinition moduleDef = loadJar(jarFile);
-        if(moduleDef.getManifest().getMainAttributes().getValue(ManifestConstants.BUNDLE_NAME)==null)
+        if(moduleDef.getManifest().getMainAttributes().getValue(ManifestConstants.BUNDLE_NAME)==null) {
             // project.getArtifacts() pick up all the transitive dependencies,
             // including to the normal jar files through modules.
             libraries.add(jarFile.toURI());
+            return null;
+        }
 
         if(logger.isLoggable(Level.CONFIG))
             logger.config("Adding module "+a.getId()+" trail: "+a.getDependencyTrail());
