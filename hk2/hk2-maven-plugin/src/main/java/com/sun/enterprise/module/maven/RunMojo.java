@@ -114,7 +114,9 @@ public class RunMojo extends AbstractMojo {
      */
     protected ModulesRegistry createModuleRegistry() throws IOException {
         ModulesRegistry r = AbstractFactory.getInstance().createModulesRegistry();
-        r.setParentClassLoader(this.getClass().getClassLoader());
+        // code in habitat needs to see HK2 classes, but we don't want them to see other classes and libraries
+        // that Maven loads into this maven plugin
+        r.setParentClassLoader(new MaskingClassLoader(this.getClass().getClassLoader(),"org.jvnet.hk2","com.sun.enterprise"));
         MavenProjectRepository lib = new MavenProjectRepository(project,artifactResolver,localRepository,artifactFactory);
         r.addRepository(lib);
         lib.initialize();
