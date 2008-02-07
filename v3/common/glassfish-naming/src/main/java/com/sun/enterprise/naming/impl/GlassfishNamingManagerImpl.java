@@ -75,8 +75,6 @@ public final class  GlassfishNamingManagerImpl
     @Inject
     InvocationManager invMgr;
 
-    public static final String JAVA_COMP_STRING = "java:comp/env/";
-
     private InitialContext initialContext;
     private InitialContext cosContext;
 
@@ -298,11 +296,9 @@ public final class  GlassfishNamingManagerImpl
      * namespace.
      */
     public void bindToComponentNamespace(String appName,
-                                         String componentId, String name, Object value)
+                                         String componentId, String logicalJndiName, Object value)
             throws NamingException {
         HashMap namespace = getComponentNameSpace(componentId);
-
-        String logicalJndiName = JAVA_COMP_STRING + name;
 
         if (_logger.isLoggable(Level.FINE)) {
             _logger.log(Level.FINE,
@@ -314,7 +310,7 @@ public final class  GlassfishNamingManagerImpl
             _logger.log(Level.WARNING,
                     "naming.alreadyexists" +
                             "Reference name [{0}] already exists in {1}",
-                    new Object[]{name, appName});
+                    new Object[]{logicalJndiName, appName});
         }
 
         bindIntermediateContexts(namespace, logicalJndiName);
