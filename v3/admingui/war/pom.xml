@@ -24,4 +24,30 @@
       <version>${project.version}</version>
     </dependency>
   </dependencies>
+
+  <profiles>
+    <profile>
+      <!--
+        during development, place all .jsf files directly under target/admingui
+        so that they can be updated without reloading app.
+
+        Activate this mode with "mvn -P dev"
+       -->
+      <id>dev</id>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-war-plugin</artifactId>
+            <configuration>
+              <webResources>
+                <webResource>
+                  <directory>../core/src/main/resources</directory>
+                </webResource>
+              </webResources>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 </project>
