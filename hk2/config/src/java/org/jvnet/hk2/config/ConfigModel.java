@@ -13,7 +13,6 @@ import javax.management.MBeanInfo;
 import javax.management.MBeanNotificationInfo;
 import javax.management.MBeanOperationInfo;
 import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Proxy;
 import java.lang.reflect.Type;
 import java.util.AbstractList;
 import java.util.ArrayList;
@@ -515,12 +514,7 @@ public final class ConfigModel {
 
         // this element is a reference to another configured inhabitant.
         // figure that out.
-        Inhabitant i = document.habitat.getInhabitantByAnnotation(InjectionTarget.class, value);
-        if(i==null)
-            throw new ComponentException(
-                "%s is referenced from %s but its ConfigInjector is not found",value,injector.typeName());
-
-        ConfigModel model = document.buildModel(i);
+        ConfigModel model = document.buildModel(value);
         if(collection)
             return new CollectionNode(model,elementName);
         else

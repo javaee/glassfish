@@ -84,7 +84,7 @@ public class ConfigParser {
      *      Otherwise fully parsed valid {@link Dom} object.
      */
     protected Dom handleElement(XMLStreamReader in,DomDocument document) throws XMLStreamException {
-        ConfigModel model = document.getModel(in.getLocalName());
+        ConfigModel model = document.getModelByElementName(in.getLocalName());
         if(model==null)
             throw new XMLStreamException("Unrecognized element "+in.getLocalName(),in.getLocation());
         return handleElement(in,document,null,model);
