@@ -9,9 +9,9 @@
 
     <modelVersion>4.0.0</modelVersion>
     <artifactId>core</artifactId>
-    <packaging>war</packaging>
+    <packaging>hk2-jar</packaging>
     <version>1.0-SNAPSHOT</version>
-    <name>Admin Console Webapp</name>
+    <name>Admin Console core</name>
     <url>http://maven.apache.org</url>
 
     <build>
