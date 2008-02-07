@@ -606,7 +606,8 @@ public class Dom extends LazyInhabitant implements InvocationHandler, Observable
     }
 
     /**
-     * Creates a strongly-typed proxy to access values in this {@link Dom} object.
+     * Creates a strongly-typed proxy to access values in this {@link Dom} object,
+     * by using the specified interface type as the proxy type.
      */
     public <T extends ConfigBeanProxy> T createProxy(Class<T> proxyType) {
         return proxyType.cast(Proxy.newProxyInstance(proxyType.getClassLoader(),new Class[]{proxyType},this));

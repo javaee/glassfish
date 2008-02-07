@@ -2,6 +2,7 @@ package org.jvnet.hk2.config;
 
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
+import org.jvnet.hk2.component.ComponentException;
 
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
@@ -58,25 +59,41 @@ public class DomDocument {
     }
 
     /**
-     * Gets the {@link ConfigModel} from the "global" element name.
+     * Obtains a {@link ConfigModel} for the given class (Which should have {@link Configured} annotation on it.)
      */
-    public ConfigModel getModel(String elementName) {
+    public ConfigModel buildModel(Class<?> clazz) {
+        return buildModel(clazz.getName());
+    }
+
+    /**
+     * Obtains a {@link ConfigModel} for the given class (Which should have {@link Configured} annotation on it.)
+     */
+    public ConfigModel buildModel(String fullyQualifiedClassName) {
+        Inhabitant i = habitat.getInhabitantByAnnotation(InjectionTarget.class, fullyQualifiedClassName);
+        if(i==null)
+            throw new ComponentException("ConfigInjector for %s is not found",fullyQualifiedClassName);
+        return buildModel(i);
+    }
+
+    /**
+     * Obtains the {@link ConfigModel} from the "global" element name.
+     *
+     * <p>
+     * This method uses {@link #buildModel} to lazily build models if necessary.
+     * 
+     * @return
+     *      Null if no configurable component is registered under the given global element name.
+     */
+    public ConfigModel getModelByElementName(String elementName) {
         Inhabitant<? extends ConfigInjector> i = habitat.getInhabitant(ConfigInjector.class, elementName);
         if(i==null) return null;
         return buildModel(i);
     }
 
+    // TODO: to be removed once we make sure that no one is using it anymore
+    @Deprecated
     public ConfigModel getModel(Class c) {
-        // not the most efficient implementation but this is probably ok as it calls only
-        // when creating new instances of configured object through an explicit Allocate() call.
-        final String className = c.getName();
-        for (Map.Entry<Inhabitant<? extends ConfigInjector>, ConfigModel> entry : models.entrySet()) {
-            final String name = entry.getValue().targetTypeName;
-            if (className.equals(name)) {
-                return entry.getValue();
-            }
-        }
-        return null;
+        return buildModel(c);
     }
 
     public Dom make(Habitat habitat, XMLStreamReader in, Dom parent, ConfigModel model) {

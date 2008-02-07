@@ -179,7 +179,7 @@ public class ConfigBean extends Dom implements ConfigView {
      */
 
     ConfigBean allocate(Class<?> type) {
-        return new ConfigBean(habitat, document, this, document.getModel(type), null);
+        return new ConfigBean(habitat, document, this, document.buildModel(type), null);
    }
 
     /**
