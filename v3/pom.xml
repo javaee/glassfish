@@ -249,7 +249,7 @@
             
             <uniqueVersion>false</uniqueVersion>
             <id>glassfish-repository-internal</id>
-            <url>scp://rator.sfbay/files/hudson/repositories/glassfish</url>
+            <url>scp://rator.sfbay.sun.com/files/hudson/repositories/glassfish</url>
         </repository>
     </distributionManagement>
     <build>
