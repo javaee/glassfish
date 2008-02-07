@@ -467,8 +467,16 @@ public final class ConfigModel {
         this.key = key;
         this.contracts = description.get(ConfigMetadata.TARGET_CONTRACTS);
         this.symoblSpaces = new HashSet<String>(description.get("symbolSpaces"));
-        this.tagName = description.getOne(InhabitantsFile.INDEX_KEY);
+
+        String tagName = null;
+        for (String v : description.get(InhabitantsFile.INDEX_KEY)) {
+            if(v.startsWith(ELEMENT_NAME_PREFIX))
+                tagName = v.substring(ELEMENT_NAME_PREFIX.length());
+        }
+        this.tagName = tagName;
     }
+
+    private static final String ELEMENT_NAME_PREFIX = ConfigInjector.class.getName() + ':';
 
     /**
      * Finds the {@link Property} from either {@link #elements} or {@link #attributes}.
