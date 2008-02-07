@@ -182,7 +182,7 @@ public final class ConfigModel {
             if(arg instanceof Dom)
                 return (Dom)arg;
             if(arg instanceof ConfigBeanProxy)
-                return (Dom) Proxy.getInvocationHandler(arg);
+                return Dom.unwrap((ConfigBeanProxy)arg);
             throw new IllegalArgumentException("Unexpected type "+arg.getClass()+" for "+xmlName);
         }
     }
