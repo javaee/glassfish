@@ -230,6 +230,7 @@ public class ConfigSupport {
     /**
      * Return the main implementation bean for a proxy.
      * @param source configuration interface proxy
+     * @return the implementation bean
      */
     public static Object getImpl(ConfigBeanProxy source) {
 

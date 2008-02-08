@@ -237,4 +237,5 @@ public interface ModulesRegistry extends ModuleChangeListener {
 
     ClassLoader getModulesClassLoader(ClassLoader parent, Collection<ModuleDefinition> defs)
         throws ResolveError;
+
 }

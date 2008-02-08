@@ -98,7 +98,6 @@ public class Transactions {
      * @param events accumulated list of changes
      */
     void addTransaction(List<PropertyChangeEvent> events) {
-        System.out.println("Adding events");
         try {
             semaphore.acquire();
         } catch (InterruptedException e) {
@@ -126,9 +125,12 @@ public class Transactions {
                 while (true) {
                     try {
                         List<PropertyChangeEvent> events = pendingRecords.take();
-                        System.out.println("processing events" + events);
-                        for (TransactionListener listener : listeners) {
-                            listener.transactionCommited(events);
+                        for (TransactionListener listener : new ArrayList<TransactionListener>(listeners)) {
+                            try {
+                                listener.transactionCommited(events);
+                            } catch(Exception e) {
+                                e.printStackTrace();
+                            }
                         }
                         for (PropertyChangeEvent evt : events) {
                             Dom dom = (Dom) ((ConfigView) Proxy.getInvocationHandler(evt.getSource())).getMasterView();
