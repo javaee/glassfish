@@ -306,6 +306,7 @@ public class Dom extends LazyInhabitant implements InvocationHandler, Observable
                 NodeChild nc = (NodeChild) child;
                 if(nc.dom==reference) {
                     itr.add(newChild);
+                    habitat.add(newNode);
                     return;
                 }
             }
@@ -331,6 +332,28 @@ public class Dom extends LazyInhabitant implements InvocationHandler, Observable
             }
         }
         throw new IllegalArgumentException(reference+" is not a valid child of "+this+". Children="+children);
+    }
+
+    /**
+     * Removes an existing {@link NodeChild}
+     *
+     */
+    public synchronized void removeChild(Dom reference) {
+        ListIterator<Child> itr = children.listIterator();
+        while(itr.hasNext()) {
+            Child child = itr.next();
+            if (child instanceof NodeChild) {
+                NodeChild nc = (NodeChild) child;
+                if(nc.dom==reference) {
+                    itr.remove();
+                    habitat.remove(reference);
+                    reference.release();
+                    return;
+                }
+            }
+        }
+        throw new IllegalArgumentException(reference+" is not a valid child of "+this+". Children="+children);
+
     }
 
     /**

@@ -81,13 +81,13 @@ public class WriteableView implements InvocationHandler, Transactor, ConfigView 
             } else {
                 // pass through.
                 Object value = bean.invoke(proxy, method, args);
-                if (value instanceof Collection) {
+                if (value instanceof List) {
                     if (!changedCollections.containsKey(property.xmlName())) {
                         // wrap collections so we can record events on that collection mutation.
                         try {
                             if(!(method.getGenericReturnType() instanceof ParameterizedType))
                                 throw new IllegalArgumentException("List needs to be parameterized");
-                            changedCollections.put(property.xmlName(), new ProtectedList((Collection) value, this, property.xmlName()));
+                            changedCollections.put(property.xmlName(), new ProtectedList((List) value, this, property.xmlName()));
                         } catch(Exception e) {
                             e.printStackTrace();
                             throw e;
@@ -170,12 +170,19 @@ public class WriteableView implements InvocationHandler, Transactor, ConfigView 
                 appliedChanges.add(event);
             }
             for (ProtectedList entry :  changedCollections.values())  {
-                Collection originalList = entry.readOnly;
+                List originalList = entry.readOnly;
                 for (PropertyChangeEvent event : (List<PropertyChangeEvent>) entry.changeEvents) {
                     if (event.getOldValue()==null) {
                         originalList.add(event.getNewValue());
                     } else {
-                        originalList.remove(event.getNewValue());
+                        final Dom toBeRemoved = Dom.unwrap((ConfigBeanProxy) event.getOldValue());
+                        for (int index=0;index<originalList.size();index++) {
+                            Object element = originalList.get(index);
+                            Dom dom = Dom.unwrap((ConfigBeanProxy) element);
+                            if (dom==toBeRemoved) {
+                                originalList.remove(index);
+                            }
+                        }
                     }
                 }
             }
@@ -252,12 +259,12 @@ public class WriteableView implements InvocationHandler, Transactor, ConfigView 
 private class ProtectedList<T extends ConfigBeanProxy> extends ArrayList<T> {
 
     final WriteableView parent;
-    final Collection readOnly;
+    final List readOnly;
     final String id;
     final List<PropertyChangeEvent> changeEvents = new ArrayList<PropertyChangeEvent>();
 
 
-    ProtectedList(Collection readOnly, WriteableView parent, String id) {
+    ProtectedList(List readOnly, WriteableView parent, String id) {
         super(readOnly);
         this.parent = parent;
         this.readOnly = readOnly;
