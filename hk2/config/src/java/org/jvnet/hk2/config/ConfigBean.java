@@ -65,7 +65,7 @@ public class ConfigBean extends Dom implements ConfigView {
     public ConfigBean(Habitat habitat, DomDocument document, Dom parent, ConfigModel model, XMLStreamReader in) {
 
         super(habitat, document, parent, model, in);
-        // by default all ConfigBean support the ConstratinedBeanListener interface
+        // by default all ConfigBean support the ConstrainedBeanListener interface
         // allowing clients to register interest in attributes changing.
         addInterceptor(new ConfigBeanInterceptor<ConstrainedBeanListener>() {
 

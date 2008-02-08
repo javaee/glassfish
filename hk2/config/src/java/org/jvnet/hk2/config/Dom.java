@@ -151,12 +151,6 @@ public class Dom extends LazyInhabitant implements InvocationHandler, Observable
         this(habitat, document, parent, model, null);
     }
 
-    /**
-     * Constructor for the case parent is known to be non-null.
-     */
-    public Dom(Habitat habitat, Dom parent, Class<? extends ConfigBeanProxy> proxyType) {
-        this(habitat, parent.document, parent, parent.document.buildModel(proxyType), null);
-    }
 
     /**
      * Unwraps the proxy and returns the underlying {@link Dom} object.
@@ -168,6 +162,9 @@ public class Dom extends LazyInhabitant implements InvocationHandler, Observable
         InvocationHandler ih = Proxy.getInvocationHandler(proxy);
         if (ih instanceof Dom)
             return (Dom) ih;
+        if (ih instanceof ConfigView) {
+            return (Dom) ((ConfigView)ih).getMasterView();
+        }        
         return null;
     }
 

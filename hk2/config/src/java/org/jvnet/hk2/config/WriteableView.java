@@ -35,14 +35,16 @@
  */
 package org.jvnet.hk2.config;
 
+import org.jvnet.tiger_types.Types;
+
 import java.lang.reflect.Proxy;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
 import java.beans.PropertyChangeEvent;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.List;
-import java.util.ArrayList;
+import java.beans.VetoableChangeSupport;
+import java.beans.PropertyVetoException;
+import java.util.*;
 
 /**
  * A WriteableView is a view of a ConfigBean object that allow access to the
@@ -55,12 +57,14 @@ public class WriteableView implements InvocationHandler, Transactor, ConfigView 
     private final ConfigBean bean;
     private final ConfigBeanProxy readView;
     private final Map<String, PropertyChangeEvent> changedAttributes;
+    private final Map<String, ProtectedList> changedCollections;
     Transaction currentTx;
 
     public WriteableView(ConfigBeanProxy readView) {
         this.readView = readView;
         this.bean = (ConfigBean) ((ConfigView) Proxy.getInvocationHandler(readView)).getMasterView();
         changedAttributes = new HashMap<String, PropertyChangeEvent>();
+        changedCollections = new HashMap<String, ProtectedList>();
     }
 
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
@@ -76,7 +80,22 @@ public class WriteableView implements InvocationHandler, Transactor, ConfigView 
                 return changedAttributes.get(property.xmlName()).getNewValue();
             } else {
                 // pass through.
-                return bean.invoke(proxy, method, args);
+                Object value = bean.invoke(proxy, method, args);
+                if (value instanceof Collection) {
+                    if (!changedCollections.containsKey(property.xmlName())) {
+                        // wrap collections so we can record events on that collection mutation.
+                        try {
+                            if(!(method.getGenericReturnType() instanceof ParameterizedType))
+                                throw new IllegalArgumentException("List needs to be parameterized");
+                            changedCollections.put(property.xmlName(), new ProtectedList((Collection) value, this, property.xmlName()));
+                        } catch(Exception e) {
+                            e.printStackTrace();
+                            throw e;
+                        }
+                    }
+                    return changedCollections.get(property.xmlName());
+                }
+                return value;
             }
         } else {
             // are we still in a transaction
@@ -142,9 +161,23 @@ public class WriteableView implements InvocationHandler, Transactor, ConfigView 
         try {
             List<PropertyChangeEvent> appliedChanges = new ArrayList<PropertyChangeEvent>();
             for (PropertyChangeEvent event : changedAttributes.values()) {
+                //TODO : dochez : remove the test below once attribute leaf can remove values
+                if (event.getNewValue()==null) {
+                    continue;
+                }
                 ConfigModel.Property property = bean.model.findIgnoreCase(event.getPropertyName());
                 property.set(bean, event.getNewValue());
                 appliedChanges.add(event);
+            }
+            for (ProtectedList entry :  changedCollections.values())  {
+                Collection originalList = entry.readOnly;
+                for (PropertyChangeEvent event : (List<PropertyChangeEvent>) entry.changeEvents) {
+                    if (event.getOldValue()==null) {
+                        originalList.add(event.getNewValue());
+                    } else {
+                        originalList.remove(event.getNewValue());
+                    }
+                }
             }
             changedAttributes.clear();
             return appliedChanges;
@@ -209,4 +242,40 @@ public class WriteableView implements InvocationHandler, Transactor, ConfigView 
         Class[] interfacesClasses = { type };
         return (T) Proxy.newProxyInstance(type.getClassLoader(), interfacesClasses, this);
     }
+
+/**
+ * A Protected List is a @Link java.util.List implementation which mutable
+ * operations are constrained by the owner of the list.
+ *
+ * @author Jerome Dochez
+ */
+private class ProtectedList<T extends ConfigBeanProxy> extends ArrayList<T> {
+
+    final WriteableView parent;
+    final Collection readOnly;
+    final String id;
+    final List<PropertyChangeEvent> changeEvents = new ArrayList<PropertyChangeEvent>();
+
+
+    ProtectedList(Collection readOnly, WriteableView parent, String id) {
+        super(readOnly);
+        this.parent = parent;
+        this.readOnly = readOnly;
+        this.id = id;
+    }
+
+    @Override
+    public boolean add(T object) {
+        changeEvents.add(new PropertyChangeEvent(parent.bean, id, null, object));
+        return super.add(object);
+    }
+
+    @Override
+    public boolean remove(Object object) {
+        changeEvents.add(new PropertyChangeEvent(parent.bean, id, object, null));
+        return super.remove(object);
+    }
+
+}
+
 }

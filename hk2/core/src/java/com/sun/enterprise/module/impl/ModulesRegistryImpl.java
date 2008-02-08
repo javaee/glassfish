@@ -104,18 +104,6 @@ public class ModulesRegistryImpl extends AbstractModulesRegistryImpl {
     }
 
     /**
-     * Finds the {@link com.sun.enterprise.module.common_impl.AbstractModulesRegistryImpl} that owns the given class.
-     *
-     * @return
-     *      null if the class is loaded outside the module system.
-     */
-    public static ModulesRegistry find(Class clazz) {
-        Module m = ModuleImpl.find(clazz);
-        if(m==null)     return null;
-        return m.getRegistry();
-    }
-
-    /**
      * Sets the classloader parenting the class loaders created by the modules
      * associated with this registry.
      * @param parent parent class loader
