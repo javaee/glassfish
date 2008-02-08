@@ -14,14 +14,7 @@ import javax.management.MBeanNotificationInfo;
 import javax.management.MBeanOperationInfo;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.AbstractList;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Describes the configuration model for a particular class (called "target type" in this class.)
@@ -220,6 +213,13 @@ public final class ConfigModel {
                         Dom child = Dom.unwrap((ConfigBeanProxy) element);
                         dom.insertAfter( index==0 ? null : v.get(index-1), xmlName, child);
                         v.add(index,child);
+                    }
+
+                    public Object remove(int index) {
+                        Dom child = v.get(index);
+                        dom.removeChild(child);
+                        v.remove(index);
+                        return child.createProxy();
                     }
 
                     public Object set(int index, Object element) {

@@ -103,6 +103,20 @@ public class Habitat {
     }
 
     /**
+     * Removes a inhabitant
+     *
+     * @param inhabitant
+     *      inhabitant to be removed
+     */
+    public boolean remove(Inhabitant<?> inhabitant) {
+        String name = inhabitant.typeName();
+        if (byType.get(name).contains(inhabitant)) {
+            byType.get(name).remove(inhabitant);
+        }
+        return true;
+    }
+
+    /**
      * Checks if the given type is a contract interface that has some implementations in this {@link Habitat}.
      *
      * <p>
