@@ -197,6 +197,12 @@
             <url>http://download.java.net/maven/glassfish</url>
         </pluginRepository>
         <pluginRepository>
+            <!-- back up glassfish maven repository in case the 'glassfish-repository' goes down -->
+            <id>glassfish-repository-wsinterop</id>
+            <name>Java.net Repository for Glassfish</name>
+            <url>http://maven.dyndns.org/glassfish/</url>
+        </pluginRepository>
+        <pluginRepository>
             <id>maven2.java.net</id>
             <name>Java.net Repository for Maven 2</name>
             <url>http://download.java.net/maven/2</url>
