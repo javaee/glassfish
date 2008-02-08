@@ -63,6 +63,7 @@ import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.web.ServletFilterMapping;
 import com.sun.enterprise.config.serverbeans.Property;
 import com.sun.enterprise.deployment.runtime.web.WebProperty;
+import com.sun.enterprise.server.ServerContext;
 import com.sun.enterprise.web.pwc.PwcWebModule;
 import com.sun.enterprise.web.session.PersistenceType;
 import com.sun.enterprise.web.session.SessionCookieConfig;
@@ -128,6 +129,9 @@ public class WebModule extends PwcWebModule {
     
     private com.sun.enterprise.config.serverbeans.WebModule bean;
     private WebBundleDescriptor webBundleDescriptor;
+
+    private String compEnvId = null;
+    private ServerContext serverContext = null;
 
 
     /**
@@ -859,6 +863,40 @@ public class WebModule extends PwcWebModule {
         this.webBundleDescriptor = wbd;
     }
 
+    /**
+     * Gets the WebBundleDesciptor (web.xml) for this WebModule.
+     */
+    public WebBundleDescriptor getWebBundleDescriptor() {
+        return this.webBundleDescriptor;
+    }
+
+    /**
+     * Gets ComponentId for Invocation.
+     */
+    public String getComponentId() {
+        return compEnvId;
+    }
+
+    /**
+     * Sets ComponentId for Invocation.
+     */
+    void setComponentId(String compEnvId) {
+        this.compEnvId = compEnvId;
+    }
+
+    /**
+     * Gets ServerContext.
+     */
+    public ServerContext getServerContext() {
+        return serverContext;
+    }
+
+    /**
+     * Sets ServerContext.
+     */
+    void setServerContext(ServerContext serverContext) {
+        this.serverContext = serverContext;
+    }
 
     /**
      * Sets the alternate docroots of this web module from the given

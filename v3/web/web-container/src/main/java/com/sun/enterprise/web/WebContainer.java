@@ -143,6 +143,7 @@ import com.sun.enterprise.config.serverbeans.Servers;
 // End EE: 4927099 load only associated applications
 
 // V3 imports
+import com.sun.enterprise.container.common.spi.util.ComponentEnvManager;
 import com.sun.enterprise.v3.server.V3Environment;
 import com.sun.enterprise.v3.common.Result;
 
@@ -169,6 +170,9 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
     @Inject
     ServerContext _serverContext;
+
+    @Inject
+    ComponentEnvManager componentEnvManager;
 
     HashMap<String, Integer> portMap = new HashMap<String, Integer>();
     HashMap<Integer, Adapter> adapterMap = new HashMap<Integer, Adapter>();
@@ -1597,12 +1601,23 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             docBase = wmInfo.getLocation();
         }
 
+        // Object containing web.xml information
+        WebBundleDescriptor wbd = wmInfo.getDescriptor();
+
+        Throwable exception = null;
+        String compEnvId = null;
+        try {
+            compEnvId = componentEnvManager.bindToComponentNamespace(wbd);
+        } catch(Exception ex) {
+            exception = ex;
+        }
+
         ctx = (WebModule) _embedded.createContext(wmContextPath,
                 docBase,
                 vs.getDefaultContextXmlLocation(),
                 vs.getDefaultWebXmlLocation(),
                 useDOLforDeployment,
-                wmInfo.getDescriptor());
+                wmInfo.getDescriptor(), compEnvId);
 
         // for now disable JNDI
         ctx.setUseNaming(false);
@@ -1633,9 +1648,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         if (adHocSubtrees != null) {
             ctx.addAdHocSubtrees(adHocSubtrees);
         }
-
-        // Object containing web.xml information
-        WebBundleDescriptor wbd = wmInfo.getDescriptor();
 
         //Set the context root
         if (wmInfo.getBean() != null) {
@@ -1672,7 +1684,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         }
         ctx.setParentClassLoader(parentLoader);
 
-        Throwable exception = null;
         try{
             // Determine if an alternate DD is set for this web-module in
             // the application

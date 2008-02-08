@@ -55,6 +55,7 @@ import org.apache.catalina.Lifecycle;
 import org.apache.catalina.Realm;
 import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.core.StandardEngine;
+import org.apache.catalina.session.StandardManager;
 import org.apache.catalina.startup.Embedded;
 import org.apache.catalina.startup.ContextConfig;
 import org.apache.catalina.mbeans.MBeanUtils;
@@ -62,16 +63,19 @@ import org.apache.catalina.net.ServerSocketFactory;
 import org.apache.catalina.logger.FileLogger;
 import org.apache.tomcat.util.IntrospectionUtils;
 
+//import org.openide.util.Lookup;
+import org.glassfish.api.invocation.InvocationManager;
+import org.jvnet.hk2.component.Habitat;
+
 import com.sun.enterprise.config.serverbeans.Property;
 import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
+import com.sun.enterprise.container.common.spi.util.InjectionManager;
 import com.sun.enterprise.deployment.WebBundleDescriptor; 
-//import com.sun.web.server.WebContainerListener;
+import com.sun.web.server.WebContainerListener;
 import com.sun.enterprise.server.ServerContext;
 import com.sun.enterprise.web.connector.coyote.PECoyoteConnector;
 import com.sun.enterprise.web.pluggable.WebContainerFeatureFactory;
 
-//import org.openide.util.Lookup;
-import org.jvnet.hk2.component.Habitat;
 
 /**
  * Represents an embedded Catalina web container within the Application Server.
@@ -95,6 +99,10 @@ public final class EmbeddedWebContainer extends Embedded {
     
     private ServerContext serverContext;
 
+    private InvocationManager invocationManager;
+
+    private InjectionManager injectionManager;
+
     /*
      * The value of the 'file' attribute of the log-service element
      */
@@ -114,7 +122,10 @@ public final class EmbeddedWebContainer extends Embedded {
         this.serverContext = serverContext;
         webContainerFeatureFactory = serverContext.getDefaultHabitat().getByContract(
                 WebContainerFeatureFactory.class);      
-        
+        invocationManager = serverContext.getDefaultHabitat().getByContract(
+                InvocationManager.class);
+        injectionManager = serverContext.getDefaultHabitat().getByContract(
+                InjectionManager.class);
     }
     
 
@@ -220,7 +231,7 @@ public final class EmbeddedWebContainer extends Embedded {
                                  String defaultContextXmlLocation,
                                  String defaultWebXmlLocation, 
                                  boolean useDOLforDeployment,
-                                 WebBundleDescriptor wbd) {
+                                 WebBundleDescriptor wbd, String compEnvId) {
 
         File configFile = new File(location, Constants.WEB_CONTEXT_XML);
         WebModule context = new WebModule(webContainer);
@@ -232,6 +243,10 @@ public final class EmbeddedWebContainer extends Embedded {
         context.setHasWebXml(wbd == null ? false : true);
         context.setWebBundleDescriptor(wbd);
         context.setManagerChecksFrequency(1);
+        context.setComponentId(compEnvId);
+        context.setServerContext(serverContext);
+        //XXX memory support only at this point
+        context.setManager(new StandardManager());
 
         if (configFile.exists()) {
             context.setConfigFile(configFile.getAbsolutePath());
@@ -254,7 +269,8 @@ public final class EmbeddedWebContainer extends Embedded {
 
         //context.addInstanceListener(Constants.J2EE_INSTANCE_LISTENER);
         
-        //context.addContainerListener(new WebContainerListener());
+        context.addContainerListener(
+                new WebContainerListener(invocationManager, injectionManager));
 
         //context.addInstanceListener(
         //    "com.sun.enterprise.admin.monitor.callflow.WebContainerListener");
