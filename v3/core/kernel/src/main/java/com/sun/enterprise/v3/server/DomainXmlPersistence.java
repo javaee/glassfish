@@ -50,6 +50,7 @@ import java.io.IOException;
 import java.io.File;
 import java.io.BufferedOutputStream;
 import java.io.FileOutputStream;
+import java.util.logging.Logger;
 
 /**
  * domain.xml persistence.
@@ -62,6 +63,10 @@ public class DomainXmlPersistence implements ConfigurationPersistence {
 
     @Inject
     V3Environment env;
+
+    @Inject
+    Logger logger;
+    
     
     public synchronized void save(DomDocument doc) throws IOException {
 
@@ -73,8 +78,9 @@ public class DomainXmlPersistence implements ConfigurationPersistence {
         // write to the temporary file
         XMLOutputFactory xmlFactory = XMLOutputFactory.newInstance();
         XMLStreamWriter writer = null;
+        FileOutputStream fos = new FileOutputStream(f);
         try {
-            writer = xmlFactory.createXMLStreamWriter(new BufferedOutputStream(new FileOutputStream(f)));
+            writer = xmlFactory.createXMLStreamWriter(new BufferedOutputStream(fos));
             doc.writeTo(new IndentingXMLStreamWriter(writer));
         } catch (XMLStreamException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
@@ -86,14 +92,23 @@ public class DomainXmlPersistence implements ConfigurationPersistence {
                     e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                 }
             }
+            try {
+                fos.close();
+            } catch(IOException e) {
+                e.printStackTrace();
+            }
         }
         
         // backup the current file
         File destination = new File(env.getConfigDirPath(), "domain.xml");
         File backup = new File(env.getConfigDirPath(), "domain.bak");
-        destination.renameTo(backup);
+        if (!destination.renameTo(backup)) {
+            logger.severe("Could not rename " + destination.getAbsolutePath() + " to " + backup.getAbsolutePath());
+        }
         // save the temp file to domain.xml
-        f.renameTo(destination);
+        if (!f.renameTo(destination)) {
+            logger.severe("Could not rename " + f.getAbsolutePath() + " to " + destination.getAbsolutePath());
+        }
     }
 
 }

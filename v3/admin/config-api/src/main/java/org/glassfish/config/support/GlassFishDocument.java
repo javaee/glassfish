@@ -42,6 +42,7 @@ import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamException;
 import java.beans.PropertyChangeEvent;
 import java.util.List;
+import java.util.Collection;
 import java.io.IOException;
 
 /**
@@ -52,13 +53,9 @@ import java.io.IOException;
  */
 public class GlassFishDocument extends DomDocument {
 
-    public GlassFishDocument(Habitat habitat) {
+    public GlassFishDocument(final Habitat habitat) {
         super(habitat);
-    }
 
-    public Dom make(final Habitat habitat, XMLStreamReader xmlStreamReader, Dom dom, ConfigModel configModel) {
-
-        // hook up transactions for now
         final DomDocument doc = this;
         Transactions.get().addTransactionsListener(new TransactionListener() {
             public void transactionCommited(List<PropertyChangeEvent> changes) {
@@ -72,8 +69,10 @@ public class GlassFishDocument extends DomDocument {
                     }
                 }
             }
-        });
+        });        
+    }
 
+    public Dom make(final Habitat habitat, XMLStreamReader xmlStreamReader, Dom dom, ConfigModel configModel) {
         // by default, people get the translated view.
         return new GlassFishConfigBean(habitat,this, dom, configModel, xmlStreamReader);
     }
