@@ -281,7 +281,7 @@ public class DomainXml implements Populator {
                 xsr.close();
                 stream.close();
                 if(configName==null)
-                throw new BootError(domainXml +" contains no <server> element that matches "+ serverName);
+                    throw new BootError(domainXml +" contains no <server> element that matches "+ serverName);
             } catch (IOException e) {
                 throw new XMLStreamException("Failed to parse "+domainXml,e);
             }
