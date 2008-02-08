@@ -187,6 +187,16 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
                 }
                 try {
                     archiveHandler.expand(archive, archiveFactory.createArchive(expansionDir));
+                    // Close the JAR archive before losing the reference to it or else the JAR remains locked.
+                    try {
+                        archive.close();
+                    } catch(IOException e) {
+                        report.setMessage(localStrings.getLocalString("deploy.errorclosingarchive","Error while closing deployable artifact {0}", file.getAbsolutePath()));
+                        report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                        return;
+                    }
+                    // Proceed using the expanded directory.
+                    file = expansionDir;
                     archive = archiveFactory.openArchive(expansionDir);
                 } catch(IOException e) {
                     report.setMessage(localStrings.getLocalString("deploy.errorexpandingjar","Error while expanding archive file"));
