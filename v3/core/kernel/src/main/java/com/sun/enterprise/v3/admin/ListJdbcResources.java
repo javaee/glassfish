@@ -69,7 +69,7 @@ public class ListJdbcResources implements AdminCommand {
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(ListJdbcResources.class);    
 
     @Inject
-    Resources resources;
+    JdbcResource[] resources;
 
     /**
      * Executes the command with the command parameters passed as Properties
@@ -78,34 +78,15 @@ public class ListJdbcResources implements AdminCommand {
      * @param context information
      */
     public void execute(AdminCommandContext context) {
-        ActionReport report = context.getActionReport();
-        final List<String> jdbcList = new ArrayList();
-        try {
-            ConfigSupport.apply(new SingleConfigCode<Resources>() {
 
-                public List<String> run(Resources param) throws PropertyVetoException, TransactionFailure {
-                    List<Resource> list = param.getResources();
-                    Iterator iter = list.iterator();
-                    while (iter.hasNext()) {
-                        Resource res = (Resource)iter.next();
-                        if (res instanceof JdbcResource) {
-                            jdbcList.add(((JdbcResource)res).getJndiName());
-                        }
-                    };
-                    return jdbcList;
-                }
-            }, resources);
+        final ActionReport report = context.getActionReport();
 
-        } catch(TransactionFailure e) {
-            report.setMessage(localStrings.getLocalString("list.jdbc.resources.fail", "list-jdbc-resources failed "));
-            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            report.setFailureCause(e);
+        report.getTopMessagePart().setMessage(localStrings.getLocalString("list.jdbc.resources.success", "list-jdbc-resources successful"));
+        report.getTopMessagePart().setChildrenType("jdbc-resource");
+        for (JdbcResource r : resources) {
+            final ActionReport.MessagePart part = report.getTopMessagePart().addChild();
+            part.setMessage(r.getJndiName());
         }
-        Iterator iter = jdbcList.iterator();
-        while (iter.hasNext()) {
-            report.setMessage((String)iter.next());
-        }
-        report.setMessage(localStrings.getLocalString("list.jdbc.resources.success", "list-jdbc-resources successful"));
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
     }
 }

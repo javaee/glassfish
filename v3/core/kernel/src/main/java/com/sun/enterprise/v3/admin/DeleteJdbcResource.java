@@ -73,6 +73,9 @@ public class DeleteJdbcResource implements AdminCommand {
     @Inject
     Resources resources;
 
+    @Inject
+    JdbcResource[] jdbcResources;
+
     /**
      * Executes the command with the command parameters passed as Properties
      * where the keys are the paramter names and the values the parameter values
@@ -80,31 +83,29 @@ public class DeleteJdbcResource implements AdminCommand {
      * @param context information
      */
     public void execute(AdminCommandContext context) {
-        ActionReport report = context.getActionReport();
+
+        final ActionReport report = context.getActionReport();
         try {
-            ConfigSupport.apply(new SingleConfigCode<Resources>() {
-
+            if (ConfigSupport.apply(new SingleConfigCode<Resources>() {
                 public Object run(Resources param) throws PropertyVetoException, TransactionFailure {
-                    List<Resource> list = param.getResources();
-                    Iterator iter = list.iterator();
-                    while (iter.hasNext()) {
-                        Resource res = (Resource)iter.next();
-                        if (res instanceof JdbcResource) {
-                            if (((JdbcResource)iter).getJndiName().equals(jndiName)) {
-                                list.remove(res);
-                            }
+                    for (JdbcResource resource : jdbcResources) {
+                        if (resource.getJndiName().equals(jndiName)) {
+                            return param.getResources().remove(resource);
                         }
-                    };
-                    return list;
+                    }
+                    // not found
+                    report.setMessage(localStrings.getLocalString("delete.jdbc.resource.notfound", "{0} delete failed, resource not found", jndiName));
+                    report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                    return null;
                 }
-            }, resources);
-
+            }, resources) !=null) {
+                report.setMessage(localStrings.getLocalString("delete.jdbc.resource.success", "{0} deleted successfully", jndiName));
+                report.setActionExitCode(ActionReport.ExitCode.SUCCESS);            
+            }
         } catch(TransactionFailure e) {
             report.setMessage(localStrings.getLocalString("delete.jdbc.resource.fail", "{0} delete failed ", jndiName));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
         }
-        report.setMessage(localStrings.getLocalString("delete.jdbc.resource.success", "{0} deleted successfully", jndiName));
-        report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
     }
 }
