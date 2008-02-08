@@ -23,19 +23,22 @@
 
 package com.sun.enterprise.v3.services.impl;
 
-import com.sun.enterprise.config.serverbeans.*;
+import com.sun.enterprise.config.serverbeans.HttpListener;
+import com.sun.enterprise.config.serverbeans.VirtualServer;
+import com.sun.grizzly.Controller;
 import com.sun.grizzly.http.SelectorThread;
 import com.sun.grizzly.standalone.StaticStreamAlgorithm;
 import com.sun.grizzly.tcp.Request;
 import com.sun.grizzly.tcp.Response;
-import org.glassfish.api.container.Adapter;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import org.glassfish.api.deployment.ApplicationContainer;
-import org.jvnet.hk2.component.*;
 
-import java.io.*;
-import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.jvnet.hk2.component.Habitat;
 
 /**
  * The Grizzly Service is responsible for starting grizzly and register the 
@@ -45,7 +48,8 @@ import java.util.logging.Logger;
  *
  * @author Jerome Dochez
  */
-public class GrizzlyAdapter extends AbstractAdapter implements com.sun.grizzly.tcp.Adapter {
+public class GrizzlyAdapter extends AbstractAdapter implements com.sun.grizzly.tcp.Adapter, 
+        NetworkProxy {
     
     final SelectorThread selectorThread;
 
@@ -58,7 +62,8 @@ public class GrizzlyAdapter extends AbstractAdapter implements com.sun.grizzly.t
 
     Map<String, VsAdapter> vsAdapters = new HashMap<String, VsAdapter>();
 
-    public GrizzlyAdapter(final Logger logger, Habitat habitat, HttpListener listener) {
+    public GrizzlyAdapter(final Logger logger, 
+            Habitat habitat, HttpListener listener, Controller controller) {
 
         this.logger = logger;
         this.httpListener = listener;
@@ -84,23 +89,6 @@ public class GrizzlyAdapter extends AbstractAdapter implements com.sun.grizzly.t
         selectorThread.setAlgorithmClassName(StaticStreamAlgorithm.class.getName());
         selectorThread.setAdapter(this);
         selectorThread.setBufferResponse(false);
-
-        Thread thread = new Thread() {
-            public void run() {
-                try {
-                    selectorThread.initEndpoint();
-                    selectorThread.startEndpoint();
-                } catch(InstantiationException e) {
-                    logger.log(Level.SEVERE, "Cannot start grizzly selector", e);
-                } catch(IOException e) {
-                    logger.log(Level.SEVERE, "Cannot start grizzly selector", e);
-                } catch (RuntimeException e) {
-                    logger.log(Level.INFO, "Exception in grizzly thread", e);
-                }
-            }
-        };
-        thread.start();
-        logger.info("Listening on port " + portNumber);
     }
 
     public void addVirtualServer(VirtualServer vs) {
@@ -114,6 +102,7 @@ public class GrizzlyAdapter extends AbstractAdapter implements com.sun.grizzly.t
         selectorThread.stopEndpoint();
     }
     
+    @Override
     public String toString() {
         return "Grizzly on port " + portNumber;
     }
@@ -223,5 +212,25 @@ public class GrizzlyAdapter extends AbstractAdapter implements com.sun.grizzly.t
         return "/";
     }
 
+    
+    public void start() {
+        Thread thread = new Thread() {
+            @Override
+            public void run() {
+                try {
+                    selectorThread.initEndpoint();
+                    selectorThread.startEndpoint();
+                } catch(InstantiationException e) {
+                    logger.log(Level.SEVERE, "Cannot start grizzly selector", e);
+                } catch(IOException e) {
+                    logger.log(Level.SEVERE, "Cannot start grizzly selector", e);
+                } catch (RuntimeException e) {
+                    logger.log(Level.INFO, "Exception in grizzly thread", e);
+                }
+            }
+        };
+        thread.start();
+        logger.info("Listening on port " + portNumber);
+    }
 
 }

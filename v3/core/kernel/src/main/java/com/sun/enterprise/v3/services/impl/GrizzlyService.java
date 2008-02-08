@@ -36,14 +36,17 @@ import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.HttpListener;
 import com.sun.enterprise.config.serverbeans.VirtualServer;
 import com.sun.enterprise.util.StringUtils;
+import com.sun.grizzly.Controller;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
-import java.util.*;
 import java.util.logging.Logger;
 
 /**
- * The Grizzly Service is responsible for starting grizzly and register the
- * top level adapter. It is also providing a runtime service where other
- * services (like admin for instance) can register endpoints adapter to
+ * The Network Service is responsible for starting grizzly and register the
+ * top level proxy. It is also providing a runtime service where other
+ * services (like admin for instance) can register endpoints proxy to
  * particular context root.
  *
  * @author Jerome Dochez
@@ -61,7 +64,12 @@ public class GrizzlyService implements Startup, PostConstruct, PreDestroy {
     @Inject
     Habitat habitat;
 
-    List<GrizzlyAdapter> adapters = new ArrayList<GrizzlyAdapter>();
+    List<NetworkProxy> proxies = new ArrayList<NetworkProxy>();
+    
+    private final Controller controller  = new Controller();
+    
+    private final static boolean enablePU = 
+            Boolean.parseBoolean(System.getProperty("v3.grizzly.enablePU", "true"));
     
     /**
      * Returns the life expectency of the service
@@ -80,25 +88,32 @@ public class GrizzlyService implements Startup, PostConstruct, PreDestroy {
     public void postConstruct() {
         
         for (HttpListener listener : config.getHttpService().getHttpListener()) {
-            // create the adapter for the port.
-            GrizzlyAdapter adapter = new GrizzlyAdapter(logger, habitat, listener);
-
-            // attach all virtual servers to this port
-            for (VirtualServer vs : config.getHttpService().getVirtualServer()) {
-                List<String> vsListeners = StringUtils.parseStringList(vs.getHttpListeners()," ,");
-                if (vsListeners.contains(listener.getId())) {
-                    adapter.addVirtualServer(vs);
+            // create the proxy for the port.
+            NetworkProxy proxy = null;
+            if (enablePU){
+                proxy = new GrizzlyProxy(logger, habitat, listener, controller);
+            } else {
+                proxy = new GrizzlyAdapter(logger, habitat, listener, controller);
+                // attach all virtual servers to this port
+               for (VirtualServer vs : config.getHttpService().getVirtualServer()) {
+                    List<String> vsListeners = StringUtils.parseStringList(vs.getHttpListeners()," ,");
+                    if (vsListeners.contains(listener.getId())) {
+                        ((GrizzlyAdapter)proxy).addVirtualServer(vs);
+                    }
                 }
             }
-            // add the new adapter to our list of adapters.
-            adapters.add(adapter);
+            
+            proxy.start();
+            
+            // add the new proxy to our list of proxies.
+            proxies.add(proxy);
 
             // todo : this neeed some rework...
-            // now register all adapters you can find out there !
+            // now register all proxies you can find out there !
             // TODO : so far these qets registered everywhere, maybe not the right thing ;-)
             for (org.glassfish.api.container.Adapter subAdapter : habitat.getAllByContract(org.glassfish.api.container.Adapter.class)) {
 
-                logger.fine("Registering adapter " + subAdapter.getContextRoot());
+                logger.fine("Registering proxy " + subAdapter.getContextRoot());
                 registerEndpoint(subAdapter.getContextRoot(), null, subAdapter, null);
             }
         }
@@ -108,16 +123,16 @@ public class GrizzlyService implements Startup, PostConstruct, PreDestroy {
      * The component is about to be removed from commission
      */
     public void preDestroy() {
-        for (GrizzlyAdapter adapter : adapters) {
-            adapter.stop();
+        for (NetworkProxy proxy : proxies) {
+            proxy.stop();
         }
     }
 
     /*
-     * Registers a new endpoint (adapter implementation) for a particular
+     * Registers a new endpoint (proxy implementation) for a particular
      * context-root. All request coming with the context root will be dispatched
-     * to the adapter instance passed in.
-     * @param contextRoot for the adapter
+     * to the proxy instance passed in.
+     * @param contextRoot for the proxy
      * @param endpointAdapter servicing requests.
      */
     public void registerEndpoint(String contextRoot, com.sun.grizzly.tcp.Adapter endpointAdapter,
@@ -127,17 +142,17 @@ public class GrizzlyService implements Startup, PostConstruct, PreDestroy {
     }
 
     /*
-     * Registers a new endpoint (adapter implementation) for a particular
+     * Registers a new endpoint (proxy implementation) for a particular
      * context-root. All request coming with the context root will be dispatched
-     * to the adapter instance passed in.
-     * @param contextRoot for the adapter
+     * to the proxy instance passed in.
+     * @param contextRoot for the proxy
      * @param endpointAdapter servicing requests.
      */
     public void registerEndpoint(String contextRoot, Collection<String> vsServers, com.sun.grizzly.tcp.Adapter endpointAdapter,
                                  ApplicationContainer container) {
 
-        for (GrizzlyAdapter adapter : adapters) {
-            adapter.registerEndpoint(contextRoot, vsServers, endpointAdapter, container);
+        for (NetworkProxy proxy : proxies) {
+            proxy.registerEndpoint(contextRoot, vsServers, endpointAdapter, container);
         }
     }
 
@@ -152,8 +167,8 @@ public class GrizzlyService implements Startup, PostConstruct, PreDestroy {
      * Removes the contex-root from our list of endpoints.
      */
     public void unregisterEndpoint(String contextRoot, ApplicationContainer app) {
-        for (GrizzlyAdapter adapter : adapters) {
-            adapter.unregisterEndpoint(contextRoot, app);
+        for (NetworkProxy proxy : proxies) {
+            proxy.unregisterEndpoint(contextRoot, app);
         }
 
     }    
