@@ -67,7 +67,7 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(DeployCommand.class);    
     public static final String NAME = "name";
     public static final String VIRTUAL_SERVERS = "virtualservers";
-    public static final String CONTEXT_ROOT = "contextRoot";
+    public static final String CONTEXT_ROOT = "contextroot";
     public static final String LIBRARIES = "libraries";
     public static final String DIRECTORY_DEPLOYED = "DirectoryDeployed";
 
