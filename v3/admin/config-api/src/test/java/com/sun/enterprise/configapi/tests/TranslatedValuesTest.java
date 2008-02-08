@@ -4,6 +4,9 @@ import org.junit.Test;
 import org.junit.Before;
 import static org.junit.Assert.*;
 import com.sun.enterprise.config.serverbeans.Domain;
+import com.sun.enterprise.config.serverbeans.JavaConfig;
+
+import java.io.File;
 
 /**
  * Simple test for translated values access
@@ -19,6 +22,7 @@ public class TranslatedValuesTest extends ConfigApiTest {
     @Before
     public void setup() {
         System.setProperty("com.sun.aas.instanceRoot", "cafebabe");
+        System.setProperty("com.sun.aas.javaRoot", System.getProperty("user.home"));
     }
 
 
@@ -28,4 +32,15 @@ public class TranslatedValuesTest extends ConfigApiTest {
         String appRoot = domain.getApplicationRoot();
         assertTrue(appRoot.startsWith("cafebabe"));
     }
+
+    @Test
+    public void testJavaRoot() {
+        if (System.getProperty("user.home").contains(File.separator)) {
+            JavaConfig config = getHabitat().getComponent(JavaConfig.class);
+            String javaRoot = config.getJavaHome();
+            assertTrue(javaRoot.indexOf(File.separatorChar)!=-1);
+        }
+        assertTrue(true);
+    }
+
 }

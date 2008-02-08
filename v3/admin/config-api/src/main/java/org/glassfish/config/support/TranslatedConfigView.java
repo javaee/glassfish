@@ -58,7 +58,8 @@ public class TranslatedConfigView implements ConfigView {
             String stringValue = value.toString();
             Matcher m = p.matcher(stringValue);
             while (m.find()) {
-                stringValue = m.replaceFirst( m.group(1)+System.getProperty(m.group(2).trim())+m.group(3));
+                stringValue = m.replaceFirst(m.quoteReplacement(m.group(1)+
+                        System.getProperty(m.group(2).trim())+m.group(3)));
                 m.reset(stringValue);
             }
             return stringValue;
