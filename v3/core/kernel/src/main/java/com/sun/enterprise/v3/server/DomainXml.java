@@ -1,10 +1,10 @@
 package com.sun.enterprise.v3.server;
 
-import org.glassfish.config.support.GlassFishDocument;
 import com.sun.enterprise.module.bootstrap.Populator;
 import com.sun.enterprise.module.bootstrap.StartupContext;
 import com.sun.hk2.component.ExistingSingletonInhabitant;
 import org.glassfish.api.Absolutized;
+import org.glassfish.config.support.GlassFishDocument;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
@@ -13,10 +13,12 @@ import org.jvnet.hk2.config.ConfigParser;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
-import javax.xml.transform.stream.StreamSource;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.LineNumberReader;
 import java.util.Properties;
 import java.util.logging.Level;
@@ -212,10 +214,30 @@ public class DomainXml implements Populator {
          */
         private boolean foundConfig;
 
+        /**
+         * Because {@link XMLStreamReader} doesn't close the underlying stream,
+         * we need to do it by ourselves. So much for the "easy to use" API.
+         */
+        private FileInputStream stream;
+
         public DomainXmlReader(File domainXml, String serverName) throws XMLStreamException {
-            super(xif.createXMLStreamReader(new StreamSource(domainXml)));
+            try {
+                stream = new FileInputStream(domainXml);
+            } catch (FileNotFoundException e) {
+                throw new XMLStreamException(e);
+            }
+            setParent(xif.createXMLStreamReader(domainXml.toURI().toString(), stream));
             this.domainXml = domainXml;
             this.serverName = serverName;
+        }
+
+        public void close() throws XMLStreamException {
+            super.close();
+            try {
+                stream.close();
+            } catch (IOException e) {
+                throw new XMLStreamException(e);
+            }
         }
 
         boolean filterOut() throws XMLStreamException {
@@ -244,19 +266,25 @@ public class DomainXml implements Populator {
 
         private void parse2ndTime() throws XMLStreamException {
             logger.info("Forced to parse "+ domainXml +" twice because we didn't see <server> before <config>");
-            XMLStreamReader xsr = xif.createXMLStreamReader(new StreamSource(domainXml));
-            while(configName==null) {
-                switch(xsr.next()) {
-                case START_ELEMENT:
-                    checkConfigRef(xsr);
-                    break;
-                case END_DOCUMENT:
-                    break;
+            try {
+                InputStream stream = new FileInputStream(domainXml);
+                XMLStreamReader xsr = xif.createXMLStreamReader(domainXml.toURI().toString(),stream);
+                while(configName==null) {
+                    switch(xsr.next()) {
+                    case START_ELEMENT:
+                        checkConfigRef(xsr);
+                        break;
+                    case END_DOCUMENT:
+                        break;
+                    }
                 }
-            }
-            xsr.close();
-            if(configName==null)
+                xsr.close();
+                stream.close();
+                if(configName==null)
                 throw new BootError(domainXml +" contains no <server> element that matches "+ serverName);
+            } catch (IOException e) {
+                throw new XMLStreamException("Failed to parse "+domainXml,e);
+            }
         }
 
         private void checkConfigRef(XMLStreamReader xsr) {

@@ -13,6 +13,9 @@ abstract class XMLStreamReaderFilter extends StreamReaderDelegate {
         super(reader);
     }
 
+    XMLStreamReaderFilter() {
+    }
+
     public int next() throws XMLStreamException {
         while(true) {
             int r = super.next();
