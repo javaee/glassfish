@@ -102,6 +102,9 @@ public class DomainXmlPersistence implements ConfigurationPersistence {
         // backup the current file
         File destination = new File(env.getConfigDirPath(), "domain.xml");
         File backup = new File(env.getConfigDirPath(), "domain.bak");
+        if (!backup.delete()) {
+            logger.severe("Could not delete previous backup file at " + backup.getAbsolutePath());
+        }
         if (!destination.renameTo(backup)) {
             logger.severe("Could not rename " + destination.getAbsolutePath() + " to " + backup.getAbsolutePath());
         }
