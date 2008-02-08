@@ -11,7 +11,7 @@
     <artifactId>core</artifactId>
     <packaging>hk2-jar</packaging>
     <version>1.0-SNAPSHOT</version>
-    <name>Admin Console core</name>
+    <name>Admin Console Core</name>
 
     <build>
         <plugins>
