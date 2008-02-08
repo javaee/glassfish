@@ -12,7 +12,7 @@ import java.beans.PropertyVetoException;
  * @author Jerome Dochez
  */
 @Configured
-public interface Module extends ConfigBeanProxy, Injectable {
+public interface Module extends ConfigBeanProxy {
 
     /**
      * Gets the value of the name property.

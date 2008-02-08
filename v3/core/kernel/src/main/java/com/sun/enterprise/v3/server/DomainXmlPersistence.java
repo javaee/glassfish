@@ -39,6 +39,7 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.config.DomDocument;
+import org.jvnet.hk2.config.IndentingXMLStreamWriter;
 import org.jvnet.hk2.component.Singleton;
 import org.glassfish.config.support.ConfigurationPersistence;
 
@@ -55,8 +56,8 @@ import java.io.FileOutputStream;
  *
  * @author Jerome Dochez
  */
-//@Service
-//@Scoped(Singleton.class)
+@Service
+@Scoped(Singleton.class)
 public class DomainXmlPersistence implements ConfigurationPersistence {
 
     @Inject
@@ -74,7 +75,7 @@ public class DomainXmlPersistence implements ConfigurationPersistence {
         XMLStreamWriter writer = null;
         try {
             writer = xmlFactory.createXMLStreamWriter(new BufferedOutputStream(new FileOutputStream(f)));
-            doc.writeTo(writer);
+            doc.writeTo(new IndentingXMLStreamWriter(writer));
         } catch (XMLStreamException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         } finally {

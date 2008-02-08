@@ -49,6 +49,8 @@ import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.TransactionFailure;
 import com.sun.enterprise.config.serverbeans.Resources;
 import com.sun.enterprise.config.serverbeans.JdbcResource;
+import com.sun.enterprise.config.serverbeans.Resource;
+import com.sun.enterprise.util.LocalStringManagerImpl;
 
 import java.beans.PropertyVetoException;
 
@@ -56,10 +58,12 @@ import java.beans.PropertyVetoException;
  * Create-jdbc-resource command
  * 
  */
-@Service
+@Service(name="create-jdbc-resource")
 @Scoped(PerLookup.class)
 @I18n("create.jdbc.resource")
 public class CreateJdbcResource implements AdminCommand {
+
+    final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(CreateJdbcResource.class);       
 
     @Param
     String connectionPoolId;
@@ -84,6 +88,20 @@ public class CreateJdbcResource implements AdminCommand {
      */
     public void execute(AdminCommandContext context) {
 
+        final ActionReport report = context.getActionReport();
+
+        // ensure we don't already have one of this name
+        for (Resource resource : resources.getResources()) {
+            if (resource instanceof JdbcResource) {
+                if (((JdbcResource) resource).getJndiName().equals(jndiName)) {
+                    report.setMessage(localStrings.getLocalString("deploy.command.duplicate",
+                            "A JDBC resource named {0} already exists.", jndiName));
+                    report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                    return;                    
+                }
+            }
+        }
+        
         try {
             ConfigSupport.apply(new SingleConfigCode<Resources>() {
 
@@ -99,9 +117,12 @@ public class CreateJdbcResource implements AdminCommand {
             }, resources);
 
         } catch(TransactionFailure e) {
-            context.getActionReport().setActionExitCode(ActionReport.ExitCode.FAILURE);
-            context.getActionReport().setFailureCause(e);
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            report.setFailureCause(e);
         }
-        context.getActionReport().setActionExitCode(ActionReport.ExitCode.SUCCESS);
+        report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
+        report.setMessage(localStrings.getLocalString("create.jdbc.resource.success",
+                "JDBC resource {0} created successfully", jndiName));
+        
     }
 }

@@ -38,6 +38,7 @@ package org.glassfish.javaee.services;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PostConstruct;
+import org.jvnet.hk2.config.ConfigListener;
 import org.glassfish.api.Startup;
 import org.glassfish.api.naming.GlassfishNamingManager;
 import com.sun.enterprise.config.serverbeans.JdbcResource;
@@ -45,6 +46,7 @@ import com.sun.enterprise.config.serverbeans.JdbcResource;
 import javax.naming.NamingException;
 import java.util.logging.Logger;
 import java.util.logging.Level;
+import java.beans.PropertyChangeEvent;
 
 /**
  * Binds proxy objects in the jndi namespace for all the JdbcResources defined in the
@@ -54,7 +56,7 @@ import java.util.logging.Level;
  * @author Jerome Dochez
  */
 @Service
-public class ResourceAdaptersBinder implements Startup, PostConstruct {
+public class ResourceAdaptersBinder implements Startup, PostConstruct, ConfigListener {
 
     @Inject
     JdbcResource[] resources;
@@ -88,4 +90,9 @@ public class ResourceAdaptersBinder implements Startup, PostConstruct {
         return Lifecycle.SERVER;
     }
 
+    public void changed(PropertyChangeEvent[] propertyChangeEvents) {
+        for (PropertyChangeEvent evt : propertyChangeEvents) {
+            System.out.println("evt" + evt.getOldValue() + " : " + evt.getNewValue());
+        }
+    }
 }

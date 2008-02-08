@@ -24,11 +24,14 @@ public class HttpListenerContainer implements ConfigListener {
 
     volatile boolean received=false;
     
-    public void changed(PropertyChangeEvent[] events) {
+    public synchronized void changed(PropertyChangeEvent[] events) {
+        if (received) {
+            // I am alredy happy
+            return;
+        }
         assertTrue(events.length==1);
         String listenerName = ((HttpListener) events[0].getSource()).getId();
         assertTrue(listenerName.equals("http-listener-1"));
-        System.out.println("new value " + events[0].getNewValue().toString());
         assertTrue(events[0].getNewValue().toString().equals("8989"));
         received = true;
     }

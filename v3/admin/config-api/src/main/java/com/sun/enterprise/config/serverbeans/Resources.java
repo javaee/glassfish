@@ -77,7 +77,7 @@ public interface Resources extends ConfigBeanProxy, Injectable  {
      * Objects of the following type(s) are allowed in the list
      * {@link CustomResource }
      * {@link ExternalJndiResource }
-     * {@link JdbcResource }
+     * {@link JdbcResource }                                       «
      * {@link MailResource }
      * {@link PersistenceManagerFactoryResource }
      * {@link AdminObjectResource }

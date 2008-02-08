@@ -36,10 +36,14 @@
 
 package com.sun.enterprise.config.serverbeans;
 
+import org.jvnet.hk2.config.ConfigBeanProxy;
+import org.jvnet.hk2.config.Configured;
+
 /**
  * Tag interface for all types of resource.
  * 
  * @author Jerome Dochez
  */
-public interface Resource {
+@Configured
+public interface Resource extends ConfigBeanProxy {
 }

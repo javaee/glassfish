@@ -40,7 +40,7 @@ public class PersistenceTest extends ConfigApiTest {
             public void save(DomDocument doc) throws IOException, XMLStreamException {
                 XMLOutputFactory factory = XMLOutputFactory.newInstance();
                 XMLStreamWriter writer = factory.createXMLStreamWriter(baos);
-                doc.writeTo(writer);
+                doc.writeTo(new IndentingXMLStreamWriter(writer));
                 writer.close();
             }
         };
