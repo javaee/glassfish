@@ -47,36 +47,27 @@ import org.jvnet.hk2.component.PerLookup;
 import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.TransactionFailure;
-import com.sun.enterprise.config.serverbeans.Resources;
-import com.sun.enterprise.config.serverbeans.JdbcResource;
 import com.sun.enterprise.config.serverbeans.Resource;
+import com.sun.enterprise.config.serverbeans.Resources;
+import com.sun.enterprise.config.serverbeans.JdbcConnectionPool;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 
 import java.beans.PropertyVetoException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
- * Create JDBC Resource Command
+ * List JDBC Connection Pools command
  * 
  */
-@Service(name="create-jdbc-resource")
+@Service(name="list-jdbc-connection-pools")
 @Scoped(PerLookup.class)
-@I18n("create.jdbc.resource")
-public class CreateJdbcResource implements AdminCommand {
+@I18n("list.jdbc.connection.pools")
+public class ListJdbcConnectionPools implements AdminCommand {
     
-    final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(CreateJdbcResource.class);    
+    final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(ListJdbcConnectionPools.class);    
 
-    @Param(name="connectionpoolid")
-    String connectionPoolId;
-
-    @Param(optional=true)
-    String enabled = Boolean.TRUE.toString();
-
-    @Param(optional=true)
-    String description;
-
-    @Param(name="jndi_name", primary=true)
-    String jndiName;
-    
     @Inject
     Resources resources;
 
@@ -87,41 +78,34 @@ public class CreateJdbcResource implements AdminCommand {
      * @param context information
      */
     public void execute(AdminCommandContext context) {
-        final ActionReport report = context.getActionReport();
-
-        // ensure we don't already have one of this name
-        for (Resource resource : resources.getResources()) {
-            if (resource instanceof JdbcResource) {
-                if (((JdbcResource) resource).getJndiName().equals(jndiName)) {
-                    report.setMessage(localStrings.getLocalString("create.jdbc.resource.duplicate",
-                            "A JDBC resource named {0} already exists.", jndiName));
-                    report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-                    return;                    
-                }
-            }
-        }
-        
+        ActionReport report = context.getActionReport();
+        final List<String> cpList = new ArrayList();
         try {
             ConfigSupport.apply(new SingleConfigCode<Resources>() {
 
-                public Object run(Resources param) throws PropertyVetoException, TransactionFailure {
-                    JdbcResource newResource = ConfigSupport.createChildOf(param, JdbcResource.class);
-                    newResource.setJndiName(jndiName);
-                    newResource.setDescription(description);
-                    newResource.setPoolName(connectionPoolId);
-                    newResource.setEnabled(enabled);
-                    param.getResources().add(newResource);                    
-                    return newResource;
+                public List<String> run(Resources param) throws PropertyVetoException, TransactionFailure {
+                    List<Resource> list = param.getResources();
+                    Iterator iter = list.iterator();
+                    while (iter.hasNext()) {
+                        Resource res = (Resource)iter.next();
+                        if (res instanceof JdbcConnectionPool) {
+                            cpList.add(((JdbcConnectionPool)res).getName());
+                        }
+                    };
+                    return cpList;
                 }
             }, resources);
 
         } catch(TransactionFailure e) {
-            report.setMessage(localStrings.getLocalString("create.jdbc.resource.fail", "{0} create failed ", jndiName));
+            report.setMessage(localStrings.getLocalString("list.jdbc.connection.pools.fail", "list-jdbc-connection-pools failed "));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
         }
+        Iterator iter = cpList.iterator();
+        while (iter.hasNext()) {
+            report.setMessage((String)iter.next());
+        }
+        report.setMessage(localStrings.getLocalString("list.jdbc.connection.pools.success", "list-jdbc-connection-pools successful"));
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
-        report.setMessage(localStrings.getLocalString("create.jdbc.resource.success",
-                "JDBC resource {0} created successfully", jndiName));
     }
 }
