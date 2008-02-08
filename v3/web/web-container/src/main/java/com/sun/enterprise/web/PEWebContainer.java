@@ -185,8 +185,6 @@ public class PEWebContainer extends WebContainer {
         configureNotSupported(httpService);
 
         createConnectors(httpService);
-
-        createConnectors(httpService);
         createJKConnector(httpService);
 
         createHosts(httpService, config.getSecurityService(), globalAccessLoggingEnabled, serverBean);

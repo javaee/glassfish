@@ -266,7 +266,6 @@ public class PECoyoteConnector extends CoyoteConnector{
                                                                .booleanValue();
         }
         
-        System.out.println("AMY coyoteOn = "+coyoteOn);
         // By default, turn on the Coyote Connector
         if (!coyoteOn) 
             setProtocolHandlerClassName(GRIZZLY_CONNECTOR);
