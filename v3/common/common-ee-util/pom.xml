@@ -84,14 +84,9 @@
             <version>${project.parent.version}</version>
         </dependency>         
         <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>servlet-api</artifactId>
-            <version>${servlet-api.version}</version>
+            <groupId>javax.javaee</groupId>
+            <artifactId>javaee</artifactId>
+            <version>${javaee-api.version}</version>
         </dependency>
-        <dependency>
-            <groupId>javax.persistence</groupId>
-            <artifactId>persistence-api</artifactId>
-            <version>${persistence-api.version}</version>
-        </dependency>         
    </dependencies>
 </project>

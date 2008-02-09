@@ -66,11 +66,6 @@
             <version>${javaee-api.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.glassfish.api</groupId>
-            <artifactId>mail</artifactId>
-            <version>${mail.version}</version>
-        </dependency>
-        <dependency>
             <groupId>com.sun.enterprise</groupId>
             <artifactId>hk2</artifactId>
             <version>${hk2.version}</version>
@@ -89,6 +84,7 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.3.1</version>
+            <scope>test</scope>
         </dependency>
    </dependencies>
 </project>

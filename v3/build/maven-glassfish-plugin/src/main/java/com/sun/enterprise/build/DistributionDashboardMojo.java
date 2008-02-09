@@ -82,7 +82,7 @@ public class DistributionDashboardMojo extends AbstractGlassfishMojo {
     public void execute() throws MojoExecutionException, MojoFailureException {
         
         // find all maven modules
-        Set<Artifact> ourArtifacts = findArtifactsOfScope(project.getArtifacts(), "runtime");
+        Set<Artifact> ourArtifacts = findArtifactsOfScope(project.getArtifacts(), "compile");
 
         initXRefs(ourArtifacts);
 
