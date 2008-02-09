@@ -135,7 +135,6 @@ public class GrizzlyServiceListener extends SelectorThread implements SecureSele
             controller.setProtocolChainInstanceHandler(instanceHandler);
         }
 
-        controller.setPipeline(processorPipeline);
         controller.setReadThreadsCount(readThreadsCount);
         // TODO: Do we want to support UDP all the time?
         controller.addSelectorHandler(createUDPSelectorHandler());
@@ -190,6 +189,7 @@ public class GrizzlyServiceListener extends SelectorThread implements SecureSele
     protected UDPSelectorHandler createUDPSelectorHandler() {
         UDPSelectorHandler udpSelectorHandler = new UDPSelectorHandler();
         udpSelectorHandler.setPort(port);
+        udpSelectorHandler.setPipeline(processorPipeline);
         return udpSelectorHandler;
     }
 
@@ -200,6 +200,7 @@ public class GrizzlyServiceListener extends SelectorThread implements SecureSele
     protected void configureSelectorHandler(UDPSelectorHandler selectorHandler) {
         selectorHandler.setPort(port);
         selectorHandler.setReuseAddress(getReuseAddress());
+        selectorHandler.setPipeline(processorPipeline);
     }
     // ---------------------------------------------- Public get/set ----- //
 
