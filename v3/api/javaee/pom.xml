@@ -147,6 +147,11 @@
             <groupId>javax.servlet.jsp.jstl</groupId>
             <artifactId>jstl-api</artifactId>
             <version>${jstl-api.version}</version>        	
-        </dependency>        
+        </dependency>  
+        <dependency>
+		    <groupId>javax.management.j2ee</groupId>
+    		<artifactId>management-api</artifactId>
+        	<version>${management-api.version}</version>
+       	</dependency>
     </dependencies>
 </project>
