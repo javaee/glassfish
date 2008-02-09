@@ -47,6 +47,7 @@ import org.jvnet.hk2.component.PerLookup;
 import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.TransactionFailure;
+import com.sun.enterprise.config.serverbeans.Resource;
 import com.sun.enterprise.config.serverbeans.Resources;
 import com.sun.enterprise.config.serverbeans.JdbcConnectionPool;
 import com.sun.enterprise.util.LocalStringManagerImpl;
@@ -127,7 +128,20 @@ public class CreateJdbcConnectionPool implements AdminCommand {
      * @param context information
      */
     public void execute(AdminCommandContext context) {
-        ActionReport report = context.getActionReport();
+        final ActionReport report = context.getActionReport();
+        
+        // ensure we don't already have one of this name
+        for (Resource resource : resources.getResources()) {
+            if (resource instanceof JdbcConnectionPool) {
+                if (((JdbcConnectionPool) resource).getName().equals(jdbc_connection_pool_id)) {
+                    report.setMessage(localStrings.getLocalString("create.jdbc.connection.pool.duplicate",
+                            "A JDBC connection pool named {0} already exists.", jdbc_connection_pool_id));
+                    report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                    return;                    
+                }
+            }
+        }
+        
         try {
             ConfigSupport.apply(new SingleConfigCode<Resources>() {
 

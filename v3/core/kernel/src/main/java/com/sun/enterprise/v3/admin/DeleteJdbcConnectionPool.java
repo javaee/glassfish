@@ -47,14 +47,11 @@ import org.jvnet.hk2.component.PerLookup;
 import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.TransactionFailure;
-import com.sun.enterprise.config.serverbeans.Resource;
 import com.sun.enterprise.config.serverbeans.Resources;
 import com.sun.enterprise.config.serverbeans.JdbcConnectionPool;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 
 import java.beans.PropertyVetoException;
-import java.util.Iterator;
-import java.util.List;
 
 /**
  * Delete JDBC Connection Pool Command
@@ -72,6 +69,9 @@ public class DeleteJdbcConnectionPool implements AdminCommand {
 
     @Inject
     Resources resources;
+    
+    @Inject
+    JdbcConnectionPool[] connPools;
 
     /**
      * Executes the command with the command parameters passed as Properties
@@ -80,31 +80,29 @@ public class DeleteJdbcConnectionPool implements AdminCommand {
      * @param context information
      */
     public void execute(AdminCommandContext context) {
-        ActionReport report = context.getActionReport();
+        final ActionReport report = context.getActionReport();
         try {
-            ConfigSupport.apply(new SingleConfigCode<Resources>() {
-
+           if (ConfigSupport.apply(new SingleConfigCode<Resources>() {
                 public Object run(Resources param) throws PropertyVetoException, TransactionFailure {
-                    List<Resource> list = param.getResources();
-                    Iterator iter = list.iterator();
-                    while (iter.hasNext()) {
-                        Resource res = (Resource)iter.next();
-                        if (res instanceof JdbcConnectionPool) {
-                            if (((JdbcConnectionPool)iter).getName().equals(jdbc_connection_pool_id)) {
-                                list.remove(res);
-                            }
+                    for (JdbcConnectionPool cp : connPools) {
+                        if (cp.getName().equals(jdbc_connection_pool_id)) {
+                            return param.getResources().remove(cp);
                         }
-                    };
-                    return list;
+                    }
+                    // not found
+                    report.setMessage(localStrings.getLocalString("delete.jdbc.connection.pool.notfound", "{0} delete failed, resource not found", jdbc_connection_pool_id));
+                    report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                    return null;
                 }
-            }, resources);
+            }, resources) !=null) {
+                report.setMessage(localStrings.getLocalString("delete.jdbc.connection.pool.success", "{0} deleted successfully", jdbc_connection_pool_id));
+                report.setActionExitCode(ActionReport.ExitCode.SUCCESS);       
+            }
 
         } catch(TransactionFailure e) {
             report.setMessage(localStrings.getLocalString("delete.jdbc.connection.pool.fail", "{0} delete failed ", jdbc_connection_pool_id));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
-        }
-        report.setMessage(localStrings.getLocalString("delete.jdbc.connection.pool.success", "{0} deleted successfully", jdbc_connection_pool_id));
-        report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
+        }        
     }
 }

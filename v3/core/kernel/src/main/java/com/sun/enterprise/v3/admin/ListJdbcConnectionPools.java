@@ -47,15 +47,10 @@ import org.jvnet.hk2.component.PerLookup;
 import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.TransactionFailure;
-import com.sun.enterprise.config.serverbeans.Resource;
-import com.sun.enterprise.config.serverbeans.Resources;
 import com.sun.enterprise.config.serverbeans.JdbcConnectionPool;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 
 import java.beans.PropertyVetoException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
 /**
  * List JDBC Connection Pools command
@@ -69,7 +64,7 @@ public class ListJdbcConnectionPools implements AdminCommand {
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(ListJdbcConnectionPools.class);    
 
     @Inject
-    Resources resources;
+    JdbcConnectionPool[] connPools;
 
     /**
      * Executes the command with the command parameters passed as Properties
@@ -78,34 +73,14 @@ public class ListJdbcConnectionPools implements AdminCommand {
      * @param context information
      */
     public void execute(AdminCommandContext context) {
-        ActionReport report = context.getActionReport();
-        final List<String> cpList = new ArrayList();
-        try {
-            ConfigSupport.apply(new SingleConfigCode<Resources>() {
+        final ActionReport report = context.getActionReport();
 
-                public List<String> run(Resources param) throws PropertyVetoException, TransactionFailure {
-                    List<Resource> list = param.getResources();
-                    Iterator iter = list.iterator();
-                    while (iter.hasNext()) {
-                        Resource res = (Resource)iter.next();
-                        if (res instanceof JdbcConnectionPool) {
-                            cpList.add(((JdbcConnectionPool)res).getName());
-                        }
-                    };
-                    return cpList;
-                }
-            }, resources);
-
-        } catch(TransactionFailure e) {
-            report.setMessage(localStrings.getLocalString("list.jdbc.connection.pools.fail", "list-jdbc-connection-pools failed "));
-            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            report.setFailureCause(e);
+        report.getTopMessagePart().setMessage(localStrings.getLocalString("list.jdbc.connection.pools.success", "list-jdbc-connection-pools successful"));
+        report.getTopMessagePart().setChildrenType("jdbc-connection-pool");
+        for (JdbcConnectionPool cp : connPools) {
+            final ActionReport.MessagePart part = report.getTopMessagePart().addChild();
+            part.setMessage(cp.getName());
         }
-        Iterator iter = cpList.iterator();
-        while (iter.hasNext()) {
-            report.setMessage((String)iter.next());
-        }
-        report.setMessage(localStrings.getLocalString("list.jdbc.connection.pools.success", "list-jdbc-connection-pools successful"));
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
     }
 }
