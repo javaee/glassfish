@@ -40,7 +40,8 @@ public class GrizzlyHttpEmbed {
         System.setProperty("product.name", "GlassFish/v3");      
         GrizzlyServiceListener grizzlyServiceListener 
                 = new GrizzlyServiceListener();
-        grizzlyServiceListener.setController(controller);
+	//TODO: Configure via domain.xml
+        //grizzlyServiceListener.setController(controller);
         grizzlyServiceListener.setPort(port);   
         grizzlyServiceListener.setMaxProcessorWorkerThreads(5);
         GrizzlyServiceListener.setWebAppRootPath(
