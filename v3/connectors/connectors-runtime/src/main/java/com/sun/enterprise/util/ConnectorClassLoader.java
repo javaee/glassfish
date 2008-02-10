@@ -36,19 +36,14 @@
 
 package com.sun.enterprise.util;
 
-import java.io.File;
-import java.util.*;
-import java.net.*;
-
-
-//START OF IASRI 4660742
-import java.util.logging.*;
-import com.sun.logging.*;
-//END OF IASRI 4660742
-
-// IASRI 4709925 - updated ejb class loader
 import com.sun.enterprise.loader.EJBClassLoader;
-import com.sun.enterprise.connectors.util.ResourcesUtil;
+import com.sun.logging.LogDomains;
+
+import java.io.File;
+import java.net.MalformedURLException;
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**
@@ -60,190 +55,191 @@ import com.sun.enterprise.connectors.util.ResourcesUtil;
  */
 public class ConnectorClassLoader extends EJBClassLoader {
 
-	// START OF IASRI 4660742
-	static final Logger _logger=LogDomains.getLogger(LogDomains.UTIL_LOGGER);
-	// END OF IASRI 4660742
+    private static final Logger _logger = LogDomains.getLogger(LogDomains.UTIL_LOGGER);
 
-	private static ConnectorClassLoader classLoader = null;
+    private static ConnectorClassLoader classLoader = null;
 
-	/**
-	 * A linked list of URL classloaders representing each deployed connector
-	 * module
-	 */
-	private final List classLoaderChain= new LinkedList();
+    /**
+     * A linked list of URL classloaders representing each deployed connector
+     * module
+     */
+    private final List classLoaderChain = new LinkedList();
 
-	/**
-	 * The parent class loader for the connector Class Loader [ie the common
-	 * Classloader]
-	 */
-	private ClassLoader parent= null;
+    /**
+     * The parent class loader for the connector Class Loader [ie the common
+     * Classloader]
+     */
+    private ClassLoader parent = null;
 
-	/**
-	 * Maintains a mapping between rar name and a classloader that has services
-	 * that RAR module.
-	 */
-	private final Map rarModuleClassLoaders = new HashMap();
+    /**
+     * Maintains a mapping between rar name and a classloader that has services
+     * that RAR module.
+     */
+    private final Map rarModuleClassLoaders = new HashMap();
 
-	public static synchronized ConnectorClassLoader getInstance() {
-	    if (classLoader == null) {
-	        classLoader = new ConnectorClassLoader();
-	    }
-	    return classLoader;
-	}
+    public static synchronized ConnectorClassLoader getInstance() {
+        if (classLoader == null) {
+            classLoader = new ConnectorClassLoader();
+        }
+        return classLoader;
+    }
 
-	private ConnectorClassLoader() {
-		super();
-	}
+    private ConnectorClassLoader() {
+        super();
+    }
 
-	// START OF IASRI 4628197: allows to pass in parent class loader
-	private ConnectorClassLoader(ClassLoader parent) {
-		super(parent);
-		this.parent= parent; 
-	}
+    private ConnectorClassLoader(ClassLoader parent) {
+        super(parent);
+        this.parent = parent;
+    }
 
-	/**
-	 * Initializes this sigleton with the given parent class loader 
-	 * if not already created.
-	 *
-	 * @param    parent    parent class loader
-	 * @return   the instance 
-	 */
-	public static ConnectorClassLoader getInstance(ClassLoader parent) {
-		if (classLoader == null) {
-			synchronized(ConnectorClassLoader.class) {
-				classLoader = new ConnectorClassLoader(parent);
-			}
-		}
-		return classLoader;
-	}
-	// END OF IASRI 4628197: allows to pass in parent class loader
+    /**
+     * Initializes this sigleton with the given parent class loader
+     * if not already created.
+     *
+     * @param parent parent class loader
+     * @return the instance
+     */
+    public static ConnectorClassLoader getInstance(ClassLoader parent) {
+        if (classLoader == null) {
+            synchronized (ConnectorClassLoader.class) {
+                classLoader = new ConnectorClassLoader(parent);
+            }
+        }
+        return classLoader;
+    }
+
+    /**
+     * Adds the requested resource adapter to the ConnectorClassLoader. A
+     * ConnectorClassLoader is created with the moduleDir as its search path
+     * and this classloader is added to the classloader chain.
+     *
+     * @param rarName   the resourceAdapter module name to add
+     * @param moduleDir the directory location where the RAR contents are exploded
+     */
+    public void addResourceAdapter(String rarName, String moduleDir) {
+
+        try {
+            File file = new File(moduleDir);
+            EJBClassLoader cl = new EJBClassLoader(parent);
+            cl.appendURL(file.toURI().toURL());
+            appendJars(file, cl);
+            classLoaderChain.add(cl);
+            rarModuleClassLoaders.put(rarName, cl);
+        } catch (MalformedURLException ex) {
+            _logger.log(Level.SEVERE, "enterprise_util.connector_malformed_url", ex);
+        }
+    }
+
+    //TODO V3 handling "unexploded jars" for now, V2 deployment module used to explode the jars also
+    private void appendJars(File moduleDir, EJBClassLoader cl) throws MalformedURLException {
+        if (moduleDir.isDirectory()) {
+            for (File file : moduleDir.listFiles()) {
+                if (file.getName().toUpperCase().endsWith(".JAR")) {
+                    cl.appendURL(file.toURI().toURL());
+                } else if (file.isDirectory()) {
+                    appendJars(file, cl); //recursive add
+                }
+            }
+        }
+    }
+
+    /**
+     * Removes the resource adapter's class loader from the classloader linked
+     * list
+     *
+     * @param moduleName the connector module that needs to be removed.
+     */
+    public void removeResourceAdapter(String moduleName) {
+        EJBClassLoader classLoaderToRemove =
+                (EJBClassLoader) rarModuleClassLoaders.get(moduleName);
+        if (classLoaderToRemove != null) {
+            classLoaderChain.remove(classLoaderToRemove);
+            rarModuleClassLoaders.remove(moduleName);
+            classLoaderToRemove = null;
+            _logger.log(
+                    Level.WARNING,
+                    "The Connector module "
+                            + moduleName
+                            + "  has been removed. Please redeploy all applications that "
+                            + "are using this connector module's resources");
+        }
+    }
 
 
-	/**
-	 * Adds the requested resource adapter to the ConnectorClassLoader. A
-	 * ConnectorClassLoader is created with the moduleDir as its search path
-	 * and this classloader is added to the classloader chain.
-	 * 
-	 * @param rarName
-	 *                     the resourceAdapter module name to add
-	 * @param moduleDir
-	 *                     the directory location where the RAR contents are exploded
-	 */
-	public void addResourceAdapter(String rarName, String moduleDir) {
+    /*
+      * Loads the class with the specified name and resolves it if specified.
+      *
+      * @see java.lang.ClassLoader#loadClass(java.lang.String, boolean)
+      */
+    public synchronized Class loadClass(String name, boolean resolve)
+            throws ClassNotFoundException {
+        Class clz = null;
+        //Use the delegation model to service class requests that could be
+        //satisfied by parent [common class loader].
 
-		try {
-			//System RARs are placed in classpath and hence would be handled 
-			//by the parent classloader 
-			if(!ResourcesUtil.createInstance().belongToSystemRar(rarName)) {
-				File file= new File(moduleDir);
-				EJBClassLoader cl= new EJBClassLoader(parent);
-				cl.appendURL(file.toURI().toURL());
-				classLoaderChain.add(cl);
-				rarModuleClassLoaders.put(rarName, cl);
-			}
-		} catch (MalformedURLException ex) {
-			_logger.log(
-					Level.SEVERE,
-					"enterprise_util.connector_malformed_url",
-					ex);
-		}
-	}
+        if (parent != null) {
+            try {
+                clz = parent.loadClass(name);
+                if (clz != null) {
+                    if (resolve) {
+                        resolveClass(clz);
+                    }
+                    return clz;
+                }
+            } catch (ClassNotFoundException e) {
+                //ignore and try the connector modules classloader
+                //chain.
+            }
+        } else {
+            return super.loadClass(name, resolve);
+        }
 
-	/**
-	 * Removes the resource adapter's class loader from the classloader linked
-	 * list
-	 * 
-	 * @param moduleName the connector module that needs to be removed.
-	 */
-	public void removeResourceAdapter(String moduleName) {
-		EJBClassLoader classLoaderToRemove=
-		(EJBClassLoader) rarModuleClassLoaders.get(moduleName);
-		if (classLoaderToRemove != null) {
-			classLoaderChain.remove(classLoaderToRemove);
-			rarModuleClassLoaders.remove(moduleName);
-			classLoaderToRemove = null;
-			_logger.log(
-				Level.WARNING,
-				"The Connector module "
-				+ moduleName
-				+ "  has been removed. Please redeploy all applications that "
-				+ "are using this connector module's resources");
-		}
-	}
+        //Going through the connector module classloader chain to find
+        // class and return the first match.
+        for (Iterator iter = classLoaderChain.iterator(); iter.hasNext();) {
+            EJBClassLoader ccl = (EJBClassLoader) iter.next();
+            try {
+                clz = ccl.loadClass(name);
+                if (clz != null) {
+                    if (resolve) {
+                        resolveClass(clz);
+                    }
+                    return clz;
+                }
+            } catch (ClassNotFoundException cnfe) {
+                //ignore this exception and continue with next classloader in
+                // chain
+                continue;
+            }
+        }
 
+        //Can't find requested class in parent and in our classloader chain
+        throw new ClassNotFoundException(name);
+    }
 
-	/*
-	 * Loads the class with the specified name and resolves it if specified.
-	 * 
-	 * @see java.lang.ClassLoader#loadClass(java.lang.String, boolean)
-	 */
-	public synchronized Class loadClass(String name, boolean resolve)
-		throws ClassNotFoundException {
-		Class clz = null;
-		//Use the delegation model to service class requests that could be
-		//satisfied by parent [common class loader].
-		if(parent != null) {
-			try {
-				clz = parent.loadClass(name);
-				if (clz != null) {
-					if(resolve) {
-				 	resolveClass(clz);
-					}
-				return clz;
-				}
-			} catch (ClassNotFoundException e) {
-			//ignore and try the connector modules classloader 
-			//chain.
-			}
-		} else {
-			return super.loadClass(name,resolve);
-		}
-	        
-		//Going through the connector module classloader chain to find
-		// class and return the first match.
-		for (Iterator iter= classLoaderChain.iterator(); iter.hasNext();) {
-			EJBClassLoader ccl= (EJBClassLoader) iter.next();
-			try {
-				clz= ccl.loadClass(name);
-				if (clz != null){
-					if(resolve) {
-						resolveClass(clz);
-					}
-					return clz;
-				}
-			} catch (ClassNotFoundException cnfe) {
-				//ignore this exception and continue with next classloader in
-				// chain
-				continue;
-			}
-		}
-        
-		//Can't find requested class in parent and in our classloader chain
-		throw new ClassNotFoundException(name);
-	}
-
-   /**
+    /**
      * Returns all the resources of the connector classloaders in the chain,
      * concatenated to a classpath string.
-     *
+     * <p/>
      * Notice that this method is called by the setClassPath() method of
      * org.apache.catalina.loader.WebappLoader, since the ConnectorClassLoader does
      * not extend off of URLClassLoader.
      *
      * @return Classpath string containing all the resources of the connectors
-     * in the chain. An empty string if there exists no connectors in the chain.
+     *         in the chain. An empty string if there exists no connectors in the chain.
      */
-    
-    public String getClasspath(){
-            StringBuffer strBuf = new StringBuffer();
-            for (int i = 0; i < classLoaderChain.size(); i++) {
-                    EJBClassLoader ecl= (EJBClassLoader) classLoaderChain.get(i);
-                    String eclClasspath = ecl.getClasspath();
-                    if ( eclClasspath != null) {
-                            if (i > 0) strBuf.append(File.pathSeparator);
-                            strBuf.append(eclClasspath);
-                    }
+
+    public String getClasspath() {
+        StringBuffer strBuf = new StringBuffer();
+        for (int i = 0; i < classLoaderChain.size(); i++) {
+            EJBClassLoader ecl = (EJBClassLoader) classLoaderChain.get(i);
+            String eclClasspath = ecl.getClasspath();
+            if (eclClasspath != null) {
+                if (i > 0) strBuf.append(File.pathSeparator);
+                strBuf.append(eclClasspath);
             }
-            return strBuf.toString();
+        }
+        return strBuf.toString();
     }
 }
