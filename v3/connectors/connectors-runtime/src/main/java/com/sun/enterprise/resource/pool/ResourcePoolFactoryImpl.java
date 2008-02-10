@@ -33,49 +33,31 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.enterprise.resource;
+package com.sun.enterprise.resource.pool;
 
 
-import com.sun.enterprise.Switch;
+import com.sun.appserv.connectors.spi.ConnectorConstants.PoolType;
 import com.sun.logging.LogDomains;
-import java.util.logging.Logger;
+
 import java.util.logging.Level;
-import com.sun.enterprise.connectors.ConnectorConstants.PoolType;
+import java.util.logging.Logger;
 
 /**
+ * Factory to create appropriate connection pool.
+ *
  * @author Aditya Gore
  */
 public class ResourcePoolFactoryImpl {
 
     private static Logger _logger = LogDomains.getLogger(LogDomains.RSR_LOGGER);
-    
-    //property to take care of switching off connection pooling in ACC
-    //since 9.1
-    private static final String SWITCH_OFF_ACC_CONNECTION_POOLING =
- 	"com.sun.enterprise.connectors.SwitchoffACCConnectionPooling";
-    private static String switchOffACCConnectionPoolingProperty = 
-            System.getProperty(SWITCH_OFF_ACC_CONNECTION_POOLING);
-    
-    
-    public static ResourcePool newInstance( String poolName, PoolType pt ) 
-        throws PoolingException {
-        ResourcePool pool = null;
-        
-        if(Switch.getSwitch().getContainerType() == Switch.APPCLIENT_CONTAINER){
-            if("TRUE".equalsIgnoreCase(switchOffACCConnectionPoolingProperty))
-                return new UnpooledResource( poolName );
-        }
 
-        if ( pt == PoolType.ASSOCIATE_WITH_THREAD_POOL ) {
-            pool = new AssocWithThreadResourcePool( poolName );
-        } else {
-            pool = new SJSASResourcePool( poolName );
-        }
+    public static ResourcePool newInstance(String poolName, PoolType pt)
+            throws PoolingException {
+        ResourcePool pool = new ConnectionPool(poolName);
 
-        if( _logger.isLoggable( Level.FINE ) ) {
-            _logger.fine( "Using Pool " + pt);
+        if (_logger.isLoggable(Level.FINE)) {
+            _logger.fine("Created a pool of type : " + pt);
         }
-
-        return pool; 
+        return pool;
     }
 }
