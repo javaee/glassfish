@@ -34,139 +34,120 @@
  * holder.
  */
 
-package com.sun.enterprise.connectors;
+package com.sun.enterprise.connectors.service;
 
-import com.sun.enterprise.connectors.util.ResourcesUtil;
+import com.sun.appserv.connectors.spi.ConnectorConstants;
+import com.sun.appserv.connectors.spi.ConnectorRuntimeException;
+import com.sun.enterprise.connectors.ConnectorConnectionPool;
+import com.sun.enterprise.connectors.ConnectorDescriptorInfo;
+import com.sun.enterprise.resource.ConnectorObjectFactory;
+
+import javax.naming.Context;
+import javax.naming.NameNotFoundException;
+import javax.naming.NamingException;
 import java.util.Hashtable;
-import java.util.logging.*;
-import java.io.PrintWriter;
-import java.sql.Connection;
-import java.sql.SQLException;
-import javax.naming.*;
-import javax.sql.DataSource;
-
-import com.sun.enterprise.*;
-import com.sun.enterprise.deployment.*;
-import com.sun.enterprise.server.*;
+import java.util.logging.Level;
 
 /**
  * This is connector resource admin service. It creates and deletes the
  * connector resources.
- * @author    Srikanth P 
+ *
+ * @author Srikanth P
  */
+public class ConnectorResourceAdminServiceImpl extends ConnectorService {
 
-
-public class ConnectorResourceAdminServiceImpl extends 
-                     ConnectorServiceImpl implements ConnectorAdminService {
-     
     /**
      * Default constructor
      */
+    public ConnectorResourceAdminServiceImpl() {
+        super();
+    }
 
-     public ConnectorResourceAdminServiceImpl() {
-         super();
-     }
-
-    /** 
+    /**
      * Creates the connector resource on a given connection pool
-     * @param jndiName JNDI name of the resource to be created
-     * @poolName PoolName to which the connector resource belongs.
-     * @resourceType Resource type Unused.
+     *
+     * @param jndiName     JNDI name of the resource to be created
+     * @param poolName     PoolName to which the connector resource belongs.
+     * @param resourceType Resource type Unused.
      * @throws ConnectorRuntimeException If the resouce creation fails.
      */
-
-    public void createConnectorResource(String jndiName, String poolName, 
-                    String resourceType) throws ConnectorRuntimeException
-    {
+    public void createConnectorResource(String jndiName, String poolName,
+                                        String resourceType) throws ConnectorRuntimeException {
 
         String errMsg = "rardeployment.jndi_lookup_failed";
         String name = poolName;
         try {
-	    ConnectorConnectionPool connectorConnectionPool = null;
+            ConnectorConnectionPool connectorConnectionPool = null;
             String jndiNameForPool = ConnectorAdminServiceUtils.
-                getReservePrefixedJNDINameForPool(poolName);
-            InitialContext ic = new InitialContext();
+                    getReservePrefixedJNDINameForPool(poolName);
+            Context ic = _runtime.getNamingManager().getInitialContext();
             try {
-                connectorConnectionPool = 
-                    (ConnectorConnectionPool) ic.lookup(jndiNameForPool);
-            } catch(NamingException ne) {
-                checkAndLoadPoolResource(poolName);
+                connectorConnectionPool =
+                        (ConnectorConnectionPool) ic.lookup(jndiNameForPool);
+            } catch (NamingException ne) {
+                /* TODO V3 handle lazy resource loading later
+                checkAndLoadPoolResource(poolName);*/
+                //TODO V3 temporary log, remove once lazy resource loading is handled
+                ne.printStackTrace();
             }
 
-            connectorConnectionPool = 
-                    (ConnectorConnectionPool) ic.lookup(jndiNameForPool);
-            ConnectorDescriptorInfo cdi = connectorConnectionPool.
-                getConnectorDescriptorInfo();
+            connectorConnectionPool = (ConnectorConnectionPool) ic.lookup(jndiNameForPool);
+            ConnectorDescriptorInfo cdi = connectorConnectionPool.getConnectorDescriptorInfo();
 
-            javax.naming.Reference ref=new  javax.naming.Reference( 
-                   connectorConnectionPool.getConnectorDescriptorInfo().
-                   getConnectionFactoryClass(), 
-                   "com.sun.enterprise.naming.factory.ConnectorObjectFactory",
-                   null);
-            StringRefAddr addr = new StringRefAddr("poolName",poolName);
-            ref.add(addr);
-            addr = new StringRefAddr("rarName", cdi.getRarName() );
-            ref.add(addr);
+            ConnectorObjectFactory cof = new ConnectorObjectFactory(jndiName, connectorConnectionPool.getConnectorDescriptorInfo().
+                    getConnectionFactoryClass(), cdi.getRarName(), poolName);
 
-            errMsg = "Failed to bind connector resource in JNDI";
-            name = jndiName;
-            Switch.getSwitch().getNamingManager().publishObject(
-                          jndiName,ref,true);
-            //To notify that a connector resource rebind has happened.
-            ConnectorResourceNamingEventNotifier.getInstance().
-                    notifyListeners(
-                            new ConnectorNamingEvent(
-                                    jndiName,ConnectorNamingEvent.EVENT_OBJECT_REBIND));
+            _runtime.getNamingManager().publishObject(jndiName, cof, true);
 
-        } catch(NamingException ne) {
-            ConnectorRuntimeException cre = 
-                  new ConnectorRuntimeException(errMsg);
+        } catch (NamingException ne) {
+            ConnectorRuntimeException cre =
+                    new ConnectorRuntimeException(errMsg);
             cre.initCause(ne);
-            _logger.log(Level.SEVERE,errMsg, name); 
-            _logger.log(Level.SEVERE,"", cre); 
+            _logger.log(Level.SEVERE, errMsg, name);
+            _logger.log(Level.SEVERE, "", cre);
             throw cre;
         }
-    } 
+    }
 
     /**
      * Deletes the connector resource.
+     *
      * @param jndiName JNDI name of the resource to delete.
      * @throws ConnectorRuntimeException if connector resource deletion fails.
      */
-
-    public void deleteConnectorResource(String jndiName) 
-                       throws ConnectorRuntimeException 
-    {
+    public void deleteConnectorResource(String jndiName)
+            throws ConnectorRuntimeException {
 
         try {
-            InitialContext ic = new InitialContext();
-            ic.unbind(jndiName);
-        } catch(NamingException ne) {
+
+            _runtime.getNamingManager().unpublishObject(jndiName);
+        } catch (NamingException ne) {
+            /* TODO V3 handle system RAR later
             ResourcesUtil resUtil = ResourcesUtil.createInstance();
-            if(resUtil.resourceBelongsToSystemRar(jndiName)) {
+            if (resUtil.resourceBelongsToSystemRar(jndiName)) {
                 return;
             }
-            if(ne instanceof  NameNotFoundException){
-                _logger.log(Level.FINE,
-                    "rardeployment.connectorresource_removal_from_jndi_error",
-                    jndiName);
-                _logger.log(Level.FINE,"", ne);
+            */
+            if (ne instanceof NameNotFoundException) {
+                _logger.log(Level.FINE, "rardeployment.connectorresource_removal_from_jndi_error", jndiName);
+                _logger.log(Level.FINE, "", ne);
                 return;
             }
-            ConnectorRuntimeException cre =  new ConnectorRuntimeException(
-                            "Failed to delete connector resource from jndi");
+            ConnectorRuntimeException cre = new ConnectorRuntimeException
+                    ("Failed to delete connector resource from jndi");
             cre.initCause(ne);
-            _logger.log(Level.SEVERE,
-                    "rardeployment.connectorresource_removal_from_jndi_error",
-                    jndiName);
-            _logger.log(Level.SEVERE,"", cre);
+            _logger.log(Level.SEVERE, "rardeployment.connectorresource_removal_from_jndi_error", jndiName);
+            _logger.log(Level.SEVERE, "", cre);
             throw cre;
         }
-    } 
+    }
 
     /**
-     * If the suffix is one of the valid context return true. 
+     * If the suffix is one of the valid context return true.
      * Return false, if that is not the case.
+     *
+     * @param suffix __nontx / __pm
+     * @return boolean whether the suffix is valid or not
      */
     public boolean isValidJndiSuffix(String suffix) {
         if (suffix != null) {
@@ -176,32 +157,27 @@ public class ConnectorResourceAdminServiceImpl extends
                 }
             }
         }
-
         return false;
     }
 
     /**
      * Look up the JNDI name with appropriate suffix.
      * Suffix can be either __pm or __nontx.
+     *
+     * @param name resource-name
+     * @return Object - from jndi
+     * @throws NamingException - when unable to get the object form jndi
      */
     public Object lookup(String name) throws NamingException {
         Hashtable ht = null;
-        String suffix = getValidSuffix(name); 
+        String suffix = getValidSuffix(name);
         if (suffix != null) {
             ht = new Hashtable();
             ht.put(ConnectorConstants.JNDI_SUFFIX_PROPERTY, suffix);
             name = name.substring(0, name.lastIndexOf(suffix));
         }
-        InitialContext ic = new InitialContext(ht);
+        Context ic = _runtime.getNamingManager().getInitialContext();
         return ic.lookup(name);
-    }
-
-    /**
-     *  Gets Connector Resource Rebind Event notifier.
-     * @return  ConnectorNamingEventNotifier
-     */
-    public ConnectorNamingEventNotifier getResourceRebindEventNotifier(){
-        return ConnectorResourceNamingEventNotifier.getInstance();
     }
 
     private String getValidSuffix(String name) {
@@ -213,64 +189,5 @@ public class ConnectorResourceAdminServiceImpl extends
             }
         }
         return null;
-    }
-
-    /**
-     * Get a wrapper datasource specified by the jdbcjndi name
-     * This API is intended to be used in the DAS. The motivation for having this
-     * API is to provide the CMP backend/ JPA-Java2DB a means of acquiring a connection during
-     * the codegen phase. If a user is trying to deploy an JPA-Java2DB app on a remote server,
-     * without this API, a resource reference has to be present both in the DAS
-     * and the server instance. This makes the deployment more complex for the
-     * user since a resource needs to be forcibly created in the DAS Too.
-     * This API will mitigate this need.
-     *
-     * @param jndiName the jndi name of the resource
-     * @return DataSource representing the resource.
-     */
-    protected Object lookupDataSourceInDAS(String jndiName){
-        MyDataSource myDS = new MyDataSource();
-        myDS.setJndiName(jndiName);
-        return myDS;
-    }
-
-    class MyDataSource implements DataSource {
-            private String jndiName ;
-            private PrintWriter logWriter;
-            private int loginTimeout;
-
-            public void setJndiName(String name){
-                jndiName = name;
-            }
-
-            public Connection getConnection() throws SQLException {
-                return ConnectorRuntime.getRuntime().getConnection(jndiName);
-            }
-
-            public Connection getConnection(String username, String password) throws SQLException {
-                return ConnectorRuntime.getRuntime().getConnection(jndiName,username,password);
-            }
-
-            public PrintWriter getLogWriter() throws SQLException {
-                return logWriter;
-            }
-
-            public void setLogWriter(PrintWriter out) throws SQLException {
-               this.logWriter = out;
-            }
-
-            public void setLoginTimeout(int seconds) throws SQLException {
-               loginTimeout = seconds;
-            }
-
-            public int getLoginTimeout() throws SQLException {
-                return loginTimeout;
-            }
-            public boolean isWrapperFor(Class<?> iface) throws SQLException{
-               throw new SQLException("Not supported operation"); 
-            }
-            public <T> T unwrap(Class<T> iface) throws SQLException{
-               throw new SQLException("Not supported operation"); 
-            }
     }
 }
