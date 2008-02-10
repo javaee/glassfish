@@ -33,11 +33,15 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.enterprise.resource;
+package com.sun.enterprise.resource.pool;
 
+
+import com.sun.enterprise.connectors.ConnectorConnectionPool;
+import com.sun.enterprise.resource.ResourceHandle;
+import com.sun.enterprise.resource.ResourceSpec;
+import com.sun.enterprise.resource.allocator.ResourceAllocator;
 
 import javax.transaction.Transaction;
-import com.sun.enterprise.connectors.ConnectorConnectionPool;
 
 /**
  * @author Tony Ng
@@ -55,9 +59,6 @@ public interface ResourcePool {
 
     public void resourceErrorOccurred(ResourceHandle resource);
 
-    public void addResource(ResourceSpec spec,
-                            ResourceHandle resource);
-
     public void resourceEnlisted(Transaction tran, ResourceHandle resource);
 
     public void transactionCompleted(Transaction tran, int status);
@@ -70,14 +71,9 @@ public interface ResourcePool {
 
 
     //reconfig the pool's properties
-    public void reconfigPoolProperties( ConnectorConnectionPool ccp )
+    public void reconfigPoolProperties(ConnectorConnectionPool ccp)
             throws PoolingException;
 
-    //toggle monitoring
-    public void disableMonitoring();
-    public void setMonitoringEnabledHigh();
-    public void setMonitoringEnabledLow();
-    public boolean isMonitoringEnabled();
 
     //cancel the resizer task in the pool
     public void cancelResizerTask();
@@ -89,7 +85,7 @@ public interface ResourcePool {
     public void emptyFreeConnectionsInPool();
 
     //accessors for self mgmt
-    /** 
+    /**
      * Gets the max-pool-size attribute of this pool. Envisaged to be
      * used by the Self management framework to query the pool size
      * attribute for tweaking it using the setMaxPoolSize method
@@ -98,8 +94,8 @@ public interface ResourcePool {
      * @see setMaxPoolSize
      */
     public int getMaxPoolSize();
-    
-    /** 
+
+    /**
      * Gets the steady-pool-size attribute of this pool. Envisaged to be
      * used by the Self management framework to query the pool size
      * attribute for tweaking it using the setSteadyPoolSize method
@@ -118,8 +114,8 @@ public interface ResourcePool {
      * @param size - The new max-pool-size value
      * @see getMaxPoolSize
      */
-    public void setMaxPoolSize( int size );
-    
+    public void setMaxPoolSize(int size);
+
     /**
      * Sets the steady-pool-size value for this pool. This attribute is
      * expected to be set by the self-management framework for an optimum
@@ -128,7 +124,7 @@ public interface ResourcePool {
      * @param size - The new steady-pool-size value
      * @see getSteadyPoolSize
      */
-    public void setSteadyPoolSize( int size );
+    public void setSteadyPoolSize(int size);
 
     /**
      * Sets/Resets the flag indicating if this pool is self managed.
@@ -142,7 +138,11 @@ public interface ResourcePool {
      *
      * @param selfManaged - true to switch on self management, false otherwise
      */
-    public void setSelfManaged( boolean selfManaged );
+    public void setSelfManaged(boolean selfManaged);
+
+    public void setPoolLifeCycleListener(PoolLifeCycleListener listener);
+
+    public void removePoolLifeCycleListener();
 }
 
 
