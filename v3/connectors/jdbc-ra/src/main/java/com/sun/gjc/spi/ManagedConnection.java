@@ -36,28 +36,28 @@
 
 package com.sun.gjc.spi;
 
-import javax.resource.spi.*;
-import javax.resource.*;
-import javax.security.auth.Subject;
-import java.io.PrintWriter;
-import javax.transaction.xa.XAResource;
-import java.util.Set;
-import java.util.Hashtable;
-import java.util.Iterator;
-import javax.sql.PooledConnection;
-import javax.sql.XAConnection;
-import java.sql.SQLException;
-import javax.resource.spi.security.PasswordCredential;
-
+import com.sun.appserv.connectors.spi.BadConnectionEventListener;
+import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.gjc.common.DataSourceObjectBuilder;
 import com.sun.gjc.spi.base.ConnectionHolder;
-import com.sun.logging.*;
+import com.sun.logging.LogDomains;
 
-import java.util.logging.Logger;
+import javax.resource.NotSupportedException;
+import javax.resource.ResourceException;
+import javax.resource.spi.ConnectionEvent;
+import javax.resource.spi.ConnectionEventListener;
+import javax.resource.spi.security.PasswordCredential;
+import javax.security.auth.Subject;
+import javax.sql.PooledConnection;
+import javax.sql.XAConnection;
+import javax.transaction.xa.XAResource;
+import java.io.PrintWriter;
+import java.sql.SQLException;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Set;
 import java.util.logging.Level;
-
-import com.sun.enterprise.util.i18n.StringManager;
-import com.sun.enterprise.resource.BadConnectionEventListener;
+import java.util.logging.Logger;
 
 /**
  * <code>ManagedConnection</code> implementation for Generic JDBC Connector.
@@ -86,7 +86,7 @@ public class ManagedConnection implements javax.resource.spi.ManagedConnection,
     private javax.resource.spi.ManagedConnectionFactory mcf = null;
     protected XAResource xar = null;
 
-    protected ConnectionHolder myLogicalConnection = null;  
+    protected ConnectionHolder myLogicalConnection = null;
 
     //GJCINT
     protected int lastTransactionIsolationLevel;
@@ -145,7 +145,7 @@ public class ManagedConnection implements javax.resource.spi.ManagedConnection,
                     "jdbc.conn_obj_null");
             throw new ResourceException(i18nMsg);
         }
-                  
+
         if (connectionType == ISNOTAPOOLEDCONNECTION) {
             actualConnection = sqlConn;
         }
@@ -186,9 +186,7 @@ public class ManagedConnection implements javax.resource.spi.ManagedConnection,
      *                           valid or the connection handle passed is null
      */
     public void associateConnection(Object connection) throws ResourceException {
-        if (logWriter != null) {
-            logWriter.println("In associateConnection");
-        }
+        logFine("In associateConnection");
         checkIfValid();
         if (connection == null) {
             String i18nMsg = localStrings.getString(
@@ -227,9 +225,7 @@ public class ManagedConnection implements javax.resource.spi.ManagedConnection,
      * @throws ResourceException if the physical connection is no more valid
      */
     public void cleanup() throws ResourceException {
-        if (logWriter != null) {
-            logWriter.println("In cleanup");
-        }
+        logFine("In cleanup");
         checkIfValid();
 
         /**
@@ -268,9 +264,7 @@ public class ManagedConnection implements javax.resource.spi.ManagedConnection,
      * @throws ResourceException if there is an error in closing the physical connection
      */
     public void destroy() throws ResourceException {
-        if (logWriter != null) {
-            logWriter.println("In destroy");
-        }
+        logFine("In destroy");
         //GJCINT
         if (isDestroyed) {
             return;
@@ -316,9 +310,7 @@ public class ManagedConnection implements javax.resource.spi.ManagedConnection,
      */
     public Object getConnection(Subject sub, javax.resource.spi.ConnectionRequestInfo cxReqInfo)
             throws ResourceException {
-        if (logWriter != null) {
-            logWriter.println("In getConnection");
-        }
+        logFine("In getConnection");
         checkIfValid();
         /** Appserver any way doesnt bother about re-authentication today. So commenting this out now.
          com.sun.gjc.spi.ConnectionRequestInfo cxRequestInfo = (com.sun.gjc.spi.ConnectionRequestInfo) cxReqInfo;
@@ -365,9 +357,9 @@ public class ManagedConnection implements javax.resource.spi.ManagedConnection,
         resetAutoCommit();
 
         String statementTimeoutString = spiMCF.getStatementTimeout();
-        if (statementTimeoutString != null ){
+        if (statementTimeoutString != null) {
             int timeoutValue = Integer.valueOf(statementTimeoutString);
-	    if(timeoutValue >= 0){
+            if (timeoutValue >= 0) {
                 statementTimeout = timeoutValue;
             }
         }
@@ -401,9 +393,7 @@ public class ManagedConnection implements javax.resource.spi.ManagedConnection,
      * @throws ResourceException if the physical connection is not valid
      */
     public javax.resource.spi.LocalTransaction getLocalTransaction() throws ResourceException {
-        if (logWriter != null) {
-            logWriter.println("In getLocalTransaction");
-        }
+        logFine("In getLocalTransaction");
         checkIfValid();
         return new com.sun.gjc.spi.LocalTransaction(this);
     }
@@ -417,9 +407,7 @@ public class ManagedConnection implements javax.resource.spi.ManagedConnection,
      * @see <code>setLogWriter</code>
      */
     public PrintWriter getLogWriter() throws ResourceException {
-        if (logWriter != null) {
-            logWriter.println("In getLogWriter");
-        }
+        logFine("In getLogWriter");
         checkIfValid();
 
         return logWriter;
@@ -433,9 +421,7 @@ public class ManagedConnection implements javax.resource.spi.ManagedConnection,
      * @throws ResourceException if the physical connection is not valid
      */
     public javax.resource.spi.ManagedConnectionMetaData getMetaData() throws ResourceException {
-        if (logWriter != null) {
-            logWriter.println("In getMetaData");
-        }
+        logFine("In getMetaData");
         checkIfValid();
 
         return new com.sun.gjc.spi.ManagedConnectionMetaData(this);
@@ -452,9 +438,7 @@ public class ManagedConnection implements javax.resource.spi.ManagedConnection,
      *                               <code>XADataSource</code>
      */
     public XAResource getXAResource() throws ResourceException {
-        if (logWriter != null) {
-            logWriter.println("In getXAResource");
-        }
+        logFine("In getXAResource");
         checkIfValid();
 
         if (connectionType == ISXACONNECTION) {
@@ -502,7 +486,7 @@ public class ManagedConnection implements javax.resource.spi.ManagedConnection,
         try {
             transactionInProgress = false;
             if (connectionType == ISPOOLEDCONNECTION || connectionType == ISXACONNECTION) {
-                 if (connectionCount <= 0) {
+                if (connectionCount <= 0) {
                     try {
                         actualConnection.close();
                         actualConnection = null;
@@ -646,11 +630,11 @@ public class ManagedConnection implements javax.resource.spi.ManagedConnection,
         ce.setConnectionHandle(connHolder30Object);
 
         if (markedForRemoval && !transactionInProgress) {
-            BadConnectionEventListener bcel = (BadConnectionEventListener)listener;
+            BadConnectionEventListener bcel = (BadConnectionEventListener) listener;
             bcel.badConnectionClosed(ce);
             _logger.log(Level.INFO, "jdbc.markedForRemoval_conClosed");
             markedForRemoval = false;
-        }else{
+        } else {
             listener.connectionClosed(ce);
         }
     }
@@ -785,5 +769,8 @@ public class ManagedConnection implements javax.resource.spi.ManagedConnection,
 
     public void setLastTransactionIsolationLevel(int isolationLevel) {
         lastTransactionIsolationLevel = isolationLevel;
+    }
+    private void logFine(String logMessage){
+        _logger.log(Level.FINE, logMessage);
     }
 }

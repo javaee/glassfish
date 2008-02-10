@@ -37,7 +37,8 @@ package com.sun.gjc.spi.jdbc30;
 
 import com.sun.gjc.spi.base.ResultSetWrapper;
 
-import java.sql.*;
+import java.sql.ResultSet;
+import java.sql.Statement;
 
 /**
  * Result Set Wrapper for JDBC 3.0
@@ -46,8 +47,9 @@ public class ResultSetWrapper30 extends ResultSetWrapper {
 
     /**
      * Creates a new instance of ResultSetWrapper for JDBC 3.0
+     *
      * @param stmt Statement that is to be wrapped<br>
-     * @param rs ResultSet that is to be wraped<br>*
+     * @param rs   ResultSet that is to be wraped<br>*
      */
 
     public ResultSetWrapper30(Statement stmt, ResultSet rs) {

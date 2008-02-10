@@ -36,27 +36,21 @@
 
 package com.sun.gjc.spi;
 
+import com.sun.gjc.common.DataSourceObjectBuilder;
+import com.sun.gjc.common.DataSourceSpec;
+import com.sun.gjc.util.SecurityUtils;
+import com.sun.logging.LogDomains;
+
 import javax.resource.ResourceException;
 import javax.resource.spi.ConnectionRequestInfo;
-
-import com.sun.gjc.util.SecurityUtils;
-
 import javax.resource.spi.security.PasswordCredential;
-
-import com.sun.gjc.common.DataSourceSpec;
-import com.sun.gjc.common.DataSourceObjectBuilder;
-
-import java.sql.Connection;
 import javax.sql.PooledConnection;
-
-import com.sun.logging.*;
-
-import java.util.logging.Logger;
-import java.util.logging.Level;
-
-import java.util.Set;
+import java.sql.Connection;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * <code>ManagedConnectionFactory</code> implementation for Generic JDBC Connector.
@@ -95,9 +89,7 @@ public abstract class ManagedConnectionFactory implements javax.resource.spi.Man
      * @return Generic JDBC Connector implementation of <code>javax.sql.DataSource</code>
      */
     public Object createConnectionFactory() {
-        if (logWriter != null) {
-            logWriter.println("In createConnectionFactory()");
-        }
+        logFine("In createConnectionFactory()");
         return jdbcObjectsFactory.getDataSourceInstance(this, null);
     }
 
@@ -109,9 +101,7 @@ public abstract class ManagedConnectionFactory implements javax.resource.spi.Man
      * @return Generic JDBC Connector implementation of <code>javax.sql.DataSource</code>
      */
     public Object createConnectionFactory(javax.resource.spi.ConnectionManager cxManager) {
-        if (logWriter != null) {
-            logWriter.println("In createConnectionFactory(javax.resource.spi.ConnectionManager cxManager)");
-        }
+        logFine("In createConnectionFactory(javax.resource.spi.ConnectionManager cxManager)");
 
         javax.sql.DataSource cf = jdbcObjectsFactory.getDataSourceInstance(this, cxManager);
 
@@ -170,9 +160,7 @@ public abstract class ManagedConnectionFactory implements javax.resource.spi.Man
      * @see <code>setResourceAdapter</code>
      */
     public javax.resource.spi.ResourceAdapter getResourceAdapter() {
-        if (logWriter != null) {
-            logWriter.println("In getResourceAdapter");
-        }
+        logFine("In getResourceAdapter");
         return ra;
     }
 
@@ -182,9 +170,7 @@ public abstract class ManagedConnectionFactory implements javax.resource.spi.Man
      * @return hash code for this <code>ManagedConnectionFactory</code>
      */
     public int hashCode() {
-        if (logWriter != null) {
-            logWriter.println("In hashCode");
-        }
+        logFine("In hashCode");
         return spec.hashCode();
     }
 
@@ -206,14 +192,11 @@ public abstract class ManagedConnectionFactory implements javax.resource.spi.Man
     public javax.resource.spi.ManagedConnection matchManagedConnections(
             java.util.Set connectionSet, javax.security.auth.Subject subject, ConnectionRequestInfo cxRequestInfo)
             throws ResourceException {
-        if (logWriter != null) {
-            logWriter.println("In matchManagedConnections");
-        }
+        logFine("In matchManagedConnections");
 
         if (connectionSet == null) {
             return null;
         }
-
 
 
         PasswordCredential pc = SecurityUtils.getPasswordCredential(this, subject, cxRequestInfo);
@@ -257,7 +240,7 @@ public abstract class ManagedConnectionFactory implements javax.resource.spi.Man
             } catch (ResourceException re) {
                 invalid.add(mc);
                 mc.connectionErrorOccurred(re, null);
-                if(_logger.isLoggable(Level.FINE)){
+                if (_logger.isLoggable(Level.FINE)) {
                     _logger.log(Level.FINE, "jdbc.invalid_connection", re);
                 }
             }
@@ -368,7 +351,7 @@ public abstract class ManagedConnectionFactory implements javax.resource.spi.Man
         } catch (Exception sqle) {
             _logger.log(Level.INFO, "jdbc.exc_metadata_validation");
             throw new ResourceException(sqle);
-        }                                                      
+        }
     }
 
     /**
@@ -392,8 +375,8 @@ public abstract class ManagedConnectionFactory implements javax.resource.spi.Man
             stmt = con.prepareStatement("SELECT COUNT(*) FROM " + tableName);
             rs = stmt.executeQuery();
         } catch (Exception sqle) {
-                _logger.log(Level.INFO, "jdbc.exc_table_validation", tableName);
-                throw new ResourceException(sqle);
+            _logger.log(Level.INFO, "jdbc.exc_table_validation", tableName);
+            throw new ResourceException(sqle);
         } finally {
             try {
                 if (rs != null) {
@@ -748,15 +731,15 @@ public abstract class ManagedConnectionFactory implements javax.resource.spi.Man
         return spec.getDetail(DataSourceSpec.PORTNUMBER);
     }
 
-    public void setJdbc30DataSource(String booleanValue){
-        spec.setDetail(DataSourceSpec.JDBC30DATASOURCE,booleanValue);
+    public void setJdbc30DataSource(String booleanValue) {
+        spec.setDetail(DataSourceSpec.JDBC30DATASOURCE, booleanValue);
     }
 
-    public String getJdbc30DataSource(){
+    public String getJdbc30DataSource() {
         return spec.getDetail(DataSourceSpec.JDBC30DATASOURCE);
     }
 
-      /**
+    /**
      * Sets the database name.
      *
      * @param databaseName <code>String</code>
@@ -776,7 +759,7 @@ public abstract class ManagedConnectionFactory implements javax.resource.spi.Man
         return spec.getDetail(DataSourceSpec.DATABASENAME);
     }
 
-      /**
+    /**
      * Sets the data source name.
      *
      * @param dsn <code>String</code>
@@ -798,6 +781,7 @@ public abstract class ManagedConnectionFactory implements javax.resource.spi.Man
 
     /**
      * Set Statement Wrapping value
+     *
      * @param wrapping <code>String</code>
      * @see <code> getStatementWrapping </code>
      */
@@ -805,6 +789,7 @@ public abstract class ManagedConnectionFactory implements javax.resource.spi.Man
         spec.setDetail(DataSourceSpec.STATEMENTWRAPPING, wrapping);
         computeStatementWrappingStatus();
     }
+
     /**
      * Gets the statement wrapping value
      *
@@ -817,6 +802,7 @@ public abstract class ManagedConnectionFactory implements javax.resource.spi.Man
 
     /**
      * Set StatementTimeout value
+     *
      * @param timeout <code>String</code>
      * @see <code> getStatementTimeout </code>
      */
@@ -834,7 +820,7 @@ public abstract class ManagedConnectionFactory implements javax.resource.spi.Man
         return spec.getDetail(DataSourceSpec.STATEMENTTIMEOUT);
     }
 
-      /**
+    /**
      * Sets the description.
      *
      * @param desc <code>String</code>
@@ -854,7 +840,7 @@ public abstract class ManagedConnectionFactory implements javax.resource.spi.Man
         return spec.getDetail(DataSourceSpec.DESCRIPTION);
     }
 
-       /**
+    /**
      * Sets the network protocol.
      *
      * @param nwProtocol <code>String</code>
@@ -874,7 +860,7 @@ public abstract class ManagedConnectionFactory implements javax.resource.spi.Man
         return spec.getDetail(DataSourceSpec.NETWORKPROTOCOL);
     }
 
-     /**
+    /**
      * Sets the role name.
      *
      * @param roleName <code>String</code>
@@ -894,7 +880,7 @@ public abstract class ManagedConnectionFactory implements javax.resource.spi.Man
         return spec.getDetail(DataSourceSpec.ROLENAME);
     }
 
-            /**
+    /**
      * Sets the login timeout.
      *
      * @param loginTimeOut <code>String</code>
@@ -914,7 +900,7 @@ public abstract class ManagedConnectionFactory implements javax.resource.spi.Man
         return spec.getDetail(DataSourceSpec.LOGINTIMEOUT);
     }
 
-      /**
+    /**
      * Sets the delimiter.
      *
      * @param delim <code>String</code>
@@ -932,6 +918,14 @@ public abstract class ManagedConnectionFactory implements javax.resource.spi.Man
      */
     public String getDelimiter() {
         return spec.getDetail(DataSourceSpec.DELIMITER);
+    }
+
+    public void setEscapeCharacter(String escapeCharacter){
+        spec.setDetail(DataSourceSpec.ESCAPECHARACTER, escapeCharacter);
+    }
+
+    public String getEscapeCharacter(){
+        return spec.getDetail(DataSourceSpec.ESCAPECHARACTER);
     }
 
       /**
@@ -962,6 +956,7 @@ public abstract class ManagedConnectionFactory implements javax.resource.spi.Man
 
     /**
      * Returns the underlying datasource
+     *
      * @return DataSource of jdbc vendor
      * @throws ResourceException
      */
@@ -993,6 +988,7 @@ public abstract class ManagedConnectionFactory implements javax.resource.spi.Man
     /**
      * Gets the Statement Wrapping JVM Option (available in 8.2)<br>
      * Which will be deprecated in future versions.
+     *
      * @return int representing the JVM Option value of statement wrapping.
      */
     private static int getStatementWrappingJVMOption() {
@@ -1029,6 +1025,7 @@ public abstract class ManagedConnectionFactory implements javax.resource.spi.Man
 
     /**
      * Returns whether statement wrapping is enabled or not.<br>
+     *
      * @return boolean representing statementwrapping status
      */
     public boolean isStatementWrappingEnabled() {
@@ -1038,4 +1035,8 @@ public abstract class ManagedConnectionFactory implements javax.resource.spi.Man
     public JdbcObjectsFactory getJdbcObjectsFactory() {
         return jdbcObjectsFactory;
     }
+    protected void logFine(String logMessage){
+        _logger.log(Level.FINE, logMessage);
+    }
+
 }

@@ -36,11 +36,9 @@
 
 package com.sun.gjc.spi;
 
-import javax.transaction.xa.Xid;
 import javax.transaction.xa.XAException;
 import javax.transaction.xa.XAResource;
-
-import com.sun.gjc.spi.ManagedConnection;
+import javax.transaction.xa.Xid;
 
 /**
  * <code>XAResource</code> wrapper for Generic JDBC Connector.

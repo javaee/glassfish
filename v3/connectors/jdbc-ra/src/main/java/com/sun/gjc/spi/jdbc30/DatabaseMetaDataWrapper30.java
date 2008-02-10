@@ -39,7 +39,8 @@ package com.sun.gjc.spi.jdbc30;
 
 import com.sun.gjc.spi.base.DatabaseMetaDataWrapper;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 
 /**
  * Wrapper class for DatabaseMetaData for JDBC 3.0 <br>
@@ -48,7 +49,8 @@ public class DatabaseMetaDataWrapper30 extends DatabaseMetaDataWrapper {
 
     /**
      * Creates a new instance of DatabaseMetaDataWrapper30 for JDBC 3.0
-     * @param con Connection that is wrapped 
+     *
+     * @param con      Connection that is wrapped
      * @param metaData DatabaseMetaData that is wrapped
      */
     public DatabaseMetaDataWrapper30(Connection con, DatabaseMetaData metaData) {

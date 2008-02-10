@@ -36,15 +36,13 @@
 
 package com.sun.gjc.spi.jdbc40;
 
-import java.sql.SQLException;
-import javax.resource.spi.ConnectionManager;
-import javax.resource.ResourceException;
-
-import com.sun.gjc.spi.base.DataSource;
-import com.sun.gjc.spi.ManagedConnectionFactory;
 import com.sun.enterprise.util.i18n.StringManager;
+import com.sun.gjc.spi.ManagedConnectionFactory;
+import com.sun.gjc.spi.base.DataSource;
 
-
+import javax.resource.ResourceException;
+import javax.resource.spi.ConnectionManager;
+import java.sql.SQLException;
 import java.util.logging.Level;
 
 /**
@@ -72,10 +70,11 @@ public class DataSource40 extends DataSource {
     public DataSource40(ManagedConnectionFactory mcf, ConnectionManager cm) {
         super(mcf, cm);
     }
+
     /**
      * Returns an object that implements the given interface to allow access to
      * non-standard methods, or standard methods not exposed by the proxy.
-     *
+     * <p/>
      * If the receiver implements the interface then the result is the receiver
      * or a proxy for the receiver. If the receiver is a wrapper
      * and the wrapped object implements the interface then the result is the
@@ -90,13 +89,13 @@ public class DataSource40 extends DataSource {
      * @since 1.6
      */
     public <T> T unwrap(Class<T> iface) throws SQLException {
-        T result ;
+        T result;
         try {
             Object cds = mcf.getDataSource();
 
-            if(iface.isInstance(cds)){
+            if (iface.isInstance(cds)) {
                 result = iface.cast(cds);
-            }else if (cds instanceof java.sql.Wrapper) {
+            } else if (cds instanceof java.sql.Wrapper) {
                 result = ((java.sql.Wrapper) cds).unwrap(iface);
             } else {
                 String msg = localStrings.getString("jdbc.feature_not_supported");
@@ -120,8 +119,8 @@ public class DataSource40 extends DataSource {
      *
      * @param iface a Class defining an interface.
      * @return true if this implements the interface or directly or indirectly wraps an object that does.
-     * @throws java.sql.SQLException  if an error occurs while determining whether this is a wrapper
-     * for an object with the given interface.
+     * @throws java.sql.SQLException if an error occurs while determining whether this is a wrapper
+     *                               for an object with the given interface.
      * @since 1.6
      */
     public boolean isWrapperFor(Class<?> iface) throws SQLException {
@@ -129,15 +128,15 @@ public class DataSource40 extends DataSource {
         try {
             Object cds = mcf.getDataSource();
 
-            if(iface.isInstance(cds)){
+            if (iface.isInstance(cds)) {
                 result = true;
-            }else if (cds instanceof java.sql.Wrapper) {
+            } else if (cds instanceof java.sql.Wrapper) {
                 result = ((java.sql.Wrapper) cds).isWrapperFor(iface);
             }
         } catch (ResourceException e) {
             _logger.log(Level.WARNING, "jdbc.exc_is_wrapper", e);
             throw new SQLException(e);
         }
-        return result ;
+        return result;
     }
 }

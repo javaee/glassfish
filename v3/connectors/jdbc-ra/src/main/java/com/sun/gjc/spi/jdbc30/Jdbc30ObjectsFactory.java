@@ -50,9 +50,9 @@ public class Jdbc30ObjectsFactory extends JdbcObjectsFactory {
      * To get an instance of ConnectionHolder30.<br>
      * Will return a ConnectionHolder30 with or without wrapper<br>
      *
-     * @param conObject Connection
-     * @param mcObject   ManagedConnection
-     * @param criObject  ConnectionRequestInfo
+     * @param conObject         Connection
+     * @param mcObject          ManagedConnection
+     * @param criObject         ConnectionRequestInfo
      * @param statementWrapping Whether to wrap statement objects or not.
      * @return ConnectionHolder
      */
@@ -72,6 +72,7 @@ public class Jdbc30ObjectsFactory extends JdbcObjectsFactory {
 
     /**
      * Returns a DataSource instance for JDBC 3.0
+     *
      * @param mcfObject Managed Connection Factory
      * @param cmObject  Connection Manager
      * @return DataSource

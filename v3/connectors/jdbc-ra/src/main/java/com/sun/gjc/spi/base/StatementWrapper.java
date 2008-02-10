@@ -36,7 +36,10 @@
 
 package com.sun.gjc.spi.base;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.SQLWarning;
+import java.sql.Statement;
 
 /**
  * Abstract class for wrapping Statement<br>
@@ -48,7 +51,8 @@ public abstract class StatementWrapper implements Statement {
 
     /**
      * Abstract class for wrapping Statement<br>
-     * @param con  ConnectionWrapper <br>
+     *
+     * @param con       ConnectionWrapper <br>
      * @param statement Statement that is to be wrapped<br>
      */
     public StatementWrapper(Connection con, Statement statement) {
@@ -207,7 +211,7 @@ public abstract class StatementWrapper implements Statement {
      * @see #getQueryTimeout
      */
     public void setQueryTimeout(int seconds) throws SQLException {
-         jdbcStatement.setQueryTimeout(seconds);
+        jdbcStatement.setQueryTimeout(seconds);
     }
 
     /**
@@ -256,7 +260,7 @@ public abstract class StatementWrapper implements Statement {
      * @throws java.sql.SQLException if a database access error occurs
      */
     public void clearWarnings() throws SQLException {
-         jdbcStatement.clearWarnings();
+        jdbcStatement.clearWarnings();
     }
 
     /**
@@ -281,7 +285,7 @@ public abstract class StatementWrapper implements Statement {
      * @throws java.sql.SQLException if a database access error occurs
      */
     public void setCursorName(String name) throws SQLException {
-         jdbcStatement.setCursorName(name);
+        jdbcStatement.setCursorName(name);
     }
 
     /**
@@ -404,7 +408,7 @@ public abstract class StatementWrapper implements Statement {
      * @since 1.2
      */
     public void setFetchSize(int rows) throws SQLException {
-         jdbcStatement.setFetchDirection(rows);
+        jdbcStatement.setFetchDirection(rows);
     }
 
     /**
@@ -482,7 +486,7 @@ public abstract class StatementWrapper implements Statement {
      * @since 1.2
      */
     public void clearBatch() throws SQLException {
-         jdbcStatement.clearBatch();
+        jdbcStatement.clearBatch();
     }
 
     /**
@@ -551,6 +555,7 @@ public abstract class StatementWrapper implements Statement {
 
     /**
      * Returns the underlying physical connection.<br>
+     *
      * @return the actual connection that produced this statement<br>
      * @throws SQLException
      */

@@ -36,11 +36,11 @@
 
 package com.sun.gjc.spi;
 
-import javax.resource.spi.endpoint.MessageEndpointFactory;
-import javax.resource.spi.ActivationSpec;
 import javax.resource.NotSupportedException;
-import javax.transaction.xa.XAResource;
+import javax.resource.spi.ActivationSpec;
 import javax.resource.spi.BootstrapContext;
+import javax.resource.spi.endpoint.MessageEndpointFactory;
+import javax.transaction.xa.XAResource;
 
 /**
  * <code>ResourceAdapter</code> implementation for Generic JDBC Connector.

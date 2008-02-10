@@ -91,7 +91,7 @@ public class LocalTransaction implements javax.resource.spi.LocalTransaction {
             mc.getActualConnection().setAutoCommit(true);
         } catch (java.sql.SQLException sqle) {
             throw new LocalTransactionException(sqle.getMessage());
-        }finally{
+        } finally {
             //GJCINT
             mc.transactionCompleted();
         }
@@ -110,7 +110,7 @@ public class LocalTransaction implements javax.resource.spi.LocalTransaction {
             mc.getActualConnection().setAutoCommit(true);
         } catch (java.sql.SQLException sqle) {
             throw new LocalTransactionException(sqle.getMessage());
-        }finally{
+        } finally {
             //GJCINT
             mc.transactionCompleted();
         }

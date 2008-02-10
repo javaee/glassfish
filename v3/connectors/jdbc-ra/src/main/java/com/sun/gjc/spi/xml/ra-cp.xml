@@ -36,19 +36,18 @@
  holder.
 -->
 
-
 <connector xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/connector_1_5.xsd"
            version="1.5">
 
     <!-- There can be any number of "description" elements including 0 -->
-    <!-- This field can be optionally used by the driver vendor to provide a 
+    <!-- This field can be optionally used by the driver vendor to provide a
          description for the resource adapter.
     -->
     <description>Resource adapter wrapping Connection Pool Datasource implementation of driver</description>
 
     <!-- There can be any number of "display-name" elements including 0 -->
-    <!-- The field can be optionally used by the driver vendor to provide a name that 
+    <!-- The field can be optionally used by the driver vendor to provide a name that
          is intended to be displayed by tools.
     -->
     <display-name>Connection Pool DataSource Resource Adapter</display-name>
@@ -56,15 +55,15 @@
     <!-- There can be any number of "icon" elements including 0 -->
     <!-- The following is an example.
         <icon>
-            This "small-icon" element can occur atmost once. This should specify the 
-            absolute or the relative path name of a file containing a small (16 x 16) 
+            This "small-icon" element can occur atmost once. This should specify the
+            absolute or the relative path name of a file containing a small (16 x 16)
             icon - JPEG or GIF image. The following is an example.
             <small-icon>smallicon.jpg</small-icon>
-        
-            This "large-icon" element can occur atmost once. This should specify the 
-            absolute or the relative path name of a file containing a small (32 x 32) 
+
+            This "large-icon" element can occur atmost once. This should specify the
+            absolute or the relative path name of a file containing a small (32 x 32)
             icon - JPEG or GIF image. The following is an example.
-            <large-icon>largeicon.jpg</large-icon>   
+            <large-icon>largeicon.jpg</large-icon>
         </icon>
     -->
     <icon>
@@ -79,7 +78,7 @@
     <vendor-name>Sun Microsystems</vendor-name>
 
     <!-- The "eis-type" element should occur exactly once. -->
-    <!-- This should specify the database, for example the product name of 
+    <!-- This should specify the database, for example the product name of
          the database independent of any version information. The following
          is an example.
         <eis-type>XYZ</eis-type>
@@ -87,7 +86,7 @@
     <eis-type>Database</eis-type>
 
     <!-- The "resourceadapter-version" element should occur exactly once. -->
-    <!-- This specifies a string based version of the resource adapter from 
+    <!-- This specifies a string based version of the resource adapter from
          the driver vendor. The default is being set as 1.0. The driver
          vendor can change it as required.
     -->
@@ -99,12 +98,12 @@
         <license>
             There can be any number of "description" elements including 0.
             <description>
-                This field can be optionally used by the driver vendor to 
-                provide a description for the licensing requirements of the 
-                resource adapter like duration of license, numberof connection 
+                This field can be optionally used by the driver vendor to
+                provide a description for the licensing requirements of the
+                resource adapter like duration of license, numberof connection
                 restrictions.
             </description>
-        
+
             This specifies whether a license is required to deploy and use the resource adapter.
             Default is false.
             <license-required>false</license-required>
@@ -116,12 +115,6 @@
 
     <resourceadapter>
 
-        <!-- 
-            The "config-property" elements can have zero or more "description" 
-            elements. The "description" elements are not being included
-            in the "config-property" elements below. The driver vendor can
-            add them as required.
-        -->
 
         <resourceadapter-class>com.sun.gjc.spi.ResourceAdapter</resourceadapter-class>
 
@@ -132,6 +125,14 @@
                 <managedconnectionfactory-class>com.sun.gjc.spi.CPManagedConnectionFactory
                 </managedconnectionfactory-class>
 
+
+                <!--
+                    The "config-property" elements can have zero or more "description"
+                    elements. The "description" elements are not being included
+                    in the "config-property" elements below. The driver vendor can
+                    add them as required.
+                -->
+
                 <!-- There can be any number of these elements including 0 -->
                 <config-property>
                     <config-property-name>ServerName</config-property-name>
@@ -141,22 +142,22 @@
                 <config-property>
                     <config-property-name>PortNumber</config-property-name>
                     <config-property-type>java.lang.String</config-property-type>
-                    <config-property-value>1521</config-property-value>
+                    <config-property-value>1527</config-property-value>
                 </config-property>
                 <config-property>
                     <config-property-name>User</config-property-name>
                     <config-property-type>java.lang.String</config-property-type>
-                    <config-property-value>scott</config-property-value>
+                    <config-property-value>APP</config-property-value>
                 </config-property>
                 <config-property>
                     <config-property-name>Password</config-property-name>
                     <config-property-type>java.lang.String</config-property-type>
-                    <config-property-value>tiger</config-property-value>
+                    <config-property-value>APP</config-property-value>
                 </config-property>
                 <config-property>
                     <config-property-name>DatabaseName</config-property-name>
                     <config-property-type>java.lang.String</config-property-type>
-                    <config-property-value>ORCL</config-property-value>
+                    <config-property-value>testdb</config-property-value>
                 </config-property>
                 <config-property>
                     <config-property-name>DataSourceName</config-property-name>
@@ -166,7 +167,7 @@
                 <config-property>
                     <config-property-name>Description</config-property-name>
                     <config-property-type>java.lang.String</config-property-type>
-                    <config-property-value>Oracle thin driver Connection Pool Datasource</config-property-value>
+                    <config-property-value>Derby driver for Connection Pool Datasource</config-property-value>
                 </config-property>
                 <config-property>
                     <config-property-name>NetworkProtocol</config-property-name>
@@ -177,36 +178,6 @@
                     <config-property-name>RoleName</config-property-name>
                     <config-property-type>java.lang.String</config-property-type>
                     <config-property-value></config-property-value>
-                </config-property>
-                <config-property>
-                    <config-property-name>MaxStatements</config-property-name>
-                    <config-property-type>java.lang.String</config-property-type>
-                    <config-property-value>0</config-property-value>
-                </config-property>
-                <config-property>
-                    <config-property-name>InitialPoolSize</config-property-name>
-                    <config-property-type>java.lang.String</config-property-type>
-                    <config-property-value>0</config-property-value>
-                </config-property>
-                <config-property>
-                    <config-property-name>MinPoolSize</config-property-name>
-                    <config-property-type>java.lang.String</config-property-type>
-                    <config-property-value>0</config-property-value>
-                </config-property>
-                <config-property>
-                    <config-property-name>MaxPoolSize</config-property-name>
-                    <config-property-type>java.lang.String</config-property-type>
-                    <config-property-value>0</config-property-value>
-                </config-property>
-                <config-property>
-                    <config-property-name>MaxIdleTime</config-property-name>
-                    <config-property-type>java.lang.String</config-property-type>
-                    <config-property-value>0</config-property-value>
-                </config-property>
-                <config-property>
-                    <config-property-name>PropertyCycle</config-property-name>
-                    <config-property-type>java.lang.String</config-property-type>
-                    <config-property-value>0</config-property-value>
                 </config-property>
                 <config-property>
                     <config-property-name>LoginTimeOut</config-property-name>
@@ -226,7 +197,7 @@
                 <config-property>
                     <config-property-name>ClassName</config-property-name>
                     <config-property-type>java.lang.String</config-property-type>
-                    <config-property-value>oracle.jdbc.pool.OracleConnectionPoolDataSource</config-property-value>
+                    <config-property-value>org.apache.derby.jdbc.ClientDataSource</config-property-value>
                 </config-property>
                 <config-property>
                     <config-property-name>ConnectionValidationRequired</config-property-name>
@@ -254,6 +225,7 @@
                     <config-property-value></config-property-value>
                 </config-property>
 
+
                 <connectionfactory-interface>javax.sql.DataSource</connectionfactory-interface>
 
                 <!-- Since 9.1 supports both JDBC 3.0 and JDBC 4.0,
@@ -274,7 +246,10 @@
 
             </connection-definition>
 
-            <transaction-support>LocalTransaction</transaction-support>
+
+            <!-- TODO V3 no transaction for now -->
+            <transaction-support>NoTransaction</transaction-support>
+
 
             <authentication-mechanism>
                 <!-- There can be any number of "description" elements including 0 -->
@@ -286,8 +261,8 @@
             </authentication-mechanism>
 
             <reauthentication-support>false</reauthentication-support>
-
         </outbound-resourceadapter>
+
 
     </resourceadapter>
 

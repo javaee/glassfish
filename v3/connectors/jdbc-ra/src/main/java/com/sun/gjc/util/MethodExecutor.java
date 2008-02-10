@@ -36,24 +36,22 @@
 
 package com.sun.gjc.util;
 
-import java.lang.reflect.Method;
-import java.lang.reflect.InvocationTargetException;
-import java.util.Vector;
-import javax.resource.ResourceException;
-
-import com.sun.logging.*;
-
-import java.util.logging.Logger;
-import java.util.logging.Level;
-
-import com.sun.gjc.common.DataSourceObjectBuilder;
 import com.sun.enterprise.util.i18n.StringManager;
+import com.sun.gjc.common.DataSourceObjectBuilder;
+import com.sun.logging.LogDomains;
+
+import javax.resource.ResourceException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Execute the methods based on the parameters.
  *
- * @version 1.0, 02/07/23
  * @author Binod P.G
+ * @version 1.0, 02/07/23
  */
 public class MethodExecutor implements java.io.Serializable {
 
@@ -71,12 +69,12 @@ public class MethodExecutor implements java.io.Serializable {
     /**
      * Exceute a simple set Method.
      *
+     * @param value  Value to be set.
+     * @param method <code>Method</code> object.
+     * @param obj    Object on which the method to be executed.
      * @throws <code>ResourceException</code>,
      *          in case of the mismatch of parameter values or
      *          a security violation.
-     * @param    value    Value to be set.
-     * @param    method    <code>Method</code> object.
-     * @param    obj    Object on which the method to be executed.
      */
     public void runJavaBeanMethod(String value, Method method, Object obj) throws ResourceException {
         if (value == null || value.trim().equals("")) {
@@ -107,12 +105,12 @@ public class MethodExecutor implements java.io.Serializable {
     /**
      * Executes the method.
      *
+     * @param method <code>Method</code> object.
+     * @param obj    Object on which the method to be executed.
+     * @param values Parameter values for executing the method.
      * @throws <code>ResourceException</code>,
      *          in case of the mismatch of parameter values or
      *          a security violation.
-     * @param    method <code>Method</code> object.
-     * @param    obj    Object on which the method to be executed.
-     * @param    values    Parameter values for executing the method.
      */
     public void runMethod(Method method, Object obj, Vector values) throws ResourceException {
         try {
@@ -148,12 +146,12 @@ public class MethodExecutor implements java.io.Serializable {
     /**
      * Converts the type from String to the Class type.
      *
+     * @param type      Class name to which the conversion is required.
+     * @param parameter String value to be converted.
+     * @return Converted value.
      * @throws <code>ResourceException</code>,
      *          in case of the mismatch of parameter values or
      *          a security violation.
-     * @param    type        Class name to which the conversion is required.
-     * @param    parameter    String value to be converted.
-     * @return    Converted value.
      */
     private Object convertType(Class type, String parameter) throws ResourceException {
         try {
@@ -203,8 +201,8 @@ public class MethodExecutor implements java.io.Serializable {
             _logger.log(Level.SEVERE, "jdbc.exc_nfe", parameter);
             String msg = sm.getString("me.invalid_param", parameter);
             throw new ResourceException(msg);
-    	}
+        }
     }
-    
+
 }
 

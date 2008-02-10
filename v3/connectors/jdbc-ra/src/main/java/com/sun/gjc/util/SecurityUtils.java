@@ -36,26 +36,23 @@
 
 package com.sun.gjc.util;
 
+import com.sun.enterprise.util.i18n.StringManager;
+import com.sun.gjc.common.DataSourceObjectBuilder;
+
+import javax.resource.ResourceException;
+import javax.resource.spi.ManagedConnectionFactory;
+import javax.resource.spi.security.PasswordCredential;
 import javax.security.auth.Subject;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
-import javax.resource.spi.security.PasswordCredential;
-import javax.resource.ResourceException;
-import javax.resource.spi.*;
-
-import com.sun.gjc.spi.ConnectionRequestInfo;
-import com.sun.gjc.common.DataSourceObjectBuilder;
-
-import java.util.Set;
 import java.util.Iterator;
-
-import com.sun.enterprise.util.i18n.StringManager;
+import java.util.Set;
 
 /**
  * SecurityUtils for Generic JDBC Connector.
  *
- * @version 1.0, 02/07/22
  * @author Evani Sai Surya Kiran
+ * @version 1.0, 02/07/22
  */
 public class SecurityUtils {
 
@@ -76,12 +73,12 @@ public class SecurityUtils {
      * <code>ManagedConnectionFactory</code>, instance equivalent
      * to the <code>ManagedConnectionFactory</code>, parameter.
      *
-     * @param    mcf    <code>ManagedConnectionFactory</code>
-     * @param    subject    <code>Subject</code>
-     * @param    info    <code>ConnectionRequestInfo</code>
-     * @return    <code>PasswordCredential</code>
-     * @throws    <code>ResourceException</code>	generic exception if operation fails
-     * @throws    <code>SecurityException</code>	if access to the <code>Subject</code> instance is denied
+     * @param mcf     <code>ManagedConnectionFactory</code>
+     * @param subject <code>Subject</code>
+     * @param info    <code>ConnectionRequestInfo</code>
+     * @return <code>PasswordCredential</code>
+     * @throws <code>ResourceException</code> generic exception if operation fails
+     * @throws <code>SecurityException</code> if access to the <code>Subject</code> instance is denied
      */
     public static PasswordCredential getPasswordCredential(final ManagedConnectionFactory mcf,
                                                            final Subject subject, javax.resource.spi.ConnectionRequestInfo info) throws ResourceException {
@@ -122,10 +119,10 @@ public class SecurityUtils {
     /**
      * Returns true if two strings are equal; false otherwise
      *
-     * @param    str1    <code>String</code>
-     * @param    str2    <code>String</code>
+     * @param str1 <code>String</code>
+     * @param str2 <code>String</code>
      * @return true    if the two strings are equal
-     * false	otherwise
+     *         false	otherwise
      */
     static private boolean isEqual(String str1, String str2) {
         if (str1 == null) {
@@ -138,10 +135,10 @@ public class SecurityUtils {
     /**
      * Returns true if two <code>PasswordCredential</code> objects are equal; false otherwise
      *
-     * @param    pC1    <code>PasswordCredential</code>
-     * @param    pC2    <code>PasswordCredential</code>
+     * @param pC1 <code>PasswordCredential</code>
+     * @param pC2 <code>PasswordCredential</code>
      * @return true    if the two PasswordCredentials are equal
-     * false	otherwise
+     *         false	otherwise
      */
     static public boolean isPasswordCredentialEqual(PasswordCredential pC1, PasswordCredential pC2) {
         if (pC1 == pC2)

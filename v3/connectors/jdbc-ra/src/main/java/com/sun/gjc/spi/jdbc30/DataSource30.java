@@ -36,9 +36,9 @@
 
 package com.sun.gjc.spi.jdbc30;
 
-import javax.resource.spi.ConnectionManager;
-
 import com.sun.gjc.spi.ManagedConnectionFactory;
+
+import javax.resource.spi.ConnectionManager;
 
 
 /**

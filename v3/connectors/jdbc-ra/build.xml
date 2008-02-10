@@ -34,33 +34,40 @@
  holder.
 -->
 
-<!--
-/*
-* @(#)build.xml	1.0 02/07/22
-*/
--->
+        <!--
+        /*
+        * @(#)build.xml	1.0 02/07/22
+        */
+        -->
 
 <project name="JDBCConnector top level" default="build">
     <property name="pkg.dir" value="com/sun/gjc/spi"/>
 
 
-    <property file="../bootstrap/project.properties"/>
+    <!--
+        <property file="../bootstrap/project.properties"/>
+    -->
     <property file="./build.properties"/>
 
     <target name="all" depends="build"/>
+
+
     <target name="all-jdbc-4.0" depends="build-jdbc-4.0"/>
 
     <target name="build" depends="compile,assemble"/>
-    <target name="build-jdbc-4.0" depends="compile-jdbc-4.0,assemble-jdbc-4.0"
+    <target name="build-jdbc-4.0" depends="compile-jdbc-4.0"
             description="builds only jdbc 4.0 classes"/>
 
     <target name="clean" description="Clean the build">
         <delete includeEmptyDirs="true" failonerror="false">
             <fileset dir="${component.classes.dir}"/>
             <fileset dir="${component.lib.home}"/>
+            <fileset dir="${component.target.rar}"/>
         </delete>
     </target>
 
+    <resolveArtifact artifactId="jdbc-ra-dependencies" groupId="org.glassfish.connectors.jdbc-ra"
+                     property="jdbc-ra-dependencies.zip"/>
 
     <!-- init. Initialization involves creating publishing directories and
          OS specific targets. -->
@@ -71,6 +78,7 @@
         <echo message="Building component ${component.name}"/>
         <mkdir dir="${component.classes.dir}"/>
         <mkdir dir="${component.lib.home}"/>
+        <mkdir dir="${component.target.rar}"/>
 
         <condition property="jdbc-4.0">
             <available classname="java.sql.Wrapper"/>
@@ -83,9 +91,17 @@
         </condition>
     </target>
 
+    <target name="install-binary-dependencies" depends="init">
+        <!-- unzip the binary dependencies (jdbc30 & jdbc40 related classes)
+later, during "compile" depending on the jdk version, appropriate classes
+(either jdbc30 or jdbc40) will be compiled and overwritten -->
+
+        <unzip src="${jdbc-ra-dependencies.zip}" dest="${component.classes.dir}"/>
+        <unzip src="${component.classes.dir}/glassfish-jdbcra-binary-dependencies.jar" dest="${component.classes.dir}"/>
+    </target>
 
     <!-- compile -->
-    <target name="compile" depends="init"
+    <target name="compile" depends="init, install-binary-dependencies"
             description="Compile com/sun/* com/iplanet/* sources">
         <javac srcdir="${src.dir}"
                destdir="${component.classes.dir}"
@@ -97,14 +113,14 @@
                target="1.5">
 
             <classpath>
-                <pathelement location="${javaee.jar}"/>
-                <pathelement location="${appserv-rt.jar}"/>
+                <path path="${compile_classpath}"></path>
             </classpath>
 
             <include name="com/sun/gjc/**"/>
             <include name="com/sun/appserv/**"/>
+            <!--<exclude name="com/sun/gjc/spi/ResourceAdapter.java"/>-->
             <exclude name="com/sun/gjc/spi/ConnectionHolder.java"/>
-	    <exclude name="com/sun/gjc/spi/DataSource.java"/> 
+            <exclude name="com/sun/gjc/spi/DataSource.java"/>
             <exclude name="com/sun/gjc/spi/jdbc30/**"/>
             <exclude name="com/sun/gjc/spi/jdbc40/**"/>
         </javac>
@@ -115,6 +131,7 @@
 
     <!-- If JDK is 1.5, compile JDBC 30 source -->
     <target name="compile-jdbc-30" if="jdbc-3.0" depends="init">
+        <echo message="building jdbc 30 classes"/>
         <javac srcdir="${src.dir}"
                destdir="${component.classes.dir}"
                debug="${javac.debug}"
@@ -124,9 +141,9 @@
                failonerror="true">
 
             <classpath>
-                <pathelement location="${javaee.jar}"/>
-                <pathelement location="${appserv-rt.jar}"/>
+                <path path="${compile_classpath}"></path>
             </classpath>
+
             <include name="com/sun/gjc/spi/jdbc30/**"/>
             <exclude name="com/sun/gjc/common/**"/>
             <exclude name="com/sun/appserv/**"/>
@@ -137,6 +154,7 @@
 
     <!-- If JDK is 1.6, compile JDBC 40 source -->
     <target name="compile-jdbc-40" if="jdbc-4.0" depends="init">
+        <echo message="building jdbc 40 classes"/>
         <javac srcdir="${src.dir}"
                destdir="${component.classes.dir}"
                debug="${javac.debug}"
@@ -147,9 +165,9 @@
                target="1.5">
 
             <classpath>
-                <pathelement location="${javaee.jar}"/>
-                <pathelement location="${appserv-rt.jar}"/>
+                <path path="${compile_classpath}"></path>
             </classpath>
+
             <include name="com/sun/gjc/spi/jdbc40/**"/>
             <exclude name="com/sun/gjc/common/**"/>
             <exclude name="com/sun/appserv/**"/>
@@ -183,19 +201,19 @@
                failonerror="true"
                target="1.5">
             <classpath>
-                <pathelement location="${javaee.jar}"/>
-                <pathelement location="${appserv-rt.jar}"/>
+                <path path="${compile_classpath}"></path>
             </classpath>
+
             <include name="com/sun/gjc/spi/jdbc40/**"/>
         </javac>
     </target>
 
 
-    <target name="assemble-jdbc-4.0" description="updates appserv-rt.jar with jdbc-4.0 classes">
+    <!--    <target name="assemble-jdbc-4.0" description="updates appserv-rt.jar with jdbc-4.0 classes">
         <jar jarfile="${appserv-rt.jar}" update="yes"
              basedir="${component.classes.dir}"
              includes="com/sun/gjc/spi/jdbc40/*"/>
-    </target>
+    </target>-->
 
     <target name="assemble">
 
@@ -206,36 +224,44 @@
         </copy>
 
 
-        <jar jarfile="${appserv-rt.jar}" update="yes"
-             basedir="${component.classes.dir}"
-             includes="${pkg.dir}/**/*, com/sun/gjc/util/**/*, com/sun/gjc/common/**/*, **/*.properties"/>
+        <!-- build JDBC RAR of type javax.sql.XADataSource -->
+        <!-- TODO V3 handle XA later
+                <copy file="${src.dir}/com/sun/gjc/spi/xml/ra-xa.xml"
+                      tofile="${component.lib.home}/ra.xml" overwrite="yes">
+                </copy>
+                <jar jarfile="${component.lib.home}/__xa_jdbc_ra.rar"
+                     basedir="${component.lib.home}" excludes="**/*">
+                    <manifest>
+                        <attribute name="Specification-Title" value="JDBC Specification"/>
+                        <attribute name="Specification-Vendor" value="Sun Microsystems, Inc.,"/>
+                        <attribute name="Specification-Version" value="3.0, 4.0"/>
+                        <attribute name="Implementation-Vendor" value="Sun Microsystems, Inc.,"/>
+                        <attribute name="Implementation-Version" value="9.1"/>
+                        <attribute name="Implementation-Title" value="Sun Java System Application Server"/>
+                    </manifest>
+                    <metainf dir="${component.lib.home}">
+                        <include name="ra.xml"/>
+                    </metainf>
+                </jar>
 
-        <jar jarfile="${appserv-ext.jar}" update="yes"
-             basedir="${component.classes.dir}"
-             includes="com/sun/appserv/jdbc/*"/>
+                <jar jarfile="${component.lib.home}/__xa_jdbc_ra.jar" update="true" basedir="${component.classes.dir}"
+                    includes ="${pkg.dir}/**/*, com/sun/gjc/util/**/*, com/sun/gjc/common/**/*, com/sun/appserv/jdbc/**/*, **/*.properties">
+                    <exclude name="com/sun/gjc/spi/DSManagedConnectionFactory.class"/>
+                    <exclude name="com/sun/gjc/spi/CPManagedConnectionFactory.class"/>
+                    <exclude name="com/sun/gjc/spi/DMManagedConnectionFactory.class"/>
+                </jar>
 
-        <copy file="${src.dir}/com/sun/gjc/spi/xml/ra-xa.xml"
-              tofile="${component.lib.home}/ra.xml" overwrite="yes">
-        </copy>
-        <jar jarfile="${component.lib.home}/__xa.rar"
-             basedir="${component.lib.home}" excludes="**/*">
-            <manifest>
-                <attribute name="Specification-Title" value="JDBC Specification"/>
-                <attribute name="Specification-Vendor" value="Sun Microsystems, Inc.,"/>
-                <attribute name="Specification-Version" value="3.0, 4.0"/>
-                <attribute name="Implementation-Vendor" value="Sun Microsystems, Inc.,"/>
-                <attribute name="Implementation-Version" value="9.1"/>
-                <attribute name="Implementation-Title" value="Sun Java System Application Server"/>
-            </manifest>
-            <metainf dir="${component.lib.home}">
-                <include name="ra.xml"/>
-            </metainf>
-        </jar>
+                <jar jarfile="${component.lib.home}/__xa_jdbc_ra.rar" update="true" basedir="${component.lib.home}">
+                    <include  name="__xa_jdbc_ra.jar" />
+                </jar>
+        -->
 
+
+        <!-- build JDBC RAR of type javax.sql.DataSource -->
         <copy file="${src.dir}/com/sun/gjc/spi/xml/ra-ds.xml"
               tofile="${component.lib.home}/ra.xml" overwrite="yes">
         </copy>
-        <jar jarfile="${component.lib.home}/__ds.rar"
+        <jar jarfile="${component.lib.home}/__ds_jdbc_ra.rar"
              basedir="${component.lib.home}" excludes="**/*">
             <manifest>
                 <attribute name="Specification-Title" value="JDBC Specification"/>
@@ -250,10 +276,23 @@
             </metainf>
         </jar>
 
+        <jar jarfile="${component.lib.home}/__ds_jdbc_ra.jar" update="true" basedir="${component.classes.dir}"
+             includes="${pkg.dir}/**/*, com/sun/gjc/util/**/*, com/sun/gjc/common/**/*, com/sun/appserv/jdbc/**/*, **/*.properties">
+            <exclude name="com/sun/gjc/spi/XAManagedConnectionFactory.class"/>
+            <exclude name="com/sun/gjc/spi/CPManagedConnectionFactory.class"/>
+            <exclude name="com/sun/gjc/spi/DMManagedConnectionFactory.class"/>
+        </jar>
+
+        <jar jarfile="${component.lib.home}/__ds_jdbc_ra.rar" update="true" basedir="${component.lib.home}">
+            <include name="__ds_jdbc_ra.jar"/>
+        </jar>
+
+
+        <!-- build JDBC RAR of type javax.sql.ConnectionPoolDataSource -->
         <copy file="${src.dir}/com/sun/gjc/spi/xml/ra-cp.xml"
               tofile="${component.lib.home}/ra.xml" overwrite="yes">
         </copy>
-        <jar jarfile="${component.lib.home}/__cp.rar"
+        <jar jarfile="${component.lib.home}/__cp_jdbc_ra.rar"
              basedir="${component.lib.home}" excludes="**/*">
             <manifest>
                 <attribute name="Specification-Title" value="JDBC Specification"/>
@@ -268,11 +307,30 @@
             </metainf>
         </jar>
 
-        <unjar src="${component.lib.home}/__xa.rar" dest="${glassfish.applications.home}/__xa"/>
-        <unjar src="${component.lib.home}/__ds.rar" dest="${glassfish.applications.home}/__ds"/>
-        <unjar src="${component.lib.home}/__cp.rar" dest="${glassfish.applications.home}/__cp"/>
+
+        <jar jarfile="${component.lib.home}/__cp_jdbc_ra.jar" update="true" basedir="${component.classes.dir}"
+             includes="${pkg.dir}/**/*, com/sun/gjc/util/**/*, com/sun/gjc/common/**/*, com/sun/appserv/jdbc/**/*, **/*.properties">
+            <exclude name="com/sun/gjc/spi/XAManagedConnectionFactory.class"/>
+            <exclude name="com/sun/gjc/spi/DSManagedConnectionFactory.class"/>
+            <exclude name="com/sun/gjc/spi/DMManagedConnectionFactory.class"/>
+        </jar>
+
+        <jar jarfile="${component.lib.home}/__cp_jdbc_ra.rar" update="true" basedir="${component.lib.home}">
+            <include name="__cp_jdbc_ra.jar"/>
+        </jar>
+
+
+        <!-- TODO V3 handle XA later
+        <unjar src="${component.lib.home}/__xa_jdbc_ra.rar" dest="${component.target.rar}/__xa_jdbc_ra"/>-->
+        <unjar src="${component.lib.home}/__ds_jdbc_ra.rar" dest="${component.target.rar}/__ds_jdbc_ra"/>
+        <unjar src="${component.lib.home}/__cp_jdbc_ra.rar" dest="${component.target.rar}/__cp_jdbc_ra"/>
+
+        <zip basedir="${component.target.rar}" file="${component.target.dir}/jdbc-ra.zip"/>
+
+        <attachArtifact file="${component.target.dir}/jdbc-ra.zip"/>
 
         <delete dir="${component.lib.home}"/>
+        <delete dir="${component.target.rar}"/>
     </target>
 
 </project>

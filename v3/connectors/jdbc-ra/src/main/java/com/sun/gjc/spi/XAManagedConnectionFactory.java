@@ -36,22 +36,18 @@
 
 package com.sun.gjc.spi;
 
+import com.sun.enterprise.util.i18n.StringManager;
+import com.sun.gjc.common.DataSourceObjectBuilder;
+import com.sun.gjc.common.DataSourceSpec;
+import com.sun.gjc.util.SecurityUtils;
+import com.sun.logging.LogDomains;
+
 import javax.resource.ResourceException;
 import javax.resource.spi.ConnectionRequestInfo;
-
-import com.sun.gjc.common.DataSourceSpec;
-import com.sun.gjc.common.DataSourceObjectBuilder;
-import com.sun.gjc.util.SecurityUtils;
-
-import javax.resource.spi.security.PasswordCredential;
 import javax.resource.spi.ResourceAllocationException;
-
-import com.sun.logging.*;
-
-import java.util.logging.Logger;
+import javax.resource.spi.security.PasswordCredential;
 import java.util.logging.Level;
-
-import com.sun.enterprise.util.i18n.StringManager;
+import java.util.logging.Logger;
 
 /**
  * XA <code>ManagedConnectionFactory</code> implementation for Generic JDBC Connector.
@@ -89,9 +85,7 @@ public class XAManagedConnectionFactory extends ManagedConnectionFactory {
      */
     public javax.resource.spi.ManagedConnection createManagedConnection(javax.security.auth.Subject subject,
                                                                         ConnectionRequestInfo cxRequestInfo) throws ResourceException {
-        if (logWriter != null) {
-            logWriter.println("In createManagedConnection");
-        }
+        logFine("In createManagedConnection");
         PasswordCredential pc = SecurityUtils.getPasswordCredential(this, subject, cxRequestInfo);
 
         javax.sql.XADataSource dataSource = getDataSource();
@@ -132,6 +126,7 @@ public class XAManagedConnectionFactory extends ManagedConnectionFactory {
 
     /**
      * Returns the underlying datasource
+     *
      * @return DataSource of jdbc vendor
      * @throws ResourceException
      */
@@ -157,9 +152,7 @@ public class XAManagedConnectionFactory extends ManagedConnectionFactory {
      *         false	otherwise
      */
     public boolean equals(Object other) {
-        if (logWriter != null) {
-            logWriter.println("In equals");
-        }
+        logFine("In equals");
         /**
          * The check below means that two ManagedConnectionFactory objects are equal
          * if and only if their properties are the same.
@@ -192,7 +185,7 @@ public class XAManagedConnectionFactory extends ManagedConnectionFactory {
         return spec.getDetail(DataSourceSpec.MAXSTATEMENTS);
     }
 
-      /**
+    /**
      * Sets the initial pool size.
      *
      * @param initPoolSz <code>String</code>
@@ -212,7 +205,7 @@ public class XAManagedConnectionFactory extends ManagedConnectionFactory {
         return spec.getDetail(DataSourceSpec.INITIALPOOLSIZE);
     }
 
-      /**
+    /**
      * Sets the minimum pool size.
      *
      * @param minPoolSz <code>String</code>
@@ -232,7 +225,7 @@ public class XAManagedConnectionFactory extends ManagedConnectionFactory {
         return spec.getDetail(DataSourceSpec.MINPOOLSIZE);
     }
 
-      /**
+    /**
      * Sets the maximum pool size.
      *
      * @param maxPoolSz <code>String</code>
@@ -252,7 +245,7 @@ public class XAManagedConnectionFactory extends ManagedConnectionFactory {
         return spec.getDetail(DataSourceSpec.MAXPOOLSIZE);
     }
 
-      /**
+    /**
      * Sets the maximum idle time.
      *
      * @param maxIdleTime String

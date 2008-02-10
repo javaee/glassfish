@@ -36,22 +36,19 @@
 
 package com.sun.gjc.spi.base;
 
+import com.sun.appserv.connectors.spi.ConnectorConstants;
+import com.sun.gjc.spi.ConnectionRequestInfo;
+import com.sun.gjc.spi.ManagedConnectionFactory;
+import com.sun.logging.LogDomains;
+
+import javax.naming.Reference;
+import javax.resource.ResourceException;
+import javax.resource.spi.ConnectionManager;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
-import javax.resource.spi.ConnectionManager;
-import javax.resource.ResourceException;
-import javax.naming.Reference;
-
-import com.sun.gjc.spi.ManagedConnectionFactory;
-import com.sun.gjc.spi.ConnectionRequestInfo;
-
-import com.sun.logging.*;
-
-import java.util.logging.Logger;
 import java.util.logging.Level;
-
-import com.sun.enterprise.connectors.ConnectorConstants;
+import java.util.logging.Logger;
 
 /**
  * Holds the <code>java.sql.Connection</code> object, which is to be
@@ -171,7 +168,7 @@ public abstract class DataSource implements javax.sql.DataSource, java.io.Serial
     public Connection getNonTxConnection() throws SQLException {
         try {
             ConnectionHolder con = (ConnectionHolder)
-                    ((com.sun.enterprise.connectors.ConnectionManagerImpl)
+                    ((com.sun.appserv.connectors.spi.ConnectionManager)
                             cm).allocateNonTxConnection(mcf, null);
             setConnectionType(con, true);
 
@@ -199,7 +196,7 @@ public abstract class DataSource implements javax.sql.DataSource, java.io.Serial
         try {
             ConnectionRequestInfo cxReqInfo = new ConnectionRequestInfo(user, password);
             ConnectionHolder con = (ConnectionHolder)
-                    ((com.sun.enterprise.connectors.ConnectionManagerImpl)
+                    ((com.sun.appserv.connectors.spi.ConnectionManager)
                             cm).allocateNonTxConnection(mcf, cxReqInfo);
 
             setConnectionType(con, true);
@@ -291,15 +288,15 @@ public abstract class DataSource implements javax.sql.DataSource, java.io.Serial
         ConnectionHolder.ConnectionType cmType = ConnectionHolder.ConnectionType.STANDARD;
 
         if (cm instanceof javax.resource.spi.LazyAssociatableConnectionManager) {
-            if (!((com.sun.enterprise.connectors.ConnectionManagerImpl) cm).
+            if (!((com.sun.appserv.connectors.spi.ConnectionManager) cm).
                     getJndiName().endsWith(ConnectorConstants.PM_JNDI_SUFFIX)) {
                 cmType = ConnectionHolder.ConnectionType.LAZY_ASSOCIATABLE;
             }
         } else if (cm instanceof
                 javax.resource.spi.LazyEnlistableConnectionManager) {
-            if (!((com.sun.enterprise.connectors.ConnectionManagerImpl) cm).
+            if (!((com.sun.appserv.connectors.spi.ConnectionManager) cm).
                     getJndiName().endsWith(ConnectorConstants.PM_JNDI_SUFFIX) &&
-                    !((com.sun.enterprise.connectors.ConnectionManagerImpl) cm).
+                    !((com.sun.appserv.connectors.spi.ConnectionManager) cm).
                             getJndiName().endsWith(ConnectorConstants.NON_TX_JNDI_SUFFIX)) {
                 cmType = ConnectionHolder.ConnectionType.LAZY_ENLISTABLE;
             }
@@ -349,6 +346,7 @@ public abstract class DataSource implements javax.sql.DataSource, java.io.Serial
                         con.close(); //Connection will be destroyed while close or Tx completion
             }
      * </pre>
+     *
      * @param conn <code>java.sql.Connection</code>
      */
     public void markConnectionAsBad(Connection conn) {

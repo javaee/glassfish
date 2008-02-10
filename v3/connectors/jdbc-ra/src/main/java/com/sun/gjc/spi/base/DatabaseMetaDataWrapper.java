@@ -35,10 +35,10 @@
  */
 package com.sun.gjc.spi.base;
 
-import java.sql.DatabaseMetaData;
-import java.sql.SQLException;
-import java.sql.ResultSet;
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 /**
  * Abstract class for wrapping DatabaseMetaData<br>
@@ -49,14 +49,16 @@ public abstract class DatabaseMetaDataWrapper implements DatabaseMetaData {
     protected Connection connection = null;
 
     /**
-     * Abstract class for wrapping DatabaseMetaData 
-     * @param con Connection that is wrapped.<br>
+     * Abstract class for wrapping DatabaseMetaData
+     *
+     * @param con      Connection that is wrapped.<br>
      * @param metaData DatabaseMetaData that is wrapped <br>
      */
     public DatabaseMetaDataWrapper(Connection con, DatabaseMetaData metaData) {
         connection = con;
         databaseMetaData = metaData;
     }
+
     /**
      * Retrieves whether the current user can call all the procedures
      * returned by the method <code>getProcedures</code>.
@@ -2511,6 +2513,7 @@ public abstract class DatabaseMetaDataWrapper implements DatabaseMetaData {
 
     /**
      * Returns the actual connection that produced this metadata object<br>
+     *
      * @return Connection
      * @throws SQLException
      */

@@ -36,20 +36,17 @@
 
 package com.sun.gjc.spi;
 
-import javax.resource.ResourceException;
-import javax.resource.spi.ConnectionRequestInfo;
-import javax.resource.spi.security.PasswordCredential;
-
+import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.gjc.common.DataSourceObjectBuilder;
 import com.sun.gjc.util.SecurityUtils;
-import com.sun.logging.*;
+import com.sun.logging.LogDomains;
 
-import java.util.logging.Logger;
-import java.util.logging.Level;
-
-import com.sun.enterprise.util.i18n.StringManager;
-
+import javax.resource.ResourceException;
+import javax.resource.spi.ConnectionRequestInfo;
 import javax.resource.spi.ResourceAllocationException;
+import javax.resource.spi.security.PasswordCredential;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Data Source <code>ManagedConnectionFactory</code> implementation for Generic JDBC Connector.
@@ -87,9 +84,7 @@ public class DSManagedConnectionFactory extends ManagedConnectionFactory {
      */
     public javax.resource.spi.ManagedConnection createManagedConnection(javax.security.auth.Subject subject,
                                                                         ConnectionRequestInfo cxRequestInfo) throws ResourceException {
-        if (logWriter != null) {
-            logWriter.println("In createManagedConnection");
-        }
+        logFine("In createManagedConnection");
         PasswordCredential pc = SecurityUtils.getPasswordCredential(this, subject, cxRequestInfo);
 
         javax.sql.DataSource dataSource = getDataSource();
@@ -121,17 +116,16 @@ public class DSManagedConnectionFactory extends ManagedConnectionFactory {
             throw rae;
         }
 
-        com.sun.gjc.spi.ManagedConnection mc = constructManagedConnection(
-                null, dsConn, pc, this);
+        ManagedConnection mc = constructManagedConnection(null, dsConn, pc, this);
 
         //GJCINT
         validateAndSetIsolation(mc);
-
         return mc;
     }
 
     /**
      * Returns the underlying datasource
+     *
      * @return DataSource of jdbc vendor
      * @throws ResourceException
      */
@@ -157,9 +151,7 @@ public class DSManagedConnectionFactory extends ManagedConnectionFactory {
      *         false	otherwise
      */
     public boolean equals(Object other) {
-        if (logWriter != null) {
-            logWriter.println("In equals");
-        }
+        logFine("In equals");
         /**
          * The check below means that two ManagedConnectionFactory objects are equal
          * if and only if their properties are the same.

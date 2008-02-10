@@ -36,10 +36,10 @@
 
 package com.sun.gjc.spi;
 
-import javax.resource.spi.ManagedConnectionFactory;
-import javax.resource.spi.ManagedConnection;
 import javax.resource.ResourceException;
 import javax.resource.spi.ConnectionRequestInfo;
+import javax.resource.spi.ManagedConnection;
+import javax.resource.spi.ManagedConnectionFactory;
 
 /**
  * ConnectionManager implementation for Generic JDBC Connector.

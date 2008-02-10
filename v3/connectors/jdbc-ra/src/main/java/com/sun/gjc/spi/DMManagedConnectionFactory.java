@@ -36,24 +36,19 @@
 
 package com.sun.gjc.spi;
 
+import com.sun.gjc.common.DataSourceSpec;
+import com.sun.gjc.util.SecurityUtils;
+import com.sun.logging.LogDomains;
+
 import javax.resource.ResourceException;
 import javax.resource.spi.ConnectionRequestInfo;
-
-import com.sun.gjc.util.SecurityUtils;
-
 import javax.resource.spi.security.PasswordCredential;
 import java.sql.DriverManager;
-
-import com.sun.gjc.common.DataSourceSpec;
-
+import java.util.NoSuchElementException;
 import java.util.Properties;
 import java.util.StringTokenizer;
-import java.util.NoSuchElementException;
-
-import com.sun.logging.*;
-
-import java.util.logging.Logger;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Driver Manager <code>ManagedConnectionFactory</code> implementation for Generic JDBC Connector.
@@ -83,32 +78,30 @@ public class DMManagedConnectionFactory extends ManagedConnectionFactory {
      *                      as a result of the invocation <code>getConnection(user, password)</code>
      *                      on the <code>DataSource</code> object
      * @return <code>ManagedConnection</code> object created
-     * @throws ResourceException           if there is an error in instantiating the
-     *                                     <code>DataSource</code> object used for the
-     *                                     creation of the <code>ManagedConnection</code> object
-     * @throws SecurityException           if there ino <code>PasswordCredential</code> object
-     *                                     satisfying this request
+     * @throws ResourceException if there is an error in instantiating the
+     *                           <code>DataSource</code> object used for the
+     *                           creation of the <code>ManagedConnection</code> object
+     * @throws SecurityException if there ino <code>PasswordCredential</code> object
+     *                           satisfying this request
      */
     public javax.resource.spi.ManagedConnection createManagedConnection(javax.security.auth.Subject subject,
                                                                         ConnectionRequestInfo cxRequestInfo) throws ResourceException {
-        if (logWriter != null) {
-            logWriter.println("In createManagedConnection");
-        }
+        logFine("In createManagedConnection");
 
         PasswordCredential pc = SecurityUtils.getPasswordCredential(this, subject, cxRequestInfo);
 
         try {
             Thread.currentThread().getContextClassLoader().loadClass(spec.getDetail(DataSourceSpec.CLASSNAME));
         } catch (ClassNotFoundException cnfe) {
-            _logger.log(Level.SEVERE, "jdbc.exc_cnfe",cnfe); 
-            throw new ResourceException("The driver could not be loaded: " + spec.getDetail(DataSourceSpec.CLASSNAME) );
+            _logger.log(Level.SEVERE, "jdbc.exc_cnfe", cnfe);
+            throw new ResourceException("The driver could not be loaded: " + spec.getDetail(DataSourceSpec.CLASSNAME));
         }
 
         java.sql.Connection dsConn = null;
 
         Properties driverProps = getPropertiesObj();
 
-        try {                            
+        try {
             if (cxRequestInfo != null) {
                 driverProps.setProperty("user", pc.getUserName());
                 driverProps.setProperty("password", new String(pc.getPassword()));
@@ -222,9 +215,7 @@ public class DMManagedConnectionFactory extends ManagedConnectionFactory {
      *         false	otherwise
      */
     public boolean equals(Object other) {
-        if (logWriter != null) {
-            logWriter.println("In equals");
-        }
+        logFine("In equals");
 
         /**
          * The check below means that two ManagedConnectionFactory objects are equal
@@ -257,7 +248,7 @@ public class DMManagedConnectionFactory extends ManagedConnectionFactory {
         }
     }
 
-     /**
+    /**
      * Sets the connection url.
      *
      * @param url <code>String</code>
@@ -277,7 +268,7 @@ public class DMManagedConnectionFactory extends ManagedConnectionFactory {
         return spec.getDetail(DataSourceSpec.URL);
     }
 
-       public Object getDataSource() throws ResourceException {
+    public Object getDataSource() throws ResourceException {
         return null;
     }
 }

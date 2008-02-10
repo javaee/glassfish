@@ -36,11 +36,10 @@
 
 package com.sun.gjc.spi.jdbc30;
 
-import java.sql.*;
-import java.util.Map;
-
 import com.sun.gjc.spi.ManagedConnection;
 import com.sun.gjc.spi.base.ConnectionHolder;
+
+import java.sql.Connection;
 
 
 /**
@@ -51,8 +50,9 @@ public class ConnectionHolder30 extends ConnectionHolder {
 
     /**
      * Connection wrapper given to application program
-     * @param con Connection that is wrapped
-     * @param mc  ManagedConnection
+     *
+     * @param con           Connection that is wrapped
+     * @param mc            ManagedConnection
      * @param cxRequestInfo Connection Request Information
      */
     public ConnectionHolder30(Connection con, ManagedConnection mc,

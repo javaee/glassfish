@@ -35,27 +35,28 @@
  */
 package com.sun.gjc.spi.base;
 
-import java.sql.*;
-import java.math.BigDecimal;
 import java.io.InputStream;
 import java.io.Reader;
-import java.util.Map;
-import java.util.Calendar;
+import java.math.BigDecimal;
 import java.net.URL;
+import java.sql.*;
+import java.util.Calendar;
+import java.util.Map;
 
 
 /**
  * Abstract class for ResultSet Wrapper <br>
  */
-public abstract class ResultSetWrapper implements ResultSet{
+public abstract class ResultSetWrapper implements ResultSet {
 
     protected ResultSet resultSet = null;
     protected Statement statement = null;
 
     /**
      * Abstract class for wrapping Statement<br>
+     *
      * @param stmt Statement that is to be wrapped<br>
-     * @param rs ResultSet that is to be wraped<br>
+     * @param rs   ResultSet that is to be wraped<br>
      */
     public ResultSetWrapper(Statement stmt, ResultSet rs) {
         resultSet = rs;
@@ -1991,6 +1992,7 @@ public abstract class ResultSetWrapper implements ResultSet{
 
     /**
      * Returns the actual statement that produced this resultset <br>
+     *
      * @return Statement
      * @throws SQLException
      */

@@ -36,17 +36,16 @@
 
 package com.sun.gjc.spi.base;
 
-import java.sql.*;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.gjc.common.DataSourceObjectBuilder;
 import com.sun.gjc.spi.ManagedConnection;
 import com.sun.logging.LogDomains;
 
 import javax.resource.ResourceException;
+import java.sql.*;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Holds the java.sql.Connection object, which is to be
@@ -80,6 +79,7 @@ public abstract class ConnectionHolder implements Connection {
     protected boolean statementTimeoutEnabled;
 
     protected final static Logger _logger;
+
     static {
         _logger = LogDomains.getLogger(LogDomains.RSR_LOGGER);
     }
@@ -187,13 +187,13 @@ public abstract class ConnectionHolder implements Connection {
      * @throws SQLException In case of a database error.
      */
     public void close() throws SQLException {
-        if(isClosed){
-             if(_logger.isLoggable(Level.FINE)){
-                _logger.log(Level.FINE,"jdbc.duplicate_close_connection",this);
+        if (isClosed) {
+            if (_logger.isLoggable(Level.FINE)) {
+                _logger.log(Level.FINE, "jdbc.duplicate_close_connection", this);
             }
             return;
         }
-        
+
         isClosed = true;
         if (mc != null) {
             //mc might be null if this is a lazyAssociatable connection
@@ -347,7 +347,7 @@ public abstract class ConnectionHolder implements Connection {
      * @return TypeMap set in this object.
      * @throws SQLException In case of a database error.
      */
-    public Map<String,Class<?>> getTypeMap() throws SQLException {
+    public Map<String, Class<?>> getTypeMap() throws SQLException {
         checkValidity();
         return con.getTypeMap();
     }
@@ -789,7 +789,7 @@ public abstract class ConnectionHolder implements Connection {
      * @param map <code>Map</code> a Map object to install.
      * @throws SQLException In case of a database error.
      */
-    public void setTypeMap(java.util.Map<String,Class<?>> map) throws SQLException {
+    public void setTypeMap(java.util.Map<String, Class<?>> map) throws SQLException {
         checkValidity();
         con.setTypeMap(map);
     }

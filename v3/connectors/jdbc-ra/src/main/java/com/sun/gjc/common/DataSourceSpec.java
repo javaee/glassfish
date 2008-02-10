@@ -42,8 +42,8 @@ import java.util.concurrent.ConcurrentHashMap;
  * Encapsulate the DataSource object details obtained from
  * ManagedConnectionFactory.
  *
- * @version 1.0, 02/07/23
  * @author Binod P.G
+ * @version 1.0, 02/07/23
  */
 public class DataSourceSpec implements java.io.Serializable {
 
@@ -85,14 +85,15 @@ public class DataSourceSpec implements java.io.Serializable {
     public static final int STATEMENTWRAPPING = 31;
 
     public static final int JDBC30DATASOURCE = 32;
+    public static final int ESCAPECHARACTER = 33;
 
-    private ConcurrentHashMap<Integer,String> details = new ConcurrentHashMap<Integer,String>();
+    private ConcurrentHashMap<Integer, String> details = new ConcurrentHashMap<Integer, String>();
 
     /**
      * Set the property.
      *
-     * @param    property    Property Name to be set.
-     * @param    value        Value of property to be set.
+     * @param property Property Name to be set.
+     * @param value    Value of property to be set.
      */
     public void setDetail(int property, String value) {
         details.put(property, value);
@@ -100,6 +101,7 @@ public class DataSourceSpec implements java.io.Serializable {
 
     /**
      * Get the value of property
+     *
      * @param property whose value is required
      * @return value of the property.
      */
@@ -115,7 +117,7 @@ public class DataSourceSpec implements java.io.Serializable {
      * Checks whether two <code>DataSourceSpec</code> objects
      * are equal or not.
      *
-     * @param    obj    Instance of <code>DataSourceSpec</code> object.
+     * @param obj Instance of <code>DataSourceSpec</code> object.
      */
     public boolean equals(Object obj) {
         if (obj instanceof DataSourceSpec) {

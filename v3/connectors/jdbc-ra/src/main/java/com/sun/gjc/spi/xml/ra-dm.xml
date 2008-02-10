@@ -42,13 +42,13 @@
            version="1.5">
 
     <!-- There can be any number of "description" elements including 0 -->
-    <!-- This field can be optionally used by the driver vendor to provide a 
+    <!-- This field can be optionally used by the driver vendor to provide a
          description for the resource adapter.
     -->
     <description>Resource adapter wrapping the driver through DriverManager</description>
 
     <!-- There can be any number of "display-name" elements including 0 -->
-    <!-- The field can be optionally used by the driver vendor to provide a name that 
+    <!-- The field can be optionally used by the driver vendor to provide a name that
          is intended to be displayed by tools.
     -->
     <display-name>DriverManager Resource Adapter</display-name>
@@ -56,15 +56,15 @@
     <!-- There can be any number of "icon" elements including 0 -->
     <!-- The following is an example.
         <icon>
-            This "small-icon" element can occur atmost once. This should specify the 
-            absolute or the relative path name of a file containing a small (16 x 16) 
+            This "small-icon" element can occur atmost once. This should specify the
+            absolute or the relative path name of a file containing a small (16 x 16)
             icon - JPEG or GIF image. The following is an example.
             <small-icon>smallicon.jpg</small-icon>
-        
-            This "large-icon" element can occur atmost once. This should specify the 
-            absolute or the relative path name of a file containing a small (32 x 32) 
+
+            This "large-icon" element can occur atmost once. This should specify the
+            absolute or the relative path name of a file containing a small (32 x 32)
             icon - JPEG or GIF image. The following is an example.
-            <large-icon>largeicon.jpg</large-icon>   
+            <large-icon>largeicon.jpg</large-icon>
         </icon>
     -->
     <icon>
@@ -79,7 +79,7 @@
     <vendor-name>Sun Microsystems</vendor-name>
 
     <!-- The "eis-type" element should occur exactly once. -->
-    <!-- This should specify the database, for example the product name of 
+    <!-- This should specify the database, for example the product name of
          the database independent of any version information. The following
          is an example.
         <eis-type>XYZ</eis-type>
@@ -87,7 +87,7 @@
     <eis-type>Database</eis-type>
 
     <!-- The "resourceadapter-version" element should occur exactly once. -->
-    <!-- This specifies a string based version of the resource adapter from 
+    <!-- This specifies a string based version of the resource adapter from
          the driver vendor. The default is being set as 1.0. The driver
          vendor can change it as required.
     -->
@@ -99,12 +99,12 @@
         <license>
             There can be any number of "description" elements including 0.
             <description>
-                This field can be optionally used by the driver vendor to 
-                provide a description for the licensing requirements of the 
-                resource adapter like duration of license, numberof connection 
+                This field can be optionally used by the driver vendor to
+                provide a description for the licensing requirements of the
+                resource adapter like duration of license, numberof connection
                 restrictions.
             </description>
-        
+
             This specifies whether a license is required to deploy and use the resource adapter.
             Default is false.
             <license-required>false</license-required>
@@ -116,8 +116,8 @@
 
     <resourceadapter>
 
-        <!-- 
-            The "config-property" elements can have zero or more "description" 
+        <!--
+            The "config-property" elements can have zero or more "description"
             elements. The "description" elements are not being included
             in the "config-property" elements below. The driver vendor can
             add them as required.
@@ -129,6 +129,7 @@
 
             <connection-definition>
 
+
                 <managedconnectionfactory-class>com.sun.gjc.spi.DMManagedConnectionFactory
                 </managedconnectionfactory-class>
 
@@ -136,12 +137,12 @@
                 <config-property>
                     <config-property-name>User</config-property-name>
                     <config-property-type>java.lang.String</config-property-type>
-                    <config-property-value>scott</config-property-value>
+                    <config-property-value>APP</config-property-value>
                 </config-property>
                 <config-property>
                     <config-property-name>Password</config-property-name>
                     <config-property-type>java.lang.String</config-property-type>
-                    <config-property-value>tiger</config-property-value>
+                    <config-property-value>APP</config-property-value>
                 </config-property>
                 <config-property>
                     <config-property-name>LoginTimeOut</config-property-name>
@@ -156,7 +157,7 @@
                 <config-property>
                     <config-property-name>ClassName</config-property-name>
                     <config-property-type>java.lang.String</config-property-type>
-                    <config-property-value>oracle.jdbc.OracleDriver</config-property-value>
+                    <config-property-value>org.apache.derby.jdbc.ClientDriver</config-property-value>
                 </config-property>
                 <config-property>
                     <config-property-name>ConnectionValidationRequired</config-property-name>
@@ -216,7 +217,6 @@
             </authentication-mechanism>
 
             <reauthentication-support>false</reauthentication-support>
-
         </outbound-resourceadapter>
 
     </resourceadapter>

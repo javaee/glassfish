@@ -48,9 +48,10 @@ public class ConnectionWrapper30 extends ConnectionHolder30 {
 
     /**
      * Instantiates connection wrapper to wrap JDBC objects.
-     * @param con Connection that is wrapped
-     * @param mc  Managed Connection
-     * @param cxRequestInfo  Connection Request Info
+     *
+     * @param con           Connection that is wrapped
+     * @param mc            Managed Connection
+     * @param cxRequestInfo Connection Request Info
      */
     public ConnectionWrapper30(Connection con, ManagedConnection mc,
                                javax.resource.spi.ConnectionRequestInfo cxRequestInfo) {

@@ -36,15 +36,12 @@
 
 package com.sun.gjc.spi;
 
-import com.sun.gjc.spi.ManagedConnection;
+import com.sun.logging.LogDomains;
 
-import java.sql.SQLException;
 import javax.resource.ResourceException;
-
-import com.sun.logging.*;
-
-import java.util.logging.Logger;
+import java.sql.SQLException;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * <code>ManagedConnectionMetaData</code> implementation for Generic JDBC Connector.

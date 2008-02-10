@@ -36,20 +36,20 @@
 
 package com.sun.gjc.spi.jdbc40;
 
-import com.sun.gjc.spi.base.ConnectionHolder;
+import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.gjc.spi.ManagedConnection;
 import com.sun.gjc.spi.ManagedConnectionFactory;
-import com.sun.enterprise.util.i18n.StringManager;
+import com.sun.gjc.spi.base.ConnectionHolder;
 import com.sun.logging.LogDomains;
 
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.sql.*;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.lang.reflect.Proxy;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
-import java.lang.reflect.InvocationTargetException;
 
 
 /**
@@ -65,15 +65,17 @@ public class ConnectionHolder40 extends ConnectionHolder {
     protected final static StringManager localStrings =
             StringManager.getManager(ManagedConnectionFactory.class);
     protected final static Logger _logger;
-    protected boolean jdbc30Connection ;
+    protected boolean jdbc30Connection;
+
     static {
         _logger = LogDomains.getLogger(LogDomains.RSR_LOGGER);
     }
 
     /**
      * Connection wrapper given to application program
-     * @param con Connection that is wrapped
-     * @param mc  ManagedConnection
+     *
+     * @param con           Connection that is wrapped
+     * @param mc            ManagedConnection
      * @param cxRequestInfo Connection Request Information
      */
     public ConnectionHolder40(Connection con, ManagedConnection mc,
@@ -81,7 +83,7 @@ public class ConnectionHolder40 extends ConnectionHolder {
                               boolean jdbc30Connection) {
         super(con, mc, cxRequestInfo);
         this.jdbc30Connection = jdbc30Connection;
-        if(!jdbc30Connection)
+        if (!jdbc30Connection)
             init();
     }
 
@@ -426,15 +428,15 @@ public class ConnectionHolder40 extends ConnectionHolder {
         checkValidity();
         T result = null;
         if (iface.isInstance(this)) { //if iface is "java.sql.Connection"
-            result = iface.cast(this); 
-        } else if (iface.isInstance(con)) { 
-	  //if iface is not "java.sql.Connection" & implemented by native Connection
+            result = iface.cast(this);
+        } else if (iface.isInstance(con)) {
+            //if iface is not "java.sql.Connection" & implemented by native Connection
             Class<T> listIntf[] = new Class[]{iface};
             result = getProxyObject(con, listIntf);
         } else {
             //probably a proxy, delegating to native connection
             result = con.unwrap(iface);
-            if(Connection.class.isInstance(result)){
+            if (Connection.class.isInstance(result)) {
                 // rare case : returned object implements both iface & java.sql.Connection
                 Class<T> listIntf[] = new Class[]{iface, Connection.class};
                 result = getProxyObject(result, listIntf);
@@ -444,14 +446,13 @@ public class ConnectionHolder40 extends ConnectionHolder {
     }
 
     /**
-     *
      * @param actualObject Object from jdbc vendor connection's unwrap
-     * @param ifaces Interfaces for which proxy is needed
+     * @param ifaces       Interfaces for which proxy is needed
      * @return Proxy class implmenting the interfaces
      * @throws SQLException
      */
     private <T> T getProxyObject(final Object actualObject, Class<T>[] ifaces) throws SQLException {
-        T result ;
+        T result;
         InvocationHandler ih;
         try {
             ih = new InvocationHandler() {
@@ -495,10 +496,10 @@ public class ConnectionHolder40 extends ConnectionHolder {
      */
     public boolean isWrapperFor(Class<?> iface) throws SQLException {
         checkValidity();
-        boolean result ;
+        boolean result;
         if (iface.isInstance(this)) {
             result = true;
-        }else{
+        } else {
             result = con.isWrapperFor(iface);
         }
         return result;
@@ -512,8 +513,8 @@ public class ConnectionHolder40 extends ConnectionHolder {
      */
     public void close() throws SQLException {
         if (isClosed) {
-            if(_logger.isLoggable(Level.FINE)){
-                _logger.log(Level.FINE,"jdbc.duplicate_close_connection",this);
+            if (_logger.isLoggable(Level.FINE)) {
+                _logger.log(Level.FINE, "jdbc.duplicate_close_connection", this);
             }
             return;
         }

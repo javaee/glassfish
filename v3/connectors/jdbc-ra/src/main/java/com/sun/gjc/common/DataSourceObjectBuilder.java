@@ -37,10 +37,7 @@
 package com.sun.gjc.common;
 
 import java.lang.reflect.Method;
-import java.util.Hashtable;
-import java.util.Vector;
-import java.util.StringTokenizer;
-import java.util.Enumeration;
+import java.util.*;
 
 import com.sun.gjc.util.MethodExecutor;
 
@@ -57,10 +54,10 @@ import com.sun.enterprise.util.i18n.StringManager;
  * Utility class, which would create necessary Datasource object according to the
  * specification.
  *
- * @version 1.0, 02/07/23
  * @author Binod P.G
- * @see        com.sun.gjc.common.DataSourceSpec
- * @see        com.sun.gjc.util.MethodExcecutor
+ * @version 1.0, 02/07/23
+ * @see com.sun.gjc.common.DataSourceSpec
+ * @see com.sun.gjc.util.MethodExcecutor
  */
 public class DataSourceObjectBuilder implements java.io.Serializable {
 
@@ -90,7 +87,7 @@ public class DataSourceObjectBuilder implements java.io.Serializable {
     /**
      * Construct a DataSource Object from the spec.
      *
-     * @param    spec    <code> DataSourceSpec </code> object.
+     * @param spec <code> DataSourceSpec </code> object.
      */
     public DataSourceObjectBuilder(DataSourceSpec spec) {
         this.spec = spec;
@@ -101,8 +98,8 @@ public class DataSourceObjectBuilder implements java.io.Serializable {
      * Construct the DataSource Object from the spec.
      *
      * @return Object constructed using the DataSourceSpec.
-     * @throws    <code>ResourceException</code> if the class is not found or some issue in executing
-     * some method.
+     * @throws <code>ResourceException</code> if the class is not found or some issue in executing
+     *                                        some method.
      */
     public Object constructDataSourceObject() throws ResourceException {
         driverProperties = parseDriverProperties(spec);
@@ -176,65 +173,78 @@ public class DataSourceObjectBuilder implements java.io.Serializable {
      * parse them to a set of methodName and parameters. Prepare a hashtable
      * containing these details and return.
      *
-     * @param    spec    <code> DataSourceSpec </code> object.
+     * @param spec <code> DataSourceSpec </code> object.
      * @return Hashtable containing method names and parameters,
-     * @throws ResourceException    If delimiter is not provided and property string
-     * is not null.
+     * @throws ResourceException If delimiter is not provided and property string
+     *                           is not null.
      */
     private Hashtable parseDriverProperties(DataSourceSpec spec) throws ResourceException {
         String delim = spec.getDetail(DataSourceSpec.DELIMITER);
-
+        String escape = spec.getDetail(DataSourceSpec.ESCAPECHARACTER);
         String prop = spec.getDetail(DataSourceSpec.DRIVERPROPERTIES);
+
         if (prop == null || prop.trim().equals("")) {
             return new Hashtable();
         } else if (delim == null || delim.equals("")) {
             String msg = sm.getString("dsob.delim_not_specified");
             throw new ResourceException(msg);
+        }else if( escape == null  || escape.equals("")){
+            String msg = sm.getString("dsob.escape_char_not_specified");
+            throw new ResourceException(msg);
         }
+        return parseDriverProperties(prop,escape, delim);
+    }
 
-        Hashtable properties = new Hashtable();
-        delim = delim.trim();
-        String sep = delim + delim;
-        int sepLen = sep.length();
-        String cache = prop;
-        Vector methods = new Vector();
-
-        while (cache.indexOf(sep) != -1) {
-            int index = cache.indexOf(sep);
-            String name = cache.substring(0, index);
-            if (!name.trim().equals("")) {
-                methods.add(name);
-                cache = cache.substring(index + sepLen);
-            }
-        }
-
-        Enumeration allMethods = methods.elements();
-        while (allMethods.hasMoreElements()) {
-            String oneMethod = (String) allMethods.nextElement();
-            if (!oneMethod.trim().equals("")) {
-                String methodName = null;
-                Vector parms = new Vector();
-                StringTokenizer methodDetails = new StringTokenizer(oneMethod, delim);
-                for (int i = 0; methodDetails.hasMoreTokens(); i++) {
-                    String token = (String) methodDetails.nextToken();
-                    if (i == 0) {
-                        methodName = token.toUpperCase();
-                    } else {
-                        parms.add(token);
-                    }
+    /**
+     * parse the driver properties and re-generate name value pairs with unescaped values.
+     * @param values driverProperties
+     * @param escape escape character
+     * @param delimiter delimiter
+     * @return Hashtable
+     */
+    public Hashtable parseDriverProperties(String values, String escape, String delimiter){
+        Hashtable result = new Hashtable();
+        String parsedValue = "";
+        String name = "";
+        String value = "";
+        char escapeChar = escape.charAt(0);
+        char delimiterChar  = delimiter.charAt(0);
+        while(values.length() >0){
+            if(values.charAt(0)==delimiterChar){
+                if(values.charAt(1)==delimiterChar){
+                    value = parsedValue;
+                    Vector v = new Vector();
+                    v.add(value);
+                    result.put(name,v);
+                    parsedValue = "";
+                    values = values.substring(2);
+                }else{
+                    name = parsedValue.toUpperCase();
+                    parsedValue = "";
+                    values = values.substring(1);
                 }
-                properties.put(methodName, parms);
+            }else if(values.charAt(0) == escapeChar) {
+                if(values.charAt(1)==escapeChar){
+                    parsedValue+=values.charAt(1);
+                }else if (values.charAt(1)==delimiterChar){
+                    parsedValue+=values.charAt(1);
+                }
+                values = values.substring(2);
+            }else if(values.charAt(0)!=escapeChar){
+                parsedValue += values.charAt(0);
+                values = values.substring(1);
             }
         }
-        return properties;
+
+        return result;
     }
 
     /**
      * Creates a Datasource object according to the spec.
      *
      * @return Initial DataSource Object instance.
-     * @throws    <code>ResourceException</code> If class name is wrong or classpath is not set
-     * properly.
+     * @throws <code>ResourceException</code> If class name is wrong or classpath is not set
+     *                                        properly.
      */
     private Object getDataSourceObject() throws ResourceException {
         String className = spec.getDetail(DataSourceSpec.CLASSNAME);
@@ -243,7 +253,7 @@ public class DataSourceObjectBuilder implements java.io.Serializable {
             Object dataSourceObject = dataSourceClass.newInstance();
             return dataSourceObject;
         } catch (ClassNotFoundException cnfe) {
-            _logger.log(Level.SEVERE, "jdbc.exc_cnfe_ds", cnfe); 
+            _logger.log(Level.SEVERE, "jdbc.exc_cnfe_ds", cnfe);
             String msg = sm.getString("dsob.class_not_found", className);
             throw new ResourceException(msg);
         } catch (InstantiationException ce) {
@@ -275,5 +285,5 @@ public class DataSourceObjectBuilder implements java.io.Serializable {
             _logger.log(Level.FINEST, "could not find Wrapper(available in jdbc-40), jdk supports only jdbc-30");
         }
         return jdbc40;
-      }
+    }
 }

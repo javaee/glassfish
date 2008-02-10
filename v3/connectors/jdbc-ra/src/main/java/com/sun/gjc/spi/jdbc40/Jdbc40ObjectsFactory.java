@@ -40,10 +40,9 @@ import com.sun.gjc.spi.JdbcObjectsFactory;
 import com.sun.gjc.spi.base.ConnectionHolder;
 import com.sun.logging.LogDomains;
 
-import java.sql.Connection;
 import java.lang.reflect.Method;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
+import java.sql.Connection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 

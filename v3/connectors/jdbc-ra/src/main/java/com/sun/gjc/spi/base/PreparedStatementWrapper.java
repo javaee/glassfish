@@ -36,12 +36,12 @@
 
 package com.sun.gjc.spi.base;
 
-import java.sql.*;
-import java.math.BigDecimal;
 import java.io.InputStream;
 import java.io.Reader;
-import java.util.Calendar;
+import java.math.BigDecimal;
 import java.net.URL;
+import java.sql.*;
+import java.util.Calendar;
 
 /**
  * Abstract class for wrapping PreparedStatement<br>
@@ -51,7 +51,8 @@ public abstract class PreparedStatementWrapper extends StatementWrapper implemen
 
     /**
      * Abstract class for wrapping PreparedStatement <br>
-     * @param con Connection Wrapper <br>
+     *
+     * @param con       Connection Wrapper <br>
      * @param statement PreparedStatement that is to be wrapped.<br>
      */
     public PreparedStatementWrapper(Connection con,
@@ -99,7 +100,7 @@ public abstract class PreparedStatementWrapper extends StatementWrapper implemen
      * @throws java.sql.SQLException if a database access error occurs
      */
     public void setBoolean(int parameterIndex, boolean x) throws SQLException {
-        preparedStatement.setBoolean(parameterIndex,x);
+        preparedStatement.setBoolean(parameterIndex, x);
     }
 
     /**

@@ -36,13 +36,14 @@
 
 package com.sun.gjc.spi;
 
-import com.sun.logging.LogDomains;
 import com.sun.gjc.common.DataSourceObjectBuilder;
+import com.sun.gjc.spi.base.ConnectionHolder;
+import com.sun.logging.LogDomains;
 
-import java.util.logging.Logger;
-import java.util.logging.Level;
-import java.sql.Connection;
 import java.io.Serializable;
+import java.sql.Connection;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**
@@ -59,6 +60,7 @@ public abstract class JdbcObjectsFactory implements Serializable {
     /**
      * Returns JDBC Objet Factory for JDBC 3.0 or JDBC 4.0 depending upon the jdbc version<br>
      * available in JDK.<br>
+     *
      * @return JdbcObjectsFactory
      */
     public static JdbcObjectsFactory getInstance() {
@@ -78,26 +80,28 @@ public abstract class JdbcObjectsFactory implements Serializable {
 
     /**
      * Returns a DataSource instance.
+     *
      * @param mcfObject Managed Connection Factory
      * @param cmObject  Connection Manager
      * @return DataSource
      */
-    public abstract javax.sql.DataSource getDataSourceInstance(com.sun.gjc.spi.ManagedConnectionFactory mcfObject,
+    public abstract javax.sql.DataSource getDataSourceInstance(ManagedConnectionFactory mcfObject,
                                                                javax.resource.spi.ConnectionManager cmObject);
+
     /**
      * To get an instance of ConnectionHolder.<br>
      * Will return a ConnectionHolder with or without wrapper<br>
      *
-     * @param conObject Connection
-     * @param mcObject  ManagedConnection
-     * @param criObject Connection Request Info
+     * @param conObject         Connection
+     * @param mcObject          ManagedConnection
+     * @param criObject         Connection Request Info
      * @param statementWrapping Whether to wrap statement objects or not.
      * @return ConnectionHolder
      */
-    public abstract com.sun.gjc.spi.base.ConnectionHolder getConnection(Connection conObject,
-                                                                        com.sun.gjc.spi.ManagedConnection mcObject,
-                                                                        javax.resource.spi.ConnectionRequestInfo criObject,
-                                                                        boolean statementWrapping);
+    public abstract ConnectionHolder getConnection(Connection conObject,
+                                                   ManagedConnection mcObject,
+                                                   javax.resource.spi.ConnectionRequestInfo criObject,
+                                                   boolean statementWrapping);
 
 
 }
