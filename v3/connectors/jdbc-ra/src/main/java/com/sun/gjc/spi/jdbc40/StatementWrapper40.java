@@ -35,18 +35,14 @@
  */
 package com.sun.gjc.spi.jdbc40;
 
-import com.sun.gjc.spi.base.StatementWrapper;
-import com.sun.gjc.spi.ManagedConnectionFactory;
 import com.sun.enterprise.util.i18n.StringManager;
+import com.sun.gjc.spi.ManagedConnectionFactory;
+import com.sun.gjc.spi.base.StatementWrapper;
 
-import java.sql.SQLException;
 import java.sql.Connection;
-import java.sql.Statement;
 import java.sql.ResultSet;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Proxy;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 /**
  * Wrapper for JDBC 4.0 Statement
@@ -58,7 +54,8 @@ public class StatementWrapper40 extends StatementWrapper {
 
     /**
      * Creates a new instance of StatementWrapper for JDBC 3.0<br>
-     * @param con  ConnectionWrapper <br>
+     *
+     * @param con       ConnectionWrapper <br>
      * @param statement Statement that is to be wrapped<br>
      */
     public StatementWrapper40(Connection con, Statement statement) {
@@ -68,6 +65,7 @@ public class StatementWrapper40 extends StatementWrapper {
     /**
      * Retrieves whether this <code>Statement</code> object has been closed. A <code>Statement</code> is closed if the
      * method close has been called on it, or if it is automatically closed.
+     *
      * @return true if this <code>Statement</code> object is closed; false if it is still open
      * @throws SQLException if a database access error occurs
      * @since 1.6
@@ -75,52 +73,57 @@ public class StatementWrapper40 extends StatementWrapper {
     public boolean isClosed() throws SQLException {
         return jdbcStatement.isClosed();
     }
+
     /**
-	 * Requests that a <code>Statement</code> be pooled or not pooled.  The value
-	 * specified is a hint to the statement pool implementation indicating
-	 * whether the applicaiton wants the statement to be pooled.  It is up to
-	 * the statement pool manager as to whether the hint is used.
-	 * <p>
-	 * The poolable value of a statement is applicable to both internal
-	 * statement caches implemented by the driver and external statement caches
-	 * implemented by application servers and other applications.
-	 * <p>
-	 * By default, a <code>Statement</code> is not poolable when created, and
-         * a <code>PreparedStatement</code> and <code>CallableStatement</code>
-         * are poolable when created.
-	 * <p>
-	 * @param poolable		requests that the statement be pooled if true and
-	 * 						that the statement not be pooled if false
-	 * <p>
-	 * @throws SQLException if this method is called on a closed
-         * <code>Statement</code>
-	 * <p>
-	 * @since 1.6
-	 */
+     * Requests that a <code>Statement</code> be pooled or not pooled.  The value
+     * specified is a hint to the statement pool implementation indicating
+     * whether the applicaiton wants the statement to be pooled.  It is up to
+     * the statement pool manager as to whether the hint is used.
+     * <p/>
+     * The poolable value of a statement is applicable to both internal
+     * statement caches implemented by the driver and external statement caches
+     * implemented by application servers and other applications.
+     * <p/>
+     * By default, a <code>Statement</code> is not poolable when created, and
+     * a <code>PreparedStatement</code> and <code>CallableStatement</code>
+     * are poolable when created.
+     * <p/>
+     *
+     * @param poolable requests that the statement be pooled if true and
+     *                 that the statement not be pooled if false
+     *                 <p/>
+     * @throws SQLException if this method is called on a closed
+     *                      <code>Statement</code>
+     *                      <p/>
+     * @since 1.6
+     */
     public void setPoolable(boolean poolable) throws SQLException {
         jdbcStatement.setPoolable(poolable);
     }
+
     /**
-	 * Returns a  value indicating whether the <code>Statement</code>
-         * is poolable or not.
-	 * <p>
-	 * @return		<code>true</code> if the <code>Statement</code>
-         * is poolable; <code>false</code> otherwise
-	 * <p>
-	 * @throws SQLException if this method is called on a closed
-         * <code>Statement</code>
-	 * <p>
-	 * @since 1.6
-	 * <p>
-	 * @see java.sql.Statement#setPoolable(boolean) setPoolable(boolean)
-	 */
+     * Returns a  value indicating whether the <code>Statement</code>
+     * is poolable or not.
+     * <p/>
+     *
+     * @throws SQLException if this method is called on a closed
+     *                      <code>Statement</code>
+     *                      <p/>
+     * @return        <code>true</code> if the <code>Statement</code>
+     * is poolable; <code>false</code> otherwise
+     * <p/>
+     * @see java.sql.Statement#setPoolable(boolean) setPoolable(boolean)
+     * @since 1.6
+     *        <p/>
+     */
     public boolean isPoolable() throws SQLException {
         return jdbcStatement.isPoolable();
     }
+
     /**
      * Returns an object that implements the given interface to allow access to
      * non-standard methods, or standard methods not exposed by the proxy.
-     *
+     * <p/>
      * If the receiver implements the interface then the result is the receiver
      * or a proxy for the receiver. If the receiver is a wrapper
      * and the wrapped object implements the interface then the result is the
@@ -135,14 +138,15 @@ public class StatementWrapper40 extends StatementWrapper {
      * @since 1.6
      */
     public <T> T unwrap(Class<T> iface) throws SQLException {
-        T result ;
+        T result;
         if (iface.isInstance(this)) {
-            result = iface.cast(this); 
+            result = iface.cast(this);
         } else {
             result = jdbcStatement.unwrap(iface);
         }
         return result;
     }
+
     /**
      * Returns true if this either implements the interface argument or is directly or indirectly a wrapper
      * for an object that does. Returns false otherwise. If this implements the interface then return true,
@@ -154,34 +158,36 @@ public class StatementWrapper40 extends StatementWrapper {
      *
      * @param iface a Class defining an interface.
      * @return true if this implements the interface or directly or indirectly wraps an object that does.
-     * @throws java.sql.SQLException  if an error occurs while determining whether this is a wrapper
-     * for an object with the given interface.
+     * @throws java.sql.SQLException if an error occurs while determining whether this is a wrapper
+     *                               for an object with the given interface.
      * @since 1.6
      */
     public boolean isWrapperFor(Class<?> iface) throws SQLException {
 
-        boolean result ;
+        boolean result;
         if (iface.isInstance(this)) {
             result = true;
-        }else{
+        } else {
             result = jdbcStatement.isWrapperFor(iface);
         }
         return result;
     }
+
     /**
      * Retrieves any auto-generated keys created as a result of executing this
      * <code>Statement</code> object. If this <code>Statement</code> object did
      * not generate any keys, an empty <code>ResultSet</code>
      * object is returned.
-     *
-     *<p><B>Note:</B>If the columns which represent the auto-generated keys were not specified,
+     * <p/>
+     * <p><B>Note:</B>If the columns which represent the auto-generated keys were not specified,
      * the JDBC driver implementation will determine the columns which best represent the auto-generated keys.
      *
      * @return a <code>ResultSet</code> object containing the auto-generated key(s)
      *         generated by the execution of this <code>Statement</code> object
-     * @exception SQLException if a database access error occurs or
-     * this method is called on a closed <code>Statement</code>
-     * @throws java.sql.SQLFeatureNotSupportedException  if the JDBC driver does not support this method
+     * @throws SQLException if a database access error occurs or
+     *                      this method is called on a closed <code>Statement</code>
+     * @throws java.sql.SQLFeatureNotSupportedException
+     *                      if the JDBC driver does not support this method
      * @since 1.4
      */
     public java.sql.ResultSet getGeneratedKeys() throws java.sql.SQLException {
@@ -192,13 +198,13 @@ public class StatementWrapper40 extends StatementWrapper {
     }
 
     /**
-     *  Retrieves the current result as a <code>ResultSet</code> object.
-     *  This method should be called only once per result.
+     * Retrieves the current result as a <code>ResultSet</code> object.
+     * This method should be called only once per result.
      *
      * @return the current result as a <code>ResultSet</code> object or
-     * <code>null</code> if the result is an update count or there are no more results
-     * @exception SQLException if a database access error occurs or
-     * this method is called on a closed <code>Statement</code>
+     *         <code>null</code> if the result is an update count or there are no more results
+     * @throws SQLException if a database access error occurs or
+     *                      this method is called on a closed <code>Statement</code>
      * @see #execute
      */
     public java.sql.ResultSet getResultSet() throws java.sql.SQLException {
@@ -213,13 +219,13 @@ public class StatementWrapper40 extends StatementWrapper {
      * <code>ResultSet</code> object.
      *
      * @param sql an SQL statement to be sent to the database, typically a
-     *        static SQL <code>SELECT</code> statement
+     *            static SQL <code>SELECT</code> statement
      * @return a <code>ResultSet</code> object that contains the data produced
      *         by the given query; never <code>null</code>
-     * @exception SQLException if a database access error occurs,
-     * this method is called on a closed <code>Statement</code> or the given
-     *            SQL statement produces anything other than a single
-     *            <code>ResultSet</code> object
+     * @throws SQLException if a database access error occurs,
+     *                      this method is called on a closed <code>Statement</code> or the given
+     *                      SQL statement produces anything other than a single
+     *                      <code>ResultSet</code> object
      */
     public java.sql.ResultSet executeQuery(String sql) throws
             java.sql.SQLException {
