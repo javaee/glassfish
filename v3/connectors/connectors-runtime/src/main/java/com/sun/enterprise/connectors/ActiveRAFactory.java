@@ -35,38 +35,39 @@
  */
 
 package com.sun.enterprise.connectors;
-import java.util.logging.*;
-import javax.resource.spi.ResourceAdapter;
-import com.sun.logging.LogDomains;
+
+import com.sun.appserv.connectors.spi.ConnectorRuntimeException;
 import com.sun.enterprise.deployment.ConnectorDescriptor;
-import com.sun.enterprise.connectors.system.*;
-import com.sun.enterprise.connectors.util.JmsRaUtil;
+import com.sun.logging.LogDomains;
+
+import javax.resource.spi.ResourceAdapter;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**
  * Factory creating Active Resource adapters.
  *
- * @author  Binod P.G
+ * @author Binod P.G
  */
 public class ActiveRAFactory {
-    static Logger _logger = LogDomains.getLogger(LogDomains.RSR_LOGGER);     
+    private static Logger _logger = LogDomains.getLogger(LogDomains.RSR_LOGGER);
 
     /**
      * Creates an active resource adapter.
      *
-     * @param cd Deployment descriptor object for connectors.
+     * @param cd         Deployment descriptor object for connectors.
      * @param moduleName Module name of the resource adapter.
-     * @param loader Class Loader,
-     * @param writeSunDescriptor Boolean indicating whether sundescriptor
-     *        need to be written or not.
+     * @param loader     Class Loader,
      * @return An instance of <code> ActiveResourceAdapter </code> object.
-     * @throws ConnectorRuntimeException.
+     * @throws ConnectorRuntimeException when unable to create the runtime for RA
      */
     public static ActiveResourceAdapter createActiveResourceAdapter(
-        ConnectorDescriptor cd, String moduleName, ClassLoader loader) 
-        throws ConnectorRuntimeException{
+            ConnectorDescriptor cd, String moduleName, ClassLoader loader)
+            throws ConnectorRuntimeException {
 
         ActiveResourceAdapter activeResourceAdapter = null;
+
         int environment = ConnectorRuntime.getRuntime().getEnviron();
         ResourceAdapter ra = null;
         String raClass = cd.getResourceAdapterClass();
@@ -74,74 +75,44 @@ public class ActiveRAFactory {
         try {
 
             // If raClass is available, load it...
-            if (raClass != null && !raClass.equals("")) {
-                if(environment == ConnectorRuntime.SERVER) {
-                    ra = (ResourceAdapter) 
-                          loader.loadClass(raClass).newInstance();
-                } else {
-                    ra = (ResourceAdapter)Class.forName(raClass).newInstance();
-                }
 
+            if (raClass != null && !raClass.equals("")) {
+                if (environment == ConnectorRuntime.SERVER) {
+                    ra = (ResourceAdapter)
+                            loader.loadClass(raClass).newInstance();
+                } else {
+                    ra = (ResourceAdapter) Class.forName(raClass).newInstance();
+                }
             }
 
-            /*
-             * If any special handling is required for the system resource 
-             * adapter, then ActiveResourceAdapter implementation for that
-             * RA should implement additional functionality by extending
-             * ActiveInboundResourceAdapter or ActiveOutboundResourceAdapter.
-             *
-             * For example ActiveJmsResourceAdapter extends 
-             * ActiveInboundResourceAdapter.
-             */
-            if (moduleName.equals(ConnectorConstants.DEFAULT_JMS_ADAPTER)) {
-                // Upgrade jms resource adapter, if necessary before starting 
-                // the RA.
-		try {
-                	JmsRaUtil raUtil = new JmsRaUtil();
-                	raUtil.upgradeIfNecessary();
-		}
-		catch (Throwable t) {
-            	_logger.log(Level.FINE,"Cannot upgrade jmsra"+ t.getMessage());
-		}
-
-                activeResourceAdapter = new ActiveJmsResourceAdapter(
-                                                 ra,cd,moduleName,loader);
-            } else if (raClass.equals(""))  {
+            if (raClass.equals("")) {
                 activeResourceAdapter = new ActiveOutboundResourceAdapter(
-                                 cd,moduleName,loader);
+                        cd, moduleName, loader);
             } else {
                 activeResourceAdapter = new ActiveInboundResourceAdapter(
-                                                 ra,cd,moduleName,loader);
+                        ra, cd, moduleName, loader);
             }
-	     
+
         } catch (ClassNotFoundException Ex) {
             ConnectorRuntimeException cre = new ConnectorRuntimeException(
-                                             "Error in creating active RAR");
+                    "Error in creating active RAR");
             cre.initCause(Ex);
-            _logger.log(Level.SEVERE,"rardeployment.class_not_found",raClass);
-            _logger.log(Level.SEVERE,"",cre);
-            throw cre; 
+            _logger.log(Level.SEVERE, "rardeployment.class_not_found", raClass);
+            _logger.log(Level.SEVERE, "", cre);
+            throw cre;
         } catch (InstantiationException Ex) {
-            ConnectorRuntimeException cre = new ConnectorRuntimeException(
-                                             "Error in creating active RAR");
+            ConnectorRuntimeException cre = new ConnectorRuntimeException("Error in creating active RAR");
             cre.initCause(Ex);
-            _logger.log(Level.SEVERE,"rardeployment.class_instantiation_error",
-                                    raClass);
-            _logger.log(Level.SEVERE,"",cre);
-            throw cre; 
+            _logger.log(Level.SEVERE, "rardeployment.class_instantiation_error", raClass);
+            _logger.log(Level.SEVERE, "", cre);
+            throw cre;
         } catch (IllegalAccessException Ex) {
-            ConnectorRuntimeException cre = new ConnectorRuntimeException(
-                                             "Error in creating active RAR");
+            ConnectorRuntimeException cre = new ConnectorRuntimeException("Error in creating active RAR");
             cre.initCause(Ex);
-            _logger.log(Level.SEVERE,"rardeployment.illegalaccess_error",
-                         raClass);
-            _logger.log(Level.SEVERE,"",cre);
-            throw cre; 
-        } 
-
+            _logger.log(Level.SEVERE, "rardeployment.illegalaccess_error", raClass);
+            _logger.log(Level.SEVERE, "", cre);
+            throw cre;
+        }
         return activeResourceAdapter;
-
     }
-
-
 }
