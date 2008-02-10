@@ -33,55 +33,34 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package com.sun.enterprise.connectors;
 
-import javax.resource.spi.ConnectionManager;
-import java.util.logging.Logger;
-import java.util.logging.Level;
+import com.sun.appserv.connectors.spi.ConnectorRuntimeException;
 import com.sun.logging.LogDomains;
+
+import javax.resource.spi.ConnectionManager;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /* Authors : Binod P G, Aditya Gore
  *
-*/
-
+ */
 public class ConnectionManagerFactory {
-    
-    
-        public static ConnectionManager getAvailableConnectionManager(
-            String poolName, boolean forceNoLazyAssoc) 
-            throws ConnectorRuntimeException 
-        {
-               
-                Logger _logger = LogDomains.getLogger( LogDomains.RSR_LOGGER );
-                
-                ConnectorRegistry registry = ConnectorRegistry.getInstance();
-                PoolMetaData pmd = registry.getPoolMetaData( poolName );
-                boolean isLazyEnlist = pmd.isLazyEnlistable();
-                boolean isLazyAssoc = pmd.isLazyAssociatable();
-                
-                ConnectionManagerImpl mgr = null;
 
-                if ( isLazyAssoc && !forceNoLazyAssoc ) {
-                    if (_logger.isLoggable( Level.FINE) ) { 
-                        _logger.fine( 
-                            "@@@@ Creating LazyAssociatableConnectionManager");
-                    }
-		    mgr = new LazyAssociatableConnectionManagerImpl(poolName);
-                } else if ( isLazyEnlist ) {
-                    if (_logger.isLoggable( Level.FINE) ) { 
-                        _logger.fine( 
-                            "@@@@ Creating LazyEnlistableConnectionManager");
-                    }
-		    mgr = new LazyEnlistableConnectionManagerImpl(poolName);
-                } else {
-                    if (_logger.isLoggable( Level.FINE) ) { 
-                        _logger.fine( 
-                            "@@@@ Creating plain ConnectionManager");
-                    }
-		    mgr = new ConnectionManagerImpl(poolName);
-                }
-		return mgr;
-	}
+    public static ConnectionManager getAvailableConnectionManager(
+            String poolName, boolean forceNoLazyAssoc)
+            throws ConnectorRuntimeException {
 
+        ConnectionManagerImpl mgr = null;
+        logFine("Creating plain ConnectionManager");
+        mgr = new ConnectionManagerImpl(poolName);
+        return mgr;
+    }
+
+    private static void logFine(String message) {
+        Logger _logger = LogDomains.getLogger(LogDomains.RSR_LOGGER);
+        if (_logger.isLoggable(Level.FINE)) {
+            _logger.fine(message);
+        }
+    }
 }
