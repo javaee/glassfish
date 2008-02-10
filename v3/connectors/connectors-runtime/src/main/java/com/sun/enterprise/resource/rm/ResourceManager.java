@@ -33,7 +33,10 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.enterprise.resource;
+package com.sun.enterprise.resource.rm;
+
+import com.sun.enterprise.resource.ResourceHandle;
+import com.sun.enterprise.resource.pool.PoolingException;
 
 import javax.transaction.Transaction;
 
@@ -42,58 +45,62 @@ import javax.transaction.Transaction;
  * ResourceSpec, PoolManager selects appropriate Resource Manager.
  *
  * @author Binod PG
- */ 
+ */
 public interface ResourceManager {
 
     /**
      * Returns the current Transaction, resource should be dealing with.
      *
      * @return An instance of Transaction object.
-     * @exception PoolingException If there is any error in getting the 
-     * 		  transaction
+     * @throws PoolingException
+     *          If there is any error in getting the
+     *          transaction
      */
     public Transaction getTransaction() throws PoolingException;
 
     /**
      * Get the component involved in invocation. Returns null , if there is
-     * no component is involved in the current invocation. 
-     * 
+     * no component is involved in the current invocation.
+     *
      * @return object handle
      */
-    public Object getComponent() ;
-    
+    public Object getComponent();
+
     /**
      * Enlist the Resource handle to the transaction.
-     * 
+     *
      * @param h Resource to be enlisted.
-     * @exception PoolingException If there is any error in enlisting.
+     * @throws PoolingException
+     *          If there is any error in enlisting.
      */
     public void enlistResource(ResourceHandle h) throws PoolingException;
 
     /**
      * Register the resource for a transaction's house keeping activities.
      *
-     * @param h Resource to be registered.
-     * @exception PoolingException If there is any error in registering.     
+     * @param handle Resource to be registered.
+     * @throws PoolingException If there is any error in registering.
      */
     public void registerResource(ResourceHandle handle) throws PoolingException;
-    
+
     /**
      * Set the transaction for rolling back.
      */
     public void rollBackTransaction();
-    
+
     /**
      * Delist the resource from the transaction.
      *
-     * @param h Resource to be delisted.
+     * @param resource  Resource to be delisted.
+     * @param xaresFlag XA Flag
      */
     public void delistResource(ResourceHandle resource, int xaresFlag);
-    
+
     /**
      * Unregister the resource from a transaction's list.
      *
-     * @param h Resource to be unregistered.     
+     * @param resource  Resource to be unregistered.
+     * @param xaresFlag XA Flag
      */
     public void unregisterResource(ResourceHandle resource, int xaresFlag);
 }
