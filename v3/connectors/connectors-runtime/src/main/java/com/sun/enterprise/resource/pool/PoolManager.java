@@ -33,32 +33,26 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.enterprise;
+package com.sun.enterprise.resource.pool;
 
-import java.util.Vector;
-import java.util.HashMap;
-import java.util.Properties;
-import java.util.concurrent.ConcurrentHashMap;
-import java.security.Principal;
-import javax.transaction.Transaction;
-import javax.sql.XAConnection;
-import com.sun.enterprise.resource.*;
-import com.sun.enterprise.deployment.ResourceReferenceDescriptor;
-import com.sun.enterprise.deployment.ConnectorDescriptor;
-import javax.security.auth.Subject;
-import javax.transaction.xa.Xid;
-import javax.naming.Reference;
-import javax.resource.spi.ManagedConnection;
-import javax.resource.ResourceException;
-
+import com.sun.appserv.connectors.spi.ConnectorConstants.PoolType;
 import com.sun.enterprise.connectors.ConnectorConnectionPool;
-import com.sun.enterprise.connectors.ConnectorConstants.PoolType;
+import com.sun.enterprise.deployment.ResourceReferenceDescriptor;
+import com.sun.enterprise.resource.ClientSecurityInfo;
+import com.sun.enterprise.resource.ResourceHandle;
+import com.sun.enterprise.resource.ResourceSpec;
+import com.sun.enterprise.resource.allocator.ResourceAllocator;
+import org.jvnet.hk2.annotations.Contract;
+
+import javax.resource.ResourceException;
+import javax.resource.spi.ManagedConnection;
+import javax.transaction.Transaction;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
- *
- * PoolManager manages resource connections such as JDBC connections
- *
+ * PoolManager manages jdbc and connector connection pool
  */
+@Contract
 public interface PoolManager {
 
     // transaction support levels
@@ -74,87 +68,93 @@ public interface PoolManager {
     static public final String PASSWORD_CREDENTIAL = "javax.resource.spi.security.PasswordCredential";
     static public final String GENERIC_CREDENTIAL = "javax.resource.spi.security.GenericCredential";
 
-    /**
-     * Obtain a transactional resource such as JDBC connection 
-     *
-     * @param spec Specification for the resource
-     * @param alloc Allocator for the resource
-     * @param info Client security for this request
-     *
-     * @return An object that represents a connection to the resource
-     *
-     * @exception ResourceReferenceException Thrown if some error occurs while
-     * obtaining the resource
-     */
-    Object getResource(ResourceSpec spec, ResourceAllocator alloc,
-                       ClientSecurityInfo info)
-        throws PoolingException;
+    ResourceHandle getResourceFromPool(ResourceSpec spec,
+                                       ResourceAllocator alloc,
+                                       ClientSecurityInfo info,
+                                       Transaction tran)
+            throws PoolingException;
 
-    ResourceReferenceDescriptor 
-        getResourceReference(String jndiName);
+    public void createEmptyConnectionPool(String name, PoolType pt) throws PoolingException;
 
-    void resourceEnlisted(Transaction tran, ResourceHandle res)
-         throws IllegalStateException;
 
-    void resourceClosed(ResourceHandle res);
-    void badResourceClosed(ResourceHandle res);
-
-    void resourceErrorOccurred(ResourceHandle res);
-
-    void transactionCompleted(Transaction tran, int status);
-
-    public void putbackResourceToPool(ResourceHandle h, 
-                                      boolean errorOccurred);
+    public void putbackResourceToPool(ResourceHandle h, boolean errorOccurred);
 
     public void putbackBadResourceToPool(ResourceHandle h);
 
     public void putbackDirectToPool(ResourceHandle h, String poolName);
 
-    public ResourceHandle getResourceFromPool(ResourceSpec spec, 
-                                              ResourceAllocator alloc,
-                                              ClientSecurityInfo info,
-                                              Transaction tran)
-        throws PoolingException;
 
-    public void registerResource(ResourceHandle resource)
-        throws PoolingException;
+    void resourceClosed(ResourceHandle res);
 
-    public void unregisterResource(ResourceHandle resource,
-                                   int xaresFlag);
+    void badResourceClosed(ResourceHandle res);
+
+    void resourceErrorOccurred(ResourceHandle res);
+
+
+    void transactionCompleted(Transaction tran, int status);
+
+    void resourceEnlisted(Transaction tran, ResourceHandle res) throws IllegalStateException;
+
+    public void postInvoke();
+
+
+    public void registerResource(ResourceHandle resource) throws PoolingException;
+
+    public void unregisterResource(ResourceHandle resource, int xaresFlag);
+
 
     public void emptyResourcePool(ResourceSpec spec);
 
-    public void killPool( String poolName );
+    public void killPool(String poolName);
 
-    public void reconfigPoolProperties( ConnectorConnectionPool ccp ) 
-            throws PoolingException;
+    public void reconfigPoolProperties(ConnectorConnectionPool ccp) throws PoolingException;
+
 
     //sets/resets the monitoring levels for the pool
-    public void disableMonitoring( String poolName);	    
-    public void setMonitoringEnabledHigh( String poolName);	    
-    public void setMonitoringEnabledLow( String poolName);	    
-    
-    //get the pooltable
-    public ConcurrentHashMap getPoolTable();
+    public void disableMonitoring(String poolName);
+
+    public void setMonitoringEnabledHigh(String poolName);
+
+    public void setMonitoringEnabledLow(String poolName);
 
     //register the MonitoringLevelListeners
     public void initializeMonitoring();
 
+
+    //get the pooltable
+    public ConcurrentHashMap getPoolTable();
+
+    public ConcurrentHashMap getMonitoredPoolTable();
+
+
     public boolean switchOnMatching(String poolName);
+
+    /**
+     * Obtain a transactional resource such as JDBC connection
+     *
+     * @param spec  Specification for the resource
+     * @param alloc Allocator for the resource
+     * @param info  Client security for this request
+     * @return An object that represents a connection to the resource
+     * @throws PoolingException Thrown if some error occurs while
+     *                          obtaining the resource
+     */
+    Object getResource(ResourceSpec spec, ResourceAllocator alloc, ClientSecurityInfo info)
+            throws PoolingException;
+
+    ResourceReferenceDescriptor getResourceReference(String jndiName);
+
 
     public void killAllPools();
 
-    public void killFreeConnectionsInPools(); 
+    public void killFreeConnectionsInPools();
 
-    public void createEmptyConnectionPool(String name, 
-        PoolType pt) throws PoolingException;
 
-    public ResourcePool getPool( String poolName );
+    public ResourcePool getPool(String poolName);
 
-    public void setSelfManaged( String poolName, boolean flag );
+    public void setSelfManaged(String poolName, boolean flag);
 
-    public void lazyEnlist( ManagedConnection mc ) throws ResourceException;
+    public void lazyEnlist(ManagedConnection mc) throws ResourceException;
 
-    public void postInvoke();
 }
 
