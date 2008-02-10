@@ -36,25 +36,23 @@
 
 package com.sun.enterprise.connectors;
 
-import com.sun.enterprise.deployment.EnvironmentProperty;
-import java.io.Serializable;
-import java.util.Set;
-import java.util.Vector;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.logging.Logger;
-import com.sun.logging.LogDomains;
 import com.sun.enterprise.connectors.util.ConnectionPoolReconfigHelper.ReconfigAction;
+import com.sun.enterprise.deployment.EnvironmentProperty;
+
+import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
- * This class abstract the ra.xml values pertaining to the connection 
+ * This class abstract the ra.xml values pertaining to the connection
  * management. It contains various config properties of MCF, Resource adapter,
  * Connection and also their respective classes and interfaces.
- * @author Srikanth P 
+ *
+ * @author Srikanth P
  */
 
 public final class ConnectorDescriptorInfo implements Serializable {
-    
+
     protected String rarName_;
     protected String resourceAdapterClass_;
     protected String connectionDefinitionName_;
@@ -63,23 +61,21 @@ public final class ConnectorDescriptorInfo implements Serializable {
     protected String connectionFactoryInterface_;
     protected String connectionClass_;
     protected String connectionInterface_;
-    protected Set mcfConfigProperties_;
-    protected Set resourceAdapterConfigProperties_;
+    protected Set<EnvironmentProperty> mcfConfigProperties_;
+    protected Set<EnvironmentProperty> resourceAdapterConfigProperties_;
 
-    private static final Logger _logger = LogDomains.getLogger(LogDomains.RSR_LOGGER);
-
-    /** Default constructor 
-     *
+    /**
+     * Default constructor
      */
-
     public ConnectorDescriptorInfo() {
 
-        mcfConfigProperties_ = new HashSet();
-        resourceAdapterConfigProperties_ = new HashSet();
+        mcfConfigProperties_ = new HashSet<EnvironmentProperty>();
+        resourceAdapterConfigProperties_ = new HashSet<EnvironmentProperty>();
     }
 
     /**
      * Clone method
+     *
      * @return ConnectorDescriptorInfo instance
      */
 
@@ -88,7 +84,7 @@ public final class ConnectorDescriptorInfo implements Serializable {
         ConnectorDescriptorInfo cdi = new ConnectorDescriptorInfo();
         cdi.setMCFConfigProperties(mcfConfigProperties_);
         cdi.setResourceAdapterConfigProperties(
-                       resourceAdapterConfigProperties_);
+                resourceAdapterConfigProperties_);
         cdi.setRarName(rarName_);
         cdi.setResourceAdapterClassName(resourceAdapterClass_);
         cdi.setConnectionDefinitionName(connectionDefinitionName_);
@@ -99,70 +95,74 @@ public final class ConnectorDescriptorInfo implements Serializable {
         cdi.setConnectionInterface(connectionInterface_);
         return cdi;
     }
-    
+
     /**
-     * Constructor 
+     * Constructor
+     *
      * @param mcfConfigProperties Array of MCF config properties
-     * @resourceAdapterConfigProperties Array of  Resource adapter config props
+     * @param resourceAdapterConfigProperties
+     *                            Array of  Resource adapter config props
      */
 
     public ConnectorDescriptorInfo(
-                        EnvironmentProperty[] mcfConfigProperties, 
-                        EnvironmentProperty[] resourceAdapterConfigProperties) 
-    {
-        mcfConfigProperties_ = new HashSet();
-        resourceAdapterConfigProperties_ = new HashSet();
-        if(mcfConfigProperties != null) {
-            for(int i=0; i<mcfConfigProperties.length; ++i) {
-                mcfConfigProperties_.add(mcfConfigProperties[i]);
+            EnvironmentProperty[] mcfConfigProperties,
+            EnvironmentProperty[] resourceAdapterConfigProperties) {
+        this();
+        if (mcfConfigProperties != null) {
+            for (EnvironmentProperty mcfConfigProperty : mcfConfigProperties) {
+                mcfConfigProperties_.add(mcfConfigProperty);
             }
-        }
-        if(resourceAdapterConfigProperties != null) {
-            for(int i=0; i<mcfConfigProperties.length; ++i) {
-                resourceAdapterConfigProperties_.add(mcfConfigProperties[i]);
+
+            if (resourceAdapterConfigProperties != null) {
+                for (EnvironmentProperty mcfConfigProperty : mcfConfigProperties) {
+                    resourceAdapterConfigProperties_.add(mcfConfigProperty);
+                }
             }
         }
     }
 
-    /** Adds an MCF config property to the existing array/Set of MCF config
-     *  properties.
-     *  @configProperty Config property to be added.
+    /**
+     * Adds an MCF config property to the existing array/Set of MCF config
+     * properties.
+     *
+     * @param configProperty Config property to be added.
      */
-
     public void addMCFConfigProperty(EnvironmentProperty configProperty) {
-        if(configProperty != null) {
+        if (configProperty != null) {
             mcfConfigProperties_.add(configProperty);
         }
     }
 
-    /** Removes an config  property from the existing array/Set of MCF config
-     *  properties
-     *  @param configProperty Config property to be removed.
+    /**
+     * Removes an config  property from the existing array/Set of MCF config
+     * properties
+     *
+     * @param configProperty Config property to be removed.
      */
-
     public void removeMCFConfigProperty(EnvironmentProperty configProperty) {
-        if(configProperty != null) {
+        if (configProperty != null) {
             mcfConfigProperties_.remove(configProperty);
         }
     }
 
     /**
-     *  Setter method for MCFConfigProperties property.
-     *  @param configProperties Set MCF config properties
+     * Setter method for MCFConfigProperties property.
+     *
+     * @param configProperties Set MCF config properties
      */
-
     public void setMCFConfigProperties(Set configProperties) {
         mcfConfigProperties_ = configProperties;
     }
 
     /**
-     *  Setter method for MCFConfigProperties property.
-     *  @param configProperties Array of MCF config properties
+     * Setter method for MCFConfigProperties property.
+     *
+     * @param configProperties Array of MCF config properties
      */
 
     public void setMCFConfigProperties(EnvironmentProperty[] configProperties) {
-        if(configProperties != null) {
-            for(int i=0; i<configProperties.length; ++i) {
+        if (configProperties != null) {
+            for (int i = 0; i < configProperties.length; ++i) {
                 mcfConfigProperties_.add(configProperties[i]);
             }
         }
@@ -170,66 +170,67 @@ public final class ConnectorDescriptorInfo implements Serializable {
 
     /**
      * Getter method for MCFConfigProperties property
-     * @return Set of managed connection factory config properties 
+     *
+     * @return Set of managed connection factory config properties
      */
 
     public Set getMCFConfigProperties() {
         return mcfConfigProperties_;
     }
 
-    /** Adds a Resource Adapter config property to the existing array/Set 
-     *  of Resource Adapter config properties.
-     *  @configProperty Config property to be added.
+    /**
+     * Adds a Resource Adapter config property to the existing array/Set
+     * of Resource Adapter config properties.
+     *
+     * @param configProperty Config property to be added.
      */
 
-    public void addResourceAdapterConfigProperty(
-                        EnvironmentProperty configProperty) 
-    {
-        if(configProperty != null) {
+    public void addResourceAdapterConfigProperty(EnvironmentProperty configProperty) {
+        if (configProperty != null) {
             resourceAdapterConfigProperties_.add(configProperty);
         }
     }
 
-    /** Removes a Resource Adapter config property to the existing array/Set 
-     *  of Resource Adapter config properties.
-     *  @configProperty Config property to be removed.
+    /**
+     * Removes a Resource Adapter config property to the existing array/Set
+     * of Resource Adapter config properties.
+     *
+     * @param configProperty Config property to be removed.
      */
-
-    public void removeResourceAdapterConfigProperty(
-                        EnvironmentProperty configProperty) 
-    {
-        if(configProperty != null) {
+    public void removeResourceAdapterConfigProperty(EnvironmentProperty configProperty) {
+        if (configProperty != null) {
             resourceAdapterConfigProperties_.remove(configProperty);
         }
     }
 
     /**
-     *  Setter method for ResourceAdapterConfigProperties property.
-     *  @param configProperties Set ResourceAdapter config properties
+     * Setter method for ResourceAdapterConfigProperties property.
+     *
+     * @param configProperties Set ResourceAdapter config properties
      */
-
     public void setResourceAdapterConfigProperties(Set configProperties) {
         resourceAdapterConfigProperties_ = configProperties;
     }
 
     /**
-     *  Setter method for ResourceAdapterConfigProperties property.
-     *  @param configProperties Array ResourceAdapter config properties
+     * Setter method for ResourceAdapterConfigProperties property.
+     *
+     * @param configProperties Array ResourceAdapter config properties
      */
 
     public void setResourceAdapterConfigProperties(
-                         EnvironmentProperty[] configProperties) 
-    {
-        if(configProperties != null) {
-            for(int i=0; i<configProperties.length; ++i) {
-                resourceAdapterConfigProperties_.add(configProperties[i]);
+            EnvironmentProperty[] configProperties) {
+        if (configProperties != null) {
+            for (EnvironmentProperty configProperty : configProperties) {
+                resourceAdapterConfigProperties_.add(configProperty);
             }
         }
     }
 
     /**
      * Getter method for ResourceAdapterConfigProperties property
-     * @return Set of resource adapter config properties 
+     *
+     * @return Set of resource adapter config properties
      */
 
     public Set getResourceAdapterConfigProperties() {
@@ -238,85 +239,99 @@ public final class ConnectorDescriptorInfo implements Serializable {
 
     /**
      * Getter method for RarName property
-     * @return rarName 
+     *
+     * @return rarName
      */
 
     public String getRarName() {
         return rarName_;
     }
 
-    /** Setter method for RarName property
-     *  @param rarName rar name
+    /**
+     * Setter method for RarName property
+     *
+     * @param rarName rar name
      */
-    
+
     public void setRarName(String rarName) {
         rarName_ = rarName;
     }
 
     /**
      * Getter method for ResourceAdapterClassName property
-     * @return Resource adapter class name 
+     *
+     * @return Resource adapter class name
      */
 
     public String getResourceAdapterClassName() {
         return resourceAdapterClass_;
     }
 
-    /** Setter method for ResourceAdapterClassName property
-     *  @param resourceAdapterClass Resource adapter class name
+    /**
+     * Setter method for ResourceAdapterClassName property
+     *
+     * @param resourceAdapterClass Resource adapter class name
      */
-  
+
     public void setResourceAdapterClassName(String resourceAdapterClass) {
         resourceAdapterClass_ = resourceAdapterClass;
     }
 
     /**
      * Getter method for ConnectionDefinitionName property
-     * @return connection definition name 
+     *
+     * @return connection definition name
      */
 
     public String getConnectionDefinitionName() {
         return connectionDefinitionName_;
     }
 
-    /** Setter method for ConnectionDefinitionName property
-     *  @param connectionDefinitionName connection definition name 
+    /**
+     * Setter method for ConnectionDefinitionName property
+     *
+     * @param connectionDefinitionName connection definition name
      */
-    
+
     public void setConnectionDefinitionName(String connectionDefinitionName) {
         connectionDefinitionName_ = connectionDefinitionName;
     }
 
     /**
      * Getter method for ManagedConnectionFactoryClass property
-     * @return managed connection factory class 
+     *
+     * @return managed connection factory class
      */
 
     public String getManagedConnectionFactoryClass() {
         return managedConnectionFactoryClass_;
     }
 
-    /** Setter method for ManagedConnectionFactoryClass property
-     *  @param managedConnectionFactoryClass managed connection factory class 
+    /**
+     * Setter method for ManagedConnectionFactoryClass property
+     *
+     * @param managedConnectionFactoryClass managed connection factory class
      */
-    
+
     public void setManagedConnectionFactoryClass(
-                      String managedConnectionFactoryClass) 
-    {
+            String managedConnectionFactoryClass) {
         managedConnectionFactoryClass_ = managedConnectionFactoryClass;
     }
 
     /**
      * Getter method for ConnectionFactoryClass property
-     * @return connection factory class 
+     *
+     * @return connection factory class
      */
 
     public String getConnectionFactoryClass() {
         return connectionFactoryClass_;
     }
 
-    /** Setter method for ConnectionFactoryClass property
-     *  @param connectionFactoryClass connection factory class 
+    /**
+     * Setter method for ConnectionFactoryClass property
+     *
+     * @param connectionFactoryClass connection factory class
      */
 
     public void setConnectionFactoryClass(String connectionFactoryClass) {
@@ -325,25 +340,28 @@ public final class ConnectorDescriptorInfo implements Serializable {
 
     /**
      * Getter method for ConnectionFactoryInterface property
-     * @return connection factory interface class 
+     *
+     * @return connection factory interface class
      */
 
     public String getConnectionFactoryInterface() {
         return connectionFactoryInterface_;
     }
 
-    /** Setter method for ConnectionFactoryInterface property
-     *  @param connectionFactoryInterface connection factory interface class 
+    /**
+     * Setter method for ConnectionFactoryInterface property
+     *
+     * @param connectionFactoryInterface connection factory interface class
      */
 
     public void setConnectionFactoryInterface(
-                       String connectionFactoryInterface) 
-    {
-        connectionFactoryInterface_ =  connectionFactoryInterface;
+            String connectionFactoryInterface) {
+        connectionFactoryInterface_ = connectionFactoryInterface;
     }
 
     /**
      * Getter method for ConnectionClass property
+     *
      * @return connection class
      */
 
@@ -351,8 +369,10 @@ public final class ConnectorDescriptorInfo implements Serializable {
         return connectionClass_;
     }
 
-    /** Setter method for ConnectionClass property
-     *  @param connectionClass connection Class 
+    /**
+     * Setter method for ConnectionClass property
+     *
+     * @param connectionClass connection Class
      */
 
     public void setConnectionClass(String connectionClass) {
@@ -361,6 +381,7 @@ public final class ConnectorDescriptorInfo implements Serializable {
 
     /**
      * Getter method for ConnectionInterface property
+     *
      * @return connectionInterface class
      */
 
@@ -368,74 +389,74 @@ public final class ConnectorDescriptorInfo implements Serializable {
         return connectionInterface_;
     }
 
-    /** Setter method for ConnectionInterface property
-     *  @param connectionInterface connection interface class
+    /**
+     * Setter method for ConnectionInterface property
+     *
+     * @param connectionInterface connection interface class
      */
 
     public void setConnectionInterface(String connectionInterface) {
         connectionInterface_ = connectionInterface;
     }
-        
+
     /**
      * Compare the MCF Config properties in this object with the
      * passed ones
-     * 
+     *
      * @param cdi - The ConnDescInfo object whose MCF config props are to
-     *              to be comapred against our props
+     *            to be comapred against our props
      * @return true - if the config properties are the same
      *         false otherwise
      */
 
-    public ReconfigAction compareMCFConfigProperties( ConnectorDescriptorInfo cdi) {
-        return compareMCFConfigProperties( cdi, new HashSet() );
+    public ReconfigAction compareMCFConfigProperties(ConnectorDescriptorInfo cdi) {
+        return compareMCFConfigProperties(cdi, new HashSet());
     }
 
     /**
      * Compare the MCF Config properties in this object with the
      * passed ones. The properties in the Set of excluded properties
      * are not compared against
-     * 
-     * @param cdi - The ConnDescInfo object whose MCF config props are to
-     *              to be comapred against our props
+     *
+     * @param cdi      - The ConnDescInfo object whose MCF config props are to
+     *                 to be comapred against our props
+     * @param excluded - list of properties to be excluded from comparison
      * @return true - if the config properties are the same
      *         false otherwise
      */
 
-    public ReconfigAction compareMCFConfigProperties( 
-            ConnectorDescriptorInfo cdi, Set excluded ) 
-    {
+    public ReconfigAction compareMCFConfigProperties(
+            ConnectorDescriptorInfo cdi, Set excluded) {
         Set mcfConfigProps = cdi.getMCFConfigProperties();
 
-        if (mcfConfigProps.size() != mcfConfigProperties_.size() ) {
+        if (mcfConfigProps.size() != mcfConfigProperties_.size()) {
             //return false;
-	    //Cannot determine anything due to size disparity - assume restart
-	    return ReconfigAction.RECREATE_POOL;
+            //Cannot determine anything due to size disparity - assume restart
+            return ReconfigAction.RECREATE_POOL;
         }
-    
+
         boolean same = false;
-        Iterator iter = mcfConfigProps.iterator();
-    
-        while( iter.hasNext() ) {
-            EnvironmentProperty prop = (EnvironmentProperty)iter.next();
+
+        for (Object mcfConfigProp : mcfConfigProps) {
+            EnvironmentProperty prop = (EnvironmentProperty) mcfConfigProp;
             //see if this property is in our list of excludes
-            if (excluded.contains( prop.getName()) ) {
+            if (excluded.contains(prop.getName())) {
                 //_logger.finest("mcfProp ignored : " + prop.getName() );
                 continue;
             }
-	    
-            Iterator iter2 = mcfConfigProperties_.iterator();
-            while( iter2.hasNext() ) {
-                if(isEnvPropEqual(prop,(EnvironmentProperty)iter2.next())){
+
+            for (EnvironmentProperty property : mcfConfigProperties_) {
+                if (isEnvPropEqual(prop, property)) {
                     //we have a match
                     same = true;
                     //_logger.finest("mcfprop matched : " + prop.getName());
                     break;
                 }
             }
-            if (! same ) {
+            if (!same) {
                 //_logger.finest("mcfprop not matched : " + prop.getName() );
                 //return false;
-		return ReconfigAction.RECREATE_POOL;
+                return ReconfigAction.RECREATE_POOL;
             }
             same = false;
         }
@@ -444,26 +465,23 @@ public final class ConnectorDescriptorInfo implements Serializable {
     }
 
     /**
-    * The EnvironmentProperty::equals method only checks for name equality
-    * So we need to write a custom equals
-    */
-
-    private boolean isEnvPropEqual( EnvironmentProperty e1, 
-            EnvironmentProperty e2 ) 
-    {
+     * The EnvironmentProperty::equals method only checks for name equality
+     * So we need to write a custom equals
+     *
+     * @param e1 property
+     * @param e2 property
+     * @return boolean - equality result
+     */
+    private boolean isEnvPropEqual(EnvironmentProperty e1,
+                                   EnvironmentProperty e2) {
         if (e1 != null && e2 != null &&
-	    e1.getName() != null && e2.getName() != null &&
-	    e1.getName().equals( e2.getName())) {
+                e1.getName() != null && e2.getName() != null &&
+                e1.getName().equals(e2.getName())) {
             if (e1.getValue() != null && e2.getValue() != null &&
-                       e1.getValue().equals( e2.getValue() ) ) {
+                    e1.getValue().equals(e2.getValue())) {
                 return true;
             }
-        } 
-        /* 
-        _logger.finest("isEnvPropEqual:: " + e1.getName()+"+"+e1.getValue()+
-        " -- "+e2.getName() + "+"+e2.getValue());
-	*/
-             
+        }
         return false;
     }
 }
