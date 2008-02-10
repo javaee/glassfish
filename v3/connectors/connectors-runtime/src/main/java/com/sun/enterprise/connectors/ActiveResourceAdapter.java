@@ -36,14 +36,15 @@
 
 package com.sun.enterprise.connectors;
 
+import com.sun.appserv.connectors.spi.ConnectorRuntimeException;
 import com.sun.enterprise.deployment.ConnectorDescriptor;
-import com.sun.enterprise.repository.*;
+
 import javax.resource.spi.ManagedConnectionFactory;
 
 
 /**
- * Interface class for different types (1.0 and 1.5 complient) resource 
- * adapter abstraction classes. 
+ * Interface class for different types (1.0 and 1.5 complient) resource
+ * adapter abstraction classes.
  * Containes methods for setup(initialization), destroy and creation of MCF.
  *
  * @author Srikanth P and Binod PG
@@ -53,49 +54,57 @@ import javax.resource.spi.ManagedConnectionFactory;
 public interface ActiveResourceAdapter {
 
     /**
-     * It initializes the resource adapter. 
-     * @throws ConnectorRuntimeException. This exception is thrown if the
-     *         setup/initialization fails. 
+     * It initializes the resource adapter.
+     *
+     * @throws ConnectorRuntimeException This exception is thrown if the
+     *                                   setup/initialization fails.
      */
 
     public void setup() throws ConnectorRuntimeException;
 
     /**
-     * uninitializes the resource adapter. 
+     * uninitializes the resource adapter.
      */
 
     public void destroy();
 
-    /** Returns the Connector descriptor which represents/holds ra.xml
-     *  @return ConnectorDescriptor Representation of ra.xml.
+    /**
+     * Returns the Connector descriptor which represents/holds ra.xml
+     *
+     * @return ConnectorDescriptor Representation of ra.xml.
      */
 
     public ConnectorDescriptor getDescriptor();
 
-    public ManagedConnectionFactory [] createManagedConnectionFactories
-                      (ConnectorConnectionPool cpr, ClassLoader loader);
-    /** Creates managed Connection factory instance.
-     *  @param ccp Connector connection pool which contains the pool properties
-     *             and ra.xml values pertaining to managed connection factory
-     *             class. These values are used in MCF creation.
-     *  @param jcl Classloader used to managed connection factory class.
-     *  @return ManagedConnectionFactory created managed connection factory
-     *          instance
+    public ManagedConnectionFactory[] createManagedConnectionFactories
+            (ConnectorConnectionPool cpr, ClassLoader loader);
+
+    /**
+     * Creates managed Connection factory instance.
+     *
+     * @param ccp    Connector connection pool which contains the pool properties
+     *               and ra.xml values pertaining to managed connection factory
+     *               class. These values are used in MCF creation.
+     * @param loader Classloader used to managed connection factory class.
+     * @return ManagedConnectionFactory created managed connection factory
+     *         instance
      */
 
     public ManagedConnectionFactory createManagedConnectionFactory
-                      (ConnectorConnectionPool cpr, ClassLoader loader);
+            (ConnectorConnectionPool ccp, ClassLoader loader);
 
     /**
      * Returns the class loader that is used to load the RAR.
+     *
      * @return <code>ClassLoader</code> object.
      */
     public ClassLoader getClassLoader();
-    
+
     /**
      * Returns the module Name of the RAR
-     * @return A <code>String</code> representing the name of the 
-     * connector module
+     *
+     * @return A <code>String</code> representing the name of the
+     *         connector module
      */
     public String getModuleName();
 }
