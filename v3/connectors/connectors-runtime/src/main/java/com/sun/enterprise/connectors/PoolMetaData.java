@@ -36,25 +36,25 @@
 
 package com.sun.enterprise.connectors;
 
+import com.sun.enterprise.connectors.authentication.RuntimeSecurityMap;
+import com.sun.enterprise.deployment.ResourcePrincipal;
+
 import javax.resource.spi.ManagedConnectionFactory;
 import javax.security.auth.Subject;
-import com.sun.enterprise.deployment.ResourcePrincipal;
-import com.sun.enterprise.connectors.authentication.RuntimeSecurityMap;
 
 
-/** 
-  * Information about the ConnectorConnectionPool. 
-  * Stored inofrmation is: 
-  * 1. Default Subject
-  * 2. MCF Instance
-  * 3. Password, UserName
-  * 4. The transaction-support attribute level in case of connector
-  *    connection pools
-  * 5. The allow-non-component-callers, non-trasnactional-connections
-  *    attribs for jdbc connection pools
-  *
-  * @author    Binod P.G., Aditya Gore 
-  * @version 
+/**
+ * Information about the ConnectorConnectionPool.
+ * Stored inofrmation is:
+ * 1. Default Subject
+ * 2. MCF Instance
+ * 3. Password, UserName
+ * 4. The transaction-support attribute level in case of connector
+ * connection pools
+ * 5. The allow-non-component-callers, non-trasnactional-connections
+ * attribs for jdbc connection pools
+ *
+ * @author Binod P.G., Aditya Gore
  */
 
 public class PoolMetaData {
@@ -70,16 +70,16 @@ public class PoolMetaData {
     private boolean lazyEnlistable_ = false;
     private boolean lazyAssoc_ = false;
     private boolean isAuthCredentialsDefinedInPool_ = true;
-    
-    public PoolMetaData(String poolName, ManagedConnectionFactory mcf, 
-                   Subject s, int txSupport, ResourcePrincipal prin,
-                   boolean isPM, boolean isNonTx, boolean lazyEnlistable,
-                   RuntimeSecurityMap runtimeSecurityMap, boolean lazyAssoc) {
+
+    public PoolMetaData(String poolName, ManagedConnectionFactory mcf,
+                        Subject s, int txSupport, ResourcePrincipal prin,
+                        boolean isPM, boolean isNonTx, boolean lazyEnlistable,
+                        RuntimeSecurityMap runtimeSecurityMap, boolean lazyAssoc) {
         this.poolName = poolName;
-	this.mcf = mcf;
-	this.subj = s;
-	txSupport_ = txSupport;
-	prin_ = prin;
+        this.mcf = mcf;
+        this.subj = s;
+        txSupport_ = txSupport;
+        prin_ = prin;
         isPM_ = isPM;
         isNonTx_ = isNonTx;
         lazyEnlistable_ = lazyEnlistable;
@@ -102,43 +102,43 @@ public class PoolMetaData {
     public ResourcePrincipal getResourcePrincipal() {
         return prin_;
     }
-    
-    
-    public void setIsNonTx( boolean flag ) {
+
+
+    public void setIsNonTx(boolean flag) {
         isNonTx_ = flag;
     }
-    
-    
+
+
     public boolean isNonTx() {
         return isNonTx_;
     }
-    
-    
-    public void setIsPM( boolean flag ) {
+
+
+    public void setIsPM(boolean flag) {
         isPM_ = flag;
     }
-    
-    
+
+
     public boolean isPM() {
         return isPM_;
     }
-    
-    public RuntimeSecurityMap getRuntimeSecurityMap(){
-    	return this.runtimeSecurityMap;
+
+    public RuntimeSecurityMap getRuntimeSecurityMap() {
+        return this.runtimeSecurityMap;
     }
 
-    public void setLazyEnlistable( boolean flag ) {
+    public void setLazyEnlistable(boolean flag) {
         lazyEnlistable_ = flag;
     }
-    
+
     public boolean isLazyEnlistable() {
         return lazyEnlistable_;
     }
 
-    public void setLazyAssoc( boolean flag ) {
+    public void setLazyAssoc(boolean flag) {
         lazyAssoc_ = flag;
     }
-    
+
     public boolean isLazyAssociatable() {
         return lazyAssoc_;
     }
@@ -150,15 +150,15 @@ public class PoolMetaData {
     public boolean isAuthCredentialsDefinedInPool() {
         return this.isAuthCredentialsDefinedInPool_;
     }
-   
+
     public String toString() {
-        StringBuffer sb = new StringBuffer("PoolMetaData : " + poolName );
-        sb.append( "\ntxSupport => " + txSupport_ );
-        sb.append( "\nisPM_     => " + isPM_ );
-        sb.append( "\nisNonTx_  => " + isNonTx_ );
-        sb.append( "\nisLazyEnlistable_  => " + lazyEnlistable_ );
-        sb.append( "\nisLazyAssociatable  => " + lazyAssoc_ );
-        sb.append( "\nsecurityMap => " + runtimeSecurityMap.toString());
+        StringBuffer sb = new StringBuffer("PoolMetaData : " + poolName);
+        sb.append("\ntxSupport => " + txSupport_);
+        sb.append("\nisPM_     => " + isPM_);
+        sb.append("\nisNonTx_  => " + isNonTx_);
+        sb.append("\nisLazyEnlistable_  => " + lazyEnlistable_);
+        sb.append("\nisLazyAssociatable  => " + lazyAssoc_);
+        sb.append("\nsecurityMap => " + runtimeSecurityMap.toString());
         return sb.toString();
     }
 }
