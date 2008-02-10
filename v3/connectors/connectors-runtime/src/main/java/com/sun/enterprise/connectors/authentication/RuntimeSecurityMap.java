@@ -39,7 +39,7 @@ package com.sun.enterprise.connectors.authentication;
 import java.util.HashMap;
 
 /**
- * @author ko133006
+ * @author Kanwar Oberoi
  */
 public class RuntimeSecurityMap {
 

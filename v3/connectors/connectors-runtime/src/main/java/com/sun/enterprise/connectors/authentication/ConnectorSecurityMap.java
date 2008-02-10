@@ -38,22 +38,22 @@
 package com.sun.enterprise.connectors.authentication;
 
 import java.io.Serializable;
-import com.sun.enterprise.connectors.authentication.EisBackendPrincipal;
+import java.util.List;
 
 /**
- * @author ko133006
+ * @author Kanwar Oberoi
  */
 public class ConnectorSecurityMap implements Serializable {
     private String name;
 
-    private String[] principals;
+    private List<String> principals;
 
-    private String[] userGroups;
+    private List<String> userGroups;
 
     private EisBackendPrincipal backendPrincipal;
 
-    public ConnectorSecurityMap(String name, String[] principals,
-            String[] userGroups, EisBackendPrincipal backendPrincipal) {
+    public ConnectorSecurityMap(String name, List<String> principals,
+                                List<String> userGroups, EisBackendPrincipal backendPrincipal) {
         this.name = name;
         this.principals = principals;
         this.userGroups = userGroups;
@@ -68,8 +68,7 @@ public class ConnectorSecurityMap implements Serializable {
     }
 
     /**
-     * @param backendPrincipal
-     *            The backendPrincipal to set.
+     * @param backendPrincipal The backendPrincipal to set.
      */
     public void setBackendPrincipal(EisBackendPrincipal backendPrincipal) {
         this.backendPrincipal = backendPrincipal;
@@ -83,8 +82,7 @@ public class ConnectorSecurityMap implements Serializable {
     }
 
     /**
-     * @param name
-     *            The name to set.
+     * @param name The name to set.
      */
     public void setName(String name) {
         this.name = name;
@@ -93,29 +91,28 @@ public class ConnectorSecurityMap implements Serializable {
     /**
      * @return Returns the principals.
      */
-    public String[] getPrincipals() {
+    public List<String> getPrincipals() {
         return this.principals;
     }
 
     /**
-     * @param principals
-     *            The principals to set.
+     * @param principals The principals to set.
      */
-    public void setPrincipals(String[] principals) {
+    public void setPrincipals(List<String> principals) {
         this.principals = principals;
     }
 
     /**
      * @return Returns the userGroups.
      */
-    public String[] getUserGroups() {
+    public List<String> getUserGroups() {
         return this.userGroups;
     }
 
     /**
      * @param userGroups The userGroups to set.
      */
-    public void setUserGroups(String[] userGroups) {
+    public void setUserGroups(List<String> userGroups) {
         this.userGroups = userGroups;
     }
 }
