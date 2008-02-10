@@ -36,39 +36,38 @@
 
 package com.sun.enterprise.connectors.util;
 
-import com.sun.enterprise.connectors.*;
-import com.sun.enterprise.deployment.runtime.connector.*;
-import com.sun.enterprise.deployment.*;
-import com.sun.enterprise.connectors.util.SecurityMapUtils;
-import com.sun.logging.*;
-import java.util.logging.Logger;
-import java.util.logging.Level;
-import java.util.Set;
-import com.sun.enterprise.connectors.authentication.RuntimeSecurityMap;
+import com.sun.appserv.connectors.spi.ConnectorRuntimeException;
+import com.sun.enterprise.connectors.ConnectorConnectionPool;
+import com.sun.enterprise.connectors.ConnectorDescriptorInfo;
 import com.sun.enterprise.connectors.authentication.ConnectorSecurityMap;
-/**
- */ 
+import com.sun.enterprise.connectors.authentication.RuntimeSecurityMap;
+import com.sun.logging.LogDomains;
+
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 
 public final class ConnectionPoolReconfigHelper {
 
-    private static final Logger _logger = LogDomains.getLogger( LogDomains.RSR_LOGGER );
-    
+    private static final Logger _logger = LogDomains.getLogger(LogDomains.RSR_LOGGER);
 
-    public enum ReconfigAction { RECREATE_POOL, UPDATE_MCF_AND_ATTRIBUTES, NO_OP };
 
-    public static ReconfigAction compare( ConnectorConnectionPool oldPool, 
-            ConnectorConnectionPool newPool, Set excludedProps ) 
-	    throws ConnectorRuntimeException 
-    {
+    public enum ReconfigAction {
+        RECREATE_POOL, UPDATE_MCF_AND_ATTRIBUTES, NO_OP
+    }
 
-        if ( isEqualConnectorConnectionPool( oldPool, newPool , excludedProps ) 
-	    == ReconfigAction.NO_OP ) {
-	
-	    return ReconfigAction.UPDATE_MCF_AND_ATTRIBUTES;
-	}
-        
-	return ReconfigAction.RECREATE_POOL;
+    public static ReconfigAction compare(ConnectorConnectionPool oldPool,
+                                         ConnectorConnectionPool newPool, Set excludedProps)
+            throws ConnectorRuntimeException {
 
+        if (isEqualConnectorConnectionPool(oldPool, newPool, excludedProps)
+                == ReconfigAction.NO_OP) {
+
+            return ReconfigAction.UPDATE_MCF_AND_ATTRIBUTES;
+        }
+
+        return ReconfigAction.RECREATE_POOL;
     }
 
     /*
@@ -81,71 +80,108 @@ public final class ConnectionPoolReconfigHelper {
      * If the new pool and old pool have identical MCF properties returns 
      * true
      */
-    private static ReconfigAction isEqualConnectorConnectionPool( ConnectorConnectionPool
-            oldCcp, ConnectorConnectionPool newCcp, Set excludedProps )
-    {
+    private static ReconfigAction isEqualConnectorConnectionPool(ConnectorConnectionPool
+            oldCcp, ConnectorConnectionPool newCcp, Set excludedProps) {
         boolean poolsEqual = true;
-        
-	//for all the following properties, we need to recreate pool if they
-	//have changed
-	if (newCcp.getTransactionSupport() != oldCcp.getTransactionSupport() ) {
-	    return ReconfigAction.RECREATE_POOL;
-	}
 
-	if (newCcp.isAssociateWithThread() != oldCcp.isAssociateWithThread() ) {
-	    return ReconfigAction.RECREATE_POOL;
-	}
+        //for all the following properties, we need to recreate pool if they
+        //have changed
+        if (newCcp.getTransactionSupport() != oldCcp.getTransactionSupport()) {
+            return ReconfigAction.RECREATE_POOL;
+        }
 
-	if (newCcp.isLazyConnectionAssoc() != oldCcp.isLazyConnectionAssoc() ) {
-	    return ReconfigAction.RECREATE_POOL;
-	}
+        if (newCcp.isAssociateWithThread() != oldCcp.isAssociateWithThread()) {
+            return ReconfigAction.RECREATE_POOL;
+        }
 
-	
+        if (newCcp.isLazyConnectionAssoc() != oldCcp.isLazyConnectionAssoc()) {
+            return ReconfigAction.RECREATE_POOL;
+        }
+
+        if (newCcp.isPartitionedPool() != oldCcp.isPartitionedPool()) {
+            return ReconfigAction.RECREATE_POOL;
+        }
+        if (newCcp.getPoolDataStructureType() == null && oldCcp.getPoolDataStructureType() != null) {
+            return ReconfigAction.RECREATE_POOL;
+        }
+        if (newCcp.getPoolDataStructureType() != null && oldCcp.getPoolDataStructureType() == null) {
+            return ReconfigAction.RECREATE_POOL;
+        }
+
+        if (((newCcp.getPoolDataStructureType() != null) && (oldCcp.getPoolDataStructureType() != null)
+                && !(newCcp.getPoolDataStructureType().equals(oldCcp.getPoolDataStructureType())))) {
+            return ReconfigAction.RECREATE_POOL;
+        }
+
+        if ((newCcp.getPoolWaitQueue() != null) && (oldCcp.getPoolWaitQueue() == null)) {
+            return ReconfigAction.RECREATE_POOL;
+        }
+
+        if ((newCcp.getPoolWaitQueue() == null) && (oldCcp.getPoolWaitQueue() != null)) {
+            return ReconfigAction.RECREATE_POOL;
+        }
+
+        if ((newCcp.getPoolWaitQueue() != null) && (oldCcp.getPoolWaitQueue() != null)
+                && (!newCcp.getPoolWaitQueue().equals(oldCcp.getPoolWaitQueue()))) {
+            return ReconfigAction.RECREATE_POOL;
+        }
+
+        if ((newCcp.getDataStructureParameters() != null) && (oldCcp.getDataStructureParameters() == null)) {
+            return ReconfigAction.RECREATE_POOL;
+        }
+
+        if ((newCcp.getDataStructureParameters() == null) && (oldCcp.getDataStructureParameters() != null)) {
+            return ReconfigAction.RECREATE_POOL;
+        }
+
+
+        if ((newCcp.getDataStructureParameters() != null) && (oldCcp.getDataStructureParameters() != null)
+                && !(newCcp.getDataStructureParameters().equals(oldCcp.getDataStructureParameters()))) {
+            return ReconfigAction.RECREATE_POOL;
+        }
+
         ConnectorDescriptorInfo oldCdi = oldCcp.getConnectorDescriptorInfo();
         ConnectorDescriptorInfo newCdi = newCcp.getConnectorDescriptorInfo();
 
-	if (! oldCdi.getResourceAdapterClassName().equals(
-	        newCdi.getResourceAdapterClassName())  ) {
-	    
-	    logFine(
-	        "isEqualConnectorConnectionPool: getResourceAdapterClassName:: " +
-	         oldCdi.getResourceAdapterClassName() + " -- " +
-		 newCdi.getResourceAdapterClassName()); 
-	    return ReconfigAction.RECREATE_POOL;
-	}
+        if (!oldCdi.getResourceAdapterClassName().equals(
+                newCdi.getResourceAdapterClassName())) {
 
-	if (! oldCdi.getConnectionDefinitionName().equals(
-	        newCdi.getConnectionDefinitionName()) ) {
-	    
-	    logFine(
-	        "isEqualConnectorConnectionPool: getConnectionDefinitionName:: "+
-	        oldCdi.getConnectionDefinitionName() + " -- " +
-		newCdi.getConnectionDefinitionName());
-	   	
-	    return ReconfigAction.RECREATE_POOL;
-	}
+            logFine(
+                    "isEqualConnectorConnectionPool: getResourceAdapterClassName:: " +
+                            oldCdi.getResourceAdapterClassName() + " -- " +
+                            newCdi.getResourceAdapterClassName());
+            return ReconfigAction.RECREATE_POOL;
+        }
 
-    ConnectorSecurityMap[] newSecurityMaps = newCcp.getSecurityMaps();
-    RuntimeSecurityMap newRuntimeSecurityMap = 
-        SecurityMapUtils.processSecurityMaps(newSecurityMaps);
-    ConnectorSecurityMap[] oldSecurityMaps = oldCcp.getSecurityMaps();
-    RuntimeSecurityMap oldRuntimeSecurityMap = 
-        SecurityMapUtils.processSecurityMaps(oldSecurityMaps);
-    if (!( oldRuntimeSecurityMap.equals(newRuntimeSecurityMap) )){
-    	logFine("isEqualConnectorConnectionPool: CCP.getSecurityMaps:: " +
-    			"New set of Security Maps is not equal to the existing" +
-    			" set of security Maps.");
-    	return ReconfigAction.RECREATE_POOL;
+        if (!oldCdi.getConnectionDefinitionName().equals(
+                newCdi.getConnectionDefinitionName())) {
+
+            logFine(
+                    "isEqualConnectorConnectionPool: getConnectionDefinitionName:: " +
+                            oldCdi.getConnectionDefinitionName() + " -- " +
+                            newCdi.getConnectionDefinitionName());
+
+            return ReconfigAction.RECREATE_POOL;
+        }
+
+        ConnectorSecurityMap[] newSecurityMaps = newCcp.getSecurityMaps();
+        RuntimeSecurityMap newRuntimeSecurityMap =
+                SecurityMapUtils.processSecurityMaps(newSecurityMaps);
+        ConnectorSecurityMap[] oldSecurityMaps = oldCcp.getSecurityMaps();
+        RuntimeSecurityMap oldRuntimeSecurityMap =
+                SecurityMapUtils.processSecurityMaps(oldSecurityMaps);
+        if (!(oldRuntimeSecurityMap.equals(newRuntimeSecurityMap))) {
+            logFine("isEqualConnectorConnectionPool: CCP.getSecurityMaps:: " +
+                    "New set of Security Maps is not equal to the existing" +
+                    " set of security Maps.");
+            return ReconfigAction.RECREATE_POOL;
+        }
+        return oldCdi.compareMCFConfigProperties(newCdi, excludedProps);
     }
-	
-	Set newMCFConfigProps = newCdi.getMCFConfigProperties();
-	Set oldMCFConfigProps = oldCdi.getMCFConfigProperties();
-        return  oldCdi.compareMCFConfigProperties( newCdi, excludedProps );
-    }
-    
-    private static void logFine( String msg ) {
-        if (msg != null && _logger.isLoggable(Level.FINE)) {
-	    _logger.fine( msg );
-	}
+
+    private static void logFine(String msg) {
+        if (_logger.isLoggable(Level.FINE) && msg != null) {
+            _logger.fine(msg);
+        }
     }
 }
