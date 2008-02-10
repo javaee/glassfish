@@ -35,155 +35,43 @@
  */
 
 
-package com.sun.enterprise.resource;
+package com.sun.enterprise.resource.deployer;
 
-import com.sun.enterprise.server.ResourceDeployer;
-import com.sun.enterprise.connectors.util.ResourcesUtil;
-
-import com.sun.enterprise.config.serverbeans.Resources;
 import com.sun.enterprise.config.serverbeans.ConnectorResource;
-import com.sun.enterprise.connectors.ConnectorAdminServiceUtils;
 import com.sun.enterprise.connectors.ConnectorRuntime;
-import com.sun.enterprise.connectors.ConnectorConnectionPool;
-import com.sun.enterprise.deployment.ConnectionDefDescriptor;
+import com.sun.enterprise.server.ResourceDeployer;
 import com.sun.logging.LogDomains;
-import com.sun.enterprise.config.serverbeans.Domain;
-import com.sun.enterprise.connectors.ConnectorConstants;
-import javax.naming.InitialContext;
-import com.sun.enterprise.config.ConfigBean;
-import com.sun.enterprise.config.ConfigException;
-import com.sun.enterprise.connectors.util.ConnectionPoolObjectsUtils;
 
-import java.util.logging.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
-  * @author    Srikanth P
-  */
+ * @author Srikanth P
+ */
 
 public class ConnectorResourceDeployer implements ResourceDeployer {
 
     static Logger _logger = LogDomains.getLogger(LogDomains.CORE_LOGGER);
+
     public synchronized void deployResource(Object resource) throws Exception {
 
-        ConnectorResource domainResource = 
-            (com.sun.enterprise.config.serverbeans.ConnectorResource)resource;
+        ConnectorResource domainResource =
+                (com.sun.enterprise.config.serverbeans.ConnectorResource) resource;
         String jndiName = domainResource.getJndiName();
         String poolName = domainResource.getPoolName();
         ConnectorRuntime crt = ConnectorRuntime.getRuntime();
-        _logger.log(Level.FINE,
-                   "Calling backend to add connector resource",jndiName);
+        _logger.log(Level.FINE, "Calling backend to add connector resource", jndiName);
 
-        // load connection pool if not loaded from the ctx in event 
-        loadPool(domainResource);
-
-        crt.createConnectorResource(jndiName,poolName,null);
-        _logger.log(Level.FINE,
-                   "Added connector resource in backend",jndiName);
+        crt.createConnectorResource(jndiName, poolName, null);
+        _logger.log(Level.FINE, "Added connector resource in backend", jndiName);
     }
 
-    public synchronized void undeployResource(Object resource) 
-                  throws Exception {
-        ConnectorResource domainResource = 
-           (com.sun.enterprise.config.serverbeans.ConnectorResource)resource;
+    public synchronized void undeployResource(Object resource)
+            throws Exception {
+        ConnectorResource domainResource =
+                (com.sun.enterprise.config.serverbeans.ConnectorResource) resource;
         String jndiName = domainResource.getJndiName();
         ConnectorRuntime crt = ConnectorRuntime.getRuntime();
         crt.deleteConnectorResource(jndiName);
-        
-        //Since 8.1 PE/SE/EE - if no more resource-ref to the pool 
-        //of this resource in this server instance, remove pool from connector
-        //runtime
-        checkAndDeletePool(domainResource);
-        
-    }
-
-
-    public synchronized void redeployResource(Object resource) 
-                  throws Exception {
-    }
-
-    public synchronized void disableResource(Object resource) 
-                  throws Exception {
-        undeployResource(resource);
-    }
-
-    public synchronized void enableResource(Object resource) throws Exception {
-        deployResource(resource);
-    }
-
-    public Object getResource(String name, Resources rbeans) throws Exception {
-
-        Object res = rbeans.getConnectorResourceByJndiName(name);
-        if (res == null) {
-            Exception ex = new Exception("No such resource");
-            _logger.log(Level.SEVERE,"no_resource",name);
-            _logger.log(Level.SEVERE,"",ex);
-            throw ex;
-        }
-        return res;
-
-    }
-
-    private void loadPool(ConnectorResource cr) throws Exception {
-
-        String poolName = cr.getPoolName();
-        Resources resources = (Resources) cr.parent();
-        ConfigBean cb = resources.getConnectorConnectionPoolByName(poolName);
-        com.sun.enterprise.config.serverbeans.ConnectorConnectionPool cp = 
-        	(com.sun.enterprise.config.serverbeans.ConnectorConnectionPool)cb;
-        if (cb != null) {
-        	if (ConnectionPoolObjectsUtils.isPoolSystemPool(poolName)){
-        	    createPool(cp);
-        	} else {
-        	    try {
-                    InitialContext ic = new InitialContext();
-                    ic.lookup(ConnectorAdminServiceUtils.getReservePrefixedJNDINameForPool(poolName));
-                } catch (Exception e) {
-                    // pool is not loaded
-                    createPool(cp);
-                }
-        	}
-        }
-    }
-
-    /**
-     * Checks if no more resource-refs to resources exists for the 
-     * connector connection pool and then deletes the pool
-     * @param cr ConnectorResource
-     * @throws Exception (ConfigException / undeploy exception)
-     * @since 8.1 pe/se/ee
-     */
-    private void checkAndDeletePool(ConnectorResource cr) throws Exception {
-        try {
-            String poolName = cr.getPoolName();
-            Resources res = (Resources) cr.parent();
-
-            boolean poolReferred = 
-                ResourcesUtil.createInstance().isPoolReferredInServerInstance(poolName);
-            if (!poolReferred) {
-                _logger.fine("Deleting pool " + poolName + "as there is no more " +
-                        "resource-refs to the pool in this server instance");
-                com.sun.enterprise.config.serverbeans.ConnectorConnectionPool ccp 
-                                    = res.getConnectorConnectionPoolByName(poolName);
-                //Delete/Undeploy Pool
-                ConnectorConnectionPoolDeployer deployer = 
-                        new ConnectorConnectionPoolDeployer();
-                deployer.undeployResource(ccp);
-            }
-            
-        } catch (ConfigException ce) {
-            _logger.warning(ce.getMessage());
-            _logger.fine("Exception while deleting pool : " + ce );
-            throw ce;
-        }
-    }
-    
-    private void createPool(com.sun.enterprise.config.serverbeans.ConnectorConnectionPool cp) 
-    throws Exception {
-        ConnectorConnectionPoolDeployer deployer = 
-            new ConnectorConnectionPoolDeployer();
-        
-        deployer.deployResource(cp);
     }
 }
