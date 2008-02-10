@@ -35,24 +35,19 @@
  */
 package com.sun.enterprise.resource;
 
-import javax.transaction.xa.XAResource;
-import javax.resource.spi.ConnectionEventListener;
-
+import com.sun.enterprise.resource.allocator.ResourceAllocator;
 import com.sun.logging.LogDomains;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-//  START OF IASRI 4629815
-//
-import javax.security.auth.Subject; // Added by Miriam - ECU
-//  END OF IASRI 4629815
-//
+import javax.resource.spi.ConnectionEventListener;
+import javax.security.auth.Subject;
+import javax.transaction.xa.XAResource;
+import java.util.logging.Logger;
 
 
 /**
  * ResourceHandle encapsulates a resource connection.
  * Equality on the handle is based on the id field
- * 
+ *
  * @author Tony Ng
  */
 public class ResourceHandle {
@@ -64,37 +59,27 @@ public class ResourceHandle {
     private ClientSecurityInfo info;
     private Object resource;  // XAConnection for JDBC 2.0
     private ResourceSpec spec;
-    private XAResource xares;
     private Object usercon;   // Connection for JDBC 2.0
     private ResourceAllocator alloc;
     private Object instance;  // the component instance holding this resource
     private int shareCount;   // sharing within a component (XA only)
-    private boolean supportsXAResource=false;
+    private boolean supportsXAResource = false;
 
-    private Subject subject = null;            //Added by Miriam - ECU .
+    private Subject subject = null;
 
     private ResourceState state = null;
     private ConnectionEventListener listener = null;
-    private boolean associated_ = false;
-    private long threadId_;
 
-    private static Logger logger = 
-	LogDomains.getLogger(LogDomains.RSR_LOGGER);
-    
-    private boolean supportsLazyEnlistment_ = false;
-    private boolean supportsLazyAssoc_ = false;
+    private static Logger logger = LogDomains.getLogger(LogDomains.RSR_LOGGER);
 
-    //To suspend and enable lazy enlistment - added by Jagadish Ramu
-
-    private boolean enlistmentSuspended = false;
     public final Object lock = new Object();
-    private boolean dirty_;
     private long lastValidated; //holds the latest time at which the connection was validated.
     private int usageCount; //holds the no. of times the handle(connection) is used so far.
-    
+    private int partition;
+
     static private long getNextId() {
-	synchronized (ResourceHandle.class) {
-	    idSequence++;
+        synchronized (ResourceHandle.class) {
+            idSequence++;
             return idSequence;
         }
     }
@@ -108,39 +93,8 @@ public class ResourceHandle {
         this.info = info;
         this.resource = resource;
         this.alloc = alloc;
-
-	if ( alloc instanceof LocalTxConnectorAllocator)
-	    supportsXAResource = false;
-	else
-	    supportsXAResource = true;
-
-        if ( resource instanceof 
-            javax.resource.spi.LazyEnlistableManagedConnection ) {
-            supportsLazyEnlistment_ = true;
-        }
-
-        if ( resource instanceof 
-            javax.resource.spi.DissociatableManagedConnection ) {
-            supportsLazyAssoc_ = true;
-        }
     }
-    //START OF IASRI 4721130
-	public ResourceHandle(Object resource,
-                          ResourceSpec spec,
-                          ResourceAllocator alloc,
-                          ClientSecurityInfo info,
-			  boolean supportsXA) {
-        this.id = getNextId();
-        this.spec = spec;
-        this.info = info;
-        this.resource = resource;
-        this.alloc = alloc;
 
-	supportsXAResource = supportsXA;
-
-        dirty_ = false;
-    }    
-    //END OF IASRI 4721130
     /**
      * Does this resource need enlistment to transaction manager?
      */
@@ -166,14 +120,10 @@ public class ResourceHandle {
 
     public void setResourceSpec(ResourceSpec spec) {
         this.spec = spec;
-    }	
+    }
 
     public ResourceSpec getResourceSpec() {
         return spec;
-    }
-
-    public XAResource getXAResource() {
-        return xares;
     }
 
     public Object getUserConnection() {
@@ -191,21 +141,6 @@ public class ResourceHandle {
     public void fillInResourceObjects(Object userConnection,
                                       XAResource xaRes) {
         if (userConnection != null) usercon = userConnection;
-        if (xaRes !=null) {
-           if(logger.isLoggable(Level.FINEST)){
-             //When Log level is Finest, XAResourceWrapper is used to log
-             //all XA interactions - Don't wrap XAResourceWrapper if it is 
-             //already wrapped
-               if ((xaRes instanceof XAResourceWrapper) ||
-                       (xaRes instanceof ConnectorXAResource)) {
-                   this.xares = xaRes;
-               } else {
-                   this.xares = new XAResourceWrapper(xaRes);
-               }
-           } else {
-            this.xares = xaRes;
-           }
-        }
     }
 
     // For XA-capable connections, multiple connections within a
@@ -226,20 +161,14 @@ public class ResourceHandle {
     public int getShareCount() {
         return shareCount;
     }
-   //  START OF IASRI 4629815
-   //
 
-    //Added by Miriam - ECU    
-    public void setSubject(Subject subject){
+    public void setSubject(Subject subject) {
         this.subject = subject;
     }
-    //Added by Miriam - ECU
-    public Subject getSubject(){
+
+    public Subject getSubject() {
         return subject;
     }
-
-   //  END OF IASRI 4629815
-   //
 
     public boolean equals(Object other) {
         if (other == null) return false;
@@ -257,15 +186,14 @@ public class ResourceHandle {
         return String.valueOf(id);
     }
 
-    //GJCINT
     private boolean connectionErrorOccurred = false;
 
     public void setConnectionErrorOccurred() {
-	connectionErrorOccurred = true;
+        connectionErrorOccurred = true;
     }
 
     public boolean hasConnectionErrorOccurred() {
-	return connectionErrorOccurred;
+        return connectionErrorOccurred;
     }
 
     public void setResourceState(ResourceState state) {
@@ -279,81 +207,40 @@ public class ResourceHandle {
     public void setListener(ConnectionEventListener l) {
         this.listener = l;
     }
-    
+
     public ConnectionEventListener getListener() {
         return listener;
     }
 
     public boolean isShareable() {
-       return alloc.shareableWithinComponent();
+        return alloc.shareableWithinComponent();
     }
 
     public boolean isEnlisted() {
         return state != null && state.isEnlisted();
     }
 
-    public boolean isAssociated() {
-        return associated_;
-    }
-
-    public void setAssociated( boolean flag ) {
-        associated_ = flag;
-    }
-
-    public long getThreadId() {
-        return threadId_;
-    }
-
-    public void setThreadId( long threadId ) {
-        threadId_ = threadId;
-    }
-
-    public boolean supportsLazyEnlistment() {
-        return supportsLazyEnlistment_;
-    }
-
-    public boolean supportsLazyAssociation() {
-        return supportsLazyAssoc_;
-    }
-
-    public boolean isDirty() {
-        return dirty_;
-    }
-
-    public void setDirty() {
-        dirty_ = true;
-    }
-
-    /**
-     * To check whether lazy enlistment is suspended or not.<br>
-     * If true, TM will not do enlist/lazy enlist.
-     * @return boolean
-     */
-    public boolean isEnlistmentSuspended()
-    {
-        return enlistmentSuspended;
-    }
-
-    public void setEnlistmentSuspended(boolean enlistmentSuspended)
-    {
-        this.enlistmentSuspended = enlistmentSuspended;
-    }
-
     public long getLastValidated() {
-     return lastValidated;
+        return lastValidated;
     }
 
     public void setLastValidated(long lastValidated) {
-     this.lastValidated = lastValidated;
+        this.lastValidated = lastValidated;
     }
 
-
-    public int getUsageCount(){
+    public int getUsageCount() {
         return usageCount;
     }
 
-    public void incrementUsageCount(){
+    public void incrementUsageCount() {
         usageCount++;
-     }
+    }
 
+    public int getPartition() {
+        return partition;
+    }
+
+    public void setPartition(int partition) {
+        this.partition = partition;
+    }
 }
