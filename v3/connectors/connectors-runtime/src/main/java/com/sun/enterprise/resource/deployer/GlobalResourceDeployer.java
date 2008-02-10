@@ -40,62 +40,48 @@
  * Created on December 12, 2003, 12:35 PM
  */
 
-package com.sun.enterprise.resource;
+package com.sun.enterprise.resource.deployer;
 
-import com.sun.enterprise.Switch;
-import com.sun.enterprise.config.serverbeans.ElementProperty;
+import com.sun.enterprise.config.serverbeans.Property;
 
 /**
- *
- * @author  Rob Ruyak
+ * @author Rob Ruyak
  */
 public abstract class GlobalResourceDeployer {
-    
-    /**
-     * Gets the application server Switch object for accessing env. objects. 
-     * This is an internal method created to eliminate dependency for other 
-     * methods. This enables one to develop unit tests for this class.
-     *
-     * @return Switch singleton containing appserver runtime objects.
-     */
-    Switch getAppServerSwitchObject() {
-        return Switch.getSwitch();
-    }
-    
+
     /**
      * Return an the element property names as an array of strings.
      *
      * @param props An array of ElementProperty objects.
      * @return The names within the element as an array of strings.
      */
-    String[] getPropNamesAsStrArr(ElementProperty [] props) {
-        if (props == null) { 
-            return null; 
+    String[] getPropNamesAsStrArr(Property[] props) {
+        if (props == null) {
+            return null;
         } else {
-            String [] result = new String[props.length];
-            for(int i = 0; i < props.length; i++) {
+            String[] result = new String[props.length];
+            for (int i = 0; i < props.length; i++) {
                 result[i] = props[i].getName();
             }
             return result;
         }
     }
-    
+
     /**
      * Return an the element property values as an array of strings.
      *
      * @param props An array of ElementProperty objects.
      * @return The values within the element as an array of strings.
      */
-    String[] getPropValuesAsStrArr(ElementProperty [] props) {
-        if (props == null) { 
-            return null; 
+    String[] getPropValuesAsStrArr(Property[] props) {
+        if (props == null) {
+            return null;
         } else {
-            String [] result = new String[props.length];
-            for(int i = 0; i < props.length; i++) {
+            String[] result = new String[props.length];
+            for (int i = 0; i < props.length; i++) {
                 result[i] = props[i].getValue();
             }
             return result;
         }
     }
-   
 }
