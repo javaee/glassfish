@@ -34,12 +34,15 @@
  * holder.
  */
 
-package com.sun.enterprise.resource;
+package com.sun.enterprise.resource.allocator;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import com.sun.enterprise.deployment.ConnectorDescriptor;
+import com.sun.enterprise.resource.ClientSecurityInfo;
+import com.sun.enterprise.resource.ResourceHandle;
+import com.sun.enterprise.resource.ResourceSpec;
+import com.sun.enterprise.resource.pool.PoolManager;
+import com.sun.enterprise.resource.pool.PoolingException;
+import com.sun.logging.LogDomains;
 
 import javax.resource.ResourceException;
 import javax.resource.spi.ConnectionRequestInfo;
@@ -47,21 +50,22 @@ import javax.resource.spi.ManagedConnection;
 import javax.resource.spi.ManagedConnectionFactory;
 import javax.resource.spi.ValidatingManagedConnectionFactory;
 import javax.security.auth.Subject;
-
-import com.sun.enterprise.PoolManager;
-import com.sun.enterprise.deployment.ConnectorDescriptor;
-import com.sun.logging.LogDomains;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**
  * An abstract implementation of the <code>ResourceAllocator</code> interface
  * that houses all the common implementation(s) of the various connector allocators.
- * All resource allocators except <code>BasicResourceAllocator</code> extend this 
+ * All resource allocators except <code>BasicResourceAllocator</code> extend this
  * abstract implementation
+ *
  * @author Sivakumar Thyagarajan
  */
-public abstract class AbstractConnectorAllocator 
-                            implements ResourceAllocator {
+public abstract class AbstractConnectorAllocator
+        implements ResourceAllocator {
 
     protected PoolManager poolMgr;
     protected ResourceSpec spec;
@@ -70,19 +74,19 @@ public abstract class AbstractConnectorAllocator
     protected ManagedConnectionFactory mcf;
     protected ConnectorDescriptor desc;
     protected ClientSecurityInfo info;
-    
+
     protected final static Logger _logger = LogDomains.getLogger(LogDomains.RSR_LOGGER);
 
     public AbstractConnectorAllocator() {
     }
 
     public AbstractConnectorAllocator(PoolManager poolMgr,
-                    ManagedConnectionFactory mcf,
-                    ResourceSpec spec,
-                    Subject subject,
-                    ConnectionRequestInfo reqInfo,
-                    ClientSecurityInfo info,
-                    ConnectorDescriptor desc) {
+                                      ManagedConnectionFactory mcf,
+                                      ResourceSpec spec,
+                                      Subject subject,
+                                      ConnectionRequestInfo reqInfo,
+                                      ClientSecurityInfo info,
+                                      ConnectorDescriptor desc) {
         this.poolMgr = poolMgr;
         this.mcf = mcf;
         this.spec = spec;
@@ -90,44 +94,43 @@ public abstract class AbstractConnectorAllocator
         this.reqInfo = reqInfo;
         this.info = info;
         this.desc = desc;
-        
+
     }
 
     public Set getInvalidConnections(Set connectionSet)
-                                throws ResourceException {
-        if(mcf instanceof ValidatingManagedConnectionFactory){
-            return ((ValidatingManagedConnectionFactory)this.mcf).
-                                    getInvalidConnections(connectionSet);
+            throws ResourceException {
+        if (mcf instanceof ValidatingManagedConnectionFactory) {
+            return ((ValidatingManagedConnectionFactory) this.mcf).
+                    getInvalidConnections(connectionSet);
         }
         return null;
     }
 
-    public boolean isConnectionValid( ResourceHandle h ) 
-    {
-         HashSet conn = new HashSet();
-         conn.add( h.getResource() );
-         Set invalids = null;
-         try {
-             invalids = getInvalidConnections( conn );
-         } catch( ResourceException re ) {
-             //ignore and continue??
-         }
-         
-	 if ( (invalids != null && invalids.size() > 0)  ||
-	         h.hasConnectionErrorOccurred() ) {
-	     return false;
-	 } 
+    public boolean isConnectionValid(ResourceHandle h) {
+        HashSet conn = new HashSet();
+        conn.add(h.getResource());
+        Set invalids = null;
+        try {
+            invalids = getInvalidConnections(conn);
+        } catch (ResourceException re) {
+            //ignore and continue??
+        }
 
-	 return true;
+        if ((invalids != null && invalids.size() > 0) ||
+                h.hasConnectionErrorOccurred()) {
+            return false;
+        }
+
+        return true;
     }
 
     public void destroyResource(ResourceHandle resourceHandle)
-        throws PoolingException {
+            throws PoolingException {
         throw new UnsupportedOperationException();
     }
 
     public void fillInResourceObjects(ResourceHandle resourceHandle)
-        throws PoolingException {
+            throws PoolingException {
         throw new UnsupportedOperationException();
     }
 
@@ -153,8 +156,8 @@ public abstract class AbstractConnectorAllocator
         Set set = new HashSet();
         set.add(h.getResource());
         try {
-            ManagedConnection mc = 
-                mcf.matchManagedConnections(set, subject, reqInfo);
+            ManagedConnection mc =
+                    mcf.matchManagedConnections(set, subject, reqInfo);
             return (mc != null);
         } catch (ResourceException ex) {
             return false;
@@ -162,7 +165,7 @@ public abstract class AbstractConnectorAllocator
     }
 
     public void closeUserConnection(ResourceHandle resource) throws PoolingException {
-    
+
         try {
             ManagedConnection mc = (ManagedConnection) resource.getResource();
             mc.cleanup();
@@ -175,8 +178,8 @@ public abstract class AbstractConnectorAllocator
         return false;
     }
 
-    public Object getSharedConnection(ResourceHandle h) 
-                                    throws PoolingException {
+    public Object getSharedConnection(ResourceHandle h)
+            throws PoolingException {
         throw new UnsupportedOperationException();
     }
 
