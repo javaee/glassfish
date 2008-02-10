@@ -36,66 +36,47 @@
 package com.sun.enterprise.resource;
 
 public class ResourceState {
-        private boolean enlisted;
-        private boolean busy;
-        private long timestamp;
+    private boolean enlisted;
+    private boolean busy;
+    private long timestamp;
 
-      //Commented from 9.1 as it is not used
-      /*  // This identifies the resource as new (never given out from the pool)
-        // used for setting isolation level on new connections
+    public boolean isEnlisted() {
+        return enlisted;
+    }
 
-        // init isNew to true
-        private boolean isNew = true;*/
+    public boolean isUnenlisted() {
+        return !enlisted;
+    }
 
+    public boolean isFree() {
+        return !busy;
+    }
 
-        public boolean isEnlisted() {
-            return enlisted;
-        }
-        
-        public boolean isUnenlisted() {
-            return !enlisted;
-        }
-        
-        public boolean isFree() {
-            return !busy;
-        }
-        
-        public void setEnlisted(boolean enlisted) {
-            this.enlisted = enlisted;
-        }
-        
-        public boolean isBusy() {
-            return busy;
-        }
-        
-        public void setBusy(boolean busy) {
-            this.busy = busy;
-        }
-        
-        public long getTimestamp() {
-            return timestamp;
-        }
-        
-        public void touchTimestamp() {
-            timestamp = System.currentTimeMillis();
-        }
-        
-        public ResourceState() {
-            touchTimestamp();
-        }
+    public void setEnlisted(boolean enlisted) {
+        this.enlisted = enlisted;
+    }
 
-        //Commented from 9.1 as it is not used
-        /*public boolean isNew() {
-            return isNew;
-        }
+    public boolean isBusy() {
+        return busy;
+    }
 
-        // There's not way to set isNew to true,
-        // There's no way to revert a state to new
-        public void setNotNew() {
-            isNew = false;
-        }*/
+    public void setBusy(boolean busy) {
+        this.busy = busy;
+    }
 
-        public String toString() {
-            return "Enlisted :" + enlisted + " Busy :" + busy;
-        }
+    public long getTimestamp() {
+        return timestamp;
+    }
+
+    public void touchTimestamp() {
+        timestamp = System.currentTimeMillis();
+    }
+
+    public ResourceState() {
+        touchTimestamp();
+    }
+
+    public String toString() {
+        return "Enlisted :" + enlisted + " Busy :" + busy;
+    }
 }
