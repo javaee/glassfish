@@ -33,11 +33,13 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.enterprise.resource;
+package com.sun.enterprise.resource.allocator;
 
-import java.util.Set;
+import com.sun.enterprise.resource.ResourceHandle;
+import com.sun.enterprise.resource.pool.PoolingException;
 
 import javax.resource.ResourceException;
+import java.util.Set;
 
 /**
  * @author Tony Ng
@@ -45,16 +47,16 @@ import javax.resource.ResourceException;
 public interface ResourceAllocator {
 
     public ResourceHandle createResource()
-         throws PoolingException;
+            throws PoolingException;
 
     public void fillInResourceObjects(ResourceHandle resource)
-        throws PoolingException;
+            throws PoolingException;
 
-    public void closeUserConnection(ResourceHandle resource) 
-        throws PoolingException;
+    public void closeUserConnection(ResourceHandle resource)
+            throws PoolingException;
 
     public void destroyResource(ResourceHandle resource)
-        throws PoolingException;
+            throws PoolingException;
 
     public boolean matchConnection(ResourceHandle h);
 
@@ -67,10 +69,10 @@ public interface ResourceAllocator {
     public boolean shareableWithinComponent();
 
     public Object getSharedConnection(ResourceHandle h)
-        throws PoolingException;
-    
-    public Set getInvalidConnections(Set connectionSet) 
-                                            throws ResourceException;
+            throws PoolingException;
 
-    public boolean isConnectionValid( ResourceHandle resource );
+    public Set getInvalidConnections(Set connectionSet)
+            throws ResourceException;
+
+    public boolean isConnectionValid(ResourceHandle resource);
 }
