@@ -49,12 +49,10 @@
  */
 package com.sun.enterprise.server;
 
-import com.sun.enterprise.config.serverbeans.Resources;
-
 /**
  * Interface to be implemented by different resource types (eg. jms-resource)
  * to deploy/undeploy a resource to the server's runtime naming context.
- *
+ * <p/>
  * The methods can potentially be called concurrently, therefore implementation
  * need to do synchronization if necessary.
  */
@@ -63,51 +61,17 @@ public interface ResourceDeployer {
     /**
      * Deploy the resource into the server's runtime naming context
      *
-     * @param resoure a resource object (eg. JmsResource) 
-     * @exception Exception thrown if fail
+     * @param resoure a resource object (eg. JmsResource)
+     * @throws Exception thrown if fail
      */
-	void deployResource(Object resoure) throws Exception;
+    void deployResource(Object resoure) throws Exception;
 
     /**
      * Undeploy the resource from the server's runtime naming context
      *
-     * @param resoure a resource object (eg. JmsResource) 
-     * @exception Exception thrown if fail
+     * @param resoure a resource object (eg. JmsResource)
+     * @throws Exception thrown if fail
      */
-	void undeployResource(Object resoure) throws Exception; 
+    void undeployResource(Object resoure) throws Exception;
 
-    /**
-     * Redeploy the resource into the server's runtime naming context
-     *
-     * @param resoure a resource object (eg. JmsResource) 
-     * @exception Exception thrown if fail
-     */
-	void redeployResource(Object resoure) throws Exception; 
-
-    /**
-     * Enable the resource in the server's runtime naming context
-     *
-     * @param resoure a resource object (eg. JmsResource) 
-     * @exception Exception thrown if fail
-     */
-	void enableResource(Object resoure) throws Exception; 
-
-    /**
-     * Disable the resource in the server's runtime naming context
-     *
-     * @param resoure a resource object (eg. JmsResource) 
-     * @exception Exception thrown if fail
-     */
-	void disableResource(Object resoure) throws Exception; 
-
-
-	/**
-	 * utility method to find a resource from Resources beans and converte
-	 * it to a resource object to be used by the implemented ResourceDeployer
-	 *
- 	 * @param name resource name (normally the jndi-name)
-	 * @param rbeans Resources config-beans  
-	 * @exception Exception thrown if fail
-	 */
-    Object getResource(String name, Resources rbeans) throws Exception;
 }
