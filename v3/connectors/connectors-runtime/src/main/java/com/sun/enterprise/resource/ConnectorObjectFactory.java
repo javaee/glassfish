@@ -33,120 +33,52 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.enterprise.naming.factory;
+package com.sun.enterprise.resource;
 
-import java.util.*;
-import javax.naming.*;
-import javax.naming.spi.*;
+import com.sun.enterprise.connectors.ConnectorRuntime;
+import org.glassfish.api.naming.NamingObjectProxy;
 
-import java.util.Hashtable;
-import javax.resource.spi.ConnectionManager;
-import javax.resource.spi.ManagedConnectionFactory;
-
-import com.sun.enterprise.*;
-import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.enterprise.connectors.*;
-import com.sun.enterprise.deployment.ConnectorDescriptor;
-
-import java.util.logging.*;
-import com.sun.logging.*;
+import javax.naming.Context;
+import javax.naming.NamingException;
 
 /**
  * An object factory to handle creation of Connection Factories
- * 
- * @author Tony Ng
  *
+ * @author Tony Ng
  */
-public class ConnectorObjectFactory implements ObjectFactory {
+public class ConnectorObjectFactory implements NamingObjectProxy {
 
-    static Logger _logger=LogDomains.getLogger(LogDomains.JNDI_LOGGER);
+    private ConnectorRuntime runtime;
+    private String jndiName;
+    private String poolName;
+    private String moduleName;
+    private String connectionFactoryName;
 
-    private static LocalStringManagerImpl localStrings = 
-    new LocalStringManagerImpl(ConnectorObjectFactory.class);
-    private ConnectorRuntime runtime = ConnectorRuntime.getRuntime();
-
-    public ConnectorObjectFactory() {
+    public ConnectorObjectFactory(String jndiName, String connectionFactoryName, String moduleName, String poolName) {
+        this.jndiName = jndiName;
+        this.moduleName = moduleName;
+        this.poolName = poolName;
+        this.connectionFactoryName = connectionFactoryName;
+        runtime = ConnectorRuntime.getRuntime();
     }
 
-    public Object getObjectInstance(Object obj, 
-				    Name name, 
-				    Context nameCtx,
-				    Hashtable env) throws Exception 
-    {
-	Reference ref = (Reference) obj;
-	if(_logger.isLoggable(Level.FINE)) {
-	    _logger.log(Level.FINE,"ConnectorObjectFactory: " + ref +
-			" Name:" + name);
-	}
-        String poolName = (String) ref.get(0).getContent();
-        String moduleName  = (String) ref.get(1).getContent();
-
-        Switch sw = Switch.getSwitch();
-
-        if(runtime.getEnviron() == ConnectorRuntime.CLIENT) {
-            ConnectorDescriptor connectorDescriptor = null; 
-            try {	     
-    	        Context ic = new InitialContext();        		
-                String descriptorJNDIName = ConnectorAdminServiceUtils.
-                    getReservePrefixedJNDINameForDescriptor(moduleName);
-        		connectorDescriptor = (ConnectorDescriptor)ic.lookup(descriptorJNDIName); 
-            }
-            catch(NamingException ne) {
-                _logger.log(Level.FINE,
-			    "Failed to look up ConnectorDescriptor from JNDI", 
-			    moduleName); 
-                throw new ConnectorRuntimeException(
-			    "Failed to look up ConnectorDescriptor from JNDI");
-            }
-            runtime.createActiveResourceAdapter(connectorDescriptor,
-						moduleName,null);
-        }
-
-        ClassLoader loader = Thread.currentThread().getContextClassLoader();
-        if (runtime.checkAccessibility(moduleName, loader) == false) {
-	    throw new NamingException(
-		      "Only the application that has the embedded resource" + 
-		      "adapter can access the resource adapter");
-	}
-	
-
-        ManagedConnectionFactory mcf = runtime.obtainManagedConnectionFactory(poolName);
-        if(mcf == null) {
-                _logger.log(Level.FINE,"Failed to create MCF ",poolName);
-                throw new ConnectorRuntimeException("Failed to create MCF");
-        }
-
-        String jndiName = name.toString();
-        boolean forceNoLazyAssoc = false;
-        if ( jndiName.endsWith( ConnectorConstants.PM_JNDI_SUFFIX ) ) {
-            forceNoLazyAssoc = true;
-        }
-        ConnectionManagerImpl mgr = (ConnectionManagerImpl) 
-            runtime.obtainConnectionManager(poolName, forceNoLazyAssoc);
-        mgr.setJndiName(deriveJndiName(jndiName, env));
-        mgr.setRarName( moduleName );
-        mgr.initialize();
-
-        Object cf = mcf.createConnectionFactory(mgr);
-        if (cf == null) {
-            String msg = localStrings.getLocalString
-                ("no.resource.adapter", "");
-            throw new ConfigurationException(msg);
-        }
-	if(_logger.isLoggable(Level.FINE)) {
-	    _logger.log(Level.FINE,"Connection Factory:" + cf);
-	}
-
-	return cf;
+    /**
+     * Tells if the result of create() is cacheable. If so
+     * the naming manager will replace this object factory with
+     * the object itself.
+     *
+     * @return true if the result of create() can be cached
+     */
+    public boolean isCreateResultCacheable() {
+        return false;
     }
 
-    private String deriveJndiName(String name, Hashtable env) {
-        String suffix = (String) env.get(ConnectorConstants.JNDI_SUFFIX_PROPERTY);
-        if (runtime.isValidJndiSuffix(suffix)) {
-            _logger.log(Level.FINE, "JNDI name will be suffixed with :" + suffix);
-            return name + suffix;
-        }
-        return name;
+    /**
+     * Create ad return an object.
+     *
+     * @return an object
+     */
+    public Object create(Context ic) throws NamingException {
+        return runtime.createConnectionFactory(jndiName, moduleName, poolName, ic.getEnvironment());
     }
-
 }
