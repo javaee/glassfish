@@ -50,166 +50,84 @@
 package com.sun.enterprise.server;
 
 
-import com.sun.enterprise.resource.AdminObjectResourceDeployer;
-import com.sun.enterprise.resource.ConnectorConnectionPoolDeployer;
-import com.sun.enterprise.resource.ConnectorResourceDeployer;
-import com.sun.enterprise.resource.ResourceAdapterConfigDeployer;
-import com.sun.enterprise.resource.JdbcResourceDeployer;
-import com.sun.enterprise.resource.PersistenceManagerFactoryResourceDeployer;
-import com.sun.enterprise.resource.CustomResourceDeployer;
-import com.sun.enterprise.resource.ExternalJndiResourceDeployer;
-import com.sun.enterprise.resource.MailResourceDeployer;
-import com.sun.enterprise.resource.JdbcConnectionPoolDeployer;
-import com.sun.enterprise.config.serverbeans.Resources;
-import com.sun.enterprise.admin.event.ResourceDeployEvent;
+import com.sun.appserv.connectors.spi.ConnectorConstants;
+import com.sun.enterprise.resource.deployer.ConnectorConnectionPoolDeployer;
+import com.sun.enterprise.resource.deployer.ConnectorResourceDeployer;
+import com.sun.enterprise.resource.deployer.JdbcConnectionPoolDeployer;
+import com.sun.enterprise.resource.deployer.JdbcResourceDeployer;
 import com.sun.enterprise.util.i18n.StringManager;
+import com.sun.logging.LogDomains;
 
 import java.util.logging.Logger;
-import java.util.logging.Level;
-import com.sun.logging.LogDomains;
 
 /**
  * Deployer factory for different resource types.
  */
 public class ResourceDeployerFactory {
-
-    /** Admin object resource deployer */
-    private ResourceDeployer resourceAdapterConfigDeployer_ = null;
-
-    /** Admin object resource deployer */
-    private ResourceDeployer adminObjectResourceDeployer_ = null;
-
-    /** Connector Resource deployer */
+    //TODO V3 should this be a Service ?
+    /*TODO V3 can't the factory do deploy/undeploy the resource by finding the resource-type and the
+    TODO V3   deployer automatically ? */
+    /**
+     * Connector Resource deployer
+     */
     private ResourceDeployer connectorResourceDeployer_ = null;
 
-    /** Connector Connection pool */
+    /**
+     * Connector Connection pool
+     */
     private ResourceDeployer connectorConnectionPoolDeployer_ = null;
 
-    /** jdbc resource deployer */
-    private ResourceDeployer jdbcResourceDeployer_  = null;
+    /**
+     * jdbc resource deployer
+     */
+    private ResourceDeployer jdbcResourceDeployer_ = null;
 
-    /** pmf resource deployer */
-    private ResourceDeployer pmfResourceDeployer_  = null;
+    /**
+     * jdbc connection pool deployer
+     */
+    private ResourceDeployer JdbcConnectionPoolDeployer_ = null;
 
-    /** custom resource deployer */
-    private ResourceDeployer customResourceDeployer_        = null;
+    /**
+     * logger to log core messages
+     */
+    static Logger _logger = LogDomains.getLogger(LogDomains.CORE_LOGGER);
 
-    /** external jndi resource deployer */
-    private ResourceDeployer externalJndiResourceDeployer_  = null;
+    private static StringManager localStrings =
+            StringManager.getManager(ResourceDeployerFactory.class);
 
-    /** java mail resource deployer */
-    private ResourceDeployer mailResourceDeployer_  = null;
-    
-    // start 4650787
-	// JdbcConnectionPoolDeployer_ was added to support dynamic connection pool - bug # 4650787
-    /** jdbc connection pool deployer */
-    private ResourceDeployer JdbcConnectionPoolDeployer_  = null;
-    // end 4650787    
-
-	/** logger to log core messages */
-	static Logger _logger = LogDomains.getLogger(LogDomains.CORE_LOGGER);
-    
-	private static StringManager localStrings =
-        StringManager.getManager("com.sun.enterprise.server");
-    
     /**
      * Initializes the resource deployers.
      */
     public ResourceDeployerFactory() {
-        this.resourceAdapterConfigDeployer_ = 
-                 new ResourceAdapterConfigDeployer();
-        this.adminObjectResourceDeployer_          = new AdminObjectResourceDeployer();
-        this.connectorResourceDeployer_          = new ConnectorResourceDeployer();
-        this.connectorConnectionPoolDeployer_          = new ConnectorConnectionPoolDeployer();
-        this.jdbcResourceDeployer_         = new JdbcResourceDeployer();
-        this.pmfResourceDeployer_          = 
-                            new PersistenceManagerFactoryResourceDeployer();
-        this.customResourceDeployer_       = new CustomResourceDeployer();
-        this.externalJndiResourceDeployer_ = new ExternalJndiResourceDeployer();
-        this.mailResourceDeployer_         = new MailResourceDeployer();
-    // start 4650787
-	// new JdbcConnectionPoolDeployer instance was created to support
-	// dynamic connection pool - bug # 4650787
-    /** jdbc connection pool deployer */
-        this.JdbcConnectionPoolDeployer_    = new JdbcConnectionPoolDeployer();
-	// end 4650787        
+        this.connectorResourceDeployer_ = new ConnectorResourceDeployer();
+        this.connectorConnectionPoolDeployer_ = new ConnectorConnectionPoolDeployer();
+        this.jdbcResourceDeployer_ = new JdbcResourceDeployer();
+        this.JdbcConnectionPoolDeployer_ = new JdbcConnectionPoolDeployer();
     }
 
     /**
      * Returns a resource deployer for the given resource type.
      *
-     * @param    type    resource type
-     * 
-     * @throws   Exception    if unknown resource type
+     * @param type resource type
+     * @throws Exception if unknown resource type
      */
-	public ResourceDeployer getResourceDeployer(String type) throws Exception {
+    public ResourceDeployer getResourceDeployer(String type) throws Exception {
 
-	ResourceDeployer deployer = null;
+        ResourceDeployer deployer = null;
 
-	if (type.equals(ResourceDeployEvent.RES_TYPE_JDBC)) {
-
+        if (type.equals(ConnectorConstants.RES_TYPE_JDBC)) {
             deployer = this.jdbcResourceDeployer_;
-
-        } else if (type.equals(ResourceDeployEvent.RES_TYPE_PMF)) {
-
-            deployer = this.pmfResourceDeployer_;
-
-	} else if (type.equals(ResourceDeployEvent.RES_TYPE_CUSTOM)) {
-
-            deployer = this.customResourceDeployer_;
-
-	} else if (type.equals(ResourceDeployEvent.RES_TYPE_EXTERNAL_JNDI)) {
-
-            deployer = this.externalJndiResourceDeployer_;
-
-        } else if (type.equals(ResourceDeployEvent.RES_TYPE_MAIL)) {
-
-            deployer = this.mailResourceDeployer_;
-
-        } else if (type.equals(ResourceDeployEvent.RES_TYPE_AOR)) {
-
-            deployer = this.adminObjectResourceDeployer_;
-
-        } else if (type.equals(ResourceDeployEvent.RES_TYPE_CR)) {
-
+        } else if (type.equals(ConnectorConstants.RES_TYPE_CR)) {
             deployer = this.connectorResourceDeployer_;
-
-        } else if (type.equals(ResourceDeployEvent.RES_TYPE_CCP)) {
-
+        } else if (type.equals(ConnectorConstants.RES_TYPE_CCP)) {
             deployer = this.connectorConnectionPoolDeployer_;
-
-        } else if (type.equals(ResourceDeployEvent.RES_TYPE_RAC)) {
-
-            deployer = this.resourceAdapterConfigDeployer_;
-
-	} else if (type.equals(ResourceDeployEvent.RES_TYPE_JCP)) {
-    // start 4650787
-	// type check was created to support
-	// dynamic connection pool - bug # 4650787
+        } else if (type.equals(ConnectorConstants.RES_TYPE_JCP)) {
             deployer = this.JdbcConnectionPoolDeployer_;
-	// end 4650787
-
         } else {
-	    String msg = localStrings.getString(
-				"resource.deployment.resource_type_not_implemented" ,type);
-	    throw new Exception(msg);
+            String msg = localStrings.getString(
+                    "resource.deployment.resource_type_not_implemented", type);
+            throw new Exception(msg);
         }
-
         return deployer;
-	}
-
-    /**
-     * Convenience method. It delegates the call to the deployer with the 
-     * config resource beands. The deployer returns the implementation 
-     * specific object that it wants.
-     * 
-     * @param    type    type of resource
-     * @param    name    jndi name of the resource
-     * @param    rbeans  config resource beans
-     */
-	public Object getResource(String type, String name, Resources rbeans) 
-            throws Exception {
-
-        return getResourceDeployer(type).getResource(name, rbeans);
-	}
+    }
 }
