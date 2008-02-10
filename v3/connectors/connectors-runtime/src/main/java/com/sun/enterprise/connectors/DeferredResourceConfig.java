@@ -36,10 +36,9 @@
 
 package com.sun.enterprise.connectors;
 
-import 
-      com.sun.enterprise.config.serverbeans.ConnectorConnectionPool;
-import com.sun.enterprise.config.*;
 import com.sun.enterprise.config.serverbeans.*;
+import com.sun.enterprise.config.serverbeans.ConnectorConnectionPool;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 
 public class DeferredResourceConfig {
 
@@ -51,7 +50,7 @@ public class DeferredResourceConfig {
     private JdbcConnectionPool jdbcConnectionPool;
     private JdbcResource jdbcResource;
     private ResourceAdapterConfig[] resourceAdapterConfig;
-    private ConfigBean[] resourcesToLoad; 
+    private ConfigBeanProxy[] resourcesToLoad;
 
 
     public DeferredResourceConfig() {
@@ -59,14 +58,13 @@ public class DeferredResourceConfig {
     }
 
     public DeferredResourceConfig(
-                String rarName,
-                AdminObjectResource adminObject, 
-                ConnectorConnectionPool connectionPool,
-                ConnectorResource connectorResource,
-                JdbcConnectionPool jdbcConnectionPool,
-                JdbcResource jdbcResource,
-                ResourceAdapterConfig[] resAdapterConfig) 
-    {
+            String rarName,
+            AdminObjectResource adminObject,
+            ConnectorConnectionPool connectionPool,
+            ConnectorResource connectorResource,
+            JdbcConnectionPool jdbcConnectionPool,
+            JdbcResource jdbcResource,
+            ResourceAdapterConfig[] resAdapterConfig) {
 
         this.rarName = rarName;
         this.adminObject = adminObject;
@@ -75,14 +73,14 @@ public class DeferredResourceConfig {
         this.jdbcConnectionPool = jdbcConnectionPool;
         this.jdbcResource = jdbcResource;
         this.resourceAdapterConfig = resAdapterConfig;
-        
+
     }
 
     public void setRarName(String rarName) {
         this.rarName = rarName;
     }
 
-    public String  getRarName() {
+    public String getRarName() {
         return this.rarName;
     }
 
@@ -90,55 +88,57 @@ public class DeferredResourceConfig {
         this.adminObject = adminObject;
     }
 
-    public AdminObjectResource  getAdminObject() {
+    public AdminObjectResource getAdminObject() {
         return this.adminObject;
     }
+
     public void setConnectorConnectionPool(
-                          ConnectorConnectionPool connectionPool) 
-    {
+            ConnectorConnectionPool connectionPool) {
         this.connectionPool = connectionPool;
     }
 
-    public ConnectorConnectionPool  getConnectorConnectionPool() {
+    public ConnectorConnectionPool getConnectorConnectionPool() {
         return this.connectionPool;
     }
 
-    public void setConnectorResource( ConnectorResource connectorResource) {
+    public void setConnectorResource(ConnectorResource connectorResource) {
         this.connectorResource = connectorResource;
     }
 
-    public ConnectorResource  getConnectorResource() {
+    public ConnectorResource getConnectorResource() {
         return this.connectorResource;
     }
-    public void setJdbcConnectionPool( JdbcConnectionPool jdbcConnectionPool) {
+
+    public void setJdbcConnectionPool(JdbcConnectionPool jdbcConnectionPool) {
         this.jdbcConnectionPool = jdbcConnectionPool;
     }
 
-    public JdbcConnectionPool  getJdbcConnectionPool() {
+    public JdbcConnectionPool getJdbcConnectionPool() {
         return this.jdbcConnectionPool;
     }
-    public void setJdbcResource( JdbcResource jdbcResource) {
+
+    public void setJdbcResource(JdbcResource jdbcResource) {
         this.jdbcResource = jdbcResource;
     }
 
-    public JdbcResource  getJdbcResource() {
+    public JdbcResource getJdbcResource() {
         return this.jdbcResource;
     }
-    public void setResourceAdapterConfig( 
-            ResourceAdapterConfig[] resourceAdapterConfig) 
-    {
+
+    public void setResourceAdapterConfig(
+            ResourceAdapterConfig[] resourceAdapterConfig) {
         this.resourceAdapterConfig = resourceAdapterConfig;
     }
 
-    public ResourceAdapterConfig[]  getResourceAdapterConfig() {
+    public ResourceAdapterConfig[] getResourceAdapterConfig() {
         return this.resourceAdapterConfig;
     }
-    public void setResourcesToLoad( ConfigBean[] resourcesToLoad) 
-    {
+
+    public void setResourcesToLoad(ConfigBeanProxy[] resourcesToLoad) {
         this.resourcesToLoad = resourcesToLoad;
     }
 
-    public ConfigBean[]  getResourcesToLoad() {
+    public ConfigBeanProxy[] getResourcesToLoad() {
         return this.resourcesToLoad;
     }
 }
