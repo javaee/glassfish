@@ -37,34 +37,38 @@
 package com.sun.enterprise.connectors.util;
 
 import com.sun.enterprise.config.serverbeans.BackendPrincipal;
-import com.sun.enterprise.connectors.ConnectorRegistry;
-import com.sun.enterprise.deployment.ResourcePrincipal;
-import com.sun.enterprise.connectors.authentication.RuntimeSecurityMap;
-import com.sun.enterprise.connectors.authentication.EisBackendPrincipal;
-import com.sun.enterprise.connectors.authentication.ConnectorSecurityMap;
 import com.sun.enterprise.config.serverbeans.SecurityMap;
-import java.util.HashMap;
+import com.sun.enterprise.connectors.authentication.ConnectorSecurityMap;
+import com.sun.enterprise.connectors.authentication.EisBackendPrincipal;
+import com.sun.enterprise.connectors.authentication.RuntimeSecurityMap;
+import com.sun.enterprise.deployment.ResourcePrincipal;
 
-/** This is class performs the task of adding/deleting and updating the
- *  security maps to the connector registry.
- *  @author Srikanth P
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+/**
+ * This is class performs the task of adding/deleting and updating the
+ * security maps to the connector registry.
+ *
+ * @author Srikanth P
  */
 
 public class SecurityMapUtils {
 
-    private static ConnectorRegistry _registry = 
-                        ConnectorRegistry.getInstance();
     public static final String USERMAP = "usermap";
     public static final String GROUPMAP = "groupmap";
 
-    /** Updates the registry with the security map. If a security map already
-     *  exists it deletes that map completely before adding the mew security 
-     *  map.
-     *  @param securityMaps Array of securityMaps to be updated.
-     *  @return Hash Map containing 1 - 1 mappings of principal and 
-     *  		Resource Principal 
+    /**
+     * Updates the registry with the security map. If a security map already
+     * exists it deletes that map completely before adding the mew security
+     * map.
+     *
+     * @param securityMaps Array of securityMaps to be updated.
+     * @return Hash Map containing 1 - 1 mappings of principal and
+     *         Resource Principal
      */
-  
+
     public static RuntimeSecurityMap processSecurityMaps(
             ConnectorSecurityMap[] securityMaps) {
         if (securityMaps == null || securityMaps.length == 0) {
@@ -74,33 +78,28 @@ public class SecurityMapUtils {
         HashMap userMap = new HashMap();
         HashMap groupMap = new HashMap();
         // Add user-backendPrincipal mappings to Map1
-        for (int i = 0; i < securityMaps.length; i++) {
-            ConnectorSecurityMap map = securityMaps[i];
+        for (ConnectorSecurityMap map : securityMaps) {
             ResourcePrincipal principal = generateResourcePrincipal(map);
 
-            String[] principalNames = map.getPrincipals();
-            for (int j = 0; j < principalNames.length; j++) {
-                userMap.put(principalNames[j], principal);
+            List<String> principalNames = map.getPrincipals();
+            for (String principalName : principalNames) {
+                userMap.put(principalName, principal);
             }
 
-            String[] groupNames = map.getUserGroups();
-            for (int j = 0; j < groupNames.length; j++) {
-                groupMap.put(groupNames[j], principal);
-            }
+            List<String> groupNames = map.getUserGroups();
+            for (String groupName : groupNames)
+                groupMap.put(groupName, principal);
         }
-
-        RuntimeSecurityMap runtimeSecurityMap = new RuntimeSecurityMap(userMap,
-                groupMap);
-
-        return runtimeSecurityMap;
+        return new RuntimeSecurityMap(userMap, groupMap);
     }
 
     public static ConnectorSecurityMap[] getConnectorSecurityMaps(
-            SecurityMap[] securityMaps) {
+            List<SecurityMap> securityMapList) {
 
-        ConnectorSecurityMap[] maps = new ConnectorSecurityMap[securityMaps.length];
-        for (int i = 0; i < securityMaps.length; i++) {
-            maps[i] = convertSecurityMapConfigBeanToSecurityMap(securityMaps[i]);
+        ConnectorSecurityMap[] maps = null;
+        maps = new ConnectorSecurityMap[securityMapList.size()];
+        for (int i = 0; i < securityMapList.size(); i++) {
+            maps[i] = convertSecurityMapConfigBeanToSecurityMap(securityMapList.get(i));
         }
         return maps;
     }
@@ -109,40 +108,37 @@ public class SecurityMapUtils {
             SecurityMap securityMap) {
 
         String name = securityMap.getName();
-        String[] principal = securityMap.getPrincipal();
-        String[] userGroup = securityMap.getUserGroup();
+        BackendPrincipal principal = securityMap.getBackendPrincipal();
+        List<String> principalList = new ArrayList<String>();
+        principalList.add(principal.getUserName());
+        principalList.add(principal.getPassword());
+
+        List<String> userGroup = securityMap.getPrincipalOrUserGroup();
         EisBackendPrincipal backendPrincipal = transformBackendPrincipal(securityMap
                 .getBackendPrincipal());
-        ConnectorSecurityMap convertedSecurityMap = new ConnectorSecurityMap(
-                name, principal, userGroup, backendPrincipal);
-
-        return convertedSecurityMap;
+        return new ConnectorSecurityMap(name, principalList, userGroup, backendPrincipal);
     }
 
     /**
-     * Creates the ResourcePrincipal object from the given securityMap 
+     * Creates the ResourcePrincipal object from the given securityMap
+     *
      * @param securityMap SecurityMap
      * @return created ResourcePrincipal object
      */
 
     private static ResourcePrincipal generateResourcePrincipal(
-                 ConnectorSecurityMap securityMap) {
+            ConnectorSecurityMap securityMap) {
 
         EisBackendPrincipal backendPrincipal = securityMap.getBackendPrincipal();
         String userName = backendPrincipal.getUserName();
         String password = backendPrincipal.getPassword();
-        ResourcePrincipal resPrincipal = 
-                      new ResourcePrincipal(userName,password);
-        return resPrincipal;
-    }
-    
-    private static EisBackendPrincipal transformBackendPrincipal(BackendPrincipal principal){
-    	String userName = principal.getUserName();
-        String password = principal.getPassword();
-        EisBackendPrincipal backendPrincipal = 
-        			  new EisBackendPrincipal(userName, password);
-    	return backendPrincipal;
+        return new ResourcePrincipal(userName, password);
     }
 
+    private static EisBackendPrincipal transformBackendPrincipal(BackendPrincipal principal) {
+        String userName = principal.getUserName();
+        String password = principal.getPassword();
+        return new EisBackendPrincipal(userName, password);
+    }
 }
 
