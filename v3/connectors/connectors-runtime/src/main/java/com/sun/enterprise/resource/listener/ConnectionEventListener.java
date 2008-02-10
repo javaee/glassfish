@@ -34,15 +34,19 @@
  * holder.
  */
 
-package com.sun.enterprise.resource;
+package com.sun.enterprise.resource.listener;
+
+import com.sun.appserv.connectors.spi.BadConnectionEventListener;
 
 import javax.resource.spi.ConnectionEvent;
 
 /**
  * Adapter to BadConnectionEventListener
- * @author  Jagadish Ramu
+ *
+ * @author Jagadish Ramu
  */
-public abstract class ConnectionEventListener implements javax.resource.spi.ConnectionEventListener, BadConnectionEventListener {
+public abstract class ConnectionEventListener implements javax.resource.spi.ConnectionEventListener,
+        BadConnectionEventListener {
 
     public void badConnectionClosed(ConnectionEvent ce) {
         //do nothing as of now
