@@ -41,10 +41,10 @@
  * Use is subject to license terms.
  * 
  */
-package com.sun.enterprise.resource;
+package com.sun.enterprise.resource.pool;
 
-import java.io.PrintWriter;
 import java.io.PrintStream;
+import java.io.PrintWriter;
 
 public class PoolingException extends Exception {
 
