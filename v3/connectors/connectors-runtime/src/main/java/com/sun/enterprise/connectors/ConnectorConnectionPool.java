@@ -36,13 +36,10 @@
 
 package com.sun.enterprise.connectors;
 
-import com.sun.enterprise.repository.J2EEResourceBase;
-import com.sun.enterprise.repository.J2EEResource;
+import com.sun.enterprise.connectors.authentication.ConnectorSecurityMap;
+import com.sun.enterprise.deployment.EnvironmentProperty;
 
 import java.io.Serializable;
-
-import com.sun.enterprise.deployment.EnvironmentProperty;
-import com.sun.enterprise.connectors.authentication.ConnectorSecurityMap;
 
 /**
  * This class abstracts a connection connection pool. It contains
@@ -54,8 +51,7 @@ import com.sun.enterprise.connectors.authentication.ConnectorSecurityMap;
  * @author Srikanth Padakandla
  */
 
-public class ConnectorConnectionPool extends J2EEResourceBase
-        implements Serializable {
+public class ConnectorConnectionPool implements Serializable {
 
     protected ConnectorDescriptorInfo connectorDescriptorInfo_;
 
@@ -77,6 +73,12 @@ public class ConnectorConnectionPool extends J2EEResourceBase
     private boolean lazyConnectionAssoc_ = false;
     private boolean lazyConnectionEnlist_ = false;
     private boolean associateWithThread_ = false;
+    private boolean partitionedPool = false;
+    private String poolDataStructureType;
+    private String poolWaitQueue;
+    private String dataStructureParameters;
+    private String resourceGatewayClass;
+    private String resourceSelectionStrategyClass;
     private boolean nonTransactional_ = false;
     private boolean nonComponent_ = false;
 
@@ -105,6 +107,9 @@ public class ConnectorConnectionPool extends J2EEResourceBase
     public static final String DEFAULT_VALIDATE_ATMOST_ONCE_PERIOD = "0";
     public static final String DEFAULT_LEAK_TIMEOUT = "0";
 
+    //TODO V3 temporary replacement for J2EEResourceBase super class
+    private String name;
+
 
     /**
      * Constructor
@@ -113,14 +118,15 @@ public class ConnectorConnectionPool extends J2EEResourceBase
      */
 
     public ConnectorConnectionPool(String name) {
-        super(name);
+        //TODO V3 temporary super(name);
+        this.name = name;
     }
 
     /**
      * Clone method.
      */
 
-    protected J2EEResource doClone(String name) {
+    protected ConnectorConnectionPool doClone(String name) {
 
         ConnectorConnectionPool clone = new ConnectorConnectionPool(name);
         ConnectorDescriptorInfo cdi = connectorDescriptorInfo_.doClone();
@@ -143,11 +149,14 @@ public class ConnectorConnectionPool extends J2EEResourceBase
         clone.setMatchConnections(matchConnections());
         clone.setLazyConnectionAssoc(isLazyConnectionAssoc());
         clone.setAssociateWithThread(isAssociateWithThread());
+        clone.setPartitionedPool(isPartitionedPool());
+        clone.setDataStructureParameters(getDataStructureParameters());
+        clone.setPoolDataStructureType(getPoolDataStructureType());
+        clone.setPoolWaitQueue(getPoolWaitQueue());
         clone.setLazyConnectionEnlist(isLazyConnectionEnlist());
 
         clone.setMaxConnectionUsage(getMaxConnectionUsage());
         clone.setValidateAtmostOncePeriod(getValidateAtmostOncePeriod());
-
 
         clone.setConnectionLeakTracingTimeout(
                 getConnectionLeakTracingTimeout());
@@ -156,6 +165,10 @@ public class ConnectorConnectionPool extends J2EEResourceBase
         clone.setConCreationRetryAttempts(getConCreationRetryAttempts());
 
         return clone;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public void setAuthCredentialsDefinedInPool(boolean authCred) {
@@ -191,15 +204,6 @@ public class ConnectorConnectionPool extends J2EEResourceBase
         connectorDescriptorInfo_ = connectorDescriptorInfo;
     }
 
-    /**
-     * Getter method of the Resource Type.
-     *
-     * @return Resource type
-     */
-
-    public int getType() {
-        return J2EEResource.JDBC_CONNECTION_POOL;
-    }
 
     /**
      * Getter method of SteadyPoolSize property
@@ -524,7 +528,7 @@ public class ConnectorConnectionPool extends J2EEResourceBase
      * Queries the validate-atmost-every-idle-seconds pool attribute
      *
      * @return boolean representing validate-atmost-every-idle-seconds
-     * status
+     *         status
      */
     public boolean isValidateAtmostEveryIdleSecs() {
         return validateAtmostEveryIdleSecs;
@@ -534,7 +538,7 @@ public class ConnectorConnectionPool extends J2EEResourceBase
      * Setter method of validate-atmost-every-idle-seconds pool attribute
      *
      * @param enabled enables/disables validate-atmost-every-idle-seconds
-     * property
+     *                property
      */
     public void setValidateAtmostEveryIdleSecs(boolean enabled) {
         this.validateAtmostEveryIdleSecs = enabled;
@@ -562,7 +566,7 @@ public class ConnectorConnectionPool extends J2EEResourceBase
      * Queries the connection-creation-retry-interval pool attribute
      *
      * @return boolean representing connection-creation-retry-interval
-     * duration
+     *         duration
      */
     public String getConCreationRetryInterval() {
         return conCreationRetryInterval_;
@@ -590,7 +594,7 @@ public class ConnectorConnectionPool extends J2EEResourceBase
      * Setter method of connection-creation-retry-attempt attribute
      *
      * @param retryAttempts connection-creation-retry-attempt interval
-     * duration
+     *                      duration
      */
     public void setConCreationRetryAttempts(String retryAttempts) {
         this.conCreationRetryAttempts_ = retryAttempts;
@@ -638,6 +642,7 @@ public class ConnectorConnectionPool extends J2EEResourceBase
      * @return String representation of pool
      */
     public String toString() {
+        //TODO V3 update with new attributes like resouce-gateway, datastructure etc.,
         String returnVal = null;
         StringBuffer sb = new StringBuffer("ConnectorConnectionPool :: ");
         try {
@@ -722,5 +727,53 @@ public class ConnectorConnectionPool extends J2EEResourceBase
             e.printStackTrace();
         }
         return returnVal;
+    }
+
+    public boolean isPartitionedPool() {
+        return partitionedPool;
+    }
+
+    public void setPartitionedPool(boolean partitionedPool) {
+        this.partitionedPool = partitionedPool;
+    }
+
+    public String getPoolDataStructureType() {
+        return poolDataStructureType;
+    }
+
+    public void setPoolDataStructureType(String poolDataStructureType) {
+        this.poolDataStructureType = poolDataStructureType;
+    }
+
+    public String getPoolWaitQueue() {
+        return poolWaitQueue;
+    }
+
+    public void setPoolWaitQueue(String poolWaitQueue) {
+        this.poolWaitQueue = poolWaitQueue;
+    }
+
+    public String getDataStructureParameters() {
+        return dataStructureParameters;
+    }
+
+    public void setDataStructureParameters(String dataStructureParameters) {
+        this.dataStructureParameters = dataStructureParameters;
+    }
+
+    public String getResourceGatewayClass() {
+        return resourceGatewayClass;
+    }
+
+    public void setResourceGatewayClass(String resourceGatewayClass) {
+        this.resourceGatewayClass = resourceGatewayClass;
+    }
+
+    public String getResourceSelectionStrategyClass() {
+        return resourceSelectionStrategyClass;
+    }
+
+    public void setResourceSelectionStrategyClass(String resourceSelectionStrategyClass) {
+        this.resourceSelectionStrategyClass = resourceSelectionStrategyClass;
     }
 }
