@@ -35,9 +35,10 @@
  */
 package com.sun.enterprise.resource;
 
-import java.io.Serializable;
+import com.sun.appserv.connectors.spi.ConnectorConstants;
 import com.sun.enterprise.connectors.PoolMetaData;
-import com.sun.enterprise.connectors.ConnectorConstants;
+
+import java.io.Serializable;
 
 /**
  * ResourceSpec is used as a key to locate the correct resource pool
@@ -46,86 +47,59 @@ import com.sun.enterprise.connectors.ConnectorConstants;
 public class ResourceSpec implements Serializable {
     private String resourceId;
     private int resourceIdType;
-    private boolean pmResource;
     private boolean nonTxResource;
-    private boolean lazyEnlistable_;
-    private boolean lazyAssociatable_;
-    private Object connectionToAssoc_;
     private boolean isXA_;
-    
+
     private String connectionPoolName;
-    
+
     static public final int JDBC_URL = 0;
     static public final int JNDI_NAME = 1;
     static public final int JMS = 2;
 
     public ResourceSpec(String resourceId,
-        int resourceIdType) {
+                        int resourceIdType) {
         if (resourceId == null) throw new NullPointerException();
         this.resourceId = resourceId;
         this.resourceIdType = resourceIdType;
-        if (resourceId.endsWith(ConnectorConstants.PM_JNDI_SUFFIX) ) {
-            pmResource = true;
+        if (resourceId.endsWith(ConnectorConstants.NON_TX_JNDI_SUFFIX)) {
+            nonTxResource = true;
         }
-	if (resourceId.endsWith(ConnectorConstants.NON_TX_JNDI_SUFFIX) ) {
-	    nonTxResource = true;
-	}
     }
 
-    public ResourceSpec( String resourceId, int resourceIdType, 
-        PoolMetaData pmd ) {
-        this( resourceId, resourceIdType );
-        
-        if (pmd != null ) {
-            if ( pmd.isPM() ) {
-                pmResource = true;
-            }
-            if( pmd.isNonTx() ) {
-                nonTxResource = true;
-            }
+    public ResourceSpec(String resourceId, int resourceIdType,
+                        PoolMetaData pmd) {
+        this(resourceId, resourceIdType);
 
-            if( pmd.isLazyEnlistable() && !nonTxResource && !pmResource ) {
-                lazyEnlistable_ = true;
-            }
-
-            if ( pmd.isLazyAssociatable() && !nonTxResource && !pmResource) {
-                lazyAssociatable_ = true;    
-                //The rationale behind doing this is that in the PoolManagerImpl
-                //when we return from getResource called by associateConnections, 
-                //enlistment should happen immediately since we are associating on
-                //first use anyway, 
-                lazyEnlistable_ = false;
-            }
-        
+        if (pmd.isNonTx()) {
+            nonTxResource = true;
         }
-
     }
-    
+
     public String getConnectionPoolName() {
         return connectionPoolName;
     }
-    
-    
+
+
     public void setConnectionPoolName(String name) {
         connectionPoolName = name;
     }
-    
-    
-    /*  The  logic is                                              *
-     *  If the connectionpool exist then equality check is against *
-     *  connectionPoolName                                         *
-     *                                                             *
-     *  If connection is null then equality check is made against  *
-     *  resourceId and resourceType                                *
+
+    /**
+     * The  logic is                                              *
+     * If the connectionpool exist then equality check is against *
+     * connectionPoolName                                         *
+     * *
+     * If connection is null then equality check is made against  *
+     * resourceId and resourceType                                *
      */
 
     public boolean equals(Object other) {
         if (other == null) return false;
         if (other instanceof ResourceSpec) {
             ResourceSpec obj = (ResourceSpec) other;
-            if(connectionPoolName == null) {
+            if (connectionPoolName == null) {
                 return (resourceId.equals(obj.resourceId) &&
-                resourceIdType == obj.resourceIdType);
+                        resourceIdType == obj.resourceIdType);
             } else {
                 return (connectionPoolName.equals(obj.connectionPoolName));
 
@@ -135,34 +109,31 @@ public class ResourceSpec implements Serializable {
         }
     }
 
-    /*  If the connectionpool exist then hashcode of connectionPoolName    *
-     *  is returned.                                                       *
-     *                                                                     *
-     *  If connectionpool is null return the hashcode of                   *
-     *  resourceId + resourceIdType                                        *
+    /**
+     * If the connectionpool exist then hashcode of connectionPoolName
+     * is returned.
+     * <p/>
+     * If connectionpool is null return the hashcode of
+     * resourceId + resourceIdType
      */
-    
     public int hashCode() {
-        if(connectionPoolName == null) {
+        if (connectionPoolName == null) {
             return resourceId.hashCode() + resourceIdType;
         } else {
             return connectionPoolName.hashCode();
         }
     }
-    
+
     public String getResourceId() {
         return resourceId;
-    }
-    
-    public boolean isPM() {
-        return pmResource;
     }
 
     /**
      * Returns the status of the noTxResource flag
+     *
      * @return true if this resource is a noTx resource
      */
-   
+
     public boolean isNonTx() {
         return nonTxResource;
     }
@@ -174,45 +145,16 @@ public class ResourceSpec implements Serializable {
     public void markAsXA() {
         isXA_ = true;
     }
-    
-    public boolean isLazyEnlistable() {
-        return lazyEnlistable_;
-    }
 
 
-    public void setLazyEnlistable( boolean lazyEnlist ) {
-        lazyEnlistable_ = lazyEnlist;
-    }
-
-    public boolean isLazyAssociatable() {
-        return lazyAssociatable_;
-    }
-
-
-    public void setLazyAssociatable( boolean lazyAssoc ) {
-        lazyAssociatable_ = lazyAssoc;
-    }
-    
-    public void setConnectionToAssociate( Object conn ) {
-        connectionToAssoc_ = conn;
-    }
-    
-    public Object getConnectionToAssociate() {
-        return connectionToAssoc_;
-    }
-    
     public String toString() {
         StringBuffer sb = new StringBuffer("ResourceSpec :- ");
         sb.append("\nconnectionPoolName : ").append(connectionPoolName);
         sb.append("\nisXA_ : ").append(isXA_);
         sb.append("\nresoureId : ").append(resourceId);
         sb.append("\nresoureIdType : ").append(resourceIdType);
-        sb.append("\npmResource : ").append(pmResource);
         sb.append("\nnonTxResource : ").append(nonTxResource);
-        sb.append("\nlazyEnlistable : ").append(lazyEnlistable_);
-        sb.append("\nlazyAssociatable : ").append(lazyAssociatable_);
 
         return sb.toString();
     }
-
 }
