@@ -36,13 +36,14 @@
 
 package com.sun.enterprise.resource;
 
-import javax.resource.spi.ConnectionRequestInfo;
 import com.sun.enterprise.deployment.ResourcePrincipal;
+
+import javax.resource.spi.ConnectionRequestInfo;
 
 /**
  * This class represents the client-specific information associated
  * with a resource. Used for pool partitioning
- * 
+ *
  * @author Tony Ng
  */
 public class ClientSecurityInfo {
@@ -107,6 +108,6 @@ public class ClientSecurityInfo {
     }
 
     public String toString() {
-        return "ClientSecurityInfo: prin=" + prin + " info="+info;
+        return "ClientSecurityInfo: prin=" + prin + " info=" + info;
     }
 }
