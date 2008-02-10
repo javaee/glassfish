@@ -36,42 +36,37 @@
 
 package com.sun.enterprise.connectors;
 
-import com.sun.enterprise.Switch;
-import com.sun.enterprise.connectors.work.WorkManagerFactory;
+import com.sun.appserv.connectors.spi.ConnectorRuntimeException;
 import com.sun.logging.LogDomains;
-import java.util.Timer;
-import java.util.logging.*;
+
 import javax.resource.spi.BootstrapContext;
 import javax.resource.spi.XATerminator;
 import javax.resource.spi.work.WorkManager;
+import java.io.Serializable;
+import java.util.Timer;
+import java.util.logging.Logger;
 
 
 /**
  * BootstrapContext implementation.
  *
- * @author	Qingqing Ouyang, Binod P.G
- * @see com.sun.enterprise.connectors.work.CommonWorkManager
- * @see com.sun.enterprise.connectors.work.WorkManagerFactory
+ * @author Qingqing Ouyang, Binod P.G
  */
-public final class BootstrapContextImpl implements BootstrapContext {
+public final class BootstrapContextImpl implements BootstrapContext, Serializable {
 
-    //The following are not serialized with the ResourceAdapter
-    private WorkManager wm;
-    private XATerminator xa;
-    private String moduleName;
     private String poolId;
+
     private static final Logger logger =
-        LogDomains.getLogger(LogDomains.RSR_LOGGER);
+            LogDomains.getLogger(LogDomains.RSR_LOGGER);
 
     /**
-     * Constructs a <code>BootstrapContext</code> with default 
+     * Constructs a <code>BootstrapContext</code> with default
      * thread pool for work manager.
      *
      * @throws ConnectorRuntimeException If there is a failure in
-     *         retrieving WorkManager.
+     *                                   retrieving WorkManager.
      */
-    public BootstrapContextImpl () throws ConnectorRuntimeException{
-        wm = WorkManagerFactory.getWorkManager(null);
+    public BootstrapContextImpl() throws ConnectorRuntimeException {
     }
 
     /**
@@ -79,12 +74,11 @@ public final class BootstrapContextImpl implements BootstrapContext {
      * thread pool for work manager.
      *
      * @throws ConnectorRuntimeException If there is a failure in
-     *         retrieving WorkManager.
+     *                                   retrieving WorkManager.
      */
-    public BootstrapContextImpl (String poolId) 
-                                 throws ConnectorRuntimeException{
+    public BootstrapContextImpl(String poolId)
+            throws ConnectorRuntimeException {
         this.poolId = poolId;
-        wm = WorkManagerFactory.getWorkManager(poolId);
     }
 
     /**
@@ -106,23 +100,13 @@ public final class BootstrapContextImpl implements BootstrapContext {
      * @see com.sun.enterprise.connectors.work.WorkManagerFactory
      */
     public WorkManager getWorkManager() {
-        if (wm == null) {
-            try {
-                wm = WorkManagerFactory.getWorkManager(poolId);
-            } catch(Exception e) {
-           	logger.log(Level.SEVERE, "workmanager.instantiation_error", e);
-            }
-        }
-        return wm;
+        throw new UnsupportedOperationException("Work manager not supported yet");
     }
 
     /**
      * Retrieves the <code>XATerminator</code> object.
      */
     public XATerminator getXATerminator() {
-        if (xa == null) {
-            xa = Switch.getSwitch().getTransactionManager().getXATerminator();
-        }
-        return xa;
+        throw new UnsupportedOperationException("Transactions not supported yet");
     }
 }
