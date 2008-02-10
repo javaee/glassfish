@@ -34,44 +34,51 @@
  * holder.
  */
 
-package com.sun.enterprise.resource;
+package com.sun.enterprise.resource.allocator;
 
-import com.sun.enterprise.log.Log;
-import com.sun.enterprise.PoolManager;
 import com.sun.enterprise.deployment.ConnectorDescriptor;
+import com.sun.enterprise.resource.ClientSecurityInfo;
+import com.sun.enterprise.resource.ResourceHandle;
+import com.sun.enterprise.resource.ResourceSpec;
+import com.sun.enterprise.resource.listener.ConnectionEventListener;
+import com.sun.enterprise.resource.pool.PoolManager;
+import com.sun.enterprise.resource.pool.PoolingException;
 
-import javax.resource.spi.*;
 import javax.resource.ResourceException;
+import javax.resource.spi.ConnectionEvent;
+import javax.resource.spi.ConnectionRequestInfo;
+import javax.resource.spi.ManagedConnection;
+import javax.resource.spi.ManagedConnectionFactory;
 import javax.security.auth.Subject;
-import java.util.logging.*;
-import java.lang.IllegalStateException;
+import java.util.logging.Level;
 
 /**
  * @author Tony Ng
  */
 public class NoTxConnectorAllocator extends AbstractConnectorAllocator {
-    
+
     class ConnectionListenerImpl extends ConnectionEventListener {
         private ResourceHandle resource;
-        
+
         public ConnectionListenerImpl(ResourceHandle resource) {
             this.resource = resource;
         }
-        
+
         public void connectionClosed(ConnectionEvent evt) {
             poolMgr.putbackResourceToPool(resource, false);
         }
 
         /**
          * Resource adapters will signal that the connection being closed is bad.
+         *
          * @param evt ConnectionEvent
          */
-        public void badConnectionClosed(ConnectionEvent evt){
+        public void badConnectionClosed(ConnectionEvent evt) {
             ManagedConnection mc = (ManagedConnection) evt.getSource();
             mc.removeConnectionEventListener(this);
             poolMgr.badResourceClosed(resource);
         }
-        
+
         public void connectionErrorOccurred(ConnectionEvent evt) {
             ManagedConnection mc = (ManagedConnection) evt.getSource();
             mc.removeConnectionEventListener(this);
@@ -84,55 +91,55 @@ public class NoTxConnectorAllocator extends AbstractConnectorAllocator {
             //GJCINT
             resource.setConnectionErrorOccurred();
         }
-        
+
         public void localTransactionStarted(ConnectionEvent evt) {
             throw new IllegalStateException("local transaction not supported");
         }
-        
+
         public void localTransactionCommitted(ConnectionEvent evt) {
             throw new IllegalStateException("local transaction not supported");
         }
-        
+
         public void localTransactionRolledback(ConnectionEvent evt) {
             throw new IllegalStateException("local transaction not supported");
         }
     }
-    
+
     public NoTxConnectorAllocator(PoolManager poolMgr,
-                                    ManagedConnectionFactory mcf,
-                                    ResourceSpec spec,
-                                    Subject subject,
-                                    ConnectionRequestInfo reqInfo,
-                                    ClientSecurityInfo info,
-                                    ConnectorDescriptor desc) {
+                                  ManagedConnectionFactory mcf,
+                                  ResourceSpec spec,
+                                  Subject subject,
+                                  ConnectionRequestInfo reqInfo,
+                                  ClientSecurityInfo info,
+                                  ConnectorDescriptor desc) {
         super(poolMgr, mcf, spec, subject, reqInfo, info, desc);
     }
-    
-    
+
+
     public ResourceHandle createResource()
-    throws PoolingException {
+            throws PoolingException {
         try {
             ManagedConnection mc =
-            mcf.createManagedConnection(subject, reqInfo);
+                    mcf.createManagedConnection(subject, reqInfo);
             ResourceHandle resource =
-            new ResourceHandle(mc, spec, this, info);
+                    new ResourceHandle(mc, spec, this, info);
             ConnectionEventListener l =
-            new ConnectionListenerImpl(resource);
+                    new ConnectionListenerImpl(resource);
             mc.addConnectionEventListener(l);
             return resource;
         } catch (ResourceException ex) {
-            _logger.log(Level.SEVERE,"poolmgr.create_resource_error",ex);
-            
-            if (ex.getLinkedException() != null) {
-                _logger.log(Level.SEVERE,"poolmgr.create_resource_error",ex.getLinkedException());
+            Object[] params = new Object[]{spec.getConnectionPoolName(), ex.getMessage()};
+            _logger.log(Level.SEVERE, "poolmgr.create_resource_error", params);
+
+            if (ex.getCause() != null) {
+                _logger.log(Level.SEVERE, "poolmgr.create_resource_error", ex.getLinkedException());
             }
-            Log.err.flush();
             throw new PoolingException(ex);
         }
     }
-    
+
     public void fillInResourceObjects(ResourceHandle resource)
-    throws PoolingException {
+            throws PoolingException {
         try {
             ManagedConnection mc = (ManagedConnection) resource.getResource();
             Object con = mc.getConnection(subject, reqInfo);
@@ -141,10 +148,10 @@ public class NoTxConnectorAllocator extends AbstractConnectorAllocator {
             throw new PoolingException(ex);
         }
     }
-    
+
     public void destroyResource(ResourceHandle resource)
-    throws PoolingException {
-        
+            throws PoolingException {
+
         try {
             ManagedConnection mc = (ManagedConnection) resource.getResource();
             mc.destroy();
@@ -153,7 +160,7 @@ public class NoTxConnectorAllocator extends AbstractConnectorAllocator {
             throw new PoolingException(ex);
         }
     }
-    
+
     public boolean isTransactional() {
         return false;
     }
