@@ -36,24 +36,22 @@
 
 package com.sun.enterprise.connectors.util;
 
+import com.sun.appserv.connectors.spi.ConnectorRuntimeException;
 import com.sun.enterprise.deployment.EnvironmentProperty;
+import com.sun.logging.LogDomains;
 
-import java.util.ArrayList;
-import java.util.Set;
-import java.util.Iterator;
 import java.lang.reflect.Method;
+import java.security.PrivilegedExceptionAction;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import com.sun.logging.LogDomains;
-import java.security.PrivilegedAction;
-import java.security.PrivilegedActionException;
-import java.security.PrivilegedExceptionAction;
-import com.sun.enterprise.connectors.ConnectorRuntimeException;
 
 /**
  * Executes setter methods on java beans.
  *
- * @author	Qingqing Ouyang, Binod P.G, Sivakumar Thyagarajan
+ * @author Qingqing Ouyang, Binod P.G, Sivakumar Thyagarajan
  */
 public final class SetMethodAction implements PrivilegedExceptionAction {
 
@@ -61,16 +59,16 @@ public final class SetMethodAction implements PrivilegedExceptionAction {
     private Set props;
     private Method[] methods;
 
-    private static final Logger logger = 
-    LogDomains.getLogger(LogDomains.RSR_LOGGER);
+    private static final Logger logger =
+            LogDomains.getLogger(LogDomains.RSR_LOGGER);
 
     /**
      * Accepts java bean object and properties to be set.
      */
     public SetMethodAction(Object bean, Set props) {
-            this.bean  = bean;
-            this.props = props;
-        }
+        this.bean = bean;
+        this.props = props;
+    }
 
     /**
      * Executes the setter methods in the java bean.
@@ -84,40 +82,40 @@ public final class SetMethodAction implements PrivilegedExceptionAction {
             Class type = getTypeOf(prop);
             //If there were no getter, use the EnvironmentProperty's
             //property type
-            if ( type == null ) {
+            if (type == null) {
                 type = Class.forName(prop.getType());
-            } 
-            
-	    if (prop.getResolvedValue() != null &&
-		prop.getResolvedValue().trim().length() != 0) {
+            }
+
+            if (prop.getResolvedValue() != null &&
+                    prop.getResolvedValue().trim().length() != 0) {
                 Method meth = null;
                 try {
                     meth = getMutatorMethod(propName, type);
                     if (meth != null) {
-                    	logger.log(Level.FINER, "Invoking" + meth + " on "
-                                   + bean.getClass().getName() + "with " +
-                                   "value [" + prop.getResolvedValueObject().getClass() 
-                                   + "  , " + getFilteredPropValue(prop) +" ] ");
-                        meth.invoke(bean,new Object[] {prop.getResolvedValueObject()});
+                        logger.log(Level.FINER, "Invoking" + meth + " on "
+                                + bean.getClass().getName() + "with " +
+                                "value [" + prop.getResolvedValueObject().getClass()
+                                + "  , " + getFilteredPropValue(prop) + " ] ");
+                        meth.invoke(bean, new Object[]{prop.getResolvedValueObject()});
                     } else {
                         //log WARNING, deployment can continue.
-                        logger.log(Level.WARNING, "rardeployment.no_setter_method", 
-                                        new Object[]{prop.getName(), bean.getClass().getName()});
+                        logger.log(Level.WARNING, "rardeployment.no_setter_method",
+                                new Object[]{prop.getName(), bean.getClass().getName()});
                     }
                 } catch (IllegalArgumentException ia) {
                     logger.log(Level.FINE, "IllegalException while trying to set " +
-                              prop.getName() + " and value "+ getFilteredPropValue(prop),
-                              ia + " on an instance of " + bean.getClass() +
-                              " -- trying again with the type from bean");
+                            prop.getName() + " and value " + getFilteredPropValue(prop),
+                            ia + " on an instance of " + bean.getClass() +
+                                    " -- trying again with the type from bean");
                     boolean prevBoundsChecking = EnvironmentProperty.isBoundsChecking();
                     try {
                         EnvironmentProperty.setBoundsChecking(false);
                         prop.setType(type.getName());
                         logger.log(Level.FINE, "2nd try :: Invoking" + meth + " on "
-                                        + bean.getClass().getName() + "with value [" 
-                                        + prop.getResolvedValueObject().getClass() 
-                                        + "  , " + getFilteredPropValue(prop) +" ] ");
-                        meth.invoke(bean,new Object[] {prop.getResolvedValueObject()});
+                                + bean.getClass().getName() + "with value ["
+                                + prop.getResolvedValueObject().getClass()
+                                + "  , " + getFilteredPropValue(prop) + " ] ");
+                        meth.invoke(bean, new Object[]{prop.getResolvedValueObject()});
                     } catch (Exception e) {
                         handleException(e, prop, bean);
                     } finally {
@@ -127,30 +125,30 @@ public final class SetMethodAction implements PrivilegedExceptionAction {
                 } catch (Exception ex) {
                     handleException(ex, prop, bean);
                 }
-	    }
+            }
         }
         return null;
     }
 
     private void handleException(Exception ex, EnvironmentProperty prop, Object bean) throws ConnectorRuntimeException {
-        logger.log(Level.WARNING, "rardeployment.exception_on_invoke_setter", 
-            new Object[]{prop.getName(), getFilteredPropValue(prop), 
-            ex.getMessage()});
+        logger.log(Level.WARNING, "rardeployment.exception_on_invoke_setter",
+                new Object[]{prop.getName(), getFilteredPropValue(prop),
+                        ex.getMessage()});
         logger.log(Level.FINE, "Exception while trying to set " +
-            prop.getName() + " and value "+ getFilteredPropValue(prop),
-            ex + " on an instance of " + bean.getClass());
-        throw (ConnectorRuntimeException) 
-        (new ConnectorRuntimeException(ex.getMessage()).initCause(ex));
+                prop.getName() + " and value " + getFilteredPropValue(prop),
+                ex + " on an instance of " + bean.getClass());
+        throw(ConnectorRuntimeException)
+                (new ConnectorRuntimeException(ex.getMessage()).initCause(ex));
     }
 
-    private static String getFilteredPropValue(EnvironmentProperty prop){
+    private static String getFilteredPropValue(EnvironmentProperty prop) {
         if (prop == null)
             return "null";
-        
-	String propname = prop.getName();
-	if (propname.toLowerCase().contains("password"))
-	     return "********";
-        
+
+        String propname = prop.getName();
+        if (propname.toLowerCase().contains("password"))
+            return "********";
+
         return (prop.getResolvedValue());
     }
 
@@ -159,39 +157,39 @@ public final class SetMethodAction implements PrivilegedExceptionAction {
      * Retrieves the appropriate setter method in the resurce adapter java bean
      * class
      */
-    private Method getMutatorMethod(String propertyName, Class type){
+    private Method getMutatorMethod(String propertyName, Class type) {
         String setterMethodName = "set" + getCamelCasedPropertyName(propertyName);
         Method m = null;
 
         //Get all setter methods for property
         Method[] setterMethods = findMethod(setterMethodName);
-		
-    	if (setterMethods.length == 1) {
-    	    //Only one setter method for this property 
-    		m = (Method)setterMethods[0];
-    	} else {
-    	    //When more than one setter for the property, do type
-    	    //checking to determine property
+
+        if (setterMethods.length == 1) {
+            //Only one setter method for this property
+            m = (Method) setterMethods[0];
+        } else {
+            //When more than one setter for the property, do type
+            //checking to determine property
             //This check is very important, because the resource
             //adapter java-bean's methods might be overridden and calling
             //set over the wrong method will result in an exception
-            for (int i =0; i < setterMethods.length; i++) {
+            for (int i = 0; i < setterMethods.length; i++) {
                 Class[] paramTypes = setterMethods[i].getParameterTypes();
-            	if(paramTypes.length > 0) {
-                    if (paramTypes[0].equals(type) && paramTypes.length == 1){
-                        logger.log(Level.FINER, "Method " +  methods[i] + 
-                                        "matches with the right arg type");
+                if (paramTypes.length > 0) {
+                    if (paramTypes[0].equals(type) && paramTypes.length == 1) {
+                        logger.log(Level.FINER, "Method " + methods[i] +
+                                "matches with the right arg type");
                         m = setterMethods[i];
                     }
-                }  
-           }
+                }
+            }
         }
-        
-        if ( m != null ) {
-            return m; 
+
+        if (m != null) {
+            return m;
         } else {
-            logger.log(Level.WARNING, "no.such.method", 
-                  new Object[] {setterMethodName, bean.getClass().getName()});
+            logger.log(Level.WARNING, "no.such.method",
+                    new Object[]{setterMethodName, bean.getClass().getName()});
             return null;
         }
     }
@@ -199,27 +197,27 @@ public final class SetMethodAction implements PrivilegedExceptionAction {
     /**
      * Use a property's accessor method in the resource adapter
      * javabean to get the Type of the property
-     * 
+     * <p/>
      * This helps in ensuring that the type as coded in the java-bean
-     * is used while setting values on a java-bean instance, 
-     * rather than on the values specified in ra.xml 
+     * is used while setting values on a java-bean instance,
+     * rather than on the values specified in ra.xml
      */
     private Class getTypeOf(EnvironmentProperty prop) {
-    	String name = prop.getName();
+        String name = prop.getName();
         Method accessorMeth = getAccessorMethod(name);
-        if (accessorMeth != null ) {
+        if (accessorMeth != null) {
             return accessorMeth.getReturnType();
         }
         //not having a getter is not a WARNING.
-    	logger.log(Level.FINE, "method.name.nogetterforproperty", 
-                new Object[] {prop.getName(), bean.getClass()});
-    	return null;
+        logger.log(Level.FINE, "method.name.nogetterforproperty",
+                new Object[]{prop.getName(), bean.getClass()});
+        return null;
     }
-    
+
     /**
      * Gets the accessor method for a property
      */
-    private Method getAccessorMethod(String propertyName){
+    private Method getAccessorMethod(String propertyName) {
         String getterName = "get" + getCamelCasedPropertyName(propertyName);
         Method[] getterMethods = findMethod(getterName);
         if (getterMethods.length > 0) {
@@ -228,7 +226,7 @@ public final class SetMethodAction implements PrivilegedExceptionAction {
             return null;
         }
     }
-    
+
     /**
      * Finds methods in the resource adapter java bean class with the same name
      * RA developers could inadvertently not camelCase getters and/or setters
@@ -237,30 +235,30 @@ public final class SetMethodAction implements PrivilegedExceptionAction {
      */
     private Method[] findMethod(String methodName) {
         ArrayList matchedMethods = new ArrayList();
-        
+
         //check for CamelCased Method(s)
         for (int i = 0; i < this.methods.length; i++) {
-            if (methods[i].getName().equals(methodName)){
+            if (methods[i].getName().equals(methodName)) {
                 matchedMethods.add(methods[i]);
             }
         }
-        
+
         //check for nonCamelCased Method(s)
         for (int i = 0; i < this.methods.length; i++) {
-            if (methods[i].getName().equalsIgnoreCase(methodName)){
+            if (methods[i].getName().equalsIgnoreCase(methodName)) {
                 matchedMethods.add(methods[i]);
             }
         }
-        return (Method[])matchedMethods.toArray(new Method[]{});
+        return (Method[]) matchedMethods.toArray(new Method[]{});
     }
-    
+
     /**
      * Returns camel-cased version of a propertyName. Used to construct
      * correct accessor and mutator method names for a give property.
      */
-    private String getCamelCasedPropertyName(String propertyName){
-        return propertyName.substring(0,1).toUpperCase() +
-        propertyName.substring(1);
+    private String getCamelCasedPropertyName(String propertyName) {
+        return propertyName.substring(0, 1).toUpperCase() +
+                propertyName.substring(1);
     }
-    
+
 }
