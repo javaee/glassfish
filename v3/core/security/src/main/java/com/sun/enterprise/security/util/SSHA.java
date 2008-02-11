@@ -62,7 +62,7 @@ public class SSHA
     private static final String SSHA_TAG = "{SSHA}";
     //TODO V3 need to check if second arg is correct
     private static StringManager sm =
-        StringManager.getManager("com.sun.enterprise.security.util", Thread.currentThread().getContextClassLoader());
+        StringManager.getManager(SSHA.class);
     private static MessageDigest md = null;
 
     

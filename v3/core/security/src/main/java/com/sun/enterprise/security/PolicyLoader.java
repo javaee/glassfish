@@ -73,8 +73,7 @@ public class PolicyLoader{
     static {
         _logger = LogDomains.getLogger(LogDomains.SECURITY_LOGGER);
     }
-    private static StringManager sm =
-        StringManager.getManager("com.sun.enterprise.security", Thread.currentThread().getContextClassLoader());
+    private static StringManager sm = StringManager.getManager(PolicyLoader.class);
 
     private static final String POLICY_PROVIDER_14 = 
         "javax.security.jacc.policy.provider";
@@ -210,8 +209,7 @@ public class PolicyLoader{
     private JaccProvider getConfiguredJaccProvider() {
         //TODO: revisit this and make it more generic
         SecurityService secService = serverContext.getDefaultHabitat().getComponent(SecurityService.class);
-        JaccProvider jaccProvider = serverContext.getDefaultHabitat().getComponent(JaccProvider.class, secService.getJacc());
-        return jaccProvider;
+        return secService.getJaccProvider().iterator().next();
         
         /*V3:Commented
         JaccProvider jacc = null;

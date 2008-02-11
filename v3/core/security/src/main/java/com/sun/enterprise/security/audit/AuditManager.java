@@ -65,13 +65,16 @@ import com.sun.enterprise.server.ServerContext;
 import com.sun.logging.LogDomains;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.Singleton;
 /**
  *
  * @author  Harpreet Singh
  * @author  Shing Wai Chan
  */
 @Service
+@Scoped(Singleton.class)
 public final class AuditManager {
     static final String NAME = "name";
     static final String CLASSNAME = "classname";
@@ -105,7 +108,7 @@ public final class AuditManager {
     private ServerContext serverContext;
      
     /** Creates a new instance of AuditManager */
-    AuditManager() {
+    public AuditManager() {
     }
     
     /**

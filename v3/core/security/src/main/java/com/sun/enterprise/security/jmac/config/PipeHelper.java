@@ -68,7 +68,6 @@ import com.sun.enterprise.deployment.WebServiceEndpoint;
 import com.sun.enterprise.deployment.runtime.common.MessageSecurityBindingDescriptor;
 
 import com.sun.enterprise.security.audit.AuditManager;
-import com.sun.enterprise.security.audit.AuditManagerFactory;
 import com.sun.enterprise.security.ClientSecurityContext;
 import com.sun.enterprise.security.SecurityContext;
 import com.sun.enterprise.security.jmac.AuthMessagePolicy;
@@ -86,12 +85,15 @@ import com.sun.xml.ws.api.model.SEIModel;
 import com.sun.xml.ws.api.model.wsdl.WSDLPort;
 import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.WSBinding;
+import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Service;
 
 
-
+@Service
 public class PipeHelper extends ConfigHelper {
-    private static AuditManager auditManager =
-            AuditManagerFactory.getAuditManagerInstance();
+    
+    @Inject
+    private AuditManager auditManager;
 
     protected static final LocalStringManagerImpl localStrings = 
         new LocalStringManagerImpl(PipeHelper.class);

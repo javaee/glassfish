@@ -53,9 +53,7 @@ import com.sun.enterprise.security.auth.login.X509CertificateCredential;
 import com.sun.enterprise.security.auth.login.ServerLoginCallbackHandler;
 import com.sun.enterprise.security.LoginException;
 import com.sun.enterprise.security.auth.realm.Realm;
-import com.sun.enterprise.security.Audit;
 import com.sun.enterprise.security.auth.realm.certificate.CertificateRealm;
-import com.sun.enterprise.security.audit.AuditManagerFactory;
 import com.sun.enterprise.security.audit.AuditManager;
 
 // FIXME: ACC methods need to be moved to ACC-specific class.
@@ -74,7 +72,7 @@ import com.sun.enterprise.security.ClientSecurityContext;
  * @author Jyri Virkki
  *
  */
-public class LoginContextDriver {
+public class LoginContextDriver  {
 
     private static final Logger _logger = 
         LogDomains.getLogger(LogDomains.SECURITY_LOGGER);
@@ -87,8 +85,7 @@ public class LoginContextDriver {
 
     public static final String CERT_REALMNAME = "certificate";
   
-    public static final AuditManager AUDIT_MANAGER = 
-        AuditManagerFactory.getAuditManagerInstance();
+    public  static AuditManager AUDIT_MANAGER;
     /** This class cannot be instantiated
      *
      */

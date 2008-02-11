@@ -48,15 +48,21 @@ import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.PreDestroy;
 
 import com.sun.enterprise.J2EESecurityManager;
+import com.sun.enterprise.deployment.interfaces.SecurityRoleMapperFactory;
+import com.sun.enterprise.deployment.interfaces.SecurityRoleMapperFactoryMgr;
+import com.sun.enterprise.security.audit.AuditManager;
+import com.sun.enterprise.security.auth.LoginContextDriver;
 import com.sun.enterprise.security.authorize.PolicyContextHandlerImpl;
-import com.sun.enterprise.security.audit.AuditManagerFactory;
 import com.sun.enterprise.security.jmac.config.GFAuthConfigFactory;
 import com.sun.enterprise.server.ServerContext;
+import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.Startup;
 import org.glassfish.api.Startup.Lifecycle;
 import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.Singleton;
 
 /**
  * This class extends default implementation of ServerLifecycle interface.
@@ -64,22 +70,34 @@ import org.jvnet.hk2.annotations.Service;
  * @author  Shing Wai Chan
  */
 @Service
+@Scoped(Singleton.class)
 public class SecurityLifecycle implements  Startup, PostConstruct, PreDestroy {
     
     @Inject
     private ServerContext sc;
     
-    @Inject RealmConfig realmConfig;
+    @Inject 
+    private RealmConfig realmConfig;
     
-    @Inject PolicyLoader policyLoader;
+    @Inject 
+    private PolicyLoader policyLoader;
     
+    @Inject 
+    private AuditManager auditManager;
+    
+    @Inject 
+    private SecurityServicesUtil secServUtil;
+    
+    private static final LocalStringManagerImpl _localStrings =
+	new LocalStringManagerImpl(SecurityLifecycle.class);
+ 
     private static final Logger _logger = LogDomains.getLogger(LogDomains.SECURITY_LOGGER);
 
     public SecurityLifecycle() {
 	try {
+            
             // security manager is set here so that it can be accessed from
             // other lifecycles, like PEWebContainer
-
             SecurityManager secMgr = System.getSecurityManager();
             if (secMgr != null &&
                     !(J2EESecurityManager.class.equals(secMgr.getClass()))) {
@@ -104,6 +122,16 @@ public class SecurityLifecycle implements  Startup, PostConstruct, PreDestroy {
     public void onInitialization() {
 
         try {
+             if (_logger.isLoggable(Level.INFO)) {
+                 _logger.log(Level.INFO, "Security startup service called");
+             }
+             
+            //TODO:V3 LoginContextDriver has a static variable dependency on AuditManager
+            //And since LoginContextDriver has too many static methods that use AuditManager
+            //we have to make this workaround here.
+            LoginContextDriver.AUDIT_MANAGER = auditManager;
+            
+            secServUtil.initSecureSeed();
             // init SSL store
             // need this for jaxr https for PE
             // need this for webcore, etc for SE
@@ -119,21 +147,25 @@ public class SecurityLifecycle implements  Startup, PostConstruct, PreDestroy {
             //TODO:V3 check if the above singleton was a better way
             assert(policyLoader != null);
             policyLoader.loadPolicy();
-
             // create realms rather than creating RemoteObject RealmManager
             // which will init ORB prematurely
             assert(realmConfig != null);
             realmConfig.createRealms();
-
             // start the audit mechanism
-            //TODO:V3 should we make AuditManagerFactory a hk2 Service
-            AuditManagerFactory amf = AuditManagerFactory.getInstance();
-            amf.getAuditManagerInstance().loadAuditModules();
+            auditManager.loadAuditModules();
+            
 
             // initRoleMapperFactory is in J2EEServer.java and not moved to here
             // this is because a DummyRoleMapperFactory is register due
             // to invocation of ConnectorRuntime.createActiveResourceAdapter
             // initRoleMapperFactory is called after it
+           // TODO:V3 i have moved it here : instantiate and register the server-side RoleMapperFactory
+           initRoleMapperFactory();
+           
+           if (_logger.isLoggable(Level.INFO)) {
+                 _logger.log(Level.INFO, "Security service(s) started successfully....");
+             }
+
         } catch(Exception ex) {
             throw new SecurityLifecycleException(ex);
         }
@@ -180,4 +212,32 @@ public class SecurityLifecycle implements  Startup, PostConstruct, PreDestroy {
         //DO Nothing ?
         //TODO:V3 need to see if something needs cleanup
     }
+    
+    /** register the RoleMapperFactory that should be used on the server side
+     */
+    private void initRoleMapperFactory() throws Exception
+    {    
+        Object o = null;
+        Class c=null;
+        // this should never fail.
+        try {
+            c = Class.forName("com.sun.enterprise.security.acl.RoleMapperFactory");
+            if (c!=null) {
+                o = c.newInstance();  
+                if (o!=null && o instanceof SecurityRoleMapperFactory) {
+                    SecurityRoleMapperFactoryMgr.registerFactory((SecurityRoleMapperFactory) o);
+                }
+            }
+            if (o==null) {
+                _logger.log(Level.SEVERE,_localStrings.getLocalString("j2ee.norolemapper", 
+								     "Cannot instantiate the SecurityRoleMapperFactory"));
+            }
+        } catch(Exception cnfe) {
+            _logger.log(Level.SEVERE,
+			_localStrings.getLocalString("j2ee.norolemapper", "Cannot instantiate the SecurityRoleMapperFactory"), 
+			cnfe);
+            throw  cnfe;
+        } 
+    }
+    
 }

@@ -47,6 +47,7 @@ import javax.security.auth.login.*;
 import javax.security.auth.spi.*;
 import com.sun.enterprise.deployment.PrincipalImpl;
 import com.sun.enterprise.deployment.Group;
+import com.sun.enterprise.security.auth.login.LoginCallbackHandler;
 import com.sun.enterprise.security.auth.realm.Realm;
 import com.sun.enterprise.security.auth.login.PasswordCredential;
 import com.sun.web.security.PrincipalGroupFactory;
@@ -87,7 +88,7 @@ public abstract class AppservPasswordLoginModule implements LoginModule
 
     //TODO:V3 not sure if the second argument is correct.
     protected final static StringManager sm =
-        StringManager.getManager("com.sun.enterprise.security.auth.login",Thread.currentThread().getContextClassLoader());
+        StringManager.getManager(LoginCallbackHandler.class);
 
     
     /**

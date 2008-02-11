@@ -47,6 +47,7 @@ import java.security.Provider;
 //V3:Commented import com.sun.enterprise.config.ConfigContext;
 import com.sun.enterprise.server.pluggable.SecuritySupport;
 import com.sun.logging.LogDomains;
+import java.io.File;
 import org.jvnet.hk2.annotations.Service;
 
 /**
@@ -58,6 +59,7 @@ public class SecuritySupportImpl implements SecuritySupport {
 
     private static final String keyStoreProp = "javax.net.ssl.keyStore";
     private static final String trustStoreProp = "javax.net.ssl.trustStore";
+    
     protected static final Logger _logger =
             LogDomains.getLogger(LogDomains.SECURITY_LOGGER);
 

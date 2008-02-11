@@ -63,7 +63,7 @@ public abstract class AppservRealm extends Realm
     protected static final Logger _logger =
         LogDomains.getLogger(LogDomains.SECURITY_LOGGER);
     protected static final StringManager sm =
-        StringManager.getManager("com.sun.enterprise.security.auth.realm", Thread.currentThread().getContextClassLoader());
+        StringManager.getManager(IASRealm.class);
 
     
     /**

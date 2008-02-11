@@ -48,6 +48,7 @@ import com.sun.enterprise.security.SSLUtils;
 //V3:Commented import com.sun.enterprise.ServerConfiguration;
 //V3:Commented import com.sun.web.server.*;
 //V3:Commented import com.sun.enterprise.server.J2EEServer;
+import com.sun.enterprise.security.SecurityServicesUtil;
 import java.util.logging.*;
 import com.sun.logging.*;
 
@@ -73,10 +74,8 @@ public class SSLSocketFactory implements org.apache.catalina.net.ServerSocketFac
     private javax.net.ssl.SSLServerSocketFactory factory = null;
     private String cipherSuites[];
     
-    public static final SecureRandom secureRandom = new SecureRandom();
-    static {
-        secureRandom.setSeed(System.currentTimeMillis());
-    }
+    public static final SecureRandom secureRandom = SecurityServicesUtil.secureRandom;
+    
     //V3:Commented private static SecureRandom sr = J2EEServer.secureRandom;
     private static KeyManager[] keyManagers = null;
     private static TrustManager[] trustManagers = null;

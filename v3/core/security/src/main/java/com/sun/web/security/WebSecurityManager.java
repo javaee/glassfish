@@ -60,7 +60,6 @@ import com.sun.enterprise.security.PermissionCache;
 import com.sun.enterprise.security.PermissionCacheFactory;
 import com.sun.enterprise.security.SecurityContext;
 import com.sun.enterprise.security.audit.AuditManager;
-import com.sun.enterprise.security.audit.AuditManagerFactory;
 import com.sun.enterprise.security.authorize.PolicyContextHandlerImpl;
 //V3:Commented import com.sun.enterprise.web.VirtualServer;
 import com.sun.enterprise.deployment.runtime.common.SecurityRoleMapping;
@@ -74,6 +73,8 @@ import com.sun.enterprise.deployment.runtime.web.SunWebApp;
 import com.sun.enterprise.deployment.interfaces.SecurityRoleMapperFactory;
 import com.sun.enterprise.deployment.interfaces.SecurityRoleMapperFactoryMgr;
 import org.apache.catalina.Globals;
+import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Service;
 
 /**
  * The class implements the JSR 115 - JavaTM Authorization Contract for Containers.
@@ -88,12 +89,14 @@ import org.apache.catalina.Globals;
  * from this class and EJBSecurityManager class and extend this class from 
  * AbstractSecurityManager
  */
+@Service
 public class WebSecurityManager {
     private static Logger logger = 
     Logger.getLogger(LogDomains.SECURITY_LOGGER);
-
-    private static AuditManager auditManager = 
-        AuditManagerFactory.getAuditManagerInstance();
+    
+    @Inject
+    private  AuditManager auditManager;
+    
     private static final String RESOURCE = "hasResourcePermission";
     private static final String USERDATA = "hasUserDataPermission";
     private static final String ROLEREF = "hasRoleRefPermission";

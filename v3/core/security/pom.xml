@@ -21,8 +21,19 @@
             </roles>
         </developer>
     </developers>
+    <build>
+        <sourceDirectory>src/main/java</sourceDirectory>
+        <resources>
+            <resource>
+                <directory>src/main/java</directory>
+                <includes>
+                    <include>**/*.properties</include>
+                </includes>
+            </resource>
+        </resources>
+    </build>
     <dependencies>
-       <!-- LDAPBP not yet published to maven
+        <!-- LDAPBP not yet published to maven
         <dependency>
             <groupId>com.sun</groupId>
             <artifactId>ldapbp</artifactId>
@@ -55,10 +66,10 @@
         </dependency>
         <dependency>
             <groupId>javax.security.auth.message</groupId>
-   	      <artifactId>jmac</artifactId>
+            <artifactId>jmac</artifactId>
             <version>${jmac-api.version}</version>
         </dependency>
-         <dependency>
+        <dependency>
             <groupId>javax.xml.ws</groupId>
             <artifactId>jaxws-api</artifactId>
             <version>${jaxws-api.version}</version>
@@ -73,12 +84,12 @@
             <artifactId>jaxb-api</artifactId>
             <version>${jaxb-api.version}</version>
         </dependency>
-         <dependency>
+        <dependency>
             <groupId>javax.xml.bind</groupId>
             <artifactId>jaxb-api</artifactId>
             <version>${jaxb-api.version}</version>
         </dependency>
-         <dependency>
+        <dependency>
             <groupId>com.sun.xml.ws</groupId>
             <artifactId>jaxws-rt</artifactId>
             <version>${jaxws-ri.version}</version>
@@ -99,4 +110,4 @@
             <version>${project.version}</version>
         </dependency>
     </dependencies>
-    </project>
+</project>
