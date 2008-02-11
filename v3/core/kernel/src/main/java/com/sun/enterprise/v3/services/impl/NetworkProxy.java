@@ -47,5 +47,16 @@ public interface NetworkProxy extends EndpointMapper<com.sun.grizzly.tcp.Adapter
      */
     public void start();
     
+    
+    /**
+     * Set the virtual host mapper
+     */
+    public void setVsMapper(VirtualHostMapper vsMapper);
+    
+    
+    /**
+     * Return the associated virtual host mapper
+     */ 
+    public VirtualHostMapper getVsMapper();
 
 }

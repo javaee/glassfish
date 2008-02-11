@@ -31,12 +31,11 @@ import com.sun.grizzly.portunif.ProtocolFinder;
 import com.sun.grizzly.portunif.ProtocolHandler;
 import com.sun.grizzly.portunif.TLSPUPreProcessor;
 import com.sun.grizzly.tcp.Adapter;
-import com.sun.grizzly.util.net.SSLImplementation;
-import com.sun.grizzly.util.net.ServerSocketFactory;
 import java.io.IOException;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.logging.Level;
 import org.glassfish.api.deployment.ApplicationContainer;
 
@@ -67,10 +66,24 @@ public class GrizzlyProxy implements NetworkProxy{
     
     private EndpointMapper<Adapter> endPointMapper;
     
+        
+    private VirtualHostMapper vsMapper;
+    
     
     //TODO: This must be configurable.
     private final static boolean isWebProfile = 
             Boolean.parseBoolean(System.getProperty("v3.grizzly.webProfile", "true"));
+    
+    
+    private static List<String> nvVsMapper = new ArrayList<String>();
+    
+    
+    // Those Adapter MUST not be mapped through a VirtualHostMapper, as our
+    // WebContainer already supports it.
+    static{
+        nvVsMapper.add("org.apache.coyote.tomcat5.CoyoteAdapter");
+        nvVsMapper.add("com.sun.enterprise.v3.admin.AdminAdapter");
+    }
     
     
     /**
@@ -192,14 +205,22 @@ public class GrizzlyProxy implements NetworkProxy{
         if (!contextRoot.startsWith("/")) {
             contextRoot = "/" + contextRoot;
         }        
+        // THis is a hack, but we don't want to add virtual server support
+        // for the Web Container as it already supports it.
+        if (!nvVsMapper.contains(endpointAdapter.getClass().getName())) {
+            vsMapper.registerEndpoint(contextRoot, vsServers, endpointAdapter, container);
+            endpointAdapter = vsMapper;
+        }
         endPointMapper.registerEndpoint(contextRoot, vsServers, endpointAdapter, container);
     }
 
+    
     /**
      * Removes the contex-root from our list of endpoints.
      */
     public void unregisterEndpoint(String contextRoot, ApplicationContainer app) {
         endPointMapper.unregisterEndpoint(contextRoot, app);
+        vsMapper.unregisterEndpoint(contextRoot, app);
     }
 
     
@@ -230,6 +251,16 @@ public class GrizzlyProxy implements NetworkProxy{
         };
         thread.start();
         logger.info("Listening on port " + grizzlyListener.getPort());
+    }
+
+    
+    public void setVsMapper(VirtualHostMapper vsMapper) {
+        this.vsMapper = vsMapper;
+    }
+
+    
+    public VirtualHostMapper getVsMapper() {
+        return vsMapper;
     }
 
 }

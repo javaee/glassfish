@@ -1,3 +1,27 @@
+
+/*
+ * The contents of this file are subject to the terms 
+ * of the Common Development and Distribution License 
+ * (the License).  You may not use this file except in
+ * compliance with the License.
+ * 
+ * You can obtain a copy of the license at 
+ * https://glassfish.dev.java.net/public/CDDLv1.0.html or
+ * glassfish/bootstrap/legal/CDDLv1.0.txt.
+ * See the License for the specific language governing 
+ * permissions and limitations under the License.
+ * 
+ * When distributing Covered Code, include this CDDL 
+ * Header Notice in each file and include the License file 
+ * at glassfish/bootstrap/legal/CDDLv1.0.txt.  
+ * If applicable, add the following below the CDDL Header, 
+ * with the fields enclosed by brackets [] replaced by
+ * you own identifying information: 
+ * "Portions Copyrighted [year] [name of copyright owner]"
+ * 
+ * Copyright 2006 Sun Microsystems, Inc. All rights reserved.
+ */
+
 package com.sun.enterprise.v3.services.impl;
 
 import com.sun.grizzly.tcp.Adapter;
@@ -8,21 +32,12 @@ import com.sun.grizzly.standalone.DynamicContentAdapter;
 import com.sun.grizzly.util.buf.ByteChunk;
 import com.sun.enterprise.module.impl.Utils;
 import com.sun.enterprise.config.serverbeans.VirtualServer;
-import com.sun.enterprise.config.serverbeans.HttpListener;
-import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
-import com.sun.enterprise.v3.data.ContainerRegistry;
-import com.sun.enterprise.v3.data.ContainerInfo;
-import com.sun.enterprise.v3.server.ContainerStarter;
 import com.sun.enterprise.v3.server.HK2Dispatcher;
 import com.sun.enterprise.util.StringUtils;
-import com.sun.logging.LogDomains;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.*;
-import java.util.regex.Pattern;
-import java.util.regex.Matcher;
 import java.io.File;
 import java.io.IOException;
 import java.io.FileNotFoundException;
@@ -30,19 +45,20 @@ import java.io.FileInputStream;
 import java.net.URLConnection;
 import java.text.SimpleDateFormat;
 import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
 
 import org.glassfish.api.deployment.ApplicationContainer;
 import org.glassfish.api.content.FileServer;
-import org.glassfish.api.content.WebRequestHandler;
-import org.glassfish.api.container.Sniffer;
-import org.jvnet.hk2.component.ComponentException;
 
 /**
- * Created by IntelliJ IDEA.
- * User: dochez
- * Date: Jan 16, 2008
- * Time: 3:29:08 PM
- * To change this template use File | Settings | File Templates.
+ *  @author: Jerome Dochez
  */
 public class VsAdapter extends AbstractAdapter implements Adapter {
 
@@ -55,8 +71,8 @@ public class VsAdapter extends AbstractAdapter implements Adapter {
     private final Set<String> hostsNames;
 
     private Map<String, com.sun.grizzly.tcp.Adapter> endpoints = new HashMap<String, com.sun.grizzly.tcp.Adapter>();
-    private Map<com.sun.grizzly.tcp.Adapter, ApplicationContainer> apps = new HashMap();
-    private List<FileServer> handlers = new ArrayList<FileServer>();
+    private Map<com.sun.grizzly.tcp.Adapter, ApplicationContainer> apps
+            = new HashMap<com.sun.grizzly.tcp.Adapter, ApplicationContainer>();
 
     private HK2Dispatcher dispatcher = new HK2Dispatcher();
     
@@ -64,7 +80,7 @@ public class VsAdapter extends AbstractAdapter implements Adapter {
     public VsAdapter(VirtualServer vs) {
         this.vs = vs;
         this.docRoot = getDocRoot(vs);
-        hostsNames = new HashSet(StringUtils.parseStringList(vs.getHosts(), ","));
+        hostsNames = new HashSet<String>(StringUtils.parseStringList(vs.getHosts(), ","));
     }
 
     public boolean handles(String serverName) {

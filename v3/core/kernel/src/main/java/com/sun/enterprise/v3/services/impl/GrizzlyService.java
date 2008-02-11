@@ -94,15 +94,16 @@ public class GrizzlyService implements Startup, PostConstruct, PreDestroy {
                 proxy = new GrizzlyProxy(logger, habitat, listener, controller);
             } else {
                 proxy = new GrizzlyAdapter(logger, habitat, listener, controller);
-                // attach all virtual servers to this port
-               for (VirtualServer vs : config.getHttpService().getVirtualServer()) {
-                    List<String> vsListeners = StringUtils.parseStringList(vs.getHttpListeners()," ,");
-                    if (vsListeners.contains(listener.getId())) {
-                        ((GrizzlyAdapter)proxy).addVirtualServer(vs);
-                    }
-                }
             }
+            proxy.setVsMapper(new VirtualHostMapper(logger, listener));
             
+             // attach all virtual servers to this port
+            for (VirtualServer vs : config.getHttpService().getVirtualServer()) {
+                List<String> vsListeners = StringUtils.parseStringList(vs.getHttpListeners()," ,");
+                if (vsListeners.contains(listener.getId())) {
+                    proxy.getVsMapper().addVirtualServer(vs);
+                }
+            }           
             proxy.start();
             
             // add the new proxy to our list of proxies.
@@ -112,7 +113,6 @@ public class GrizzlyService implements Startup, PostConstruct, PreDestroy {
             // now register all proxies you can find out there !
             // TODO : so far these qets registered everywhere, maybe not the right thing ;-)
             for (org.glassfish.api.container.Adapter subAdapter : habitat.getAllByContract(org.glassfish.api.container.Adapter.class)) {
-
                 logger.fine("Registering proxy " + subAdapter.getContextRoot());
                 registerEndpoint(subAdapter.getContextRoot(), null, subAdapter, null);
             }

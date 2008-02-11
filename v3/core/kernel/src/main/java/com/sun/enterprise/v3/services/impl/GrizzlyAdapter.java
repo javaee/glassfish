@@ -48,8 +48,7 @@ import org.jvnet.hk2.component.Habitat;
  *
  * @author Jerome Dochez
  */
-public class GrizzlyAdapter extends AbstractAdapter implements com.sun.grizzly.tcp.Adapter, 
-        NetworkProxy {
+public class GrizzlyAdapter extends AbstractAdapter implements NetworkProxy {
     
     final SelectorThread selectorThread;
 
@@ -59,8 +58,9 @@ public class GrizzlyAdapter extends AbstractAdapter implements com.sun.grizzly.t
     private Map<String, com.sun.grizzly.tcp.Adapter> endpoints = new HashMap<String, com.sun.grizzly.tcp.Adapter>();
 
     int portNumber;
-
-    Map<String, VsAdapter> vsAdapters = new HashMap<String, VsAdapter>();
+    
+    private VirtualHostMapper vsMapper;
+    
 
     public GrizzlyAdapter(final Logger logger, 
             Habitat habitat, HttpListener listener, Controller controller) {
@@ -87,12 +87,7 @@ public class GrizzlyAdapter extends AbstractAdapter implements com.sun.grizzly.t
         selectorThread = new SelectorThread();
         selectorThread.setPort(portNumber);
         selectorThread.setAlgorithmClassName(StaticStreamAlgorithm.class.getName());
-        selectorThread.setAdapter(this);
         selectorThread.setBufferResponse(false);
-    }
-
-    public void addVirtualServer(VirtualServer vs) {
-        vsAdapters.put(vs.getId(), new VsAdapter(vs));
     }
 
     /**
@@ -105,53 +100,6 @@ public class GrizzlyAdapter extends AbstractAdapter implements com.sun.grizzly.t
     @Override
     public String toString() {
         return "Grizzly on port " + portNumber;
-    }
-    
-    /**
-     * Call the service method, and notify all listeners
-     *
-     * @exception Exception if an error happens during handling of
-     *   the request. Common errors are:
-     *   <ul><li>IOException if an input/output error occurs and we are
-     *   processing an included servlet (otherwise it is swallowed and
-     *   handled by the top level error handler mechanism)
-     *       <li>ServletException if a servlet throws an exception and
-     *  we are processing an included servlet (otherwise it is swallowed
-     *  and handled by the top level error handler mechanism)
-     *  </ul>
-     *  Tomcat should be able to handle and log any other exception ( including
-     *  runtime exceptions )
-     */
-    public void service(Request req, Response res)
-        throws Exception {
-
-        if (logger.isLoggable(Level.FINER)) {
-            logger.finer("Received something on " + req.requestURI());
-        }
-
-        // find the right virtual server this is intented to
-        final String serverName = req.serverName().toString();
-        for (VsAdapter adapter : vsAdapters.values()) {
-            if (adapter.handles(serverName)) {
-                adapter.service(req,res);
-                return;
-            }
-        }
-        // default virtual server dispatching
-        if (httpListener.getDefaultVirtualServer()!=null) {
-            VsAdapter adapter = vsAdapters.get(httpListener.getDefaultVirtualServer());
-            if (adapter!=null) {
-                adapter.service(req,res);
-                return;
-            }
-        }
-
-        // if I am here, I could not find the right VirtualServer.
-        if (logger.isLoggable(Level.FINE)) {
-            logger.fine("Invalid server name " + serverName + " for request " + req.requestURI().toString());
-        }
-        sendError(res, "Glassfish v3 Error : Server name Not Found : " + serverName);        
-
     }
 
     /*
@@ -168,32 +116,14 @@ public class GrizzlyAdapter extends AbstractAdapter implements com.sun.grizzly.t
         if (!contextRoot.startsWith("/")) {
             contextRoot = "/" + contextRoot;
         }
-        StringBuffer buffer = new StringBuffer("Endpoint registered at ").append(contextRoot);
-        buffer.append(" on virtual server(s) : ");
-        if (vsServers==null) {
-            for (VsAdapter adapter : vsAdapters.values()) {
-                adapter.registerEndpoint(contextRoot, endpointAdapter, container);
-                buffer.append(adapter.getVirtualServer().getId()).append(" ");
-            }        
-        } else {
-            for (String vsId : vsServers) {
-                VsAdapter vsAdapter = vsAdapters.get(vsId);
-                if (vsAdapter!=null) {
-                    vsAdapter.registerEndpoint(contextRoot, endpointAdapter, container);       
-                    buffer.append(vsAdapter.getVirtualServer().getId()).append(" ");
-                }
-            }
-        }
-        logger.fine(buffer.toString());
+        vsMapper.registerEndpoint(contextRoot, vsServers, endpointAdapter, container);
     }
 
     /**
      * Removes the contex-root from our list of endpoints.
      */
     public void unregisterEndpoint(String contextRoot, ApplicationContainer app) {
-        for (VsAdapter adapter : vsAdapters.values()) {
-            adapter.unregisterEndpoint(contextRoot, app);
-        }
+        vsMapper.unregisterEndpoint(contextRoot, app);
     }
 
     /**
@@ -214,6 +144,8 @@ public class GrizzlyAdapter extends AbstractAdapter implements com.sun.grizzly.t
 
     
     public void start() {
+        selectorThread.setAdapter(vsMapper);
+
         Thread thread = new Thread() {
             @Override
             public void run() {
@@ -231,6 +163,16 @@ public class GrizzlyAdapter extends AbstractAdapter implements com.sun.grizzly.t
         };
         thread.start();
         logger.info("Listening on port " + portNumber);
+    }
+
+    
+    public void setVsMapper(VirtualHostMapper vsMapper) {
+        this.vsMapper = vsMapper;
+    }
+
+    
+    public VirtualHostMapper getVsMapper() {
+        return vsMapper;
     }
 
 }
