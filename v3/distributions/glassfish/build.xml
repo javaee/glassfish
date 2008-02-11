@@ -32,7 +32,7 @@
     <target name="create.bundle" depends="web.prepare, ejb.moduleDef, web.moduleDef">
         <resolveAll todir="target/stage/glassfish/modules">
             <excludeArtifactsTransitively>
-                <scope level="runtime"/>
+                <scope level="compile,runtime"/>
                 <artifact artifactId="gf-web-connector" />
                 <artifact artifactId="gf-ejb-connector" />
             </excludeArtifactsTransitively>
@@ -42,7 +42,7 @@
 
         <graphDef id="generate-picture">
             <visualize file="modules.png">
-                <scope level="runtime" />
+                <scope level="compile,runtime" />
                 <subGraph color="red">
                     <graphRef refid="web-modules"/>
                 </subGraph>
