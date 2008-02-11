@@ -267,7 +267,7 @@ public final class EmbeddedWebContainer extends Embedded {
         context.addLifecycleListener(new WebModuleListener(serverContext, 
                 webContainer.getInstanceClassPath(), location, wbd));
 
-        //context.addInstanceListener(Constants.J2EE_INSTANCE_LISTENER);
+        context.addInstanceListener(Constants.J2EE_INSTANCE_LISTENER);
         
         context.addContainerListener(
                 new WebContainerListener(invocationManager, injectionManager));
