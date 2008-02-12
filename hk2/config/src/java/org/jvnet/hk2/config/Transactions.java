@@ -119,6 +119,10 @@ public class Transactions {
         while (pendingTransactionEvents());
     }
 
+    public void shutdown() {
+        pump.interrupt();
+    }
+
     private Transactions() {
         pump = new Thread() {
             public void run() {
@@ -146,7 +150,7 @@ public class Transactions {
                         }
                         semaphore.release();
                     } catch (InterruptedException e) {
-                        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                        return;
                     }
                 }
             }
