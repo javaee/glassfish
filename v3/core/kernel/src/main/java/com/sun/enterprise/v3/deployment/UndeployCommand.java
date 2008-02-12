@@ -31,6 +31,8 @@ import com.sun.enterprise.v3.data.ApplicationRegistry;
 import com.sun.enterprise.v3.server.ApplicationLifecycle;
 import com.sun.enterprise.v3.server.V3Environment;
 import com.sun.enterprise.v3.services.impl.GrizzlyService;
+import com.sun.enterprise.config.serverbeans.Applications;
+import com.sun.enterprise.config.serverbeans.Module;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
@@ -40,10 +42,14 @@ import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.config.ConfigSupport;
+import org.jvnet.hk2.config.SingleConfigCode;
+import org.jvnet.hk2.config.TransactionFailure;
 
 import java.io.File;
 import java.util.Properties;
 import java.util.logging.Logger;
+import java.beans.PropertyVetoException;
 
 /**
  * Undeploys applications.
@@ -71,6 +77,9 @@ public class UndeployCommand extends ApplicationLifecycle implements AdminComman
     @Param(primary = true, name=DeployCommand.NAME)
     String name=null;
 
+    @Inject
+    Applications applications;
+
     Logger logger = LogDomains.getLogger(LogDomains.DPL_LOGGER);
 
     public void execute(AdminCommandContext context) {
@@ -96,6 +105,23 @@ public class UndeployCommand extends ApplicationLifecycle implements AdminComman
 
         undeploy(name, deploymentContext, report);
         if (report.getActionExitCode().equals(ActionReport.ExitCode.SUCCESS)) {
+            // so far I am doing this after the unload, maybe this should be moved before...
+            try {
+                ConfigSupport.apply(new SingleConfigCode<Applications>() {
+                    public Object run(Applications apps) throws PropertyVetoException, TransactionFailure {
+                        for (Module module : applications.getModules()) {
+                            if (module.getName().equals(name)) {
+                                apps.getModules().remove(module);
+                                return module;
+                            }
+                        }
+                        throw new TransactionFailure("Module not found in configuration", null);
+                    }
+                }, applications);
+
+            } catch(TransactionFailure e) {
+                logger.warning("Module " + name + " not found in configuration");
+            }
                 //check if deployment is from directory
             Properties props = metaData.load(name);
             boolean isDirectoryDeployed = false;

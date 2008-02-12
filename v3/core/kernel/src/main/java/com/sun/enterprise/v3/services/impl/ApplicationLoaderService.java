@@ -32,6 +32,8 @@ import com.sun.enterprise.v3.deployment.DeployCommand;
 import com.sun.enterprise.v3.deployment.DeploymentContextImpl;
 import com.sun.enterprise.v3.server.ApplicationLifecycle;
 import com.sun.enterprise.v3.server.V3Environment;
+import com.sun.enterprise.config.serverbeans.Applications;
+import com.sun.enterprise.config.serverbeans.Module;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.Startup;
 import org.glassfish.api.container.Sniffer;
@@ -84,6 +86,9 @@ public class ApplicationLoaderService extends ApplicationLifecycle
 
     @Inject
     ApplicationMetaDataPersistence metaData;
+
+    @Inject
+    Applications applications;
 
     Map<String, Object> startedContainers=null;
 
@@ -153,8 +158,19 @@ public class ApplicationLoaderService extends ApplicationLifecycle
                                     env);
                             depContext.setClassLoader(cloader);
 
-                            ActionReport report = new HTMLActionReporter();
-                            load(appSniffers, depContext, report);
+
+                            for (Module module : applications.getModules()) {
+                                if (module.getName().equals(sourceFile.getName())) {
+                                    depContext.setConfig(module);
+                                    break;
+                                }
+                            }
+                            if (depContext.getConfig()==null) {
+                                logger.severe("Cannot find configuration for application " + sourceFile.getName());
+                            } else {
+                                ActionReport report = new HTMLActionReporter();
+                                load(appSniffers, depContext, report);
+                            }
 
                         } else {
                             logger.severe("Cannot find the application type for the artifact at : "
@@ -185,9 +201,11 @@ public class ApplicationLoaderService extends ApplicationLifecycle
             return;
         }
 
+        // todo : dochez : replace all those with the config api keys
         String sniffersType=props.getProperty("Type");
         String source = props.getProperty("Source");
-        String appName = props.getProperty("Name");
+        final String appName = props.getProperty(DeployCommand.NAME);
+
 
         if (sniffersType == null) {
             logger.severe("Cannot determine application type at " + appRoot.getAbsolutePath());
@@ -207,7 +225,7 @@ public class ApplicationLoaderService extends ApplicationLifecycle
 
                     archive = archiveFactory.openArchive(sourceFile);
                     Properties deploymentProperties = new Properties();
-                    deploymentProperties.setProperty(DeployCommand.NAME, appName);
+                    deploymentProperties.putAll(props);
 
                     DeploymentContextImpl depContext = new DeploymentContextImpl(
                             logger,
@@ -215,6 +233,17 @@ public class ApplicationLoaderService extends ApplicationLifecycle
                             deploymentProperties,
                             env);
 
+
+                    for (Module module : applications.getModules()) {
+                        if (module.getName().equals(appName)) {
+                            depContext.setConfig(module);
+                            break;
+                        }
+                    }
+                    if (depContext.getConfig()==null) {
+                        logger.severe("Cannot find configuration for application " + sourceFile.getName());
+                        return;
+                    }
                     depContext.setProps(props);
 
                     ActionReport report = new HTMLActionReporter();

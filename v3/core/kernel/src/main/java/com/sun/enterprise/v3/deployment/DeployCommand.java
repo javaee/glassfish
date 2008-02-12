@@ -1,23 +1,23 @@
 /*
- * The contents of this file are subject to the terms 
- * of the Common Development and Distribution License 
+ * The contents of this file are subject to the terms
+ * of the Common Development and Distribution License
  * (the License).  You may not use this file except in
  * compliance with the License.
- * 
- * You can obtain a copy of the license at 
+ *
+ * You can obtain a copy of the license at
  * https://glassfish.dev.java.net/public/CDDLv1.0.html or
  * glassfish/bootstrap/legal/CDDLv1.0.txt.
- * See the License for the specific language governing 
+ * See the License for the specific language governing
  * permissions and limitations under the License.
- * 
- * When distributing Covered Code, include this CDDL 
- * Header Notice in each file and include the License file 
- * at glassfish/bootstrap/legal/CDDLv1.0.txt.  
- * If applicable, add the following below the CDDL Header, 
+ *
+ * When distributing Covered Code, include this CDDL
+ * Header Notice in each file and include the License file
+ * at glassfish/bootstrap/legal/CDDLv1.0.txt.
+ * If applicable, add the following below the CDDL Header,
  * with the fields enclosed by brackets [] replaced by
- * you own identifying information: 
+ * you own identifying information:
  * "Portions Copyrighted [year] [name of copyright owner]"
- * 
+ *
  * Copyright 2006 Sun Microsystems, Inc. All rights reserved.
  */
 
@@ -34,6 +34,7 @@ import com.sun.enterprise.module.Module;
 import com.sun.enterprise.module.ModuleDefinition;
 import com.sun.enterprise.module.impl.ClassLoaderProxy;
 import com.sun.enterprise.config.serverbeans.Domain;
+import com.sun.enterprise.config.serverbeans.Applications;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
@@ -47,11 +48,15 @@ import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.PerLookup;
+import org.jvnet.hk2.config.ConfigSupport;
+import org.jvnet.hk2.config.SingleConfigCode;
+import org.jvnet.hk2.config.TransactionFailure;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import java.util.logging.Level;
+import java.beans.PropertyVetoException;
 
 
 /**
@@ -64,7 +69,7 @@ import java.util.logging.Level;
 @Scoped(PerLookup.class)
 public class DeployCommand extends ApplicationLifecycle implements AdminCommand {
 
-    final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(DeployCommand.class);    
+    final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(DeployCommand.class);
     public static final String NAME = "name";
     public static final String VIRTUAL_SERVERS = "virtualservers";
     public static final String CONTEXT_ROOT = "contextroot";
@@ -98,6 +103,8 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
     @Inject
     Domain domain;
 
+    @Inject
+    Applications applications;
 
     @Param(primary=true, shortName = "p")
     public void setPath(String path) {
@@ -110,9 +117,9 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
     public void execute(AdminCommandContext context) {
 
         long operationStartTime = Calendar.getInstance().getTimeInMillis();
-        
-        Properties parameters = context.getCommandParameters();
-        ActionReport report = context.getActionReport();
+
+        final Properties parameters = context.getCommandParameters();
+        final ActionReport report = context.getActionReport();
 
         File file = new File(path);
         if (!file.exists()) {
@@ -120,14 +127,14 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             return;
         }
-        
+
         if (sniffers==null) {
             String msg = localStrings.getLocalString("deploy.nocontainer", "No container services registered, done...");
             logger.severe(msg);
             report.setMessage(msg);
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             return;
-        }        
+        }
 
         ReadableArchive archive;
         try {
@@ -151,7 +158,7 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
             if (name==null) {
                 // Archive handlers know how to construct default app names.
                 name = archiveHandler.getDefaultApplicationName(archive);
-                // For the autodeployer in particular the name must be set in the 
+                // For the autodeployer in particular the name must be set in the
                 // command context parameters for later use.
                 parameters.put(NAME, name);
             }
@@ -202,33 +209,68 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
                     report.setMessage(localStrings.getLocalString("deploy.errorexpandingjar","Error while expanding archive file"));
                     report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                     return;
-                    
+
                 }
             }
-            
+
             // create the parent class loader
             ClassLoader parentCL = createSnifferParentCL(null, Arrays.asList(sniffers));
             // now the archive class loader, this will only be used for the sniffers.handles() method
-            ClassLoader cloader = archiveHandler.getClassLoader(parentCL, archive);
+            final ClassLoader cloader = archiveHandler.getClassLoader(parentCL, archive);
 
-            Collection<Sniffer> appSniffers = getSniffers(archive, cloader);
+            final Collection<Sniffer> appSniffers = getSniffers(archive, cloader);
             if (appSniffers.size()==0) {
                 report.setMessage(localStrings.getLocalString("deploy.unknownmoduletpe","Module type not recognized"));
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                 return;
             }
 
-            DeploymentContextImpl deploymentContext = new DeploymentContextImpl(logger,
-                    archive, parameters, env);
+            final String docBase = archive.getURI().getSchemeSpecificPart();
+            final ReadableArchive sourceArchive = archive; 
+            final DeploymentContextImpl deploymentContext = new DeploymentContextImpl(logger,
+                    sourceArchive, parameters, env);
             deploymentContext.setClassLoader(cloader);
 
-            ApplicationInfo appInfo = load(appSniffers, deploymentContext, report);
+            // let's add our configuration data. so far it's an horrible hack where I always create
+            // a WebModule instance, soon we should have a generic config object
+            com.sun.enterprise.config.serverbeans.WebModule wm = (com.sun.enterprise.config.serverbeans.WebModule)
+                ConfigSupport.apply(new SingleConfigCode<Applications>() {
+                    /**
+                     * Runs the following command passing the configration object. The code will be run
+                     * within a transaction, returning true will commit the transaction, false will abort
+                     * it.
+                     *
+                     * @param param is the configuration object protected by the transaction
+                     * @return true if the changes on param should be commited or false for abort.
+                     * @throws java.beans.PropertyVetoException
+                     *          if the changes cannot be applied
+                     *          to the configuration
+                     */
+                    public Object run(Applications param) throws PropertyVetoException, TransactionFailure {
+                        com.sun.enterprise.config.serverbeans.WebModule wm = ConfigSupport.createChildOf(param, com.sun.enterprise.config.serverbeans.WebModule.class);
+
+                        applications.getModules().add(wm);
+                        wm.setName(name);
+                        wm.setLocation(docBase);
+
+
+                        // another horrible hack because Webcontainer wants a WebModule before the deployment code runs,
+                        // this will need tobe changed asap.                        
+                        deploymentContext.setConfig(wm);
+
+                        ApplicationInfo appInfo = load(appSniffers, deploymentContext, report);
+
+                        return wm;
+                    }
+                }, applications);
+            
+
             if (report.getActionExitCode().equals(ActionReport.ExitCode.SUCCESS)) {
                 report.setMessage(localStrings.getLocalString("deploy.command.success",
                         "Application {0} deployed successfully", name));
 
                 Properties moduleProps = deploymentContext.getProps();
-                moduleProps.setProperty("Name", name);
+                moduleProps.setProperty(NAME, name);
                 StringBuffer sb = new StringBuffer();
                 for (Sniffer sniffer : appSniffers) {
                     sb.append(sniffer.getModuleType());
@@ -236,6 +278,9 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
                 }
                 moduleProps.setProperty("Type", sb.toString());
                 moduleProps.setProperty("Source", deploymentContext.getSource().getURI().toString());
+                if (contextRoot!=null) {
+                    moduleProps.setProperty(CONTEXT_ROOT, contextRoot);
+                }
                 moduleProps.setProperty(DIRECTORY_DEPLOYED, String.valueOf(isDirectoryDeployed));
                 metaData.save(name, moduleProps);
             }
@@ -255,8 +300,8 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
             } else {
                 if (expansionDir!=null) {
                    FileUtils.whack(expansionDir);
-                }                
+                }
             }
         }
-    }  
+    }
 }

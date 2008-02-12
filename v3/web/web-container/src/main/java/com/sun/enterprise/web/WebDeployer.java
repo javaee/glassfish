@@ -48,9 +48,7 @@ import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.javaee.core.deployment.JavaEEDeployer;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.config.ConfigSupport;
-import org.jvnet.hk2.config.SingleConfigCode;
-import org.jvnet.hk2.config.TransactionFailure;
+import org.jvnet.hk2.config.*;
 
 import java.util.*;
 import java.util.logging.Level;
@@ -169,32 +167,14 @@ public class WebDeployer extends JavaEEDeployer<WebContainer, WebApplication>{
                 Application.class).getStandaloneBundleDescriptor();
         
             final String contextRoot = wbd.getContextRoot();
-            final String name = wbd.getName();
-
-            // TODO : dochez : need to move this code to the DeploymentBack end.
+            
+            // TODO : need to make this code generic
             com.sun.enterprise.config.serverbeans.WebModule wm = (com.sun.enterprise.config.serverbeans.WebModule)
-                ConfigSupport.apply(new SingleConfigCode<Applications>() {
-                    /**
-                     * Runs the following command passing the configration object. The code will be run
-                     * within a transaction, returning true will commit the transaction, false will abort
-                     * it.
-                     *
-                     * @param param is the configuration object protected by the transaction
-                     * @return true if the changes on param should be commited or false for abort.
-                     * @throws java.beans.PropertyVetoException
-                     *          if the changes cannot be applied
-                     *          to the configuration
-                     */
-                    public Object run(Applications param) throws PropertyVetoException, TransactionFailure {
-                        com.sun.enterprise.config.serverbeans.WebModule wm = ConfigSupport.createChildOf(param, com.sun.enterprise.config.serverbeans.WebModule.class);
-                        wm.setName(name);
-                        wm.setContextRoot(contextRoot);
-                        wm.setLocation(docBase);
-                        return wm;
-                    }
-                }, applications);
+                    dc.getConfig();
 
-        
+            if (wm.getContextRoot()==null && contextRoot!=null) {
+                wm.setContextRoot(contextRoot);
+            }
             wmInfo.setBean(wm);
             wmInfo.setDescriptor(wbd);
             wmInfo.setVirtualServers(virtualServers);

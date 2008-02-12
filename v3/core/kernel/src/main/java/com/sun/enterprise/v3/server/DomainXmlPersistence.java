@@ -70,8 +70,10 @@ public class DomainXmlPersistence implements ConfigurationPersistence {
     
     public synchronized void save(DomDocument doc) throws IOException {
 
+
+        File destination = new File(env.getConfigDirPath(), "domain.xml");
         // get a temporary file
-        File f = File.createTempFile("domain", ".xml");
+        File f = File.createTempFile("domain", ".xml", destination.getParentFile());
         if (f==null) {
             throw new IOException("Cannot create temporary file when saving domain.xml");    
         }
@@ -81,7 +83,9 @@ public class DomainXmlPersistence implements ConfigurationPersistence {
         FileOutputStream fos = new FileOutputStream(f);
         try {
             writer = xmlFactory.createXMLStreamWriter(new BufferedOutputStream(fos));
-            doc.writeTo(new IndentingXMLStreamWriter(writer));
+            IndentingXMLStreamWriter indentingXMLStreamWriter = new IndentingXMLStreamWriter(writer);
+            doc.writeTo(indentingXMLStreamWriter);
+            indentingXMLStreamWriter.close();
         } catch (XMLStreamException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         } finally {
@@ -100,17 +104,21 @@ public class DomainXmlPersistence implements ConfigurationPersistence {
         }
         
         // backup the current file
-        File destination = new File(env.getConfigDirPath(), "domain.xml");
         File backup = new File(env.getConfigDirPath(), "domain.bak");
-        if (!backup.delete()) {
+        if (backup.exists() && !backup.delete()) {
             logger.severe("Could not delete previous backup file at " + backup.getAbsolutePath());
+            return;
         }
         if (!destination.renameTo(backup)) {
             logger.severe("Could not rename " + destination.getAbsolutePath() + " to " + backup.getAbsolutePath());
+            return;
         }
         // save the temp file to domain.xml
         if (!f.renameTo(destination)) {
             logger.severe("Could not rename " + f.getAbsolutePath() + " to " + destination.getAbsolutePath());
+            if (!backup.renameTo(destination)) {
+                logger.severe("Could not rename backup to" + destination.getAbsolutePath());               
+            }
         }
     }
 
