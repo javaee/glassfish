@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.Scanner;
 
 /**
- * Holds information about /META-INF/services and /META-INF/habitats for a {@link Module}.
+ * Holds information about /META-INF/services and /META-INF/inhabitants for a {@link Module}.
  *
  * <p>
  * A Service implementation is identified by the service
