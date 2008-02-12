@@ -276,7 +276,12 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
     }
 
     public void preDestroy() {
-
+        try {
+            _embedded.stop();
+        } catch(LifecycleException le) {
+            _logger.log(Level.SEVERE, "Unable to stop web container", le);
+            return;
+        }
     }
 
     public String getName() {

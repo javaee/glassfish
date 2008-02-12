@@ -40,7 +40,7 @@ import com.sun.enterprise.v3.server.V3Environment;
  * @author dochez
  */
 public class DeploymentContextImpl implements DeploymentContext {
-    
+
     final ReadableArchive source;
     final Properties parameters;
     final Logger logger;

@@ -41,6 +41,7 @@ import com.sun.enterprise.module.ModulesRegistry;
 import org.jvnet.hk2.component.PreDestroy;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.config.Transactions;
 
 /**
  * Service responsible for cleaning up before shutdown.
@@ -58,5 +59,6 @@ public class HouseKeeper implements Init, PreDestroy
      */
     public void preDestroy() {
         systemRegistry.shutdown();
+        Transactions.get().shutdown();
     }
 }

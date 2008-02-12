@@ -44,7 +44,7 @@ public class ContainerRegistry {
 
     Map<String, ContainerInfo> containers = new HashMap<String, ContainerInfo>();
 
-    public void addContainer(String name, ContainerInfo info) {
+    public synchronized void addContainer(String name, ContainerInfo info) {
         containers.put(name, info);
         info.setRegistry(this);
     }
@@ -59,12 +59,17 @@ public class ContainerRegistry {
         return sniffers;
     }
 
-    public ContainerInfo getContainer(String containerType) {
+    public synchronized ContainerInfo getContainer(String containerType) {
         return containers.get(containerType);
     }
 
-    public ContainerInfo removeContainer(String containerType) {
-        return containers.remove(containerType);
+    public synchronized ContainerInfo removeContainer(ContainerInfo container) {
+        for (Map.Entry<String, ContainerInfo> entry : containers.entrySet()) {
+            if (entry.getValue().equals(container)) {
+                return containers.remove(entry.getKey());
+            }
+        }
+        return null;
     }
 
     public Iterable<? extends ContainerInfo> getContainers() {

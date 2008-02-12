@@ -9,6 +9,7 @@ import org.glassfish.api.invocation.ComponentInvocation;
 import org.glassfish.api.invocation.InvocationManager;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.PreDestroy;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -16,7 +17,7 @@ import java.util.Timer;
 
 @Service
 public class ContainerUtilImpl
-    implements ContainerUtil {
+    implements ContainerUtil, PreDestroy {
 
     @Inject
     private InvocationManager invMgr;
@@ -79,5 +80,12 @@ public class ContainerUtilImpl
     public void scheduleTask(Runnable runnable) {
         //TODO: Get hold of a worker threadpool and run this runnable
         //TODO: Should we take the ContextClassLoader as parameter
+    }
+
+    /**
+     * The component is about to be removed from commission
+     */
+    public void preDestroy() {
+        _timer.cancel();
     }
 }

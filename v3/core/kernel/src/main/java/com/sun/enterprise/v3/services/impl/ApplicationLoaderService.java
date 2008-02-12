@@ -344,6 +344,7 @@ public class ApplicationLoaderService extends ApplicationLifecycle
             Iterable<ApplicationInfo> apps = containerInfo.getApplications();
             for (ApplicationInfo appInfo : apps) {
                 props.put(DeployCommand.NAME, appInfo.getName());
+
                 DeploymentContextImpl depContext = new DeploymentContextImpl(
                     logger,appInfo.getSource() , props, env);
                 super.unload(appInfo.getName(), depContext, dummy);

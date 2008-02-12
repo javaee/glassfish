@@ -48,6 +48,7 @@ import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.component.Inhabitant;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -424,21 +425,19 @@ abstract public class ApplicationLifecycle {
         }
     }
 
-    // Todo : switch info to use inhabitant
+    // Todo : take care of Deployer when unloading...
     protected void stopContainer(Logger logger, ContainerInfo info)
     {
-        /*if (info.getDeployer()!=null) {
-
-                componentMgr.releaseComponent(info.getDeployer());
-            }
-        } catch(ComponentException e) {
-            logger.log(Level.SEVERE, "Cannot release deployer : " + info.getDeployer(), e);
+        Inhabitant i = habitat.getInhabitantByType(info.getDeployer().getClass());
+        if (i!=null) {
+            i.release();
         }
-        try {
-            componentMgr.releaseComponent(info.getContainer());
-        } catch(ComponentException e) {
-            logger.log(Level.SEVERE, "Cannot release container : " + info.getContainer(), e);
-        }*/
+        i = habitat.getInhabitantByType(info.getContainer().getClass());
+        if (i!=null) {
+            i.release();
+        }
+        containerRegistry.removeContainer(info);
+
     }
 
     protected ApplicationInfo unload(String appName, DeploymentContext context, ActionReport report) {
@@ -451,7 +450,11 @@ abstract public class ApplicationLifecycle {
         }
         for (ModuleInfo moduleInfo : info.getModuleInfos()) {
             unloadModule(moduleInfo, info, context, report);
+            if (!moduleInfo.getContainerInfo().getApplications().iterator().hasNext()) {
+                stopContainer(context.getLogger(), moduleInfo.getContainerInfo());
+            }
         }
+
 
         appRegistry.remove(appName);
         return info;
@@ -518,6 +521,7 @@ abstract public class ApplicationLifecycle {
             failure(context.getLogger(), "Exception while shutting down application container", e, report);
             return false;
         }
+        module.getContainerInfo().remove(info);
         return true;
     }
 }
