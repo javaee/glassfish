@@ -44,6 +44,7 @@ import javax.resource.ResourceException;
 import javax.resource.spi.ConnectionManager;
 import java.sql.SQLException;
 import java.util.logging.Level;
+import java.sql.*;
 
 /**
  * Holds the <code>java.sql.Connection</code> object, which is to be

@@ -41,6 +41,7 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.*;
 
 /**
  * Wrapper class for DatabaseMetaData for JDBC 4.0 <br>
