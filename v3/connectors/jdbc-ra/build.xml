@@ -34,43 +34,27 @@
  holder.
 -->
 
-        <!--
-        /*
-        * @(#)build.xml	1.0 02/07/22
-        */
-        -->
 
 <project name="JDBCConnector top level" default="build">
     <property name="pkg.dir" value="com/sun/gjc/spi"/>
 
-
-    <!--
-        <property file="../bootstrap/project.properties"/>
-    -->
     <property file="./build.properties"/>
 
     <target name="all" depends="build"/>
 
-
-    <target name="all-jdbc-4.0" depends="build-jdbc-4.0"/>
-
-    <target name="build" depends="compile,assemble"/>
-    <target name="build-jdbc-4.0" depends="compile-jdbc-4.0"
-            description="builds only jdbc 4.0 classes"/>
+    <target name="build" depends="compile,resolve-binary-dependencies,assemble"/>
 
     <target name="clean" description="Clean the build">
         <delete includeEmptyDirs="true" failonerror="false">
             <fileset dir="${component.classes.dir}"/>
             <fileset dir="${component.lib.home}"/>
             <fileset dir="${component.target.rar}"/>
+            <fileset dir="${component.target.binary}"/>
         </delete>
     </target>
 
-    <resolveArtifact artifactId="jdbc-ra-dependencies" groupId="org.glassfish.connectors.jdbc-ra"
-                     property="jdbc-ra-dependencies.zip"/>
-
-    <!-- init. Initialization involves creating publishing directories and
-         OS specific targets. -->
+    <!-- init. Initialization involves creating publishing directories and finding jdk version, how binary dependency
+    need to be resolved (either by build or by download) -->
     <target name="init" description="${component.name} initialization">
         <tstamp>
             <format property="start.time" pattern="MM/dd/yyyy hh:mm aa"/>
@@ -89,20 +73,39 @@
                 <available classname="java.sql.Wrapper"/>
             </not>
         </condition>
+
+        <condition property="generate.binary">
+            <istrue value="${build.binary.flag}"/>
+        </condition>
+
+        <condition property="download.binary">
+            <isfalse value="${build.binary.flag}"/>
+        </condition>
     </target>
 
-    <target name="install-binary-dependencies" depends="init">
-        <!-- unzip the binary dependencies (jdbc30 & jdbc40 related classes)
-later, during "compile" depending on the jdk version, appropriate classes
-(either jdbc30 or jdbc40) will be compiled and overwritten -->
+    <target name="resolve-binary-dependencies">
+        <antcall target="install-binary-dependencies"/>
+        <antcall target="generate-binary-dependencies"/>
+    </target>
 
+
+    <target name="install-binary-dependencies" depends="init" if="download.binary">
+        <resolveArtifact artifactId="jdbc-ra-dependencies" groupId="org.glassfish.connectors.jdbc-ra"
+                         property="jdbc-ra-dependencies.zip"/>
+        <echo message="installing binary dependencies from repository"/>
+
+        <!-- unzip the binary dependencies (jdbc30 & jdbc40 related classes)
+        later, during "compile" depending on the jdk version, appropriate classes
+        (either jdbc30 or jdbc40) will be compiled and overwritten -->
         <unzip src="${jdbc-ra-dependencies.zip}" dest="${component.classes.dir}"/>
         <unzip src="${component.classes.dir}/glassfish-jdbcra-binary-dependencies.jar" dest="${component.classes.dir}"/>
     </target>
 
+
     <!-- compile -->
-    <target name="compile" depends="init, install-binary-dependencies"
-            description="Compile com/sun/* com/iplanet/* sources">
+    <!--<target name="compile" depends="init"-->
+    <target name="compile" depends="init" description="Compile com/sun/* sources">
+
         <javac srcdir="${src.dir}"
                destdir="${component.classes.dir}"
                debug="${javac.debug}"
@@ -130,7 +133,7 @@ later, during "compile" depending on the jdk version, appropriate classes
     </target>
 
     <!-- If JDK is 1.5, compile JDBC 30 source -->
-    <target name="compile-jdbc-30" if="jdbc-3.0" depends="init">
+    <target name="compile-jdbc-30" if="jdbc-3.0">
         <echo message="building jdbc 30 classes"/>
         <javac srcdir="${src.dir}"
                destdir="${component.classes.dir}"
@@ -176,27 +179,57 @@ later, during "compile" depending on the jdk version, appropriate classes
         </javac>
     </target>
 
-    <target name="generate-jdbc-3.0-binary" description="generate jdbc-30 (com/sun/gjc/spi/jdbc30) binary">
-        <antcall target="compile-jdbc-30"/>
-        <jar jarfile="${30binary.jar}" update="yes"
+    <target name="generate-binary-dependencies" if="generate.binary"
+            description="generate binary dependency with jdbc30 and jdbc40 classes">
+        <echo message="generating binary dependency with jdbc30 and jdbc40 classes"/>
+        <mkdir dir="${component.target.binary}"/>
+        <antcall target="generate-jdbc-3.0-binary"/>
+        <antcall target="generate-jdbc-4.0-binary"/>
+        <jar jarfile="${component.target.binary}/${glassfish-jdbcra-binary-dependencies.jar}" update="yes"
              basedir="${component.classes.dir}"
-             includes="com/sun/gjc/spi/jdbc30/*"/>
+             includes="com/sun/gjc/spi/jdbc30/*, com/sun/gjc/spi/jdbc40/*"/>
+        <tstamp>
+            <format property="TIMESTAMP" pattern="yyyy-MM-dd-HH-mm"/>
+        </tstamp>
+        <jar jarfile="${component.target.binary}/${binary.name.prefix}-${TIMESTAMP}.jar"
+             includes="${glassfish-jdbcra-binary-dependencies.jar}" basedir="${component.target.binary}"/>
+        <echo message="JDBC Binary dependency version no. (timestamp) : ${TIMESTAMP}"/>        
+
+    </target>
+
+
+    <target name="generate-jdbc-3.0-binary" description="generate jdbc-30 (com/sun/gjc/spi/jdbc30) binary">
+        <antcall target="compile-jdbc-30-with-explicit-jdk1.5"/>
     </target>
 
     <target name="generate-jdbc-4.0-binary" description="generate jdbc-40 (com/sun/gjc/spi/jdbc40) binary">
-        <antcall target="compile-jdbc-40"/>
-        <jar jarfile="${40binary.jar}" update="yes"
-             basedir="${component.classes.dir}"
-             includes="com/sun/gjc/spi/jdbc40/*"/>
+        <antcall target="compile-jdbc-40-with-explicit-jdk1.6"/>
     </target>
 
-    <target name="compile-jdbc-4.0" depends="init"
+    <target name="compile-jdbc-40-with-explicit-jdk1.6"
             description="Compiles com/sun/gjc/spi/jdbc40 sources">
-        <javac srcdir="${src.dir}"
+        <javac srcdir="${src.dir}" includejavaruntime="no" fork="true"
                destdir="${component.classes.dir}"
                debug="${javac.debug}"
-               optimize="${javac.optimize}"
-               source="${javac.source}"
+               optimize="${javac.optimize}" compiler="modern"
+               source="${javac.source}" executable="${jdk1.6}/bin/javac"
+               deprecation="${javac.deprecation}"
+               failonerror="true"
+               target="1.5">
+            <classpath>
+                <path path="${compile_classpath}"></path>
+            </classpath>
+            <include name="com/sun/gjc/spi/jdbc40/**"/>
+        </javac>
+    </target>
+
+    <target name="compile-jdbc-30-with-explicit-jdk1.5"
+            description="Compiles com/sun/gjc/spi/jdbc30 sources">
+        <javac srcdir="${src.dir}" includejavaruntime="no" fork="true"
+               destdir="${component.classes.dir}"
+               debug="${javac.debug}"
+               optimize="${javac.optimize}" compiler="modern"
+               source="${javac.source}" executable="${jdk1.5}/bin/javac"
                deprecation="${javac.deprecation}"
                failonerror="true"
                target="1.5">
@@ -204,16 +237,9 @@ later, during "compile" depending on the jdk version, appropriate classes
                 <path path="${compile_classpath}"></path>
             </classpath>
 
-            <include name="com/sun/gjc/spi/jdbc40/**"/>
+            <include name="com/sun/gjc/spi/jdbc30/**"/>
         </javac>
     </target>
-
-
-    <!--    <target name="assemble-jdbc-4.0" description="updates appserv-rt.jar with jdbc-4.0 classes">
-        <jar jarfile="${appserv-rt.jar}" update="yes"
-             basedir="${component.classes.dir}"
-             includes="com/sun/gjc/spi/jdbc40/*"/>
-    </target>-->
 
     <target name="assemble">
 
@@ -243,6 +269,7 @@ later, during "compile" depending on the jdk version, appropriate classes
                         <include name="ra.xml"/>
                     </metainf>
                 </jar>
+                <echo message="Assembling __xa rar"/>
 
                 <jar jarfile="${component.lib.home}/__xa_jdbc_ra.jar" update="true" basedir="${component.classes.dir}"
                     includes ="${pkg.dir}/**/*, com/sun/gjc/util/**/*, com/sun/gjc/common/**/*, com/sun/appserv/jdbc/**/*, **/*.properties">
@@ -282,7 +309,7 @@ later, during "compile" depending on the jdk version, appropriate classes
             <exclude name="com/sun/gjc/spi/CPManagedConnectionFactory.class"/>
             <exclude name="com/sun/gjc/spi/DMManagedConnectionFactory.class"/>
         </jar>
-
+            <echo message="Assembling __ds rar"/>
         <jar jarfile="${component.lib.home}/__ds_jdbc_ra.rar" update="true" basedir="${component.lib.home}">
             <include name="__ds_jdbc_ra.jar"/>
         </jar>
@@ -315,6 +342,8 @@ later, during "compile" depending on the jdk version, appropriate classes
             <exclude name="com/sun/gjc/spi/DMManagedConnectionFactory.class"/>
         </jar>
 
+        <echo message="Assembling __cp rar"/>
+
         <jar jarfile="${component.lib.home}/__cp_jdbc_ra.rar" update="true" basedir="${component.lib.home}">
             <include name="__cp_jdbc_ra.jar"/>
         </jar>
@@ -334,4 +363,3 @@ later, during "compile" depending on the jdk version, appropriate classes
     </target>
 
 </project>
-

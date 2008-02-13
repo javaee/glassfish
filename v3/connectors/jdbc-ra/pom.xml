@@ -46,14 +46,20 @@
 
         <dependency>
             <groupId>org.glassfish.common</groupId>
-            <artifactId>common-util</artifactId>
+            <artifactId>glassfish-api</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
 
         <dependency>
+            <groupId>org.glassfish.common</groupId>
+            <artifactId>common-util</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+
+        <!--<dependency>
             <groupId>org.glassfish.connectors.jdbc-ra</groupId>
             <artifactId>jdbc-ra-dependencies</artifactId>
             <version>${jdbc-ra-dependencies.version}</version>
-        </dependency>
+        </dependency>-->
     </dependencies>
 </project>
