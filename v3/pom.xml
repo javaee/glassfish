@@ -145,6 +145,7 @@
         <jruby.version>1.0.3</jruby.version>
         <jmac-api.version>1.0</jmac-api.version>
         <jaxws-ri.version>2.1.3</jaxws-ri.version>
+        <jdbc-ra.version>10.0-SNAPSHOT</jdbc-ra.version>
     </properties>
     <modules>
     	<module>build</module>
@@ -153,6 +154,7 @@
     	<module>core</module>
     	<module>web</module>
     	<module>ejb</module>
+    	<module>connectors</module>
     	<module>extras</module>
     	<module>distributions</module>
     </modules> 

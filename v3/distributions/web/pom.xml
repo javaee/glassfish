@@ -126,7 +126,17 @@
             <artifactId>amx-impl</artifactId>
             <version>${pe.version}</version>
         </dependency>
-
+        <dependency>
+            <groupId>org.glassfish.connectors</groupId>
+            <artifactId>jdbc-ra</artifactId>
+            <version>${jdbc-ra.version}</version>
+            <type>zip</type>
+        </dependency>
+        <dependency>
+                <groupId>org.glassfish.connectors</groupId>
+                <artifactId>gf-connectors-connector</artifactId>
+            <version>${pe.version}</version>
+        </dependency>
     </dependencies>
 </project>
 
