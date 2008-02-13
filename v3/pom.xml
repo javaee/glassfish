@@ -188,7 +188,12 @@
         <repository>
             <id>maven2.java.net</id>
             <name>Java.net Repository for Maven 2</name>
-            <!-- url>http://download.java.net/maven/2</url -->
+            <url>http://download.java.net/maven/2</url>
+        </repository>
+        <repository>
+            <!-- in case the primary repository goes down -->
+            <id>maven2.java.net-backup</id>
+            <name>Java.net Repository for Maven 2</name>
             <url>https://maven2-repository.dev.java.net/nonav/repository</url>
         </repository>
     </repositories>
