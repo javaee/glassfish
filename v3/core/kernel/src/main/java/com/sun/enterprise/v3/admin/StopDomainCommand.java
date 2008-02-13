@@ -61,11 +61,19 @@ public class StopDomainCommand implements AdminCommand {
         context.getLogger().info(localStrings.getLocalString("stop.domain.init","Server shutdown initiated"));
         try {
             for (Inhabitant<? extends Startup> svc : habitat.getInhabitants(Startup.class)) {
-                svc.release();
+                try {
+                    svc.release();
+                } catch(Throwable e) {
+                    e.printStackTrace();
+                }
             }
 
             for (Inhabitant<? extends Init> svc : habitat.getInhabitants(Init.class)) {
-                svc.release();
+                try {
+                    svc.release();
+                } catch(Exception e) {
+                    e.printStackTrace();
+                }
             }
 
         } catch(ComponentException e) {

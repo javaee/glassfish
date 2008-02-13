@@ -29,6 +29,7 @@ import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.glassfish.api.Startup;
+import org.glassfish.api.Async;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -52,6 +53,7 @@ import org.jvnet.hk2.component.Singleton;
  */
 @Service
 @Scoped(Singleton.class)
+@Async
 public class AutoDeployService implements Startup, PostConstruct, PreDestroy {
 
     @Inject

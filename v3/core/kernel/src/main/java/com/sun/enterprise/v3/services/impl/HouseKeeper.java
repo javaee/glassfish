@@ -38,7 +38,9 @@ package com.sun.enterprise.v3.services.impl;
 
 import com.sun.enterprise.v3.server.Init;
 import com.sun.enterprise.module.ModulesRegistry;
+import com.sun.appserv.connectors.spi.ConnectorRuntime;
 import org.jvnet.hk2.component.PreDestroy;
+import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.config.Transactions;
@@ -53,6 +55,9 @@ public class HouseKeeper implements Init, PreDestroy
 {
     @Inject
     ModulesRegistry systemRegistry;
+
+    @Inject
+    Habitat habitat;
     
     /**
      * The component is about to be removed from commission
@@ -60,5 +65,6 @@ public class HouseKeeper implements Init, PreDestroy
     public void preDestroy() {
         systemRegistry.shutdown();
         Transactions.get().shutdown();
+        habitat.getInhabitant(ConnectorRuntime.class, null).release();
     }
 }

@@ -24,6 +24,8 @@
 package com.sun.enterprise.v3.deployment;
 
 import com.sun.enterprise.module.ModulesRegistry;
+import com.sun.enterprise.module.ModuleDefinition;
+import com.sun.enterprise.module.Module;
 import org.glassfish.api.container.Sniffer;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.jvnet.hk2.annotations.Inject;
@@ -101,14 +103,23 @@ public abstract class GenericSniffer implements Sniffer {
         return containerName;
     }
 
-    /**
+   /**
      * Sets up the container libraries so that any imported bundle from the
      * connector jar file will now be known to the module subsystem
+     *
+     * This method returns a {@link ModuleDefinition} for the module containing
+     * the core implementation of the container. That means that this module
+     * will be locked as long as there is at least one module loaded in the
+     * associated container.
+     *
      * @param containerHome is where the container implementation resides
      * @param logger the logger to use
-     * @throws IOException exception if something goes sour
+     * @return the module definition of the core container implementation.
+     *
+     * @throws java.io.IOException exception if something goes sour
      */
-    public void setup(String containerHome, Logger logger) throws IOException {
+    public Module setup(String containerHome, Logger logger) throws IOException {
+       return null;
     }
 
     /**

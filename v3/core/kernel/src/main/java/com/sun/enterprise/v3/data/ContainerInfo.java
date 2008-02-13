@@ -28,6 +28,7 @@ import org.glassfish.api.container.Container;
 import org.glassfish.api.deployment.Deployer;
 import org.glassfish.api.deployment.ApplicationContainer;
 import com.sun.enterprise.v3.data.ApplicationInfo;
+import com.sun.enterprise.module.Module;
 
 
 import java.util.*;
@@ -51,6 +52,7 @@ public class ContainerInfo<T extends Container, U extends ApplicationContainer> 
     Map<String, ApplicationInfo> deployedApps = new HashMap<String, ApplicationInfo>();
     Map<WeakReference<Thread>, Set<Integer>> addedThreadLocals = new HashMap();
     Deployer deployer;
+    Module topModule;
 
     /**
      * Creates a new ContractProvider info with references to the container, the sniffer
@@ -137,7 +139,9 @@ public class ContainerInfo<T extends Container, U extends ApplicationContainer> 
      * @return an iterable list
      */
     public Iterable<ApplicationInfo> getApplications() {
-        return deployedApps.values();
+        ArrayList<ApplicationInfo> copy = new ArrayList<ApplicationInfo>(deployedApps.size());
+        copy.addAll(deployedApps.values());
+        return copy;
     }
 
     /*
@@ -150,6 +154,14 @@ public class ContainerInfo<T extends Container, U extends ApplicationContainer> 
 
     public void stop() {
 
+    }
+
+    public void setMainModule(Module module) {
+        this.topModule = module;
+    }
+
+    public Module getMainModule() {
+        return topModule;
     }
 
     /**

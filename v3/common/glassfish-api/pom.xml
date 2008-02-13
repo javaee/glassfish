@@ -79,6 +79,7 @@
              <groupId>javax.resource</groupId>
              <artifactId>connector-api</artifactId>
              <version>${connector-api.version}</version>
+             <scope>provided</scope>
          </dependency>
     </dependencies>
 </project>

@@ -80,8 +80,7 @@ public class ListContainersCommand implements AdminCommand {
                     container.addProperty(
                             localStrings.getLocalString("status", "Status"),
                             localStrings.getLocalString("started", "Started"));
-                    // TODO (Sahoo): Stop using ModuleImpl
-                    Module connectorModule = ModuleImpl.find(containerInfo.getContainer().getClass());
+                    Module connectorModule = containerInfo.getMainModule();
                     container.addProperty(localStrings.getLocalString("connector", "Connector"),
                             connectorModule.getModuleDefinition().getName() +
                             ":" + connectorModule.getModuleDefinition().getVersion());

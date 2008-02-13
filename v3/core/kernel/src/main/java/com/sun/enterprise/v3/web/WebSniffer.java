@@ -40,14 +40,9 @@ import org.jvnet.hk2.component.Singleton;
 public class WebSniffer  extends GenericSniffer implements Sniffer {
 
     public WebSniffer() {
-        this("web", "WEB-INF/web.xml", null);
+        super("web", "WEB-INF/web.xml", null);
     }
     
-    public WebSniffer(String containerName, String appStigma, String urlPattern) {
-        super(containerName, appStigma, urlPattern);
-    }    
-
-    //final String[] containers = { "com.sun.enterprise.web.WebContainer" ,"com.sun.enterprise.security.SecurityContainer"};
     final String[] containers = { "com.sun.enterprise.web.WebContainer" };
     public String[] getContainersNames() {
         return containers;

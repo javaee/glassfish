@@ -282,6 +282,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             _logger.log(Level.SEVERE, "Unable to stop web container", le);
             return;
         }
+        _timer.cancel();
     }
 
     public String getName() {

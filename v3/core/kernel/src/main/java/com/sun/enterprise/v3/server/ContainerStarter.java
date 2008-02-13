@@ -66,7 +66,7 @@ public class ContainerStarter {
         this.logger = logger;
     }
 
-    public Collection<ContainerInfo> startContainer(Sniffer sniffer) {
+    public Collection<ContainerInfo> startContainer(Sniffer sniffer, Module snifferModule) {
 
         assert sniffer!=null;
         String containerName = sniffer.getModuleType();
@@ -95,11 +95,15 @@ public class ContainerStarter {
         assert containerHome!=null;
 
 
+        Module mainModule = null;
         // I do the container setup first so the code has a chance to set up
         // repositories which would allow access to the connector module.
         try {
 
-            sniffer.setup(containerHome, logger);
+            mainModule = sniffer.setup(containerHome, logger);
+            if (mainModule!=null) {
+                snifferModule.addImport(mainModule);
+            }
         } catch(FileNotFoundException fnf) {
             logger.log(Level.SEVERE, fnf.getMessage());
             return null;
@@ -129,6 +133,12 @@ public class ContainerStarter {
                     ContainerRegistry registry = habitat.getComponent(ContainerRegistry.class);
                     registry.addContainer(name, info);
                     containers.add(info);
+
+                    if (mainModule==null) {
+                        info.setMainModule(snifferModule);
+                    } else {
+                        info.setMainModule(mainModule);
+                    }
                 }
             } catch (ComponentException e) {
                 logger.log(Level.SEVERE, "Cannot create or inject Container", e);
@@ -137,7 +147,7 @@ public class ContainerStarter {
                 Thread.currentThread().setContextClassLoader(cl);
             }
 
-        }
+        }                                       
         return containers;
     }
 

@@ -57,12 +57,11 @@ public class ListApplicationsCommand implements AdminCommand {
         for (ContainerInfo containerInfo : containerRegistry.getContainers()) {
             ActionReport.MessagePart containerChild = part.addChild();
             containerChild.setMessage(containerInfo.getSniffer().getModuleType() + " ContractProvider");
-            // TODO (Sahoo): Stop using ModuleImpl
-            Module connectorModule = ModuleImpl.find(containerInfo.getContainer().getClass());            
+            Module connectorModule = containerInfo.getMainModule();          
             containerChild.addProperty("Connector module", connectorModule.getModuleDefinition().getName());
             containerChild.addProperty("Sniffer module", containerInfo.getSniffer().getClass().toString());
             containerChild.setChildrenType("Application");
-            Iterable<ApplicationInfo> apps  = containerInfo.getApplications();            
+            Iterable<ApplicationInfo> apps  = containerInfo.getApplications();
             for (ApplicationInfo info : apps) {
                 ActionReport.MessagePart appPart = containerChild.addChild();
                 appPart.setMessage(info.getName());

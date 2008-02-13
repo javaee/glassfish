@@ -82,9 +82,6 @@ public class ApplicationLoaderService extends ApplicationLifecycle
     V3Environment env;
 
     @Inject
-    DeploymentService deploymentService;
-
-    @Inject
     ApplicationMetaDataPersistence metaData;
 
     @Inject

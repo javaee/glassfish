@@ -89,7 +89,7 @@ public final class BootstrapContextImpl implements BootstrapContext, Serializabl
      * @return <code>java.util.Timer</code> object.
      */
     public Timer createTimer() {
-        return new Timer();
+        return new Timer("connectors-runtime-context");
     }
 
     /**

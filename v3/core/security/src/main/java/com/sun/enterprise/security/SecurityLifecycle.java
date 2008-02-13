@@ -71,7 +71,7 @@ import org.jvnet.hk2.component.Singleton;
  */
 @Service
 @Scoped(Singleton.class)
-public class SecurityLifecycle implements  Startup, PostConstruct, PreDestroy {
+public class SecurityLifecycle implements  PostConstruct, PreDestroy {
     
     @Inject
     private ServerContext sc;

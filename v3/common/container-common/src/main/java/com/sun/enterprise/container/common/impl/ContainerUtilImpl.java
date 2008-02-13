@@ -31,7 +31,7 @@ public class ContainerUtilImpl
     @Inject
     private CallFlowAgent callFlowAgent;
     
-    private static Timer _timer = new Timer(true);
+    private static Timer _timer = new Timer("container-util",true);
 
     private static ContainerUtil _util;
 

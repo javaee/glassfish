@@ -32,6 +32,7 @@ import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 import com.sun.enterprise.module.Module;
+import com.sun.enterprise.module.ModuleDefinition;
 
 /**
  * A sniffer implementation is responsible for identifying a particular
@@ -70,11 +71,19 @@ public interface Sniffer {
    /**                                          
      * Sets up the container libraries so that any imported bundle from the
      * connector jar file will now be known to the module subsystem
+     *
+     * This method returns a {@link ModuleDefinition} for the module containing
+     * the core implementation of the container. That means that this module
+     * will be locked as long as there is at least one module loaded in the
+     * associated container.
+     *
      * @param containerHome is where the container implementation resides
      * @param logger the logger to use
+     * @return the module definition of the core container implementation.
+     *
      * @throws java.io.IOException exception if something goes sour
      */
-    public void setup(String containerHome, Logger logger) throws IOException;
+    public Module setup(String containerHome, Logger logger) throws IOException;
 
    /**
      * Tears down a container, remove all imported libraries from the module

@@ -32,9 +32,11 @@ import com.sun.enterprise.module.impl.ModuleImpl;
 import com.sun.enterprise.module.impl.ModulesRegistryImpl;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.Startup;
+import org.glassfish.api.Async;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.component.Inhabitant;
 
 import java.io.File;
 import java.io.IOException;
@@ -80,7 +82,7 @@ public class AppServerStartup implements ModuleStartup {
     public void run() {
 
         logger.fine("GlassFish v3 starting");
-        logger.fine("HK2 initialized in " + (System.currentTimeMillis() - context.getCreationTime()) + " ms");
+        logger.info("HK2 initialized in " + (System.currentTimeMillis() - context.getCreationTime()) + " ms");
         if (context==null) {
             System.err.println("Startup context not provided, cannot continue");
         }
@@ -101,13 +103,28 @@ public class AppServerStartup implements ModuleStartup {
         // run the init services
         Collection<Init> inits = habitat.getAllByContract(Init.class);
         for (Init init : inits) {
-            logger.info("Init service : " + init);
+            logger.fine("Init service : " + init);
+            //logger.info(init + " Init done in " + (System.currentTimeMillis() - context.getCreationTime()) + " ms");
         }
+        logger.fine("Init done in " + (System.currentTimeMillis() - context.getCreationTime()) + " ms");
 
         // run the startup services
-        Collection<Startup> startups = habitat.getAllByContract(Startup.class);
-        for (Startup startup : startups) {
-            logger.info("Startup service : " + startup);
+        Thread t = new Thread(new Runnable() {
+            public void run() {
+                for (final Inhabitant i : habitat.getInhabitants(Startup.class)) {
+                    if (i.type().getAnnotation(Async.class)!=null) {
+                        //logger.fine("Runs " + i.get() + "asynchronously");
+                        i.get();
+                    }
+                }
+            }
+        });
+        t.start(); 
+        for (final Inhabitant i : habitat.getInhabitants(Startup.class)) {
+            if (i.type().getAnnotation(Async.class)==null) {
+                logger.fine("Startup service " + i.get());
+                //logger.info(i.get() + " startup done in " + (System.currentTimeMillis() - context.getCreationTime()) + " ms");
+            }
         }
 
         logger.info("Glassfish v3 started in "

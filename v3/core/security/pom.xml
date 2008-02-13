@@ -7,8 +7,8 @@
         <version>10.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>        
     </parent>    
-    <groupId>org.glassfish.core.security</groupId>
-    <artifactId>core-security</artifactId>
+    <groupId>org.glassfish.core</groupId>
+    <artifactId>security</artifactId>
     <packaging>hk2-jar</packaging>
     <name>Security Core Classes</name>
     <developers>
@@ -69,7 +69,7 @@
             <artifactId>jmac</artifactId>
             <version>${jmac-api.version}</version>
         </dependency>
-        <dependency>
+        <!--dependency>
             <groupId>javax.xml.ws</groupId>
             <artifactId>jaxws-api</artifactId>
             <version>${jaxws-api.version}</version>
@@ -88,17 +88,17 @@
             <groupId>javax.xml.bind</groupId>
             <artifactId>jaxb-api</artifactId>
             <version>${jaxb-api.version}</version>
-        </dependency>
+        </dependency-->
         <dependency>
             <groupId>com.sun.xml.ws</groupId>
             <artifactId>jaxws-rt</artifactId>
             <version>${jaxws-ri.version}</version>
         </dependency>
-        <dependency>
+        <!--dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>servlet-api</artifactId>
             <version>${servlet-api.version}</version>
-        </dependency>
+        </dependency-->
         <dependency>
             <groupId>org.glassfish.web</groupId>
             <artifactId>webtier</artifactId>
@@ -108,6 +108,11 @@
             <groupId>org.glassfish.core</groupId>
             <artifactId>kernel</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.javaee</groupId>
+            <artifactId>javaee</artifactId>
+            <version>${javaee-api.version}</version>       
         </dependency>
     </dependencies>
 </project>

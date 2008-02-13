@@ -52,6 +52,7 @@ import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.Singleton;
+import org.jvnet.hk2.component.PreDestroy;
 
 import javax.naming.ConfigurationException;
 import javax.resource.spi.ConnectionManager;
@@ -66,7 +67,7 @@ import java.util.logging.Logger;
 
 @Service
 @Scoped(Singleton.class)
-public class ConnectorRuntime implements ConnectorConstants, com.sun.appserv.connectors.spi.ConnectorRuntime, PostConstruct {
+public class ConnectorRuntime implements ConnectorConstants, com.sun.appserv.connectors.spi.ConnectorRuntime, PostConstruct, PreDestroy {
 
     /* TODO V3 environment set to server as of today
     private volatile int environment = CLIENT;*/
@@ -546,7 +547,7 @@ public class ConnectorRuntime implements ConnectorConstants, com.sun.appserv.con
             if (timer == null) {
                 // Create a scheduler as a daemon so it
                 // won't prevent process from exiting.
-                timer = new Timer(true);
+                timer = new Timer("connector-runtime", true);
             }
         }
         return timer;
@@ -557,4 +558,13 @@ public class ConnectorRuntime implements ConnectorConstants, com.sun.appserv.con
         return containerUtil.getComponentEnvManager().getCurrentJndiNameEnvironment().getResourceReferenceDescriptors();
     }
 */
+
+    /**
+     * The component is about to be removed from commission
+     */
+    public void preDestroy() {
+        if (timer!=null) {
+            timer.cancel();
+        }
+    }
 }

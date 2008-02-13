@@ -41,6 +41,7 @@ import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.PreDestroy;
 import org.glassfish.api.Startup;
+import org.glassfish.api.Async;
 import org.glassfish.api.naming.GlassfishNamingManager;
 import com.sun.enterprise.config.serverbeans.JdbcResource;
 import com.sun.enterprise.config.serverbeans.JdbcConnectionPool;
@@ -61,6 +62,7 @@ import java.util.ArrayList;
  * @author Jerome Dochez
  */
 @Service
+@Async
 public class ResourceAdaptersBinder implements Startup, PostConstruct, PreDestroy {
 
     @Inject
@@ -150,12 +152,13 @@ public class ResourceAdaptersBinder implements Startup, PostConstruct, PreDestro
      * The component is about to be removed from commission
      */
     public void preDestroy() {
-        ConnectorRuntime runtime = connectorRuntimeHabitat.getComponent(ConnectorRuntime.class, null);
+        /*ConnectorRuntime runtime = connectorRuntimeHabitat.getComponent(ConnectorRuntime.class, null);
 
         List<String> poolNames = getAllPoolNames(pools);
         List<String> resourceNames = getAllResourceNames(resources);
 
         runtime.shutdownAllActiveResourceAdapters(poolNames, resourceNames);
+        */
     }
 
     private List<String> getAllPoolNames(JdbcConnectionPool[] pools) {
@@ -171,7 +174,7 @@ public class ResourceAdaptersBinder implements Startup, PostConstruct, PreDestro
         for(JdbcResource resource : resources){
             resourceNames.add(resource.getJndiName());
         }
-        return resourceNames;
+        return resourceNames;           
     }
 
 }

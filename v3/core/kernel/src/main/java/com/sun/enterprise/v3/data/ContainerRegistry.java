@@ -28,10 +28,7 @@ import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Singleton;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * The container Registry holds references to the currently running containers.
@@ -72,8 +69,10 @@ public class ContainerRegistry {
         return null;
     }
 
-    public Iterable<? extends ContainerInfo> getContainers() {
-        return containers.values();
+    public Iterable<ContainerInfo> getContainers() {
+        ArrayList<ContainerInfo> copy = new ArrayList<ContainerInfo>(containers.size());
+        copy.addAll(containers.values());
+        return copy;
     }
         
 }

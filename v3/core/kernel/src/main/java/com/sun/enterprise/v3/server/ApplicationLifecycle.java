@@ -24,10 +24,8 @@
 package com.sun.enterprise.v3.server;
 
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
-import com.sun.enterprise.module.ModulesRegistry;
-import com.sun.enterprise.module.Module;
-import com.sun.enterprise.module.ResolveError;
-import com.sun.enterprise.module.ModuleDefinition;
+import com.sun.enterprise.module.*;
+import com.sun.enterprise.module.bootstrap.BootException;
 import com.sun.enterprise.module.impl.ModuleImpl;
 import com.sun.enterprise.module.impl.ClassLoaderProxy;
 import com.sun.enterprise.v3.data.*;
@@ -50,13 +48,18 @@ import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
+import java.util.jar.Manifest;
+import java.util.jar.JarFile;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.net.URL;
+import java.net.JarURLConnection;
+import java.net.URISyntaxException;
+import java.net.MalformedURLException;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * Application Loader is providing utitily methods to load applications
@@ -206,17 +209,54 @@ abstract public class ApplicationLifecycle {
                 failure(logger, "no container associated with application of type : " + sniffer.getModuleType(), null, report);
                 return null;
             }
+
+            String resourceName = sniffer.getClass().getName().replace(".","/")+".class";
+            URL resource = sniffer.getClass().getClassLoader().getResource(resourceName);
+            if (resource==null) {
+                failure(logger, "cannot find container module from service implementation " + sniffer.getClass(), null, report);
+                return null;
+            }
+            String resourceID = resource.toString();
+            String manifest = resourceID.substring(0, resourceID.length() - resourceName.length())+ JarFile.MANIFEST_NAME;
+            Manifest m = null;
+
+            InputStream is = null;
+            try {
+                URL manifestURL = new URL(manifest);
+                is = manifestURL.openStream();
+                if (is!=null) {
+                    m = new Manifest(is);
+                }
+            } catch (MalformedURLException e) {
+            } catch (IOException e) {
+            } finally {
+                if (is!=null) {
+                    try {
+                        is.close();
+                    } catch (IOException e) {                        
+                    }
+                }
+            }
+            Module snifferModule=null;
+            if (m!=null) {
+                String bundleName = m.getMainAttributes().getValue(ManifestConstants.BUNDLE_NAME);
+                snifferModule = modulesRegistry.makeModuleFor(bundleName, null);
+            }
+            if (snifferModule==null) {
+                failure(logger, "cannot find container module from service implementation " + sniffer.getClass(), null, report);
+                return null;
+            }
+
             // start all the containers associated with sniffers.
             ContainerInfo containerInfo = containerRegistry.getContainer(sniffer.getContainersNames()[0]);
             if (containerInfo == null) {
-                Collection<ContainerInfo> containersInfo = startContainer(sniffer, logger, report);
+                Collection<ContainerInfo> containersInfo = startContainer(sniffer, snifferModule, logger, report);
                 if (containersInfo==null || containersInfo.size()==0) {
                     stopContainers(logger, startedContainers);
                     failure(logger, "Cannot start container(s) associated to application of type : " + sniffer.getModuleType(), null, report);
                     return null;
                 }
                 startedContainers.addAll(containersInfo);
-                break;
             }
 
         }
@@ -281,7 +321,7 @@ abstract public class ApplicationLifecycle {
         }
 
         // this is the end of the prepare phase, on to the load phase.
-        List<ModuleInfo> modules = new ArrayList<ModuleInfo>();
+        List<ModuleInfo> moduleInfos = new ArrayList<ModuleInfo>();
         for (ContainerInfo containerInfo : sortedModuleInfos) {
 
             // get the container.
@@ -296,16 +336,16 @@ abstract public class ApplicationLifecycle {
                         failure(logger, "Cannot load application in " + containerInfo.getContainer().getName() + " container",
                             null, report);
 
-                        unload(modules, context);
+                        unload(moduleInfos, context);
                         clean(preparedDeployers, context);
                         stopContainers(logger, startedContainers);
                         return null;
                     }
                     ModuleInfo moduleInfo = new ModuleInfo(containerInfo, appCtr);
-                    modules.add(moduleInfo);
+                    moduleInfos.add(moduleInfo);
                 } catch(Exception e) {
                     failure(logger, "Exception while invoking " + deployer.getClass() + " prepare method",e, report);
-                    unload(modules, context);
+                    unload(moduleInfos, context);
                     clean(preparedDeployers, context);
                     stopContainers(logger, startedContainers);
                     return null;
@@ -317,7 +357,7 @@ abstract public class ApplicationLifecycle {
 
         // registers all deployed items.
         List<ModuleInfo> startedModules = new ArrayList<ModuleInfo>();
-        for (ModuleInfo module : modules) {
+        for (ModuleInfo module : moduleInfos) {
 
             try {
                 module.getApplicationContainer().start();
@@ -334,7 +374,7 @@ abstract public class ApplicationLifecycle {
             } catch(Exception e) {
                 failure(logger, "Exception while invoking " + module.getApplicationContainer().getClass() + " start method",e, report);
                 stopModules(startedModules, logger);
-                unload(modules, context);
+                unload(moduleInfos, context);
                 clean(preparedDeployers, context);
                 stopContainers(logger, startedContainers);
                 return null;
@@ -384,10 +424,10 @@ abstract public class ApplicationLifecycle {
         }
     }
 
-    protected Collection<ContainerInfo> startContainer(Sniffer sniffer, Logger logger, ActionReport report) {
+    protected Collection<ContainerInfo> startContainer(Sniffer sniffer, Module snifferModule,  Logger logger, ActionReport report) {
 
         ContainerStarter starter = new ContainerStarter(modulesRegistry, habitat, logger);
-        Collection<ContainerInfo> containersInfo = starter.startContainer(sniffer);
+        Collection<ContainerInfo> containersInfo = starter.startContainer(sniffer, snifferModule);
         if (containersInfo == null || containersInfo.size()==0) {
             failure(logger, "Cannot start container(s) associated to application of type : " + sniffer.getModuleType(), null, report);
             return null;
@@ -428,16 +468,21 @@ abstract public class ApplicationLifecycle {
     // Todo : take care of Deployer when unloading...
     protected void stopContainer(Logger logger, ContainerInfo info)
     {
-        Inhabitant i = habitat.getInhabitantByType(info.getDeployer().getClass());
-        if (i!=null) {
-            i.release();
+        ClassLoader original = Thread.currentThread().getContextClassLoader();
+        try {
+            Thread.currentThread().setContextClassLoader(info.getContainer().getClass().getClassLoader());
+            Inhabitant i = habitat.getInhabitantByType(info.getDeployer().getClass());
+            if (i!=null) {
+                i.release();
+            }
+            i = habitat.getInhabitantByType(info.getContainer().getClass());
+            if (i!=null) {
+                i.release();
+            }
+            containerRegistry.removeContainer(info);
+        } finally {
+            Thread.currentThread().setContextClassLoader(original);
         }
-        i = habitat.getInhabitantByType(info.getContainer().getClass());
-        if (i!=null) {
-            i.release();
-        }
-        containerRegistry.removeContainer(info);
-
     }
 
     protected ApplicationInfo unload(String appName, DeploymentContext context, ActionReport report) {
@@ -494,34 +539,44 @@ abstract public class ApplicationLifecycle {
                                      ActionReport report) {
         
         // remove any endpoints if exists.
+        ClassLoader original = Thread.currentThread().getContextClassLoader();
         try {
-            final Adapter appAdapter = Adapter.class.cast(module.getApplicationContainer());
-            adapter.unregisterEndpoint(appAdapter.getContextRoot(), module.getApplicationContainer());
-        } catch(ClassCastException e) {
-            // do nothing the application did not have an adapter
-        }
-
-
-        // first stop the application
-        try {
-            if (!module.getApplicationContainer().stop()) {
-                logger.severe("Cannot stop application " + info.getName() + " in container "
-                        + module.getContainerInfo().getSniffer().getModuleType());
+            if (module.getApplicationContainer().getClassLoader()!=null) {
+                Thread.currentThread().setContextClassLoader(module.getApplicationContainer().getClassLoader());
+            } else {
+                Thread.currentThread().setContextClassLoader(module.getContainerInfo().getContainer().getClass().getClassLoader());
             }
-        } catch(Exception e) {
-            failure(context.getLogger(), "Exception while stopping the application", e, report);
-            return false;
-        }
+            try {
+                final Adapter appAdapter = Adapter.class.cast(module.getApplicationContainer());
+                adapter.unregisterEndpoint(appAdapter.getContextRoot(), module.getApplicationContainer());
+            } catch(ClassCastException e) {
+                // do nothing the application did not have an adapter
+            }
 
-        // then remove the application from the container
-        Deployer deployer = module.getContainerInfo().getDeployer();
-        try {
-            deployer.unload(module.getApplicationContainer(), context);
-        } catch(Exception e) {
-            failure(context.getLogger(), "Exception while shutting down application container", e, report);
-            return false;
+
+            // first stop the application
+            try {
+                if (!module.getApplicationContainer().stop()) {
+                    logger.severe("Cannot stop application " + info.getName() + " in container "
+                            + module.getContainerInfo().getSniffer().getModuleType());
+                }
+            } catch(Exception e) {
+                failure(context.getLogger(), "Exception while stopping the application", e, report);
+                return false;
+            }
+
+            // then remove the application from the container
+            Deployer deployer = module.getContainerInfo().getDeployer();
+            try {
+                deployer.unload(module.getApplicationContainer(), context);
+            } catch(Exception e) {
+                failure(context.getLogger(), "Exception while shutting down application container", e, report);
+                return false;
+            }
+            module.getContainerInfo().remove(info);
+            return true;
+        } finally {
+            Thread.currentThread().setContextClassLoader(original);   
         }
-        module.getContainerInfo().remove(info);
-        return true;
     }
 }

@@ -1,6 +1,7 @@
 package com.sun.enterprise.connectors.module;
 
 import com.sun.enterprise.v3.deployment.GenericSniffer;
+import com.sun.enterprise.module.Module;
 import org.glassfish.api.container.Sniffer;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -28,8 +29,9 @@ public class ConnectorSniffer extends GenericSniffer implements Sniffer {
      * @throws java.io.IOException exception if something goes sour
      */
     @Override
-    public void setup(String containerHome, Logger logger) throws IOException {
+    public Module setup(String containerHome, Logger logger) throws IOException {
         // do nothing, we are embedded in GFv3 for now
+        return null;
     }
 
     /**

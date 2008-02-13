@@ -26,6 +26,7 @@ package com.sun.enterprise.v3.phobos;
 import com.sun.enterprise.v3.deployment.GenericSniffer;
 import org.glassfish.api.container.Sniffer;
 import com.sun.enterprise.module.Module;
+import com.sun.enterprise.module.ModuleDefinition;
 import org.glassfish.api.deployment.Deployer;
 import org.jvnet.hk2.annotations.Service;
 
@@ -56,7 +57,8 @@ public class PhobosSniffer extends GenericSniffer implements Sniffer {
      * @param logger the logger to use
      * @throws java.io.IOException exception if something goes sour
      */
-    public void setup(String containerHome, Logger logger) throws IOException {
+    @Override
+    public Module setup(String containerHome, Logger logger) throws IOException {
         // In most cases, the location of the jar files for a
         // particular container is in <containerHome>/lib.
         if (!(new File(containerHome).exists())) {
@@ -67,7 +69,7 @@ public class PhobosSniffer extends GenericSniffer implements Sniffer {
             File libDirectory = new File(containerHome, "lib");
             if (!libDirectory.exists()) {
                 logger.warning(getModuleType() + " container does not have a lib directory");
-                return;
+                return null;
             }
             PhobosRepository containerRepo = new PhobosRepository(libDirectory.getAbsolutePath());
             containerRepo.initialize();
@@ -79,6 +81,7 @@ public class PhobosSniffer extends GenericSniffer implements Sniffer {
             logger.log(Level.SEVERE, "Cannot set up the repository for the container", e);
             throw e;
         }
+       return null;
     }
 
     final String[] containers = { "com.sun.enterprise.phobos.PhobosContainer" };

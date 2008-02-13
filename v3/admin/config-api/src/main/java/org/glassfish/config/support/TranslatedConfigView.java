@@ -56,6 +56,9 @@ public class TranslatedConfigView implements ConfigView {
     public static Object getTranslatedValue(Object value) {
         if (value!=null && value instanceof String) {
             String stringValue = value.toString();
+            if (stringValue.indexOf('$')==-1) {
+                return value;
+            }
             Matcher m = p.matcher(stringValue);
             while (m.find()) {
                 stringValue = m.replaceFirst(m.quoteReplacement(m.group(1)+

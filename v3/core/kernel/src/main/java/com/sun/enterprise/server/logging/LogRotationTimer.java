@@ -33,26 +33,47 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
-package com.sun.enterprise.web;
+package com.sun.enterprise.server.logging;
 
 import java.util.Timer;
 
-public class WebContainerTimer
-	extends Timer
-{
-	public WebContainerTimer() {
-		super("web-container-timer");
-	}
+public class LogRotationTimer {
+    private Timer rotationTimer;
 
-	public WebContainerTimer(boolean isDeamon) {
-		super(isDeamon);
-	}
+    private LogRotationTimerTask rotationTimerTask;
 
-/*	public void cancel() {
-		(new Throwable()).printStackTrace();
-	}
-*/
+    private static LogRotationTimer instance = new LogRotationTimer( );
+
+    private LogRotationTimer( ) {
+        rotationTimer = new Timer("log-rotation-timer" );
+    }
+
+    public static LogRotationTimer getInstance( ) {
+        return instance;
+    }
+
+    public void startTimer( LogRotationTimerTask timerTask ) {
+        rotationTimerTask = timerTask;
+        rotationTimer.schedule( rotationTimerTask, 
+            timerTask.getRotationTimerValue( ) );
+    }
+
+    public void stopTimer( ) {
+        rotationTimer.cancel( );
+    }
+
+    public void restartTimer( ) {
+        // We will restart the timer only if the timerTask is set which
+        // means user has set a value for LogRotation based on Time
+        if( rotationTimerTask != null ) {
+            rotationTimerTask.cancel( );
+            rotationTimerTask = new LogRotationTimerTask( 
+                // This is wierd, We need to have a fresh TimerTask object
+                // to reschedule the work.
+                rotationTimerTask.task,
+                rotationTimerTask.getRotationTimerValueInMinutes( ) );
+            rotationTimer.schedule( rotationTimerTask, 
+                rotationTimerTask.getRotationTimerValue( ) );
+        } 
+    } 
 }
-
-
