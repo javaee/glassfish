@@ -33,120 +33,186 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package com.sun.web.security;
 
 import java.util.HashMap;
 import java.util.Map;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
-import java.util.logging.*; 
+import com.sun.enterprise.security.authorize.PolicyContextHandlerImpl;
+import com.sun.enterprise.server.ServerContext;
+import java.util.logging.*;
 import com.sun.logging.LogDomains;
 import java.util.List;
 import java.util.ArrayList;
+import javax.security.jacc.PolicyContext;
+import javax.security.jacc.PolicyContextException;
+import javax.security.jacc.PolicyContextHandler;
 
 /** @author JeanFrancois Arcand
  *  @author Harpreet Singh
  */
 public class WebSecurityManagerFactory {
-    private static Logger logger = 
-	Logger.getLogger(LogDomains.SECURITY_LOGGER);
-    
+
+    private static Logger logger =
+            Logger.getLogger(LogDomains.SECURITY_LOGGER);
     private Map securityManagerPool = new HashMap();
     // stores the context ids to appnames for standalone web apps
     private Map CONTEXT_ID = new HashMap();
     private static WebSecurityManagerFactory factory = null;
-        
+
     private WebSecurityManagerFactory() {
     }
     // returns the singleton instance of WebSecurityManagerFactory
-    public static synchronized WebSecurityManagerFactory getInstance(){
-        if (factory == null){
-	    factory = new WebSecurityManagerFactory();
-        }   
-        return  factory;
+    public static synchronized WebSecurityManagerFactory getInstance() {
+        if (factory == null) {
+            factory = new WebSecurityManagerFactory();
+            registerPolicyHandlers();
+        }        
+        return factory;
     }
     // generates a webSecurityManager
-    public WebSecurityManager newWebSecurityManager(WebBundleDescriptor wbd){
+    public WebSecurityManager newWebSecurityManager(WebBundleDescriptor wbd) {
         String contextId = WebSecurityManager.getContextID(wbd);
         String appname = wbd.getApplication().getRegistrationName();
 
-	synchronized (CONTEXT_ID) {
-	    List lst = (List)CONTEXT_ID.get(appname);
-	    if(lst == null){
-		lst = new ArrayList();
-		CONTEXT_ID.put(appname, lst);
-	    }
-	    if (!lst.contains(contextId)) {
-		lst.add(contextId);
-	    }
-	}
+        synchronized (CONTEXT_ID) {
+            List lst = (List) CONTEXT_ID.get(appname);
+            if (lst == null) {
+                lst = new ArrayList();
+                CONTEXT_ID.put(appname, lst);
+            }
+            if (!lst.contains(contextId)) {
+                lst.add(contextId);
+            }
+        }
 
-        if(logger.isLoggable(Level.FINE)){
-            logger.log(Level.FINE, "[Web-Security] Web Security:Creating WebSecurityManager for contextId = "+contextId);
+        if (logger.isLoggable(Level.FINE)) {
+            logger.log(Level.FINE, "[Web-Security] Web Security:Creating WebSecurityManager for contextId = " + contextId);
         }
 
         WebSecurityManager wsManager = getWebSecurityManager(contextId);
-	if (wsManager == null) {
+        if (wsManager == null) {
 
-	    // we should see if it is safe to do the security manager 
-	    // construction within the synchronize block.
-	    // for the time being, we will just make sure that we 
-	    // synchronize access to the pool.
-	    try{
-		wsManager = new WebSecurityManager(wbd);
-	    } catch (javax.security.jacc.PolicyContextException e){
-		logger.log(Level.FINE, "[Web-Security] FATAl Exception. Unable to create WebSecurityManager: " + e.getMessage() );
-		throw new RuntimeException(e);
-	    }
+            // we should see if it is safe to do the security manager 
+            // construction within the synchronize block.
+            // for the time being, we will just make sure that we 
+            // synchronize access to the pool.
+            try {
+                wsManager = new WebSecurityManager(wbd);
+            } catch (javax.security.jacc.PolicyContextException e) {
+                logger.log(Level.FINE, "[Web-Security] FATAl Exception. Unable to create WebSecurityManager: " + e.getMessage());
+                throw new RuntimeException(e);
+            }
 
-	    synchronized (securityManagerPool) {
-		WebSecurityManager other = 
-		    (WebSecurityManager)securityManagerPool.get(contextId);
-		if (other == null) {
-		    securityManagerPool.put(contextId, wsManager);
-		} else {
-		    wsManager = other;
-		}
-	    }
-	}
-	return wsManager;
+            synchronized (securityManagerPool) {
+                WebSecurityManager other =
+                        (WebSecurityManager) securityManagerPool.get(contextId);
+                if (other == null) {
+                    securityManagerPool.put(contextId, wsManager);
+                } else {
+                    wsManager = other;
+                }
+            }
+        }
+        return wsManager;
     }
-        
-    public WebSecurityManager getWebSecurityManager(String contextId){
-	synchronized (securityManagerPool) {
-	    return (WebSecurityManager)securityManagerPool.get(contextId);
-	}
+
+    public WebSecurityManager newWebSecurityManager(WebBundleDescriptor wbd, ServerContext context) {
+        String contextId = WebSecurityManager.getContextID(wbd);
+        String appname = wbd.getApplication().getRegistrationName();
+
+        synchronized (CONTEXT_ID) {
+            List lst = (List) CONTEXT_ID.get(appname);
+            if (lst == null) {
+                lst = new ArrayList();
+                CONTEXT_ID.put(appname, lst);
+            }
+            if (!lst.contains(contextId)) {
+                lst.add(contextId);
+            }
+        }
+
+        if (logger.isLoggable(Level.FINE)) {
+            logger.log(Level.FINE, "[Web-Security] Web Security:Creating WebSecurityManager for contextId = " + contextId);
+        }
+
+        WebSecurityManager wsManager = getWebSecurityManager(contextId);
+        if (wsManager == null) {
+
+            // we should see if it is safe to do the security manager 
+            // construction within the synchronize block.
+            // for the time being, we will just make sure that we 
+            // synchronize access to the pool.
+            try {
+                wsManager = new WebSecurityManager(wbd, context);
+            } catch (javax.security.jacc.PolicyContextException e) {
+                logger.log(Level.FINE, "[Web-Security] FATAl Exception. Unable to create WebSecurityManager: " + e.getMessage());
+                throw new RuntimeException(e);
+            }
+
+            synchronized (securityManagerPool) {
+                WebSecurityManager other =
+                        (WebSecurityManager) securityManagerPool.get(contextId);
+                if (other == null) {
+                    securityManagerPool.put(contextId, wsManager);
+                } else {
+                    wsManager = other;
+                }
+            }
+        }
+        return wsManager;
     }
-    
-    public void removeWebSecurityManager(String contextId){
-        synchronized (securityManagerPool){
-	    securityManagerPool.remove(contextId);
+
+    public WebSecurityManager getWebSecurityManager(String contextId) {
+        synchronized (securityManagerPool) {
+            return (WebSecurityManager) securityManagerPool.get(contextId);
+        }
+    }
+
+    public void removeWebSecurityManager(String contextId) {
+        synchronized (securityManagerPool) {
+            securityManagerPool.remove(contextId);
         }
     }
 
     /**
      * valid for standalone web apps
      */
-    public String[] getContextIdsOfApp(String appName){
-	synchronized(CONTEXT_ID) {
-	    List contextId = (List) CONTEXT_ID.get(appName);
-	    if(contextId == null)
-		return null;
-	    String[] arrayContext = new String[contextId.size()];
-	    arrayContext = (String[])contextId.toArray(arrayContext);
-	    return arrayContext;
-	}
+    public String[] getContextIdsOfApp(String appName) {
+        synchronized (CONTEXT_ID) {
+            List contextId = (List) CONTEXT_ID.get(appName);
+            if (contextId == null) {
+                return null;
+            }
+            String[] arrayContext = new String[contextId.size()];
+            arrayContext = (String[]) contextId.toArray(arrayContext);
+            return arrayContext;
+        }
     }
 
     /**
      * valid for standalone web apps
      */
-    public String[] getAndRemoveContextIdForWebAppName(String appName){
-	synchronized(CONTEXT_ID) {
-	    String [] rvalue = getContextIdsOfApp(appName);
-	    CONTEXT_ID.remove(appName);
-	    return rvalue;
-	}
+    public String[] getAndRemoveContextIdForWebAppName(String appName) {
+        synchronized (CONTEXT_ID) {
+            String[] rvalue = getContextIdsOfApp(appName);
+            CONTEXT_ID.remove(appName);
+            return rvalue;
+        }
     }
-        
+
+    private static  void registerPolicyHandlers()
+             {
+        try {
+            PolicyContextHandler pch = PolicyContextHandlerImpl.getInstance();
+            PolicyContext.registerHandler(PolicyContextHandlerImpl.ENTERPRISE_BEAN, pch, true);
+            PolicyContext.registerHandler(PolicyContextHandlerImpl.SUBJECT, pch, true);
+            PolicyContext.registerHandler(PolicyContextHandlerImpl.EJB_ARGUMENTS, pch, true);
+            PolicyContext.registerHandler(PolicyContextHandlerImpl.SOAP_MESSAGE, pch, true);
+            PolicyContext.registerHandler(PolicyContextHandlerImpl.HTTP_SERVLET_REQUEST, pch, true);
+            PolicyContext.registerHandler(PolicyContextHandlerImpl.REUSE, pch, true);
+        } catch (PolicyContextException ex) {
+            Logger.getLogger(WebSecurityManagerFactory.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
 }

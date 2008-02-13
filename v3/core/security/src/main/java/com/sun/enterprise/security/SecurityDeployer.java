@@ -20,9 +20,10 @@
  * 
  * Copyright 2006 Sun Microsystems, Inc. All rights reserved.
  */
-
 package com.sun.enterprise.security;
 
+import com.sun.enterprise.deployment.interfaces.SecurityRoleMapperFactory;
+import com.sun.enterprise.deployment.interfaces.SecurityRoleMapperFactoryMgr;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.MetaData;
 import org.glassfish.deployment.common.IASDeploymentException;
@@ -33,6 +34,7 @@ import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.module.Module;
 import com.sun.enterprise.module.ModuleDefinition;
 import com.sun.enterprise.security.util.IASSecurityException;
+import com.sun.enterprise.server.ServerContext;
 import com.sun.enterprise.v3.deployment.DeployCommand;
 import com.sun.logging.LogDomains;
 import com.sun.web.security.WebSecurityManager;
@@ -43,6 +45,7 @@ import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 
 /**
@@ -50,93 +53,128 @@ import org.jvnet.hk2.annotations.Service;
  *
  */
 @Service
-public class SecurityDeployer extends SimpleDeployer 
-        <SecurityContainer, DummyApplication>  {
+public class SecurityDeployer extends SimpleDeployer<SecurityContainer, DummyApplication> {
 
-    private static Logger _logger=null;
-    
+    private static Logger _logger = null;
+    @Inject
+    private ServerContext serverContext;
+
+    @Inject 
+    private PolicyLoader policyLoader;
     static {
-        _logger=LogDomains.getLogger(LogDomains.SECURITY_LOGGER);
+        _logger = LogDomains.getLogger(LogDomains.SECURITY_LOGGER);
+        initRoleMapperFactory();
+        
     }
     // creates security policy if needed
     @Override
-    protected void generateArtifacts(DeploymentContext dc) 
-        throws IASDeploymentException {
+    protected void generateArtifacts(DeploymentContext dc)
+            throws IASDeploymentException {
         generatePolicy(dc);
     }
 
     // removes security policy if needed
     @Override
     protected void cleanArtifacts(DeploymentContext dc)
-        throws IASDeploymentException {
+            throws IASDeploymentException {
         removePolicy(dc);
+    }
+     
+    @Override
+    public DummyApplication load(SecurityContainer container, DeploymentContext context) {
+        return new DummyApplication();
     }
 
     // TODO: need to add ear and standalone ejb module case
-    protected void generatePolicy(DeploymentContext dc) 
-        throws IASDeploymentException {
+    protected void generatePolicy(DeploymentContext dc)
+            throws IASDeploymentException {
         Properties params = dc.getCommandParameters();
         String appName = params.getProperty(DeployCommand.NAME);
-
         try {
+            policyLoader.loadPolicy();
             Application app = dc.getModuleMetaData(Application.class);
             // standalone web module case
             if (app.isVirtual()) {
-                WebBundleDescriptor wbd = 
-                    (WebBundleDescriptor) app.getStandaloneBundleDescriptor(); 
+                WebBundleDescriptor wbd =
+                        (WebBundleDescriptor) app.getStandaloneBundleDescriptor();
 
-                WebSecurityManagerFactory wsmf = 
-                    WebSecurityManagerFactory.getInstance();
+                WebSecurityManagerFactory wsmf =
+                        WebSecurityManagerFactory.getInstance();
                 // this should create all permissions
-                wsmf.newWebSecurityManager(wbd);
+                wsmf.newWebSecurityManager(wbd,serverContext);
                 // for an application the securityRoleMapper should already be 
                 // created. I am just creating the web permissions and handing 
                 // it to the security component.
-                String name = WebSecurityManager.getContextID(wbd) ;
+                String name = WebSecurityManager.getContextID(wbd);
                 SecurityUtil.generatePolicyFile(name);
             }
-        } catch(IASSecurityException se){
+        } catch (IASSecurityException se) {
             String msg = "Error in generating security policy for " + appName;
-            throw new IASDeploymentException(msg, se);         
+            throw new IASDeploymentException(msg, se);
         }
     }
 
     // TODO: need to add ear and standalone ejb module case
-    private void removePolicy(DeploymentContext dc) throws 
-        IASDeploymentException {
+    private void removePolicy(DeploymentContext dc) throws
+            IASDeploymentException {
         Properties params = dc.getCommandParameters();
         String appName = params.getProperty(DeployCommand.NAME);
 
-        try {                
-            WebSecurityManagerFactory wsmf = 
-                WebSecurityManagerFactory.getInstance();
-            String[] name
-                = wsmf.getAndRemoveContextIdForWebAppName(appName);
-            if (name != null){
-                if(name[0] != null) {
+        try {
+            WebSecurityManagerFactory wsmf =
+                    WebSecurityManagerFactory.getInstance();
+            String[] name = wsmf.getAndRemoveContextIdForWebAppName(appName);
+            if (name != null) {
+                if (name[0] != null) {
                     SecurityUtil.removePolicy(name[0]);
                     wsmf.removeWebSecurityManager(name[0]);
                 }
             }
-        } catch(IASSecurityException ex) {
+        } catch (IASSecurityException ex) {
             String msg = "Error in removing security policy for " + appName;
             _logger.log(Level.WARNING, msg, ex);
-            throw new IASDeploymentException(msg, ex); 
-        }        
+            throw new IASDeploymentException(msg, ex);
+        }
     }
 
     //TODO: check if this is correct returning the Security Module def in getMetaData
     public MetaData getMetaData() {
         List<ModuleDefinition> apis = new ArrayList<ModuleDefinition>();
         Module module = modulesRegistry.makeModuleFor("javax.javaee:javaee", "5.0");
-        if (module!=null) {
+        if (module != null) {
             apis.add(module.getModuleDefinition());
         }
         module = modulesRegistry.makeModuleFor("org.glassfish.core.security:core-security", null);
-        if (module!=null) {
+        if (module != null) {
             apis.add(module.getModuleDefinition());
         }
         return new MetaData(false, apis.toArray(new ModuleDefinition[apis.size()]));
+    }
+
+    private static void initRoleMapperFactory() //throws Exception
+    {
+        Object o = null;
+        Class c = null;
+        // this should never fail.
+        try {
+            c = Class.forName("com.sun.enterprise.security.acl.RoleMapperFactory");
+            if (c != null) {
+                o = c.newInstance();
+                if (o != null && o instanceof SecurityRoleMapperFactory) {
+                    SecurityRoleMapperFactoryMgr.registerFactory((SecurityRoleMapperFactory) o);
+                }
+            }
+            if (o == null) {
+            //               _logger.log(Level.SEVERE,_localStrings.getLocalString("j2ee.norolemapper", "Cannot instantiate the SecurityRoleMapperFactory"));
+            }
+        } catch (Exception cnfe) {
+//            _logger.log(Level.SEVERE,
+//			_localStrings.getLocalString("j2ee.norolemapper", "Cannot instantiate the SecurityRoleMapperFactory"), 
+//			cnfe);
+//		cnfe.printStackTrace();
+//		throw new RuntimeException(cnfe);
+        //   throw  cnfe;
+        }
     }
 }
 

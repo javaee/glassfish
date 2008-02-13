@@ -36,6 +36,7 @@
 
 package com.sun.web.security;
 
+import com.sun.enterprise.server.ServerContext;
 import java.security.*;
 import java.util.Set;
 import java.util.List;
@@ -96,7 +97,7 @@ public class WebSecurityManager {
     
     @Inject
     private  AuditManager auditManager;
-    
+ 
     private static final String RESOURCE = "hasResourcePermission";
     private static final String USERDATA = "hasUserDataPermission";
     private static final String ROLEREF = "hasRoleRefPermission";
@@ -153,6 +154,7 @@ public class WebSecurityManager {
     private static SecurityRoleMapperFactory factory = 
 	SecurityRoleMapperFactoryMgr.getFactory();
 
+    private ServerContext serverContext = null;
     // WebBundledescriptor
     private WebBundleDescriptor wbd = null;
     //TODO:V3 Copied from VirtualServer.java to avoid dependency on web-container module
@@ -162,6 +164,15 @@ public class WebSecurityManager {
         this.wbd = wbd;
         this.CONTEXT_ID = getContextID(wbd);
         String appname = getAppId();
+        factory.setAppNameForContext(appname, CONTEXT_ID);
+        initialise();
+    }
+    
+    public WebSecurityManager(WebBundleDescriptor wbd,ServerContext svc) throws PolicyContextException {
+        this.wbd = wbd;
+        this.CONTEXT_ID = getContextID(wbd);
+        String appname = getAppId();
+        this.serverContext = svc;
         factory.setAppNameForContext(appname, CONTEXT_ID);
         initialise();
     }
@@ -414,7 +425,7 @@ public class WebSecurityManager {
             logger.log(Level.FINE,"[Web-Security] hasResource isGranted: " + isGranted);
             logger.log(Level.FINE,"[Web-Security] hasResource perm: " + perm);
         }
-        if(auditManager.isAuditOn()){
+        if(auditManager !=null && auditManager.isAuditOn()){
             Principal prin = httpsr.getUserPrincipal();
             String user = (prin != null) ? prin.getName(): null;
             auditManager.webInvocation(user, httpsr, RESOURCE, isGranted);
@@ -469,7 +480,7 @@ public class WebSecurityManager {
             logger.log(Level.FINE,"[Web-Security] hasUserDataPermission isGranted: " + isGranted);
         }
 
-        if(auditManager.isAuditOn()){
+        if(auditManager!= null && auditManager.isAuditOn()){
             Principal prin = httpsr.getUserPrincipal();
             String user = (prin != null) ? prin.getName(): null;
             auditManager.webInvocation(user, httpsr, USERDATA, isGranted);
@@ -623,7 +634,7 @@ public class WebSecurityManager {
      */
     private String getVirtualServers(String appName) {
         String ret = null;
-        Server server = com.sun.enterprise.v3.server.Globals.getGlobals().getDefaultHabitat().getComponent(Server.class);
+        Server server = serverContext.getDefaultHabitat().getComponent(Server.class);
         for (ApplicationRef appRef : server.getApplicationRef()) {
             if (appRef.getRef().equals(appName)) {
                 return appRef.getVirtualServers();

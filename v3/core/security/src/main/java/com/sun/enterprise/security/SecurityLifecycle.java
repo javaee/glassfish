@@ -142,11 +142,11 @@ public class SecurityLifecycle implements  Startup, PostConstruct, PreDestroy {
             initializeJMAC();
 
             // jacc
-            registerPolicyHandlers();
+            //registerPolicyHandlers();
             //V3:Commented PolicyLoader policyLoader = PolicyLoader.getInstance();
             //TODO:V3 check if the above singleton was a better way
             assert(policyLoader != null);
-            policyLoader.loadPolicy();
+            //policyLoader.loadPolicy();
             // create realms rather than creating RemoteObject RealmManager
             // which will init ORB prematurely
             assert(realmConfig != null);
@@ -160,7 +160,7 @@ public class SecurityLifecycle implements  Startup, PostConstruct, PreDestroy {
             // to invocation of ConnectorRuntime.createActiveResourceAdapter
             // initRoleMapperFactory is called after it
            // TODO:V3 i have moved it here : instantiate and register the server-side RoleMapperFactory
-           initRoleMapperFactory();
+           //initRoleMapperFactory();
            
            if (_logger.isLoggable(Level.INFO)) {
                  _logger.log(Level.INFO, "Security service(s) started successfully....");
