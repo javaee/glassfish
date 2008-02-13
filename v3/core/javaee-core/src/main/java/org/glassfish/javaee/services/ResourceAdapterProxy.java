@@ -36,11 +36,14 @@
 package org.glassfish.javaee.services;
 
 import org.glassfish.api.naming.NamingObjectProxy;
+import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.Habitat;
 
 import javax.naming.Context;
 import javax.naming.NamingException;
 
-import com.sun.enterprise.config.serverbeans.JdbcResource;
+import com.sun.appserv.connectors.spi.ConnectorRuntime;
 
 /**
  * Holder for a resource adapter configuration that gets registered in the naming manager.
@@ -48,24 +51,66 @@ import com.sun.enterprise.config.serverbeans.JdbcResource;
  *
  * @author Jerome Dochez
  */
+@Service
 public class ResourceAdapterProxy implements NamingObjectProxy {
 
-    final public JdbcResource resource;
-    public ResourceAdapterProxy(JdbcResource resource) {
-        this.resource = resource;
+    private Object resource;
+    private Object pool;
+    private String resourceType;
+    private String raName;
+    private String resourceName;
+    @Inject
+    Habitat connectorRuntimeHabitat;
 
+    public ResourceAdapterProxy() {
     }
+
+    public void setResource(Object resource) {
+        this.resource = resource;
+    }
+
+    public void setConnectionPool(Object pool) {
+        this.pool = pool;
+    }
+
+    public void setResourceType(String resourceType){
+        this.resourceType = resourceType;
+    }
+
+    public void setRAName(String raName){
+        this.raName = raName;
+    }
+
+    public void setResourceName(String resourceName){
+        this.resourceName = resourceName;
+    }
+
     /**
      * Create and return an object.
      *
      * @return an object
      */
     public Object create(Context ic) throws NamingException {
-        // Jagadish, please do something
 
-        // fake deployment event....
-        
-        System.out.println("Cool, proxy for resource adapter is called " + resource.getJndiName());
-        return resource;
+        ConnectorRuntime connectorRuntime = connectorRuntimeHabitat.getComponent
+                (ConnectorRuntime.class, null);
+
+        Object result = null;
+        try {
+            if(connectorRuntime.checkAndLoadResource(resource, pool, resourceType, resourceName, raName)){
+                result = ic.lookup(resourceName);
+            }else{
+                throwResourceNotFoundException(null, resourceName);
+            }
+        } catch (Exception e) {
+            return throwResourceNotFoundException(e, resourceName);
+        }
+        return result;
+    }
+
+    private Object throwResourceNotFoundException(Exception e, String resourceName) throws NamingException {
+        NamingException ne = new NamingException("Unable to lookup resource : " + resourceName);
+        ne.initCause(e);
+        throw ne;
     }
 }

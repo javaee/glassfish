@@ -38,15 +38,20 @@ package org.glassfish.javaee.services;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PostConstruct;
-import org.jvnet.hk2.config.ConfigListener;
+import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.component.PreDestroy;
 import org.glassfish.api.Startup;
 import org.glassfish.api.naming.GlassfishNamingManager;
 import com.sun.enterprise.config.serverbeans.JdbcResource;
+import com.sun.enterprise.config.serverbeans.JdbcConnectionPool;
+import com.sun.appserv.connectors.spi.ConnectorRuntime;
+import com.sun.appserv.connectors.spi.ConnectorConstants;
 
 import javax.naming.NamingException;
 import java.util.logging.Logger;
 import java.util.logging.Level;
-import java.beans.PropertyChangeEvent;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  * Binds proxy objects in the jndi namespace for all the JdbcResources defined in the
@@ -56,29 +61,80 @@ import java.beans.PropertyChangeEvent;
  * @author Jerome Dochez
  */
 @Service
-public class ResourceAdaptersBinder implements Startup, PostConstruct, ConfigListener {
+public class ResourceAdaptersBinder implements Startup, PostConstruct, PreDestroy {
 
     @Inject
     JdbcResource[] resources;
+
+    @Inject
+    JdbcConnectionPool[] pools;
 
     @Inject
     GlassfishNamingManager manager;
 
     @Inject
     Logger logger;
-    
+
+    @Inject
+    Habitat raProxyHabitat;
+
+    @Inject
+    Habitat connectorRuntimeHabitat;
+
     /**
      * The component has been injected with any dependency and
      * will be placed into commission by the subsystem.
      */
     public void postConstruct() {
+
+        deployAllJdbcResourcesAndPools();
+    }
+
+    private void deployAllJdbcResourcesAndPools() {
         for (JdbcResource resource : resources) {
             try {
-                manager.publishObject(resource.getJndiName(), new ResourceAdapterProxy(resource), true);
+                JdbcConnectionPool pool = getAssociatedPool(resource.getPoolName());
+                if (pool == null) {
+                    logger.log(Level.SEVERE, "Could not get the pool [ " + resource.getPoolName() + " ] of resource [ " +
+                            resource.getJndiName() + " ]");
+                    continue;
+                }
+                bindResource(resource, pool, resource.getJndiName(), ConnectorConstants.RES_TYPE_JDBC);
             } catch (NamingException e) {
                 logger.log(Level.SEVERE, "Cannot bind " + resource.getPoolName() + " to naming manager", e);
             }
         }
+    }
+
+    public void bindResource(Object resource, Object pool, String resourceName, String resourceType) throws NamingException {
+        ResourceAdapterProxy raProxy = constructResourceProxy(resource, pool, resourceType, resourceName);
+        manager.publishObject(resourceName, raProxy, true);
+    }
+
+    private ResourceAdapterProxy constructResourceProxy(Object resource, Object pool, String resourceType,
+                                                        String resourceName) {
+        ResourceAdapterProxy raProxy = raProxyHabitat.getComponent(ResourceAdapterProxy.class);
+        raProxy.setResource(resource);
+        raProxy.setConnectionPool(pool);
+        raProxy.setResourceType(resourceType);
+        raProxy.setResourceName(resourceName);
+        return raProxy;
+    }
+
+    /**
+     * get the associated pool's name for the jdbc-resource
+     * @param  poolName Pool Name
+     * @return JdbcConnectionPool
+     */
+    private JdbcConnectionPool getAssociatedPool(String poolName) {
+        JdbcConnectionPool result = null;
+        for (JdbcConnectionPool pool : pools) {
+            if (pool.getName().equalsIgnoreCase(poolName)) {
+                result = pool;
+                break;
+            }
+        }
+        return result;
     }
 
     /**
@@ -90,9 +146,32 @@ public class ResourceAdaptersBinder implements Startup, PostConstruct, ConfigLis
         return Lifecycle.SERVER;
     }
 
-    public void changed(PropertyChangeEvent[] propertyChangeEvents) {
-        for (PropertyChangeEvent evt : propertyChangeEvents) {
-            System.out.println("evt" + evt.getOldValue() + " : " + evt.getNewValue());
-        }
+    /**
+     * The component is about to be removed from commission
+     */
+    public void preDestroy() {
+        ConnectorRuntime runtime = connectorRuntimeHabitat.getComponent(ConnectorRuntime.class, null);
+
+        List<String> poolNames = getAllPoolNames(pools);
+        List<String> resourceNames = getAllResourceNames(resources);
+
+        runtime.shutdownAllActiveResourceAdapters(poolNames, resourceNames);
     }
+
+    private List<String> getAllPoolNames(JdbcConnectionPool[] pools) {
+        List<String> poolNames = new ArrayList<String>();
+        for(JdbcConnectionPool pool : pools){
+            poolNames.add(pool.getName());
+        }
+        return poolNames;
+    }
+
+    private List<String> getAllResourceNames(JdbcResource[] resources) {
+        List<String> resourceNames = new ArrayList<String>();
+        for(JdbcResource resource : resources){
+            resourceNames.add(resource.getJndiName());
+        }
+        return resourceNames;
+    }
+
 }
