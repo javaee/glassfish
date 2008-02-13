@@ -29,8 +29,6 @@ import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Singleton;
 
-import java.io.IOException;
-import java.util.logging.Logger;
 
 /**
  * Implementation of the Sniffer for the web container.
@@ -49,8 +47,8 @@ public class WebSniffer  extends GenericSniffer implements Sniffer {
         super(containerName, appStigma, urlPattern);
     }    
 
-    final String[] containers = { "com.sun.enterprise.web.WebContainer" ,"com.sun.enterprise.security.SecurityContainer"};
-        
+    //final String[] containers = { "com.sun.enterprise.web.WebContainer" ,"com.sun.enterprise.security.SecurityContainer"};
+    final String[] containers = { "com.sun.enterprise.web.WebContainer" };
     public String[] getContainersNames() {
         return containers;
     }    
