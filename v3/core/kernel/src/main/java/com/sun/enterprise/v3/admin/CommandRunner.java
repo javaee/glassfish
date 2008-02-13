@@ -233,6 +233,7 @@ public class CommandRunner {
         try {
             command = habitat.getComponent(AdminCommand.class, commandName);
         } catch(ComponentException e) {
+           e.printStackTrace();
         }
         if (command==null) {
             String msg = adminStrings.getLocalString("adapter.command.notfound", "Command {0} not found", commandName);
