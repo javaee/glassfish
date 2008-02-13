@@ -42,6 +42,7 @@ import java.security.AccessControlException;
 import java.security.Policy;
 import java.security.ProtectionDomain;
 import java.security.Principal;
+import java.text.MessageFormat;
 import javax.security.auth.Subject;
 import javax.transaction.Transaction;
 import javax.servlet.Servlet;
@@ -87,8 +88,9 @@ import com.sun.logging.*;
 public final class J2EEInstanceListener implements InstanceListener {
 
     // START OF IASRI 4660742
-    static Logger _logger=LogDomains.getLogger(LogDomains.WEB_LOGGER);
+    protected static Logger _logger=LogDomains.getLogger(LogDomains.WEB_LOGGER);
     // END OF IASRI 4660742
+    protected static ResourceBundle _rb = _logger.getResourceBundle();
 
     private static final HashSet beforeEvents = new HashSet(4);
     private static final HashSet afterEvents = new HashSet(4);
@@ -138,7 +140,9 @@ public final class J2EEInstanceListener implements InstanceListener {
     private void init(WebModule wm) {
         ServerContext serverContext = wm.getServerContext();
         if (serverContext == null) {
-            throw new IllegalStateException();
+            String msg = _rb.getString("webmodule.noservercontext");
+            msg = MessageFormat.format(msg, new Object[] { wm.getName() });
+            throw new IllegalStateException(msg);
         }
         im = serverContext.getDefaultHabitat().getByContract(
                 InvocationManager.class);
@@ -156,6 +160,7 @@ public final class J2EEInstanceListener implements InstanceListener {
 
         Object instance = null;
         if (eventType.equals(InstanceEvent.BEFORE_FILTER_EVENT)) {
+
             instance = event.getFilter();
         } else {
             instance = event.getServlet();

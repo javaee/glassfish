@@ -68,6 +68,7 @@ import com.sun.enterprise.deployment.PersistenceUnitDescriptor;
 import com.sun.enterprise.deployment.util.WebValidatorWithCL;
 import com.sun.enterprise.deployment.util.WebBundleVisitor;
 import com.sun.enterprise.server.ServerContext;
+import com.sun.enterprise.web.jsp.ResourceInjectorImpl;
 import com.sun.logging.LogDomains;
 import com.sun.appserv.web.cache.CacheManager;
 import com.sun.appserv.server.util.ASClassLoaderUtil;
@@ -416,7 +417,7 @@ final class WebModuleListener
             wrapper.addInitParameter("logVerbosityLevel",getJasperLogLevel());
 
             wrapper.addInitParameter("com.sun.appserv.jsp.resource.injector",
-                                     "com.sun.enterprise.web.jsp.ResourceInjectorImpl");
+                                     ResourceInjectorImpl.class.getName());
 
             // START SJSAS 6311155
             String sysClassPath = ASClassLoaderUtil.getWebModuleClassPath(
