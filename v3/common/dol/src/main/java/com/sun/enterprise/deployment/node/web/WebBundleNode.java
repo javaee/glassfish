@@ -70,7 +70,7 @@ import com.sun.enterprise.deployment.web.LoginConfiguration;
  * @author  Jerome Dochez
  * @version 
  */
-public class WebBundleNode extends BundleNode implements RootXMLNode {
+public class WebBundleNode extends BundleNode<WebBundleDescriptor> {
 
    public final static XMLElement tag = new XMLElement(WebTagNames.WEB_BUNDLE);
 
@@ -165,7 +165,7 @@ public class WebBundleNode extends BundleNode implements RootXMLNode {
    /**
     * @return the descriptor instance to associate with this XMLNode
     */
-    public Object getDescriptor() {
+    public WebBundleDescriptor getDescriptor() {
         if (descriptor==null) {
             descriptor = (WebBundleDescriptor)getDefaultBundleDescriptor();
         }
@@ -347,11 +347,8 @@ public class WebBundleNode extends BundleNode implements RootXMLNode {
      * @param the descriptor to write
      * @return the DOM tree top node
      */    
-    public Node writeDescriptor(Node parent, Descriptor descriptor) {
-        if (! (descriptor instanceof WebBundleDescriptor)) {
-            throw new IllegalArgumentException(getClass() + " cannot handles descriptors of type " + descriptor.getClass());
-        }
-        WebBundleDescriptor webBundleDesc = (WebBundleDescriptor) descriptor;
+    public Node writeDescriptor(Node parent, 
+        WebBundleDescriptor webBundleDesc) {
         Node jarNode = super.writeDescriptor(parent, webBundleDesc);             
         if (webBundleDesc.isDistributable()) {
             appendChild(jarNode, WebTagNames.DISTRIBUTABLE);        

@@ -87,6 +87,9 @@ public abstract class JavaEEDeployer<T extends Container, U extends ApplicationC
     private static String CLIENT_JAR_MAKER_CHOICE = System.getProperty(
         DeploymentImplConstants.CLIENT_JAR_MAKER_CHOICE);
 
+    private static String WRITEOUT_XML = System.getProperty(
+        "writeout.xml");
+
     /**
      * Returns the meta data assocated with this Deployer
      *
@@ -121,6 +124,9 @@ public abstract class JavaEEDeployer<T extends Container, U extends ApplicationC
                 return false;
             }
             generateArtifacts(dc);
+            if (Boolean.valueOf(WRITEOUT_XML)) {
+                saveAppDescriptor(dc);
+            }
             createClientJar(dc);
             return true;
         } catch (Exception ex) {
