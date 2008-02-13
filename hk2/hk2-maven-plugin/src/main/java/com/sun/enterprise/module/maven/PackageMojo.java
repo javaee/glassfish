@@ -40,8 +40,6 @@ import java.io.File;
  * @requiresProject
  */
 public class PackageMojo extends AbstractMojo {
-    private static final String[] DEFAULT_EXCLUDES = new String[]{"**/package.html"};
-
     private static final String[] DEFAULT_INCLUDES = new String[]{"**/**"};
 
     /**
@@ -99,6 +97,12 @@ public class PackageMojo extends AbstractMojo {
      */
     protected File classesDirectory;
 
+    /**
+     * Ant glob patterns to be excluded from the jar file, like "**<span></span>/*.bak"
+     * The base directory for the pattern is specified in {@link #classesDirectory}.
+     */
+    protected String[] excludes;
+
     protected final MavenProject getProject() {
         return project;
     }
@@ -130,7 +134,7 @@ public class PackageMojo extends AbstractMojo {
             if (!contentDirectory.exists()) {
                 getLog().warn("JAR will be empty - no content was marked for inclusion!");
             } else {
-                archiver.getArchiver().addDirectory(contentDirectory, DEFAULT_INCLUDES, DEFAULT_EXCLUDES);
+                archiver.getArchiver().addDirectory(contentDirectory, DEFAULT_INCLUDES, getExcludes());
             }
 
             archiver.createArchive(project, archive);
@@ -151,5 +155,12 @@ public class PackageMojo extends AbstractMojo {
         File jarFile = createArchive();
 
         getProject().getArtifact().setFile(jarFile);
+    }
+
+    private String[] getExcludes() {
+        if (excludes != null && excludes.length > 0)
+            return excludes;
+        // default
+        return new String[]{"**/package.html"};
     }
 }
