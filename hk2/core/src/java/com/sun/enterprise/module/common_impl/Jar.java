@@ -5,10 +5,7 @@ import com.sun.enterprise.module.impl.Utils;
 import com.sun.enterprise.module.ModuleMetadata.InhabitantsDescriptor;
 import com.sun.hk2.component.InhabitantsFile;
 
-import java.io.DataInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.*;
 import java.util.Enumeration;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -140,10 +137,15 @@ public abstract class Jar {
         }
 
         public void loadMetadata(ModuleMetadata result) {
+
+            if (jar.getJarEntry(InhabitantsFile.PATH)==null
+                    && jar.getJarEntry(SERVICE_LOCATION)==null) {
+                return;
+            }
             Enumeration<JarEntry> entries = jar.entries();
             while (entries.hasMoreElements()) {
                 JarEntry entry = entries.nextElement();
-                if (entry.getName().startsWith(InhabitantsFile.PATH)) {
+                if (!entry.isDirectory() && entry.getName().startsWith(InhabitantsFile.PATH)) {
                     String habitatName = entry.getName().substring(InhabitantsFile.PATH.length()+1);
 
                     try {
@@ -186,6 +188,5 @@ public abstract class Jar {
             }
         }
     }
-
     final static private String SERVICE_LOCATION = "META-INF/services";
 }

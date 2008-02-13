@@ -49,7 +49,7 @@ public class DirectoryBasedRepository extends AbstractRepositoryImpl {
 
         final boolean returnValue = super.addListener(listener);
         if (returnValue && timer==null) {
-            timer = new Timer();
+            timer = new Timer("hk2-repo-listener");
             timer.schedule(new TimerTask() {
                 long lastModified = repository.lastModified();
                 public void run() {
