@@ -33,7 +33,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.enterprise.resource;
+package com.sun.appserv.connectors.spi;
 
 import javax.resource.spi.ConnectionEvent;
 

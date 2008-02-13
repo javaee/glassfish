@@ -34,11 +34,12 @@
  * holder.
  */
 
-package com.sun.enterprise.connectors;
+package com.sun.appserv.connectors.spi;
 
 import java.util.Collections;
 import java.util.List;
-import com.sun.appserv.management.util.misc.ListUtil;
+import java.util.Arrays;
+
 
 /** 
  * This interface contains all the constants referenced and used in the 
@@ -59,19 +60,19 @@ public interface ConnectorConstants {
      *  JDBC datasource  system resource adapter name.
      */
 
-    public static final String JDBCDATASOURCE_RA_NAME = "__ds";
+    public static final String JDBCDATASOURCE_RA_NAME = "__ds_jdbc_ra";
     
     /** 
      *  JDBC connectionpool datasource  system resource adapter name.
      */
 
-    public static final String JDBCCONNECTIONPOOLDATASOURCE_RA_NAME = "__cp";
+    public static final String JDBCCONNECTIONPOOLDATASOURCE_RA_NAME = "__cp_jdbc_ra";
     
     /** 
      *  JDBC XA datasource  system resource adapter name.
      */
 
-    public static final String JDBCXA_RA_NAME = "__xa";
+    public static final String JDBCXA_RA_NAME = "__xa_jdbc_ra";
     
     /** 
      *  JMS datasource  system resource adapter name.
@@ -85,7 +86,7 @@ public interface ConnectorConstants {
      */
     
     public static final List<String> systemRarNames = Collections.unmodifiableList(
-            ListUtil.newList(
+            Arrays.asList(
                 JAXR_RA_NAME,
                 JDBCDATASOURCE_RA_NAME,
                 JDBCCONNECTIONPOOLDATASOURCE_RA_NAME,
@@ -262,7 +263,7 @@ public interface ConnectorConstants {
      */
     public static int JMS_POOL_MAXSIZE = 250;
     
-    public static enum PoolType { ASSOCIATE_WITH_THREAD_POOL, STANDARD_POOL }
+    public static enum PoolType { ASSOCIATE_WITH_THREAD_POOL, STANDARD_POOL, PARTITIONED_POOL }
 
     public static int NON_ACC_CLIENT = 0;
 
@@ -280,4 +281,40 @@ public interface ConnectorConstants {
      * Valid values that can be provided to the JNDI property.
      */
     public static String[] JNDI_SUFFIX_VALUES = { PM_JNDI_SUFFIX , NON_TX_JNDI_SUFFIX };
+
+    public static final String CCP = "ConnectorConnectionPool";
+    public static final String CR  =  "ConnectorResource";
+    public static final String AOR = "AdminObjectResource";
+    public static final String SEC = "Security";
+    public static final String RA = "ResourceAdapter";
+
+    //TODO V3 use SystemPropertyConstants later
+    public static final String INSTALL_ROOT = "com.sun.aas.installRoot";
+
+    //TODO V3 should be taken from ResourceDeployEvent
+    public static final String RES_TYPE_JDBC = "jdbc";
+
+    /**
+     * Constant to denote jdbc connection pool resource type.
+     */
+    //TODO V3 should be taken from ResourceDeployEvent
+    public static final String RES_TYPE_JCP = "jcp";
+
+    /**
+     * Constant to denote connector connection pool  resource type.
+     */
+    //TODO V3 should be taken from ResourceDeployEvent
+    public static final String RES_TYPE_CCP = "ccp";
+
+    /**
+     * Constant to denote connector resource type.
+     */
+    //TODO V3 should be taken from ResourceDeployEvent
+    public static final String RES_TYPE_CR = "cr";
+
+
+    //TODO V3 should be taken from IASJ2EEResourceFactoryImpl
+    public static final String JDBC_RES_TYPE = "jdbc-resource";
+
+
 }

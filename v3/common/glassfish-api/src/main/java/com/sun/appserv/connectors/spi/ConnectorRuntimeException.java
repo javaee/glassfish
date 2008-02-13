@@ -34,21 +34,23 @@
  * holder.
  */
 
-package com.sun.enterprise.connectors;
+package com.sun.appserv.connectors.spi;
 
 /**
-  * This is an Exception class. Connector module uses this class to 
-  * thow exceptions both for internal and external(outside connector module )
-  * Contains an message which indicates the error message.
-  * @author    Binod P.G 
-  * @version
+ * This is an Exception class. Connector module uses this class to
+ * thow exceptions both for internal and external(outside connector module )
+ * Contains an message which indicates the error message.
+ *
+ * @author Binod P.G
  */
 
 
 public class ConnectorRuntimeException extends Exception {
 
-    /** Constructor
-     *  @param msg Error message
+    /**
+     * Constructor
+     *
+     * @param msg Error message
      */
 
     public ConnectorRuntimeException(String msg) {
