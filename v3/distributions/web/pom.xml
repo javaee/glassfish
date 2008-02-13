@@ -133,9 +133,14 @@
             <type>zip</type>
         </dependency>
         <dependency>
-                <groupId>org.glassfish.connectors</groupId>
-                <artifactId>gf-connectors-connector</artifactId>
-            <version>${pe.version}</version>
+           <groupId>org.glassfish.connectors</groupId>
+           <artifactId>gf-connectors-connector</artifactId>
+           <version>${pe.version}</version>
+        </dependency>
+        <dependency>
+           <groupId>org.glassfish.connectors</groupId>
+           <artifactId>connectors-runtime</artifactId>
+           <version>${pe.version}</version>
         </dependency>
     </dependencies>
 </project>
