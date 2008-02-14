@@ -41,8 +41,6 @@ import org.jvnet.hk2.annotations.Contract;
 import java.util.Hashtable;
 import java.util.List;
 
-import com.sun.enterprise.config.serverbeans.JdbcResource;
-import com.sun.enterprise.config.serverbeans.JdbcConnectionPool;
 
 @Contract
 public interface ConnectorRuntime {
