@@ -142,6 +142,8 @@ public abstract class JavaEEDeployer<T extends Container, U extends ApplicationC
 
         ReadableArchive sourceArchive = dc.getSource();
         ClassLoader cl = dc.getClassLoader();
+        Properties props = dc.getCommandParameters();
+        String name = props.getProperty(DeploymentProperties.NAME);
 
         Archivist archivist = archivistFactory.getArchivist(
                 sourceArchive, cl);
@@ -151,7 +153,7 @@ public abstract class JavaEEDeployer<T extends Container, U extends ApplicationC
                 getDefaultBundleDescriptor());
 
         Application application = applicationFactory.openArchive(
-                archivist, sourceArchive, true);
+                name, archivist, sourceArchive, true);
 
         if (application!=null) {
             archivist.validate(cl);
