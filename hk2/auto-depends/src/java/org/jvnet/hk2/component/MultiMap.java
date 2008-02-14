@@ -14,9 +14,26 @@ import java.util.Set;
  * 
  * @author Kohsuke Kawaguchi
  */
-public class MultiMap<K,V> {
+public final class MultiMap<K,V> {
     private final Map<K,List<V>> store;
 
+    public final String toString() {
+        final StringBuilder builder = new StringBuilder();
+        
+        final String newline = System.getProperty( "line.separator" );
+        builder.append( "{" );
+        for ( final K key : store.keySet() ) {
+            builder.append( key  + ": {" );
+            for( final Object value : store.values() ) {
+                builder.append( value.toString() + "," );
+            }
+            // trailing comma is OK
+            builder.append( "}" + newline );
+        }
+        builder.append( "}" );
+        return builder.toString();
+    }
+    
     /**
      * Creates an empty multi-map.
      */
