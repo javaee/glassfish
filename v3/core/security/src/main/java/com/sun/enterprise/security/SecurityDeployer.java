@@ -144,7 +144,8 @@ public class SecurityDeployer extends SimpleDeployer<SecurityContainer, DummyApp
         if (module != null) {
             apis.add(module.getModuleDefinition());
         }
-        module = modulesRegistry.makeModuleFor("org.glassfish.core.security:core-security", null);
+        
+        module = modulesRegistry.makeModuleFor("org.glassfish.core:security", null);
         if (module != null) {
             apis.add(module.getModuleDefinition());
         }
