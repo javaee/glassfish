@@ -25,8 +25,6 @@ package com.sun.enterprise.v3.server;
 
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import com.sun.enterprise.module.*;
-import com.sun.enterprise.module.bootstrap.BootException;
-import com.sun.enterprise.module.impl.ModuleImpl;
 import com.sun.enterprise.module.impl.ClassLoaderProxy;
 import com.sun.enterprise.v3.data.*;
 import com.sun.enterprise.v3.deployment.DeployCommand;
@@ -54,10 +52,7 @@ import java.util.jar.JarFile;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.net.URL;
-import java.net.JarURLConnection;
-import java.net.URISyntaxException;
 import java.net.MalformedURLException;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -147,9 +142,7 @@ abstract public class ApplicationLifecycle {
             if (deployMetadata!=null) {
                 ModuleDefinition[] moduleDefs = deployMetadata.getPublicAPIs();
                 if (moduleDefs!=null) {
-                    for (ModuleDefinition def : moduleDefs) {
-                        defs.add(def);
-                    }
+                    defs.addAll(Arrays.asList(moduleDefs));
                 }
             }
         }
@@ -170,7 +163,6 @@ abstract public class ApplicationLifecycle {
         // Use the sniffers class loaders as the delegates to the parent class loader.
         // This will allow any class loadable by the sniffer (therefore visible to the sniffer
         // class loader) to be also loadable by the archive's class loader.
-        List<ModuleDefinition> snifferDefs = new ArrayList<ModuleDefinition>();
         ClassLoaderProxy cl = new ClassLoaderProxy(new URL[0], parent);
         for (Sniffer sniffer : sniffers) {
             cl.addDelegate(sniffer.getClass().getClassLoader());
@@ -187,6 +179,8 @@ abstract public class ApplicationLifecycle {
      * returned.
      *
      * @param archive source archive abstraction
+     * @param cloader is a class loader capable of loading classes and resources
+     * from the passed archive.
      * @return possibly empty collection of sniffers that handle the passed
      * archive.
      */
@@ -201,9 +195,20 @@ abstract public class ApplicationLifecycle {
         return appSniffers;
     }
 
-    public ApplicationInfo load(Iterable<Sniffer> sniffers, DeploymentContextImpl context, ActionReport report) {
+    public ApplicationInfo load(Iterable<Sniffer> sniffers, final DeploymentContextImpl context, ActionReport report) {
 
-        List<ContainerInfo> startedContainers = new ArrayList<ContainerInfo>();
+        final ApplicationLifecycle myself = this;
+
+        ProgressTracker tracker = new ProgressTracker() {
+            public void actOn(Logger logger) {
+                myself.stopModules(get("started", ModuleInfo.class), logger);
+                myself.unload(get(ModuleInfo.class), context);
+                myself.clean(get(Deployer.class), context);
+                stopContainers(get(ContainerInfo.class), logger);
+            }
+        };
+
+        //List<ContainerInfo> startedContainers = new ArrayList<ContainerInfo>();
         for (Sniffer sniffer : sniffers) {
             if (sniffer.getContainersNames()==null || sniffer.getContainersNames().length==0) {
                 failure(logger, "no container associated with application of type : " + sniffer.getModuleType(), null, report);
@@ -233,7 +238,8 @@ abstract public class ApplicationLifecycle {
                 if (is!=null) {
                     try {
                         is.close();
-                    } catch (IOException e) {                        
+                    } catch (IOException e) {
+                        logger.finer("cannot close manifest file input stream");
                     }
                 }
             }
@@ -252,18 +258,17 @@ abstract public class ApplicationLifecycle {
             if (containerInfo == null) {
                 Collection<ContainerInfo> containersInfo = startContainer(sniffer, snifferModule, logger, report);
                 if (containersInfo==null || containersInfo.size()==0) {
-                    stopContainers(logger, startedContainers);
+                    tracker.actOn(logger);
                     failure(logger, "Cannot start container(s) associated to application of type : " + sniffer.getModuleType(), null, report);
                     return null;
                 }
-                startedContainers.addAll(containersInfo);
+                tracker.addAll(ContainerInfo.class, containersInfo);
             }
 
         }
 
         // all containers that have recognized parts of the application being deployed
         // have now been successfully started. Start the deployment process.
-        List<Deployer> preparedDeployers = new ArrayList<Deployer>();
         List<Deployer> deployers = new ArrayList<Deployer>();
 
         // first we need to run the deployers which may invalidate the class loader
@@ -307,12 +312,11 @@ abstract public class ApplicationLifecycle {
             try {
                 Thread.currentThread().setContextClassLoader(containerInfo.getContainer().getClass().getClassLoader());
                 try {
-                    preparedDeployers.add(deployer);
                     deployer.prepare(context);
+                    tracker.add(Deployer.class, deployer);
                 } catch(Exception e) {
                     failure(logger, "Exception while invoking " + deployer.getClass() + " prepare method",e, report);
-                    clean(preparedDeployers, context);
-                    stopContainers(logger, startedContainers);
+                    tracker.actOn(logger);
                     return null;
                 }
             } finally {
@@ -321,7 +325,6 @@ abstract public class ApplicationLifecycle {
         }
 
         // this is the end of the prepare phase, on to the load phase.
-        List<ModuleInfo> moduleInfos = new ArrayList<ModuleInfo>();
         for (ContainerInfo containerInfo : sortedModuleInfos) {
 
             // get the container.
@@ -336,18 +339,14 @@ abstract public class ApplicationLifecycle {
                         failure(logger, "Cannot load application in " + containerInfo.getContainer().getName() + " container",
                             null, report);
 
-                        unload(moduleInfos, context);
-                        clean(preparedDeployers, context);
-                        stopContainers(logger, startedContainers);
+                        tracker.actOn(logger);
                         return null;
                     }
                     ModuleInfo moduleInfo = new ModuleInfo(containerInfo, appCtr);
-                    moduleInfos.add(moduleInfo);
+                    tracker.add(ModuleInfo.class, moduleInfo);
                 } catch(Exception e) {
                     failure(logger, "Exception while invoking " + deployer.getClass() + " prepare method",e, report);
-                    unload(moduleInfos, context);
-                    clean(preparedDeployers, context);
-                    stopContainers(logger, startedContainers);
+                    tracker.actOn(logger);
                     return null;
                 }
             } finally {
@@ -356,12 +355,11 @@ abstract public class ApplicationLifecycle {
         }
 
         // registers all deployed items.
-        List<ModuleInfo> startedModules = new ArrayList<ModuleInfo>();
-        for (ModuleInfo module : moduleInfos) {
+        for (ModuleInfo module : tracker.get(ModuleInfo.class)) {
 
             try {
                 module.getApplicationContainer().start();
-                startedModules.add(module);
+                tracker.add("started", ModuleInfo.class, module);
 
                 // add the endpoint
                 try {
@@ -373,17 +371,14 @@ abstract public class ApplicationLifecycle {
 
             } catch(Exception e) {
                 failure(logger, "Exception while invoking " + module.getApplicationContainer().getClass() + " start method",e, report);
-                stopModules(startedModules, logger);
-                unload(moduleInfos, context);
-                clean(preparedDeployers, context);
-                stopContainers(logger, startedContainers);
+                tracker.actOn(logger);
                 return null;
             }
         }
 
         final String appName = context.getCommandParameters().getProperty(DeployCommand.NAME);
         ApplicationInfo appInfo = new ApplicationInfo(context.getSource(), appName,
-                startedModules.toArray(new ModuleInfo[startedModules.size()]));
+                tracker.get(ModuleInfo.class).toArray(new ModuleInfo[tracker.get(ModuleInfo.class).size()]));
 
         appRegistry.add(appName, appInfo);
 
@@ -407,7 +402,7 @@ abstract public class ApplicationLifecycle {
         for (ModuleInfo module : modules) {
             try {
                 module.getContainerInfo().getDeployer().unload(module.getApplicationContainer(), context);
-            } catch(Exception e) {
+            } catch(Throwable e) {
                 logger.log(Level.SEVERE, "Failed to unload from container type : " +
                         module.getContainerInfo().getSniffer().getModuleType(), e);
             }
@@ -418,7 +413,7 @@ abstract public class ApplicationLifecycle {
         for (Deployer deployer : deployers) {
             try {
                 deployer.clean(context);
-            } catch(Exception e) {
+            } catch(Throwable e) {
                 context.getLogger().log(Level.INFO, "Deployer.clean failed for " + deployer, e);
             }
         }
@@ -454,7 +449,7 @@ abstract public class ApplicationLifecycle {
         return containersInfo;
     }
 
-    protected void stopContainers(Logger logger, Iterable<ContainerInfo> ctrInfos) {
+    protected void stopContainers(Iterable<ContainerInfo> ctrInfos, Logger logger) {
         for (ContainerInfo ctrInfo : ctrInfos) {
             try {
                 stopContainer(logger, ctrInfo);
@@ -480,6 +475,9 @@ abstract public class ApplicationLifecycle {
                 i.release();
             }
             containerRegistry.removeContainer(info);
+            if (logger.isLoggable(Level.FINE)) {
+                logger.fine("Container " + info.getContainer().getName() + " stopped");
+            }
         } finally {
             Thread.currentThread().setContextClassLoader(original);
         }

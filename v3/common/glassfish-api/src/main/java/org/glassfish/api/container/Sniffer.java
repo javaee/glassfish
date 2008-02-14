@@ -30,6 +30,7 @@ import org.jvnet.hk2.annotations.Contract;
 import java.io.IOException;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
+import java.lang.annotation.Annotation;
 
 import com.sun.enterprise.module.Module;
 import com.sun.enterprise.module.ModuleDefinition;
@@ -62,6 +63,17 @@ public interface Sniffer {
      */
     public Pattern getURLPattern();
 
+    /**
+     * Returns the list of annotations types that this sniffer is interested in.
+     * If an application bundle contains at least one class annotated with
+     * one of the returned annotations, the deployment process will not
+     * call the handles method but will invoke the containers deployers as if
+     * the handles method had been called and returned true.
+     *
+     * @return list of annotations this sniffer is interested in or an empty array
+     */
+    public Class<? extends Annotation>[] getAnnotationTypes();
+    
     /**
      * Returns the module type associated with this sniffer
      * @return the container name

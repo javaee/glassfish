@@ -114,7 +114,8 @@ public class DistributionDashboardMojo extends AbstractGlassfishMojo {
             for(Artifact a : ourArtifacts) {
 
                 if (isModule(a)) {
-                    String key = a.getGroupId();
+                    // our group key is xx.yy (like org.glassfish)
+                    String key = a.getGroupId().substring(0, a.getGroupId().lastIndexOf('.'));
                     List<Artifact> values = modules.get(key);
                     if (values==null) {
                         values = new ArrayList<Artifact>();

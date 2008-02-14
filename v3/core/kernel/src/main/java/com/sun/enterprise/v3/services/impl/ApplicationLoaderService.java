@@ -87,7 +87,6 @@ public class ApplicationLoaderService extends ApplicationLifecycle
     @Inject
     Applications applications;
 
-    Map<String, Object> startedContainers=null;
 
     /**
      * Retuns the lifecyle of the service. 
@@ -109,7 +108,6 @@ public class ApplicationLoaderService extends ApplicationLifecycle
         
         assert env!=null;
         
-        startedContainers = new HashMap<String, Object>();
         File appsRoot = new File(env.getApplicationStubPath());
 
         if (appsRoot.exists()) {

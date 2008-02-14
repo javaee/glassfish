@@ -98,7 +98,7 @@
     	<maven.repo.local>${basedir}/.m2/repository</maven.repo.local>
         <ant.version>1.7.0</ant.version>
         <glassfish.version>10.0-SNAPSHOT</glassfish.version>
-        <javaee-api.version>5.0</javaee-api.version>
+        <javaee-api.version>5.0-SNAPSHOT</javaee-api.version>
         <activation-api.version>1.1</activation-api.version> 
         <transaction-api.version>1.1</transaction-api.version>
         <mail-api.version>1.4</mail-api.version>        
@@ -126,6 +126,7 @@
         <jaxws-api.version>2.0</jaxws-api.version>
         <jsr250-api.version>1.0</jsr250-api.version>
         <jsr181-api.version>1.0-MR1</jsr181-api.version>
+		<saaj-api.version>1.3</saaj-api.version>
         <com.sun.commons.logging.version>1.0.4</com.sun.commons.logging.version>
         <com.sun.commons.modeler.version>1.1</com.sun.commons.modeler.version>
         <com.sun.commons.digester.version>1.5</com.sun.commons.digester.version>

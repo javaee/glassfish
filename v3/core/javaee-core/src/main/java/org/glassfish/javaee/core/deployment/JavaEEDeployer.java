@@ -148,6 +148,8 @@ public abstract class JavaEEDeployer<T extends Container, U extends ApplicationC
         Archivist archivist = archivistFactory.getArchivist(
                 sourceArchive, cl);
         archivist.setAnnotationProcessingRequested(true);
+        archivist.setXMLValidation(false);
+        archivist.setRuntimeXMLValidation(false);
 
         archivist.setDefaultBundleDescriptor(
                 getDefaultBundleDescriptor());

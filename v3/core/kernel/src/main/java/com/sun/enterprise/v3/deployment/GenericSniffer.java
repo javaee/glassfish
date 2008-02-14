@@ -34,6 +34,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
+import java.lang.annotation.Annotation;
 
 /**
  * Generic implementation of the Sniffer service that can be programmatically instantiated
@@ -128,5 +129,18 @@ public abstract class GenericSniffer implements Sniffer {
      * 
      */
     public void tearDown() {
+    }
+
+    /**
+     * Returns the list of annotations types that this sniffer is interested in.
+     * If an application bundle contains at least one class annotated with
+     * one of the returned annotations, the deployment process will not
+     * call the handles method but will invoke the containers deployers as if
+     * the handles method had been called and returned true.
+     *
+     * @return list of annotations this sniffer is interested in.
+     */
+    public Class<? extends Annotation>[] getAnnotationTypes() {
+        return new Class[0];
     }
 }
