@@ -34,11 +34,19 @@
     </build>
     <dependencies>
 
+<!--
         <dependency>
             <groupId>javax.resource</groupId>
             <artifactId>connector-api</artifactId>
             <version>${connector-api.version}</version>
         </dependency>
+-->
+        <dependency>
+            <groupId>javax.javaee</groupId>
+            <artifactId>javaee</artifactId>
+            <version>${javaee-api.version}</version>
+        </dependency>
+
 
         <dependency>
             <groupId>org.glassfish.core</groupId>
