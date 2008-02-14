@@ -44,7 +44,7 @@ import com.sun.enterprise.deployment.archivist.DescriptorArchivist;
 import org.glassfish.deployment.common.DeploymentProperties;
 import com.sun.enterprise.deployment.backend.DeploymentImplConstants;
 import com.sun.enterprise.deployment.backend.ClientJarMakerThread;
-import org.glassfish.deployment.common.IASDeploymentException;
+import org.glassfish.deployment.common.DeploymentException;
 import com.sun.enterprise.module.Module;
 import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.module.ModuleDefinition;
@@ -163,15 +163,15 @@ public abstract class JavaEEDeployer<T extends Container, U extends ApplicationC
     }
 
     protected void generateArtifacts(DeploymentContext dc) 
-        throws IASDeploymentException {
+        throws DeploymentException {
     }
 
     protected void createClientJar(DeploymentContext dc)
-        throws IASDeploymentException {
+        throws DeploymentException {
     }
 
     protected final void createClientJar(DeploymentContext dc, 
-        ZipItem[] clientStubs) throws IASDeploymentException {
+        ZipItem[] clientStubs) throws DeploymentException {
         Properties props = dc.getCommandParameters();
         String name = props.getProperty(DeploymentProperties.NAME);
         String clientJarRequested = 

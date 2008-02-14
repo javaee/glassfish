@@ -29,7 +29,7 @@ import org.glassfish.api.container.Container;
 import org.glassfish.api.deployment.ApplicationContainer;
 import org.glassfish.api.deployment.Deployer;
 import org.glassfish.api.deployment.MetaData;
-import org.glassfish.deployment.common.IASDeploymentException;
+import org.glassfish.deployment.common.DeploymentException;
 import org.jvnet.hk2.annotations.Inject;
 import com.sun.enterprise.module.Module;
 import com.sun.enterprise.module.ModulesRegistry;
@@ -120,8 +120,8 @@ public abstract class SimpleDeployer <T extends Container,
 
     // methods for implementation clsses to override
     abstract protected void generateArtifacts(DeploymentContext dc) 
-        throws IASDeploymentException;
+        throws DeploymentException;
     abstract protected void cleanArtifacts(DeploymentContext dc)
-        throws IASDeploymentException;
+        throws DeploymentException;
 
 }

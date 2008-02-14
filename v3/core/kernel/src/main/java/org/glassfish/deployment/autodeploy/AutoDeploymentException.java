@@ -43,7 +43,7 @@
 
 package org.glassfish.deployment.autodeploy;
 
-import org.glassfish.deployment.common.IASDeploymentException;
+import org.glassfish.deployment.common.DeploymentException;
 
 /**
  * AutoDeploymentException
@@ -52,7 +52,7 @@ import org.glassfish.deployment.common.IASDeploymentException;
  */
 
 
-public class AutoDeploymentException extends IASDeploymentException {
+public class AutoDeploymentException extends DeploymentException {
     /**
      *constructor with no argument
      */

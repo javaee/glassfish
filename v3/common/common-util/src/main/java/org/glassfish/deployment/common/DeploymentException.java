@@ -47,7 +47,7 @@ package org.glassfish.deployment.common;
  * @author  bnevins
  * @version 
  */
-public class IASDeploymentException extends Exception 
+public class DeploymentException extends Exception 
 {   
 
         // declare SUID for class versioning compatibility
@@ -56,14 +56,14 @@ public class IASDeploymentException extends Exception
         // 8.x releases
         static final long serialVersionUID = -7110600101249180249L;
 
-	public IASDeploymentException() 
+	public DeploymentException() 
 	{
 	}
-	public IASDeploymentException(String s) 
+	public DeploymentException(String s) 
 	{
 		super(s);
 	}
-	public IASDeploymentException(Throwable t) 
+	public DeploymentException(Throwable t) 
 	{
             // we cannot just invoke the super(throwable) constructor because
             // the IASDeploymentException travels between processes and needs
@@ -72,7 +72,7 @@ public class IASDeploymentException extends Exception
             super(t.getMessage());
             setStackTrace(t.getStackTrace());
 	}
-	public IASDeploymentException(String s, Throwable t) 
+	public DeploymentException(String s, Throwable t) 
 	{
             // we cannot just invoke the super(throwable) constructor because
             // the IASDeploymentException travels between processes and needs

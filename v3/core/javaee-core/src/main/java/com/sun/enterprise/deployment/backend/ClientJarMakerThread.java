@@ -35,7 +35,7 @@
  */
 package com.sun.enterprise.deployment.backend;
 
-import org.glassfish.deployment.common.IASDeploymentException;
+import org.glassfish.deployment.common.DeploymentException;
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.ApplicationClientDescriptor;
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
@@ -96,7 +96,7 @@ public class ClientJarMakerThread extends Thread {
         // now we build the client jar file 
         try {
             createClientJar(dc, clientJar, clientStubs, clientJarChoice);
-        } catch(IASDeploymentException e) {
+        } catch(DeploymentException e) {
             // unfortunetely, we cannot provide failures feedback to the client
             // at this point, but we certainly need to log it.
             DeploymentLogger.get().log(Level.SEVERE, 
@@ -120,7 +120,7 @@ public class ClientJarMakerThread extends Thread {
      */
     public static final void createClientJar(
         DeploymentContext dc, File clientJar, ZipItem[] clientStubs, 
-        String clientJarChoice) throws IASDeploymentException {
+        String clientJarChoice) throws DeploymentException {
         try {         
             ArchiveFactory archiveFactory = Globals.getGlobals().
                 getDefaultHabitat().getComponent(ArchiveFactory.class);
@@ -162,7 +162,7 @@ public class ClientJarMakerThread extends Thread {
             source.close();
             target.close();
         } catch(Exception e) {
-            IASDeploymentException newE = new IASDeploymentException();
+            DeploymentException newE = new DeploymentException();
             newE.initCause(e);
             throw newE;
         }

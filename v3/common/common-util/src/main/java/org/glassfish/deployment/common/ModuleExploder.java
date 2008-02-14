@@ -24,7 +24,7 @@
 package org.glassfish.deployment.common;
 
 
-import org.glassfish.deployment.common.IASDeploymentException;
+import org.glassfish.deployment.common.DeploymentException;
 import org.glassfish.api.deployment.archive.Archive;
 import java.io.*;
 import java.util.Enumeration;
@@ -109,7 +109,7 @@ public class ModuleExploder {
     
 
     public static void explodeModule(Archive source, File directory, boolean preserveManifest)
-    throws IOException, IASDeploymentException {
+    throws IOException, DeploymentException {
 
         File explodedManifest = null;
         File preservedManifestFromArchive = null;

@@ -26,7 +26,7 @@ import com.sun.enterprise.deployment.interfaces.SecurityRoleMapperFactory;
 import com.sun.enterprise.deployment.interfaces.SecurityRoleMapperFactoryMgr;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.MetaData;
-import org.glassfish.deployment.common.IASDeploymentException;
+import org.glassfish.deployment.common.DeploymentException;
 import org.glassfish.deployment.common.SimpleDeployer;
 import org.glassfish.deployment.common.DummyApplication;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
@@ -69,14 +69,14 @@ public class SecurityDeployer extends SimpleDeployer<SecurityContainer, DummyApp
     // creates security policy if needed
     @Override
     protected void generateArtifacts(DeploymentContext dc)
-            throws IASDeploymentException {
+            throws DeploymentException {
         generatePolicy(dc);
     }
 
     // removes security policy if needed
     @Override
     protected void cleanArtifacts(DeploymentContext dc)
-            throws IASDeploymentException {
+            throws DeploymentException {
         removePolicy(dc);
     }
      
@@ -87,7 +87,7 @@ public class SecurityDeployer extends SimpleDeployer<SecurityContainer, DummyApp
 
     // TODO: need to add ear and standalone ejb module case
     protected void generatePolicy(DeploymentContext dc)
-            throws IASDeploymentException {
+            throws DeploymentException {
         Properties params = dc.getCommandParameters();
         String appName = params.getProperty(DeployCommand.NAME);
         try {
@@ -110,13 +110,13 @@ public class SecurityDeployer extends SimpleDeployer<SecurityContainer, DummyApp
             }
         } catch (IASSecurityException se) {
             String msg = "Error in generating security policy for " + appName;
-            throw new IASDeploymentException(msg, se);
+            throw new DeploymentException(msg, se);
         }
     }
 
     // TODO: need to add ear and standalone ejb module case
     private void removePolicy(DeploymentContext dc) throws
-            IASDeploymentException {
+            DeploymentException {
         Properties params = dc.getCommandParameters();
         String appName = params.getProperty(DeployCommand.NAME);
 
@@ -133,7 +133,7 @@ public class SecurityDeployer extends SimpleDeployer<SecurityContainer, DummyApp
         } catch (IASSecurityException ex) {
             String msg = "Error in removing security policy for " + appName;
             _logger.log(Level.WARNING, msg, ex);
-            throw new IASDeploymentException(msg, ex);
+            throw new DeploymentException(msg, ex);
         }
     }
 
