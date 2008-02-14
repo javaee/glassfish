@@ -24,6 +24,7 @@
 package com.sun.enterprise.v3.services.impl;
 
 import com.sun.enterprise.config.serverbeans.HttpListener;
+import com.sun.enterprise.config.serverbeans.HttpService;
 import com.sun.grizzly.Controller;
 import com.sun.grizzly.http.portunif.HttpProtocolFinder;
 import com.sun.grizzly.portunif.PUPreProcessor;
@@ -62,6 +63,9 @@ public class GrizzlyProxy implements NetworkProxy{
     
     
     final HttpListener httpListener;
+    
+    
+    final HttpService httpService;
 
     
     private EndpointMapper<Adapter> endPointMapper;
@@ -90,10 +94,11 @@ public class GrizzlyProxy implements NetworkProxy{
      * TODO: We must configure Grizzly using the HttpService element,
      * <strong>not HttpListener only</strong>.
      */
-    public GrizzlyProxy(final Logger logger, 
-            Habitat habitat, HttpListener httpListener, Controller controller) {
+    public GrizzlyProxy(final Logger logger, Habitat habitat, 
+            HttpListener httpListener, Controller controller, HttpService httpService) {
         this.logger = logger;
         this.httpListener = httpListener;
+        this.httpService = httpService;
 
         String port = httpListener.getPort();
         int portNumber = 8080;
@@ -138,7 +143,7 @@ public class GrizzlyProxy implements NetworkProxy{
      * @param port the port on which we need to listen.
      */
     private void configureGrizzly(int port,Controller controller){
-        grizzlyListener = GrizzlyHttpEmbed.createListener(null, port, controller);
+        grizzlyListener = GrizzlyHttpEmbed.createListener(httpService, port, controller);
         
         if (!isWebProfile){
             PUPreProcessor preProcessor = null;

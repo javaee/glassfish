@@ -91,7 +91,8 @@ public class GrizzlyService implements Startup, PostConstruct, PreDestroy {
             // create the proxy for the port.
             NetworkProxy proxy = null;
             if (enablePU){
-                proxy = new GrizzlyProxy(logger, habitat, listener, controller);
+                proxy = new GrizzlyProxy(logger, habitat, listener, controller, 
+                        config.getHttpService());
             } else {
                 proxy = new GrizzlyAdapter(logger, habitat, listener, controller);
             }
