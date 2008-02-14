@@ -80,4 +80,12 @@ public interface Archive {
      * @return long indicating the size of the archive
      */
     public long getArchiveSize() throws NullPointerException, SecurityException;
+    
+    /**
+     * Returns the name of the archive.
+     * <p>
+     * Implementations should not return null.
+     * @return the name of the archive
+     */
+    public String getName();
 }

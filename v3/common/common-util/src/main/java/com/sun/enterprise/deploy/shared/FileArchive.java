@@ -23,6 +23,7 @@
 
 package com.sun.enterprise.deploy.shared;
 
+import com.sun.enterprise.deployment.deploy.shared.Util;
 import com.sun.enterprise.util.io.FileUtils;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.archive.WritableArchive;
@@ -421,6 +422,25 @@ public class FileArchive implements ReadableArchive, WritableArchive {
         }
         os = new BufferedOutputStream(new FileOutputStream(newFile));
         return os;   
+    }
+
+    /**
+     * Returns the name portion of the archive's URI.
+     * <p>
+     * For FileArhive the name is all of the path that follows
+     * the last slash (ignoring a slash at the end of the path).  
+     * <p>
+     * Here are some example archive names for the specified FileArchive paths:
+     * <ul>
+     * <li>/a/b/c/d/ -> d
+     * <li>/a/b/c/d  -> d
+     * <li>/a/b/c.jar -> c.jar
+     * </ul>
+     * @return the name of the archive
+     * 
+     */
+    public String getName() {
+        return Util.getURIName(getURI());
     }
     
 }

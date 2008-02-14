@@ -12,13 +12,14 @@ import java.io.OutputStream;
 import java.util.Enumeration;
 
 import com.sun.enterprise.util.io.FileUtils;
+import org.glassfish.api.deployment.archive.ArchiveHandler;
 
 /**
  * Common methods for ArchiveHandler implementations
  *
  * @author Jerome Dochez
  */
-public class AbstractArchiveHandler {
+public abstract class AbstractArchiveHandler implements ArchiveHandler {
 
     /**
      * Prepares the jar file to a format the ApplicationContainer is
@@ -52,40 +53,25 @@ public class AbstractArchiveHandler {
     /**
      * Returns the default application name usable for identifying the archive.
      * <p>
-     * The default application name is the name portion (without the file type) of 
-     * the archive's URI.  A concrete subclass should override this method if it
-     * needs to provide an alternative way of deriving the default 
-     * application name.
+     * This default implementation returns the name portion of 
+     * the archive's URI.  The archive's name depends on the type of archive 
+     * (FileArchive vs. JarArchive vs. MemoryMappedArchive, for example).  
+     * <p>
+     * A concrete subclass can override this method to provide an alternative 
+     * way of deriving the default application name.
      * 
      * @param archive the archive for which the default name is needed
      * @return the default application name for the specified archive
      */
     public String getDefaultApplicationName(ReadableArchive archive) {
-        return getDefaultApplicationName(archive.getURI());
+        String appName = archive.getName();
+        int lastDot = appName.lastIndexOf('.');
+        if (lastDot != -1) {
+            if (appName.substring(lastDot).equalsIgnoreCase("." + getArchiveType())) {
+                appName = appName.substring(0, lastDot);
+            }
+        }
+        return appName;
     }
     
-    String getDefaultApplicationName(URI uri) {
-        String name = null;
-        String path = uri.getPath();
-        if (path != null) {
-            /*
-             * Strip the path up to and including the last slash, if there is one.
-             * A directory URI may end with a slash; ignore such a slash in 
-             * finding the name. 
-             * 
-             * Then the name is the part of that stripped path up to the last dot.
-             */
-            if (path.endsWith("/")) {
-                path = path.substring(0, path.length() - 1);
-            }
-            int startOfName = path.lastIndexOf('/') + 1;
-            int endOfName = path.length();
-            int lastDot = path.lastIndexOf('.');
-            if (lastDot != -1) {
-                endOfName = lastDot;
-            }
-            name = path.substring(startOfName, endOfName);
-        }
-        return name;
-    }
 }

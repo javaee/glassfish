@@ -236,4 +236,15 @@ public class MemoryMappedArchive extends JarArchive implements ReadableArchive {
         return false;
     }        
     
+    /**
+     * Returns the name for the archive.
+     * <p>
+     * For a MemoryMappedArhive there is no name, so an empty string is returned.
+     * @return the name of the archive
+     * 
+     */
+    @Override
+    public String getName() {
+        return "";
+    }
 }

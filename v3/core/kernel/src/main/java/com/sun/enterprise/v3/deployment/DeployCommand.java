@@ -156,7 +156,7 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
             }
             // get an application name
             if (name==null) {
-                // Archive handlers know how to construct default app names.
+                // Archives know how to construct default app names.
                 name = archiveHandler.getDefaultApplicationName(archive);
                 // For the autodeployer in particular the name must be set in the
                 // command context parameters for later use.

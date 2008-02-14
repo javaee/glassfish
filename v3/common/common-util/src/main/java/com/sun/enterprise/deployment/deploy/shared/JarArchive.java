@@ -24,6 +24,7 @@
 package com.sun.enterprise.deployment.deploy.shared;
 
 
+import java.net.URI;
 import org.glassfish.api.deployment.archive.Archive;
 import java.util.Enumeration;
 import java.util.Vector;
@@ -56,5 +57,28 @@ public abstract class JarArchive implements Archive {
             }
         }
         return entries.elements();
+    } 
+    
+   /**
+     * Returns the name portion of the archive's URI.
+     * <p>
+     * For JarArhive the name is all of the path that follows
+     * the last slash up to but not including the last dot.
+     * <p>
+     * Here are some example archive names for the specified JarArchive paths:
+     * <ul>
+     * <li>/a/b/c/d.jar -> d
+     * <li>/a/b/c/d  -> d
+     * <li>/x/y/z.html -> z
+     * </ul>
+     * @return the name of the archive
+     * 
+     */
+    public String getName() {
+         String path = Util.getURIName(getURI());
+         int lastDot = path.lastIndexOf('.');
+         int endOfName = (lastDot != 1) ? lastDot : path.length();
+         String name = path.substring(0, endOfName);
+         return name;
     }    
 }
