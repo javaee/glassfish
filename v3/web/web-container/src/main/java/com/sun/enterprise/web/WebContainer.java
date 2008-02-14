@@ -97,7 +97,7 @@ import com.sun.enterprise.web.connector.coyote.PECoyoteConnector;
 import com.sun.enterprise.web.pluggable.WebContainerFeatureFactory;
 
 
-//import com.sun.enterprise.security.SecurityUtil;
+import com.sun.enterprise.security.SecurityUtil;
 
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.WebServicesDescriptor;
@@ -109,9 +109,9 @@ import com.sun.enterprise.deployment.WebServiceEndpoint;
 import com.sun.appserv.server.util.ASClassLoaderUtil;
 import com.sun.logging.LogDomains;
 
-//import com.sun.web.security.WebSecurityManager;
-//import com.sun.web.security.WebSecurityManagerFactory;
-//import com.sun.web.security.RealmAdapter;
+import com.sun.web.security.WebSecurityManager;
+import com.sun.web.security.WebSecurityManagerFactory;
+import com.sun.web.security.RealmAdapter;
 
 // monitoring imports
 import java.util.HashSet;
@@ -497,8 +497,8 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
     /**
      * The WebSecurityManagerFactory used for generating web permission
      */
-//    private WebSecurityManagerFactory webSecurityManagerFactory
-//           = WebSecurityManagerFactory.getInstance();
+    private WebSecurityManagerFactory webSecurityManagerFactory
+           = WebSecurityManagerFactory.getInstance();
 
     //private EjbWebServiceRegistryListener ejbWebServiceRegistryListener;
 
@@ -1809,10 +1809,10 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                      * the virtual server on which they are being deployed,
                      * unless they specify their own
                      */
-//                    ctx.setRealm(new RealmAdapter(wbd, isSystem,
-//                                                  vs.getAuthRealmName()));
+                    ctx.setRealm(new RealmAdapter(wbd, isSystem,
+                                                  vs.getAuthRealmName()));
                 } else {
-//                    ctx.setRealm(new RealmAdapter(wbd, isSystem));
+                    ctx.setRealm(new RealmAdapter(wbd, isSystem));
                 }
                 configureSecurity(wbd, isSystem);
 
@@ -1932,14 +1932,14 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
      */
     protected void configureSecurity(WebBundleDescriptor wbd,
             boolean isSystem) {
-//        try{
-//            webSecurityManagerFactory.newWebSecurityManager(wbd);
-//            String context = WebSecurityManager.getContextID(wbd);
-//            SecurityUtil.generatePolicyFile(context);
-//        }catch(Exception ce){
-//            _logger.log(Level.SEVERE, "webcontainer.configureSecurity", ce);
-//            throw new RuntimeException(ce);
-//        }
+        try{
+            webSecurityManagerFactory.newWebSecurityManager(wbd);
+            String context = WebSecurityManager.getContextID(wbd);
+            SecurityUtil.generatePolicyFile(context);
+        }catch(Exception ce){
+            _logger.log(Level.SEVERE, "webcontainer.configureSecurity", ce);
+            throw new RuntimeException(ce);
+        }
     }
 
     /**
