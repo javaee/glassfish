@@ -100,6 +100,8 @@ public class PackageMojo extends AbstractMojo {
     /**
      * Ant glob patterns to be excluded from the jar file, like "**<span></span>/*.bak"
      * The base directory for the pattern is specified in {@link #classesDirectory}.
+     * 
+     * @parameter
      */
     protected String[] excludes;
 
