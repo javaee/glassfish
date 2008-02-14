@@ -51,7 +51,6 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.xml.namespace.QName;
 import javax.xml.soap.Name;
 import javax.xml.soap.MimeHeaders;
 import javax.xml.soap.SOAPBody;
@@ -95,13 +94,13 @@ import com.sun.enterprise.security.jauth.PendingException;
 import com.sun.enterprise.security.jauth.SOAPAuthParam;*/
 import com.sun.enterprise.security.jmac.AuthMessagePolicy;
 //TODO:V3 Commented import com.sun.enterprise.security.jmac.PacketMessageInfo;
-import com.sun.enterprise.security.jmac.PacketMessageInfo;
 import com.sun.logging.LogDomains;
 
-import com.sun.xml.ws.api.message.Message;
-import com.sun.xml.ws.api.message.Packet;
-import com.sun.xml.ws.api.model.wsdl.WSDLPort;
-import com.sun.xml.ws.api.model.wsdl.WSDLBoundOperation;
+//V3:Commented
+//import com.sun.xml.ws.api.message.Message;
+//import com.sun.xml.ws.api.message.Packet;
+//import com.sun.xml.ws.api.model.wsdl.WSDLPort;
+//import com.sun.xml.ws.api.model.wsdl.WSDLBoundOperation;
 
 /**
  * This class implements the interface AuthConfigProvider.
@@ -834,6 +833,7 @@ public class GFServerConfigProvider implements AuthConfigProvider {
 	 */
         public String getAuthContextID(MessageInfo messageInfo) {
             //XXX temporary, may need to re-structure the code
+            /*V3:Commented SOAP Layer support
             if (GFServerConfigProvider.SOAP.equals(layer)) {
                 // make this more efficient by operating on packet 
                 String rvalue = null;
@@ -861,7 +861,7 @@ public class GFServerConfigProvider implements AuthConfigProvider {
                     // make this more efficient by operating on packet 
                     return getOpName((SOAPMessage)messageInfo.getRequestMessage());
                 }
-            } else if (GFServerConfigProvider.HTTPSERVLET.equals(layer)) {
+            } else */if (GFServerConfigProvider.HTTPSERVLET.equals(layer)) {
                 String isMandatoryStr =
                     (String)messageInfo.getMap().get(HttpServletConstants.IS_MANDATORY);
                 return Boolean.valueOf(isMandatoryStr).toString();

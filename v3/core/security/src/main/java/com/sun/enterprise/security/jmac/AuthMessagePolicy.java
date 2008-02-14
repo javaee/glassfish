@@ -46,12 +46,10 @@ import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.message.MessagePolicy;
 import static javax.security.auth.message.MessagePolicy.*;
 
-import javax.xml.namespace.QName;
 
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.WebServiceEndpoint;
 import com.sun.enterprise.deployment.ServiceReferenceDescriptor;
-import com.sun.enterprise.deployment.ServiceRefPortInfo;
 import com.sun.enterprise.deployment.runtime.common.MessageDescriptor;
 import com.sun.enterprise.deployment.runtime.common.MessageSecurityBindingDescriptor;
 import com.sun.enterprise.deployment.runtime.common.MessageSecurityDescriptor;
@@ -60,8 +58,8 @@ import com.sun.enterprise.deployment.runtime.web.SunWebApp;
 import com.sun.enterprise.security.AppservAccessController;
 import com.sun.enterprise.security.jmac.config.HttpServletConstants;
 import static com.sun.enterprise.security.jmac.config.GFServerConfigProvider.SOAP;
-
-import com.sun.xml.ws.api.model.wsdl.WSDLPort;
+//V3:Commented webservices support
+//import com.sun.xml.ws.api.model.wsdl.WSDLPort;
 
 
 /**
@@ -105,6 +103,7 @@ public class AuthMessagePolicy {
 	    ServiceReferenceDescriptor s = (ServiceReferenceDescriptor) 
 		properties.get("SERVICE_REF");
 	    if (s != null) {
+                /*V3:Commented
 		WSDLPort p = (WSDLPort) properties.get("WSDL_MODEL");
 		QName portName = null;
 		if (p != null) {
@@ -115,7 +114,7 @@ public class AuthMessagePolicy {
 		    if (i != null) {
 			binding = i.getMessageSecurityBinding();
 		    }
-		}
+		}*/
 	    }
 	}
 
