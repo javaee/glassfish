@@ -59,6 +59,7 @@
 	    <module>jaxb</module>
 	    <module>grizzly-http</module>
 	    <module>grizzly-jruby</module>        
+	    <module>apache-commons</module>
     </modules>
 </project>
 
