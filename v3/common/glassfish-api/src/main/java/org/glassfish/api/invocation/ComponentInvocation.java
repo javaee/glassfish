@@ -1,13 +1,11 @@
 package org.glassfish.api.invocation;
 
-import org.jvnet.hk2.annotations.Contract;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PerLookup;
 
 @Scoped(PerLookup.class)
 @Service
-@Contract
 public class ComponentInvocation {
 
     public enum ComponentInvocationType {
@@ -32,6 +30,10 @@ public class ComponentInvocation {
     public String componentId;
 
     public Object transaction;
+
+    // true if transaction commit or rollback is
+    // happening for this invocation context
+    private boolean transactionCompleting = false;
 
     //  security context coming in a call
     // security context changes on a runas call - on a run as call
@@ -87,11 +89,11 @@ public class ComponentInvocation {
         return container;
     }
 
-    public Object getTransaction() {
-        return transaction;
+    public <T> T getTransaction() {
+        return (T)transaction;
     }
 
-    public void setTransaction(Object t) {
+    public <T> void setTransaction(T t) {
         this.transaction = t;
     }
     
@@ -109,4 +111,11 @@ public class ComponentInvocation {
 	return oldSecurityContext;
     }
 
+    public boolean isTransactionCompleting() {
+        return transactionCompleting;
+    }
+
+    public void setTransactionCompeting(boolean value) {
+        transactionCompleting = value;
+    }
 }
