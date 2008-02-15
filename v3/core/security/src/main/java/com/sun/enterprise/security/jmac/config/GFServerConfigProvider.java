@@ -51,14 +51,15 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.xml.soap.Name;
-import javax.xml.soap.MimeHeaders;
-import javax.xml.soap.SOAPBody;
-import javax.xml.soap.SOAPException;
-import javax.xml.soap.SOAPElement;
-import javax.xml.soap.SOAPEnvelope;
-import javax.xml.soap.SOAPMessage;
-import javax.xml.soap.SOAPPart;
+//V3:Commented
+//import javax.xml.soap.Name;
+//import javax.xml.soap.MimeHeaders;
+//import javax.xml.soap.SOAPBody;
+//import javax.xml.soap.SOAPException;
+//import javax.xml.soap.SOAPElement;
+//import javax.xml.soap.SOAPEnvelope;
+//import javax.xml.soap.SOAPMessage;
+//import javax.xml.soap.SOAPPart;
 
 import javax.security.auth.Subject;
 import javax.security.auth.callback.Callback;
@@ -872,6 +873,7 @@ public class GFServerConfigProvider implements AuthConfigProvider {
 
 
         // we should be able to replace the following with a method on packet
+        /*V3:Commented
         private String getOpName(SOAPMessage message) {
             if (message == null) {
                 return null;
@@ -934,7 +936,7 @@ public class GFServerConfigProvider implements AuthConfigProvider {
             }
         
             return rvalue;
-        }
+        }*/
 
         /**
          * Causes a dynamic anthentication context configuration object to 
