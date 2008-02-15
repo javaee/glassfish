@@ -67,13 +67,13 @@ public final class JavaEETransaction extends TimerTask implements
         com.sun.enterprise.container.common.spi.JavaEETransaction {
 
     @Inject 
-    private Logger _logger;
+    static Logger _logger;
 
     // Sting Manager for Localization
     private static StringManager sm = StringManager.getManager(JavaEETransaction.class);
 
     @Inject 
-    private JavaEETransactionManager /** XXX ??? Opt **/ javaEETM; 
+    static JavaEETransactionManager /** XXX ??? Opt **/ javaEETM; 
 
     // Local Tx ids are just numbers: they dont need to be unique across
     // processes or across multiple activations of this server process.
@@ -132,12 +132,11 @@ public final class JavaEETransaction extends TimerTask implements
         this.resourceTable = new HashMap();
         localTxStatus = Status.STATUS_ACTIVE;
         startTime=System.currentTimeMillis();
-        if (_logger.isLoggable(Level.FINE)) {
+        if (_logger != null && _logger.isLoggable(Level.FINE)) {
             _logger.log(Level.FINE,"--Created new JavaEETransaction, txId = "+txId);
         }
     }
 
-    
     // START: local transaction timeout
     JavaEETransaction(int timeout) {
         this();
@@ -148,8 +147,6 @@ public final class JavaEETransaction extends TimerTask implements
         this.timeout = timeout;
     }
     // END: local transaction timeout
-
-
 
     JavaEETransaction(Transaction jtsTx) {
         this();

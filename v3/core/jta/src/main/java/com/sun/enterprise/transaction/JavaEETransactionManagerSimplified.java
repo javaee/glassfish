@@ -72,7 +72,7 @@ import org.glassfish.api.invocation.InvocationException;
 public class JavaEETransactionManagerSimplified 
         implements JavaEETransactionManager {
 
-    @Inject private Logger _logger;
+    @Inject protected Logger _logger;
 
     @Inject protected PoolManager poolmgr;
 
@@ -204,6 +204,10 @@ public class JavaEETransactionManagerSimplified
             // ignore
         }
 *** XXX **/
+    }
+
+    public void clearThreadTx() {
+        transactions.set(null);
     }
 
 /****************************************************************************/
@@ -729,6 +733,12 @@ public class JavaEETransactionManagerSimplified
                 tx = new JavaEETransaction(timeout);
             else
                 tx = new JavaEETransaction();
+
+// XXX NO INJECTION ???
+            tx._logger = _logger;
+            tx.javaEETM = this;
+// XXX NO INJECTION ???
+
             transactions.set(tx);
             if (monitoringEnabled) {
                 activeTransactions.addElement(tx);
@@ -1115,6 +1125,10 @@ public class JavaEETransactionManagerSimplified
 /****************************************************************************/
 /************************* Helper Methods ***********************************/
 /****************************************************************************/
+    protected static String getStatusAsString(int status) {
+        return (String)statusMap.get(status);
+    }
+
     private void delistComponentResources(ComponentInvocation inv,
                                           boolean suspend)
         throws InvocationException {
