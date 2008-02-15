@@ -98,26 +98,31 @@
             <groupId>javax.javaee</groupId>
             <artifactId>javaee</artifactId>
             <version>${javaee-api.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.glassfish.web</groupId>
             <artifactId>war-util</artifactId>
             <version>${project.parent.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.glassfish.admin</groupId>
             <artifactId>admin-util</artifactId>
             <version>${project.parent.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.glassfish.common</groupId>
             <artifactId>common-util</artifactId>
             <version>${project.parent.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.glassfish.common</groupId>
             <artifactId>common-ee-util</artifactId>
             <version>${project.parent.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <!--
@@ -129,46 +134,31 @@
             <groupId>org.glassfish.external</groupId>
             <artifactId>ant</artifactId>
             <version>${project.parent.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.glassfish.web</groupId>
             <artifactId>pwc</artifactId>
             <version>${project.parent.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>com.sun.commons</groupId>
-            <artifactId>logging-api</artifactId>
-            <version>${com.sun.commons.logging.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.commons</groupId>
-            <artifactId>modeler</artifactId>
-            <version>${com.sun.commons.modeler.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.commons</groupId>
-            <artifactId>digester</artifactId>
-            <version>${com.sun.commons.digester.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.commons</groupId>
-            <artifactId>beanutils</artifactId>
-            <version>${com.sun.commons.beanutils.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.commons</groupId>
-            <artifactId>collections</artifactId>
-            <version>${com.sun.commons.collections.version}</version>
+            <groupId>org.glassfish.external</groupId>
+            <artifactId>apache-commons</artifactId>
+            <version>${project.parent.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.glassfish.external</groupId>
             <artifactId>grizzly-module</artifactId>
             <version>${grizzly.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>jasper-jsr199</groupId>
             <artifactId>jasper-jsr199</artifactId>
             <version>${jasper-jsr199.version}</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 </project>

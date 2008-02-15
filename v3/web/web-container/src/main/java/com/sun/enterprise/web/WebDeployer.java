@@ -119,7 +119,7 @@ public class WebDeployer extends JavaEEDeployer<WebContainer, WebApplication>{
         if (module != null) {
             apis.add(module.getModuleDefinition());
         }
-        return new MetaData(false, apis.toArray(new ModuleDefinition[apis.size()]));
+        return new MetaData(false, apis.toArray(new ModuleDefinition[apis.size()]), new Class[] { Application.class }, null );
     }    
 
     protected WebBundleDescriptor getDefaultBundleDescriptor() {

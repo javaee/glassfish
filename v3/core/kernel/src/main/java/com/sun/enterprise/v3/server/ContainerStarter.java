@@ -125,7 +125,7 @@ public class ContainerStarter {
                     logger.severe("Cannot start " + sniffer.getModuleType() + " container");
                     return null;
                 }
-                Thread.currentThread().setContextClassLoader(provider.type().getClassLoader());
+                Thread.currentThread().setContextClassLoader(snifferModule.getClassLoader());
                 Container container = provider.get();
                 if (container!=null) {
                     ContainerInfo info = new ContainerInfo(container, sniffer);

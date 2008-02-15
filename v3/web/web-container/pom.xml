@@ -78,31 +78,10 @@
             <version>${javaee-api.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.sun.commons</groupId>
-            <artifactId>logging-api</artifactId>
-            <version>${com.sun.commons.logging.version}</version>
+            <groupId>org.glassfish.external</groupId>
+            <artifactId>apache-commons</artifactId>
+            <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>com.sun.commons</groupId>
-            <artifactId>modeler</artifactId>
-            <version>${com.sun.commons.modeler.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.commons</groupId>
-            <artifactId>digester</artifactId>
-            <version>${com.sun.commons.digester.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.commons</groupId>
-            <artifactId>beanutils</artifactId>
-            <version>${com.sun.commons.beanutils.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.commons</groupId>
-            <artifactId>collections</artifactId>
-            <version>${com.sun.commons.collections.version}</version>
-        </dependency>
-
         <dependency>
             <groupId>org.glassfish.admin</groupId>
             <artifactId>admin-core</artifactId>
@@ -130,6 +109,11 @@
             <artifactId>common-util</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.glassfish.common</groupId>
+            <artifactId>common-ee-util</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>        
         <dependency>
             <groupId>org.glassfish.common</groupId>
             <artifactId>glassfish-api</artifactId>
@@ -186,11 +170,6 @@
             <groupId>javax.faces</groupId>
             <artifactId>jsf-impl</artifactId>
             <version>${jsf-api.version}</version>
-        </dependency>
-	<dependency>
-            <groupId>org.glassfish.core</groupId>
-            <artifactId>security</artifactId>
-            <version>${project.version}</version>
         </dependency>
     </dependencies>
 

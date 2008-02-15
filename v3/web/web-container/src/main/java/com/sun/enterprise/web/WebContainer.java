@@ -97,7 +97,6 @@ import com.sun.enterprise.web.connector.coyote.PECoyoteConnector;
 import com.sun.enterprise.web.pluggable.WebContainerFeatureFactory;
 
 
-import com.sun.enterprise.security.SecurityUtil;
 
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.WebServicesDescriptor;
@@ -109,10 +108,12 @@ import com.sun.enterprise.deployment.WebServiceEndpoint;
 import com.sun.appserv.server.util.ASClassLoaderUtil;
 import com.sun.logging.LogDomains;
 
-import com.sun.web.security.WebSecurityManager;
+// TODO : v3 : dochez Need to remove dependency on security
+/*import com.sun.web.security.WebSecurityManager;
+import com.sun.enterprise.security.SecurityUtil;
 import com.sun.web.security.WebSecurityManagerFactory;
 import com.sun.web.security.RealmAdapter;
-
+  */
 // monitoring imports
 import java.util.HashSet;
 
@@ -494,12 +495,14 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
      */
     protected boolean globalSSOEnabled = true;
 
+    // TODO : v3 : dochez Need to remove dependency on security
+
     /**
      * The WebSecurityManagerFactory used for generating web permission
      */
-    private WebSecurityManagerFactory webSecurityManagerFactory
+    /*private WebSecurityManagerFactory webSecurityManagerFactory
            = WebSecurityManagerFactory.getInstance();
-
+    */
     //private EjbWebServiceRegistryListener ejbWebServiceRegistryListener;
 
     protected WebContainerFeatureFactory webFeatureFactory;
@@ -1803,17 +1806,18 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                 String resourceType = wmInfo.getBean().getObjectType();
                 boolean isSystem = (resourceType != null &&
                         resourceType.startsWith("system-"));
-                if ("null".equals(j2eeApplication)) {
+                // TODO : v3 : dochez Need to remove dependency on security
+               //*if ("null".equals(j2eeApplication)) {
                     /*
                      * Standalone webapps inherit the realm referenced by
                      * the virtual server on which they are being deployed,
                      * unless they specify their own
                      */
-                    ctx.setRealm(new RealmAdapter(wbd, isSystem,
+                /*    ctx.setRealm(new RealmAdapter(wbd, isSystem,
                                                   vs.getAuthRealmName()));
                 } else {
                     ctx.setRealm(new RealmAdapter(wbd, isSystem));
-                }
+                } */
                 configureSecurity(wbd, isSystem);
 
                 // post processing DOL object for standalone web module
@@ -1932,14 +1936,16 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
      */
     protected void configureSecurity(WebBundleDescriptor wbd,
             boolean isSystem) {
-        try{
-            webSecurityManagerFactory.newWebSecurityManager(wbd);
+        // TODO : v3 : dochez Need to remove dependency on security
+        /*try{
+            webSecurityM`anagerFactory.newWebSecurityManager(wbd);
             String context = WebSecurityManager.getContextID(wbd);
             SecurityUtil.generatePolicyFile(context);
         }catch(Exception ce){
             _logger.log(Level.SEVERE, "webcontainer.configureSecurity", ce);
             throw new RuntimeException(ce);
         }
+        */
     }
 
     /**

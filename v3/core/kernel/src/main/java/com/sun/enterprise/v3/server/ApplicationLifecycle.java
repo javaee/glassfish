@@ -271,25 +271,54 @@ abstract public class ApplicationLifecycle {
         // have now been successfully started. Start the deployment process.
         List<Deployer> deployers = new ArrayList<Deployer>();
 
+
         // first we need to run the deployers which may invalidate the class loader
         // we use for deployment. This is true for technologies like JPA where they need
         // to reload previously loaded classes in order to perform bytecode enhancements.
         LinkedList<ContainerInfo> sortedModuleInfos = new LinkedList<ContainerInfo>();
         boolean atLeastOne=false;
+
+        Map<Class, Deployer> metaDataProvided = new HashMap<Class, Deployer>();
+        Map<Class, Deployer> metaDataRequired = new HashMap<Class, Deployer>();
+        Map<Deployer, ContainerInfo> containerInfosByDeployers = new HashMap<Deployer, ContainerInfo>();
         for (Sniffer sniffer : sniffers) {
             for (String containerName : sniffer.getContainersNames()) {
                 ContainerInfo containerInfo = containerRegistry.getContainer(containerName);
-                Deployer deployer = getDeployer(containerInfo);
-                deployers.add(deployer);
-                if (deployer.getMetaData().invalidatesClassLoader()) {
-                    atLeastOne=true;
-                    sortedModuleInfos.addFirst(containerInfo);
-                } else {
-                    sortedModuleInfos.addLast(containerInfo);
+                ClassLoader original = Thread.currentThread().getContextClassLoader();
+                try {
+                    Thread.currentThread().setContextClassLoader(containerInfo.getMainModule().getClassLoader());
+                    Deployer deployer = getDeployer(containerInfo);
+                    deployers.add(deployer);
+                    containerInfosByDeployers.put(deployer, containerInfo);
+                    final MetaData metadata = deployer.getMetaData();
+                    for (Class metadataType : metadata.requires()) {
+                        metaDataRequired.put(metadataType, deployer);
+                    }
+                    for (Class metadataType : metadata.provides()) {
+                        metaDataProvided.put(metadataType, deployer);
+                    }
+                    if (deployer.getMetaData().invalidatesClassLoader()) {
+                        atLeastOne=true;
+                    }
+                } finally {
+                    Thread.currentThread().setContextClassLoader(original);
                 }
             }
         }
 
+        // now sort...
+        for (Class required : metaDataRequired.keySet()) {
+            if (metaDataProvided.containsKey(required)) {
+                Deployer provider = metaDataProvided.get(required);
+                Deployer requester = metaDataRequired.get(required);
+                // TODO : better sorting job.
+                sortedModuleInfos.addFirst(containerInfosByDeployers.get(provider));
+                sortedModuleInfos.addLast(containerInfosByDeployers.get(requester));
+            } else {
+                failure(logger,"Deployer " + metaDataRequired.get(required) + " requires " + required + " but no other deployer provides it", null, report);
+                return null;
+            }
+        }
         // Ok we now have all we need to create the parent class loader for our application
         // which will be stored in the deployment context.
         ClassLoader parentCL = createApplicationParentCL(null, deployers);
@@ -301,12 +330,6 @@ abstract public class ApplicationLifecycle {
             // get the deployer
             Deployer deployer = containerInfo.getDeployer();
 
-            // we might need to flush the class loader used the load the application
-            // bits in case we ran all the prepare() methods of the invalidating
-            // deployers.
-            if (atLeastOne && !deployer.getMetaData().invalidatesClassLoader()) {
-                context.setClassLoader(handler.getClassLoader(parentCL, context.getSource()));
-            }
 
             ClassLoader currentCL = Thread.currentThread().getContextClassLoader();
             try {
@@ -324,6 +347,13 @@ abstract public class ApplicationLifecycle {
             }
         }
 
+        // we might need to flush the class loader used the load the application
+        // bits in case we ran all the prepare() methods of the invalidating
+        // deployers.
+        if (atLeastOne) {
+            context.setClassLoader(handler.getClassLoader(parentCL, context.getSource()));
+        }
+        
         // this is the end of the prepare phase, on to the load phase.
         for (ContainerInfo containerInfo : sortedModuleInfos) {
 
@@ -429,22 +459,29 @@ abstract public class ApplicationLifecycle {
         }
 
         for (ContainerInfo containerInfo : containersInfo) {
-            Container container = containerInfo.getContainer();
-            Class<? extends Deployer> deployerClass = container.getDeployer();
-            Deployer deployer;
+            ClassLoader original = Thread.currentThread().getContextClassLoader();
             try {
-                deployer = habitat.getComponent(deployerClass);
-                containerInfo.setDeployer(deployer);
-            } catch (ComponentException e) {
-                failure(logger, "Cannot instantiate or inject "+deployerClass, e, report);
-                stopContainer(logger, containerInfo);
-                return null;
-            } catch (ClassCastException e) {
-                stopContainer(logger, containerInfo);
-                failure(logger, deployerClass+" does not implement " +
-                        " the org.jvnet.glassfish.api.deployment.Deployer interface", e, report);
-                return null;
+                Thread.currentThread().setContextClassLoader(containerInfo.getMainModule().getClassLoader());
+                Container container = containerInfo.getContainer();
+                Class<? extends Deployer> deployerClass = container.getDeployer();
+                Deployer deployer;
+                try {
+                        deployer = habitat.getComponent(deployerClass);
+                        containerInfo.setDeployer(deployer);
+                } catch (ComponentException e) {
+                    failure(logger, "Cannot instantiate or inject "+deployerClass, e, report);
+                    stopContainer(logger, containerInfo);
+                    return null;
+                } catch (ClassCastException e) {
+                    stopContainer(logger, containerInfo);
+                    failure(logger, deployerClass+" does not implement " +
+                            " the org.jvnet.glassfish.api.deployment.Deployer interface", e, report);
+                    return null;
+                }
+            }  finally {
+                Thread.currentThread().setContextClassLoader(original);
             }
+                
         }
         return containersInfo;
     }

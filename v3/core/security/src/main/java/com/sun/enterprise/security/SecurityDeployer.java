@@ -149,7 +149,7 @@ public class SecurityDeployer extends SimpleDeployer<SecurityContainer, DummyApp
         if (module != null) {
             apis.add(module.getModuleDefinition());
         }
-        return new MetaData(false, apis.toArray(new ModuleDefinition[apis.size()]));
+        return new MetaData(false, apis.toArray(new ModuleDefinition[apis.size()]), null, new Class[] {Application.class});
     }
 
     private static void initRoleMapperFactory() //throws Exception

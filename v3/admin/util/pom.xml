@@ -52,89 +52,26 @@
 
     <developers>
         <developer>
-            <id>km</id>
-            <name>Kedar Mhaswade</name>
-            <url>http://weblogs.java.net/blog/km</url>
+            <id>dochez</id>
+            <name>Jerome Dochez</name>
+            <url>http://blogs.sun.com/dochez</url>
             <organization>Sun Microsystems, Inc.</organization>
             <roles>
                 <role>lead</role>
                 <role>developer</role>
             </roles>
         </developer>
-        <developer>
-            <id>chambers</id>
-            <name>Lloyd Chambers</name>
-            <organization>Sun Microsystems, Inc.</organization>
-            <roles>
-                <role>developer</role>
-            </roles>
-        </developer>
-        <developer>
-            <id>bnevins</id>
-            <name>Byron Nevins</name>
-            <url>http://blogs.sun.com/foo/</url>
-            <organization>Sun Microsystems, Inc.</organization>
-            <roles>
-                <role>developer</role>
-            </roles>
-        </developer>
-        <developer>
-            <id>ektare</id>
-	        <name>Nandini Ektare</name>
-            <organization>Sun Microsystems, Inc.</organization>
-            <roles>
-                <role>developer</role>
-            </roles>
-        </developer>
-        <developer>
-            <id>sm</id>
-	        <name>Sreenivas Munnangi</name>
-            <organization>Sun Microsystems, Inc.</organization>
-            <roles>
-                <role>developer</role>
-            </roles>
-        </developer>
     </developers>
-    <build>
-        <resources>
-            <resource>
-                <directory>src/share</directory>
-                <includes>
-                    <include>**/*.properties</include>
-                </includes>
-            </resource>
-        </resources>
-    </build>
     <dependencies>
         <dependency>
-            <groupId>com.sun.commons</groupId>
-            <artifactId>modeler</artifactId>
-            <version>${com.sun.commons.modeler.version}</version>
+            <groupId>org.glassfish.external</groupId>
+            <artifactId>apache-commons</artifactId>
+            <version>${project.parent.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.common</groupId>
             <artifactId>common-util</artifactId>
             <version>${project.parent.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.commons</groupId>
-            <artifactId>logging-api</artifactId>
-            <version>${com.sun.commons.logging.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.commons</groupId>
-            <artifactId>digester</artifactId>
-            <version>${com.sun.commons.digester.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.commons</groupId>
-            <artifactId>collections</artifactId>
-            <version>${com.sun.commons.collections.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.commons</groupId>
-            <artifactId>beanutils</artifactId>
-            <version>${com.sun.commons.beanutils.version}</version>
         </dependency>
     </dependencies>
 </project>

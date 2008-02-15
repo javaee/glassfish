@@ -56,7 +56,7 @@ public class RailsDeployer implements Deployer<RailsContainer, RailsApplication>
      * @return the meta data for this Deployer
      */
     public MetaData getMetaData() {
-        return new MetaData(false, null);
+        return new MetaData(false, null, null, null);
     }
 
     public RailsApplication load(RailsContainer container, DeploymentContext context) {

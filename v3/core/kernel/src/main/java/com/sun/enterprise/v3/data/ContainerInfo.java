@@ -53,6 +53,7 @@ public class ContainerInfo<T extends Container, U extends ApplicationContainer> 
     Map<WeakReference<Thread>, Set<Integer>> addedThreadLocals = new HashMap();
     Deployer deployer;
     Module topModule;
+    ClassLoader mainClassLoader; // use to prevent gc of the main module class loader;
 
     /**
      * Creates a new ContractProvider info with references to the container, the sniffer
@@ -158,6 +159,7 @@ public class ContainerInfo<T extends Container, U extends ApplicationContainer> 
 
     public void setMainModule(Module module) {
         this.topModule = module;
+        this.mainClassLoader = module.getClassLoader();
     }
 
     public Module getMainModule() {

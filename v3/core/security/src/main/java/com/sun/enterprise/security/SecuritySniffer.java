@@ -12,15 +12,10 @@ import java.util.logging.Logger;
 import java.io.IOException;
 
 import com.sun.enterprise.module.Module;
-import com.sun.enterprise.v3.web.WebSniffer;
 import com.sun.enterprise.v3.deployment.GenericSniffer;
 
 /**
- * Created by IntelliJ IDEA.
- * User: dochez
- * Date: Feb 13, 2008
- * Time: 10:20:46 AM
- * To change this template use File | Settings | File Templates.
+ * SecuritySniffer for security related activities
  */
 @Service
 public class SecuritySniffer extends GenericSniffer {

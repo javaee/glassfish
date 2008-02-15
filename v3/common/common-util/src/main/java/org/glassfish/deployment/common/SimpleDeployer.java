@@ -115,7 +115,7 @@ public abstract class SimpleDeployer <T extends Container,
             apis.add(module.getModuleDefinition());
         }
         return new MetaData(false, apis.toArray(
-            new ModuleDefinition[apis.size()]));
+            new ModuleDefinition[apis.size()]), null, null);
     }
 
     // methods for implementation clsses to override

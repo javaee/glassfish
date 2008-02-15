@@ -101,8 +101,8 @@ public abstract class JavaEEDeployer<T extends Container, U extends ApplicationC
         if (module!=null) {
             apis.add(module.getModuleDefinition());
         }
-        return new MetaData(false, apis.toArray(new ModuleDefinition[apis.size()]));
-    }    
+        return new MetaData(false, apis.toArray(new ModuleDefinition[apis.size()]), null, null);
+    }
 
     /**
      * Prepares the application bits for running in the application server.

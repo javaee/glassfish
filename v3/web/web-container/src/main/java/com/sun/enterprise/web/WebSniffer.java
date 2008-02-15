@@ -21,14 +21,13 @@
  * Copyright 2006 Sun Microsystems, Inc. All rights reserved.
  */
 
-package com.sun.enterprise.v3.web;
+package com.sun.enterprise.web;
 
 import com.sun.enterprise.v3.deployment.GenericSniffer;
 import org.glassfish.api.container.Sniffer;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Singleton;
-
 
 /**
  * Implementation of the Sniffer for the web container.
@@ -42,7 +41,7 @@ public class WebSniffer  extends GenericSniffer implements Sniffer {
     public WebSniffer() {
         super("web", "WEB-INF/web.xml", null);
     }
-    
+
     final String[] containers = { "com.sun.enterprise.web.WebContainer" };
     public String[] getContainersNames() {
         return containers;

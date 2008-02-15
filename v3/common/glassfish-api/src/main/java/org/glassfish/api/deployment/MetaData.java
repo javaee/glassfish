@@ -40,8 +40,12 @@ import com.sun.enterprise.module.ModuleDefinition;
  */
 public class MetaData {
 
+    final static Class[] empty = new Class[0];
+
     private final boolean invalidatesCL;
     private final ModuleDefinition[] componentAPIs;
+    private final Class[] requires;
+    private final Class[] provides;
 
     /**
      * Constructor for the Deployer's metadata
@@ -52,9 +56,11 @@ public class MetaData {
      * deployable artifact list of imported modules.
      *
      */
-    public MetaData(boolean invalidatesClassLoader, ModuleDefinition[] componentAPIs) {
+    public MetaData(boolean invalidatesClassLoader, ModuleDefinition[] componentAPIs, Class[] provides, Class[] requires) {
         this.invalidatesCL = invalidatesClassLoader;
         this.componentAPIs = componentAPIs;
+        this.provides = provides;
+        this.requires = requires;
     }
 
     /**
@@ -76,5 +82,31 @@ public class MetaData {
      */
     public ModuleDefinition[] getPublicAPIs() {
         return componentAPIs;
+    }
+
+    /**
+     * Returns the list of types of metadata this deployer will provide to the deployement
+     * context upon the successful completion of the prepare method.
+     *
+     * @return list of metadata type;
+     */
+    public Class[] provides() {
+        if (provides==null) {
+            return empty;
+        }
+        return provides;
+    };                 
+
+    /**
+     * Returns the list of types of metadata this deployer will require to run successfully
+     * the prepare method.
+     *
+     * @return list of metadata required type;
+     */
+    public Class[] requires() {
+        if (requires==null) {
+            return empty;
+        }
+        return requires;
     }
 }
