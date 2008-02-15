@@ -54,7 +54,7 @@ public class AppTest
     }
 
     public void testCommit() {
-            System.out.println("**Testing TM commit ===>");
+        System.out.println("**Testing TM commit ===>");
         try {
             TransactionManager t = new JavaEETransactionManagerSimplified();
             ((JavaEETransactionManagerSimplified)t)._logger = Logger.getAnonymousLogger();
@@ -62,6 +62,8 @@ public class AppTest
             t.begin();
             System.out.println("**Status after begin: " 
                     + JavaEETransactionManagerSimplified.getStatusAsString(t.getStatus()));
+
+            System.out.println("**Calling TM commit ===>");
             t.commit();
             System.out.println("**Status after commit: " 
                     + JavaEETransactionManagerSimplified.getStatusAsString(t.getStatus()));
@@ -81,6 +83,8 @@ public class AppTest
             t.begin();
             System.out.println("**Status after begin: " 
                     + JavaEETransactionManagerSimplified.getStatusAsString(t.getStatus()));
+
+            System.out.println("**Calling TM rollback ===>");
             t.rollback();
             System.out.println("**Status after rollback: " 
                     + JavaEETransactionManagerSimplified.getStatusAsString(t.getStatus()));
@@ -92,16 +96,19 @@ public class AppTest
     }
 
     public void testTxCommit() {
-            System.out.println("**Testing TX commit ===>");
+        System.out.println("**Testing TX commit ===>");
         try {
             TransactionManager t = new JavaEETransactionManagerSimplified();
             ((JavaEETransactionManagerSimplified)t)._logger = Logger.getAnonymousLogger();
 
             t.begin();
             Transaction tx = t.getTransaction();
+            tx.registerSynchronization(new TestSync());
 
             System.out.println("**Status after begin: "
                     + JavaEETransactionManagerSimplified.getStatusAsString(tx.getStatus()));
+
+            System.out.println("**Calling TX commit ===>");
             tx.commit();
             System.out.println("**Status after commit: "
                     + JavaEETransactionManagerSimplified.getStatusAsString(tx.getStatus()));
@@ -113,16 +120,19 @@ public class AppTest
     }
 
     public void testTxRollback() {
-            System.out.println("**Testing TX rollback ===>");
+        System.out.println("**Testing TX rollback ===>");
         try {
             TransactionManager t = new JavaEETransactionManagerSimplified();
             ((JavaEETransactionManagerSimplified)t)._logger = Logger.getAnonymousLogger();
 
             t.begin();
             Transaction tx = t.getTransaction();
+            tx.registerSynchronization(new TestSync());
 
             System.out.println("**Status after begin: "
                     + JavaEETransactionManagerSimplified.getStatusAsString(tx.getStatus()));
+
+            System.out.println("**Calling TX rollback ===>");
             tx.rollback();
             System.out.println("**Status after rollback: "
                     + JavaEETransactionManagerSimplified.getStatusAsString(tx.getStatus()));
@@ -133,4 +143,13 @@ public class AppTest
         }
     }
 
+    static class TestSync implements Synchronization {
+        public void beforeCompletion() {
+            System.out.println("**In beforeCompletion  **");
+        }
+        public void afterCompletion(int status) {
+            System.out.println("**In afterCompletion:  "
+                    + JavaEETransactionManagerSimplified.getStatusAsString(status));
+        }
+    }
 }
