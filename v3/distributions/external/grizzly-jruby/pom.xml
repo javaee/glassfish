@@ -45,27 +45,10 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>grizzly-jruby-module</artifactId>
     <packaging>hk2-jar</packaging>
-    <version>1.7.0_01</version>
+    <version>${grizzly.version}</version>
     <name>Module packaging for JRuby grizzly adapter for V3</name>
     <description>JRUBY grizzly adapter for GlassFish v3</description>
 
-    <build>
-        <plugins>
-            <plugin>
-                <!-- This is needed because the pom version 1.7.0_01
-                     is not compatible with OSGi. -->
-                <groupId>com.sun.enterprise</groupId>
-                <artifactId>hk2-maven-plugin</artifactId>
-                <configuration>
-                    <archive>
-                        <manifestEntries>
-                            <Bundle-Version>1.7.0-01</Bundle-Version>
-                        </manifestEntries>
-                    </archive>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
     <developers>
         <developer>
             <id>pramodgo</id>
@@ -100,7 +83,7 @@
         <dependency>
             <groupId>com.sun.grizzly</groupId>
              <artifactId>grizzly-jruby</artifactId>
-             <version>1.7.0_01</version>
+             <version>${grizzly.version}</version>
              <exclusions>
                  <exclusion>
                     <groupId>org.jruby</groupId>

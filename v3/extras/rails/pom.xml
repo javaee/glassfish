@@ -82,7 +82,7 @@
         <dependency>
             <groupId>org.glassfish.external</groupId>
             <artifactId>grizzly-jruby-module</artifactId>
-            <version>1.7.0_01</version>
+            <version>${grizzly.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.external</groupId>
