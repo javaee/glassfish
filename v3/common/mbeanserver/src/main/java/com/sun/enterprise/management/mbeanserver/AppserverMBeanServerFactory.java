@@ -40,6 +40,8 @@ import java.lang.management.ManagementFactory;
 
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.FactoryFor;
+import org.jvnet.hk2.component.Factory;
+import org.jvnet.hk2.annotations.Extract;
 
 
 /**
@@ -57,32 +59,22 @@ import org.jvnet.hk2.annotations.FactoryFor;
     incompatibilities.
  */
 @Service(name="AppserverMBeanServerFactory")
-//@FactoryFor(MBeanServer.class)
-public final class AppserverMBeanServerFactory
+@FactoryFor(MBeanServer.class)
+public final class AppserverMBeanServerFactory implements Factory
 {
-    private AppserverMBeanServerFactory() {/*disallow*/}
+    public static final String OFFICIAL_MBEANSERVER = "Official_MBeanServer";
     
-    private static final MBeanServer INSTANCE = ManagementFactory.getPlatformMBeanServer();
+    @Extract
+    private final MBeanServer officialMBeanServer;
     
-    public static MBeanServer getMBeanServer() {
-        return INSTANCE;
-    }
-    
-/*
-    public static final String GLASSFISH_MBEANSERVER="Glassfish MBeanServer";
-  @Extract(name=GLASSFISH_MBEANSERVER)
-    final MBeanServer mGlassfishMBeanServer;
-    
-    private GlassfishMBeanServerFactory()
+    public AppserverMBeanServerFactory()
     {
-        mGlassfishMBeanServer    = ManagementFactory.getPlatformMBeanServer();
+        officialMBeanServer = ManagementFactory.getPlatformMBeanServer();
     }
     
-    /** to support the @FactoryFor expectations
     public Object getObject() {
-        return getMBeanServer();
+        return officialMBeanServer;
     }
-*/
 };
 
 
