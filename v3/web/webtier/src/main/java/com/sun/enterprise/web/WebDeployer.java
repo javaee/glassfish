@@ -115,10 +115,6 @@ public class WebDeployer extends JavaEEDeployer<WebContainer, WebApplication>{
         if (module!=null) {
             apis.add(module.getModuleDefinition());
         }
-        module = modulesRegistry.makeModuleFor("org.glassfish.web:gf-web-connector", null);
-        if (module != null) {
-            apis.add(module.getModuleDefinition());
-        }
         return new MetaData(false, apis.toArray(new ModuleDefinition[apis.size()]), new Class[] { Application.class }, null );
     }    
 
