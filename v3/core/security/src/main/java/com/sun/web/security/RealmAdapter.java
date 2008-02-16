@@ -87,8 +87,10 @@ import com.sun.enterprise.deployment.WebComponentDescriptor;
 import com.sun.enterprise.deployment.interfaces.SecurityRoleMapper;
 import com.sun.enterprise.deployment.web.LoginConfiguration;
 import com.sun.enterprise.security.SecurityContext;
+import com.sun.enterprise.security.SecurityUtil;
 import com.sun.enterprise.security.auth.LoginContextDriver;
 import com.sun.enterprise.security.auth.realm.certificate.CertificateRealm;
+import com.sun.enterprise.security.integration.RealmInitializer;
 import com.sun.logging.LogDomains;
 import com.sun.enterprise.security.jmac.config.HttpServletConstants;
 import com.sun.enterprise.security.jmac.config.HttpServletHelper;
@@ -106,8 +108,8 @@ import org.jvnet.hk2.annotations.Service;
  * @author Harpreet Singh
  * @author JeanFrancois Arcand
  */
-@Service
-public class RealmAdapter extends RealmBase {
+@Service 
+public class RealmAdapter extends RealmBase implements RealmInitializer {
     private static final String UNCONSTRAINED = "unconstrained";
     
     private static final Logger _logger=LogDomains.getLogger(LogDomains.WEB_LOGGER);
@@ -1441,6 +1443,71 @@ public class RealmAdapter extends RealmBase {
 
         public Map getMap() {
             return map;
+        }
+    }
+
+    public void initializeRealm(Object descriptor, boolean isSystemApp, String realmName) {
+        this.isSystemApp = isSystemApp;
+        webDesc = (WebBundleDescriptor)descriptor;
+        Application app = webDesc.getApplication();
+        mapper = app.getRoleMapper();
+        LoginConfiguration loginConfig = webDesc.getLoginConfiguration();
+        _realmName = app.getRealm();
+        if (_realmName == null && loginConfig != null) {
+            _realmName = loginConfig.getRealmName();
+        }
+        if (realmName != null
+                && (_realmName == null || _realmName.equals(""))) {
+            _realmName = realmName;
+        }
+
+        // BEGIN IASRI 4747594
+   	CONTEXT_ID = WebSecurityManager.getContextID(webDesc);
+        runAsPrincipals = new HashMap();
+        Iterator bundle = webDesc.getWebComponentDescriptors().iterator();
+	
+        while(bundle.hasNext()) {
+            
+            WebComponentDescriptor wcd = (WebComponentDescriptor)bundle.next();
+            RunAsIdentityDescriptor runAsDescriptor = wcd.getRunAsIdentity();
+	    
+            if (runAsDescriptor != null) {
+                String principal = runAsDescriptor.getPrincipal();
+                String servlet = wcd.getCanonicalName();
+		
+                if (principal == null || servlet == null) {
+                    _logger.warning("web.realmadapter.norunas");
+                } else {
+                    runAsPrincipals.put(servlet, principal);
+                    _logger.fine("Servlet "+servlet+
+                     " will run-as: "+principal);
+		}
+	    }
+	}	
+	// END IASRI 4747594
+
+	this.appID = app.getRegistrationName();
+        // helper are set until setVirtualServer is invoked
+        
+        configureSecurity(webDesc,isSystemApp);
+    }
+    
+    /**
+     * Generate the JSR 115 policy file for a web application, bundled
+     * within a ear or deployed as a standalone war file.
+     *
+     * Implementation note: If the generated file doesn't contains
+     * all the permission, the role mapper is probably broken.
+     */
+    protected void configureSecurity(WebBundleDescriptor wbd,
+            boolean isSystem) {
+        try{
+            webSecurityManagerFactory.newWebSecurityManager(wbd);
+            String context = WebSecurityManager.getContextID(wbd);
+            SecurityUtil.generatePolicyFile(context);
+        }catch(Exception ce){
+            _logger.log(Level.SEVERE, "policy.configure", ce);
+            throw new RuntimeException(ce);
         }
     }
 }
