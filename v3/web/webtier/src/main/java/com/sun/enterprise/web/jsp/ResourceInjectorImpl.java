@@ -104,8 +104,10 @@ public class ResourceInjectorImpl implements ResourceInjector {
                 throw new IllegalStateException(
                         _rb.getString("resource.injector.noservercontext"));
             }
-            injectionMgr = serverContext.getDefaultHabitat().getByContract(
-                     InjectionManager.class);
+            if (injectionMgr == null) {
+                injectionMgr = serverContext.getDefaultHabitat().getByContract(
+                         InjectionManager.class);
+            }
             desc = wm.getWebBundleDescriptor();
         }
     }
