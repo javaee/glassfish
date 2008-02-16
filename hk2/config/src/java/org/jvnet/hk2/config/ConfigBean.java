@@ -49,6 +49,9 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.TimeUnit;
 
+import javax.management.ObjectName;
+
+
 /**
  * ConfigBean is the core implementation of the config beans. It has features like locking
  * view creation and optional features attachement.
@@ -61,6 +64,19 @@ public class ConfigBean extends Dom implements ConfigView {
     private volatile boolean writeLock = false;
     private final Map<Class , ConfigBeanInterceptor> optionalFeatures =
             new HashMap<Class, ConfigBeanInterceptor>();
+    
+    /**
+        ObjectName will be null until when/if an MBean is registered.
+     */
+    private volatile ObjectName objectName = null;
+    
+    public ObjectName getObjectName() { return objectName; }
+    
+    public void setObjectName( final ObjectName objectNameIn )
+    {
+        if ( objectName != null ) throw new IllegalStateException();
+        objectName = objectNameIn;
+    }
 
     public ConfigBean(Habitat habitat, DomDocument document, Dom parent, ConfigModel model, XMLStreamReader in) {
 
