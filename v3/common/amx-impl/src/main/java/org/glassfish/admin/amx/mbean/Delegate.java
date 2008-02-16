@@ -33,21 +33,69 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+package org.glassfish.admin.amx.mbean;
 
-package com.sun.enterprise.management.support;
+import javax.management.ObjectName;
+import javax.management.MBeanInfo;
+import javax.management.AttributeList;
+import javax.management.Attribute;
+import javax.management.AttributeNotFoundException;
+import javax.management.InvalidAttributeValueException;
+import javax.management.InstanceNotFoundException;
+import javax.management.ReflectionException;
+import javax.management.MBeanException;
+
 
 
 /**
-	Optional interface for users of Delegate interface.
+	Interface for delegating responsibility for handling Attribute getters/setters
+	as well as invoke().
  */
-public interface DelegateOwner
+public interface Delegate
 {
+    /**
+        An arbitrary (but hopefully meaningful) identifier
+        for this Delegate.
+     */
+    public String   getID();
+    
+	public Object getAttribute( String attrName )
+		throws	AttributeNotFoundException;
+
+	public AttributeList getAttributes( final String[] attrNames );
+	
+	public void setAttribute( final Attribute attrName )
+		throws	AttributeNotFoundException,
+				InvalidAttributeValueException;
+	
+	public AttributeList	setAttributes( final AttributeList mappedAttrs );
+	
 	/**
-		The Delegate has failed with a fatal error and is no longer useable.
-		
-		@param t	the Throwable that caused the problem
+		Return true if the Attribute is supported
 	 */
-	public void	delegateFailed( Throwable t );
+	public boolean	supportsAttribute( String name );
+    
+    public String getDefaultValue( final String name )
+		throws	AttributeNotFoundException;
+	
+	/**
+		Return true if the operation is supported
+	 */
+	public boolean	supportsOperation( 
+		String 		operationName,
+		Object[]	args,
+		String[]	types  );
+	
+	/**
+		invoke the operation.
+	 */
+	public Object	invoke(
+		String 		operationName,
+		Object[]	args,
+		String[]	types );
+		
+	
+	public void	setOwner( DelegateOwner owner );
 }
 
 

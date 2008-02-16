@@ -61,6 +61,7 @@ public class TypesMapper
     /**
         Array[i] should be the type, [i+1] should be the interface, [i+2] the impl class
      */
+     @SuppressWarnings("unchecked")
         public
 	TypesMapper( final Object[] typesAndInterfaces )
 	{

@@ -43,16 +43,16 @@ import com.sun.enterprise.management.mbeanserver.AppserverMBeanServerFactory;
 abstract class AMXCommandBase implements AdminCommand {
     private static final LocalStringManagerImpl localStrings = new LocalStringManagerImpl(AMXCommandBase.class);
     
-//@Inject(name=GlassfishMBeanServerFactory.GLASSFISH_MBEANSERVER)
-    private final MBeanServer mMBeanServer;
+    @Inject //(name=AppserverMBeanServerFactory.OFFICIAL_MBEANSERVER)
+    private MBeanServer mMBeanServer;
     protected final MBeanServer getMBeanServer() { return mMBeanServer; }
     
     // use 'volatile'; don't assume stateless subclasses
     private volatile AdminCommandContext mAdminCommandContext;
     
     public AMXCommandBase() {
-        //System.out.println( "AMXCommandBase.AMXCommandBase: " + this.getClass().getName() );
-        mMBeanServer = AppserverMBeanServerFactory.getMBeanServer();
+        System.out.println( "AMXCommandBase.AMXCommandBase: " + this.getClass().getName() );
+        System.out.println( "MBeanServer is " + mMBeanServer );
     }
     
     protected ActionReport getActionReport() { return mAdminCommandContext.getActionReport(); }
@@ -70,6 +70,7 @@ abstract class AMXCommandBase implements AdminCommand {
 
         protected void
     preExecute(final AdminCommandContext context) {
+        System.out.println( "AMXCommandBase.preExecute: " + this.getClass().getName() + ", MBeanServer = " + getMBeanServer() );
         // presume success
         getActionReport().setActionExitCode(ExitCode.SUCCESS);
     }
