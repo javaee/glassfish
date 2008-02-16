@@ -26,8 +26,6 @@ package com.sun.enterprise.web;
 
 //import com.sun.enterprise.admin.event.EventListenerRegistry;
 import com.sun.enterprise.util.OS;
-import com.sun.enterprise.module.Module;
-
 import java.io.File;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
@@ -108,12 +106,6 @@ import com.sun.enterprise.deployment.WebServiceEndpoint;
 import com.sun.appserv.server.util.ASClassLoaderUtil;
 import com.sun.logging.LogDomains;
 
-// TODO : v3 : dochez Need to remove dependency on security
-/*import com.sun.web.security.WebSecurityManager;
-import com.sun.enterprise.security.SecurityUtil;
-import com.sun.web.security.WebSecurityManagerFactory;
-import com.sun.web.security.RealmAdapter;
-  */
 // monitoring imports
 import java.util.HashSet;
 
@@ -156,6 +148,8 @@ import org.jvnet.hk2.component.PreDestroy;
 import javax.naming.spi.NamingManager;
 import java.lang.reflect.Method;
 
+import org.apache.catalina.Realm;
+import com.sun.enterprise.security.integration.RealmInitializer;
 /**
  * Web container service
  *
@@ -175,6 +169,9 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
     @Inject
     ComponentEnvManager componentEnvManager;
 
+    @Inject
+    Realm realm;
+    
     HashMap<String, Integer> portMap = new HashMap<String, Integer>();
     HashMap<Integer, Adapter> adapterMap = new HashMap<Integer, Adapter>();
 
@@ -495,14 +492,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
      */
     protected boolean globalSSOEnabled = true;
 
-    // TODO : v3 : dochez Need to remove dependency on security
-
-    /**
-     * The WebSecurityManagerFactory used for generating web permission
-     */
-    /*private WebSecurityManagerFactory webSecurityManagerFactory
-           = WebSecurityManagerFactory.getInstance();
-    */
     //private EjbWebServiceRegistryListener ejbWebServiceRegistryListener;
 
     protected WebContainerFeatureFactory webFeatureFactory;
@@ -1516,7 +1505,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
      */
     protected Result<WebModule> loadWebModule(VirtualServer vs, WebModuleConfig wmInfo,
             String j2eeApplication) {
-
         String wmName = wmInfo.getName();
         String wmContextPath = wmInfo.getContextPath();
 
@@ -1807,18 +1795,24 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                 boolean isSystem = (resourceType != null &&
                         resourceType.startsWith("system-"));
                 // TODO : v3 : dochez Need to remove dependency on security
-               //*if ("null".equals(j2eeApplication)) {
+                if ("null".equals(j2eeApplication)) {
                     /*
                      * Standalone webapps inherit the realm referenced by
                      * the virtual server on which they are being deployed,
                      * unless they specify their own
                      */
-                /*    ctx.setRealm(new RealmAdapter(wbd, isSystem,
-                                                  vs.getAuthRealmName()));
+                    if (realm != null && realm instanceof RealmInitializer) {
+                        ((RealmInitializer)realm).initializeRealm(
+                                wbd, isSystem, vs.getAuthRealmName());
+                        ctx.setRealm(realm);
+                    }
                 } else {
-                    ctx.setRealm(new RealmAdapter(wbd, isSystem));
-                } */
-                configureSecurity(wbd, isSystem);
+                    if (realm != null && realm instanceof RealmInitializer) {
+                        ((RealmInitializer)realm).initializeRealm(
+                                wbd, isSystem, null);
+                        ctx.setRealm(realm);
+                    }
+                } 
 
                 // post processing DOL object for standalone web module
                 if (wbd.getApplication() != null &&
@@ -1926,27 +1920,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         }
     }
 
-
-    /**
-     * Generate the JSR 115 policy file for a web application, bundled
-     * within a ear or deployed as a standalone war file.
-     *
-     * Implementation note: If the generated file doesn't contains
-     * all the permission, the role mapper is probably broken.
-     */
-    protected void configureSecurity(WebBundleDescriptor wbd,
-            boolean isSystem) {
-        // TODO : v3 : dochez Need to remove dependency on security
-        /*try{
-            webSecurityM`anagerFactory.newWebSecurityManager(wbd);
-            String context = WebSecurityManager.getContextID(wbd);
-            SecurityUtil.generatePolicyFile(context);
-        }catch(Exception ce){
-            _logger.log(Level.SEVERE, "webcontainer.configureSecurity", ce);
-            throw new RuntimeException(ce);
-        }
-        */
-    }
 
     /**
      * Utility Method to access the ServerContext
