@@ -26,6 +26,7 @@ package com.sun.enterprise.v3.deployment;
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.io.FileUtils;
+import com.sun.enterprise.v3.admin.CommandRunner;
 import com.sun.enterprise.v3.contract.ApplicationMetaDataPersistence;
 import com.sun.enterprise.v3.data.ApplicationInfo;
 import com.sun.enterprise.v3.server.ApplicationLifecycle;
@@ -85,6 +86,9 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
     @Inject
     ApplicationMetaDataPersistence metaData;
 
+    @Inject
+    CommandRunner commandRunner;
+
     String path;
 
     @Param(name = NAME, optional=true)
@@ -97,8 +101,49 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
     @I18n("virtualservers")
     String virtualservers = null;
 
-    @Param(optional=true)
+    @Param(name=LIBRARIES, optional=true)
     String libraries = null;
+
+    @Param(optional=true)
+    String force = Boolean.FALSE.toString();
+
+    @Param(optional=true)
+    String precompilejsp = Boolean.FALSE.toString();
+
+    @Param(optional=true)
+    String verify = Boolean.FALSE.toString();
+    
+    @Param(optional=true)
+    String retrieve = null;
+    
+    @Param(optional=true)
+    String dbvendorname = null;
+
+    //mutually exclusive with dropandcreatetables
+    @Param(optional=true)
+    String createtables = null;
+
+    //mutually exclusive with createtables
+    @Param(optional=true)
+    String dropandcreatetables = null;
+
+    @Param(optional=true)
+    String uniquetablenames = null;
+
+    @Param(optional=true)
+    String deploymentplan = null;
+
+    @Param(optional=true)
+    String enabled = Boolean.TRUE.toString();
+    
+    @Param(optional=true)
+    String generatermistubs = Boolean.FALSE.toString();
+    
+    @Param(optional=true)
+    String availabilityenabled = Boolean.FALSE.toString();
+    
+    @Param(optional=true)
+    String target = "server";
 
     @Inject
     Domain domain;
@@ -156,28 +201,15 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
             }
             // get an application name
             if (name==null) {
-                // Archives know how to construct default app names.
+                // Archive handlers know how to construct default app names.
                 name = archiveHandler.getDefaultApplicationName(archive);
                 // For the autodeployer in particular the name must be set in the
                 // command context parameters for later use.
                 parameters.put(NAME, name);
             }
-
-            // check this application is not already registered.
-            try {
-                ApplicationInfo appInfo = appRegistry.get(name);
-                if (appInfo!=null) {
-                    report.setMessage(localStrings.getLocalString("application.alreadyreg",
-                        "Application {0} already registered", name));
-                    report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-                    return;
-                }
-
-            } catch(ComponentException e) {
-                report.setMessage(e.getMessage());
-                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            
+            if (checkIfAppIsRegistered(appRegistry.get(name), report)) {
                 return;
-
             }
 
             File source = new File(archive.getURI().getSchemeSpecificPart());
@@ -304,4 +336,45 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
             }
         }
     }
+
+    /**
+     *  Check if the application is deployed or not.
+     *  If force option is true and appInfo is not null, then undeploy
+     *  the application and return false.  This will force deployment
+     *  if there's already a running application deployed.
+     *
+     *  @param appInfo ApplicationInfo, contains information of a
+     *                 running application.  If this object is null,
+     *                 then the application is not deployed.
+     *  @param report ActionReport, report object to send back to client.
+     *
+     *  @return true if application is deployed else return false.
+     */
+    boolean checkIfAppIsRegistered(final ApplicationInfo appInfo,
+                                   final ActionReport report)
+    {
+        try {
+            boolean isForce = Boolean.parseBoolean(force);
+            if (appInfo!=null && !isForce) {
+                report.setMessage(localStrings.getLocalString("application.alreadyreg",
+                                  "Application {0} already registered", name));
+                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                return true;
+            }
+            else if (appInfo != null && isForce) 
+            {
+                //if applicaiton is already deployed and force=true,
+                //then undeploy the application first.
+                Properties undeployParam = new Properties();
+                undeployParam.put(NAME, name);
+                commandRunner.doCommand("undeploy", undeployParam, report);
+            }
+        } catch(ComponentException e) {
+            report.setMessage(e.getMessage());
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            return true;
+        }
+        return false;
+    }
+    
 }

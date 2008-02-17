@@ -134,7 +134,7 @@ public class UndeployCommand extends ApplicationLifecycle implements AdminComman
             if (!isDirectoryDeployed) {
                 FileUtils.whack(new File(info.getSource().getURI()));
             }
-            report.setMessage(localStrings.getLocalString("redeploy.command.sucess",
+            report.setMessage(localStrings.getLocalString("undeploy.command.sucess",
                     "{0} undeployed successfully", name));
             report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
         } // else a message should have been provided.

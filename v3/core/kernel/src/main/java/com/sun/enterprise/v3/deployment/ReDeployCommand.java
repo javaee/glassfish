@@ -27,19 +27,15 @@ import com.sun.enterprise.v3.server.ApplicationLifecycle;
 import com.sun.enterprise.v3.server.V3Environment;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
+import com.sun.enterprise.v3.admin.CommandRunner;
 import org.glassfish.api.Param;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
-import org.glassfish.api.container.Sniffer;
-import org.glassfish.api.deployment.DeploymentContext;
-import com.sun.enterprise.v3.data.ContainerRegistry;
-import com.sun.enterprise.v3.data.ApplicationInfo;
-import com.sun.enterprise.v3.data.ApplicationRegistry;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
+import java.util.Properties;
 
-import java.util.List;
 
 /**
  *
@@ -50,19 +46,17 @@ import java.util.List;
  */
 @Service(name="redeploy")
 @I18n("redeploy.command")
+
 public class ReDeployCommand extends ApplicationLifecycle implements AdminCommand {
+
+    @Inject
+    CommandRunner commandRunner;
+    @Param(primary=true)
+    String name;
 
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(ReDeployCommand.class);
     
-    @Inject
-    ApplicationRegistry appRegistry;
-
-    @Inject
-    V3Environment env;
-
-    @Param(name=DeployCommand.NAME, primary=true)
-    String appName;
-
+        
     /**
      * Executes the command with the command parameters passed as Properties
      * where the keys are the paramter names and the values the parameter values
@@ -70,29 +64,15 @@ public class ReDeployCommand extends ApplicationLifecycle implements AdminComman
      * @param context information
      */
     public void execute(AdminCommandContext context) {
-
         ActionReport report = context.getActionReport();
-
-        ApplicationInfo appInfo = appRegistry.get(appName);
-        if (appInfo==null) {
-            failure(context.logger,
-                    localStrings.getLocalString("application.notreg","Application {0} not registered", appName),
-                    null,
-                    report);
-            return;
-        }
-        DeploymentContextImpl depContext =
-                new DeploymentContextImpl(context.getLogger(), appInfo.getSource(), context.getCommandParameters(), env);
-
-        unload(appName, depContext, report);
-
-        if (report.getActionExitCode().equals(ActionReport.ExitCode.SUCCESS)) {
-            load(appInfo.getSniffers(), depContext, report);
-        }
+        Properties deployParam = new Properties();
+        deployParam.put("force", Boolean.TRUE.toString());
+        deployParam.put("path", name);        
+        commandRunner.doCommand("deploy", deployParam, report);
         if (report.getActionExitCode().equals(ActionReport.ExitCode.SUCCESS)) {
             report.setMessage(localStrings.getLocalString("redeploy.command.sucess",
-                    "{0} redeployed successfully", appName));
+                    "{0} redeployed successfully", name));
         } // else a message should have been provided for the failure. don't overwrite.
-        
     }
+
 }
