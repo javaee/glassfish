@@ -76,7 +76,7 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
     public static final String CONTEXT_ROOT = "contextroot";
     public static final String LIBRARIES = "libraries";
     public static final String DIRECTORY_DEPLOYED = "DirectoryDeployed";
-
+    
     @Inject
     V3Environment env;
 
@@ -300,7 +300,15 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
             if (report.getActionExitCode().equals(ActionReport.ExitCode.SUCCESS)) {
                 report.setMessage(localStrings.getLocalString("deploy.command.success",
                         "Application {0} deployed successfully", name));
-
+                
+                /*
+                 * The caller may want to know the resulting module ID as
+                 * assigned by the server - if the caller did not specify it
+                 * on the deploy command in the first place.
+                 */
+                ActionReport.MessagePart msgPart = report.getTopMessagePart();
+                msgPart.addProperty(NAME, name);
+                
                 Properties moduleProps = deploymentContext.getProps();
                 moduleProps.setProperty(NAME, name);
                 StringBuffer sb = new StringBuffer();
