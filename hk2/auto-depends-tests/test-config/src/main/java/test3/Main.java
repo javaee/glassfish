@@ -31,6 +31,12 @@ public class Main extends Assert implements ModuleStartup {
     FooBean foo;
 
     @Inject
+    Bird bird;
+
+    @Inject
+    Lion lion;
+
+    @Inject
     Habitat habitat;
 
 //    private static final XMLOutputFactory xof = XMLOutputFactory.newInstance();
@@ -83,6 +89,12 @@ public class Main extends Assert implements ModuleStartup {
         Dom i = (Dom) habitat.getInhabitant(HttpListener.class, "a");
         i.attribute("acceptor-threads","56");
         assertEquals(56,listener.acceptorThreads);
+
+        System.out.println(bird.name);
+        assertEquals(bird.name, "Caged tweety");
+
+        System.out.println(lion.name);
+        assertEquals(lion.name, "Caged kitty");     
 
         // this test is breaking Hudson. will come back to this. Must be a classloader issue
         /* stack trace:
