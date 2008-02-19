@@ -50,7 +50,7 @@ import java.util.regex.Matcher;
  *
  * @author Jerome Dochez
  */
-public class GlassFishConfigBean extends ConfigBean {
+public final class GlassFishConfigBean extends ConfigBean {
 
     /**
      * Returns the translated view of a configuration object

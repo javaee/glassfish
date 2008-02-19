@@ -49,6 +49,8 @@ import java.beans.VetoableChangeSupport;
 import java.io.Serializable;
 import java.util.List;
 
+import org.glassfish.admin.amx.AMXObjectNameInfo;
+import org.glassfish.admin.amx.AMXConfigInfo;
 
 /**
  *
@@ -60,6 +62,8 @@ import java.util.List;
     "property"
 }) */
 @Configured
+@AMXObjectNameInfo(j2eeType=com.sun.appserv.management.base.XTypes.WEB_MODULE_CONFIG)
+@AMXConfigInfo
 public interface WebModule extends ConfigBeanProxy, Injectable, Module {
 
     /**
