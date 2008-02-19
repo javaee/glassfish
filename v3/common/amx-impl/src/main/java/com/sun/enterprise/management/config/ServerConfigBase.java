@@ -43,7 +43,7 @@ import com.sun.enterprise.management.config.AMXConfigImplBase;
 import com.sun.enterprise.management.support.Delegate;
 import com.sun.enterprise.management.support.AMXAttributeNameMapper;
 
-import com.sun.enterprise.util.Issues;
+import org.glassfish.admin.amx.util.Issues;
 
 /**
  */

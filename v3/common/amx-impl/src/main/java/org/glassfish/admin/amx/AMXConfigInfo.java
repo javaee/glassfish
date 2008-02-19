@@ -1,8 +1,8 @@
 package org.glassfish.admin.amx;
 
-import static java.lang.annotation.ElementType.TYPE;
+import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import org.jvnet.hk2.annotations.InhabitantMetadata;
@@ -16,15 +16,10 @@ import com.sun.appserv.management.base.AMX;
   in the future.
  * @author llc
  */
-@Retention(RUNTIME)
-@Target(TYPE)
-@CagedBy(AMXConfigRegistrar.class)
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.TYPE)
 @AMXMBeanMetadata(amxGroup=AMX.GROUP_CONFIGURATION)
+@CagedBy(AMXConfigRegistrar.class)
 public @interface AMXConfigInfo {
-    String value() default "not used";
-    
-    // right, wrong, ???
-    //@InhabitantMetadata
-    //CagedBy cagedBy() default @CagedBy( AMXConfigRegistrar.class );
 }
 

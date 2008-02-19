@@ -48,7 +48,7 @@ import com.sun.appserv.management.util.misc.TypeCast;
 import com.sun.enterprise.management.support.Delegate;
 import com.sun.enterprise.management.support.AMXAttributeNameMapper;
 
-import com.sun.enterprise.util.Issues;
+import org.glassfish.admin.amx.util.Issues;
 
 
 public final class WebServiceEndpointConfigImpl  extends AMXConfigImplBase

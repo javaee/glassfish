@@ -98,7 +98,7 @@ import com.sun.enterprise.management.support.DelegateBase;
 import com.sun.enterprise.management.support.AMXAttributeNameMapper;
 
 
-import com.sun.enterprise.util.Issues;
+import org.glassfish.admin.amx.util.Issues;
 
 //import com.sun.enterprise.management.config.ConfigFactory;
 import com.sun.enterprise.management.support.oldconfig.OldProperties;

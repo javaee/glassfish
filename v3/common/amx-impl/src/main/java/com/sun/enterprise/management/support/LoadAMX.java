@@ -43,7 +43,7 @@ import javax.management.MBeanServer;
 import javax.management.ObjectName;
 import javax.management.JMException;
 
-import com.sun.enterprise.util.Issues;
+import org.glassfish.admin.amx.util.Issues;
 
 import com.sun.appserv.management.util.jmx.JMXUtil;
 

@@ -60,7 +60,7 @@ import com.sun.appserv.management.util.stringifier.SmartStringifier;
 import com.sun.appserv.management.ext.support.ExtendedAMX;
 import com.sun.appserv.management.ext.support.SupportUtil;
 
-import com.sun.enterprise.util.Issues;
+import org.glassfish.admin.amx.util.Issues;
 import com.sun.appserv.management.util.misc.TimingDelta;
 
 import com.sun.appserv.management.base.SystemInfo.*;

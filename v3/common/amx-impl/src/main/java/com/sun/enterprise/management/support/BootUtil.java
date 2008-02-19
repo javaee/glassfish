@@ -41,7 +41,7 @@ import javax.management.MBeanServerInvocationHandler;
 
 import com.sun.appserv.management.base.Util;
 
-import com.sun.enterprise.util.Issues;
+import org.glassfish.admin.amx.util.Issues;
 
 import com.sun.enterprise.management.support.AMXServerLogger;
 import com.sun.enterprise.management.support.AMXMBeanRootLogger;

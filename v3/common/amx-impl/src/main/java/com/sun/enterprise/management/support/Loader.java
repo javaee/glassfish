@@ -82,7 +82,7 @@ import com.sun.appserv.management.client.ProxyFactory;
 import com.sun.enterprise.management.support.TypeInfos;
 import com.sun.enterprise.management.DomainRootImpl;
 
-import com.sun.enterprise.util.FeatureAvailability;
+import org.glassfish.admin.amx.util.FeatureAvailability;
 
 /**
 	Implements loading of all MBean API MBeans WITHIN the DAS (Domain Admin Server).

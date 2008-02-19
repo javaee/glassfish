@@ -71,7 +71,7 @@ import com.sun.appserv.management.base.Util;
 import static com.sun.appserv.management.base.XTypes.*;
 import com.sun.appserv.management.j2ee.J2EETypes;
 
-import com.sun.enterprise.util.FeatureAvailability;
+import org.glassfish.admin.amx.util.FeatureAvailability;
 
 import com.sun.appserv.management.util.misc.TimingDelta;
 

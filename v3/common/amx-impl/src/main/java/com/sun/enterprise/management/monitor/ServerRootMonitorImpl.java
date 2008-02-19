@@ -57,7 +57,7 @@ import com.sun.appserv.management.monitor.ServerRootMonitor;
 import com.sun.enterprise.management.support.ObjectNames;
 import com.sun.enterprise.management.support.BootUtil;
 
-import com.sun.enterprise.util.Issues;
+import org.glassfish.admin.amx.util.Issues;
 
 
 /**

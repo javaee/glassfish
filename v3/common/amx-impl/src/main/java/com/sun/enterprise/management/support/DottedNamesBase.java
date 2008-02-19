@@ -79,8 +79,8 @@ import com.sun.enterprise.management.support.ObjectNames;
 import com.sun.appserv.management.helper.AMXDebugHelper;
 import com.sun.appserv.management.util.misc.RunnableBase;
 
-import com.sun.enterprise.util.FeatureAvailability;
-import static com.sun.enterprise.util.FeatureAvailability.SERVER_STARTED_FEATURE;
+import org.glassfish.admin.amx.util.FeatureAvailability;
+import static org.glassfish.admin.amx.util.FeatureAvailability.SERVER_STARTED_FEATURE;
 
 
 /**

@@ -20,7 +20,7 @@ import com.sun.appserv.management.util.jmx.JMXUtil;
 /**
  * @author llc
  */
-@Service(name="AMXConfigRegistrar")
+@Service //(name="AMXConfigRegistrar")
 public final class AMXConfigRegistrar implements CageBuilder
 {
     @Inject

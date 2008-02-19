@@ -93,7 +93,7 @@ import com.sun.enterprise.management.support.oldconfig.OldResourcesMBean;
 import com.sun.appserv.management.base.AMXDebug;
 
 
-import com.sun.enterprise.util.Issues;
+import org.glassfish.admin.amx.util.Issues;
 
 /**
 	Factory for creating and removing configs.

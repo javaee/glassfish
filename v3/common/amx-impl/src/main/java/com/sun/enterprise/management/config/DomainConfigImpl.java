@@ -64,7 +64,7 @@ import com.sun.enterprise.management.config.AMXConfigImplBase;
 //import com.sun.enterprise.management.support.OldConfigTypes;
 
 
-import com.sun.enterprise.util.Issues;
+import org.glassfish.admin.amx.util.Issues;
 
 /**
 */
