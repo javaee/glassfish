@@ -18,7 +18,6 @@ import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 import com.sun.enterprise.admin.cli.deployment.FileUploadUtil;
 
-
 /**
  * RemoteCommand class 
  */
@@ -34,6 +33,19 @@ public class RemoteCommand {
     }
 
     public void handleRemoteCommand(final String[] args) {
+        handleRemoteCommand(args, "hk2-cli", null);
+    }
+
+    /**
+     * Runs the command using the specified arguments and sending the result
+     * to the caller-provided {@link OutputStream} in the requested format for processing.
+     * @param args the arguments to use in building the command
+     * @param responseFormatType direction to the server as to how to format the response; usually hk2-cli or xml-cli
+     * @param userOut the {@link OutputStream} to which to write the command's response text
+     */
+    public void handleRemoteCommand(final String[] args,
+                                     String responseFormatType,
+                                     OutputStream userOut) {
         if (args.length == 0) {
             System.err.println("usage : asadmin <command> [parameters]");
             return;
@@ -46,14 +58,12 @@ public class RemoteCommand {
             }
             final Map<String, String> params = rcp.getOptions();
             final Vector operands = rcp.getOperands();
-            
-                //upload option  for deploy command is default to true
-                //operand takes precedence over --path option
-            final boolean uploadFile = getUploadFile((String)params.get("upload"),
-                                                     rcp.getCommandName(),
-                                                     operands.size()>0?
-                                                     (String)operands.firstElement():
-                                                     (String)params.get("path"));
+
+            //upload option  for deploy command is default to true
+            //operand takes precedence over --path option
+            final boolean uploadFile = getUploadFile((String) params.get("upload"),
+                                                      rcp.getCommandName(),
+                                                      operands.size() > 0 ? (String) operands.firstElement() : (String) params.get("path"));
             File fileName = null;
             String httpConnection;
             final String hostName = (params.get("host") == null ? "localhost" : params.get("host"));
@@ -61,61 +71,66 @@ public class RemoteCommand {
             httpConnection = "http://" + hostName + ":" + hostPort + "/__asadmin/" + rcp.getCommandName();
             for (Map.Entry<String, String> param : params.entrySet()) {
                 String paramName = param.getKey();
-                    //do not want to pass host/port/upload to the backend
+                //do not want to pass host/port/upload to the backend
                 if (paramName.equals("host") || paramName.equals("port") ||
-                    paramName.equals("upload") ) {
+                        paramName.equals("upload")) {
                     continue;
                 }
                 try {
                     String paramValue = param.getValue();
-                        // let's check if I am passing a valid path...
+                    // let's check if I am passing a valid path...
                     if (paramName.equals("path")) {
                         fileName = new File(paramValue);
-                            //get new paramValue since it may be
-                            //absoluate path if uploadFile=false
+                        //get new paramValue since it may be
+                        //absoluate path if uploadFile=false
                         paramValue = getFileParam(uploadFile, fileName);
                     }
-                    httpConnection = httpConnection + "?" + paramName + "=" + URLEncoder.encode(paramValue, "UTF-8");
+                    httpConnection = httpConnection + "?" + paramName + "=" + URLEncoder.encode(paramValue,
+                                                                                                "UTF-8");
                 } catch (UnsupportedEncodingException e) {
                     System.err.println("Error encoding " + paramName + ", parameter value will be ignored");
                 }
             }
-        
+
             //add operands
-            for (int ii=0; ii<operands.size(); ii++) {
-                final String operand = (String)operands.get(ii);
+            for (int ii = 0; ii < operands.size(); ii++) {
+                final String operand = (String) operands.get(ii);
                 if (rcp.getCommandName().equals("deploy")) {
                     fileName = new File(operand);
                     final String fileParam = getFileParam(uploadFile, fileName);
-                        //there should only be one operand for deploy command
-                    httpConnection = httpConnection + "?path=" + URLEncoder.encode(fileParam, "UTF-8");
+                    //there should only be one operand for deploy command
+                    httpConnection = httpConnection + "?path=" + URLEncoder.encode(fileParam,
+                                                                                   "UTF-8");
                     break;
                 }
-                httpConnection = httpConnection + "?DEFAULT=" + URLEncoder.encode(operand, "UTF-8");
+                httpConnection = httpConnection + "?DEFAULT=" + URLEncoder.encode(operand,
+                                                                                  "UTF-8");
             }
 
             if (TRACE) {
                 System.out.println("Connecting to " + httpConnection);
             }
             try {
-                if (fileName!= null && uploadFile) {
+                if (fileName != null && uploadFile) {
                     if (fileName.exists()) {
-                        HttpURLConnection urlConnection = FileUploadUtil.upload(httpConnection, fileName);
+                        HttpURLConnection urlConnection = FileUploadUtil.upload(httpConnection,
+                                                                                fileName);
                         InputStream in = urlConnection.getInputStream();
-                        handleResponse(params, in, urlConnection.getResponseCode());
+                        handleResponse(params, in,
+                                       urlConnection.getResponseCode());
+                    } else {
+                        throw new Exception("File " + fileName.getName() + " does not exist.");
                     }
-                    else {
-                        throw new Exception("File "+ fileName.getName() + " does not exist.");
-                    }
-                }
-                else {
+                } else {
                     URL url = new URL(httpConnection);
                     HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-                    urlConnection.setRequestProperty("User-Agent", "hk2-cli");
+                    urlConnection.setRequestProperty("User-Agent",
+                                                     responseFormatType);
                     urlConnection.connect();
 
                     InputStream in = urlConnection.getInputStream();
-                    handleResponse(params, in, urlConnection.getResponseCode());
+                    handleResponse(params, in, urlConnection.getResponseCode(),
+                                   userOut);
                 }
             } catch (IOException e) {
                 System.err.println("Cannot connect to host, is server up ?");
@@ -125,71 +140,70 @@ public class RemoteCommand {
         }
     }
 
-        /**
-         * Returns either the name of the file/directory or the canonical form
-         * of the file/directory.  If <code>uploadFile</code> is
-         * <code>false</code> and file/directory exists on the client then the
-         * canonical form is returned else the file/directory name is returned.
-         *
-         * @param uploadFile    indicates if file is to be uploaded to the
-         *                      server.
-         * @param fileName      name of the file/directory.
-         * @return              returns either the file name or the canonical
-         *                      form of the file/directory.
-         *                      returns <code>null</code> if
-         *                      <code>fileName</code> equals <code>null</code>.
-         */
+    /**
+     * Returns either the name of the file/directory or the canonical form
+     * of the file/directory.  If <code>uploadFile</code> is
+     * <code>false</code> and file/directory exists on the client then the
+     * canonical form is returned else the file/directory name is returned.
+     *
+     * @param uploadFile    indicates if file is to be uploaded to the
+     *                      server.
+     * @param fileName      name of the file/directory.
+     * @return              returns either the file name or the canonical
+     *                      form of the file/directory.
+     *                      returns <code>null</code> if
+     *                      <code>fileName</code> equals <code>null</code>.
+     */
     String getFileParam(final boolean uploadFile, final File fileName) {
-        if (fileName == null) return null;
+        if (fileName == null) {
+            return null;
+        }
         String paramValue = fileName.getName();
         if (fileName.exists() && !uploadFile) {
             try {
                 paramValue = fileName.getCanonicalPath();
-            }
-            catch(IOException ioe) {
+            } catch (IOException ioe) {
                 paramValue = fileName.getAbsolutePath();
             }
         }
         return paramValue;
     }
 
-    
-        /**
-         * Returns the <code>uploadFile</code> value.
-         * If <code>uploadFile</code> is <code>true</code>, then HTTP
-         * Post connect is established to upload file to server side.
-         * <p>
-         * <code>uploadFile</code> is determined by the following cases:
-         * (1) if <code>uploadOption</code> is <code>null</code>,
-         *     <code>commandName</code> is deploy and <code>fileName</code>
-         *     is valid then <code>uploadFile</code> is always <code>true</code>.
-         * (2) if <code>commandName</code> is deploy and <code>fileName</code>
-         *     is a directory, regardless of <code>uploadOption</code>,
-         *     <code>uploadFile</code> is always <code>false</code>.
-         * (3) if <code>uploadOption</code> is not <code>true</code> or
-         *     <code>null</code> and <code>commandName</code> is not
-         *     deploy then <code>uploadFile</code> is always <code>false</code>.
-         * (4) if <code>uploadOption</code> is <code>true</code> (not case
-         *     sensitive) and <code>commandName</code> is not deploy then
-         *     <code>uploadFile</code> is always <code>true</code>.
-         *
-         * @param uploadOption    upload option value specified on the
-         *                        command line.
-         * @param commandName     command name specified on the command line.
-         * @fileName              fileName specified on the command line.
-         * @return                <code>true</code> or <code>false</code>
-         */
+    /**
+     * Returns the <code>uploadFile</code> value.
+     * If <code>uploadFile</code> is <code>true</code>, then HTTP
+     * Post connect is established to upload file to server side.
+     * <p>
+     * <code>uploadFile</code> is determined by the following cases:
+     * (1) if <code>uploadOption</code> is <code>null</code>,
+     *     <code>commandName</code> is deploy and <code>fileName</code>
+     *     is valid then <code>uploadFile</code> is always <code>true</code>.
+     * (2) if <code>commandName</code> is deploy and <code>fileName</code>
+     *     is a directory, regardless of <code>uploadOption</code>,
+     *     <code>uploadFile</code> is always <code>false</code>.
+     * (3) if <code>uploadOption</code> is not <code>true</code> or
+     *     <code>null</code> and <code>commandName</code> is not
+     *     deploy then <code>uploadFile</code> is always <code>false</code>.
+     * (4) if <code>uploadOption</code> is <code>true</code> (not case
+     *     sensitive) and <code>commandName</code> is not deploy then
+     *     <code>uploadFile</code> is always <code>true</code>.
+     *
+     * @param uploadOption    upload option value specified on the
+     *                        command line.
+     * @param commandName     command name specified on the command line.
+     * @fileName              fileName specified on the command line.
+     * @return                <code>true</code> or <code>false</code>
+     */
     boolean getUploadFile(final String uploadOption,
                           final String commandName,
                           final String fileName) {
-        
+
         boolean uploadFile = Boolean.parseBoolean(uploadOption);
         if (fileName != null && commandName.equals("deploy")) {
             if (new File(fileName).isDirectory()) {
                 //for directory deployment uploadFile is always false.
                 uploadFile = false;
-            }
-            else if (uploadOption == null) {
+            } else if (uploadOption == null) {
                 //to be compatible with GFv2, upload option is default
                 //to true for deploy command
                 uploadFile = true;
@@ -197,12 +211,20 @@ public class RemoteCommand {
         }
         return uploadFile;
     }
-    
-    
+
     private void handleResponse(Map<String, String> params,
-                                InputStream in, int code) throws IOException {
+                                 InputStream in, int code, OutputStream userOut) throws IOException {
+        if (userOut == null) {
+            handleResponse(params, in, code);
+        } else {
+            copyStream(in, userOut);
+        }
+    }
+
+    private void handleResponse(Map<String, String> params,
+                                 InputStream in, int code) throws IOException {
         if (TRACE) {
-             // dump the content
+            // dump the content
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             copyStream(in, baos);
             System.out.println("Response\n=====");
@@ -227,7 +249,6 @@ public class RemoteCommand {
         }
     }
 
-    
     private Manifest getManifest(InputStream is) {
         try {
             Manifest m = new Manifest();
@@ -288,7 +309,8 @@ public class RemoteCommand {
 
     }
 
-    private void processOneLevel(String prefix, String key, Manifest m, Attributes attr) {
+    private void processOneLevel(String prefix, String key, Manifest m,
+                                  Attributes attr) {
 
         String keys = attr.getValue("keys");
         if (keys != null) {

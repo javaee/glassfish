@@ -36,7 +36,6 @@
 * holder. 
 */ 
 --> 
-<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
@@ -45,8 +44,8 @@
         <version>10.0-SNAPSHOT</version>
     </parent>    
     <artifactId>deployment-client</artifactId>
-    <packaging>hk2-jar</packaging>
-    <name>Deployment Client Classes</name>
+    <packaging>jar</packaging>
+    <name>Deployment Client Classes and Interfaces</name>
 
     <developers>
         <developer>
@@ -58,22 +57,36 @@
                 <role>developer</role>
             </roles>
         </developer>
+        <developer>
+            <id>tjquinn</id>
+            <name>Tim Quinn</name>
+            <url>http://blogs.sun.com/quinn</url>
+            <organization>Sun Microsystems, Inc.</organization>
+            <roles>
+                <role>developer</role>
+            </roles>
+        </developer>
     </developers>
+    <build>
+	<resources>
+            <resource>
+                <directory>src/main/java</directory>
+                <includes>
+                    <include>**/*.properties</include>
+                </includes>
+            </resource>
+        </resources>
+    </build>
     <dependencies>
         <dependency>
-            <groupId>com.sun.enterprise</groupId>
-            <artifactId>hk2</artifactId>
-            <version>${hk2.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.common</groupId>
-            <artifactId>glassfish-api</artifactId>
+            <groupId>org.glassfish.admin</groupId>
+            <artifactId>admin-cli</artifactId>
             <version>${project.version}</version>
         </dependency>   
         <dependency>
-            <groupId>org.glassfish.common</groupId>
-            <artifactId>common-util</artifactId>
-            <version>${project.version}</version>
+            <groupId>javax.javaee</groupId>
+            <artifactId>javaee</artifactId>
+            <version>${javaee-api.version}</version>
         </dependency>
     </dependencies>
 </project>

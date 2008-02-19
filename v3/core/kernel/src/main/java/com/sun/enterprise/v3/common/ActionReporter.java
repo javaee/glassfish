@@ -90,4 +90,15 @@ public abstract class ActionReporter implements ActionReport {
         
     public abstract void writeReport(OutputStream os) throws IOException;
     
+    /**
+     * Returns the content type to be used in sending the response back to 
+     * the client/caller.
+     * <p>
+     * This is the default type.  Specific subclasses of ActionReporter might
+     * override the method to return a different valid type.
+     * @return content type to be used in formatting the command response to the client
+     */
+    public String getContentType() {
+        return "text/html";
+    }
 }

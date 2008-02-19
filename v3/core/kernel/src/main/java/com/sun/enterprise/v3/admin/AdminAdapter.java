@@ -128,24 +128,35 @@ public class AdminAdapter implements Adapter {
         }
         String command = requestURI.substring(PREFIX_URI.length()+1);
         final Properties parameters =  extractParameters(req.queryString().toString());
-        if (req.method().toString().equalsIgnoreCase(GET)) {
-            logger.fine("***** AdminAdapter GET  *****");
-            commandRunner.doCommand(command, parameters, report);            
-        }
-        else if (req.method().toString().equalsIgnoreCase(POST)) {
-            logger.fine("***** AdminAdapter POST *****");
-            if (parameters.get("path")!=null) {
-                try {
-                    final String uploadFile = doUploadFile(req, report, parameters.getProperty("path"));
-                    parameters.setProperty("path", uploadFile);
-                    commandRunner.doCommand(command, parameters, report);
-                }
-                catch (IOException ioe) {
-                    logger.log(Level.WARNING, ioe.getMessage());
-                        //log the exception message to server log
-                        //client recieves error message embedded in report object
+        try {
+            if (req.method().toString().equalsIgnoreCase(GET)) {
+                logger.fine("***** AdminAdapter GET  *****");
+                commandRunner.doCommand(command, parameters, report);            
+            }
+            else if (req.method().toString().equalsIgnoreCase(POST)) {
+                logger.fine("***** AdminAdapter POST *****");
+                if (parameters.get("path")!=null) {
+                    try {
+                        final String uploadFile = doUploadFile(req, report, parameters.getProperty("path"));
+                        parameters.setProperty("path", uploadFile);
+                        commandRunner.doCommand(command, parameters, report);
+                    }
+                    catch (IOException ioe) {
+                        logger.log(Level.WARNING, ioe.getMessage());
+                            //log the exception message to server log
+                            //client recieves error message embedded in report object
+                    }
                 }
             }
+        } catch (Throwable t) {
+            /*
+             * Must put the error information into the report
+             * for the client to see it.
+             */
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            report.setFailureCause(t);
+            report.setMessage(t.getLocalizedMessage());
+            report.setActionDescription("Last-chance AdminAdapter exception handler");
         }
     }
 
