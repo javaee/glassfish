@@ -22,12 +22,20 @@
  */
 package com.sun.enterprise.v3.common;
 
-import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Map;
-import javax.xml.stream.XMLOutputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.Result;
+import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 /**
  * Represents the action report as XML like this:
@@ -54,25 +62,24 @@ import javax.xml.stream.XMLStreamWriter;
 public class XMLActionReporter extends ActionReporter {
 
     @Override
-    public void writeReport(OutputStream os) throws IOException {
-        XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
+    public void writeReport(OutputStream os)  {
         try {
-            XMLStreamWriter streamWriter = outputFactory.createXMLStreamWriter(os);
-            streamWriter.writeStartDocument();
-            streamWriter.writeStartElement("action-report");
-            streamWriter.writeAttribute("description", actionDescription);
-            streamWriter.writeAttribute("exit-code", exitCode.name());
+            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            DocumentBuilder db = dbf.newDocumentBuilder();
+
+            Document d = db.newDocument();
+
+            Element actionReport = d.createElement("action-report");
+            actionReport.setAttribute("description", actionDescription);
+            actionReport.setAttribute("exit-code", exitCode.name());
             if (exception != null) {
-                streamWriter.writeAttribute("failure-cause", exception.getLocalizedMessage());
+                actionReport.setAttribute("failure-cause", exception.getLocalizedMessage());
             }
             
-            writePart(streamWriter, topMessage, null);
-            
-            streamWriter.writeEndElement();
-            streamWriter.writeEndDocument();
-            streamWriter.close();
-        } catch (XMLStreamException se) {
-            throw new IOException(se);
+            writePart(actionReport, topMessage, null);
+            writeXML(d, os);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
         
     }
@@ -83,24 +90,33 @@ public class XMLActionReporter extends ActionReporter {
     }
     
     
-    private void writePart(XMLStreamWriter writer, MessagePart part, String childType) throws XMLStreamException {
-        writer.writeStartElement("message-part");
-        writer.writeAttribute("message", part.getMessage());
+    
+    private void writePart(Element actionReport, MessagePart part, String childType) {
+        Document d = actionReport.getOwnerDocument();
+        Element messagePart = d.createElement("message-part");
+        actionReport.appendChild(messagePart);
         if (childType != null) {
-            writer.writeAttribute("type", childType);
+            messagePart.setAttribute("type", childType);
         }
-
+        
         for (Map.Entry prop : part.getProps().entrySet()) {
-            writer.writeStartElement("property");
-            writer.writeAttribute("name", prop.getKey().toString());
-            writer.writeAttribute("value", prop.getValue().toString());
-            writer.writeEndElement();
+            Element p = d.createElement("property");
+            messagePart.appendChild(d);
+            p.setAttribute("name", prop.getKey().toString());
+            p.setAttribute("value", prop.getValue().toString());
         }
         
         for (MessagePart subPart : part.getChildren()) {
-            writePart(writer, subPart, subPart.getChildrenType());
+            writePart(messagePart, subPart, subPart.getChildrenType());
         }
-        writer.writeEndElement();
     }
+    
+    private void writeXML(Document doc, OutputStream os) throws TransformerConfigurationException, TransformerException {
+        Source source = new DOMSource(doc);
 
+        Result result = new StreamResult(os);
+
+        Transformer xformer = TransformerFactory.newInstance().newTransformer();
+        xformer.transform(source, result);
+    }
 }

@@ -5,15 +5,14 @@
 
 package org.glassfish.deployment.client;
 
+import java.io.IOException;
 import java.io.InputStream;
-import javax.xml.namespace.QName;
-import javax.xml.stream.XMLEventReader;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.events.Attribute;
-import javax.xml.stream.events.EndElement;
-import javax.xml.stream.events.StartElement;
-import javax.xml.stream.events.XMLEvent;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
 
 /**
  *
@@ -21,44 +20,18 @@ import javax.xml.stream.events.XMLEvent;
  */
 public class CommandXMLResultParser {
 
-    static DFDeploymentStatus parse(InputStream is) throws XMLStreamException {
-        XMLEventReader xmlReader = XMLInputFactory.newInstance().createXMLEventReader(is);
-        DFDeploymentStatus topStatus = null;
-        DFDeploymentStatus currentLevel = null;
-
+    static DFDeploymentStatus parse(InputStream is) throws ParserConfigurationException, SAXException, IOException {
+        SAXParserFactory pf = SAXParserFactory.newInstance();
+        SAXParser parser = pf.newSAXParser();
         
-        while(xmlReader.hasNext()) {
-            XMLEvent event = xmlReader.nextEvent();
-            if (event.isStartElement()) {
-                StartElement start = (StartElement) event;
-                if (start.getName().getLocalPart().equals("action-report")) {
-                    /*
-                     * This is the top-level element, so create the top-level DFDeploymentStatus object.
-                     */
-                    currentLevel = topStatus = new DFDeploymentStatus();
-                    topStatus.setStageStatus(exitCodeToStatus(attrToText(start, "exit-code")));
-                    topStatus.setStageDescription(attrToText(start, "description"));
-                    String failureCause = attrToText(start, "failure-cause");
-                    if (failureCause != null) {
-                        topStatus.setStageStatusMessage(failureCause);
-                    }
-                } else if (start.getName().getLocalPart().equals("message-part")) {
-                    /*
-                     * Create a new lower-level stage.
-                     */
-                    currentLevel = new DFDeploymentStatus(currentLevel);
-                    currentLevel.setStageStatusMessage(attrToText(start, "message"));
-                    
-                } else if (start.getName().equals("property")) {
-                    currentLevel.addProperty(attrToText(start, "name"), attrToText(start, "value"));
-                }
-            } else if (event.isEndElement()) {
-                EndElement end = (EndElement) event;
-                if (end.getName().getLocalPart().equals("message-part") || end.getName().getLocalPart().equals("action-report")) {
-                    currentLevel = currentLevel.getParent();
-                }
-            }
-        }
+        
+        
+        DFDeploymentStatus topStatus = null;
+        ResultHandler rh = new ResultHandler();
+        parser.parse(is, rh);
+        
+        topStatus = rh.getTopStatus();
+        
         return topStatus;
     }
     
@@ -66,9 +39,43 @@ public class CommandXMLResultParser {
         return DFDeploymentStatus.Status.valueOf(exitCodeText);
     }
     
-    private static String attrToText(StartElement e, String attrName) {
-        Attribute a = e.getAttributeByName(QName.valueOf(attrName));
-        return (a == null ? null : a.getValue());
-    }
+    private static class ResultHandler extends DefaultHandler {
 
+        private DFDeploymentStatus topStatus;
+        private DFDeploymentStatus currentLevel;
+
+        private String attrToText(Attributes attrs, String attrName) {
+            return attrs.getValue(attrName);
+        }
+        
+        private DFDeploymentStatus getTopStatus() {
+            return topStatus;
+        }
+        
+        @Override
+        public void startElement(String uri, String localName, String qName,
+                                 Attributes attributes) throws SAXException {
+            if (localName.equals("action-report")) {
+                currentLevel = topStatus = new DFDeploymentStatus();
+                topStatus.setStageStatus(exitCodeToStatus(attrToText(attributes, "exit-code")));
+                topStatus.setStageDescription(attrToText(attributes, "description"));
+                String failureCause = attrToText(attributes, "failure-cause");
+                if (failureCause != null) {
+                    topStatus.setStageStatusMessage(failureCause);
+                }
+            } else if (localName.equals("message-part")) {
+                currentLevel = new DFDeploymentStatus(currentLevel);
+                currentLevel.setStageStatusMessage(attrToText(attributes, "message"));
+            } else if (localName.equals("property")) {
+                currentLevel.addProperty(attrToText(attributes, "name"), attrToText(attributes, "value"));
+            }
+        }
+
+        @Override
+        public void endElement(String uri, String localName, String qName) throws SAXException {
+            if (localName.equals("message-part") || localName.equals("action-report")) {
+                currentLevel = currentLevel.getParent();
+            }
+        }
+    }
 }
