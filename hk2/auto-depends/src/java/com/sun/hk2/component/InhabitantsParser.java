@@ -7,6 +7,8 @@ import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.component.MultiMap;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  * Parses <tt>/META-INF/inhabitants</tt> and
@@ -22,6 +24,8 @@ public class InhabitantsParser {
     }
 
     public void parse(InhabitantsScanner scanner, Holder<ClassLoader> classLoader) throws IOException {
+
+        List<Inhabitant> inhabitants = new ArrayList<Inhabitant>();
         for( KeyValuePairParser kvpp : scanner) {
             String className=null;
             MultiMap<String,String> metadata=new MultiMap<String, String>();
@@ -37,7 +41,8 @@ public class InhabitantsParser {
             }
 
             Inhabitant i = new LazyInhabitant(habitat, classLoader, className,metadata);
-            habitat.add(i);
+            habitat.initialize(i);
+            inhabitants.add(i);
 
             for (String v : kvpp.findAll(INDEX_KEY)) {
                 // register inhabitant to the index
@@ -53,6 +58,9 @@ public class InhabitantsParser {
                     metadata.add(contract,name);
                 }
             }
+        }
+        for (Inhabitant<?> i : inhabitants) {
+            habitat.processInhabitantDecorations(i);
         }
     }
 

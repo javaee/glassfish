@@ -26,4 +26,6 @@
         <principal name="third"/>
         <backend-principal name="backend"/>
     </security-map>
+    <bird name="tweety"/>
+    <lion name="kitty"/>
 </domain>

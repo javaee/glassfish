@@ -37,12 +37,14 @@ package org.jvnet.hk2.config;
 
 import com.sun.hk2.component.LazyInhabitant;
 import org.jvnet.hk2.component.*;
+import org.jvnet.hk2.annotations.CagedBy;
 
 import javax.xml.stream.Location;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 import java.lang.reflect.*;
+import java.lang.annotation.Annotation;
 import java.util.*;
 import java.util.regex.Pattern;
 /**
@@ -164,7 +166,7 @@ public class Dom extends LazyInhabitant implements InvocationHandler, Observable
             return (Dom) ih;
         if (ih instanceof ConfigView) {
             return (Dom) ((ConfigView)ih).getMasterView();
-        }        
+        }
         return null;
     }
 
@@ -293,7 +295,7 @@ public class Dom extends LazyInhabitant implements InvocationHandler, Observable
         // TODO: reparent newNode
         if(name.equals("*"))    name=newNode.model.tagName;
         NodeChild newChild = new NodeChild(name, newNode);
-        
+
         if(reference==null) {
             children.add(0, newChild);
             return;
@@ -772,8 +774,37 @@ public class Dom extends LazyInhabitant implements InvocationHandler, Observable
     protected Womb createWomb(Class c) {
         if(ConfigBeanProxy.class.isAssignableFrom(c))
             return new DomProxyWomb(c,metadata(),this);
-        else
-            return new ConfiguredWomb(super.createWomb(c),this);
+        else {
+            final CagedBy cagedBy = digAnnotation((Class<?>) c, CagedBy.class);
+
+            if (cagedBy == null) {
+                return new ConfiguredWomb(super.createWomb(c),this);
+            } else {
+                Class<? extends CageBuilder> value = cagedBy.value();
+                CageBuilder builder = habitat.getByType(value);
+                return new CagedConfiguredWomb(super.createWomb(c), this, builder);
+            }
+        }
+    }
+
+    public static <T extends Annotation> T digAnnotation(Class<?> target, Class<T> annotationType) {
+        return digAnnotation(target, annotationType, new ArrayList<Class<? extends Annotation>>());
+    }
+
+    public static <T extends Annotation> T digAnnotation(Class<?> target, Class<T> annotationType, List<Class<? extends Annotation>> visited) {
+        T result = target.getAnnotation(annotationType);
+        if (result==null) {
+            for (Annotation a : target.getAnnotations()) {
+                if (!visited.contains(a.annotationType())) {
+                    visited.add(a.annotationType());
+                    result = digAnnotation(a.annotationType(), annotationType, visited);
+                    if (result!=null) {
+                        return result;
+                    }
+                }
+            }
+        }
+        return result;
     }
 
     /**
@@ -804,7 +835,7 @@ public class Dom extends LazyInhabitant implements InvocationHandler, Observable
 
         for (Child c : children)
             c.writeTo(w);
-        
+
         w.writeEndElement();
     }
 

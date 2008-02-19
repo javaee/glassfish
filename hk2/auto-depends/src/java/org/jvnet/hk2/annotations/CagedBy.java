@@ -5,6 +5,7 @@ import org.jvnet.hk2.component.CageBuilder;
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
+import java.lang.annotation.Inherited;
 import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
 import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
@@ -43,6 +44,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Documented
 @Retention(RUNTIME)
 @Target({ANNOTATION_TYPE,TYPE})
+@Inherited
 public @interface CagedBy {
     /**
      * Designates the {@link CageBuilder} that intercepts incoming inhabitants.
