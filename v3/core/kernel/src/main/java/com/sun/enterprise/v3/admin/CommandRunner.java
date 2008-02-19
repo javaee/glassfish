@@ -122,7 +122,7 @@ public class CommandRunner {
                         return value;
                     }
                 }
-                return parameters.get(getParamName(param, target));
+                return getPropertiesValue(parameters, getParamName(param, target), true);
             }
         };
 
@@ -219,6 +219,33 @@ public class CommandRunner {
         }
         return "";
     }
+
+    
+        /**
+         *  Searches for the property with the specified key in this property list.
+         *  The method returns null if the property is not found.
+         *  @see java.util.Properties#getProperty(java.lang.String)
+         *
+         *  @param props - the property to search in
+         *  @param key - the property key
+         *  @param ignoreCase - true to search the key ignoring case
+         *                      false otherwise
+         *  @return the value in this property list with the specified key value.
+         */
+    String getPropertiesValue(final Properties props, final String key,
+                              final boolean ignoreCase) {
+        if (ignoreCase) {
+            for (Object propObj : props.keySet()) {
+                final String propName = (String)propObj;
+                if (propName.equalsIgnoreCase(key)) {
+                    return props.getProperty(propName);
+                }
+            }
+        }
+        return props.getProperty(key);
+    }
+
+    
     /**
      * Return Command handlers from the lookup or if not found in the lookup,
      * look at META-INF/services implementations and add them to the lookup

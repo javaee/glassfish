@@ -127,32 +127,7 @@ public class AdminAdapter implements Adapter {
             return;
         }
         String command = requestURI.substring(PREFIX_URI.length()+1);
-
-        // extract parameters...
-        final Properties parameters = new Properties();
-        String queryString = req.queryString().toString();
-        StringTokenizer stoken = new StringTokenizer(queryString, "?");
-        while (stoken.hasMoreTokens()) {
-            String token = stoken.nextToken();
-            if (token.indexOf("=")==-1)
-                continue;
-            String paramName = token.substring(0, token.lastIndexOf("="));
-            String value = token.substring(token.lastIndexOf("=")+1);
-            try {
-                value = URLDecoder.decode(value, "UTF-8");
-            } catch (UnsupportedEncodingException e) {
-                logger.log(Level.WARNING, adminStrings.getLocalString("adapter.param.decode",
-                        "Cannot decode parameter {0} = {1}"));
-            }
-            parameters.setProperty(paramName, value);
-        }
-
-        // Dump parameters...
-        if (logger.isLoggable(Level.FINER)) {
-            for (Object key : parameters.keySet()) {
-              logger.finer("Key " + key + " = " + parameters.getProperty((String) key));
-            }
-        }
+        final Properties parameters =  extractParameters(req.queryString().toString());
         if (req.method().toString().equalsIgnoreCase(GET)) {
             logger.fine("***** AdminAdapter GET  *****");
             commandRunner.doCommand(command, parameters, report);            
@@ -257,5 +232,39 @@ public class AdminAdapter implements Adapter {
         }
         return uploadFilePath;
     }
-    
+
+        /**
+         *  extract parameters from URI and save it in Properties obj
+         *  
+         *  @params requestString string URI to extract
+         *
+         *  @returns Properties
+         */
+    Properties extractParameters(final String requestString) {
+        // extract parameters...
+        final Properties parameters = new Properties();
+        StringTokenizer stoken = new StringTokenizer(requestString, "?");
+        while (stoken.hasMoreTokens()) {
+            String token = stoken.nextToken();
+            if (token.indexOf("=")==-1)
+                continue;
+            String paramName = token.substring(0, token.lastIndexOf("="));
+            String value = token.substring(token.lastIndexOf("=")+1);
+            try {
+                value = URLDecoder.decode(value, "UTF-8");
+            } catch (UnsupportedEncodingException e) {
+                logger.log(Level.WARNING, adminStrings.getLocalString("adapter.param.decode",
+                        "Cannot decode parameter {0} = {1}"));
+            }
+            parameters.setProperty(paramName, value);
+        }
+
+        // Dump parameters...
+        if (logger.isLoggable(Level.FINER)) {
+            for (Object key : parameters.keySet()) {
+              logger.finer("Key " + key + " = " + parameters.getProperty((String) key));
+            }
+        }
+        return parameters;
+    }
 }
