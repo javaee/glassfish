@@ -143,11 +143,7 @@ public class Mapper {
      */
     String mapContextRoot(ByteBuffer byteBuffer) throws IOException{
         // TODO: Right now we work at the String level, we should work with bytes.
-        String contextRoot = "/" + HttpUtils.findContextRoot(byteBuffer);
-        if (contextRoot.equals("")){
-            contextRoot = ROOT;
-        }
-        return contextRoot;
+        return ROOT + HttpUtils.findContextRoot(byteBuffer);
     }
     
     

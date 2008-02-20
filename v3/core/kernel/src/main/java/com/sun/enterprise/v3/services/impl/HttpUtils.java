@@ -57,7 +57,6 @@ public class HttpUtils {
             // Rule b - try to determine the context-root
             while(byteBuffer.hasRemaining()) {
                 c = byteBuffer.get();
-
                 // State Machine
                 // 0 - Search for the first SPACE ' ' between the method and the
                 //     the request URI
@@ -72,7 +71,7 @@ public class HttpUtils {
                         }
                         break;
                     case 1: // Search for next valid '/', and then ' '
-                        if (c == 0x2f){
+                        if (c == 0x2f && separatorPos == -1){
                             if (byteBuffer.position() != lastPos + 1){
                                 separatorPos = byteBuffer.position() - 1;
                             } else if (byteBuffer.position() - 1 == start){

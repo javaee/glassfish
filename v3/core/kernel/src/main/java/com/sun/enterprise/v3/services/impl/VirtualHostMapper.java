@@ -25,12 +25,8 @@ package com.sun.enterprise.v3.services.impl;
 
 import com.sun.enterprise.config.serverbeans.HttpListener;
 import com.sun.enterprise.config.serverbeans.VirtualServer;
-import com.sun.grizzly.Controller;
-import com.sun.grizzly.http.SelectorThread;
-import com.sun.grizzly.standalone.StaticStreamAlgorithm;
 import com.sun.grizzly.tcp.Request;
 import com.sun.grizzly.tcp.Response;
-import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -38,7 +34,6 @@ import org.glassfish.api.deployment.ApplicationContainer;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.jvnet.hk2.component.Habitat;
 
 /**
  * The Grizzly Service is responsible for starting grizzly and register the 
