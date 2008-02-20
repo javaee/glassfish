@@ -91,11 +91,6 @@
             <artifactId>webtier</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-           <groupId>org.glassfish.web</groupId>
-            <artifactId>gf-web-connector</artifactId>
-            <version>${project.version}</version>
-        </dependency>
         
     </dependencies>
 </project>
