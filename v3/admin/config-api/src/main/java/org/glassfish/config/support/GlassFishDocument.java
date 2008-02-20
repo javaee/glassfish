@@ -37,6 +37,9 @@ package org.glassfish.config.support;
 
 import org.jvnet.hk2.config.*;
 import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.component.CageBuilder;
+import org.glassfish.admin.amx.AMXConfigRegistrar;
+import org.glassfish.admin.amx.AMXConfigInfo;
 
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamException;
@@ -44,6 +47,8 @@ import java.beans.PropertyChangeEvent;
 import java.util.List;
 import java.util.Collection;
 import java.io.IOException;
+
+import com.sun.hk2.component.ExistingSingletonInhabitant;
 
 /**
  * plug our Dom implementation

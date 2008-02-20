@@ -12,10 +12,13 @@ import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.config.Dom;
 import org.jvnet.hk2.config.ConfigBean;
 import org.jvnet.hk2.config.ConfigBeanProxy;
+import org.jvnet.hk2.config.ConfigView;
 import org.jvnet.hk2.component.CageBuilder;
 
 import com.sun.appserv.management.util.misc.ExceptionUtil;
 import com.sun.appserv.management.util.jmx.JMXUtil;
+
+import java.lang.reflect.Proxy;
 
 /**
  * @author llc
@@ -44,6 +47,8 @@ public final class AMXConfigRegistrar implements CageBuilder
     {
         debug( "AMXConfigRegistrar: inhabitant: " + inhabitant );
         final ConfigBean cb = asConfigBean(inhabitant);
+        debug(" got a config bean for " + cb.getProxyType());
+
         if ( cb != null )
         {
             registerConfigBean( cb );

@@ -37,12 +37,16 @@ package org.glassfish.config.support;
 
 import org.jvnet.hk2.config.*;
 import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.component.CageBuilder;
+import org.jvnet.hk2.annotations.CagedBy;
 
 import javax.xml.stream.XMLStreamReader;
 import java.lang.reflect.Proxy;
 import java.lang.reflect.Method;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 
 /**
  * Translated view of a configured objects where values can be represented
@@ -52,25 +56,7 @@ import java.util.regex.Matcher;
  */
 public final class GlassFishConfigBean extends ConfigBean {
 
-    /**
-     * Returns the translated view of a configuration object
-     * @param s the config-apu interface implementation
-     * @return the new interface implementation providing the raw view
-     */
-    public static <T  extends ConfigBeanProxy> T getTranslatedView(T s) {
-
-        Transformer rawTransformer = new Transformer() {
-            @SuppressWarnings("unchecked")
-            public <T extends ConfigBeanProxy> T transform(T source) {
-                final ConfigView sourceBean = (ConfigView) Proxy.getInvocationHandler(source);
-                
-                ConfigView translatedView = new TranslatedConfigView(sourceBean.getMasterView());
-                return (T) translatedView.getProxy(sourceBean.getProxyType());
-            }
-        };
-
-        return ConfigSupport.getView(rawTransformer, s);
-    }
+     TranslatedConfigView defaultView;
 
     /**
      * Returns the translated view of a configuration object
@@ -97,7 +83,28 @@ public final class GlassFishConfigBean extends ConfigBean {
 
     @Override
     public <T extends ConfigBeanProxy> T createProxy(Class<T> proxyType) {
-        return new TranslatedConfigView(this).getProxy(proxyType);
+        if (defaultView==null) {
+            defaultView = new TranslatedConfigView(this);
+        }
+        return defaultView.getProxy(proxyType);
+    }
+
+    @Override
+    public void initializationCompleted() {
+        super.initializationCompleted();
+/*        CagedBy cagedBy = digAnnotation(getProxyType(), CagedBy.class);
+        if (cagedBy!=null) {
+            CageBuilder builder = habitat.getByType(cagedBy.value());
+            if (builder!=null) {
+                try {
+                    builder.onEntered(this);
+                } catch(Exception e) {
+                    Logger.getAnonymousLogger().info("CageBuilder " + builder + " raised exception : " +  e.getMessage());
+                    Logger.getAnonymousLogger().log(Level.FINE, "CageBuilder " + builder + " raised exception : ", e);    
+                }
+            }
+        }
+        */
     }
 
 }
