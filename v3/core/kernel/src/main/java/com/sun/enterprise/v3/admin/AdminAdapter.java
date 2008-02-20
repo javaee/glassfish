@@ -126,7 +126,13 @@ public class AdminAdapter implements Adapter {
             Utils.getDefaultLogger().info(msg);
             return;
         }
-        String command = requestURI.substring(PREFIX_URI.length()+1);
+        
+         // wbn handle no command and no slash-suffix
+        String command = "";
+        
+        if(requestURI.length() > PREFIX_URI.length() + 1)
+            command = requestURI.substring(PREFIX_URI.length()+1);
+
         final Properties parameters =  extractParameters(req.queryString().toString());
         try {
             if (req.method().toString().equalsIgnoreCase(GET)) {

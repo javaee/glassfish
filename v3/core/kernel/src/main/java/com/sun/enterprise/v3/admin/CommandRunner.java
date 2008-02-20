@@ -263,7 +263,13 @@ public class CommandRunner {
            e.printStackTrace();
         }
         if (command==null) {
-            String msg = adminStrings.getLocalString("adapter.command.notfound", "Command {0} not found", commandName);
+            String msg;
+            
+            if(!ok(commandName))
+                msg = adminStrings.getLocalString("adapter.command.nocommand", "No command was specified.");
+            else
+                msg = adminStrings.getLocalString("adapter.command.notfound", "Command {0} not found", commandName);
+            
             report.setMessage(msg);
             Utils.getDefaultLogger().info(msg);
         }
@@ -302,6 +308,9 @@ public class CommandRunner {
         }
     }
     
+    private boolean ok(String s) {
+        return s != null && s.length() > 0;
+    }
 
 }
 
