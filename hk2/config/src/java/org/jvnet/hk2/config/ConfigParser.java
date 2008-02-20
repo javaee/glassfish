@@ -153,6 +153,7 @@ public class ConfigParser {
             // to support look up.
             habitat.addIndex(dom,model.targetTypeName,key);
 
+        dom.initializationCompleted();
         return dom;
     }
 

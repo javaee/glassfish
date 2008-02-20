@@ -129,7 +129,7 @@ public class PackageMojo extends AbstractMojo {
         archiver.setOutputFile(jarFile);
 
         try {
-            new Packager().configureManifet(project,archive,classesDirectory);
+            new Packager().configureManifest(project,archive,classesDirectory);
             new OSGiPackager().configureOSGiManifest(project,archive,classesDirectory);
 
             File contentDirectory = classesDirectory;
