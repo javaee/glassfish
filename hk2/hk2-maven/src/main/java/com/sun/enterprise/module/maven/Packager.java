@@ -42,7 +42,7 @@ public class Packager {
      */
     public void writeManifest(MavenProject pom, File classesDirectory) throws IOException {
         Manifest mf = new Manifest();
-        for( Map.Entry<String,String> e : configureManifet(pom,null,classesDirectory).entrySet()) {
+        for( Map.Entry<String,String> e : configureManifest(pom,null,classesDirectory).entrySet()) {
             mf.getMainAttributes().put(
                 new Attributes.Name(e.getKey()),e.getValue());
         }
@@ -57,7 +57,7 @@ public class Packager {
             os.close();
         }
     }
-    public Map<String,String> configureManifet(MavenProject pom, MavenArchiveConfiguration archive, File classesDirectory) throws IOException {
+    public Map<String,String> configureManifest(MavenProject pom, MavenArchiveConfiguration archive, File classesDirectory) throws IOException {
         Map<String,String> entries;
         if(archive!=null)
             entries = archive.getManifestEntries();

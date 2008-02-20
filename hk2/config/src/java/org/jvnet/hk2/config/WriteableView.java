@@ -161,10 +161,6 @@ public class WriteableView implements InvocationHandler, Transactor, ConfigView 
         try {
             List<PropertyChangeEvent> appliedChanges = new ArrayList<PropertyChangeEvent>();
             for (PropertyChangeEvent event : changedAttributes.values()) {
-                //TODO : dochez : remove the test below once attribute leaf can remove values
-                if (event.getNewValue()==null) {
-                    continue;
-                }
                 ConfigModel.Property property = bean.model.findIgnoreCase(event.getPropertyName());
                 property.set(bean, event.getNewValue());
                 appliedChanges.add(event);

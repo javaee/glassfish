@@ -113,6 +113,9 @@ public class Dom extends LazyInhabitant implements InvocationHandler, Observable
         }
     }
 
+    public void initializationCompleted() {
+    }
+
     /**
      * All attributes and their raw values before {@link Translator} processing.
      */
@@ -296,6 +299,9 @@ public class Dom extends LazyInhabitant implements InvocationHandler, Observable
         if(name.equals("*"))    name=newNode.model.tagName;
         NodeChild newChild = new NodeChild(name, newNode);
 
+        if (children.size()==0) {
+            children = new ArrayList<Child>();
+        }
         if(reference==null) {
             children.add(0, newChild);
             return;
@@ -772,8 +778,9 @@ public class Dom extends LazyInhabitant implements InvocationHandler, Observable
     @Override
     @SuppressWarnings("unchecked")
     protected Womb createWomb(Class c) {
-        final CagedBy cagedBy = digAnnotation((Class<?>) c, CagedBy.class);
-        Womb womb = (ConfigBeanProxy.class.isAssignableFrom(c)?new DomProxyWomb(c,metadata(),this):new ConfiguredWomb(super.createWomb(c),this));
+        return (ConfigBeanProxy.class.isAssignableFrom(c)?new DomProxyWomb(c,metadata(),this):new ConfiguredWomb(super.createWomb(c),this));
+        // turning off @Configured and @CagedBy until we get a clear picture on how this should work together.
+/*        Womb womb = (ConfigBeanProxy.class.isAssignableFrom(c)?new DomProxyWomb(c,metadata(),this):new ConfiguredWomb(super.createWomb(c),this));
         if (cagedBy==null) {
             return womb;
         } else {
@@ -781,6 +788,7 @@ public class Dom extends LazyInhabitant implements InvocationHandler, Observable
             CageBuilder builder = habitat.getByType(value);
             return new CagedConfiguredWomb(womb, this, builder);
         }
+        */
     }
 
     public static <T extends Annotation> T digAnnotation(Class<?> target, Class<T> annotationType) {
