@@ -51,6 +51,7 @@ import org.xml.sax.SAXParseException;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashSet;
@@ -181,9 +182,12 @@ public class ConnectorDDTransformUtils {
 
         try {
 
+            File module = new File(moduleDir);
+
             FileArchive fileArchive = new FileArchive();
             // TODO V3 [new fileArhive does not define this method, old one checks whether the file exists ]
-            fileArchive.open(new URI("file://" + moduleDir));  // directory where rar is exploded
+            //fileArchive.open(new URI("file://" + moduleDir));  // directory where rar is exploded
+            fileArchive.open(module.toURI());  // directory where rar is exploded
             //TODO V3 shouldnt this be injected ??
             ConnectorArchivist connectorArchivist = new ConnectorArchivist();
 
@@ -200,13 +204,6 @@ public class ConnectorDDTransformUtils {
                     "Failed to parse the connector deployment descriptors");
             cre.initCause(ex);
             _logger.log(Level.SEVERE, "rardeployment.connector_descriptor_parse_error", moduleDir);
-            _logger.log(Level.SEVERE, "", cre);
-            throw cre;
-        } catch (URISyntaxException e) {
-            ConnectorRuntimeException cre = new ConnectorRuntimeException(
-                    "Failed to open the connector archive");
-            cre.initCause(e);
-            _logger.log(Level.SEVERE, "rardeployment.connector_descriptor_read_error", moduleDir);
             _logger.log(Level.SEVERE, "", cre);
             throw cre;
         }
