@@ -26,6 +26,7 @@ package com.sun.enterprise.web;
 
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.Applications;
+import com.sun.enterprise.config.serverbeans.ServerTags;
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.io.WebDeploymentDescriptorFile;
@@ -128,20 +129,31 @@ public class WebDeployer extends JavaEEDeployer<WebContainer, WebApplication>{
         if (app.isVirtual()) {
 
             WebBundleDescriptor wbd = (WebBundleDescriptor) app.getStandaloneBundleDescriptor(); 
-            // TO DO : this will need to be revisited to handle context root property
+
+            // the context root should be set using the following precedence
+            // for standalone web module
+            // 1. User specified value through DeployCommand
+            // 2. Context root value specified through sun-web.xml
+            // 3. The default context root
+            String contextRoot; 
             Properties params = dc.getCommandParameters();
             if (params.getProperty(DeployCommand.CONTEXT_ROOT)!=null) {
-                if (params.getProperty(DeployCommand.CONTEXT_ROOT).startsWith("/")) {
-                    wbd.setContextRoot(params.getProperty(DeployCommand.CONTEXT_ROOT));
-                } else {
-                    wbd.setContextRoot("/" + params.getProperty(DeployCommand.CONTEXT_ROOT)); 
-                }
+                contextRoot = params.getProperty(DeployCommand.CONTEXT_ROOT);
+            } else if (wbd.getContextRoot() != null) {
+                contextRoot = wbd.getContextRoot(); 
             } else {
-                if (wbd.getContextRoot()==null || wbd.getContextRoot().length()==0) {
-                   wbd.setContextRoot("/" + params.getProperty(DeployCommand.NAME)); 
-                }
+                contextRoot = params.getProperty(DeployCommand.NAME);
             }
+
+            if (!contextRoot.startsWith("/")) {
+                contextRoot = "/" + contextRoot;
+            }
+            wbd.setContextRoot(contextRoot);
             wbd.setName(params.getProperty(DeployCommand.NAME));
+
+            // set the context root to deployment context props so this value
+            // will be persisted in domain.xml
+            dc.getProps().setProperty(ServerTags.CONTEXT_ROOT, contextRoot);
         }
 
         return app;
