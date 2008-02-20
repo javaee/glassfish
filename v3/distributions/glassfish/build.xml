@@ -33,7 +33,7 @@
         <resolveAll todir="target/stage/glassfish/modules">
             <excludeArtifactsTransitively>
                 <scope level="compile,runtime"/>
-                <artifact artifactId="gf-web-connector" />
+                <artifact artifactId="webtier" />
                 <artifact artifactId="gf-ejb-connector" />
             </excludeArtifactsTransitively>
         </resolveAll>
