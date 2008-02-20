@@ -772,18 +772,14 @@ public class Dom extends LazyInhabitant implements InvocationHandler, Observable
     @Override
     @SuppressWarnings("unchecked")
     protected Womb createWomb(Class c) {
-        if(ConfigBeanProxy.class.isAssignableFrom(c))
-            return new DomProxyWomb(c,metadata(),this);
-        else {
-            final CagedBy cagedBy = digAnnotation((Class<?>) c, CagedBy.class);
-
-            if (cagedBy == null) {
-                return new ConfiguredWomb(super.createWomb(c),this);
-            } else {
-                Class<? extends CageBuilder> value = cagedBy.value();
-                CageBuilder builder = habitat.getByType(value);
-                return new CagedConfiguredWomb(super.createWomb(c), this, builder);
-            }
+        final CagedBy cagedBy = digAnnotation((Class<?>) c, CagedBy.class);
+        Womb womb = (ConfigBeanProxy.class.isAssignableFrom(c)?new DomProxyWomb(c,metadata(),this):new ConfiguredWomb(super.createWomb(c),this));
+        if (cagedBy==null) {
+            return womb;
+        } else {
+            Class<? extends CageBuilder> value = cagedBy.value();
+            CageBuilder builder = habitat.getByType(value);
+            return new CagedConfiguredWomb(womb, this, builder);
         }
     }
 
