@@ -128,25 +128,6 @@ public class PEWebContainer extends WebContainer {
      * Maps http-listener id to Tomcat Connector
      */
     private HashMap<String,PECoyoteConnector> connectorMap;
-    
-   
-    /**
-     * Allow disabling accessLog mechanism
-     */
-    private boolean globalAccessLoggingEnabled = true;
-    
-    
-   /**
-    * AccessLog buffer size for storing logs.
-    */
-   private String globalAccessLogBufferSize = null;
-   
-   
-   /**
-    * AccessLog interval before the valve flush its buffer to the disk.
-    */
-   private String globalAccessLogWriteInterval = null;  
-
    
     /**
      * The default-redirect port.
@@ -518,16 +499,16 @@ public class PEWebContainer extends WebContainer {
             vs.configureCacheControl(cacheProp.getValue());   
         }
 
-        /*PEAccessLogValve accessLogValve = vs.getAccessLogValve();
+        PEAccessLogValve accessLogValve = vs.getAccessLogValve();
         boolean startAccessLog = accessLogValve.configure(
-            vs_id, vse, httpService, domain, instance,
-            _serverContext.getPluggableFeatureFactory().
-                getWebContainerFeatureFactory(),
+            vs_id, vse, httpService, domain, _serverContext.getDefaultHabitat(), 
+            _serverContext.getDefaultHabitat().
+                getComponent(WebContainerFeatureFactory.class),
             globalAccessLogBufferSize, globalAccessLogWriteInterval);
         if (startAccessLog
                 && vs.isAccessLoggingEnabled(globalAccessLoggingEnabled)) {
             vs.addValve(accessLogValve);
-        }*/
+        }
 
         if (_logger.isLoggable(Level.FINEST)) {
             _logger.log(Level.FINEST, "Created virtual server " + vs_id);

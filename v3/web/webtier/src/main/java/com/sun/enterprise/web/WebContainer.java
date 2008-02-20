@@ -24,8 +24,6 @@
 
 package com.sun.enterprise.web;
 
-//import com.sun.enterprise.admin.event.EventListenerRegistry;
-import com.sun.enterprise.util.OS;
 import java.io.File;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
@@ -33,6 +31,7 @@ import java.net.UnknownHostException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.text.MessageFormat;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.HashMap;
 //HERCULES:add
@@ -81,8 +80,9 @@ import com.sun.enterprise.config.serverbeans.HttpService;
 import com.sun.enterprise.config.serverbeans.HttpListener;
 import com.sun.enterprise.config.serverbeans.HttpProtocol;
 import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
-//import com.sun.enterprise.server.StandaloneWebModulesManager;
-import com.sun.enterprise.server.ServerContext;
+import com.sun.enterprise.deployment.WebBundleDescriptor;
+import com.sun.enterprise.deployment.WebServicesDescriptor;
+import com.sun.enterprise.deployment.WebServiceEndpoint;
 import com.sun.enterprise.deployment.runtime.web.SunWebApp;
 import com.sun.enterprise.deployment.runtime.web.ManagerProperties;
 import com.sun.enterprise.deployment.runtime.web.SessionManager;
@@ -90,27 +90,24 @@ import com.sun.enterprise.deployment.runtime.web.StoreProperties;
 import com.sun.enterprise.deployment.runtime.web.WebProperty;
 import com.sun.enterprise.deployment.util.WebValidatorWithoutCL;
 import com.sun.enterprise.deployment.util.WebBundleVisitor;
+//import com.sun.enterprise.instance.WebModulesManager;
+//import com.sun.enterprise.instance.AppsManager;
 //import com.sun.enterprise.management.util.J2EEModuleUtil;
-import com.sun.enterprise.util.io.FileUtils;
+//import com.sun.enterprise.server.StandaloneWebModulesManager;
+import com.sun.enterprise.server.ServerContext;
 import com.sun.enterprise.util.StringUtils;
+import com.sun.enterprise.util.OS;
+import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.web.connector.coyote.PECoyoteConnector;
 import com.sun.enterprise.web.logger.IASLogger;
 import com.sun.enterprise.web.pluggable.WebContainerFeatureFactory;
 
-import com.sun.enterprise.deployment.WebBundleDescriptor;
-import com.sun.enterprise.deployment.WebServicesDescriptor;
-import com.sun.enterprise.deployment.WebServiceEndpoint;
-//import com.sun.enterprise.instance.WebModulesManager;
-//import com.sun.enterprise.instance.AppsManager;//
-//import com.sun.enterprise.Switch;
 //import com.sun.appserv.server.ServerLifecycleException;
 import com.sun.appserv.server.util.ASClassLoaderUtil;
 import com.sun.appserv.server.util.Version;
 import com.sun.logging.LogDomains;
 
 // monitoring imports
-import java.util.HashSet;
-
 import com.sun.enterprise.admin.monitor.stats.ServletStats;
 import com.sun.enterprise.web.stats.ServletStatsImpl;
 import com.sun.enterprise.web.monitor.PwcServletStats;
@@ -119,10 +116,15 @@ import com.sun.enterprise.admin.monitor.stats.WebModuleStats;
 import com.sun.enterprise.web.stats.WebModuleStatsImpl;
 import com.sun.enterprise.web.monitor.impl.PwcWebModuleStatsImpl;
 import com.sun.enterprise.admin.monitor.registry.MonitoringRegistry;
+import com.sun.enterprise.admin.monitor.registry.MonitoringRegistrationException;
 import com.sun.enterprise.admin.monitor.registry.MonitoringLevel;
 import com.sun.enterprise.admin.monitor.registry.MonitoringLevelListener;
 import com.sun.enterprise.config.serverbeans.MonitoringService;
 import com.sun.enterprise.config.serverbeans.ModuleMonitoringLevels;
+import com.sun.enterprise.config.serverbeans.Property;
+import com.sun.enterprise.config.serverbeans.SecurityService;
+import com.sun.enterprise.web.stats.PWCVirtualServerStatsImpl;
+import com.sun.enterprise.web.stats.PWCRequestStatsImpl;
 
 //HERCULES:add
 //admin event imports
@@ -181,12 +183,29 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
     Engine engine;
     String instanceName;
     String defaultWebXml;
+    
+    private PECoyoteConnector jkConnector;
 
     /**
      * The id of this web container object.
      */
     private String _id = null;
-
+   
+    /**
+     * Allow disabling accessLog mechanism
+     */
+    protected boolean globalAccessLoggingEnabled = true;
+    
+   /**
+    * AccessLog buffer size for storing logs.
+    */
+   protected String globalAccessLogBufferSize = null;   
+   
+   /**
+    * AccessLog interval before the valve flush its buffer to the disk.
+    */
+   protected String globalAccessLogWriteInterval = null;  
+   
     /**
      * The logger to use for logging ALL web container related messages.
      */
@@ -379,11 +398,10 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             // Configure virtual servers
             List<com.sun.enterprise.config.serverbeans.VirtualServer> virtualServers = httpService.getVirtualServer();
             for (com.sun.enterprise.config.serverbeans.VirtualServer vs : virtualServers) {
-                createVirtualServer(vs);
+                createVirtualServer(vs, httpService, aConfig.getSecurityService());
                 _logger.info("Created virtual server " + vs.getId());
             }
         }
-        
 
         //_lifecycle.fireLifecycleEvent(START_EVENT, null);
         _started = true;
@@ -395,6 +413,9 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                                "Unable to start web container", le);
             return;
         }
+        
+        // TODO not yet
+        //enableVirtualServerMonitoring();
         
         /*
         if (_reloadingEnabled) {
@@ -455,34 +476,33 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
         CoyoteAdapter coyoteAdapter = new CoyoteAdapter(webConnector);
         adapterMap.put(Integer.valueOf(hListener.getPort()), coyoteAdapter);
+        
     }
 
     private void createVirtualServer(
-                com.sun.enterprise.config.serverbeans.VirtualServer vsBean) {
+                com.sun.enterprise.config.serverbeans.VirtualServer vsBean,
+                HttpService httpService, SecurityService securityService) {
+        
+        MimeMap mm = null;
+        String vs_id = vsBean.getId();
 
         String docroot =
             ConfigBeansUtilities.getPropertyValueByName(vsBean, "docroot");
+        
+        validateDocroot(docroot,
+                        vs_id,
+                        vsBean.getDefaultWebModule());
 
-        Host vs = _embedded.createHost(vsBean.getId(), vsBean, docroot, null, null);
-        //Host vs = _embedded.createHost(vsBean.getId(), docroot);
+        VirtualServer vs = createVS(vs_id, vsBean, docroot,
+                                    vsBean.getLogFile(), mm,
+                                    httpService.getHttpProtocol());
 
-        // Configure the virtual server with the port numbers of its
-        // associated HTTP listeners
-        List listeners =
-            StringUtils.parseStringList(vsBean.getHttpListeners(), ",");
-        if (listeners != null) {
-            int[] ports = new int[listeners.size()];
-            int i = 0;
-            ListIterator<String> iter = listeners.listIterator();
-            while (iter.hasNext()) {
-                Integer port = portMap.get(iter.next());
-                if (port != null) {
-                    ports[i++] = port.intValue();
-                    _logger.info("Virtual Server "+vsBean.getId()+" set port "+port.intValue());
-                }
-	    }
-            vs.setPorts(ports);
-        }
+        // cache control
+        Property cacheProp = ConfigBeansUtilities.getPropertyByName(vsBean, 
+                                                    "setCacheControl");
+        if ( cacheProp != null ){
+            vs.configureCacheControl(cacheProp.getValue());   
+        }        
 
         // Set Host alias names
         List<String> aliasNames =
@@ -501,10 +521,215 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             }
             vs.addAlias(alias);
         }
+        
+        // TODO resolve WebContainerFeatureFactory
+        /*PEAccessLogValve accessLogValve = vs.getAccessLogValve();
+        boolean startAccessLog = accessLogValve.configure(
+            vs_id, vsBean, httpService, domain, _serverContext.getDefaultHabitat(), 
+            _serverContext.getDefaultHabitat().
+                getComponent(WebContainerFeatureFactory.class),
+            globalAccessLogBufferSize, globalAccessLogWriteInterval);
+        if (startAccessLog
+                && vs.isAccessLoggingEnabled(globalAccessLoggingEnabled)) {
+            vs.addValve(accessLogValve);
+        }*/
 
+        if (_logger.isLoggable(Level.FINEST)) {
+            _logger.log(Level.FINEST, "Created virtual server " + vs_id);
+        }
+
+        /*
+         * We must configure the Host with its associated port numbers and
+         * alias names before adding it as an engine child and thereby
+         * starting it, because a MapperListener, which is associated with
+         * an HTTP listener and receives notifications about Host
+         * registrations, relies on these Host properties in order to determine
+         * whether a new Host needs to be added to the HTTP listener's Mapper.
+         */
+        configureHost(vs, httpService, securityService);
+
+        // Add Host to Engine
         engine.addChild(vs);
+        
     }
 
+    /**
+     * Validate the docroot properties of a virtual-server.
+     */
+    protected boolean validateDocroot(String docroot, String vs_id, 
+                                      String defaultWebModule){
+        
+        // docroot vs default-web-module
+        if (docroot != null ) {
+            // If the docroot is invalid and there is no default module,
+            // stop the process.
+            boolean isValid = new File(docroot).exists();
+            if ( !isValid && defaultWebModule == null){
+
+                String msg = 
+                    _rb.getString("pewebcontainer.virtual_server.invalid_docroot");
+                msg = MessageFormat.format(msg, 
+                                        new Object[] { vs_id , docroot});
+                throw new IllegalArgumentException(msg);
+            } else if (!isValid) {
+
+                _logger.log(Level.WARNING, "virtual-server " + vs_id 
+                            + " has an invalid docroot: " + docroot );
+            }
+        } else if (defaultWebModule == null) {
+            String msg = _rb.getString("pewebcontainer.virtual_server.missing_docroot");
+            msg = MessageFormat.format(msg, new Object[] { vs_id });
+            throw new IllegalArgumentException(msg);
+        }
+        return true;
+    }
+    
+
+    /**
+     * Configures the given virtual server.
+     *
+     * @param vs The virtual server to be configured
+     * @param httpService The http-service element of which the given
+     * virtual server is a subelement
+     * @param securityService The security-service element
+     */
+    protected void configureHost(VirtualServer vs,
+                                 HttpService httpService,
+                                 SecurityService securityService) {
+        com.sun.enterprise.config.serverbeans.VirtualServer vsBean
+            = vs.getBean();
+       
+        vs.configureAliases();
+
+        // Set the ports with which this virtual server is associated
+        List<String> listeners = StringUtils.parseStringList(
+                                                vsBean.getHttpListeners(), ",");
+        if (listeners == null) {
+            return;
+        }
+        
+        HttpListener[] httpListeners = new HttpListener[listeners.size()];
+        for (int i=0; i < listeners.size(); i++){
+            for (HttpListener httpListener : httpService.getHttpListener()) {
+                if (httpListener.getId().equals(listeners.get(i))) {
+                    httpListeners[i] = httpListener;
+                }
+            }
+        }
+        
+        configureHostPortNumbers(vs, httpListeners);
+        vs.configureCatalinaProperties();
+        // TODO
+        //vs.configureAuthRealm(securityService);
+    }
+        
+    /**
+     * Configures the given virtual server with the port numbers of its
+     * associated http listeners.
+     *
+     * @param vs The virtual server to configure
+     * @param httpListeners The http listeners with which the given virtual
+     * server is associated
+     */
+    protected void configureHostPortNumbers(VirtualServer vs,
+                                            HttpListener[] httpListeners){
+       
+        boolean addJkListenerPort = (jkConnector != null
+            && !vs.getName().equalsIgnoreCase(VirtualServer.ADMIN_VS));
+
+        ArrayList<Integer> portsList = new ArrayList();
+       
+        for (int i=0; i < httpListeners.length; i++){
+            //TODO enable not supported yet
+            //if (Boolean.getBoolean(httpListeners[i].getEnabled())){
+                Integer port = portMap.get(httpListeners[i].getId());
+                if (port != null) {
+                    portsList.add(port);
+                }               
+            /*} else {
+                if ((vs.getName().equalsIgnoreCase(VirtualServer.ADMIN_VS))) {
+                    String msg = _rb.getString(
+                        "pewebcontainer.httpListener.mustNotDisable");
+                    msg = MessageFormat.format(
+                        msg,
+                        new Object[] { httpListeners[i].getId(),
+                                       vs.getName() });
+                    //throw new IllegalArgumentException(msg);
+                }
+            }      */      
+             
+        }
+        
+        int numPorts = portsList.size();
+        if (addJkListenerPort) {
+            numPorts++;
+        }
+        if (numPorts > 0) {
+            int[] ports = new int[numPorts];
+            int i=0;
+            for (i=0; i<portsList.size(); i++) {
+                ports[i] = portsList.get(i).intValue();
+                 _logger.info("Virtual Server "+vs.getID()+" set port "+ports[i]);
+            }
+            if (addJkListenerPort) {
+                ports[i] = jkConnector.getPort();
+                 _logger.info("Virtual Server "+vs.getID()+" set jk port "+ports[i]);
+            }
+            vs.setPorts(ports);
+        }
+    }
+    
+    /*
+     * Enables monitoring of all virtual servers.
+     */
+    private void enableVirtualServerMonitoring() {
+        Engine[] engines = _embedded.getEngines();
+        for (int j = 0; j < engines.length; j++) {
+            Container[] hostArray = engines[j].findChildren();
+            for (int i = 0; i < hostArray.length; i++) {
+                VirtualServer vs = (VirtualServer) hostArray[i];
+                enableVirtualServerMonitoring(vs);            
+            }
+        }
+    }
+    
+    /*
+     * Enables monitoring of all virtual servers.
+     */
+    private void enableVirtualServerMonitoring(VirtualServer vs){        
+        ServerContext sc = getServerContext();
+        MonitoringRegistry monitoringRegistry = sc.getDefaultHabitat().getComponent(MonitoringRegistry.class);
+
+        
+        PWCVirtualServerStatsImpl vsStats = new PWCVirtualServerStatsImpl(vs);
+        try {
+            monitoringRegistry.registerPWCVirtualServerStats(vsStats,
+                                                             vs.getID(),
+                                                             null);
+        } catch (Exception e) {
+            _logger.log(Level.WARNING,
+                        "Unable to register PWCVirtualServerStats for "
+                        + vs.getID(), e);
+        }
+
+        PWCRequestStatsImpl pwcRequestStatsImpl = 
+                new PWCRequestStatsImpl(sc.getDefaultDomainName());  
+        vs.setPWCRequestStatsImpl(pwcRequestStatsImpl);
+        
+        try {
+            monitoringRegistry.registerPWCRequestStats(pwcRequestStatsImpl,
+                        vs.getID(),
+                        null);
+        } catch (MonitoringRegistrationException mre) {
+            String msg = _logger.getResourceBundle().getString(
+                            "web.monitoringRegistrationError");
+            msg = MessageFormat.format(
+                            msg,
+                            new Object[] { "PWCRequestStats" });
+            _logger.log(Level.WARNING, msg, mre);
+        }
+    }
+    
     // ------------------------------------------------------------ Constants
 
     public static final String DISPATCHER_MAX_DEPTH="dispatcher-max-depth";
@@ -914,14 +1139,14 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             HttpProtocol httpProtocol) {
 
         // Initialize the docroot
-        //VirtualServer vs = (VirtualServer) _embedded.createHost(vsBean.getId(), docroot);
         VirtualServer vs = (VirtualServer) _embedded.createHost(vsID,
                 vsBean,
                 docroot,
                 logFile,
                 mimeMap);
 
-        vs.configureVirtualServerState();
+        //TODO
+        //vs.configureVirtualServerState();  
         vs.configureRemoteAddressFilterValve();
         vs.configureRemoteHostFilterValve(httpProtocol);
         vs.configureSSOValve(globalSSOEnabled, _serverContext.getDefaultHabitat().getComponent(WebContainerFeatureFactory.class));
