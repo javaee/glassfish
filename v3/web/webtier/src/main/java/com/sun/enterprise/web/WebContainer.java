@@ -58,10 +58,12 @@ import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.core.StandardEngine;
 import org.apache.catalina.core.StandardHost;
 import org.apache.catalina.loader.WebappLoader;
-import org.apache.catalina.startup.TldConfig;
 import org.apache.catalina.startup.DigesterFactory;
-import org.apache.jasper.compiler.TldLocationsCache;
+import org.apache.catalina.startup.TldConfig;
+import org.apache.catalina.util.ServerInfo;
 import org.apache.coyote.tomcat5.CoyoteAdapter;
+import org.apache.jasper.compiler.TldLocationsCache;
+import org.apache.jasper.xmlparser.ParserUtils;
 
 import com.sun.grizzly.tcp.Adapter;
 import com.sun.grizzly.util.http.mapper.Mapper;
@@ -92,9 +94,8 @@ import com.sun.enterprise.deployment.util.WebBundleVisitor;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.util.StringUtils;
 import com.sun.enterprise.web.connector.coyote.PECoyoteConnector;
+import com.sun.enterprise.web.logger.IASLogger;
 import com.sun.enterprise.web.pluggable.WebContainerFeatureFactory;
-
-
 
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.WebServicesDescriptor;
@@ -104,6 +105,7 @@ import com.sun.enterprise.deployment.WebServiceEndpoint;
 //import com.sun.enterprise.Switch;
 //import com.sun.appserv.server.ServerLifecycleException;
 import com.sun.appserv.server.util.ASClassLoaderUtil;
+import com.sun.appserv.server.util.Version;
 import com.sun.logging.LogDomains;
 
 // monitoring imports
@@ -176,7 +178,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
     HashMap<Integer, Adapter> adapterMap = new HashMap<Integer, Adapter>();
 
     EmbeddedWebContainer _embedded;
-    //Embedded _embedded;
     Engine engine;
     String instanceName;
     String defaultWebXml;
@@ -223,20 +224,139 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         try {
             DigesterFactory.setSchemaResourcePrefix(schemas.toURL().toString());
             DigesterFactory.setDtdResourcePrefix(dtds.toURL().toString());
+            ParserUtils.setSchemaResourcePrefix(schemas.toURL().toString());
+            ParserUtils.setDtdResourcePrefix(dtds.toURL().toString());
         } catch(MalformedURLException e) {
             _logger.log(Level.SEVERE, "Exception setting the schemas/dtds location", e);
         }
 
         instanceName = _serverContext.getInstanceName();
 
-        //_embedded = new Embedded();
+        /* TODO : revisit later
+         ejbWebServiceRegistryListener = new EjbWebServiceRegistryListener(this);
+         webFeatureFactory = _serverContext.getPluggableFeatureFactory().getWebContainerFeatureFactory();
+
+         try {
+            webModulesManager = new WebModulesManager(instance);
+            appsManager = new AppsManager(instance);
+        } catch (ConfigException cx) {
+            _logger.log(Level.WARNING,
+                "Error in creating web modules manager: ", cx);
+        }
+
+        LogService logService = null;
+
+        try {
+
+            Config cfg = _serverContext.getDefaultHabitat().getComponent(Config.class);
+            getDynamicReloadingSettings(cfg.getAdminService().getDasConfig());
+            logService = cfg.getLogService();
+            initLogLevel(logService);
+            initMonitoringLevel(cfg.getMonitoringService());
+
+            Property maxDepth
+                    = ConfigBeansUtilities.getPropertyByName(cfg.getWebContainer(), DISPATCHER_MAX_DEPTH);
+            if (maxDepth != null && maxDepth.getValue() != null) {
+
+                int depth = -1;
+                try {
+                    depth = Integer.parseInt(maxDepth.getValue());
+                } catch (Exception e) {}
+
+                if (depth > 0) {
+                    CoyoteRequest.setMaxDispatchDepth(depth);
+                    if (_logger.isLoggable(Level.FINE)) {
+                        _logger.fine("Maximum depth for nested request "
+                                + "dispatches set to "
+                                + maxDepth.getValue());
+                    }
+                }
+            }
+
+        } catch (ConfigException e) {
+            _logger.log(Level.SEVERE, "webcontainer.configError", e);
+        }
+
+        String logServiceFile = null;
+        if (logService != null) {
+            logServiceFile = logService.getFile();
+        }
+         */
+        
         _embedded = new EmbeddedWebContainer(_logger, _serverContext, this, null);
         _embedded.setUseNaming(false);
+        if (_debug > 1)
+            _embedded.setDebug(_debug);
+        _embedded.setLogger(new IASLogger(_logger));
+        
         // TODO (Sahoo): Stop using ModuleImpl
         engine = _embedded.createEngine();
         engine.setParentClassLoader(EmbeddedWebContainer.class.getClassLoader());
         _embedded.addEngine(engine);
         ((StandardEngine) engine).setDomain("com.sun.appserv");
+
+        /*
+         * Set the server name and version.
+         * Allow customers to override this information by specifying
+         * product.name system property. For example, some customers prefer
+         * not to disclose the product name and version for security
+         * reasons, in which case they would set the value of the
+         * product.name system property to the empty string.
+         */
+        String serverInfo = System.getProperty("product.name");
+        if (serverInfo != null) {
+            ServerInfo.setServerInfo(serverInfo);
+        } else {
+            ServerInfo.setServerInfo(Version.getVersion());
+            System.setProperty("product.name", Version.getVersion());
+        }
+
+        //HERCULES:add
+        //added for internal monitoring
+        WebDebugMonitor debugMonitor = new WebDebugMonitor();
+        HashMap monitorMap = debugMonitor.getDebugMonitoringDetails();
+        debugMonitoring = ((Boolean) monitorMap.get("debugMonitoring")).booleanValue();
+        debugMonitoringPeriodMS = ((Long) monitorMap.get(
+                "debugMonitoringPeriodMS")).longValue();
+
+        if (debugMonitoring) {
+            _timer.schedule(new DebugMonitor(_embedded), 0L,
+                    debugMonitoringPeriodMS);
+        }
+        //added for internal monitoring
+        //END HERCULES:add
+
+        if (System.getProperty(DOC_BUILDER_FACTORY_PROPERTY) == null) {
+            System.setProperty(DOC_BUILDER_FACTORY_PROPERTY,
+                    DOC_BUILDER_FACTORY_IMPL);
+        }
+
+        initInstanceSessionProperties();
+
+        //HERCULES:mod
+        /*
+        registerAdminEvents();
+        registerMonitoringLevelEvents();
+        initHealthChecker();
+        if(isNativeReplicationEnabled()) {
+            initReplicationReceiver();
+        }
+         */
+        long btime = 0L;
+        if (_logger.isLoggable(Level.FINE)) {
+            _logger.fine("before schema check");
+            btime = System.currentTimeMillis();
+        }
+        doSchemaCheck();
+        if (_logger.isLoggable(Level.FINE)) {
+            _logger.fine("after schema check time: " + (System.currentTimeMillis() - btime));
+        }
+        //end HERCULES:mod
+
+        // TODO : revisit later
+        //ejbWebServiceRegistryListener.register(_serverContext.getDefaultHabitat());
+
+        //loadDefaultWebModules();
 
         List<Config> configs = domain.getConfigs().getConfig();
         for (Config aConfig : configs) {
@@ -263,7 +383,11 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                 _logger.info("Created virtual server " + vs.getId());
             }
         }
+        
 
+        //_lifecycle.fireLifecycleEvent(START_EVENT, null);
+        _started = true;
+        // start the embedded container
         try {
             _embedded.start();
         } catch (LifecycleException le) {
@@ -271,6 +395,33 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                                "Unable to start web container", le);
             return;
         }
+        
+        /*
+        if (_reloadingEnabled) {
+            // Enable dynamic reloading (via the .reload file) for all
+            // standalone web-modules that are marked as enabled
+
+            Applications appsBean = null;
+            try {
+                appsBean = ServerBeansFactory.getApplicationsBean(_configContext);
+            } catch (ConfigException e) {
+               String msg = _rb.getString("webcontainer.appsConfigError");
+               _logger.log(Level.SEVERE, msg, e);
+            }
+
+            _reloadManager = new StandaloneWebModulesManager(_id,
+                                                             _modulesRoot,
+                                                             _pollInterval);
+            if (appsBean != null) {
+                com.sun.enterprise.config.serverbeans.WebModule[] wmBeans = appsBean.getWebModule();
+                if (wmBeans != null && wmBeans.length > 0) {
+                    _reloadManager.addWebModules(wmBeans);
+                }
+            }
+
+        }
+        enableAllWSEndpoints();    
+         */
     }
 
     public void preDestroy() {
@@ -371,28 +522,9 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
     // ----------------------------------------------------- Instance Variables
 
-    /**
-     * The embedded Catalina object.
-     */
-    //protected EmbeddedWebContainer _embedded = null;
-
-    /**
-     * The parent/top-level container in <code>_embedded</code> for virtual
-     * servers.
-     */
-
-    /**
-     * The server context under which this container was created.
-     */
-    //protected ServerContext _serverContext = null;
-
-    /**
-     * The config context under which this container was created.
-     */
-    //protected ConfigContext _configContext = null;
-
-    //protected Domain domain = null;
     protected V3Environment instance = null;
+    
+    // TODO
     //protected WebModulesManager webModulesManager = null;
     //protected AppsManager appsManager = null;
 
@@ -528,214 +660,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
      * The current <code>WebContainer</code> instance used (single).
      */
     protected static WebContainer webContainer;
-
-
-    // ------------------------------------------------------------ Constructor
-
-    /**
-     * This creates the embedded Catalina/Jasper container and sets the config
-     * properties on the container.
-     *
-    protected WebContainer(String id, ServerContext context) {
-
-        _id = id;
-        _serverContext = context;
-
-        _configContext = _serverContext.getConfigContext();
-
-        String rootDir = _serverContext.getInstallRoot();
-        String name = _serverContext.getInstanceName();
-        instance = (V3Environment) _serverContext.getDefaultHabitat().getComponent(V3Environment.class);
-        //instance = new InstanceEnvironment(rootDir, name);
-        _modulesWorkRoot = instance.getWebModuleCompileJspPath();
-        _appsWorkRoot = instance.getApplicationCompileJspPath();
-        _modulesRoot = instance.getModuleRepositoryPath();
-
-        instanceClassPath = getInstanceClassPath(instance);
-
-        //ejbWebServiceRegistryListener = new EjbWebServiceRegistryListener(this);
-
-        // START S1AS 6178005
-        modulesStubRoot = instance.getModuleStubPath();
-        appsStubRoot = instance.getApplicationStubPath();
-        // END S1AS 6178005
-
-        webFeatureFactory = _serverContext.getPluggableFeatureFactory().getWebContainerFeatureFactory();
-
-         try {
-            webModulesManager = new WebModulesManager(instance);
-            appsManager = new AppsManager(instance);
-        } catch (ConfigException cx) {
-            _logger.log(Level.WARNING,
-                "Error in creating web modules manager: ", cx);
-        }
-
-        setNoTldScan();
-
-        LogService logService = null;
-
-        try {
-            domain = _serverContext.getDefaultHabitat().getComponent(Domain.class);
-            _serverBean = _serverContext.getDefaultHabitat().getComponent(Server.class);
-
-            Config cfg = _serverContext.getDefaultHabitat().getComponent(Config.class);
-            getDynamicReloadingSettings(cfg.getAdminService().getDasConfig());
-            logService = cfg.getLogService();
-            initLogLevel(logService);
-            initMonitoringLevel(cfg.getMonitoringService());
-
-            Property maxDepth
-                    = ConfigBeansUtilities.getPropertyByName(cfg.getWebContainer(), DISPATCHER_MAX_DEPTH);
-            if (maxDepth != null && maxDepth.getValue() != null) {
-
-                int depth = -1;
-                try {
-                    depth = Integer.parseInt(maxDepth.getValue());
-                } catch (Exception e) {}
-
-                if (depth > 0) {
-                    CoyoteRequest.setMaxDispatchDepth(depth);
-                    if (_logger.isLoggable(Level.FINE)) {
-                        _logger.fine("Maximum depth for nested request "
-                                + "dispatches set to "
-                                + maxDepth.getValue());
-                    }
-                }
-            }
-
-        } catch (ConfigException e) {
-            _logger.log(Level.SEVERE, "webcontainer.configError", e);
-        }
-
-        String logServiceFile = null;
-        if (logService != null) {
-            logServiceFile = logService.getFile();
-        }
-        _embedded = new EmbeddedWebContainer(_logger, _serverContext.getDefaultHabitat(), this,
-                logServiceFile);
-        Module module = Module.find(EmbeddedWebContainer.class);
-        Engine engine = _embedded.createEngine();
-        engine.setParentClassLoader(module.getClassLoader());
-        _embedded.addEngine(engine);
-
-        _embedded.setUseNaming(false);
-        if (_debug > 1)
-            _embedded.setDebug(_debug);
-        _embedded.setLogger(new IASLogger(_logger));
-
-        DigesterFactory.setSchemaResourcePrefix("/schemas/");
-        DigesterFactory.setDtdResourcePrefix("/dtds/");
-        ParserUtils.setSchemaResourcePrefix("/schemas/");
-        ParserUtils.setDtdResourcePrefix("/dtds/");
-
-        /*
-         * Set the server name and version.
-         * Allow customers to override this information by specifying
-         * product.name system property. For example, some customers prefer
-         * not to disclose the product name and version for security
-         * reasons, in which case they would set the value of the
-         * product.name system property to the empty string.
-         */
-        /*
-        String serverInfo = System.getProperty("product.name");
-        if (serverInfo != null) {
-            ServerInfo.setServerInfo(serverInfo);
-        } else {
-            ServerInfo.setServerInfo(Version.getVersion());
-            System.setProperty("product.name", Version.getVersion());
-        }
-
-        //HERCULES:add
-        //added for internal monitoring
-        WebDebugMonitor debugMonitor = new WebDebugMonitor();
-        HashMap monitorMap = debugMonitor.getDebugMonitoringDetails();
-        debugMonitoring = ((Boolean) monitorMap.get("debugMonitoring")).booleanValue();
-        debugMonitoringPeriodMS = ((Long) monitorMap.get(
-                "debugMonitoringPeriodMS")).longValue();
-
-        if (debugMonitoring) {
-            _timer.schedule(new DebugMonitor(_embedded), 0L,
-                    debugMonitoringPeriodMS);
-        }
-        //added for internal monitoring
-        //END HERCULES:add
-
-        if (System.getProperty(DOC_BUILDER_FACTORY_PROPERTY) == null) {
-            System.setProperty(DOC_BUILDER_FACTORY_PROPERTY,
-                    DOC_BUILDER_FACTORY_IMPL);
-        }
-
-        initInstanceSessionProperties();
-
-        //HERCULES:mod
-        //registerAdminEvents();
-        registerMonitoringLevelEvents();
-        initHealthChecker();
-        if(isNativeReplicationEnabled()) {
-            initReplicationReceiver();
-        }
-        long btime = 0L;
-        if (_logger.isLoggable(Level.FINE)) {
-            _logger.fine("before schema check");
-            btime = System.currentTimeMillis();
-        }
-        doSchemaCheck();
-        if (_logger.isLoggable(Level.FINE)) {
-            _logger.fine("after schema check time: " + (System.currentTimeMillis() - btime));
-        }
-        //end HERCULES:mod
-
-        //ejbWebServiceRegistryListener.register(_serverContext.getDefaultHabitat());
-
-        Engine[] engines =  _embedded.getEngines();
-
-        for (int j=0; j<engines.length; j++) {
-            Container[] vsList = engines[j].findChildren();
-            for (int i = 0; i < vsList.length; i++) {
-                // Load all the standalone web modules for each VS
-                loadWebModules((VirtualServer)vsList[i]);
-            }
-        }
-
-        // Load the web modules specified in each j2ee-application
-        loadAllJ2EEApplicationWebModules(true);
-
-        loadDefaultWebModules();
-
-        //_lifecycle.fireLifecycleEvent(START_EVENT, null);
-        _started = true;
-        // start the embedded container
-        try {
-            _embedded.start();
-        } catch (LifecycleException le) {
-            _logger.log(Level.SEVERE,
-                               "Unable to start web container", le);
-        }
-        if (_reloadingEnabled) {
-            // Enable dynamic reloading (via the .reload file) for all
-            // standalone web-modules that are marked as enabled
-
-            /*Applications appsBean = null;
-            try {
-                appsBean = ServerBeansFactory.getApplicationsBean(_configContext);
-            } catch (ConfigException e) {
-               String msg = _rb.getString("webcontainer.appsConfigError");
-               _logger.log(Level.SEVERE, msg, e);
-            }
-
-            _reloadManager = new StandaloneWebModulesManager(_id,
-                                                             _modulesRoot,
-                                                             _pollInterval);
-            if (appsBean != null) {
-                com.sun.enterprise.config.serverbeans.WebModule[] wmBeans = appsBean.getWebModule();
-                if (wmBeans != null && wmBeans.length > 0) {
-                    _reloadManager.addWebModules(wmBeans);
-                }
-            }
-
-        }
-        enableAllWSEndpoints();
-    }**/
 
     //HERCULES:add
     //added for monitoring
