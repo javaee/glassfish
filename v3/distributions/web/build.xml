@@ -66,14 +66,14 @@
         <attribute name="artifactId" />
         <sequential>
             <!--
-              This filtering definition obtains a set of HK2 modules that are retained by gf-web-connector
-              (that is, set of modules that won't be in the dependency list if gf-web-connector is not a part of the dependency;
-              IOW, a dependency only reachable through gf-web-connector) and all its non-module dependencies
+              This filtering definition obtains a set of HK2 modules that are retained by webtier
+              (that is, set of modules that won't be in the dependency list if webtier is not a part of the dependency;
+              IOW, a dependency only reachable through webtier) and all its non-module dependencies
               (that is, normal jars.)
 
               The formula to compute this is non-trivial. We first compute a subgraph X which represents
               nodes that we *don't* want. That is, all HK2 modules that are reachable without going through
-              gf-web-connector. I use <packaging not="..."/> so that it includes transitive dependencies
+              webtier. I use <packaging not="..."/> so that it includes transitive dependencies
               through distribution zips. Also note that all non-module normal jars need to be excluded from
               X because if a module that ends up in /web depends on normal jars, those jars also need to be
               in /web.
