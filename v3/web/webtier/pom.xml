@@ -105,7 +105,7 @@
                 <configuration>
                     <archive>
                         <manifestEntries>
-                            <Module-Import-Policy>com.sun.enterprise.web.WebImportPolicy</Module-Import-Policy>
+                            <HK2-Module-Import-Policy>com.sun.enterprise.web.WebImportPolicy</HK2-Module-Import-Policy>
                         </manifestEntries>
                      </archive>
                 </configuration>

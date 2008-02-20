@@ -27,6 +27,7 @@ import org.glassfish.api.container.Sniffer;
 import org.glassfish.api.container.Container;
 import org.glassfish.api.deployment.Deployer;
 import org.glassfish.api.deployment.ApplicationContainer;
+import org.jvnet.hk2.component.Inhabitant;
 import com.sun.enterprise.v3.data.ApplicationInfo;
 import com.sun.enterprise.module.Module;
 
@@ -46,7 +47,7 @@ import java.lang.reflect.InvocationTargetException;
  */
 public class ContainerInfo<T extends Container, U extends ApplicationContainer> {
 
-    final T container;
+    final Inhabitant<T> container;
     final Sniffer sniffer;
     ContainerRegistry registry = null;
     Map<String, ApplicationInfo> deployedApps = new HashMap<String, ApplicationInfo>();
@@ -62,7 +63,7 @@ public class ContainerInfo<T extends Container, U extends ApplicationContainer> 
      * @param container instance of the container
      * @param sniffer sniffer associated with that container
      */
-    public ContainerInfo(T container, Sniffer sniffer) {
+    public ContainerInfo(Inhabitant<T> container, Sniffer sniffer) {
         this.container = container;
         this.sniffer = sniffer;
     }
@@ -72,7 +73,7 @@ public class ContainerInfo<T extends Container, U extends ApplicationContainer> 
      * @return the container instance
      */
     public T getContainer() {
-        return container;
+        return container.get();
     }
 
     /**

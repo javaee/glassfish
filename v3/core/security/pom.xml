@@ -114,7 +114,7 @@
         </dependency>
         <dependency>
             <groupId>org.glassfish.web</groupId>
-            <artifactId>gf-web-connector</artifactId>
+            <artifactId>webtier</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>

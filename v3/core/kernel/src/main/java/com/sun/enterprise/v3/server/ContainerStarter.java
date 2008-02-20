@@ -126,9 +126,8 @@ public class ContainerStarter {
                     return null;
                 }
                 Thread.currentThread().setContextClassLoader(snifferModule.getClassLoader());
-                Container container = provider.get();
-                if (container!=null) {
-                    ContainerInfo info = new ContainerInfo(container, sniffer);
+                if (provider!=null) {
+                    ContainerInfo info = new ContainerInfo(provider, sniffer);
 
                     ContainerRegistry registry = habitat.getComponent(ContainerRegistry.class);
                     registry.addContainer(name, info);

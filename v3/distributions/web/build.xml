@@ -106,7 +106,7 @@
         This part will be reused by other bundles that build on the web module.
     -->
     <target name="web.moduleDef">
-        <moduleDef name="web" artifactId="gf-web-connector" />
+        <moduleDef name="web" artifactId="webtier" />
     </target>
 
     <!--
@@ -127,7 +127,7 @@
         <resolveAll todir="target/stage/glassfish/modules">
             <excludeArtifactsTransitively>
                 <scope level="compile,runtime"/>
-                <artifact artifactId="gf-web-connector" />
+                <artifact artifactId="webtier" />
                 <artifact artifactId="gf-ejb-connector" />
             </excludeArtifactsTransitively>
         </resolveAll>

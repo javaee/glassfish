@@ -256,7 +256,7 @@ abstract public class ApplicationLifecycle {
             // start all the containers associated with sniffers.
             ContainerInfo containerInfo = containerRegistry.getContainer(sniffer.getContainersNames()[0]);
             if (containerInfo == null) {
-                Collection<ContainerInfo> containersInfo = startContainer(sniffer, snifferModule, logger, report);
+                Collection<ContainerInfo> containersInfo = setupContainer(sniffer, snifferModule, logger, report);
                 if (containersInfo==null || containersInfo.size()==0) {
                     tracker.actOn(logger);
                     failure(logger, "Cannot start container(s) associated to application of type : " + sniffer.getModuleType(), null, report);
@@ -265,6 +265,12 @@ abstract public class ApplicationLifecycle {
                 tracker.addAll(ContainerInfo.class, containersInfo);
             }
 
+        }
+
+        // now start all containers, by now, they should be all setup...
+        if (!startContainers(tracker.get(ContainerInfo.class), logger, report)) {
+            tracker.actOn(logger);
+            return null;
         }
 
         // all containers that have recognized parts of the application being deployed
@@ -449,7 +455,7 @@ abstract public class ApplicationLifecycle {
         }
     }
 
-    protected Collection<ContainerInfo> startContainer(Sniffer sniffer, Module snifferModule,  Logger logger, ActionReport report) {
+    protected Collection<ContainerInfo> setupContainer(Sniffer sniffer, Module snifferModule,  Logger logger, ActionReport report) {
 
         ContainerStarter starter = new ContainerStarter(modulesRegistry, habitat, logger);
         Collection<ContainerInfo> containersInfo = starter.startContainer(sniffer, snifferModule);
@@ -457,7 +463,10 @@ abstract public class ApplicationLifecycle {
             failure(logger, "Cannot start container(s) associated to application of type : " + sniffer.getModuleType(), null, report);
             return null;
         }
+        return containersInfo;
+    }
 
+    protected boolean startContainers(Collection<ContainerInfo> containersInfo, Logger logger, ActionReport report) {
         for (ContainerInfo containerInfo : containersInfo) {
             ClassLoader original = Thread.currentThread().getContextClassLoader();
             try {
@@ -471,19 +480,19 @@ abstract public class ApplicationLifecycle {
                 } catch (ComponentException e) {
                     failure(logger, "Cannot instantiate or inject "+deployerClass, e, report);
                     stopContainer(logger, containerInfo);
-                    return null;
+                    return false;
                 } catch (ClassCastException e) {
                     stopContainer(logger, containerInfo);
                     failure(logger, deployerClass+" does not implement " +
                             " the org.jvnet.glassfish.api.deployment.Deployer interface", e, report);
-                    return null;
+                    return false;
                 }
             }  finally {
                 Thread.currentThread().setContextClassLoader(original);
             }
                 
         }
-        return containersInfo;
+        return true;
     }
 
     protected void stopContainers(Iterable<ContainerInfo> ctrInfos, Logger logger) {
