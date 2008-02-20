@@ -72,7 +72,7 @@
         <!-- base distribution image -->
         <dependency>
             <groupId>org.glassfish.distributions</groupId>
-            <artifactId>pe</artifactId>
+            <artifactId>web</artifactId>
             <version>${pe.version}</version>
             <type>zip</type>
         </dependency>
