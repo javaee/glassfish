@@ -35,6 +35,7 @@ import com.sun.logging.LogDomains;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -75,25 +76,31 @@ public class RailsContainer implements Container, PostConstruct, PreDestroy {
             jrubyScript = "";
         }
         
-        // For now using the numberOfRuntimes provided by the user as is, later
-        // this would be tied to the mode of deployment production/development/test
-        // In the near future provide a jruby-container element in the domain.xml
-        // that could have all the jruby related information as part of it.
-        if (jrubyRuntime != null) {
-            try {
-                numberOfRuntime = Integer.parseInt(jrubyRuntime);
-            } catch (NumberFormatException ex) {
-                // For now ignoring the exception and setting the default
+        // If the user is running V3 as a gem, and has provided a --jruby.runtime
+        // property value, we would use that value. In that case the numberOfRuntime
+        // would already be set, hence avoid the check below and continue.
+        if (numberOfRuntime == 1) {
+            // For now using the numberOfRuntimes provided by the user as is, later
+            // this would be tied to the mode of deployment production/development/test
+            // In the near future provide a jruby-container element in the domain.xml
+            // that could have all the jruby related information as part of it.
+            if (jrubyRuntime != null) {
+                try {
+                    numberOfRuntime = Integer.parseInt(jrubyRuntime);
+                } catch (NumberFormatException ex) {
+                    logger.log(Level.WARNING, "Invalid number of Runtimes specified");
+                }
+            }
+            if ((railsEnv != null && railsEnv.equalsIgnoreCase("production")) &&
+                (jrubyRuntime == null)) {
+                // By default if the user has defined a production environment and
+                // not provided the number of runtimes to start we start with a 
+                // default value of '3'. Why '3' (have no idea, just a number that 
+                // I decided on).
+                numberOfRuntime = 3;
             }
         }
-        if ((railsEnv != null && railsEnv.equalsIgnoreCase("production")) &&
-            (jrubyRuntime == null)) {
-            // By default if the user has defined a production environment and
-            // not provided the number of runtimes to start we start with a 
-            // default value of '3'. Why '3' (have no idea, just a number that 
-            // I decided on).
-            numberOfRuntime = 3;
-        }
+        
         System.setProperty("jruby.script", jrubyScript);
         System.setProperty("jruby.shell", jrubyShell);
         System.setProperty("jruby.base", jrubyBase);

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+   Copyright 2004-2005 Sun Microsystems, Inc.  All rights reserved.
+   Use is subject to license terms.
+-->
+<domain application-root="${com.sun.aas.instanceRoot}/applications" log-root="${com.sun.aas.instanceRoot}/logs"> 
+ <servers>
+  <server name="server" config-ref="server-config" lb-weight="100"/> 
+ </servers> 
+ <configs>
+  <config name="server-config">
+    <http-service> 
+       <access-log format="%client.name% %auth-user-name% %datetime% %request% %status% %response.length%" rotation-enabled="true" rotation-interval-in-minutes="60" rotation-policy="time" rotation-suffix="yyyy-MM-dd"/>
+       <http-listener id="http-listener-1" address="0.0.0.0" port="3000" acceptor-threads="1" security-enabled="false" default-virtual-server="server" server-name="" xpowered-by="true" enabled="true" family="inet" blocking-enabled="false"/>
+       <virtual-server id="server" http-listeners="http-listener-1" hosts="${com.sun.aas.hostName}" state="on" log-file="${com.sun.aas.instanceRoot}/logs/server.log">
+          <property name="docroot" value="${com.sun.aas.instanceRoot}/docroot"/>
+          <property name="accesslog" value="${com.sun.aas.instanceRoot}/logs/access"/>
+         <property name="sso-enabled" value="false"/>
+       </virtual-server>
+       <request-processing header-buffer-length-in-bytes="8192" initial-thread-count="10" request-timeout-in-seconds="30" thread-count="20" thread-increment="1"/>
+       <keep-alive max-connections="250" thread-count="1" timeout-in-seconds="30"/>
+       <connection-pool max-pending-count="4096" queue-size-in-bytes="4096" receive-buffer-size-in-bytes="4096" send-buffer-size-in-bytes="8192"/>
+       <http-protocol default-response-type="text/plain; charset=iso-8859-1" dns-lookup-enabled="false" forced-response-type="text/plain; charset=iso-8859-1" ssl-enabled="true" version="HTTP/1.1"/>
+       <http-file-cache globally-enabled="false" file-caching-enabled="false" max-age-in-seconds="30" medium-file-size-limit-in-bytes="537600" medium-file-space-in-bytes="10485760" small-file-size-limit-in-bytes="2048" small-file-space-in-bytes="1048576" max-files-count="1024" file-transmission-enabled="false" hash-init-size="0"/>
+       <property name="accessLoggingEnabled" value="false"/>
+   </http-service>
+   <admin-service system-jmx-connector-name="system" type="das-and-server">
+     <jmx-connector accept-all="false" address="0.0.0.0" auth-realm-name="admin-realm" enabled="true" name="system" port="8686" protocol="rmi_jrmp" security-enabled="false"/>
+     <das-config dynamic-reload-enabled="false" dynamic-reload-poll-interval-in-seconds="2" autodeploy-enabled="false" autodeploy-polling-interval-in-seconds="2" autodeploy-dir="${com.sun.aas.instanceRoot}/autodeploy" autodeploy-verifier-enabled="false" autodeploy-jsp-precompilation-enabled="false" deploy-xml-validation="full" admin-session-timeout-in-minutes="60"/>
+   </admin-service>
+   <log-service file="${com.sun.aas.instanceRoot}/logs/server.log" use-system-logging="false" log-to-console="false" alarms="false" log-rotation-limit-in-bytes="2000000" log-rotation-timelimit-in-minutes="0" retain-error-statistics-for-hours="5">
+    <module-log-levels root="INFO" server="INFO" web-container="INFO" classloader="INFO" configuration="INFO" naming="INFO" security="INFO"/>
+   </log-service>
+    <java-config java-home="${com.sun.aas.javaRoot}" rmic-options="-iiop -poa -alwaysgenerate -keepgenerated -g" javac-options="-g" system-classpath="${com.sun.aas.installRoot}/lib/appserv-launch.jar" classpath-suffix="" env-classpath-ignored="true">
+    <jvm-options>-client</jvm-options>
+    <jvm-options>-Djava.security.policy=${com.sun.aas.instanceRoot}/config/server.policy</jvm-options>
+    <jvm-options>-Djavax.net.ssl.keyStore=${com.sun.aas.instanceRoot}/config/keystore.jks</jvm-options>
+    <jvm-options>-Djavax.net.ssl.trustStore=${com.sun.aas.instanceRoot}/config/cacerts.jks</jvm-options>
+   </java-config>
+   <thread-pools>
+        <thread-pool thread-pool-id="thread-pool-1" min-thread-pool-size="0" max-thread-pool-size="200" idle-thread-timeout-in-seconds="120" num-work-queues="1"/>
+    </thread-pools>
+  <management-rules enabled="true">
+  </management-rules>
+  </config>
+ </configs>
+ <property name="administrative.domain.name" value="domain1"/>
+</domain>

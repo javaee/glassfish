@@ -26,15 +26,20 @@
 package com.sun.enterprise.rails;
 
 import com.sun.enterprise.v3.deployment.DeployCommand;
+import com.sun.enterprise.v3.server.V3Environment;
+import com.sun.enterprise.v3.services.impl.GrizzlyService;
+import com.sun.grizzly.arp.DefaultAsyncHandler;
 import org.glassfish.api.deployment.Deployer;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.MetaData;
 import com.sun.grizzly.jruby.RubyObjectPool;
+import com.sun.grizzly.jruby.RubyRuntimeAsyncFilter;
 import java.util.Iterator;
 import org.jruby.RubyArray;
 import org.jruby.RubyException;
 import org.jruby.exceptions.RaiseException;
 import org.jruby.javasupport.JavaEmbedUtils;
+import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 
 /**
@@ -45,7 +50,15 @@ import org.jvnet.hk2.annotations.Service;
 @Service
 public class RailsDeployer implements Deployer<RailsContainer, RailsApplication> {
     
-
+    @Inject
+    V3Environment env;
+    
+    @Inject
+    GrizzlyService grizzlyAdapter;
+    
+    private static final String contextRootStr = "--contextRoot";
+    private static final String numberOfRuntimeStr = "--jruby.runtime";
+    
     public boolean prepare(DeploymentContext context) {
         return true;
     }
@@ -60,35 +73,26 @@ public class RailsDeployer implements Deployer<RailsContainer, RailsApplication>
     }
 
     public RailsApplication load(RailsContainer container, DeploymentContext context) {
-        String appContext = "/" + context.getCommandParameters().getProperty(DeployCommand.NAME);
-        // TODO : we should really get the next available pool.
-        RubyObjectPool pool = container.getPool();
-        String contextRoot = context.getSource().getURI().getSchemeSpecificPart();
-        if (contextRoot.endsWith("/")) {
-            // rails adapter does not like trailing /
-            contextRoot = contextRoot.substring(0, contextRoot.length()-1);
-        }
-        pool.setRailsRoot(contextRoot);
-        
-        RailsApplication adapter = new RailsApplication(pool);    
-        adapter.setContextRoot(appContext);
-        try {   
+        String contextRoot = getContextRoot(context);
+        RubyObjectPool pool = setupRubyObjectPool(container, context);
+        RailsApplication adapter = registerAdapter(pool, contextRoot, context);
+
+        try {
+            System.out.println("Starting Rails instances"); 
             pool.start();
         } catch (RaiseException e) {
-
             e.printStackTrace();
-
             System.out.println(e.getMessage());
-			// try to put some helpful information in the logs
-			RubyException re = e.getException();
-			String rubyMessage = (String)JavaEmbedUtils.rubyToJava(pool.bollowRuntime(), re.message, String.class);
-			String message = "Failed to load Rails: " + rubyMessage + "\n";
-			RubyArray backtrace = (RubyArray)re.backtrace();
-			for(Iterator traceIt = backtrace.iterator(); traceIt.hasNext(); ) {
-				String traceLine = (String)traceIt.next();
-				message += "\t" + traceLine + "\n";
-			}
-                        return null;
+            // try to put some helpful information in the logs
+            RubyException re = e.getException();
+            String rubyMessage = (String)JavaEmbedUtils.rubyToJava(pool.borrowRuntime(), re.message, String.class);
+            String message = "Failed to load Rails: " + rubyMessage + "\n";
+            RubyArray backtrace = (RubyArray)re.backtrace();
+            for(Iterator traceIt = backtrace.iterator(); traceIt.hasNext(); ) {
+                    String traceLine = (String)traceIt.next();
+                    message += "\t" + traceLine + "\n";
+            }
+            return null;
         }
          
         return adapter;
@@ -98,5 +102,49 @@ public class RailsDeployer implements Deployer<RailsContainer, RailsApplication>
     }
     
     public void clean(DeploymentContext context) {
+    }
+
+    private String getContextRoot(DeploymentContext context) {
+        String contextRoot = context.getCommandParameters().getProperty(DeployCommand.CONTEXT_ROOT);
+        if (contextRoot == null) {
+            contextRoot = env.getStartupContext().getArguments().get("--contextroot");
+        }
+        if (contextRoot == null || contextRoot.length() == 0) {
+            contextRoot = "/" + context.getCommandParameters().getProperty(DeployCommand.NAME);
+        }
+        return contextRoot;
+    }
+
+    private RailsApplication registerAdapter(RubyObjectPool pool,
+            String contextRoot, DeploymentContext context) {
+        RailsApplication adapter = new RailsApplication(pool);
+        adapter.setContextRoot(contextRoot);
+        pool.setAsyncEnabled(true);
+        context.getLogger().info("Loading application " + 
+                context.getCommandParameters().getProperty(DeployCommand.NAME) 
+                + " at " + contextRoot);
+        grizzlyAdapter.registerEndpoint(contextRoot, null, adapter, adapter);
+        return adapter;
+    }
+
+    private RubyObjectPool setupRubyObjectPool(RailsContainer container, DeploymentContext context) {
+        RubyObjectPool pool = container.getPool();
+        String railsRoot = context.getSource().getURI().getSchemeSpecificPart();
+        pool.setRailsRoot(railsRoot);        
+        
+        // Check to see if the user has set --jruby.runtime on the command prompt
+        // when launching the gem.
+        String jrubyRuntime = env.getStartupContext().getArguments().get("--runtimes");
+        int numberOfRuntime = 1;
+        if (jrubyRuntime != null) {
+            try {
+                numberOfRuntime = Integer.parseInt(jrubyRuntime);
+            } catch (NumberFormatException ex) {
+                // Ignoring the exception and taking a default value of 1
+            }
+        }
+        pool.setNumberOfRuntime(numberOfRuntime);
+        
+        return pool;
     }
 }

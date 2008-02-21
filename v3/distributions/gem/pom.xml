@@ -82,7 +82,7 @@
               <goal>copy-dependencies</goal>
             </goals>
             <configuration>
-			  <outputDirectory>${project.build.directory}/dependency/glassfish/modules</outputDirectory>
+                <outputDirectory>${project.build.directory}/dependency/glassfish/modules</outputDirectory>
             </configuration>
           </execution>
         </executions>
@@ -95,9 +95,9 @@
                   <configuration>
                       <tasks>
                           <copy file="glassfish_rails" todir="target/dependency/glassfish/bin"/>
-						  <copy file="glassfish.rb" todir="target/dependency/glassfish/modules"/>
-						  <concat destfile="target/dependency/glassfish/config/asenv.conf" append="true">jruby.home=../../../../../../..
-						  </concat>
+                          <copy file="glassfish.rb" todir="target/dependency/glassfish/modules"/>
+                          <copy file="target/dependency/glassfish/domains/domain1/config/domain.xml" toFile="target/dependency/glassfish/domains/domain1/config/domain.xml_ORIG"/>
+                          <copy file="domain.xml" todir="target/dependency/glassfish/domains/domain1/config"/>
                       </tasks>
                   </configuration>
                   <goals>
@@ -117,89 +117,95 @@
             <goals><goal>rake</goal></goals>
             <configuration>
               <script>
-				require 'rake/gempackagetask'
+                require 'rake/gempackagetask'
 
-				spec = Gem::Specification.new do |s| 
-				  s.name = "GlassFish"
-				  s.version = "10.0.0"
-				  s.author = "Jerome Dochez"
-				  s.email = "jerome.dochez@sun.com"
-				  s.homepage = "http://glassfish.dev.java.net"
-				  s.platform = Gem::Platform::CURRENT
-				  s.summary = "GlassFish V3 Application Server for JRuby"
-				  s.files = FileList["{bin,lib,modules,config,javadb,domains,ext}/**/*"].to_a
-				  s.bindir = "bin"
-				  s.require_paths = ["modules"]
-				  s.executables = ["glassfish_rails", "asadmin", "asadmin.bat"]
-				  s.default_executable = "glassfish_rails"
-				  s.autorequire = "GlassFish"
-				  s.test_files = FileList["{test}/**/*test.rb"].to_a
-				  s.has_rdoc = false
-				  s.extra_rdoc_files = ["README","LICENSE.txt","COPYRIGHT"]
-				end
+                spec = Gem::Specification.new do |s| 
+                  s.name = "glassfish"
+                  s.version = "0.1.2"
+                  s.author = "Pramod Gopinath, Jerome Dochez"
+                  s.email = "pramod.gopinath@sun.com, jerome.dochez@sun.com"
+                  s.homepage = "http://wiki.glassfish.java.net/Wiki.jsp?page=JRuby"
+                  s.platform = Gem::Platform::CURRENT
+                  s.summary = "GlassFish V3 Application Server for JRuby"
+                  s.description = "GlassFish gem is an embedded GlassFish V3 application server which would help run your Ruby on Rails application"
+                  s.files = FileList["{bin,lib,modules,config,javadb,domains,ext}/**/*"].to_a
+                  s.bindir = "bin"
+                  s.require_paths = ["modules"]
+                  s.executables = ["glassfish_rails", "asadmin", "asadmin.bat"]
+                  s.default_executable = "glassfish_rails"
+                  s.autorequire = "GlassFish"
+                  s.test_files = FileList["{test}/**/*test.rb"].to_a
+                  s.has_rdoc = false
+                  s.extra_rdoc_files = ["README","LICENSE.txt","COPYRIGHT"]
+                  s.rubyforge_project = "glassfishgem"
+                end
 
-				# Create the gem distribution package
+                # Create the gem distribution package
 
-				Rake::GemPackageTask.new(spec) do |pkg| 
-				  pkg.need_tar = true 
-				end 
+                Rake::GemPackageTask.new(spec) do |pkg| 
+                  pkg.need_tar = true 
+                end 
 
-				task :default => :gem do
-				end
+                task :default => :gem do
+                end
               </script>
               <launchDirectory>target/dependency/glassfish</launchDirectory>
             </configuration>
           </execution>
         </executions>
       </plugin>
-	  <plugin>
-          <artifactId>maven-install-plugin</artifactId>
-          <executions>
-              <execution>
-				  <id>install-gem</id>
-                  <phase>install</phase>
-                  <configuration>
-				       <groupId>org.glassfish.distributions</groupId>
-				       <artifactId>GlassFish-Gem</artifactId>
-				       <version>10.0-SNAPSHOT</version>	
-					   <generatePom>false</generatePom>
-						<packaging>gem</packaging>
-						<file>target/dependency/glassfish/pkg/GlassFish-10.0.0-java.gem</file>
-                  </configuration>
-                  <goals>
-                      <goal>install-file</goal>
-                  </goals>
-              </execution>
+      <plugin>
+        <artifactId>maven-install-plugin</artifactId>
+        <executions>
+            <execution>
+                <id>install-gem</id>
+                <phase>install</phase>
+                <configuration>
+                    <groupId>org.glassfish.distributions</groupId>
+                    <artifactId>glassfish-gem</artifactId>
+                    <version>0.1.2-SNAPSHOT</version>	
+                    <generatePom>false</generatePom>
+                    <packaging>gem</packaging>
+                    <file>target/dependency/glassfish/pkg/glassfish-0.1.2-universal-java-1.5.gem</file>
+                </configuration>
+                <goals>
+                    <goal>install-file</goal>
+                </goals>
+            </execution>
           </executions>
       </plugin>
-	  <plugin>
-          <artifactId>maven-deploy-plugin</artifactId>
-          <executions>
-              <execution>
-				  <id>deploy-gem</id>
-				  <phase>deploy</phase>
-                  <goals>
-                      <goal>deploy-file</goal>
-                  </goals>
-                  <configuration>
-				       <groupId>org.glassfish.distributions</groupId>
-				       <artifactId>GlassFish-Gem</artifactId>
-				       <version>10.0-SNAPSHOT</version>	
-						<file>target/dependency/glassfish/pkg/GlassFish-10.0.0-java.gem</file>
-						<url>sftp://trx2.sun.com:/export/nfs/dlc/maven/glassfish</url>						
-                  </configuration>
-
-              </execution>
-          </executions>
-      </plugin>
-    </plugins>
-  </build>
+            <plugin>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>deploy-gem</id>
+                        <phase>deploy</phase>
+                        <goals>
+                            <goal>deploy-file</goal>
+                        </goals>
+                        <configuration>
+                            <groupId>org.glassfish.distributions</groupId>
+                            <artifactId>glassfish-gem</artifactId>
+                            <version>0.1.2-SNAPSHOT</version>	
+                            <file>target/dependency/glassfish/pkg/glassfish-0.1.2-universal-java-1.5.gem</file>
+                            <url>sftp://trx2.sun.com:/export/nfs/dlc/maven/glassfish</url>						
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
   
-  <dependencies>
-  	<dependency>
-         <groupId>org.glassfish.extras</groupId>
-         <artifactId>gf-jruby-connector</artifactId>
-    	<version>${pe.version}</version>
-     </dependency>
-  </dependencies>
+    <dependencies>
+        <dependency>
+            <groupId>org.glassfish.extras</groupId>
+            <artifactId>gf-jruby-connector</artifactId>
+            <version>${pe.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.common</groupId>
+            <artifactId>common-ee-util</artifactId>
+            <version>${pe.version}</version>
+        </dependency>
+    </dependencies>
 </project>
