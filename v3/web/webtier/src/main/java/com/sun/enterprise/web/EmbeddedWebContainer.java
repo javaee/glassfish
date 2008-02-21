@@ -386,7 +386,7 @@ public final class EmbeddedWebContainer extends Embedded {
                   ((address == null) ? "ALL" : address) +
                   "' port='" + port + "' protocol='" + protocol + "'");
 
-        PECoyoteConnector connector = new PECoyoteConnector();
+        WebConnector connector = new WebConnector();
 
         if (address != null) {
             connector.setAddress(address);

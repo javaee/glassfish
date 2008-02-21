@@ -24,13 +24,19 @@
 
 package com.sun.enterprise.web;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.UnknownHostException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.text.MessageFormat;
+import java.util.Enumeration;
+import java.util.Properties;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.HashMap;
@@ -61,6 +67,7 @@ import org.apache.catalina.startup.DigesterFactory;
 import org.apache.catalina.startup.TldConfig;
 import org.apache.catalina.util.ServerInfo;
 import org.apache.coyote.tomcat5.CoyoteAdapter;
+import org.apache.tomcat.util.IntrospectionUtils;
 import org.apache.jasper.compiler.TldLocationsCache;
 import org.apache.jasper.xmlparser.ParserUtils;
 
@@ -75,11 +82,18 @@ import com.sun.enterprise.config.serverbeans.ApplicationRef;
 import com.sun.enterprise.config.serverbeans.LogService;
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.DasConfig;
-import com.sun.enterprise.config.serverbeans.Server;
-import com.sun.enterprise.config.serverbeans.HttpService;
-import com.sun.enterprise.config.serverbeans.HttpListener;
-import com.sun.enterprise.config.serverbeans.HttpProtocol;
 import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
+import com.sun.enterprise.config.serverbeans.ConnectionPool;
+import com.sun.enterprise.config.serverbeans.Server;
+import com.sun.enterprise.config.serverbeans.HttpFileCache;
+import com.sun.enterprise.config.serverbeans.HttpService;
+import com.sun.enterprise.config.serverbeans.HttpProtocol;
+import com.sun.enterprise.config.serverbeans.KeepAlive;
+import com.sun.enterprise.config.serverbeans.HttpListener;
+import com.sun.enterprise.config.serverbeans.Property; 
+import com.sun.enterprise.config.serverbeans.RequestProcessing;
+import com.sun.enterprise.config.serverbeans.SecurityService;
+import com.sun.enterprise.config.serverbeans.Ssl;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.WebServicesDescriptor;
 import com.sun.enterprise.deployment.WebServiceEndpoint;
@@ -101,7 +115,8 @@ import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.web.connector.coyote.PECoyoteConnector;
 import com.sun.enterprise.web.logger.IASLogger;
 import com.sun.enterprise.web.pluggable.WebContainerFeatureFactory;
-
+import com.sun.enterprise.security.CipherInfo;
+import com.sun.appserv.ProxyHandler;
 //import com.sun.appserv.server.ServerLifecycleException;
 import com.sun.appserv.server.util.ASClassLoaderUtil;
 import com.sun.appserv.server.util.Version;
@@ -154,6 +169,7 @@ import java.lang.reflect.Method;
 
 import org.apache.catalina.Realm;
 import com.sun.enterprise.security.integration.RealmInitializer;
+
 /**
  * Web container service
  *
@@ -184,7 +200,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
     String instanceName;
     String defaultWebXml;
     
-    private PECoyoteConnector jkConnector;
+    private WebConnector jkConnector;
 
     /**
      * The id of this web container object.
@@ -206,12 +222,21 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
     */
    protected String globalAccessLogWriteInterval = null;  
    
+   /**
+    * The default-redirect port
+    */
+    protected int defaultRedirectPort = -1;
+    
+    private static final String DEFAULT_KEYSTORE_TYPE = "JKS";
+    private static final String DEFAULT_TRUSTSTORE_TYPE = "JKS";
+    
     /**
      * The logger to use for logging ALL web container related messages.
      */
     protected static final Logger _logger = LogDomains.getLogger(
             LogDomains.WEB_LOGGER);
 
+    
     public void postConstruct() {
 
         instance = (V3Environment) _serverContext.getDefaultHabitat().getComponent(V3Environment.class);
@@ -389,12 +414,12 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                     // XXX TBD
                     continue;
                 } else {
-                    createHttpListener(httpListener);
-                    _logger.info("Created HTTP listener "
-                                        + httpListener.getId());
+                    createHttpListener(httpListener, httpService);
                 }
             }
-
+            createJKConnector(httpService);
+            setDefaultRedirectPort(defaultRedirectPort);
+            
             // Configure virtual servers
             List<com.sun.enterprise.config.serverbeans.VirtualServer> virtualServers = httpService.getVirtualServer();
             for (com.sun.enterprise.config.serverbeans.VirtualServer vs : virtualServers) {
@@ -462,23 +487,523 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
     public Class<? extends org.glassfish.api.deployment.Deployer> getDeployer() {
         return WebDeployer.class;
     }
+    
+    /**
+     * Use an http-listener subelements and creates a corresponding 
+     * Tomcat Connector for each.
+     *
+     * @param httpService The http-service element
+     * @param httpListener the configuration element.
+     */       
+    private void createHttpListener(HttpListener httpListener,
+                                             HttpService httpService){
+        
+        /* TODO 
+        if (!Boolean.getBoolean(httpListener.getEnabled())) {
+            return;
+        }*/
+                                 
+        int port = 8080;
+        WebConnector connector;
+        
+        checkHostnameUniqueness(httpListener.getId(), httpService);
 
+        try {
+            port = Integer.parseInt(httpListener.getPort());
+        } catch (NumberFormatException nfe) {
+            String msg = _rb.getString("pewebcontainer.http_listener.invalid_port");
+            msg = MessageFormat.format(msg,
+                                       new Object[] {httpListener.getPort(),
+                                       httpListener.getId() });
+            throw new IllegalArgumentException(msg);
+        }
 
-    private void createHttpListener(HttpListener hListener) {
+        /*
+         * Create Connector. Connector is SSL-enabled if
+         * 'security-enabled' attribute in <http-listener>
+         * element is set to TRUE.
+         */
+        boolean isSecure = Boolean.getBoolean(httpListener.getSecurityEnabled());
+        if (isSecure && defaultRedirectPort == -1) {
+            defaultRedirectPort = port;
+        }
+        String address = httpListener.getAddress();
+        if ("any".equals(address) || "ANY".equals(address)
+                || "INADDR_ANY".equals(address)) {
+            address = null;
+            /*
+             * Setting 'address' to NULL will cause Tomcat to pass a
+             * NULL InetAddress argument to the java.net.ServerSocket
+             * constructor, meaning that the server socket will accept
+             * connections on any/all local addresses.
+             */
+        }
+        
+        connector = 
+            (WebConnector)_embedded.createConnector(address,port,
+                                                         isSecure);
+        
+        _logger.info("Created HTTP listener " + httpListener.getId());
+        connector.setName(httpListener.getId());
 
-        portMap.put(hListener.getId(),
-                    Integer.valueOf(hListener.getPort()));
+        configureConnector(connector,httpListener,isSecure,httpService);
 
-        WebConnector webConnector = new WebConnector();
-        webConnector.setPort(Integer.parseInt(hListener.getPort()));
-        webConnector.setDefaultHost(hListener.getDefaultVirtualServer());
-        _embedded.addConnector(webConnector);
+        if ( _logger.isLoggable(Level.FINE)){
+            _logger.log(Level.FINE, "create.listenerport",
+                new Object[] {Integer.valueOf(port), connector});
+        }
 
-        CoyoteAdapter coyoteAdapter = new CoyoteAdapter(webConnector);
-        adapterMap.put(Integer.valueOf(hListener.getPort()), coyoteAdapter);
+        _embedded.addConnector(connector);
+    
+        portMap.put(httpListener.getId(),
+                    Integer.valueOf(httpListener.getPort()));
+        CoyoteAdapter coyoteAdapter = new CoyoteAdapter(connector);
+        adapterMap.put(Integer.valueOf(httpListener.getPort()), coyoteAdapter);
+        
+        // If we already know the redirect port, then set it now
+        // This situation will occurs when dynamic reconfiguration occurs
+        if ( defaultRedirectPort != -1 ){
+            connector.setRedirectPort(defaultRedirectPort);
+        }
         
     }
 
+    /**
+     * Starts the AJP connector that will listen to call from Apache using
+     * mod_jk, mod_jk2 or mod_ajp.
+     */
+    private void createJKConnector(HttpService httpService) {
+
+        String portString = System.getProperty("com.sun.enterprise.web.connector.enableJK");
+
+        if (portString == null) {
+            // do not create JK Connector if property is not set
+            return;
+        } else {
+            int port = 8009;
+            try {
+                port = Integer.parseInt(portString);
+            } catch (NumberFormatException ex) {
+                // use default port 8009
+                port = 8009;
+            }
+
+            jkConnector = (WebConnector) _embedded.createConnector("0.0.0.0", 
+                                            port, "ajp");
+
+            configureJKProperties(jkConnector);
+
+            String defaultHost = "server";
+            jkConnector.setDefaultHost(defaultHost);        
+            jkConnector.setDomain(_serverContext.getDefaultDomainName());
+            jkConnector.setLogger(_logger); 
+            jkConnector.setName("httpd-listener");
+        
+            configureHttpProtocol(jkConnector, httpService.getHttpProtocol());
+
+            _logger.log(Level.INFO, "Apache mod_jk/jk2 attached to virtual-server "
+                                + defaultHost + " listening on port: "
+                                + portString);
+
+            _embedded.addConnector(jkConnector);       
+        }
+    }
+
+    /**
+     * Assigns the given redirect port to each Connector whose corresponding
+     * http-listener element in domain.xml does not specify its own
+     * redirect-port attribute.
+     *
+     * The given defaultRedirectPort corresponds to the port number of the 
+     * first security-enabled http-listener in domain.xml.
+     *
+     * This method does nothing if none of the http-listener elements is
+     * security-enabled, in which case Tomcat's default redirect port (443) 
+     * will be used.
+     *
+     * @param defaultRedirectPort The redirect port to be assigned to any
+     * Connector object that doesn't specify its own
+     */
+    private void setDefaultRedirectPort(int defaultRedirectPort) {
+        if (defaultRedirectPort != -1) {
+            Connector[] connectors = _embedded.getConnectors();
+            for (int i=0; i<connectors.length; i++) {
+                if (connectors[i].getRedirectPort() == -1) {
+                    connectors[i].setRedirectPort(defaultRedirectPort);
+                }
+            } 
+        }
+    }
+        
+    /*
+     * Configures the given connector.
+     *
+     * @param connector The connector to configure
+     * @param httpListener The http-listener that corresponds to the given
+     * connector
+     * @param isSecure true if the connector is security-enabled, false
+     * otherwise
+     * @param httpServiceProps The http-service properties
+     */
+    private void configureConnector(WebConnector connector,
+                                    HttpListener httpListener,
+                                    boolean isSecure,
+                                    HttpService httpService) {
+
+        configureConnectionPool(connector, httpService.getConnectionPool());
+
+        /* TODO 
+        WebContainerFeatureFactory wcFeatureFactory = _serverContext.getDefaultHabitat().getComponent(WebContainerFeatureFactory.class);
+        String sslImplementationName = 
+            webFeatureFactory.getSSLImplementationName();
+        
+        if (sslImplementationName != null) {
+            connector.setProperty("sSLImplementation",sslImplementationName);
+        }*/
+        
+        connector.setDomain(_serverContext.getDefaultDomainName());
+        connector.setLogger(_logger);         
+        
+        configureSSL(connector, httpListener);
+        configureKeepAlive(connector, httpService.getKeepAlive());
+        configureHttpProtocol(connector, httpService.getHttpProtocol());     
+        configureRequestProcessing(httpService.getRequestProcessing(),connector);
+        configureFileCache(connector, httpService.getHttpFileCache());
+        
+        // default-virtual-server
+        connector.setDefaultHost(httpListener.getDefaultVirtualServer());
+
+        // xpoweredBy
+        connector.setXpoweredBy(Boolean.getBoolean(httpListener.getXpoweredBy()));
+        
+        // Application root
+        connector.setWebAppRootPath(getModulesRoot());
+        
+        // server-name (may contain scheme and colon-separated port number)
+        String serverName = httpListener.getServerName();
+        if (serverName != null && serverName.length() > 0) {
+            // Ignore scheme, which was required for webcore issued redirects
+            // in 8.x EE
+            if (serverName.startsWith("http://")) {
+                serverName = serverName.substring("http://".length());
+            } else if (serverName.startsWith("https://")) {
+                serverName = serverName.substring("https://".length());
+            }
+            int index = serverName.indexOf(':');
+            if (index != -1) {
+                connector.setProxyName(serverName.substring(0, index).trim());
+                String serverPort = serverName.substring(index+1).trim();
+                if (serverPort.length() > 0) {
+                    try {
+                        connector.setProxyPort(Integer.parseInt(serverPort));
+                    } catch (NumberFormatException nfe) {
+                        _logger.log(Level.SEVERE,
+                            "pewebcontainer.invalid_proxy_port",
+                            new Object[] { serverPort, httpListener.getId() });
+		    }
+                }
+            } else {
+                connector.setProxyName(serverName);
+            }
+        }
+
+        boolean blockingEnabled = Boolean.valueOf(
+                        httpListener.getBlockingEnabled());
+        if (blockingEnabled){
+            connector.setBlocking(blockingEnabled);
+        }
+
+        // redirect-port
+        String redirectPort = httpListener.getRedirectPort();
+        if (redirectPort != null && !redirectPort.equals("")) {
+            try {
+                connector.setRedirectPort(Integer.parseInt(redirectPort));
+            } catch (NumberFormatException nfe) {
+                _logger.log(Level.WARNING,
+                    "pewebcontainer.invalid_redirect_port",
+                    new Object[] {
+                        redirectPort,
+                        httpListener.getId(),
+                        Integer.toString(connector.getRedirectPort()) });
+            }  
+        } else {
+            connector.setRedirectPort(-1);
+        }
+
+        // acceptor-threads
+        String acceptorThreads = httpListener.getAcceptorThreads();
+        if (acceptorThreads != null) {
+            try {
+                connector.setSelectorReadThreadsCount
+                    (Integer.parseInt(acceptorThreads));
+            } catch (NumberFormatException nfe) {
+                _logger.log(Level.WARNING,
+                    "pewebcontainer.invalid_acceptor_threads",
+                    new Object[] {
+                        acceptorThreads,
+                        httpListener.getId(),
+                        Integer.toString(connector.getMaxProcessors()) });
+            }  
+        }
+        
+        // Configure Connector with keystore password and location
+        if (isSecure) {
+            configureConnectorKeysAndCerts(connector);
+        }
+        
+        configureHttpServiceProperties(httpService,connector);      
+
+        // Override http-service property if defined.
+        configureHttpListenerProperties(httpListener,connector);
+    }
+    
+    /**
+     * Configure http-listener properties
+     */
+    public void configureHttpListenerProperties(HttpListener httpListener,
+                                                WebConnector connector){
+        // Configure Connector with <http-service> properties
+        for (Property httpListenerProp  : httpListener.getProperty()) { 
+            String propName = httpListenerProp.getName();
+            String propValue = httpListenerProp.getValue();
+            if (!configureHttpListenerProperty(propName,
+                                               propValue,
+                                               connector)){
+                _logger.log(Level.WARNING,
+                    "pewebcontainer.invalid_http_listener_property",
+                    propName);                    
+            }
+        }    
+    }          
+    
+    /**
+     * Configure http-listener property.
+     * return true if the property exists and has been set.
+     */
+    protected boolean configureHttpListenerProperty(
+                                            String propName, 
+                                            String propValue,
+                                            WebConnector connector)
+                                            throws NumberFormatException {
+                                                        
+        if ("bufferSize".equals(propName)) {
+            connector.setBufferSize(Integer.parseInt(propValue)); 
+            return true; 
+        } else if ("recycle-objects".equals(propName)) {
+            connector
+                .setRecycleObjects(ConfigBeansUtilities.toBoolean(propValue));
+            return true;
+        } else if ("reader-threads".equals(propName)) {
+            connector
+                .setMaxReadWorkerThreads(Integer.parseInt(propValue));
+            return true;            
+        } else if ("acceptor-queue-length".equals(propName)) {
+            connector
+                .setMinAcceptQueueLength(Integer.parseInt(propValue));
+            return true;            
+        } else if ("reader-queue-length".equals(propName)) {
+            connector
+                .setMinReadQueueLength(Integer.parseInt(propValue));
+            return true;            
+        } else if ("use-nio-direct-bytebuffer".equals(propName)) {
+            connector
+                .setUseDirectByteBuffer(ConfigBeansUtilities.toBoolean(propValue));
+            return true;   
+        } else if ("maxKeepAliveRequests".equals(propName)) {
+            connector
+                .setMaxKeepAliveRequests(Integer.parseInt(propValue));
+            return true;           
+        } else if ("reader-selectors".equals(propName)) {
+            connector
+                .setSelectorReadThreadsCount(Integer.parseInt(propValue));
+            return true;
+        } else if ("authPassthroughEnabled".equals(propName)) {
+            connector.setAuthPassthroughEnabled(
+                                        ConfigBeansUtilities.toBoolean(propValue));
+            return true;
+        } else if ("maxPostSize".equals(propName)) {
+            connector.setMaxPostSize(Integer.parseInt(propValue));
+            return true;
+        } else if ("compression".equals(propName)) {
+            connector.setProperty("compression",propValue);
+            return true;
+        } else if ("compressableMimeType".equals(propName)) {
+            connector.setProperty("compressableMimeType",propValue);
+            return true;       
+        } else if ("noCompressionUserAgents".equals(propName)) {
+            connector.setProperty("noCompressionUserAgents",propValue);
+            return true;   
+        } else if ("compressionMinSize".equals(propName)) {
+            connector.setProperty("compressionMinSize",propValue);
+            return true;             
+        } else if ("restrictedUserAgents".equals(propName)) {
+            connector.setProperty("restrictedUserAgents",propValue);
+            return true;             
+        } else if ("blocking".equals(propName)) {
+            connector.setBlocking(ConfigBeansUtilities.toBoolean(propValue));
+            return true;             
+        } else if ("selectorThreadImpl".equals(propName)) {
+            connector.setSelectorThreadImpl(propValue);
+            return true;             
+        } else if ("cometSupport".equals(propName)) {
+            connector.setProperty(propName,ConfigBeansUtilities.toBoolean(propValue));
+            return true;     
+        } else if ("rcmSupport".equals(propName)) {
+            connector.setProperty(propName,ConfigBeansUtilities.toBoolean(propValue));
+            return true;    
+        } else if ("connectionUploadTimeout".equals(propName)) {
+            connector.setConnectionUploadTimeout(Integer.parseInt(propValue));
+            return true;            
+        } else if ("disableUploadTimeout".equals(propName)) {
+            connector.setDisableUploadTimeout(ConfigBeansUtilities.toBoolean(propValue));
+            return true;             
+        } else if ("proxiedProtocols".equals(propName)) {
+            connector.setProperty(propName,propValue);
+            return true;              
+        } else if ("proxyHandler".equals(propName)) {
+            setProxyHandler(connector, propValue);
+            return true;
+        } else if ("uriEncoding".equals(propName)) {
+            connector.setURIEncoding(propValue);
+            return true;
+        } else if ("chunkingDisabled".equals(propName)
+                || "chunking-disabled".equals(propName)) {
+            connector.setChunkingDisabled(ConfigBeansUtilities.toBoolean(propValue));
+            return true;
+        } else if ("crlFile".equals(propName)) {
+            connector.setCrlFile(propValue);
+            return true;
+        } else if ("trustAlgorithm".equals(propName)) {
+            connector.setTrustAlgorithm(propValue);
+            return true;
+        } else if ("trustMaxCertLength".equals(propName)) {
+            connector.setTrustMaxCertLength(propValue);
+            return true;
+        } else {
+            return false;
+        }   
+    }   
+
+    /**
+     * Configure http-service properties.
+     */
+    public void configureHttpServiceProperties(HttpService httpService,
+                                               WebConnector connector){
+        // Configure Connector with <http-service> properties
+        List<Property> httpServiceProps = httpService.getProperty();
+
+        // Set default ProxyHandler impl, may be overriden by
+        // proxyHandler property
+        connector.setProxyHandler(new ProxyHandlerImpl());
+
+        if (httpServiceProps != null) {
+            for (Property httpServiceProp : httpServiceProps) {
+                String propName = httpServiceProp.getName();
+                String propValue = httpServiceProp.getValue();
+                               
+                if (configureHttpListenerProperty(propName,
+                                                  propValue, 
+                                                  connector)){
+                    continue;
+                }
+                
+                if ("connectionTimeout".equals(propName)) {
+                    connector.setConnectionTimeout(
+                                                Integer.parseInt(propValue));
+                } else if ("tcpNoDelay".equals(propName)) {
+                    connector.setTcpNoDelay(ConfigBeansUtilities.toBoolean(propValue));
+                } else if ("traceEnabled".equals(propName)) {
+                    connector.setAllowTrace(ConfigBeansUtilities.toBoolean(propValue));
+                } else if (Constants.ACCESS_LOGGING_ENABLED.equals(propName)) {
+                    globalAccessLoggingEnabled = ConfigBeansUtilities.toBoolean(propValue);
+                } else if (Constants.ACCESS_LOG_WRITE_INTERVAL_PROPERTY.equals(
+                                propName)) {
+                    globalAccessLogWriteInterval = propValue;
+                } else if (Constants.ACCESS_LOG_BUFFER_SIZE_PROPERTY.equals(
+                                propName)) {
+                    globalAccessLogBufferSize = propValue;
+                } else if ("authPassthroughEnabled".equals(propName)) {
+                    connector.setAuthPassthroughEnabled(
+                                    ConfigBeansUtilities.toBoolean(propValue));
+                } else if ("ssl-session-timeout".equals(propName)) {
+                    connector.setSSLSessionTimeout(propValue);
+                } else if ("ssl3-session-timeout".equals(propName)) {
+                    connector.setSSL3SessionTimeout(propValue);
+                } else if ("ssl-cache-entries".equals(propName)) {
+                    connector.setSSLSessionCacheSize(propValue);
+                } else if ("proxyHandler".equals(propName)) {
+                    setProxyHandler(connector, propValue);
+                } else if (Constants.SSO_ENABLED.equals(propName)) {
+                    globalSSOEnabled = ConfigBeansUtilities.toBoolean(propValue);
+                } else {
+                    _logger.log(Level.WARNING,
+                        "pewebcontainer.invalid_http_service_property",
+                        httpServiceProp.getName());
+                }
+            }
+        }    
+    }    
+        
+    /*
+     * Ensures that the host names of all virtual servers associated with the
+     * HTTP listener with the given listener id are unique.
+     *
+     * @param listenerId The id of the HTTP listener whose associated virtual
+     * servers are checked for uniqueness of host names
+     * @param httpService The http-service element whose virtual servers are
+     * checked
+     */
+    private void checkHostnameUniqueness(String listenerId,
+                                         HttpService httpService) {
+
+        ArrayList listenerVses = null;
+
+        // Determine all the virtual servers associated with the given listener
+        for (com.sun.enterprise.config.serverbeans.VirtualServer vse : httpService.getVirtualServer()) {
+            List vsListeners =
+                StringUtils.parseStringList(vse.getHttpListeners(), ",");
+            for (int j=0; vsListeners!=null && j<vsListeners.size(); j++) {
+                if (listenerId.equals((String)vsListeners.get(j))) {
+                    if (listenerVses == null) {
+                        listenerVses = new ArrayList();
+                    }
+                    listenerVses.add(vse);
+                    break;
+                }
+            }
+        }
+        if (listenerVses == null) {
+            return;
+        }
+
+        for (int i=0; i<listenerVses.size(); i++) {
+            com.sun.enterprise.config.serverbeans.VirtualServer vs
+                = (com.sun.enterprise.config.serverbeans.VirtualServer) listenerVses.get(i);
+            List hosts = StringUtils.parseStringList(vs.getHosts(), ",");
+            for (int j=0; hosts!=null && j<hosts.size(); j++) {
+                String host = (String) hosts.get(j);
+                for (int k=0; k<listenerVses.size(); k++) {
+                    if (k <= i) {
+                        continue;
+                    }
+                    com.sun.enterprise.config.serverbeans.VirtualServer otherVs
+                        = (com.sun.enterprise.config.serverbeans.VirtualServer)
+                            listenerVses.get(k);
+                    List otherHosts = StringUtils.parseStringList(otherVs.getHosts(), ",");
+                    for (int l=0; otherHosts!=null && l<otherHosts.size(); l++) {
+                        if (host.equals((String) otherHosts.get(l))) {
+                            _logger.log(Level.SEVERE,
+                                        "pewebcontainer.duplicate_host_name",
+                                        new Object[] { host, vs.getId(),
+                                                       otherVs.getId(),
+                                                       listenerId });
+                        }
+                    }
+		}    
+            }        
+        }            
+    }
+    
     private void createVirtualServer(
                 com.sun.enterprise.config.serverbeans.VirtualServer vsBean,
                 HttpService httpService, SecurityService securityService) {
@@ -727,6 +1252,605 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                             msg,
                             new Object[] { "PWCRequestStats" });
             _logger.log(Level.WARNING, msg, mre);
+        }
+    }
+    
+        /*
+     * Parses the given comma-separated string of cipher suite names,
+     * converts each cipher suite that is enabled (i.e., not preceded by a
+     * '-') to the corresponding JSSE cipher suite name, and returns a string
+     * of comma-separated JSSE cipher suite names.
+     *
+     * @param sslCiphers String of SSL ciphers to parse
+     *
+     * @return String of comma-separated JSSE cipher suite names, or null if
+     * none of the cipher suites in the given string are enabled or can be
+     * mapped to corresponding JSSE cipher suite names
+     */
+    private String getJSSECiphers(String ciphers) {
+
+        String cipher = null;
+        StringBuffer enabledCiphers = null;
+        boolean first = true;
+
+        int index = ciphers.indexOf(',');
+        if (index != -1) {
+            int fromIndex = 0;
+            while (index != -1) {
+                cipher = ciphers.substring(fromIndex, index).trim();
+                if (cipher.length() > 0 && !cipher.startsWith("-")) {
+                    if (cipher.startsWith("+")) {
+                        cipher = cipher.substring(1);
+		    }
+                    String jsseCipher = getJSSECipher(cipher);
+                    if (jsseCipher == null) {
+                        _logger.log(Level.WARNING,
+                            "pewebcontainer.unrecognized_cipher", cipher);
+                    } else {
+                        if (enabledCiphers == null) {
+                            enabledCiphers = new StringBuffer();
+                        }
+                        if (!first) {
+                            enabledCiphers.append(", ");
+                        } else {
+                            first = false;
+                        }
+                        enabledCiphers.append(jsseCipher);
+                    }
+                }
+                fromIndex = index + 1;
+                index = ciphers.indexOf(',', fromIndex);
+            }
+            cipher = ciphers.substring(fromIndex);
+        } else {
+            cipher = ciphers;
+        }
+
+        if (cipher != null) {
+            cipher = cipher.trim();
+            if (cipher.length() > 0 && !cipher.startsWith("-")) {
+                if (cipher.startsWith("+")) {
+                    cipher = cipher.substring(1);
+                }
+                String jsseCipher = getJSSECipher(cipher);
+                if (jsseCipher == null) {
+                    _logger.log(Level.WARNING,
+                                "pewebcontainer.unrecognized_cipher", cipher);
+                } else {
+                    if (enabledCiphers == null) {
+                        enabledCiphers = new StringBuffer();
+                    }
+                    if (!first) {
+                        enabledCiphers.append(", ");
+                    } else {
+                        first = false;
+                    }
+                    enabledCiphers.append(jsseCipher);
+                }
+            }
+        }
+
+        return (enabledCiphers == null ? null : enabledCiphers.toString());
+    }
+
+    /*
+     * Converts the given cipher suite name to the corresponding JSSE cipher.
+     *
+     * @param cipher The cipher suite name to convert
+     *
+     * @return The corresponding JSSE cipher suite name, or null if the given
+     * cipher suite name can not be mapped
+     */
+    private String getJSSECipher(String cipher) {
+
+        String jsseCipher = null;
+
+        CipherInfo ci = CipherInfo.getCipherInfo(cipher);
+        if( ci != null ) {
+            jsseCipher = ci.getCipherName();
+        }
+
+        return jsseCipher;
+    }
+        
+    /*
+     * Configures the SSL properties on the given PECoyoteConnector from the
+     * SSL config of the given HTTP listener.
+     *
+     * @param connector PECoyoteConnector to configure
+     * @param httpListener HTTP listener whose SSL config to use
+     */
+    private void configureSSL(PECoyoteConnector connector,
+                              HttpListener httpListener) {
+
+        Ssl sslConfig = httpListener.getSsl();
+        if (sslConfig == null) {
+            return;
+        }
+
+        // client-auth
+        if (Boolean.getBoolean(sslConfig.getClientAuthEnabled())) {
+            connector.setClientAuth(true);
+        }
+
+        // ssl protocol variants
+        StringBuffer sslProtocolsBuf = new StringBuffer();
+        boolean needComma = false;
+        if (Boolean.getBoolean(sslConfig.getSsl2Enabled())) {
+            sslProtocolsBuf.append("SSLv2");
+            needComma = true;
+        }
+        if (Boolean.getBoolean(sslConfig.getSsl3Enabled())) {
+            if (needComma) {
+                sslProtocolsBuf.append(", ");
+            } else {
+                needComma = true;
+            }
+            sslProtocolsBuf.append("SSLv3");
+        }
+        if (Boolean.getBoolean(sslConfig.getTlsEnabled())) {
+            if (needComma) {
+                sslProtocolsBuf.append(", ");
+            }
+            sslProtocolsBuf.append("TLSv1");
+        }
+        if (Boolean.getBoolean(sslConfig.getSsl3Enabled()) || Boolean.getBoolean(sslConfig.getTlsEnabled())) {
+            sslProtocolsBuf.append(", SSLv2Hello");
+        }
+
+        if (sslProtocolsBuf.length() == 0) {
+            _logger.log(Level.WARNING,
+                        "pewebcontainer.all_ssl_protocols_disabled",
+                        httpListener.getId());
+        } else {
+            connector.setSslProtocols(sslProtocolsBuf.toString());
+        }
+
+        // cert-nickname
+        String certNickname = sslConfig.getCertNickname();
+        if (certNickname != null && certNickname.length() > 0) {
+            connector.setKeyAlias(sslConfig.getCertNickname());
+        }
+
+        // ssl3-tls-ciphers
+        String ciphers = sslConfig.getSsl3TlsCiphers();
+        if (ciphers != null) {
+            String jsseCiphers = getJSSECiphers(ciphers);
+            if (jsseCiphers == null) {
+                _logger.log(Level.WARNING,
+                            "pewebcontainer.all_ciphers_disabled",
+                            httpListener.getId());
+            } else {
+                connector.setCiphers(jsseCiphers);
+            }
+        }            
+    }
+
+    /*
+     * Configures the keep-alive properties on the given PECoyoteConnector
+     * from the given keep-alive config.
+     *
+     * @param connector PECoyoteConnector to configure
+     * @param keepAlive Keep-alive config to use
+     */
+    private void configureKeepAlive(PECoyoteConnector connector,
+                                    KeepAlive keepAlive) {
+
+        // timeout-in-seconds, default is 60 as per sun-domain_1_1.dtd
+        int timeoutInSeconds = 60;
+
+        // max-connections, default is 256 as per sun-domain_1_1.dtd
+        int maxConnections = 256;
+
+        // thread-count, default is 1 as per sun-domain_1_1.dtd
+        int threadCount = 1;
+
+        if (keepAlive != null) {
+            // timeout-in-seconds
+            try {
+	        timeoutInSeconds = Integer.parseInt(
+                                keepAlive.getTimeoutInSeconds());
+            } catch (NumberFormatException ex) {
+                String msg = _rb.getString(
+                    "pewebcontainer.invalidKeepAliveTimeout");
+                msg = MessageFormat.format(
+                    msg,
+                    new Object[] { keepAlive.getTimeoutInSeconds(),
+                                   Integer.toString(timeoutInSeconds)});
+                _logger.log(Level.WARNING, msg, ex);
+            }
+
+            // max-connections
+            try {
+	        maxConnections = Integer.parseInt(
+                                keepAlive.getMaxConnections());
+            } catch (NumberFormatException ex) {
+                String msg = _rb.getString(
+                    "pewebcontainer.invalidKeepAliveMaxConnections");
+                msg = MessageFormat.format(
+                    msg,
+                    new Object[] { keepAlive.getMaxConnections(),
+                                   Integer.toString(maxConnections)});
+                _logger.log(Level.WARNING, msg, ex);
+            }
+
+            // thread-count
+            try {
+	        threadCount = Integer.parseInt(keepAlive.getThreadCount());
+            } catch (NumberFormatException ex) {
+                String msg = _rb.getString(
+                    "pewebcontainer.invalidKeepAliveThreadCount");
+                msg = MessageFormat.format(
+                    msg,
+                    new Object[] { keepAlive.getThreadCount(),
+                                   Integer.toString(threadCount)});
+                _logger.log(Level.WARNING, msg, ex);
+            }
+        }
+        
+        connector.setKeepAliveTimeoutInSeconds(timeoutInSeconds);
+        connector.setMaxKeepAliveRequests(maxConnections);
+        connector.setKeepAliveThreadCount(threadCount);
+    }
+    
+    /*
+     * Configures the given HTTP connector with connection-pool related info.
+     */
+    private void configureConnectionPool(PECoyoteConnector connector,
+                                         ConnectionPool cp) {
+        if (cp == null) {
+            return;
+        }
+            
+        try{
+            int queueSizeInBytes = 
+                    Integer.parseInt(cp.getQueueSizeInBytes());
+            if (queueSizeInBytes <= -1){
+                _logger.log(
+                    Level.WARNING,
+                    "pewebcontainer.invalidQueueSizeInBytes",
+                    new Object[] 
+                        { cp.getQueueSizeInBytes(),
+                          Integer.toString(
+                                  connector.getQueueSizeInBytes())});
+            } else {
+                connector.setQueueSizeInBytes(queueSizeInBytes);
+            }
+        } catch (NumberFormatException ex){
+            String msg = _rb.getString("pewebcontainer.invalidQueueSizeInBytes");
+            msg = MessageFormat.format(
+                msg, new Object[] 
+                    { ConfigBeansUtilities.getDefaultQueueSizeInBytes(),
+                      Integer.toString(connector.getQueueSizeInBytes())});
+            _logger.log(Level.WARNING, msg, ex);
+        }
+        
+        
+        try{
+            int ssBackLog = Integer.parseInt(cp.getMaxPendingCount());
+            if (ssBackLog <= 0){
+                _logger.log(
+                    Level.WARNING,
+                    "pewebcontainer.invalidMaxPendingCount",
+                    new Object[] 
+                        { cp.getMaxPendingCount(),
+                          Integer.toString(connector.getSocketServerBacklog())});
+            } else {
+                connector.setSocketServerBacklog(ssBackLog);
+            }
+        } catch (NumberFormatException ex){
+            String msg = _rb.getString("pewebcontainer.invalidMaxPendingCount");
+            msg = MessageFormat.format(
+                msg, new Object[] 
+                    { cp.getMaxPendingCount(),
+                      Integer.toString(connector.getSocketServerBacklog())});
+            _logger.log(Level.WARNING, msg, ex);
+        }
+        
+        
+        try{
+            int bufferSize = 
+                        Integer.parseInt(cp.getReceiveBufferSizeInBytes());
+            if ( bufferSize <= 0 ){
+                _logger.log(
+                    Level.WARNING,
+                    "pewebcontainer.invalidBufferSize",
+                    new Object[] 
+                        { cp.getReceiveBufferSizeInBytes(),
+                          Integer.toString(connector.getBufferSize())});
+            } else {
+                connector.setBufferSize(bufferSize);
+            }
+        } catch (NumberFormatException ex) {
+            String msg = _rb.getString("pewebcontainer.invalidBufferSize");
+            msg = MessageFormat.format(
+                msg, new Object[] 
+                    { cp.getReceiveBufferSizeInBytes(),
+                      Integer.toString(connector.getBufferSize())});
+            _logger.log(Level.WARNING, msg, ex);
+        }
+
+        try{
+            int maxHttpHeaderSize = 
+                          Integer.parseInt(cp.getSendBufferSizeInBytes());
+            if ( maxHttpHeaderSize <= 0 ){
+                _logger.log(
+                    Level.WARNING,
+                    "pewebcontainer.invalidMaxHttpHeaderSize",
+                    new Object[] 
+                        { cp.getSendBufferSizeInBytes(),
+                          Integer.toString(connector.getMaxHttpHeaderSize())});
+            } else {
+                connector.setMaxHttpHeaderSize(maxHttpHeaderSize);
+            }
+        } catch (NumberFormatException ex){
+            String msg = _rb.getString(
+                "pewebcontainer.invalidMaxHttpHeaderSize");
+            msg = MessageFormat.format(
+                msg, new Object[] 
+                    { cp.getSendBufferSizeInBytes(),
+                      Integer.toString(connector.getMaxHttpHeaderSize())});
+            _logger.log(Level.WARNING, msg, ex);
+        }
+    }
+        
+    /*
+     * Configures the given HTTP connector with the given http-protocol
+     * config.
+     *
+     * @param connector HTTP connector to configure
+     * @param httpProtocol http-protocol config to use
+     */
+    private void configureHttpProtocol(PECoyoteConnector connector,
+                                       HttpProtocol httpProtocol) {
+    
+        if (httpProtocol == null) {
+            return;
+        }
+
+        /*connector.setEnableLookups(httpProtocol.isDnsLookupEnabled());
+        connector.setForcedRequestType(httpProtocol.getForcedType());
+        connector.setDefaultResponseType(httpProtocol.getDefaultType());
+         */
+    }
+    
+    /**
+     * Configure the Grizzly FileCache mechanism
+     */
+    private void configureFileCache(PECoyoteConnector connector,
+                                    HttpFileCache httpFileCache){
+        if ( httpFileCache == null ) return;
+        
+        /*catalinaCachingAllowed = !(httpFileCache.isGloballyEnabled() &&
+                ConfigBeansUtilities.toBoolean(httpFileCache.getFileCachingEnabled()));
+        
+        connector.setFileCacheEnabled(httpFileCache.isGloballyEnabled());   */      
+        connector.setLargeFileCacheEnabled(
+            ConfigBeansUtilities.toBoolean(httpFileCache.getFileCachingEnabled()));
+        
+        if (httpFileCache.getMaxAgeInSeconds() != null){
+            connector.setSecondsMaxAge(
+                Integer.parseInt(httpFileCache.getMaxAgeInSeconds()));
+        }
+        
+        if (httpFileCache.getMaxFilesCount() != null){
+            connector.setMaxCacheEntries(
+                Integer.parseInt(httpFileCache.getMaxFilesCount()));
+        }
+        
+        if (httpFileCache.getSmallFileSizeLimitInBytes() != null){
+            connector.setMinEntrySize(
+                Integer.parseInt(httpFileCache.getSmallFileSizeLimitInBytes()));
+        }
+        
+        if (httpFileCache.getMediumFileSizeLimitInBytes() != null){
+            connector.setMaxEntrySize(
+                Integer.parseInt(httpFileCache.getMediumFileSizeLimitInBytes()));
+        }
+        
+        if (httpFileCache.getMediumFileSpaceInBytes() != null){
+            connector.setMaxLargeCacheSize(
+                Integer.parseInt(httpFileCache.getMediumFileSpaceInBytes()));
+        }
+        
+        if (httpFileCache.getSmallFileSpaceInBytes() != null){
+            connector.setMaxSmallCacheSize(
+                Integer.parseInt(httpFileCache.getSmallFileSpaceInBytes())); 
+        }
+    }
+    
+    /**
+     * Configures all HTTP connector with the given request-processing
+     * config.
+     *
+     * @param httpService http-service config to use
+     */
+    protected void configureRequestProcessing(HttpService httpService){
+
+        RequestProcessing rp = httpService.getRequestProcessing();
+        Connector[] connectors = (Connector[])_embedded.findConnectors();       
+                    
+        for (int i=0; i < connectors.length; i++){    
+            configureRequestProcessing(rp,(PECoyoteConnector)connectors[i]);
+        }
+    }
+    
+    /**
+     * Configures an HTTP connector with the given request-processing
+     * config.
+     *
+     * @param RequestProcessing http-service config to use
+     * @param connector the connector used.
+     */
+    protected void configureRequestProcessing(RequestProcessing rp, 
+                                              PECoyoteConnector connector){
+        if (rp == null) return;
+
+        try{
+            connector.setMaxProcessors(
+                    Integer.parseInt(rp.getThreadCount()));
+            connector.setMinProcessors(
+                    Integer.parseInt(rp.getInitialThreadCount()));
+            connector.setProcessorWorkerThreadsTimeout(
+                    Integer.parseInt(rp.getRequestTimeoutInSeconds())); 
+            connector.setProcessorWorkerThreadsIncrement(
+                    Integer.parseInt(rp.getThreadIncrement()));
+            connector.setMaxHttpHeaderSize(
+                   Integer.parseInt(rp.getHeaderBufferLengthInBytes()));
+        } catch (NumberFormatException ex){
+            _logger.log(Level.WARNING, " Invalid request-processing attribute", 
+                    ex);                      
+        }             
+    }
+    
+    /*
+     * Loads and instantiates the ProxyHandler implementation
+     * class with the specified name, and sets the instantiated 
+     * ProxyHandler on the given connector.
+     *
+     * @param connector The HTTP connector to configure
+     * @param className The ProxyHandler implementation class name
+     */
+    private void setProxyHandler(PECoyoteConnector connector,
+                                 String className) {
+
+        Object handler = null;
+        try {
+            Class handlerClass = Class.forName(className);
+            handler = handlerClass.newInstance();
+        } catch (Exception e) {
+            String msg = _rb.getString(
+                "pewebcontainer.proxyHandlerClassLoadError");
+            msg = MessageFormat.format(msg, new Object[] { className });
+            _logger.log(Level.SEVERE, msg, e);
+        }
+        if (handler != null) {
+            if (!(handler instanceof ProxyHandler)) {
+                _logger.log(
+                    Level.SEVERE,
+                    "pewebcontainer.proxyHandlerClassInvalid",
+                    className);
+            } else {
+                connector.setProxyHandler((ProxyHandler) handler);
+            }                
+        } 
+    }
+
+    /*
+     * Configures the given HTTP listener with its keystore and truststore.
+     *
+     * @param connector The HTTP listener to be configured
+     */
+    private void configureConnectorKeysAndCerts(PECoyoteConnector connector) {
+
+        /*
+         * Keystore
+         */
+        String prop = System.getProperty("javax.net.ssl.keyStore");
+        if (prop != null) {
+            // PE
+            connector.setKeystoreFile(prop);
+            connector.setKeystoreType(DEFAULT_KEYSTORE_TYPE);
+        }
+
+        /*
+         * Get keystore password from password.conf file.
+         * Notice that JSSE, the underlying SSL implementation in PE,
+         * currently does not support individual key entry passwords
+         * that are different from the keystore password.
+         *
+        String ksPasswd = null;
+        try {
+            ksPasswd = PasswordConfReader.getKeyStorePassword();
+        } catch (IOException ioe) {
+            // Ignore
+        }
+        if (ksPasswd == null) {
+            ksPasswd = System.getProperty("javax.net.ssl.keyStorePassword");
+        }
+        if (ksPasswd != null) {
+            try {
+                connector.setKeystorePass(ksPasswd);
+            } catch (Exception e) {
+                _logger.log(Level.SEVERE,
+                    "pewebcontainer.http_listener_keystore_password_exception",
+                    e);
+            }
+        }*/
+
+        /*
+	 * Truststore
+         */
+        prop = System.getProperty("javax.net.ssl.trustStore");
+        if (prop != null) {
+            // PE
+            connector.setTruststore(prop);
+            connector.setTruststoreType(DEFAULT_TRUSTSTORE_TYPE);
+        }
+    }
+
+    /*
+     * Load the glassfish-jk.properties
+     *
+     * @param connector The JK connector to configure
+     */
+    private void configureJKProperties(PECoyoteConnector connector) {
+
+        String propertiesURL =
+            System.getProperty("com.sun.enterprise.web.connector.enableJK.propertyFile");
+
+        if (propertiesURL == null) {
+            if (_logger.isLoggable(Level.FINEST)) {
+                 _logger.finest(
+                 "com.sun.enterprise.web.connector.enableJK.propertyFile not defined");
+            }
+            return;
+        } 
+
+        if (_logger.isLoggable(Level.FINEST)) {
+             _logger.finest("Loading glassfish-jk.properties from " +propertiesURL);
+        }
+
+        File propertiesFile   = new File(propertiesURL);
+        if ( !propertiesFile.exists() ) {
+            String msg = _rb.getString( "pewebcontainer.missingJKProperties" );
+            msg = MessageFormat.format(msg, new Object[] { propertiesURL });
+            _logger.log(Level.WARNING, msg);
+            return;
+        }
+
+        Properties properties = null;
+        InputStream is = null;
+ 
+        try {
+            FileInputStream fis = new FileInputStream(propertiesFile);
+            is = new BufferedInputStream(fis);
+            properties = new Properties();
+            properties.load(is);
+
+        } catch (Exception ex) {
+            String msg = _rb.getString("pewebcontainer.configureJK");
+            msg = MessageFormat.format(
+                msg, 
+                new Object[] { Integer.valueOf(connector.getPort()) });
+            _logger.log(Level.SEVERE, msg, ex);
+
+            } finally {
+                if (is != null) {
+                    try {
+                        is.close();
+                    } catch (IOException ioe) {}
+                }
+            }
+
+        Enumeration enumeration = properties.keys();
+        while (enumeration.hasMoreElements()) {
+            String name = (String) enumeration.nextElement();
+            String value = (String) properties.getProperty(name);
+            if (value != null) {
+                IntrospectionUtils.setProperty(connector, name, value);
+            }
+
         }
     }
     
