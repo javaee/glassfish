@@ -139,7 +139,7 @@ public class WebDeployer extends JavaEEDeployer<WebContainer, WebApplication>{
             Properties params = dc.getCommandParameters();
             if (params.getProperty(DeployCommand.CONTEXT_ROOT)!=null) {
                 contextRoot = params.getProperty(DeployCommand.CONTEXT_ROOT);
-            } else if (wbd.getContextRoot() != null || wbd.getContextRoot().length()==0) {
+            } else if (wbd.getContextRoot() != null && wbd.getContextRoot().length()>0) {
                 contextRoot = wbd.getContextRoot(); 
             } else {
                 contextRoot = params.getProperty(DeployCommand.NAME);
