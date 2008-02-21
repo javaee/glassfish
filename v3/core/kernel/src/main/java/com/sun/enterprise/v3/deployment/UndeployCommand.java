@@ -33,6 +33,7 @@ import com.sun.enterprise.v3.server.V3Environment;
 import com.sun.enterprise.v3.services.impl.GrizzlyService;
 import com.sun.enterprise.config.serverbeans.Applications;
 import com.sun.enterprise.config.serverbeans.Module;
+import com.sun.enterprise.config.serverbeans.WebModule;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
@@ -110,7 +111,8 @@ public class UndeployCommand extends ApplicationLifecycle implements AdminComman
                 ConfigSupport.apply(new SingleConfigCode<Applications>() {
                     public Object run(Applications apps) throws PropertyVetoException, TransactionFailure {
                         for (Module module : applications.getModules()) {
-                            if (module.getName().equals(name)) {
+                            if (module.getName().equals(name) 
+                                && module instanceof WebModule) {
                                 apps.getModules().remove(module);
                                 return module;
                             }
@@ -118,6 +120,9 @@ public class UndeployCommand extends ApplicationLifecycle implements AdminComman
                         throw new TransactionFailure("Module not found in configuration", null);
                     }
                 }, applications);
+
+                // remove the "application" element
+                unregisterAppFromDomainXML(name);
 
             } catch(TransactionFailure e) {
                 logger.warning("Module " + name + " not found in configuration");

@@ -36,6 +36,7 @@ import com.sun.enterprise.module.ModuleDefinition;
 import com.sun.enterprise.module.impl.ClassLoaderProxy;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.Applications;
+import com.sun.enterprise.config.serverbeans.ServerTags;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
@@ -76,15 +77,14 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
     public static final String CONTEXT_ROOT = "contextroot";
     public static final String LIBRARIES = "libraries";
     public static final String DIRECTORY_DEPLOYED = "DirectoryDeployed";
+    public static final String LOCATION = "LOCATION";
+    public static final String ENABLED = "ENABLED";
     
     @Inject
     V3Environment env;
 
     @Inject
     ArchiveFactory archiveFactory;
-
-    @Inject
-    ApplicationMetaDataPersistence metaData;
 
     @Inject
     CommandRunner commandRunner;
@@ -265,6 +265,8 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
 
             // let's add our configuration data. so far it's an horrible hack where I always create
             // a WebModule instance, soon we should have a generic config object
+            final List<ApplicationInfo> appInfos = 
+                new ArrayList<ApplicationInfo>();
             com.sun.enterprise.config.serverbeans.WebModule wm = (com.sun.enterprise.config.serverbeans.WebModule)
                 ConfigSupport.apply(new SingleConfigCode<Applications>() {
                     /**
@@ -291,7 +293,7 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
                         deploymentContext.setConfig(wm);
 
                         ApplicationInfo appInfo = load(appSniffers, deploymentContext, report);
-
+                        appInfos.add(appInfo);
                         return wm;
                     }
                 }, applications);
@@ -310,19 +312,12 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
                 msgPart.addProperty(NAME, name);
                 
                 Properties moduleProps = deploymentContext.getProps();
-                moduleProps.setProperty(NAME, name);
-                StringBuffer sb = new StringBuffer();
-                for (Sniffer sniffer : appSniffers) {
-                    sb.append(sniffer.getModuleType());
-                    sb.append(" ");
-                }
-                moduleProps.setProperty("Type", sb.toString());
-                moduleProps.setProperty("Source", deploymentContext.getSource().getURI().toString());
-                if (contextRoot!=null) {
-                    moduleProps.setProperty(CONTEXT_ROOT, contextRoot);
-                }
-                moduleProps.setProperty(DIRECTORY_DEPLOYED, String.valueOf(isDirectoryDeployed));
-                metaData.save(name, moduleProps);
+                moduleProps.setProperty(ServerTags.NAME, name);
+                moduleProps.setProperty(ServerTags.LOCATION, deploymentContext.getSource().getURI().toString());
+                moduleProps.setProperty(ServerTags.ENABLED, enabled);
+                moduleProps.setProperty(ServerTags.DIRECTORY_DEPLOYED, String.valueOf(isDirectoryDeployed));
+                // register application information in domain.xml
+                registerAppInDomainXML(appInfos.get(0), deploymentContext);
             }
         } catch(Exception e) {
             logger.log(Level.SEVERE, "Error during deployment : ", e);

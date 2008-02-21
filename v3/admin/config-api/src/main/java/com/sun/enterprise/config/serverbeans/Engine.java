@@ -38,11 +38,14 @@
 
 package com.sun.enterprise.config.serverbeans;
 
+import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.Element;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.component.Injectable;
 
+import java.beans.PropertyVetoException;
+import java.beans.VetoableChangeSupport;
 import java.io.Serializable;
 import java.util.List;
 
@@ -52,25 +55,67 @@ import java.util.List;
  */
 
 /* @XmlType(name = "", propOrder = {
-    "lifecycleModuleOrJ2EeApplicationOrEjbModuleOrWebModuleOrConnectorModuleOrAppclientModuleOrMbeanOrExtensionModule"
+    "description",
+    "property"
 }) */
 @Configured
-public interface Applications extends ConfigBeanProxy, Injectable  {
+public interface Engine extends ConfigBeanProxy, Injectable, Module {
 
     /**
-     * Gets the value of the lifecycleModuleOrJ2EeApplicationOrEjbModuleOrWebModuleOrConnectorModuleOrAppclientModuleOrMbeanOrExtensionModuleorApplication property.
-     * Objects of the following type(s) are allowed in the list
-     * {@link LifecycleModule }
-     * {@link J2EeApplication }
-     * {@link EjbModule }
-     * {@link WebModule }
-     * {@link ConnectorModule }
-     * {@link AppclientModule }
-     * {@link Mbean }
-     * {@link ExtensionModule }
-     * {@link Application }
+     * Gets the value of the sniffer property.
+     *
+     * @return possible object is
+     *         {@link String }
      */
-    @Element("*")
-    public List<Module> getModules();
+    @Attribute(required = true)
+    public String getSniffer();
+
+    /**
+     * Sets the value of the sniffer property.
+     *
+     * @param value allowed object is
+     *              {@link String }
+     */
+    public void setSniffer(String value) throws PropertyVetoException;
+
+    /**
+     * Gets the value of the description property.
+     *
+     * @return possible object is
+     *         {@link String }
+     */
+    @Attribute
+    public String getDescription();
+
+    /**
+     * Sets the value of the description property.
+     *
+     * @param value allowed object is
+     *              {@link String }
+     */
+    public void setDescription(String value) throws PropertyVetoException;
+
+    /**
+     * Gets the value of the property property.
+     * <p/>
+     * <p/>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the property property.
+     * <p/>
+     * <p/>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getProperty().add(newItem);
+     * </pre>
+     * <p/>
+     * <p/>
+     * <p/>
+     * Objects of the following type(s) are allowed in the list
+     * {@link Property }
+     */
+    @Element("property")
+    public List<Property> getProperty();
 
 }

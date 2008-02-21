@@ -34,6 +34,10 @@ import com.sun.enterprise.v3.server.ApplicationLifecycle;
 import com.sun.enterprise.v3.server.V3Environment;
 import com.sun.enterprise.config.serverbeans.Applications;
 import com.sun.enterprise.config.serverbeans.Module;
+import com.sun.enterprise.config.serverbeans.Application;
+import com.sun.enterprise.config.serverbeans.Engine;
+import com.sun.enterprise.config.serverbeans.WebModule;
+import com.sun.enterprise.config.serverbeans.Property;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.Startup;
 import org.glassfish.api.container.Sniffer;
@@ -82,9 +86,6 @@ public class ApplicationLoaderService extends ApplicationLifecycle
     V3Environment env;
 
     @Inject
-    ApplicationMetaDataPersistence metaData;
-
-    @Inject
     Applications applications;
 
 
@@ -108,15 +109,9 @@ public class ApplicationLoaderService extends ApplicationLifecycle
         
         assert env!=null;
         
-        File appsRoot = new File(env.getApplicationStubPath());
-
-        if (appsRoot.exists()) {
-            File[] appNames = appsRoot.listFiles();
-            for (File appRoot : appNames) {
-                if (appRoot.isDirectory()) {
-
-                    processApplication(appRoot, logger);
-                }
+        for (Module module : applications.getModules()) {
+            if (module instanceof Application) {
+                processApplication((Application)module, logger);
             }
         }
 
@@ -187,23 +182,20 @@ public class ApplicationLoaderService extends ApplicationLifecycle
     }
     
 
-    private void processApplication(File appRoot, final Logger logger) {
+    private void processApplication(Application app, final Logger logger) {
 
         long operationStartTime = Calendar.getInstance().getTimeInMillis();
 
-        Properties props = metaData.load(appRoot.getName());
-        if (props==null) {
-            return;
+        String source = app.getLocation();
+        final String appName = app.getName();
+
+        List<String> snifferTypes = new ArrayList<String>();
+        for (Engine engine : app.getEngine()) {
+            snifferTypes.add(engine.getSniffer());
         }
 
-        // todo : dochez : replace all those with the config api keys
-        String sniffersType=props.getProperty("Type");
-        String source = props.getProperty("Source");
-        final String appName = props.getProperty(DeployCommand.NAME);
-
-
-        if (sniffersType == null) {
-            logger.severe("Cannot determine application type at " + appRoot.getAbsolutePath());
+        if (snifferTypes.isEmpty()) {
+            logger.severe("Cannot determine application type at " + source);
             return;
         }
         URI uri = null;
@@ -219,18 +211,19 @@ public class ApplicationLoaderService extends ApplicationLifecycle
                 try {
 
                     archive = archiveFactory.openArchive(sourceFile);
-                    Properties deploymentProperties = new Properties();
-                    deploymentProperties.putAll(props);
+                    Properties deploymentParams = 
+                        populateDeployParamsFromDomainXML(app);
 
                     DeploymentContextImpl depContext = new DeploymentContextImpl(
                             logger,
                             archive,
-                            deploymentProperties,
+                            deploymentParams,
                             env);
 
 
                     for (Module module : applications.getModules()) {
-                        if (module.getName().equals(appName)) {
+                        if (module.getName().equals(appName) && 
+                            module instanceof WebModule) {
                             depContext.setConfig(module);
                             break;
                         }
@@ -239,14 +232,13 @@ public class ApplicationLoaderService extends ApplicationLifecycle
                         logger.severe("Cannot find configuration for application " + sourceFile.getName());
                         return;
                     }
-                    depContext.setProps(props);
+ 
+                    depContext.setProps(populateDeployPropsFromDomainXML(app));
 
                     ActionReport report = new HTMLActionReporter();
 
                     List<Sniffer> sniffers = new ArrayList<Sniffer>();
-                    StringTokenizer st = new StringTokenizer(sniffersType, " ", false);
-                    while(st.hasMoreElements()) {
-                        String snifferType = st.nextToken();
+                    for (String snifferType : snifferTypes) {
                         Sniffer sniffer = getSniffer(snifferType);
                         if (sniffer!=null) {
                             sniffers.add(sniffer);
@@ -374,5 +366,28 @@ public class ApplicationLoaderService extends ApplicationLifecycle
                 super.unload(appInfo.getName(), depContext, dummy);
             }
         }
+    }
+
+    // set the neccessary information in DeploymentContext params from
+    // domain.xml
+    private Properties populateDeployParamsFromDomainXML(Application app) {
+        Properties deploymentParams = new Properties(); 
+        deploymentParams.setProperty(DeployCommand.NAME, app.getName());
+        deploymentParams.setProperty(DeployCommand.LOCATION, app.getLocation());
+        deploymentParams.setProperty(DeployCommand.CONTEXT_ROOT, 
+            app.getContextRoot());
+        deploymentParams.setProperty(DeployCommand.DIRECTORY_DEPLOYED, 
+            app.getDirectoryDeployed());
+        return deploymentParams;
+    }
+
+    // set the neccessary information in DeploymentContext props from
+    // domain.xml
+    private Properties populateDeployPropsFromDomainXML(Application app) {
+        Properties deploymentProps = new Properties();
+        for (Property prop : app.getProperty()) {
+            deploymentProps.put(prop.getName(), prop.getValue());
+        }
+        return deploymentProps;
     }
 }

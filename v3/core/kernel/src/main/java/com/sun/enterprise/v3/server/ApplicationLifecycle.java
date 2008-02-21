@@ -27,9 +27,14 @@ import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import com.sun.enterprise.module.*;
 import com.sun.enterprise.module.impl.ClassLoaderProxy;
 import com.sun.enterprise.v3.data.*;
-import com.sun.enterprise.v3.deployment.DeployCommand;
 import com.sun.enterprise.v3.deployment.DeploymentContextImpl;
+import com.sun.enterprise.v3.deployment.DeployCommand;
 import com.sun.enterprise.v3.services.impl.GrizzlyService;
+import com.sun.enterprise.config.serverbeans.Applications;
+import com.sun.enterprise.config.serverbeans.Application;
+import com.sun.enterprise.config.serverbeans.Engine;
+import com.sun.enterprise.config.serverbeans.Property;
+import com.sun.enterprise.config.serverbeans.ServerTags;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.container.Adapter;
@@ -45,8 +50,12 @@ import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
+import org.jvnet.hk2.config.ConfigSupport;
+import org.jvnet.hk2.config.SingleConfigCode;
+import org.jvnet.hk2.config.TransactionFailure;
 
 import java.util.*;
+import java.util.Properties;
 import java.util.jar.Manifest;
 import java.util.jar.JarFile;
 import java.util.logging.Level;
@@ -55,6 +64,7 @@ import java.net.URL;
 import java.net.MalformedURLException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.beans.PropertyVetoException;
 
 /**
  * Application Loader is providing utitily methods to load applications
@@ -86,6 +96,9 @@ abstract public class ApplicationLifecycle {
 
     @Inject
     ArchiveFactory archiveFactory;
+
+    @Inject
+    Applications applications;
 
     protected Logger logger = LogDomains.getLogger(LogDomains.DPL_LOGGER);
 
@@ -622,5 +635,93 @@ abstract public class ApplicationLifecycle {
         } finally {
             Thread.currentThread().setContextClassLoader(original);   
         }
+    }
+
+    // register application information in domain.xml
+    protected void registerAppInDomainXML(final ApplicationInfo 
+        applicationInfo, final DeploymentContext context) 
+        throws TransactionFailure {
+        final Properties moduleProps = context.getProps();
+        Application application = (Application)
+            ConfigSupport.apply(new SingleConfigCode<Applications>() {
+                public Object run(Applications param) throws PropertyVetoException, TransactionFailure {
+                    Application app = ConfigSupport.createChildOf(param, 
+                        Application.class);
+                    applications.getModules().add(app);
+
+                    // various attributes
+                    app.setName(moduleProps.getProperty(ServerTags.NAME));
+                    app.setLocation(moduleProps.getProperty(
+                        ServerTags.LOCATION));
+                    // set to default user for object-type till we have domain 
+                    // dtd validation
+                    app.setObjectType("user");
+		    app.setEnabled(moduleProps.getProperty(
+                        ServerTags.ENABLED));
+                    if (moduleProps.getProperty(ServerTags.CONTEXT_ROOT) != 
+                        null) {
+		            app.setContextRoot(moduleProps.getProperty(
+                                ServerTags.CONTEXT_ROOT));
+                    }
+                    if (moduleProps.getProperty(ServerTags.LIBRARIES) != 
+                        null) {
+		            app.setContextRoot(moduleProps.getProperty(
+                                ServerTags.LIBRARIES));
+                    }
+                    app.setDirectoryDeployed(moduleProps.getProperty(
+                        ServerTags.DIRECTORY_DEPLOYED));
+   
+                    
+                    // engine element
+                    for (ModuleInfo moduleInfo : 
+                        applicationInfo.getModuleInfos()) {
+                        Engine engine = ConfigSupport.createChildOf(app, 
+                        Engine.class);
+                        app.getEngine().add(engine);
+                        engine.setSniffer(moduleInfo.getContainerInfo(
+                            ).getSniffer().getModuleType());
+                    } 
+
+                    // property element
+                    // trim the properties that have been written as attributes
+                    // the rest properties will be written as property element
+                    for (Iterator itr = moduleProps.keySet().iterator(); 
+                        itr.hasNext();) {
+                        String propName = (String) itr.next();
+                        if (!propName.equals(ServerTags.NAME) && 
+                            !propName.equals(ServerTags.LOCATION) && 
+                            !propName.equals(ServerTags.ENABLED) && 
+                            !propName.equals(ServerTags.CONTEXT_ROOT) && 
+                            !propName.equals(ServerTags.LIBRARIES) && 
+                            !propName.equals(ServerTags.OBJECT_TYPE) && 
+                            !propName.equals(ServerTags.DIRECTORY_DEPLOYED))
+                        { 
+                            Property prop = ConfigSupport.createChildOf(app, 
+                                Property.class);
+                            app.getProperty().add(prop);
+                            prop.setName(propName);
+                            prop.setValue(moduleProps.getProperty(propName));
+                        }
+                    }
+                    return app;
+                }
+        }, applications);
+    }
+
+    protected void unregisterAppFromDomainXML(final String appName) 
+        throws TransactionFailure {
+        ConfigSupport.apply(new SingleConfigCode<Applications>() {
+            public Object run(Applications apps) throws PropertyVetoException, TransactionFailure {
+                for (com.sun.enterprise.config.serverbeans.Module module : 
+                    applications.getModules()) {
+                    if (module.getName().equals(appName) && 
+                        module instanceof Application) {
+                        apps.getModules().remove(module);
+                        return module;
+                    }
+                }
+                throw new TransactionFailure("Module not found in configuration", null);
+            }
+        }, applications);
     }
 }
