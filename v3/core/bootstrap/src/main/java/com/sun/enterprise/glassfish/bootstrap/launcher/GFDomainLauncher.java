@@ -1,20 +1,25 @@
-
 package com.sun.enterprise.glassfish.bootstrap.launcher;
+import java.util.*;
 
 /**
+ * GFDomainLauncher
  *
  * @author bnevins
  */
-public abstract class GFLauncher 
+
+public class GFDomainLauncher 
 {
-    GFLauncherInfo getInfo()
+    public static void main(String[] args) 
     {
-        return info;
+        // TODO code application logic here
     }
-    
-    
-    
-    private GFLauncherInfo info = new GFLauncherInfo();
+
+    ///////////////////////////////////////////////////////////////////////////
+
+    public void setInfo(java.util.Properties props)
+    {
+        
+    }
 }
 
 /*
