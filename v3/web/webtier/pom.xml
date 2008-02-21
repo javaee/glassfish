@@ -211,9 +211,9 @@
         </dependency>
 
         <dependency>
-            <groupId>javax.faces</groupId>
-            <artifactId>jsf-impl</artifactId>
-            <version>${jsf-api.version}</version>
+            <groupId>org.glassfish.web</groupId>
+            <artifactId>jsf-connector</artifactId>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 </project>
