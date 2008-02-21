@@ -498,10 +498,13 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
     private void createHttpListener(HttpListener httpListener,
                                              HttpService httpService){
         
-        /* TODO 
+        
         if (!Boolean.getBoolean(httpListener.getEnabled())) {
-            return;
-        }*/
+            _logger.warning(httpListener.getId()+" HTTP listener is disabled " +
+                    Boolean.getBoolean(httpListener.getEnabled()));
+            // TODO
+            //return;
+        }
                                  
         int port = 8080;
         WebConnector connector;
