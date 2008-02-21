@@ -54,6 +54,7 @@
         <module>tomcat-connector</module>
         <module>jsf-connector</module>
 		<!--module>jstl</module-->
+        <module>admin</module>
     </modules>
 
 </project>
