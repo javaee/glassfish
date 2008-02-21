@@ -45,7 +45,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>grizzly-jruby-module</artifactId>
     <packaging>hk2-jar</packaging>
-    <version>${grizzly.version}</version>
+    <version>1.7-SNAPSHOT</version>
     <name>Module packaging for JRuby grizzly adapter for V3</name>
     <description>JRUBY grizzly adapter for GlassFish v3</description>
 
@@ -83,7 +83,7 @@
         <dependency>
             <groupId>com.sun.grizzly</groupId>
              <artifactId>grizzly-jruby</artifactId>
-             <version>${grizzly.version}</version>
+             <version>1.7-SNAPSHOT</version>
              <exclusions>
                  <exclusion>
                     <groupId>org.jruby</groupId>
@@ -106,7 +106,7 @@
         <dependency>
             <groupId>org.glassfish.external</groupId>
             <artifactId>grizzly-module</artifactId>
-            <version>${grizzly.version}</version>
+            <version>1.7-SNAPSHOT</version>
         </dependency>
     </dependencies>
 </project>
