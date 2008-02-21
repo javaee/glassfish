@@ -18,7 +18,8 @@
         <module>core</module>
         <module>jdbc</module>
         <module>war</module>
-    </modules>
+    	<module>j1plugin</module>
+  </modules>
 
     <build>
         <plugins>
