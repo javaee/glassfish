@@ -29,6 +29,7 @@ import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.v3.common.ActionReporter;
 import com.sun.enterprise.v3.common.HTMLActionReporter;
 import com.sun.enterprise.v3.common.PropsFileActionReporter;
+import com.sun.enterprise.v3.common.XMLActionReporter;
 import com.sun.grizzly.tcp.Request;
 import com.sun.grizzly.tcp.Response;
 import com.sun.grizzly.tcp.http11.InternalOutputBuffer;
@@ -95,9 +96,12 @@ public class AdminAdapter implements Adapter {
 
         // so far, I only use HTMLActionReporter, but I should really look at
         // the request client.
+        // XXX Really needs to be generalized
         ActionReporter report;
         if (req.getHeader("User-Agent").startsWith("hk2")) {
             report = new PropsFileActionReporter();
+        } else if (req.getHeader("User-Agent").startsWith("xml")) {
+            report = new XMLActionReporter();
         } else {
             report = new HTMLActionReporter();
         }
