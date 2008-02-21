@@ -120,7 +120,7 @@
         <jsf-impl.version>2.0.0-SNAPSHOT</jsf-impl.version>        
         <deployment-api.version>1.2</deployment-api.version>
         <jaxrpc-api.version>1.1</jaxrpc-api.version>
-        <grizzly.version>1.7-SNAPSHOT</grizzly.version>
+        <grizzly.version>1.7.1</grizzly.version>
         <jasper-jsr199.version>9.1</jasper-jsr199.version>
         <jaxb-api.version>2.1</jaxb-api.version>
         <jaxws-api.version>2.0</jaxws-api.version>
