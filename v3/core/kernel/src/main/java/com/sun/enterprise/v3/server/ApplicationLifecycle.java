@@ -326,16 +326,20 @@ abstract public class ApplicationLifecycle {
         }
 
         // now sort...
-        for (Class required : metaDataRequired.keySet()) {
-            if (metaDataProvided.containsKey(required)) {
-                Deployer provider = metaDataProvided.get(required);
-                Deployer requester = metaDataRequired.get(required);
-                // TODO : better sorting job.
-                sortedModuleInfos.addFirst(containerInfosByDeployers.get(provider));
-                sortedModuleInfos.addLast(containerInfosByDeployers.get(requester));
-            } else {
-                failure(logger,"Deployer " + metaDataRequired.get(required) + " requires " + required + " but no other deployer provides it", null, report);
-                return null;
+        if (metaDataRequired.isEmpty()) {
+            sortedModuleInfos.addAll(containerInfosByDeployers.values());
+        } else {
+            for (Class required : metaDataRequired.keySet()) {
+                if (metaDataProvided.containsKey(required)) {
+                    Deployer provider = metaDataProvided.get(required);
+                    Deployer requester = metaDataRequired.get(required);
+                    // TODO : better sorting job.
+                    sortedModuleInfos.addFirst(containerInfosByDeployers.get(provider));
+                    sortedModuleInfos.addLast(containerInfosByDeployers.get(requester));
+                } else {
+                    failure(logger,"Deployer " + metaDataRequired.get(required) + " requires " + required + " but no other deployer provides it", null, report);
+                    return null;
+                }
             }
         }
         // Ok we now have all we need to create the parent class loader for our application

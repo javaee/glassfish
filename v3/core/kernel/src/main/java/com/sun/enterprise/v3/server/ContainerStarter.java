@@ -133,11 +133,13 @@ public class ContainerStarter {
                     registry.addContainer(name, info);
                     containers.add(info);
 
-                    if (mainModule==null) {
                         info.setMainModule(snifferModule);
-                    } else {
-                        info.setMainModule(mainModule);
-                    }
+                        
+//                    if (mainModule==null) {
+//                        info.setMainModule(snifferModule);
+//                    } else {
+//                        info.setMainModule(mainModule);
+//                    }
                 }
             } catch (ComponentException e) {
                 logger.log(Level.SEVERE, "Cannot create or inject Container", e);
