@@ -165,9 +165,11 @@ import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.PreDestroy;
 
 import javax.naming.spi.NamingManager;
+import javax.servlet.jsp.JspFactory;
 import java.lang.reflect.Method;
-
+import org.apache.jasper.runtime.JspFactoryImpl;
 import org.apache.catalina.Realm;
+
 import com.sun.enterprise.security.integration.RealmInitializer;
 
 /**
@@ -238,6 +240,8 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
     
     public void postConstruct() {
+
+        setJspFactory();
 
         instance = (V3Environment) _serverContext.getDefaultHabitat().getComponent(V3Environment.class);
         _modulesWorkRoot = instance.getWebModuleCompileJspPath();
@@ -4824,6 +4828,12 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                 _logger.log(Level.INFO, "webcontainer.notYet", params);
             }
         }*/
+    }
+
+    private static synchronized void setJspFactory() {
+        if (JspFactory.getDefaultFactory() == null) {
+            JspFactory.setDefaultFactory(new JspFactoryImpl());
+        }
     }
 
 }

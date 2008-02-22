@@ -39,9 +39,11 @@ package com.sun.enterprise.web;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 import java.util.ResourceBundle;
-import java.util.Hashtable;
-import java.util.Enumeration;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.Hashtable;
 import java.text.MessageFormat;
 import java.lang.instrument.IllegalClassFormatException;
 import java.lang.instrument.ClassFileTransformer;
@@ -60,6 +62,8 @@ import org.apache.catalina.LifecycleListener;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.Wrapper;
 import org.apache.catalina.loader.WebappClassLoader;
+import org.glassfish.api.web.TldProvider;
+
 import com.sun.enterprise.deployment.runtime.web.SunWebApp;
 import com.sun.enterprise.deployment.runtime.web.WebProperty;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
@@ -381,6 +385,21 @@ final class WebModuleListener
      * in sun-web.xml's jsp-config
      */
     private void configureJspParameters(WebModule webModule) {
+        // Find tld URL and set it to ServletContext attribute
+        Collection<TldProvider> tldProviders =
+                serverContext.getDefaultHabitat().getAllByContract(
+                TldProvider.class);
+        List<URL> tldURLs = new ArrayList<URL>();
+        for (TldProvider tldProvider : tldProviders) {
+            URL[] urls = tldProvider.getTldURLs();
+            if (urls != null && urls.length > 0) {
+                for (URL url : urls) {
+                    tldURLs.add(url);
+                }
+            }
+        }
+        webModule.getServletContext().setAttribute(
+                "com.sun.appserv.tld.urls", tldURLs);
 
         SunWebApp bean  = webModule.getIasWebAppConfigBean();
 
