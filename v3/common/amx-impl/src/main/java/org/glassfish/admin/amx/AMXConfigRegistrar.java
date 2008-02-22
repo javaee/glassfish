@@ -11,6 +11,10 @@ import com.sun.appserv.management.config.AMXConfig;
 
 
 /**
+    Called when ConfigBeans come into the habitat.  They are passed along
+    to the AMXConfigLoader, which might queue them (if AMX has not been requested)
+    or might register them as MBeans (if AMX has been requested already).
+    
  * @author llc
  */
 @Service //(name="AMXConfigRegistrar")
