@@ -113,6 +113,14 @@ public @interface AMXObjectNameInfo {
        because its j2eeType alone effectively denotes the name.
      */
     boolean singleton() default false;
+    
+    
+    /**
+       Declares that the j2eeType of this MBean should not be included as an ancestor
+       property in its children.  DomainConfig is the key example; including it would serve
+       no useful purpose.
+     */
+    boolean omitAsAncestor() default false;
 }
 
 

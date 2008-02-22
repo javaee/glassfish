@@ -68,7 +68,7 @@ import org.glassfish.admin.amx.AMXConfigInfo;
     "systemProperty",
     "property"
 }) */
-@AMXObjectNameInfo(j2eeType=com.sun.appserv.management.base.XTypes.DOMAIN_CONFIG, singleton=true)
+@AMXObjectNameInfo(j2eeType=com.sun.appserv.management.base.XTypes.DOMAIN_CONFIG, singleton=true, omitAsAncestor=true)
 @AMXConfigInfo( amxInterface=com.sun.appserv.management.config.DomainConfig.class )
 @Configured
 public interface Domain extends ConfigBeanProxy, Injectable  {

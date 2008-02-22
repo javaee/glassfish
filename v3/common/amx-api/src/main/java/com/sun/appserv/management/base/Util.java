@@ -183,6 +183,28 @@ public final class Util
 		
 		return( Util.makeProp( j2eeType, name ) );
 	}
+    
+    /**
+		Extract all properties other than j2eeType=<type>,name=<name>.
+		
+		@param objectName
+	 */
+		public static String
+	getAdditionalProps( final ObjectName objectName )
+	{
+        final java.util.Hashtable allProps = objectName.getKeyPropertyList();
+        allProps.remove( AMX.J2EE_TYPE_KEY );
+        allProps.remove( AMX.NAME_KEY );
+        
+        String props = "";
+        for( final Object key : allProps.keySet() )
+        {
+            final String prop = makeProp( (String)key, (String)allProps.get(key) );
+            props = concatenateProps( props, prop );
+        }
+		
+		return props;
+	}
 	
 	
 	/**

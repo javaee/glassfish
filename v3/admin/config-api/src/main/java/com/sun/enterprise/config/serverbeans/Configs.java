@@ -47,6 +47,7 @@ import java.io.Serializable;
 import java.util.List;
 
 
+import org.glassfish.admin.amx.AMXConfigInfo;
 /**
  *
  */
@@ -54,6 +55,7 @@ import java.util.List;
 /* @XmlType(name = "", propOrder = {
     "config"
 }) */
+@AMXConfigInfo( amxInterface=org.glassfish.admin.amx.AMXConfigVoid.class )
 @Configured
 public interface Configs extends ConfigBeanProxy, Injectable  {
 

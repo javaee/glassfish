@@ -21,13 +21,7 @@ import com.sun.appserv.management.config.AMXConfig;
 public final class AMXConfigRegistrar implements CageBuilder
 {
     private volatile AMXConfigLoader  mConfigLoader;
-    
-    @SuppressWarnings("unchecked")
-    final ConfigBean asConfigBean( final Object o )
-    {
-        return (o instanceof ConfigBean) ? (ConfigBean)o : null;
-    }
-    
+        
         public
     AMXConfigRegistrar()
     {
@@ -38,6 +32,16 @@ public final class AMXConfigRegistrar implements CageBuilder
     
     private static void debug( final String s ) { System.out.println(s); }
     
+    
+    /**
+        @return a ConfigBean, or null if it's not a ConfigBean
+     */
+    @SuppressWarnings("unchecked")
+    final ConfigBean asConfigBean( final Object o )
+    {
+        return (o instanceof ConfigBean) ? (ConfigBean)o : null;
+    }
+
     public void onEntered(Inhabitant<?> inhabitant)
     {
         final ConfigBean cb = asConfigBean(inhabitant);

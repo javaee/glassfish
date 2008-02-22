@@ -53,7 +53,7 @@ import org.glassfish.admin.amx.AMXConfigInfo;
 
 
 /* @XmlType(name = "") */
-@AMXObjectNameInfo(j2eeType=com.sun.appserv.management.base.XTypes.ACCESS_LOG_CONFIG,nameHint="id")
+@AMXObjectNameInfo(j2eeType=com.sun.appserv.management.base.XTypes.ACCESS_LOG_CONFIG,singleton=true)
 @AMXConfigInfo( amxInterface=com.sun.appserv.management.config.AccessLogConfig.class )
 @Configured
 public interface AccessLog extends ConfigBeanProxy, Injectable {

@@ -177,7 +177,7 @@ public class AMXImplBase extends MBeanImplBase
 	private final Delegate		mSuppliedDelegate;
 	private volatile Delegate   mDelegate;
 	
-	private AMXAttributeNameMapper	mAttributeNameMapper	= null;
+	//private AMXAttributeNameMapper	mAttributeNameMapper	= null;
 	
 	private Map<String,MBeanAttributeInfo>			mAttributeInfos;
 	
@@ -247,7 +247,7 @@ public class AMXImplBase extends MBeanImplBase
 		// initialization of mDelegate is deferred until later; the supplied delegate
 		// may not be in a position to run yet
 		mDelegate				= null;
-		mAttributeNameMapper	= null;
+		//mAttributeNameMapper	= null;
 		
 		mAttributeInfos	= null;
 		mFullType		= null;
@@ -382,13 +382,13 @@ public class AMXImplBase extends MBeanImplBase
 		return( DelegateInvocationHandler.newProxyInstance( getDelegate(), theInterface ) );
 	}
 	
-	*/
 	
 		protected AMXAttributeNameMapper
 	getAttributeNameMapper()
 	{
 		return( mAttributeNameMapper );
 	}
+	*/
  
 	private static final MBeanNotificationInfo[] EMPTY_NOTIFICATIONS = new MBeanNotificationInfo[ 0 ];
 	
