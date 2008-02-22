@@ -102,7 +102,11 @@ public final class GlassFishConfigBean extends ConfigBean {
         COMPLETED_THREAD.add( this );
     }
     
-    private static final InitializationCompletedThread  COMPLETED_THREAD = new InitializationCompletedThread();
+    private static final InitializationCompletedThread  COMPLETED_THREAD;
+    static {
+        COMPLETED_THREAD = new InitializationCompletedThread();
+        COMPLETED_THREAD.submit( RunnableBase.HowToRun.RUN_IN_SEPARATE_THREAD );
+    }
     
     private static final class InitializationCompletedThread extends RunnableBase
     {
