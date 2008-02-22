@@ -263,6 +263,17 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
                     sourceArchive, parameters, env);
             deploymentContext.setClassLoader(cloader);
 
+            Properties moduleProps = deploymentContext.getProps();
+            moduleProps.setProperty(ServerTags.NAME, name);
+            moduleProps.setProperty(ServerTags.LOCATION, deploymentContext.getSource().getURI().toString());
+            if (contextRoot!=null) {
+                moduleProps.setProperty(CONTEXT_ROOT, contextRoot);
+            }
+
+            moduleProps.setProperty(ServerTags.ENABLED, enabled);
+            moduleProps.setProperty(ServerTags.DIRECTORY_DEPLOYED, String.valueOf(isDirectoryDeployed));
+
+
             // let's add our configuration data. so far it's an horrible hack where I always create
             // a WebModule instance, soon we should have a generic config object
             final List<ApplicationInfo> appInfos = 
@@ -311,11 +322,6 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
                 ActionReport.MessagePart msgPart = report.getTopMessagePart();
                 msgPart.addProperty(NAME, name);
                 
-                Properties moduleProps = deploymentContext.getProps();
-                moduleProps.setProperty(ServerTags.NAME, name);
-                moduleProps.setProperty(ServerTags.LOCATION, deploymentContext.getSource().getURI().toString());
-                moduleProps.setProperty(ServerTags.ENABLED, enabled);
-                moduleProps.setProperty(ServerTags.DIRECTORY_DEPLOYED, String.valueOf(isDirectoryDeployed));
                 // register application information in domain.xml
                 registerAppInDomainXML(appInfos.get(0), deploymentContext);
             }
