@@ -1230,7 +1230,7 @@ public final class ClassUtil
 	 */
 		public static Object
 	getFieldValue(
-		final Class		theInterface,
+		final Class<?>	theInterface,
 		final String	name )
 	{
 		Object	value	= null;
