@@ -1,0 +1,246 @@
+<html>
+    <head>
+        <meta name="j1holtabname" content="Introduction">
+    </head>
+    <body>
+        <div class="j1holcontents">
+            <!-- This text contents of the tag labeled "j1holtitleid" on the
+                 page in the first tab will be used to set the title for the
+                 page.  If such a tag cannot be found, the page title will be
+                 the generic title from the index page. -->
+            <div id="j1holtitleid" class="pagetitle"><a name="Intro"></a>LAB-xxxx: Title of Your Hands-on Lab</div>
+            
+            <div class="j1holduration xbig">Expected duration: 120 minutes</div>
+            
+            <div class="j1holcontacts">Contacts:
+                <a href="mailto:jeff.kesselman@sun.com">Jeff Kesselman</a>
+            and <a href="mailto:dan.templeton@sun.com">Daniel Templeton</a></div>
+            
+            <div class="j1holupdated">Last Updated: May 8, 2007</div>
+            
+            <p>[Write your abstract here.
+                An example follows.] JavaServer Faces (JSF) is a standard-based server
+                side user
+                interface component framework for Java technology based Web
+                applications.
+                In this hands-on lab, your will learn basic concept, architecture
+                and features of JavaServer Faces by building, deploying, and
+                running
+                a set of sample Web applications. You will also learn the usage of
+                basic UI components through JavaServer Faces custom
+                tags, specify page selection through JavaServer Faces navigation
+                model, perform input validation, handle
+                event handling, and so on.
+            </p>
+            
+            <div class="j1holcopyright">
+                <p>Copyright</p>
+                
+                <pre>Copyright 2008 Sun Microsystems, Inc. All rights reserved. Sun, Sun Microsystems, the Sun logo, Solaris, Java, the Java Coffee Cup logo, JavaOne, the JavaOne logo, and all Solaris-based and Java-based marks and logos are trademarks or registered trademarks of Sun Microsystems, Inc. in the United States and other countries.</pre>
+            </div>
+            
+            <p class="j1holheader">Prerequisites</p>
+            
+            <p>This hands-on lab assumes you have some
+            basic knowledge or programming experience on the following technologies.</p>
+            
+            <ul>
+                <li>Servlet and JSP Programming</li>
+                <li>MVC (Model, View, and Controller) architecture</li>
+            </ul>
+            
+            <p class="j1holheader">System Requirements</p>
+            
+            <ul>
+                <li>Supported OS: Windows 2000/ XP, Solaris 8/9, Linux</li>
+                <li>Memory requirement: 256M minimum, 512M recommended</li>
+                <li>Disk space requirement: 300M bytes</li>
+            </ul>
+            
+            <p class="j1holheader">Software needed for the lab</p>
+            
+            <p>[List the list of platform software that need to
+            be downloaded. The following is an example.]</p>
+            
+            <p>Please download and install the following set of software. If you have any
+                questions on installation, please feel free to send questions to the
+            email alias mentioned below.</p>
+            
+            <ul class="j1hollist">
+                <li>Download and install <a href="http://java.sun.com/javase/downloads/?intcmp=1281">JDK 6</a></li>
+                
+                <li>Download and install
+                    <a href="http://www.netbeans.info/downloads/download.php?a=b&amp;p=1">
+                    <a href="http://download.netbeans.org/netbeans/6.0/final/">NetBeans IDE 6.0</a> or higher</a>
+                    <ul>
+                        <li>On the download page, choose either the Web & Java EE download
+                            or the All download.
+                        </li>
+
+                        <li>The instruction of how to build and deploy the lab exercises
+                            in this lab is provided as an optional exercise.
+                        </li>
+                    </ul>
+                </li>
+                
+                <li>
+                    Download and install <a href="http://dev.mysql.com/downloads/mysql/5.0.html#downloads">MySQL 5.0</a> (required for Exercise NNN only)
+                </li>
+                
+                <li>Download and unzip
+                    <a href="http://developers.sun.com/learning/javaoneonline/j1lab.jsp?lab=LAB-4205&yr=2008&track=1">lab
+                    zip file (4205_basicstruts.zip)</a> under a directory of your
+                    choice, &lt;lab_root&gt;
+                    <ul>
+                        <li>Read &lt;lab_root&gt;/basicstruts/index.html to proceed</li>
+                    </ul>
+                </li>
+            </ul>
+            
+            <p class="j1holheader"">Notations used in this documentation</p>
+            
+            <ul class="j1hollist">
+                <li>&lt;J2EE14_HOME&gt; or &lt;INSTALL_DIR&gt;
+                    <ul>
+                        <li>It is the installation directory of J2EE 1.4 SDK</li>
+                        <ul>
+                            <li>For Windows, the default is C:\Sun\AppServer</li>
+                            <li>For Solaris/Linux, the default is /opt/SUNWappserver</li>
+                        </ul>
+                    </ul>
+                </li>
+                
+                <li>&lt;lab_root&gt; - directory into which lab zip file is unzipped
+                    
+                    <ul>
+                        <li>
+                            This document uses &lt;lab_root&gt; to denote the directory
+                            under which you have
+                            unzipped the lab zip file of this handson lab. The name of the lab zip
+                            file of this handson lab is <span style="font-weight: bold;">7622_netbeans40.zip</span>.
+                        </li>
+                        <li>
+                            Once you
+                            unzipped the lab zip file under &lt;lab_root&gt;, it will create
+                            a subdirectory called <span style="font-weight: bold;">netbeans40</span>.
+                            For example, under Windows, if you
+                            have unzipped the lab zip file in the root of drive <span
+                                style="font-weight: bold;">E:\</span>, it will create <span
+                                style="font-weight: bold;">E:\netbeans40</span>.
+                            
+                            Under Linux/Solaris, if you have unzipped the
+                            lab zip file in the <span style="font-weight: bold;">/home/sang</span>
+                            directory, it will create <span style="font-weight: bold;">$HOME/netbeans40</span>
+                            directory.
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+            
+            <p class="j1holheader j1holnote"><a name="Notes">Notes to
+                    JavaOne attendees using lab machines provided. (This does not apply
+                to those who use their own machines.)</a>
+            </p>
+            
+            <ul class="j1hollist">
+                <li>The lab machines are running Java Desktop System over Solaris 10</li>
+                
+                <li>
+                    In order to open a terminal window in Java Desktop System, right click
+                    any point in the background of the desktop, and select Open Terminal in
+                    the pop-up menu.
+                </li>
+                <li>The following source code editors are provided on the lab machines
+                    <ul>
+                        <li>vi (type vi in a terminal window)</li>
+                        <li>emacs (type emacs in a terminal window)</li>
+                        <li>jedit (type jedit in a terminal window)</li>
+                        <li>NetBeans (either click NetBeans icon or type netbeans in a
+                        terminal window)</li>
+                    </ul>
+                </li>
+            </ul>
+            
+            <p class="j1holheader"">Lab exercises</p>
+            
+            <ul>
+                <li><a href="#Exercise_0">Exercise 0: Install and configure the lab
+                environment</a></li>
+                <li><a href="#Exercise_1">Exercise 1: Do this</a></li>
+                <li><a href="#Exercise_2">Exercise 2: Do that</a></li>
+            </ul>
+            
+            <p class="j1holheader">Resources</p>
+            
+            <ul>
+                <li>
+                    <a href="0000_Template.pdf">Lab presentation</a>
+                </li>
+                <li>
+                    <a href="http://java.sun.com/j2ee/1.4/docs/tutorial/doc/JSFIntro.html#wp114889">JSF
+                    tutorial chapters (Chapter 17</a>,
+                    <a href="http://java.sun.com/j2ee/1.4/docs/tutorial/doc/JSFPage.html#wp114889">18,</a>
+                    <a href="http://java.sun.com/j2ee/1.4/docs/tutorial/doc/JSFDevelop.html#wp998388">19,</a>
+                    <a href="http://java.sun.com/j2ee/1.4/docs/tutorial/doc/JSFCustom.html#wp113904">20,</a>
+                    <a href="http://java.sun.com/j2ee/1.4/docs/tutorial/doc/JSFConfigure.html#wp998388">21</a>)
+                    of <a href="http://java.sun.com/j2ee/1.4/docs/tutorial/doc/index.html">J2EE
+                    1.4 tutorial</a>
+                </li>
+                <li>
+                    <a href="http://www.jsfcentral.com/">JSFCentral website (JSF
+                    community)</a>
+                </li>
+                <li>
+                    <a href="http://java.sun.com/j2ee/javaserverfaces/1.0/docs/api/index.html">JSF
+                    API online documentation</a>
+                </li>
+                <li>
+                    <a href="http://java.sun.com/j2ee/javaserverfaces/1.0/docs/tlddocs/overview-summary.html">JSF
+                    Tags online documentation</a>
+                </li>
+                
+                <li>
+                    <a href="http://www.javapassion.com/j2eeadvanced/ClassAdvanced.html#Class_5">JSF
+                        related contents in the "Advanced J2EE programming with
+                    Passion!" online course</a>
+                </li>
+            </ul>
+            
+            <p class="j1holheader">Where to send questions or feedbacks
+            on this lab and public discussion forums</p>
+            
+            <ul class="j1hollist">
+                <li>
+                    You can send technical questions via email to the authors of this
+                    Hands-on lab (and experts on the subject) or you can post the questions
+                    to the web. <br>
+                    Please post questions that are relevant only to this
+                    hands-on lab.
+                    
+                    <ul>
+                        <li>
+                            <a href="https://hands-on-labs.dev.java.net/servlets/ForumMessageList?forumID=2548">6340_JavaME_StreamingVideo
+                            forum at hands-on-labs.dev.java.net</a>
+                        </li>
+                    </ul>
+                </li>
+                
+                <li>
+                    You can send your other questions to the public mailing lists and
+                    forums.
+                    
+                    <ul>
+                        <li>
+                            <a href="http://mobility.netbeans.org/servlets/SummarizeList?listName=users">Mobility
+                            users mailing list archive </a>
+                        </li>
+                        <li>
+                            <a href="http://forum.java.sun.com/forum.jspa?forumID=76">Forum:
+                            Java ME Technologies - CLDC and MIDP</a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </body>
+</html>

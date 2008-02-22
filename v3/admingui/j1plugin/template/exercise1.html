@@ -1,0 +1,468 @@
+<html>
+    <head>
+        <meta name="j1holtabname" content="Exercise 1: Create Document">
+    </head>
+    <body>
+        <div class="j1holcontents">
+            
+            <h1><a name="Exercise_1"></a>Exercise 1: Create Document</h1>
+            
+            <div class="j1holduration xbig">Expected duration: 45 minutes</div>
+            
+            <p class="j1holheader">Introduction:</p>
+            
+            <p>[Describe the learning goals of this exercise. Example is as following]</p>
+            
+            <p>
+                The goal of this exercise
+                is to let you build a simple Struts application called <span
+                    style="font-weight: bold;">struts-submit</span> by following step by
+                step instructions. All the codes and build script are already
+                provided in this exercise. Even though the application is simple, it
+                lets you explore most core features of the Struts framework listed
+                below:
+            </p>
+            
+            <ul>
+                <li>
+                    Building <span style="font-weight: bold;">ActionForm</span> class
+                    which captures input form data
+                </li>
+                <li>
+                    Building <span style="font-weight: bold;">Action</span> class
+                    which contains business logic
+                </li>
+                <li>
+                    Request to Action mapping which is defined in Struts
+                    configuration file (<span style="font-weight: bold;">struts-config.xml</span>)
+                </li>
+                <li>Input validation</li>
+                <li>Error handling</li>
+                <li>Page navigation (View selection or Next page selection)</li>
+                <li>Usage of Struts tags</li>
+            </ul>
+            
+            <p class="j1holheader">Background information:</p>
+            
+            <p>[Technical information that need to be understood by the
+            attendee to finish the lab. Examples is as following.]<p>
+            
+            <ul class="j1hollist">
+                <li>
+                    The root directory of each lab must
+                    contain index.html. Each lab
+                    also can have corresponding PDF document but this is optional. (A
+                    zip file you will create will contain a root directory which is named
+                    after your lab.)
+                </li>
+                <li>
+                    You are welcome to use any software
+                    for creating the
+                    HTML document. If you have some HTML experience, NetBeans
+                    makes a very nice editor.  These documents were produced
+                    with NetBeans.  If you have no HTML experience, you can get
+                    by with Netscape Composer, but you will have trouble with
+                    formatting.  See below for further comments.
+                </li>
+                <li>
+                    For instructor-led handson labs,
+                    hard-copy printouts will be
+                    created from either index.html or PDF file. Because of this,
+                    index.html file of
+                    instructor-led labs should be a single file rather than multiple files.
+                </li>
+                
+                <li>
+                    Each handson lab can have other
+                    accompanying documents which can
+                    be in either PDF or HTML format
+                </li>
+                <li>
+                    Tips for editing the content files (from Dan)
+                    
+                    <ul>
+                        <li>
+                            Netscape Composer and StarOffice are really bad
+                            choices for editing your lab content.  If you really
+                            have absolutely no HTML experience, they will work, but
+                            they will make your life harder in the end.
+                        </li>
+                        <li>
+                            The best choice of tools for editing your content
+                            pages is Dreamweaver.  Unfortunately, it doesn't
+                            run on Solaris, and Sun doesn't provide you a
+                            licensed copy.
+                        </li>
+                        <li>
+                            For me, the next best choice is NetBeans.  NetBeans
+                            has really nice HTML, CSS, and JavaScript support.
+                            It does syntax highlighting and code completion.  It
+                            is <b>not</b> a WYSIWYG editor, however.
+                        </li>
+                        <li>
+                            If NetBeans is too much, my next choice would be
+                            any smart text editor, like JEdit or vim or Emacs.
+                        </li>
+                        <li>
+                            If you don't have access to a smart text editor, my
+                            next choice would be a dumb one, like Windows
+                            Textpad or vi.
+                        </li>
+                        <li>
+                            Only if I had no other choices would I turn to
+                            Composer or StarOffice.  Of course, as I said, if
+                            you don't know any HTML, and you don't own a copy of
+                            Dreamweaver, they may be your only choices.  If you
+                            go this route, see Sang's comments below.
+                        </li>
+                    </ul>
+                </li>
+                
+                <li>
+                    Tips for using Netscape composer (from Sang)
+                    <ul>
+                        <li>
+                            Since someone asked me what would be
+                            the suggested tips of using
+                            Netscape Composer for writing our handson lab document,
+                            I thought I would share what I learned so far. If you know any
+                            other tricks and tips, please share with the team.
+                        </li>
+                        <li>
+                            I use minimum features of Netscape
+                            composer.  For example, basically all I do is to write
+                            heading2 for title, and bodytext for all the
+                            others
+                        </li>
+                        <li>
+                            Do not use Composer generated
+                            numberings schemes. It will make updating your documents very
+                            difficult. Create numbers manually
+                        </li>
+                        <li>
+                            For the placement of images, create a
+                            directory called
+                            index_files in the root directory and save the images in that
+                            directory. If you
+                            already created a document which contains
+                            images in different directory, open the document with netscape browser
+                            and then do
+                            &quot;"save, complete&quot;. The Netscape will then
+                            create index_files directory and save all the
+                            images there. From that point on, you save
+                            the newly created images there.
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+            
+            <p class="j1holsubheader">Using the New Template</p>
+            
+            <p>
+                This year the lab template is very different from last year.
+                Instead of having one monolithic document, each exercise is
+                broken out into its own document.  The index.html page is a
+                generic page that detects the documents in your directory and
+                builds a tab bar to display them.  Also, this year we're using
+                CSS stylesheets to make your life easier.  The main goal of the
+                new template is to reduce the formatting clutter to make the
+                lab content easier to develop and maintain.
+            </p>
+            
+            <p>
+                First thing to know is that to use the new template with a lab
+                from last year, you can simply cut each exercise out of the old
+                lab document and past it into its own document.  No further
+                modifications are necessary.  You'll probably <b>want</b> to do
+                some modifications, but none are required.
+            </p>
+            
+            <p>
+                The new lab template enforces a naming scheme for your lab
+                documents.  First, the main page is the index.html page.  <span class="j1holwarn">DO
+                NOT EDIT THE index.html PAGE!</span>  This page should be identical
+                for all labs and may be overwritten by the labs staff at any
+                time with no warning.  The main page contains a tab for every
+                exercise, an optional tab for a solution for each exercise, a tab
+                for the introduction, and a tab for the summary.
+            </p>
+            
+            <p>
+                The documents for the exercise tabs <b>must</b> be named
+                &quot;exercise&lt;n&gt;.html&quot;, where &lt;n&gt; is the number of
+                the exercise, and the documents <b>must</b> be located in the
+                same directory as the index.html file.  The documents <b>must</b>
+                be numbered sequentially, starting from 0.  If the exercise0.html
+                document is not present, no attempt will be made to load
+                exercise1.html.  If exercise1.html is not present, no attempt
+                will be made to load exercise2.html.  Etc.  The index.html page
+                will load as many exercises as it can find.
+            </p>
+            
+            <p>
+                The documents for the solution tabs <b>must</b> be named
+                &quot;solution&lt;n&gt;.html&quot;, where &lt;n&gt; is the number of
+                the exercise, and the documents <b>must</b> be located in the
+                same directory as the index.html file.  The documents <b>must</b>
+                be numbered the same as the corresponding exercises.  Solution
+                documents are optional.  If an exercise has no associted
+                solution document, no solution tab will be created.
+            </p>
+            
+            <p>
+                The intro document must be named intro.html.  The summary
+                document must be named summary.html.
+            </p>
+            
+            <p class="j1holsubheader">Using the New Stylesheet</p>
+            
+            <p>
+                To make life simpler, we've provided a CSS stylesheet that
+                automatically does formatting for you, <b>if</b> you set the
+                correct style class on your HTML tags.  The following style
+                classes are available for you to use:
+            </p>
+            
+            <ul class="j1hollist">
+                <li>
+                    <b>j1holheader</b> -- should be used with DIV, SPAN or P
+                    elements.  Produces a section header, like &quot;Background
+                    Information&quot; above.
+                </li>
+                <li>
+                    <b>j1holsubheader</b> -- should be used with DIV, SPAN or P
+                    elements.  Produces a subsection header, like &quot;Using
+                    the New Stylesheet&quot; above.
+                </li>
+                <li>
+                    <b>j1hollist</b> -- should be used with OL or UL elements.
+                    Produces a list with spacing between the top-level list
+                    items and spacing before any sublists.  When used with OL
+                    elements, it also sets the numbering scheme to numeric at
+                    the top level, lower-case alphabetic at the second level,
+                    and lower-case Roman numerals at the third level.  For an
+                    example, see the lists under &quot;Steps to Follow&quot; and
+                    &quot;Background Information&quot;.  In contrast, the list in
+                    the &quot;Introduction&quot; section does not use this style
+                    class.
+                </li>
+                <li>
+                    <b>j1holcontents</b> -- must be used with a DIV element.
+                    The complete body of every content page should be wrapped in
+                    a DIV of this style class.
+                </li>
+                <li>
+                    <b>j1holnote</b> -- should be used with DIV, SPAN or P
+                    elements.  <span class="j1holnote">Produces text intended
+                    to get the reader's attention.</span>
+                </li>
+                <li>
+                    <b>j1holwarn</b> -- should be used with DIV, SPAN or P
+                    elements.  <span class="j1holwarn">Produces text intended
+                    to warn the reader about something important.</span>
+                </li>
+                <li>
+                    <b>pagetitle</b> -- must be used with a DIV element.
+                    Used for the lab title on the intro page.
+                </li>
+                <li>
+                    <b>j1holduration</b> -- should be used with DIV or P
+                    elements.  Used for the lab and exercise durations at the
+                    top of the intro and exercise pages.
+                </li>
+                <li>
+                    <b>j1holcopyright</b> -- must be used with a DIV element.
+                    The contents of the DIV must be a P element with the
+                    copyright heading (usually &quot;Copyright&quot;) and a PRE
+                    element with the contents of the copyright.  Used at the top
+                    of the intro page.
+                </li>
+                <li>
+                    <b>j1holcontacts</b> -- should be used with DIV or P
+                    elements.  Used to list the contributing authors to this lab
+                    at the top of the intro page.
+                </li>
+                <li>
+                    <b>j1holupdated</b> -- should be used with DIV or P
+                    elements.  Used to list when this lab was last updated.
+                    Used at the top of the intro page.
+                </li>
+                <li>
+                    <b>j1holtip</b> -- should be used with DIV or P elements.
+                    
+                    <div class="j1holtip">
+                        <p class="j1holsubheader">If a j1holsubheader element is
+                        used within the DIV, it is treated specially.</p>
+
+                        <p>Produces an inset to contain tips or best practices.</p>
+                    </div>
+                </li>
+                <li>
+                    <b>codebox</b> -- must be used with a DIV element.  The
+                    contents of the DIV element must be a PRE element.  Produces
+                    an inset where source code contained in the PRE element will
+                    be displayed.  To collapse a portion of the source code,
+                    wrap that portion in a SPAN element with &quot;collapsed&quot;
+                    as its style class.  See <a href="#Exercise_2">Exercise 2</a>
+                    and the <a href="#Solution_3">Solution to Exercise 3</a> for
+                    examples.
+                </li>
+                <li>
+                    <b>console</b> -- must be used with a DIV element.  The
+                    contents of the DIV element must be a PRE element.  Produces
+                    an inset where the contents of the PRE elements will be
+                    displayed as though they were being printed in a terminal
+                    window.  See <a href="#Exercise_2">Exercise 2</a>
+                    for an example.
+                </li>
+            </ul>
+            
+            <p class="j1holsubheader">Other Magic Elements</p>
+            
+            <p>
+                The new template uses a few magic elements to make things flow
+                more smoothly.  They are:
+            </p>
+            
+            <ul class="j1hollist">
+                <li>
+                    The tag in the first tab (usually the intro document) with
+                    the id &quot;j1holtitleid&quot; will be used to set the
+                    title for the page.  <span class="j1holwarn">DO NOT EDIT THE
+                    index.html PAGE</span> to change the page's title.  Instead,
+                    to change the page's title, change the j1holtitieid element
+                    in the intro document.  (In the template intro document,
+                    the pagetitle DIV is the j1holtitleid element.  See
+                    pagetitle above.)
+                </li>
+                
+                <li>
+                    By default, the intro tab is labeled &quot;Introduction&quot;,
+                    the summary tab is labeled &quot;Summary&quot;, the exercise
+                    tabs are labeled &quot;Exercise &lt;n&gt;&quot;, and the solution
+                    tabs are labeled &quot;Solution &lt;n&gt;&quot;.  If, however, the
+                    HEAD element of one of those documents contains a META
+                    element whose name is &quot;j1holtabname&quot;, the content
+                    attribute of that element will be used as that document's
+                    tab name instead.  See the <a href="#Intro">intro</a> page
+                    and <a href="#Solution_3">Exercise 1</a> for examples.
+                </li>
+                
+                <li>
+                    To link to a page in a tab, use the anchors in the headings
+                    of the pages.  For the intro tab, link to &quot;#Intro&quot;.
+                    For the summary tab, link to &quot;#Summary&quot;.  For the
+                    exercises, link to &quot;#Exercise_&lt;n&gt;&quot;.  For the
+                    solution tabs, link to &quot;#Solution_&lt;n&gt;&quot;.
+                </li>
+                
+                <li>
+                    <p><span class="j1holnote">This one is important!</span>  In
+                    order to make the page loading go faster, the index.html
+                    page stores information about the tabs in cookies.  Namely,
+                    it stores a list of which pages exist and their titles.
+                    Because that information is cached, it can cause problems
+                    when you try to, for example, create a new exercise.  Reloading
+                    the page in the browser will not cause the new page to be
+                    recognized.  To clear the cookies so that you can see new
+                    pages (or remove deleted pages), you'll need to do one of
+                    two things.  One, you could restart your browser.  Two, you
+                    can type the following URL into your browser:</p>
+                    
+                    <p><a href="#Clear">&lt;your_url_here&gt;/index.html#Clear</a></p>
+                
+                    <p>The &quot;Clear&quot; anchor will cause the cookies to be
+                    purged, and the whole set of pages will be reloaded fresh.
+                    For simplicity's sake, you may just want to include a link
+                    to &quot;#Clear&quot; on one of your pages so that you can
+                    just click it to purge the cookies.  Just remember to remove
+                    it before JavaOne!</p>
+                </li>
+            </ul>
+            
+            <p class="j1holsubheader">Converting an Old Document</p>
+            
+            <p>
+                To convert a lab document that uses an old template, you'll need
+                to break it up into an intro page, a summary page, exercise
+                pages, and solution pages.  The easiest way to do that is to
+                copy the text contents of your lab from the old document and
+                paste it into the new template pages.  If you are using Composer,
+                this process will be a little difficult.  On the bright side,
+                though, it's highly unlikely that anything you do will break the
+                template.  At worst your pages might not be very well formatted.
+            </p>
+            
+            <p class="j1holsubheader">Source Code</p>
+            
+            <p>
+                When including source code in your exercises and solutions, you
+                should use the codebox style class as described above.  If you
+                are referencing code from your exercise text, such as a method
+                name, you should wrap the code in &lt;CODE&gt; tags.  For
+                example, <code>java.lang.String.substring()</code> should be
+                marked as code.
+            </p>
+            
+            <p>
+                Each lab should have an &quot;exercises&quot; directory and a
+                &quot;solutions&quot; directory.  Both should have subdirectories
+                for every exercise in the lab.  The exercises subdirectories
+                should contain any files or source code needed to complete the
+                exercises.  The solutions subdirectories should contain all
+                files modified in the exercises as they would be if the exercises
+                were completed successfully (ideally, even).
+            </p>
+            
+            <p class="j1holheader">Steps to follow:</p>
+            
+            <ol class="j1hollist">
+                <li>
+                    Using your Netscape browser, do the following:
+                    <ol>
+                        <li>Select File Menu</li>
+                        <li>Select Open File</li>
+                        <li>Read this document</li>
+                    </ol>
+                </li>
+                <li>
+                    When you see the document, do the following
+                    
+                    <ol>
+                        <li>Select File menu</li>
+                        <li>Select <span style="font-weight: bold;">Save Page As...</span>
+                        as shown below in Figure-03.</li>
+                    </ol>
+                    
+                    <p><img alt="" src="index_files/savingfile.jpg"
+                            style="width: 785px; height: 688px;"></p>
+                    Figure-03: Save the file
+                </li>
+                <li>
+                    In the <span style="font-weight: bold;">Save As</span> window, go
+                    to your lab directory. Let's say your lab code is set solaris10, then you go to <span
+                        style="font-weight: bold;">solaris10/index_files</span> directory and
+                    save the file as <span style="font-weight: bold;">index.html</span>
+                    file as shown below in Figure-04. Click <span
+                        style="font-weight: bold;">Save</span> button.
+                    <p><img alt="" src="index_files/index.jpg"
+                            style="width: 563px; height: 419px;"></p>
+                    Figure-04: How to save the template file for your lab
+                </li>
+                <li>
+                    Now you are ready to change this file. Whenever you want to
+                    save an image, save it under
+                    <span style="font-weight: bold;">solaris10/index_files</span> directory.
+                </li>
+            </ol>
+            
+            <p class="j1holheader">Summary:</p>
+            
+            <p>In
+            this exercise, you learned how to create your hands-on lab document.</p>
+            
+            <p><a href="#Solution_1">Go to solution</a></p>
+            <p><a href="#Exercise_2">Go on to next exercise</a></p>
+        </div>
+    </body>
+</html>

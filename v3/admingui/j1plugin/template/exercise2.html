@@ -1,0 +1,688 @@
+<html>
+    <head></head>
+    <body>
+        <div class="j1holcontents">
+            
+            <h1><a name="Exercise_2"></a>Exercise 2: Working With Source Code</h1>
+            
+            <div class="j1holduration xbig">Expected duration: 45 minutes</div>
+            
+            <p class="j1holheader">Introduction:</p>
+            
+            <p>
+                In this exercise, we'll look your options for including source
+                code in your lab documents.
+            </p>
+            
+            <p class="j1holheader">Background Information:</p>
+            
+            <p>
+                When you want to display source code in a lab document, there is
+                a special way to do it.  To include a snippet of code, you'd do
+                something like:
+            </p>
+
+            <div class="codebox">
+              <pre>
+<a name="line1" class="LineNumber"> 1</a> <span class="PredefinedIdentifier"><span class="Braces">&lt;</span>div<span class="Identifier"> class</span>=<span class="String">&quot;codebox&quot;</span><span class="Braces">&gt;</span></span>
+<a name="line2" class="LineNumber"> 2</a>     <span class="PredefinedIdentifier"><span class="Braces">&lt;</span>pre<span class="Braces">&gt;</span></span>
+<a name="line3" class="LineNumber"> 3</a>     /**
+<a name="line4" class="LineNumber"> 4</a>      * This method builds the Widget for the tab's title
+<a name="line5" class="LineNumber"> 5</a>      * @param name the tab's anchor text
+<a name="line6" class="LineNumber"> 6</a>      * @param target the tab's anchor
+<a name="line7" class="LineNumber"> 7</a>      * @return a Widget representing the tab's title
+<a name="line8" class="LineNumber"> 8</a>      */
+<a name="line9" class="LineNumber"> 9</a>     private Widget buildTab(String name, String target) {
+<a name="line10" class="LineNumber">10</a>         // We make the title a Hyperlink to satisfy the Sun style sheet
+<a name="line11" class="LineNumber">11</a>         Hyperlink link = new Hyperlink(name, target);
+<a name="line12" class="LineNumber">12</a> 
+<a name="line13" class="LineNumber">13</a>         return link;
+<a name="line14" class="LineNumber">14</a>     }
+<a name="line15" class="LineNumber">15</a>     <span class="PredefinedIdentifier"><span class="Braces">&lt;</span>/pre<span class="Braces">&gt;</span></span>
+<a name="line16" class="LineNumber">16</a> <span class="PredefinedIdentifier"><span class="Braces">&lt;</span>/div<span class="Braces">&gt;</span></span>
+                </pre>
+            </div>
+    
+            <p>
+                and it would look something like:
+            </p>
+
+            <div class="codebox">
+                <pre>
+    /**
+     * This method builds the Widget for the tab's title
+     * @param name the tab's anchor text
+     * @param target the tab's anchor
+     * @return a Widget representing the tab's title
+     */
+    private Widget buildTab(String name, String target) {
+        // We make the title a Hyperlink to satisfy the Sun style sheet
+        Hyperlink link = new Hyperlink(name, target);
+
+        return link;
+    }
+                </pre>
+            </div>
+
+            <p>
+                You probably noticed that the HTML source code above is in color
+                and has line numbers, whereas the Java source code is just plain
+                text.  In order to get the syntax highlighting and line
+                numbering, you have to use a utility called code2html.  You can
+                find the code2html script in the <tt>exercises/exercise2</tt> directory.
+                (You could also <a href="http://www.palfrader.org/code2html/">download code2html</a> from the web,
+                but the one included in this template has been modified to
+                better support the needs of hands-on-labs developers.
+            </p>
+            
+            <p>
+                To use code2html, you need to have a Perl interpreter.  Solaris,
+                Linux and MacOS X come with Perl interpreters.  To run code2html
+                on Windows, you'll have to download and install a Windows Perl
+                interpreter.
+            </p>
+            
+            <p>
+                Running code2html for a typical lab source file might look like:
+            </p>
+
+            <div class="console">
+                <pre>
+> ./code2html -n -o xhtml-css -t 2 -w 120 -H code.java code.html
+./code2html: language mode not given. guessing...
+./code2html: using 'java'
+>
+                </pre>
+            </div>
+
+            <p>
+                The <tt>-n</tt> option causes line numbers to be generated.  The
+                <tt>-o xhtml-css</tt> option tells code2html to use an HTML
+                format that works with the stylesheet being used for the hands-on
+                labs.  The <tt>-t 2</tt> causes tabs to be replaced with two
+                spaces.  The <tt>-w 120</tt> option makes the maximum line length
+                be 120 characters.  Because your code is placed in PRE tags, and
+                PRE tags don't wrap text, without this option, long lines of
+                code may expland the page width.  The <tt>-H</tt> option gives
+                only the marked-up source code as output.  Without this option,
+                the marked-up source code would be wrapped in a sample HTML
+                page.  The first argument, <tt>code.java</tt> is the file to
+                convert.  The language of the file is determined from the file
+                name.  If you have an unusual file name format (such as a Java
+                source file that doesn't end in .java), you can use the <tt>-l language</tt>
+                option to set the file's language.  The second argument,
+                <tt>code.html</tt> is the name of the destination file where the
+                marked-up source code will be stored.  If the second argument is
+                left out, the marked-up source code will be printed to standard
+                out.
+            </p>
+
+            <p>
+                After using code2html on the same sample as before, we get HTML
+                that is much more complicated:
+            </p>
+
+            <div class="codebox">
+              <pre>
+<a name="line1" class="LineNumber"> 1</a> <span class="PredefinedIdentifier"><span class="Braces">&lt;</span>div<span class="Identifier"> class</span>=<span class="String">&quot;codebox&quot;</span><span class="Braces">&gt;</span></span>
+<a name="line2" class="LineNumber"> 2</a>   <span class="PredefinedIdentifier"><span class="Braces">&lt;</span>pre<span class="Braces">&gt;</span></span>
+<a name="line3" class="LineNumber"> 3</a> <span class="PredefinedIdentifier"><span class="Braces">&lt;</span>a<span class="Identifier"> name</span>=<span class="String">&quot;line1&quot;</span><span class="Identifier"> class</span>=<span class="String">&quot;LineNumber&quot;</span><span class="Braces">&gt;</span></span> 1<span class="PredefinedIdentifier"><span class="Braces">&lt;</span>/a<span class="Braces">&gt;</span></span>     <span class="PredefinedIdentifier"><span class="Braces">&lt;</span>span<span class="Identifier"> class</span>=<span class="String">&quot;DocComment&quot;</span><span class="Braces">&gt;</span></span>/**
+<a name="line4" class="LineNumber"> 4</a> <span class="PredefinedIdentifier"><span class="Braces">&lt;</span>a<span class="Identifier"> name</span>=<span class="String">&quot;line2&quot;</span><span class="Identifier"> class</span>=<span class="String">&quot;LineNumber&quot;</span><span class="Braces">&gt;</span></span> 2<span class="PredefinedIdentifier"><span class="Braces">&lt;</span>/a<span class="Braces">&gt;</span></span>      * This method builds the Widget for the tab's title
+<a name="line5" class="LineNumber"> 5</a> <span class="PredefinedIdentifier"><span class="Braces">&lt;</span>a<span class="Identifier"> name</span>=<span class="String">&quot;line3&quot;</span><span class="Identifier"> class</span>=<span class="String">&quot;LineNumber&quot;</span><span class="Braces">&gt;</span></span> 3<span class="PredefinedIdentifier"><span class="Braces">&lt;</span>/a<span class="Braces">&gt;</span></span>      * @param name the tab's anchor text
+<a name="line6" class="LineNumber"> 6</a> <span class="PredefinedIdentifier"><span class="Braces">&lt;</span>a<span class="Identifier"> name</span>=<span class="String">&quot;line4&quot;</span><span class="Identifier"> class</span>=<span class="String">&quot;LineNumber&quot;</span><span class="Braces">&gt;</span></span> 4<span class="PredefinedIdentifier"><span class="Braces">&lt;</span>/a<span class="Braces">&gt;</span></span>      * @param target the tab's anchor
+<a name="line7" class="LineNumber"> 7</a> <span class="PredefinedIdentifier"><span class="Braces">&lt;</span>a<span class="Identifier"> name</span>=<span class="String">&quot;line5&quot;</span><span class="Identifier"> class</span>=<span class="String">&quot;LineNumber&quot;</span><span class="Braces">&gt;</span></span> 5<span class="PredefinedIdentifier"><span class="Braces">&lt;</span>/a<span class="Braces">&gt;</span></span>      * @return a Widget representing the tab's title
+<a name="line8" class="LineNumber"> 8</a> <span class="PredefinedIdentifier"><span class="Braces">&lt;</span>a<span class="Identifier"> name</span>=<span class="String">&quot;line6&quot;</span><span class="Identifier"> class</span>=<span class="String">&quot;LineNumber&quot;</span><span class="Braces">&gt;</span></span> 6<span class="PredefinedIdentifier"><span class="Braces">&lt;</span>/a<span class="Braces">&gt;</span></span>      */<span class="PredefinedIdentifier"><span class="Braces">&lt;</span>/span<span class="Braces">&gt;</span></span>
+<a name="line9" class="LineNumber"> 9</a> <span class="PredefinedIdentifier"><span class="Braces">&lt;</span>a<span class="Identifier"> name</span>=<span class="String">&quot;line7&quot;</span><span class="Identifier"> class</span>=<span class="String">&quot;LineNumber&quot;</span><span class="Braces">&gt;</span></span> 7<span class="PredefinedIdentifier"><span class="Braces">&lt;</span>/a<span class="Braces">&gt;</span></span>     <span class="PredefinedIdentifier"><span class="Braces">&lt;</span>span<span class="Identifier"> class</span>=<span class="String">&quot;ReservedWord&quot;</span><span class="Braces">&gt;</span></span>private<span class="PredefinedIdentifier"><span class="Braces">&lt;</span>/span<span class="Braces">&gt;</span></span> <span class="PredefinedIdentifier"><span class="Braces">&lt;</span>span
+»<span class="Identifier"> class</span>=<span class="String">&quot;Identifier&quot;</span><span class="Braces">&gt;</span></span>Widget<span class="PredefinedIdentifier"><span class="Braces">&lt;</span>/span<span class="Braces">&gt;</span></span> <span class="PredefinedIdentifier"><span class="Braces">&lt;</span>span<span class="Identifier"> class</span>=<span class="String">&quot;Identifier&quot;</span><span class="Braces">&gt;</span></span>buildTab<span class="PredefinedIdentifier"><span class="Braces">&lt;</span>/span<span class="Braces">&gt;</span></span><span class="PredefinedIdentifier"><span class="Braces">&lt;</span>span<span class="Identifier"> class</span>=<span class="String">&quot;Braces&quot;</span><span class="Braces">&gt;</span></span>(<span class="PredefinedIdentifier"><span class="Braces">&lt;</span>/span<span class="Braces">&gt;</span></span><span class="PredefinedIdentifier"><span class="Braces">&lt;</span>span
+»<span class="Identifier"> class</span>=<span class="String">&quot;Identifier&quot;</span><span class="Braces">&gt;</span></span>String<span class="PredefinedIdentifier"><span class="Braces">&lt;</span>/span<span class="Braces">&gt;</span></span> <span class="PredefinedIdentifier"><span class="Braces">&lt;</span>span<span class="Identifier"> class</span>=<span class="String">&quot;Identifier&quot;</span><span class="Braces">&gt;</span></span>name<span class="PredefinedIdentifier"><span class="Braces">&lt;</span>/span<span class="Braces">&gt;</span></span>, <span class="PredefinedIdentifier"><span class="Braces">&lt;</span>span<span class="Identifier"> class</span>=<span class="String">&quot;Identifier&quot;</span><span class="Braces">&gt;</span></span>String<span class="PredefinedIdentifier"><span class="Braces">&lt;</span>/span<span class="Braces">&gt;</span></span> <span class="PredefinedIdentifier"><span class="Braces">&lt;</span>span
+»<span class="Identifier"> class</span>=<span class="String">&quot;Identifier&quot;</span><span class="Braces">&gt;</span></span>target<span class="PredefinedIdentifier"><span class="Braces">&lt;</span>/span<span class="Braces">&gt;</span></span><span class="PredefinedIdentifier"><span class="Braces">&lt;</span>span<span class="Identifier"> class</span>=<span class="String">&quot;Braces&quot;</span><span class="Braces">&gt;</span></span>)<span class="PredefinedIdentifier"><span class="Braces">&lt;</span>/span<span class="Braces">&gt;</span></span> <span class="PredefinedIdentifier"><span class="Braces">&lt;</span>span<span class="Identifier"> class</span>=<span class="String">&quot;Braces&quot;</span><span class="Braces">&gt;</span></span>{<span class="PredefinedIdentifier"><span class="Braces">&lt;</span>/span<span class="Braces">&gt;</span></span>
+<a name="line10" class="LineNumber">10</a> <span class="PredefinedIdentifier"><span class="Braces">&lt;</span>a<span class="Identifier"> name</span>=<span class="String">&quot;line8&quot;</span><span class="Identifier"> class</span>=<span class="String">&quot;LineNumber&quot;</span><span class="Braces">&gt;</span></span> 8<span class="PredefinedIdentifier"><span class="Braces">&lt;</span>/a<span class="Braces">&gt;</span></span>         <span class="PredefinedIdentifier"><span class="Braces">&lt;</span>span<span class="Identifier"> class</span>=<span class="String">&quot;Comment&quot;</span><span class="Braces">&gt;</span></span>// We make the title a Hyperlink to satisfy the
+» Sun style sheet<span class="PredefinedIdentifier"><span class="Braces">&lt;</span>/span<span class="Braces">&gt;</span></span>
+<a name="line11" class="LineNumber">11</a> <span class="PredefinedIdentifier"><span class="Braces">&lt;</span>a<span class="Identifier"> name</span>=<span class="String">&quot;line9&quot;</span><span class="Identifier"> class</span>=<span class="String">&quot;LineNumber&quot;</span><span class="Braces">&gt;</span></span> 9<span class="PredefinedIdentifier"><span class="Braces">&lt;</span>/a<span class="Braces">&gt;</span></span>         <span class="PredefinedIdentifier"><span class="Braces">&lt;</span>span<span class="Identifier"> class</span>=<span class="String">&quot;Identifier&quot;</span><span class="Braces">&gt;</span></span>Hyperlink<span class="PredefinedIdentifier"><span class="Braces">&lt;</span>/span<span class="Braces">&gt;</span></span> <span class="PredefinedIdentifier"><span class="Braces">&lt;</span>span
+»<span class="Identifier"> class</span>=<span class="String">&quot;Identifier&quot;</span><span class="Braces">&gt;</span></span>link<span class="PredefinedIdentifier"><span class="Braces">&lt;</span>/span<span class="Braces">&gt;</span></span> <span class="PredefinedIdentifier"><span class="Braces">&lt;</span>span<span class="Identifier"> class</span>=<span class="String">&quot;Symbol&quot;</span><span class="Braces">&gt;</span></span>=<span class="PredefinedIdentifier"><span class="Braces">&lt;</span>/span<span class="Braces">&gt;</span></span> <span class="PredefinedIdentifier"><span class="Braces">&lt;</span>span<span class="Identifier"> class</span>=<span class="String">&quot;ReservedWord&quot;</span><span class="Braces">&gt;</span></span>new<span class="PredefinedIdentifier"><span class="Braces">&lt;</span>/span<span class="Braces">&gt;</span></span> <span class="PredefinedIdentifier"><span class="Braces">&lt;</span>span
+»<span class="Identifier"> class</span>=<span class="String">&quot;Identifier&quot;</span><span class="Braces">&gt;</span></span>Hyperlink<span class="PredefinedIdentifier"><span class="Braces">&lt;</span>/span<span class="Braces">&gt;</span></span><span class="PredefinedIdentifier"><span class="Braces">&lt;</span>span<span class="Identifier"> class</span>=<span class="String">&quot;Braces&quot;</span><span class="Braces">&gt;</span></span>(<span class="PredefinedIdentifier"><span class="Braces">&lt;</span>/span<span class="Braces">&gt;</span></span><span class="PredefinedIdentifier"><span class="Braces">&lt;</span>span<span class="Identifier"> class</span>=<span class="String">&quot;Identifier&quot;</span><span class="Braces">&gt;</span></span>name<span class="PredefinedIdentifier"><span class="Braces">&lt;</span>/span<span class="Braces">&gt;</span></span>, <span class="PredefinedIdentifier"><span class="Braces">&lt;</span>span
+»<span class="Identifier"> class</span>=<span class="String">&quot;Identifier&quot;</span><span class="Braces">&gt;</span></span>target<span class="PredefinedIdentifier"><span class="Braces">&lt;</span>/span<span class="Braces">&gt;</span></span><span class="PredefinedIdentifier"><span class="Braces">&lt;</span>span<span class="Identifier"> class</span>=<span class="String">&quot;Braces&quot;</span><span class="Braces">&gt;</span></span>)<span class="PredefinedIdentifier"><span class="Braces">&lt;</span>/span<span class="Braces">&gt;</span></span><span class="PredefinedIdentifier"><span class="Braces">&lt;</span>span<span class="Identifier"> class</span>=<span class="String">&quot;Symbol&quot;</span><span class="Braces">&gt;</span></span>;<span class="PredefinedIdentifier"><span class="Braces">&lt;</span>/span<span class="Braces">&gt;</span></span>
+<a name="line12" class="LineNumber">12</a> <span class="PredefinedIdentifier"><span class="Braces">&lt;</span>a<span class="Identifier"> name</span>=<span class="String">&quot;line10&quot;</span><span class="Identifier"> class</span>=<span class="String">&quot;LineNumber&quot;</span><span class="Braces">&gt;</span></span>10<span class="PredefinedIdentifier"><span class="Braces">&lt;</span>/a<span class="Braces">&gt;</span></span> 
+<a name="line13" class="LineNumber">13</a> <span class="PredefinedIdentifier"><span class="Braces">&lt;</span>a<span class="Identifier"> name</span>=<span class="String">&quot;line11&quot;</span><span class="Identifier"> class</span>=<span class="String">&quot;LineNumber&quot;</span><span class="Braces">&gt;</span></span>11<span class="PredefinedIdentifier"><span class="Braces">&lt;</span>/a<span class="Braces">&gt;</span></span>         <span class="PredefinedIdentifier"><span class="Braces">&lt;</span>span<span class="Identifier"> class</span>=<span class="String">&quot;ReservedWord&quot;</span><span class="Braces">&gt;</span></span>return<span class="PredefinedIdentifier"><span class="Braces">&lt;</span>/span<span class="Braces">&gt;</span></span> <span class="PredefinedIdentifier"><span class="Braces">&lt;</span>span
+»<span class="Identifier"> class</span>=<span class="String">&quot;Identifier&quot;</span><span class="Braces">&gt;</span></span>link<span class="PredefinedIdentifier"><span class="Braces">&lt;</span>/span<span class="Braces">&gt;</span></span><span class="PredefinedIdentifier"><span class="Braces">&lt;</span>span<span class="Identifier"> class</span>=<span class="String">&quot;Symbol&quot;</span><span class="Braces">&gt;</span></span>;<span class="PredefinedIdentifier"><span class="Braces">&lt;</span>/span<span class="Braces">&gt;</span></span>
+<a name="line14" class="LineNumber">14</a> <span class="PredefinedIdentifier"><span class="Braces">&lt;</span>a<span class="Identifier"> name</span>=<span class="String">&quot;line12&quot;</span><span class="Identifier"> class</span>=<span class="String">&quot;LineNumber&quot;</span><span class="Braces">&gt;</span></span>12<span class="PredefinedIdentifier"><span class="Braces">&lt;</span>/a<span class="Braces">&gt;</span></span>     <span class="PredefinedIdentifier"><span class="Braces">&lt;</span>span<span class="Identifier"> class</span>=<span class="String">&quot;Braces&quot;</span><span class="Braces">&gt;</span></span>}<span class="PredefinedIdentifier"><span class="Braces">&lt;</span>/span<span class="Braces">&gt;</span></span>
+<a name="line15" class="LineNumber">15</a>     <span class="PredefinedIdentifier"><span class="Braces">&lt;</span>/pre<span class="Braces">&gt;</span></span>
+<a name="line16" class="LineNumber">16</a> <span class="PredefinedIdentifier"><span class="Braces">&lt;</span>/div<span class="Braces">&gt;</span></span>
+                </pre>
+            </div>
+    
+            <p>
+                but it produces a much more readable code sample:
+            </p>
+            
+<div class="codebox">
+  <pre>
+<a name="line1" class="LineNumber"> 1</a>     <span class="DocComment">/**
+<a name="line2" class="LineNumber"> 2</a>      * This method builds the Widget for the tab's title
+<a name="line3" class="LineNumber"> 3</a>      * @param name the tab's anchor text
+<a name="line4" class="LineNumber"> 4</a>      * @param target the tab's anchor
+<a name="line5" class="LineNumber"> 5</a>      * @return a Widget representing the tab's title
+<a name="line6" class="LineNumber"> 6</a>      */</span>
+<a name="line7" class="LineNumber"> 7</a>     <span class="ReservedWord">private</span> <span class="Identifier">Widget</span> <span class="Identifier">buildTab</span><span class="Braces">(</span><span class="Identifier">String</span> <span class="Identifier">name</span>, <span class="Identifier">String</span> <span class="Identifier">target</span><span class="Braces">)</span> <span class="Braces">{</span>
+<a name="line8" class="LineNumber"> 8</a>         <span class="Comment">// We make the title a Hyperlink to satisfy the Sun style sheet</span>
+<a name="line9" class="LineNumber"> 9</a>         <span class="Identifier">Hyperlink</span> <span class="Identifier">link</span> <span class="Symbol">=</span> <span class="ReservedWord">new</span> <span class="Identifier">Hyperlink</span><span class="Braces">(</span><span class="Identifier">name</span>, <span class="Identifier">target</span><span class="Braces">)</span><span class="Symbol">;</span>
+<a name="line10" class="LineNumber">10</a> 
+<a name="line11" class="LineNumber">11</a>         <span class="ReservedWord">return</span> <span class="Identifier">link</span><span class="Symbol">;</span>
+<a name="line12" class="LineNumber">12</a>     <span class="Braces">}</span>
+    </pre>
+</div>
+
+            <p>
+                There's one more trick to working with source code.  Notice that
+                in the above code sample, we're only showing a single method
+                from a class, but the line numbers nevertheless start from 1.
+                What's in the rest of the source file?  Wouldn't it be nice to
+                make the rest of the source file available, but still keep that
+                one method as the center of focus?  That's where code folding
+                comes in.
+            </p>
+
+            <p>
+                Just like code folding in NetBeans, code folding in your code
+                samples lets you collapse segments of code that aren't important
+                to show, but that you don't want to leave out altogheter.  To
+                mark a section as collapsed, wrap it in a SPAN tab with the
+                style class, &quot;collapsed&quot;.  Here's an example:
+            </p>
+
+            <div class="codebox">
+              <pre>
+<span class="collapsed"><a name="line1" class="LineNumber">  1</a> <span class="Include">package com.sun.javaone.client;</span>
+<a name="line2" class="LineNumber">  2</a> 
+<a name="line3" class="LineNumber">  3</a> <span class="Include">import com.google.gwt.core.client.EntryPoint;</span>
+<a name="line4" class="LineNumber">  4</a> <span class="Include">import com.google.gwt.core.client.GWT;</span>
+<a name="line5" class="LineNumber">  5</a> <span class="Include">import com.google.gwt.http.client.Request;</span>
+<a name="line6" class="LineNumber">  6</a> <span class="Include">import com.google.gwt.http.client.RequestBuilder;</span>
+<a name="line7" class="LineNumber">  7</a> <span class="Include">import com.google.gwt.http.client.RequestCallback;</span>
+<a name="line8" class="LineNumber">  8</a> <span class="Include">import com.google.gwt.http.client.RequestException;</span>
+<a name="line9" class="LineNumber">  9</a> <span class="Include">import com.google.gwt.http.client.Response;</span>
+<a name="line10" class="LineNumber"> 10</a> <span class="Include">import com.google.gwt.user.client.DOM;</span>
+<a name="line11" class="LineNumber"> 11</a> <span class="Include">import com.google.gwt.user.client.Element;</span>
+<a name="line12" class="LineNumber"> 12</a> <span class="Include">import com.google.gwt.user.client.History;</span>
+<a name="line13" class="LineNumber"> 13</a> <span class="Include">import com.google.gwt.user.client.HistoryListener;</span>
+<a name="line14" class="LineNumber"> 14</a> <span class="Include">import com.google.gwt.user.client.Window;</span>
+<a name="line15" class="LineNumber"> 15</a> <span class="Include">import com.google.gwt.user.client.ui.HTML;</span>
+<a name="line16" class="LineNumber"> 16</a> <span class="Include">import com.google.gwt.user.client.ui.Hyperlink;</span>
+<a name="line17" class="LineNumber"> 17</a> <span class="Include">import com.google.gwt.user.client.ui.RootPanel;</span>
+<a name="line18" class="LineNumber"> 18</a> <span class="Include">import com.google.gwt.user.client.ui.SimplePanel;</span>
+<a name="line19" class="LineNumber"> 19</a> <span class="Include">import com.google.gwt.user.client.ui.TabPanel;</span>
+<a name="line20" class="LineNumber"> 20</a> <span class="Include">import com.google.gwt.user.client.ui.Widget;</span>
+<a name="line21" class="LineNumber"> 21</a> <span class="Include">import java.util.ArrayList;</span>
+<a name="line22" class="LineNumber"> 22</a> <span class="Include">import java.util.List;</span>
+<a name="line23" class="LineNumber"> 23</a> 
+<a name="line24" class="LineNumber"> 24</a> <span class="DocComment">/**
+<a name="line25" class="LineNumber"> 25</a>  * This class expands the j1holframe DIV in the parent HTML page to include a
+<a name="line26" class="LineNumber"> 26</a>  * tab bar dynamically built from the available pages.  This allows the parent
+<a name="line27" class="LineNumber"> 27</a>  * HTML page to be identical for all labs, making maintenance much easier.
+<a name="line28" class="LineNumber"> 28</a>  *
+<a name="line29" class="LineNumber"> 29</a>  * @author dan.templeton@sun.com
+<a name="line30" class="LineNumber"> 30</a>  */</span>
+<a name="line31" class="LineNumber"> 31</a> <span class="ReservedWord">public</span> <span class="ReservedWord">class</span> <span class="Identifier">HoLTemplateEntryPoint</span> <span class="ReservedWord">implements</span> <span class="Identifier">EntryPoint</span>, <span class="Identifier">HistoryListener</span> <span class="Braces">{</span>
+<a name="line32" class="LineNumber"> 32</a>     <span class="ReservedWord">private</span> <span class="Identifier">TabPanel</span> <span class="Identifier">tabs</span> <span class="Symbol">=</span> <span class="ReservedWord">null</span><span class="Symbol">;</span>
+<a name="line33" class="LineNumber"> 33</a>     <span class="ReservedWord">private</span> <span class="Identifier">List</span> <span class="Identifier">tabNames</span> <span class="Symbol">=</span> <span class="ReservedWord">new</span> <span class="Identifier">ArrayList</span><span class="Braces">(</span><span class="Braces">)</span><span class="Symbol">;</span>
+<a name="line34" class="LineNumber"> 34</a> 
+<a name="line35" class="LineNumber"> 35</a>     <span class="DocComment">/**
+<a name="line36" class="LineNumber"> 36</a>      * The entry point method, called automatically by loading a module
+<a name="line37" class="LineNumber"> 37</a>      * that declares an implementing class as an entry-point
+<a name="line38" class="LineNumber"> 38</a>      */</span>
+<a name="line39" class="LineNumber"> 39</a>     <span class="ReservedWord">public</span> <span class="ReservedWord">void</span> <span class="Identifier">onModuleLoad</span><span class="Braces">(</span><span class="Braces">)</span> <span class="Braces">{</span>
+<a name="line40" class="LineNumber"> 40</a>         <span class="Comment">// Get the root panel of the insertion div</span>
+<a name="line41" class="LineNumber"> 41</a>         <span class="Identifier">RootPanel</span> <span class="Identifier">rp</span> <span class="Symbol">=</span> <span class="Identifier">RootPanel</span>.<span class="Identifier">get</span><span class="Braces">(</span><span class="String">&quot;j1holframe&quot;</span><span class="Braces">)</span><span class="Symbol">;</span>
+<a name="line42" class="LineNumber"> 42</a> 
+<a name="line43" class="LineNumber"> 43</a>         <span class="Comment">// If there is no insertion div, just attach things to the</span>
+<a name="line44" class="LineNumber"> 44</a>         <span class="Comment">// top level document</span>
+<a name="line45" class="LineNumber"> 45</a>         <span class="ReservedWord">if</span> <span class="Braces">(</span><span class="Identifier">rp</span> <span class="Symbol">=</span><span class="Symbol">=</span> <span class="ReservedWord">null</span><span class="Braces">)</span> <span class="Braces">{</span>
+<a name="line46" class="LineNumber"> 46</a>             <span class="Identifier">rp</span> <span class="Symbol">=</span> <span class="Identifier">RootPanel</span>.<span class="Identifier">get</span><span class="Braces">(</span><span class="Braces">)</span><span class="Symbol">;</span>
+<a name="line47" class="LineNumber"> 47</a>         <span class="Braces">}</span>
+<a name="line48" class="LineNumber"> 48</a> 
+<a name="line49" class="LineNumber"> 49</a>         <span class="Comment">// Create a new tab panel</span>
+<a name="line50" class="LineNumber"> 50</a>         <span class="Identifier">tabs</span> <span class="Symbol">=</span> <span class="ReservedWord">new</span> <span class="Identifier">TabPanel</span><span class="Braces">(</span><span class="Braces">)</span><span class="Symbol">;</span>
+<a name="line51" class="LineNumber"> 51</a>         <span class="Identifier">tabs</span>.<span class="Identifier">getTabBar</span><span class="Braces">(</span><span class="Braces">)</span>.<span class="Identifier">setStylePrimaryName</span><span class="Braces">(</span><span class="String">&quot;j1holtab&quot;</span><span class="Braces">)</span><span class="Symbol">;</span>
+<a name="line52" class="LineNumber"> 52</a>         <span class="Identifier">tabs</span>.<span class="Identifier">getTabBar</span><span class="Braces">(</span><span class="Braces">)</span>.<span class="Identifier">addStyleName</span><span class="Braces">(</span><span class="String">&quot;d7v0&quot;</span><span class="Braces">)</span><span class="Symbol">;</span>
+<a name="line53" class="LineNumber"> 53</a>         <span class="Identifier">rp</span>.<span class="Identifier">add</span><span class="Braces">(</span><span class="Identifier">tabs</span><span class="Braces">)</span><span class="Symbol">;</span>
+<a name="line54" class="LineNumber"> 54</a> 
+<a name="line55" class="LineNumber"> 55</a>         <span class="Comment">// Set up the history listener.  This is required to allow linking to</span>
+<a name="line56" class="LineNumber"> 56</a>         <span class="Comment">// tabs via anchors</span>
+<a name="line57" class="LineNumber"> 57</a>         <span class="Identifier">History</span>.<span class="Identifier">addHistoryListener</span><span class="Braces">(</span><span class="ReservedWord">this</span><span class="Braces">)</span><span class="Symbol">;</span>
+<a name="line58" class="LineNumber"> 58</a>         <span class="Comment">// Start the tab loading</span>
+<a name="line59" class="LineNumber"> 59</a>         <span class="Identifier">loadIntroTab</span><span class="Braces">(</span><span class="Braces">)</span><span class="Symbol">;</span>
+<a name="line60" class="LineNumber"> 60</a>     <span class="Braces">}</span>
+<a name="line61" class="LineNumber"> 61</a> 
+<a name="line62" class="LineNumber"> 62</a>     <span class="DocComment">/**
+<a name="line63" class="LineNumber"> 63</a>      * This method is used to pick up links to anchors.
+<a name="line64" class="LineNumber"> 64</a>      * @param historyToken the anchor name
+<a name="line65" class="LineNumber"> 65</a>      */</span>
+<a name="line66" class="LineNumber"> 66</a>     <span class="ReservedWord">public</span> <span class="ReservedWord">void</span> <span class="Identifier">onHistoryChanged</span><span class="Braces">(</span><span class="Identifier">String</span> <span class="Identifier">historyToken</span><span class="Braces">)</span> <span class="Braces">{</span>
+<a name="line67" class="LineNumber"> 67</a>         <span class="Comment">// Look for the anchor in the list of tab names</span>
+<a name="line68" class="LineNumber"> 68</a>         <span class="ReservedWord">int</span> <span class="Identifier">index</span> <span class="Symbol">=</span> <span class="Identifier">tabNames</span>.<span class="Identifier">indexOf</span><span class="Braces">(</span><span class="Identifier">historyToken</span><span class="Braces">)</span><span class="Symbol">;</span>
+<a name="line69" class="LineNumber"> 69</a> 
+<a name="line70" class="LineNumber"> 70</a>         <span class="Comment">// If we don't find it, default to the first tab</span>
+<a name="line71" class="LineNumber"> 71</a>         <span class="ReservedWord">if</span> <span class="Braces">(</span><span class="Identifier">index</span> <span class="Symbol">&lt;</span> <span class="Numeric">0</span><span class="Braces">)</span> <span class="Braces">{</span>
+<a name="line72" class="LineNumber"> 72</a>             <span class="Identifier">index</span> <span class="Symbol">=</span> <span class="Numeric">0</span><span class="Symbol">;</span>
+<a name="line73" class="LineNumber"> 73</a>         <span class="Braces">}</span>
+<a name="line74" class="LineNumber"> 74</a> 
+<a name="line75" class="LineNumber"> 75</a>         <span class="Comment">// Select the given tab</span>
+<a name="line76" class="LineNumber"> 76</a>         <span class="Identifier">tabs</span>.<span class="Identifier">selectTab</span><span class="Braces">(</span><span class="Identifier">index</span><span class="Braces">)</span><span class="Symbol">;</span>
+<a name="line77" class="LineNumber"> 77</a>     <span class="Braces">}</span>
+<a name="line78" class="LineNumber"> 78</a> 
+<a name="line79" class="LineNumber"> 79</a>     <span class="DocComment">/**
+<a name="line80" class="LineNumber"> 80</a>      * This method sets the active tab based on the anchor or defaults to the
+<a name="line81" class="LineNumber"> 81</a>      * first tab.
+<a name="line82" class="LineNumber"> 82</a>      */</span>
+<a name="line83" class="LineNumber"> 83</a>     <span class="ReservedWord">private</span> <span class="ReservedWord">void</span> <span class="Identifier">setDefaultActiveTab</span><span class="Braces">(</span><span class="Braces">)</span> <span class="Braces">{</span>
+<a name="line84" class="LineNumber"> 84</a>         <span class="Identifier">String</span> <span class="Identifier">token</span> <span class="Symbol">=</span> <span class="Identifier">History</span>.<span class="Identifier">getToken</span><span class="Braces">(</span><span class="Braces">)</span><span class="Symbol">;</span>
+<a name="line85" class="LineNumber"> 85</a> 
+<a name="line86" class="LineNumber"> 86</a>         <span class="ReservedWord">if</span> <span class="Braces">(</span><span class="Identifier">token</span>.<span class="Identifier">length</span><span class="Braces">(</span><span class="Braces">)</span> <span class="Symbol">&gt;</span> <span class="Numeric">0</span><span class="Braces">)</span> <span class="Braces">{</span>
+<a name="line87" class="LineNumber"> 87</a>             <span class="Identifier">onHistoryChanged</span><span class="Braces">(</span><span class="Identifier">token</span><span class="Braces">)</span><span class="Symbol">;</span>
+<a name="line88" class="LineNumber"> 88</a>         <span class="Braces">}</span> <span class="ReservedWord">else</span> <span class="Braces">{</span>
+<a name="line89" class="LineNumber"> 89</a>             <span class="Identifier">tabs</span>.<span class="Identifier">selectTab</span><span class="Braces">(</span><span class="Numeric">0</span><span class="Braces">)</span><span class="Symbol">;</span>
+<a name="line90" class="LineNumber"> 90</a>         <span class="Braces">}</span>
+<a name="line91" class="LineNumber"> 91</a> 
+<a name="line92" class="LineNumber"> 92</a>         <span class="Identifier">doCodeFolds</span><span class="Braces">(</span><span class="Braces">)</span><span class="Symbol">;</span>
+<a name="line93" class="LineNumber"> 93</a>     <span class="Braces">}</span>
+<a name="line94" class="LineNumber"> 94</a> 
+<a name="line95" class="LineNumber"> 95</a>     <span class="ReservedWord">private</span> <span class="ReservedWord">static</span> <span class="ReservedWord">native</span> <span class="ReservedWord">void</span> <span class="Identifier">doCodeFolds</span><span class="Braces">(</span><span class="Braces">)</span> <span class="Comment">/*-{
+<a name="line96" class="LineNumber"> 96</a>         var spanElements = $doc.getElementsByTagName(&quot;span&quot;);
+<a name="line97" class="LineNumber"> 97</a> 
+<a name="line98" class="LineNumber"> 98</a>         for(var i = 0; i &lt; spanElements.length; i++) {
+<a name="line99" class="LineNumber"> 99</a>             var spanElement = spanElements[i];
+<a name="line100" class="LineNumber">100</a> 
+<a name="line101" class="LineNumber">101</a>             if ((spanElement.className == &quot;collapsed&quot;) ||
+<a name="line102" class="LineNumber">102</a>                 (spanElement.classname == &quot;uncollapsed&quot;)) {
+<a name="line103" class="LineNumber">103</a>                 var collapseDivNode = $doc.createElement(&quot;div&quot;);
+<a name="line104" class="LineNumber">104</a>                 var collapseDivInnerNode = $doc.createElement(&quot;div&quot;);
+<a name="line105" class="LineNumber">105</a>                 var parentNode = spanElement.parentNode;
+<a name="line106" class="LineNumber">106</a> 
+<a name="line107" class="LineNumber">107</a>                 collapseDivNode.spanElement = spanElement;
+<a name="line108" class="LineNumber">108</a>                 collapseDivNode.className=&quot;collapseboxclosed&quot;;
+<a name="line109" class="LineNumber">109</a>                 collapseDivNode.onclick = function() {
+<a name="line110" class="LineNumber">110</a>                     if (this.spanElement.className == &quot;collapsed&quot;) {
+<a name="line111" class="LineNumber">111</a>                         this.spanElement.className = &quot;uncollapsed&quot;;
+<a name="line112" class="LineNumber">112</a>                         this.className = &quot;collapseboxopen&quot;;
+<a name="line113" class="LineNumber">113</a>                     } else if (this.spanElement.className == &quot;uncollapsed&quot;) {
+<a name="line114" class="LineNumber">114</a>                         this.spanElement.className = &quot;collapsed&quot;;
+<a name="line115" class="LineNumber">115</a>                         this.className = &quot;collapseboxclosed&quot;;
+<a name="line116" class="LineNumber">116</a>                     }
+<a name="line117" class="LineNumber">117</a>                 };
+<a name="line118" class="LineNumber">118</a> 
+<a name="line119" class="LineNumber">119</a>                 collapseDivInnerNode.className=&quot;collapsewidget&quot;;
+<a name="line120" class="LineNumber">120</a> 
+<a name="line121" class="LineNumber">121</a>                 collapseDivNode.appendChild(collapseDivInnerNode);
+<a name="line122" class="LineNumber">122</a>                 parentNode.insertBefore(collapseDivNode, spanElement);
+<a name="line123" class="LineNumber">123</a>             }
+<a name="line124" class="LineNumber">124</a>         }
+<a name="line125" class="LineNumber">125</a>     }-*/</span><span class="Symbol">;</span>
+<a name="line126" class="LineNumber">126</a> 
+<a name="line127" class="LineNumber">127</a>     <span class="DocComment">/**
+<a name="line128" class="LineNumber">128</a>      * This method loads the tab for the numbered exercise.
+<a name="line129" class="LineNumber">129</a>      * @param index the number of the exercise
+<a name="line130" class="LineNumber">130</a>      */</span>
+<a name="line131" class="LineNumber">131</a>     <span class="ReservedWord">private</span> <span class="ReservedWord">void</span> <span class="Identifier">loadExerciseTab</span><span class="Braces">(</span><span class="ReservedWord">final</span> <span class="ReservedWord">int</span> <span class="Identifier">index</span><span class="Braces">)</span> <span class="Braces">{</span>
+<a name="line132" class="LineNumber">132</a>         <span class="Comment">// Request the HTML page from the server</span>
+<a name="line133" class="LineNumber">133</a>         <span class="Identifier">RequestBuilder</span> <span class="Identifier">builder</span> <span class="Symbol">=</span> <span class="ReservedWord">new</span> <span class="Identifier">RequestBuilder</span><span class="Braces">(</span><span class="Identifier">RequestBuilder</span>.<span class="Identifier">GET</span>, <span class="Identifier">GWT</span>.<span class="Identifier">getHostPageBaseURL</span><span class="Braces">(</span><span class="Braces">)</span> <span class="Symbol">+</span> <span class="String">&quot;/exercise&quot;</span> <span class="Symbol">+</span> <span class="Identifier">index</span> <span class="Symbol">+</span>
+» <span class="String">&quot;.html&quot;</span><span class="Braces">)</span><span class="Symbol">;</span>
+<a name="line134" class="LineNumber">134</a> 
+<a name="line135" class="LineNumber">135</a>         <span class="ReservedWord">try</span> <span class="Braces">{</span>
+<a name="line136" class="LineNumber">136</a>             <span class="Identifier">builder</span>.<span class="Identifier">sendRequest</span><span class="Braces">(</span><span class="ReservedWord">null</span>, <span class="ReservedWord">new</span> <span class="Identifier">RequestCallback</span><span class="Braces">(</span><span class="Braces">)</span> <span class="Braces">{</span>
+<a name="line137" class="LineNumber">137</a> 
+<a name="line138" class="LineNumber">138</a>                 <span class="ReservedWord">public</span> <span class="ReservedWord">void</span> <span class="Identifier">onResponseReceived</span><span class="Braces">(</span><span class="Identifier">Request</span> <span class="Identifier">req</span>, <span class="Identifier">Response</span> <span class="Identifier">res</span><span class="Braces">)</span> <span class="Braces">{</span>
+<a name="line139" class="LineNumber">139</a>                     <span class="ReservedWord">if</span> <span class="Braces">(</span><span class="Identifier">isValidPage</span><span class="Braces">(</span><span class="Identifier">res</span><span class="Braces">)</span><span class="Braces">)</span> <span class="Braces">{</span>
+<a name="line140" class="LineNumber">140</a>                         <span class="Comment">// If the page exists, create a tab and load the solution</span>
+<a name="line141" class="LineNumber">141</a>                         <span class="Identifier">addTab</span><span class="Braces">(</span><span class="String">&quot;Exercise_&quot;</span> <span class="Symbol">+</span> <span class="Identifier">index</span>, <span class="Identifier">res</span>.<span class="Identifier">getText</span><span class="Braces">(</span><span class="Braces">)</span><span class="Braces">)</span><span class="Symbol">;</span>
+<a name="line142" class="LineNumber">142</a>                         <span class="Identifier">loadSolutionTab</span><span class="Braces">(</span><span class="Identifier">index</span><span class="Braces">)</span><span class="Symbol">;</span>
+<a name="line143" class="LineNumber">143</a>                     <span class="Braces">}</span> <span class="ReservedWord">else</span> <span class="Braces">{</span>
+<a name="line144" class="LineNumber">144</a>                         <span class="Comment">// If the page doesn't exist, load the summary page</span>
+<a name="line145" class="LineNumber">145</a>                         <span class="Identifier">loadSummaryTab</span><span class="Braces">(</span><span class="Braces">)</span><span class="Symbol">;</span>
+<a name="line146" class="LineNumber">146</a>                     <span class="Braces">}</span>
+<a name="line147" class="LineNumber">147</a>                 <span class="Braces">}</span>
+<a name="line148" class="LineNumber">148</a> 
+<a name="line149" class="LineNumber">149</a>                 <span class="ReservedWord">public</span> <span class="ReservedWord">void</span> <span class="Identifier">onError</span><span class="Braces">(</span><span class="Identifier">Request</span> <span class="Identifier">req</span>, <span class="Identifier">Throwable</span> <span class="Identifier">t</span><span class="Braces">)</span> <span class="Braces">{</span>
+<a name="line150" class="LineNumber">150</a>                     <span class="Comment">// If the page doesn't exist, load the summary page</span>
+<a name="line151" class="LineNumber">151</a>                     <span class="Identifier">loadSummaryTab</span><span class="Braces">(</span><span class="Braces">)</span><span class="Symbol">;</span>
+<a name="line152" class="LineNumber">152</a>                 <span class="Braces">}</span>
+<a name="line153" class="LineNumber">153</a>             <span class="Braces">}</span><span class="Braces">)</span><span class="Symbol">;</span>
+<a name="line154" class="LineNumber">154</a>         <span class="Braces">}</span> <span class="ReservedWord">catch</span> <span class="Braces">(</span><span class="Identifier">RequestException</span> <span class="Identifier">e</span><span class="Braces">)</span> <span class="Braces">{</span>
+<a name="line155" class="LineNumber">155</a>             <span class="Comment">// If the page doesn't exist, load the summary page</span>
+<a name="line156" class="LineNumber">156</a>             <span class="Identifier">loadSummaryTab</span><span class="Braces">(</span><span class="Braces">)</span><span class="Symbol">;</span>
+<a name="line157" class="LineNumber">157</a>         <span class="Braces">}</span>
+<a name="line158" class="LineNumber">158</a>     <span class="Braces">}</span>
+<a name="line159" class="LineNumber">159</a> 
+<a name="line160" class="LineNumber">160</a>     <span class="DocComment">/**
+<a name="line161" class="LineNumber">161</a>      * This method loads the solution tab for the numbered exercise.
+<a name="line162" class="LineNumber">162</a>      * @param index the number of the exercise
+<a name="line163" class="LineNumber">163</a>      */</span>
+<a name="line164" class="LineNumber">164</a>     <span class="ReservedWord">private</span> <span class="ReservedWord">void</span> <span class="Identifier">loadSolutionTab</span><span class="Braces">(</span><span class="ReservedWord">final</span> <span class="ReservedWord">int</span> <span class="Identifier">index</span><span class="Braces">)</span> <span class="Braces">{</span>
+<a name="line165" class="LineNumber">165</a>         <span class="Comment">// Request the HTML page from the server</span>
+<a name="line166" class="LineNumber">166</a>         <span class="Identifier">RequestBuilder</span> <span class="Identifier">builder</span> <span class="Symbol">=</span> <span class="ReservedWord">new</span> <span class="Identifier">RequestBuilder</span><span class="Braces">(</span><span class="Identifier">RequestBuilder</span>.<span class="Identifier">GET</span>, <span class="Identifier">GWT</span>.<span class="Identifier">getHostPageBaseURL</span><span class="Braces">(</span><span class="Braces">)</span> <span class="Symbol">+</span> <span class="String">&quot;/solution&quot;</span> <span class="Symbol">+</span> <span class="Identifier">index</span> <span class="Symbol">+</span>
+» <span class="String">&quot;.html&quot;</span><span class="Braces">)</span><span class="Symbol">;</span>
+<a name="line167" class="LineNumber">167</a> 
+<a name="line168" class="LineNumber">168</a>         <span class="ReservedWord">try</span> <span class="Braces">{</span>
+<a name="line169" class="LineNumber">169</a>             <span class="Identifier">builder</span>.<span class="Identifier">sendRequest</span><span class="Braces">(</span><span class="ReservedWord">null</span>, <span class="ReservedWord">new</span> <span class="Identifier">RequestCallback</span><span class="Braces">(</span><span class="Braces">)</span> <span class="Braces">{</span>
+<a name="line170" class="LineNumber">170</a> 
+<a name="line171" class="LineNumber">171</a>                 <span class="ReservedWord">public</span> <span class="ReservedWord">void</span> <span class="Identifier">onResponseReceived</span><span class="Braces">(</span><span class="Identifier">Request</span> <span class="Identifier">req</span>, <span class="Identifier">Response</span> <span class="Identifier">res</span><span class="Braces">)</span> <span class="Braces">{</span>
+<a name="line172" class="LineNumber">172</a>                     <span class="Comment">// If the page exists, create a tab</span>
+<a name="line173" class="LineNumber">173</a>                     <span class="ReservedWord">if</span> <span class="Braces">(</span><span class="Identifier">isValidPage</span><span class="Braces">(</span><span class="Identifier">res</span><span class="Braces">)</span><span class="Braces">)</span> <span class="Braces">{</span>
+<a name="line174" class="LineNumber">174</a>                         <span class="Identifier">addTab</span><span class="Braces">(</span><span class="String">&quot;Solution_&quot;</span> <span class="Symbol">+</span> <span class="Identifier">index</span>, <span class="Identifier">res</span>.<span class="Identifier">getText</span><span class="Braces">(</span><span class="Braces">)</span><span class="Braces">)</span><span class="Symbol">;</span>
+<a name="line175" class="LineNumber">175</a>                     <span class="Braces">}</span>
+<a name="line176" class="LineNumber">176</a> 
+<a name="line177" class="LineNumber">177</a>                     <span class="Comment">// Regardless, load the next exercise</span>
+<a name="line178" class="LineNumber">178</a>                     <span class="Identifier">loadExerciseTab</span><span class="Braces">(</span><span class="Identifier">index</span> <span class="Symbol">+</span> <span class="Numeric">1</span><span class="Braces">)</span><span class="Symbol">;</span>
+<a name="line179" class="LineNumber">179</a>                 <span class="Braces">}</span>
+<a name="line180" class="LineNumber">180</a> 
+<a name="line181" class="LineNumber">181</a>                 <span class="ReservedWord">public</span> <span class="ReservedWord">void</span> <span class="Identifier">onError</span><span class="Braces">(</span><span class="Identifier">Request</span> <span class="Identifier">req</span>, <span class="Identifier">Throwable</span> <span class="Identifier">t</span><span class="Braces">)</span> <span class="Braces">{</span>
+<a name="line182" class="LineNumber">182</a>                     <span class="Comment">// Load the next exercise</span>
+<a name="line183" class="LineNumber">183</a>                     <span class="Identifier">loadExerciseTab</span><span class="Braces">(</span><span class="Identifier">index</span> <span class="Symbol">+</span> <span class="Numeric">1</span><span class="Braces">)</span><span class="Symbol">;</span>
+<a name="line184" class="LineNumber">184</a>                 <span class="Braces">}</span>
+<a name="line185" class="LineNumber">185</a>             <span class="Braces">}</span><span class="Braces">)</span><span class="Symbol">;</span>
+<a name="line186" class="LineNumber">186</a>         <span class="Braces">}</span> <span class="ReservedWord">catch</span> <span class="Braces">(</span><span class="Identifier">RequestException</span> <span class="Identifier">e</span><span class="Braces">)</span> <span class="Braces">{</span>
+<a name="line187" class="LineNumber">187</a>             <span class="Comment">// Load the next exercise</span>
+<a name="line188" class="LineNumber">188</a>             <span class="Identifier">loadExerciseTab</span><span class="Braces">(</span><span class="Identifier">index</span> <span class="Symbol">+</span> <span class="Numeric">1</span><span class="Braces">)</span><span class="Symbol">;</span>
+<a name="line189" class="LineNumber">189</a>         <span class="Braces">}</span>
+<a name="line190" class="LineNumber">190</a>     <span class="Braces">}</span>
+<a name="line191" class="LineNumber">191</a> 
+<a name="line192" class="LineNumber">192</a>     <span class="DocComment">/**
+<a name="line193" class="LineNumber">193</a>      * This method loads the intro tab.
+<a name="line194" class="LineNumber">194</a>      */</span>
+<a name="line195" class="LineNumber">195</a>     <span class="ReservedWord">private</span> <span class="ReservedWord">void</span> <span class="Identifier">loadIntroTab</span><span class="Braces">(</span><span class="Braces">)</span> <span class="Braces">{</span>
+<a name="line196" class="LineNumber">196</a>         <span class="Comment">// Request the HTML page from the server</span>
+<a name="line197" class="LineNumber">197</a>         <span class="Identifier">RequestBuilder</span> <span class="Identifier">builder</span> <span class="Symbol">=</span> <span class="ReservedWord">new</span> <span class="Identifier">RequestBuilder</span><span class="Braces">(</span><span class="Identifier">RequestBuilder</span>.<span class="Identifier">GET</span>, <span class="Identifier">GWT</span>.<span class="Identifier">getHostPageBaseURL</span><span class="Braces">(</span><span class="Braces">)</span> <span class="Symbol">+</span> <span class="String">&quot;/intro.html&quot;</span><span class="Braces">)</span><span class="Symbol">;</span>
+<a name="line198" class="LineNumber">198</a> 
+<a name="line199" class="LineNumber">199</a>         <span class="ReservedWord">try</span> <span class="Braces">{</span>
+<a name="line200" class="LineNumber">200</a>             <span class="Identifier">builder</span>.<span class="Identifier">sendRequest</span><span class="Braces">(</span><span class="ReservedWord">null</span>, <span class="ReservedWord">new</span> <span class="Identifier">RequestCallback</span><span class="Braces">(</span><span class="Braces">)</span> <span class="Braces">{</span>
+<a name="line201" class="LineNumber">201</a> 
+<a name="line202" class="LineNumber">202</a>                 <span class="ReservedWord">public</span> <span class="ReservedWord">void</span> <span class="Identifier">onResponseReceived</span><span class="Braces">(</span><span class="Identifier">Request</span> <span class="Identifier">req</span>, <span class="Identifier">Response</span> <span class="Identifier">res</span><span class="Braces">)</span> <span class="Braces">{</span>
+<a name="line203" class="LineNumber">203</a>                     <span class="Comment">// If the page exists, create a tab and set the page title</span>
+<a name="line204" class="LineNumber">204</a>                     <span class="ReservedWord">if</span> <span class="Braces">(</span><span class="Identifier">isValidPage</span><span class="Braces">(</span><span class="Identifier">res</span><span class="Braces">)</span><span class="Braces">)</span> <span class="Braces">{</span>
+<a name="line205" class="LineNumber">205</a>                         <span class="Identifier">addTab</span><span class="Braces">(</span><span class="String">&quot;Intro&quot;</span>, <span class="Identifier">res</span>.<span class="Identifier">getText</span><span class="Braces">(</span><span class="Braces">)</span><span class="Braces">)</span><span class="Symbol">;</span>
+<a name="line206" class="LineNumber">206</a> 
+<a name="line207" class="LineNumber">207</a>                         <span class="Comment">// Find the j1holtitleid element and set the page title</span>
+<a name="line208" class="LineNumber">208</a>                         <span class="Comment">// to that element's inner text</span>
+<a name="line209" class="LineNumber">209</a>                         <span class="Identifier">Element</span> <span class="Identifier">e</span> <span class="Symbol">=</span> <span class="Identifier">DOM</span>.<span class="Identifier">getElementById</span><span class="Braces">(</span><span class="String">&quot;j1holtitleid&quot;</span><span class="Braces">)</span><span class="Symbol">;</span>
+<a name="line210" class="LineNumber">210</a> 
+<a name="line211" class="LineNumber">211</a>                         <span class="ReservedWord">if</span> <span class="Braces">(</span><span class="Identifier">e</span> <span class="Symbol">!</span><span class="Symbol">=</span> <span class="ReservedWord">null</span><span class="Braces">)</span> <span class="Braces">{</span>
+<a name="line212" class="LineNumber">212</a>                             <span class="Identifier">String</span> <span class="Identifier">title</span> <span class="Symbol">=</span> <span class="Identifier">DOM</span>.<span class="Identifier">getInnerText</span><span class="Braces">(</span><span class="Identifier">e</span><span class="Braces">)</span><span class="Symbol">;</span>
+<a name="line213" class="LineNumber">213</a> 
+<a name="line214" class="LineNumber">214</a>                             <span class="ReservedWord">if</span> <span class="Braces">(</span><span class="Braces">(</span><span class="Identifier">title</span> <span class="Symbol">!</span><span class="Symbol">=</span> <span class="ReservedWord">null</span><span class="Braces">)</span> <span class="Symbol">&amp;</span><span class="Symbol">&amp;</span> <span class="Symbol">!</span><span class="Identifier">title</span>.<span class="Identifier">equals</span><span class="Braces">(</span><span class="String">&quot;&quot;</span><span class="Braces">)</span><span class="Braces">)</span> <span class="Braces">{</span>
+<a name="line215" class="LineNumber">215</a>                                 <span class="Identifier">Window</span>.<span class="Identifier">setTitle</span><span class="Braces">(</span><span class="Identifier">title</span><span class="Braces">)</span><span class="Symbol">;</span>
+<a name="line216" class="LineNumber">216</a>                             <span class="Braces">}</span>
+<a name="line217" class="LineNumber">217</a>                         <span class="Braces">}</span>
+<a name="line218" class="LineNumber">218</a>                     <span class="Braces">}</span>
+<a name="line219" class="LineNumber">219</a> 
+<a name="line220" class="LineNumber">220</a>                     <span class="Comment">// Regardless, load the first exercise</span>
+<a name="line221" class="LineNumber">221</a>                     <span class="Identifier">loadExerciseTab</span><span class="Braces">(</span><span class="Numeric">0</span><span class="Braces">)</span><span class="Symbol">;</span>
+<a name="line222" class="LineNumber">222</a>                 <span class="Braces">}</span>
+<a name="line223" class="LineNumber">223</a> 
+<a name="line224" class="LineNumber">224</a>                 <span class="ReservedWord">public</span> <span class="ReservedWord">void</span> <span class="Identifier">onError</span><span class="Braces">(</span><span class="Identifier">Request</span> <span class="Identifier">req</span>, <span class="Identifier">Throwable</span> <span class="Identifier">t</span><span class="Braces">)</span> <span class="Braces">{</span>
+<a name="line225" class="LineNumber">225</a>                     <span class="Comment">// Load the first exercise</span>
+<a name="line226" class="LineNumber">226</a>                     <span class="Identifier">loadExerciseTab</span><span class="Braces">(</span><span class="Numeric">0</span><span class="Braces">)</span><span class="Symbol">;</span>
+<a name="line227" class="LineNumber">227</a>                 <span class="Braces">}</span>
+<a name="line228" class="LineNumber">228</a>             <span class="Braces">}</span><span class="Braces">)</span><span class="Symbol">;</span>
+<a name="line229" class="LineNumber">229</a>         <span class="Braces">}</span> <span class="ReservedWord">catch</span> <span class="Braces">(</span><span class="Identifier">RequestException</span> <span class="Identifier">e</span><span class="Braces">)</span> <span class="Braces">{</span>
+<a name="line230" class="LineNumber">230</a>             <span class="Comment">// Load the first exercise</span>
+<a name="line231" class="LineNumber">231</a>             <span class="Identifier">loadExerciseTab</span><span class="Braces">(</span><span class="Numeric">0</span><span class="Braces">)</span><span class="Symbol">;</span>
+<a name="line232" class="LineNumber">232</a>         <span class="Braces">}</span>
+<a name="line233" class="LineNumber">233</a>     <span class="Braces">}</span>
+<a name="line234" class="LineNumber">234</a> 
+<a name="line235" class="LineNumber">235</a>     <span class="DocComment">/**
+<a name="line236" class="LineNumber">236</a>      * This method loads the summary tab
+<a name="line237" class="LineNumber">237</a>      */</span>
+<a name="line238" class="LineNumber">238</a>     <span class="ReservedWord">private</span> <span class="ReservedWord">void</span> <span class="Identifier">loadSummaryTab</span><span class="Braces">(</span><span class="Braces">)</span> <span class="Braces">{</span>
+<a name="line239" class="LineNumber">239</a>         <span class="Comment">// Request the HTML page from the server</span>
+<a name="line240" class="LineNumber">240</a>         <span class="Identifier">RequestBuilder</span> <span class="Identifier">builder</span> <span class="Symbol">=</span> <span class="ReservedWord">new</span> <span class="Identifier">RequestBuilder</span><span class="Braces">(</span><span class="Identifier">RequestBuilder</span>.<span class="Identifier">GET</span>, <span class="Identifier">GWT</span>.<span class="Identifier">getHostPageBaseURL</span><span class="Braces">(</span><span class="Braces">)</span> <span class="Symbol">+</span> <span class="String">&quot;/summary.html&quot;</span><span class="Braces">)</span><span class="Symbol">;</span>
+<a name="line241" class="LineNumber">241</a> 
+<a name="line242" class="LineNumber">242</a>         <span class="ReservedWord">try</span> <span class="Braces">{</span>
+<a name="line243" class="LineNumber">243</a>             <span class="Identifier">builder</span>.<span class="Identifier">sendRequest</span><span class="Braces">(</span><span class="ReservedWord">null</span>, <span class="ReservedWord">new</span> <span class="Identifier">RequestCallback</span><span class="Braces">(</span><span class="Braces">)</span> <span class="Braces">{</span>
+<a name="line244" class="LineNumber">244</a> 
+<a name="line245" class="LineNumber">245</a>                 <span class="ReservedWord">public</span> <span class="ReservedWord">void</span> <span class="Identifier">onResponseReceived</span><span class="Braces">(</span><span class="Identifier">Request</span> <span class="Identifier">req</span>, <span class="Identifier">Response</span> <span class="Identifier">res</span><span class="Braces">)</span> <span class="Braces">{</span>
+<a name="line246" class="LineNumber">246</a>                     <span class="Comment">// If the page exists, create a tab</span>
+<a name="line247" class="LineNumber">247</a>                     <span class="ReservedWord">if</span> <span class="Braces">(</span><span class="Identifier">isValidPage</span><span class="Braces">(</span><span class="Identifier">res</span><span class="Braces">)</span><span class="Braces">)</span> <span class="Braces">{</span>
+<a name="line248" class="LineNumber">248</a>                         <span class="Identifier">addTab</span><span class="Braces">(</span><span class="String">&quot;Summary&quot;</span>, <span class="Identifier">res</span>.<span class="Identifier">getText</span><span class="Braces">(</span><span class="Braces">)</span><span class="Braces">)</span><span class="Symbol">;</span>
+<a name="line249" class="LineNumber">249</a>                     <span class="Braces">}</span>
+<a name="line250" class="LineNumber">250</a> 
+<a name="line251" class="LineNumber">251</a>                     <span class="Comment">// Set the active tab</span>
+<a name="line252" class="LineNumber">252</a>                     <span class="Identifier">setDefaultActiveTab</span><span class="Braces">(</span><span class="Braces">)</span><span class="Symbol">;</span>
+<a name="line253" class="LineNumber">253</a>                 <span class="Braces">}</span>
+<a name="line254" class="LineNumber">254</a> 
+<a name="line255" class="LineNumber">255</a>                 <span class="ReservedWord">public</span> <span class="ReservedWord">void</span> <span class="Identifier">onError</span><span class="Braces">(</span><span class="Identifier">Request</span> <span class="Identifier">req</span>, <span class="Identifier">Throwable</span> <span class="Identifier">t</span><span class="Braces">)</span> <span class="Braces">{</span>
+<a name="line256" class="LineNumber">256</a>                     <span class="Comment">// Set the active tab</span>
+<a name="line257" class="LineNumber">257</a>                     <span class="Identifier">setDefaultActiveTab</span><span class="Braces">(</span><span class="Braces">)</span><span class="Symbol">;</span>
+<a name="line258" class="LineNumber">258</a>                 <span class="Braces">}</span>
+<a name="line259" class="LineNumber">259</a>             <span class="Braces">}</span><span class="Braces">)</span><span class="Symbol">;</span>
+<a name="line260" class="LineNumber">260</a>         <span class="Braces">}</span> <span class="ReservedWord">catch</span> <span class="Braces">(</span><span class="Identifier">RequestException</span> <span class="Identifier">e</span><span class="Braces">)</span> <span class="Braces">{</span>
+<a name="line261" class="LineNumber">261</a>             <span class="Comment">// Set the active tab</span>
+<a name="line262" class="LineNumber">262</a>             <span class="Identifier">setDefaultActiveTab</span><span class="Braces">(</span><span class="Braces">)</span><span class="Symbol">;</span>
+<a name="line263" class="LineNumber">263</a>         <span class="Braces">}</span>
+<a name="line264" class="LineNumber">264</a>     <span class="Braces">}</span>
+<a name="line265" class="LineNumber">265</a> 
+<a name="line266" class="LineNumber">266</a>     <span class="DocComment">/**
+<a name="line267" class="LineNumber">267</a>      * This method creates a new tab for a loaded page
+<a name="line268" class="LineNumber">268</a>      * @param link the tab's anchor
+<a name="line269" class="LineNumber">269</a>      * @param body the tab's contents
+<a name="line270" class="LineNumber">270</a>      */</span>
+<a name="line271" class="LineNumber">271</a>     <span class="ReservedWord">private</span> <span class="ReservedWord">void</span> <span class="Identifier">addTab</span><span class="Braces">(</span><span class="Identifier">String</span> <span class="Identifier">link</span>, <span class="Identifier">String</span> <span class="Identifier">body</span><span class="Braces">)</span> <span class="Braces">{</span>
+<a name="line272" class="LineNumber">272</a>         <span class="Identifier">HTML</span> <span class="Identifier">panel</span> <span class="Symbol">=</span> <span class="ReservedWord">new</span> <span class="Identifier">HTML</span><span class="Braces">(</span><span class="Identifier">body</span><span class="Braces">)</span><span class="Symbol">;</span>
+<a name="line273" class="LineNumber">273</a>         <span class="Identifier">String</span> <span class="Identifier">text</span> <span class="Symbol">=</span> <span class="ReservedWord">null</span><span class="Symbol">;</span>
+<a name="line274" class="LineNumber">274</a> 
+<a name="line275" class="LineNumber">275</a>         <span class="Identifier">panel</span>.<span class="Identifier">setStyleName</span><span class="Braces">(</span><span class="String">&quot;j1holpanel&quot;</span><span class="Braces">)</span><span class="Symbol">;</span>
+<a name="line276" class="LineNumber">276</a> 
+<a name="line277" class="LineNumber">277</a>         <span class="Comment">// First try to find a META tag with a tab title</span>
+<a name="line278" class="LineNumber">278</a>         <span class="Comment">// e is the HTML panel</span>
+<a name="line279" class="LineNumber">279</a>         <span class="Identifier">Element</span> <span class="Identifier">e</span> <span class="Symbol">=</span> <span class="Identifier">panel</span>.<span class="Identifier">getElement</span><span class="Braces">(</span><span class="Braces">)</span><span class="Symbol">;</span>
+<a name="line280" class="LineNumber">280</a>         <span class="Comment">// The HEAD and BODY tags get dropped, leaving the META tags as the</span>
+<a name="line281" class="LineNumber">281</a>         <span class="Comment">// first tags before the body contents</span>
+<a name="line282" class="LineNumber">282</a>         <span class="Comment">// e2 should be the first META tag</span>
+<a name="line283" class="LineNumber">283</a>         <span class="Identifier">Element</span> <span class="Identifier">e2</span> <span class="Symbol">=</span> <span class="Identifier">DOM</span>.<span class="Identifier">getFirstChild</span><span class="Braces">(</span><span class="Identifier">e</span><span class="Braces">)</span><span class="Symbol">;</span>
+<a name="line284" class="LineNumber">284</a> 
+<a name="line285" class="LineNumber">285</a>         <span class="ReservedWord">while</span> <span class="Braces">(</span><span class="Identifier">e2</span> <span class="Symbol">!</span><span class="Symbol">=</span> <span class="ReservedWord">null</span><span class="Braces">)</span> <span class="Braces">{</span>
+<a name="line286" class="LineNumber">286</a>             <span class="Comment">// Check the tag's name</span>
+<a name="line287" class="LineNumber">287</a>             <span class="Identifier">String</span> <span class="Identifier">name</span> <span class="Symbol">=</span> <span class="Identifier">DOM</span>.<span class="Identifier">getElementAttribute</span><span class="Braces">(</span><span class="Identifier">e2</span>, <span class="String">&quot;name&quot;</span><span class="Braces">)</span><span class="Symbol">;</span>
+<a name="line288" class="LineNumber">288</a> 
+<a name="line289" class="LineNumber">289</a>             <span class="Comment">// If it has the right name, get its value</span>
+<a name="line290" class="LineNumber">290</a>             <span class="ReservedWord">if</span> <span class="Braces">(</span><span class="Braces">(</span><span class="Identifier">name</span> <span class="Symbol">!</span><span class="Symbol">=</span> <span class="ReservedWord">null</span><span class="Braces">)</span> <span class="Symbol">&amp;</span><span class="Symbol">&amp;</span> <span class="Braces">(</span><span class="Identifier">name</span>.<span class="Identifier">equalsIgnoreCase</span><span class="Braces">(</span><span class="String">&quot;j1holtabname&quot;</span><span class="Braces">)</span><span class="Braces">)</span><span class="Braces">)</span> <span class="Braces">{</span>
+<a name="line291" class="LineNumber">291</a>                 <span class="Identifier">text</span> <span class="Symbol">=</span> <span class="Identifier">DOM</span>.<span class="Identifier">getElementAttribute</span><span class="Braces">(</span><span class="Identifier">e2</span>, <span class="String">&quot;content&quot;</span><span class="Braces">)</span><span class="Symbol">;</span>
+<a name="line292" class="LineNumber">292</a>                 <span class="ReservedWord">break</span><span class="Symbol">;</span>
+<a name="line293" class="LineNumber">293</a>             <span class="Braces">}</span> <span class="ReservedWord">else</span> <span class="Braces">{</span>
+<a name="line294" class="LineNumber">294</a>                 <span class="Comment">// Otherwise, try the next tag</span>
+<a name="line295" class="LineNumber">295</a>                 <span class="Identifier">e2</span> <span class="Symbol">=</span> <span class="Identifier">DOM</span>.<span class="Identifier">getNextSibling</span><span class="Braces">(</span><span class="Identifier">e2</span><span class="Braces">)</span><span class="Symbol">;</span>
+<a name="line296" class="LineNumber">296</a>             <span class="Braces">}</span>
+<a name="line297" class="LineNumber">297</a>         <span class="Braces">}</span>
+<a name="line298" class="LineNumber">298</a> 
+<a name="line299" class="LineNumber">299</a>         <span class="Comment">// If we didn't find a tab title META tag, use the anchor as the title</span>
+<a name="line300" class="LineNumber">300</a>         <span class="ReservedWord">if</span> <span class="Braces">(</span><span class="Identifier">text</span> <span class="Symbol">=</span><span class="Symbol">=</span> <span class="ReservedWord">null</span><span class="Braces">)</span> <span class="Braces">{</span>
+<a name="line301" class="LineNumber">301</a>             <span class="Identifier">text</span> <span class="Symbol">=</span> <span class="Identifier">link</span><span class="Symbol">;</span>
+<a name="line302" class="LineNumber">302</a> 
+<a name="line303" class="LineNumber">303</a>             <span class="Comment">// Replace the underbars with spaces.  We can't just use String.replace()</span>
+<a name="line304" class="LineNumber">304</a>             <span class="Comment">// because it doesn't appear to work with GWT.</span>
+<a name="line305" class="LineNumber">305</a>             <span class="ReservedWord">int</span> <span class="Identifier">index</span> <span class="Symbol">=</span> <span class="Symbol">-</span><span class="Numeric">1</span><span class="Symbol">;</span>
+<a name="line306" class="LineNumber">306</a> 
+<a name="line307" class="LineNumber">307</a>             <span class="ReservedWord">while</span> <span class="Braces">(</span><span class="Braces">(</span><span class="Identifier">index</span> <span class="Symbol">=</span> <span class="Identifier">text</span>.<span class="Identifier">indexOf</span><span class="Braces">(</span><span class="String">'_'</span><span class="Braces">)</span><span class="Braces">)</span> <span class="Symbol">&gt;</span><span class="Symbol">=</span> <span class="Numeric">0</span><span class="Braces">)</span> <span class="Braces">{</span>
+<a name="line308" class="LineNumber">308</a>                 <span class="ReservedWord">if</span> <span class="Braces">(</span><span class="Identifier">index</span> <span class="Symbol">=</span><span class="Symbol">=</span> <span class="Numeric">0</span><span class="Braces">)</span> <span class="Braces">{</span>
+<a name="line309" class="LineNumber">309</a>                     <span class="Identifier">text</span> <span class="Symbol">=</span> <span class="Identifier">text</span>.<span class="Identifier">substring</span><span class="Braces">(</span><span class="Numeric">1</span><span class="Braces">)</span><span class="Symbol">;</span>
+<a name="line310" class="LineNumber">310</a>                 <span class="Braces">}</span> <span class="ReservedWord">else</span> <span class="Braces">{</span>
+<a name="line311" class="LineNumber">311</a>                     <span class="Identifier">text</span> <span class="Symbol">=</span> <span class="Identifier">text</span>.<span class="Identifier">substring</span><span class="Braces">(</span><span class="Numeric">0</span>, <span class="Identifier">index</span><span class="Braces">)</span> <span class="Symbol">+</span> <span class="String">' '</span> <span class="Symbol">+</span> <span class="Identifier">text</span>.<span class="Identifier">substring</span><span class="Braces">(</span><span class="Identifier">index</span> <span class="Symbol">+</span> <span class="Numeric">1</span><span class="Braces">)</span><span class="Symbol">;</span>
+<a name="line312" class="LineNumber">312</a>                 <span class="Braces">}</span>
+<a name="line313" class="LineNumber">313</a>             <span class="Braces">}</span>
+<a name="line314" class="LineNumber">314</a>         <span class="Braces">}</span>
+<a name="line315" class="LineNumber">315</a> 
+<a name="line316" class="LineNumber">316</a>         <span class="Comment">// Add the anchor to the list of tab names</span>
+<a name="line317" class="LineNumber">317</a>         <span class="Identifier">tabNames</span>.<span class="Identifier">add</span><span class="Braces">(</span><span class="Identifier">link</span><span class="Braces">)</span><span class="Symbol">;</span>
+<a name="line318" class="LineNumber">318</a>         <span class="Comment">// Add the tab to the tab panel</span>
+<a name="line319" class="LineNumber">319</a>         <span class="Identifier">tabs</span>.<span class="Identifier">add</span><span class="Braces">(</span><span class="Identifier">buildTabBody</span><span class="Braces">(</span><span class="Identifier">panel</span><span class="Braces">)</span>, <span class="Identifier">buildTab</span><span class="Braces">(</span><span class="Identifier">text</span>, <span class="Identifier">link</span><span class="Braces">)</span><span class="Braces">)</span><span class="Symbol">;</span>
+<a name="line320" class="LineNumber">320</a>     <span class="Braces">}</span>
+<a name="line321" class="LineNumber">321</a> 
+<a name="line322" class="LineNumber">322</a>     <span class="DocComment">/**
+<a name="line323" class="LineNumber">323</a>      * This method creates a tab's body.
+<a name="line324" class="LineNumber">324</a>      * @param body the contents of the tab
+<a name="line325" class="LineNumber">325</a>      * @return a Widget representing the tab's body
+<a name="line326" class="LineNumber">326</a>      */</span>
+<a name="line327" class="LineNumber">327</a>     <span class="ReservedWord">private</span> <span class="ReservedWord">static</span> <span class="Identifier">Widget</span> <span class="Identifier">buildTabBody</span><span class="Braces">(</span><span class="Identifier">Widget</span> <span class="Identifier">body</span><span class="Braces">)</span> <span class="Braces">{</span>
+<a name="line328" class="LineNumber">328</a>         <span class="Comment">// We build this weird heirarchy to allow the Sun style sheet to work</span>
+<a name="line329" class="LineNumber">329</a>         <span class="Identifier">SimplePanel</span> <span class="Identifier">d7</span> <span class="Symbol">=</span> <span class="ReservedWord">new</span> <span class="Identifier">SimplePanel</span><span class="Braces">(</span><span class="Braces">)</span><span class="Symbol">;</span>
+<a name="line330" class="LineNumber">330</a>         <span class="Identifier">SimplePanel</span> <span class="Identifier">d7v4</span> <span class="Symbol">=</span> <span class="ReservedWord">new</span> <span class="Identifier">SimplePanel</span><span class="Braces">(</span><span class="Braces">)</span><span class="Symbol">;</span>
+<a name="line331" class="LineNumber">331</a>         <span class="Identifier">SimplePanel</span> <span class="Identifier">cornerBL</span> <span class="Symbol">=</span> <span class="ReservedWord">new</span> <span class="Identifier">SimplePanel</span><span class="Braces">(</span><span class="Braces">)</span><span class="Symbol">;</span>
+<a name="line332" class="LineNumber">332</a>         <span class="Identifier">SimplePanel</span> <span class="Identifier">cornerBR</span> <span class="Symbol">=</span> <span class="ReservedWord">new</span> <span class="Identifier">SimplePanel</span><span class="Braces">(</span><span class="Braces">)</span><span class="Symbol">;</span>
+<a name="line333" class="LineNumber">333</a> 
+<a name="line334" class="LineNumber">334</a>         <span class="Identifier">d7</span>.<span class="Identifier">setStyleName</span><span class="Braces">(</span><span class="String">&quot;d7&quot;</span><span class="Braces">)</span><span class="Symbol">;</span>
+<a name="line335" class="LineNumber">335</a>         <span class="Identifier">d7v4</span>.<span class="Identifier">setStyleName</span><span class="Braces">(</span><span class="String">&quot;d7v4&quot;</span><span class="Braces">)</span><span class="Symbol">;</span>
+<a name="line336" class="LineNumber">336</a>         <span class="Identifier">cornerBL</span>.<span class="Identifier">setStyleName</span><span class="Braces">(</span><span class="String">&quot;cornerBL&quot;</span><span class="Braces">)</span><span class="Symbol">;</span>
+<a name="line337" class="LineNumber">337</a>         <span class="Identifier">cornerBR</span>.<span class="Identifier">setStyleName</span><span class="Braces">(</span><span class="String">&quot;cornerBR&quot;</span><span class="Braces">)</span><span class="Symbol">;</span>
+<a name="line338" class="LineNumber">338</a> 
+<a name="line339" class="LineNumber">339</a>         <span class="Identifier">cornerBR</span>.<span class="Identifier">add</span><span class="Braces">(</span><span class="Identifier">body</span><span class="Braces">)</span><span class="Symbol">;</span>
+<a name="line340" class="LineNumber">340</a>         <span class="Identifier">cornerBL</span>.<span class="Identifier">add</span><span class="Braces">(</span><span class="Identifier">cornerBR</span><span class="Braces">)</span><span class="Symbol">;</span>
+<a name="line341" class="LineNumber">341</a>         <span class="Identifier">d7v4</span>.<span class="Identifier">add</span><span class="Braces">(</span><span class="Identifier">cornerBL</span><span class="Braces">)</span><span class="Symbol">;</span>
+<a name="line342" class="LineNumber">342</a>         <span class="Identifier">d7</span>.<span class="Identifier">add</span><span class="Braces">(</span><span class="Identifier">d7v4</span><span class="Braces">)</span><span class="Symbol">;</span>
+<a name="line343" class="LineNumber">343</a> 
+<a name="line344" class="LineNumber">344</a>         <span class="ReservedWord">return</span> <span class="Identifier">d7</span><span class="Symbol">;</span>
+<a name="line345" class="LineNumber">345</a>     <span class="Braces">}</span>
+<a name="line346" class="LineNumber">346</a> 
+</span><a name="line347" class="LineNumber">347</a>     <span class="DocComment">/**
+<a name="line348" class="LineNumber">348</a>      * This method builds the Widget for the tab's title
+<a name="line349" class="LineNumber">349</a>      * @param name the tab's anchor text
+<a name="line350" class="LineNumber">350</a>      * @param target the tab's anchor
+<a name="line351" class="LineNumber">351</a>      * @return a Widget representing the tab's title
+<a name="line352" class="LineNumber">352</a>      */</span>
+<a name="line353" class="LineNumber">353</a>     <span class="ReservedWord">private</span> <span class="Identifier">Widget</span> <span class="Identifier">buildTab</span><span class="Braces">(</span><span class="Identifier">String</span> <span class="Identifier">name</span>, <span class="Identifier">String</span> <span class="Identifier">target</span><span class="Braces">)</span> <span class="Braces">{</span>
+<a name="line354" class="LineNumber">354</a>         <span class="Comment">// We make the title a Hyperlink to satisfy the Sun style sheet</span>
+<a name="line355" class="LineNumber">355</a>         <span class="Identifier">Hyperlink</span> <span class="Identifier">link</span> <span class="Symbol">=</span> <span class="ReservedWord">new</span> <span class="Identifier">Hyperlink</span><span class="Braces">(</span><span class="Identifier">name</span>, <span class="Identifier">target</span><span class="Braces">)</span><span class="Symbol">;</span>
+<a name="line356" class="LineNumber">356</a> 
+<a name="line357" class="LineNumber">357</a>         <span class="ReservedWord">return</span> <span class="Identifier">link</span><span class="Symbol">;</span>
+<a name="line358" class="LineNumber">358</a>     <span class="Braces">}</span>
+<span class="collapsed"><a name="line359" class="LineNumber">359</a> 
+<a name="line360" class="LineNumber">360</a>     <span class="DocComment">/**
+<a name="line361" class="LineNumber">361</a>      * This method checks that the server response indicates that the page
+<a name="line362" class="LineNumber">362</a>      * exists and is accessible.
+<a name="line363" class="LineNumber">363</a>      * @param res the server response
+<a name="line364" class="LineNumber">364</a>      * @return whether the page exists and is accessible
+<a name="line365" class="LineNumber">365</a>      */</span>
+<a name="line366" class="LineNumber">366</a>     <span class="ReservedWord">private</span> <span class="ReservedWord">boolean</span> <span class="Identifier">isValidPage</span><span class="Braces">(</span><span class="Identifier">Response</span> <span class="Identifier">res</span><span class="Braces">)</span> <span class="Braces">{</span>
+<a name="line367" class="LineNumber">367</a>         <span class="Identifier">String</span> <span class="Identifier">text</span> <span class="Symbol">=</span> <span class="Identifier">res</span>.<span class="Identifier">getText</span><span class="Braces">(</span><span class="Braces">)</span><span class="Symbol">;</span>
+<a name="line368" class="LineNumber">368</a> 
+<a name="line369" class="LineNumber">369</a>         <span class="ReservedWord">return</span> <span class="Braces">(</span><span class="Braces">(</span><span class="Identifier">res</span>.<span class="Identifier">getStatusCode</span><span class="Braces">(</span><span class="Braces">)</span> <span class="Symbol">=</span><span class="Symbol">=</span> <span class="Numeric">200</span><span class="Braces">)</span> <span class="Symbol">|</span><span class="Symbol">|</span> <span class="Comment">// OK</span>
+<a name="line370" class="LineNumber">370</a>                 <span class="Braces">(</span><span class="Identifier">res</span>.<span class="Identifier">getStatusCode</span><span class="Braces">(</span><span class="Braces">)</span> <span class="Symbol">=</span><span class="Symbol">=</span> <span class="Numeric">203</span><span class="Braces">)</span> <span class="Symbol">|</span><span class="Symbol">|</span> <span class="Comment">// Cached copy</span>
+<a name="line371" class="LineNumber">371</a>                 <span class="Braces">(</span><span class="Identifier">res</span>.<span class="Identifier">getStatusCode</span><span class="Braces">(</span><span class="Braces">)</span> <span class="Symbol">&lt;</span> <span class="Numeric">100</span><span class="Braces">)</span><span class="Braces">)</span> <span class="Symbol">&amp;</span><span class="Symbol">&amp;</span> <span class="Comment">// Local file</span>
+<a name="line372" class="LineNumber">372</a>                <span class="Braces">(</span><span class="Identifier">text</span> <span class="Symbol">!</span><span class="Symbol">=</span> <span class="ReservedWord">null</span><span class="Braces">)</span> <span class="Symbol">&amp;</span><span class="Symbol">&amp;</span>
+<a name="line373" class="LineNumber">373</a>                <span class="Symbol">!</span><span class="Identifier">text</span>.<span class="Identifier">equals</span><span class="Braces">(</span><span class="String">&quot;&quot;</span><span class="Braces">)</span><span class="Symbol">;</span>
+<a name="line374" class="LineNumber">374</a>     <span class="Braces">}</span>
+<a name="line375" class="LineNumber">375</a> <span class="Braces">}</span></span>
+                </pre>
+            </div>
+
+            <p>
+                To achieve this effect, a SPAN element was opened at the
+                beginning of line 1 and closed at the beginning of line 347.  A
+                second SPAN element was opened at the beginning of line 359 and
+                closed at the end of line 375.  Both SPAN elements have the style
+                class, &quot;collapsed&quot;.  A simple source example would
+                look like:
+            </p>
+            
+            <div class="codebox">
+                <pre>
+<a name="line1" class="LineNumber"> 1</a> <span class="PredefinedIdentifier"><span class="Braces">&lt;</span>div<span class="Identifier"> class</span>=<span class="String">&quot;codebox&quot;</span><span class="Braces">&gt;</span></span>
+<a name="line2" class="LineNumber"> 2</a>     <span class="PredefinedIdentifier"><span class="Braces">&lt;</span>pre<span class="Braces">&gt;</span></span>
+<a name="line3" class="LineNumber"> 3</a>     /**
+<a name="line4" class="LineNumber"> 4</a> <span class="PredefinedIdentifier" style="font-weight: bold;"><span class="Braces" style="font-weight: bold;">&lt;</span>span<span class="Identifier" style="font-weight: bold;"> class</span>=<span class="String" style="font-weight: bold;">&quot;collapsed&quot;</span><span class="Braces" style="font-weight: bold;">&gt;</span></span>     * This method builds the Widget for the tab's title
+<a name="line5" class="LineNumber"> 5</a>      * @param name the tab's anchor text
+<a name="line6" class="LineNumber"> 6</a>      * @param target the tab's anchor
+<a name="line7" class="LineNumber"> 7</a>      * @return a Widget representing the tab's title
+<a name="line8" class="LineNumber"> 8</a> <span class="PredefinedIdentifier" style="font-weight: bold;"><span class="Braces" style="font-weight: bold;">&lt;</span>/span<span class="Braces" style="font-weight: bold;">&gt;</span></span>     */
+<a name="line9" class="LineNumber"> 9</a>     private Widget buildTab(String name, String target) {
+<a name="line10" class="LineNumber">10</a> <span class="PredefinedIdentifier" style="font-weight: bold;"><span class="Braces" style="font-weight: bold;">&lt;</span>span<span class="Identifier" style="font-weight: bold;"> class</span>=<span class="String" style="font-weight: bold;">&quot;collapsed&quot;</span><span class="Braces" style="font-weight: bold;">&gt;</span></span>        // We make the title a Hyperlink to satisfy the Sun style sheet
+<a name="line11" class="LineNumber">11</a>         Hyperlink link = new Hyperlink(name, target);
+<a name="line12" class="LineNumber">12</a> 
+<a name="line13" class="LineNumber">13</a> <span class="PredefinedIdentifier" style="font-weight: bold;"><span class="Braces" style="font-weight: bold;">&lt;</span>/span<span class="Braces" style="font-weight: bold;">&gt;</span></span>        return link;
+<a name="line14" class="LineNumber">14</a>     }
+<a name="line15" class="LineNumber">15</a>     <span class="PredefinedIdentifier"><span class="Braces">&lt;</span>/pre<span class="Braces">&gt;</span></span>
+<a name="line16" class="LineNumber">16</a> <span class="PredefinedIdentifier"><span class="Braces">&lt;</span>/div<span class="Braces">&gt;</span></span>
+                </pre>
+            </div>
+
+            <p>
+                This example will cause the JavaDoc comment and the method
+                contents to be collapsed, like this:
+            </p>
+            
+            <div class="codebox">
+                <pre>
+    /**
+<span class="collapsed">     * This method builds the Widget for the tab's title
+     * @param name the tab's anchor text
+     * @param target the tab's anchor
+     * @return a Widget representing the tab's title
+</span>     */
+    private Widget buildTab(String name, String target) {
+<span class="collapsed">        // We make the title a Hyperlink to satisfy the Sun style sheet
+        Hyperlink link = new Hyperlink(name, target);
+
+</span>        return link;
+    }
+                </pre>
+            </div>
+
+            <p>
+                It is best to always place the SPAN elements at beginning of the
+                line.  Also, because when using the collapsed SPAN with a
+                Comment or DocComment SPAN.  Command and DocComment SPANs may
+                cover several lines, and if you don't nest your tags correctly,
+                you may get unexpected results.
+            </p>
+
+            <p class="j1holheader">Steps to follow:</p>
+            
+            <ol class="j1hollist">
+                <li>
+                    Make sure your source file is in a stable state.  Propogating
+                    changes to the source file into the HTML pages is a real
+                    pain in the butt!
+                </li>
+                
+                <li>
+                    Create the destination HTML page.  At the place where the
+                    source code should go, insert the following:
+                    
+                    <div class="codebox">
+                        <pre>
+<span class="PredefinedIdentifier"><span class="Braces">&lt;</span>div<span class="Identifier"> class</span>=<span class="String">&quot;codebox&quot;</span><span class="Braces">&gt;</span></span>
+  <span class="PredefinedIdentifier"><span class="Braces">&lt;</span>pre<span class="Braces">&gt;</span></span>
+  <span class="PredefinedIdentifier"><span class="Braces">&lt;</span>/pre<span class="Braces">&gt;</span></span>
+<span class="PredefinedIdentifier"><span class="Braces">&lt;</span>/div<span class="Braces">&gt;</span></span>
+                        </pre>
+                    </div>
+                </li>
+                
+                <li>
+                    Run code2html for your source code.  If you source file is
+                    code.java, run the following:
+
+                    <div class="console">
+                        <pre>
+> ./code2html -n -o xhtml-css -t 2 -w 120 -H code.java code.html
+./code2html: language mode not given. guessing...
+./code2html: using 'java'
+>
+                        </pre>
+                    </div>
+                </li>
+                
+                <li>
+                    Open the newly generated code.html file.  Copy the contents
+                    and paste them between the PRE tags in your HTML page.
+                </li>
+            </ol>
+            
+            <p class="j1holheader">Summary:</p>
+            
+            <p>
+                Using the codebox DIV class, code2html and code folding, it's
+                possible to generate excellent code examples with little effort.
+            </p>
+            
+            <p><a href="#Exercise_3">Go on to next exercise</a></p>
+        </div>
+    </body>
+</html>

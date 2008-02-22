@@ -1,0 +1,366 @@
+<html>
+<head></head>
+<body>
+    <div class="j1holcontents">
+        
+        <h2><a name="Solution_3"></a>Exercise 3 Solution: Something</h2>
+        
+        <div class="codebox">
+            <pre>
+package com.sun.javaone.client;
+
+<span class="collapsed">import com.google.gwt.core.client.EntryPoint;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.http.client.Request;
+import com.google.gwt.http.client.RequestBuilder;
+import com.google.gwt.http.client.RequestCallback;
+import com.google.gwt.http.client.RequestException;
+import com.google.gwt.http.client.Response;
+import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.History;
+import com.google.gwt.user.client.HistoryListener;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.Hyperlink;
+import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.SimplePanel;
+import com.google.gwt.user.client.ui.TabPanel;
+import com.google.gwt.user.client.ui.Widget;
+import java.util.ArrayList;
+import java.util.List;
+</span>
+/**
+ * This class expands the j1holframe DIV in the parent HTML page to include a
+ * tab bar dynamically built from the available pages.  This allows the parent
+ * HTML page to be identical for all labs, making maintenance much easier.
+ * 
+ * @author dan.templeton@sun.com
+ */
+public class HoLTemplateEntryPoint implements EntryPoint, HistoryListener {
+<span class="collapsed">    private TabPanel tabs = null;
+    private List tabNames = new ArrayList();
+</span>
+    /**
+     * The entry point method, called automatically by loading a module
+     * that declares an implementing class as an entry-point
+     */
+    public void onModuleLoad() {
+<span class="collapsed">        // Get the root panel of the insertion div
+        RootPanel rp = RootPanel.get("j1holframe");
+
+        // If there is no insertion div, just attach things to the
+        // top level document
+        if (rp == null) {
+            rp = RootPanel.get();
+        }
+
+        // Create a new tab panel
+        tabs = new TabPanel();
+        tabs.getTabBar().setStylePrimaryName("j1holtab");
+        tabs.getTabBar().addStyleName("d7v0");
+        rp.add(tabs);
+
+        // Set up the history listener.  This is required to allow linking to
+        // tabs via anchors
+        History.addHistoryListener(this);
+        // Start the tab loading
+        loadIntroTab();
+</span>    }
+
+    /**
+     * This method is used to pick up links to anchors.
+     * @param historyToken the anchor name
+     */
+    public void onHistoryChanged(String historyToken) {
+<span class="collapsed">        // Look for the anchor in the list of tab names
+        int index = tabNames.indexOf(historyToken);
+
+        // If we don't find it, default to the first tab
+        if (index < 0) {
+            index = 0;
+        }
+
+        // Select the given tab
+        tabs.selectTab(index);
+        // Scroll to the top of the page
+        resetScrollPosition();
+</span>    }
+
+    /**
+     * This is a native call to scroll to the top of the page
+     */
+    public static native void resetScrollPosition() /*-{
+<span class="collapsed">    $wnd.scroll(0,0);
+</span>    }-*/;
+
+    /**
+     * This method sets the active tab based on the anchor or defaults to the
+     * first tab.
+     */
+    private void setDefaultActiveTab() {
+<span class="collapsed">        String token = History.getToken();
+
+        if (token.length() > 0) {
+            onHistoryChanged(token);
+        } else {
+            tabs.selectTab(0);
+        }
+</span>    }
+
+    /**
+     * This method loads the tab for the numbered exercise.
+     * @param index the number of the exercise
+     */
+    private void loadExerciseTab(final int index) {
+<span class="collapsed">        // Request the HTML page from the server
+        RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, GWT.getHostPageBaseURL() + "/exercise" + index + ".html");
+
+        try {
+            builder.sendRequest(null, new RequestCallback() {
+
+                public void onResponseReceived(Request req, Response res) {
+                    if (isValidPage(res)) {
+                        // If the page exists, create a tab and load the solution
+                        addTab("Exercise_" + index, res.getText());
+                        loadSolutionTab(index);
+                    } else {
+                        // If the page doesn't exist, load the summary page
+                        loadSummaryTab();
+                    }
+                }
+
+                public void onError(Request req, Throwable t) {
+                    // If the page doesn't exist, load the summary page
+                    loadSummaryTab();
+                }
+            });
+        } catch (RequestException e) {
+            // If the page doesn't exist, load the summary page
+            loadSummaryTab();
+        }
+</span>    }
+
+    /**
+     * This method loads the solution tab for the numbered exercise.
+     * @param index the number of the exercise
+     */
+    private void loadSolutionTab(final int index) {
+<span class="collapsed">        // Request the HTML page from the server
+        RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, GWT.getHostPageBaseURL() + "/solution" + index + ".html");
+
+        try {
+            builder.sendRequest(null, new RequestCallback() {
+
+                public void onResponseReceived(Request req, Response res) {
+                    // If the page exists, create a tab
+                    if (isValidPage(res)) {
+                        addTab("Solution_" + index, res.getText());
+                    }
+
+                    // Regardless, load the next exercise
+                    loadExerciseTab(index + 1);
+                }
+
+                public void onError(Request req, Throwable t) {
+                    // Load the next exercise
+                    loadExerciseTab(index + 1);
+                }
+            });
+        } catch (RequestException e) {
+            // Load the next exercise
+            loadExerciseTab(index + 1);
+        }
+</span>    }
+
+    /**
+     * This method loads the intro tab.
+     */
+    private void loadIntroTab() {
+<span class="collapsed">        // Request the HTML page from the server
+        RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, GWT.getHostPageBaseURL() + "/intro.html");
+
+        try {
+            builder.sendRequest(null, new RequestCallback() {
+
+                public void onResponseReceived(Request req, Response res) {
+                    // If the page exists, create a tab and set the page title
+                    if (isValidPage(res)) {
+                        addTab("Intro", res.getText());
+
+                        // Find the j1holtitleid element and set the page title
+                        // to that element's inner text
+                        Element e = DOM.getElementById("j1holtitleid");
+
+                        if (e != null) {
+                            String title = DOM.getInnerText(e);
+
+                            if ((title != null) && !title.equals("")) {
+                                Window.setTitle(title);
+                            }
+                        }
+                    }
+
+                    // Regardless, load the first exercise
+                    loadExerciseTab(0);
+                }
+
+                public void onError(Request req, Throwable t) {
+                    // Load the first exercise
+                    loadExerciseTab(0);
+                }
+            });
+        } catch (RequestException e) {
+            // Load the first exercise
+            loadExerciseTab(0);
+        }
+</span>    }
+
+    /**
+     * This method loads the summary tab
+     */
+    private void loadSummaryTab() {
+<span class="collapsed">        // Request the HTML page from the server
+        RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, GWT.getHostPageBaseURL() + "/summary.html");
+
+        try {
+            builder.sendRequest(null, new RequestCallback() {
+
+                public void onResponseReceived(Request req, Response res) {
+                    // If the page exists, create a tab
+                    if (isValidPage(res)) {
+                        addTab("Summary", res.getText());
+                    }
+
+                    // Set the active tab
+                    setDefaultActiveTab();
+                }
+
+                public void onError(Request req, Throwable t) {
+                    // Set the active tab
+                    setDefaultActiveTab();
+                }
+            });
+        } catch (RequestException e) {
+            // Set the active tab
+            setDefaultActiveTab();
+        }
+</span>    }
+
+    /**
+     * This method creates a new tab for a loaded page
+     * @param link the tab's anchor
+     * @param body the tab's contents
+     */
+    private void addTab(String link, String body) {
+<span class="collapsed">        HTML panel = new HTML(body);
+        String text = null;
+        
+        panel.setStyleName("j1holpanel");
+
+        // First try to find a META tag with a tab title
+        // e is the HTML panel
+        Element e = panel.getElement();
+        // The HEAD and BODY tags get dropped, leaving the META tags as the
+        // first tags before the body contents
+        // e2 should be the first META tag
+        Element e2 = DOM.getFirstChild(e);
+
+        while (e2 != null) {
+            // Check the tag's name
+            String name = DOM.getElementAttribute(e2, "name");
+
+            // If it has the right name, get its value
+            if ((name != null) && (name.equalsIgnoreCase("j1holtabname"))) {
+                text = DOM.getElementAttribute(e2, "content");
+                break;
+            } else {
+                // Otherwise, try the next tag
+                e2 = DOM.getNextSibling(e2);
+            }
+        }
+
+        // If we didn't find a tab title META tag, use the anchor as the title
+        if (text == null) {
+            text = link;
+            
+            // Replace the underbars with spaces.  We can't just use String.replace()
+            // because it doesn't appear to work with GWT.
+            int index = -1;
+            
+            while ((index = text.indexOf('_')) >= 0) {
+                if (index == 0) {
+                    text = text.substring(1);
+                } else {
+                    text = text.substring(0, index) + ' ' + text.substring(index + 1);
+                }
+            }
+        }
+
+        // Add the anchor to the list of tab names
+        tabNames.add(link);
+        // Add the tab to the tab panel
+        tabs.add(buildTabBody(panel), buildTab(text, link));
+</span>    }
+
+    /**
+     * This method creates a tab's body.
+     * @param body the contents of the tab
+     * @return a Widget representing the tab's body
+     */
+    private static Widget buildTabBody(Widget body) {
+<span class="collapsed">        // We build this weird heirarchy to allow the Sun style sheet to work
+        SimplePanel d7 = new SimplePanel();
+        SimplePanel d7v4 = new SimplePanel();
+        SimplePanel cornerBL = new SimplePanel();
+        SimplePanel cornerBR = new SimplePanel();
+
+        d7.setStyleName("d7");
+        d7v4.setStyleName("d7v4");
+        cornerBL.setStyleName("cornerBL");
+        cornerBR.setStyleName("cornerBR");
+
+        cornerBR.add(body);
+        cornerBL.add(cornerBR);
+        d7v4.add(cornerBL);
+        d7.add(d7v4);
+
+        return d7;
+</span>    }
+
+    /**
+     * This method builds the Widget for the tab's title
+     * @param name the tab's anchor text
+     * @param target the tab's anchor
+     * @return a Widget representing the tab's title
+     */
+    private Widget buildTab(String name, String target) {
+<span class="collapsed">        // We make the title a Hyperlink to satisfy the Sun style sheet
+        Hyperlink link = new Hyperlink(name, target);
+
+        return link;
+</span>    }
+    
+    /**
+     * This method checks that the server response indicates that the page
+     * exists and is accessible.
+     * @param res the server response
+     * @return whether the page exists and is accessible
+     */
+    private boolean isValidPage(Response res) {
+<span class="collapsed">        String text = res.getText();
+        
+        return ((res.getStatusCode() == 200) || // OK
+                (res.getStatusCode() == 203) || // Cached copy
+                (res.getStatusCode() < 100)) && // Local file
+               (text != null) &&
+               !text.equals("");
+</span>    }
+}
+            </pre>
+        </div>
+        
+        <p><a href="#Summary">Go on to summary</a></p>
+    </div>
+</body>
