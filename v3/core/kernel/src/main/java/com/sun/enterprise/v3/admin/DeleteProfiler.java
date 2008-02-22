@@ -64,6 +64,9 @@ public class DeleteProfiler implements AdminCommand {
 
    final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(DeleteProfiler.class);
 
+    @Param(optional=true)
+    String target;
+
    @Inject
    JavaConfig javaConfig;
 
@@ -80,7 +83,6 @@ public class DeleteProfiler implements AdminCommand {
            ConfigSupport.apply(new SingleConfigCode<JavaConfig>() {
                public Object run(JavaConfig param) throws PropertyVetoException, TransactionFailure {
                    if (param.getProfiler() != null) {
-                       System.out.println("Profiler is " + param.getProfiler().getName());
                        param.setProfiler(null);
                        report.setMessage(localStrings.getLocalString("delete.profiler.success", "deleted successfully"));
                        report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
