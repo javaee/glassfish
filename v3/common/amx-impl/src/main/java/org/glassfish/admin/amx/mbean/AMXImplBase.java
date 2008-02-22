@@ -193,7 +193,7 @@ public class AMXImplBase extends MBeanImplBase
        private synchronized MBeanInfo
     getInterfaceMBeanInfo(final Class<? extends AMX> theInterface )
     {
-		final MBeanInfo info	= MBeanInfoCache.getMBeanInfo( theInterface );
+		final MBeanInfo info	= null; //MBeanInfoCache.getMBeanInfo( theInterface );
         if ( getAMXDebug() )
         {
             debug( "Interface " + mInterface.getName() +

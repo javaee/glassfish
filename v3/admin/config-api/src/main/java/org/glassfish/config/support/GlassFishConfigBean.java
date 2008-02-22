@@ -93,7 +93,7 @@ public final class GlassFishConfigBean extends ConfigBean {
     @Override
     public void initializationCompleted() {
         super.initializationCompleted();
-        
+
         final CagedBy cagedBy = digAnnotation(getProxyType(), CagedBy.class);
             
         if (cagedBy!=null) {

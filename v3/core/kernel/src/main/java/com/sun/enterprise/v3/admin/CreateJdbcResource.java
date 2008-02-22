@@ -107,7 +107,9 @@ public class CreateJdbcResource implements AdminCommand {
                 public Object run(Resources param) throws PropertyVetoException, TransactionFailure {
                     JdbcResource newResource = ConfigSupport.createChildOf(param, JdbcResource.class);
                     newResource.setJndiName(jndiName);
-                    newResource.setDescription(description);
+                    if (description!=null) {
+                        newResource.setDescription(description);
+                    }
                     newResource.setPoolName(connectionPoolId);
                     newResource.setEnabled(enabled);
                     param.getResources().add(newResource);                    

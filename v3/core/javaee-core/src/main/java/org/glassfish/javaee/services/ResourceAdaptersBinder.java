@@ -40,12 +40,16 @@ import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.PreDestroy;
+import org.jvnet.hk2.config.ConfigListener;
+import org.jvnet.hk2.config.ConfigSupport;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.glassfish.api.Startup;
 import org.glassfish.api.Async;
 import org.glassfish.api.naming.GlassfishNamingManager;
+import org.jvnet.hk2.config.Changed;
 import com.sun.enterprise.config.serverbeans.JdbcResource;
 import com.sun.enterprise.config.serverbeans.JdbcConnectionPool;
-import com.sun.appserv.connectors.spi.ConnectorRuntime;
+import com.sun.enterprise.config.serverbeans.Resources;
 import com.sun.appserv.connectors.spi.ConnectorConstants;
 
 import javax.naming.NamingException;
@@ -53,6 +57,7 @@ import java.util.logging.Logger;
 import java.util.logging.Level;
 import java.util.List;
 import java.util.ArrayList;
+import java.beans.PropertyChangeEvent;
 
 /**
  * Binds proxy objects in the jndi namespace for all the JdbcResources defined in the
@@ -63,13 +68,16 @@ import java.util.ArrayList;
  */
 @Service
 @Async
-public class ResourceAdaptersBinder implements Startup, PostConstruct, PreDestroy {
+public class ResourceAdaptersBinder implements Startup, PostConstruct, PreDestroy, ConfigListener {
 
     @Inject
-    JdbcResource[] resources;
+    JdbcResource[] jdbcResources;
 
     @Inject
     JdbcConnectionPool[] pools;
+
+    @Inject
+    Resources resources;
 
     @Inject
     GlassfishNamingManager manager;
@@ -93,7 +101,7 @@ public class ResourceAdaptersBinder implements Startup, PostConstruct, PreDestro
     }
 
     private void deployAllJdbcResourcesAndPools() {
-        for (JdbcResource resource : resources) {
+        for (JdbcResource resource : jdbcResources) {
             try {
                 JdbcConnectionPool pool = getAssociatedPool(resource.getPoolName());
                 if (pool == null) {
@@ -177,4 +185,36 @@ public class ResourceAdaptersBinder implements Startup, PostConstruct, PreDestro
         return resourceNames;           
     }
 
+    /**
+     * Notification that @Configured objects that were injected have changed
+     *
+     * @param events list of changes
+     */
+    public void changed(PropertyChangeEvent[] events) {
+        // I am not so interested with the list of events, just sort who got added or removed for me.
+        ConfigSupport.sortAndDispatch(events, new Changed() {
+            /**
+             * Notification of a change on a configuration object
+             *
+             * @param type            type of change : ADD mean the changedInstance was added to the parent
+             *                        REMOVE means the changedInstance was removed from the parent, CHANGE means the
+             *                        changedInstance has mutated.
+             * @param changedType     type of the configuration object
+             * @param changedInstance changed instance.
+             */
+            public <T extends ConfigBeanProxy> void changed(TYPE type, Class<T> changedType, T changedInstance) {
+                switch(type) {
+                    case ADD : logger.info("A new " + changedType.getName() + " was added : " + changedInstance);
+                        break;
+
+                    case CHANGE : logger.info("A " + changedType.getName() + " was changed : " + changedInstance);
+                        break;
+
+                    case REMOVE : logger.info("A " + changedType.getName() + " was removed : " + changedInstance);
+                        break;
+                }
+            }
+        }, logger);
+
+    }
 }
