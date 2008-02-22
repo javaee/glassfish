@@ -49,15 +49,16 @@ import java.beans.VetoableChangeSupport;
 import java.util.List;
 
 
-/**
- *
- */
+import org.glassfish.admin.amx.AMXObjectNameInfo;
+import org.glassfish.admin.amx.AMXConfigInfo;
+
 
 /* @XmlType(name = "", propOrder = {
     "description",
     "property"
 }) */
-@Configured
+@AMXObjectNameInfo(j2eeType=com.sun.appserv.management.base.XTypes.MAIL_RESOURCE_CONFIG,nameHint="id")
+@AMXConfigInfo( amxInterface=com.sun.appserv.management.config.MailResourceConfig.class )@Configured
 public interface MailResource extends ConfigBeanProxy, Injectable, Resource {
 
     /**

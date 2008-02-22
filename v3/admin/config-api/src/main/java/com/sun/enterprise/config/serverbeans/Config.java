@@ -81,6 +81,9 @@ import org.glassfish.admin.amx.AMXConfigInfo;
     "property"
 }) */
 @Configured
+@AMXObjectNameInfo(j2eeType=com.sun.appserv.management.base.XTypes.CONFIG_CONFIG)
+@AMXConfigInfo( amxInterface=com.sun.appserv.management.config.ConfigConfig.class )
+
 public interface Config extends ConfigBeanProxy, Injectable  {
 
     /**

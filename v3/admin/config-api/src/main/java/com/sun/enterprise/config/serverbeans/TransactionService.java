@@ -47,6 +47,8 @@ import org.jvnet.hk2.config.Element;
 import java.beans.PropertyVetoException;
 import java.util.List;
 
+import org.glassfish.admin.amx.AMXObjectNameInfo;
+import org.glassfish.admin.amx.AMXConfigInfo;
 
 /**
  *
@@ -55,6 +57,8 @@ import java.util.List;
 /* @XmlType(name = "", propOrder = {
     "property"
 }) */
+@AMXObjectNameInfo(j2eeType=com.sun.appserv.management.base.XTypes.TRANSACTION_SERVICE_CONFIG, singleton=true)
+@AMXConfigInfo( amxInterface=com.sun.appserv.management.config.TransactionServiceConfig.class )
 @Configured
 public interface TransactionService extends ConfigBeanProxy, Injectable  {
 

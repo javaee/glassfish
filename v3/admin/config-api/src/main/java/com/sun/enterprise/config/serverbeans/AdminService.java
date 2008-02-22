@@ -49,15 +49,16 @@ import java.io.Serializable;
 import java.util.List;
 
 
-/**
- *
- */
+import org.glassfish.admin.amx.AMXObjectNameInfo;
+import org.glassfish.admin.amx.AMXConfigInfo;
 
 /* @XmlType(name = "", propOrder = {
     "jmxConnector",
     "dasConfig",
     "property"
 }) */
+@AMXObjectNameInfo(j2eeType=com.sun.appserv.management.base.XTypes.ADMIN_SERVICE_CONFIG, singleton=true)
+@AMXConfigInfo( amxInterface=com.sun.appserv.management.config.AdminServiceConfig.class )
 @Configured
 public interface AdminService extends ConfigBeanProxy, Injectable  {
 
