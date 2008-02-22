@@ -87,7 +87,7 @@ public class WriteableView implements InvocationHandler, Transactor, ConfigView 
                         try {
                             if(!(method.getGenericReturnType() instanceof ParameterizedType))
                                 throw new IllegalArgumentException("List needs to be parameterized");
-                            changedCollections.put(property.xmlName(), new ProtectedList((List) value, this, property.xmlName()));
+                            changedCollections.put(property.xmlName(), new ProtectedList((List) value, readView, property.xmlName()));
                         } catch(Exception e) {
                             e.printStackTrace();
                             throw e;
@@ -180,6 +180,7 @@ public class WriteableView implements InvocationHandler, Transactor, ConfigView 
                             }
                         }
                     }
+                    appliedChanges.add(event);
                 }
             }
             changedAttributes.clear();
@@ -254,28 +255,33 @@ public class WriteableView implements InvocationHandler, Transactor, ConfigView 
  */
 private class ProtectedList<T extends ConfigBeanProxy> extends ArrayList<T> {
 
-    final WriteableView parent;
+    final ConfigBeanProxy readView;
     final List readOnly;
     final String id;
     final List<PropertyChangeEvent> changeEvents = new ArrayList<PropertyChangeEvent>();
 
 
-    ProtectedList(List readOnly, WriteableView parent, String id) {
+    ProtectedList(List readOnly, ConfigBeanProxy parent, String id) {
         super(readOnly);
-        this.parent = parent;
+        this.readView = parent;
         this.readOnly = readOnly;
         this.id = id;
     }
 
     @Override
     public boolean add(T object) {
-        changeEvents.add(new PropertyChangeEvent(parent.bean, id, null, object));
+        Object param = object;
+        Object handler = Proxy.getInvocationHandler(object);
+        if (handler instanceof WriteableView) {
+            param = ((WriteableView) handler).readView;
+        }
+        changeEvents.add(new PropertyChangeEvent(readView, id, null, param));
         return super.add(object);
     }
 
     @Override
     public boolean remove(Object object) {
-        changeEvents.add(new PropertyChangeEvent(parent.bean, id, object, null));
+        changeEvents.add(new PropertyChangeEvent(readView, id, object, null));
         return super.remove(object);
     }
 

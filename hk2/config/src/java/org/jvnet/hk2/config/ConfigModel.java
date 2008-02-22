@@ -15,6 +15,7 @@ import javax.management.MBeanOperationInfo;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.*;
+import java.util.logging.Logger;
 
 /**
  * Describes the configuration model for a particular class (called "target type" in this class.)
@@ -394,9 +395,11 @@ public final class ConfigModel {
          * Sets the value to {@link Dom}.
          */
         public void set(Dom dom, Object arg) {
-            if(arg==null)
+            if(arg==null) {
                 // TODO: implement remove
-                throw new UnsupportedOperationException();
+                Logger.getAnonymousLogger().severe("TODO : KK : implement remove");
+                return;
+            }
             dom.attribute(xmlName, arg.toString());
         }
     }
@@ -417,9 +420,11 @@ public final class ConfigModel {
         }
 
         public void set(Dom dom, Object arg) {
-            if(arg==null)
+            if(arg==null) {
                 // TODO: implement remove
-                throw new UnsupportedOperationException();
+                Logger.getAnonymousLogger().severe("TODO : KK : implement remove");
+                return;
+            }
             dom.setLeafElements(xmlName,arg.toString());
         }
     }
