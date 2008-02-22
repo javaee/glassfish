@@ -48,6 +48,10 @@ import java.util.regex.Matcher;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 
+
+import java.util.concurrent.LinkedBlockingQueue;
+import com.sun.appserv.management.util.misc.RunnableBase;
+
 /**
  * Translated view of a configured objects where values can be represented
  * with a @{xx.yy.zz} name to be translated using a property value translator.
@@ -93,26 +97,60 @@ public final class GlassFishConfigBean extends ConfigBean {
     @Override
     public void initializationCompleted() {
         super.initializationCompleted();
-
-        final CagedBy cagedBy = digAnnotation(getProxyType(), CagedBy.class);
-            
-        if (cagedBy!=null) {
-            final Class<? extends CageBuilder> builderClass = cagedBy.value();
-            try {
-                final CageBuilder builder = habitat.getByType( builderClass );
-                if (builder!=null) {
-                    builder.onEntered(this);
+        
+        // this optimizes startup speed by threading the @CagedBy handling
+        COMPLETED_THREAD.add( this );
+    }
+    
+    private static final InitializationCompletedThread  COMPLETED_THREAD = new InitializationCompletedThread();
+    
+    private static final class InitializationCompletedThread extends RunnableBase
+    {
+        private final LinkedBlockingQueue<GlassFishConfigBean> mQueue = new LinkedBlockingQueue<GlassFishConfigBean>();
+        volatile boolean    mQuit = false;
+        
+        InitializationCompletedThread()
+        {
+        }
+        
+        public void add( final GlassFishConfigBean item ) {
+            mQueue.add( item );
+        }
+        
+        void quit() { mQuit = true; }
+            protected void
+        doRun() throws Exception {
+            while ( ! mQuit ) {
+                final GlassFishConfigBean cb = mQueue.take();
+                
+                try  {
+                    final CagedBy cagedBy = digAnnotation(cb.getProxyType(), CagedBy.class);
+                    
+                    if (cagedBy!=null) {
+                        final Class<? extends CageBuilder> builderClass = cagedBy.value();
+                        try {
+                            final CageBuilder builder = cb.habitat.getByType( builderClass );
+                            if (builder!=null) {
+                                builder.onEntered(cb);
+                            }
+                        }
+                        catch ( final org.jvnet.hk2.component.UnsatisfiedDepedencyException e ) {
+                            Logger.getAnonymousLogger().info("CageBuilder " + builderClass.getName() + " raised UnsatisfiedDepedencyException ");
+                        }
+                        catch ( final Exception e ) {
+                            Logger.getAnonymousLogger().info("CageBuilder " + builderClass.getName() + " raised exception : " +  e.getMessage());
+                            Logger.getAnonymousLogger().log(Level.FINE, "CageBuilder " + builderClass.getName() + " raised exception : ", e); 
+                        }
+                    }
                 }
-            }
-            catch ( final org.jvnet.hk2.component.UnsatisfiedDepedencyException e ) {
-                Logger.getAnonymousLogger().info("CageBuilder " + builderClass.getName() + " raised UnsatisfiedDepedencyException ");
-            }
-            catch ( final Exception e ) {
-                Logger.getAnonymousLogger().info("CageBuilder " + builderClass.getName() + " raised exception : " +  e.getMessage());
-                Logger.getAnonymousLogger().log(Level.FINE, "CageBuilder " + builderClass.getName() + " raised exception : ", e); 
+                catch( Throwable t )
+                {
+                    t.printStackTrace();
+                }
             }
         }
     }
+
 }
 
 
