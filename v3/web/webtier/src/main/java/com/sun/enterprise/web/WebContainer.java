@@ -2509,11 +2509,9 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                             wmInfo.getContextPath(),
                             vs.getID() });
                 }
-                com.sun.enterprise.config.serverbeans.WebModule webBean =
-                        wmInfo.getBean();
                 // load the stand alone web module if it is enabled
-                if (webBean != null &&
-                        isEnabled(webBean.getName())) {
+                if (wmInfo != null &&
+                        isEnabled(wmInfo.getName())) {
                     loadStandaloneWebModule(vs, wmInfo);
                 }
             }
@@ -2925,14 +2923,10 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         if (adHocSubtrees != null) {
             ctx.addAdHocSubtrees(adHocSubtrees);
         }
-
+        
         //Set the context root
-        if (wmInfo.getBean() != null) {
-            String contextRoot = wmInfo.getBean().getContextRoot();
-            ctx.setContextRoot(contextRoot);
-            if (wbd != null) {
-                wbd.setContextRoot(contextRoot);
-            }
+        if (wmInfo.getDescriptor() != null) {
+            ctx.setContextRoot(wmInfo.getDescriptor().getContextRoot());
         } else {
             // Should never happen.
             _logger.log(Level.WARNING, "Unable to set context root", wmInfo);
@@ -3071,7 +3065,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             ctx.setI18nInfo();
 
             if (wbd != null) {
-                String resourceType = wmInfo.getBean().getObjectType();
+                String resourceType = wmInfo.getObjectType();
                 boolean isSystem = (resourceType != null &&
                         resourceType.startsWith("system-"));
                 // TODO : v3 : dochez Need to remove dependency on security

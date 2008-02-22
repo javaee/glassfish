@@ -177,19 +177,11 @@ public class WebDeployer extends JavaEEDeployer<WebContainer, WebApplication>{
             
             WebBundleDescriptor wbd = (WebBundleDescriptor)dc.getModuleMetaData(
                 Application.class).getStandaloneBundleDescriptor();
-        
-            final String contextRoot = wbd.getContextRoot();
             
-            // TODO : need to make this code generic
-            com.sun.enterprise.config.serverbeans.WebModule wm = (com.sun.enterprise.config.serverbeans.WebModule)
-                    dc.getConfig();
-
-            if (wm.getContextRoot()==null && contextRoot!=null) {
-                wm.setContextRoot(contextRoot);
-            }
-            wmInfo.setBean(wm);
             wmInfo.setDescriptor(wbd);
             wmInfo.setVirtualServers(virtualServers);
+            wmInfo.setLocation(dc.getSourceDir().getAbsolutePath());
+            wmInfo.setObjectType(dc.getProps().getProperty("objectType"));
         
         } catch (Exception ex) {
             dc.getLogger().log(Level.WARNING, "loadWebModuleConfig", ex);
