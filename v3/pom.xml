@@ -116,8 +116,8 @@
         <servlet-api.version>2.5</servlet-api.version>
         <jsp-api.version>2.1</jsp-api.version>
         <jstl-api.version>1.2</jstl-api.version>        
-        <jsf-api.version>1.2_02</jsf-api.version>
-        <jsf-impl.version>2.0.0-SNAPSHOT</jsf-impl.version>        
+        <jsf-api.version>1.2_07</jsf-api.version>
+        <jsf-impl.version>1.2_07</jsf-impl.version>        
         <deployment-api.version>1.2</deployment-api.version>
         <jaxrpc-api.version>1.1</jaxrpc-api.version>
         <grizzly.version>1.7.1</grizzly.version>
