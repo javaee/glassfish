@@ -35,7 +35,7 @@ public class JndiNamingObjectFactory
             if (value == null) {
                 synchronized (this) {
                     if (value == null) {
-                        value =ic.lookup(jndiName);
+                        result = value = ic.lookup(jndiName);
                     }
                 }
             } else {

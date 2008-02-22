@@ -37,7 +37,7 @@ public class DelegatingNamingObjectFactory
             if (value == null) {
                 synchronized (this) {
                     if (value == null) {
-                        value = delegate.create(ic);
+                        result = value = delegate.create(ic);
                     }
                 }
             } else {
