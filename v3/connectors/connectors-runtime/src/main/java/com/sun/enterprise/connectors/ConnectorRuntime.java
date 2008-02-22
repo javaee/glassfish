@@ -45,6 +45,7 @@ import com.sun.enterprise.connectors.util.RAWriterAdapter;
 import com.sun.enterprise.deployment.ConnectorDescriptor;
 import com.sun.enterprise.resource.pool.PoolManager;
 import com.sun.enterprise.util.ConnectorClassLoader;
+import com.sun.enterprise.container.common.spi.util.ComponentEnvManager;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.naming.GlassfishNamingManager;
 import org.jvnet.hk2.annotations.Inject;
@@ -87,6 +88,9 @@ public class ConnectorRuntime implements ConnectorConstants, com.sun.appserv.con
 
     @Inject
     private PoolManager poolManager;
+
+    @Inject
+    private ComponentEnvManager componentEnvManager;
 
     private final Object getTimerLock = new Object();
     private Timer timer;
@@ -553,11 +557,9 @@ public class ConnectorRuntime implements ConnectorConstants, com.sun.appserv.con
         return timer;
     }
 
-/* TODO V3 handle resourc-ref later
     public Set getResourceReferenceDescriptor(){
-        return containerUtil.getComponentEnvManager().getCurrentJndiNameEnvironment().getResourceReferenceDescriptors();
+        return componentEnvManager.getCurrentJndiNameEnvironment().getResourceReferenceDescriptors();
     }
-*/
 
     /**
      * The component is about to be removed from commission
