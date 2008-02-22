@@ -34,7 +34,7 @@
  * holder.
  */
 
-package com.sun.faces.vendor;
+package org.glassfish.faces.integration;
 
 import com.sun.faces.spi.DiscoverableInjectionProvider;
 import com.sun.faces.spi.InjectionProviderException;
