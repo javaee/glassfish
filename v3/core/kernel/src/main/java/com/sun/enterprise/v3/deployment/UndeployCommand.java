@@ -151,27 +151,20 @@ public class UndeployCommand extends ApplicationLifecycle implements AdminComman
     
     private void deleteContainerMetaInfo(ApplicationInfo info, DeploymentContext context) {
         
-        // need to remove the entry in the generated directories...
-        // we need to remove generated/xml, generated/ejb, generated/jsp
+        // need to remove the generated directories...
+        // need to remove generated/xml, generated/ejb, generated/jsp
 
         // remove generated/xml
-        File generatedXmlRoot = new File(env.getApplicationStubPath(), "xml");
-        generatedXmlRoot = new File(generatedXmlRoot, 
-                context.getCommandParameters().getProperty(DeployCommand.NAME));
-        // recursively delete...
+        File generatedXmlRoot = context.getScratchDir("xml");
         FileUtils.whack(generatedXmlRoot);               
 
         // remove generated/ejb
-        File generatedEjbRoot = new File(env.getApplicationStubPath(), "ejb");
-        generatedEjbRoot = new File(generatedEjbRoot, 
-                context.getCommandParameters().getProperty(DeployCommand.NAME));
+        File generatedEjbRoot = context.getScratchDir("ejb");
         // recursively delete...
         FileUtils.whack(generatedEjbRoot);               
 
         // remove generated/jsp
-        File generatedJspRoot = new File(env.getApplicationStubPath(), "jsp");
-        generatedJspRoot = new File(generatedJspRoot, 
-                context.getCommandParameters().getProperty(DeployCommand.NAME));
+        File generatedJspRoot = context.getScratchDir("jsp");
         // recursively delete...
         FileUtils.whack(generatedJspRoot);               
     }

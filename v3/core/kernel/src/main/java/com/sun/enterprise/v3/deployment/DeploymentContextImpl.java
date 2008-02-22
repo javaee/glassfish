@@ -136,9 +136,7 @@ public class DeploymentContextImpl implements DeploymentContext {
      */
     public File getSourceDir() {
 
-        String moduleName = parameters.getProperty(DeployCommand.NAME);
-        return new File(env.getApplicationRepositoryPath(), moduleName);
-
+        return new File(source.getURI());
     }
 
     public void addModuleMetaData(Object metaData) {
