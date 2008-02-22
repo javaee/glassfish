@@ -191,10 +191,9 @@ public class AMXImplBase extends MBeanImplBase
         Collections.synchronizedMap( new HashMap<String,Map<String,Class>>() );
 	    
        private synchronized MBeanInfo
-    getInterfaceMBeanInfo(
-        final Class theInterface )
+    getInterfaceMBeanInfo(final Class<? extends AMX> theInterface )
     {
-		MBeanInfo info	= TypeInfos.getInstance().getMBeanInfoForInterface( theInterface );
+		final MBeanInfo info	= MBeanInfoCache.getMBeanInfo( theInterface );
         if ( getAMXDebug() )
         {
             debug( "Interface " + mInterface.getName() +
@@ -215,7 +214,7 @@ public class AMXImplBase extends MBeanImplBase
 		@param theInterface		(may be null) the public interface as seen on the client
 		@param delegate			an MBean to which unknown requests are delegated
 	*/
-		private
+		public
 	AMXImplBase(
 		final Class<? extends AMX> theInterface,
 		final Delegate		delegate )

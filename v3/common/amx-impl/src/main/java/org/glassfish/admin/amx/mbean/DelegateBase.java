@@ -60,9 +60,9 @@ import com.sun.appserv.management.util.misc.Output;
  */
 public abstract class DelegateBase implements Delegate
 {
-	private Set<String>	mAttributeNames;
-	private DelegateOwner		mOwner;
-	private Output              mDebug;
+	//private Set<String>	mAttributeNames;
+	private volatile DelegateOwner		mOwner;
+	private volatile Output              mDebug;
 	private final String        mID;
 	
 	/**
@@ -76,11 +76,11 @@ public abstract class DelegateBase implements Delegate
 	}
 	
 		public
-	DelegateBase( final String id, DelegateOwner owner )
+	DelegateBase( final String id )
 	{
 	    mID = id;
-		mAttributeNames	= null;
-		mOwner	= owner;
+		//mAttributeNames	= null;
+		mOwner	= null;
 		mDebug  = null;
 	}
 	

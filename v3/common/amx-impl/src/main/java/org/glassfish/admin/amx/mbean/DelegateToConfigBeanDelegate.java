@@ -61,10 +61,9 @@ public class DelegateToConfigBeanDelegate extends DelegateBase
 	
 		public
 	DelegateToConfigBeanDelegate(
-        final ConfigBean configBean,
-        final DelegateOwner owner )
+        final ConfigBean configBean )
 	{
-		super( "DelegateToConfigBeanDelegate." + configBean.toString(), owner );
+		super( "DelegateToConfigBeanDelegate." + configBean.toString() );
 		
 		mConfigBean	= configBean;
 	}

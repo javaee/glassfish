@@ -457,6 +457,7 @@ new MiscChild( NOTIFICATION_SERVICE, NOTIFICATION_SERVICE_MGR),
 
 /*
 new DomainRootChild( LOAD_BALANCER ),
+*/
 
 new DomainConfigChild( CONFIG_CONFIG ),
 new DomainConfigChild( WEB_MODULE_CONFIG  ),
@@ -605,7 +606,7 @@ new MiscChild( PROVIDER_CONFIG, MESSAGE_SECURITY_CONFIG ),
 new MiscChild( REQUEST_POLICY_CONFIG, PROVIDER_CONFIG ),
 new MiscChild( RESPONSE_POLICY_CONFIG, PROVIDER_CONFIG ),
 
-*/
+
 
 
 //--------------------------------------------------------------------------------

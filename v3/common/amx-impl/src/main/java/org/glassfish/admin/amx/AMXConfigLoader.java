@@ -24,6 +24,9 @@ import java.lang.reflect.Proxy;
 import com.sun.appserv.management.config.AMXConfig;
 import com.sun.appserv.management.util.misc.RunnableBase;
 
+import org.glassfish.admin.amx.mbean.Delegate;
+import org.glassfish.admin.amx.mbean.DelegateToConfigBeanDelegate;
+import org.glassfish.admin.amx.mbean.AMXImplBase;
 
 /**
  * @author llc
@@ -100,6 +103,30 @@ public final class AMXConfigLoader
         }
     }
     
+    
+    private ObjectName createAndRegister(
+        final ConfigBean cb,
+        Class<? extends AMXConfig>  amxInterface,
+        final ObjectName objectNameIn )
+    {
+        ObjectName  objectName = objectNameIn;
+        
+        final Delegate delegate = new DelegateToConfigBeanDelegate( cb );
+        final AMXImplBase impl = new AMXImplBase( amxInterface, delegate );
+        
+        try
+        {
+            final ObjectInstance instance = mMBeanServer.registerMBean( impl, objectNameIn );
+            objectName = instance.getObjectName();
+            cb.setObjectName( objectName );
+        }
+        catch( final JMException e )
+        {
+            debug( ExceptionUtil.toString(e) );
+            objectName = null;
+        }
+        return objectName;
+    }
 
     /**
      */
@@ -139,19 +166,10 @@ public final class AMXConfigLoader
 
         objectName = buildObjectName( cb, objectNameInfo );
     
-        try
-        {
-            final ObjectInstance instance = mMBeanServer.registerMBean( new Dummy(cb), objectName );
-            objectName = instance.getObjectName();
-            cb.setObjectName( objectName );
-            debug( "REGISTERED MBEAN: " + JMXUtil.toString(objectName) +
-                " using ObjectNameInfo = " + objectNameInfo.toString() +
-                ", AMXMBeanMetaData = " + metadata + "\n");
-        }
-        catch( final JMException e )
-        {
-            debug( ExceptionUtil.toString(e) );
-        }
+        objectName  = createAndRegister( cb, amxInterface, objectName );
+        debug( "REGISTERED MBEAN: " + JMXUtil.toString(objectName) +
+            " using ObjectNameInfo = " + objectNameInfo.toString() +
+            ", AMXMBeanMetaData = " + metadata + "\n");
 
         return objectName;
     }
