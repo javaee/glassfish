@@ -80,6 +80,15 @@ public final class JMXUtil
 	public final static String	MBEAN_SERVER_DELEGATE	=
 							"JMImplementation:type=MBeanServerDelegate";
 	
+        public static MBeanServerDelegateMBean
+    getMBeanServerDelegateMBean( final MBeanServerConnection server )
+    {
+        final MBeanServerDelegateMBean delegate = (MBeanServerDelegateMBean)
+            MBeanServerInvocationHandler.newProxyInstance( server,
+                newObjectName(MBEAN_SERVER_DELEGATE), MBeanServerDelegateMBean.class, true );
+        return delegate;
+    }
+    
 	public final static String	MBEAN_SERVER_ID_ATTRIBUTE_NAME	=
 							"MBeanServerId";
 							
