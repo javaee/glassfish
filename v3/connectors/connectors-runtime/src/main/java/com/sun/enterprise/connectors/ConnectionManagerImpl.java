@@ -39,6 +39,7 @@ import com.sun.appserv.connectors.spi.ConnectionManager;
 import com.sun.appserv.connectors.spi.ConnectorConstants;
 import com.sun.appserv.connectors.spi.ConnectorRuntimeException;
 import com.sun.enterprise.connectors.util.ConnectionPoolObjectsUtils;
+import com.sun.enterprise.connectors.authentication.AuthenticationService;
 import com.sun.enterprise.deployment.ConnectorDescriptor;
 import com.sun.enterprise.deployment.ResourcePrincipal;
 import com.sun.enterprise.deployment.ResourceReferenceDescriptor;
@@ -49,6 +50,7 @@ import com.sun.enterprise.resource.allocator.ResourceAllocator;
 import com.sun.enterprise.resource.pool.PoolManager;
 import com.sun.enterprise.resource.pool.PoolingException;
 import com.sun.enterprise.util.i18n.StringManager;
+import com.sun.enterprise.security.SecurityContext;
 import com.sun.logging.LogDomains;
 
 import javax.resource.ResourceException;
@@ -60,6 +62,8 @@ import javax.security.auth.Subject;
 import java.io.Serializable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.Set;
+import java.security.Principal;
 
 
 /**
@@ -150,6 +154,7 @@ public class ConnectionManagerImpl implements ConnectionManager, Serializable {
 
         ResourceReferenceDescriptor ref = poolmgr.getResourceReference(jndiNameToUse);
 
+        //TODO V3 refactor all the 3 cases viz, no res-ref, app-auth, cont-auth.
         if (ref == null) {
             _logger.log(Level.FINE, "poolmgr.no_resource_reference", jndiNameToUse);
             return internalGetConnection(mcf, defaultPrin, cxRequestInfo,
@@ -166,8 +171,40 @@ public class ConnectionManagerImpl implements ConnectionManager, Serializable {
             ConnectorRuntime.getRuntime().switchOnMatching(rarName, poolName);
             return internalGetConnection(mcf, null, cxRequestInfo,
                     resourceShareable, jndiNameToUse, conn, false);
+        } else {
+            ResourcePrincipal prin = null;
+            Set principalSet = null;
+            Principal callerPrincipal = null;
+            SecurityContext securityContext = null;
+            ConnectorRuntime connectorRuntime = ConnectorRuntime.getRuntime();
+            //TODO V3 is SecurityContext.getCurrent() the right way ? Does it need to be injected ?
+            if (connectorRuntime.isServer() &&
+                    (securityContext = SecurityContext.getCurrent()) != null &&
+                    (callerPrincipal = securityContext.getCallerPrincipal()) != null &&
+                    (principalSet = securityContext.getPrincipalSet()) != null) {
+                AuthenticationService authService =
+                        connectorRuntime.getAuthenticationService(rarName, poolName);
+                if (authService != null) {
+                    prin = (ResourcePrincipal) authService.mapPrincipal(
+                            callerPrincipal, principalSet);
+                }
+            }
+
+            if (prin == null) {
+                prin = ref.getResourcePrincipal();
+                if (prin == null) {
+                    _logger.log(Level.FINE, "default-resource-principal not" +
+                            "specified for " + jndiNameToUse + ". Defaulting to" +
+                            " user/password specified in the pool");
+
+                    prin = defaultPrin;
+                } else if (!prin.equals(defaultPrin)) {
+                    ConnectorRuntime.getRuntime().switchOnMatching(rarName, poolName);
+                }
+            }
+            return internalGetConnection(mcf, prin, cxRequestInfo,
+                    resourceShareable, jndiNameToUse, conn, false);
         }
-        return null;
     }
 
     protected Object internalGetConnection(ManagedConnectionFactory mcf,

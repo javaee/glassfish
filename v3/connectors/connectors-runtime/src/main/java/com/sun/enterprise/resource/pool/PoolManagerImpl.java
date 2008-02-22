@@ -163,6 +163,22 @@ public class PoolManagerImpl extends AbstractPoolManager {
         return pool.getResource(spec, alloc, tran);
     }
 
+    /**
+     * Switch on matching in the pool.
+     *
+     * @param poolName Name of the pool
+     */
+    public boolean switchOnMatching(String poolName) {
+	ResourcePool pool = (ResourcePool) getPoolTable().get( poolName );
+
+	if (pool != null ) {
+	    pool.switchOnMatching();
+            return true;
+        } else {
+            return false;
+        }
+    }
+
 
     public ConcurrentHashMap getPoolTable() {
         return poolTable;

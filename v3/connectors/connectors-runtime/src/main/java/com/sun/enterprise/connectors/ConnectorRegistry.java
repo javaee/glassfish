@@ -39,6 +39,7 @@ package com.sun.enterprise.connectors;
 import com.sun.enterprise.config.serverbeans.ResourceAdapterConfig;
 import com.sun.enterprise.config.serverbeans.SecurityMap;
 import com.sun.enterprise.deployment.ConnectorDescriptor;
+import com.sun.enterprise.connectors.authentication.RuntimeSecurityMap;
 import com.sun.logging.LogDomains;
 
 import javax.resource.spi.ManagedConnectionFactory;
@@ -284,17 +285,16 @@ public class ConnectorRegistry {
      *  @see SecurityMapUtils.processSecurityMaps(SecurityMap[])
      */
 
-/*  TODO V3
+
     public RuntimeSecurityMap getRuntimeSecurityMap(String poolName) {
         if(poolName != null) {
-            _logger.log(Level.FINE,
-              "Returing the security map from connector registry.", poolName);
+            _logger.log(Level.FINE, "Returing the security map from connector registry.", poolName);
             PoolMetaData pmd = factories.get(poolName);
             return pmd.getRuntimeSecurityMap();
         } else {
             return null;
         }
-    }*/
+    }
 
     /**
      * Get the resource adapter config properties object registered with

@@ -118,9 +118,7 @@ public abstract class AbstractPoolManager implements PoolManager {
     }
 
     public boolean switchOnMatching(String poolName) {
-	    _logger.log(Level.INFO, "AbstractPoolManager : switchOnMatching() : This Operation is not supported");
-	    return false;
-        //throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException();
     }
 
     public void killAllPools() {

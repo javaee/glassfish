@@ -102,5 +102,11 @@
             <version>${project.parent.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.glassfish.core</groupId>
+            <artifactId>security</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+
     </dependencies>
 </project>

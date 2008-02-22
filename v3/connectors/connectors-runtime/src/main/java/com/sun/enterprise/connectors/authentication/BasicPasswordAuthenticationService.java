@@ -46,16 +46,12 @@ import com.sun.logging.LogDomains;
 import java.security.Principal;
 import java.util.logging.*;
 import java.util.*;
-import com.sun.enterprise.connectors.util.SecurityMapUtils;
-import com.sun.enterprise.config.serverbeans.SecurityMap;
 import javax.security.auth.Subject;
-import javax.ejb.EJBContext;
 
-import com.sun.enterprise.*;
+
 import com.sun.enterprise.deployment.interfaces.*;
-import com.sun.enterprise.security.factory.SecurityManagerFactory;
-import com.sun.enterprise.web.*;
-import com.sun.ejb.Container;
+import com.sun.appserv.connectors.spi.ConnectorConstants;
+import org.glassfish.api.invocation.ComponentInvocation;
 
 
 /**
@@ -88,7 +84,7 @@ public class BasicPasswordAuthenticationService
 
     /**
      * Maps the principal to the backendPrincipal
-     * @param principalName Name of the principal to be mapped.
+     * @param callerPrincipal Name of the principal to be mapped.
      * @return Mapped Backendprincipal 
      */
 
@@ -104,7 +100,7 @@ public class BasicPasswordAuthenticationService
     	String principalName = callerPrincipal.getName();
       	
     	// Create a list of Group Names from group Set
-      	List<String> groupNames = new ArrayList();
+      	List<String> groupNames = new ArrayList<String>();
       	Iterator iter = principalSet.iterator();
       	while (iter.hasNext()){
       		Principal p = (Principal)iter.next();
@@ -157,9 +153,10 @@ public class BasicPasswordAuthenticationService
         }
         
         // If ejb, use isCallerInRole  
-        if (isContainerContextAContainerObject() && roleName == null){
-        	ComponentInvocation componentInvocation = 
-                Switch.getSwitch().getInvocationManager().getCurrentInvocation();
+/*      TODO V3 handle EJBContext later
+        if (isContainerContextAContainerObject() && roleName == null) {
+        	ComponentInvocation componentInvocation =
+                ConnectorRuntime.getRuntime().getInvocationManager().getCurrentInvocation();
         	EJBContext ejbcontext = (EJBContext)componentInvocation.context;
         	Set s = groupNameSecurityMap.keySet();
         	Iterator i = s.iterator();
@@ -175,7 +172,7 @@ public class BasicPasswordAuthenticationService
           			return (Principal)groupNameSecurityMap.get(entry);
           		}
         	}
-        }	
+        }*/
         
         // Check if caller's group(s) is/are present in the Group Map
         for (int j=0; j<groupNames.size(); j++){
@@ -201,12 +198,12 @@ public class BasicPasswordAuthenticationService
     private String getRoleName(Principal callerPrincipal){
     
     	String roleName = null;
-        WebModule _webmodule = (WebModule)getContainerContext();        	
+        String componentId = getCurrentComponentId();
         
         SecurityRoleMapperFactory securityRoleMapperFactory = 
                                  SecurityRoleMapperFactoryMgr.getFactory();
         SecurityRoleMapper securityRoleMapper= 
-            securityRoleMapperFactory.getRoleMapper(_webmodule.getID());
+            securityRoleMapperFactory.getRoleMapper(componentId);
                
         Map<String, Subject> map = securityRoleMapper.getRoleToSubjectMapping();
         Set<String> roleSet = map.keySet();
@@ -222,29 +219,26 @@ public class BasicPasswordAuthenticationService
         return "";
     }
     
-    //private boolean isContainerContextInstanceOfWebModule() {}
-    
-    private Object getContainerContext(){
-    	if (this.containerContext == null){
-    		ComponentInvocation componentInvocation = 
-                Switch.getSwitch().getInvocationManager().getCurrentInvocation();
-        	this.containerContext = componentInvocation.getContainerContext();
-    	}
-    	return this.containerContext;
+
+    private ComponentInvocation getCurrentComponentInvocation(){
+        return ConnectorRuntime.getRuntime().getInvocationManager().getCurrentInvocation();
+
     }
-    
-    private boolean isContainerContextAContainerObject(){
-    	if (getContainerContext() instanceof Container){
-    		return true;
-    	}
-    	return false;
+    private String getCurrentComponentId(){
+          return  getCurrentComponentInvocation().getComponentId();
     }
-    
+
+    private ComponentInvocation.ComponentInvocationType getCurrentComponentType(){
+        return getCurrentComponentInvocation().getInvocationType();
+    }
+
     private boolean isContainerContextAWebModuleObject(){
-    	if (getContainerContext() instanceof WebModule){
-    		return true;
-    	}
-    	return false;
-    	
+        return ComponentInvocation.ComponentInvocationType.SERVLET_INVOCATION.equals(getCurrentComponentType());
     }
+
+    //TODO V3 use this instead of isContainerContextAContainerObject
+    private boolean isContainerContextAEJBContainerObject(){
+        return ComponentInvocation.ComponentInvocationType.EJB_INVOCATION.equals(getCurrentComponentType());
+    }
+
 }

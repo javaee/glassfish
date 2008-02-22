@@ -34,7 +34,7 @@
  * holder.
  */
 
-package com.sun.enterprise.connectors;
+package com.sun.enterprise.connectors.service;
 
 import java.util.*;
 import com.sun.enterprise.connectors.authentication.*;
@@ -49,13 +49,11 @@ import com.sun.enterprise.config.serverbeans.*;
  */
 
 
-public class ConnectorSecurityAdminServiceImpl extends 
-         ConnectorServiceImpl implements ConnectorAdminService {
+public class ConnectorSecurityAdminServiceImpl extends ConnectorService  {
 
     /**
      * Default constructor
      */
-
      public ConnectorSecurityAdminServiceImpl() {
          super();
      }
@@ -64,23 +62,22 @@ public class ConnectorSecurityAdminServiceImpl extends
     /** 
      *  Obtain the authentication service associated with rar module.
      *  Currently only the BasicPassword authentication is supported.
-     *  @rarName Rar module Name
-     *  @poolName Name of the pool. Used for creation of 
+     *  @param rarName Rar module Name
+     *  @param poolName Name of the pool. Used for creation of
      *                              BasicPasswordAuthenticationService
+     * @return AuthenticationService 
      */
-
     public AuthenticationService getAuthenticationService(String rarName,
                            String poolName) {
 
         ConnectorDescriptor cd =  _registry.getDescriptor(rarName);
         OutboundResourceAdapter obra = cd.getOutboundResourceAdapter();
         Set authMechs = obra.getAuthMechanisms();
-        Iterator it = authMechs.iterator();
-        while(it.hasNext()) {
-            AuthMechanism authMechanism = (AuthMechanism)it.next();
+        for (Object authMech : authMechs) {
+            AuthMechanism authMechanism = (AuthMechanism) authMech;
             String mech = authMechanism.getAuthMechType();
-            if(mech.equals("BasicPassword")) {
-                return new BasicPasswordAuthenticationService(rarName,poolName);
+            if (mech.equals("BasicPassword")) {
+                return new BasicPasswordAuthenticationService(rarName, poolName);
             }
         }
         return null;

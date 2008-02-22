@@ -42,12 +42,14 @@ import com.sun.enterprise.config.serverbeans.Property;
 import com.sun.enterprise.config.serverbeans.SecurityMap;
 import com.sun.enterprise.connectors.service.*;
 import com.sun.enterprise.connectors.util.RAWriterAdapter;
+import com.sun.enterprise.connectors.authentication.AuthenticationService;
 import com.sun.enterprise.deployment.ConnectorDescriptor;
 import com.sun.enterprise.resource.pool.PoolManager;
 import com.sun.enterprise.util.ConnectorClassLoader;
 import com.sun.enterprise.container.common.spi.util.ComponentEnvManager;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.naming.GlassfishNamingManager;
+import org.glassfish.api.invocation.InvocationManager;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -80,6 +82,8 @@ public class ConnectorRuntime implements ConnectorConstants, com.sun.appserv.con
     private ConnectorResourceAdminServiceImpl connectorResourceAdmService;
     private ConnectorService connectorService;
     private ResourceAdapterAdminServiceImpl resourceAdapterAdmService;
+    private ConnectorSecurityAdminServiceImpl connectorSecurityAdmService;
+
 
     private long startTime;
 
@@ -88,6 +92,9 @@ public class ConnectorRuntime implements ConnectorConstants, com.sun.appserv.con
 
     @Inject
     private PoolManager poolManager;
+
+    @Inject
+    private InvocationManager invocationManager;
 
     @Inject
     private ComponentEnvManager componentEnvManager;
@@ -339,6 +346,7 @@ public class ConnectorRuntime implements ConnectorConstants, com.sun.appserv.con
      * bound in JNDI
      *
      * @param poolName Name of the pool
+     * @throws ConnectorRuntimeException when unable to set matching via jndi object
      */
     public void switchOnMatchingInJndi(String poolName)
             throws ConnectorRuntimeException {
@@ -420,6 +428,8 @@ public class ConnectorRuntime implements ConnectorConstants, com.sun.appserv.con
         connectorService = new ConnectorService();
         resourceAdapterAdmService = (ResourceAdapterAdminServiceImpl)
                 ConnectorAdminServicesFactory.getService(ConnectorConstants.RA);
+        connectorSecurityAdmService = (ConnectorSecurityAdminServiceImpl)
+                ConnectorAdminServicesFactory.getService(ConnectorConstants.SEC);
 
         //TODO V3 class-loader (temprorarily initializing with current thread's context cl)
         ConnectorClassLoader.getInstance(Thread.currentThread().getContextClassLoader());
@@ -546,6 +556,10 @@ public class ConnectorRuntime implements ConnectorConstants, com.sun.appserv.con
         return poolManager;
     }
 
+    public InvocationManager getInvocationManager(){
+        return invocationManager;
+    }
+
     public Timer getTimer() {
         synchronized (getTimerLock) {
             if (timer == null) {
@@ -569,4 +583,29 @@ public class ConnectorRuntime implements ConnectorConstants, com.sun.appserv.con
             timer.cancel();
         }
     }
+
+    /**
+     *  Obtain the authentication service associated with rar module.
+     *  Currently only the BasicPassword authentication is supported.
+     *  @param rarName Rar module Name
+     *  @param poolName Name of the pool. Used for creation of
+     *                              BasicPasswordAuthenticationService
+     * @return AuthenticationService connector runtime's authentication service
+     */
+
+    public AuthenticationService getAuthenticationService(String rarName,
+                           String poolName) {
+
+        return connectorSecurityAdmService.getAuthenticationService(rarName,poolName);
+    }
+
+    /** Checks whether the executing environment is application server
+     *  @return true if execution environment is server
+     *          false if it is client
+     */
+    public static boolean isServer() {
+        //TODO V3 static method using instance ?
+        return getRuntime().connectorService.isServer();
+    }
+
 }
