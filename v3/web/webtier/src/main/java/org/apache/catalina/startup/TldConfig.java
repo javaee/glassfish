@@ -49,6 +49,7 @@ import java.io.InputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.JarURLConnection;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
@@ -56,6 +57,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
@@ -422,10 +424,16 @@ public final class TldConfig  {
          */
         Set resourcePaths = tldScanResourcePaths();              
         Map jarPaths = getJarPaths();
+
+        List<URL> tldURLs = null;
+        if (scanParent || context.isJsfApplication()) {
+            tldURLs = (List<URL>)context.getServletContext().getAttribute(
+                    "com.sun.appserv.tld.urls");
+        }
         
         // Check to see if we can use cached listeners
         if (tldCache != null && tldCache.exists()) {
-            long lastModified = getLastModified(resourcePaths, jarPaths);
+            long lastModified = getLastModified(resourcePaths, jarPaths, tldURLs);
             if (lastModified < tldCache.lastModified()) {
                 try {
                     processCache(tldCache);
@@ -446,6 +454,13 @@ public final class TldConfig  {
             while (elems.hasNext()) {
                 JarPathElement elem = elems.next();
                 tldScanJar(elem.getJarFile(), elem.getIsLocal());
+            }
+        }
+
+        // Scan system impl TLD directly
+        if (tldURLs != null) {
+            for (URL tldURL : tldURLs) {
+                tldScan(tldURL);
             }
         }
 
@@ -488,11 +503,12 @@ public final class TldConfig  {
      *
      * @param resourcePaths
      * @param jarPaths
+     * @param tldURLs
      *
      * @return Last modification date
      */
-    private long getLastModified(Set resourcePaths, Map jarPaths)
-            throws Exception {
+    private long getLastModified(Set resourcePaths, Map jarPaths,
+            List<URL> tldURLs) throws Exception {
 
         long lastModified = 0;
 
@@ -521,6 +537,16 @@ public final class TldConfig  {
                 if (log.isDebugEnabled()) {
                     log.debug("Last modified " + jarFile.getAbsolutePath()
                               + " " + lastM);
+                }
+            }
+        }
+
+        if (tldURLs != null) {
+            for (URL tldURL : tldURLs) {
+                long lastM = tldURL.openConnection().getLastModified();
+                if (lastM > lastModified) lastModified = lastM;
+                if (log.isDebugEnabled()) {
+                    log.debug("Last modified " + tldURL + " " + lastM);
                 }
             }
         }
@@ -625,6 +651,28 @@ public final class TldConfig  {
                 }
             }
         }
+    }
+
+    private void tldScan(URL tldURL) throws Exception {
+        InputStream is = null;
+        String jarPath = "";
+        String name = "";
+        try {
+            JarURLConnection jarConn = (JarURLConnection)tldURL.openConnection();
+            jarPath = jarConn.getJarFileURL().toString();
+            name = jarConn.getEntryName();
+            jarConn.connect();
+            tldScanStream(new InputSource(jarConn.getInputStream()),
+                    false);
+        } catch (Exception e) {
+            log.error(sm.getString("contextConfig.tldEntryException",
+                    name, jarPath, context.getPath()), e);
+        } finally {
+            if (is != null) {
+                is.close();
+            }
+        }
+
     }
 
     /**

@@ -55,6 +55,7 @@ import java.util.HashMap;
 // END GlassFish 747
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.jar.JarEntry;
@@ -445,27 +446,7 @@ public class TldLocationsCache {
                 if (!name.startsWith("META-INF/")) continue;
                 if (!name.endsWith(".tld")) continue;
                 InputStream stream = jarFile.getInputStream(entry);
-                try {
-                    String uri = getUriFromTld(resourcePath, stream);
-                    // Add map entry.
-                    // Override existing entries as we move higher
-                    // up in the classloader delegation chain.
-                    if (uri != null
-                            && (mappings.get(uri) == null
-                                || systemUris.contains(uri)
-                                || (systemUrisJsf.contains(uri)
-                                    && !useMyFaces))) {
-                        mappings.put(uri, new String[]{ resourcePath, name });
-                    }
-                } finally {
-                    if (stream != null) {
-                        try {
-                            stream.close();
-                        } catch (Throwable t) {
-                            // do nothing
-                        }
-                    }
-                }
+                scanTld(resourcePath, name, stream);
             }
         } catch (Exception ex) {
             if (!redeployMode) {
@@ -490,6 +471,31 @@ public class TldLocationsCache {
                     } catch (Throwable t) {
                         // ignore
                     }
+                }
+            }
+        }
+    }
+
+    private void scanTld(String resourcePath, String entryName,
+            InputStream stream) throws Exception {
+        try {
+            String uri = getUriFromTld(resourcePath, stream);
+            // Add map entry.
+            // Override existing entries as we move higher
+            // up in the classloader delegation chain.
+            if (uri != null
+                    && (mappings.get(uri) == null
+                    || systemUris.contains(uri)
+                    || (systemUrisJsf.contains(uri)
+                            && !useMyFaces))) {
+                mappings.put(uri, new String[]{ resourcePath, entryName });
+            }
+        } finally {
+            if (stream != null) {
+                try {
+                    stream.close();
+                } catch (Throwable t) {
+                    // do nothing
                 }
             }
         }
@@ -631,6 +637,18 @@ public class TldLocationsCache {
             }
 
             loader = loader.getParent();
+        }
+
+        List<URL> tldURLs = (List<URL>)ctxt.getAttribute(
+                "com.sun.appserv.tld.urls");
+        // Scan system impl TLD directly
+        for (URL tldURL : tldURLs) {
+            JarURLConnection juConn =
+                    (JarURLConnection)tldURL.openConnection();
+            String resourcePath = juConn.getJarFileURL().toString();
+            String entryName = juConn.getEntryName();
+            InputStream is = juConn.getInputStream();
+            scanTld(resourcePath, entryName, is);
         }
     }
 
