@@ -43,6 +43,7 @@ import com.sun.enterprise.resource.ResourceSpec;
 import com.sun.enterprise.resource.allocator.ResourceAllocator;
 import com.sun.enterprise.resource.rm.NoTxResourceManagerImpl;
 import com.sun.enterprise.resource.rm.ResourceManager;
+import com.sun.enterprise.connectors.ConnectorRuntime;
 import com.sun.logging.LogDomains;
 import org.jvnet.hk2.annotations.Service;
 
@@ -51,7 +52,7 @@ import javax.transaction.xa.XAResource;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
+import java.util.Set;
 
 /**
  * @author Tony Ng, Aditya Gore
@@ -263,10 +264,7 @@ public class PoolManagerImpl extends AbstractPoolManager {
     }
 
     public ResourceReferenceDescriptor getResourceReference(String jndiName) {
-        //TODO V3 poolManager has to get the resource-ref from invocation-context
-/*
         Set descriptors = ConnectorRuntime.getRuntime().getResourceReferenceDescriptor();
-
 
         for (Object descriptor : descriptors) {
             ResourceReferenceDescriptor ref =
@@ -276,8 +274,6 @@ public class PoolManagerImpl extends AbstractPoolManager {
                 return ref;
             }
         }
-*/
-
         return null;
     }
 }

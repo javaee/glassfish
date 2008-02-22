@@ -11,7 +11,9 @@ import javax.resource.ResourceException;
 import javax.resource.spi.ManagedConnection;
 import javax.transaction.Transaction;
 import java.util.concurrent.ConcurrentHashMap;
-
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import com.sun.logging.LogDomains;
 
 public abstract class AbstractPoolManager implements PoolManager {
     /**
@@ -24,6 +26,13 @@ public abstract class AbstractPoolManager implements PoolManager {
      * @throws PoolingException Thrown if some error occurs while
      *                          obtaining the resource
      */
+
+    private static Logger _logger = null;
+
+    static {
+        _logger = LogDomains.getLogger(LogDomains.RSR_LOGGER);
+    }
+
     public Object getResource(ResourceSpec spec, ResourceAllocator alloc, ClientSecurityInfo info) throws PoolingException {
         throw new UnsupportedOperationException();
     }
@@ -109,7 +118,9 @@ public abstract class AbstractPoolManager implements PoolManager {
     }
 
     public boolean switchOnMatching(String poolName) {
-        throw new UnsupportedOperationException();
+	    _logger.log(Level.INFO, "AbstractPoolManager : switchOnMatching() : This Operation is not supported");
+	    return false;
+        //throw new UnsupportedOperationException();
     }
 
     public void killAllPools() {
