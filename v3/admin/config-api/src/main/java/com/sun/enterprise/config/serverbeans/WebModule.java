@@ -62,8 +62,6 @@ import org.glassfish.admin.amx.AMXConfigInfo;
     "property"
 }) */
 @Configured
-@AMXObjectNameInfo(j2eeType=com.sun.appserv.management.base.XTypes.WEB_MODULE_CONFIG)
-@AMXConfigInfo
 public interface WebModule extends ConfigBeanProxy, Injectable, Module {
 
     /**

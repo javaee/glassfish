@@ -88,25 +88,42 @@ public final class GlassFishConfigBean extends ConfigBean {
         }
         return defaultView.getProxy(proxyType);
     }
+    
 
     @Override
     public void initializationCompleted() {
         super.initializationCompleted();
-/*        CagedBy cagedBy = digAnnotation(getProxyType(), CagedBy.class);
-        if (cagedBy!=null) {
-            CageBuilder builder = habitat.getByType(cagedBy.value());
-            if (builder!=null) {
+        
+        final boolean EXEC_CAGE_BUILDER = true;
+        if ( EXEC_CAGE_BUILDER )
+        {
+            final CagedBy cagedBy = digAnnotation(getProxyType(), CagedBy.class);
+                
+            if (cagedBy!=null) {
+                final Class<? extends CageBuilder> builderClass = cagedBy.value();
                 try {
-                    builder.onEntered(this);
-                } catch(Exception e) {
-                    Logger.getAnonymousLogger().info("CageBuilder " + builder + " raised exception : " +  e.getMessage());
-                    Logger.getAnonymousLogger().log(Level.FINE, "CageBuilder " + builder + " raised exception : ", e);    
+                    final CageBuilder builder = habitat.getByType( builderClass );
+                    if (builder!=null) {
+                        builder.onEntered(this);
+                    }
+                }
+                catch ( final org.jvnet.hk2.component.UnsatisfiedDepedencyException e ) {
+                    Logger.getAnonymousLogger().info("CageBuilder " + builderClass.getName() + " raised UnsatisfiedDepedencyException ");
+                }
+                catch ( final Exception e ) {
+                    Logger.getAnonymousLogger().info("CageBuilder " + builderClass.getName() + " raised exception : " +  e.getMessage());
+                    Logger.getAnonymousLogger().log(Level.FINE, "CageBuilder " + builderClass.getName() + " raised exception : ", e); 
                 }
             }
         }
-        */
     }
-
 }
+
+
+
+
+
+
+
 
 

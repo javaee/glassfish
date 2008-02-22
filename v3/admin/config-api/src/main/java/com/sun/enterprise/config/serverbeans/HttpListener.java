@@ -64,8 +64,7 @@ import org.glassfish.admin.amx.AMXConfigInfo;
     "property"
 }) */
 @AMXObjectNameInfo(j2eeType=com.sun.appserv.management.base.XTypes.HTTP_LISTENER_CONFIG,nameHint="id")
-@AMXConfigInfo
-//@CagedBy(org.glassfish.admin.amx.AMXConfigRegistrar.class)
+@AMXConfigInfo( amxInterface=com.sun.appserv.management.config.HTTPListenerConfig.class )
 @Configured
 public interface HttpListener extends ConfigBeanProxy, Injectable  {
 
