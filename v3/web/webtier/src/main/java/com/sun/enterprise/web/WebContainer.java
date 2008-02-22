@@ -255,7 +255,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         modulesStubRoot = instance.getModuleStubPath();
         appsStubRoot = instance.getApplicationStubPath();
         // END S1AS 6178005
-
+        
         defaultWebXml = System.getProperty("AS_DEF_DOMAINS_PATH");
         if (defaultWebXml != null) {
             defaultWebXml += File.separator + "domain1"
@@ -2792,6 +2792,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             return null;
         }
 
+        /* TODO appsWorkRoot
         if (wmName.indexOf(Constants.NAME_SEPARATOR) != -1) {
             wmInfo.setWorkDirBase(_appsWorkRoot);
             // START S1AS 6178005
@@ -2802,7 +2803,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             // START S1AS 6178005
             wmInfo.setStubBaseDir(modulesStubRoot);
             // END S1AS 6178005
-        }
+        }*/
 
         String displayContextPath = null;
         if (wmContextPath.equals(""))
