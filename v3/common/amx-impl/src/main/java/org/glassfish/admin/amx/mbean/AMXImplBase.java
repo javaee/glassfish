@@ -189,63 +189,13 @@ public class AMXImplBase extends MBeanImplBase
      */
     private static final Map<String,Map<String,Class>>  ATTRIBUTE_CLASSES =
         Collections.synchronizedMap( new HashMap<String,Map<String,Class>>() );
-	
-		protected Class
-	getInterface( final String j2eeType )
-	{
-		return( AllTypesMapper.getInstance().getInterfaceForType( j2eeType ) );
-	}
-	
-		protected String
-	deduceJ2EEType( final Class c)
-	{
-		// it may extend the interface in which case its type is readily available
-		String	j2eeType	= (String)ClassUtil.getFieldValue( c, "J2EE_TYPE" );
-		if ( j2eeType == null )
-		{
-			final String	strippedName	= StringUtil.stripSuffix(
-												ClassUtil.stripPackageName( c.getName() ), "Impl" );
-			
-			if ( c.getPackage().getName().endsWith( ".j2ee" ) )
-			{
-				// j2ee standard type
-				j2eeType	= strippedName;
-			}
-			else
-			{
-				j2eeType	= "X-" + strippedName;
-			}
-		}
-		
-		return( j2eeType );
-	}
-
-		protected
-	AMXImplBase( String j2eeType, Delegate delegate )
-	{
-		this( j2eeType, null, delegate );
-	}
-	
-		protected
-	AMXImplBase()
-	{
-		this( null, null, null );
-	}
-	
-		protected
-	AMXImplBase( final Delegate delegate )
-	{
-		this( null, null, delegate );
-	}
-
-
-    
+	    
        private synchronized MBeanInfo
     getInterfaceMBeanInfo(
         final Class theInterface )
     {
 		MBeanInfo info	= TypeInfos.getInstance().getMBeanInfoForInterface( theInterface );
-        if ( false || getAMXDebug() )
+        if ( getAMXDebug() )
         {
             debug( "Interface " + mInterface.getName() +
                 " has MBeanInfo:\n" +
@@ -267,42 +217,24 @@ public class AMXImplBase extends MBeanImplBase
 	*/
 		private
 	AMXImplBase(
-		final String		j2eeTypeIn,
-		final Class			theInterface,
+		final Class<? extends AMX> theInterface,
 		final Delegate		delegate )
 	{
 		super();
+        
+		mInterface	= theInterface;
         
 		if ( delegate != null )
 		{
 			delegate.setOwner( this );
 		}
 		
-		mJ2EEType	= j2eeTypeIn == null ? 
-							deduceJ2EEType( getClass() ): j2eeTypeIn;
-							
-		if ( getAMXDebug() && j2eeTypeIn != null )
-		{
-			final String	deducedJ2EEType	= deduceJ2EEType( getClass() );
-			
-			if ( ! deducedJ2EEType.equals( mJ2EEType ) )
-			{
-				debug( "warning: deducedj2eeType " + deducedJ2EEType +
-					" does not match: " + j2eeTypeIn );
-			}
-		}
-		
-		mInterface	= theInterface == null ? getInterface( mJ2EEType ) : theInterface;
-		if ( mInterface == null )
-		{
-		    throw new Error( "AMXImplBase: can't get interface for j2eeType " + j2eeTypeIn  );
-		}
+		mJ2EEType	= (String)ClassUtil.getFieldValue( theInterface, "J2EE_TYPE" );
 		
 		mCachedContainerObjectName	= null;
 		mEmitAttributeChangeNotifications	= true;
 		mQueryMgr			= null;
 		mSelfProxy				= null;
-		
 		
 		mSuppliedDelegate		= delegate;
 		if ( mSuppliedDelegate instanceof DelegateBase )
