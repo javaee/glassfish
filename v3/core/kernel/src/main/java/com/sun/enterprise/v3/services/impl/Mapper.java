@@ -244,8 +244,14 @@ public class Mapper {
                 break;
             }
             
-            if (contextRoot.lastIndexOf(ROOT)!=-1) {
-                contextRoot = contextRoot.substring(0, contextRoot.lastIndexOf(ROOT));
+            if (!contextRoot.equals(ROOT)) {
+                if (contextRoot.lastIndexOf(ROOT)!=-1) {
+                    contextRoot = contextRoot.substring(0, contextRoot.lastIndexOf(ROOT));
+                }
+
+            } 
+            if (contextRoot.length() == 0) {
+                contextRoot = ROOT;
             } else {
                 break;
             }

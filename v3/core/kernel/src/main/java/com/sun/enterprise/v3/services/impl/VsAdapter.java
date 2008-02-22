@@ -143,9 +143,11 @@ public class VsAdapter extends AbstractAdapter implements Adapter {
                     dispatchTo.afterService(req, res);
                     return;
                 }
-
-                if (requestURI.lastIndexOf("/")!=-1) {
-                    requestURI = requestURI.substring(0, requestURI.lastIndexOf("/"));
+                
+                if (!requestURI.equals("/")) {
+                    if (requestURI.lastIndexOf("/")!=-1) {
+                        requestURI = requestURI.substring(0, requestURI.lastIndexOf("/"));
+                    }
                 } else {
                     // last chance, look in our docroot...
                     File file = new File(docRoot, req.requestURI().getString());
@@ -161,6 +163,9 @@ public class VsAdapter extends AbstractAdapter implements Adapter {
                                 + req.requestURI().getString());
                     }
                     return;
+                }
+                if (requestURI.length() == 0) {
+                    requestURI = "/";
                 }
             }
         } finally {
