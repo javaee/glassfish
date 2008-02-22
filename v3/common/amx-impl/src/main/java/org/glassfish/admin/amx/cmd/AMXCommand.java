@@ -229,12 +229,23 @@ public class AMXCommand extends AMXCommandBase implements AdminCommand
             timingMsg = " (previously initialized)";
         }
         
-        
-        
         final ActionReport report = getActionReport();
         report.setActionExitCode(ExitCode.SUCCESS);
         
         report.getTopMessagePart().addChild().setMessage( getMBeanServerDelegateInfo( getMBeanServer() ) );
+
+        JMXConnectorServer connectorServer    = null;
+        try
+        {
+            connectorServer = startJMXMPConnectorServer( getMBeanServer(), JMXMP_PORT );
+            report.getTopMessagePart().addChild().setMessage( "JMXServiceURL ===> " + connectorServer.getAddress() );
+        }
+        catch ( final Exception e )
+        {
+            debug( "failed to start JMXMPConnectorServer" );
+            e.printStackTrace();
+            report.getTopMessagePart().addChild().setMessage( "ERROR: could not start JMXConnectorServer: " + e );
+        }
         
         // get a nice sorted list of all AMX MBean ObjectNames
         final ObjectName amxPattern = JMXUtil.newObjectName( "amx:*" );
@@ -243,39 +254,11 @@ public class AMXCommand extends AMXCommandBase implements AdminCommand
         Collections.sort(mbeanList);
         
         String msg = "AMX initialized and ready for use." + timingMsg + StringUtil.NEWLINE();
-        report.setMessage( "AMX initialized and ready for use." + timingMsg );
+        report.setMessage( msg );
         for( final String on : mbeanList )
         {
             report.getTopMessagePart().addChild().setMessage( on );
         }
-
-        JMXConnectorServer connectorServer    = null;
-/*
-        try
-        {
-            connectorServer = startRMIConnectorServer( getMBeanServer(), RMI_REGISTRY_PORT );
-        }
-        catch ( final Exception e )
-        {
-            debug( "failed to start RMIConnectorServer" );
-            e.printStackTrace();
-        }
-        msg = msg + "JMXServiceURL: " + connectorServer.getAddress();
-*/
-        
-        try
-        {
-            connectorServer = startJMXMPConnectorServer( getMBeanServer(), JMXMP_PORT );
-        }
-        catch ( final Exception e )
-        {
-            debug( "failed to start JMXMPConnectorServer" );
-            e.printStackTrace();
-        }
-        msg = msg + "JMXServiceURL: " + connectorServer.getAddress();
-        
-        report.setMessage( msg );
-
     }
 }
 

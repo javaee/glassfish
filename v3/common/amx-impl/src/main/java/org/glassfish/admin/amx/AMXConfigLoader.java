@@ -38,12 +38,6 @@ public final class AMXConfigLoader
     
     private AMXConfigLoaderThread mLoaderThread = null;
     
-    @SuppressWarnings("unchecked")
-    final ConfigBean asConfigBean( final Object o )
-    {
-        return (o instanceof ConfigBean) ? (ConfigBean)o : null;
-    }
-    
         public
     AMXConfigLoader()
     {
@@ -109,7 +103,7 @@ public final class AMXConfigLoader
 
     /**
      */
-        protected ObjectName
+        private ObjectName
     registerConfigBeanAsMBean( final ConfigBean cb )
     {
         ObjectName objectName = cb.getObjectName();
@@ -162,7 +156,7 @@ public final class AMXConfigLoader
         return objectName;
     }
     
-        ObjectName
+        private ObjectName
     buildObjectName(
         final ConfigBean b,
         final AMXObjectNameInfo info)
