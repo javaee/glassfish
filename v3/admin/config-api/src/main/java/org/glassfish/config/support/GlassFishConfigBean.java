@@ -94,26 +94,22 @@ public final class GlassFishConfigBean extends ConfigBean {
     public void initializationCompleted() {
         super.initializationCompleted();
         
-        final boolean EXEC_CAGE_BUILDER = true;
-        if ( EXEC_CAGE_BUILDER )
-        {
-            final CagedBy cagedBy = digAnnotation(getProxyType(), CagedBy.class);
-                
-            if (cagedBy!=null) {
-                final Class<? extends CageBuilder> builderClass = cagedBy.value();
-                try {
-                    final CageBuilder builder = habitat.getByType( builderClass );
-                    if (builder!=null) {
-                        builder.onEntered(this);
-                    }
+        final CagedBy cagedBy = digAnnotation(getProxyType(), CagedBy.class);
+            
+        if (cagedBy!=null) {
+            final Class<? extends CageBuilder> builderClass = cagedBy.value();
+            try {
+                final CageBuilder builder = habitat.getByType( builderClass );
+                if (builder!=null) {
+                    builder.onEntered(this);
                 }
-                catch ( final org.jvnet.hk2.component.UnsatisfiedDepedencyException e ) {
-                    Logger.getAnonymousLogger().info("CageBuilder " + builderClass.getName() + " raised UnsatisfiedDepedencyException ");
-                }
-                catch ( final Exception e ) {
-                    Logger.getAnonymousLogger().info("CageBuilder " + builderClass.getName() + " raised exception : " +  e.getMessage());
-                    Logger.getAnonymousLogger().log(Level.FINE, "CageBuilder " + builderClass.getName() + " raised exception : ", e); 
-                }
+            }
+            catch ( final org.jvnet.hk2.component.UnsatisfiedDepedencyException e ) {
+                Logger.getAnonymousLogger().info("CageBuilder " + builderClass.getName() + " raised UnsatisfiedDepedencyException ");
+            }
+            catch ( final Exception e ) {
+                Logger.getAnonymousLogger().info("CageBuilder " + builderClass.getName() + " raised exception : " +  e.getMessage());
+                Logger.getAnonymousLogger().log(Level.FINE, "CageBuilder " + builderClass.getName() + " raised exception : ", e); 
             }
         }
     }
