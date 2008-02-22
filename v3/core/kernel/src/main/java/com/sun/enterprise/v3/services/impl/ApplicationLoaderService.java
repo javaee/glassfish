@@ -374,8 +374,10 @@ public class ApplicationLoaderService extends ApplicationLifecycle
         Properties deploymentParams = new Properties(); 
         deploymentParams.setProperty(DeployCommand.NAME, app.getName());
         deploymentParams.setProperty(DeployCommand.LOCATION, app.getLocation());
-        deploymentParams.setProperty(DeployCommand.CONTEXT_ROOT, 
-            app.getContextRoot());
+        if (app.getContextRoot() != null) {
+            deploymentParams.setProperty(DeployCommand.CONTEXT_ROOT, 
+                app.getContextRoot());
+        }
         deploymentParams.setProperty(DeployCommand.DIRECTORY_DEPLOYED, 
             app.getDirectoryDeployed());
         return deploymentParams;
