@@ -133,5 +133,18 @@ public class DataSourceWrapper implements DataSource {
         throw new SQLException(Resources.getMessage("NOT_SUPPORTED"));
     }
 
+    /**
+     * Always return false.
+     */
+    public boolean isWrapperFor(Class<?> iface) throws SQLException {
+        return false;
+    }
+
+    /**
+     * Always throws a SQLException. Not supported.
+     */
+    public <T> T unwrap(Class<T> iface) throws SQLException {
+        throw new SQLException(Resources.getMessage("NOT_SUPPORTED"));
+    }
 
 }
