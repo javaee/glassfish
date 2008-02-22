@@ -52,8 +52,9 @@ abstract class AMXCommandBase implements AdminCommand {
     
     public AMXCommandBase() {
         System.out.println( "AMXCommandBase.AMXCommandBase: " + this.getClass().getName() );
-        System.out.println( "MBeanServer is " + mMBeanServer );
     }
+    
+    protected static void debug( final String s ) { System.out.println(s); }
     
     protected ActionReport getActionReport() { return mAdminCommandContext.getActionReport(); }
     

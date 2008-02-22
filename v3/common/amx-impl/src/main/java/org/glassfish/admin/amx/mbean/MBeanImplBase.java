@@ -65,11 +65,8 @@ import com.sun.appserv.management.util.jmx.NotificationBuilder;
 import com.sun.appserv.management.util.jmx.NotificationSender;
 import com.sun.appserv.management.util.jmx.NotificationEmitterSupport;
 import com.sun.appserv.management.util.jmx.AttributeChangeNotificationBuilder;
-import com.sun.appserv.management.util.jmx.stringifier.NotificationStringifier;
 
 import com.sun.appserv.management.util.misc.Output;
-import com.sun.appserv.management.util.misc.FileOutput;
-import com.sun.appserv.management.util.misc.OutputIgnore;
 
 /**
 	Absolute base impl class. Should contain only core functionality,

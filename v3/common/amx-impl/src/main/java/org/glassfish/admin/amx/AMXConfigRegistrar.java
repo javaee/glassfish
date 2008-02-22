@@ -1,24 +1,14 @@
+
 package org.glassfish.admin.amx;
 
-import javax.management.MBeanServer;
-import javax.management.ObjectName;
-import javax.management.JMException;
-import javax.management.ObjectInstance;
 
 import org.jvnet.hk2.component.CageBuilder;
 import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.config.Dom;
 import org.jvnet.hk2.config.ConfigBean;
-import org.jvnet.hk2.config.ConfigBeanProxy;
-import org.jvnet.hk2.config.ConfigView;
-import org.jvnet.hk2.component.CageBuilder;
 
-import com.sun.appserv.management.util.misc.ExceptionUtil;
-import com.sun.appserv.management.util.jmx.JMXUtil;
+import com.sun.appserv.management.config.AMXConfig;
 
-import java.lang.reflect.Proxy;
 
 /**
  * @author llc
@@ -26,8 +16,7 @@ import java.lang.reflect.Proxy;
 @Service //(name="AMXConfigRegistrar")
 public final class AMXConfigRegistrar implements CageBuilder
 {
-    @Inject
-    MBeanServer mMBeanServer;
+    private volatile AMXConfigLoader  mConfigLoader;
     
     @SuppressWarnings("unchecked")
     final ConfigBean asConfigBean( final Object o )
@@ -38,85 +27,26 @@ public final class AMXConfigRegistrar implements CageBuilder
         public
     AMXConfigRegistrar()
     {
-        debug( "#### AMXConfigRegistrar.AMXConfigRegistrar  #####" );
+        //debug( "#### AMXConfigRegistrar.AMXConfigRegistrar  #####" );
+        
+        mConfigLoader = new AMXConfigLoader();
     }
     
     private static void debug( final String s ) { System.out.println(s); }
     
     public void onEntered(Inhabitant<?> inhabitant)
     {
-        debug( "AMXConfigRegistrar: inhabitant: " + inhabitant );
         final ConfigBean cb = asConfigBean(inhabitant);
-        debug(" got a config bean for " + cb.getProxyType());
-
         if ( cb != null )
         {
-            registerConfigBean( cb );
+            mConfigLoader.handleConfigBean( cb );
         }
     }
     
-    /**
-     */
-        protected ObjectName
-    registerConfigBean( final ConfigBean cb )
+        public AMXConfigLoader
+    getAMXConfigLoader()
     {
-        ObjectName objectName = cb.getObjectName();
-        if ( objectName != null )
-        {
-            throw new IllegalArgumentException( "ConfigBean " + cb + " already registered as " + objectName );
-        }
-        
-        final Class<? extends ConfigBeanProxy> configuredClass = cb.getProxyType();
-        // should be getting @AMXInfo, and using meta annotation
-        final AMXConfigInfo amxConfigInfo = configuredClass.getAnnotation( AMXConfigInfo.class );
-        if ( amxConfigInfo == null )
-        {
-            throw new IllegalArgumentException( "Missing @AMXConfigInfo" );
-        }
-        
-        // check class itself first for metadata, if missing find it from the AMXConfigInfo instead
-        AMXMBeanMetadata metadata    = configuredClass.getAnnotation( AMXMBeanMetadata.class );
-        if ( metadata == null )
-        {
-            // the default
-            metadata = AMXConfigInfo.class.getAnnotation( AMXMBeanMetadata.class );
-        }
-        
-        final AMXObjectNameInfo objectNameInfo = configuredClass.getAnnotation( AMXObjectNameInfo.class );
-        if ( objectNameInfo == null )
-        {
-            throw new IllegalArgumentException( "Missing @AMXObjectNameInfo" );
-        }
-        
-    debug( "Preparing ConfigBean for registration with ObjectNameInfo = " + objectNameInfo.toString() + ", AMXMBeanMetaData = " + metadata );
-
-        objectName = buildObjectName( cb, objectNameInfo );
-    
-        try
-        {
-            final ObjectInstance instance = mMBeanServer.registerMBean( new Dummy(cb), objectName );
-            objectName = instance.getObjectName();
-            cb.setObjectName( objectName );
-            debug( "REGISTERED MBEAN: " + JMXUtil.toString(objectName) );
-        }
-        catch( final JMException e )
-        {
-            debug( ExceptionUtil.toString(e) );
-        }
-
-        return objectName;
-    }
-    
-        ObjectName
-    buildObjectName(
-        final ConfigBean b,
-        final AMXObjectNameInfo info)
-    {
-        final String name = b.rawAttribute( info.nameHint() );
-        
-        final String nameString = "amx:j2eeType=" + info.j2eeType() + ",name=" + name;
-        
-        return JMXUtil.newObjectName( nameString );
+        return mConfigLoader;
     }
 }
 
