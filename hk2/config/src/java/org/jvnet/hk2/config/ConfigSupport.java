@@ -39,7 +39,14 @@
 import org.jvnet.hk2.annotations.Service;
 
 import java.beans.PropertyVetoException;
+import java.beans.PropertyChangeEvent;
 import java.lang.reflect.Proxy;
+import java.lang.reflect.Method;
+import java.lang.reflect.InvocationTargetException;
+import java.util.logging.Logger;
+import java.util.logging.Level;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
   * <p>
@@ -232,14 +239,78 @@ public class ConfigSupport {
      * @param source configuration interface proxy
      * @return the implementation bean
      */
-    public static Object getImpl(ConfigBeanProxy source) {
+    public static ConfigView getImpl(ConfigBeanProxy source) {
 
         Object bean = Proxy.getInvocationHandler(source);
         if (bean instanceof ConfigView) {
             return ((ConfigView) bean).getMasterView();
         } else {
-            return bean;
+            return (ConfigBean) bean;
         }
         
+    }
+
+    /**
+     * Returns the type of configuration object this config proxy represents.
+     * @param element is the configuration object
+     * @return the configuration interface class
+     */
+    public static <T extends ConfigBeanProxy> Class<T> proxyType(T element) {
+        ConfigView bean = getImpl(element);
+        return bean.getProxyType();
+    }
+
+    /**
+     * sort events and dispatch the changes. There will be only one notification of event
+     * per event type, per object, meaning that if an object has had 3 attributes changes, the
+     * Changed interface implementation will get notified only once.
+     *
+     * @param list of events that resulted of a successful configuration transaction
+     * @param target the intended receiver of the changes notification
+     * @param logger to log any issues.
+     */
+    public static void sortAndDispatch(PropertyChangeEvent[] events, Changed target, Logger logger) {
+
+
+        List<PropertyChangeEvent> unprocessed = new ArrayList<PropertyChangeEvent>();
+        List<Dom> added = new ArrayList<Dom>();
+        List<Dom> changed = new ArrayList<Dom>();
+
+        for (PropertyChangeEvent event : events) {
+
+            if (event.getOldValue()==null && event.getNewValue() instanceof ConfigBeanProxy) {
+                // something was added
+                try {
+                    final ConfigBeanProxy proxy =  ConfigBeanProxy.class.cast(event.getNewValue());
+                    added.add(Dom.unwrap(proxy));
+                    target.changed(Changed.TYPE.ADD, proxyType(proxy), proxy);
+                } catch (Exception e) {
+                    logger.log(Level.SEVERE, "Exception while processing config bean changes : ", e);
+                }
+            }
+        }
+
+        for (PropertyChangeEvent event : events) {
+
+            try {
+                Dom eventSource = Dom.unwrap((ConfigBeanProxy) event.getSource());
+                if (added.contains(eventSource)) {
+                    // we don't really send the changed events for new comers.
+                    continue;
+                }
+                if (event.getNewValue()==null) {
+                    final ConfigBeanProxy proxy =  ConfigBeanProxy.class.cast(event.getOldValue());
+                    target.changed(Changed.TYPE.REMOVE, proxyType(proxy), proxy );
+                } else {
+                    if (!changed.contains(eventSource)) {
+                        final ConfigBeanProxy proxy =  ConfigBeanProxy.class.cast(event.getSource());
+                        changed.add(eventSource);
+                        target.changed(Changed.TYPE.CHANGE, proxyType(proxy), proxy);
+                    }
+                }
+            } catch (Exception e) {
+                logger.log(Level.SEVERE, "Exception while processing config bean changes : ", e);
+            }
+        }
     }
  }
