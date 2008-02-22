@@ -34,6 +34,7 @@ import com.sun.enterprise.v3.services.impl.GrizzlyService;
 import com.sun.enterprise.config.serverbeans.Applications;
 import com.sun.enterprise.config.serverbeans.Module;
 import com.sun.enterprise.config.serverbeans.WebModule;
+import com.sun.enterprise.config.serverbeans.Application;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
@@ -70,9 +71,6 @@ public class UndeployCommand extends ApplicationLifecycle implements AdminComman
     ApplicationRegistry appRegistry;
 
     @Inject
-    ApplicationMetaDataPersistence metaData;
-
-    @Inject
     GrizzlyService adapter;
 
     @Param(primary = true, name=DeployCommand.NAME)
@@ -105,6 +103,17 @@ public class UndeployCommand extends ApplicationLifecycle implements AdminComman
         DeploymentContextImpl deploymentContext = new DeploymentContextImpl(logger, info.getSource(), parameters, env);        
 
         undeploy(name, deploymentContext, report);
+
+        // check if it's directory deployment
+        boolean isDirectoryDeployed = false;
+        for (Module module : applications.getModules()) {
+            if (module.getName().equals(name) 
+                && module instanceof Application) {
+                isDirectoryDeployed = Boolean.valueOf(
+                    ((Application)module).getDirectoryDeployed());
+            }
+        }
+
         if (report.getActionExitCode().equals(ActionReport.ExitCode.SUCCESS)) {
             // so far I am doing this after the unload, maybe this should be moved before...
             try {
@@ -127,13 +136,7 @@ public class UndeployCommand extends ApplicationLifecycle implements AdminComman
             } catch(TransactionFailure e) {
                 logger.warning("Module " + name + " not found in configuration");
             }
-                //check if deployment is from directory
-            Properties props = metaData.load(name);
-            boolean isDirectoryDeployed = false;
-            if (props!=null) {
-                isDirectoryDeployed = Boolean.valueOf(props.getProperty(DeployCommand.DIRECTORY_DEPLOYED));
-            }
-                //remove context from generated
+            //remove context from generated
             deleteContainerMetaInfo(info, deploymentContext);
                 //if directory deployment then do no remove the directory
             if (!isDirectoryDeployed) {
@@ -148,12 +151,28 @@ public class UndeployCommand extends ApplicationLifecycle implements AdminComman
     
     private void deleteContainerMetaInfo(ApplicationInfo info, DeploymentContext context) {
         
-        // need to remove the entry in the generated directory...
-        File generatedAppRoot = new File(env.getApplicationStubPath());
-        generatedAppRoot = new File(generatedAppRoot, 
-                context.getCommandParameters().getProperty(DeployCommand.NAME));
+        // need to remove the entry in the generated directories...
+        // we need to remove generated/xml, generated/ejb, generated/jsp
 
+        // remove generated/xml
+        File generatedXmlRoot = new File(env.getApplicationStubPath(), "xml");
+        generatedXmlRoot = new File(generatedXmlRoot, 
+                context.getCommandParameters().getProperty(DeployCommand.NAME));
         // recursively delete...
-        FileUtils.whack(generatedAppRoot);               
+        FileUtils.whack(generatedXmlRoot);               
+
+        // remove generated/ejb
+        File generatedEjbRoot = new File(env.getApplicationStubPath(), "ejb");
+        generatedEjbRoot = new File(generatedEjbRoot, 
+                context.getCommandParameters().getProperty(DeployCommand.NAME));
+        // recursively delete...
+        FileUtils.whack(generatedEjbRoot);               
+
+        // remove generated/jsp
+        File generatedJspRoot = new File(env.getApplicationStubPath(), "jsp");
+        generatedJspRoot = new File(generatedJspRoot, 
+                context.getCommandParameters().getProperty(DeployCommand.NAME));
+        // recursively delete...
+        FileUtils.whack(generatedJspRoot);               
     }
 }
