@@ -50,7 +50,7 @@
 
     <developers>
         <developer>
-            <id>jyoung</id>
+            <id>janey</id>
             <name>Jane Young</name>
             <organization>Sun Microsystems, Inc.</organization>
             <roles>
@@ -59,17 +59,41 @@
             </roles>
         </developer>
         <developer>
-            <id>abbagani</id>
-            <name>Prashanth Abbagani</name>
+            <id>bnevins</id>
+            <name>Byron Nevins</name>
             <organization>Sun Microsystems, Inc.</organization>
             <roles>
                 <role>lead</role>
                 <role>developer</role>
             </roles>
+        </developer>        
+        <developer>
+            <id>pa100654</id>
+            <name>Prashant Abbagani</name>
+            <organization>Sun Microsystems, Inc.</organization>
+            <roles>
+                <role>developer</role>
+            </roles>
+        </developer>
+        <developer>
+            <id>km</id>
+            <name>Kedar Mhaswade</name>
+            <organization>Sun Microsystems, Inc.</organization>
+            <roles>
+                <role>developer</role>
+            </roles>
+        </developer>
+        <developer>
+            <id>jc129909</id>
+            <name>Jennifer Chou</name>
+            <organization>Sun Microsystems, Inc.</organization>
+            <roles>
+                <role>developer</role>
+            </roles>
         </developer>
     </developers>
     <build>
-	<resources>
+    <resources>
             <resource>
                 <directory>src/main/resources</directory>
                 <includes>
@@ -84,35 +108,26 @@
             </resource>
         </resources>
         <plugins>
-          <!--plugin>
-               <artifactId>maven-antrun-plugin</artifactId>
-               <executions>
-                   <execution>
-                       <phase>generate-sources</phase>
-                       <configuration>
-                           <tasks>
-                               <copy todir="${glassfish.home}/bin">
-                                   <fileset dir="src/resources"/>
-                               </copy>
-                                <chmod file="${glassfish.home}/bin/*" perm="ugo+rx"/>
-                           </tasks>
-                       </configuration>
-                       <goals>
-                           <goal>run</goal>
-                       </goals>
-                   </execution>
-               </executions>
-           </plugin-->
+           <plugin>
+                <groupId>com.sun.enterprise</groupId>
+                <artifactId>hk2-maven-plugin</artifactId>
+           </plugin>
             <plugin>
                 <groupId>com.sun.enterprise</groupId>
                 <artifactId>hk2-maven-plugin</artifactId>
                 <configuration>
-                    <archive>
-                        <manifest>
-                            <mainClass>com.sun.enterprise.admin.cli.Main</mainClass>
-                        </manifest>
-                    </archive>
+                    <configFile>src/main/resources/asadmin</configFile>
+                    <destDir>target/classes</destDir>
+                    <!-- optional: <forPlatform></forPlatform> -->
                 </configuration>
+                <executions>
+                  <execution>
+                    <phase>compile</phase>
+                    <goals>
+                      <goal>createscripts</goal>
+                    </goals>
+                  </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
