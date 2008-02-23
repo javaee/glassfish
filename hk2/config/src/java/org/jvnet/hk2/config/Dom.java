@@ -245,6 +245,10 @@ public class Dom extends LazyInhabitant implements InvocationHandler, Observable
     public String rawAttribute(String name) {
         return attributes.get(name);
     }
+    
+    public Set<String> getAttributeNames() {
+        return model.getAttributeNames();
+    }
 
     /**
      * Obtains the plural attribute value. Values are separate by ',' and surrounding whitespaces are ignored.

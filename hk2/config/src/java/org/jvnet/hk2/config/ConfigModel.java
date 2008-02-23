@@ -7,11 +7,6 @@ import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.component.MultiMap;
 import org.jvnet.tiger_types.Types;
 
-import javax.management.MBeanAttributeInfo;
-import javax.management.MBeanConstructorInfo;
-import javax.management.MBeanInfo;
-import javax.management.MBeanNotificationInfo;
-import javax.management.MBeanOperationInfo;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.*;
@@ -90,11 +85,10 @@ public final class ConfigModel {
      * @see ConfigMetadata#KEY
      */
     public final String key;
-
-    /**
-     * Lazily created {@link MBeanInfo} for this model.
-     */
-    private volatile MBeanInfo mbeanInfo;
+    
+    public Set<String> getAttributeNames() {
+        return Collections.unmodifiableSet( attributes.keySet() );
+    }
 
     /**
      * Performs injection to the given object.
@@ -533,36 +527,4 @@ public final class ConfigModel {
         else
             return new SingleNode(model,elementName);
     }
-
-    public MBeanInfo getMBeanInfo() {
-        if(mbeanInfo==null)
-            // worst case scenario is we end up building redundant MBeanInfo if two threads execute this concurrently.
-            // It's a waste, but it's not incorrect.
-            mbeanInfo = buildMBeanInfo();
-        return mbeanInfo;
-    }
-
-    private MBeanInfo buildMBeanInfo() {
-        List<MBeanAttributeInfo> properties = new ArrayList<MBeanAttributeInfo>();
-        List<MBeanOperationInfo> operations = new ArrayList<MBeanOperationInfo>();
-
-        for (Map.Entry<String,Leaf> a : attributes.entrySet()) {
-            properties.add(new MBeanAttributeInfo(a.getKey(),
-                String.class.getName(),
-                a.getKey(), // TODO: fetch from javadoc
-                true, true, false));
-        }
-        // TODO: fetch element properties
-        // TODO: fetch operations
-
-        return new MBeanInfo(targetTypeName,
-            targetTypeName, // TODO: capture from javadoc
-            properties.toArray(new MBeanAttributeInfo[properties.size()]),
-            EMPTY_MBEAN_CONSTRUCTORS,
-            operations.toArray(new MBeanOperationInfo[operations.size()]),
-            EMPTY_MBEAN_NOTIFICATIONS);
-    }
-
-    private static final MBeanNotificationInfo[] EMPTY_MBEAN_NOTIFICATIONS = new MBeanNotificationInfo[0];
-    private static final MBeanConstructorInfo[] EMPTY_MBEAN_CONSTRUCTORS = new MBeanConstructorInfo[0];
 }
