@@ -51,7 +51,7 @@ abstract class AMXCommandBase implements AdminCommand {
     private volatile AdminCommandContext mAdminCommandContext;
     
     public AMXCommandBase() {
-        System.out.println( "AMXCommandBase.AMXCommandBase: " + this.getClass().getName() );
+        //debug( "AMXCommandBase.AMXCommandBase: " + this.getClass().getName() );
     }
     
     protected static void debug( final String s ) { System.out.println(s); }
@@ -71,7 +71,7 @@ abstract class AMXCommandBase implements AdminCommand {
 
         protected void
     preExecute(final AdminCommandContext context) {
-        System.out.println( "AMXCommandBase.preExecute: " + this.getClass().getName() + ", MBeanServer = " + getMBeanServer() );
+        //debug( "AMXCommandBase.preExecute: " + this.getClass().getName() + ", MBeanServer = " + getMBeanServer() );
         // presume success
         getActionReport().setActionExitCode(ExitCode.SUCCESS);
     }

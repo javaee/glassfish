@@ -45,6 +45,9 @@ import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.glassfish.api.ActionReport.ExitCode;
 
+import com.sun.appserv.management.DomainRoot;
+import com.sun.appserv.management.client.ProxyFactory;
+
 import com.sun.appserv.management.util.jmx.JMXUtil;
 import com.sun.appserv.management.util.misc.StringUtil;
 import com.sun.appserv.management.util.misc.TimingDelta;
@@ -99,19 +102,20 @@ public final class AMXCommand extends AMXCommandBase implements AdminCommand
     public final synchronized void _execute(AdminCommandContext context)
     {
         String timingMsg = "";
-        final TimingDelta allDelta = new TimingDelta();
-        final TimingDelta delta = new TimingDelta();
-        
-        final Class c = XTypesMapper.class;
-        debug( "Reference XTypesMapper: " + delta.elapsedMillis()  + " " + c.getName() );
-        XTypesMapper.getInstance();
-        debug( "Load XTypesMapper: " + delta.elapsedMillis() );
-        J2EETypesMapper.getInstance();
-        debug( "Load J2EETypesMapper: " + delta.elapsedMillis() );
-        AllTypesMapper.getInstance();
-        debug( "Load AllTypesMapper: " + delta.elapsedMillis() );
-        
+            
         if ( ! mInitialized ) {
+            final TimingDelta allDelta = new TimingDelta();
+            final TimingDelta delta = new TimingDelta();
+            
+            final Class c = XTypesMapper.class;
+            debug( "Reference XTypesMapper: " + delta.elapsedMillis()  + " " + c.getName() );
+            XTypesMapper.getInstance();
+            debug( "Load XTypesMapper: " + delta.elapsedMillis() );
+            J2EETypesMapper.getInstance();
+            debug( "Load J2EETypesMapper: " + delta.elapsedMillis() );
+            AllTypesMapper.getInstance();
+            debug( "Load AllTypesMapper: " + delta.elapsedMillis() );
+        
             StartAMX.startAMX( getMBeanServer(), mConfigRegistrar );
             mInitialized    = true;
             timingMsg = " (" + allDelta.elapsedMillis() + " ms)";
@@ -120,6 +124,9 @@ public final class AMXCommand extends AMXCommandBase implements AdminCommand
         {
             timingMsg = " (previously initialized)";
         }
+        
+        final DomainRoot domainRoot = ProxyFactory.getInstance(  getMBeanServer() ).getDomainRoot();
+        domainRoot.waitAMXReady();
         
         final ActionReport report = getActionReport();
         report.setActionExitCode(ExitCode.SUCCESS);

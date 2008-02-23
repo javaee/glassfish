@@ -69,9 +69,7 @@ public final class LoadAMX
             final boolean inDAS = true;
             Issues.getAMXIssues().notDone( "LoadAMX.loadAMX(): determine if this is the DAS" );
             
-        final TimingDelta delta = new TimingDelta();
             TypeInfos.getInstance();
-        System.out.println( "TypeInfos.getInstance(): " + delta.elapsedMillis()  );
             
             if ( inDAS )
             {
@@ -83,7 +81,6 @@ public final class LoadAMX
                 {
                     LOADER_OBJECTNAME  =
                         mbeanServer.registerMBean( loader, tempObjectName ).getObjectName();
-        System.out.println( "LoadAMX - register loader(): " + delta.elapsedMillis()  );
                 }
                 catch( JMException e )
                 {
