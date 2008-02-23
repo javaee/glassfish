@@ -54,6 +54,7 @@ import java.util.List;
 /* @XmlType(name = "", propOrder = {
     "nodeAgent"
 }) */
+@org.glassfish.admin.amx.AMXConfigInfo( amxInterface=org.glassfish.admin.amx.AMXConfigVoid.class, omitAsAncestor=true)
 @Configured
 public interface NodeAgents extends ConfigBeanProxy, Injectable  {
 

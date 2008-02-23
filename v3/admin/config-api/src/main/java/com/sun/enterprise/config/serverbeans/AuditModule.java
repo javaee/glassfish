@@ -55,6 +55,7 @@ import java.util.List;
 /* @XmlType(name = "", propOrder = {
     "property"
 }) */
+@org.glassfish.admin.amx.AMXConfigInfo( amxInterface=com.sun.appserv.management.config.AuditModuleConfig.class)
 @Configured
 public interface AuditModule extends ConfigBeanProxy, Injectable  {
 

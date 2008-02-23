@@ -56,6 +56,7 @@ import java.util.List;
 /* @XmlType(name = "", propOrder = {
     "property"
 }) */
+//@org.glassfish.admin.amx.AMXConfigInfo( amxInterface=com.sun.appserv.management.config.FilterConfig.class)
 @Configured
 public interface FilterConfig extends ConfigBeanProxy, Injectable  {
 

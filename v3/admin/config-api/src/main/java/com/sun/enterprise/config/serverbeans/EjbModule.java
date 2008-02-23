@@ -59,6 +59,7 @@ import java.util.List;
     "webServiceEndpoint",
     "property"
 }) */
+@org.glassfish.admin.amx.AMXConfigInfo( amxInterface=com.sun.appserv.management.config.EJBModuleConfig.class)
 @Configured
 public interface EjbModule extends ConfigBeanProxy, Injectable, Module {
 

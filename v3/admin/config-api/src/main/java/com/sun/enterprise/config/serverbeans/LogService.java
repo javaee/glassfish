@@ -48,15 +48,13 @@ import java.beans.PropertyVetoException;
 import java.io.Serializable;
 import java.util.List;
 
-import org.glassfish.admin.amx.AMXObjectNameInfo;
 import org.glassfish.admin.amx.AMXConfigInfo;
 
 /* @XmlType(name = "", propOrder = {
     "moduleLogLevels",
     "property"
 }) */
-@AMXObjectNameInfo(j2eeType=com.sun.appserv.management.base.XTypes.LOG_SERVICE_CONFIG, singleton=true)
-@AMXConfigInfo( amxInterface=com.sun.appserv.management.config.LogServiceConfig.class )
+@AMXConfigInfo( amxInterface=com.sun.appserv.management.config.LogServiceConfig.class, singleton=true)
 @Configured
 public interface LogService extends ConfigBeanProxy, Injectable  {
 

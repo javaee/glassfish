@@ -56,6 +56,7 @@ import java.util.List;
     "sessionConfig",
     "property"
 }) */
+@org.glassfish.admin.amx.AMXConfigInfo( amxInterface=com.sun.appserv.management.config.WebContainerConfig.class, singleton=true)
 @Configured
 public interface WebContainer extends ConfigBeanProxy, Injectable  {
 

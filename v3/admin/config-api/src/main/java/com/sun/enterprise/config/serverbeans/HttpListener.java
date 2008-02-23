@@ -48,23 +48,14 @@ import java.beans.PropertyVetoException;
 import java.io.Serializable;
 import java.util.List;
 
-import org.glassfish.admin.amx.AMXObjectNameInfo;
 import org.glassfish.admin.amx.AMXConfigInfo;
-
-//import org.jvnet.hk2.annotations.CagedBy;
-
-/**
- *
- */
-
 
 
 /* @XmlType(name = "", propOrder = {
     "ssl",
     "property"
 }) */
-@AMXObjectNameInfo(j2eeType=com.sun.appserv.management.base.XTypes.HTTP_LISTENER_CONFIG,nameHint="id")
-@AMXConfigInfo( amxInterface=com.sun.appserv.management.config.HTTPListenerConfig.class )
+@AMXConfigInfo( amxInterface=com.sun.appserv.management.config.HTTPListenerConfig.class, nameHint="id")
 @Configured
 public interface HttpListener extends ConfigBeanProxy, Injectable  {
 

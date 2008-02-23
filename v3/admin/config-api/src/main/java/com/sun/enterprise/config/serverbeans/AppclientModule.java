@@ -58,6 +58,7 @@ import java.util.List;
     "description",
     "property"
 }) */
+@org.glassfish.admin.amx.AMXConfigInfo( amxInterface=com.sun.appserv.management.config.AppClientModuleConfig.class)
 @Configured
 public interface AppclientModule extends ConfigBeanProxy, Injectable, Module {
     

@@ -53,6 +53,7 @@ import java.util.List;
 /* @XmlType(name = "", propOrder = {
     "server"
 }) */
+@org.glassfish.admin.amx.AMXConfigInfo( amxInterface=org.glassfish.admin.amx.AMXConfigVoid.class, omitAsAncestor=true)
 @Configured
 public interface Servers extends ConfigBeanProxy, Injectable  {
 

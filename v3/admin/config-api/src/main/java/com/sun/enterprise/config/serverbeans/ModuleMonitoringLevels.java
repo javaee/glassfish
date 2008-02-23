@@ -55,6 +55,7 @@ import java.util.List;
 /* @XmlType(name = "", propOrder = {
     "property"
 }) */
+@org.glassfish.admin.amx.AMXConfigInfo( amxInterface=com.sun.appserv.management.config.ModuleMonitoringLevelsConfig.class, singleton=true)
 @Configured
 public interface ModuleMonitoringLevels extends ConfigBeanProxy, Injectable  {
 

@@ -29,6 +29,7 @@ import java.util.List;
     "securityMap",
     "property"
 }) */
+@org.glassfish.admin.amx.AMXConfigInfo( amxInterface=com.sun.appserv.management.config.ConnectorConnectionPoolConfig.class)
 @Configured
 public interface ConnectorConnectionPool extends ConfigBeanProxy, Injectable, Resource {
 

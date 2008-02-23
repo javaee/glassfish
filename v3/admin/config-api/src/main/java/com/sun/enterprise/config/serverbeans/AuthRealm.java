@@ -55,6 +55,7 @@ import org.jvnet.hk2.config.Element;
 /* @XmlType(name = "", propOrder = {
     "property"
 }) */
+@org.glassfish.admin.amx.AMXConfigInfo( amxInterface=com.sun.appserv.management.config.AuthRealmConfig.class)
 @Configured
 public interface AuthRealm extends ConfigBeanProxy, Injectable  {
 

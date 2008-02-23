@@ -58,6 +58,7 @@ import java.util.List;
     "description",
     "property"
 }) */
+@org.glassfish.admin.amx.AMXConfigInfo( amxInterface=com.sun.appserv.management.config.ExtensionModuleConfig.class)
 @Configured
 public interface ExtensionModule extends ConfigBeanProxy, Injectable, Module {
 

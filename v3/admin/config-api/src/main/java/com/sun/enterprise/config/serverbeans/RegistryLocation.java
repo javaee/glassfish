@@ -52,6 +52,7 @@ import java.io.Serializable;
  */
 
 /* @XmlType(name = "") */
+@org.glassfish.admin.amx.AMXConfigInfo( amxInterface=com.sun.appserv.management.config.RegistryLocationConfig.class)
 @Configured
 public interface RegistryLocation extends ConfigBeanProxy, Injectable  {
 

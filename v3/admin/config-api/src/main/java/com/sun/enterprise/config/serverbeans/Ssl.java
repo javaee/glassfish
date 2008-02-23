@@ -52,6 +52,7 @@ import java.io.Serializable;
  */
 
 /* @XmlType(name = "") */
+@org.glassfish.admin.amx.AMXConfigInfo( amxInterface=com.sun.appserv.management.config.SSLConfig.class, singleton=true)
 @Configured
 public interface Ssl extends ConfigBeanProxy, Injectable  {
 

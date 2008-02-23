@@ -35,6 +35,10 @@
  */
 package org.glassfish.admin.amx.mbean;
 
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.Set;
+
 import javax.management.ObjectName;
 import javax.management.MBeanServer;
 import javax.management.MBeanServerConnection;
@@ -47,7 +51,8 @@ import javax.management.InstanceNotFoundException;
 import javax.management.IntrospectionException;
 import javax.management.ReflectionException;
 
-import com.sun.appserv.management.util.jmx.stringifier.MBeanInfoStringifier;
+import com.sun.appserv.management.util.misc.CollectionUtil;
+import com.sun.appserv.management.util.misc.ExceptionUtil;
 
 
 import org.jvnet.hk2.config.ConfigBean;
@@ -55,9 +60,11 @@ import org.jvnet.hk2.config.ConfigBean;
 /**
 	Delegate which delegates to another MBean.
  */
-public class DelegateToConfigBeanDelegate extends DelegateBase
+public final class DelegateToConfigBeanDelegate extends DelegateBase
 {
 	private final ConfigBean mConfigBean;
+    
+    private static void debug( final String s ) { System.out.println(s); }
 	
 		public
 	DelegateToConfigBeanDelegate(
@@ -68,11 +75,36 @@ public class DelegateToConfigBeanDelegate extends DelegateBase
 		mConfigBean	= configBean;
 	}
 	
+     
+    /**
+        Get the XML attribute name corresponding to the AMX attribute name.
+     */
+        private final String
+    getXMLName( final String amxName )
+    {
+        String xmlName = NameMapping.getXMLName( amxName );
+        if ( xmlName == null )
+        {
+            final Set<String> xmlNames = mConfigBean.getAttributeNames();
+            //debug( "Attribute names: " + CollectionUtil.toString( xmlNames ) );
+            
+            xmlName = NameMapping.matchAMXName( amxName, xmlNames );
+            debug( "Matched: " + amxName + " => " + xmlName );
+        }
+        
+        //debug( "amxAttrNameToConfigBeanName: resolved as : " + xmlName );
+        return xmlName;
+    }
+    
+            
 		public final Object
 	getAttribute( final String attrName )
 		throws AttributeNotFoundException
 	{
-        return mConfigBean.rawAttribute( attrName );
+        //debug( "DelegateToConfigBeanDelegate.getAttribute: " + attrName );
+        final String xmlName = getXMLName(attrName);
+        
+        return mConfigBean.rawAttribute( xmlName );
 	}
     
     private static final String[]   SINGLE_STRING_SIG   = new String[] { String.class.getName() };
@@ -89,7 +121,7 @@ public class DelegateToConfigBeanDelegate extends DelegateBase
 	setAttribute( final Attribute attr )
 		throws AttributeNotFoundException, InvalidAttributeValueException
 	{
-        throw new RuntimeException( "setAttribute() not implemented yet " );
+        mConfigBean.attribute( getXMLName(attr.getName()), "" + attr.getValue() );
 	}
 	
 		public MBeanInfo

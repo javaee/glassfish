@@ -16,8 +16,10 @@ import com.sun.appserv.management.util.jmx.JMXUtil;
 
 import com.sun.appserv.management.base.AMX;
 import com.sun.appserv.management.base.Util;
+import com.sun.appserv.management.base.XTypes;
 import com.sun.appserv.management.config.AMXConfig;
 import com.sun.appserv.management.util.misc.RunnableBase;
+import com.sun.appserv.management.util.misc.ClassUtil;
 
 import org.glassfish.admin.amx.mbean.Delegate;
 import org.glassfish.admin.amx.mbean.DelegateToConfigBeanDelegate;
@@ -47,7 +49,7 @@ public final class AMXConfigLoader
         that contain only children, no Attributes of their own, and thus are not represented
         as MBeans.
      */
-        private ConfigBean
+        private static ConfigBean
     getActualParent( final ConfigBean configBean )
     {
         ConfigBean parent = (ConfigBean)configBean.parent();
@@ -77,7 +79,7 @@ public final class AMXConfigLoader
         return parent;
     }
     
-        private ObjectName
+        private static ObjectName
     getActualParentObjectName( final ConfigBean configBean )
     {
         ObjectName  parentObjectName = null;
@@ -98,13 +100,13 @@ public final class AMXConfigLoader
     handleConfigBean( final ConfigBean cb )
     {
         Class<? extends ConfigBeanProxy> parentClass = null;
-        final Class<? extends ConfigBeanProxy> configuredClass = cb.getProxyType();
+        final Class<? extends ConfigBeanProxy> cbClass = cb.getProxyType();
         final ConfigBean parent = asConfigBean( cb.parent() );
         if ( parent != null )
         {
             parentClass = parent.getProxyType();
         }
-        //debug( "RECEIVED: " + configuredClass.getName()  +
+        //debug( "RECEIVED: " + cbClass.getName()  +
         //    ", PARENT = " + ((parentClass == null) ? "null" : parentClass.getName()) +
         //    ", parent Object Name = " + parent.getObjectName() );
         
@@ -133,6 +135,17 @@ public final class AMXConfigLoader
             
             mLoaderThread   = new AMXConfigLoaderThread( mPendingConfigBeans );
             mLoaderThread.submit( RunnableBase.HowToRun.RUN_IN_SEPARATE_THREAD );
+        }
+        
+        try
+        {
+            // should throw an Exception
+            new AMXImplBase( null, null, null, AMXConfig.class, null );
+            throw new Error( "AMXConfigLoader: AMXImplBase did not throw an exception for a null j2eeType!!!" );
+        }
+        catch( Exception e )
+        {
+            // good!
         }
     }
     
@@ -204,19 +217,6 @@ public final class AMXConfigLoader
         return amxConfigInfo;
     }
     
-         private AMXObjectNameInfo
-    getAMXObjectNameInfo( final ConfigBean cb )
-    {
-        final Class<? extends ConfigBeanProxy> cbClass = cb.getProxyType();
-        
-        final AMXObjectNameInfo objectNameInfo = cbClass.getAnnotation( AMXObjectNameInfo.class );
-        if ( objectNameInfo == null )
-        {
-            throw new IllegalArgumentException( "ConfigBean has no @AMXObjectNameInfo: " + cbClass.getName() );
-        }        
-        return objectNameInfo;
-    }
-    
          private AMXMBeanMetadata
     getAMXMBeanMetadata( final ConfigBean cb )
     {
@@ -234,25 +234,23 @@ public final class AMXConfigLoader
     }
     
     /**
-        Parent has been registered.
+        Parent must have been registered already.
      */
         private ObjectName
     _registerConfigBeanAsMBean(
         final ConfigBean cb,
         final ConfigBean parentCB )
     {
-        ObjectName objectName = cb.getObjectName();
+        final Class<? extends ConfigBeanProxy> cbClass = cb.getProxyType();
         
+        ObjectName objectName = cb.getObjectName();
         if ( objectName != null )
         {
-            throw new IllegalArgumentException( "ConfigBean " + cb + " already registered as " + objectName );
+            throw new IllegalArgumentException( "ConfigBean " + cbClass.getName() + " already registered as " + objectName );
         }
-        
-        final Class<? extends ConfigBeanProxy> configuredClass = cb.getProxyType();
-        
         if ( parentCB != null && parentCB.getObjectName() == null )
         {
-            throw new IllegalArgumentException( "ConfigBean parent " + configuredClass.getName() + " must be registered first " );
+            throw new IllegalArgumentException( "ConfigBean parent " + cbClass.getName() + " must be registered first " );
         }
         
         final AMXConfigInfo amxConfigInfo = getAMXConfigInfo( cb );
@@ -264,22 +262,47 @@ public final class AMXConfigLoader
             final Class<? extends AMXConfig> amxInterface = amxConfigInfo.amxInterface();
             
             final AMXMBeanMetadata metadata        = getAMXMBeanMetadata(cb);
-            final AMXObjectNameInfo objectNameInfo = getAMXObjectNameInfo(cb);
             
             // debug( "Preparing ConfigBean for registration with ObjectNameInfo = " + objectNameInfo.toString() + ", AMXMBeanMetaData = " + metadata );
 
-            objectName = buildObjectName( cb, objectNameInfo );
+            objectName = buildObjectName( cb, amxConfigInfo );
         
             objectName  = createAndRegister( cb, amxInterface, objectName );
             debug( "REGISTERED MBEAN: " + JMXUtil.toString(objectName) + " ===> USING " +
                 " AMXConfigInfo = " + amxConfigInfo.toString() +
-                ", ObjectNameInfo = " + objectNameInfo.toString() +
                 ", AMXMBeanMetaData = " + metadata + "\n");
         }
         
         return objectName;
     }
     
+    /**
+		@return the fully qualified type as required by AMX.FULL_TYPE
+	 */
+		protected static String
+	getFullType( final ConfigBean configBean )
+	{
+        String fullType = "";
+        if ( configBean != null )
+        {
+            final String j2eeType = configBean.getObjectName().getKeyProperty(AMX.J2EE_TYPE_KEY);
+            
+            final ConfigBean parent = getActualParent( configBean );
+            if ( parent == null )
+            {
+                fullType = j2eeType;
+            }
+            else
+            {
+                fullType = getFullType(parent) + "." + j2eeType;
+            }
+            //debug( "Full type for " + configBean.getObjectName() + " = " + fullType );
+        }
+        
+		return( fullType );
+	}
+
+
     
     private ObjectName createAndRegister(
         final ConfigBean cb,
@@ -288,8 +311,13 @@ public final class AMXConfigLoader
     {
         ObjectName  objectName = objectNameIn;
         
+        final String j2eeType = objectNameIn.getKeyProperty(AMX.J2EE_TYPE_KEY);
+        final String fullType = getFullType( getActualParent(cb) ) + "." + j2eeType;
+        //debug( "Full type for " + objectNameIn + " = " + fullType );
+        
         final Delegate delegate = new DelegateToConfigBeanDelegate( cb );
-        final AMXImplBase impl = new AMXImplBase( amxInterface, delegate );
+        final ObjectName parentObjectName = getActualParentObjectName( cb );
+        final AMXImplBase impl = new AMXImplBase( j2eeType, fullType, parentObjectName, amxInterface, delegate );
         
         try
         {
@@ -305,14 +333,77 @@ public final class AMXConfigLoader
         return objectName;
     }
 
+        private String
+    getJ2EEType(
+        final ConfigBean cb,
+        final AMXConfigInfo info)
+    {
+        final Class<? extends AMXConfig> amxInterface = info.amxInterface();
+        
+        String j2eeType = null;
+        // if an AMX interface was specified, use its J2EE_TYPE field
+        if ( amxInterface != AMXConfig.class )
+        {
+            try {
+            j2eeType	= (String)ClassUtil.getFieldValue( amxInterface, "J2EE_TYPE" );
+            }
+            catch( Exception e )
+            {
+                // this is NOT OK: should be specified if something other than generic
+                debug( "No J2EE_TYPE field found in " + amxInterface.getName() );
+                throw new IllegalArgumentException(e);
+            }
+        }
+        
+        if ( j2eeType == null )
+        {
+            // Use the value from the annotation
+            j2eeType = info.j2eeType();
+            
+            // if the value is empty, derive one from the fully-qualified interface name
+            if ( j2eeType.length() == 0 )
+            {
+                // don't allow "." in the type; it will confuse the "full type" attribute
+                final String configInterfaceName = cb.getProxyType().getName().replace(".", "_");
+                j2eeType = XTypes.PREFIX + "CFG-" + configInterfaceName;
+            }
+        }
+        assert j2eeType != null && j2eeType.startsWith( XTypes.PREFIX );
+        
+        if ( j2eeType == null )
+        {
+            throw new RuntimeException( "AMXConfigLoader.getJ2EEType: j2eeType is null" );
+        }
+        
+        if ( ! j2eeType.startsWith( XTypes.PREFIX ) )
+        {
+            throw new RuntimeException( "AMXConfigLoader.getJ2EEType: j2eeType is null" );
+        }
+        
+        return j2eeType;
+    }
+    
+        private String
+    getName(
+        final ConfigBean cb,
+        final AMXConfigInfo info)
+    {
+        String name = info.singleton() ? AMX.NO_NAME : cb.rawAttribute( info.nameHint() );
+        
+        if ( name == null )
+        {
+            name = "BUG_NO_NAME_AVAILABLE";
+        }
+        return name;
+    }
     
         private ObjectName
     buildObjectName(
         final ConfigBean cb,
-        final AMXObjectNameInfo info )
+        final AMXConfigInfo info )
     {
-        final String j2eeType = info.j2eeType();
-        final String name     = info.singleton() ? AMX.NO_NAME : cb.rawAttribute( info.nameHint() );
+        final String j2eeType = getJ2EEType( cb, info );
+        final String name     = getName( cb, info );
         
         String parentProps = "";
         String domain = AMX.JMX_DOMAIN;
@@ -325,11 +416,9 @@ public final class AMXConfigLoader
             {
                 domain = parentObjectName.getDomain();
                 
-                final boolean omitAsAncestor = getAMXObjectNameInfo( parent ).omitAsAncestor();
-                
                 // a child's ObjectName is parentJ2EEType=parentName,<all other parent properties>
                 final String ancestorProps = Util.getAdditionalProps( parentObjectName );
-                final String parentProp     = omitAsAncestor ? "" : Util.getSelfProp( parentObjectName );
+                final String parentProp     = info.omitAsAncestor() ? "" : Util.getSelfProp( parentObjectName );
                 
                 parentProps = Util.concatenateProps( parentProp, ancestorProps );
             }

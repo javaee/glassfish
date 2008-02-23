@@ -57,6 +57,7 @@ import java.util.List;
     "description",
     "property"
 }) */
+@org.glassfish.admin.amx.AMXConfigInfo( amxInterface=com.sun.appserv.management.config.EventConfig.class)
 @Configured
 public interface Event extends ConfigBeanProxy, Injectable  {
     

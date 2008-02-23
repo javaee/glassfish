@@ -49,7 +49,6 @@ import java.io.Serializable;
 import java.util.List;
 
 
-import org.glassfish.admin.amx.AMXObjectNameInfo;
 import org.glassfish.admin.amx.AMXConfigInfo;
 
 
@@ -60,8 +59,7 @@ import org.glassfish.admin.amx.AMXConfigInfo;
     "messageSecurityConfig",
     "property"
 }) */
-@AMXObjectNameInfo(j2eeType=com.sun.appserv.management.base.XTypes.SECURITY_SERVICE_CONFIG, singleton=true)
-@AMXConfigInfo( amxInterface=com.sun.appserv.management.config.SecurityServiceConfig.class )
+@AMXConfigInfo( amxInterface=com.sun.appserv.management.config.SecurityServiceConfig.class, singleton=true)
 @Configured
 public interface SecurityService extends ConfigBeanProxy, Injectable  {
 

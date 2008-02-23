@@ -55,6 +55,7 @@ import java.util.List;
     "alertSubscription",
     "property"
 }) */
+//@org.glassfish.admin.amx.AMXConfigInfo( amxInterface=com.sun.appserv.management.config.AlertServiceConfig.class, singleton=true)
 @Configured
 public interface AlertService extends ConfigBeanProxy, Injectable  {
 

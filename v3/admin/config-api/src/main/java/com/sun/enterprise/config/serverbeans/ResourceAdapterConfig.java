@@ -56,6 +56,7 @@ import java.util.List;
 /* @XmlType(name = "", propOrder = {
     "property"
 }) */
+@org.glassfish.admin.amx.AMXConfigInfo( amxInterface=com.sun.appserv.management.config.ResourceAdapterConfig.class)
 @Configured
 public interface ResourceAdapterConfig extends ConfigBeanProxy, Injectable, Resource {
 

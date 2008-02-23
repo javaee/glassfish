@@ -55,6 +55,7 @@ import java.util.List;
 /* @XmlType(name = "", propOrder = {
     "property"
 }) */
+@org.glassfish.admin.amx.AMXConfigInfo( amxInterface=com.sun.appserv.management.config.StorePropertiesConfig.class, singleton=true)
 @Configured
 public interface StoreProperties extends ConfigBeanProxy, Injectable  {
 

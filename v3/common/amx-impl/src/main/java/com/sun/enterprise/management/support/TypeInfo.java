@@ -225,7 +225,7 @@ public final class TypeInfo
         implClass   = INTERFACE_TO_IMPL.get( mbeanInterface );
         if ( implClass == null )
         {
-            System.out.println( "NON-OPTIMIZED IMPL: " + mbeanInterface.getName() );
+            //System.out.println( "NON-OPTIMIZED IMPL: " + mbeanInterface.getName() );
         }
         
         if ( implClass == null )

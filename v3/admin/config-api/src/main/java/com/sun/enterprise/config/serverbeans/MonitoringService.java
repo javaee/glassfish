@@ -48,15 +48,13 @@ import java.io.Serializable;
 import java.util.List;
 
 
-import org.glassfish.admin.amx.AMXObjectNameInfo;
 import org.glassfish.admin.amx.AMXConfigInfo;
 
 /* @XmlType(name = "", propOrder = {
     "moduleMonitoringLevels",
     "property"
 }) */
-@AMXObjectNameInfo(j2eeType=com.sun.appserv.management.base.XTypes.MONITORING_SERVICE_CONFIG, singleton=true)
-@AMXConfigInfo( amxInterface=com.sun.appserv.management.config.MonitoringServiceConfig.class )
+@AMXConfigInfo( amxInterface=com.sun.appserv.management.config.MonitoringServiceConfig.class, singleton=true)
 @Configured
 public interface MonitoringService extends ConfigBeanProxy, Injectable  {
 

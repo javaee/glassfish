@@ -154,10 +154,9 @@ public class AMXImplBase extends MBeanImplBase
 	private final MBeanInfo		mMBeanInterfaceMBeanInfo;
 	
 	/**
-		The parent MBean for this MBean.
-        No need to make volatile; a recompute is OK if one thread doesn't yet see it.
+		The Container or "parent" MBean for this MBean.
 	*/
-	private ObjectName		mCachedContainerObjectName;
+	private final ObjectName		mContainerObjectName;
 	
 	/**
 		Flag to enable or disable whether AttributeChangeNotifications are
@@ -181,7 +180,7 @@ public class AMXImplBase extends MBeanImplBase
 	
 	private Map<String,MBeanAttributeInfo>			mAttributeInfos;
 	
-	private String			mFullType;
+	private final String    mFullType;
 	private final String	mJ2EEType;
 	
     /**
@@ -206,7 +205,7 @@ public class AMXImplBase extends MBeanImplBase
         return info;
     }
 
-    
+ 
 	/**
 		Construct a new implementation that implements the supplied mbeanInterface.
 		
@@ -216,21 +215,38 @@ public class AMXImplBase extends MBeanImplBase
 	*/
 		public
 	AMXImplBase(
+        final String        j2eeType,
+        final String        fullType,
+        final ObjectName    parentObjectName,
 		final Class<? extends AMX> theInterface,
 		final Delegate		delegate )
 	{
 		super();
+
+        //System.out.println( "AMXImplBase: j2eeType = " + j2eeType + ", fullType = " + fullType );
+        if ( j2eeType == null )
+        {
+            throw new IllegalArgumentException( "AMXImplBase: j2eeType is null for " + theInterface.getName() );
+        }
+        if ( fullType == null || ! fullType.endsWith(j2eeType) )
+        {
+            throw new IllegalArgumentException( "AMXImplBase: fullType is null or ends wrong: " + fullType  + " for " + theInterface.getName() );
+        }
+        //System.out.println( "AMXImplBase: j2eeType = " + j2eeType + ", fullType = " + fullType );
         
+        mJ2EEType   = j2eeType; // can override the interface, and/or interface might not specify
+        mFullType = fullType;
 		mInterface	= theInterface;
+		mContainerObjectName	= parentObjectName;
         
 		if ( delegate != null )
 		{
 			delegate.setOwner( this );
 		}
 		
-		mJ2EEType	= (String)ClassUtil.getFieldValue( theInterface, "J2EE_TYPE" );
+        //debug( "J2EE_TYPE: " + j2eeType + " <==> " + ClassUtil.getFieldValue( theInterface, "J2EE_TYPE" ) );
+		//mJ2EEType	= (String)ClassUtil.getFieldValue( theInterface, "J2EE_TYPE" );
 		
-		mCachedContainerObjectName	= null;
 		mEmitAttributeChangeNotifications	= true;
 		mQueryMgr			= null;
 		mSelfProxy				= null;
@@ -250,7 +266,6 @@ public class AMXImplBase extends MBeanImplBase
 		//mAttributeNameMapper	= null;
 		
 		mAttributeInfos	= null;
-		mFullType		= null;
 		
 		mMBeanInterfaceMBeanInfo	= getInterfaceMBeanInfo( mInterface );
 	}
@@ -487,22 +502,7 @@ public class AMXImplBase extends MBeanImplBase
 		protected synchronized ObjectName
 	getContainerObjectName( final ObjectName selfObjectName )
 	{
-		if ( mCachedContainerObjectName == null &&
-			! getSelfJ2EEType().equals( XTypes.DOMAIN_ROOT ) )
-		{
-			try
-			{
-				mCachedContainerObjectName	=
-					getObjectNames().getContainerObjectName( getMBeanServer(), selfObjectName );
-			}
-			catch( InstanceNotFoundException e )
-			{
-			    debug( ExceptionUtil.getStackTrace( e ) );
-				throw new RuntimeException( e );
-			}
-		}
-
-		return( mCachedContainerObjectName );
+        return mContainerObjectName;
 	}
 
 	/**
@@ -842,6 +842,13 @@ public class AMXImplBase extends MBeanImplBase
 		return( result );
 	}
 	
+    
+    private boolean isSpecialAMXAttr( final String attrName )
+    {
+        return isObjectNameMapAttribute( attrName ) || isObjectNameAttribute( attrName );
+    }
+
+
 		protected Object
 	getAttributeInternal( String name )
 		throws AttributeNotFoundException,
@@ -850,41 +857,48 @@ public class AMXImplBase extends MBeanImplBase
 		Object	result	= null;
 		boolean	handleManually	= false;
 		
-		// see if a getter exists
-		final Method m	= findGetter( name );
-		if ( m != null )
-		{
-			result	= getAttributeByMethod( name, m );
-			debug( "getAttribute: " + name + " CALLED GETTER: " + m + " = " + result);
-			handleManually	= false;
-		}
-		else if ( haveDelegate() )
-		{
-			trace( "getAttribute: " + name + " HAVE DELEGATE " );
-				
-			if ( getDelegate().supportsAttribute( name ) )
-			{
-				trace( "getAttribute: " + name + " CALLING DELEGATE " );
-				try
-				{
-					result	= delegateGetAttribute( name );
-				}
-				catch( Exception e )
-				{
-					trace( "getAttribute: DELEGATE claims support, but fails: " + name  );
-					handleManually	= true;
-				}
-			}
-			else
-			{
-				trace( "getAttribute: " + name + " DELEGATE DOES NOT SUPPORT " );
-				handleManually	= true;
-			}
-		}
-		else
-		{
-			handleManually	= true;
-		}
+        if ( isSpecialAMXAttr( name ) )
+        {
+            handleManually = true;
+        }
+        else
+        {
+            // see if a getter exists
+            final Method m	= findGetter( name );
+            if ( m != null )
+            {
+                result	= getAttributeByMethod( name, m );
+                debug( "getAttribute: " + name + " CALLED GETTER: " + m + " = " + result);
+                handleManually	= false;
+            }
+            else if ( haveDelegate() )
+            {
+                trace( "getAttribute: " + name + " HAVE DELEGATE " );
+                    
+                if ( getDelegate().supportsAttribute( name ) )
+                {
+                    trace( "getAttribute: " + name + " CALLING DELEGATE " );
+                    try
+                    {
+                        result	= delegateGetAttribute( name );
+                    }
+                    catch( Exception e )
+                    {
+                        trace( "getAttribute: DELEGATE claims support, but fails: " + name  );
+                        handleManually	= true;
+                    }
+                }
+                else
+                {
+                    trace( "getAttribute: " + name + " DELEGATE DOES NOT SUPPORT " );
+                    handleManually	= true;
+                }
+            }
+            else
+            {
+                handleManually	= true;
+            }
+        }
 		
 		if ( handleManually )
 		{
@@ -1603,10 +1617,11 @@ public class AMXImplBase extends MBeanImplBase
 		protected TypeInfo
 	getTypeInfo( final String j2eeType )
 	{
+//System.out.println( "getTypeInfo: " + j2eeType + " for " + this.getClass().getName() );
 		return( TypeInfos.getInstance().getInfo( j2eeType ) );
 	}
 	
-		protected String
+		protected final String
 	getSelfJ2EEType()
 	{
 		return( mJ2EEType );
@@ -1621,6 +1636,7 @@ public class AMXImplBase extends MBeanImplBase
 		protected TypeInfo
 	getSelfTypeInfo()
 	{
+//System.out.println( "getSelfJ2EEType: " + getSelfJ2EEType() );
 		return( getTypeInfo( getSelfJ2EEType() ) );
 	}
 	
@@ -1920,29 +1936,9 @@ public class AMXImplBase extends MBeanImplBase
 		return( Util.getJ2EEType( getObjectName() ) );
 	}
 	
-	/**
-		@param partialSelfObjectName the ObjectName, lacking the type property
-		@return the fully qualified type as required by AMX.FULL_TYPE
-	 */
-		protected static String
-	getFullType( final ObjectName partialSelfObjectName )
-	{
-		final String	selfJ2EEType	= Util.getJ2EEType( partialSelfObjectName );
-		
-		final TypeInfos	typeInfos	= TypeInfos.getInstance();
-		final TypeInfo	info	= typeInfos.getInfo( selfJ2EEType );
-		
-		final String[]	chain	= typeInfos.getJ2EETypeChain( partialSelfObjectName );
-		
-		final String	fullType	= ArrayStringifier.stringify( chain, "." );
-		
-		return( fullType );
-	}
-	
 		public final String
 	getFullType( )
 	{
-		assert( mFullType != null ) : "******************************************************";
 		return( mFullType );
 	}
 	
@@ -1959,8 +1955,7 @@ public class AMXImplBase extends MBeanImplBase
 		final MBeanServer	server,
 		final ObjectName	nameIn )
 	{
-		mFullType		= getFullType( nameIn );
-		
+        /*
 		// now ensure that certain singleton ancestors have a name
 		String	ancestorProps	= "";
 		final String[]	fullTypeArray	= Util.getTypeArray( mFullType );
@@ -1985,6 +1980,8 @@ public class AMXImplBase extends MBeanImplBase
 		final ObjectName	nameOut	= Util.newObjectName( newName );
 
 		return( nameOut );
+        */
+        return nameIn;
 	}
 	
     /*

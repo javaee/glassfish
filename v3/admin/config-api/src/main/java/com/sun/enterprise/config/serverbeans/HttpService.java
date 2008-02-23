@@ -48,7 +48,6 @@ import java.io.Serializable;
 import java.util.List;
 
 
-import org.glassfish.admin.amx.AMXObjectNameInfo;
 import org.glassfish.admin.amx.AMXConfigInfo;
 
 /**
@@ -66,9 +65,8 @@ import org.glassfish.admin.amx.AMXConfigInfo;
     "httpFileCache",
     "property"
 }) */
+@AMXConfigInfo( amxInterface=com.sun.appserv.management.config.HTTPServiceConfig.class, singleton=true)
 @Configured
-@AMXObjectNameInfo(j2eeType=com.sun.appserv.management.base.XTypes.HTTP_SERVICE_CONFIG, singleton=true)
-@AMXConfigInfo( amxInterface=com.sun.appserv.management.config.HTTPServiceConfig.class )
 public interface HttpService extends ConfigBeanProxy, Injectable  {
 
     /**

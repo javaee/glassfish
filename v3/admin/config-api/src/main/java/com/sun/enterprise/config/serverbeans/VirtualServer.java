@@ -49,15 +49,13 @@ import java.io.Serializable;
 import java.util.List;
 
 
-import org.glassfish.admin.amx.AMXObjectNameInfo;
 import org.glassfish.admin.amx.AMXConfigInfo;
 
 /* @XmlType(name = "", propOrder = {
     "httpAccessLog",
     "property"
 }) */
-@AMXObjectNameInfo(j2eeType=com.sun.appserv.management.base.XTypes.VIRTUAL_SERVER_CONFIG,nameHint="id")
-@AMXConfigInfo( amxInterface=com.sun.appserv.management.config.VirtualServerConfig.class )
+@AMXConfigInfo( amxInterface=com.sun.appserv.management.config.VirtualServerConfig.class, nameHint="id" )
 @Configured
 public interface VirtualServer extends ConfigBeanProxy, Injectable  {
 

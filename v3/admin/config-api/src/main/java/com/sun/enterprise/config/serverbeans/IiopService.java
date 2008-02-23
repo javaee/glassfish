@@ -48,7 +48,6 @@ import java.beans.PropertyVetoException;
 import java.io.Serializable;
 import java.util.List;
 
-import org.glassfish.admin.amx.AMXObjectNameInfo;
 import org.glassfish.admin.amx.AMXConfigInfo;
 
 /* @XmlType(name = "", propOrder = {
@@ -56,8 +55,7 @@ import org.glassfish.admin.amx.AMXConfigInfo;
     "sslClientConfig",
     "iiopListener"
 }) */
-@AMXObjectNameInfo(j2eeType=com.sun.appserv.management.base.XTypes.IIOP_SERVICE_CONFIG, singleton=true)
-@AMXConfigInfo( amxInterface=com.sun.appserv.management.config.IIOPServiceConfig.class )
+@AMXConfigInfo( amxInterface=com.sun.appserv.management.config.IIOPServiceConfig.class, singleton=true)
 @Configured
 public interface IiopService extends ConfigBeanProxy, Injectable  {
 

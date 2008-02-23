@@ -60,6 +60,7 @@ import java.util.List;
     "systemProperty",
     "property"
 }) */
+@org.glassfish.admin.amx.AMXConfigInfo( amxInterface=com.sun.appserv.management.config.ClusterConfig.class)
 @Configured
 public interface Cluster extends ConfigBeanProxy, Injectable  {
 

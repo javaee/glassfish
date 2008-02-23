@@ -57,6 +57,7 @@ import java.io.Serializable;
     "action",
     "description"
 }) */
+@org.glassfish.admin.amx.AMXConfigInfo( amxInterface=com.sun.appserv.management.config.ManagementRuleConfig.class)
 @Configured
 public interface ManagementRule extends ConfigBeanProxy, Injectable  {
 

@@ -54,6 +54,7 @@ import java.util.List;
 /* @XmlType(name = "", propOrder = {
     "threadPool"
 }) */
+@org.glassfish.admin.amx.AMXConfigInfo( amxInterface=org.glassfish.admin.amx.AMXConfigVoid.class)
 @Configured
 public interface ThreadPools extends ConfigBeanProxy, Injectable  {
 

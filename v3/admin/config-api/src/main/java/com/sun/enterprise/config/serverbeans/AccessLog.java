@@ -47,14 +47,12 @@ import java.beans.PropertyVetoException;
 import java.io.Serializable;
 
 
-import org.glassfish.admin.amx.AMXObjectNameInfo;
 import org.glassfish.admin.amx.AMXConfigInfo;
 
 
 
 /* @XmlType(name = "") */
-@AMXObjectNameInfo(j2eeType=com.sun.appserv.management.base.XTypes.ACCESS_LOG_CONFIG,singleton=true)
-@AMXConfigInfo( amxInterface=com.sun.appserv.management.config.AccessLogConfig.class )
+@AMXConfigInfo( amxInterface=com.sun.appserv.management.config.AccessLogConfig.class, singleton=true)
 @Configured
 public interface AccessLog extends ConfigBeanProxy, Injectable {
 
