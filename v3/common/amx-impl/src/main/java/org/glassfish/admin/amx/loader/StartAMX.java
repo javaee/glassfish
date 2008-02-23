@@ -93,6 +93,12 @@ public final class StartAMX
         mConfigRegistrar= registrar;
     }
     
+        public static boolean
+    isStarted()
+    {
+        return getInstance() != null;
+    }
+    
         private synchronized void
     start()
     {
