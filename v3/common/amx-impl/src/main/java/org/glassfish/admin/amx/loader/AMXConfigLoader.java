@@ -1,4 +1,5 @@
-package org.glassfish.admin.amx;
+
+package org.glassfish.admin.amx.loader;
 
 import java.util.Collections;
 import java.util.concurrent.LinkedBlockingQueue;

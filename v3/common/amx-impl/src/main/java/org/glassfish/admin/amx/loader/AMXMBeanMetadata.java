@@ -33,7 +33,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.admin.amx;
+package org.glassfish.admin.amx.loader;
 
 import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
