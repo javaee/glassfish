@@ -102,6 +102,7 @@ public final class StartAMX
         private synchronized void
     start()
     {
+        /*
         String timingMsg = "";
         final TimingDelta allDelta = new TimingDelta();
         final TimingDelta delta = new TimingDelta();
@@ -114,6 +115,7 @@ public final class StartAMX
         debug( "Load J2EETypesMapper: " + delta.elapsedMillis() );
         AllTypesMapper.getInstance();
         debug( "Load AllTypesMapper: " + delta.elapsedMillis() );
+        */
         
         
         // loads the high-level AMX MBeans, like DomainRoot, QueryMgr, etc

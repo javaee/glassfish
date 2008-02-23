@@ -281,23 +281,24 @@ public final class AMXConfigLoader
 		@return the fully qualified type as required by AMX.FULL_TYPE
 	 */
 		protected static String
-	getFullType( final ConfigBean configBean )
+	getFullType( final ConfigBean cb, final ObjectName proposedObjectName )
 	{
         String fullType = "";
-        if ( configBean != null )
+        if ( cb != null )
         {
-            final String j2eeType = configBean.getObjectName().getKeyProperty(AMX.J2EE_TYPE_KEY);
+            ObjectName objectName = (proposedObjectName != null) ? proposedObjectName : cb.getObjectName();
+            final String j2eeType = objectName.getKeyProperty(AMX.J2EE_TYPE_KEY);
             
-            final ConfigBean parent = getActualParent( configBean );
+            final ConfigBean parent = getActualParent( cb );
             if ( parent == null )
             {
                 fullType = j2eeType;
             }
             else
             {
-                fullType = getFullType(parent) + "." + j2eeType;
+                fullType = getFullType(parent, null) + "." + j2eeType;
             }
-            //debug( "Full type for " + configBean.getObjectName() + " = " + fullType );
+            //debug( "Full type for " + cb.getObjectName() + " = " + fullType );
         }
         
 		return( fullType );
@@ -313,7 +314,8 @@ public final class AMXConfigLoader
         ObjectName  objectName = objectNameIn;
         
         final String j2eeType = objectNameIn.getKeyProperty(AMX.J2EE_TYPE_KEY);
-        final String fullType = getFullType( getActualParent(cb) ) + "." + j2eeType;
+        final String fullType = getFullType(cb, objectName );
+
         //debug( "Full type for " + objectNameIn + " = " + fullType );
         
         final Delegate delegate = new DelegateToConfigBeanDelegate( cb );

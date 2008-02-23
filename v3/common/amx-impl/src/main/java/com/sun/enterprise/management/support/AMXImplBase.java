@@ -118,6 +118,8 @@ import com.sun.appserv.management.j2ee.J2EETypes;
 
 import com.sun.logging.LogDomains;
 
+import org.glassfish.admin.amx.mbean.MBeanInfoCache;
+
 /**
 	Base class from which all AMX MBeans should derive (but not "must").
 	<p>
@@ -151,7 +153,7 @@ public class AMXImplBase extends MBeanImplBase
 	/**
 		The interface this MBean implements
 	*/
-	private final Class			mInterface;
+	private final Class	<? extends AMX>		mInterface;
 	
 	/**
 		The MBeanInfo 
@@ -290,10 +292,11 @@ public class AMXImplBase extends MBeanImplBase
         return wasEnabled;
     }
     
+    
        private synchronized MBeanInfo
-    getInterfaceMBeanInfo(
-        final Class theInterface )
+    getInterfaceMBeanInfo(final Class<? extends AMX> theInterface )
     {
+        /*
 		MBeanInfo info	= TypeInfos.getInstance().getMBeanInfoForInterface( theInterface );
         if ( false || getAMXDebug() )
         {
@@ -303,6 +306,8 @@ public class AMXImplBase extends MBeanImplBase
                 
             info   = addDebugMBeanInfo( info );
         }
+        */
+        final MBeanInfo info = MBeanInfoCache.getMBeanInfo( theInterface );
         
         return info;
     }
