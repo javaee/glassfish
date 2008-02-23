@@ -1,6 +1,6 @@
 
 
-package org.glassfish.admin.amx.annotations;
+package org.glassfish.admin.amx.annotation;
 
 
 import java.util.Collections;
@@ -27,7 +27,6 @@ import com.sun.appserv.management.config.AMXConfig;
 @Service //(name="AMXConfigRegistrar")
 public final class AMXConfigRegistrar implements CageBuilder
 {
-    @Extract(name="AMXConfigRegistrar-AMXPendingConfigBeans")
     private final LinkedBlockingQueue<ConfigBean> mPendingConfigBeans = new LinkedBlockingQueue<ConfigBean>();
         
         public
@@ -38,6 +37,12 @@ public final class AMXConfigRegistrar implements CageBuilder
     
     private static void debug( final String s ) { System.out.println(s); }
     
+        public ConfigBean
+    take()
+        throws InterruptedException
+    {
+        return mPendingConfigBeans.take();
+    }
     
     /**
         @return a ConfigBean, or null if it's not a ConfigBean
