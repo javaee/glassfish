@@ -267,7 +267,7 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
             moduleProps.setProperty(ServerTags.NAME, name);
             moduleProps.setProperty(ServerTags.LOCATION, deploymentContext.getSource().getURI().toString());
             if (contextRoot!=null) {
-                moduleProps.setProperty(CONTEXT_ROOT, contextRoot);
+                moduleProps.setProperty(ServerTags.CONTEXT_ROOT, contextRoot);
             }
 
             moduleProps.setProperty(ServerTags.ENABLED, enabled);
