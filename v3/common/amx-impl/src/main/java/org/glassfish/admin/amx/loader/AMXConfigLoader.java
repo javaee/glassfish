@@ -304,8 +304,6 @@ public final class AMXConfigLoader
 		return( fullType );
 	}
 
-
-    
     private ObjectName createAndRegister(
         final ConfigBean cb,
         Class<? extends AMXConfig>  amxInterface,
