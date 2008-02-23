@@ -110,6 +110,22 @@ public final class JMXUtil
 	{
 		return( newObjectName( "JMImplementation:type=MBeanServerDelegate" ) );
 	}
+    
+        public static String
+    getMBeanServerDelegateInfo( final MBeanServer server )
+    {
+        final MBeanServerDelegateMBean delegate = getMBeanServerDelegateMBean(server);
+        final String mbeanServerInfo = "MBeanServerDelegate: {" +
+            "MBeanServerId = " + delegate.getMBeanServerId() +
+            ", ImplementationMame = " + delegate.getImplementationName() +
+            ", ImplementationVendor = " + delegate.getImplementationVendor() +
+            ", ImplementationVersion = " + delegate.getImplementationVersion() +
+            ", SpecificationName = " + delegate.getSpecificationName() +
+            ", SpecificationVendor = " + delegate.getSpecificationVendor() +
+            ", SpecificationVersion = " + delegate.getSpecificationVersion() +
+            " }";
+        return mbeanServerInfo;
+    }
 	
 		public static void
 	listenToMBeanServerDelegate(
@@ -1856,7 +1872,8 @@ public final class JMXUtil
 	    }
 
 	    return result;
-	}
+	}    
+
 }
 
 
