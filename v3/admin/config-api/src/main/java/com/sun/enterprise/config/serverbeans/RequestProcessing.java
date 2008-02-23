@@ -52,7 +52,7 @@ import java.io.Serializable;
  */
 
 /* @XmlType(name = "") */
-@org.glassfish.admin.amx.AMXConfigInfo( amxInterface=com.sun.appserv.management.config.RequestProcessingConfig.class, singleton=true)
+@org.glassfish.admin.amx.loader.AMXConfigInfo( amxInterface=com.sun.appserv.management.config.RequestProcessingConfig.class, singleton=true)
 @Configured
 public interface RequestProcessing extends ConfigBeanProxy, Injectable  {
 

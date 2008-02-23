@@ -56,7 +56,7 @@ import java.io.Serializable;
     "listenerConfig",
     "filterConfig"
 }) */
-//@org.glassfish.admin.amx.AMXConfigInfo( amxInterface=com.sun.appserv.management.config.AlertSubscriptionConfig.class)
+//@org.glassfish.admin.amx.loader.AMXConfigInfo( amxInterface=com.sun.appserv.management.config.AlertSubscriptionConfig.class)
 @Configured
 public interface AlertSubscription extends ConfigBeanProxy, Injectable  {
 

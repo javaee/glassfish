@@ -56,7 +56,7 @@ import java.util.List;
 /* @XmlType(name = "", propOrder = {
     "property"
 }) */
-@org.glassfish.admin.amx.AMXConfigInfo( amxInterface=com.sun.appserv.management.config.JACCProviderConfig.class)
+@org.glassfish.admin.amx.loader.AMXConfigInfo( amxInterface=com.sun.appserv.management.config.JACCProviderConfig.class)
 @Configured
 public interface JaccProvider extends ConfigBeanProxy, Injectable  {
 

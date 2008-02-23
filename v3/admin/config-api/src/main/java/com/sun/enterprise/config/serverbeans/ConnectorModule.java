@@ -57,7 +57,7 @@ import java.util.List;
     "description",
     "property"
 }) */
-@org.glassfish.admin.amx.AMXConfigInfo( amxInterface=com.sun.appserv.management.config.ConnectorModuleConfig.class)
+@org.glassfish.admin.amx.loader.AMXConfigInfo( amxInterface=com.sun.appserv.management.config.ConnectorModuleConfig.class)
 @Configured
 public interface ConnectorModule extends ConfigBeanProxy, Injectable, Module {
 

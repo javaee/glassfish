@@ -57,7 +57,7 @@ import java.util.List;
     "registryLocation",
     "transformationRule"
 }) */
-@org.glassfish.admin.amx.AMXConfigInfo( amxInterface=com.sun.appserv.management.config.WebServiceEndpointConfig.class)
+@org.glassfish.admin.amx.loader.AMXConfigInfo( amxInterface=com.sun.appserv.management.config.WebServiceEndpointConfig.class)
 @Configured
 public interface WebServiceEndpoint extends ConfigBeanProxy, Injectable  {
 

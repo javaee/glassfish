@@ -56,7 +56,7 @@ import java.util.List;
 /* @XmlType(name = "", propOrder = {
     "property"
 }) */
-@org.glassfish.admin.amx.AMXConfigInfo( amxInterface=com.sun.appserv.management.config.MDBContainerConfig.class, singleton=true)
+@org.glassfish.admin.amx.loader.AMXConfigInfo( amxInterface=com.sun.appserv.management.config.MDBContainerConfig.class, singleton=true)
 @Configured
 public interface MdbContainer extends ConfigBeanProxy, Injectable  {
 

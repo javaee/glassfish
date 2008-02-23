@@ -49,7 +49,7 @@ import java.io.Serializable;
 import java.util.List;
 
 
-import org.glassfish.admin.amx.AMXConfigInfo;
+import org.glassfish.admin.amx.loader.AMXConfigInfo;
 
 /* @XmlType(name = "", propOrder = {
     "httpAccessLog",

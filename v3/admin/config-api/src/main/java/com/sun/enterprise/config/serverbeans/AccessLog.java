@@ -47,7 +47,7 @@ import java.beans.PropertyVetoException;
 import java.io.Serializable;
 
 
-import org.glassfish.admin.amx.AMXConfigInfo;
+import org.glassfish.admin.amx.loader.AMXConfigInfo;
 
 
 

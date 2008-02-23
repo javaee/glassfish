@@ -56,7 +56,7 @@ import java.io.Serializable;
 /* @XmlType(name = "", propOrder = {
     "healthChecker"
 }) */
-@org.glassfish.admin.amx.AMXConfigInfo( amxInterface=com.sun.appserv.management.config.ServerRefConfig.class)
+@org.glassfish.admin.amx.loader.AMXConfigInfo( amxInterface=com.sun.appserv.management.config.ServerRefConfig.class)
 @Configured
 public interface ServerRef extends ConfigBeanProxy, Injectable  {
 

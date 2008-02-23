@@ -58,7 +58,7 @@ import java.util.List;
     "responsePolicy",
     "property"
 }) */
-@org.glassfish.admin.amx.AMXConfigInfo( amxInterface=com.sun.appserv.management.config.ProviderConfig.class, nameHint="provider-id")
+@org.glassfish.admin.amx.loader.AMXConfigInfo( amxInterface=com.sun.appserv.management.config.ProviderConfig.class, nameHint="provider-id")
 @Configured
 public interface ProviderConfig extends ConfigBeanProxy, Injectable  {
 

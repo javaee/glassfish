@@ -52,7 +52,7 @@ import java.io.Serializable;
  */
 
 /* @XmlType(name = "") */
-@org.glassfish.admin.amx.AMXConfigInfo( amxInterface=com.sun.appserv.management.config.BackendPrincipalConfig.class)
+@org.glassfish.admin.amx.loader.AMXConfigInfo( amxInterface=com.sun.appserv.management.config.BackendPrincipalConfig.class)
 @Configured
 public interface BackendPrincipal extends ConfigBeanProxy, Injectable  {
 

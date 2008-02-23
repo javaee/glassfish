@@ -38,8 +38,8 @@ package org.glassfish.config.support;
 import org.jvnet.hk2.config.*;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.CageBuilder;
-import org.glassfish.admin.amx.AMXConfigRegistrar;
-import org.glassfish.admin.amx.AMXConfigInfo;
+import org.glassfish.admin.amx.loader.AMXConfigRegistrar;
+import org.glassfish.admin.amx.loader.AMXConfigInfo;
 
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamException;

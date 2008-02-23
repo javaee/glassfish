@@ -57,7 +57,7 @@ import java.util.List;
     "ssl",
     "property"
 }) */
-@org.glassfish.admin.amx.AMXConfigInfo( amxInterface=com.sun.appserv.management.config.JMXConnectorConfig.class)
+@org.glassfish.admin.amx.loader.AMXConfigInfo( amxInterface=com.sun.appserv.management.config.JMXConnectorConfig.class)
 @Configured
 public interface JmxConnector extends ConfigBeanProxy, Injectable  {
 

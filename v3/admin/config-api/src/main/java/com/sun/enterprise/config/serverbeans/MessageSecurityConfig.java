@@ -56,7 +56,7 @@ import java.util.List;
 /* @XmlType(name = "", propOrder = {
     "providerConfig"
 }) */
-@org.glassfish.admin.amx.AMXConfigInfo( amxInterface=com.sun.appserv.management.config.MessageSecurityConfig.class, singleton=true)
+@org.glassfish.admin.amx.loader.AMXConfigInfo( amxInterface=com.sun.appserv.management.config.MessageSecurityConfig.class, singleton=true)
 @Configured
 public interface MessageSecurityConfig extends ConfigBeanProxy, Injectable  {
 

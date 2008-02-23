@@ -54,7 +54,7 @@ import java.util.List;
 /* @XmlType(name = "", propOrder = {
     "lifecycleModuleOrJ2EeApplicationOrEjbModuleOrWebModuleOrConnectorModuleOrAppclientModuleOrMbeanOrExtensionModule"
 }) */
-@org.glassfish.admin.amx.AMXConfigInfo( amxInterface=org.glassfish.admin.amx.AMXConfigVoid.class, omitAsAncestor=true)
+@org.glassfish.admin.amx.loader.AMXConfigInfo( amxInterface=org.glassfish.admin.amx.loader.AMXConfigVoid.class, omitAsAncestor=true)
 @Configured
 public interface Applications extends ConfigBeanProxy, Injectable  {
 

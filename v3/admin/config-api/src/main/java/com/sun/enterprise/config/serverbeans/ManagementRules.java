@@ -56,7 +56,7 @@ import java.util.List;
 /* @XmlType(name = "", propOrder = {
     "managementRule"
 }) */
-@org.glassfish.admin.amx.AMXConfigInfo( amxInterface=com.sun.appserv.management.config.ManagementRulesConfig.class, singleton=true)
+@org.glassfish.admin.amx.loader.AMXConfigInfo( amxInterface=com.sun.appserv.management.config.ManagementRulesConfig.class, singleton=true)
 @Configured
 public interface ManagementRules extends ConfigBeanProxy, Injectable  {
 
