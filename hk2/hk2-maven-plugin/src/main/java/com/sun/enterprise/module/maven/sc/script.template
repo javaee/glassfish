@@ -1,0 +1,24 @@
+# This is the template used as an input to script cration
+# comment -- ignored
+[copyright]
+text=actual text that is carried as-is into generated script
+# "Source" File, one per line
+[source]
+config-file=
+# Environment variables, one per line, with format a=b, any path-like structure should use comma to delimit
+[env.vars]
+# Shell variables, one per line, with format a=b, any path-like structure should use comma to delimit
+[shell.vars]
+# JVM information
+[jvm]
+#FQCN of the Main class or jar file with Main-Class in Manifest entry needs to be specified, "jar" takes precedence
+main.class=
+#jar=startup.jar
+# all the options as one line, treated verbatim
+jvm.options=
+# one classpath element per line of the form CP1=foo.jar, to retain manageability of this file
+[classpath]
+# Java system properties (-D's) one per line, with format a=b, without the -D
+[java.system.properties]
+# OS specific stuff, the value of osname is one of "unix", "windows", "macos"
+# [osname.verbatim.pre]
