@@ -404,8 +404,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         // TODO : revisit later
         //ejbWebServiceRegistryListener.register(_serverContext.getDefaultHabitat());
 
-        //loadDefaultWebModules();
-
         List<Config> configs = domain.getConfigs().getConfig();
         for (Config aConfig : configs) {
 
@@ -431,6 +429,24 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                 _logger.info("Created virtual server " + vs.getId());
             }
         }
+
+        /*
+        Engine[] engines =  _embedded.getEngines();
+
+        for (int j=0; j<engines.length; j++) {
+            Container[] vsList = engines[j].findChildren();
+            for (int i = 0; i < vsList.length; i++) {
+                // Load all the standalone web modules for each VS
+                loadWebModules((VirtualServer)vsList[i]);
+            }
+        }
+
+        
+        // Load the web modules specified in each j2ee-application
+        loadAllJ2EEApplicationWebModules(true);
+
+        loadDefaultWebModules();
+         */
 
         //_lifecycle.fireLifecycleEvent(START_EVENT, null);
         _started = true;
@@ -2328,95 +2344,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             }
         }
     }
-
-    /**
-     * Prepare for the beginning of active use of the public methods of this
-     * component.  This method should be called before any of the public
-     * methods of the component are utilized.
-     *
-     * @exception IllegalStateException if this component has already been
-     *  started
-     * @exception LifecycleException if this component detects a fatal error
-     *  that prevents this component from being used
-     *
-    public void start() throws LifecycleException {
-        if (_started) {
-            String msg = _rb.getString("webcontainer.alreadyStarted");
-            throw new LifecycleException(msg);
-        }
-
-        if (System.getProperty(DOC_BUILDER_FACTORY_PROPERTY) == null) {
-            System.setProperty(DOC_BUILDER_FACTORY_PROPERTY,
-                    DOC_BUILDER_FACTORY_IMPL);
-        }
-
-        initInstanceSessionProperties();
-
-        //HERCULES:mod
-        //registerAdminEvents();
-        registerMonitoringLevelEvents();
-        initHealthChecker();
-        if(isNativeReplicationEnabled()) {
-            initReplicationReceiver();
-        }
-        long btime = 0L;
-        if (_logger.isLoggable(Level.FINE)) {
-            _logger.fine("before schema check");
-            btime = System.currentTimeMillis();
-        }
-        doSchemaCheck();
-        if (_logger.isLoggable(Level.FINE)) {
-            _logger.fine("after schema check time: " + (System.currentTimeMillis() - btime));
-        }
-        //end HERCULES:mod
-
-        //ejbWebServiceRegistryListener.register(_serverContext.getDefaultHabitat());
-
-        Engine[] engines =  _embedded.getEngines();
-
-        for (int j=0; j<engines.length; j++) {
-            Container[] vsList = engines[j].findChildren();
-            for (int i = 0; i < vsList.length; i++) {
-                // Load all the standalone web modules for each VS
-                loadWebModules((VirtualServer)vsList[i]);
-            }
-        }
-
-        // Load the web modules specified in each j2ee-application
-        loadAllJ2EEApplicationWebModules(true);
-
-        loadDefaultWebModules();
-
-        _lifecycle.fireLifecycleEvent(START_EVENT, null);
-        _started = true;
-        // start the embedded container
-        _embedded.start();
-
-        if (_reloadingEnabled) {
-            // Enable dynamic reloading (via the .reload file) for all
-            // standalone web-modules that are marked as enabled
-
-            /*Applications appsBean = null;
-            try {
-                appsBean = ServerBeansFactory.getApplicationsBean(_configContext);
-            } catch (ConfigException e) {
-               String msg = _rb.getString("webcontainer.appsConfigError");
-               _logger.log(Level.SEVERE, msg, e);
-            }
-
-            _reloadManager = new StandaloneWebModulesManager(_id,
-                                                             _modulesRoot,
-                                                             _pollInterval);
-            if (appsBean != null) {
-                com.sun.enterprise.config.serverbeans.WebModule[] wmBeans = appsBean.getWebModule();
-                if (wmBeans != null && wmBeans.length > 0) {
-                    _reloadManager.addWebModules(wmBeans);
-                }
-            }
-             **
-        }
-        enableAllWSEndpoints();
-    }*/
 
     /**
      * Gracefully terminate the active use of the public methods of this
