@@ -83,13 +83,13 @@ import org.glassfish.admin.amx.loader.StartAMX;
 @I18n("amx.command")
 public final class AMXCommand extends AMXCommandBase implements AdminCommand
 {
-    @Inject
-    private AMXConfigRegistrar mConfigRegistrar;
+    private final AMXConfigRegistrar mConfigRegistrar;
 
     private boolean mInitialized;
     
     public AMXCommand()
     {
+        mConfigRegistrar    = AMXConfigRegistrar.getInstance();
     }
     
                     

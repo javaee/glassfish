@@ -34,7 +34,7 @@ import com.sun.appserv.management.config.AMXConfig;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 @AMXMBeanMetadata(amxGroup=AMX.GROUP_CONFIGURATION)
-@CagedBy(AMXConfigRegistrar.class)
+//@CagedBy(AMXConfigRegistrar.class)
 public @interface AMXConfigInfo {
     /**
         The default behavior is to derive all attributes automatically from the ConfigBean.

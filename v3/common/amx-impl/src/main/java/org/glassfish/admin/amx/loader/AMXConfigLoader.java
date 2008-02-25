@@ -193,15 +193,22 @@ public final class AMXConfigLoader
         private void
     registerConfigBeanAsMBean( final ConfigBean cb )
     {
-        final ConfigBean parentCB = getActualParent(cb);
-        if ( parentCB != null && parentCB.getObjectName() == null )
+        if ( getAMXConfigInfo(cb) != null )
         {
-            //debug( "REGISTER parent first: " + parentCB.getProxyType().getName() );
-            registerConfigBeanAsMBean( parentCB );
-            //debug( "REGISTERED parent: " + parentCB.getProxyType().getName() + " as " + JMXUtil.toString(parentCB.getObjectName()) );
+            final ConfigBean parentCB = getActualParent(cb);
+            if ( parentCB != null && parentCB.getObjectName() == null )
+            {
+                //debug( "REGISTER parent first: " + parentCB.getProxyType().getName() );
+                registerConfigBeanAsMBean( parentCB );
+                //debug( "REGISTERED parent: " + parentCB.getProxyType().getName() + " as " + JMXUtil.toString(parentCB.getObjectName()) );
+            }
+           final ObjectName objectName =  _registerConfigBeanAsMBean( cb, parentCB );
+           assert cb.getObjectName() != null;
         }
-       final ObjectName objectName =  _registerConfigBeanAsMBean( cb, parentCB );
-       assert cb.getObjectName() != null;
+        else
+        {
+            debug( "NOTE: ConfigBean has no @AMXConfigInfo: " + cb.getProxyType().getName() + " (IGNORING)");
+        }
     }
     
         private AMXConfigInfo
@@ -210,10 +217,6 @@ public final class AMXConfigLoader
         final Class<? extends ConfigBeanProxy> cbClass = cb.getProxyType();
         
         final AMXConfigInfo amxConfigInfo = cbClass.getAnnotation( AMXConfigInfo.class );
-        if ( amxConfigInfo == null )
-        {
-            throw new IllegalArgumentException( "ConfigBean has no @AMXConfigInfo: " + cbClass.getName() );
-        }
         
         return amxConfigInfo;
     }
@@ -251,10 +254,16 @@ public final class AMXConfigLoader
         }
         if ( parentCB != null && parentCB.getObjectName() == null )
         {
-            throw new IllegalArgumentException( "ConfigBean parent " + cbClass.getName() + " must be registered first " );
+            throw new IllegalArgumentException( "ConfigBean parent " + parentCB.getProxyType().getName() +
+                " must be registered first before child = " +cbClass.getName() );
         }
         
         final AMXConfigInfo amxConfigInfo = getAMXConfigInfo( cb );
+        if ( amxConfigInfo == null )
+        {
+            throw new IllegalArgumentException( "ConfigBean has no @AMXConfigInfo: " + cbClass.getName() );
+        }
+
         
         // don't process internal nodes like <configs>, <resources>, etc; these contain
         // nothing but child nodes.  Such nodes use AMXConfigVoid.

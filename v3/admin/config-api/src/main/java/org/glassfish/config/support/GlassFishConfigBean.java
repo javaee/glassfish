@@ -48,9 +48,7 @@ import java.util.regex.Matcher;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 
-
-import java.util.concurrent.LinkedBlockingQueue;
-import com.sun.appserv.management.util.misc.RunnableBase;
+import org.glassfish.admin.amx.loader.AMXConfigRegistrar;
 
 /**
  * Translated view of a configured objects where values can be represented
@@ -98,10 +96,13 @@ public final class GlassFishConfigBean extends ConfigBean {
     public void initializationCompleted() {
         super.initializationCompleted();
         
-        // this optimizes startup speed by threading the @CagedBy handling
-        COMPLETED_THREAD.add( this );
+        AMXConfigRegistrar.getInstance().onEntered( this );
     }
     
+    /*
+import java.util.concurrent.LinkedBlockingQueue;
+import com.sun.appserv.management.util.misc.RunnableBase;
+
     private static final InitializationCompletedThread  COMPLETED_THREAD;
     static {
         COMPLETED_THREAD = new InitializationCompletedThread();
@@ -154,6 +155,7 @@ public final class GlassFishConfigBean extends ConfigBean {
             }
         }
     }
+    */
 
 }
 
