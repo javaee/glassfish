@@ -24,7 +24,7 @@ import com.sun.appserv.management.util.misc.ClassUtil;
 
 import org.glassfish.admin.amx.mbean.Delegate;
 import org.glassfish.admin.amx.mbean.DelegateToConfigBeanDelegate;
-import org.glassfish.admin.amx.mbean.AMXImplBase;
+import org.glassfish.admin.amx.mbean.AMXConfigImplBase;
 
 /**
  * @author llc
@@ -140,9 +140,9 @@ public final class AMXConfigLoader
         
         try
         {
-            // should throw an Exception
-            new AMXImplBase( null, null, null, AMXConfig.class, null );
-            throw new Error( "AMXConfigLoader: AMXImplBase did not throw an exception for a null j2eeType!!!" );
+            // TEST code (remove later): should throw an Exception
+            new AMXConfigImplBase( null, null, null, AMXConfig.class, null );
+            throw new Error( "AMXConfigLoader: AMXConfigImplBase did not throw an exception for a null j2eeType!!!" );
         }
         catch( Exception e )
         {
@@ -318,7 +318,7 @@ public final class AMXConfigLoader
         
         final Delegate delegate = new DelegateToConfigBeanDelegate( cb );
         final ObjectName parentObjectName = getActualParentObjectName( cb );
-        final AMXImplBase impl = new AMXImplBase( j2eeType, fullType, parentObjectName, amxInterface, delegate );
+        final AMXConfigImplBase impl = new AMXConfigImplBase( j2eeType, fullType, parentObjectName, amxInterface, delegate );
         
         try
         {

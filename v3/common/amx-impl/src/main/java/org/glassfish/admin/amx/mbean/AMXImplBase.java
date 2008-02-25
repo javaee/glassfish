@@ -234,7 +234,7 @@ public class AMXImplBase extends MBeanImplBase
         }
         //System.out.println( "AMXImplBase: j2eeType = " + j2eeType + ", fullType = " + fullType );
         
-        mJ2EEType   = j2eeType; // can override the interface, and/or interface might not specify
+        mJ2EEType   = j2eeType; //  overrides the interface, and/or interface might not specify
         mFullType = fullType;
 		mInterface	= theInterface;
 		mContainerObjectName	= parentObjectName;
