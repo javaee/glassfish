@@ -265,7 +265,10 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
 
             Properties moduleProps = deploymentContext.getProps();
             moduleProps.setProperty(ServerTags.NAME, name);
-            moduleProps.setProperty(ServerTags.LOCATION, deploymentContext.getSource().getURI().toString());
+            moduleProps.setProperty(ServerTags.LOCATION, deploymentContext.getSource().getURI().getSchemeSpecificPart());
+            // set to default "user", deployers can override it 
+            // during processing
+            moduleProps.setProperty(ServerTags.OBJECT_TYPE, "user");
             if (contextRoot!=null) {
                 moduleProps.setProperty(ServerTags.CONTEXT_ROOT, contextRoot);
             }

@@ -657,9 +657,8 @@ abstract public class ApplicationLifecycle {
                     app.setName(moduleProps.getProperty(ServerTags.NAME));
                     app.setLocation(moduleProps.getProperty(
                         ServerTags.LOCATION));
-                    // set to default user for object-type till we have domain 
-                    // dtd validation
-                    app.setObjectType("user");
+                    app.setObjectType(moduleProps.getProperty(
+                        ServerTags.OBJECT_TYPE));
 		    app.setEnabled(moduleProps.getProperty(
                         ServerTags.ENABLED));
                     if (moduleProps.getProperty(ServerTags.CONTEXT_ROOT) != 

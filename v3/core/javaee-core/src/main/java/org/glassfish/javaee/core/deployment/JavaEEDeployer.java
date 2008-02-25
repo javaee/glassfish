@@ -48,13 +48,18 @@ import org.glassfish.deployment.common.DeploymentException;
 import com.sun.enterprise.module.Module;
 import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.module.ModuleDefinition;
+import com.sun.enterprise.config.serverbeans.ServerTags;
 import org.jvnet.hk2.annotations.Inject;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.jar.Manifest;
+import java.util.jar.JarFile;
+import java.util.jar.Attributes;
 
 /**
  * Convenient superclass for JavaEE Deployer implementations.
@@ -86,6 +91,8 @@ public abstract class JavaEEDeployer<T extends Container, U extends ApplicationC
 
     private static String CLIENT_JAR_MAKER_CHOICE = System.getProperty(
         DeploymentImplConstants.CLIENT_JAR_MAKER_CHOICE);
+
+    private static final String APPLICATION_TYPE = "Application-Type";
 
     private static String WRITEOUT_XML = System.getProperty(
         "writeout.xml");
@@ -123,6 +130,12 @@ public abstract class JavaEEDeployer<T extends Container, U extends ApplicationC
                 dc.getLogger().severe("Failed to load deployment descriptor, aborting");
                 return false;
             }
+            String objectType = getObjectType(dc);
+            if (objectType != null) {
+                dc.getProps().setProperty(ServerTags.OBJECT_TYPE, 
+                    objectType);
+            }
+
             generateArtifacts(dc);
             if (Boolean.valueOf(WRITEOUT_XML)) {
                 saveAppDescriptor(dc);
@@ -242,6 +255,33 @@ public abstract class JavaEEDeployer<T extends Container, U extends ApplicationC
         context.getScratchDir("jsp").mkdirs();
     }
 
+    // get the object type from the application manifest file if 
+    // it is present. Application can be user application or system 
+    // appliction.
+    protected String getObjectType(DeploymentContext context) {
+        File appDir = context.getSourceDir();
+        FileInputStream fis = null;
+        try{
+            File manifestFile = new File(appDir, JarFile.MANIFEST_NAME);
+            fis = new FileInputStream(manifestFile);
+            Manifest manifest = new Manifest(fis);
+            Attributes attrs = manifest.getMainAttributes();
+            return attrs.getValue(APPLICATION_TYPE);
+        }catch(Exception e){
+            // by default resource-type will be assigned "user".
+            return null;
+        } finally {
+            try {
+                if (fis != null) {
+                    fis.close();
+                }
+            } catch (IOException ioe) {
+                // ignore ioe
+            }
+        }
+
+    }
+ 
     abstract protected RootDeploymentDescriptor getDefaultBundleDescriptor();
     abstract protected String getModuleType();
 }
