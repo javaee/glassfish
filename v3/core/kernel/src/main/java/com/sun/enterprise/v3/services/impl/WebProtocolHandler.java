@@ -241,6 +241,14 @@ public class WebProtocolHandler implements ProtocolHandler, EndpointMapper<Adapt
         this.fallbackProtocolFilter = fallbackProtocolFilter;
     }
 
-
+    
+    /**
+     * Returns <code>ByteBuffer</code>, where PUReadFilter will read data
+     * @return <code>ByteBuffer</code>
+     */    
+    public ByteBuffer getByteBuffer(){
+        return null;
+    }
+    
 
 }
