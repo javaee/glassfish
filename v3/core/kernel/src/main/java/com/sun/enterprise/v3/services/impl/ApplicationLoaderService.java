@@ -198,13 +198,7 @@ public class ApplicationLoaderService extends ApplicationLifecycle
             logger.severe("Cannot determine application type at " + source);
             return;
         }
-        URI uri = null;
-        try {
-            uri = new URI(source);
-        } catch (URISyntaxException e) {
-            logger.severe("Cannot determine original location for application : " + e.getMessage());
-        }
-        File sourceFile = new File(uri);
+        File sourceFile = new File(source);
         if (sourceFile.exists()) {
             try {
                 ReadableArchive archive = null;
