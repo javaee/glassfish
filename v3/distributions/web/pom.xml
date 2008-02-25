@@ -146,7 +146,7 @@
            <groupId>org.glassfish.core</groupId>
            <artifactId>security</artifactId>
            <version>${pe.version}</version>
-        </dependency>        
+        </dependency>           
     </dependencies>
 </project>
 

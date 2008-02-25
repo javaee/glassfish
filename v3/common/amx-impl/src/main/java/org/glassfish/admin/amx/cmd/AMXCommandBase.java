@@ -35,7 +35,6 @@ import org.glassfish.api.I18n;
 import org.glassfish.api.ActionReport.ExitCode;
 
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.enterprise.management.mbeanserver.AppserverMBeanServerFactory;
 
 /**
     Base class for AMX commands.

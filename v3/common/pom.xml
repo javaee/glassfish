@@ -49,6 +49,7 @@
     <packaging>pom</packaging>
     <name>GlassFish Common modules</name>  
     <modules>
+    	<module>internal-api</module>
         <module>mbeanserver</module>
         <module>amx-api</module>
         <module>amx-impl</module>

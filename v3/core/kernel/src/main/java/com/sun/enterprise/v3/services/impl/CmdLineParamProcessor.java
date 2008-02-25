@@ -23,7 +23,7 @@
 
 package com.sun.enterprise.v3.services.impl;
 
-import com.sun.enterprise.v3.server.Init;
+import org.glassfish.internal.api.Init;
 import com.sun.enterprise.v3.server.V3Environment;
 import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.module.ModuleDefinition;

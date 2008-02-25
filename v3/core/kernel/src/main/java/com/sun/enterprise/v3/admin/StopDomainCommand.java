@@ -23,7 +23,7 @@
 package com.sun.enterprise.v3.admin;
 
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.enterprise.v3.server.Init;
+import org.glassfish.internal.api.Init;
 import org.glassfish.api.Async;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Startup;

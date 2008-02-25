@@ -48,8 +48,7 @@ import org.jvnet.hk2.annotations.Extract;
     The MBeanServer is optional (at least in theory).  For example, a lean production
     environment might choose to not load the management APIs (AMX) and therefore might not
     need the MBeanServer.
-    <p>
-    Although the Glassfish V3 MBeanServer is likely to be the PlatformMBeanServer as returned
+    <p>§the PlatformMBeanServer as returned
     by ManagementFactory.getPlatformMBeanServer(), this is <em>not</em> guaranteed.  Glassfish
     modules that require the MBeanServer should obtain it here. 
     It might be that a single-server Glassfish would use

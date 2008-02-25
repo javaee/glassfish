@@ -36,7 +36,7 @@
 
 package com.sun.enterprise.v3.services.impl;
 
-import com.sun.enterprise.v3.server.Init;
+import org.glassfish.internal.api.Init;
 import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.appserv.connectors.spi.ConnectorRuntime;
 import org.jvnet.hk2.component.PreDestroy;

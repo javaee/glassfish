@@ -26,30 +26,17 @@ package com.sun.enterprise.v3.server;
 import com.sun.enterprise.module.*;
 import com.sun.enterprise.module.bootstrap.ModuleStartup;
 import com.sun.enterprise.module.bootstrap.StartupContext;
-import com.sun.enterprise.module.impl.CookedModuleDefinition;
-import com.sun.enterprise.module.common_impl.DirectoryBasedRepository;
-import com.sun.enterprise.module.impl.ModuleImpl;
-import com.sun.enterprise.module.impl.ModulesRegistryImpl;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.Startup;
 import org.glassfish.api.Async;
+import org.glassfish.internal.api.Init;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.FileNotFoundException;
-import java.net.URI;
-import java.net.URLClassLoader;
-import java.net.URL;
-import java.net.MalformedURLException;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.List;
-import java.util.jar.Attributes;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -104,9 +91,19 @@ public class AppServerStartup implements ModuleStartup {
         Collection<Init> inits = habitat.getAllByContract(Init.class);
         for (Init init : inits) {
             logger.fine("Init service : " + init);
-            //logger.info(init + " Init done in " + (System.currentTimeMillis() - context.getCreationTime()) + " ms");
+            logger.info(init + " Init done in " + (System.currentTimeMillis() - context.getCreationTime()) + " ms");
         }
         logger.fine("Init done in " + (System.currentTimeMillis() - context.getCreationTime()) + " ms");
+
+        for (final Inhabitant i : habitat.getInhabitants(Startup.class)) {
+            if (i.type().getAnnotation(Async.class)==null) {
+                logger.fine("Startup service " + i.get());
+                logger.info(i.get() + " startup done in " + (System.currentTimeMillis() - context.getCreationTime()) + " ms");
+            }
+        }
+
+        logger.info("Glassfish v3 started in "
+                    + (Calendar.getInstance().getTimeInMillis() - context.getCreationTime()) + " ms");
 
         // run the startup services
         Thread t = new Thread(new Runnable() {
@@ -119,17 +116,7 @@ public class AppServerStartup implements ModuleStartup {
                 }
             }
         });
-        t.start(); 
-        for (final Inhabitant i : habitat.getInhabitants(Startup.class)) {
-            if (i.type().getAnnotation(Async.class)==null) {
-                logger.fine("Startup service " + i.get());
-                //logger.info(i.get() + " startup done in " + (System.currentTimeMillis() - context.getCreationTime()) + " ms");
-            }
-        }
-
-        logger.info("Glassfish v3 started in "
-                    + (Calendar.getInstance().getTimeInMillis() - context.getCreationTime()) + " ms");
-
+        t.start();
         
     }
 }

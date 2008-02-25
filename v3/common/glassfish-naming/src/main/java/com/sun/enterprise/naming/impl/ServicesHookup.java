@@ -38,7 +38,7 @@ package com.sun.enterprise.naming.impl;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PostConstruct;
-import com.sun.enterprise.v3.server.Init;
+import org.glassfish.internal.api.Init;
 
 import javax.naming.spi.InitialContextFactoryBuilder;
 import javax.naming.spi.NamingManager;

@@ -1,6 +1,6 @@
 package com.sun.enterprise.v3.server;
 
-import com.sun.enterprise.v3.server.Init;
+import org.glassfish.internal.api.Init;
 import com.sun.enterprise.config.serverbeans.JavaConfig;
 import com.sun.enterprise.util.net.NetUtils;
 import com.sun.enterprise.util.SystemPropertyConstants;
