@@ -26,6 +26,7 @@ import com.sun.enterprise.deployment.annotation.factory.SJSASFactory;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.Singleton;
 
 import java.util.Set;
@@ -39,17 +40,14 @@ import java.util.Set;
  */
 @Service(name="default")
 @Scoped(Singleton.class)
-public class DefaultAnnotationScanner implements AnnotationScanner {
+public class DefaultAnnotationScanner implements AnnotationScanner, 
+    PostConstruct {
 
-    SJSASFactory factory = new SJSASFactory();
+    @Inject 
+    SJSASFactory factory;
     
     private static Set<String> annotations=null;
     
-    /** Creates a new instance of DefaultAnnotationScanner */
-    public DefaultAnnotationScanner() {
-        annotations = factory.getAnnotations();
-    }
-        
     /**
      * Test if the passed constant pool string is a reference to 
      * a Type.TYPE annotation of a J2EE component
@@ -61,4 +59,7 @@ public class DefaultAnnotationScanner implements AnnotationScanner {
         return annotations.contains(value);
     }
     
+    public void postConstruct() {
+        annotations = factory.getAnnotations();
+    }
 }
