@@ -41,7 +41,7 @@ import com.sun.appserv.management.base.XTypes;
 	 Configuration for the &lt;property> element.
 */
 
-public interface SystemPropertyConfig extends ConfigElement, Description 
+public interface SystemPropertyConfig extends AnyPropertyConfig 
 {
 /** The j2eeType as returned by {@link com.sun.appserv.management.base.AMX#getJ2EEType}. */
 	public static final String	J2EE_TYPE	= XTypes.SYSTEM_PROPERTY_CONFIG;

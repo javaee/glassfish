@@ -798,20 +798,6 @@ public class AMXImplBase extends MBeanImplBase
 	{
 		return( getMBeanLogger() );
 	}
-	
-	
-        protected void
-    checkAttributeSupportedInBuild( final String attributeName )
-    {
-    }
-    
-        protected void
-    checkOperationSupportedInBuild(
-        final String operationName,
-		Object[]	 args,
-		String[]	 types)
-    {
-    }
 
 	/**
 		Get an Attribute value, first by looking for a getter method
@@ -827,8 +813,6 @@ public class AMXImplBase extends MBeanImplBase
 		throws AttributeNotFoundException
 	{
 		Object	result	= null;
-		
-		checkAttributeSupportedInBuild( name );
 		
 		if ( ! (isLegalAttribute( name ) || name.equals(OBJECT_REF_ATTR_NAME) ) )
 		{
@@ -1591,8 +1575,6 @@ public class AMXImplBase extends MBeanImplBase
 		
 		try
 		{
-		    checkOperationSupportedInBuild( operationName, args, types );
-		
 			final Class[]	signature	= ClassUtil.signatureFromClassnames( types );
 			final Method	m	= findMethod( operationName, signature );
 			if ( m != null )
@@ -2139,7 +2121,13 @@ public class AMXImplBase extends MBeanImplBase
 		}
 		return( mSelfProxy );
 	}
-	
+		protected final <T> T
+	getSelf( final Class<T> theClass )
+	{
+        return theClass.cast( getSelf() );
+    }
+    
+    protected Container getSelfAsContainer() { return getSelf(Container.class); }
 	
 	
 		public final DomainRoot

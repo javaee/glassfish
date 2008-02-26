@@ -37,8 +37,6 @@ package com.sun.appserv.management.config;
 
 import java.util.Map;
 
-import javax.management.ObjectName;
-
 import com.sun.appserv.management.base.XTypes;
 import com.sun.appserv.management.base.Container;
 
@@ -117,7 +115,7 @@ public interface PropertiesAccess extends Container
 		Return all PropertyConfig MBeans, keyed by property name. 
         @since Glassfish V3
 	 */
-    public Map<String,ObjectName>  getPropertyConfigMap();
+    public Map<String,PropertyConfig>  getPropertyConfigMap();
 }
 
 

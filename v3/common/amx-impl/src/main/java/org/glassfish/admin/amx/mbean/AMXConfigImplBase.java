@@ -38,6 +38,7 @@ package org.glassfish.admin.amx.mbean;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.HashMap;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Constructor;
@@ -65,22 +66,11 @@ import com.sun.appserv.management.util.jmx.JMXUtil;
 import com.sun.appserv.management.config.PropertiesAccess;
 import com.sun.appserv.management.config.AMXConfig;
 import com.sun.appserv.management.config.RefConfig;
-import com.sun.appserv.management.config.ResourceConfig;
-import com.sun.appserv.management.config.ModuleConfig;
 import com.sun.appserv.management.config.RefConfigReferent;
-import com.sun.appserv.management.config.ResourceRefConfig;
-import com.sun.appserv.management.config.ResourceRefConfigReferent;
-import com.sun.appserv.management.config.DeployedItemRefConfigReferent;
-import com.sun.appserv.management.config.ClusterRefConfigReferent;
-import com.sun.appserv.management.config.ServerRefConfigReferent;
-import com.sun.appserv.management.config.Description;
-import com.sun.appserv.management.config.Enabled;
-import com.sun.appserv.management.config.ObjectType;
+import com.sun.appserv.management.config.AnyPropertyConfig;
+import com.sun.appserv.management.config.PropertyConfig;
+import com.sun.appserv.management.config.SystemPropertyConfig;
 
-import com.sun.appserv.management.config.DeployedItemRefConfigCR;
-import com.sun.appserv.management.config.ServerRefConfigCR;
-import com.sun.appserv.management.config.ClusterRefConfigCR;
-import com.sun.appserv.management.config.ResourceRefConfigCR;
 import com.sun.appserv.management.config.SystemPropertiesAccess;
 
 import com.sun.appserv.management.base.XTypes;
@@ -145,107 +135,8 @@ public class AMXConfigImplBase extends AMXImplBase
 	{
 	    return SystemPropertiesAccess.class.isAssignableFrom( getInterface() );
 	}
-	
-	/**
-	    Verify that the AMX support for system properties is the same
-	    as its Delegate.
-	 */
-	    protected final void
-	checkPropertiesAccessSupport()
-	{
-        if ( getDelegate() != null)
-        {
-            final boolean   delegateHasProperties   = delegateSupportsProperties();
-            
-            if ( delegateHasProperties != supportsProperties() )
-            {
-                final String msg = getJ2EEType() + ": " +
-                    "delegateSupportsProperties=" + delegateHasProperties +
-                    ", but supportsProperties=" + supportsProperties();
-                // implementation error
-                logWarning( msg );
-                throw new Error( msg );
-            }
-        }
-        else if ( supportsProperties() )
-        {
-            final String msg    =  getJ2EEType() + ": " +
-                "AMX interface supports properties, but has no delegate";
-            logSevere( msg );
-            throw new Error( msg );
-        }
-	}
-	
-	    private boolean
-	delegateSupportsSystemProperties()
-	{
-        boolean supports   = false;
-        final V3SystemPropertiesAccess access    = getV3SystemPropertiesAccess();
-        if ( access != null )
-        {
-            try
-            {
-              final AttributeList props    =  access.getSystemProperties();
-              supports   = true;
-            }
-            catch( Exception e )
-            {
-                // OK
-            }
-        }
-        return supports;
-	}
-	
-	    private boolean
-	delegateSupportsProperties()
-	{
-        boolean supports   = false;
-        final V3PropertiesAccess access    = getV3PropertiesAccess();
-        if ( access != null )
-        {
-            try
-            {
-              final AttributeList props    =  access.getProperties();
-              supports   = true;
-            }
-            catch( Exception e )
-            {
-                // OK
-            }
-        }
-        return supports;
-	}
-	
-	/**
-	    Verify that the AMX support for properties is the same
-	    as its Delegate.
-	 */
-	    protected final void
-	checkSystemPropertiesAccessSupport()
-	{
-        if ( getDelegate() != null)
-        {
-            final boolean   delegateSupports    = delegateSupportsSystemProperties();
-            
-            if ( delegateSupports != supportsSystemProperties() )
-            {
-                final String msg = getJ2EEType() + ": " +
-                    "delegateSupportsSystemProperties=" + delegateSupports +
-                    ", but supportsSystemProperties=" + supportsSystemProperties();
-                // implementation error
-                logWarning( msg );
-                throw new Error( msg );
-            }
-        }
-        else if ( supportsSystemProperties() )
-        {
-            final String msg    =  getJ2EEType() + ": " +
-                "AMX interface supports system properties, but has no delegate";
-            logSevere( msg );
-            throw new Error( msg );
-        }
-	}
-	
+		
+    /*
 	    protected final void
 	checkInterfaceSupport(
 	    final Class<?>     theInterface,
@@ -270,8 +161,9 @@ public class AMXConfigImplBase extends AMXImplBase
             }
         }
 	}
+    */
 
-	
+	@Override
 		protected final Set<String>
 	getSuperfluousMethods()
 	{
@@ -296,25 +188,6 @@ public class AMXConfigImplBase extends AMXImplBase
 	    return items;
 	}
 	
-    /*
-		protected final void
-	implCheck()
-	{
-	    super.implCheck();
-	    
-	    // not sure how to implement these checks in offline mode
-	    if ( ! org.glassfish.admin.amx.support.BootUtil.getInstance().getOffline() )
-	    {
-    	    checkPropertiesAccessSupport();
-    	    checkSystemPropertiesAccessSupport();
-	    }
-	    
-	    checkInterfaceSupport( Description.class, "Description" );
-	    checkInterfaceSupport( ObjectType.class, "ObjectType" );
-	    checkInterfaceSupport( Enabled.class, "Enabled" );
-    }
-    */
-    
 		private static void
 	validatePropertyName( final String propertyName )
 	{
@@ -325,174 +198,104 @@ public class AMXConfigImplBase extends AMXImplBase
 				StringUtil.quote( propertyName ) );
 		}
 	}
-
-
-		protected V3SystemPropertiesAccess
-	getV3SystemPropertiesAccess()
+    
+    
+    	protected final <T extends AnyPropertyConfig> Map<String,String>
+	asNameValuePairs( final Map<String,T> items )
 	{
-		if ( ! haveDelegate() )
-		{
-			final String msg	= "system properties not supported (no delegate) by " +
-									quote( getObjectName() );
-			
-			throw new IllegalArgumentException( msg );
-		}
-		
-		//return( new V3SystemPropertiesAccessImpl( getDelegate() ) );
-        return null;
-	}
-
-	
-		public Map<String,String>
-	getSystemProperties( )
+        final Map<String,String>  result = new HashMap<String,String>();
+        for( final String name : items.keySet() )
+        {
+            final AnyPropertyConfig any = items.get(name);
+            final String value = any.getValue();
+            result.put( name, value );
+        }
+        
+        return result;
+    }
+    
+		protected final <T extends AnyPropertyConfig>  AnyPropertyConfig
+	getAnyPropertyConfig( Map<String,T> props, final String propertyName )
 	{
-		final AttributeList	props	= getV3SystemPropertiesAccess().getSystemProperties();
-		final Map<String,String> result	= JMXUtil.attributeListToStringMap( props );
-		
-		return result;
-	}
-	
-		public String[]
-	getSystemPropertyNames( )
-	{
-		final Set<String>	names	= getSystemProperties().keySet();
-		
-		return( GSetUtil.toStringArray( names ) );
-	}
-	
-		public String
-	getSystemPropertyValue( String propertyName )
-	{
-		return( getV3SystemPropertiesAccess().getSystemPropertyValue( propertyName ) );
-	}
-	
-		public final void
-	setSystemPropertyValue(
-		final String propertyName,
-		final String propertyValue )
-	{
-		validatePropertyName( propertyName );
-		
-		if ( propertyValue == null  )
-		{
-			throw new IllegalArgumentException( "" + null );
-		}
-
-		final Attribute		attr	= new Attribute( propertyName, propertyValue );
-		
-		getV3SystemPropertiesAccess().setSystemProperty( attr );
-	}
-	
-		public final boolean
-	existsSystemProperty( String propertyName )
-	{
-		validatePropertyName( propertyName );
-		
-		return( GSetUtil.newSet( getSystemPropertyNames() ).contains( propertyName ) );
-	}
-	
-		public final void
-	removeSystemProperty( String propertyName )
-	{
-		validatePropertyName( propertyName );
-		
-		getV3SystemPropertiesAccess().setSystemProperty( new Attribute( propertyName, null ) );
-	}
-	
-		public final void
-	createSystemProperty( String propertyName, String propertyValue )
-	{
-		setSystemPropertyValue( propertyName, propertyValue );
-	}
-	
-	
-	
-	
-	/**
-		Get the old mbean's properties API.
-		protected V3PropertiesAccess
-     */
-        V3PropertiesAccess
-	getV3PropertiesAccess()
-	{	
-		if ( ! haveDelegate() )
-		{
-			final String msg	= "properties not supported (no delegate) by " +
-									quote( getObjectName() );
-			
-			throw new IllegalArgumentException( msg );
-		}
-		
-		//return( new V3PropertiesAccessImpl( getDelegate() ) );
-        return null;
+        return props.get(propertyName);
 	}
     
-	
-		public Map<String,String>
+		protected final <T extends AnyPropertyConfig>  String
+	getPropertyValue( Map<String,T> props, final String propertyName )
+	{
+        final AnyPropertyConfig prop = props.get(propertyName);
+        return prop == null ? null : prop.getValue();
+	}
+    
+        private void
+    validateNameValue( final String propertyName, final String propertyValue )
+    {
+		validatePropertyName( propertyName );
+		if ( propertyValue == null  )
+		{
+			throw new IllegalArgumentException( "null" );
+		}
+    }
+
+
+//========================================================================================
+    protected Map<String,PropertyConfig> getPropertyConfigMap() { return getSelf(PropertiesAccess.class).getPropertyConfigMap(); }
+    
+    	public Map<String,String>
 	getProperties( )
 	{
-		/*
-        final AttributeList	props	= getV3PropertiesAccess().getProperties();
-		
-		return JMXUtil.attributeListToStringMap( props );
-        */
-        return null;
+        return asNameValuePairs( getPropertyConfigMap() );
 	}
-	
 	
 		public String[]
 	getPropertyNames( )
 	{
-		final Set<String>	names	= getProperties().keySet();
-		
-		return( GSetUtil.toStringArray( names ) );
+		return( GSetUtil.toStringArray( getPropertyConfigMap().keySet() ) );
 	}
 	
 		public String
 	getPropertyValue( String propertyName )
-	{
-		return( getV3PropertiesAccess().getPropertyValue( propertyName ) );
-	}
+	{   
+        return getPropertyValue( getPropertyConfigMap(), propertyName );
+    }
 	
 		public final void
 	setPropertyValue(
 		final String propertyName,
 		final String propertyValue )
 	{
-		validatePropertyName( propertyName );
-		
-		if ( propertyValue == null  )
-		{
-			throw new IllegalArgumentException( "null" );
-		}
-
-		final Attribute		attr	= new Attribute( propertyName, propertyValue );
-		
-		getV3PropertiesAccess().setProperty( attr );
+		validateNameValue( propertyName, propertyValue );
+        
+        final PropertyConfig prop =  getPropertyConfigMap().get( propertyName );
+        if ( prop != null )
+        {
+            prop.setValue( propertyValue );
+        }
+        else
+        {
+            createProperty( propertyName, propertyValue );
+        }
 	}
 	
 		public final boolean
-	existsProperty( String propertyName )
+	existsProperty( final String propertyName )
 	{
-		validatePropertyName( propertyName );
-		
-		return( GSetUtil.newSet( getPropertyNames() ).contains( propertyName ) );
+		return getPropertyConfigMap().keySet().contains( propertyName );
 	}
 	
 		public final void
-	removeProperty( String propertyName )
+	removeProperty( final String propertyName )
 	{
 		validatePropertyName( propertyName );
 		
-		getV3PropertiesAccess().setProperty( new Attribute( propertyName, null ) );
+        throw new UnsupportedOperationException( "Can't (yet) remove properties" );
 	}
 	
 		public final void
-	createProperty( String propertyName, String propertyValue )
+	createProperty( final String propertyName, final String propertyValue )
 	{
-		validatePropertyName( propertyName );
-		
-		setPropertyValue( propertyName, propertyValue );
+		validateNameValue( propertyName, propertyValue );
+        throw new UnsupportedOperationException( "Can't (yet) create new properties" );
 	}
 	
 		public final String
@@ -501,7 +304,68 @@ public class AMXConfigImplBase extends AMXImplBase
 		return( AMX.GROUP_CONFIGURATION );
 	}
 	
+//========================================================================================
+    protected Map<String,SystemPropertyConfig> getSystemPropertyConfigMap() { return getSelf(SystemPropertiesAccess.class).getSystemPropertyConfigMap(); }
+
+		public Map<String,String>
+	getSystemProperties( )
+	{
+        return asNameValuePairs( getSystemPropertyConfigMap() );
+	}
 	
+		public String[]
+	getSystemPropertyNames( )
+	{
+		return( GSetUtil.toStringArray( getSystemPropertyConfigMap().keySet() ) );
+	}
+	
+		public String
+	getSystemPropertyValue( final String propertyName )
+	{
+        return getPropertyValue( getSystemPropertyConfigMap(), propertyName );
+	}
+	
+		public final void
+	setSystemPropertyValue(
+		final String propertyName,
+		final String propertyValue )
+	{
+		validateNameValue( propertyName, propertyValue );
+        
+        final SystemPropertyConfig prop =  getSystemPropertyConfigMap().get( propertyName );
+        if ( prop != null )
+        {
+            prop.setValue( propertyValue );
+        }
+        else
+        {
+            createSystemProperty( propertyName, propertyValue );
+        }
+	}
+	
+		public final boolean
+	existsSystemProperty( final String propertyName )
+	{
+		return getSystemPropertyConfigMap().keySet().contains( propertyName );
+	}
+	
+		public final void
+	removeSystemProperty( String propertyName )
+	{
+		validatePropertyName( propertyName );
+		
+        throw new UnsupportedOperationException( "Can't (yet) remove system properties" );
+	}
+	
+		public final void
+	createSystemProperty( String propertyName, String propertyValue )
+	{
+		validateNameValue( propertyName, propertyValue );
+        throw new UnsupportedOperationException( "Can't (yet) create new system properties" );
+	}
+	
+//========================================================================================
+    
 	    public MBeanNotificationInfo[]
 	getNotificationInfo()
 	{

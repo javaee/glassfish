@@ -35,13 +35,15 @@
  */
 package com.sun.appserv.management.config;
 
-import com.sun.appserv.management.base.XTypes;
-
 /**
-	 Configuration for the &lt;property> element.
+	 Facts out commonality between PropertyConfig and SystemPropertyConfig.
 */
-public interface PropertyConfig extends AnyPropertyConfig 
+public interface AnyPropertyConfig extends NamedConfigElement, Description 
 {
-/** The j2eeType as returned by {@link com.sun.appserv.management.base.AMX#getJ2EEType}. */
-	public static final String	J2EE_TYPE	= XTypes.PROPERTY_CONFIG;
+    /**
+        @return value of this property
+     */
+    String  getValue();
+    
+    void setValue( String value );
 }

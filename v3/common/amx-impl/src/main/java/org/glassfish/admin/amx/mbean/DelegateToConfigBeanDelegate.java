@@ -89,7 +89,7 @@ public final class DelegateToConfigBeanDelegate extends DelegateBase
             //debug( "Attribute names: " + CollectionUtil.toString( xmlNames ) );
             
             xmlName = NameMapping.matchAMXName( amxName, xmlNames );
-            debug( "Matched: " + amxName + " => " + xmlName );
+            //debug( "Matched: " + amxName + " => " + xmlName );
         }
         
         //debug( "amxAttrNameToConfigBeanName: resolved as : " + xmlName );
