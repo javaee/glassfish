@@ -6,6 +6,7 @@ import junit.framework.Assert;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.config.Dom;
 import org.jvnet.hk2.config.DomDocument;
 import org.jvnet.hk2.config.IndentingXMLStreamWriter;
@@ -13,6 +14,8 @@ import org.dom4j.io.DocumentResult;
 import org.dom4j.io.DOMReader;
 import org.w3c.dom.Document;
 import test3.substitution.SecurityMap;
+import test3.cage.JmsCompanion;
+import test3.cage.TestCageBuilder;
 
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
@@ -38,6 +41,9 @@ public class Main extends Assert implements ModuleStartup {
 
     @Inject
     Habitat habitat;
+
+    @Inject
+    TestCageBuilder testCageBuilder;
 
 //    private static final XMLOutputFactory xof = XMLOutputFactory.newInstance();
 
@@ -180,6 +186,18 @@ Caused by: java.lang.ClassCastException: com.sun.xml.stream.ZephyrWriterFactory
 //                throw new AssertionError(e);
 //            }
 //        }
+
+        testJmsCompanion();
+    }
+
+    private void testJmsCompanion() {
+        JmsHost jms = find(foo.all, JmsHost.class);
+        Dom dom = Dom.unwrap(jms);
+        assertEquals(1,dom.companions().size());
+        Inhabitant i = (Inhabitant)dom.companions().iterator().next();
+        assertTrue(i.get() instanceof JmsCompanion);
+
+        assertEquals(1,testCageBuilder.inhabitants.size());
     }
 
     private <T> T find(Collection<?> all, Class<T> type) {
