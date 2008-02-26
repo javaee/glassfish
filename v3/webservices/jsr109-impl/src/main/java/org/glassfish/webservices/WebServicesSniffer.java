@@ -19,10 +19,10 @@ import java.util.ArrayList;
 @Service(name="webservices")
 public class WebServicesSniffer extends GenericSniffer {
 
-    final String[] containers = { "com.sun.enterprise.security.WebServicesContainer" };
+    final String[] containers = { "org.glassfish.webservices.WebServicesContainer" };
 
     public WebServicesSniffer() {
-        super("webservices", "WEB-INF/webservices.xml", null);
+        super("webservices", "WEB-INF/web.xml", null);
     }
 
 
