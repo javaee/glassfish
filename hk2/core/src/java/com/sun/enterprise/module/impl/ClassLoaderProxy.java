@@ -53,32 +53,37 @@ public class ClassLoaderProxy extends URLClassLoader {
 
     protected Class<?> findClass(String name) throws ClassNotFoundException {
 
-        Class c=null;
-        synchronized(facadeSurrogates) {
-            for (ClassLoaderFacade classLoader : facadeSurrogates) {
-                try {
-                    c = classLoader.getClass(name);
-                } catch(ClassNotFoundException e) {
-                    // ignored.
-                }
-                if (c!=null) {
-                    return c;
-                }
-            }
-        }
-        synchronized(surrogates) {
-            for (ClassLoader classLoader : surrogates) {
-                try {
-                    c = classLoader.loadClass(name);
-                } catch(ClassNotFoundException e) {
-                    // ignored.
-                }
-                if (c!=null) {
-                    return c;
+        try {
+            return findClassDirect(name);
+        } catch(ClassNotFoundException cfne) {
+
+            Class c=null;
+            synchronized(facadeSurrogates) {
+                for (ClassLoaderFacade classLoader : facadeSurrogates) {
+                    try {
+                        c = classLoader.getClass(name);
+                    } catch(ClassNotFoundException e) {
+                        // ignored.
+                    }
+                    if (c!=null) {
+                        return c;
+                    }
                 }
             }
+            synchronized(surrogates) {
+                for (ClassLoader classLoader : surrogates) {
+                    try {
+                        c = classLoader.loadClass(name);
+                    } catch(ClassNotFoundException e) {
+                        // ignored.
+                    }
+                    if (c!=null) {
+                        return c;
+                    }
+                }
+            }
+            throw cfne;
         }
-        return findClassDirect(name);
     }
 
     /**
@@ -91,45 +96,51 @@ public class ClassLoaderProxy extends URLClassLoader {
     }
 
     public URL findResource(String name) {
-        synchronized(facadeSurrogates) {
-            for (ClassLoaderFacade classLoader : facadeSurrogates) {
+        URL url = super.findResource(name);
+        if (url==null) {
+            synchronized(facadeSurrogates) {
+                for (ClassLoaderFacade classLoader : facadeSurrogates) {
 
-                URL url = classLoader.findResource(name);
-                if (url!=null) {
-                    return url;
+                    url = classLoader.findResource(name);
+                    if (url!=null) {
+                        return url;
+                    }
+                }
+            }
+            synchronized(surrogates) {
+                for (ClassLoader classLoader : surrogates) {
+
+                    url = classLoader.getResource(name);
+                    if (url!=null) {
+                        return url;
+                    }
                 }
             }
         }
-        synchronized(surrogates) {
-            for (ClassLoader classLoader : surrogates) {
-
-                URL url = classLoader.getResource(name);
-                if (url!=null) {
-                    return url;
-                }
-            }
-        }
-        return super.findResource(name);
-
+        return url;
     }
 
     public Enumeration<URL> findResources(String name) throws IOException {
 
+        Enumeration<URL> enumerat = super.findResources(name);
+        if (enumerat!=null && enumerat.hasMoreElements()) {
+             return enumerat;
+        }
         for (ClassLoaderFacade classLoader : facadeSurrogates) {
 
-            Enumeration<URL> enumerat = classLoader.getResources(name);
+            enumerat = classLoader.getResources(name);
             if (enumerat!=null && enumerat.hasMoreElements()) {
                 return enumerat;
             }
         }
         for (ClassLoader classLoader : surrogates) {
-            Enumeration<URL> enumerat = classLoader.getResources(name);
+            enumerat = classLoader.getResources(name);
             if (enumerat!=null && enumerat.hasMoreElements()) {
                 return enumerat;
             }
 
         }
-        return super.findResources(name);
+        return enumerat;
     }
 
     public void addDelegate(ClassLoader cl) {

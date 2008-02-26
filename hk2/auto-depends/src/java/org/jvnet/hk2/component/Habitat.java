@@ -123,6 +123,16 @@ public class Habitat {
             if(cageBuilder!=null)
                 ((CageBuilder)cageBuilder.get()).onEntered(i);
         }
+
+/*        for (CageBuilder c : this.getAllByContract(CageBuilder.class)) {
+            TargetType tt = c.getClass().getAnnotation(TargetType.class);
+            if (tt!=null) {
+                if (i.type().isAssignableFrom(tt.value())) {
+                    c.onEntered(i);
+                }
+            
+            }
+        }  */
     }
 
     /**
