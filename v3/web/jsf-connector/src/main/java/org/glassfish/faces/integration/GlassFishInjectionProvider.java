@@ -76,7 +76,6 @@ public class GlassFishInjectionProvider extends DiscoverableInjectionProvider {
     public GlassFishInjectionProvider(ServletContext servletContext) {
         Habitat defaultHabitat = (Habitat)servletContext.getAttribute(
                 JSF_HABITAT_ATTRIBUTE);
-        servletContext.removeAttribute(JSF_HABITAT_ATTRIBUTE);
         invokeMgr = defaultHabitat.getByContract(InvocationManager.class);
         injectionManager = defaultHabitat.getByContract(InjectionManager.class);
     }
