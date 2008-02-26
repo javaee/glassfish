@@ -35,12 +35,12 @@
  */
 package com.sun.appserv.management.config;
 
-import com.sun.appserv.management.base.XTypes;
-import com.sun.appserv.management.base.Container;
-
-
 import java.util.Map;
 
+import javax.management.ObjectName;
+
+import com.sun.appserv.management.base.XTypes;
+import com.sun.appserv.management.base.Container;
 
 
 /**
@@ -111,12 +111,17 @@ public interface PropertiesAccess extends Container
 	 */
 	public void		createProperty( String propertyName, String propertyValue);
 	
-	/**
-		Remove a property with the specified name. 
-		
-		@param propertyName	the name of the property
-	 */
 	public void		removeProperty( String propertyName );
+    
+	/**
+		Return all PropertyConfig MBeans, keyed by property name. 
+        @since Glassfish V3
+	 */
+    public Map<String,ObjectName>  getPropertyConfigMap();
 }
+
+
+
+
 
 

@@ -1657,24 +1657,6 @@ public class AMXImplBase extends MBeanImplBase
 	{
 		return( Container.class.isAssignableFrom( getInterface() ) );
 	}
-    
-    /**
-        @return true if this MBean supports access to properties
-     */
-    	private boolean
-	supportsProperties()
-	{
-		return( PropertiesAccess.class.isAssignableFrom( getInterface() ) );
-	}
-    
-    /**
-        @return true if this MBean supports access to properties
-     */
-    	private boolean
-	supportsSystemProperties()
-	{
-		return( PropertiesAccess.class.isAssignableFrom( getInterface() ) );
-	}
 	
 	protected final static Set<String>  EMPTY_STRING_SET    = Collections.emptySet();
 	
@@ -1853,6 +1835,7 @@ public class AMXImplBase extends MBeanImplBase
     }
 	
 	
+    /*
 	static private final Set<String>  AMX_NATIVE_ATTRIBUTES    =
 	    Collections.unmodifiableSet( GSetUtil.newSet(
     	    new String[]
@@ -1872,10 +1855,10 @@ public class AMXImplBase extends MBeanImplBase
     	    }));
 	    
 	
-	/**
+	**
 		An optimization to not bother with all the names that are
 		native to AMX and not mapped to a Delegate Attribute.
-	 */
+	 *
 	    private Set<String>
     getMyAttributeMappingCandidates()
     {
@@ -1901,6 +1884,7 @@ public class AMXImplBase extends MBeanImplBase
 		
 		return candidates;
     }
+    */
 
 	/*
 		protected void
