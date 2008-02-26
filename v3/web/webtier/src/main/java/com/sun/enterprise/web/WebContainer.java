@@ -67,6 +67,7 @@ import org.apache.catalina.startup.DigesterFactory;
 import org.apache.catalina.startup.TldConfig;
 import org.apache.catalina.util.ServerInfo;
 import org.apache.coyote.tomcat5.CoyoteAdapter;
+import org.apache.coyote.tomcat5.CoyoteRequest;
 import org.apache.tomcat.util.IntrospectionUtils;
 import org.apache.jasper.compiler.TldLocationsCache;
 import org.apache.jasper.xmlparser.ParserUtils;
@@ -291,47 +292,39 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             _logger.log(Level.WARNING,
                 "Error in creating web modules manager: ", cx);
         }
+         */
 
         LogService logService = null;
-
-        try {
-
-            Config cfg = _serverContext.getDefaultHabitat().getComponent(Config.class);
-            getDynamicReloadingSettings(cfg.getAdminService().getDasConfig());
-            logService = cfg.getLogService();
-            initLogLevel(logService);
-            initMonitoringLevel(cfg.getMonitoringService());
-
-            Property maxDepth
-                    = ConfigBeansUtilities.getPropertyByName(cfg.getWebContainer(), DISPATCHER_MAX_DEPTH);
-            if (maxDepth != null && maxDepth.getValue() != null) {
-
-                int depth = -1;
-                try {
-                    depth = Integer.parseInt(maxDepth.getValue());
-                } catch (Exception e) {}
-
-                if (depth > 0) {
-                    CoyoteRequest.setMaxDispatchDepth(depth);
-                    if (_logger.isLoggable(Level.FINE)) {
-                        _logger.fine("Maximum depth for nested request "
-                                + "dispatches set to "
-                                + maxDepth.getValue());
-                    }
+        Config cfg = _serverContext.getDefaultHabitat().getComponent(Config.class);
+        getDynamicReloadingSettings(cfg.getAdminService().getDasConfig());
+        logService = cfg.getLogService();
+        initLogLevel(logService);
+        initMonitoringLevel(cfg.getMonitoringService());
+        
+        Property maxDepth = ConfigBeansUtilities.getPropertyByName(
+                cfg.getWebContainer(), DISPATCHER_MAX_DEPTH);
+        if (maxDepth != null && maxDepth.getValue() != null) {
+            int depth = -1;
+            try {
+                depth = Integer.parseInt(maxDepth.getValue());
+            } catch (Exception e) {}
+                
+            if (depth > 0) {
+                CoyoteRequest.setMaxDispatchDepth(depth);
+                if (_logger.isLoggable(Level.FINE)) {
+                    _logger.fine("Maximum depth for nested request "
+                            + "dispatches set to "
+                            + maxDepth.getValue());
                 }
             }
-
-        } catch (ConfigException e) {
-            _logger.log(Level.SEVERE, "webcontainer.configError", e);
         }
-
+    
         String logServiceFile = null;
         if (logService != null) {
             logServiceFile = logService.getFile();
         }
-         */
         
-        _embedded = new EmbeddedWebContainer(_logger, _serverContext, this, null);
+        _embedded = new EmbeddedWebContainer(_logger, _serverContext, this, logServiceFile);
         _embedded.setUseNaming(false);
         if (_debug > 1)
             _embedded.setDebug(_debug);
