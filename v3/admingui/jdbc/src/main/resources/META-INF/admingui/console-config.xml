@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<console-config id="myIntegration">
-    <integration-point id="jdbcResources" type="tree" priority="840" parentId="Resources" content="/jdbcLists.jsf" />
-    <integration-point id="myTab" type="tab" priority="22" parentId="ResourcesTab" />
-</console-config> 
