@@ -228,12 +228,14 @@ final class ContainerSupport
 		return( m );
 	}
 	
+    static private final Map<String,ObjectName> EMPTY_MAP = Collections.emptyMap();
+    
 		public final Map<String,ObjectName>
 	getContaineeObjectNameMap( final String j2eeType )
 	{
 		if ( ! getContaineeJ2EETypes().contains( j2eeType ) )
 		{
-			throw new IllegalArgumentException( mOwnerObjectName + " does not contain j2eeType: " + j2eeType );
+            return EMPTY_MAP;
 		}
 
 		final Set<ObjectName>	objectNames	= getContaineeObjectNameSet( j2eeType );

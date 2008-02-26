@@ -832,8 +832,7 @@ public class AMXImplBase extends MBeanImplBase
 		
 		if ( ! (isLegalAttribute( name ) || name.equals(OBJECT_REF_ATTR_NAME) ) )
 		{
-			debug( "getAttribute: unknown Attribute " + name + ", legal Attributes are: " +
-				toString( getAttributeInfos().keySet() ) );
+			debug( "getAttribute: unknown Attribute " + name + ", legal Attributes are: " + toString( getAttributeInfos().keySet() ) );
 			throw new AttributeNotFoundException( name );
 		}
 		

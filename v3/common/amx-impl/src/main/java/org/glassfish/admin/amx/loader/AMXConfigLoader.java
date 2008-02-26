@@ -290,7 +290,7 @@ public final class AMXConfigLoader
             // if the specified interface is the base interface AMXConfig, then
             // the resulting interface is a combination of AMXConfig and the interface of the ConfigBean
             final boolean autoInterface = amxInterface == AMXConfig.class;
-            final Class<?> supplementaryIntf = cbClass.isInterface() ? cbClass : null;
+            final Class<?> supplementaryIntf = autoInterface ? (cbClass.isInterface() ? cbClass : null) : null;
             
             final AMXMBeanMetadata metadata        = getAMXMBeanMetadata(cb);
             
