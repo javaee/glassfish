@@ -48,8 +48,6 @@ public class DeploymentContextImpl implements DeploymentContext {
     ClassLoader cloader;
     Properties props;
     Map<String, Object> modulesMetaData = new HashMap<String, Object>();
-    Object config;
-
 
     /** Creates a new instance of DeploymentContext */
     public DeploymentContextImpl(Logger logger, ReadableArchive source, Properties params, V3Environment env) {
@@ -69,14 +67,6 @@ public class DeploymentContextImpl implements DeploymentContext {
 
     public Logger getLogger() {
         return logger;
-    }
-
-    public void setConfig(Object config) {
-        this.config = config;
-    }
-
-    public Object getConfig() {
-        return config;
     }
 
     /**

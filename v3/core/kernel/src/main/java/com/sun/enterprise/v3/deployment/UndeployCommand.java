@@ -33,7 +33,6 @@ import com.sun.enterprise.v3.server.V3Environment;
 import com.sun.enterprise.v3.services.impl.GrizzlyService;
 import com.sun.enterprise.config.serverbeans.Applications;
 import com.sun.enterprise.config.serverbeans.Module;
-import com.sun.enterprise.config.serverbeans.WebModule;
 import com.sun.enterprise.config.serverbeans.Application;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.ActionReport;
@@ -44,14 +43,11 @@ import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.config.ConfigSupport;
-import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.TransactionFailure;
 
 import java.io.File;
 import java.util.Properties;
 import java.util.logging.Logger;
-import java.beans.PropertyVetoException;
 
 /**
  * Undeploys applications.
@@ -107,8 +103,7 @@ public class UndeployCommand extends ApplicationLifecycle implements AdminComman
         // check if it's directory deployment
         boolean isDirectoryDeployed = false;
         for (Module module : applications.getModules()) {
-            if (module.getName().equals(name) 
-                && module instanceof Application) {
+            if (module.getName().equals(name)) {
                 isDirectoryDeployed = Boolean.valueOf(
                     ((Application)module).getDirectoryDeployed());
             }
@@ -117,25 +112,12 @@ public class UndeployCommand extends ApplicationLifecycle implements AdminComman
         if (report.getActionExitCode().equals(ActionReport.ExitCode.SUCCESS)) {
             // so far I am doing this after the unload, maybe this should be moved before...
             try {
-                ConfigSupport.apply(new SingleConfigCode<Applications>() {
-                    public Object run(Applications apps) throws PropertyVetoException, TransactionFailure {
-                        for (Module module : applications.getModules()) {
-                            if (module.getName().equals(name) 
-                                && module instanceof WebModule) {
-                                apps.getModules().remove(module);
-                                return module;
-                            }
-                        }
-                        throw new TransactionFailure("Module not found in configuration", null);
-                    }
-                }, applications);
-
                 // remove the "application" element
                 unregisterAppFromDomainXML(name);
-
             } catch(TransactionFailure e) {
                 logger.warning("Module " + name + " not found in configuration");
             }
+
             //remove context from generated
             deleteContainerMetaInfo(info, deploymentContext);
                 //if directory deployment then do no remove the directory

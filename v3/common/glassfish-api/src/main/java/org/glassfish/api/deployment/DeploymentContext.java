@@ -107,13 +107,6 @@ public interface DeploymentContext extends ExecutionContext {
     public <T> T getModuleMetaData(Class<T> metadataType);
 
     /**
-     * Returns the configuration object for the deployment
-     *
-     * @return the configuration object that will be persisted to our configuration backing store
-     */
-    public Object getConfig();
-
-    /**
      * Returns the properties that will be persisted as a key value pair at
      * then end of deployment. That allows individual Deployers implementation
      * to store some information that should be available upon server restart.

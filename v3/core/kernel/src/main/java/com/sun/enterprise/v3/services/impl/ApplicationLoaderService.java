@@ -150,19 +150,8 @@ public class ApplicationLoaderService extends ApplicationLifecycle
                                     env);
                             depContext.setClassLoader(cloader);
 
-
-                            for (Module module : applications.getModules()) {
-                                if (module.getName().equals(sourceFile.getName())) {
-                                    depContext.setConfig(module);
-                                    break;
-                                }
-                            }
-                            if (depContext.getConfig()==null) {
-                                logger.severe("Cannot find configuration for application " + sourceFile.getName());
-                            } else {
-                                ActionReport report = new HTMLActionReporter();
-                                load(appSniffers, depContext, report);
-                            }
+                            ActionReport report = new HTMLActionReporter();
+                            load(appSniffers, depContext, report);
 
                         } else {
                             logger.severe("Cannot find the application type for the artifact at : "
@@ -223,18 +212,6 @@ public class ApplicationLoaderService extends ApplicationLifecycle
                             env);
 
 
-                    for (Module module : applications.getModules()) {
-                        if (module.getName().equals(appName) && 
-                            module instanceof WebModule) {
-                            depContext.setConfig(module);
-                            break;
-                        }
-                    }
-                    if (depContext.getConfig()==null) {
-                        logger.severe("Cannot find configuration for application " + sourceFile.getName());
-                        return;
-                    }
- 
                     depContext.setProps(populateDeployPropsFromDomainXML(app));
 
                     ActionReport report = new HTMLActionReporter();

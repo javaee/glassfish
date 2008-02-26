@@ -50,15 +50,11 @@ import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.PerLookup;
-import org.jvnet.hk2.config.ConfigSupport;
-import org.jvnet.hk2.config.SingleConfigCode;
-import org.jvnet.hk2.config.TransactionFailure;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import java.util.logging.Level;
-import java.beans.PropertyVetoException;
 
 
 /**
@@ -277,41 +273,7 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
             moduleProps.setProperty(ServerTags.DIRECTORY_DEPLOYED, String.valueOf(isDirectoryDeployed));
 
 
-            // let's add our configuration data. so far it's an horrible hack where I always create
-            // a WebModule instance, soon we should have a generic config object
-            final List<ApplicationInfo> appInfos = 
-                new ArrayList<ApplicationInfo>();
-            com.sun.enterprise.config.serverbeans.WebModule wm = (com.sun.enterprise.config.serverbeans.WebModule)
-                ConfigSupport.apply(new SingleConfigCode<Applications>() {
-                    /**
-                     * Runs the following command passing the configration object. The code will be run
-                     * within a transaction, returning true will commit the transaction, false will abort
-                     * it.
-                     *
-                     * @param param is the configuration object protected by the transaction
-                     * @return true if the changes on param should be commited or false for abort.
-                     * @throws java.beans.PropertyVetoException
-                     *          if the changes cannot be applied
-                     *          to the configuration
-                     */
-                    public Object run(Applications param) throws PropertyVetoException, TransactionFailure {
-                        com.sun.enterprise.config.serverbeans.WebModule wm = ConfigSupport.createChildOf(param, com.sun.enterprise.config.serverbeans.WebModule.class);
-
-                        applications.getModules().add(wm);
-                        wm.setName(name);
-                        wm.setLocation(docBase);
-
-
-                        // another horrible hack because Webcontainer wants a WebModule before the deployment code runs,
-                        // this will need tobe changed asap.                        
-                        deploymentContext.setConfig(wm);
-
-                        ApplicationInfo appInfo = load(appSniffers, deploymentContext, report);
-                        appInfos.add(appInfo);
-                        return wm;
-                    }
-                }, applications);
-            
+            ApplicationInfo appInfo = load(appSniffers, deploymentContext, report);
 
             if (report.getActionExitCode().equals(ActionReport.ExitCode.SUCCESS)) {
                 report.setMessage(localStrings.getLocalString("deploy.command.success",
@@ -326,7 +288,7 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
                 msgPart.addProperty(NAME, name);
                 
                 // register application information in domain.xml
-                registerAppInDomainXML(appInfos.get(0), deploymentContext);
+                registerAppInDomainXML(appInfo, deploymentContext);
             }
         } catch(Exception e) {
             logger.log(Level.SEVERE, "Error during deployment : ", e);

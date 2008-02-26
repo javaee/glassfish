@@ -717,8 +717,7 @@ abstract public class ApplicationLifecycle {
             public Object run(Applications apps) throws PropertyVetoException, TransactionFailure {
                 for (com.sun.enterprise.config.serverbeans.Module module : 
                     applications.getModules()) {
-                    if (module.getName().equals(appName) && 
-                        module instanceof Application) {
+                    if (module.getName().equals(appName)) {  
                         apps.getModules().remove(module);
                         return module;
                     }
