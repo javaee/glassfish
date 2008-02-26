@@ -8,22 +8,12 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.config.Dom;
-import org.jvnet.hk2.config.DomDocument;
-import org.jvnet.hk2.config.IndentingXMLStreamWriter;
-import org.dom4j.io.DocumentResult;
-import org.dom4j.io.DOMReader;
-import org.w3c.dom.Document;
-import test3.substitution.SecurityMap;
 import test3.cage.JmsCompanion;
 import test3.cage.TestCageBuilder;
+import test3.substitution.SecurityMap;
 
-import javax.xml.stream.XMLOutputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.transform.dom.DOMResult;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import java.util.List;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * @author Kohsuke Kawaguchi
