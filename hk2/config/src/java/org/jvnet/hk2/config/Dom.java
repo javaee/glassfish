@@ -67,7 +67,7 @@ public class Dom extends LazyInhabitant implements InvocationHandler, Observable
      */
     public final ConfigModel model;
 
-    private Dom parent;
+    private final Dom parent;
 
     static abstract class Child {
         final String name;
