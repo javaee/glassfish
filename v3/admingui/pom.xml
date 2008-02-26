@@ -15,11 +15,12 @@
     <name>Admin Console Webapp Packages</name>
 
     <modules>
+    	<module>plugin</module>
         <module>core</module>
         <module>jdbc</module>
         <module>war</module>
     	<module>j1plugin</module>
-  </modules>
+    </modules>
 
     <build>
         <plugins>
