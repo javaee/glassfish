@@ -50,10 +50,10 @@
     <name>GlassFish Web container related modules</name>  
     <modules>
         <module>war-util</module>
+        <module>jstl</module>
+        <module>jsf-connector</module>
         <module>webtier</module>
         <module>tomcat-connector</module>
-        <module>jsf-connector</module>
-		<!--module>jstl</module-->
         <module>admin</module>
     </modules>
 
