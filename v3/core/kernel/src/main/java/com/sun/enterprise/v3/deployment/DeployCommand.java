@@ -257,7 +257,7 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
                 return;
             }
 
-            final String docBase = archive.getURI().getSchemeSpecificPart();
+            final String docBase = archive.getURI().toURL().toString();
             final ReadableArchive sourceArchive = archive; 
             final DeploymentContextImpl deploymentContext = new DeploymentContextImpl(logger,
                     sourceArchive, parameters, env);
@@ -265,7 +265,7 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
 
             Properties moduleProps = deploymentContext.getProps();
             moduleProps.setProperty(ServerTags.NAME, name);
-            moduleProps.setProperty(ServerTags.LOCATION, deploymentContext.getSource().getURI().getSchemeSpecificPart());
+            moduleProps.setProperty(ServerTags.LOCATION, deploymentContext.getSource().getURI().toURL().toString());
             // set to default "user", deployers can override it 
             // during processing
             moduleProps.setProperty(ServerTags.OBJECT_TYPE, "user");

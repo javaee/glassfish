@@ -40,6 +40,7 @@ import com.sun.enterprise.config.serverbeans.WebModule;
 import com.sun.enterprise.config.serverbeans.Property;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.Startup;
+import org.glassfish.api.Async;
 import org.glassfish.api.container.Sniffer;
 import org.glassfish.api.container.Container;
 import org.glassfish.api.deployment.ApplicationContainer;
@@ -70,6 +71,7 @@ import java.util.logging.Logger;
  */
 @Service
 @Scoped(Singleton.class)
+@Async
 public class ApplicationLoaderService extends ApplicationLifecycle
         implements Startup, PreDestroy, PostConstruct {
     
@@ -198,7 +200,13 @@ public class ApplicationLoaderService extends ApplicationLifecycle
             logger.severe("Cannot determine application type at " + source);
             return;
         }
-        File sourceFile = new File(source);
+        URI uri = null;
+        try {
+            uri = new URI(source);
+        } catch (URISyntaxException e) {
+            logger.severe("Cannot determine original location for application : " + e.getMessage());
+        }
+        File sourceFile = new File(uri);
         if (sourceFile.exists()) {
             try {
                 ReadableArchive archive = null;
