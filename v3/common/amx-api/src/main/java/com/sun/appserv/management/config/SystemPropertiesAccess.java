@@ -34,6 +34,7 @@
  * holder.
  */
 package com.sun.appserv.management.config;
+import com.sun.appserv.management.base.Container;
 
 import java.util.Map;
 
@@ -44,6 +45,9 @@ import com.sun.appserv.management.base.XTypes;
 	All MBeans that have system Properties must extend this interface.
 	<p>
 	Properties are always Strings.  Property names are required to be unique.
+    <p>
+    New for Glassfish V3:  system properties are first-class MBeans and so this
+    interface extends Container.
 	
 	@see ClusterConfig
 	@see ConfigConfig

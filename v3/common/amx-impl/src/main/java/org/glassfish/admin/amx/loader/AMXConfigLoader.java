@@ -109,7 +109,10 @@ public final class AMXConfigLoader
         }
         else
         {
-            //debug( "WARNING: parent is null for " + configBean.getProxyType().getName() + " (bug in ConfigBeans)");
+            if ( ! configBean.getProxyType().getName().endsWith( "Domain" ) )
+            {
+                debug( "WARNING: parent is null for " + configBean.getProxyType().getName() + " (bug in ConfigBeans)");
+            }
         }
         
         return parent;
@@ -154,7 +157,7 @@ public final class AMXConfigLoader
         
         try
         {
-            // TEST code (remove later): should throw an Exception
+            // TEST CODE (remove later): should throw an Exception
             new AMXConfigImplBase( null, null, null, AMXConfig.class, null, null );
             throw new Error( "AMXConfigLoader: AMXConfigImplBase did not throw an exception for a null j2eeType!!!" );
         }
@@ -355,8 +358,8 @@ public final class AMXConfigLoader
             }
             else
             {
-                debug( "WARNING: All ConfigBeans must have a parent!  No parent for " + cb.getProxyType().getName() );
-               // throw new IllegalArgumentException( "All AMXConfig MBeans must have a parent!  No parent for " + cb.getProxyType().getName() );
+                //debug( "WARNING: All ConfigBeans must have a parent!  No parent for " + cb.getProxyType().getName() );
+                throw new IllegalArgumentException( "All AMXConfig MBeans must have a parent!  No parent for " + cb.getProxyType().getName() );
             }
         }
         
@@ -377,6 +380,21 @@ public final class AMXConfigLoader
     }
 
         private String
+    getJ2EETypeField( final Class<? extends AMXConfig>  amxInterface )
+    {
+        String j2eeType = null;
+        try {
+            j2eeType	= (String)ClassUtil.getFieldValue( amxInterface, "J2EE_TYPE" );
+        }
+        catch( Exception e )
+        {
+            // this is NOT OK: should be specified if something other than generic
+            //debug( "No J2EE_TYPE field found in " + amxInterface.getName() );
+            throw new IllegalArgumentException(e);
+        }
+        return j2eeType;
+    }
+        private String
     getJ2EEType(
         final ConfigBean cb,
         final AMXConfigInfo info)
@@ -384,20 +402,12 @@ public final class AMXConfigLoader
         final Class<? extends AMXConfig> amxInterface = info.amxInterface();
         
         String j2eeType = null;
-        // if an AMX interface was specified, use its J2EE_TYPE field
+        // if a specific AMX interface was specified (not the base interface AMXConfig), 
+        // use its J2EE_TYPE field preferentially
         if ( amxInterface != AMXConfig.class )
         {
-            try {
-            j2eeType	= (String)ClassUtil.getFieldValue( amxInterface, "J2EE_TYPE" );
-            }
-            catch( Exception e )
-            {
-                // this is NOT OK: should be specified if something other than generic
-                debug( "No J2EE_TYPE field found in " + amxInterface.getName() );
-                throw new IllegalArgumentException(e);
-            }
+            j2eeType = getJ2EETypeField( amxInterface );
         }
-        
         if ( j2eeType == null )
         {
             // Use the value from the annotation
@@ -409,6 +419,7 @@ public final class AMXConfigLoader
                 // don't allow "." in the type; it will confuse the "full type" attribute
                 final String configInterfaceName = cb.getProxyType().getName().replace(".", "_");
                 j2eeType = XTypes.PREFIX + "CFG-" + configInterfaceName;
+                debug( "Using DERIVED j2eeType of " + j2eeType + " for " + configInterfaceName );
             }
         }
         assert j2eeType != null && j2eeType.startsWith( XTypes.PREFIX );
@@ -417,10 +428,9 @@ public final class AMXConfigLoader
         {
             throw new RuntimeException( "AMXConfigLoader.getJ2EEType: j2eeType is null" );
         }
-        
         if ( ! j2eeType.startsWith( XTypes.PREFIX ) )
         {
-            throw new RuntimeException( "AMXConfigLoader.getJ2EEType: j2eeType is null" );
+            throw new RuntimeException( "AMXConfigLoader.getJ2EEType: j2eeType just start with " + XTypes.PREFIX);
         }
         
         return j2eeType;

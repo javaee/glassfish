@@ -55,6 +55,7 @@ import java.io.Serializable;
     "description"
 }) */
 @Configured
+@org.glassfish.admin.amx.loader.AMXConfigInfo( amxInterface=com.sun.appserv.management.config.PropertyConfig.class)
 public interface Property extends ConfigBeanProxy, Injectable  {
 
     /**

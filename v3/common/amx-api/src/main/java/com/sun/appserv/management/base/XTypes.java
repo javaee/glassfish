@@ -168,8 +168,18 @@ public final class XTypes
 	 */
 	public final static String	NODE_AGENT_CONFIG			=  P + "NodeAgentConfig";
 	
+	/**
+		ID for {@link com.sun.appserv.management.config.PropertyConfig}
+	 */
+	public final static String	PROPERTY_CONFIG       =  P + "PropertyConfig";
 	
-	
+	/**
+		ID for {@link com.sun.appserv.management.config.SystemPropertyConfig}
+	 */
+	public final static String	SYSTEM_PROPERTY_CONFIG       =  P + "SystemPropertyConfig";
+    
+    
+    
 	/**
 		ID for {@link com.sun.appserv.management.config.TransformationRuleConfig}
 	 */
@@ -885,5 +895,6 @@ LOAD_BALANCER_MONITORING
 		ID for {@link com.sun.appserv.management.monitor.WebServiceEndpointMonitor}
 	 */
 	public final static String	WEBSERVICE_ENDPOINT_MONITOR       =  P + "WebServiceEndpointMonitor";
+
         
 }

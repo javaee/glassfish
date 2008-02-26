@@ -33,16 +33,10 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
- 
-/*
- * $Header: /cvs/glassfish/appserv-api/src/java/com/sun/appserv/management/config/PropertiesAccess.java,v 1.2 2007/05/05 05:30:35 tcfujii Exp $
- * $Revision: 1.2 $
- * $Date: 2007/05/05 05:30:35 $
- */
-
 package com.sun.appserv.management.config;
 
 import com.sun.appserv.management.base.XTypes;
+import com.sun.appserv.management.base.Container;
 
 
 import java.util.Map;
@@ -62,9 +56,12 @@ import java.util.Map;
     optional.put( PropertiesAccess.PROPERTY_PREFIX + "prop1", prop1Value );
     optional.put( PropertiesAccess.PROPERTY_PREFIX + "prop2", prop2Value );
     ...
-</code></pref> 
+</code></pref>
+    <p>
+    New for Glassfish V3:  properties are first-class MBeans and so this
+    interface extends Container.
  */
-public interface PropertiesAccess
+public interface PropertiesAccess extends Container
 {
 	/**
 		When a key is required for a property in a Map,

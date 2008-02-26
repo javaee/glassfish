@@ -230,7 +230,7 @@ public class AMXImplBase extends MBeanImplBase
         if ( parentObjectName == null && theInterface != DomainRoot.class )
         {
             debug( "WARNING: every AMX MBean must have a parent object (Container)! Missing parent for j2eeType " + j2eeType );
-            //throw new IllegalArgumentException( "every AMX MBean must have a parent object (Container)" );
+            throw new IllegalArgumentException( "every AMX MBean must have a parent object (Container)" );
         }
 
         //System.out.println( "AMXImplBase: j2eeType = " + j2eeType + ", fullType = " + fullType );
@@ -1657,39 +1657,30 @@ public class AMXImplBase extends MBeanImplBase
 	{
 		return( Container.class.isAssignableFrom( getInterface() ) );
 	}
-	
+    
+    /**
+        @return true if this MBean supports access to properties
+     */
+    	private boolean
+	supportsProperties()
+	{
+		return( PropertiesAccess.class.isAssignableFrom( getInterface() ) );
+	}
+    
+    /**
+        @return true if this MBean supports access to properties
+     */
+    	private boolean
+	supportsSystemProperties()
+	{
+		return( PropertiesAccess.class.isAssignableFrom( getInterface() ) );
+	}
 	
 	protected final static Set<String>  EMPTY_STRING_SET    = Collections.emptySet();
 	
     private ContainerSupport mContainerSupport = null;
         
-        protected void
-    addContainee( final ObjectName objectName)
-    {
-        getContainerSupport().addContainee( objectName );
-    }
-    
-       protected void
-    removeContainee( final ObjectName objectName)
-    {
-        getContainerSupport().removeContainee( objectName );
-    }
-
-        protected synchronized ContainerSupport
-    getContainerSupport()
-    {
-		if ( ! isContainer() )
-		{
-			throw new UnsupportedOperationException();
-		}
-        
-        if ( mContainerSupport == null )
-        {
-            mContainerSupport = new ContainerSupport( getMBeanServer(), getObjectName() );
-        }
-        return mContainerSupport;
-    }	
-	
+  	
 	/**
 		Our container is the one that actually holds the MBeans we
 		created. Ask it for the ObjectName.
@@ -2060,9 +2051,9 @@ public class AMXImplBase extends MBeanImplBase
         {
             //------------------------------------------------------
             final AMXImplBase containerObject = getContainerObject();
-        if ( getContainerObjectName() == null ) {
-    System.out.println("postRegister: containerObject null for " + getObjectName() );
-    }
+            if ( getContainerObjectName() == null ) {
+                System.out.println("postRegister: containerObject null for " + getObjectName() );
+            }
             if ( containerObject != null )
             {
                 containerObject.getContainerSupport().containeeRegistered( getObjectName() );
@@ -2307,7 +2298,34 @@ public class AMXImplBase extends MBeanImplBase
     
     
 	//---------------------------------- Container support ---------------------------------------------
+          protected void
+    addContainee( final ObjectName objectName)
+    {
+        getContainerSupport().addContainee( objectName );
+    }
     
+       protected void
+    removeContainee( final ObjectName objectName)
+    {
+        getContainerSupport().removeContainee( objectName );
+    }
+
+        protected synchronized ContainerSupport
+    getContainerSupport()
+    {
+		if ( ! isContainer() )
+		{
+            final ObjectName containerObjectName = getContainerObjectName();
+			throw new UnsupportedOperationException("MBean " + StringUtil.quote(getObjectName()) + " is not an AMX 'Container'");
+		}
+        
+        if ( mContainerSupport == null )
+        {
+            mContainerSupport = new ContainerSupport( getMBeanServer(), getObjectName() );
+        }
+        return mContainerSupport;
+    }	
+
         public Set<String>
     getContaineeJ2EETypes()
     {

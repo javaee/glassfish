@@ -37,36 +37,12 @@ package com.sun.appserv.management.config;
 
 import com.sun.appserv.management.base.XTypes;
 
-
 /**
-	 representing a &lt;lifecycle-module&gt;.
+	 Configuration for the &lt;property> element.
 */
-public interface LifecycleModuleConfig
-    extends NamedConfigElement, DeployedItemRefConfigReferent,
-        PropertiesAccess, Description, Enabled, ObjectType
+
+public interface SystemPropertyConfig extends ConfigElement, Description 
 {
 /** The j2eeType as returned by {@link com.sun.appserv.management.base.AMX#getJ2EEType}. */
-	public static final String	J2EE_TYPE	= XTypes.LIFECYCLE_MODULE_CONFIG;
-	
-	public String	getClasspath();
-	public void		setClasspath( String classpath );
-	
-	public String	getClassname();
-	public void		setClassname( String classname );
-	
-	public String	getLoadOrder();
-	public void		setLoadOrder( String order );
-	
-	/**
-	    Use {@link #getIsFailureFatal}.
-	 @deprecated
-	 */
-	public boolean	isFailureFatal();
-	
-	public boolean	getIsFailureFatal();
-	public void 	setIsFailureFatal( boolean isFatal );
+	public static final String	J2EE_TYPE	= XTypes.SYSTEM_PROPERTY_CONFIG;
 }
-
-
-
-

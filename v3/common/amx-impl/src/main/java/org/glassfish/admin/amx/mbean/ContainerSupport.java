@@ -111,7 +111,7 @@ final class ContainerSupport
         items.add( objectName );
         mContainees.put( j2eeType, items );
         
-debug( "addContainee: " + JMXUtil.toString(objectName) );
+        //debug( "addContainee: " + JMXUtil.toString(objectName) + " to " + JMXUtil.toString(mOwnerObjectName));
     }
     
        public synchronized void
@@ -120,7 +120,7 @@ debug( "addContainee: " + JMXUtil.toString(objectName) );
         final String j2eeType = Util.getJ2EEType( objectName );
         final Set<ObjectName> items = mContainees.get(j2eeType);
         items.remove( objectName );
-debug( "removeContainee: " + JMXUtil.toString(objectName) );
+        //debug( "removeContainee: " + JMXUtil.toString(objectName) + " from " + JMXUtil.toString(mOwnerObjectName));
     }
 
     
