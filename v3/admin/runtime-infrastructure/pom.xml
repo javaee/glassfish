@@ -61,4 +61,14 @@
         </developer>
     </developers>
 
+    <dependencies>
+        <dependency>
+          <groupId>com.sun</groupId>
+          <artifactId>tools</artifactId>
+          <version>1.4.2</version>
+          <scope>system</scope>
+          <systemPath>${java.home}/../lib/tools.jar</systemPath>
+       </dependency>
+     </dependencies>
+
 </project>
