@@ -101,6 +101,12 @@ final class WebModuleListener
     private static boolean _debugLog;
 
     /**
+     * ServletContext attribute constant used for JSF injection integration.
+     */
+    private static final String JSF_HABITAT_ATTRIBUTE =
+            "com.sun.appserv.jsf.habitat";
+
+    /**
      * The instance classpath, which is composed of the pathnames of
      * domain_root/lib/classes and domain_root/lib/[*.jar|*.zip] (in this
      * order), separated by the path-separator character.
@@ -400,6 +406,11 @@ final class WebModuleListener
         }
         webModule.getServletContext().setAttribute(
                 "com.sun.appserv.tld.urls", tldURLs);
+
+        // set habitat for jsf injection
+        webModule.getServletContext().setAttribute(
+                JSF_HABITAT_ATTRIBUTE,
+                serverContext.getDefaultHabitat());
 
         SunWebApp bean  = webModule.getIasWebAppConfigBean();
 

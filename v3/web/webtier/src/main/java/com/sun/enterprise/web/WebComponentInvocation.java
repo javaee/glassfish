@@ -34,6 +34,7 @@ public class WebComponentInvocation extends ComponentInvocation {
         setComponentInvocationType(
                 ComponentInvocation.ComponentInvocationType.SERVLET_INVOCATION);
         componentId = wm.getComponentId();
+        jndiEnvironment = wm.getWebBundleDescriptor();
         container = wm;
         this.instance = instance;
     }
