@@ -172,7 +172,7 @@ final class ContainerSupport
 		}
 		else if ( children.size() == 0 )
 		{
-			debug( "getContaineeObjectName: no children of type " + j2eeType );
+			//debug( "getContaineeObjectName: no children of type " + j2eeType );
 			result	= null;
 		}
 		else

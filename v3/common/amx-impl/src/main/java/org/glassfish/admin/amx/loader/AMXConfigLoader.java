@@ -302,9 +302,9 @@ public final class AMXConfigLoader
             objectName = buildObjectName( cb, amxConfigInfo );
         
             objectName  = createAndRegister( cb, amxInterface, supplementaryIntf, objectName );
-            debug( "REGISTERED MBEAN: " + JMXUtil.toString(objectName) + " ===> USING " +
+            /*debug( "REGISTERED MBEAN: " + JMXUtil.toString(objectName) + " ===> USING " +
                 " AMXConfigInfo = " + amxConfigInfo.toString() +
-                ", AMXMBeanMetaData = " + metadata + "\n");
+                ", AMXMBeanMetaData = " + metadata + "\n");*/
         }
         
         return objectName;

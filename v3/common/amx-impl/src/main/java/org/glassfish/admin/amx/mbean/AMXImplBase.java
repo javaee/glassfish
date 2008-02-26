@@ -2016,7 +2016,7 @@ public class AMXImplBase extends MBeanImplBase
         {
             //------------------------------------------------------
             final AMXImplBase containerObject = getContainerObject();
-            if ( getContainerObjectName() == null ) {
+            if ( getContainerObjectName() == null && getInterface() != DomainRoot.class ) {
                 System.out.println("postRegister: containerObject null for " + getObjectName() );
             }
             if ( containerObject != null )
