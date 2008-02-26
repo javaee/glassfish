@@ -611,7 +611,7 @@ public class Dom extends LazyInhabitant implements InvocationHandler, Observable
      */
     public Dom getSymbolSpaceRoot(String typeName) {
         Dom dom = this;
-        while(!dom.model.symoblSpaces.contains(typeName)) {
+        while(!dom.model.symbolSpaces.contains(typeName)) {
             Dom p = dom.parent();
             if(p==null) return dom; // root
             dom = p;

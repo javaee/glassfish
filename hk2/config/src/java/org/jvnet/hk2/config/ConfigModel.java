@@ -44,7 +44,7 @@ public final class ConfigModel {
     /**
      * Type names for which this type creates a symbol space.
      */
-    final Set<String> symoblSpaces;
+    final Set<String> symbolSpaces;
 
     /**
      * The element name of this model itself, if this element can appear globally.
@@ -465,7 +465,7 @@ public final class ConfigModel {
         this.keyedAs = indexTypeName;
         this.key = key;
         this.contracts = description.get(ConfigMetadata.TARGET_CONTRACTS);
-        this.symoblSpaces = new HashSet<String>(description.get("symbolSpaces"));
+        this.symbolSpaces = new HashSet<String>(description.get("symbolSpaces"));
 
         String tagName = null;
         for (String v : description.get(InhabitantsFile.INDEX_KEY)) {
