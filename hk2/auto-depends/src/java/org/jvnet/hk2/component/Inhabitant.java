@@ -107,6 +107,45 @@ public interface Inhabitant<T> extends Holder<T> {
     MultiMap<String,String> metadata();
 
     /**
+     * Obtains the serialized metadata.
+     *
+     * <p>
+     * This method is a wrapper around {@link #metadata()} and useful for
+     * defining a highly structured metadata that doesn't easily fit
+     * a simple string representation.
+     *
+     * <p>
+     * The implementation of this method is to obtain the value associated with
+     * this key as {@code metadata().getOne(key)}, and if that exists, treat
+     * the value as base64-encoded binary, and deserializes it and returns the object.
+     *
+     * <p>
+     * The classes used in the serialization need to be available during the build time
+     * (normally during the HK2 compile mojo runs) so that the metadata can be
+     * serialized. The evolution of these classes need to be careful done, otherwise
+     * the deserialization of the metadata may fail unexpectedly.
+     *
+     * @throws Error
+     *      If the deserialization fails. This can be for example because of
+     *      the incompatible class change, or failure to resolve the classes.
+     *      Sine these problems can only happen in a critical situation,
+     *      this method throws unchecked error.
+     *      TODO: switch this to IOError when we can depend on JDK6.
+     *
+     * @return
+     *      the deserialized object.
+     */
+    <T> T getSerializedMetadata(Class<T> type, String key);
+
+    /**
+     * Obtains the metadata serialized into String.
+     *
+     * <p>
+     * This is a convenient short-cut that does {@code getSerializedMetadata(type,type.getName())}
+     */
+    <T> T getSerializedMetadata(Class<T> type);
+
+    /**
      * Called to orderly shutdown {@link Habitat}.
      * <p>
      * The expected behavior is for objects to get its {@link PreDestroy}
