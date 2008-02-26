@@ -52,10 +52,7 @@ import com.sun.appserv.management.util.jmx.JMXUtil;
 import com.sun.appserv.management.util.misc.StringUtil;
 import com.sun.appserv.management.util.misc.TimingDelta;
 
-import com.sun.enterprise.management.support.LoadAMX;
-import com.sun.enterprise.management.support.XTypesMapper;
-import com.sun.enterprise.management.support.J2EETypesMapper;
-import com.sun.enterprise.management.support.AllTypesMapper;
+import org.glassfish.admin.amx.support.LoadAMX;
 
 import java.net.MalformedURLException;
 import java.io.IOException;
@@ -102,9 +99,13 @@ public final class AMXCommand extends AMXCommandBase implements AdminCommand
     public final synchronized void _execute(AdminCommandContext context)
     {
         String timingMsg = "";
+         final TimingDelta allDelta = new TimingDelta();
             
         if ( ! mInitialized ) {
-            final TimingDelta allDelta = new TimingDelta();
+        /*
+import com.sun.enterprise.management.support.XTypesMapper;
+import com.sun.enterprise.management.support.J2EETypesMapper;
+import com.sun.enterprise.management.support.AllTypesMapper;
             final TimingDelta delta = new TimingDelta();
             
             final Class c = XTypesMapper.class;
@@ -115,6 +116,7 @@ public final class AMXCommand extends AMXCommandBase implements AdminCommand
             debug( "Load J2EETypesMapper: " + delta.elapsedMillis() );
             AllTypesMapper.getInstance();
             debug( "Load AllTypesMapper: " + delta.elapsedMillis() );
+        */
         
             StartAMX.startAMX( getMBeanServer(), mConfigRegistrar );
             mInitialized    = true;

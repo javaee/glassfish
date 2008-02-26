@@ -101,17 +101,39 @@ import org.glassfish.admin.amx.util.Issues;
 public class AMXConfigImplBase extends AMXImplBase
 	implements AMXConfig
 {
+    private final Class<?> mSupplementaryInterface;
+    
 		public
 	AMXConfigImplBase( 
         final String        j2eeType,
         final String        fullType,
         final ObjectName    parentObjectName,
 		final Class<? extends AMX> theInterface,
+        final  Class<?>     supplementaryInterface,
 		final Delegate		delegate )
 	{
 		super( j2eeType, fullType, parentObjectName, theInterface, delegate );
+        
+        mSupplementaryInterface = supplementaryInterface;
 	}
 	
+    @Override
+        protected MBeanInfo
+	modifyMBeanInfo( final MBeanInfo defaultInfo )
+	{
+        MBeanInfo info = super.modifyMBeanInfo( defaultInfo );
+        
+        if ( mSupplementaryInterface != null )
+        {
+            final MBeanInfo supplementaryInfo = MBeanInfoCache.getOtherMBeanInfo( mSupplementaryInterface );
+            
+            info = JMXUtil.mergeMBeanInfos( defaultInfo, supplementaryInfo );
+        }
+        
+		return( info );
+	}
+    
+    
 	    protected boolean
 	supportsProperties()
 	{
@@ -274,13 +296,14 @@ public class AMXConfigImplBase extends AMXImplBase
 	    return items;
 	}
 	
+    /*
 		protected final void
 	implCheck()
 	{
 	    super.implCheck();
 	    
 	    // not sure how to implement these checks in offline mode
-	    if ( ! com.sun.enterprise.management.support.BootUtil.getInstance().getOffline() )
+	    if ( ! org.glassfish.admin.amx.support.BootUtil.getInstance().getOffline() )
 	    {
     	    checkPropertiesAccessSupport();
     	    checkSystemPropertiesAccessSupport();
@@ -290,6 +313,7 @@ public class AMXConfigImplBase extends AMXImplBase
 	    checkInterfaceSupport( ObjectType.class, "ObjectType" );
 	    checkInterfaceSupport( Enabled.class, "Enabled" );
     }
+    */
     
 		private static void
 	validatePropertyName( final String propertyName )
@@ -847,7 +871,7 @@ public class AMXConfigImplBase extends AMXImplBase
    removeConfig( final String operationName)
    {
         final String        j2eeType    = operationNameToJ2EEType( operationName );
-        final ObjectName    objectName  = getContaineeObjectName( j2eeType );
+        final ObjectName    objectName  = getContainerSupport().getContaineeObjectName( j2eeType );
         if ( objectName == null )
         {
             throw new RuntimeException( new InstanceNotFoundException( j2eeType ) );

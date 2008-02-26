@@ -67,7 +67,7 @@ import org.glassfish.admin.amx.loader.AMXConfigInfo;
     "systemProperty",
     "property"
 }) */
-@AMXConfigInfo( amxInterface=com.sun.appserv.management.config.DomainConfig.class, singleton=true, omitAsAncestor=true)
+@AMXConfigInfo( amxInterface=com.sun.appserv.management.config.DomainConfig.class, singleton=true, omitAsAncestorInChildObjectName=true)
 @Configured
 public interface Domain extends ConfigBeanProxy, Injectable  {
 

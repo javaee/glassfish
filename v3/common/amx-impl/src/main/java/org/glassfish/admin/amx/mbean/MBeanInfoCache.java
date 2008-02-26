@@ -52,6 +52,7 @@ import com.sun.appserv.management.util.jmx.JMXUtil;
 public final class MBeanInfoCache
 {
 	private final	Map<Class<? extends AMX>, MBeanInfo> mInfos = new HashMap<Class<? extends AMX>, MBeanInfo>();
+	private final	Map<Class<?>, MBeanInfo> mOtherInfos = new HashMap<Class<?>, MBeanInfo>();
     
     private static final MBeanInfoCache INSTANCE = new MBeanInfoCache();
     
@@ -62,7 +63,7 @@ public final class MBeanInfoCache
     }
     
         public static synchronized MBeanInfo
-    getMBeanInfo( final Class<? extends AMX> amxInterface )
+    getAMXMBeanInfo( final Class<? extends AMX> amxInterface )
     {
         MBeanInfo info = INSTANCE.mInfos.get( amxInterface );
         if ( info == null )
@@ -72,9 +73,22 @@ public final class MBeanInfoCache
         }
         return info;
     }
+    
+        public static synchronized MBeanInfo
+    getOtherMBeanInfo( final Class<?> intf )
+    {
+        MBeanInfo info = INSTANCE.mOtherInfos.get( intf );
+        if ( info == null )
+        {
+            info = MBeanInfoConverter.getInstance().convert( intf, null );
+            INSTANCE.mOtherInfos.put( intf, info );
+        }
+        return info;
+    }
+
         
     /**
-		A design decision was to not include certain Attributes or pseuod-Attributes directly
+		A design decision was to not include certain Attributes or pseuodo-Attributes directly
 		in AMX, so these fields are separated out into 'Extra'.  However, some of these
 		are real Attributes that do need to be present in the MBeanInfo supplied by each
 		MBean.

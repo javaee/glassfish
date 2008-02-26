@@ -40,7 +40,6 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.Properties;
 import java.util.HashSet;
 
@@ -67,8 +66,12 @@ import com.sun.appserv.management.base.Utility;
 
 import com.sun.appserv.management.base.QueryMgr;
 import com.sun.appserv.management.base.XTypes;
-import com.sun.enterprise.management.support.XTypesMapper;
-import com.sun.enterprise.management.support.AllTypesMapper;
+/*
+import org.glassfish.admin.amx.types.XTypesMapper;
+import org.glassfish.admin.amx.types.AllTypesMapper;
+import org.glassfish.admin.amx.types.TypeInfos;
+import org.glassfish.admin.amx.types.TypeInfo;
+*/
 
 import com.sun.appserv.management.base.AMXLoggerBase;
 
@@ -80,8 +83,6 @@ import com.sun.appserv.management.base.Util;
 
 import com.sun.appserv.management.client.ConnectionSource;
 import com.sun.appserv.management.util.jmx.MBeanServerConnectionSource;
-import com.sun.enterprise.management.support.AMXAttributeNameMapper;
-import com.sun.appserv.management.util.jmx.Acronyms;
 import com.sun.appserv.management.util.jmx.JMXUtil;
 
 import com.sun.appserv.management.util.misc.ClassUtil;
@@ -91,9 +92,7 @@ import com.sun.appserv.management.util.misc.ThrowableMapper;
 import com.sun.appserv.management.util.misc.StringUtil;
 import com.sun.appserv.management.util.misc.CollectionUtil;
 
-import com.sun.enterprise.management.support.ObjectNames;
-import com.sun.enterprise.management.support.TypeInfo;
-import com.sun.enterprise.management.support.TypeInfos;
+import org.glassfish.admin.amx.util.ObjectNames;
 import com.sun.appserv.management.base.AMX;
 import com.sun.appserv.management.base.Container;
 
@@ -108,8 +107,6 @@ import com.sun.appserv.management.config.AMXConfig;
 import com.sun.appserv.management.config.PropertiesAccess;
 
 import com.sun.appserv.management.j2ee.J2EETypes;
-
-import com.sun.enterprise.management.support.QueryMgrImpl;
 
 import com.sun.logging.LogDomains;
 
@@ -149,9 +146,16 @@ public class AMXImplBase extends MBeanImplBase
 	private final Class			mInterface;
 	
 	/**
-		The MBeanInfo 
+		The MBeanInfo from the supplied AMX interface.  Additional info
+        might be available.
 	*/
-	private final MBeanInfo		mMBeanInterfaceMBeanInfo;
+	private final MBeanInfo		mAMXMBeanInterfaceMBeanInfo;
+    
+	/**
+		The final and complete MBeanInfo which must of course be invariant.
+        If this field is non-null, then it will be returned by getMBeanInfo().
+	*/
+	private volatile MBeanInfo		mInvariantMBeanInfo;
 	
 	/**
 		The Container or "parent" MBean for this MBean.
@@ -192,7 +196,7 @@ public class AMXImplBase extends MBeanImplBase
        private synchronized MBeanInfo
     getInterfaceMBeanInfo(final Class<? extends AMX> theInterface )
     {
-		final MBeanInfo info	= MBeanInfoCache.getMBeanInfo( theInterface );
+		final MBeanInfo info	= MBeanInfoCache.getAMXMBeanInfo( theInterface );
         if ( getAMXDebug() )
         {
             debug( "Interface " + mInterface.getName() +
@@ -222,6 +226,12 @@ public class AMXImplBase extends MBeanImplBase
 		final Delegate		delegate )
 	{
 		super();
+        
+        if ( parentObjectName == null && theInterface != DomainRoot.class )
+        {
+            debug( "WARNING: every AMX MBean must have a parent object (Container)! Missing parent for j2eeType " + j2eeType );
+            //throw new IllegalArgumentException( "every AMX MBean must have a parent object (Container)" );
+        }
 
         //System.out.println( "AMXImplBase: j2eeType = " + j2eeType + ", fullType = " + fullType );
         if ( j2eeType == null )
@@ -267,7 +277,7 @@ public class AMXImplBase extends MBeanImplBase
 		
 		mAttributeInfos	= null;
 		
-		mMBeanInterfaceMBeanInfo	= getInterfaceMBeanInfo( mInterface );
+		mAMXMBeanInterfaceMBeanInfo	= getInterfaceMBeanInfo( mInterface );
 	}
 	
 		public void
@@ -282,12 +292,6 @@ public class AMXImplBase extends MBeanImplBase
     {
         return ClassUtil.stripPackageName( this.getClass().getName() );
     }
-    
-		protected MBeanInfo
-	getMBeanInfoFromInterface()
-	{
-		return( mMBeanInterfaceMBeanInfo );
-	}
 	
 	/**
 		Almost all MBeans don't change their MBeanInfo once it's created, making it
@@ -339,26 +343,38 @@ public class AMXImplBase extends MBeanImplBase
 		public MBeanInfo
 	getMBeanInfo()
 	{
-		MBeanInfo	mbeanInfo	= null;
-	
-		try
-		{
-			mbeanInfo	= getMBeanInfoFromInterface();
-			
-			final MBeanNotificationInfo[]    notifs  = getNotificationInfo();
-			if ( notifs != null && notifs.length != 0 )
-			{
-			    mbeanInfo   = JMXUtil.addNotificationInfos( mbeanInfo, notifs );
-			}
-		}
-		catch( Exception e )
-		{
-			e.printStackTrace();
-			throw new RuntimeException( e );
-		}
-		
-		mbeanInfo   = removeUnsupportedMBeanInfo( mbeanInfo );
-		mbeanInfo   = modifyMBeanInfo( mbeanInfo );
+        MBeanInfo	mbeanInfo = null;
+        
+        if ( mInvariantMBeanInfo != null )
+        {
+            mbeanInfo = mInvariantMBeanInfo;
+        }
+        else
+        {
+            mbeanInfo = mAMXMBeanInterfaceMBeanInfo;
+            
+            try
+            {
+                final MBeanNotificationInfo[]    notifs  = getNotificationInfo();
+                if ( notifs != null && notifs.length != 0 )
+                {
+                    mbeanInfo   = JMXUtil.addNotificationInfos( mbeanInfo, notifs );
+                }
+            }
+            catch( Exception e )
+            {
+                e.printStackTrace();
+                throw new RuntimeException( e );
+            }
+            
+            mbeanInfo   = removeUnsupportedMBeanInfo( mbeanInfo );
+            mbeanInfo   = modifyMBeanInfo( mbeanInfo );
+                
+            if ( getMBeanInfoIsInvariant() )
+            {
+                mInvariantMBeanInfo = mbeanInfo;
+            }
+        }
 		
 		return( mbeanInfo );
 	}
@@ -479,18 +495,19 @@ public class AMXImplBase extends MBeanImplBase
 		return( Container.class.cast( getSelf() ) );
 	}
 	
-		public final ObjectName
-	getContainerObjectName( )
-	{
-		return( getContainerObjectName( getObjectName() ) );
-	}
 	
 		public final Container
-	getContainer( )
+	getContainer()
 	{
-		final ObjectName	objectName	= getContainerObjectName( getObjectName() );
+		final ObjectName	objectName	= getContainerObjectName();
 		
 		return(  getProxyFactory().getProxy( objectName, Container.class) );
+	}
+	
+		protected ObjectName
+	getContainerObjectName()
+	{
+        return mContainerObjectName;
 	}
 	
 	    protected ObjectNames
@@ -498,12 +515,6 @@ public class AMXImplBase extends MBeanImplBase
     {
     	return ObjectNames.getInstance( getJMXDomain() );
     }
-	
-		protected synchronized ObjectName
-	getContainerObjectName( final ObjectName selfObjectName )
-	{
-        return mContainerObjectName;
-	}
 
 	/**
 		Use the ObjectName with which this MBean was registered in combination with
@@ -766,7 +777,7 @@ public class AMXImplBase extends MBeanImplBase
 		protected boolean
 	isLegalAttribute( final String name )
 	{
-		return( getAttributeInfos().keySet().contains( name ) );
+		return( getAttributeInfos().keySet().contains( name )  );
 	}
 	
 		protected MBeanAttributeInfo
@@ -819,7 +830,7 @@ public class AMXImplBase extends MBeanImplBase
 		
 		checkAttributeSupportedInBuild( name );
 		
-		if ( ! isLegalAttribute( name ) )
+		if ( ! (isLegalAttribute( name ) || name.equals(OBJECT_REF_ATTR_NAME) ) )
 		{
 			debug( "getAttribute: unknown Attribute " + name + ", legal Attributes are: " +
 				toString( getAttributeInfos().keySet() ) );
@@ -857,49 +868,46 @@ public class AMXImplBase extends MBeanImplBase
 		Object	result	= null;
 		boolean	handleManually	= false;
 		
-        if ( isSpecialAMXAttr( name ) )
+        // see if a getter exists
+        final Method m	= findGetter( name );
+        if ( m != null )
+        {
+            result	= getAttributeByMethod( name, m );
+            debug( "getAttribute: " + name + " CALLED GETTER: " + m + " = " + result);
+            handleManually	= false;
+        }
+        else if ( isSpecialAMXAttr( name ) )
         {
             handleManually = true;
         }
-        else
+        else if ( haveDelegate() )
         {
-            // see if a getter exists
-            final Method m	= findGetter( name );
-            if ( m != null )
+            trace( "getAttribute: " + name + " HAVE DELEGATE " );
+                
+            if ( getDelegate().supportsAttribute( name ) )
             {
-                result	= getAttributeByMethod( name, m );
-                debug( "getAttribute: " + name + " CALLED GETTER: " + m + " = " + result);
-                handleManually	= false;
-            }
-            else if ( haveDelegate() )
-            {
-                trace( "getAttribute: " + name + " HAVE DELEGATE " );
-                    
-                if ( getDelegate().supportsAttribute( name ) )
+                trace( "getAttribute: " + name + " CALLING DELEGATE " );
+                try
                 {
-                    trace( "getAttribute: " + name + " CALLING DELEGATE " );
-                    try
-                    {
-                        result	= delegateGetAttribute( name );
-                    }
-                    catch( Exception e )
-                    {
-                        trace( "getAttribute: DELEGATE claims support, but fails: " + name  );
-                        handleManually	= true;
-                    }
+                    result	= delegateGetAttribute( name );
                 }
-                else
+                catch( Exception e )
                 {
-                    trace( "getAttribute: " + name + " DELEGATE DOES NOT SUPPORT " );
+                    trace( "getAttribute: DELEGATE claims support, but fails: " + name  );
                     handleManually	= true;
                 }
             }
             else
             {
+                trace( "getAttribute: " + name + " DELEGATE DOES NOT SUPPORT " );
                 handleManually	= true;
             }
         }
-		
+        else
+        {
+            handleManually	= true;
+        }
+    
 		if ( handleManually )
 		{
 			trace( "getAttribute: handle manually: " + name );
@@ -1055,13 +1063,13 @@ public class AMXImplBase extends MBeanImplBase
 	    {
 	        final String    j2eeType    = attributeNameToJ2EEType( attributeName );
 	        debug( "getAttributeManually: attributeName " + attributeName + " => j2eeType " + j2eeType );
-	        result  = getContaineeObjectName( j2eeType );
+	        result  = getContainerSupport().getContaineeObjectName( j2eeType );
 	    }
 	    else if ( isObjectNameMapAttribute( attributeName  ) )
 	    {
 	        final String    j2eeType    = attributeNameToJ2EEType( attributeName );
 	        debug( "invokeManually:  attributeName " + attributeName + " => j2eeType " + j2eeType );
-	        result  = getContaineeObjectNameMap( j2eeType );
+	        result  = getContainerSupport().getContaineeObjectNameMap( j2eeType );
 	    }
 		else
 		{
@@ -1614,13 +1622,15 @@ public class AMXImplBase extends MBeanImplBase
 		return( result );
 	}
 	
+    /*
 		protected TypeInfo
 	getTypeInfo( final String j2eeType )
 	{
 //System.out.println( "getTypeInfo: " + j2eeType + " for " + this.getClass().getName() );
 		return( TypeInfos.getInstance().getInfo( j2eeType ) );
 	}
-	
+	*/
+    
 		protected final String
 	getSelfJ2EEType()
 	{
@@ -1632,72 +1642,53 @@ public class AMXImplBase extends MBeanImplBase
 	{
 		return( Util.getName( getObjectName() ) );
 	}
-	
+
+/*
 		protected TypeInfo
 	getSelfTypeInfo()
 	{
 //System.out.println( "getSelfJ2EEType: " + getSelfJ2EEType() );
 		return( getTypeInfo( getSelfJ2EEType() ) );
 	}
-	
+*/
+
 		private boolean
 	isContainer()
 	{
 		return( Container.class.isAssignableFrom( getInterface() ) );
 	}
 	
-		protected Set<String>
-	getChildJ2EETypes()
-	{
-		return( getSelfTypeInfo().getChildJ2EETypes() );
-	}
 	
 	protected final static Set<String>  EMPTY_STRING_SET    = Collections.emptySet();
-
-	/**
-		Certain special cases are present (eg standalone ejb/web modules) where
-		a parent as described by the FullType (TypeInfos) does not exist.
-		In this case, the actual parent must contain these items.
-	 */
-		protected Set<String>
-	getFauxChildTypes()
-	{
-		return( EMPTY_STRING_SET );
-	}
 	
-		public Set<String>
-	getContaineeJ2EETypes()
-	{
+    private ContainerSupport mContainerSupport = null;
+        
+        protected void
+    addContainee( final ObjectName objectName)
+    {
+        getContainerSupport().addContainee( objectName );
+    }
+    
+       protected void
+    removeContainee( final ObjectName objectName)
+    {
+        getContainerSupport().removeContainee( objectName );
+    }
+
+        protected synchronized ContainerSupport
+    getContainerSupport()
+    {
 		if ( ! isContainer() )
 		{
-			final Exception	e	=
-				new AttributeNotFoundException( "ContaineeJ2EETypes" );
-			
-			throw new RuntimeException( e );
+			throw new UnsupportedOperationException();
 		}
-		
-		final Set<String>	fauxTypes		= getFauxChildTypes();
-		final Set<String>	officialTypes	= getSelfTypeInfo().getContaineeJ2EETypes();
-
-		return( fauxTypes.size() == 0 ? officialTypes : GSetUtil.newSet( fauxTypes, officialTypes ) );
-	}
-	
-	
-		protected String
-	getChildJ2EEType()
-	{
-		final Set<String>	types	= getChildJ2EETypes();
-		if ( types.size() != 1 )
-		{
-			debug( "getChildJ2EEType failing on: ", getObjectName(),
-				", got this many children: ", types.size() );
-			throw new IllegalArgumentException(
-						SmartStringifier.toString( types ) );
-		}
-		
-		return( GSetUtil.getSingleton( types ) );
-	}
-	
+        
+        if ( mContainerSupport == null )
+        {
+            mContainerSupport = new ContainerSupport( getMBeanServer(), getObjectName() );
+        }
+        return mContainerSupport;
+    }	
 	
 	/**
 		Our container is the one that actually holds the MBeans we
@@ -1719,6 +1710,7 @@ public class AMXImplBase extends MBeanImplBase
 		return( Util.getObjectName( containee ) );
 	}
 	
+    /*
 		protected boolean
 	isOfflineCapable( final TypeInfo childInfo )
 	{
@@ -1728,6 +1720,7 @@ public class AMXImplBase extends MBeanImplBase
 	            Utility.class.isAssignableFrom( c ) ||
 	            c == DomainRoot.class;
 	}
+    */
 	
 	    protected boolean
 	getOffline()
@@ -1735,171 +1728,10 @@ public class AMXImplBase extends MBeanImplBase
 	    return false;
 	}
 	
-	/**
-		Register a child MBean which is a manager.
-	*/
-		protected void
-	registerSelfMgrChild( final TypeInfo	childInfo )
-		throws JMException, InstantiationException, IllegalAccessException
-	{
-		final String	childJ2EEType	= childInfo.getJ2EEType( );
-		
-	    if ( ( ! getOffline() ) || isOfflineCapable( childInfo ) )
-	    {
-    		final Class		implClass	= childInfo.getImplClass();
-    		
-    		final ObjectName	childObjectName	=
-    			getObjectNames().buildContaineeObjectName( getObjectName(), getFullType(), childJ2EEType );
-    		if ( ! getMBeanServer().isRegistered ( childObjectName ) )
-    		{
-    		    final Object	impl	= implClass.newInstance();
-    		
-    		    registerMBean( impl, childObjectName );
-    		}
-	    }
-	    else
-	    {
-	        debug( "Not loading child in offline mode: " + childJ2EEType );
-	    }
-	}
 
-		protected void
-	unregisterSelfMgrChildren()
-	{
-		final TypeInfo		selfInfo		=	getSelfTypeInfo();
-		final Set<String>	childTypesSet	=	selfInfo.getContaineeJ2EETypes();
-		final String[]		childTypes		=	GSetUtil.toStringArray( childTypesSet );
-		final MBeanServer	mbeanServer		=	getMBeanServer();
-		for( int i = 0; i < childTypes.length; ++i )
-		{
-			final String		childType	= childTypes[ i ];
-			debug( "unregisterSelfMgrChildren: processing type: ", childType);
-
-			final TypeInfo	childInfo	= getTypeInfo( childType );
-	
-			final Class	childInterface	= childInfo.getInterface();
-
-			if ( 	//isConfigMgrMBean( childInterface ) ||
-					isSingletonMBean( childInterface ) ||
-					isUtilityMBean( childInterface )
-				)
-			{
-				final ObjectName containeeObjectName = 
-					getContaineeObjectName( childType );
-			    if ( containeeObjectName != null )
-			    {
-    				try
-    				{
-    					mbeanServer.unregisterMBean( containeeObjectName );
-    					debug( "unregisterSelfMgrChildren: ", containeeObjectName,
-    						" is unregistered" );
-    				}
-    				catch ( InstanceNotFoundException infe )
-    				{
-    					logWarning( "unregisterSelfMgrChildren: " + infe.getMessage() );
-    				}
-    				catch ( Exception e )
-    				{
-    					logSevere( "unregisterSelfMgrChildren: " + 
-    						ExceptionUtil.getRootCause(e).getMessage() );
-    				}
-    				}
-			}
-			else
-			{
-				debug( "unregisterSelfMgrChildren: skipping: ", childInterface.getName() );
-			}
-		}
-	}
-	
-		protected void
-	registerSelfMgrChildren( )
-	{
-		final TypeInfo		selfInfo		= getSelfTypeInfo();
-		final Set<String> childTypesSet	=	selfInfo.getContaineeJ2EETypes();
-
-		debug( "registerSelfMgrChildren for ", getSelfJ2EEType(), ": ", toString( childTypesSet ) );
-		
-		if ( childTypesSet.size() != 0 )
-		{
-			debug( "registerSelfMgrChildren: child types = ", toString( childTypesSet ) );
-		}
-		else
-		{
-			debug( "no child types for: ", quote( getObjectName() ) );
-		}
-		
-		final String[]	childTypes	= GSetUtil.toStringArray( childTypesSet );
-		for( int i = 0; i < childTypes.length; ++i )
-		{
-			final String		childType	= childTypes[ i ];
-			debug( "registerSelfMgrChildren: processing type: ", childType);
-			
-			final TypeInfo	childInfo	= getTypeInfo( childType );
-	
-			final Class	childInterface	= childInfo.getInterface();
-		
-			if ( 	isSingletonMBean( childInterface ) ||
-					isUtilityMBean( childInterface )
-					)
-			{
-				try
-				{
-					registerSelfMgrChild( childInfo );
-				}
-				catch( InstantiationException e )
-				{
-					trace( "InstantiationException for child of type: " + childInfo.getJ2EEType() +
-						" = " + e.getMessage() );
-					e.printStackTrace();
-					
-					final Throwable	t	= ExceptionUtil.getRootCause( e );
-					if ( t != e && t != null )
-					{
-						trace( "InstantiationException: root cause msg =" + t.getMessage() );
-						trace( ExceptionUtil.getStackTrace( t ) );
-					}
-					else
-					{
-						trace( ExceptionUtil.getStackTrace(  ExceptionUtil.getRootCause( e ) ));
-					}
-				}
-				catch( Exception e )
-				{
-					trace( "Can't create child, info = " + childInfo + "\n" + e + "\n\n" );
-					debug( ExceptionUtil.getStackTrace( e ) );
-				}
-			}
-			else
-			{
-				trace( "registerSelfMgrChildren: skipping: " + childInterface.getName() );
-			}
-		}
-	}
-	
-	/**
-		Register special containee MBeans.
-		Usually this should only be done for child MBeans
-		that otherwise would not come into existence.
-	*/
-		protected final void
-	registerSpecialContainees()
-	{
-		registerSelfMgrChildren( );
-		registerMisc();
-	}
-	
-		protected void
-	registerMisc()
-	{
-		// nothing by default
-	}
-	
 		protected void
 	preDeregisterHook()
 	{
-	    unregisterMisc();
-		unregisterSelfMgrChildren( );
 	}
 	
 		protected void
@@ -1912,7 +1744,6 @@ public class AMXImplBase extends MBeanImplBase
 	{
 		// nothing by default
 	}
-	
 	
 	
 	/**
@@ -2003,14 +1834,9 @@ public class AMXImplBase extends MBeanImplBase
         
 		mSelfObjectName	= preRegisterModifyName( server, nameFromSuper );
 		
-		if ( getAMXDebug() )
-		{
-		    implCheck();
-		}
-		
 		mSelfObjectName = preRegisterHook( mSelfObjectName );
 		
-		registerSpecialContainees();
+		//registerSpecialContainees();
 		
 		preRegisterDone();
 		return( mSelfObjectName );
@@ -2085,7 +1911,7 @@ public class AMXImplBase extends MBeanImplBase
 		return candidates;
     }
 
-	
+	/*
 		protected void
 	implCheck()
 	{
@@ -2112,6 +1938,7 @@ public class AMXImplBase extends MBeanImplBase
 		
 	    checkSuperfluousMethods();
 	}
+    */
 	
 	
 	private static final Set<String> NOT_SUPERFLUOUS =
@@ -2182,6 +2009,42 @@ public class AMXImplBase extends MBeanImplBase
 	    }
 	}
 	
+    /**
+        Hide this dirty business: non-serializable and private class.
+     */
+    private static final class ObjectRefWrapper
+    {
+        final AMXImplBase mPayload;
+        ObjectRefWrapper( final AMXImplBase payload ) { mPayload = payload; }
+    }
+    
+    /*
+        This *hack* allows us to get the actual object itself, preferable to exposing
+        an operation to the "whole world".
+     */
+        private AMXImplBase
+    getContainerObject()
+    {
+        AMXImplBase containerObject = null;
+        
+        final ObjectName containerObjectName = getContainerObjectName();
+        // shouldn't have to call isRegistered(), but special MBeans at startup
+        // do not have a Container (eg SystemInfo).
+        if ( containerObjectName != null && getMBeanServer().isRegistered(containerObjectName) )
+        {
+            try
+            {
+                final Object value =  getMBeanServer().getAttribute( containerObjectName, OBJECT_REF_ATTR_NAME );
+                containerObject = ObjectRefWrapper.class.cast( value ).mPayload;
+            }
+            catch( Exception e )
+            {
+                e.printStackTrace();
+            }
+        }
+        return containerObject;
+    }
+    
     /*
         Note that this method is 'synchronized'--to force visibility of all fields it affects. 
         Since it's called only once (per instance) for an MBean Registration, it has no performance
@@ -2193,9 +2056,29 @@ public class AMXImplBase extends MBeanImplBase
 	{
 		super.postRegister( registrationSucceeded );
 		
+        if ( registrationSucceeded.booleanValue() )
+        {
+            //------------------------------------------------------
+            final AMXImplBase containerObject = getContainerObject();
+        if ( getContainerObjectName() == null ) {
+    System.out.println("postRegister: containerObject null for " + getObjectName() );
+    }
+            if ( containerObject != null )
+            {
+                containerObject.getContainerSupport().containeeRegistered( getObjectName() );
+            }
+            //------------------------------------------------------
+        }
+        
 		postRegisterHook( registrationSucceeded );
 	}
-	
+    
+    private static final String OBJECT_REF_ATTR_NAME = "__ObjectRef";
+        public ObjectRefWrapper
+    get__ObjectRef()
+    {
+        return new ObjectRefWrapper(this);
+    }
 	
 		public void
 	postRegisterHook( Boolean registrationSucceeded )
@@ -2218,6 +2101,14 @@ public class AMXImplBase extends MBeanImplBase
 	postDeregister()
 	{
 	    super.postDeregister();
+        
+        //------------------------------------------------------
+        final AMXImplBase containerObject = getContainerObject();
+        if ( containerObject != null )
+        {
+            containerObject.getContainerSupport().containeeUnregistered( getObjectName() );
+        }
+        //------------------------------------------------------
 	    
 	    postDeregisterHook();
 	}
@@ -2260,8 +2151,6 @@ public class AMXImplBase extends MBeanImplBase
 	{
 		return( mConnectionSource );
 	}
-
-	
 	
 		protected final synchronized AMX
 	getSelf()
@@ -2302,78 +2191,7 @@ public class AMXImplBase extends MBeanImplBase
     
 		return( mQueryMgr );
 	}
-	
-	/**
-		Extract the value of the "name" key for each ObjectName and place
-		it into an array.
-		
-		@return String[] containing values of "name" property, one for each ObjectName
-	*/
-		protected final String[]
-	getNamePropertyValues( final Set<ObjectName> objectNameSet )
-	{
-		return( JMXUtil.getKeyProperty( NAME_KEY, objectNameSet ) );
-	}
-	
-	
-	/**
-		@return String[] containing names of all children of specified type
-	*/
-		protected final String[]
-	getChildNames()
-	{
-		return( getContaineeNamesOfType( getChildJ2EEType() ) );
-	}
-	
-	/**
-		@return String[] containing names of all children of specified type
-	*/
-		protected final String[]
-	getContaineeNamesOfType( final String j2eeType )
-	{
-		final Set<ObjectName> objectNames	= getContaineeObjectNameSet( j2eeType );
-				
-		return( getNamePropertyValues( objectNames ) );
-	}
-	
-	/**
-		Get the names of all child objects, which may be of more
-		than one type.
-		
-		@return Set containing all child ObjectNames
-	*/
-		public final Set<ObjectName>
-	getContaineeObjectNameSet()
-	{
-		final String		selfType	= getSelfJ2EEType();
-		
-		final Set<ObjectName>	allChildren	= new HashSet<ObjectName>();
-		
-		final Set<String>	containedTypes	=
-			GSetUtil.newSet( getChildJ2EETypes(), getContaineeJ2EETypes() );
-		
-		for( final String	childJ2eeType : containedTypes )
-		{
-			final Set<ObjectName>	childrenOfType	= getContaineeObjectNameSet( childJ2eeType );
-			
-			allChildren.addAll( childrenOfType );
-		}
-		
-		return( allChildren );
-	}
-	
-	/**
-		Get the name of a child MBean, assuming there is only one kind,
-		and there is never more than one.
-		
-		@return ObjectName of child, or null if not found
-	*/
-		protected ObjectName
-	getOnlyChildObjectName()
-	{
-		return( getContaineeObjectName( getChildJ2EEType() ) );
-	}
-	
+
 
 	/**
 		@param parentType
@@ -2396,199 +2214,7 @@ public class AMXImplBase extends MBeanImplBase
 		return( result  );
 	}
 	
-		
-		protected Set<ObjectName>
-	getFauxContaineeObjectNameSet( 
-		final String	childJ2EEType,
-		final String	nullProps )
-	{
-		assert getFauxChildTypes().contains( childJ2EEType );
-		
-		final String selfProp	= Util.makeProp( getJ2EEType(), getSelfName() );
-		
-		final String	childJ2EETypeProp	= Util.makeJ2EETypeProp( childJ2EEType );
-		final String	props	= Util.concatenateProps( selfProp, nullProps, childJ2EETypeProp );
-		
-		final Set<AMX>	candidates	= getQueryMgr().queryPropsSet( props );
-		final Set<ObjectName>	objectNames	= Util.toObjectNames( candidates );
-		
-		return( objectNames );
-	}
-	
-		public Set<ObjectName>
-	getContaineeObjectNameSet( final String childJ2EEType )
-	{
-		final TypeInfos	infos	= TypeInfos.getInstance();
-		final TypeInfo	info	= infos.getInfo( childJ2EEType );
-		
-		String	props	= Util.makeJ2EETypeProp( childJ2EEType );
-		
-		QueryExp expr	= null;
-		if ( info.isSubType() )
-		{
-			final String	selfFullType	= getFullType();
-			final String	childFullType	= makeType( selfFullType, childJ2EEType );
-			
-			final String	selfProps	= Util.getFullTypeProps( getObjectName(), getFullType() );
-			
-			props	= Util.concatenateProps( props, selfProps );
-			expr	= Query.eq(Query.attr( AMXAttributes.ATTR_FULL_TYPE ), Query.value( childFullType ));
-		}
-		else
-		{
-			// not a sub-type; nothing else to add
-			expr	= null;
-		}
-		
-        final ObjectName	pattern	=
-         	JMXUtil.newObjectNamePattern( getObjectName().getDomain(), props );
-		final Set<ObjectName>	candidates	= JMXUtil.queryNames( getMBeanServer(), pattern, expr);
-		
-		return( candidates );
-	}
-	
-	
-		public final Set<ObjectName>
-	getContaineeObjectNameSet( final Set<String> j2eeTypes )
-	{
-		final Set<ObjectName>	all	= new HashSet<ObjectName>();
-
-        final Set<String>   actualTypes =
-            j2eeTypes == null ? getContaineeJ2EETypes() : j2eeTypes;
-            
-		for( final String j2eeType : actualTypes )
-		{
-			final Set<ObjectName>	objectNames	= getContaineeObjectNameSet( j2eeType );
-			
-			all.addAll( objectNames );
-		}
-				
-		return( all );
-	}
-	
-
-
-	/**
-		There must be 0 or 1 children of the specified type or an exception
-		will be thrown.
-		
-		@return ObjectName for child of specified type
-	*/
-		public final ObjectName
-	getContaineeObjectName( final String j2eeType )
-	{
-		final Set<ObjectName>	children	= getContaineeObjectNameSet( j2eeType );
-		
-		ObjectName	result	= null;
-		
-		if ( children.size() == 1 )
-		{
-			result	= GSetUtil.getSingleton( children );
-		}
-		else if ( children.size() == 0 )
-		{
-			trace( "AMXImplBase.getContaineeObjectName: no children of type " + j2eeType );
-			result	= null;
-		}
-		else
-		{
-			trace( "AMXImplBase.getContaineeObjectName: " + j2eeType + " impossible");
-			impossible( new UnsupportedOperationException( "getContaineeObjectName" ) );
-		}
-				
-		return( result );
-	}
-	
-		protected final ObjectName
-	getNamedChildObjectName( final String	name)
-	{
-		trace( "\nAMXImplBase.getNamedContaineeObjectName: " +
-			"Looking for " + name + " in " + quote( getObjectName() ) );
-		
-		return( getContaineeObjectName( getChildJ2EEType(), name ) );
-	}
-	
-		public final ObjectName
-	getContaineeObjectName(
-		final String	j2eeType,
-		final String	name)
-	{
-		final Set<ObjectName>	candidates	= getContaineeObjectNameSet( j2eeType );
-		
-		final Set<ObjectName> matching	=
-		    JMXUtil.findByProperty( candidates, NAME_KEY, name );
-		
-		final ObjectName	result	= (matching.size() == 0) ?
-			null : GSetUtil.getSingleton( matching );
-		
-		return( result );
-	}
-	
-		public Map<String,Map<String,ObjectName>>
-	getMultiContaineeObjectNameMap( final Set<String> j2eeTypesIn )
-	{
-		// if Set is null, it means all types
-		final Set<String>	j2eeTypes	= j2eeTypesIn == null ?
-			getContaineeJ2EETypes() : j2eeTypesIn;
-			
-		final Map<String,Map<String,ObjectName>>	m	=
-		    new HashMap<String,Map<String,ObjectName>>();
-		
-		for( final String j2eeType : j2eeTypes )
-		{
-			final Map<String,ObjectName>	nameMap	= getContaineeObjectNameMap( j2eeType );
-			if ( nameMap.keySet().size() != 0 )
-			{
-				m.put( j2eeType, nameMap );
-			}
-		}
-		
-		return( m );
-	}
-	
-		public final Map<String,ObjectName>
-	getContaineeObjectNameMap( final String j2eeType )
-	{
-		if ( ! getContaineeJ2EETypes().contains( j2eeType ) )
-		{
-			throw new IllegalArgumentException( getObjectName() +
-				" does not contain j2eeType: " + j2eeType );
-		}
-
-		final Set<ObjectName>	objectNames	= getContaineeObjectNameSet( j2eeType );
-		
-		Map<String,ObjectName>	result	= Collections.emptyMap();
-		
-		if ( objectNames.size() != 0 )
-		{
-			result	= Util.createObjectNameMap( objectNames );
-		}
-		assert( result.keySet().size() == objectNames.size() );
-		
-		return( result );
-	}
-
-
-		public Set<ObjectName>
-	getByNameContaineeObjectNameSet(
-		final Set<String>		j2eeTypes,
-		final String	name )
-	{
-		final Iterator	iter	= getContaineeObjectNameSet( j2eeTypes ).iterator();
-		final Set<ObjectName>		result	= new HashSet<ObjectName>();
-		
-		while ( iter.hasNext() )
-		{
-			final ObjectName	objectName	= (ObjectName)iter.next();
-			
-			if ( Util.getName( objectName ).equals( name ) )
-			{
-				result.add( objectName );
-			}
-		}
-		return( result );
-	}
-	
+  	
 	//------------------------ Access to other MBeans --------------------------------
 	
 	
@@ -2678,6 +2304,64 @@ public class AMXImplBase extends MBeanImplBase
     
     // FIX
     public boolean isDAS() { return true; }
+    
+    
+	//---------------------------------- Container support ---------------------------------------------
+    
+        public Set<String>
+    getContaineeJ2EETypes()
+    {
+        return getContainerSupport().getContaineeJ2EETypes();
+    }
+	
+        public Map<String,Map<String,ObjectName>>
+    getMultiContaineeMap( final Set<String> j2eeTypes )
+    {
+        return getContainerSupport().getMultiContaineeObjectNameMap( j2eeTypes );
+    }
+	
+        public <T extends AMX> Map<String,ObjectName>
+    getContaineeMap( final String j2eeType )
+    {
+        return getContainerSupport().getContaineeObjectNameMap( j2eeType );
+    }
+	
+        public ObjectName
+    getContaineeObjectName( final String j2eeType )
+    {
+        return getContainerSupport().getContaineeObjectName( j2eeType );
+    }
+	
+        public Set<ObjectName>
+    getContaineeObjectNameSet( final String j2eeType )
+    {
+        return getContainerSupport().getContaineeObjectNameSet( j2eeType );
+    }
+	
+        public Set<ObjectName>
+    getContaineeObjectNameSet()
+    {
+        return getContainerSupport().getContaineeObjectNameSet();
+    }
+	
+        public Set<ObjectName>
+    getContaineeObjectNameSet( final Set<String> j2eeTypes )
+    {
+        return getContainerSupport().getContaineeObjectNameSet( j2eeTypes );
+    }
+	
+	
+        public Set<ObjectName> 
+    getByNameContaineeObjectNameSet( final Set<String> j2eeTypes, final String name )
+    {
+        return getContainerSupport().getByNameContaineeObjectNameSet( j2eeTypes, name );
+    }
+	
+	public ObjectName	getContaineeObjectName( final String j2eeType, final String name )
+    {
+        return getContainerSupport().getContaineeObjectName( j2eeType, name );
+    }
+
 
 }
 

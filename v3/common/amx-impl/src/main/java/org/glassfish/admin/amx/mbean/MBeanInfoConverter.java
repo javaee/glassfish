@@ -61,7 +61,7 @@ import com.sun.appserv.management.base.Container;
 	Convert MBeanInfo which was derived from public client-side interface into
 	MBeanInfo useable by server-side MBeans.
  */
-final class MBeanInfoConverter 
+public final class MBeanInfoConverter 
 {
 	private final Map<Class,MBeanInfo>	mConvertedInfos;
 	private static MBeanInfoConverter	INSTANCE	= null;

@@ -21,6 +21,7 @@ import com.sun.appserv.management.config.AMXConfig;
 //@Service //(name="AMXConfigRegistrar")
 public final class AMXConfigRegistrar // implements CageBuilder
 {
+    private static void debug( final String s ) { System.out.println(s); }
     private AMXConfigLoader  mConfigLoader;
         
         private
@@ -38,8 +39,6 @@ public final class AMXConfigRegistrar // implements CageBuilder
         return INSTANCE;
     }
     
-    private static void debug( final String s ) { System.out.println(s); }
-    
     /**
         @return a ConfigBean, or null if it's not a ConfigBean
      */
@@ -54,6 +53,9 @@ public final class AMXConfigRegistrar // implements CageBuilder
         final ConfigBean cb = asConfigBean(inhabitant);
         if ( cb != null )
         {
+         //   final ConfigBean parent = asConfigBean(cb.parent());
+        //debug( "AMXConfigRegistrar.onEntered: " + cb.getProxyType().getName() + " with parent " + (parent == null ? "null" : parent.getProxyType().getName()) );
+        
             mConfigLoader.handleConfigBean( cb );
         }
     }

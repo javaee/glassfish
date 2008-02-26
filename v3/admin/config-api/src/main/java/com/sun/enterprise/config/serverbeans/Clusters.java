@@ -54,7 +54,7 @@ import java.util.List;
 /* @XmlType(name = "", propOrder = {
     "cluster"
 }) */
-@org.glassfish.admin.amx.loader.AMXConfigInfo( amxInterface=org.glassfish.admin.amx.loader.AMXConfigVoid.class, omitAsAncestor=true)
+@org.glassfish.admin.amx.loader.AMXConfigInfo( amxInterface=org.glassfish.admin.amx.loader.AMXConfigVoid.class, omitAsAncestorInChildObjectName=true)
 @Configured
 public interface Clusters extends ConfigBeanProxy, Injectable {
 

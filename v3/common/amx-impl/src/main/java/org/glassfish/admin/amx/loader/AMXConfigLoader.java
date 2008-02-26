@@ -26,6 +26,8 @@ import org.glassfish.admin.amx.mbean.Delegate;
 import org.glassfish.admin.amx.mbean.DelegateToConfigBeanDelegate;
 import org.glassfish.admin.amx.mbean.AMXConfigImplBase;
 
+import org.glassfish.admin.amx.util.ObjectNames;
+
 /**
  * @author llc
  */
@@ -44,6 +46,29 @@ public final class AMXConfigLoader
     {
     }
     
+    /**
+        No items will be processd until {@link #start} is called.
+     */
+        protected void
+    handleConfigBean( final ConfigBean cb )
+    {
+        /*
+        Class<? extends ConfigBeanProxy> parentClass = null;
+        final Class<? extends ConfigBeanProxy> cbClass = cb.getProxyType();
+        final ConfigBean parent = asConfigBean( cb.parent() );
+        if ( parent != null )
+        {
+            parentClass = parent.getProxyType();
+        }
+        //debug( "RECEIVED: " + cbClass.getName()  +
+        //    ", PARENT = " + ((parentClass == null) ? "null" : parentClass.getName()) +
+        //    ", parent Object Name = " + parent.getObjectName() );
+        */
+        
+        mPendingConfigBeans.add( cb );
+    }
+
+
      /**
         Internal nodes that don't get registered as MBeans throw a small monkey wrench
         into things; examples include &lt;configs> and &lt;resources> which are elements
@@ -53,9 +78,11 @@ public final class AMXConfigLoader
         private static ConfigBean
     getActualParent( final ConfigBean configBean )
     {
-        ConfigBean parent = (ConfigBean)configBean.parent();
+        ConfigBean parent = asConfigBean( configBean.parent() );
         if ( parent != null )
         {
+            //debug( "config bean  " + configBean.getProxyType().getName() + " has parent " + configBean.parent().getProxyType().getName() );
+            
             // if it has an ObjectName, then its a valid parent (this is the quick check).
             // If not, it might not yet have one; use the annotation
             final ObjectName parentObjectName    = parent.getObjectName();
@@ -75,6 +102,14 @@ public final class AMXConfigLoader
                     parent = getActualParent( parent );
                 }
             }
+            else
+            {
+                // valid parent with an ObjectName
+            }
+        }
+        else
+        {
+            //debug( "WARNING: parent is null for " + configBean.getProxyType().getName() + " (bug in ConfigBeans)");
         }
         
         return parent;
@@ -92,33 +127,12 @@ public final class AMXConfigLoader
         }
         
         return parentObjectName;
-    }
-
-    /**
-        No items will be processd until {@link #start} is called.
-     */
-        protected void
-    handleConfigBean( final ConfigBean cb )
-    {
-        Class<? extends ConfigBeanProxy> parentClass = null;
-        final Class<? extends ConfigBeanProxy> cbClass = cb.getProxyType();
-        final ConfigBean parent = asConfigBean( cb.parent() );
-        if ( parent != null )
-        {
-            parentClass = parent.getProxyType();
-        }
-        //debug( "RECEIVED: " + cbClass.getName()  +
-        //    ", PARENT = " + ((parentClass == null) ? "null" : parentClass.getName()) +
-        //    ", parent Object Name = " + parent.getObjectName() );
-        
-        mPendingConfigBeans.add( cb );
-    }
-    
+    }    
      /**
         @return a ConfigBean, or null if it's not a ConfigBean
      */
     @SuppressWarnings("unchecked")
-    final ConfigBean asConfigBean( final Object o )
+    static ConfigBean asConfigBean( final Object o )
     {
         return (o instanceof ConfigBean) ? (ConfigBean)o : null;
     }
@@ -141,7 +155,7 @@ public final class AMXConfigLoader
         try
         {
             // TEST code (remove later): should throw an Exception
-            new AMXConfigImplBase( null, null, null, AMXConfig.class, null );
+            new AMXConfigImplBase( null, null, null, AMXConfig.class, null, null );
             throw new Error( "AMXConfigLoader: AMXConfigImplBase did not throw an exception for a null j2eeType!!!" );
         }
         catch( Exception e )
@@ -263,13 +277,17 @@ public final class AMXConfigLoader
         {
             throw new IllegalArgumentException( "ConfigBean has no @AMXConfigInfo: " + cbClass.getName() );
         }
-
         
         // don't process internal nodes like <configs>, <resources>, etc; these contain
         // nothing but child nodes.  Such nodes use AMXConfigVoid.
         if ( amxConfigInfo.amxInterface() != AMXConfigVoid.class )
         {
             final Class<? extends AMXConfig> amxInterface = amxConfigInfo.amxInterface();
+        
+            // if the specified interface is the base interface AMXConfig, then
+            // the resulting interface is a combination of AMXConfig and the interface of the ConfigBean
+            final boolean autoInterface = amxInterface == AMXConfig.class;
+            final Class<?> supplementaryIntf = cbClass.isInterface() ? cbClass : null;
             
             final AMXMBeanMetadata metadata        = getAMXMBeanMetadata(cb);
             
@@ -277,7 +295,7 @@ public final class AMXConfigLoader
 
             objectName = buildObjectName( cb, amxConfigInfo );
         
-            objectName  = createAndRegister( cb, amxInterface, objectName );
+            objectName  = createAndRegister( cb, amxInterface, supplementaryIntf, objectName );
             debug( "REGISTERED MBEAN: " + JMXUtil.toString(objectName) + " ===> USING " +
                 " AMXConfigInfo = " + amxConfigInfo.toString() +
                 ", AMXMBeanMetaData = " + metadata + "\n");
@@ -315,7 +333,8 @@ public final class AMXConfigLoader
 
     private ObjectName createAndRegister(
         final ConfigBean cb,
-        Class<? extends AMXConfig>  amxInterface,
+        final Class<? extends AMXConfig>  amxInterface,
+        final Class<?>  supplementaryIntf,
         final ObjectName objectNameIn )
     {
         ObjectName  objectName = objectNameIn;
@@ -326,8 +345,22 @@ public final class AMXConfigLoader
         //debug( "Full type for " + objectNameIn + " = " + fullType );
         
         final Delegate delegate = new DelegateToConfigBeanDelegate( cb );
-        final ObjectName parentObjectName = getActualParentObjectName( cb );
-        final AMXConfigImplBase impl = new AMXConfigImplBase( j2eeType, fullType, parentObjectName, amxInterface, delegate );
+        ObjectName parentObjectName = getActualParentObjectName( cb );
+        
+        if ( parentObjectName == null  )
+        {
+            if ( amxInterface == com.sun.appserv.management.config.DomainConfig.class )
+            {
+                parentObjectName = ObjectNames.getInstance().getDomainRootObjectName();
+            }
+            else
+            {
+                debug( "WARNING: All ConfigBeans must have a parent!  No parent for " + cb.getProxyType().getName() );
+               // throw new IllegalArgumentException( "All AMXConfig MBeans must have a parent!  No parent for " + cb.getProxyType().getName() );
+            }
+        }
+        
+        final AMXConfigImplBase impl = new AMXConfigImplBase( j2eeType, fullType, parentObjectName, amxInterface, supplementaryIntf, delegate );
         
         try
         {
@@ -428,7 +461,7 @@ public final class AMXConfigLoader
                 
                 // a child's ObjectName is parentJ2EEType=parentName,<all other parent properties>
                 final String ancestorProps = Util.getAdditionalProps( parentObjectName );
-                final String parentProp     = info.omitAsAncestor() ? "" : Util.getSelfProp( parentObjectName );
+                final String parentProp     = info.omitAsAncestorInChildObjectName() ? "" : Util.getSelfProp( parentObjectName );
                 
                 parentProps = Util.concatenateProps( parentProp, ancestorProps );
             }

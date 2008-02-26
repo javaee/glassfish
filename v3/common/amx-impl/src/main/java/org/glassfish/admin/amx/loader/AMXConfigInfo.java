@@ -104,6 +104,6 @@ public @interface AMXConfigInfo {
        property in its children.  DomainConfig is the key example; including it would serve
        no useful purpose.
      */
-    boolean omitAsAncestor() default false;
+    boolean omitAsAncestorInChildObjectName() default false;
 }
 

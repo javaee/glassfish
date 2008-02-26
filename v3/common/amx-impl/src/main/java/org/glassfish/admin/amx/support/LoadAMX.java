@@ -1,8 +1,8 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
- *
+ * 
  * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
- *
+ * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
@@ -10,7 +10,7 @@
  * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
  * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
- *
+ * 
  * When distributing the software, include this License Header Notice in each
  * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
  * Sun designates this particular file as subject to the "Classpath" exception
@@ -19,9 +19,9 @@
  * Header, with the fields enclosed by brackets [] replaced by your own
  * identifying information: "Portions Copyrighted [year]
  * [name of copyright owner]"
- *
+ * 
  * Contributor(s):
- *
+ * 
  * If you wish your version of this file to be governed by only the CDDL or
  * only the GPL Version 2, indicate your decision by adding "[Contributor]
  * elects to include this software in this distribution under the [CDDL or GPL
@@ -33,55 +33,59 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
-
-
-package com.sun.enterprise.config.serverbeans;
-
-import org.jvnet.hk2.config.Configured;
-import org.jvnet.hk2.config.Element;
-import org.jvnet.hk2.config.ConfigBeanProxy;
-import org.jvnet.hk2.component.Injectable;
-
-import java.io.Serializable;
-import java.util.List;
-
-
-/**
- *
+ 
+/*
  */
 
-/* @XmlType(name = "", propOrder = {
-    "lbConfig"
-}) */
-@org.glassfish.admin.amx.loader.AMXConfigInfo( amxInterface=org.glassfish.admin.amx.loader.AMXConfigVoid.class, omitAsAncestorInChildObjectName=true)
-@Configured
-public interface LbConfigs extends ConfigBeanProxy, Injectable  {
+package org.glassfish.admin.amx.support;
 
+import javax.management.MBeanServer;
+import javax.management.ObjectName;
+import javax.management.JMException;
 
-    /**
-     * Gets the value of the lbConfig property.
-     * <p/>
-     * <p/>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the lbConfig property.
-     * <p/>
-     * <p/>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getLbConfig().add(newItem);
-     * </pre>
-     * <p/>
-     * <p/>
-     * <p/>
-     * Objects of the following type(s) are allowed in the list
-     * {@link LbConfig }
-     */
-    @Element
-    public List<LbConfig> getLbConfig();
+import org.glassfish.admin.amx.util.Issues;
 
+import com.sun.appserv.management.util.jmx.JMXUtil;
 
+import com.sun.appserv.management.util.misc.TimingDelta;
 
+/**
+	Used internally to work around problems with cascaded MBeans.
+ */
+public final class LoadAMX
+{
+    private LoadAMX() {}
+    private static ObjectName LOADER_OBJECTNAME = null;
+    
+    private static final String AMX_LOADER_DEFAULT_OBJECTNAME    =
+        "amx-support:name=mbean-loader";
+
+        public static synchronized ObjectName
+    loadAMX( final MBeanServer mbeanServer )
+    {
+        if ( LOADER_OBJECTNAME == null )
+        {
+            final boolean inDAS = true;
+            Issues.getAMXIssues().notDone( "LoadAMX.loadAMX(): determine if this is the DAS" );
+            
+            if ( inDAS )
+            {
+                final Loader loader = new Loader();
+                
+                final ObjectName tempObjectName  = JMXUtil.newObjectName( AMX_LOADER_DEFAULT_OBJECTNAME );
+                
+                try
+                {
+                    LOADER_OBJECTNAME  =
+                        mbeanServer.registerMBean( loader, tempObjectName ).getObjectName();
+                }
+                catch( JMException e )
+                {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+        return LOADER_OBJECTNAME;
+    }
 }
+
