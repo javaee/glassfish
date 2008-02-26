@@ -46,6 +46,7 @@ import java.lang.reflect.Method;
 import java.util.LinkedList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.servlet.ServletContext;
 import com.sun.enterprise.container.common.spi.util.InjectionManager;
 import com.sun.enterprise.container.common.spi.util.InjectionException;
 import com.sun.enterprise.deployment.JndiNameEnvironment;
@@ -62,17 +63,22 @@ import org.glassfish.api.invocation.ComponentInvocation;
 public class GlassFishInjectionProvider extends DiscoverableInjectionProvider {
 
     private static final Logger LOGGER = FacesLogger.APPLICATION.getLogger();
+    private static final String JSF_HABITAT_ATTRIBUTE =
+            "com.sun.appserv.jsf.habitat";
     private InjectionManager injectionManager;
     private InvocationManager invokeMgr;
 
     /**
      * <p>Constructs a new <code>GlassFishInjectionProvider</code> instance.</p>
      *
-     * @param defaultHabitat the habitat to get the dependencies from
+     * @param servletContext
      */
-    public GlassFishInjectionProvider(Habitat defaultHabitat) {
-        invokeMgr = defaultHabitat.getComponent(InvocationManager.class);
-        injectionManager = defaultHabitat.getComponent(InjectionManager.class);
+    public GlassFishInjectionProvider(ServletContext servletContext) {
+        Habitat defaultHabitat = (Habitat)servletContext.getAttribute(
+                JSF_HABITAT_ATTRIBUTE);
+        servletContext.removeAttribute(JSF_HABITAT_ATTRIBUTE);
+        invokeMgr = defaultHabitat.getByContract(InvocationManager.class);
+        injectionManager = defaultHabitat.getByContract(InjectionManager.class);
     }
     
     /**
