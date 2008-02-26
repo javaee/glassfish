@@ -55,7 +55,7 @@ import java.io.Serializable;
     "sessionManager",
     "sessionProperties"
 }) */
-@org.glassfish.admin.amx.loader.AMXConfigInfo( amxInterface=com.sun.appserv.management.config.SessionConfig.class, singleton=true)
+@com.sun.appserv.management.annotation.AMXConfigInfo( amxInterface=com.sun.appserv.management.config.SessionConfig.class, singleton=true)
 @Configured
 public interface SessionConfig extends ConfigBeanProxy, Injectable  {
 

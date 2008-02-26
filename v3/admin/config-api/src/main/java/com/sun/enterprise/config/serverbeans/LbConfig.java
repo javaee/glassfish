@@ -57,7 +57,7 @@ import java.util.List;
     "clusterRefOrServerRef",
     "property"
 }) */
-@org.glassfish.admin.amx.loader.AMXConfigInfo( amxInterface=com.sun.appserv.management.config.LBConfig.class)
+@com.sun.appserv.management.annotation.AMXConfigInfo( amxInterface=com.sun.appserv.management.config.LBConfig.class)
 @Configured
 public interface LbConfig extends ConfigBeanProxy, Injectable  {
 

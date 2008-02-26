@@ -59,7 +59,7 @@ import java.util.List;
     "webServiceEndpoint",
     "property"
 }) */
-@org.glassfish.admin.amx.loader.AMXConfigInfo( amxInterface=com.sun.appserv.management.config.J2EEApplicationConfig.class)
+@com.sun.appserv.management.annotation.AMXConfigInfo( amxInterface=com.sun.appserv.management.config.J2EEApplicationConfig.class)
 @Configured
 public interface J2EeApplication extends ConfigBeanProxy, Injectable, Module {
 

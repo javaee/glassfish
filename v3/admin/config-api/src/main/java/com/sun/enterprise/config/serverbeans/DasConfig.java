@@ -56,7 +56,7 @@ import java.util.List;
 /* @XmlType(name = "", propOrder = {
     "property"
 }) */
-@org.glassfish.admin.amx.loader.AMXConfigInfo( amxInterface=com.sun.appserv.management.config.DASConfig.class, singleton=true)
+@com.sun.appserv.management.annotation.AMXConfigInfo( amxInterface=com.sun.appserv.management.config.DASConfig.class, singleton=true)
 @Configured
 public interface DasConfig extends ConfigBeanProxy, Injectable  {
 

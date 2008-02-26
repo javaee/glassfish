@@ -55,7 +55,7 @@ import java.io.Serializable;
 /* @XmlType(name = "", propOrder = {
     "healthChecker"
 }) */
-@org.glassfish.admin.amx.loader.AMXConfigInfo( amxInterface=com.sun.appserv.management.config.ClusterRefConfig.class)
+@com.sun.appserv.management.annotation.AMXConfigInfo( amxInterface=com.sun.appserv.management.config.ClusterRefConfig.class)
 @Configured
 public interface ClusterRef extends ConfigBeanProxy, Injectable, Ref  {
     

@@ -59,7 +59,7 @@ import java.util.List;
     "logService",
     "property"
 }) */
-@org.glassfish.admin.amx.loader.AMXConfigInfo( amxInterface=com.sun.appserv.management.config.NodeAgentConfig.class)
+@com.sun.appserv.management.annotation.AMXConfigInfo( amxInterface=com.sun.appserv.management.config.NodeAgentConfig.class)
 @Configured
 public interface NodeAgent extends ConfigBeanProxy, Injectable  {
 

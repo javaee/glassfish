@@ -59,7 +59,7 @@ import java.util.List;
     "systemProperty",
     "property"
 }) */
-@org.glassfish.admin.amx.loader.AMXConfigInfo( amxInterface=com.sun.appserv.management.config.StandaloneServerConfig.class)
+@com.sun.appserv.management.annotation.AMXConfigInfo( amxInterface=com.sun.appserv.management.config.StandaloneServerConfig.class)
 @Configured
 public interface Server extends ConfigBeanProxy, Injectable  {
 

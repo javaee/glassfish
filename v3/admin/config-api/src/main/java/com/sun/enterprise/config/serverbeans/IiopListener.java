@@ -57,7 +57,7 @@ import java.util.List;
     "ssl",
     "property"
 }) */
-@org.glassfish.admin.amx.loader.AMXConfigInfo( amxInterface=com.sun.appserv.management.config.IIOPListenerConfig.class, nameHint="id")
+@com.sun.appserv.management.annotation.AMXConfigInfo( amxInterface=com.sun.appserv.management.config.IIOPListenerConfig.class, nameHint="id")
 @Configured
 public interface IiopListener extends ConfigBeanProxy, Injectable  {
 

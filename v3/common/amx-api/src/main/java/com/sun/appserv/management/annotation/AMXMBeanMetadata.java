@@ -33,14 +33,13 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.admin.amx.loader;
+package com.sun.appserv.management.annotation;
 
 import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
 import java.lang.annotation.Retention;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import java.lang.annotation.Target;
-import org.jvnet.hk2.annotations.InhabitantMetadata;
 
 
 import com.sun.appserv.management.base.AMX;

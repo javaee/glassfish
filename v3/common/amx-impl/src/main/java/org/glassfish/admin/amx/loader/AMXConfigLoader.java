@@ -21,6 +21,9 @@ import com.sun.appserv.management.base.XTypes;
 import com.sun.appserv.management.config.AMXConfig;
 import com.sun.appserv.management.util.misc.RunnableBase;
 import com.sun.appserv.management.util.misc.ClassUtil;
+import com.sun.appserv.management.annotation.AMXConfigInfo;
+import com.sun.appserv.management.annotation.AMXMBeanMetadata;
+
 
 import org.glassfish.admin.amx.mbean.Delegate;
 import org.glassfish.admin.amx.mbean.DelegateToConfigBeanDelegate;

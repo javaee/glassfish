@@ -58,7 +58,7 @@ import java.util.List;
     "description",
     "property"
 }) */
-//@org.glassfish.admin.amx.loader.AMXConfigInfo( amxInterface=com.sun.appserv.management.config.ExternalJNDIResourceConfig.class, nameHint="jndi-name")
+//@com.sun.appserv.management.annotation.AMXConfigInfo( amxInterface=com.sun.appserv.management.config.ExternalJNDIResourceConfig.class, nameHint="jndi-name")
 @Configured
 public interface ExternalJndiResource extends ConfigBeanProxy, Injectable, Resource {
 

@@ -55,7 +55,7 @@ import java.util.List;
 /* @XmlType(name = "", propOrder = {
     "property"
 }) */
-@org.glassfish.admin.amx.loader.AMXConfigInfo( amxInterface=com.sun.appserv.management.config.ModuleLogLevelsConfig.class, singleton=true)
+@com.sun.appserv.management.annotation.AMXConfigInfo( amxInterface=com.sun.appserv.management.config.ModuleLogLevelsConfig.class, singleton=true)
 @Configured
 public interface ModuleLogLevels extends ConfigBeanProxy, Injectable  {
 
