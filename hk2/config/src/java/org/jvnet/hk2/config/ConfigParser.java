@@ -46,7 +46,7 @@ public class ConfigParser {
 
     public void parse(XMLStreamReader in, DomDocument document) throws XMLStreamException {
         in.nextTag();
-        document.root = handleElement(in,document);
+        document.root = handleElement(in,document, null);
     }
 
     /**
@@ -79,15 +79,17 @@ public class ConfigParser {
      * @param document
      *      The document that we are building right now.
      *      Newly created {@link Dom} will belong to this document.
+     * @param parent
+     *      The parent element
      * @return
      *      Null if the XML element didn't yield anything (which can happen if the element is skipped.)
      *      Otherwise fully parsed valid {@link Dom} object.
      */
-    protected Dom handleElement(XMLStreamReader in,DomDocument document) throws XMLStreamException {
+    protected Dom handleElement(XMLStreamReader in,DomDocument document, Dom parent) throws XMLStreamException {
         ConfigModel model = document.getModelByElementName(in.getLocalName());
         if(model==null)
             throw new XMLStreamException("Unrecognized element "+in.getLocalName(),in.getLocation());
-        return handleElement(in,document,null,model);
+        return handleElement(in,document,parent,model);
     }
 
     /**
@@ -97,7 +99,7 @@ public class ConfigParser {
      * <p>
      * This is the entry point for recursively parsing inside a configuration tree.
      * Since not every element is global, you don't always want to infer the model
-     * just from the element name (as is the case with {@link #handleElement(XMLStreamReader, DomDocument)}.
+     * just from the element name (as is the case with {@link #handleElement(XMLStreamReader, DomDocument, Dom)}.
      * 
      * @param in
      *      pre-condition:  'in' is at the start element.
@@ -105,6 +107,8 @@ public class ConfigParser {
      * @param document
      *      The document that we are building right now.
      *      Newly created {@link Dom} will belong to this document.
+     * @param parent
+     *      The parent element
      * @return
      *      Null if the XML element didn't yield anything (which can happen if the element is skipped.)
      *      Otherwise fully parsed valid {@link Dom} object.
@@ -126,7 +130,7 @@ public class ConfigParser {
 
             if(a==null) {
                 // global look up
-                Dom child = handleElement(in, document);
+                Dom child = handleElement(in, document, dom);
                 if(child!=null)
                     children.add(new Dom.NodeChild(name, child));
             } else
