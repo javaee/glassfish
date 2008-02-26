@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.glassfish.admingui</groupId>
         <artifactId>admingui</artifactId>
@@ -7,11 +8,8 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <modelVersion>4.0.0</modelVersion>
     <artifactId>core</artifactId>
     <packaging>hk2-jar</packaging>
-    
-    <version>1.0-SNAPSHOT</version>
     <name>Admin Console Core</name>
 
     <build>
@@ -21,19 +19,25 @@
               <artifactId>hk2-maven-plugin</artifactId>
               <configuration>
                   <target>../war/target/admingui</target>
-                  <processors>
-                      <processor>
-                          <groupId>com.sun.jsftemplating</groupId>
-                          <artifactId>jsftemplating-dt</artifactId>
-                          <version>1.2-SNAPSHOT</version>
-                      </processor>
-                  </processors>
-                  <excludes>
-                    <exclude>**/UIComponentFactory.map</exclude>
-                    <exclude>**/FormatDefinition.map</exclude>
-                  </excludes>
               </configuration>
           </plugin>
         </plugins>
     </build>
+    <dependencies>
+        <dependency>
+            <groupId>com.sun.enterprise</groupId>
+            <artifactId>hk2</artifactId>
+            <version>${hk2.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.admingui</groupId>
+            <artifactId>console-plugin</artifactId>
+            <version>10.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+	    <groupId>org.glassfish.core</groupId>
+	    <artifactId>kernel</artifactId>
+	    <version>10.0-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
 </project>
