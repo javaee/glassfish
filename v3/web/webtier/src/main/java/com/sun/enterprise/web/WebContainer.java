@@ -191,7 +191,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
     @Inject
     ComponentEnvManager componentEnvManager;
 
-    @Inject
+    @Inject(optional=true)
     Realm realm;
     
     HashMap<String, Integer> portMap = new HashMap<String, Integer>();
