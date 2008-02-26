@@ -1063,17 +1063,16 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             vs.addAlias(alias);
         }
         
-        // TODO resolve WebContainerFeatureFactory
-        /*PEAccessLogValve accessLogValve = vs.getAccessLogValve();
+        PEAccessLogValve accessLogValve = vs.getAccessLogValve();
         boolean startAccessLog = accessLogValve.configure(
             vs_id, vsBean, httpService, domain, _serverContext.getDefaultHabitat(), 
             _serverContext.getDefaultHabitat().
-                getComponent(WebContainerFeatureFactory.class),
+                getComponent(PEWebContainerFeatureFactoryImpl.class),
             globalAccessLogBufferSize, globalAccessLogWriteInterval);
         if (startAccessLog
                 && vs.isAccessLoggingEnabled(globalAccessLoggingEnabled)) {
             vs.addValve(accessLogValve);
-        }*/
+        }
 
         if (_logger.isLoggable(Level.FINEST)) {
             _logger.log(Level.FINEST, "Created virtual server " + vs_id);
