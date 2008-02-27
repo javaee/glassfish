@@ -43,7 +43,7 @@
         <artifactId>admingui</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>    
-    <artifactId>jdbc-gui</artifactId>
+    <artifactId>jdbc-console-plugin</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>hk2-jar</packaging>
     <name>Admin GUI JDBC Plugin</name>
