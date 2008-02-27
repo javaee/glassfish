@@ -35,8 +35,6 @@
  */
 package org.glassfish.admingui.plugin;
 
-import com.sun.enterprise.module.bootstrap.Populator;
-
 import org.glassfish.api.admingui.ConsoleProvider;
 
 import org.jvnet.hk2.annotations.Inject;
@@ -58,12 +56,9 @@ import java.util.logging.Logger;
  *  @author Ken Paulsen	(ken.paulsen@sun.com)
  */
 @Service
-public class ConsolePluginService implements Populator {
-// FIXME: Remove Populator interface
+public class ConsolePluginService {
     @Inject Logger logger;
-
     @Inject Habitat habitat;
-
     @Inject ConsoleProvider providers[];
 
 
@@ -75,10 +70,14 @@ System.out.println("CONSTRUCTOR: Console Plugin Service!");
     }
 
     /**
-     *	Temporary method that will go away when I can @Inject this class into
-     *	web app.  Its only here now for testing purposes.
+     *	<p> Initialize the available {@link IntegrationPoint}s.</p>
      */
-    public void run(ConfigParser notused) {
+    protected synchronized void init() {
+	if (initialized) {
+	    return;
+	}
+	initialized = true;
+
 System.out.println("INITIALIZING: Console Plugin Service!");
 
 	// First find the parser
@@ -104,10 +103,7 @@ System.out.println("INITIALIZING: Console Plugin Service!");
 		addIntegrationPoints(config.getIntegrationPoints(), provider);
 	    }
 	}
-
-// Test...
-System.out.println("this: " + this);
-System.out.println("tree ips: " + getIntegrationPoints("tree"));
+System.out.println("DONE INITIALIZING: '" + pointsByType + "'!");
     }
 
     /**
@@ -141,14 +137,14 @@ System.out.println("tree ips: " + getIntegrationPoints("tree"));
      *	@param	type	The type of {@link IntegrationPoint}s to retrieve.
      */
     public List<IntegrationPoint> getIntegrationPoints(String type) {
-System.out.println("Getting Integration Points: Console Plugin Service!");
+	init();	// Ensure it is initialized.
 	return pointsByType.get(type);
     }
 
     /**
-     *
+     *	<p> Flag indicating intialization has already occured.</p>
      */
-    private static final ConsolePluginService pluginService = new ConsolePluginService();
+    private boolean initialized	= false;
 
     /**
      *	<p> This <code>Map</code> contains the {@link IntegrationPoint}s keyed
