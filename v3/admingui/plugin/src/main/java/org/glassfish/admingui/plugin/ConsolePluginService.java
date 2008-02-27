@@ -49,6 +49,8 @@ import java.util.List;
 //import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.sun.enterprise.module.ModulesRegistry;
+
 
 /**
  *  <p>	This class provides access to {@link IntegrationPoint}s.</p>
@@ -60,6 +62,8 @@ public class ConsolePluginService {
     @Inject Logger logger;
     @Inject Habitat habitat;
     @Inject ConsoleProvider providers[];
+
+    @Inject ModulesRegistry modulesRegistry;
 
 
     /**
