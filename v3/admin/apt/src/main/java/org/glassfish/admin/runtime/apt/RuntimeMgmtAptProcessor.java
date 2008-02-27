@@ -7,6 +7,10 @@ import java.io.*;
 import java.util.*;
 import javax.xml.parsers.*;
 
+import org.glassfish.admin.runtime.infrastructure.management.ManagedAttribute;
+import org.glassfish.admin.runtime.infrastructure.management.MBean;
+import org.glassfish.admin.runtime.infrastructure.management.ManagedOperation;
+
 class RuntimeMgmtAptProcessor implements AnnotationProcessor {
 
     private final AnnotationProcessorEnvironment env;
@@ -59,7 +63,7 @@ class RuntimeMgmtAptProcessor implements AnnotationProcessor {
 
     private void generateMethods(MethodDeclaration mdecl, PrintWriter out) {
         if ((mdecl.getAnnotation(ManagedOperation.class) == null) &&
-            (mdecl.getAnnotation(ManagedAttribute.class) == null)) 
+            (mdecl.getAnnotation(ManagedAttribute.class) == null))
             return;
 
         String type = null;

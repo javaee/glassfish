@@ -4,6 +4,10 @@ import com.sun.mirror.apt.*;
 import com.sun.mirror.declaration.*;
 import java.util.*;
 
+import org.glassfish.admin.runtime.infrastructure.management.MBean;
+import org.glassfish.admin.runtime.infrastructure.management.ManagedAttribute;
+import org.glassfish.admin.runtime.infrastructure.management.ManagedOperation;
+
 public class RuntimeMgmtAptFactory implements AnnotationProcessorFactory {
 
     public RuntimeMgmtAptFactory() {}
