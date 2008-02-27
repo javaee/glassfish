@@ -17,7 +17,6 @@ import java.util.Map;
 
 /**
  * This class contains important information about the startup process
- *
  * @author dochez
  */
 @Service
@@ -29,18 +28,8 @@ public class StartupContext {
 
     /** Creates a new instance of StartupContext */
     public StartupContext(File root, String[] args) {
-        this.root = root.getAbsoluteFile();
-        this.args = new HashMap<String, String>();
-        for (int i=0;i<args.length;i++) {
-            if (args[i].startsWith("-")) {
-                if (i+1<args.length) {
-                    this.args.put(args[i], args[i+1]);
-                    i++;
-                }
-            } else {
-                this.args.put("default", args[i]);
-            }
-        }
+        this.root = absolutize(root);
+        this.args = ArgumentManager.argsToMap(args);
     }
 
     /**
@@ -67,5 +56,17 @@ public class StartupContext {
      */
     public long getCreationTime() {
         return timeZero;
+    }
+    
+    private File absolutize(File f)
+    {
+        try 
+        { 
+            return f.getCanonicalFile(); 
+        }
+        catch(Exception e)
+        {
+            return f.getAbsoluteFile();
+        }
     }
 }
