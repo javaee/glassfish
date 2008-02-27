@@ -36,20 +36,20 @@
 
 package org.glassfish.faces.integration;
 
-import java.io.File;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.List;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
+import java.util.regex.Pattern;
 
 import org.glassfish.api.web.TldProvider;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.Singleton;
+
+import com.sun.enterprise.util.web.JarURLPattern;
+
 
 /**
  * Implementation of TldProvider for JSF.
@@ -69,71 +69,11 @@ public class GlassFishTldProvider implements TldProvider, PostConstruct {
     }
 
     public void postConstruct() {
-        List<URL> jsfImplURLs = getJSFImplURLs();
-        for (URL jsfImplURL : jsfImplURLs) {
-            try {
-                JarFile jarFile = new JarFile(new File(jsfImplURL.toURI()));
-                Enumeration<JarEntry> entries = jarFile.entries();
-                while (entries.hasMoreElements()) {
-                    JarEntry entry = (JarEntry)entries.nextElement();
-                    String name = entry.getName();
-                    if (!name.startsWith("META-INF/") ||
-                            !name.endsWith(".tld")) {
-                        continue;
-                    } else {
-                        tldList.add(new URL("jar:" +
-                                jsfImplURL.toString() + "!/" + name));
-                    }
-                }
-            } catch(Exception ex) {
-                throw new RuntimeException(ex);
-            }
+        ClassLoader classLoader = getClass().getClassLoader();
+        if (classLoader instanceof URLClassLoader) {
+            URL[] urls = ((URLClassLoader)classLoader).getURLs();
+            Pattern pattern = Pattern.compile("META-INF/.*\\.tld");
+            tldList =  JarURLPattern.getJarEntryURLs(urls, pattern);
         }
-    }
-
-    private List<URL> getJSFImplURLs() {
-        List<URL> jsfImplURLs = new ArrayList<URL>();
-        ClassLoader loader = getClass().getClassLoader();
-        while (loader != null) {
-            if (loader instanceof URLClassLoader) {
-                URL[] urls = ((URLClassLoader)loader).getURLs();
-                if (urls != null && urls.length > 0) {
-                    for (URL url : urls) {
-                        File file = null;
-                        try {
-                            file = new File(url.toURI());
-                        } catch(Exception ex) {
-                            // ignore
-                        }
-                        if (file == null && file.isDirectory()) {
-                            continue;
-                        } else {
-                            String name = file.getName();
-                            if (name != null &&
-                                    name.startsWith("jsf-impl") &&
-                                    name.endsWith(".jar")) {
-                                boolean isModule = false;
-                                File parentFile = file.getParentFile();
-                                if (parentFile != null) {
-                                    isModule = "modules".equals(parentFile.getName());
-                                    if (!isModule) {
-                                        parentFile = parentFile.getParentFile();
-                                        isModule = "modules".equals(parentFile.getName());
-                                    }
-                                }
-                             
-                                if (isModule) {
-                                    jsfImplURLs.add(url);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            loader = loader.getParent();
-        }
-
-        return jsfImplURLs;
     }
 }
