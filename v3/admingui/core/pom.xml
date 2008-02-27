@@ -8,7 +8,7 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>core</artifactId>
+    <artifactId>console-core</artifactId>
     <packaging>hk2-jar</packaging>
     <name>Admin Console Core</name>
 
