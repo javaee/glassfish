@@ -230,7 +230,7 @@ public class DomainXml implements Populator {
         if(!ok(dirname))
             throw new RuntimeException(DEFAULT_DOMAINS_DIR_PROPNAME + " is not set.");
             
-        File domainsDir = new File(dirname);
+        File domainsDir = absolutize(new File(dirname));
         
         if(!domainsDir.isDirectory())
             throw new RuntimeException(DEFAULT_DOMAINS_DIR_PROPNAME + 
@@ -255,7 +255,7 @@ public class DomainXml implements Populator {
             throw new RuntimeException("no domain directories found under " + domainsDir);
         
         if(domains.length > 1)
-            throw new RuntimeException("More than one domin found under " 
+            throw new RuntimeException("More than one domain found under " 
                     + domainsDir + " -- you must specify one domain.");
 
         return domains[0];
