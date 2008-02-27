@@ -21,6 +21,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.LineNumberReader;
+import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -179,7 +180,9 @@ public class DomainXml implements Populator {
     private File getDomainRoot() 
     {
         // first see if it is specified directly
-        String domainDir = context.getArguments().get("-domaindir");
+        Map<String,String> args = context.getArguments();
+        
+        String domainDir = getParam(args, "domaindir");
         
         if(ok(domainDir))
             return new File(domainDir);
@@ -188,7 +191,7 @@ public class DomainXml implements Populator {
         // default domains-dir
         
         File defDomainsRoot = getDefaultDomainsDir();
-        String domainName = context.getArguments().get("-domain");
+        String domainName = getParam(args, "domain");
 
         if(ok(domainName))
             return new File(defDomainsRoot, domainName);
@@ -265,6 +268,17 @@ public class DomainXml implements Populator {
     private boolean ok(String s)
     {
         return s != null && s.length() > 0;
+    }
+
+    private String getParam(Map<String,String> map, String name)
+    {
+        // allow both "-" and "--"
+        String val = map.get("-" + name);
+        
+        if(val == null)
+            val = map.get("--" + name);
+        
+        return val;
     }
 
     private File absolutize(File f)
