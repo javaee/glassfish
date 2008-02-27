@@ -44,9 +44,10 @@
         <version>1.0-SNAPSHOT</version>
     </parent>    
     <artifactId>console-plugin</artifactId>
-    <version>10.0-SNAPSHOT</version>
+    <version>1.0-SNAPSHOT</version>
     <packaging>hk2-jar</packaging>
-    <name>Glassfish V3 Admin Console Integration</name>
+    <name>Admin GUI Integration</name>
+    <description>Glassfish V3 Admin Console Integration</description>
 
     <developers>
         <developer>
