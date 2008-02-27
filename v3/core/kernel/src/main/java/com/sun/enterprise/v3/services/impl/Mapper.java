@@ -38,19 +38,13 @@ public class Mapper {
     /**
      * Grizzly's Adapter associated with its context-root.
      */
-    private Map<String, Adapter> adapters = null;
+    private Map<String, Pair<Adapter, ApplicationContainer>> adapters = null;
     
     /** 
      * Grizzly's ProtocolFilter associated with their respective Container.
      */
     private Map<String,List<ProtocolFilter>> contextProtocolFilters = null;
     
-    
-    /**
-     * Grizzly's Adapter associated with it respective GlassFish Container.
-     */
-    private Map<Adapter, ApplicationContainer> applicationContainers = null;
-     
     
     /** 
      * The number of default ProcessorFilter a ProtocolChain contains.
@@ -69,11 +63,9 @@ public class Mapper {
     }
 
     
-    void register( Map<String, Adapter> adapters,
-            Map<Adapter, ApplicationContainer> applicationContainers,
+    void register( Map<String, Pair<Adapter, ApplicationContainer>> adapters,
             Map<String,List<ProtocolFilter>> contextProtocolFilters){
         this.adapters = adapters;
-        this.applicationContainers = applicationContainers;
         this.contextProtocolFilters = contextProtocolFilters;                      
     }
     
@@ -104,12 +96,12 @@ public class Mapper {
         }
              
         String contextRoot = mapContextRoot(byteBuffer);
-        Adapter adapter = mapAdapter(contextRoot);
-        if (adapter == null){
+        Pair<Adapter, ApplicationContainer> pair = mapAdapter(contextRoot);
+        if (pair == null){
             return false;
         }
         List<ProtocolFilter> filtersToInject = null;
-        ApplicationContainer container = applicationContainers.get(adapter);
+        ApplicationContainer container = pair.getSecondElement();
         
         // If we have a container, let the request flow throw the default http path
         if (container == null){
@@ -152,28 +144,29 @@ public class Mapper {
      * if not found. If the Adapter is found, bind it to the current 
      * ProcessorTask.
      */
-    Adapter mapAdapter(String contextRoot){                
-        Adapter adapter = lookupAdapter(contextRoot);
+    Pair<Adapter, ApplicationContainer> mapAdapter(String contextRoot){                
+        Pair<Adapter, ApplicationContainer> pair = lookupAdapter(contextRoot);
         
         // If no Adapter has been found, add a default one. This is the equivalent
         // of having virtual host.
         // TODO: Allow configuring the docroot of those virtual host
-        if (adapter == null && contextRoot.equals(ROOT)){
-            adapter = new StaticResourcesAdapter();
+        if (pair == null && contextRoot.equals(ROOT)){
+            Adapter adapter = new StaticResourcesAdapter();
             ((StaticResourcesAdapter)adapter)
                     .setRootFolder(GrizzlyServiceListener.getWebAppRootPath());
-            adapters.put(contextRoot, adapter);
+            pair = new Pair<Adapter, ApplicationContainer>(adapter, null);
+            adapters.put(contextRoot, pair);
         } 
         
         // Some extension (like SIP) aren't using the Adapter interface, hence
         // no need to configure the Adapter.
-        if (adapter != null) {
-            bindProcessorTask(adapter);
+        if (pair != null) {
+            bindProcessorTask(pair.getFirstElement());
         } else {
             GrizzlyServiceListener.logger().log(Level.WARNING,
                     "Adapter was null for: " + contextRoot);  
         }        
-        return adapter;
+        return pair;
     }
     
     
@@ -219,44 +212,47 @@ public class Mapper {
     /**
      * Bind ProcessorTask's Adapter.
      */
-    private Adapter lookupAdapter(String contextRoot){ 
-        Adapter adapter = null;
+    private Pair<Adapter, ApplicationContainer> lookupAdapter(String contextRoot){ 
+        Pair<Adapter, ApplicationContainer> pair = null;
+
         for(;;) {            
-            adapter = adapters.get(contextRoot);
-            ApplicationContainer container = applicationContainers.get(adapter);
-            if (adapter!=null) {
+            pair = adapters.get(contextRoot);
+            if (pair!=null) {
+                Adapter adapter = pair.getFirstElement();
+                ApplicationContainer container = pair.getSecondElement();
                 ClassLoader cl = null;
                 if (container!=null) {
                     cl = container.getClassLoader();
                 }
-                ClassLoader currentCL = Thread.currentThread().getContextClassLoader();
+
                 try {
                     if (cl==null) {
                         cl = adapter.getClass().getClassLoader();
                     }
                     Thread.currentThread().setContextClassLoader(cl);
                 } catch(Exception e) {
-                    
-                } finally {
-                    Thread.currentThread().setContextClassLoader(currentCL);
                 }
                
                 break;
             }
             
             if (!contextRoot.equals(ROOT)) {
-                if (contextRoot.lastIndexOf(ROOT)!=-1) {
-                    contextRoot = contextRoot.substring(0, contextRoot.lastIndexOf(ROOT));
+                int lastIndexOfRoot = contextRoot.lastIndexOf(ROOT);
+                if (lastIndexOfRoot != -1) {
+                    contextRoot = contextRoot.substring(0, lastIndexOfRoot);
+                } else {
+                    // Should not get here. Only if contextRoot is malformed
+                    break;
                 }
 
-            } 
-            if (contextRoot.length() == 0) {
-                contextRoot = ROOT;
+                if (contextRoot.length() == 0) {
+                    contextRoot = ROOT;
+                }
             } else {
                 break;
             }
         }
-        return adapter;
+        return pair;
     }
     
     

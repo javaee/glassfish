@@ -51,16 +51,10 @@ public class HttpProtocolFilter extends DefaultProtocolFilter implements Endpoin
     /**
      * Grizzly's Adapter associated with its context-root.
      */
-    private Map<String, Adapter> adapters = new HashMap<String, Adapter>();
+    private Map<String, Pair<Adapter, ApplicationContainer>> adapters = 
+            new HashMap<String, Pair<Adapter, ApplicationContainer>>();
 
-    
-    /**
-     * Grizzly's Adapter associated with it respective GlassFish Container.
-     */
-    private Map<Adapter, ApplicationContainer> applicationContainers 
-            = new HashMap<Adapter, ApplicationContainer>();
-    
-    
+        
     /**
      * The Mapper used to find and configure the endpoint.
      */
@@ -84,8 +78,7 @@ public class HttpProtocolFilter extends DefaultProtocolFilter implements Endpoin
         
         try{
             String contextRoot = mapper.mapContextRoot(byteBuffer);
-            Adapter adapter = mapper.mapAdapter(contextRoot);
-            if (adapter == null){
+            if (mapper.mapAdapter(contextRoot) == null){
                 //TODO: Some Application might not have Adapter. Might want to
                 //add a dummy one instead of sending a 404.
                 try {
@@ -119,11 +112,10 @@ public class HttpProtocolFilter extends DefaultProtocolFilter implements Endpoin
         if (!contextRoot.startsWith(ROOT)) {
             contextRoot = ROOT + contextRoot;
         }
-        adapters.put(contextRoot, adapter);
-        if (container!=null) {
-            applicationContainers.put(adapter, container);
-        }
-        mapper.register(adapters,applicationContainers,null);
+        Pair<Adapter, ApplicationContainer> pair = 
+                new Pair<Adapter, ApplicationContainer>(adapter, container);
+        adapters.put(contextRoot, pair);
+        mapper.register(adapters,null);
     }
 
     
@@ -131,11 +123,8 @@ public class HttpProtocolFilter extends DefaultProtocolFilter implements Endpoin
      * Removes the context-root from our list of adapters.
      */
     public void unregisterEndpoint(String contextRoot, ApplicationContainer app) {
-        if (applicationContainers.containsValue(app)) {
-            adapters.remove(contextRoot);
-            applicationContainers.remove(app);
-        }
-        mapper.register(adapters,applicationContainers,null);
+        adapters.remove(contextRoot);
+        mapper.register(adapters,null);
     }
     
 }

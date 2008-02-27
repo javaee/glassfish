@@ -86,11 +86,18 @@ public class HttpUtils {
                             } else {
                                 end = byteBuffer.position() - 1;
                             }
-                            byte[] contextRoot = new byte[end-start];
-                            byteBuffer.position(start);
-                            byteBuffer.limit(end);
-                            byteBuffer.get(contextRoot);
-                            return new String(contextRoot);
+                            
+                            if (byteBuffer.hasArray()) { // Optimization, if ByteBuffer has underlying array
+                                return new String(byteBuffer.array(), 
+                                        byteBuffer.arrayOffset() + start, 
+                                        end - start);
+                            } else {
+                                byte[] contextRoot = new byte[end - start];
+                                byteBuffer.position(start);
+                                byteBuffer.limit(end);
+                                byteBuffer.get(contextRoot);
+                                return new String(contextRoot);
+                            }
                         }
                         break;
                     default:
@@ -207,13 +214,27 @@ public class HttpUtils {
                             state = 0;
                         }
                         break;     
-                    case 5: // Get the Host                  
-                        StringBuilder sb = new StringBuilder();
-                        while (c != 0x0d && c != 0x0a) {
-                            sb.append((char) c);
-                            c = byteBuffer.get();
+                    case 5: // Get the Host
+                        String result;
+                        if (byteBuffer.hasArray()) {// Optimization, if ByteBuffer has underlying array
+                            int startPos = byteBuffer.position();
+                            int endPos = startPos;
+                            while (c != 0x0d && c != 0x0a) {
+                                endPos++;
+                                c = byteBuffer.get();
+                            }
+                            result = new String(byteBuffer.array(), 
+                                    byteBuffer.arrayOffset() + startPos, 
+                                    endPos - startPos);
+                        } else {
+                            StringBuilder sb = new StringBuilder();
+                            while (c != 0x0d && c != 0x0a) {
+                                sb.append((char) c);
+                                c = byteBuffer.get();
+                            }
+                            result = sb.toString();
                         }
-                        return sb.toString().trim();                        
+                        return result.trim();                        
                     default:
                         throw new IllegalArgumentException("Unexpected state");
                 }      

@@ -81,7 +81,8 @@ public class WebProtocolHandler implements ProtocolHandler, EndpointMapper<Adapt
     /**
      * Grizzly's Adapter associated with its context-root.
      */
-    private Map<String, Adapter> adapters = new HashMap<String, Adapter>();
+    private Map<String, Pair<Adapter, ApplicationContainer>> adapters = 
+            new HashMap<String, Pair<Adapter, ApplicationContainer>>();
     
     /** 
      * Grizzly's ProtocolFilter associated with their respective Container.
@@ -89,13 +90,6 @@ public class WebProtocolHandler implements ProtocolHandler, EndpointMapper<Adapt
     private HashMap<String,List<ProtocolFilter>> contextProtocolFilters
             = new HashMap<String,List<ProtocolFilter>>();
     
-    
-    /**
-     * Grizzly's Adapter associated with it respective GlassFish Container.
-     */
-    private Map<Adapter, ApplicationContainer> applicationContainers 
-            = new HashMap<Adapter, ApplicationContainer>();
-     
     
     /** 
      * The number of default ProcessorFilter a ProtocolChain contains.
@@ -179,14 +173,14 @@ public class WebProtocolHandler implements ProtocolHandler, EndpointMapper<Adapt
         if (!contextRoot.startsWith(ROOT)) {
             contextRoot = ROOT + contextRoot;
         }
-        adapters.put(contextRoot, adapter);
-        if (container!=null) {
-            applicationContainers.put(adapter, container);
-        }
+        
+        Pair<Adapter, ApplicationContainer> pair = 
+                new Pair<Adapter, ApplicationContainer>(adapter, container);
+        adapters.put(contextRoot, pair);
         ArrayList<ProtocolFilter> filter = new ArrayList<ProtocolFilter>(1);
         filter.add(grizzlyListener.getHttpProtocolFilter());
         contextProtocolFilters.put(contextRoot,filter);
-        mapper.register(adapters,applicationContainers,contextProtocolFilters);
+        mapper.register(adapters,contextProtocolFilters);
     }
 
     
@@ -194,12 +188,10 @@ public class WebProtocolHandler implements ProtocolHandler, EndpointMapper<Adapt
      * Removes the context-root from our list of adapters.
      */
     public void unregisterEndpoint(String contextRoot, ApplicationContainer app) {
-        if (applicationContainers.containsValue(app)) {
-            adapters.remove(contextRoot);
-            applicationContainers.remove(app);
+        if (adapters.remove(contextRoot) != null) {
             contextProtocolFilters.remove(contextRoot);
         }
-        mapper.register(adapters,applicationContainers,contextProtocolFilters);
+        mapper.register(adapters,contextProtocolFilters);
     }
     
     
