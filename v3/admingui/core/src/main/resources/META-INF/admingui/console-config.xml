@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <console-config id="myIntegration">
-    <integration-point id="jdbcResources" type="tree" priority="840" parentId="Resources" content="/jdbcLists.jsf" />
-    <integration-point id="myTab" type="tab" priority="22" parentId="ResourcesTab" />
-</console-config> 
+    <integration-point id="jbiRootNode" type="tree" priority="840" parentId="rootNode" uri="/myTreeNode.jsf" content="test" />
+    <integration-point id="myTab" type="webApplicationTab" priority="22" parentId="webApplicationTab" uri="/myTab.jsf" />
+    <integration-point id="jbiRootNode" type="tree" priority="840" parentId="rootNode" uri="/myTreeNode.jsf"  content="test2"/>
+</console-config>  
