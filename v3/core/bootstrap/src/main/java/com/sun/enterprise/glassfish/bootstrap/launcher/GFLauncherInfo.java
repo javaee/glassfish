@@ -97,6 +97,11 @@ public class GFLauncherInfo
         if((s = getString("domain")) != null)
             domainName = s;
         
+        // the Arg processor may have set the name "default" to the domain name
+        // just like in asadmin
+        if(!GFLauncherUtils.ok(domainName) && (s = getString("default")) != null)
+            domainName = s;
+        
         if((s = getString("instanceName")) != null)
             instanceName = s;
 
@@ -114,21 +119,19 @@ public class GFLauncherInfo
     private void finalSetup() throws GFLauncherException
     {
         installDir = GFLauncherUtils.getInstallDir();
-        
-        // temp temp temp temp
-        // temp temp temp temp
-        // temp temp temp temp
-        // temp temp temp temp
-        if(installDir != null)
-            throw new GFLauncherException("noInstallDir", installDir);
-        // temp temp temp temp
-        // temp temp temp temp
-        // temp temp temp temp
-        // temp temp temp temp
 
         if(!GFLauncherUtils.safeIsDirectory(installDir))
             throw new GFLauncherException("noInstallDir", installDir);
+        
+        if(domainParentDir != null)
+        {
+            // if the arg was given -- then it MUST point to a real dir
+            if(!GFLauncherUtils.safeIsDirectory(domainParentDir))
+                throw new GFLauncherException("noDomainParentDir", domainParentDir);
+            
+        }
        
+        
         
         
 
