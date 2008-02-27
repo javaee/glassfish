@@ -66,7 +66,7 @@ import java.text.MessageFormat;
 import java.net.URLEncoder;
 
 import java.io.UnsupportedEncodingException;
-//import com.sun.appserv.management.util.misc.ExceptionUtil;
+import com.sun.appserv.management.util.misc.ExceptionUtil;
 
 
 /**
@@ -171,7 +171,7 @@ public class GuiUtil {
 		return encdString;
 	}
     /*
-     * returns the strings from com.sun.enterprise.tools.admingui.Strings 
+     * returns the strings from org.glassfish.admingui.Strings 
      * if no such key exists, return the key itself.
      */
     public static String getMessage(String key){
@@ -289,8 +289,7 @@ public class GuiUtil {
     }
     
     public static Throwable getRootCause( final Throwable ex ){
-        //return ExceptionUtil.getRootCause(ex);    V3 commented out for now.  NEED to fix this.
-        return new RuntimeException();
+        return ExceptionUtil.getRootCause(ex);
     }
 
 	public static List<String> convertListOfStrings(List l) {
@@ -404,5 +403,5 @@ public class GuiUtil {
 	}
         
     public static final String I18N_RESOURCE_BUNDLE = "__i18n_resource_bundle";
-    public static final String RESOURCE_NAME = "com.sun.enterprise.tools.admingui.resources.Strings";
+    public static final String RESOURCE_NAME = "org.glassfish.admingui.resources.Strings";
 }
