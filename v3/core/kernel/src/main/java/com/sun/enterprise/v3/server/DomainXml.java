@@ -66,7 +66,7 @@ public class DomainXml implements Populator {
         File bootstrapDirectory = context.getRootDirectory();
         glassFishRoot = bootstrapDirectory.getParentFile();
         if (!glassFishRoot.exists()) {
-            throw new BootError("No such path exists " + glassFishRoot);
+            throw new RuntimeException("No such path exists " + glassFishRoot);
         }
 
         parseAsEnv(glassFishRoot);
@@ -93,9 +93,9 @@ public class DomainXml implements Populator {
             parser.parse(xsr, new GlassFishDocument(habitat));
             xsr.close();
             if(!xsr.foundConfig)
-                throw new BootError("No <config> seen for name="+xsr.configName);
+                throw new RuntimeException("No <config> seen for name="+xsr.configName);
         } catch (XMLStreamException e) {
-            throw new BootError("Failed to parse "+domainXml,e);
+            throw new RuntimeException("Failed to parse "+domainXml,e);
         }
     }
 
@@ -133,7 +133,7 @@ public class DomainXml implements Populator {
                 line = lnReader.readLine();
             }
         } catch (IOException ioe) {
-            throw new BootError("Error opening asenv.conf : ", ioe);
+            throw new RuntimeException("Error opening asenv.conf : ", ioe);
         } finally {
             try {
                 if (lnReader != null)
@@ -169,10 +169,10 @@ public class DomainXml implements Populator {
         if (domainName == null) {
             File[] domainFiles = domainRoot.listFiles();
             if (domainFiles==null) {
-                throw new BootError("No such directory exists: "+domainName);
+                throw new RuntimeException("No such directory exists: "+domainName);
             }
             if (domainFiles.length == 0) {
-                throw new BootError("No domain found at " + domainRoot);
+                throw new RuntimeException("No domain found at " + domainRoot);
             }
             int i = 0;
             while (domainName == null) {
@@ -181,14 +181,14 @@ public class DomainXml implements Populator {
                 }
                 i++;
                 if (i > domainFiles.length) {
-                    throw new BootError("No domain found at " + domainRoot);
+                    throw new RuntimeException("No domain found at " + domainRoot);
                 }
             }
         }
 
         domainRoot = new File(domainRoot, domainName);
         if (!domainRoot.exists()) {
-            throw new BootError("Domain " + domainName + " does not exist at " + domainRoot);
+            throw new RuntimeException("Domain " + domainName + " does not exist at " + domainRoot);
         }
 
         System.setProperty("com.sun.aas.instanceRoot", domainRoot.getPath() );
@@ -281,7 +281,7 @@ public class DomainXml implements Populator {
                 xsr.close();
                 stream.close();
                 if(configName==null)
-                    throw new BootError(domainXml +" contains no <server> element that matches "+ serverName);
+                    throw new RuntimeException(domainXml +" contains no <server> element that matches "+ serverName);
             } catch (IOException e) {
                 throw new XMLStreamException("Failed to parse "+domainXml,e);
             }
@@ -295,7 +295,7 @@ public class DomainXml implements Populator {
                 if(serverName.equals(xsr.getAttributeValue(null, "name"))) {
                     configName = xsr.getAttributeValue(null,"config-ref");
                     if(configName==null)
-                        throw new BootError("<server> element is missing @config-ref at "+formatLocation(xsr));
+                        throw new RuntimeException("<server> element is missing @config-ref at "+formatLocation(xsr));
                 }
             }
         }
