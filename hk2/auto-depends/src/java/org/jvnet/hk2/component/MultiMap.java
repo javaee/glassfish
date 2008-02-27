@@ -24,7 +24,7 @@ public final class MultiMap<K,V> {
         builder.append( "{" );
         for ( final K key : store.keySet() ) {
             builder.append( key  + ": {" );
-            for( final Object value : store.values() ) {
+            for( final V value : store.get(key) ) {
                 builder.append( value.toString() + "," );
             }
             // trailing comma is OK
