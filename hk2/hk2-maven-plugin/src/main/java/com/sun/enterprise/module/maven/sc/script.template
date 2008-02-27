@@ -1,8 +1,12 @@
 # This is the template used as an input to script cration
 # comment -- ignored
+# copyright section, taken verbatim
 [copyright]
 text=actual text that is carried as-is into generated script
-# "Source" File, one per line
+# header, which is treated verbatim on all platforms
+[header]
+text=value
+# "Source" File, one per line, this will automatically get a .bat extension on Windows
 [source]
 config-file=
 # Environment variables, one per line, with format a=b, any path-like structure should use comma to delimit

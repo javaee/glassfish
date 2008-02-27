@@ -6,7 +6,7 @@
 package com.sun.enterprise.module.maven.sc;
 
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.StringTokenizer;
@@ -30,7 +30,7 @@ final class Section {
         if (name == null || name.length() == 0)
             throw new IllegalArgumentException("null arg");
         this.name  = name;
-        this.props = new HashMap<String, String>();
+        this.props = new LinkedHashMap<String, String>();
         this.env   = env;
     }
     
@@ -86,9 +86,9 @@ final class Section {
     
     private String makeLocalRef(String s) { //gets rid of '${ and }' from given string
         if (WINDOWS.equals(env.get(OPERATING_SYSTEM))) {
-            return ("%" + s.substring(3, s.length() - 2) + "%"); 
+            return ("%" + s.substring(2, s.length() - 1) + "%"); 
         } else { //only "Windows" behaves differently
-            return ( "$" + s.substring(3, s.length() - 2) );
+            return ( "$" + s.substring(2, s.length() - 1) );
         }
     }
     private String processExtRefs(String s) {

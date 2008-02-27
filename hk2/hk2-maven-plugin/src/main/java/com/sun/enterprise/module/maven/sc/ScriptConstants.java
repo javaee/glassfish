@@ -14,6 +14,7 @@ public final class ScriptConstants {
     /* Sections */
     public static final String SYSTEM_SECTION     = "system";
     public static final String COPYRIGHT_SECTION  = "copyright";
+    public static final String HEADER_SECTION     = "header";
     public static final String SOURCE_SECTION     = "source";
     public static final String ENVVARS_SECTION    = "env.vars";
     public static final String SHELLVARS_SECTION  = "shell.vars";
@@ -30,15 +31,15 @@ public final class ScriptConstants {
     /* Property Names  */
 
     /* Values */
-    public static final String WINDOWS_SCRIPT_HOME_VALUE = "%~dp0";
+    public static final String WINDOWS_SCRIPT_HOME_VALUE = "%cd%";
     public static final String UNIX_SCRIPT_HOME_VALUE    = "`dirname $0`";
     public static final String DEFAULT_SHELL_PATH_VALUE  = "#!/bin/sh";
     /* Values */
     /* Others */
     public static final String JAVA_EXE_ENVVAR          = "JAVA";    
     public static final String SCRIPT_HOME_TOKEN        = "script.home";
-    public static final String LOCAL_VAR_REFER_PATTERN  = "'\\$\\{[a-zA-Z\\d\\._]*\\}'";
-    public static final String EXT_PROP_REFER_PATTERN   = "\\$\\{[a-zA-Z\\d\\._]*\\}";
+    public static final String LOCAL_VAR_REFER_PATTERN  = "#\\{[a-zA-Z\\d\\._]+\\}";
+    public static final String EXT_PROP_REFER_PATTERN   = "\\$\\{[a-zA-Z\\d\\._]+\\}";
     public static final String SECTION_START            = "[";
     public static final String SECTION_END              = "]";
     public static final String UNIX                     = "unix";

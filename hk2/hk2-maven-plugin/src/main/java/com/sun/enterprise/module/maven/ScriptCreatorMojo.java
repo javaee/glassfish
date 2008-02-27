@@ -3,6 +3,8 @@ package com.sun.enterprise.module.maven;
 import com.sun.enterprise.module.maven.sc.ScriptCreator;
 import static com.sun.enterprise.module.maven.sc.ScriptConstants.*;
 import java.io.File;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Properties;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -27,7 +29,11 @@ public final class ScriptCreatorMojo extends AbstractMojo {
     /**
      * @parameter
      */
-    private String configFile;
+    private String[] configFiles;
+    /**
+     * @parameter
+     */
+    private String[] destDirs;
     /**
      * @parameter
      */
@@ -43,29 +49,43 @@ public final class ScriptCreatorMojo extends AbstractMojo {
     private final Log log = getLog();
 
     public void execute() throws MojoExecutionException {
-        dumpProperties(project, log);
+        //dumpProperties(project, log);
         String basedir = project.getBasedir().getAbsolutePath();
-        if (configFile == null) {
-            throw new MojoExecutionException("Required parameter <configFile> not specified, exiting ...");
+        if (configFiles == null || configFiles.length == 0) {
+            throw new MojoExecutionException("Required parameter <configFiles> not specified or no <configFile> specified, exiting ...");
         }
-        if (destDir == null) {
-            throw new MojoExecutionException("Required parameter <destDir> not specified, exiting ...");
+        if (destDir == null && destDirs == null) {
+            throw new MojoExecutionException("Either <destDir> or <destDirs> should be specified");
         }
-        File cf = new File(basedir, configFile);
-        File dd = new File(basedir, destDir);
-        try {
-            Properties env;
-            if (buildPlatformSpecific) {
-                env = createBuildPlatformSpecificEnvironment();
-                new ScriptCreator(env).create();
-            } else {
-                env = createEnvironment(cf, dd, WINDOWS);
-                new ScriptCreator(env).create();
-                env = createEnvironment(cf, dd, UNIX);
-                new ScriptCreator(env).create();
+        Map<String, String> sd = new LinkedHashMap<String, String>();
+        if (destDir != null) { // this has higher precedence
+            for (String file : configFiles) {
+                sd.put(file, destDir);
             }
-        } catch (Exception e) {
-            throw new MojoExecutionException(e.getMessage());
+        } else {
+            if (destDirs.length != configFiles.length) 
+                throw new MojoExecutionException("Number of <configFile>s and <destDir>s should be same");
+            for (int i = 0 ; i < configFiles.length ; i ++) {
+                sd.put(configFiles[i], destDirs[i]);
+            } 
+        }
+        for (String file : configFiles) {
+            File cf = new File(basedir, file);
+            File dd = new File(basedir, sd.get(file));
+            try {
+                Properties env;
+                if (buildPlatformSpecific) {
+                    env = createBuildPlatformSpecificEnvironment();
+                    new ScriptCreator(env).create();
+                } else {
+                    env = createEnvironment(cf, dd, WINDOWS);
+                    new ScriptCreator(env).create();
+                    env = createEnvironment(cf, dd, UNIX);
+                    new ScriptCreator(env).create();
+                }
+            } catch (Exception e) {
+                throw new MojoExecutionException(e.getMessage());
+            }
         }
     }
 
