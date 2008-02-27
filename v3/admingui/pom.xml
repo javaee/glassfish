@@ -17,9 +17,9 @@
     <modules>
     	<module>plugin</module>
         <module>core</module>
-        <module>jdbc</module>
-        <module>war</module>
+        <module>jdbc-gui</module>
     	<module>j1plugin</module>
+        <module>war</module>
     </modules>
 
     <build>
