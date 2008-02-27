@@ -19,19 +19,33 @@ import java.util.*;
 
 public class ArgumentManager 
 {
-    static Map<String,String> argsToMap(String[] sargs)
+    public static Map<String,String> argsToMap(String[] sargs)
     {
         ArgumentManager mgr = new ArgumentManager(sargs);
         return mgr.getArgs();
     }
+ 
+    public static Map<String,String> argsToMap(List<String>sargs)
+    {
+        ArgumentManager mgr = new ArgumentManager(sargs);
+        return mgr.getArgs();
+    }
+    
     ///////////////////////////////////////////////////////////////////////////
     //////   ALL PRIVATE BELOW      ///////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////
     
     private ArgumentManager(String[] sargs)
     {
+        args = new ArrayList<String>();
+        
         for(String s : sargs)
             args.add(s);
+    }
+
+    private ArgumentManager(List<String> sargs)
+    {
+        args = sargs;
     }
 
     private Map<String, String> getArgs()
@@ -64,5 +78,5 @@ public class ArgumentManager
     }
 
     Map<String,String>  map     = new HashMap<String,String>();
-    List<String>        args    = new ArrayList<String>();
+    List<String>        args;
 }
