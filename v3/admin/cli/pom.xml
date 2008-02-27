@@ -116,7 +116,10 @@
                 <groupId>com.sun.enterprise</groupId>
                 <artifactId>hk2-maven-plugin</artifactId>
                 <configuration>
-                    <configFile>src/main/resources/asadmin</configFile>
+                    <configFiles>
+                        <configFile>src/main/resources/asadmin</configFile>
+                        <configFile>src/main/resources/asenv</configFile>
+                    </configFiles>
                     <destDir>target/classes</destDir>
                     <!-- optional: <forPlatform></forPlatform> -->
                 </configuration>
