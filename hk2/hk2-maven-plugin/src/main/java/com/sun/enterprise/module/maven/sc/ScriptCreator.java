@@ -95,14 +95,15 @@ public final class ScriptCreator {
             @Override
             public void println(String s) {
                 if (windows()) {
-                    super.print(s + "\r\n"); //This is upon Byron's "notepad" request, he should really use vi
+                    super.print(backwards(s) + "\r\n"); //This is upon Byron's "notepad" request, he should really use vi
                 } else {
-                    super.println(s);
+                    super.println(forwards(s));
                 }
             }
         };
         try {
             writePreamble(sections.get(COPYRIGHT_SECTION), writer);
+            writeHeader(sections.get(HEADER_SECTION), writer);
             writeSourceFiles(sections.get(SOURCE_SECTION), writer);
             writeEnvironmentVariables(sections.get(ENVVARS_SECTION), writer);
             writeShellVariables(sections.get(SHELLVARS_SECTION), writer);
@@ -130,6 +131,18 @@ public final class ScriptCreator {
             writer.println("endlocal");
         }
     }
+    
+    private void writeHeader(Section header, PrintWriter writer) {
+        Map<String, String> props = null;
+        if (header == null || ((props = header.getProps()) == null))
+            return;
+        String line = null;
+        for (String value : props.values()) {
+            line = commentIt(value);
+            writer.println(line);
+        }
+    }
+    
     private String commentIt(String s) {
         if (windows())
             return "REM " + s;
@@ -141,8 +154,8 @@ public final class ScriptCreator {
         String text = "";
         if (cps != null) {
             Map<String, String> props = cps.getProps();
-            for (String key : props.keySet()) {
-                text += props.get(key) + " ";
+            for (String value : props.values()) {
+                text += value + " ";
             }
         }
         return ( text );
@@ -153,11 +166,11 @@ public final class ScriptCreator {
         if (s == null || (props = s.getProps()) == null)
             return; //no such section, or no properties available
         String line = null;
-        for (String key : props.keySet()) {
+        for (String value : props.values()) {
             if (windows()) {
-                line = "call " + props.get(key);
+                line = "call " + value + WIN_SCRIPT_EXTENSION;
             } else { //only Windows behaves differently
-                line = ". " + props.get(key);
+                line = ". " + value;
             }
             writer.println(line);
         }        
@@ -211,8 +224,7 @@ public final class ScriptCreator {
     
     private void writeJava(Section jvm, Section cp, Section sysPropsSection, PrintWriter writer) {
         if (jvm == null) {
-            System.out.println("No Java information, is that what you needed?");
-            return; // if [jvm] section is null, it is better to return with a warning
+            return; // if [jvm] section is absent, just return
         }
         String javaPath      = getJavaPath() + " ";
         String jvmOptions    = "";
@@ -263,7 +275,7 @@ public final class ScriptCreator {
         StringBuilder sb = new StringBuilder("-cp ");
         int i = 0;
         for (String value : props.values()) {
-            value = quote(forwards(value));
+            value = quote(value);
             if (i++ < props.size() - 1)
                 value = value + delim;
             sb.append(value);
@@ -290,7 +302,7 @@ public final class ScriptCreator {
             return quote("${@}");
     }
     
-    private boolean windows() {
+    boolean windows() {
         return ( (WINDOWS.equals(env.get(OPERATING_SYSTEM))) );
     }
     
@@ -303,8 +315,15 @@ public final class ScriptCreator {
     
     private static String forwards(String s) {
         if (s != null) {
-            s = s.replaceAll("\\\\", "/"); // replaceAll takes a "regex"!
+            s = s.replace('\\', '/'); // replaceAll takes a "regex"!
         }
         return ( s );
+    }
+    
+    private static String backwards(String s) {
+        if (s != null) {
+            s = s.replace('/', '\\');
+        }
+        return ( s );        
     }
 }
