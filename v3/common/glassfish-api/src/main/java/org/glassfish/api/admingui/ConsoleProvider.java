@@ -41,7 +41,7 @@ public interface ConsoleProvider {
     /**
      *	<p> Returns a <code>URL</code> to the <code>console-config.xml</code>
      *	    file, or <code>null</code>.  If <code>null</code> is returned, the
-     *	    default (@{link #DEFAULT_CONFIG_FILENAME}) will be used.</p>
+     *	    default ({@link #DEFAULT_CONFIG_FILENAME}) will be used.</p>
      */
     public URL getConfiguration();
 
