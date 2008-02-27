@@ -84,7 +84,7 @@ public class DomainXml implements Populator {
     /**
      * Parses <tt>domain.xml</tt>
      */
-    protected void parseDomainXml(ConfigParser parser, final File domainXml) {
+    private void parseDomainXml(ConfigParser parser, final File domainXml) {
         try {
             // TODO: in reality we need to get the server name from somewhere
             final String serverName = "server";
@@ -99,7 +99,7 @@ public class DomainXml implements Populator {
         }
     }
 
-    protected void parseAsEnv(File installRootFile) {
+    private void parseAsEnv(File installRootFile) {
         Properties asenvProps = new Properties();
         asenvProps.putAll(System.getProperties());
         asenvProps.put("com.sun.aas.installRoot", glassFishRoot.getPath());
@@ -150,7 +150,7 @@ public class DomainXml implements Populator {
     /**
      * Figures out the asenv.conf file to load.
      */
-    protected File getAsEnvConf(File configDir) {
+    private File getAsEnvConf(File configDir) {
         String osName = System.getProperty("os.name");
         if (osName.indexOf("Windows") == -1) {
             return new File(configDir, "asenv.conf");
@@ -163,7 +163,7 @@ public class DomainXml implements Populator {
      * Determines the root directory of the domain that we'll start.
      */
     @Absolutized
-    protected File getDomainRoot() {
+    private File getDomainRoot() {
         File domainRoot = new File(System.getProperty("AS_DEF_DOMAINS_PATH"));
         String domainName = context.getArguments().get("-domain");
         if (domainName == null) {
