@@ -11,7 +11,7 @@
     <artifactId>war</artifactId>
     <packaging>war</packaging>
     <version>1.0-SNAPSHOT</version>
-    <name>Admin Console Webapp</name>
+    <name>Admin GUI WAR</name>
 
     <build>
         <finalName>admingui</finalName>
@@ -20,7 +20,7 @@
   <dependencies>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>core</artifactId>
+      <artifactId>console-core</artifactId>
       <version>${project.version}</version>
     </dependency>
   </dependencies>
