@@ -195,6 +195,8 @@ public final class  GlassfishNamingManagerImpl
     public void unpublishObject(String name)
             throws NamingException {
 
+        /*
+        //Fixme once CosNaming is supported
         Object obj = null;
         try {
             initialContext.lookup(name);
@@ -205,6 +207,7 @@ public final class  GlassfishNamingManagerImpl
         if (isCOSNamingObj(obj)) {
             getCosContext().unbind(name);
         }
+        */
 
         initialContext.unbind(name);
     }
