@@ -119,7 +119,7 @@ System.out.println("DONE INITIALIZING: '" + pointsByType + "'!");
 
     /**
      *	<p> This method allows new {@link IntegrationPoint}s to be added to
-     *	    the known {@link IntegrationPoints}.</p>
+     *	    the known {@link IntegrationPoint}s.</p>
      */
     public void addIntegrationPoints(List<IntegrationPoint> points, ConsoleProvider provider) {
 	// Add them all...
