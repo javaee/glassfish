@@ -50,6 +50,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import com.sun.enterprise.module.ModulesRegistry;
+import com.sun.enterprise.module.Module;
 
 
 /**
@@ -90,7 +91,13 @@ System.out.println("INITIALIZING: Console Plugin Service!");
 	    ConfigParser parser = new ConfigParser(habitat);
 	    URL url = null;
 
-	    // Loop through the configs and add them all
+        for(Module m : modulesRegistry.getModules()) {
+            url = m.getClassLoader().getResource(ConsoleProvider.DEFAULT_CONFIG_FILENAME);
+            if(url!=null)
+                ; // TODO: parse url
+        }
+
+        // Loop through the configs and add them all
 	    for (ConsoleProvider provider : providers) {
 		// Read the contents from the URL
 		url = provider.getConfiguration();
