@@ -39,27 +39,15 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <parent>
-        <groupId>org.glassfish.admin</groupId>
-        <artifactId>admin</artifactId>
-        <version>10.0-SNAPSHOT</version>
+        <groupId>org.glassfish.admin.rt-ann</groupId>
+        <artifactId>rt-ann</artifactId>
+        <version>1.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>apt</artifactId>
     <packaging>jar</packaging>
     <name>Admin Build Time Annotation Processing Classes</name>
     <description>Admin Annotation Processing Infrastructure</description>
-
-    <developers>
-        <developer>
-            <id>msreddy</id>
-            <name>Sreenivas Munnangi</name>
-            <url>http://weblogs.java.net/blog/msreddy/</url>
-            <organization>Sun Microsystems, Inc.</organization>
-            <roles>
-                <role>developer</role>
-            </roles>
-        </developer>
-    </developers>
 
     <dependencies>
         <dependency>
