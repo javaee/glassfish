@@ -9,7 +9,7 @@ public class AddonCompanion implements Runtime {
     public String getName() {
         System.out.println("AddonCompanion: getName: M S Reddy ...");
         return null;
-    };
+    }
 
     public Object getParent() {return null;}
 }
