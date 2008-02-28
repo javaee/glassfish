@@ -30,7 +30,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.Map;
-import java.util.HashMap;
 
 /**
  * Generates <tt>/META-INF/inhabitants/*</tt>
@@ -114,9 +113,20 @@ public class InhabitantsGenerator implements AnnotationProcessor, RoundCompleteL
             if (debug) {
                 env.getMessager().printNotice("Found component annotation " + a + " on "+d.getQualifiedName());
             }
+            
+            // update the descriptor
+            InhabitantsDescriptor descriptor = list.get(ia.value());
+            descriptor.put(d.getQualifiedName(),getInhabitantDeclaration(a,d));
+        }
 
-
-
+        /**
+         * Computes the metadata line for the given class declaration. 
+         *
+         * @param a
+         *      The annotation which is meta-annotated with {@link InhabitantAnnotation}.
+         *      Used to extract the index.
+         */
+        public String getInhabitantDeclaration(AnnotationMirror a, ClassDeclaration d) {
             indices.clear();
             checkedInterfaces.clear();
 
@@ -138,9 +148,6 @@ public class InhabitantsGenerator implements AnnotationProcessor, RoundCompleteL
                 }
             }
 
-            // update the descriptor
-            InhabitantsDescriptor descriptor = list.get(ia.value());
-
             StringBuilder buf = new StringBuilder();
             buf.append(InhabitantsFile.CLASS_KEY).append('=').append(d.getQualifiedName());
             for (String contract : indices)
@@ -153,7 +160,7 @@ public class InhabitantsGenerator implements AnnotationProcessor, RoundCompleteL
             if(metadata!=null && metadata.length()>0)
                 buf.append(',').append(metadata);
 
-            descriptor.put(d.getQualifiedName(),buf.toString());
+            return buf.toString();
         }
 
         /**
