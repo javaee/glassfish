@@ -47,7 +47,7 @@
     <packaging>hk2-jar</packaging>
     <version>${grizzly.version}</version>
     <name>Module packaging for Grizzly</name>
-    <description>Grizzly HTTP Module for GlassFish v3</description>
+    <description>Grizzly HTTP/Comet Module for GlassFish v3</description>
 
     <developers>
         <developer>
@@ -73,7 +73,7 @@
     <dependencies>
         <dependency>
             <groupId>com.sun.grizzly</groupId>
-             <artifactId>grizzly-http</artifactId>
+             <artifactId>grizzly-cometd</artifactId>
              <version>${grizzly.version}</version>
         </dependency>
     </dependencies>
