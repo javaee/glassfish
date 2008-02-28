@@ -315,7 +315,11 @@ public class Habitat {
      *      if no such component is found.
      */
     public <T> Inhabitant<T> getInhabitantByType(Class<T> implType) {
-        List<Inhabitant> list = byType.get(implType.getName());
+        return (Inhabitant<T>)getInhabitantByType(implType.getName());
+    }
+
+    public Inhabitant<?> getInhabitantByType(String fullyQualifiedClassName) {
+        List<Inhabitant> list = byType.get(fullyQualifiedClassName);
         if(list.isEmpty())  return null;
         return list.get(0);
     }
