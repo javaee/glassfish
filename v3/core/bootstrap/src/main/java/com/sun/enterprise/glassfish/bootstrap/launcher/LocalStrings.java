@@ -5,9 +5,6 @@
 
 package com.sun.enterprise.glassfish.bootstrap.launcher;
 
-import java.util.ResourceBundle;
-import java.text.MessageFormat;
-
 /**
  * This class makes getting localized strings super-simple.  All methods are static.
  * The reason is that that makes it much simpler to use -- you never need to create an 
