@@ -1,9 +1,17 @@
 package com.sun.hk2.component;
 
 import java.util.Iterator;
+import java.util.StringTokenizer;
 
 /**
  * Parses a string like <tt>key=value,key=value,key=value</tt>.
+ *
+ * <p>
+ * This class works like {@link StringTokenizer}; each time {@link #parseNext()}
+ * is invoked, the parser "moves" to the next key/value pair, which
+ * you can then obtain with {@link #getKey()} and {@link #getValue()}.
+ * The {@link #hasNext()} method shall be used to check if there's a next key/value
+ * pair after the current position.
  *
  * TODO: improved error check
  * @author Kohsuke Kawaguchi
@@ -15,6 +23,9 @@ public final class KeyValuePairParser {
     private String key;
     private String value;
 
+    /**
+     * Resets the parser to parse the given string that looks like "key=value,key=value,..."
+     */
     public void set(String str) {
         this.str = str;
         idx = 0;
@@ -54,6 +65,9 @@ public final class KeyValuePairParser {
         return value;
     }
 
+    /**
+     * Moves the parser to the head of the key/value pair, to reparse the same string.
+     */
     public void rewind() {
         idx=0;
     }
