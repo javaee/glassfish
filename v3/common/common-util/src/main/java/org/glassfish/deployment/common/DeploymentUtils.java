@@ -36,43 +36,56 @@
 
 package org.glassfish.deployment.common;
 
-/**
- * 
- * @author  bnevins
- * @version 
+import com.sun.enterprise.util.io.FileUtils;
+
+import java.io.File;
+
+/** 
+ * Utility methods for deployment. 
  */
-public class DeploymentException extends Exception 
-{   
 
-        // declare SUID for class versioning compatibility
-        // generated using pe build fcs-b52
-        // this value should stay the same for all
-        // 8.x releases
-        static final long serialVersionUID = -7110600101249180249L;
+public class DeploymentUtils {
 
-	public DeploymentException() 
-	{
-	}
-	public DeploymentException(String s) 
-	{
-		super(s);
-	}
-	public DeploymentException(Throwable t) 
-	{
-            // we cannot just invoke the super(throwable) constructor because
-            // the IASDeploymentException travels between processes and needs
-            // to be serializable as well as all sub or chained exception.
-            // Therefore, I use the setStackTrace to chain instead of initCause
-            super(t.getMessage());
-            setStackTrace(t.getStackTrace());
-	}
-	public DeploymentException(String s, Throwable t) 
-	{
-            // we cannot just invoke the super(throwable) constructor because
-            // the IASDeploymentException travels between processes and needs
-            // to be serializable as well as all sub or chained exception.
-            // Therefore, I use the setStackTrace to chain instead of initCause            
-	    super(s + " -- " + t.getMessage());
-            this.setStackTrace(t.getStackTrace());
-	}
+    /**
+     * This method returns the relative file path of an embedded module to 
+     * the application root.
+     * For example, if the module is expanded/located at 
+     * $domain_dir/applications/j2ee-apps/foo/fooEJB_jar,
+     * this method will return fooEJB_jar
+     *
+     *@param appRootPath The path of the application root which
+     *                   contains the module 
+     *                   e.g. $domain_dir/applications/j2ee-apps/foo
+     *@param moduleUri The module uri
+     *                 e.g. fooEJB.jar
+     *@return The relative file path of the module to the application root
+     */
+    public static String getRelativeEmbeddedModulePath(String appRootPath,
+        String moduleUri) {
+        moduleUri = FileUtils.makeLegalNoBlankFileName(moduleUri);
+        if (FileUtils.safeIsDirectory(new File(appRootPath, moduleUri))) {
+            return moduleUri;
+        } else {
+            return FileUtils.makeFriendlyFilename(moduleUri);
+        }
+    }
+
+    /**
+     * This method returns the file path of an embedded module. 
+     * For example, if the module is expanded/located at 
+     * $domain_dir/applications/j2ee-apps/foo/fooEJB_jar,
+     * this method will return 
+     * $domain_dir/applications/j2ee-apps/foo/fooEJB_jar
+     *
+     *@param appRootPath The path of the application root which
+     *                   contains the module 
+     *                   e.g. $domain_dir/applications/j2ee-apps/foo
+     *@param moduleUri The module uri
+     *                 e.g. fooEJB.jar
+     *@return The file path of the module
+     */
+    public static String getEmbeddedModulePath(String appRootPath,
+        String moduleUri) {
+        return appRootPath + File.separator + getRelativeEmbeddedModulePath(appRootPath, moduleUri) ;
+    }
 }
