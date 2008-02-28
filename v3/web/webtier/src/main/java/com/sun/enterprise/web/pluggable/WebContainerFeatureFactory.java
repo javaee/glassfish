@@ -46,9 +46,12 @@ import com.sun.enterprise.web.WebContainer;
 import com.sun.enterprise.web.WebContainerStartStopOperation;
 import com.sun.enterprise.web.VirtualServer;
 
+import org.jvnet.hk2.annotations.Contract;
+
 /**
  * Interface for getting webcontainer specific pluggable features.
  */
+@Contract
 public interface WebContainerFeatureFactory {
 
     public WebModuleStats getWebModuleStats();
