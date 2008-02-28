@@ -87,7 +87,7 @@
         <dependency>
             <groupId>org.glassfish.external</groupId>
             <artifactId>grizzly-module</artifactId>
-            <version>1.7-SNAPSHOT</version>
+            <version>${grizzly.version}</version>
             <scope>compile</scope>
         </dependency>         
         <dependency>
