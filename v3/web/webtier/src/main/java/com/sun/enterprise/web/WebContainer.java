@@ -248,7 +248,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         instance = (V3Environment) _serverContext.getDefaultHabitat().getComponent(V3Environment.class);
         _modulesWorkRoot = instance.getWebModuleCompileJspPath();
         _appsWorkRoot = instance.getApplicationCompileJspPath();
-        _modulesRoot = instance.getModuleRepositoryPath();
+        _modulesRoot = instance.getApplicationRepositoryPath();
         instanceClassPath = getInstanceClassPath(instance);
 
         setTldScan();
@@ -689,7 +689,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         
         // default-virtual-server
         connector.setDefaultHost(httpListener.getDefaultVirtualServer());
-
+        
         // xpoweredBy
         connector.setXpoweredBy(Boolean.getBoolean(httpListener.getXpoweredBy()));
         

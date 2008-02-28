@@ -106,7 +106,7 @@ import com.sun.appserv.ProxyHandler;
 public class CoyoteConnector
     implements Connector, Lifecycle, MBeanRegistration
 {
-    private static Log log = LogFactory.getLog(CoyoteConnector.class);
+    protected static Log log = LogFactory.getLog(CoyoteConnector.class);
 
     // ---------------------------------------------- Adapter Configuration --//
     
@@ -320,7 +320,7 @@ public class CoyoteConnector
     /**
      * The string manager for this package.
      */
-    private StringManager sm =
+    protected StringManager sm =
         StringManager.getManager(Constants.Package);
 
 
@@ -398,7 +398,7 @@ public class CoyoteConnector
     /**
      * Mapper.
      */
-    private Mapper mapper = new Mapper();
+    protected Mapper mapper = new Mapper();
 
 
     /**
@@ -2014,6 +2014,13 @@ public class CoyoteConnector
         return domain;
     }
 
+    /**
+     * Set the domain of this object.
+     */
+    public void setDomain(String domain){
+        this.domain = domain;
+    }
+    
     public ObjectName preRegister(MBeanServer server,
                                   ObjectName name) throws Exception {
         oname=name;

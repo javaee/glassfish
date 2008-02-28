@@ -26,6 +26,7 @@ package com.sun.enterprise.web;
 import org.apache.catalina.LifecycleException;
 import org.apache.coyote.tomcat5.CoyoteConnector;
 import com.sun.enterprise.web.connector.coyote.PECoyoteConnector;
+import com.sun.org.apache.commons.modeler.Registry;
 
 /**
  * A CoyoteConnector subclass which "wraps around" an existing Grizzly
@@ -42,17 +43,28 @@ import com.sun.enterprise.web.connector.coyote.PECoyoteConnector;
  */ 
 public class WebConnector extends PECoyoteConnector {
 
-    public void start() throws LifecycleException {
-        mapperListener.setPort(getPort());
+    public void start() throws LifecycleException {        
+        if( !initialized )
+            initialize();
+
         mapperListener.setDomain("com.sun.appserv");
+        mapperListener.setPort(getPort());
+        mapperListener.setDefaultHost(getDefaultHost());
         mapperListener.init();
+            
+        try {
+            Registry.getRegistry().registerComponent(mapper, getDomain(), 
+                    "Mapper", "type=Mapper");
+        } catch (Exception ex) {
+            log.error(sm.getString(
+                    "coyoteConnector.protocolRegistrationFailed"), ex);
+        }
+                    
+        if ( grizzlyMonitor != null ) {
+            grizzlyMonitor.initConfig();
+            // TODO
+            //grizzlyMonitor.registerMonitoringLevelEvents();
+        }
     }
-
-    public void setDefaultHost(String defaultHost) {
-        mapperListener.setDefaultHost(defaultHost);
-    }
-
-    public void initialize() throws LifecycleException {
-        initialized = true;
-    }
+    
 }

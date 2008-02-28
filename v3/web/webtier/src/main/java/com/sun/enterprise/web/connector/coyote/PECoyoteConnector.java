@@ -159,17 +159,12 @@ public class PECoyoteConnector extends CoyoteConnector{
      */
     protected String forcedRequestType = "text/plain; charset=iso-8859-1"; 
     
+    
     /**
      * The monitoring classes used to gather stats.
      */
-    private GrizzlyConfig grizzlyMonitor;
-    
-    
-    /**
-     *  The JMX domain.
-     */       
-    private String domain;
-    
+    protected GrizzlyConfig grizzlyMonitor;
+
     
     /**
      * The root folder where application are deployed
@@ -597,14 +592,6 @@ public class PECoyoteConnector extends CoyoteConnector{
     public String getForcedRequestType(){
         return forcedRequestType;
     } 
-    
-    
-    /**
-     * Set the domain of this object.
-     */
-    public void setDomain(String domain){
-        this.domain = domain;
-    }
 
     
     public void start() throws LifecycleException {
