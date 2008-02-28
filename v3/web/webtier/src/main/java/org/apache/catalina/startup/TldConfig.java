@@ -90,7 +90,7 @@ import org.xml.sax.InputSource;
 public final class TldConfig  {
 
     // Names of JARs that are known not to contain any TLDs with listeners
-    private static HashSet<String> noTldListeners;
+    private static HashSet<String> tldListeners;
 
     private static com.sun.org.apache.commons.logging.Log log=
         com.sun.org.apache.commons.logging.LogFactory.getLog( TldConfig.class );
@@ -189,41 +189,41 @@ public final class TldConfig  {
 
 
     /**
-     * Sets the list of JAR files that are known not to contain any
+     * Sets the list of JAR files that are known to contain any
      * TLDs that declare servlet listeners.
      *
      * Only shared JAR files (that is, those loaded by a delegation parent
      * of the webapp's classloader) will be checked against this list.
      *
      * @param jarNames List of comma-separated names of JAR files that are 
-     * known not to contain any TLDs that declare servlet listeners
+     * known to contain any TLDs that declare servlet listeners
      */
-    public static void setNoTldListeners(String jarNames) {
+    public static void setTldListeners(String jarNames) {
         if (jarNames != null) {
-            if (noTldListeners == null) {
-                noTldListeners = new HashSet<String>();
+            if (tldListeners == null) {
+                tldListeners = new HashSet<String>();
             } else {
-                noTldListeners.clear();
+                tldListeners.clear();
             }
             StringTokenizer tokenizer = new StringTokenizer(jarNames, ",");
             while (tokenizer.hasMoreElements()) {
-                noTldListeners.add(tokenizer.nextToken());
+                tldListeners.add(tokenizer.nextToken());
             }
         }
     }
 
     /**
-     * Sets the list of JAR files that are known not to contain any
+     * Sets the list of JAR files that are known to contain any
      * TLDs that declare servlet listeners.
      *
      * Only shared JAR files (that is, those loaded by a delegation parent
      * of the webapp's classloader) will be checked against this list.
      *
-     * @param set HashSet containing the names of JAR file known not to
+     * @param set HashSet containing the names of JAR file known to
      * contain any TLDs that declare servlet listeners
      */
-    public static void setNoTldListeners(HashSet set) {
-        noTldListeners = set;
+    public static void setTldListeners(HashSet set) {
+        tldListeners = set;
     }
     
     // START SJSAS 8.1 5049111   
@@ -865,8 +865,8 @@ public final class TldConfig  {
      * <CATALINA_HOME>/common/lib).
      *
      * The set of shared JARs to be scanned for TLDs is narrowed down by
-     * the <tt>noTldListeners</tt> class variable, which contains the names
-     * of JARs that are known not to contain any TLDs that declare servlet
+     * the <tt>tldListeners</tt> class variable, which contains the names
+     * of JARs that are known to contain any TLDs that declare servlet
      * listeners.
      *
      * @return Map of JAR file paths
@@ -905,8 +905,8 @@ public final class TldConfig  {
                      * listeners
                      */
                     if (loader == webappLoader
-                            || noTldListeners == null
-                            || !noTldListeners.contains(file.getName())) {
+                            || (tldListeners != null &&
+                                tldListeners.contains(file.getName()))) {
                         JarPathElement elem = new JarPathElement(
                                 file, loader == webappLoader);
                         if (jarPathMap == null) {

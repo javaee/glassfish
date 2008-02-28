@@ -123,7 +123,7 @@ public class TldLocationsCache {
     private static final String JAR_FILE_SUFFIX = ".jar";
 
     // Names of JARs that are known not to contain any TLDs
-    private static HashSet<String> noTldJars;
+    private static HashSet<String> tldJars;
 
     // Names of system Uri's that are ignored if referred in WEB-INF/web.xml
     private static HashSet<String> systemUris = new HashSet<String>();
@@ -217,39 +217,39 @@ public class TldLocationsCache {
     }
 
     /**
-     * Sets the list of JAR files that are known not to contain any TLDs.
+     * Sets the list of JAR files that are known to contain any TLDs.
      *
      * Only shared JAR files (that is, those loaded by a delegation parent
      * of the webapp's classloader) will be checked against this list.
      *
      * @param jarNames List of comma-separated names of JAR files that are 
-     * known not to contain any TLDs 
+     * known to contain any TLDs 
      */
-    public static void setNoTldJars(String jarNames) {
+    public static void setTldJars(String jarNames) {
         if (jarNames != null) {
-            if (noTldJars == null) {
-                noTldJars = new HashSet<String>();
+            if (tldJars == null) {
+                tldJars = new HashSet<String>();
             } else {
-                noTldJars.clear();
+                tldJars.clear();
             }
             StringTokenizer tokenizer = new StringTokenizer(jarNames, ",");
             while (tokenizer.hasMoreElements()) {
-                noTldJars.add(tokenizer.nextToken());
+                tldJars.add(tokenizer.nextToken());
             }
         }
     }
 
     /**
-     * Sets the list of JAR files that are known not to contain any TLDs.
+     * Sets the list of JAR files that are known to contain any TLDs.
      *
      * Only shared JAR files (that is, those loaded by a delegation parent
      * of the webapp's classloader) will be checked against this list.
      *
-     * @param set HashSet containing the names of JAR files known not to
+     * @param set HashSet containing the names of JAR files known to
      * contain any TLDs
      */
-    public static void setNoTldJars(HashSet<String> set) {
-        noTldJars = set;
+    public static void setTldJars(HashSet<String> set) {
+        tldJars = set;
     }
 
     /**
@@ -594,8 +594,8 @@ public class TldLocationsCache {
      * <CATALINA_HOME>/common/lib).
      *
      * The set of shared JARs to be scanned for TLDs is narrowed down by
-     * the <tt>noTldJars</tt> class variable, which contains the names of JARs
-     * that are known not to contain any TLDs.
+     * the <tt>tldJars</tt> class variable, which contains the names of JARs
+     * that are known to contain any TLDs.
      */
     private void scanJars() throws Exception {
 
@@ -675,6 +675,6 @@ public class TldLocationsCache {
         if (slash >= 0) {
             jarName = jarPath.substring(slash + 1);
         }
-        return ((noTldJars == null) || !noTldJars.contains(jarName));
+        return (tldJars != null && tldJars.contains(jarName));
     }
 }

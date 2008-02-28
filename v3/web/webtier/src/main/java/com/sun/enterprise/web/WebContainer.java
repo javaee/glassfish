@@ -40,6 +40,7 @@ import java.util.Properties;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.HashMap;
+import java.util.StringTokenizer;
 //HERCULES:add
 import java.util.ArrayList;
 //end HERCULES:add
@@ -250,7 +251,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         _modulesRoot = instance.getModuleRepositoryPath();
         instanceClassPath = getInstanceClassPath(instance);
 
-        setNoTldScan();
+        setTldScan();
 
         // START S1AS 6178005
         modulesStubRoot = instance.getModuleStubPath();
@@ -3958,66 +3959,38 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
     }
 
     /*
-     * Excludes, from TLD scanning, any JARs on the classpath and higher up in
-     * the classloader delegation chain that are known not to contain any TLDs
-     * or TLD listeners.
+     * Includes, from TLD scanning, any user specified JARs on the classpath
+     * and higher up in the classloader delegation chain that are known to
+     * contain any TLDs or TLD listeners.
      */
-    private void setNoTldScan() {
+    private void setTldScan() {
 
-        List tldJars = null;
-        List tldListeners = null;
-        HashSet<String> noTldJars = new HashSet<String>();
-        HashSet<String> noTldListeners = new HashSet<String>();
+        HashSet<String> tldJars = null;
+        HashSet<String> tldListeners = null;
 
         String prop = System.getProperty("com.sun.enterprise.taglibs");
-        if (prop != null) {
-            tldJars = StringUtils.parseStringList(prop, ",");
+        if (prop != null && prop.trim().length() > 0) {
+            tldJars = new HashSet<String>(
+                    StringUtils.parseStringList(prop, ","));
         }
 
         prop = System.getProperty("com.sun.enterprise.taglisteners");
-        if (prop != null) {
-            tldListeners = StringUtils.parseStringList(prop, ",");
+        if (prop != null && prop.trim().length() > 0) {
+            tldListeners = new HashSet<String>(
+                    StringUtils.parseStringList(prop, ","));
         }
 
         // Check to see if we need to scan the parent classloader when
         // searching for TLD listener. JSF application mandate the search, as
         // well as shared TLD added to the
         // property com.sun.enterprise.taglisteners
-        if ( tldListeners != null ){
-            int size = tldListeners.size();
-            if ( size > 0 ){
-                // By default, domain.xml contains 1 elements.
-                if ( !tldListeners.contains("jsf-impl.jar") || (size > 1))
-                    TldConfig.setScanParentTldListener(true);
-            }
+        if ( tldListeners != null && tldListeners.size() > 0 ){
+            // By default, domain.xml contains no element.
+            TldConfig.setScanParentTldListener(true);
         }
 
-        ClassLoader loader = getClass().getClassLoader();
-        while (loader != null) {
-            if (loader instanceof URLClassLoader) {
-                URL[] urls = ((URLClassLoader) loader).getURLs();
-                for (int i=0; i<urls.length; i++) {
-                    String url = urls[i].toString();
-                    int index = url.lastIndexOf('/');
-                    if (index != -1) {
-                        url = url.substring(index+1);
-                    }
-                    if (url != null && url.endsWith(".jar")) {
-                        if (tldJars == null || !tldJars.contains(url)) {
-                            noTldJars.add(url);
-                        }
-                        if (tldListeners == null
-                                || !tldListeners.contains(url)) {
-                            noTldListeners.add(url);
-                        }
-                    }
-                }
-            }
-            loader = loader.getParent();
-        }
-
-        TldConfig.setNoTldListeners(noTldListeners);
-        TldLocationsCache.setNoTldJars(noTldJars);
+        TldConfig.setTldListeners(tldListeners);
+        TldLocationsCache.setTldJars(tldJars);
     }
 
 
