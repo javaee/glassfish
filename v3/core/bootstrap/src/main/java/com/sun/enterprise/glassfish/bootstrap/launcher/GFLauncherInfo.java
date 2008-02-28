@@ -70,7 +70,7 @@ public class GFLauncherInfo
             argsRaw.add(s);
     }
 
-    private void setup() throws GFLauncherException
+    void setup() throws GFLauncherException
     {
         setupFromArgs();
         finalSetup();
@@ -87,11 +87,14 @@ public class GFLauncherInfo
         // pick out file props
         // annoying -- cli uses "domaindir" to represent the parent of the 
         // domain root dir.  I'm sticking with the same syntax for now...
-        if((f = getFile("domainDir")) != null)
+        if((f = getFile("domaindir")) != null)
             domainParentDir = f;
         
-        if((f = getFile("instanceDir")) != null)
+        if((f = getFile("instancedir")) != null)
             instanceDir = f;
+        
+        if((f = getFile("domainrootdir")) != null)
+            domainRootDir = f;
         
         // Now do the same thing with known Strings
         if((s = getString("domain")) != null)
@@ -102,7 +105,7 @@ public class GFLauncherInfo
         if(!GFLauncherUtils.ok(domainName) && (s = getString("default")) != null)
             domainName = s;
         
-        if((s = getString("instanceName")) != null)
+        if((s = getString("instancename")) != null)
             instanceName = s;
 
         // finally, do the booleans
@@ -123,19 +126,70 @@ public class GFLauncherInfo
         if(!GFLauncherUtils.safeIsDirectory(installDir))
             throw new GFLauncherException("noInstallDir", installDir);
         
+        // check user-supplied args
         if(domainParentDir != null)
         {
             // if the arg was given -- then it MUST point to a real dir
             if(!GFLauncherUtils.safeIsDirectory(domainParentDir))
                 throw new GFLauncherException("noDomainParentDir", domainParentDir);
-            
         }
-       
-        
-        
-        
 
+        setupDomainRootDir();
         
+        if(!GFLauncherUtils.safeIsDirectory(domainRootDir))
+            throw new GFLauncherException("noDomainRootDir", domainRootDir);
+        
+        configDir = new File(domainRootDir, CONFIG_DIR);
+        
+        // if we made it here -- we're in pretty good shape!
+    }
+
+    private void setupDomainRootDir() throws GFLauncherException
+    {
+        // if they set domainrootdir -- it takes precedence
+        if(domainRootDir != null)
+        {
+            domainParentDir = domainRootDir.getParentFile();
+            domainName = domainRootDir.getName();
+            return;
+        }
+        
+        // if they set domainParentDir -- use it.  o/w use the default dir
+        if(domainParentDir == null)
+        {
+            domainParentDir = new File(installDir, DEFAULT_DOMAIN_PARENT_DIR);
+        }
+        
+        // if they specified domain name -- use it.  o/w use the one and only dir
+        // in the domain parent dir
+        
+        if(domainName == null)
+        {
+            domainName = getTheOneAndOnlyDomain();
+        }
+        
+        domainRootDir = new File(domainParentDir, domainName);
+    }
+
+    private String getTheOneAndOnlyDomain() throws GFLauncherException
+    {
+        // look for subdirs in the parent dir -- there must be one and only one
+        
+        File[] files = domainParentDir.listFiles(new FileFilter()
+        {
+            public boolean accept(File f) 
+            { 
+                return GFLauncherUtils.safeIsDirectory(f); 
+            }
+        });
+        
+        if(files == null || files.length == 0)
+            throw new GFLauncherException("noDomainDirs", domainParentDir);
+        
+        if(files.length > 1)
+            throw new GFLauncherException("tooManyDomainDirs", domainParentDir);
+        
+        return files[0].getName();
     }
     
     private Boolean getBoolean(String key) 
@@ -187,6 +241,7 @@ public class GFLauncherInfo
     private boolean             valid           = false;
     private Map<String,String>  argsMap;
     private ArrayList<String>   argsRaw = new ArrayList<String>();
-    
+    private final static String DEFAULT_DOMAIN_PARENT_DIR = "domains";
+    private final static String CONFIG_DIR                = "config";
 }
 
