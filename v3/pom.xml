@@ -254,6 +254,21 @@
                     </distribution>
                 </configuration>
             </plugin>
+            <!--plugin>
+                <!- - configuration for compiling HK2 jars - ->
+                <groupId>com.sun.enterprise</groupId>
+                <artifactId>hk2-maven-plugin</artifactId>
+                <configuration>
+                    <processors>
+                        <processor>
+                            <!- - handle runtime MBean annotations like JSR-255 - ->
+                            <groupId>org.glassfish.admin.rt-ann</groupId>
+                            <artifactId>apt</artifactId>
+                            <version>1.0-SNAPSHOT</version>
+                        </processor>
+                    </processors>
+                </configuration>
+            </plugin-->
             <plugin>
                 <groupId>com.sun.enterprise</groupId>
                 <artifactId>hk2-maven-plugin</artifactId>
