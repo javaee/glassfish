@@ -40,6 +40,9 @@ import com.sun.enterprise.config.serverbeans.HttpService;
 import com.sun.enterprise.config.serverbeans.Property; 
 import com.sun.enterprise.config.serverbeans.RequestProcessing;
 import com.sun.grizzly.Controller;
+import com.sun.grizzly.arp.DefaultAsyncHandler;
+import com.sun.grizzly.comet.CometAsyncFilter;
+import com.sun.grizzly.http.AsyncHandler;
 import com.sun.logging.LogDomains;
 
 /**
@@ -69,8 +72,8 @@ public class GrizzlyHttpEmbed {
             int port, Controller controller){
         
         System.setProperty("product.name", "GlassFish/v3");      
-        GrizzlyServiceListener grizzlyListener 
-                = new GrizzlyServiceListener();
+        GrizzlyServiceListener grizzlyListener = new GrizzlyServiceListener();
+        
 	//TODO: Configure via domain.xml
         //grizzlyListener.setController(controller);
         grizzlyListener.setPort(port); 
@@ -84,15 +87,17 @@ public class GrizzlyHttpEmbed {
         /*  if (!Boolean.getBoolean(httpListener.getEnabled())) {
                 continue;
             } */
-            boolean isSecure = Boolean.getBoolean(httpListener.getSecurityEnabled());
-            configureGrizzlyListener(grizzlyListener,
-                    httpListener,isSecure,httpService);           
+            if (httpListener.getPort().equalsIgnoreCase(String.valueOf(port))){
+                boolean isSecure = Boolean.getBoolean(httpListener.getSecurityEnabled());
+                configureGrizzlyListener(grizzlyListener,httpListener,isSecure,httpService);
+                break;
+            }
         }
-
+              
         return grizzlyListener;
         
     }
-    
+
     
     /*
      * Configures the given grizzlyListener.
@@ -117,7 +122,6 @@ public class GrizzlyHttpEmbed {
         configureHttpProtocol(grizzlyListener, httpService.getHttpProtocol());     
         configureRequestProcessing(httpService.getRequestProcessing(),grizzlyListener);
         configureFileCache(grizzlyListener, httpService.getHttpFileCache());
-
 
         // acceptor-threads
         String acceptorThreads = httpListener.getAcceptorThreads();
@@ -148,6 +152,11 @@ public class GrizzlyHttpEmbed {
 
         // Override http-service property if defined.
         configureHttpListenerProperties(httpListener,grizzlyListener);
+        
+        if(System.getProperty("v3.grizzly.comet.disabled") == null
+                && !httpListener.getId().equalsIgnoreCase("admin-listener")){       
+            configureComet(grizzlyListener);       
+        } 
     }      
     
     
@@ -532,4 +541,16 @@ public class GrizzlyHttpEmbed {
         }    
     }
     
+    
+    /**
+     * Enable Comet/Poll request support.
+     */
+    private final static void configureComet(GrizzlyServiceListener grizzlyListener){
+        grizzlyListener.setEnableAsyncExecution(true);
+        AsyncHandler asyncHandler = new DefaultAsyncHandler();
+        asyncHandler.addAsyncFilter(new CometAsyncFilter()); 
+        grizzlyListener.setAsyncHandler(asyncHandler);
+    }
+    
+        
 }
