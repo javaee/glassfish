@@ -34,10 +34,12 @@
  * holder.
  */
 
-package com.sun.enterprise.resource;
+package com.sun.enterprise.resource.listener;
 
-import com.sun.enterprise.PoolManager;
-import com.sun.enterprise.Switch;
+import com.sun.enterprise.resource.pool.PoolManager;
+import com.sun.enterprise.connectors.ConnectorRuntime;
+import com.sun.enterprise.resource.*;
+
 import javax.resource.spi.*;
 import java.util.*;
 
@@ -59,7 +61,7 @@ public class LocalTxConnectionEventListener extends ConnectionEventListener {
     public LocalTxConnectionEventListener(ResourceHandle resource) {
         this.resource = resource;
         this.associatedHandles = new IdentityHashMap(10);
-        this.poolMgr = Switch.getSwitch().getPoolManager();
+        this.poolMgr = ConnectorRuntime.getRuntime().getPoolManager();
     }
 
     public void connectionClosed(ConnectionEvent evt) {

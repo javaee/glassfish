@@ -33,246 +33,123 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.enterprise.resource;
+package com.sun.enterprise.resource.rm;
 
 import java.util.logging.*;
 
-import javax.transaction.*;
+import javax.transaction.Transaction;
+import javax.transaction.SystemException;
 
 import com.sun.logging.*;
-import com.sun.enterprise.*;
+import com.sun.enterprise.container.common.spi.JavaEETransactionManager;
+import com.sun.enterprise.connectors.ConnectorRuntime;
+import com.sun.appserv.connectors.spi.PoolingException;
+import com.sun.enterprise.resource.*;
 
 /**
- * Resource Manager for any resource request from a component.
+ * SystemResourceManagerImpl manages the resource requests from system
  *
  * @author Binod PG
- */
-public class ResourceManagerImpl implements ResourceManager {
-    
-    
-    static Logger _logger = null;
+ */ 
+public class SystemResourceManagerImpl implements ResourceManager {
+
+
+    private static Logger _logger ;
     static {
         _logger = LogDomains.getLogger(LogDomains.RSR_LOGGER);
     }
-    
+
+
     /**
      * Returns the transaction component is participating.
      *
      * @return Handle to the <code>Transaction</code> object.
-     * @exception <code>PoolingException<code>
+     * @exception <code>PoolingException<code> If exception is thrown
+     *         while getting the transaction.
      */
     public Transaction getTransaction() throws PoolingException{
-        InvocationManager invmgr =
-        Switch.getSwitch().getInvocationManager();
-        ComponentInvocation inv = invmgr.getCurrentInvocation();
-        if (inv == null) {
-	    try {
-                return Switch.getSwitch().getTransactionManager().getTransaction();
-            } catch (Exception ex) {
-	        return null;
-	    }
+        try {
+            return ConnectorRuntime.getRuntime().getTransaction();
+        } catch (Exception ex) {
+            _logger.log(Level.SEVERE,"poolmgr.unexpected_exception",ex);
+            throw new PoolingException(ex.toString(), ex);
         }
-        return inv.getTransaction();
-    }
-    
-    /**
-     * Returns the component invoking resource request.
-     *
-     * @return Handle to the component.
-     */
-    public Object getComponent(){
-        
-        InvocationManager invmgr =
-        Switch.getSwitch().getInvocationManager();
-        ComponentInvocation inv = invmgr.getCurrentInvocation();
-        if (inv == null) {
-            return null;
-        }
-        
-        return inv.getInstance();
     }
 
     /**
-     * Enlist the <code>ResourceHandle</code> in the transaction
-     *
-     * @param h	<code>ResourceHandle</code> object
-     * @exception <code>PoolingException</code>
+     * Return null for System Resource.
      */
-    public void enlistResource(ResourceHandle h) throws PoolingException{
-        registerResource(h);
+    public Object getComponent() {        
+        return null;
     }
     
     /**
      * Register the <code>ResourceHandle</code> in the transaction
      *
      * @param handle	<code>ResourceHandle</code> object
-     * @exception <code>PoolingException</code>
-     */
-    public void registerResource(ResourceHandle handle)
-            throws PoolingException 
-    {
+     * @exception <code>PoolingException</code> If there is any error while 
+     *        enlisting.
+     */    
+    public void enlistResource(ResourceHandle handle) throws PoolingException{
         try {
-            Transaction tran = null;
-            J2EETransactionManager tm = 
-            Switch.getSwitch().getTransactionManager();
-            // enlist if necessary
-            if (handle.isTransactional()) {
-                InvocationManager invmgr =
-                Switch.getSwitch().getInvocationManager();
-                ComponentInvocation inv = invmgr.getCurrentInvocation();
-                              
-                if (inv == null) {
-                    //throw new InvocationException();
-                    
-                    //Go to the tm and get the transaction
-		    //This is mimicking the current behavior of
-		    //the SystemResourceManagerImpl registerResource method
-		    //in that, you return the transaction from the TxManager
-		    try {
-                        tran = tm.getTransaction(); 	
-                    } catch( Exception e ) {
-		        tran = null;
-			_logger.log(Level.INFO, e.getMessage());
-		    }
-                } else {
-                    tran = inv.getTransaction();
-                    tm.registerComponentResource(handle);
-                }
-                
-                if (tran != null) {
- 	 	    try{            
- 	 	        tm.enlistResource(tran, handle);
- 	 	    } catch (Exception ex) {
- 	 	        _logger.fine("Exception whle trying to enlist resource " + ex.getMessage());
- 	 	        //If transactional, remove the connection handle from the
- 	 	        //component's resource list as there has been exception attempting
- 	 	        //to enlist the resource
- 	 	        if(inv != null) {
- 	 	            _logger.fine("Attempting to unregister component resource");
- 	 	            tm.unregisterComponentResource(handle);
- 	 	        }
- 	 	        throw ex;
- 	 	    }
-                }
+            JavaEETransactionManager tm = ConnectorRuntime.getRuntime().getTransactionManager();
+            Transaction tran = tm.getTransaction();
+	    if (tran != null) {
+                tm.enlistResource(tran, handle);
             }
-                        
-        } catch (Exception ex) {
-            _logger.log(Level.SEVERE,"poolmgr.component_register_exception",ex);
+	} catch (Exception ex) {
+            _logger.log(Level.SEVERE,"poolmgr.unexpected_exception",ex);
             throw new PoolingException(ex.toString(), ex);
-        }
-    }
-   
-    //Overridden by the LazyEnlistableResourceManager to be a No-Op
-    protected void enlist( J2EETransactionManager tm, Transaction tran, 
-        ResourceHandle h ) throws PoolingException {
-        try {
-            tm.enlistResource( tran, h );
-        } catch( Exception e ) {
-            PoolingException pe = new PoolingException( e.getMessage() );
-            pe.initCause( e );
-            throw pe;
-        }
+        }           
+    }                
+
+    /**
+     * Dont do any thing for System Resource.
+     */
+    public void registerResource(ResourceHandle handle) 
+         throws PoolingException {
     }
     
-    /**
-     * Get's the component's transaction and marks it for rolling back.
-     */
     public void rollBackTransaction() {
-        InvocationManager invmgr =
-        Switch.getSwitch().getInvocationManager();
-	J2EETransactionManager tm = Switch.getSwitch().getTransactionManager();
-	Transaction tran = null;
         try {
-            ComponentInvocation inv = invmgr.getCurrentInvocation();
-            if (inv == null) {
-                //throw new InvocationException();
-                    
-               //Go to the tm and get the transaction
-               //This is mimicking the current behavior of
-               //the SystemResourceManagerImpl registerResource method
-               //in that, you return the transaction from the TxManager
-	       try {
-                   tran = tm.getTransaction(); 	
-               } catch( Exception e ) {
-	           tran = null;
-                   _logger.log(Level.INFO, e.getMessage());
-               }
-
-            } else {
-                tran = inv.getTransaction();
-	    }
-            if (tran != null) {
+            JavaEETransactionManager tm = ConnectorRuntime.getRuntime().getTransactionManager();
+            Transaction tran = tm.getTransaction();
+	    if ( tran != null ) {
                 tran.setRollbackOnly();
-            }
+	    }
         } catch (SystemException ex) {
             _logger.log(Level.WARNING,"poolmgr.system_exception",ex);
         } catch (IllegalStateException ex) {
             // ignore
-        }
+        }    
     }
-    
+   
     /**
      * delist the <code>ResourceHandle</code> from the transaction
      *
-     * @param resource	<code>ResourceHandle</code> object
+     * @param h	<code>ResourceHandle</code> object
      * @param xaresFlag flag indicating transaction success. This can
-     *        be XAResource.TMSUCCESS or XAResource.TMFAIL
+     *        be XAResource.TMSUCCESS or XAResource.TMFAIL     
      * @exception <code>PoolingException</code>
-     */
-    public void delistResource(ResourceHandle resource, int xaresFlag) {
-        unregisterResource(resource,xaresFlag);
-    }
+     */       
+    public void delistResource(ResourceHandle h, int xaresFlag) {
+        try {
+        JavaEETransactionManager tm = ConnectorRuntime.getRuntime().getTransactionManager();
+            Transaction tran = tm.getTransaction();
+	    if (tran != null) {
+                tm.delistResource(tran, h, xaresFlag);
+            }		
+        } catch (SystemException ex) {
+            _logger.log(Level.WARNING,"poolmgr.system_exception",ex);
+        } catch (IllegalStateException ex) {
+            // ignore
+        }            
+    }   
     
     /**
-     * Unregister the <code>ResourceHandle</code> from the transaction
-     *
-     * @param resource	<code>ResourceHandle</code> object
-     * @param xaresFlag flag indicating transaction success. This can
-     *        be XAResource.TMSUCCESS or XAResource.TMFAIL
-     * @exception <code>PoolingException</code>
+     * Dont do any thing for System Resource.
      */
     public void unregisterResource(ResourceHandle resource,
-                                   int xaresFlag) {
-
-        J2EETransactionManager tm =
-                Switch.getSwitch().getTransactionManager();
-        Transaction tran = null;
-
-        try {
-            // delist with TMSUCCESS if necessary
-            if (resource.isTransactional()) {
-                InvocationManager invmgr =
-                        Switch.getSwitch().getInvocationManager();
-                ComponentInvocation inv = invmgr.getCurrentInvocation();
-                if (inv == null) {
-                    //throw new InvocationException();
-
-                    //Go to the tm and get the transaction
-                    //This is mimicking the current behavior of
-                    //the SystemResourceManagerImpl registerResource method
-                    //in that, you return the transaction from the TxManager
-                    try {
-                        tran = tm.getTransaction();
-                    } catch (Exception e) {
-                        tran = null;
-                        _logger.log(Level.INFO, e.getMessage());
-                    }
-                } else {
-                    tran = inv.getTransaction();
-                    tm.unregisterComponentResource(resource);
-                }
-                if (tran != null && resource.isEnlisted()) {
-                    tm.delistResource(tran, resource, xaresFlag);
-                }
-            }
-        } catch (SystemException ex) {
-            _logger.log(Level.WARNING, "poolmgr.system_exception", ex);
-        } catch (IllegalStateException ex) {
-            // transaction aborted. Do nothing
-        } catch (InvocationException ex) {
-            // unregisterResource is called outside of component context
-            // likely to be container-forced destroy. Do nothing
-        }
-
+                                   int xaresFlag) {        
     }
 }

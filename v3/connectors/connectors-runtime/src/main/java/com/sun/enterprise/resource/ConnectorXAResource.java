@@ -38,23 +38,25 @@ package com.sun.enterprise.resource;
 import javax.transaction.xa.*;
 import javax.resource.spi.*;
 
-import com.sun.enterprise.PoolManager;
-import com.sun.enterprise.Switch;
-import com.sun.enterprise.J2EETransactionManager;
-import com.sun.enterprise.distributedtx.J2EETransaction;
+import com.sun.enterprise.container.common.spi.JavaEETransactionManager;
+import com.sun.enterprise.container.common.spi.JavaEETransaction;
+import com.sun.enterprise.connectors.ConnectorRuntime;
+import com.sun.enterprise.resource.allocator.ResourceAllocator;
+import com.sun.appserv.connectors.spi.PoolingException;
+import com.sun.enterprise.resource.pool.PoolManager;
+import com.sun.enterprise.resource.listener.ConnectionEventListener;
+import com.sun.enterprise.resource.listener.LocalTxConnectionEventListener;
 
 import java.util.logging.Logger;
 import java.util.logging.Level;
 import java.util.Hashtable;
 import java.util.Set;
 import java.util.Map;
-import java.util.Iterator;
 
 import com.sun.logging.LogDomains;
-import com.sun.jts.CosTransactions.Configuration;
 
 /**
- * @author Tony Ng
+ * @author Tony Ng, Jagadish Ramu
  *
  */
 public class ConnectorXAResource implements XAResource {
@@ -77,15 +79,13 @@ public class ConnectorXAResource implements XAResource {
 
     static Logger _logger = LogDomains.getLogger(LogDomains.RSR_LOGGER);
 
-
-
     public ConnectorXAResource(ResourceHandle handle,
                                ResourceSpec spec,
-                               ResourceAllocator alloc,
+                               com.sun.enterprise.resource.allocator.ResourceAllocator alloc,
                                ClientSecurityInfo info ) {
 
         // initially userHandle is associated with mc
-        this.poolMgr = Switch.getSwitch().getPoolManager();
+        this.poolMgr = ConnectorRuntime.getRuntime().getPoolManager();
         this.userHandle = null;
         this.spec = spec;
 	    this.poolName = spec.getConnectionPoolName();
@@ -126,7 +126,7 @@ public class ConnectorXAResource implements XAResource {
                 ManagedConnection mc = (ManagedConnection) handle.getResource();
                 mc.associateConnection(userHandle);
                 LocalTxConnectionEventListener l =
-                        (LocalTxConnectionEventListener) handle.getListener();
+                        (com.sun.enterprise.resource.listener.LocalTxConnectionEventListener) handle.getListener();
                 if(_logger.isLoggable(Level.FINE)){
                     _logger.log(Level.FINE, "connection_sharing_start",  userHandle);
                 }
@@ -183,7 +183,8 @@ public class ConnectorXAResource implements XAResource {
     }        
 
     public int prepare(Xid xid) throws XAException {
-	    return Configuration.LAO_PREPARE_OK;
+        //TODO V3 use Configuration.LAO_PREPARE_OK later
+        return 123456;
     }
     
     public Xid[] recover(int flag) throws XAException {
@@ -210,20 +211,15 @@ public class ConnectorXAResource implements XAResource {
         listenerTable.remove(mc);
     }
 
-      //Commented from 9.1 as it is not used
-    /*public static void addListener(ManagedConnection mc, ConnectionEventListener l) {
-        listenerTable.put(mc,l);
-    }*/
-
     private ResourceHandle getResourceHandle() throws PoolingException {
         try {
             ResourceHandle h = null;
-            J2EETransactionManager txMgr = Switch.getSwitch().getTransactionManager();
-            J2EETransaction j2eetran = (J2EETransaction) txMgr.getTransaction();
+            JavaEETransactionManager txMgr = ConnectorRuntime.getRuntime().getTransactionManager();
+            JavaEETransaction j2eetran = (JavaEETransaction) txMgr.getTransaction();
             if (j2eetran == null) {      //Only if some thing is wrong with tx manager.
                 h = localHandle_;        //Just return the local handle.
             } else {
-                h = j2eetran.getNonXAResource();
+                h = (ResourceHandle)j2eetran.getNonXAResource();
             }
             if (h.getResourceState().isUnenlisted()) {
                 ManagedConnection mc = (ManagedConnection) h.getResource();
@@ -264,5 +260,4 @@ public class ConnectorXAResource implements XAResource {
             handleResourceException(ex);
         }
     }
-
 }

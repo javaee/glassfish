@@ -34,7 +34,7 @@
  * holder.
  */
 
-package com.sun.enterprise.resource;
+package com.sun.enterprise.resource.allocator;
 
 import javax.transaction.xa.XAResource;
 import javax.resource.spi.*;
@@ -43,7 +43,11 @@ import javax.security.auth.Subject;
 import java.util.logging.*;
 
 import com.sun.enterprise.deployment.ConnectorDescriptor;
-import com.sun.enterprise.PoolManager;
+import com.sun.enterprise.resource.pool.PoolManager;
+import com.sun.enterprise.resource.*;
+import com.sun.enterprise.resource.listener.ConnectionEventListener;
+import com.sun.enterprise.resource.listener.LocalTxConnectionEventListener;
+import com.sun.appserv.connectors.spi.PoolingException;
 
 /**
  * @author Tony Ng
@@ -65,23 +69,20 @@ public class LocalTxConnectorAllocator extends AbstractConnectorAllocator {
     public ResourceHandle createResource()
          throws PoolingException {
         try {
-            ManagedConnection mc =
-                mcf.createManagedConnection(subject, reqInfo);
+            ManagedConnection mc = mcf.createManagedConnection(subject, reqInfo);
             
-            ResourceHandle resource =
-                new ResourceHandle(mc, spec, this, info);
-            ConnectionEventListener l = 
-                new LocalTxConnectionEventListener(resource);
+            ResourceHandle resource =  new ResourceHandle(mc, spec, this, info);
+            ConnectionEventListener l =  new LocalTxConnectionEventListener(resource);
             mc.addConnectionEventListener(l);
             resource.setListener(l);
 
-            XAResource xares = 
-                new ConnectorXAResource(resource, spec, this, info);
+            XAResource xares =  new ConnectorXAResource(resource, spec, this, info);
             resource.fillInResourceObjects(null, xares);
 
             return resource;
         } catch (ResourceException ex) {
-            _logger.log(Level.WARNING,"poolmgr.create_resource_error",ex.getMessage());
+            Object[]  params = new Object[]{spec.getConnectionPoolName(), ex.getMessage()};
+            _logger.log(Level.WARNING,"poolmgr.create_resource_error", params);
             _logger.log(Level.FINE,"Resource Exception while creating resource",ex);
 
             if (ex.getLinkedException() != null) {
