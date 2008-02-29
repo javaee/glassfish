@@ -74,7 +74,6 @@ public class GrizzlyHttpEmbed {
 	//TODO: Configure via domain.xml
         //grizzlyListener.setController(controller);
         grizzlyListener.setPort(port);   
-        grizzlyListener.setMaxProcessorWorkerThreads(5);
         GrizzlyServiceListener.setWebAppRootPath(
                 System.getProperty("com.sun.aas.instanceRoot") + "/docroot");
         
