@@ -41,7 +41,7 @@
  * Use is subject to license terms.
  * 
  */
-package com.sun.enterprise.resource.pool;
+package com.sun.appserv.connectors.spi;
 
 import java.io.PrintStream;
 import java.io.PrintWriter;

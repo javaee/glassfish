@@ -33,19 +33,20 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.enterprise.container.common.spi;
+package com.sun.appserv.connectors.spi;
 
 import org.jvnet.hk2.annotations.Contract;
 
 import javax.transaction.Transaction;
 
+import com.sun.appserv.connectors.spi.ResourceHandle;
+
 /**
- * PoolManager manages jdbc and connector connection pool
+ * TransactedPoolManager manages jdbc and connector connection pool
  */
 @Contract
-public interface PoolManager {
+public interface TransactedPoolManager {
 
     void resourceEnlisted(Transaction tran, ResourceHandle res) throws IllegalStateException;
-
 }
 

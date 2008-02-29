@@ -33,24 +33,23 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.enterprise.container.common.spi;
+package com.sun.appserv.connectors.spi;
 
-import javax.resource.spi.ConnectionEventListener;
-import javax.security.auth.Subject;
 import javax.transaction.xa.XAResource;
 
-import org.jvnet.hk2.annotations.Contract;
+import com.sun.appserv.connectors.spi.PoolingException;
 
 /**
  * ResourceHandle interface to be used by transaction manager components
  *
  * @author Marina Vatkina
  */
-@Contract
+
 public interface ResourceHandle {
 
     public boolean isTransactional();
 
+    //TODO V3 not needed as of now.
     public boolean isEnlistmentSuspended();
 
     public XAResource getXAResource();
@@ -61,7 +60,7 @@ public interface ResourceHandle {
 
     public void setComponentInstance(Object instance);
 
-    public void closeUserConnection();
+    public void closeUserConnection() throws PoolingException;
 
     public boolean isEnlisted();
 
