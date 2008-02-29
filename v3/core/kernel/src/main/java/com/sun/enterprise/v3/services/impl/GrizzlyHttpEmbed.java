@@ -319,11 +319,9 @@ public class GrizzlyHttpEmbed {
     private static void configureFileCache(GrizzlyServiceListener grizzlyListener,
                                     HttpFileCache httpFileCache){
         if ( httpFileCache == null ) return;
-        
-        /*catalinaCachingAllowed = !(httpFileCache.isGloballyEnabled() &&
-                ConfigBeansUtilities.toBoolean(httpFileCache.getFileCachingEnabled()));
-        
-        grizzlyListener.setFileCacheEnabled(httpFileCache.isGloballyEnabled());   */      
+               
+        grizzlyListener.setFileCacheIsEnabled(
+                ConfigBeansUtilities.toBoolean(httpFileCache.getGloballyEnabled()));         
         grizzlyListener.setLargeFileCacheEnabled(
             ConfigBeansUtilities.toBoolean(httpFileCache.getFileCachingEnabled()));
         
