@@ -47,6 +47,7 @@ import javax.resource.spi.work.WorkException;
 import org.jvnet.hk2.annotations.Contract;
 import org.glassfish.api.invocation.ComponentInvocation;
 import org.glassfish.api.invocation.InvocationException;
+import com.sun.appserv.connectors.spi.ResourceHandle;
 
 /**
  *
