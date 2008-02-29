@@ -246,10 +246,7 @@
 
             </connection-definition>
 
-
-            <!-- TODO V3 no transaction for now -->
-            <transaction-support>NoTransaction</transaction-support>
-
+            <transaction-support>LocalTransaction</transaction-support>
 
             <authentication-mechanism>
                 <!-- There can be any number of "description" elements including 0 -->
