@@ -1,8 +1,25 @@
 /*
- * Copyright 2004-2005 Sun Microsystems, Inc.  All rights reserved.
- * Use is subject to license terms.
+ * The contents of this file are subject to the terms 
+ * of the Common Development and Distribution License 
+ * (the License).  You may not use this file except in
+ * compliance with the License.
+ * 
+ * You can obtain a copy of the license at 
+ * https://glassfish.dev.java.net/public/CDDLv1.0.html or
+ * glassfish/bootstrap/legal/CDDLv1.0.txt.
+ * See the License for the specific language governing 
+ * permissions and limitations under the License.
+ * 
+ * When distributing Covered Code, include this CDDL 
+ * Header Notice in each file and include the License file 
+ * at glassfish/bootstrap/legal/CDDLv1.0.txt.  
+ * If applicable, add the following below the CDDL Header, 
+ * with the fields enclosed by brackets [] replaced by
+ * you own identifying information: 
+ * "Portions Copyrighted [year] [name of copyright owner]"
+ * 
+ * Copyright 2008 Sun Microsystems, Inc. All rights reserved.
  */
-
 package com.sun.enterprise.glassfish.bootstrap.launcher;
 
 /**
@@ -35,23 +52,20 @@ package com.sun.enterprise.glassfish.bootstrap.launcher;
  * 
  * @author bnevins
  */
-public class LocalStrings
-{
-    private LocalStrings()
-    {
+public class LocalStrings {
+
+    private LocalStrings() {
     }
-    
+
     /**
      * Get a String from the caller's package's LocalStrings.properties
      * @param indexString The string index into the localized string file
      * @return the String from LocalStrings or the supplied String if it doesn't exist
      */
-    
-    public static String get(String indexString)
-    {
+    public static String get(String indexString) {
         return new LocalStringsImpl().get(indexString);
     }
-    
+
     /**
      * Get and format a String from the caller's package's LocalStrings.properties
      * @param indexString The string index into the localized string file
@@ -59,41 +73,36 @@ public class LocalStrings
      * @return the String from LocalStrings or the supplied String if it doesn't exist --
      * using the array of supplied Object arguments
      */
-    public static String get(String indexString, Object... objects)
-    {
+    public static String get(String indexString, Object... objects) {
         return new LocalStringsImpl().get(indexString, objects);
     }
-   
+
     /**
      * Get a String from the caller's package's LocalStrings.properties
      * @param indexString The string index into the localized string file
      * @return the String from LocalStrings or the supplied default value if it doesn't exist
      */
-    public String getString(String indexString, String defaultValue)
-    {
+    public String getString(String indexString, String defaultValue) {
         return new LocalStringsImpl().get(indexString, defaultValue);
     }
-    
+
     /**
      * Get an integer from the caller's package's LocalStrings.properties
      * @param indexString The string index into the localized string file
      * @return the integer value from LocalStrings or the supplied default if 
      * it doesn't exist or is bad.
      */
-    
-    public static int getInt(String indexString, int defaultValue)
-    {
+    public static int getInt(String indexString, int defaultValue) {
         return new LocalStringsImpl().getInt(indexString, defaultValue);
     }
-    
+
     /**
      * Get a boolean from the caller's package's LocalStrings.properties
      * @param indexString The string index into the localized string file
      * @return the integer value from LocalStrings or the supplied default if 
      * it doesn't exist or is bad.
      */
-    public boolean getBoolean(String indexString, boolean defaultValue)
-    {
+    public boolean getBoolean(String indexString, boolean defaultValue) {
         return new LocalStringsImpl().getBoolean(indexString, defaultValue);
-    }    
+    }
 }

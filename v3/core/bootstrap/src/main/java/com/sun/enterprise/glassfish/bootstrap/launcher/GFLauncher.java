@@ -1,22 +1,3 @@
-
-package com.sun.enterprise.glassfish.bootstrap.launcher;
-
-/**
- *
- * @author bnevins
- */
-public abstract class GFLauncher 
-{
-    GFLauncherInfo getInfo()
-    {
-        return info;
-    }
-    
-    
-    
-    private GFLauncherInfo info = new GFLauncherInfo();
-}
-
 /*
  * The contents of this file are subject to the terms 
  * of the Common Development and Distribution License 
@@ -37,5 +18,58 @@ public abstract class GFLauncher
  * you own identifying information: 
  * "Portions Copyrighted [year] [name of copyright owner]"
  * 
- * Copyright 2006 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2008 Sun Microsystems, Inc. All rights reserved.
  */
+package com.sun.enterprise.glassfish.bootstrap.launcher;
+
+/**
+ * This is the main Launcher class designed for external and internal usage.
+ * Each of the 3 kinds of server -- domain, node-agent and instance -- need
+ * to sublass this class.  
+ * @author bnevins
+ */
+public abstract class GFLauncher {
+
+    /**
+     * 
+     * @return The info object that contains startup info
+     */
+    public final GFLauncherInfo getInfo()
+    {
+        return info;
+    }
+
+    /**
+     * An info object is created automatically use this method to set your own
+     * instance.
+     * @param info the info instance
+     */
+    public final void setInfo(GFLauncherInfo info)
+    {
+        this.info = info;
+    }
+
+    abstract void internalLaunch() throws GFLauncherException;
+
+    /**
+     * Launches the server.  Any fatal error results in a GFLauncherException
+     * No unchecked Throwables of any kind will be thrown.
+     * 
+     * @throws com.sun.enterprise.glassfish.bootstrap.launcher.GFLauncherException
+     */
+    public void launch() throws GFLauncherException
+    {
+        try {
+            internalLaunch();
+        }
+        catch (GFLauncherException gfe) {
+            throw gfe;
+        }
+        catch (Throwable t) {
+            // hk2 might throw a java.lang.Error
+            throw new GFLauncherException("unknownError", t);
+        }
+    }
+    private GFLauncherInfo info = new GFLauncherInfo();
+}
+

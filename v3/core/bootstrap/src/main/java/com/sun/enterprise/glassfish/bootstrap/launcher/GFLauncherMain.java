@@ -22,43 +22,28 @@
  */
 package com.sun.enterprise.glassfish.bootstrap.launcher;
 
-import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
- * Simple helper class for MiniXmlParser.
- * No publics
+ *
  * @author bnevins
  */
-class AttributeManager {
+public class GFLauncherMain {
 
-    void add(String name, String value) {
-        atts.add(new Attribute(name, value));
-    }
-
-    void dump() {
-        for (Attribute att : atts) {
-            System.out.println(att.name + " = " + att.value);
+    /**
+     * JAVADOC IS PENDING FINAL API OF THE ARGS
+     * @param args
+     */
+    public static void main(String[] args)
+    {
+        try {
+            GFLauncher launcher = GFLauncherFactory.getInstance(GFLauncherFactory.ServerType.domain);
+            launcher.getInfo().addArgs(args);
+            launcher.launch();
+        }
+        catch (GFLauncherException ex) {
+            Logger.getLogger(GFLauncherMain.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-
-    String getValue(String name) {
-        for (Attribute att : atts) {
-            if (att.name.equals(name)) {
-                return att.value;
-            }
-        }
-        return null;
-    }
-
-    private static class Attribute {
-
-        Attribute(String n, String v) {
-            name = n;
-            value = v;
-        }
-        String name;
-        String value;
-    }
-    List<Attribute> atts = new ArrayList<Attribute>();
 }
-

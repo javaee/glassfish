@@ -18,30 +18,25 @@
  * you own identifying information: 
  * "Portions Copyrighted [year] [name of copyright owner]"
  * 
- * Copyright 2006 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2008 Sun Microsystems, Inc. All rights reserved.
  */
-
 package com.sun.enterprise.glassfish.bootstrap.launcher;
+
 import java.util.*;
+import com.sun.enterprise.glassfish.bootstrap.Main;
 
 /**
  * GFDomainLauncher
- *
+ * This class is a package-private subclass of GFLauncher designed for
+ * domain launching
  * @author bnevins
  */
+class GFDomainLauncher extends GFLauncher {
 
-public class GFDomainLauncher 
-{
-    public static void main(String[] args) 
-    {
-        // TODO code application logic here
-    }
-
-    ///////////////////////////////////////////////////////////////////////////
-
-    public void setInfo(java.util.Properties props)
-    {
-        
+    void internalLaunch() throws GFLauncherException {
+        getInfo().setup();
+        Main main = new Main();
+        main.run(new String[]{"-domaindir", getInfo().domainRootDir.getPath()});
     }
 }
 

@@ -22,43 +22,35 @@
  */
 package com.sun.enterprise.glassfish.bootstrap.launcher;
 
-import java.util.*;
-
 /**
- * Simple helper class for MiniXmlParser.
- * No publics
+ *
  * @author bnevins
  */
-class AttributeManager {
+public class GFLauncherFactory {
 
-    void add(String name, String value) {
-        atts.add(new Attribute(name, value));
-    }
+    /**
+     * An enum for specifying the three kinds of servers.
+     */
+    public enum ServerType
+    {
 
-    void dump() {
-        for (Attribute att : atts) {
-            System.out.println(att.name + " = " + att.value);
+        domain, nodeAgent, instance
+    }; 
+    /**
+     * 
+     * @param type The type of server to launch.
+     * @return A launcher instance that can be used for launching the specified 
+     * server type.
+     * @throws com.sun.enterprise.glassfish.bootstrap.launcher.GFLauncherException
+     */
+    public static GFLauncher getInstance(ServerType type) throws GFLauncherException
+    {
+        switch(type)
+        {
+            case domain:  
+                return new GFDomainLauncher();
+            default:
+                throw new GFLauncherException("Only domain launching is currently supported.");
         }
     }
-
-    String getValue(String name) {
-        for (Attribute att : atts) {
-            if (att.name.equals(name)) {
-                return att.value;
-            }
-        }
-        return null;
-    }
-
-    private static class Attribute {
-
-        Attribute(String n, String v) {
-            name = n;
-            value = v;
-        }
-        String name;
-        String value;
-    }
-    List<Attribute> atts = new ArrayList<Attribute>();
 }
-
