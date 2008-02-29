@@ -36,12 +36,15 @@
 package com.sun.enterprise.resource;
 
 import com.sun.enterprise.resource.allocator.ResourceAllocator;
+import com.sun.enterprise.resource.allocator.LocalTxConnectorAllocator;
+import com.sun.appserv.connectors.spi.PoolingException;
 import com.sun.logging.LogDomains;
 
 import javax.resource.spi.ConnectionEventListener;
 import javax.security.auth.Subject;
 import javax.transaction.xa.XAResource;
 import java.util.logging.Logger;
+import java.util.logging.Level;
 
 
 /**
@@ -50,7 +53,7 @@ import java.util.logging.Logger;
  *
  * @author Tony Ng
  */
-public class ResourceHandle {
+public class ResourceHandle implements com.sun.appserv.connectors.spi.ResourceHandle {
 
     // unique ID for resource handles
     static private long idSequence;
@@ -59,6 +62,7 @@ public class ResourceHandle {
     private ClientSecurityInfo info;
     private Object resource;  // XAConnection for JDBC 2.0
     private ResourceSpec spec;
+    private XAResource xares;
     private Object usercon;   // Connection for JDBC 2.0
     private ResourceAllocator alloc;
     private Object instance;  // the component instance holding this resource
@@ -93,13 +97,39 @@ public class ResourceHandle {
         this.info = info;
         this.resource = resource;
         this.alloc = alloc;
+
+	if ( alloc instanceof LocalTxConnectorAllocator)
+	    supportsXAResource = false;
+	else
+	    supportsXAResource = true;
+
     }
+
+	public ResourceHandle(Object resource,
+                          ResourceSpec spec,
+                          ResourceAllocator alloc,
+                          ClientSecurityInfo info,
+			  boolean supportsXA) {
+        this.id = getNextId();
+        this.spec = spec;
+        this.info = info;
+        this.resource = resource;
+        this.alloc = alloc;
+
+		supportsXAResource = supportsXA;
+
+    }    
+
 
     /**
      * Does this resource need enlistment to transaction manager?
      */
     public boolean isTransactional() {
         return alloc.isTransactional();
+    }
+
+    public boolean isEnlistmentSuspended() {
+        throw new UnsupportedOperationException("Transaction is not supported yet");
     }
 
     public boolean supportsXA() {
@@ -126,12 +156,20 @@ public class ResourceHandle {
         return spec;
     }
 
+    public XAResource getXAResource() {
+        return xares;
+    }
+
     public Object getUserConnection() {
         return usercon;
     }
 
     public void setComponentInstance(Object instance) {
         this.instance = instance;
+    }
+
+    public void closeUserConnection() throws PoolingException {
+        getResourceAllocator().closeUserConnection(this);
     }
 
     public Object getComponentInstance() {
@@ -141,6 +179,23 @@ public class ResourceHandle {
     public void fillInResourceObjects(Object userConnection,
                                       XAResource xaRes) {
         if (userConnection != null) usercon = userConnection;
+
+        if (xaRes !=null) {
+           if(logger.isLoggable(Level.FINEST)){
+             //When Log level is Finest, XAResourceWrapper is used to log
+             //all XA interactions - Don't wrap XAResourceWrapper if it is 
+             //already wrapped
+               if ((xaRes instanceof XAResourceWrapper) ||
+                       (xaRes instanceof ConnectorXAResource)) {
+                   this.xares = xaRes;
+               } else {
+                   this.xares = new XAResourceWrapper(xaRes);
+               }
+           } else {
+            this.xares = xaRes;
+           }
+        }
+
     }
 
     // For XA-capable connections, multiple connections within a
@@ -214,6 +269,10 @@ public class ResourceHandle {
 
     public boolean isShareable() {
         return alloc.shareableWithinComponent();
+    }
+
+    public void destroyResource() {
+        throw new UnsupportedOperationException("Transaction is not supported yet");
     }
 
     public boolean isEnlisted() {

@@ -37,6 +37,7 @@
 package com.sun.enterprise.connectors.service;
 
 import com.sun.appserv.connectors.spi.ConnectorRuntimeException;
+import com.sun.appserv.connectors.spi.PoolingException;
 import com.sun.enterprise.config.serverbeans.Property;
 import com.sun.enterprise.config.serverbeans.SecurityMap;
 import com.sun.enterprise.connectors.*;
@@ -48,7 +49,6 @@ import com.sun.enterprise.deployment.ConnectorDescriptor;
 import com.sun.enterprise.deployment.EnvironmentProperty;
 import com.sun.enterprise.deployment.ResourcePrincipal;
 import com.sun.enterprise.resource.pool.PoolManager;
-import com.sun.enterprise.resource.pool.PoolingException;
 import com.sun.enterprise.util.RelativePathResolver;
 import com.sun.enterprise.util.i18n.StringManager;
 
@@ -744,6 +744,8 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
             //came here
             origCcp.setMatchConnections(ccp.matchConnections());
             origCcp.setMaxConnectionUsage(ccp.getMaxConnectionUsage());
+            origCcp.setNonComponent(ccp.isNonComponent());
+            origCcp.setNonTransactional(ccp.isNonTransactional());
             origCcp.setConCreationRetryAttempts(ccp.getConCreationRetryAttempts());
             origCcp.setConCreationRetryInterval
                     (ccp.getConCreationRetryInterval());
@@ -768,7 +770,7 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
         PoolManager poolMgr = _runtime.getPoolManager();
         try {
             poolMgr.reconfigPoolProperties(ccp);
-        } catch (com.sun.enterprise.resource.pool.PoolingException pe) {
+        } catch (PoolingException pe) {
             throw new ConnectorRuntimeException(pe.getMessage());
         }
         //Run setXXX methods on the copy of the MCF that we have
@@ -792,6 +794,8 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
         //update the properties "allow-non-component-callers" and
         //"non-transactional-connections" in the PoolMetaData
         PoolMetaData pmd = registry.getPoolMetaData(poolName);
+        pmd.setIsPM(ccp.isNonComponent());
+        pmd.setIsNonTx(ccp.isNonTransactional());
         pmd.setAuthCredentialsDefinedInPool(ccp.getAuthCredentialsDefinedInPool());
 
         logFine("Pool properties reconfiguration done");

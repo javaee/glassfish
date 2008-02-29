@@ -98,6 +98,8 @@ public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, Connec
      * @param context      of the undeployment
      */
     //TODO V3 unload's job is to remove the app's content from class-loader or class-loader specific to this app
+    //TODO V3 application.start/stop() will take care of creating/destryingARA
+
     public void unload(ConnectorApplication appContainer, DeploymentContext context) {
         File sourceDir = context.getSourceDir();
         String moduleName = sourceDir.getName();

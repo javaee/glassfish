@@ -50,9 +50,11 @@
 package com.sun.enterprise.resource.deployer;
 
 import com.sun.enterprise.connectors.ConnectorRuntime;
+import com.sun.enterprise.connectors.util.ConnectorsUtil;
 import com.sun.enterprise.server.ResourceDeployer;
 import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.logging.LogDomains;
+import com.sun.appserv.connectors.spi.ConnectorConstants;
 
 import java.util.logging.Logger;
 
@@ -96,6 +98,10 @@ public class JdbcResourceDeployer implements ResourceDeployer {
 
             ConnectorRuntime runtime = ConnectorRuntime.getRuntime();
             runtime.createConnectorResource(jndiName, poolName, null);
+            //In-case the resource is explicitly created with a suffix (__nontx or __PM), no need to create one
+            if(ConnectorsUtil.getValidSuffix(jndiName) == null){
+                runtime.createConnectorResource( ConnectorsUtil.getPMJndiName( jndiName), poolName, null);
+            }
             _logger.finest("deployed resource " + jndiName);
         } /*else {
             _logger.log(Level.INFO, "core.resource_disabled",
@@ -119,6 +125,10 @@ public class JdbcResourceDeployer implements ResourceDeployer {
 
         ConnectorRuntime runtime = ConnectorRuntime.getRuntime();
         runtime.deleteConnectorResource(jndiName);
+        //In-case the resource is explicitly created with a suffix (__nontx or __PM), no need to delete one
+        if(ConnectorsUtil.getValidSuffix(jndiName) == null){
+            runtime.deleteConnectorResource( ConnectorsUtil.getPMJndiName( jndiName) );
+        }
     }
 
     /**

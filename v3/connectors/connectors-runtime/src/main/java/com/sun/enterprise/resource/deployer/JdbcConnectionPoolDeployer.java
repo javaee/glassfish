@@ -258,7 +258,11 @@ public class JdbcConnectionPoolDeployer implements ResourceDeployer {
                     conConnPool.setMatchConnections(toBoolean(rp.getValue(), false));
                     logFine("MATCHCONNECTIONS");
 
-                } else if ("POOLWAITQUEUE".equals(name.toUpperCase())) {
+                }else if ("POOLDATASTRUCTURE".equals(name.toUpperCase())) {
+                    conConnPool.setPoolDataStructureType(rp.getValue());
+                    logFine("POOLDATASTRUCTURE");
+
+                }else if ("POOLWAITQUEUE".equals(name.toUpperCase())) {
                     conConnPool.setPoolWaitQueue(rp.getValue());
                     logFine("POOLWAITQUEUE");
 

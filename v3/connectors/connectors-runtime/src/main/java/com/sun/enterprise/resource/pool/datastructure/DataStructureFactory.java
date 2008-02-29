@@ -36,7 +36,7 @@
 
 package com.sun.enterprise.resource.pool.datastructure;
 
-import com.sun.enterprise.resource.pool.PoolingException;
+import com.sun.appserv.connectors.spi.PoolingException;
 import com.sun.enterprise.resource.pool.ResourceHandler;
 import com.sun.logging.LogDomains;
 

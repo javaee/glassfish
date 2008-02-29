@@ -37,6 +37,7 @@ package com.sun.enterprise.resource.pool;
 
 
 import com.sun.appserv.connectors.spi.ConnectorConstants.PoolType;
+import com.sun.appserv.connectors.spi.PoolingException;
 import com.sun.logging.LogDomains;
 
 import java.util.logging.Level;

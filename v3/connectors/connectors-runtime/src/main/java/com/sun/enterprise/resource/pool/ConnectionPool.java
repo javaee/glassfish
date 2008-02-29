@@ -48,15 +48,15 @@ import com.sun.enterprise.resource.pool.resizer.Resizer;
 import com.sun.enterprise.resource.pool.waitqueue.PoolWaitQueue;
 import com.sun.enterprise.resource.pool.waitqueue.PoolWaitQueueFactory;
 import com.sun.enterprise.util.i18n.StringManager;
+import com.sun.enterprise.container.common.spi.JavaEETransaction;
 import com.sun.logging.LogDomains;
+import com.sun.appserv.connectors.spi.PoolingException;
 
 import javax.naming.Context;
 import javax.naming.NamingException;
 import javax.resource.ResourceException;
 import javax.transaction.Transaction;
-import java.util.ArrayList;
-import java.util.Set;
-import java.util.Timer;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -122,6 +122,8 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
 
     protected String name;
 
+    private PoolTxHandler poolTxHandler;
+
     // adding resourceSpec and allocator
     protected ResourceSpec resourceSpec;
 
@@ -137,6 +139,7 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
         initializePoolDataStructure();
         initializeResourceSelectionStragegy();
         initializePoolWaitQueue();
+        poolTxHandler = new PoolTxHandler(name);
         gateway = ResourceGateway.getInstance(resourceGatewayClass);
         _logger.log(Level.FINE, "Connection Pool : " + poolName);
     }
@@ -422,7 +425,9 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
         if (result != null) {
             return result;
         }
+        result = getResourceFromTransaction(tran, alloc, spec);
 
+        // We didnt get a connection that is already enlisted in the current transaction (if any).
         if (result == null) {
             result = getUnenlistedResource(spec, alloc, tran);
             if (result != null) {
@@ -435,8 +440,86 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
             }
         }
         return result;
-
     }
+
+    /**
+     * Try to get a resource from current transaction if it is shareable<br>
+     * @param tran Current Transaction
+     * @param alloc ResourceAllocator
+     * @param spec ResourceSpec
+     * @return result ResourceHandle
+     */
+    private ResourceHandle getResourceFromTransaction(Transaction tran, ResourceAllocator alloc, ResourceSpec spec) {
+        ResourceHandle result = null;
+        try {
+            //comment-1: sharing is possible only if caller is marked
+            //shareable, so abort right here if that's not the case
+            if (tran != null && alloc.shareableWithinComponent()) {
+                //TODO V3 should be handled by PoolTxHandler
+                JavaEETransaction j2eetran = (JavaEETransaction) tran;
+                // case 1. look for free and enlisted in same tx
+                Set set = j2eetran.getResources(name);
+                if (set != null) {
+                    Iterator iter = set.iterator();
+                    while (iter.hasNext()) {
+                        ResourceHandle h = (ResourceHandle) iter.next();
+                        if (h.hasConnectionErrorOccurred()) {
+                            iter.remove();
+                            continue;
+                        }
+
+                        ResourceState state = h.getResourceState();
+                        /*
+                         * One can share a resource only for the following conditions:
+                         * 1. The caller resource is shareable (look at the outermost
+                         *    if marked comment-1
+                         * 2. The resource enlisted inside the transaction is shareable
+                         * 3. We are dealing with XA resources OR
+                         *    We are deling with a non-XA resource that's not in use
+                         *    Note that sharing a non-xa resource that's in use involves
+                         *    associating physical connections.
+                         * 4. The credentials of the resources match
+                         */
+                        if (h.getResourceAllocator().shareableWithinComponent()) {
+                            if (spec.isXA() || poolTxHandler.isNonXAResourceAndFree(j2eetran, h)) {
+                                if (matchConnections) {
+                                    if (!alloc.matchConnection(h)) {
+                                        if (poolLifeCycleListener != null) {
+                                            poolLifeCycleListener.connectionNotMatched();
+                                        }
+                                        continue;
+                                    }
+                                    if (h.hasConnectionErrorOccurred()) {
+                                        if (failAllConnections) {
+                                            //if failAllConnections has happened, we flushed the
+                                            //pool, so we don't have to do iter.remove else we
+                                            //will get a ConncurrentModificationException
+                                            result = null;
+                                            break;
+                                        }
+                                        iter.remove();
+                                        continue;
+                                    }
+                                    if (poolLifeCycleListener != null) {
+                                        poolLifeCycleListener.connectionMatched();
+                                    }
+                                }
+                                if (state.isFree())
+                                    setResourceStateToBusy(h);
+                                result = h;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (ClassCastException e) {
+            _logger.log(Level.FINE, "Pool: getResource : " +
+                    "transaction is not J2EETransaction but a " + tran.getClass().getName(), e);
+        }
+        return result;
+    }
+
 
     /**
      * To provide an unenlisted,  valid, matched resource from pool.
@@ -622,6 +705,7 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
         return result;
     }
 
+    //TODO V3 can't this be replaced by getResourceFromPool ?
     private ResourceHandle getMatchedResourceFromPool(ResourceAllocator alloc) {
         ResourceHandle handle;
         ResourceHandle result = null;
@@ -806,7 +890,9 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
         setResourceStateToFree(h);  // mark as not busy
         state.touchTimestamp();
 
-        freeUnenlistedResource(h);
+        if (state.isUnenlisted() || (poolTxHandler.isNonXAResource(h) && poolTxHandler.isLocalResourceEligibleForReuse(h))) {
+            freeUnenlistedResource(h);
+        }
 
         if (poolLifeCycleListener != null) {
             poolLifeCycleListener.connectionReleased();
@@ -815,7 +901,6 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
             _logger.log(Level.FINE, "Pool: resourceFreed: " + h);
         }
     }
-
 
     /**
      * If the resource is used for <i>maxConnectionUsage</i> times, destroy and create one
@@ -931,8 +1016,7 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
      */
     public void resourceEnlisted(Transaction tran, ResourceHandle resource)
             throws IllegalStateException {
-        //TODO V3 handle transactions later
-        throw new UnsupportedOperationException("transaction is not supported yet");
+            poolTxHandler.resourceEnlisted(tran, resource);
     }
 
     /**
@@ -941,10 +1025,14 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
      * @param tran   Transaction
      * @param status status of transaction
      */
-    public void transactionCompleted(Transaction tran, int status)
-            throws IllegalStateException {
-        //TODO V3 handle transactions later
-        throw new UnsupportedOperationException("transaction is not supported yet");
+    public void transactionCompleted(Transaction tran, int status) throws IllegalStateException {
+        List<ResourceHandle> delistedResources = poolTxHandler.transactionCompleted(tran, status, name);
+        for (ResourceHandle resource : delistedResources) {
+            // Application might not have closed the connection.
+            if (isResourceUnused(resource)) {
+                freeResource(resource);
+            }
+        }
     }
 
     protected boolean isResourceUnused(ResourceHandle h) {

@@ -40,13 +40,22 @@ import com.sun.appserv.connectors.spi.ConnectorConstants;
 import com.sun.appserv.connectors.spi.ConnectorRuntimeException;
 import com.sun.enterprise.connectors.ConnectorConnectionPool;
 import com.sun.enterprise.connectors.ConnectorDescriptorInfo;
+import com.sun.enterprise.connectors.ConnectorRuntime;
+import com.sun.enterprise.connectors.naming.ConnectorResourceNamingEventNotifier;
+import com.sun.enterprise.connectors.naming.ConnectorNamingEvent;
+import com.sun.enterprise.connectors.naming.ConnectorNamingEventNotifier;
+import com.sun.enterprise.connectors.util.ConnectorsUtil;
 import com.sun.enterprise.resource.ConnectorObjectFactory;
 
 import javax.naming.Context;
 import javax.naming.NameNotFoundException;
 import javax.naming.NamingException;
+import javax.sql.DataSource;
 import java.util.Hashtable;
 import java.util.logging.Level;
+import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 /**
  * This is connector resource admin service. It creates and deletes the
@@ -99,6 +108,12 @@ public class ConnectorResourceAdminServiceImpl extends ConnectorService {
 
             _runtime.getNamingManager().publishObject(jndiName, cof, true);
 
+            //To notify that a connector resource rebind has happened.
+            ConnectorResourceNamingEventNotifier.getInstance().
+                    notifyListeners(
+                            new ConnectorNamingEvent(
+                                    jndiName, ConnectorNamingEvent.EVENT_OBJECT_REBIND));
+
         } catch (NamingException ne) {
             ConnectorRuntimeException cre =
                     new ConnectorRuntimeException(errMsg);
@@ -143,22 +158,14 @@ public class ConnectorResourceAdminServiceImpl extends ConnectorService {
     }
 
     /**
-     * If the suffix is one of the valid context return true.
-     * Return false, if that is not the case.
+     * Gets Connector Resource Rebind Event notifier.
      *
-     * @param suffix __nontx / __pm
-     * @return boolean whether the suffix is valid or not
+     * @return ConnectorNamingEventNotifier
      */
-    public boolean isValidJndiSuffix(String suffix) {
-        if (suffix != null) {
-            for (String validSuffix : ConnectorConstants.JNDI_SUFFIX_VALUES) {
-                if (validSuffix.equals(suffix)) {
-                    return true;
-                }
-            }
-        }
-        return false;
+    public ConnectorNamingEventNotifier getResourceRebindEventNotifier() {
+        return ConnectorResourceNamingEventNotifier.getInstance();
     }
+
 
     /**
      * Look up the JNDI name with appropriate suffix.
@@ -170,7 +177,7 @@ public class ConnectorResourceAdminServiceImpl extends ConnectorService {
      */
     public Object lookup(String name) throws NamingException {
         Hashtable ht = null;
-        String suffix = getValidSuffix(name);
+        String suffix = ConnectorsUtil.getValidSuffix(name);
         if (suffix != null) {
             ht = new Hashtable();
             ht.put(ConnectorConstants.JNDI_SUFFIX_PROPERTY, suffix);
@@ -178,16 +185,5 @@ public class ConnectorResourceAdminServiceImpl extends ConnectorService {
         }
         Context ic = _runtime.getNamingManager().getInitialContext();
         return ic.lookup(name);
-    }
-
-    private String getValidSuffix(String name) {
-        if (name != null) {
-            for (String validSuffix : ConnectorConstants.JNDI_SUFFIX_VALUES) {
-                if (name.endsWith(validSuffix)) {
-                    return validSuffix;
-                }
-            }
-        }
-        return null;
     }
 }

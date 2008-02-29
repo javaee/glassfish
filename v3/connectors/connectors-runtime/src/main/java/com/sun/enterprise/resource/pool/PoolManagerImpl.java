@@ -36,6 +36,7 @@
 package com.sun.enterprise.resource.pool;
 
 import com.sun.appserv.connectors.spi.ConnectorConstants.PoolType;
+import com.sun.appserv.connectors.spi.PoolingException;
 import com.sun.enterprise.deployment.ResourceReferenceDescriptor;
 import com.sun.enterprise.resource.ClientSecurityInfo;
 import com.sun.enterprise.resource.ResourceHandle;
@@ -43,16 +44,25 @@ import com.sun.enterprise.resource.ResourceSpec;
 import com.sun.enterprise.resource.allocator.ResourceAllocator;
 import com.sun.enterprise.resource.rm.NoTxResourceManagerImpl;
 import com.sun.enterprise.resource.rm.ResourceManager;
+import com.sun.enterprise.resource.rm.ResourceManagerImpl;
+import com.sun.enterprise.resource.rm.SystemResourceManagerImpl;
 import com.sun.enterprise.connectors.ConnectorRuntime;
+import com.sun.enterprise.container.common.spi.JavaEETransaction;
+import com.sun.enterprise.container.common.spi.JavaEETransactionManager;
 import com.sun.logging.LogDomains;
 import org.jvnet.hk2.annotations.Service;
+import org.glassfish.api.invocation.InvocationException;
+import org.glassfish.api.invocation.ComponentInvocation;
 
 import javax.transaction.Transaction;
+import javax.transaction.Synchronization;
 import javax.transaction.xa.XAResource;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.Set;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * @author Tony Ng, Aditya Gore
@@ -61,7 +71,11 @@ import java.util.Set;
 public class PoolManagerImpl extends AbstractPoolManager {
 
     private ConcurrentHashMap<String, ResourcePool> poolTable;
+
+    private ResourceManager resourceManager;
+    private ResourceManager sysResourceManager;
     private ResourceManager noTxResourceManager;
+
     private static Logger _logger = null;
 
     static {
@@ -70,6 +84,8 @@ public class PoolManagerImpl extends AbstractPoolManager {
 
     public PoolManagerImpl() {
         this.poolTable = new ConcurrentHashMap<String, ResourcePool>();
+        resourceManager    = new ResourceManagerImpl();
+        sysResourceManager = new SystemResourceManagerImpl();
         noTxResourceManager = new NoTxResourceManagerImpl();
     }
 
@@ -199,8 +215,96 @@ public class PoolManagerImpl extends AbstractPoolManager {
         if (spec.isNonTx()) {
             logFine("Returning noTxResourceManager");
             return noTxResourceManager;
+        } else if (spec.isPM()) {
+            logFine( "Returning sysResourceManager");
+            return sysResourceManager;
+        } else {
+            logFine( "Returning resourceManager");
+            return resourceManager;
         }
-        return noTxResourceManager;
+    }
+
+    private void addSyncListener(Transaction tran) {
+        Synchronization sync = new SynchronizationListener(tran);
+        try {
+            tran.registerSynchronization(sync);
+        } catch (Exception ex) {
+            _logger.fine( "Error adding syncListener : " +
+	        (ex.getMessage() != null ? ex.getMessage() : " "));
+        }
+    }
+
+    // called by EJB Transaction Manager
+    public void transactionCompleted(Transaction tran, int status)
+    throws IllegalStateException {
+
+	Iterator iter = ((JavaEETransaction)tran).getAllParticipatingPools().iterator();
+        while (iter.hasNext()) {
+            ResourcePool pool = getPool((String)iter.next());
+            if (_logger.isLoggable(Level.FINE)){
+                _logger.fine( "calling transactionCompleted on " + pool.getPoolName() );
+            }
+        pool.transactionCompleted( tran, status );
+        }
+    }
+
+    public void resourceEnlisted(Transaction tran, com.sun.appserv.connectors.spi.ResourceHandle h) throws IllegalStateException {
+        ResourceHandle res = (ResourceHandle)h;
+
+        String poolName = res.getResourceSpec().getConnectionPoolName();
+        try {
+            JavaEETransaction j2eeTran = (JavaEETransaction) tran;
+            if (poolName != null && j2eeTran.getResources(poolName) == null) {
+                addSyncListener(tran);
+            }
+        } catch (ClassCastException e) {
+            addSyncListener(tran);
+        }
+        if (poolName != null) {
+            ResourcePool pool = getPool(poolName);
+            if (pool != null) {
+                pool.resourceEnlisted(tran, res);
+            }
+        }
+    }
+
+    /*
+     * Called by the InvocationManager at methodEnd. This method
+     * will disassociate ManagedConnection instances from Connection
+     * handles if the ResourceAdapter supports that.
+     */
+    public void postInvoke() throws InvocationException {
+        ConnectorRuntime runtime = ConnectorRuntime.getRuntime();
+        JavaEETransactionManager tm = runtime.getTransactionManager();
+        ComponentInvocation invToUse =  runtime.getInvocationManager().getCurrentInvocation();
+
+        if ( invToUse == null ) {
+            return;
+        }
+
+        Object comp = invToUse.getInstance();
+
+        if ( comp == null ) {
+            return;
+        }
+
+
+        List list = tm.getExistingResourceList(comp, invToUse );
+        if (list == null ) {
+            //For invocations of asadmin the ComponentInvocation does not
+            //have any resources and hence the existingResourcesList is null
+            return;
+        }
+    }
+
+    public void registerResource(ResourceHandle handle) throws PoolingException {
+        ResourceManager rm = getResourceManager(handle.getResourceSpec());
+        rm.registerResource(handle);
+    }
+
+    public void unregisterResource(ResourceHandle resource, int xaresFlag) {
+        ResourceManager rm = getResourceManager(resource.getResourceSpec());
+        rm.unregisterResource(resource,xaresFlag);
     }
 
     public void resourceClosed(ResourceHandle resource) {
@@ -292,5 +396,26 @@ public class PoolManagerImpl extends AbstractPoolManager {
         }
         return null;
     }
-}
 
+    class SynchronizationListener implements Synchronization {
+
+        private Transaction tran;
+
+        SynchronizationListener(Transaction tran) {
+            this.tran = tran;
+        }
+
+        public void afterCompletion(int status) {
+            try {
+                transactionCompleted(tran, status);
+            } catch (Exception ex) {
+                _logger.fine( "Exception in afterCompletion : " +
+		    (ex.getMessage() != null ? ex.getMessage() : " " ));
+            }
+        }
+
+        public void beforeCompletion() {
+            // do nothing
+        }
+    }
+}

@@ -304,6 +304,41 @@ public class ResourceAdapterAdminServiceImpl extends ConnectorService {
         }
     }
 
+    /*
+     * Updates the connector descriptor of the connector module, with the 
+     * contents of a resource adapter config if specified.
+     * 
+     * This modified ConnectorDescriptor is then bound to JNDI so that ACC 
+     * clients while configuring a non-system RAR could get the correct merged
+     * configuration. Any updates to resource-adapter config while an ACC client
+     * is in use is not transmitted to the client dynamically. All such changes 
+     * would be visible on ACC client restart. 
+     */
+    /* TODO V3 handle resource-adapter-config later
+    private void updateRAConfigInDescriptor(ConnectorDescriptor connectorDescriptor,
+                                            String moduleName) {
+
+        ResourceAdapterConfig raConfig =
+                ConnectorRegistry.getInstance().getResourceAdapterConfig(moduleName);
+
+        ElementProperty[] raConfigProps = null;
+        if (raConfig != null) {
+            raConfigProps = raConfig.getElementProperty();
+        }
+
+        _logger.fine("current RAConfig In Descriptor " + connectorDescriptor.getConfigProperties());
+
+        if (raConfigProps != null) {
+            Set mergedProps = ConnectorDDTransformUtils.mergeProps(
+                    raConfigProps, connectorDescriptor.getConfigProperties());
+            Set actualProps = connectorDescriptor.getConfigProperties();
+            actualProps.clear();
+            actualProps.addAll(mergedProps);
+            _logger.fine("updated RAConfig In Descriptor " + connectorDescriptor.getConfigProperties());
+        }
+
+    }*/
+
 
     /**
      * Creates Active resource Adapter which abstracts the rar module. During

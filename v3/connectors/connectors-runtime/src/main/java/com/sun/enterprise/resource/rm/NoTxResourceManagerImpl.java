@@ -36,7 +36,7 @@
 package com.sun.enterprise.resource.rm;
 
 import com.sun.enterprise.resource.ResourceHandle;
-import com.sun.enterprise.resource.pool.PoolingException;
+import com.sun.appserv.connectors.spi.PoolingException;
 import com.sun.logging.LogDomains;
 
 import javax.transaction.Transaction;

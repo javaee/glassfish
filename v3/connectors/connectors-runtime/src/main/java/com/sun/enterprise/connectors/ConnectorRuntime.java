@@ -42,11 +42,16 @@ import com.sun.enterprise.config.serverbeans.Property;
 import com.sun.enterprise.config.serverbeans.SecurityMap;
 import com.sun.enterprise.connectors.service.*;
 import com.sun.enterprise.connectors.util.RAWriterAdapter;
+import com.sun.enterprise.connectors.util.ResourcesUtil;
+import com.sun.enterprise.connectors.util.ConnectorsUtil;
 import com.sun.enterprise.connectors.authentication.AuthenticationService;
+import com.sun.enterprise.connectors.naming.ConnectorNamingEventNotifier;
 import com.sun.enterprise.deployment.ConnectorDescriptor;
 import com.sun.enterprise.resource.pool.PoolManager;
 import com.sun.enterprise.util.ConnectorClassLoader;
 import com.sun.enterprise.container.common.spi.util.ComponentEnvManager;
+import com.sun.enterprise.container.common.spi.JavaEETransaction;
+import com.sun.enterprise.container.common.spi.JavaEETransactionManager;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.naming.GlassfishNamingManager;
 import org.glassfish.api.invocation.InvocationManager;
@@ -58,14 +63,19 @@ import org.jvnet.hk2.component.Singleton;
 import org.jvnet.hk2.component.PreDestroy;
 
 import javax.naming.ConfigurationException;
+import javax.naming.NamingException;
 import javax.resource.spi.ConnectionManager;
 import javax.resource.spi.ManagedConnectionFactory;
+import javax.transaction.SystemException;
+import javax.transaction.Transaction;
+import javax.transaction.TransactionManager;
 import java.io.PrintWriter;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Set;
 import java.util.Timer;
 import java.util.logging.Logger;
+import java.util.logging.Level;
 
 
 @Service
@@ -76,7 +86,7 @@ public class ConnectorRuntime implements ConnectorConstants, com.sun.appserv.con
     private volatile int environment = CLIENT;*/
     private volatile int environment = SERVER;
     private static ConnectorRuntime _runtime;
-
+    protected final static Logger _logger = LogDomains.getLogger(LogDomains.RSR_LOGGER);
 
     private ConnectorConnectionPoolAdminServiceImpl ccPoolAdmService;
     private ConnectorResourceAdminServiceImpl connectorResourceAdmService;
@@ -98,6 +108,9 @@ public class ConnectorRuntime implements ConnectorConstants, com.sun.appserv.con
 
     @Inject
     private ComponentEnvManager componentEnvManager;
+
+    @Inject
+    private JavaEETransactionManager transactionManager;
 
     private final Object getTimerLock = new Object();
     private Timer timer;
@@ -321,13 +334,57 @@ public class ConnectorRuntime implements ConnectorConstants, com.sun.appserv.con
         return mgr;
     }
 
-
     /**
-     * Code that checks whether a jndi suffix is valid or not.
+     * Does lookup of "__pm" datasource. If found, it will be returned.<br><br>
+     *
+     * If not found and <b>force</b> is true, this api will try to get a wrapper datasource specified
+     *  by the jdbcjndi name. The motivation for having this
+     * API is to provide the CMP backend/ JPA-Java2DB a means of acquiring a connection during
+     * the codegen phase. If a user is trying to deploy an JPA-Java2DB app on a remote server,
+     * without this API, a resource reference has to be present both in the DAS
+     * and the server instance. This makes the deployment more complex for the
+     * user since a resource needs to be forcibly created in the DAS Too.
+     * This API will mitigate this need.
+     * When the resource is not enabled, datasource wrapper provided will not be of
+     * type "__pm"
+     *
+     * @param jndiName  jndi name of the resource
+     * @param force provide the resource (in DAS)  even if it is not enabled in DAS
+     * @return DataSource representing the resource.
+     * @throws javax.naming.NamingException when not able to get the datasource.
      */
-    public boolean isValidJndiSuffix(String name) {
-        return connectorResourceAdmService.isValidJndiSuffix(name);
+    public Object lookupPMResource(String jndiName, boolean force) throws NamingException {
+        //TODO V3 handle clustering later (  --createtables, nonDAS)
+        if(force){
+            _logger.log(Level.INFO, "lookup PM Resource [ "+jndiName+" ] with force=true is not supported");
+        }
+        return connectorResourceAdmService.lookup(jndiName+PM_JNDI_SUFFIX);
     }
+    /**
+     * Does lookup of non-tx-datasource. If found, it will be returned.<br><br>
+     *
+     * If not found and <b>force</b> is true,  this api will try to get a wrapper datasource specified
+     * by the jdbcjndi name. The motivation for having this
+     * API is to provide the CMP backend/ JPA-Java2DB a means of acquiring a connection during
+     * the codegen phase. If a user is trying to deploy an JPA-Java2DB app on a remote server,
+     * without this API, a resource reference has to be present both in the DAS
+     * and the server instance. This makes the deployment more complex for the
+     * user since a resource needs to be forcibly created in the DAS Too.
+     * This API will mitigate this need.
+     *
+     * @param jndiName  jndi name of the resource
+     * @param force provide the resource (in DAS)  even if it is not enabled in DAS
+     * @return DataSource representing the resource.
+     * @throws NamingException when not able to get the datasource.
+     */
+    public Object lookupNonTxResource(String jndiName, boolean force) throws NamingException{
+        //TODO V3 handle clustering later (  --createtables, nonDAS)
+        if(force){
+            _logger.log(Level.INFO, "lookup NonTx Resource [ "+jndiName+" ] with force=true is not supported");
+        }
+        return connectorResourceAdmService.lookup(jndiName+NON_TX_JNDI_SUFFIX);
+    }
+    
 
     /**
      * Causes pool to switch on the matching of connections.
@@ -359,20 +416,17 @@ public class ConnectorRuntime implements ConnectorConstants, com.sun.appserv.con
         try {
             ManagedConnectionFactory mcf = getRuntime().obtainManagedConnectionFactory(poolName);
             if (mcf == null) {
-                /* TODO V3 temp
-            _logger.log(Level.FINE,"Failed to create MCF ",poolName);*/
+                _logger.log(Level.FINE,"Failed to create MCF ",poolName);
                 throw new ConnectorRuntimeException("Failed to create MCF");
             }
 
-
             boolean forceNoLazyAssoc = false;
-            /* TODO V3 handle lazy-assoc later
+
             if ( jndiName.endsWith( com.sun.appserv.connectors.spi.ConnectorConstants.PM_JNDI_SUFFIX ) ) {
                 forceNoLazyAssoc = true;
             }
-            */
 
-            String derivedJndiName = deriveJndiName(jndiName, env);
+            String derivedJndiName = ConnectorsUtil.deriveJndiName(jndiName, env);
             ConnectionManagerImpl mgr = (ConnectionManagerImpl)
                     getRuntime().obtainConnectionManager(poolName, forceNoLazyAssoc);
             mgr.setJndiName(derivedJndiName);
@@ -388,26 +442,15 @@ public class ConnectorRuntime implements ConnectorConstants, com.sun.appserv.con
                 String msg = "No resource adapter found";
                 throw new RuntimeException(new ConfigurationException(msg));
             }
-            /* TODO V3 handle later
+            
                 if(_logger.isLoggable(Level.FINE)) {
                 _logger.log(Level.FINE,"Connection Factory:" + cf);
             }
-            */
+
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
         return cf;
-    }
-
-    private String deriveJndiName(String name, Hashtable env) {
-        String suffix = (String) env.get(ConnectorConstants.JNDI_SUFFIX_PROPERTY);
-        if (getRuntime().isValidJndiSuffix(suffix)) {
-            /* TODO V3 handle later
-                _logger.log(Level.FINE, "JNDI name will be suffixed with :" + suffix);
-            */
-            return name + suffix;
-        }
-        return name;
     }
 
     public GlassfishNamingManager getNamingManager() {
@@ -608,4 +651,19 @@ public class ConnectorRuntime implements ConnectorConstants, com.sun.appserv.con
         return getRuntime().connectorService.isServer();
     }
 
+    public Transaction getTransaction() throws SystemException {
+        return transactionManager.getTransaction();
+    }
+
+    public JavaEETransactionManager getTransactionManager(){
+        return transactionManager;
+    }
+
+    /**
+     * Gets Connector Resource Rebind Event notifier.
+     * @return   ConnectorNamingEventNotifier
+     */
+    private ConnectorNamingEventNotifier getResourceRebindEventNotifier(){
+        return connectorResourceAdmService.getResourceRebindEventNotifier();
+    }
 }

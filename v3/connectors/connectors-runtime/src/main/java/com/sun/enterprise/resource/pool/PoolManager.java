@@ -36,6 +36,8 @@
 package com.sun.enterprise.resource.pool;
 
 import com.sun.appserv.connectors.spi.ConnectorConstants.PoolType;
+import com.sun.appserv.connectors.spi.TransactedPoolManager;
+import com.sun.appserv.connectors.spi.PoolingException;
 import com.sun.enterprise.connectors.ConnectorConnectionPool;
 import com.sun.enterprise.deployment.ResourceReferenceDescriptor;
 import com.sun.enterprise.resource.ClientSecurityInfo;
@@ -53,7 +55,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * PoolManager manages jdbc and connector connection pool
  */
 @Contract
-public interface PoolManager {
+public interface PoolManager extends TransactedPoolManager {
 
     // transaction support levels
     static public final int NO_TRANSACTION = 0;
@@ -93,10 +95,7 @@ public interface PoolManager {
 
     void transactionCompleted(Transaction tran, int status);
 
-    void resourceEnlisted(Transaction tran, ResourceHandle res) throws IllegalStateException;
-
     public void postInvoke();
-
 
     public void registerResource(ResourceHandle resource) throws PoolingException;
 

@@ -47,6 +47,8 @@ import java.io.Serializable;
 public class ResourceSpec implements Serializable {
     private String resourceId;
     private int resourceIdType;
+
+    private boolean pmResource;
     private boolean nonTxResource;
     private boolean isXA_;
 
@@ -61,14 +63,25 @@ public class ResourceSpec implements Serializable {
         if (resourceId == null) throw new NullPointerException();
         this.resourceId = resourceId;
         this.resourceIdType = resourceIdType;
+
         if (resourceId.endsWith(ConnectorConstants.NON_TX_JNDI_SUFFIX)) {
             nonTxResource = true;
         }
+
+        if (resourceId.endsWith(com.sun.appserv.connectors.spi.ConnectorConstants.PM_JNDI_SUFFIX) ) {
+            pmResource = true;
+        }
+
     }
 
     public ResourceSpec(String resourceId, int resourceIdType,
                         PoolMetaData pmd) {
         this(resourceId, resourceIdType);
+
+
+        if ( pmd.isPM() ) {
+            pmResource = true;
+        }
 
         if (pmd.isNonTx()) {
             nonTxResource = true;
@@ -128,6 +141,10 @@ public class ResourceSpec implements Serializable {
         return resourceId;
     }
 
+    public boolean isPM() {
+        return pmResource;
+    }
+    
     /**
      * Returns the status of the noTxResource flag
      *
@@ -153,6 +170,7 @@ public class ResourceSpec implements Serializable {
         sb.append("\nisXA_ : ").append(isXA_);
         sb.append("\nresoureId : ").append(resourceId);
         sb.append("\nresoureIdType : ").append(resourceIdType);
+        sb.append("\npmResource : ").append(pmResource);
         sb.append("\nnonTxResource : ").append(nonTxResource);
 
         return sb.toString();

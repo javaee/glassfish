@@ -293,11 +293,11 @@ public class ActiveOutboundResourceAdapter implements ActiveResourceAdapter {
 
             if (mcf instanceof ConfigurableTransactionSupport) {
                 TransactionSupport ts = ConnectionPoolObjectsUtils.getTransactionSupport(ccp.getTransactionSupport());
-                if(TransactionSupport.NO_TRANSACTION.equals(ts)){
+                if(!TransactionSupport.XA_TRANSACTION.equals(ts) ){
                     ((ConfigurableTransactionSupport) mcf).setTransactionSupport(ts);
                 }else{
-                    //TODO V3 handle other types of transaction later
-                    throw new UnsupportedOperationException("Only NoTx is supported now");
+                    //TODO V3 handle XA transaction support later
+                    throw new UnsupportedOperationException("XA Transaction is not supported");
                 }
             }
 

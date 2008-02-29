@@ -38,6 +38,7 @@ package com.sun.enterprise.connectors;
 import com.sun.appserv.connectors.spi.ConnectionManager;
 import com.sun.appserv.connectors.spi.ConnectorConstants;
 import com.sun.appserv.connectors.spi.ConnectorRuntimeException;
+import com.sun.appserv.connectors.spi.PoolingException;
 import com.sun.enterprise.connectors.util.ConnectionPoolObjectsUtils;
 import com.sun.enterprise.connectors.authentication.AuthenticationService;
 import com.sun.enterprise.deployment.ConnectorDescriptor;
@@ -47,8 +48,8 @@ import com.sun.enterprise.resource.ClientSecurityInfo;
 import com.sun.enterprise.resource.ResourceSpec;
 import com.sun.enterprise.resource.allocator.NoTxConnectorAllocator;
 import com.sun.enterprise.resource.allocator.ResourceAllocator;
+import com.sun.enterprise.resource.allocator.LocalTxConnectorAllocator;
 import com.sun.enterprise.resource.pool.PoolManager;
-import com.sun.enterprise.resource.pool.PoolingException;
 import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.enterprise.security.SecurityContext;
 import com.sun.logging.LogDomains;
@@ -289,12 +290,19 @@ public class ConnectionManagerImpl implements ConnectionManager, Serializable {
         switch (txLevel) {
             case ConnectorConstants.NO_TRANSACTION_INT:
                 alloc = new NoTxConnectorAllocator(poolmgr, mcf, spec, subject, cxRequestInfo, info, desc);
-                return poolmgr.getResource(spec, alloc, info);
-
+                break;
+            case ConnectorConstants.LOCAL_TRANSACTION_INT:
+                if (!shareable) {
+                    String i18nMsg = localStrings.getString("con_mgr.resource_not_shareable");
+                    throw new ResourceAllocationException(i18nMsg);
+                }
+                alloc = new LocalTxConnectorAllocator(poolmgr, mcf, spec, subject, cxRequestInfo, info, desc);
+                break;
             default:
                 String i18nMsg = localStrings.getString("con_mgr.illegal_tx_level", txLevel + " ");
                 throw new IllegalStateException(i18nMsg);
         }
+        return poolmgr.getResource(spec, alloc, info);
     }
 
 

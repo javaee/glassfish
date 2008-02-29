@@ -38,7 +38,7 @@ package com.sun.enterprise.resource.pool.resizer;
 import com.sun.enterprise.resource.ResourceHandle;
 import com.sun.enterprise.resource.ResourceState;
 import com.sun.enterprise.resource.pool.PoolProperties;
-import com.sun.enterprise.resource.pool.PoolingException;
+import com.sun.appserv.connectors.spi.PoolingException;
 import com.sun.enterprise.resource.pool.ResourceHandler;
 import com.sun.enterprise.resource.pool.datastructure.DataStructure;
 import com.sun.logging.LogDomains;
