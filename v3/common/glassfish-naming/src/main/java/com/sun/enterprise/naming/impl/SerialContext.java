@@ -194,8 +194,8 @@ public class SerialContext implements Context {
      */
     public Object lookup(String name) throws NamingException {
 
-        // Before enything call ondemand initialization framework.
-        //generateEntryContext(name);
+        // Before any lookup bind any NamedNamingObjectProxy
+        SerialInitContextFactory.checkForBind(habitat);
 
         /**
          * In case a user is creating an IC with env passed in constructor; env
