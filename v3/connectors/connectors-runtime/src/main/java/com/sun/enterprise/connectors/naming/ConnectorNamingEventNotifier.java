@@ -34,7 +34,7 @@
  * holder.
  */
 
-package com.sun.enterprise.connectors;
+package com.sun.enterprise.connectors.naming;
 
 /**
  * To notify events related to Connector objects published using JNDI

@@ -33,7 +33,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.enterprise.connectors;
+package com.sun.enterprise.connectors.naming;
 
 import java.util.ArrayList;
 
@@ -41,7 +41,7 @@ import java.util.ArrayList;
  * Notifier for connector resource naming events
  * @author Jagadish Ramu
  */
-class ConnectorResourceNamingEventNotifier implements ConnectorNamingEventNotifier{
+public class ConnectorResourceNamingEventNotifier implements ConnectorNamingEventNotifier{
 
      private ArrayList<ConnectorNamingEventListener> listeners;
      private static ConnectorResourceNamingEventNotifier notifier;
