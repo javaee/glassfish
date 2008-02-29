@@ -30,7 +30,7 @@ div.j1holcopyright pre{white-space: normal;}
 .j1holnote, .j1holnote a, .j1holnote a:visited, .j1holnote code, .j1holwarn, .j1holwarn a, .j1holwarn a:visited, .j1holwarn code{color: red}
 .j1holnote a, .j1holwarn a{text-decoration: underline}
 .j1holwarn, .j1holwarn a, .j1holwarn code{padding-top: 10px; padding-bottom: 10px; font-weight: bold;}
-.j1holtip{padding: 5px; margin-left: 60px; margin-top: 9px; margin-bottom: 15px; background-color: lightgrey;}
+.j1holtip, .j1hollist > li > p.j1holtip {padding: 5px; margin-left: 40px; margin-right: 40px; margin-top: 9px; margin-bottom: 15px; background-color: lightgrey;}
 .j1holtip p.j1holsubheader{text-align: center;}
 ul.j1hollist > li + li, ol.j1hollist > li + li{padding-top: 10px;}
 ul.j1hollist > li ul, ol.j1hollist > li ol, ul.j1hollist > li ol, ol.j1hollist > li ul{padding-top: 2px;padding-bottom: 3px;}
@@ -72,3 +72,5 @@ div.codebox pre span.EscVar {color: black; font-weight: bold;}
 /* Special coloring for HTML tags */
 div.codebox pre span.PredefinedIdentifier > span.Braces {color: rgb(0,0,230); font-weight: normal;}
 div.codebox pre span.PredefinedIdentifier > span.Identifier {color: rgb(0,153,0); font-weight: normal;}
+/* Fix for list formatting issue */
+.j1hollist > li > p {margin-top: 3px; margin-bottom: 3px;}

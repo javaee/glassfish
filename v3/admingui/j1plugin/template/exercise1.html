@@ -5,7 +5,7 @@
     <body>
         <div class="j1holcontents">
             
-            <h1><a name="Exercise_1"></a>Exercise 1: Create Document</h1>
+            <h1>Exercise 1: Create Document</h1>
             
             <div class="j1holduration xbig">Expected duration: 45 minutes</div>
             
@@ -184,7 +184,8 @@
                 for all labs and may be overwritten by the labs staff at any
                 time with no warning.  The main page contains a tab for every
                 exercise, an optional tab for a solution for each exercise, a tab
-                for the introduction, and a tab for the summary.
+                for the introduction, a tab for the summary, and additional tab
+                for appendices.
             </p>
             
             <p>
@@ -212,6 +213,18 @@
             <p>
                 The intro document must be named intro.html.  The summary
                 document must be named summary.html.
+            </p>
+            
+            <p>
+                The documents for the appendix tabs must be named &quot;appendix&lt;x&gt;&quot;,
+                where &lt;x&gt; is the letter of the appendix, and the documents
+                <b>must</b> be located in the
+                same directory as the index.html file.  The documents <b>must</b>
+                be lettered sequentially, starting from a.  If the appendixa.html
+                document is not present, no attempt will be made to load
+                appendixb.html.  If appendixb.html is not present, no attempt
+                will be made to load appendixc.html.  Etc.  The index.html page
+                will load as many appendices as it can find.
             </p>
             
             <p class="j1holsubheader">Using the New Stylesheet</p>
@@ -339,8 +352,9 @@
                 <li>
                     By default, the intro tab is labeled &quot;Introduction&quot;,
                     the summary tab is labeled &quot;Summary&quot;, the exercise
-                    tabs are labeled &quot;Exercise &lt;n&gt;&quot;, and the solution
-                    tabs are labeled &quot;Solution &lt;n&gt;&quot;.  If, however, the
+                    tabs are labeled &quot;Exercise &lt;n&gt;&quot;, the solution
+                    tabs are labeled &quot;Solution &lt;n&gt;&quot;, and appendix
+                    tabs are labeled &quot;Appendix &lt;X&gt;&quot;.  If, however, the
                     HEAD element of one of those documents contains a META
                     element whose name is &quot;j1holtabname&quot;, the content
                     attribute of that element will be used as that document's
@@ -353,7 +367,8 @@
                     of the pages.  For the intro tab, link to &quot;#Intro&quot;.
                     For the summary tab, link to &quot;#Summary&quot;.  For the
                     exercises, link to &quot;#Exercise_&lt;n&gt;&quot;.  For the
-                    solution tabs, link to &quot;#Solution_&lt;n&gt;&quot;.
+                    solution tabs, link to &quot;#Solution_&lt;n&gt;&quot;.  For
+                    the appendix tabs, linke to &quot;Appendix_&lt;X&gt;&quot;.
                 </li>
                 
                 <li>
@@ -377,6 +392,22 @@
                     to &quot;#Clear&quot; on one of your pages so that you can
                     just click it to purge the cookies.  Just remember to remove
                     it before JavaOne!</p>
+                </li>
+                
+                <li>
+                    <p>
+                        Links to anchors in the same tab should work as expected.
+                    </p>
+                </li>
+                
+                <li>
+                    <p>
+                        To link across pages, you have to use a special anchor
+                        syntax.  For example, to link to the #Demo anchor in
+                        the Intro tab, you'd like to &quot;#Intro=Demo&quot;.
+                        For example, here's <a href="#Exercise_0=Demo">a link</a>
+                        to #Demo in the Exercise 0 tab.
+                    </p>
                 </li>
             </ul>
             
