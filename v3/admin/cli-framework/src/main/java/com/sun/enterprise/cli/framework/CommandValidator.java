@@ -240,6 +240,21 @@ public class CommandValidator {
                   validCommand.hasRequiredOption(optionName) ||
                   validCommand.hasDeprecatedOption(optionName)))
             {
+               // TEMPORARY HACK
+               // TEMPORARY HACK
+               // TEMPORARY HACK
+               // TEMPORARY HACK
+               String s = System.getenv("LIDIA_HACK");
+               if(s == null || !s.equals("true"))
+                   
+               // TEMPORARY HACK
+               // TEMPORARY HACK
+               // TEMPORARY HACK
+               // TEMPORARY HACK
+               // TEMPORARY HACK
+               // TEMPORARY HACK
+                
+                
                 throw new CommandValidationException(getLocalizedString("InvalidOption",
                                                      new Object[] {optionName,
                                                      validCommand.getName()}));
