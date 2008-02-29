@@ -108,7 +108,8 @@ public class GrizzlyHttpEmbed {
             boolean isSecure,
             HttpService httpService) {
 
-        grizzlyListener.setName(httpListener.getId());
+        //TODO: Use the grizzly-config name.
+        grizzlyListener.setName("grizzly-v3-" + httpListener.getPort());
         GrizzlyServiceListener.setLogger(logger);                 
         configureKeepAlive(grizzlyListener, httpService.getKeepAlive());
         configureHttpProtocol(grizzlyListener, httpService.getHttpProtocol());     
@@ -120,8 +121,12 @@ public class GrizzlyHttpEmbed {
         String acceptorThreads = httpListener.getAcceptorThreads();
         if (acceptorThreads != null) {
             try {
-                grizzlyListener.setSelectorReadThreadsCount
-                    (Integer.parseInt(acceptorThreads));
+                // Acceptor-Thread needs to be > 1 to be used by Grizzly
+                int readController = Integer.parseInt(acceptorThreads) -1;
+                if (readController > 0){
+                    grizzlyListener.setSelectorReadThreadsCount
+                        (readController);
+                }
             } catch (NumberFormatException nfe) {
                 logger.log(Level.WARNING,
                     "pewebcontainer.invalid_acceptor_threads",
