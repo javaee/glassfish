@@ -1,5 +1,7 @@
 package com.sun.enterprise.naming.impl;
 
+import org.jvnet.hk2.component.Habitat;
+
 import java.util.Hashtable;
 
 import javax.naming.Context;
@@ -15,15 +17,17 @@ public class SerialInitContextFactory implements InitialContextFactory {
 
 
     private Hashtable defaultEnv;
+    private final Habitat habitat;
 
     private boolean useS1ASCtxFactory;
 
     /**
      * Default constructor. Creates an ORB if one is not already created.
      */
-    public SerialInitContextFactory(Hashtable environemnt) {
+    public SerialInitContextFactory(Hashtable environemnt, Habitat habitat) {
 
         this.defaultEnv = environemnt;
+        this.habitat = habitat;
 
     }
 
@@ -35,9 +39,9 @@ public class SerialInitContextFactory implements InitialContextFactory {
         //Another Big TODO Sync with useS1ASCtxFactory
 
         if (env != null) {
-            return new SerialContext(env);
+            return new SerialContext(env, habitat);
         } else {
-            return new SerialContext(defaultEnv);
+            return new SerialContext(defaultEnv, habitat);
         }
     }
 }

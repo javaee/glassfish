@@ -37,6 +37,8 @@ package com.sun.enterprise.naming.impl;
 
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.ContractProvided;
+import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.component.Habitat;
 
 import javax.naming.spi.InitialContextFactoryBuilder;
 import javax.naming.spi.InitialContextFactory;
@@ -51,6 +53,10 @@ import java.util.Hashtable;
 @Service
 @ContractProvided(InitialContextFactoryBuilder.class)
 public class GFInitialContextFactoryBuilder implements InitialContextFactoryBuilder {
+
+    @Inject
+    Habitat habitat;
+
     /**
      * Creates an initial context factory using the specified
      * environment.
@@ -65,6 +71,6 @@ public class GFInitialContextFactoryBuilder implements InitialContextFactoryBuil
      * @throws javax.naming.NamingException If an initial context factory could not be created.
      */
     public InitialContextFactory createInitialContextFactory(Hashtable<?, ?> environment) throws NamingException {
-        return new SerialInitContextFactory(environment);
+        return new SerialInitContextFactory(environment, habitat);
     }
 }

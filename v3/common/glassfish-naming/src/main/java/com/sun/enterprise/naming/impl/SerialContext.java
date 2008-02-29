@@ -24,6 +24,7 @@ package com.sun.enterprise.naming.impl;
 
 import com.sun.enterprise.naming.util.LogFacade;
 import org.glassfish.api.naming.NamingObjectProxy;
+import org.jvnet.hk2.component.Habitat;
 
 import javax.naming.*;
 import java.rmi.RemoteException;
@@ -68,6 +69,8 @@ public class SerialContext implements Context {
 
     private final boolean isEE;
 
+    private final Habitat habitat;
+
     /**
      * set and get methods for preserving stickiness. This is a temporary
      * solution to store the sticky IC as a thread local variable. This sticky
@@ -110,9 +113,11 @@ public class SerialContext implements Context {
      * Constructor for the context. Initializes the object reference to the
      * remote provider object.
      */
-    public SerialContext(String name, Hashtable environment)
+    public SerialContext(String name, Hashtable environment, Habitat habitat)
             throws NamingException {
 
+        this.habitat = habitat;
+        
         myEnv = (environment != null) ? (Hashtable) (environment.clone())
                 : null;
 
@@ -143,8 +148,8 @@ public class SerialContext implements Context {
      * This constructor takes the component id as an argument. All name
      * arguments to operations are prepended by the component id.
      */
-    public SerialContext(Hashtable env) throws NamingException {
-        this("", env);
+    public SerialContext(Hashtable env, Habitat habitat) throws NamingException {
+        this("", env, habitat);
     }
 
     /**
@@ -212,7 +217,7 @@ public class SerialContext implements Context {
             resetSticky();
             // Asking to look up this context itself. Create and return
             // a new instance with its own independent environment.
-            return (new SerialContext(myName, myEnv));
+            return (new SerialContext(myName, myEnv, habitat));
         }
         name = getRelativeName(name);
         if (_logger.isLoggable(Level.FINE))
@@ -229,7 +234,7 @@ public class SerialContext implements Context {
                 }
                 if (obj instanceof Context) {
                     resetSticky();
-                    return new SerialContext(name, myEnv);
+                    return new SerialContext(name, myEnv, habitat);
                 }
                 Object retObj = javax.naming.spi.NamingManager
                         .getObjectInstance(obj, new CompositeName(name), null,
@@ -547,7 +552,7 @@ public class SerialContext implements Context {
                  * not resolved properly due to rmi
                  */
                 if (c instanceof Context) {
-                    c = new SerialContext(name, myEnv);
+                    c = new SerialContext(name, myEnv, habitat);
                 }
             } catch (RemoteException e) {
                 CommunicationException ce = new CommunicationException(e
