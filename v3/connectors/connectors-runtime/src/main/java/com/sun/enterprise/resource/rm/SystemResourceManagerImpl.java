@@ -33,7 +33,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.enterprise.resource;
+package com.sun.enterprise.resource.rm;
 
 import java.util.logging.*;
 
@@ -41,7 +41,10 @@ import javax.transaction.Transaction;
 import javax.transaction.SystemException;
 
 import com.sun.logging.*;
-import com.sun.enterprise.*;
+import com.sun.enterprise.container.common.spi.JavaEETransactionManager;
+import com.sun.enterprise.connectors.ConnectorRuntime;
+import com.sun.appserv.connectors.spi.PoolingException;
+import com.sun.enterprise.resource.*;
 
 /**
  * SystemResourceManagerImpl manages the resource requests from system
@@ -66,9 +69,7 @@ public class SystemResourceManagerImpl implements ResourceManager {
      */
     public Transaction getTransaction() throws PoolingException{
         try {
-            J2EETransactionManager tm =
-                Switch.getSwitch().getTransactionManager();
-            return tm.getTransaction();
+            return ConnectorRuntime.getRuntime().getTransaction();
         } catch (Exception ex) {
             _logger.log(Level.SEVERE,"poolmgr.unexpected_exception",ex);
             throw new PoolingException(ex.toString(), ex);
@@ -91,8 +92,7 @@ public class SystemResourceManagerImpl implements ResourceManager {
      */    
     public void enlistResource(ResourceHandle handle) throws PoolingException{
         try {
-            J2EETransactionManager tm =
-                Switch.getSwitch().getTransactionManager();
+            JavaEETransactionManager tm = ConnectorRuntime.getRuntime().getTransactionManager();
             Transaction tran = tm.getTransaction();
 	    if (tran != null) {
                 tm.enlistResource(tran, handle);
@@ -112,8 +112,7 @@ public class SystemResourceManagerImpl implements ResourceManager {
     
     public void rollBackTransaction() {
         try {
-            J2EETransactionManager tm =
-                Switch.getSwitch().getTransactionManager();
+            JavaEETransactionManager tm = ConnectorRuntime.getRuntime().getTransactionManager();
             Transaction tran = tm.getTransaction();
 	    if ( tran != null ) {
                 tran.setRollbackOnly();
@@ -135,8 +134,7 @@ public class SystemResourceManagerImpl implements ResourceManager {
      */       
     public void delistResource(ResourceHandle h, int xaresFlag) {
         try {
-            J2EETransactionManager tm =
-                Switch.getSwitch().getTransactionManager();
+        JavaEETransactionManager tm = ConnectorRuntime.getRuntime().getTransactionManager();
             Transaction tran = tm.getTransaction();
 	    if (tran != null) {
                 tm.delistResource(tran, h, xaresFlag);
