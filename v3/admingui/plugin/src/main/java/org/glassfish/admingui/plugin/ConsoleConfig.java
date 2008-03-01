@@ -35,6 +35,7 @@
  */
 package org.glassfish.admingui.plugin;
 
+import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.Element;
 
@@ -45,6 +46,29 @@ import java.util.List;
  *  <p>	This class is configured via XML (i.e. a console-config.xml file).
  *  	This is done via the HK2 <code>ConfigParser</code>.</p>
  *
+ *  <p>	Each module that wishes to provide an integration with the GlassFish
+ *	admin console should provide a <code>console-config.xml</code> file
+ *	which provides all the {@link IntegrationPoint} information for the
+ *	module.  Here is an example of what that file might look like:</p>
+ *
+ *  <p><code><pre>
+ *	<?xml version="1.0" encoding="UTF-8"?>
+ *
+ *	<console-config id="uniqueId">
+ *	    <integration-point id="someId" type="tree" priority="840"
+ *		    parentId="rootNode" content="/myTreeNode.jsf" />
+ *	    <integration-point id="anotherId" type="webApplicationTab"
+ *		    priority="22" parentId="appTab" content="/myTab.jsf" />
+ *	    <integration-point id="fooId" type="tree" priority="400"
+ *		    parentId="appNode" content="/fooNode.jsf" />
+ *	</console-config>
+ *
+ *  </pre></code></p>
+ *
+ *  <p>	Normally a <code>console-config.xml</code> file should exist at
+ *	"<code>META-INF/admingui/console-config.xml</code>" inside your module
+ *	jar file.</p>
+ *
  *  @author Ken Paulsen	(ken.paulsen@sun.com)
  */
 @Configured
@@ -54,16 +78,32 @@ public class ConsoleConfig {
      *	    {@link IntegrationPoint}s.<?p>
      */
     public List<IntegrationPoint> getIntegrationPoints() {
-	return integrationPoints;
+	return this.integrationPoints;
     }
 
     /**
-     *	<p> Setter.</p>
+     *	<p> {@link IntegrationPoint}s setter.</p>
      */
     @Element("integration-point")
     void setIntegrationPoints(List<IntegrationPoint> integrationPoints) {
 	this.integrationPoints = integrationPoints;
     }
 
+    /**
+     *	<p> A unique identifier for the ConsoleConfig instance.</p>
+     */
+    public String getId() {
+	return this.id;
+    }
+
+    /**
+     *	<p> Setter for the id.</p>
+     */
+    @Attribute(required=true)
+    void setId(String id) {
+	this.id = id;
+    }
+
+    private String id;
     private List<IntegrationPoint> integrationPoints;
 }
