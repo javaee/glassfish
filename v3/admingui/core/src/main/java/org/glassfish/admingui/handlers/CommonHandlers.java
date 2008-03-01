@@ -125,19 +125,6 @@ public class CommonHandlers {
         sessionMap.put("jmsDestinationSummaryView", true);
     }
     
-    @Handler (id="testAMX2")
-    public static void testAMX2(HandlerContext handlerCtx)
-    {
-        Map sessionMap = handlerCtx.getFacesContext().getExternalContext().getSessionMap();
-        AMXUtil.startAMX();
-        DomainRoot domainRoot = AMXUtil.getDomainRoot();
-        System.out.println("=============== domainRoot = " + domainRoot);
-        System.out.println("============== domainRoot name = " + domainRoot.getAppserverDomainName());
-        domainRoot.getDomainConfig().getApplicationRoot();
-        AMXRoot amxRoot = new AMXRoot( domainRoot);
-        sessionMap.put("_AMXROOT", amxRoot);
-    }
-        
     /**
      * <p> This handler will be called during initialization for doing any initialization.
      */
