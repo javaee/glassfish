@@ -20,6 +20,7 @@ class RuntimeMgmtAptProcessor implements AnnotationProcessor {
     private final boolean debug;
     private String pojoName;
     private String pojoClassName;
+    private String packageName;
     private ArrayList<ModelMBeanOperationInfo> mmoiArr;
     private ArrayList<ModelMBeanAttributeInfo> mmaiArr;
     private HashMap<String, ArrayList> attrMap;
@@ -53,6 +54,7 @@ class RuntimeMgmtAptProcessor implements AnnotationProcessor {
         if (decl.getAnnotation(MBean.class) == null) return;
         pojoName = decl.getSimpleName();
         pojoClassName = (decl.getQualifiedName());
+        packageName = decl.getPackage().getQualifiedName();
         if (debug)
             msg.printNotice("generating mbeaninfo ...");
         try {
@@ -108,10 +110,9 @@ class RuntimeMgmtAptProcessor implements AnnotationProcessor {
         }
 
         // serialize data
-        /*
         try {
             OutputStream fos = env.getFiler().createBinaryFile( 
-                Filer.Location.CLASS_TREE, "", new File(pojoName + ".ser"));
+                Filer.Location.CLASS_TREE, packageName, new File(pojoName + ".ser"));
             ObjectOutputStream out = new ObjectOutputStream( fos );
             out.writeObject(mmbinfo);
             out.flush();
@@ -119,7 +120,6 @@ class RuntimeMgmtAptProcessor implements AnnotationProcessor {
         } catch (IOException ioe) {
             throw new RuntimeException(ioe);
         }
-        */
 
     }
 
