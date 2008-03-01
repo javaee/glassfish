@@ -33,7 +33,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.admingui.plugin;
+package org.glassfish.admingui.j1plugin;
 
 import org.glassfish.api.admingui.ConsoleProvider;
 //import org.jvnet.hk2.annotations.Inject;
