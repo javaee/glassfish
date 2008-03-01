@@ -50,35 +50,61 @@ public class ClassLoaderProxy extends URLClassLoader {
         stop();
     }
 
-
+    protected synchronized Class<?> loadClass(String name, boolean resolve, boolean followImports)
+	throws ClassNotFoundException
+    {
+	// First, check if the class has already been loaded
+	Class c =  findLoadedClass(name);
+	if (c == null) {
+        try {
+            if (getParent()!=null) {
+                c = getParent().loadClass(name);
+            }
+        } catch(ClassNotFoundException e) {
+            
+        }
+        if (c==null) {
+            c = findClass(name, followImports);
+        }
+        if (resolve) {
+	        resolveClass(c);
+	    }
+    }
+    return c;
+    }
     protected Class<?> findClass(String name) throws ClassNotFoundException {
+        return findClass(name, true);
+    }
+
+    protected Class<?> findClass(String name, boolean followImports) throws ClassNotFoundException {
 
         try {
             return findClassDirect(name);
         } catch(ClassNotFoundException cfne) {
-
-            Class c=null;
-            synchronized(facadeSurrogates) {
-                for (ClassLoaderFacade classLoader : facadeSurrogates) {
-                    try {
-                        c = classLoader.getClass(name);
-                    } catch(ClassNotFoundException e) {
-                        // ignored.
-                    }
-                    if (c!=null) {
-                        return c;
+            if (followImports) {
+                Class c=null;
+                synchronized(facadeSurrogates) {
+                    for (ClassLoaderFacade classLoader : facadeSurrogates) {
+                        try {
+                            c = classLoader.getClass(name);
+                        } catch(ClassNotFoundException e) {
+                            // ignored.
+                        }
+                        if (c!=null) {
+                            return c;
+                        }
                     }
                 }
-            }
-            synchronized(surrogates) {
-                for (ClassLoader classLoader : surrogates) {
-                    try {
-                        c = classLoader.loadClass(name);
-                    } catch(ClassNotFoundException e) {
-                        // ignored.
-                    }
-                    if (c!=null) {
-                        return c;
+                synchronized(surrogates) {
+                    for (ClassLoader classLoader : surrogates) {
+                        try {
+                            c = classLoader.loadClass(name);
+                        } catch(ClassNotFoundException e) {
+                            // ignored.
+                        }
+                        if (c!=null) {
+                            return c;
+                        }
                     }
                 }
             }
@@ -92,7 +118,11 @@ public class ClassLoaderProxy extends URLClassLoader {
     private Class findClassDirect(String name) throws ClassNotFoundException {
         Class c = findLoadedClass(name);
         if(c!=null) return c;
-        return super.findClass(name);
+        try {
+            return super.findClass(name);
+        } catch (NoClassDefFoundError e) {
+            throw new ClassNotFoundException(name);
+        }
     }
 
     public URL findResource(String name) {

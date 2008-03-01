@@ -55,7 +55,7 @@ public class LazyInhabitant<T> extends AbstractInhabitantImpl<T> {
             Class<T> c = (Class<T>) classLoader.get().loadClass(typeName);
             real = Inhabitants.wrapByScope(c,createWomb(c),habitat);
         } catch (ClassNotFoundException e) {
-            throw new ComponentException("Failed to load "+typeName+" from "+classLoader,e);
+            throw new ComponentException("Failed to load "+typeName+" from "+classLoader.get(),e);
         }
     }
 
