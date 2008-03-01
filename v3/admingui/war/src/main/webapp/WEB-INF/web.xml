@@ -5,6 +5,10 @@
     <param-name>com.sun.jsftemplating.DEBUG</param-name>
     <param-value>true</param-value>
   </context-param>
+  <context-param>
+    <param-name>com.sun.jsftemplating.CLASSLOADER</param-name>
+    <param-value>org.glassfish.admingui.plugin.ConsoleClassLoader</param-value>
+  </context-param>
   <listener>
       <listener-class>com.sun.faces.config.ConfigureListener</listener-class>
   </listener>
