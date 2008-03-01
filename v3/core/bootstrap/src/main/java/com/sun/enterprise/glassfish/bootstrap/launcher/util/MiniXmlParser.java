@@ -20,7 +20,7 @@
  * 
  * Copyright 2008 Sun Microsystems, Inc. All rights reserved.
  */
-package com.sun.enterprise.glassfish.bootstrap.launcher;
+package com.sun.enterprise.glassfish.bootstrap.launcher.util;
 
 import java.io.*;
 import java.util.*;

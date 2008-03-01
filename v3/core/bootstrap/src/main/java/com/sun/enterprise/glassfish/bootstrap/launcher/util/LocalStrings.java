@@ -20,7 +20,7 @@
  * 
  * Copyright 2008 Sun Microsystems, Inc. All rights reserved.
  */
-package com.sun.enterprise.glassfish.bootstrap.launcher;
+package com.sun.enterprise.glassfish.bootstrap.launcher.util;
 
 /**
  * This class makes getting localized strings super-simple.  All methods are static.

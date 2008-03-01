@@ -22,6 +22,9 @@
  */
 package com.sun.enterprise.glassfish.bootstrap.launcher;
 
+import com.sun.enterprise.glassfish.bootstrap.launcher.util.LocalStringsImpl;
+import com.sun.enterprise.module.bootstrap.BootException;
+
 /**
  * The one and only type of Exception that will be thrown out of this package.
  * I18N is wired in.  If a String message is found in the resource bundle, it will
@@ -76,4 +79,13 @@ public class GFLauncherException extends Exception {
         super(strings.get(msg, objs), t);
     }
     private final static LocalStringsImpl strings = new LocalStringsImpl(GFLauncherException.class);
+
+    /**
+     * 
+     * @param t The causing Throwable.
+     */
+    public GFLauncherException(Throwable t)
+    {
+        super(t);
+    }
 }

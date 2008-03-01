@@ -22,6 +22,7 @@
  */
 package com.sun.enterprise.glassfish.bootstrap.launcher;
 
+import com.sun.enterprise.module.bootstrap.BootException;
 import java.util.*;
 import com.sun.enterprise.glassfish.bootstrap.Main;
 
@@ -34,9 +35,16 @@ import com.sun.enterprise.glassfish.bootstrap.Main;
 class GFDomainLauncher extends GFLauncher {
 
     void internalLaunch() throws GFLauncherException {
-        getInfo().setup();
-        Main main = new Main();
-        main.run(new String[]{"-domaindir", getInfo().domainRootDir.getPath()});
+        try {
+            getInfo().setup();
+            Main main = new Main();
+            main.start(new String[]{"-domaindir", getInfo().domainRootDir.getPath()});
+            System.out.println("FINISHED EMBEDDED LAUNCH");
+        }
+        catch (BootException ex) 
+        {
+            throw new GFLauncherException("unknownError", ex);
+        }
     }
 }
 

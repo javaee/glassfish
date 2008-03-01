@@ -27,7 +27,7 @@
  * Created on December 3, 2005, 5:26 PM
  *
  */
-package com.sun.enterprise.glassfish.bootstrap.launcher;
+package com.sun.enterprise.glassfish.bootstrap.launcher.util;
 
 import java.util.ResourceBundle;
 import java.text.MessageFormat;
