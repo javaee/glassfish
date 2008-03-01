@@ -37,8 +37,8 @@ package org.glassfish.admingui.plugin;
 
 import org.glassfish.api.admingui.ConsoleProvider;
 
-import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.Attribute;
+import org.jvnet.hk2.config.Configured;
 
 import java.io.Serializable;
 
