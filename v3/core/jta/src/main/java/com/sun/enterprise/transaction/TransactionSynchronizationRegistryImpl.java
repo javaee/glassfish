@@ -44,7 +44,9 @@ import javax.transaction.TransactionSynchronizationRegistry;
 import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.enterprise.container.common.spi.JavaEETransactionManager;
 import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Service;
 
+@Service
 public class TransactionSynchronizationRegistryImpl 
              implements TransactionSynchronizationRegistry {
 

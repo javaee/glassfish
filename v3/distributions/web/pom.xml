@@ -157,6 +157,11 @@
            <artifactId>shared-components</artifactId>
            <version>${pe.version}</version>
         </dependency>         
+        <dependency>
+           <groupId>org.glassfish.core</groupId>
+           <artifactId>jta</artifactId>
+           <version>${pe.version}</version>
+        </dependency>           
     </dependencies>
 </project>
 

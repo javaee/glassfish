@@ -50,6 +50,9 @@ import org.glassfish.api.invocation.InvocationManager;
 import org.glassfish.api.invocation.ComponentInvocation;
 
 import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.PerLookup;
 
 /** 
  * This class implements javax.transaction.UserTransaction .
@@ -62,8 +65,10 @@ import org.jvnet.hk2.annotations.Inject;
  * passivation, so we make this Serializable.
  *
  * @author Tony Ng
+ * @author Marina Vatkina
  */
-
+@Service
+@Scoped(PerLookup.class)
 public class UserTransactionImpl implements UserTransaction, Serializable
 {
 
@@ -272,5 +277,11 @@ public class UserTransactionImpl implements UserTransaction, Serializable
         if (seconds < 0) seconds = 0;
         // transactionTimeout = seconds;
         transactionManager.setTransactionTimeout(seconds);
+    }
+
+    protected void setForTesting(TransactionManager tm, InvocationManager im, Logger l) {
+        transactionManager = (JavaEETransactionManager)tm;
+        invocationManager = im;
+        _logger = l;
     }
 }

@@ -45,7 +45,7 @@ import javax.persistence.EntityManager;
 
 import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.enterprise.container.common.spi.JavaEETransactionManager;
-import com.sun.enterprise.container.common.spi.ResourceHandle;
+import com.sun.appserv.connectors.spi.ResourceHandle;
 
 import org.jvnet.hk2.annotations.Inject;
 

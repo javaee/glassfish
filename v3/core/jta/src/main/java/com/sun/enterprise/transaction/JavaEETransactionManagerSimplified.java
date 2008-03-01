@@ -49,9 +49,9 @@ import com.sun.appserv.util.cache.BaseCache;
 import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.enterprise.container.common.spi.ComponentContext;
 import com.sun.enterprise.container.common.spi.JavaEETransactionManager;
-import com.sun.enterprise.container.common.spi.ResourceHandle;
-import com.sun.enterprise.container.common.spi.PoolManager;
-// XXX import com.sun.enterprise.resource.pool.PoolingException;
+import com.sun.appserv.connectors.spi.ResourceHandle;
+import com.sun.appserv.connectors.spi.TransactedPoolManager;
+import com.sun.appserv.connectors.spi.PoolingException;
 
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
@@ -74,7 +74,7 @@ public class JavaEETransactionManagerSimplified
 
     @Inject protected Logger _logger;
 
-    @Inject protected PoolManager poolmgr;
+    @Inject protected TransactedPoolManager poolmgr;
 
     @Inject protected InvocationManager invMgr;
 
@@ -535,7 +535,7 @@ public class JavaEETransactionManagerSimplified
                 ResourceHandle h = (ResourceHandle) it.next();
                 try {
                     h.closeUserConnection();
-                } catch (/** XXX ??? CHECK EXCEPTION TYPE Pooling **/Exception ex) {
+                } catch (PoolingException ex) {
                     if (_logger.isLoggable(Level.FINE))
                         _logger.log(Level.WARNING,"enterprise_distributedtx.pooling_excep", ex);
                 }
@@ -1139,21 +1139,20 @@ public class JavaEETransactionManagerSimplified
                 List l = getExistingResourceList(inv.getInstance(), inv);
                 if (l == null || l.size() == 0)
                     return;
+
+                int flag = (suspend)? XAResource.TMSUSPEND : XAResource.TMSUCCESS;
                 Iterator it = l.iterator();
-                // END IASRI 4705808 TTT002
-                int flag = XAResource.TMSUCCESS;
-                if(suspend)flag = XAResource.TMSUSPEND;
                 while(it.hasNext()){
                     ResourceHandle h = (ResourceHandle)it.next();
                     try{
                         if ( h.isEnlisted() ) {
-                            delistResource(tran,h,flag);
+                            delistResource(tran, h, flag);
                         }
                     } catch (IllegalStateException ex) {
                         // ignore error due to tx time out
                     }catch(Exception ex){
                         it.remove();
-                        handleResourceError(h,ex,tran,inv);
+                        handleResourceError(h, ex, tran, inv);
                     }
                 }
                 //END OF IASRI 4658504
