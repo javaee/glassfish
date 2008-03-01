@@ -61,7 +61,21 @@
             </roles>
         </developer>
     </developers>
-
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>com.sun.enterprise</groupId>
+                <artifactId>hk2-maven-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifestEntries>
+							<HK2-Export-Package>javax.</HK2-Export-Package>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
     <dependencies>
         <dependency>
             <groupId>javax.enterprise.deploy</groupId>
