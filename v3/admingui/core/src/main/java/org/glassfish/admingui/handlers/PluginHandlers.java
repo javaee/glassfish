@@ -41,6 +41,7 @@ import com.sun.jsftemplating.annotation.HandlerOutput;
 import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
 
 import org.glassfish.admingui.plugin.ConsolePluginService;
+import org.glassfish.admingui.plugin.IntegrationPoint;
 
 import org.jvnet.hk2.component.Habitat;
 
@@ -91,15 +92,25 @@ public class PluginHandlers {
         output={
             @HandlerOutput(name="points", type=List.class)})
     public static void getIntegrationPoints(HandlerContext handlerCtx) {
+	String key = (String) handlerCtx.getInputValue("key");
+	List<IntegrationPoint> value =
+	    getIntegrationPoints(handlerCtx.getFacesContext(), key);
+	handlerCtx.setOutputValue("points", value);
+    }
+
+    /**
+     *
+     */
+    public static List<IntegrationPoint> getIntegrationPoints(FacesContext context, String key) {
+	Object value = null;
 	try {
-	    String key = (String) handlerCtx.getInputValue("key");
 //System.out.println("" + org.glassfish.admingui.util.AMXUtil.getDomainRoot());
-	    Object obj = getPluginService(handlerCtx.getFacesContext());
+	    Object obj = getPluginService(context);
 	    Method meth = obj.getClass().getMethod("getIntegrationPoints", String.class);
-	    Object value = meth.invoke(obj, key);
-	    handlerCtx.setOutputValue("points", value);
+	    value = meth.invoke(obj, key);
 	} catch (Exception ex) {
 	    ex.printStackTrace();
 	}
+	return (List<IntegrationPoint>) value;
     }
 }
