@@ -31,6 +31,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Enumeration;
 import java.util.HashSet;
+import java.util.ArrayList;
 
 /**
  * Facade for {@link ModuleClassLoader} to only expose public classes.
@@ -41,7 +42,8 @@ final class ClassLoaderFacade extends URLClassLoader {
  
     private final static URL[] EMPTY_URLS = new URL[0];
     private HashSet<String> publicPkgs = null;
-    private ModuleClassLoader privateLoader; 
+    private ArrayList<String> publicSet = null;
+    private ModuleClassLoader privateLoader;
     private int classesLoaded = 0;
 
     /** Creates a new instance of ClassLoaderFacade */
@@ -61,9 +63,18 @@ final class ClassLoaderFacade extends URLClassLoader {
         if (publicPkgs==null || publicPkgs.length==0)
             return;
         
-        this.publicPkgs = new HashSet<String>();
         for (String publicPkg : publicPkgs) {
-            this.publicPkgs.add(publicPkg);
+            if (publicPkg.endsWith(".")) {
+                if (publicSet==null) {
+                    publicSet = new ArrayList<String>();
+                }
+                publicSet.add(publicPkg);
+            } else {
+                if (this.publicPkgs==null) {
+                    this.publicPkgs = new HashSet<String>();
+                }
+                this.publicPkgs.add(publicPkg);
+            }
         }
     }
     
@@ -72,8 +83,18 @@ final class ClassLoaderFacade extends URLClassLoader {
     }
     
     boolean matchExportedPackage(String name) {
-        if (publicPkgs==null) {
+        if (publicPkgs==null && publicSet==null) {
             return true;
+        }
+        if (publicSet!=null) {
+            for (String aPublicSet : publicSet) {
+                if (name.startsWith(aPublicSet)) {
+                    return true;
+                 }
+            }
+        }
+        if (publicPkgs==null) {
+            return false;
         }
         int index = name.lastIndexOf('.');
         if (index==-1) {
@@ -126,7 +147,7 @@ final class ClassLoaderFacade extends URLClassLoader {
 */    
     Class getClass(String name) throws ClassNotFoundException {
         if (matchExportedPackage(name)) {
-            Class c = privateLoader.loadClass(name);
+            Class c = privateLoader.loadClass(name, false, false);
             classesLoaded++;
             return c;
         }
