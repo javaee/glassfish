@@ -45,8 +45,10 @@ import org.jvnet.hk2.config.ConfigParser;
 import org.jvnet.hk2.config.DomDocument;
 
 import java.net.URL;
+import java.util.HashMap;
 import java.util.List;
-//import java.util.logging.Level;
+import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.sun.enterprise.module.ModulesRegistry;
@@ -64,14 +66,19 @@ public class ConsolePluginService {
     @Inject Habitat habitat;
     @Inject ConsoleProvider providers[];
 
+/*
     @Inject ModulesRegistry modulesRegistry;
-
+        for(Module m : modulesRegistry.getModules()) {
+            url = m.getClassLoader().getResource(ConsoleProvider.DEFAULT_CONFIG_FILENAME);
+            if(url!=null)
+                ; // TODO: parse url
+        }
+*/
 
     /**
      *	<p> Default constructor.</p>
      */
     public ConsolePluginService() {
-System.out.println("CONSTRUCTOR: Console Plugin Service!");
     }
 
     /**
@@ -83,38 +90,54 @@ System.out.println("CONSTRUCTOR: Console Plugin Service!");
 	}
 	initialized = true;
 
-System.out.println("INITIALIZING: Console Plugin Service!");
-
 	// First find the parser
 	if ((providers != null) && (providers.length > 0)) {
 	    // Get our parser...
 	    ConfigParser parser = new ConfigParser(habitat);
 	    URL url = null;
 
-        for(Module m : modulesRegistry.getModules()) {
-            url = m.getClassLoader().getResource(ConsoleProvider.DEFAULT_CONFIG_FILENAME);
-            if(url!=null)
-                ; // TODO: parse url
-        }
-
-        // Loop through the configs and add them all
+	    // Loop through the configs and add them all
 	    for (ConsoleProvider provider : providers) {
 		// Read the contents from the URL
 		url = provider.getConfiguration();
 		if (url == null) {
+// FIXME: When this is the JDBC ClassLoader, it resolves to the "core" URL!!!!  Why does it find the console-config.xml file from core?
 		    url = provider.getClass().getClassLoader().getResource(
 			ConsoleProvider.DEFAULT_CONFIG_FILENAME);
 		}
+		if (url == null) {
+		    if (logger.isLoggable(Level.INFO)) {
+			logger.info("Unable to find "
+			    + ConsoleProvider.DEFAULT_CONFIG_FILENAME
+			    + " file for provider '"
+			    + provider.getClass().getName() + "'");
+		    }
+		    continue;
+		}
+//System.out.println("Provider *"+provider+"* : url=*"+url+"*");
 		DomDocument doc = parser.parse(url);
 
 		// Get the New IntegrationPoints
 		ConsoleConfig config = (ConsoleConfig) doc.getRoot().get();
 
+		// Save the ClassLoader for later
+//System.out.println("Storing: " + config.getId() + " : " + provider.getClass().getClassLoader());
+		moduleClassLoaderMap.put(config.getId(), provider.getClass().getClassLoader());
+
 		// Add the new IntegrationPoints
 		addIntegrationPoints(config.getIntegrationPoints(), provider);
 	    }
 	}
-System.out.println("DONE INITIALIZING: '" + pointsByType + "'!");
+
+//System.out.println("IP Map: " + pointsByType.toString());
+
+	// Log some trace messages
+	if (logger.isLoggable(Level.FINE)) {
+	    logger.fine("Console Plugin Service has been Initialized!");
+	    if (logger.isLoggable(Level.FINEST)) {
+		logger.finest(pointsByType.toString());
+	    }
+	}
     }
 
     /**
@@ -153,6 +176,20 @@ System.out.println("DONE INITIALIZING: '" + pointsByType + "'!");
     }
 
     /**
+     *	<p> This method returns the <code>ClassLoader</code> associated with
+     *	    the requested module.  If the requested module does not exist, has
+     *	    not been initialized, or does not contain any admin console
+     *	    extensions, this method will return <code>null</code>.</p>
+     *
+     *	@param	name	The name of the module.
+     *
+     *	@return	<code>null</code>, or the module's <code>ClassLoader</code>.
+     */
+    public ClassLoader getModuleClassLoader(String moduleName) {
+	return moduleClassLoaderMap.get(moduleName);
+    }
+
+    /**
      *	<p> Flag indicating intialization has already occured.</p>
      */
     private boolean initialized	= false;
@@ -163,4 +200,13 @@ System.out.println("DONE INITIALIZING: '" + pointsByType + "'!");
      */
     private MultiMap<String, IntegrationPoint> pointsByType =
 	    new MultiMap<String, IntegrationPoint>();
+
+    /**
+     *	<p> This <code>Map</code> keeps track of the <code>ClassLoader</code>
+     *	    for each module that provides GUI {@link IntegrationPoint}s.  It
+     *	    is keyed by the id specified in the <code>console-config.xml</code>
+     *	    file from the module.</p>
+     */
+    private Map<String, ClassLoader> moduleClassLoaderMap =
+	    new HashMap<String, ClassLoader>();
 }
