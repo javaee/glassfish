@@ -2,9 +2,6 @@ package org.glassfish.admingui.util;
 
 import java.util.Map;
 
-import org.glassfish.admin.amx.loader.StartAMX;
-import org.glassfish.admin.amx.loader.AMXConfigRegistrar; 
-
 import com.sun.appserv.management.DomainRoot;
 import com.sun.appserv.management.client.ProxyFactory;
 
@@ -20,11 +17,6 @@ public class AMXUtil {
     private AMXUtil() {} //dummy constructor, all static methods.
 
     private static final MBeanServer mMBeanServer = ManagementFactory.getPlatformMBeanServer();
-    private static final AMXConfigRegistrar mConfigRegistrar = AMXConfigRegistrar.getInstance();
-
-    public static void startAMX(){
-        StartAMX.startAMX( mMBeanServer, mConfigRegistrar ); 
-    }
 
     public static DomainRoot getDomainRoot() {
         if (domainRoot == null){
