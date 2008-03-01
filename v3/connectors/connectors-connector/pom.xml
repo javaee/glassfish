@@ -47,6 +47,12 @@
         </dependency>
 
         <dependency>
+            <groupId>org.glassfish.common</groupId>
+            <artifactId>common-util</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.glassfish.core</groupId>
             <artifactId>kernel</artifactId>
             <version>${project.parent.version}</version>

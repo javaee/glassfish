@@ -77,12 +77,6 @@ public class AppServerStartup implements ModuleStartup {
             logger.fine("Startup class : " + this.getClass().getName());
         }
 
-        // set the parent class loader to the shared module class loader, if packaged
-        Module parentModule = systemRegistry.makeModuleFor("org.glassfish.core:shared-components", null);
-        if(parentModule!=null) {
-            systemRegistry.setParentClassLoader(parentModule.getClassLoader());
-        }
-
         // prepare the global variables
         habitat.addComponent(null, systemRegistry);
         habitat.addComponent(LogDomains.CORE_LOGGER, logger);

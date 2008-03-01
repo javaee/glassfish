@@ -209,7 +209,11 @@
             <artifactId>container-common</artifactId>
             <version>${project.version}</version>
         </dependency>
-
+        <dependency>
+            <groupId>org.glassfish.admin</groupId>
+            <artifactId>config-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.glassfish.web</groupId>
             <artifactId>jsf-connector</artifactId>

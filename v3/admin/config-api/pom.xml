@@ -114,14 +114,11 @@
             <artifactId>hk2</artifactId>
             <version>${hk2.version}</version>
         </dependency> 
-        
-    
-        <dependency>
+         <dependency>
             <groupId>org.glassfish.common</groupId>
-            <artifactId>amx-impl</artifactId>
-            <version>${project.version}</version>
-        </dependency> 
-         
+            <artifactId>amx-api</artifactId>
+            <version>${amx-api.version}</version>
+        </dependency>        
         <dependency>
             <groupId>com.sun.xml.stream</groupId>
             <artifactId>sjsxp</artifactId>

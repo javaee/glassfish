@@ -154,17 +154,27 @@ public class GrizzlyConfig implements MonitoringLevelListener{
     
     
     public void registerMonitoringLevelEvents() {
+        if (WebContainer.getInstance()==null) {
+            return;
+        }
         MonitoringRegistry monitoringRegistry = 
             WebContainer.getInstance().getServerContext().getDefaultHabitat().getComponent(MonitoringRegistry.class);
-        monitoringRegistry.registerMonitoringLevelListener(
-            this, MonitoredObjectType.HTTP_LISTENER);
+        if (monitoringRegistry!=null) {
+            monitoringRegistry.registerMonitoringLevelListener(
+                this, MonitoredObjectType.HTTP_LISTENER);
+        }
     }
 
     
     public void unregisterMonitoringLevelEvents() {
+        if (WebContainer.getInstance()==null) {
+            return;
+        }
         MonitoringRegistry monitoringRegistry =
             WebContainer.getInstance().getServerContext().getDefaultHabitat().getComponent(MonitoringRegistry.class);
-        monitoringRegistry.unregisterMonitoringLevelListener(this);
+        if (monitoringRegistry!=null) {
+            monitoringRegistry.unregisterMonitoringLevelListener(this);
+        }
     }
 
     
@@ -206,7 +216,8 @@ public class GrizzlyConfig implements MonitoringLevelListener{
             ObjectName objectName = new ObjectName(onStr);
             mBeanServer.invoke(objectName,methodToInvoke,objects,signature);
         } catch ( Exception ex ){
-            throw new RuntimeException(ex);
+            logger.log(Level.SEVERE, "Exception while invoking mebean server operation " + methodToInvoke, ex.getMessage());
+            //throw new RuntimeException(ex);
         }
     }
 

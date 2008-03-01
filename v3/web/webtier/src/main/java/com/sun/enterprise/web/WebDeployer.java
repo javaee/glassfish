@@ -57,6 +57,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.beans.PropertyVetoException;
+import java.net.URL;
 
 /**
  * Web module deployer.

@@ -45,7 +45,7 @@
     </parent>
     <artifactId>kernel</artifactId>
     <packaging>hk2-jar</packaging>
-    <name>Core Classes</name>
+    <name>Kernel Classes</name>
 
     <developers>
         <developer>
@@ -111,7 +111,7 @@
             <groupId>org.glassfish.common</groupId>
             <artifactId>glassfish-api</artifactId>
             <version>${project.version}</version>
-        </dependency>
+        </dependency>        
         <dependency>
             <groupId>org.glassfish.common</groupId>
             <artifactId>internal-api</artifactId>

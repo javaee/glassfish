@@ -77,7 +77,12 @@
             <groupId>org.glassfish.common</groupId>
             <artifactId>dol</artifactId>
             <version>${pe.version}</version>
-        </dependency>        
+        </dependency>   
+        <dependency>
+            <groupId>com.sun.grizzly</groupId>
+            <artifactId>grizzly-comet</artifactId>
+            <version>${grizzly.version}</version>
+        </dependency>          
         <dependency>
             <groupId>org.glassfish.web</groupId>
             <artifactId>war-util</artifactId>
@@ -146,7 +151,12 @@
            <groupId>org.glassfish.core</groupId>
            <artifactId>security</artifactId>
            <version>${pe.version}</version>
-        </dependency>           
+        </dependency>     
+        <dependency>
+           <groupId>org.glassfish.core</groupId>
+           <artifactId>shared-components</artifactId>
+           <version>${pe.version}</version>
+        </dependency>         
     </dependencies>
 </project>
 

@@ -70,27 +70,6 @@
             <artifactId>grizzly-module</artifactId>
             <version>${grizzly.version}</version>
         </dependency>       
-<!--
-         <dependency>
-            <groupId>org.glassfish.admin</groupId>
-            <artifactId>config-api</artifactId>
-            <version>${project.parent.version}</version>
-        </dependency>
--->
-<!--
-        <dependency>
-             <groupId>javax.resource</groupId>
-             <artifactId>connector-api</artifactId>
-             <version>${connector-api.version}</version>
-             <scope>provided</scope>
-         </dependency>
--->
-        <dependency>
-            <groupId>javax.javaee</groupId>
-            <artifactId>javaee</artifactId>
-            <version>${javaee-api.version}</version>
-        </dependency>
-        
     </dependencies>
 </project>
 

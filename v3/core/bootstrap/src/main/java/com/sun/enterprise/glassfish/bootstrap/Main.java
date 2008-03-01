@@ -56,6 +56,7 @@ public class Main extends com.sun.enterprise.module.bootstrap.Main {
     protected void setParentClassLoader(ModulesRegistry mr) throws BootException {
 
         ClassLoader cl = this.getClass().getClassLoader();
+        mr.setParentClassLoader(cl);
                 
         // first we mask JAXB if necessary.
         // mask the JAXB and JAX-WS API in the bootstrap classloader so that
@@ -80,7 +81,16 @@ public class Main extends com.sun.enterprise.module.bootstrap.Main {
                 "javax.xml.ws.",
                 "com.sun.xml."
             );
+            mr.setParentClassLoader(cl);
         }
+
+        // now install the java-ee APIs. this has to be at a very high level in the hierarchy
+        Module parentModule = mr.makeModuleFor("javax.javaee:javaee", null);
+        if(parentModule!=null) {
+            cl = parentModule.getClassLoader();
+        }
+        
+
 
         // do we have a lib ?
         Repository lib = mr.getRepository("lib");
@@ -90,6 +100,7 @@ public class Main extends com.sun.enterprise.module.bootstrap.Main {
 
         // finally
         mr.setParentClassLoader(cl);
+        
     }
 
     /**

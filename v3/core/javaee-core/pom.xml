@@ -68,7 +68,12 @@
             <groupId>org.glassfish.common</groupId>
             <artifactId>glassfish-api</artifactId>
             <version>${project.version}</version>
-        </dependency>   
+        </dependency> 
+        <dependency>
+            <groupId>org.glassfish.common</groupId>
+            <artifactId>glassfish-ee-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>         
         <dependency>
             <groupId>org.glassfish.common</groupId>
             <artifactId>dol</artifactId>
@@ -77,6 +82,11 @@
         <dependency>
             <groupId>org.glassfish.common</groupId>
             <artifactId>common-util</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.admin</groupId>
+            <artifactId>config-api</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

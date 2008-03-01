@@ -488,7 +488,13 @@ abstract public class ApplicationLifecycle {
             ClassLoader original = Thread.currentThread().getContextClassLoader();
             try {
                 Thread.currentThread().setContextClassLoader(containerInfo.getMainModule().getClassLoader());
-                Container container = containerInfo.getContainer();
+                Container container;
+                try {
+                    container = containerInfo.getContainer();
+                } catch(Exception e) {
+                    logger.log(Level.SEVERE, "Cannot start container from module " +  containerInfo.getMainModule(),e);
+                    return false;
+                }
                 Class<? extends Deployer> deployerClass = container.getDeployer();
                 Deployer deployer;
                 try {
@@ -529,13 +535,17 @@ abstract public class ApplicationLifecycle {
         ClassLoader original = Thread.currentThread().getContextClassLoader();
         try {
             Thread.currentThread().setContextClassLoader(info.getContainer().getClass().getClassLoader());
-            Inhabitant i = habitat.getInhabitantByType(info.getDeployer().getClass());
-            if (i!=null) {
-                i.release();
+            if (info.getDeployer()!=null) {
+                Inhabitant i = habitat.getInhabitantByType(info.getDeployer().getClass());
+                if (i!=null) {
+                    i.release();
+                }
             }
-            i = habitat.getInhabitantByType(info.getContainer().getClass());
-            if (i!=null) {
-                i.release();
+            if (info.getContainer()!=null) {
+                Inhabitant i = habitat.getInhabitantByType(info.getContainer().getClass());
+                if (i!=null) {
+                    i.release();
+                }
             }
             containerRegistry.removeContainer(info);
             if (logger.isLoggable(Level.FINE)) {

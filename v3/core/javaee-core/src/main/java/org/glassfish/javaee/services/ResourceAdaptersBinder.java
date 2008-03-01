@@ -160,6 +160,8 @@ public class ResourceAdaptersBinder implements Startup, PostConstruct, PreDestro
      * The component is about to be removed from commission
      */
     public void preDestroy() {
+        raProxyHabitat.getInhabitant(com.sun.appserv.connectors.spi.ConnectorRuntime.class, null).release();
+        
         /*ConnectorRuntime runtime = connectorRuntimeHabitat.getComponent(ConnectorRuntime.class, null);
 
         List<String> poolNames = getAllPoolNames(pools);

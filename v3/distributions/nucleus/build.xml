@@ -26,7 +26,6 @@ own identifying information: Portions Copyright [yyyy]
        <resolveArtifact artifactId="nucleus-base" property="nucleus-base.zip"/>
 
        <resolveAll todir="target/stage/glassfish/modules">
-           <scope level="runtime" />
        </resolveAll>
        <delete dir="target/stage/glassfish/modules" includes="*.zip" />
 
