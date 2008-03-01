@@ -27,5 +27,10 @@
 	    <artifactId>kernel</artifactId>
 	    <version>10.0-SNAPSHOT</version>
         </dependency>
+        <dependency>
+	    <groupId>javax.servlet.jsp</groupId>
+	    <artifactId>jsp-api</artifactId>
+	    <version>${jsp-api.version}</version>
+        </dependency>
     </dependencies>
 </project>
