@@ -152,6 +152,11 @@
                 >
             </sun:treeNode>
 	</sun:tree>
+	<event>
+	    <!afterCreate
+		includeIntegrations(type="tree");
+	    />
+	</event>
       </sun:form>
 
     </sun:body>
