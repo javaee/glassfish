@@ -43,7 +43,7 @@
         <artifactId>admingui</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>    
-    <artifactId>console-plugin</artifactId>
+    <artifactId>console-plugin-service</artifactId>
     <packaging>hk2-jar</packaging>
     <name>Admin GUI Integration</name>
     <description>Glassfish V3 Admin Console Integration</description>
