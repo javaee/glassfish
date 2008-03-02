@@ -94,7 +94,7 @@
         </dependency>
         <dependency>
             <groupId>org.glassfish.admingui</groupId>
-            <artifactId>console-plugin</artifactId>
+            <artifactId>console-plugin-service</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
         <dependency>
