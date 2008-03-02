@@ -39,15 +39,23 @@ import com.sun.jsftemplating.annotation.Handler;
 import com.sun.jsftemplating.annotation.HandlerInput;
 import com.sun.jsftemplating.annotation.HandlerOutput;
 import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
+import com.sun.jsftemplating.layout.LayoutDefinitionManager;
+import com.sun.jsftemplating.layout.LayoutViewHandler;
+import com.sun.jsftemplating.layout.descriptors.LayoutDefinition;
 
 import org.glassfish.admingui.plugin.ConsolePluginService;
 import org.glassfish.admingui.plugin.IntegrationPoint;
+import org.glassfish.admingui.plugin.IntegrationPointComparator;
 
 import org.jvnet.hk2.component.Habitat;
 
 import java.lang.reflect.Method;
+import java.util.Iterator;
 import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
+import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.servlet.ServletContext;
 
@@ -61,6 +69,7 @@ import javax.servlet.ServletContext;
  *  @author Ken Paulsen	(ken.paulsen@sun.com)
  */
 public class PluginHandlers {
+
     /**
      *	<p> Constructor.</p>
      */
@@ -83,34 +92,155 @@ public class PluginHandlers {
 
 
     /**
+     *	<p> This handler provides access to {@link IntegrationPoint}s for the requested key.</p>
      *
      *	@param	context	The <code>HandlerContext</code>.
      */
     @Handler(id="getIntegrationPoints",
     	input={
-            @HandlerInput(name="key", type=String.class, required=true)},
+            @HandlerInput(name="type", type=String.class, required=true)},
         output={
             @HandlerOutput(name="points", type=List.class)})
     public static void getIntegrationPoints(HandlerContext handlerCtx) {
-	String key = (String) handlerCtx.getInputValue("key");
+	String type = (String) handlerCtx.getInputValue("type");
 	List<IntegrationPoint> value =
-	    getIntegrationPoints(handlerCtx.getFacesContext(), key);
+	    getIntegrationPoints(handlerCtx.getFacesContext(), type);
 	handlerCtx.setOutputValue("points", value);
     }
 
     /**
      *
      */
-    public static List<IntegrationPoint> getIntegrationPoints(FacesContext context, String key) {
+    public static List<IntegrationPoint> getIntegrationPoints(FacesContext context, String type) {
 	Object value = null;
 	try {
 //System.out.println("" + org.glassfish.admingui.util.AMXUtil.getDomainRoot());
 	    Object obj = getPluginService(context);
 	    Method meth = obj.getClass().getMethod("getIntegrationPoints", String.class);
-	    value = meth.invoke(obj, key);
+	    value = meth.invoke(obj, type);
 	} catch (Exception ex) {
 	    ex.printStackTrace();
 	}
 	return (List<IntegrationPoint>) value;
+    }
+
+    /**
+     *	<p> This handler adds {@link IntegrationPoint}s of a given type to a
+     *	    <code>UIComponent</code> tree.  It looks for
+     *	    {@link IntegrationPoint}s using the given <code>type</code>.  It
+     *	    then sorts the results (if any) by <code>parentId</code>, and then
+     *	    by priority.  It next interates over each one looking for a
+     *	    <code>UIComponent</code> with an <code>id</code> which matches the
+     *	    its own <code>parentId</code> value.  It then uses the content of
+     *	    the {@link IntegrationPoint} to attempt to include the .jsf page
+     *	    it refers to under the identified parent component.</p>
+     */
+    @Handler(id="includeIntegrations",
+    	input={
+            @HandlerInput(name="type", type=String.class, required=true),
+	    @HandlerInput(name="root", type=UIComponent.class, required=false)})
+    public static void includeIntegrations(HandlerContext handlerCtx) {
+	// Get the input
+	String type = (String) handlerCtx.getInputValue("type");
+	UIComponent root = (UIComponent) handlerCtx.getInputValue("root");
+
+	// Get the IntegrationPoints
+	FacesContext ctx = handlerCtx.getFacesContext();
+	List<IntegrationPoint> points = getIntegrationPoints(ctx, type);
+
+	// Include them
+	includeIntegrationPoints(ctx, root, points);
+    }
+
+    /**
+     *
+     */
+    public static void includeIntegrationPoints(FacesContext ctx, UIComponent root, List<IntegrationPoint> points) {
+	if (root == null) {
+	    // No root is specified, search whole page
+	    root = ctx.getViewRoot();
+	}
+
+	// Use a TreeSet to sort automatically
+	SortedSet<IntegrationPoint> sortedSet =
+	    new TreeSet<IntegrationPoint>(
+		IntegrationPointComparator.getInstance());
+// FIXME: Check for duplicates! Modify "id" if there is a duplicate?
+	sortedSet.addAll(points);
+
+	// Iterate
+	boolean done = false;
+	IntegrationPoint point;
+	while (sortedSet.size() > 0) {
+	    Iterator it = sortedSet.iterator();
+	    String lastParentId = "";
+	    UIComponent parent = null;
+
+	    // Iterate through the IntegrationPoints
+	    while (it.hasNext()) {
+// FIXME: Instead of using generics or casting to IntegrationPoint, I am working around classloader configuration problems by instantiating an IntegrationPoint from an Object (which is an integration point).  This copies over all the values via reflection.
+		point = new IntegrationPoint(it.next());
+
+		// Optimize for multiple plugins for the same parent
+		String parentId = point.getParentId();
+		if (parentId == null) {
+		    // If not specified, just stick it @ the root
+		    parentId = root.getId();
+		    parent = root;
+		} else if (!parentId.equals(lastParentId)) {
+		    parent = findComponentById(root, parentId);
+		    lastParentId = parentId;
+		}
+
+		// If we found the parent, remove from our list of IPs to add
+		if (parent != null) {
+		    it.remove();
+		}
+
+		// Add the content
+		String content = point.getContent();
+		while (content.startsWith("/")) {
+		    content = content.substring(1);
+		}
+		LayoutDefinition def =
+		    LayoutDefinitionManager.getLayoutDefinition(ctx,
+			point.getConsoleConfigId() + "/" + content);
+		LayoutViewHandler.buildUIComponentTree(ctx, parent, def);
+	    }
+	    done = true;
+	}
+    }
+
+    /**
+     *	<p> This method search for the requested simple id in the given
+     *	    <code>UIComponent</code>.  If the id matches the UIComponent, it
+     *	    is returned, otherwise, it will search the children and facets
+     *	    recursively.</p>
+     *
+     *	@param	base	The <code>UIComponent</code> to search.
+     *	@param	id	The <code>id</code> we're looking for.
+     *
+     *	@return	The UIComponent, or null.
+     */
+    private static UIComponent findComponentById(UIComponent base, String id) {
+	// Check if this is the one we're looking for
+	if (id.equals(base.getId())) {
+	    return base;
+	}
+
+	// Not this one, check its kids
+	Iterator<UIComponent> it = base.getFacetsAndChildren();
+	UIComponent comp = null;
+	while (it.hasNext()) {
+	    // Recurse
+	    comp = findComponentById(it.next(), id);
+	    if (comp != null) {
+		// Found!
+		return comp;
+	    }
+	}
+
+	// Not found
+	return null;
     }
 }
