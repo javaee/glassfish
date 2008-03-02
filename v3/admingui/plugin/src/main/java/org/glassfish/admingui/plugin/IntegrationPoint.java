@@ -73,7 +73,7 @@ import java.io.Serializable;
  *	    compare or sort <code>IntegrationPoint</code>s.</li>
  *	<li><code>providerId</code> - The {@link Provider}'s id which provided
  *	    this <code>IntegrationPoint</code>.</li>
- *	<li><code>resourceURI</code> - A value pointing to additional content
+ *	<li><code>content</code> - A value pointing to additional content
  *	    to implement this <code>IntegrationPoint</code></li>
  *	<li><code>handlerId</code> - An <code>Handler</code> name which should
  *	    be invoked to help implement this <code>IntegrationPoint</code></li>
@@ -86,6 +86,46 @@ import java.io.Serializable;
  */
 @Configured
 public class IntegrationPoint implements Serializable {
+    /**
+     *	<p> Default constructor.</p>
+     */
+    public IntegrationPoint() {
+    }
+
+    /**
+     *	<p> This constructor is a hack work-a-round for ClassLoader issues that
+     *	    I'm waiting for to be worked out.  This implementation will copy
+     *	    values from the Object via reflection.  It is expected that the
+     *	    Object be an instanceof IntegrationPoint, however, it may be loaded
+     *	    from a different ClassLoader (which prevents casting b/c of a
+     *	    CastClassException).
+     */
+    public IntegrationPoint(Object obj) {
+	this.id = (String) invokeGetter(obj, "getId");
+	this.type = (String) invokeGetter(obj, "getType");
+	this.parentId = (String) invokeGetter(obj, "getParentId");
+	this.content = (String) invokeGetter(obj, "getContent");
+	try {
+	this.priority = Integer.parseInt("" + invokeGetter(obj, "getPriority"));
+	} catch (Exception ex) {
+	    // Ignore
+	}
+	this.configId = (String) invokeGetter(obj, "getConsoleConfigId");
+    }
+
+    /**
+     *	<p> Temporary Reflection Method.</p>
+     */
+    private Object invokeGetter(Object obj, String method) {
+	Object val = null;
+	try {
+	    val = obj.getClass().getMethod(method).invoke(obj);
+	} catch (Exception ex) {
+	    // ignore
+	    ex.printStackTrace();
+	}
+	return val;
+    }
 
 // FIXME: Implement event / handler declarations
 
@@ -134,7 +174,7 @@ public class IntegrationPoint implements Serializable {
     /**
      *	<p> Setter for the parentId of the <code>IntegrationPoint</code>.</p>
      */
-    @Attribute
+    @Attribute("parentId")
     void setParentId(String parentId) {
 	this.parentId = parentId;
     }
@@ -183,21 +223,21 @@ public class IntegrationPoint implements Serializable {
     }
 
     /**
-     *	<p> This provides access to the {@link ConsoleProvider} which provided
+     *	<p> This provides access to the {@link ConsoleConfig} which provided
      *	    this <code>IntegrationPoint</code>.
      */
-    public ConsoleProvider getConsoleProvider() {
-	return consoleProvider;
+    public String getConsoleConfigId() {
+	return this.configId;
     }
 
     /**
      *	<p> This method should only be called by the
      *	    {@link ConsolePluginService}.  This associates this
-     *	    <code>IntegrationPoint</code> with the {@link ConsoleProvider}
+     *	    <code>IntegrationPoint</code> with the {@link ConsoleConfig}
      *	    which specified it.</p>
      */
-    void setConsoleProvider(ConsoleProvider provider) {
-	this.consoleProvider = provider;
+    void setConsoleConfigId(String id) {
+	this.configId = id;
     }
 
 
@@ -206,5 +246,5 @@ public class IntegrationPoint implements Serializable {
     private String parentId;
     private String content;
     private int priority;
-    private ConsoleProvider consoleProvider = null;
+    private String configId = null;
 }
