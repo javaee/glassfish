@@ -95,6 +95,7 @@ public class ConsolePluginService {
 	    // Get our parser...
 	    ConfigParser parser = new ConfigParser(habitat);
 	    URL url = null;
+	    String id = null;
 
 	    // Loop through the configs and add them all
 	    for (ConsoleProvider provider : providers) {
@@ -122,10 +123,11 @@ public class ConsolePluginService {
 
 		// Save the ClassLoader for later
 //System.out.println("Storing: " + config.getId() + " : " + provider.getClass().getClassLoader());
-		moduleClassLoaderMap.put(config.getId(), provider.getClass().getClassLoader());
+		id = config.getId();
+		moduleClassLoaderMap.put(id, provider.getClass().getClassLoader());
 
 		// Add the new IntegrationPoints
-		addIntegrationPoints(config.getIntegrationPoints(), provider);
+		addIntegrationPoints(config.getIntegrationPoints(), id);
 	    }
 	}
 
@@ -144,10 +146,10 @@ public class ConsolePluginService {
      *	<p> This method allows new {@link IntegrationPoint}s to be added to
      *	    the known {@link IntegrationPoint}s.</p>
      */
-    public void addIntegrationPoints(List<IntegrationPoint> points, ConsoleProvider provider) {
+    public void addIntegrationPoints(List<IntegrationPoint> points, String id) {
 	// Add them all...
 	for (IntegrationPoint point : points) {
-	    addIntegrationPoint(point, provider);
+	    addIntegrationPoint(point, id);
 	}
     }
 
@@ -155,10 +157,10 @@ public class ConsolePluginService {
      *	<p> This method allows a new {@link IntegrationPoint} to be added to
      *	    the known {@link IntegrationPoint}s.</p>
      */
-    public void addIntegrationPoint(IntegrationPoint point, ConsoleProvider provider) {
+    public void addIntegrationPoint(IntegrationPoint point, String id) {
 	// Associate the Provider with this IntegrationPoint so we
 	// have a way to get the correct classloader
-	point.setConsoleProvider(provider);
+	point.setConsoleConfigId(id);
 
 	// Add it
 	pointsByType.add(point.getType(), point);
