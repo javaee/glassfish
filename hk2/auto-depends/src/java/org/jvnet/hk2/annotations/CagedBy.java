@@ -3,12 +3,12 @@ package org.jvnet.hk2.annotations;
 import org.jvnet.hk2.component.CageBuilder;
 
 import java.lang.annotation.Documented;
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
-import java.lang.annotation.Inherited;
 import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
 import static java.lang.annotation.ElementType.TYPE;
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import java.lang.annotation.Target;
 
 /**
  * Annotation indicating that additional processing is performed when
@@ -52,5 +52,8 @@ public @interface CagedBy {
     // this value is captured in metadata so that at runtime
     // we can check the registration hook easily.
     @InhabitantMetadata("cageBuilder")
+    // we need to be able to find all components that are caged by certain CageBuilder,
+    // hence this index.
+    @Index
     Class<? extends CageBuilder> value();
 }

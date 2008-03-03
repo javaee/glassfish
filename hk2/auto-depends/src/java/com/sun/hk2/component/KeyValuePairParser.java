@@ -7,6 +7,18 @@ import java.util.StringTokenizer;
  * Parses a string like <tt>key=value,key=value,key=value</tt>.
  *
  * <p>
+ * More specifically the format of the line satisfies the following BNF constructions:
+ *
+ * <pre>
+ * LINE = TOKEN ( ',' LINE )?               // LINE is ','-separated TOKENs
+ * TOKEN = KEY ( '=' VALUE )?               // TOKEN is a key/value pair. value is optional.
+ * KEY = [^,=]+                             // KEY is a non-empty string that doesn't contain ',' nor '='
+ * VALUE = '"' ([^"]| '\' ANYCHAR )* '"'    // VALUE is any string surrounded by quotes/doublequotes (where \ is used as escape), or ...
+ * VALUE = ''' ([^']| '\' ANYCHAR )* '''
+ * VALUE = [^,]*                //       possibly empty string that doesn't contain ','
+ * </pre>
+ *
+ * <p>
  * This class works like {@link StringTokenizer}; each time {@link #parseNext()}
  * is invoked, the parser "moves" to the next key/value pair, which
  * you can then obtain with {@link #getKey()} and {@link #getValue()}.
@@ -22,6 +34,14 @@ public final class KeyValuePairParser {
 
     private String key;
     private String value;
+    private final StringBuilder buf = new StringBuilder();
+
+    public KeyValuePairParser() {
+    }
+
+    public KeyValuePairParser(String s) {
+        set(s);
+    }
 
     /**
      * Resets the parser to parse the given string that looks like "key=value,key=value,..."
@@ -35,25 +55,66 @@ public final class KeyValuePairParser {
         return idx<str.length();
     }
 
+    private int indexOf(char separator) {
+        int i = str.indexOf(separator, idx + 1);
+        if(i<0) return str.length();
+        return i;
+    }
+
+    /**
+     * Returns true if the current character is ch.
+     */
+    private boolean isAt(char ch) {
+        return idx<str.length() && str.charAt(idx)==ch;
+    }
+
+    private char current() {
+        return str.charAt(idx);
+    }
+
     public void parseNext() {
-        int del = str.indexOf('=',idx+1);
-        if(del==-1) del=str.length();
+        // parse key
+        int del = Math.min(indexOf('='),indexOf(','));
+        key = str.substring(idx,del);
+        value = null;
+        idx=del;
 
-        int end = str.indexOf(',',idx+1);
-        if(end==-1) end=str.length();
+        if(idx==str.length())
+            return; // key only, and we are at the end of the line
 
-        if(del>=end) {
-            // key only, no value
-            key = str.substring(idx,end);
-            value = null;
-        } else {
-            // key=value
-            key = str.substring(idx,del);
-            value = str.substring(del+1,end);
+        if(current()==',') {
+            // key only, so consume ',' and return.
+            idx++;
+            return;
         }
 
-        idx = end;
-        if(idx<str.length()) idx++; // skip ','
+        // we have a value. now consume '='
+        assert current()=='=';
+        idx++;
+
+        if(isAt('\'') || isAt('"')) {
+            char quote = current();
+            // quoted string. now let's find the end:
+            idx++;
+            buf.setLength(0);
+            while(true) {
+                if(isAt(quote)) {
+                    value = buf.toString();
+                    // consume endquote and ','. this may put as beyond EOL but that's fine.
+                    idx+=2;
+                    return;
+                }
+                if(isAt('\\'))
+                    idx++;
+                buf.append(current());
+                idx++;
+            }
+        }
+
+        // unquoted string
+        int end = indexOf(',');
+        value = str.substring(idx,end);
+        idx=end+1;
     }
 
 

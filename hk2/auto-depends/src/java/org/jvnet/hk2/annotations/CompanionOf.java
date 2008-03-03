@@ -19,7 +19,8 @@ import java.lang.annotation.Documented;
 @Documented
 @Retention(RUNTIME)
 @Target({TYPE})
-@InhabitantAnnotation("default")
+// companion class by itself is not an inhabitant. only its instances are.
+// @InhabitantAnnotation("default")
 public @interface CompanionOf {
     /**
      * Specifies the target of the companion.
