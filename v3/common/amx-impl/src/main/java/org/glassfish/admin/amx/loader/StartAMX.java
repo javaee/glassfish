@@ -158,7 +158,9 @@ public final class StartAMX
         if ( mJMXMP == null )
         {
             final Map<String,Object> env = new HashMap<String,Object>();
-        
+            env.put("jmx.remote.protocol.provider.pkgs", "com.sun.jmx.remote.protocol"); 
+            env.put("jmx.remote.protocol.provider.class.loader", this.getClass().getClassLoader());
+
             final JMXServiceURL url =
                 mJMXMPServiceURL = new JMXServiceURL("service:jmx:jmxmp://localhost:" + port );
                 mJMXMP = JMXConnectorServerFactory.newJMXConnectorServer(mJMXMPServiceURL, env, null);
@@ -172,7 +174,7 @@ public final class StartAMX
                 {
                     e.printStackTrace();
                 }
-                
+
                 // test
                // JMXConnector jmxc = JMXConnectorFactory.connect(url, null);
                // MBeanServerConnection mbsc = jmxc.getMBeanServerConnection();
