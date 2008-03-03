@@ -1,8 +1,8 @@
 package net.munnangi.addon;
 
-import com.sun.enterprise.v3.server.Init;
-import org.jvnet.hk2.component.PostConstruct;
+import org.glassfish.internal.api.Init;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.PostConstruct;
 
 @Service
 public class AddonInit implements Init, PostConstruct {
