@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<console-config id="javaone">
+    <integration-point id="JavaOneNode"
+                       type="tree" 
+                       priority="210"
+                       parentId="tree"
+                       content="treenode-ex1.jsf" />
+</console-config> 
