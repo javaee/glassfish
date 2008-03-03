@@ -129,7 +129,9 @@ public class ResourceHandle implements com.sun.appserv.connectors.spi.ResourceHa
     }
 
     public boolean isEnlistmentSuspended() {
-        throw new UnsupportedOperationException("Transaction is not supported yet");
+        //throw new UnsupportedOperationException("Transaction is not supported yet");
+        //TODO V3 till lazy enlistment is done
+        return false;
     }
 
     public boolean supportsXA() {
