@@ -35,6 +35,8 @@
  */
 package com.sun.enterprise.v3.admin;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.I18n;
@@ -42,47 +44,34 @@ import org.glassfish.api.Param;
 import org.glassfish.api.ActionReport;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
-import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PerLookup;
-import org.jvnet.hk2.config.ConfigSupport;
-import org.jvnet.hk2.config.SingleConfigCode;
-import org.jvnet.hk2.config.TransactionFailure;
-import com.sun.enterprise.config.serverbeans.Resources;
-import com.sun.enterprise.config.serverbeans.JdbcResource;
-import com.sun.enterprise.config.serverbeans.Resource;
-import com.sun.enterprise.config.serverbeans.ServerTags;
 import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.enterprise.config.serverbeans.Resources;
+import org.jvnet.hk2.annotations.Inject;
 
-import java.beans.PropertyVetoException;
-import java.util.HashMap;
-import java.util.Properties;
+import java.util.ArrayList;
+import java.util.Iterator;
 
 /**
- * Create JDBC Resource Command
+ * Create add-resources Command
  * 
  */
-@Service(name="create-jdbc-resource")
+@Service(name="add-resources")
 @Scoped(PerLookup.class)
-@I18n("create.jdbc.resource")
-public class CreateJdbcResource implements AdminCommand {
+@I18n("add.resources")
+public class AddResources implements AdminCommand {
     
-    final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(CreateJdbcResource.class);    
-
-    @Param(name="connectionpoolid")
-    String connectionPoolId;
+    final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(AddResources.class);    
 
     @Param(optional=true)
-    String enabled = Boolean.TRUE.toString();
+    String target;
 
-    @Param(optional=true)
-    String description;
-
-    @Param(name="jndi_name", primary=true)
-    String jndiName;
+    @Param(name="xml_file_name", primary=true)
+    String xmlFileName;
     
     @Inject
     Resources resources;
-
+    
     /**
      * Executes the command with the command parameters passed as Properties
      * where the keys are the paramter names and the values the parameter values
@@ -91,35 +80,39 @@ public class CreateJdbcResource implements AdminCommand {
      */
     public void execute(AdminCommandContext context) {
         final ActionReport report = context.getActionReport();
-
-        JDBCResourceManager jdbcMgr = new JDBCResourceManager();
-        HashMap attrList = new HashMap();
-        attrList.put(ResourceConstants.JNDI_NAME, jndiName);
-        attrList.put(ResourceConstants.CONNECTION_POOL_NAME, connectionPoolId);
-        attrList.put(ServerTags.DESCRIPTION, description);
-        attrList.put(ResourceConstants.ENABLED, enabled);
-        Properties props = null;
-        ResourceStatus rs;
+        
         try {
-            rs = jdbcMgr.create(resources, attrList, props, jndiName);
-        } catch(Exception e) {
-            report.setMessage(localStrings.getLocalString("create.jdbc.resource.failed",
-                    "JDBC resource {0} creation failed", jndiName));
+            final ResourcesManager resMgr = new ResourcesManager();
+            final ArrayList results = resMgr.createResources(resources, xmlFileName, target);
+            final Iterator resultsIter = results.iterator();
+            report.getTopMessagePart().setChildrenType("Command");
+            boolean isSuccess = false;
+            while (resultsIter.hasNext()) {
+                ResourceStatus rs = ((ResourceStatus) resultsIter.next());
+                final String msgToAdd = rs.getMessage();
+                if ((msgToAdd != null) && (!msgToAdd.equals(""))) {
+                    final ActionReport.MessagePart part = report.getTopMessagePart().addChild();
+                    part.setMessage(msgToAdd);
+                }
+                if (rs.getStatus() == ResourceStatus.SUCCESS)
+                    isSuccess = true;
+            }
+            report.setActionExitCode(
+                    (isSuccess)?ActionReport.ExitCode.SUCCESS:ActionReport.ExitCode.FAILURE);
+            if (isSuccess)
+                report.setMessage(localStrings.getLocalString("add.resources.success", 
+                                                "add-resources successfull"));
+            else
+                report.setMessage(localStrings.getLocalString("add.resources.failed", 
+                                                "add-resources <{0}> failed", xmlFileName));
+                
+        } catch (Exception ex) {
+            Logger.getLogger(AddResources.class.getName()).log(Level.SEVERE, "Something went wrong in add-resources", ex);
+            report.setMessage(localStrings.getLocalString("add.resources.failed", 
+                                                "add-resources <{0}> failed", xmlFileName));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            report.setFailureCause(e);
-            return;
+            //Need to fix, doesn't show the error from exception, though it writes in the log
+            report.setFailureCause(ex);
         }
-        ActionReport.ExitCode ec = ActionReport.ExitCode.SUCCESS;
-        if (rs.getStatus() == ResourceStatus.FAILURE) {
-            ec = ActionReport.ExitCode.FAILURE;
-            report.setMessage(localStrings.getLocalString("create.jdbc.resource.failed",
-                    "JDBC resource {0} creation failed", jndiName));
-            if (rs.getException() != null)
-                report.setFailureCause(rs.getException());
-        } else {
-            report.setMessage(localStrings.getLocalString("create.jdbc.resource.success",
-                    "JDBC resource {0} created successfully", jndiName));
-        }
-        report.setActionExitCode(ec);
     }
 }
