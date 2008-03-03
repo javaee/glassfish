@@ -121,7 +121,7 @@ public class ClassLoaderProxy extends URLClassLoader {
         try {
             return super.findClass(name);
         } catch (NoClassDefFoundError e) {
-            throw new ClassNotFoundException(name);
+            throw new ClassNotFoundException(e.getMessage());
         }
     }
 

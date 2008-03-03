@@ -103,7 +103,7 @@ final class ClassLoaderFacade extends URLClassLoader {
         String packageName = name.substring(0, index);
         return publicPkgs.contains(packageName);
     }
-    
+              
     protected Class findClass(String name) throws ClassNotFoundException {
         if (matchExportedPackage(name)) {
             return privateLoader.loadClass(name);
