@@ -114,7 +114,7 @@ public class PluginHandlers {
     public static List<IntegrationPoint> getIntegrationPoints(FacesContext context, String type) {
 	Object value = null;
 	try {
-//System.out.println("" + org.glassfish.admingui.util.AMXUtil.getDomainRoot());
+// FIXME: Clean up all this reflection!
 	    Object obj = getPluginService(context);
 	    Method meth = obj.getClass().getMethod("getIntegrationPoints", String.class);
 	    value = meth.invoke(obj, type);
@@ -161,17 +161,29 @@ public class PluginHandlers {
 	    root = ctx.getViewRoot();
 	}
 
+// FIXME: Remove this hack!  Need ClassLoader support, help!
+	Object ps = getPluginService(ctx);
+	java.util.Comparator comp = null;
+	try {
+	comp = (java.util.Comparator) ps.getClass().getMethod("getIntegrationPointComparator").invoke(ps);
+	} catch (Exception ex) {
+	    ex.printStackTrace();
+	}
 	// Use a TreeSet to sort automatically
 	SortedSet<IntegrationPoint> sortedSet =
 	    new TreeSet<IntegrationPoint>(
-		IntegrationPointComparator.getInstance());
+		comp);
+		//IntegrationPointComparator.getInstance());
 // FIXME: Check for duplicates! Modify "id" if there is a duplicate?
 	sortedSet.addAll(points);
 
 	// Iterate
-	boolean done = false;
 	IntegrationPoint point;
-	while (sortedSet.size() > 0) {
+	int lastSize = 0;
+	int currSize = sortedSet.size();
+	while (currSize != lastSize) {
+	    // Stop loop by comparing previous size
+	    lastSize = currSize;
 	    Iterator it = sortedSet.iterator();
 	    String lastParentId = "";
 	    UIComponent parent = null;
@@ -189,13 +201,18 @@ public class PluginHandlers {
 		    parent = root;
 		} else if (!parentId.equals(lastParentId)) {
 		    parent = findComponentById(root, parentId);
+		    if (parent == null) {
+			// Didn't find the one specified!
+// FIXME: log FINE!  Note this may not be a problem, keep iterating to see if we find it later.
+			System.out.println("The specified parentId (" + parentId + ") was not found!"); 
+			lastParentId = null;
+			continue;
+		    }
 		    lastParentId = parentId;
 		}
 
-		// If we found the parent, remove from our list of IPs to add
-		if (parent != null) {
-		    it.remove();
-		}
+		// We found the parent, remove from our list of IPs to add
+		it.remove();
 
 		// Add the content
 		String content = point.getContent();
@@ -207,7 +224,9 @@ public class PluginHandlers {
 			point.getConsoleConfigId() + "/" + content);
 		LayoutViewHandler.buildUIComponentTree(ctx, parent, def);
 	    }
-	    done = true;
+
+	    // Get the set size to see if we have any left to process
+	    currSize = sortedSet.size();
 	}
     }
 
