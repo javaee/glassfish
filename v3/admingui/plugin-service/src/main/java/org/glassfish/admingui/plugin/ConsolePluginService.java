@@ -178,6 +178,14 @@ public class ConsolePluginService {
     }
 
     /**
+     *	<p> Method used to avoid CCE b/c we don't have the corrent ClassLoaders yet.</p>
+     */
+// FIXME: Delete this method!
+    public IntegrationPointComparator getIntegrationPointComparator() {
+	return IntegrationPointComparator.getInstance();
+    }
+
+    /**
      *	<p> This method returns the <code>ClassLoader</code> associated with
      *	    the requested module.  If the requested module does not exist, has
      *	    not been initialized, or does not contain any admin console
