@@ -27,7 +27,6 @@ import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.v3.admin.CommandRunner;
-import com.sun.enterprise.v3.contract.ApplicationMetaDataPersistence;
 import com.sun.enterprise.v3.data.ApplicationInfo;
 import com.sun.enterprise.v3.server.ApplicationLifecycle;
 import com.sun.enterprise.v3.server.V3Environment;
@@ -43,6 +42,7 @@ import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.container.Sniffer;
+import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.archive.ArchiveHandler;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.jvnet.hk2.annotations.Inject;
@@ -72,9 +72,9 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
     public static final String VIRTUAL_SERVERS = "virtualservers";
     public static final String CONTEXT_ROOT = "contextroot";
     public static final String LIBRARIES = "libraries";
-    public static final String DIRECTORY_DEPLOYED = "DirectoryDeployed";
-    public static final String LOCATION = "LOCATION";
-    public static final String ENABLED = "ENABLED";
+    public static final String DIRECTORY_DEPLOYED = "directorydeployed";
+    public static final String LOCATION = "location";
+    public static final String ENABLED = "enabled";
     
     @Inject
     V3Environment env;
@@ -101,7 +101,7 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
     String libraries = null;
 
     @Param(optional=true)
-    String force = Boolean.FALSE.toString();
+    String force = Boolean.TRUE.toString();
 
     @Param(optional=true)
     String precompilejsp = Boolean.FALSE.toString();
@@ -170,7 +170,7 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
         }
 
         if (sniffers==null) {
-            String msg = localStrings.getLocalString("deploy.nocontainer", "No container services registered, done...");
+            String msg = localStrings.getLocalString("nocontainer", "No container services registered, done...");
             logger.severe(msg);
             report.setMessage(msg);
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
@@ -182,7 +182,7 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
             archive = archiveFactory.openArchive(file);
         } catch (IOException e) {
             logger.log(Level.SEVERE, "Error opening deployable artifact : " + file.getAbsolutePath(), e);
-            report.setMessage(localStrings.getLocalString("deploy.unknownarchiveformat", "Archive format not recognized"));
+            report.setMessage(localStrings.getLocalString("unknownarchiveformat", "Archive format not recognized"));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             return;
         }
@@ -204,8 +204,15 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
                 parameters.put(NAME, name);
             }
             
-            if (checkIfAppIsRegistered(appRegistry.get(name), report)) {
-                return;
+            handleRedeploy(name, report);
+
+            // clean up any left over repository files
+            FileUtils.whack(new File(env.getApplicationRepositoryPath(), name));
+
+            // this part needs to be cleaned up when we have a way 
+            // to set default value for optional params automatically
+            if (parameters.getProperty(ENABLED) == null) {
+                parameters.put(ENABLED, enabled);
             }
 
             File source = new File(archive.getURI().getSchemeSpecificPart());
@@ -259,6 +266,9 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
                     sourceArchive, parameters, env);
             deploymentContext.setClassLoader(cloader);
 
+            // clean up any generated files
+            deleteContainerMetaInfo(deploymentContext);
+
             Properties moduleProps = deploymentContext.getProps();
             moduleProps.setProperty(ServerTags.NAME, name);
             moduleProps.setProperty(ServerTags.LOCATION, deploymentContext.getSource().getURI().toURL().toString());
@@ -268,17 +278,16 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
             if (contextRoot!=null) {
                 moduleProps.setProperty(ServerTags.CONTEXT_ROOT, contextRoot);
             }
-
             moduleProps.setProperty(ServerTags.ENABLED, enabled);
             moduleProps.setProperty(ServerTags.DIRECTORY_DEPLOYED, String.valueOf(isDirectoryDeployed));
+            if (virtualservers != null) {
+                moduleProps.setProperty(ServerTags.VIRTUAL_SERVERS, 
+                    virtualservers);
+            }
 
-
-            ApplicationInfo appInfo = load(appSniffers, deploymentContext, report);
-
-            if (report.getActionExitCode().equals(ActionReport.ExitCode.SUCCESS)) {
-                report.setMessage(localStrings.getLocalString("deploy.command.success",
-                        "Application {0} deployed successfully", name));
-                
+            ApplicationInfo appInfo = deploy(appSniffers, deploymentContext, report);
+            if (report.getActionExitCode().equals(
+                ActionReport.ExitCode.SUCCESS)) {
                 /*
                  * The caller may want to know the resulting module ID as
                  * assigned by the server - if the caller did not specify it
@@ -289,6 +298,10 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
                 
                 // register application information in domain.xml
                 registerAppInDomainXML(appInfo, deploymentContext);
+
+                report.setMessage(localStrings.getLocalString(
+                        "deploy.command.success",
+                        "Application {0} deployed successfully", name));
             }
         } catch(Exception e) {
             logger.log(Level.SEVERE, "Error during deployment : ", e);
@@ -317,38 +330,27 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
      *  the application and return false.  This will force deployment
      *  if there's already a running application deployed.
      *
-     *  @param appInfo ApplicationInfo, contains information of a
-     *                 running application.  If this object is null,
-     *                 then the application is not deployed.
+     *  @param name application name
      *  @param report ActionReport, report object to send back to client.
      *
-     *  @return true if application is deployed else return false.
      */
-    boolean checkIfAppIsRegistered(final ApplicationInfo appInfo,
-                                   final ActionReport report)
-    {
-        try {
-            boolean isForce = Boolean.parseBoolean(force);
-            if (appInfo!=null && !isForce) {
-                report.setMessage(localStrings.getLocalString("application.alreadyreg",
-                                  "Application {0} already registered", name));
-                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-                return true;
-            }
-            else if (appInfo != null && isForce) 
-            {
-                //if applicaiton is already deployed and force=true,
-                //then undeploy the application first.
-                Properties undeployParam = new Properties();
-                undeployParam.put(NAME, name);
-                commandRunner.doCommand("undeploy", undeployParam, report);
-            }
-        } catch(ComponentException e) {
-            report.setMessage(e.getMessage());
-            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            return true;
+    private void handleRedeploy(final String name, final ActionReport report) 
+        throws Exception {
+        boolean isForce = Boolean.parseBoolean(force);
+        boolean isRegistered = isRegistered(name);
+        if (isRegistered && !isForce) {
+            String msg = localStrings.getLocalString(
+                "application.alreadyreg",
+                "Application {0} already registered", name);
+            throw new Exception(msg);
         }
-        return false;
+        else if (isRegistered && isForce) 
+        {
+            //if applicaiton is already deployed and force=true,
+            //then undeploy the application first.
+            Properties undeployParam = new Properties();
+            undeployParam.put(NAME, name);
+            commandRunner.doCommand("undeploy", undeployParam, report);
+        }
     }
-    
 }

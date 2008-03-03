@@ -89,7 +89,8 @@ public class UndeployCommand extends ApplicationLifecycle implements AdminComman
         parameters.setProperty(DeployCommand.NAME, name);
 
         ApplicationInfo info = appRegistry.get(name);
-        if (info==null) {
+
+        if (!isRegistered(name)) {
             report.setMessage(localStrings.getLocalString("application.notreg","Application {0} not registered", name));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE); 
             return;
@@ -119,7 +120,7 @@ public class UndeployCommand extends ApplicationLifecycle implements AdminComman
             }
 
             //remove context from generated
-            deleteContainerMetaInfo(info, deploymentContext);
+            deleteContainerMetaInfo(deploymentContext);
                 //if directory deployment then do no remove the directory
             if (!isDirectoryDeployed) {
                 FileUtils.whack(new File(info.getSource().getURI()));
@@ -129,25 +130,5 @@ public class UndeployCommand extends ApplicationLifecycle implements AdminComman
             report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
         } // else a message should have been provided.
 
-    }
-    
-    private void deleteContainerMetaInfo(ApplicationInfo info, DeploymentContext context) {
-        
-        // need to remove the generated directories...
-        // need to remove generated/xml, generated/ejb, generated/jsp
-
-        // remove generated/xml
-        File generatedXmlRoot = context.getScratchDir("xml");
-        FileUtils.whack(generatedXmlRoot);               
-
-        // remove generated/ejb
-        File generatedEjbRoot = context.getScratchDir("ejb");
-        // recursively delete...
-        FileUtils.whack(generatedEjbRoot);               
-
-        // remove generated/jsp
-        File generatedJspRoot = context.getScratchDir("jsp");
-        // recursively delete...
-        FileUtils.whack(generatedJspRoot);               
     }
 }

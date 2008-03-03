@@ -38,6 +38,8 @@ import com.sun.enterprise.config.serverbeans.Application;
 import com.sun.enterprise.config.serverbeans.Engine;
 import com.sun.enterprise.config.serverbeans.WebModule;
 import com.sun.enterprise.config.serverbeans.Property;
+import com.sun.enterprise.config.serverbeans.ApplicationRef;
+import com.sun.enterprise.config.serverbeans.Server;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.Startup;
 import org.glassfish.api.Async;
@@ -90,6 +92,8 @@ public class ApplicationLoaderService extends ApplicationLifecycle
     @Inject
     Applications applications;
 
+    @Inject
+    Server server;
 
     /**
      * Retuns the lifecyle of the service. 
@@ -113,7 +117,17 @@ public class ApplicationLoaderService extends ApplicationLifecycle
         
         for (Module module : applications.getModules()) {
             if (module instanceof Application) {
-                processApplication((Application)module, logger);
+                for (ApplicationRef appRef : server.getApplicationRef()) {
+                    if (appRef.getRef().equals(module.getName())) {
+                        if (appRef.getEnabled().equals(String.valueOf(
+                            Boolean.TRUE))) {
+                            // only process the application when the enable
+                            // attribute is true
+                            processApplication((Application)module, logger);
+                        }
+                        break;
+                    }
+                }
             }
         }
 
@@ -151,7 +165,7 @@ public class ApplicationLoaderService extends ApplicationLifecycle
                             depContext.setClassLoader(cloader);
 
                             ActionReport report = new HTMLActionReporter();
-                            load(appSniffers, depContext, report);
+                            deploy(appSniffers, depContext, report);
 
                         } else {
                             logger.severe("Cannot find the application type for the artifact at : "
@@ -229,7 +243,7 @@ public class ApplicationLoaderService extends ApplicationLifecycle
                         logger.severe("Cannot find any sniffer for deployed app " + appName);
                         return;
                     }
-                    load(sniffers, depContext, report);
+                    deploy(sniffers, depContext, report);
                     if (report.getActionExitCode().equals(ActionReport.ExitCode.SUCCESS)) {
                         logger.info("Loading " + appName + " Application done is "
                                 + (Calendar.getInstance().getTimeInMillis() - operationStartTime) + " ms");
@@ -345,30 +359,5 @@ public class ApplicationLoaderService extends ApplicationLifecycle
                 super.unload(appInfo.getName(), depContext, dummy);
             }
         }
-    }
-
-    // set the neccessary information in DeploymentContext params from
-    // domain.xml
-    private Properties populateDeployParamsFromDomainXML(Application app) {
-        Properties deploymentParams = new Properties(); 
-        deploymentParams.setProperty(DeployCommand.NAME, app.getName());
-        deploymentParams.setProperty(DeployCommand.LOCATION, app.getLocation());
-        if (app.getContextRoot() != null) {
-            deploymentParams.setProperty(DeployCommand.CONTEXT_ROOT, 
-                app.getContextRoot());
-        }
-        deploymentParams.setProperty(DeployCommand.DIRECTORY_DEPLOYED, 
-            app.getDirectoryDeployed());
-        return deploymentParams;
-    }
-
-    // set the neccessary information in DeploymentContext props from
-    // domain.xml
-    private Properties populateDeployPropsFromDomainXML(Application app) {
-        Properties deploymentProps = new Properties();
-        for (Property prop : app.getProperty()) {
-            deploymentProps.put(prop.getName(), prop.getValue());
-        }
-        return deploymentProps;
     }
 }

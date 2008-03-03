@@ -13,7 +13,7 @@ import org.glassfish.api.deployment.ApplicationContainer;
 public class ModuleInfo<T> {
 
     final private ContainerInfo ctrInfo;
-    final private ApplicationContainer appCtr;
+    private ApplicationContainer appCtr;
 
     public ModuleInfo(ContainerInfo container, ApplicationContainer appCtr) {
         this.ctrInfo = container;
@@ -27,6 +27,14 @@ public class ModuleInfo<T> {
      */
     public ContainerInfo getContainerInfo() {
         return ctrInfo;
+    }
+
+    /**
+     * Set the contaier associated with this application
+     * @param the container for this application
+     */
+    public void setApplicationContainer(ApplicationContainer appCtr) {
+        this.appCtr = appCtr;
     }
 
     /**
