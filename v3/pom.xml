@@ -39,34 +39,25 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <prerequisites>
-        <maven>2.0.4</maven>
-    </prerequisites>
+    <parent>
+        <groupId>org.glassfish</groupId>
+        <artifactId>pom</artifactId>
+        <version>1</version>
+    </parent>
+    
     <groupId>org.glassfish</groupId>
     <artifactId>glassfish-parent</artifactId>
     <packaging>pom</packaging>
     <version>10.0-SNAPSHOT</version>
     <name>GlassFish Parent Project</name>
-    <url>http://glassfish.org/</url>
     <scm>
-        <connection>scm:svn:https://${java.net.usernane}@glassfish-svn.dev.java.net/glassfish-svn/gfsvn/trunk/v3/${pom.artifactId}</connection>
+        <connection>scm:svn:https://${java.net.username}@glassfish-svn.dev.java.net/glassfish-svn/gfsvn/trunk/v3/${pom.artifactId}</connection>
     </scm>
     <issueManagement>
         <system>IssueTracker</system>
         <url>https://glassfish.dev.java.net/servlets/ProjectIssues</url>
     </issueManagement>
-    <licenses>
-      <license>
-        <name>CDDL</name>
-        <url>http://www.sun.com/cddl</url>
-        <distribution>repo</distribution>
-        <comments>A business-friendly OSS license</comments>
-      </license>
-    </licenses>
-  	<organization>
-    	<name>Sun Microsystems, Inc.</name>
-    	<url>http://www.sun.com</url>
-  	</organization>    
+    
     <mailingLists>
         <mailingList>
             <name>dev</name>
@@ -126,7 +117,7 @@
         <jaxws-api.version>2.0</jaxws-api.version>
         <jsr250-api.version>1.0</jsr250-api.version>
         <jsr181-api.version>1.0-MR1</jsr181-api.version>
-		<saaj-api.version>1.3</saaj-api.version>
+        <saaj-api.version>1.3</saaj-api.version>
         <com.sun.commons.logging.version>1.0.4</com.sun.commons.logging.version>
         <com.sun.commons.modeler.version>1.1</com.sun.commons.modeler.version>
         <com.sun.commons.digester.version>1.5</com.sun.commons.digester.version>
@@ -149,15 +140,15 @@
         <jdbc-ra.version>10.0-SNAPSHOT</jdbc-ra.version>
     </properties>
     <modules>
-    	<module>build</module>
-    	<module>common</module>
-    	<module>admin</module>
-    	<module>core</module>
-    	<module>web</module>
-    	<module>ejb</module>
-    	<module>connectors</module>
-    	<module>extras</module>
-    	<module>distributions</module>
+      	<module>build</module>
+      	<module>common</module>
+      	<module>admin</module>
+      	<module>core</module>
+      	<module>web</module>
+      	<module>ejb</module>
+      	<module>connectors</module>
+      	<module>extras</module>
+      	<module>distributions</module>
     </modules> 
     <repositories>
         <repository>
@@ -171,70 +162,9 @@
             <name>Java.net Repository for Glassfish</name>
             <url>http://maven.dyndns.org/glassfish/</url>
         </repository>
-        <repository>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-            <id>java-dev-repository</id>
-            <name>Maven 1.x java.dev Snapshot Repository</name>
-            <layout>legacy</layout>
-            <!-- url>http://download.java.net/maven/1</url -->
-            <url>https://maven-repository.dev.java.net/nonav/repository</url>
-        </repository>
-        <repository>
-            <id>repo1.maven.org</id>
-            <name>Maven 2 default Repository</name>
-            <url>http://repo1.maven.org/maven2</url>
-        </repository>        
-        <repository>
-            <id>maven2.java.net</id>
-            <name>Java.net Repository for Maven 2</name>
-            <url>http://download.java.net/maven/2</url>
-        </repository>
-        <repository>
-            <!-- in case the primary repository goes down -->
-            <id>maven2.java.net-backup</id>
-            <name>Java.net Repository for Maven 2</name>
-            <url>https://maven2-repository.dev.java.net/nonav/repository</url>
-        </repository>
+        <!-- all the other repositories are inherited -->
     </repositories>
-    <pluginRepositories>
-        <pluginRepository>
-            <id>glassfish-repository</id>
-            <name>Java.net Repository for Maven 2</name>
-            <url>http://download.java.net/maven/glassfish</url>
-        </pluginRepository>
-        <pluginRepository>
-            <!-- back up glassfish maven repository in case the 'glassfish-repository' goes down -->
-            <id>glassfish-repository-wsinterop</id>
-            <name>Java.net Repository for Glassfish</name>
-            <url>http://maven.dyndns.org/glassfish/</url>
-        </pluginRepository>
-        <pluginRepository>
-            <id>maven2.java.net</id>
-            <name>Java.net Repository for Maven 2</name>
-            <url>http://download.java.net/maven/2</url>
-        </pluginRepository>
-        <pluginRepository>
-            <!-- backup -->
-            <id>maven2.java.net-wsinterop</id>
-            <name>Java.net Repository for Maven 2</name>
-            <url>http://maven.dyndns.org/2</url>
-        </pluginRepository>
-    </pluginRepositories>
-    <distributionManagement>
-        <repository>
-            <!-- the ID maps to ~/.m2/settings.xml, so don't change the ID -->
-            <!-- switching to back up while the main server is down 
-            <id>glassfish-repository</id>
-            <uniqueVersion>false</uniqueVersion>
-            <url>sftp://trx2.sun.com:/export/nfs/dlc/maven/glassfish</url-->
-            
-            <uniqueVersion>false</uniqueVersion>
-            <id>glassfish-repository-internal</id>
-            <url>scp://rator.sfbay.sun.com/files/hudson/repositories/glassfish</url>
-        </repository>
-    </distributionManagement>
+    
     <build>
         <defaultGoal>install</defaultGoal>
         <sourceDirectory>src/main/java</sourceDirectory>      
@@ -252,6 +182,12 @@
                         <artifactId>web</artifactId>
                         <version>${pe.version}</version>
                     </distribution>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <forkMode>none</forkMode>
                 </configuration>
             </plugin>
             <!--plugin>
@@ -274,13 +210,6 @@
                 <artifactId>hk2-maven-plugin</artifactId>
                 <version>${hk2.version}</version>
                 <extensions>true</extensions>
-            </plugin>
-            <plugin>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>1.5</source>
-                    <target>1.5</target>
-                </configuration>
             </plugin>
         </plugins>
         <extensions>
