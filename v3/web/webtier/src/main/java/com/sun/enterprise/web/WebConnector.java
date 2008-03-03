@@ -23,10 +23,12 @@
 
 package com.sun.enterprise.web;
 
-import org.apache.catalina.LifecycleException;
-import org.apache.coyote.tomcat5.CoyoteConnector;
 import com.sun.enterprise.web.connector.coyote.PECoyoteConnector;
 import com.sun.org.apache.commons.modeler.Registry;
+import javax.management.ObjectName;
+import javax.management.MalformedObjectNameException;
+import org.apache.catalina.LifecycleException;
+import org.apache.coyote.tomcat5.CoyoteConnector;
 
 /**
  * A CoyoteConnector subclass which "wraps around" an existing Grizzly
@@ -53,18 +55,30 @@ public class WebConnector extends PECoyoteConnector {
         mapperListener.init();
             
         try {
-            Registry.getRegistry().registerComponent(mapper, getDomain(), 
+            Registry.getRegistry().registerComponent(mapper, domain, 
                     "Mapper", "type=Mapper");
         } catch (Exception ex) {
             log.error(sm.getString(
                     "coyoteConnector.protocolRegistrationFailed"), ex);
         }
-                    
+         
+        /* TODO Grizzly MBeans          
         if ( grizzlyMonitor != null ) {
             grizzlyMonitor.initConfig();
-            // TODO
-            //grizzlyMonitor.registerMonitoringLevelEvents();
+            grizzlyMonitor.registerMonitoringLevelEvents();
         }
+         */
+    }
+    
+    public void stop() throws LifecycleException {
+        if ( domain != null){
+            try {
+                Registry.getRegistry().unregisterComponent(
+                        new ObjectName(domain,"type", "Mapper"));
+            } catch (MalformedObjectNameException e) {
+                log.info( "Error unregistering mapper ", e);
+            }
+        } 
     }
     
 }
