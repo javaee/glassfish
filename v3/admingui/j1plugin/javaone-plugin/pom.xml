@@ -3,7 +3,7 @@
 /* 
 * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER. 
 * 
-* Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved. 
+* Copyright 1997-2008 Sun Microsystems, Inc. All rights reserved. 
 * 
 * The contents of this file are subject to the terms of either the GNU 
 * General Public License Version 2 only ("GPL") or the Common Development 
@@ -37,33 +37,89 @@
 */ 
 --> 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-    <parent>
-        <groupId>org.glassfish</groupId>
-        <artifactId>glassfish-parent</artifactId>
-        <version>10.0-SNAPSHOT</version>
-        <relativePath>../pom.xml</relativePath>
-    </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.glassfish.admingui</groupId>
+    <groupId>org.example</groupId>
     <artifactId>console-javaone-plugin</artifactId>
     <packaging>hk2-jar</packaging>
-    <name>JavaOne2008 Admin Console Plugin </name>
+    <version>1.0-SNAPSHOT</version>
+    <name>JavaOne2008 Admin Console Plugin</name>
+    <organization>
+	<name>Sun Microsystems, Inc.</name>
+	<url>http://www.sun.com</url>
+    </organization>    
+    <mailingLists>
+	<mailingList>
+	    <name>admin</name>
+	    <subscribe>https://glassfish.dev.java.net/servlets/ProjectMailingListList</subscribe>
+	    <post>admin@glassfish.dev.java.net</post>
+	    <archive>https://glassfish.dev.java.net/servlets/SummarizeList?listName=admin</archive>
+	</mailingList>
+    </mailingLists>
     
     <build>
-        <plugins>
-            <plugin>
-                <groupId>com.sun.enterprise</groupId>
-                <artifactId>hk2-maven-plugin</artifactId>
-            </plugin>
-        </plugins>
+	<defaultGoal>install</defaultGoal>
+	<sourceDirectory>src/main/java</sourceDirectory>      
+	<plugins>
+	    <plugin>
+		<groupId>com.sun.enterprise</groupId>
+		<artifactId>hk2-maven-plugin</artifactId>
+		<version>0.2-SNAPSHOT</version>
+		<extensions>true</extensions>
+		<configuration>
+		    <processors>
+			<processor>
+			    <groupId>com.sun.jsftemplating</groupId>
+			    <artifactId>jsftemplating-dt</artifactId>
+			    <version>1.2-SNAPSHOT</version>
+			</processor>
+		    </processors>
+		</configuration>
+	    </plugin>
+	    <plugin>
+		<artifactId>maven-compiler-plugin</artifactId>
+		<configuration>
+		    <source>1.5</source>
+		    <target>1.5</target>
+		</configuration>
+	    </plugin>
+	</plugins>
     </build>
-    
+
+    <repositories>
+	<repository>
+	    <id>gfv3</id>
+	    <url>http://download.java.net/maven/glassfish/</url>
+	</repository>
+	<repository>
+	    <id>java.net2</id>
+	    <url>https://maven2-repository.dev.java.net/nonav/repository</url>
+	</repository>
+        <repository>
+            <id>java-dev-repository</id>
+            <name>Maven 1.x java.dev Snapshot Repository</name>
+            <layout>legacy</layout>
+            <url>https://maven-repository.dev.java.net/nonav/repository</url>
+        </repository>
+    </repositories>
+    <pluginRepositories>
+	<pluginRepository>
+	    <id>glassfish-repository</id>
+	    <name>Glassfish repository</name>
+	    <url>http://download.java.net/maven/glassfish/</url>
+	</pluginRepository>
+    </pluginRepositories>
+
     <dependencies>
-        <dependency>
-            <groupId>org.glassfish.admingui</groupId>
-            <artifactId>console-core</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
+	<dependency>
+	    <groupId>org.glassfish.common</groupId>
+	    <artifactId>glassfish-api</artifactId>
+	    <version>10.0-SNAPSHOT</version>
+	</dependency>
+	<dependency>
+	    <groupId>com.sun.jsftemplating</groupId>
+	    <artifactId>jsftemplating-dt</artifactId>
+	    <version>1.2-SNAPSHOT</version>
+	</dependency>
     </dependencies>
 </project>
