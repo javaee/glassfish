@@ -405,9 +405,8 @@ public class JdbcConnectionPoolDeployer implements ResourceDeployer {
             throw new UnsupportedOperationException("XA is not supported yet");
         }
 
-        /* TODO V3 temporary set no-tx for now */
         return ConnectionPoolObjectsUtils.parseTransactionSupportString(
-                ConnectorConstants.NO_TRANSACTION_TX_SUPPORT_STRING);
+                ConnectorConstants.LOCAL_TRANSACTION_TX_SUPPORT_STRING);
     }
 
     private ConnectorDescriptorInfo createConnectorDescriptorInfo(
