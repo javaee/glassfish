@@ -46,8 +46,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.glassfish.api</groupId>
     <artifactId>mail</artifactId>
-    <packaging>jar</packaging>
-    <version>${mail.version}</version>
+    <version>1.4.1ea-SNAPSHOT</version>
     <name>Java EE Mail API</name>
     <description>Project GlassFish Java EE Mail API</description>
 
@@ -134,5 +133,5 @@
             <artifactId>activation</artifactId>
             <version>${activation-api.version}</version>
         </dependency>
-   </dependencies>
+    </dependencies>
 </project>

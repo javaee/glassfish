@@ -47,8 +47,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>javax.security</groupId>
 	<artifactId>security-api</artifactId>
-	<packaging>jar</packaging>
-	<version>${security-api.version}</version>
+	<version>1.1-1-SNAPSHOT</version>
 	<name>Java Authorization Contract for Containers API</name>
 	<developers>
 		<developer>

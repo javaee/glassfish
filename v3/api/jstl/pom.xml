@@ -47,8 +47,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>javax.servlet.jsp.jstl</groupId>
     <artifactId>jstl-api</artifactId>
-    <packaging>jar</packaging>
-    <version>${jstl-api.version}</version>
+    <version>1.2-1-SNAPSHOT</version>
     <name>JavaServer Pages(TM) Standard Tag Library</name>
 
     <developers>
@@ -102,10 +101,10 @@
             <artifactId>servlet-api</artifactId>
             <version>${servlet-api.version}</version>
         </dependency>
-                <dependency>
+        <dependency>
             <groupId>javax.servlet.jsp</groupId>
             <artifactId>jsp-api</artifactId>
             <version>${jsp-api.version}</version>
         </dependency>
-   </dependencies>    
+    </dependencies>
 </project>

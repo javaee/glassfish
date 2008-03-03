@@ -41,10 +41,10 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.glassfish</groupId>
-        <artifactId>glassfish-parent</artifactId>
-        <version>10.0-SNAPSHOT</version>
-        <relativePath>../pom.xml</relativePath>
+        <artifactId>pom</artifactId>
+        <version>1</version>
     </parent>
+    
     <groupId>org.glassfish.api</groupId>
     <artifactId>api</artifactId>
     <packaging>pom</packaging>
@@ -76,7 +76,7 @@
 					</goals>
 					<configuration>
 					  <resourceBundles>
-						<resourceBundle>org.glassfish.build:legal:${project.parent.version}</resourceBundle>
+						<resourceBundle>org.glassfish.build:legal:10.0-SNAPSHOT</resourceBundle>
 					  </resourceBundles>
 					</configuration>
 				  </execution>
@@ -84,10 +84,11 @@
 			</plugin>	
 		</plugins>
 	</build>
+    
     <modules>
     	<module>activation</module>
         <module>connector</module>
-    	<module>deployment</module>
+        <module>deployment</module>
         <module>ejb</module>
         <module>jacc</module>
         <module>javaee</module>
@@ -97,15 +98,17 @@
         <module>management</module>
         <module>servlet</module>
         <module>persistence</module>
-    	<module>transaction</module>
-	<module>jstl</module>
+        <module>transaction</module>
+        <module>jstl</module>
         <module>jmac</module>
     </modules>
+    
     <repositories>
         <repository>
             <id>glassfish-repository</id>
             <name>Java.net Repository for Glassfish</name>
             <url>http://download.java.net/maven/glassfish</url>
         </repository>
+        <!-- all the other repositories come from the GF super POM -->
     </repositories>
 </project>

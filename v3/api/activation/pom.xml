@@ -48,7 +48,7 @@
     <groupId>javax.activation</groupId>
     <artifactId>activation</artifactId>
     <packaging>jar</packaging>
-    <version>1.1-1-SNAPSHOT</version>
+    <version>${activation-spec.version}-1-SNAPSHOT</version>
     <name>JavaBeans(TM) Activation Framework</name>
     <description>JavaBeans(TM) Activation Framework Specification</description>
     <developers>
@@ -69,7 +69,7 @@
         <configuration>
           <archive>
             <manifestEntries>
-              <Specification-Version>${activation-api.version}</Specification-Version>         
+              <Specification-Version>${activation-spec.version}</Specification-Version>
               <Specification-Vendor>Sun Microsystems, Inc.</Specification-Vendor>
               <Implementation-Vendor>Sun Microsystems, Inc.</Implementation-Vendor>
               <Implementation-Vendor-Id>com.sun</Implementation-Vendor-Id>
@@ -103,4 +103,8 @@
             </resource>
         </resources>
     </build>
+
+    <properties>
+        <activation-spec.version>1.1</activation-spec.version>
+    </properties>
 </project>
