@@ -159,14 +159,7 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
 
     private void setPoolConfiguration() throws PoolingException {
 
-        ConnectorConnectionPool poolResource;
-        try {
-            Context ic = ConnectorRuntime.getRuntime().getNamingManager().getInitialContext();
-            String jndiNameOfPool = ConnectorAdminServiceUtils.getReservePrefixedJNDINameForPool(name);
-            poolResource = (ConnectorConnectionPool) ic.lookup(jndiNameOfPool);
-        } catch (NamingException ex) {
-            throw new PoolingException(ex);
-        }
+        ConnectorConnectionPool poolResource = getPoolConfigurationFromJndi();
         idletime = Integer.parseInt(poolResource.getIdleTimeoutInSeconds()) * 1000;
         maxPoolSize = Integer.parseInt(poolResource.getMaxPoolSize());
         steadyPoolSize = Integer.parseInt(poolResource.getSteadyPoolSize());
@@ -194,6 +187,18 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
         resourceGatewayClass = poolResource.getResourceGatewayClass();
 
         setAdvancedPoolConfiguration(poolResource);
+    }
+
+    protected ConnectorConnectionPool getPoolConfigurationFromJndi() throws PoolingException {
+        ConnectorConnectionPool poolResource;
+        try {
+            Context ic = ConnectorRuntime.getRuntime().getNamingManager().getInitialContext();
+            String jndiNameOfPool = ConnectorAdminServiceUtils.getReservePrefixedJNDINameForPool(name);
+            poolResource = (ConnectorConnectionPool) ic.lookup(jndiNameOfPool);
+        } catch (NamingException ex) {
+            throw new PoolingException(ex);
+        }
+        return poolResource;
     }
 
     // This method does not need to be synchronized since all caller methods are,
