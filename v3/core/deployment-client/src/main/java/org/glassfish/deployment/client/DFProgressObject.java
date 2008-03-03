@@ -51,7 +51,7 @@ public interface DFProgressObject extends ProgressObject {
     /** 
      * Once the progress object has reached a completed or 
      * failed state, this API will permit to retrieve the 
-     * JES status information for the deployment
+     * final status information for the deployment
      * @return the deployment status
      */
     DFDeploymentStatus getCompletedStatus();
@@ -62,4 +62,11 @@ public interface DFProgressObject extends ProgressObject {
      * @return the completed status
      */
     public DFDeploymentStatus waitFor();
+    
+    /**
+     * Reports the TargetModuleIDs corresponding to the target/module combinations
+     * affected by the deployment facility method corresponding to this progress object.
+     * @return array of TargetModuleID objects representing targets and the module of interest
+     */
+    public javax.enterprise.deploy.spi.TargetModuleID[] getResultTargetModuleIDs();
 }

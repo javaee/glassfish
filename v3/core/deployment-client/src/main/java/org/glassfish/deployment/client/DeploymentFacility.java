@@ -60,7 +60,12 @@ public interface DeploymentFacility {
     /**
      * Connects to a particular instance of the domain adminstration 
      * server using the provided connection information
+     * <p>
+     * Most other methods require that connect be invoked first.
+     * @param targetDAS the {@link ServerConnectionIdentifier} that specifies which DAS to connect to
+     * @return whether or not the connection attempt succeeded
      */
+    
     public boolean connect(ServerConnectionIdentifier targetDAS);
     
     /** 
@@ -80,27 +85,37 @@ public interface DeploymentFacility {
      * archive abstraction and an optional deployment plan if the 
      * server specific information is not embedded in the source 
      * archive. The deploymentOptions is a key-value pair map of 
-     * deployment options for this operations. Once the deployment 
-     * is successful, the targets server instances 
+     * deployment options for this operation. 
+     * <p>
+     * Once the deployment 
+     * is successful, the TargetModuleID objects representing where the application
+     * now resides are available using the {@link DFProgressObject#getResultTargetModuleIDs} method.
      * 
-     * @param source is the j2ee module abstraction (with or without 
+     * @param targets the Target objects to which to deploy the application - an empty array indicates a request to deploy to the default server
+     * @param source URI to the Java EE module abstraction (with or without 
      * the server specific artifacts). 
-     * @param deploymenPlan is the optional deployment plan is the source 
+     * @param deploymentPlan URI to the optional deployment plan if the source 
      * archive is portable.
-     * @param the deployment options
-     * @return a DFProgressObject to receive deployment events.
+     * @param deploymentOptions deployment options
+     * @return a DFProgressObject to receive deployment events and status
+     * @throws IllegalStateException if the client has not invoked connect yet
      */
     public DFProgressObject deploy(Target[] targets, URI source, 
         URI deploymentPlan, Map deploymentOptions);
     
-    /**
-     * Initiates a undeployment operation on the server 
-     * @param module ID for the component to undeploy
-     * @return a JESProgress to receive undeployment events
-     */
     // FIXME : This will go once admin-cli changes its code
     public DFProgressObject undeploy(Target[] targets, String moduleID);
 
+    /**
+     * Initiates an undeployment operation of the specified module affecting the selected targets.
+     * <p>
+     * After the undeployment operation completes successfully use the {@link DFProgressObject#getResultTargetModuleIDs} method to retrieve
+     * the TargetModuleID objects representing the targets from which the module has been undeployed.
+     * @param targets the Target objects indicating which targets from which to undeploy the application; an empty targets array is a request to undeploy from the default server
+     * @param moduleID identifies the module to undeploy
+     * @return a {@link DFProgressObject} to receive undeployment events and completion status
+     * @throws IllegalStateException if the deployment facility has not been connected to the back-end
+     */
     public DFProgressObject undeploy(Target[] targets, String moduleID, Map options);
     
     /**
@@ -154,7 +169,12 @@ public interface DeploymentFacility {
      * @return the deployment status
      */
     public DFDeploymentStatus waitFor(DFProgressObject po);
-     
+    
+    /**
+     * Creates an array of Target objects corresponding to the list of target names.
+     * @param targets the names of the targets of interest
+     * @return an array of Target objects for the selected target names
+     */
     public Target[] createTargets(String[] targets );
     
 }
