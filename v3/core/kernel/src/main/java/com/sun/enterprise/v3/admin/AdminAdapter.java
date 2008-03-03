@@ -110,7 +110,7 @@ public class AdminAdapter implements Adapter {
         
         InternalOutputBuffer outputBuffer = (InternalOutputBuffer) res.getOutputBuffer();
         res.setStatus(200);
-        res.setContentType("text/html");
+        res.setContentType(report.getContentType());
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         report.writeReport(bos);
         res.setContentLength(bos.size());
