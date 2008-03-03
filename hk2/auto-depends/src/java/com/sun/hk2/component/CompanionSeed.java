@@ -1,6 +1,7 @@
 package com.sun.hk2.component;
 
 import static com.sun.hk2.component.InhabitantsFile.COMPANION_CLASS_KEY;
+import static com.sun.hk2.component.InhabitantsFile.COMPANION_CLASS_METADATA_KEY;
 import org.jvnet.hk2.annotations.CagedBy;
 import org.jvnet.hk2.annotations.CompanionOf;
 import org.jvnet.hk2.annotations.Contract;
@@ -88,7 +89,18 @@ public @interface CompanionSeed {
                         return seed.type().getClassLoader();
                     }
                 };
-            LazyInhabitant ci = new LazyInhabitant(habitat, cl, seed.metadata().getOne(COMPANION_CLASS_KEY), MultiMap.<String,String>emptyMap()) {
+
+            // this is the name of the class with @CompanionOf
+            String fqcn = seed.metadata().getOne(COMPANION_CLASS_KEY);
+
+            String metadataLine = seed.metadata().getOne(COMPANION_CLASS_METADATA_KEY);
+            MultiMap<String,String> metadata;
+            if(metadataLine==null)
+                metadata = MultiMap.emptyMap();
+            else
+                metadata = InhabitantsParser.buildMetadata(new KeyValuePairParser(metadataLine));
+
+            LazyInhabitant ci = new LazyInhabitant(habitat, cl, fqcn, metadata) {
                 public Inhabitant lead() {
                     return lead;
                 }

@@ -87,27 +87,29 @@ public class Habitat {
 
         add(new ExistingSingletonInhabitant<CompanionSeed.Registerer>(CompanionSeed.Registerer.class,
                 new CompanionSeed.Registerer(this)));
+        add(new ExistingSingletonInhabitant<CageBuilder.Registerer>(CageBuilder.Registerer.class,
+                new CageBuilder.Registerer(this)));
     }
 
-    public void add(final Inhabitant<?> i) {
-        initialize(i);
-        processInhabitantDecorations(i);
-    }
+
+    /*
+        Why initialize/processInhabitantDecorations didn't work:
+
+        when a new CageBuilder comes into the habitat, it needs to build cages for all existing components.
+        when a caged component comes into the habitat, it checks existing cage builders in the habitat.
+
+        Now, when  a cage builder and a component are both initialized first and then processInhabitantDecorations
+        runs for both of them later, then you end up creating a cage twice, because the builder think it got into
+        habitat after than the component, and the component think it got into habitat after the builder.
+     */
 
     /**
      * Adds a new inhabitant.
      */
-    public void initialize(final Inhabitant<?> i) {
+    public void add(final Inhabitant<?> i) {
         String name = i.typeName();
         byType.add(name,i);
 
-
-    }
-
-    public void processInhabitantDecorations(Inhabitant<?> i) {
-
-        String name = i.typeName();
-        
         // for each companion, create an inhabitat that goes with the lead and hook them up
         List<Inhabitant> companions=null;
         for(Inhabitant<?> c : getInhabitantsByAnnotation(CompanionSeed.class,name)) {
@@ -122,6 +124,10 @@ public class Habitat {
             Inhabitant cageBuilder = byType.getOne(cageBuilderName);
             if(cageBuilder!=null)
                 ((CageBuilder)cageBuilder.get()).onEntered(i);
+            // if cageBuilder==null, we can't cage this component now, but
+            // we'll do that when cageBuilder comes into the habitat.
+            // that happens because every CageBuilder implementations are caged by
+            // CageBuilder.Registerer.
         }
     }
 
@@ -408,7 +414,7 @@ public class Habitat {
                     public boolean hasNext() {
                         while(i==null && itr.hasNext()) {
                             NamedInhabitant ni = itr.next();
-                            if(ni.name.equals(name))
+                            if(eq(ni.name,name))
                                 i = ni.inhabitant;
                         }
                         return i!=null;
@@ -478,6 +484,9 @@ public class Habitat {
     }
 
     private static final class NamedInhabitant {
+        /**
+         * Name. Can be null.
+         */
         final String name;
         final Inhabitant inhabitant;
 

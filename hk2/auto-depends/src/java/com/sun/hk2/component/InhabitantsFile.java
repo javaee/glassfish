@@ -72,4 +72,9 @@ public class InhabitantsFile {
      * Used to point to {@link CageBuilder} for this component.
      */
     public static final String CAGE_BUILDER_KEY = "cageBuilder";
+    /**
+     * Used as metadafa for inhabitants of {@link CompanionSeed} to capture
+     * metadata of the actual companioin class.
+     */
+    public static final String COMPANION_CLASS_METADATA_KEY = "companionClassMetadata";
 }

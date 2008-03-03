@@ -38,17 +38,13 @@ package meta;
 import org.jvnet.hk2.annotations.Service;
 
 /**
- * Created by IntelliJ IDEA.
- * User: dochez
- * Date: Feb 18, 2008
- * Time: 5:03:24 PM
- * To change this template use File | Settings | File Templates.
+ *
+ * @author Jerome Dochez
  */
 @Prisoner
 @Service
 public class Monkey implements Animal {
-
-    String name = "cheetah";
+    String name = "monkey";
 
     public String getName() {
         return name;

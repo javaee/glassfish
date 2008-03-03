@@ -24,25 +24,10 @@ public class InhabitantsParser {
     }
 
     public void parse(InhabitantsScanner scanner, Holder<ClassLoader> classLoader) throws IOException {
-
-        List<Inhabitant> inhabitants = new ArrayList<Inhabitant>();
         for( KeyValuePairParser kvpp : scanner) {
-            String className=null;
-            MultiMap<String,String> metadata=new MultiMap<String, String>();
-
-            while(kvpp.hasNext()) {
-                kvpp.parseNext();
-
-                if(kvpp.getKey().equals(CLASS_KEY)) {
-                    className = kvpp.getValue();
-                    continue;
-                }
-                metadata.add(kvpp.getKey(),kvpp.getValue());
-            }
-
-            Inhabitant i = new LazyInhabitant(habitat, classLoader, className,metadata);
-            habitat.initialize(i);
-            inhabitants.add(i);
+            MultiMap<String,String> metadata=buildMetadata(kvpp);
+            Inhabitant i = new LazyInhabitant(habitat, classLoader, metadata.getOne(CLASS_KEY), metadata);
+            habitat.add(i);
 
             for (String v : kvpp.findAll(INDEX_KEY)) {
                 // register inhabitant to the index
@@ -55,13 +40,30 @@ public class InhabitantsParser {
                     String contract = v.substring(0, idx);
                     String name = v.substring(idx + 1);
                     habitat.addIndex(i, contract, name);
-                    metadata.add(contract,name);
                 }
             }
         }
-        for (Inhabitant<?> i : inhabitants) {
-            habitat.processInhabitantDecorations(i);
-        }
     }
 
+    public static MultiMap<String,String> buildMetadata(KeyValuePairParser kvpp) {
+        MultiMap<String,String> metadata=new MultiMap<String, String>();
+
+        while(kvpp.hasNext()) {
+            kvpp.parseNext();
+
+            if(kvpp.getKey().equals(INDEX_KEY)) {
+                String v = kvpp.getValue();
+                int idx = v.indexOf(':');
+                if(idx!=-1) {
+                    // v=contract:name
+                    String contract = v.substring(0, idx);
+                    String name = v.substring(idx + 1);
+                    metadata.add(contract,name);
+                }
+            }
+            metadata.add(kvpp.getKey(),kvpp.getValue());
+        }
+
+        return metadata;
+    }
 }
