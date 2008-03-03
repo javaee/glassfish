@@ -74,6 +74,12 @@
 
         <dependency>
             <groupId>org.glassfish.common</groupId>
+            <artifactId>glassfish-ee-api</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.glassfish.common</groupId>
             <artifactId>glassfish-api</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
