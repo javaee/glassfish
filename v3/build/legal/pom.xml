@@ -38,37 +38,60 @@
 --> 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <parent>
-      <groupId>org.glassfish.build</groupId>
-      <artifactId>build</artifactId>
-      <version>10.0-SNAPSHOT</version>
-      <relativePath>../pom.xml</relativePath>    
-  </parent>
+    <parent>
+        <!--
+          this module inherits directly from the super POM so that
+          it can be separately released from the main v3 build.
+          
+          This is necessary as other modules outside GFv3 proper
+          would require this module for its build.
+        -->
+        <groupId>org.glassfish</groupId>
+        <artifactId>pom</artifactId>
+        <version>1</version>
+    </parent>
+
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.glassfish.build</groupId>
     <artifactId>legal</artifactId>
-    <packaging>jar</packaging>
+    <version>1.0-SNAPSHOT</version>
+
+    <scm>
+        <!-- should we move this module outside v3, given that it has its own life cycle? -->
+        <connection>scm:svn:https://kohsuke@svn.dev.java.net/svn/glassfish-svn/trunk/v3/build/legal</connection>
+        <developerConnection>scm:svn:https://kohsuke@svn.dev.java.net/svn/glassfish-svn/trunk/v3/build/legal</developerConnection>
+    </scm>
+    
     <name>Legal License for glassfish code</name>
     <build>
-    <plugins>
-      <!-- Turn this into a lifecycle -->
-      <plugin>      
-        <artifactId>maven-remote-resources-plugin</artifactId>        
-        <executions>
-          <execution>
-            <goals>
-              <goal>bundle</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
+      <plugins>
+        <!-- Turn this into a lifecycle -->
+        <plugin>      
+          <artifactId>maven-remote-resources-plugin</artifactId>        
+          <executions>
+            <execution>
+              <goals>
+                <goal>bundle</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+      </plugins>
     </build>
+    
+    <repositories>  
+        <repository>
+            <id>glassfish-repository</id>
+            <name>Java.net Repository for Glassfish</name>
+            <url>http://download.java.net/maven/glassfish</url>
+        </repository>    
+    </repositories>
+    
     <developers>
         <developer>
             <id>dochez</id>
             <name>dochez</name>
-			<url>http://blogs.sun.com/dochez</url>
+            <url>http://blogs.sun.com/dochez</url>
             <organization>Sun Microsystems, Inc.</organization>
             <roles>
                 <role>lead</role>
