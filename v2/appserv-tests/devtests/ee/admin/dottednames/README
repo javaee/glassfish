@@ -1,4 +1,0 @@
-Directory: appserv-tests/devtests/ee/admin/dottednames
-Purpose: Testing our entire suite of dotted names in both PE and SE/EE context. This is very important because (inadvertently) the dotted names become our exposed interface as users tend to use them heavily.
-
-Contact Lloyd Chambers for details, enhancements.

@@ -1,4 +1,0 @@
-Manifest-Version: 1.0
-Created-By: Apache Ant 1.5.1
-Main-Class: com.sun.s1asdev.ejb.ee.methodcheckpoint.simple.client.Client
-
