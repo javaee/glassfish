@@ -229,32 +229,14 @@ public class CommandValidator {
      */
     private boolean verifyOptionsAreValid(final ValidCommand validCommand,
                                           final Map optionsList)
-        throws CommandValidationException
-    {
+        throws CommandValidationException {
 
         final Iterator iter = (optionsList.keySet()).iterator();
-        while (iter.hasNext())
-        {
+        while (iter.hasNext()) {
             final String optionName = (String)iter.next();
             if (!(validCommand.hasValidOption(optionName) ||
                   validCommand.hasRequiredOption(optionName) ||
-                  validCommand.hasDeprecatedOption(optionName)))
-            {
-               // TEMPORARY HACK
-               // TEMPORARY HACK
-               // TEMPORARY HACK
-               // TEMPORARY HACK
-               String s = System.getenv("LIDIA_HACK");
-               if(s == null || !s.equals("true"))
-                   
-               // TEMPORARY HACK
-               // TEMPORARY HACK
-               // TEMPORARY HACK
-               // TEMPORARY HACK
-               // TEMPORARY HACK
-               // TEMPORARY HACK
-                
-                
+                  validCommand.hasDeprecatedOption(optionName))) {
                 throw new CommandValidationException(getLocalizedString("InvalidOption",
                                                      new Object[] {optionName,
                                                      validCommand.getName()}));
