@@ -1,3 +1,38 @@
+/*
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+ * 
+ * Copyright 1997-2008 Sun Microsystems, Inc. All rights reserved.
+ * 
+ * The contents of this file are subject to the terms of either the GNU
+ * General Public License Version 2 only ("GPL") or the Common Development
+ * and Distribution License("CDDL") (collectively, the "License").  You
+ * may not use this file except in compliance with the License. You can obtain
+ * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
+ * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
+ * language governing permissions and limitations under the License.
+ * 
+ * When distributing the software, include this License Header Notice in each
+ * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
+ * Sun designates this particular file as subject to the "Classpath" exception
+ * as provided by Sun in the GPL Version 2 section of the License file that
+ * accompanied this code.  If applicable, add the following below the License
+ * Header, with the fields enclosed by brackets [] replaced by your own
+ * identifying information: "Portions Copyrighted [year]
+ * [name of copyright owner]"
+ * 
+ * Contributor(s):
+ * 
+ * If you wish your version of this file to be governed by only the CDDL or
+ * only the GPL Version 2, indicate your decision by adding "[Contributor]
+ * elects to include this software in this distribution under the [CDDL or GPL
+ * Version 2] license."  If you don't indicate a single choice of license, a
+ * recipient has the option to distribute your version of this file under
+ * either the CDDL, the GPL Version 2 or to extend the choice of license to
+ * its licensees as provided above.  However, if you add GPL Version 2 code
+ * and therefore, elected the GPL Version 2 license, then the option applies
+ * only if the new code is made subject to such option by the copyright
+ * holder.
+ */
 package com.sun.enterprise.admin.cli;
 
 import java.io.ByteArrayInputStream;
@@ -17,6 +52,9 @@ import java.util.StringTokenizer;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 import com.sun.enterprise.admin.cli.deployment.FileUploadUtil;
+import com.sun.enterprise.admin.cli.util.CLIUtil;
+import com.sun.enterprise.admin.cli.util.HttpConnectorAddress;
+import com.sun.enterprise.admin.cli.util.AuthenticationInfo;
 
 /**
  * RemoteCommand class 
@@ -65,15 +103,27 @@ public class RemoteCommand {
                                                       rcp.getCommandName(),
                                                       operands.size() > 0 ? (String) operands.firstElement() : (String) params.get("path"));
             File fileName = null;
-            String httpConnection;
+            String uriConnection;
             final String hostName = (params.get("host") == null ? "localhost" : params.get("host"));
             final String hostPort = (params.get("port") == null ? "8080" : params.get("port"));
-            httpConnection = "http://" + hostName + ":" + hostPort + "/__asadmin/" + rcp.getCommandName();
+                //set default value of secure to false
+            final String secure = (params.get("secure") == null ? "false" : params.get("secure"));
+            final boolean isSecure = Boolean.parseBoolean(secure);
+                //temporary make user as optional
+            final String user = (params.get("user") == null ? "" : params.get("user"));            
+                //temporary make password as optional
+            String password = "";
+            if (params.get("passwordfile") != null) {
+                Map passwordOptions = CLIUtil.readPasswordFileOptions(params.get("passwordfile"));
+                password = (String)passwordOptions.get("password");
+            }
+            uriConnection = "/__asadmin/" + rcp.getCommandName();
             for (Map.Entry<String, String> param : params.entrySet()) {
                 String paramName = param.getKey();
-                //do not want to pass host/port/upload to the backend
+                //do not want to add host/port/upload/secure/user/password to the uri
                 if (paramName.equals("host") || paramName.equals("port") ||
-                        paramName.equals("upload")) {
+                    paramName.equals("upload") || paramName.equals("user") ||
+                    paramName.equals("passwordfile") || paramName.equals("secure") ) {
                     continue;
                 }
                 try {
@@ -85,7 +135,7 @@ public class RemoteCommand {
                         //absoluate path if uploadFile=false
                         paramValue = getFileParam(uploadFile, fileName);
                     }
-                    httpConnection = httpConnection + "?" + paramName + "=" + URLEncoder.encode(paramValue,
+                    uriConnection = uriConnection + "?" + paramName + "=" + URLEncoder.encode(paramValue,
                                                                                                 "UTF-8");
                 } catch (UnsupportedEncodingException e) {
                     System.err.println("Error encoding " + paramName + ", parameter value will be ignored");
@@ -99,21 +149,24 @@ public class RemoteCommand {
                     fileName = new File(operand);
                     final String fileParam = getFileParam(uploadFile, fileName);
                     //there should only be one operand for deploy command
-                    httpConnection = httpConnection + "?path=" + URLEncoder.encode(fileParam,
+                    uriConnection = uriConnection + "?path=" + URLEncoder.encode(fileParam,
                                                                                    "UTF-8");
                     break;
                 }
-                httpConnection = httpConnection + "?DEFAULT=" + URLEncoder.encode(operand,
+                uriConnection = uriConnection + "?DEFAULT=" + URLEncoder.encode(operand,
                                                                                   "UTF-8");
             }
 
             if (TRACE) {
-                System.out.println("Connecting to " + httpConnection);
+                System.out.println("Connecting to " + uriConnection);
             }
             try {
+                HttpConnectorAddress url = new HttpConnectorAddress(hostName, Integer.parseInt(hostPort), isSecure);
+                url.setAuthenticationInfo(new AuthenticationInfo(user, password));
+
                 if (fileName != null && uploadFile) {
                     if (fileName.exists()) {
-                        HttpURLConnection urlConnection = FileUploadUtil.upload(httpConnection,
+                        HttpURLConnection urlConnection = FileUploadUtil.upload(url.toURL(uriConnection).toString(),
                                                                                 fileName);
                         InputStream in = urlConnection.getInputStream();
                         handleResponse(params, in,
@@ -121,9 +174,9 @@ public class RemoteCommand {
                     } else {
                         throw new Exception("File " + fileName.getName() + " does not exist.");
                     }
-                } else {
-                    URL url = new URL(httpConnection);
-                    HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+                }
+                else {
+                    final HttpURLConnection urlConnection = (HttpURLConnection)url.openConnection(uriConnection);
                     urlConnection.setRequestProperty("User-Agent",
                                                      responseFormatType);
                     urlConnection.connect();

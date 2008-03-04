@@ -33,73 +33,55 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.enterprise.admin.cli;
+package com.sun.enterprise.admin.cli.util;
 
 import java.io.File;
-import java.lang.reflect.Method;
+import java.util.Properties;
 import java.util.Map;
+import java.util.HashMap;
+import java.io.BufferedInputStream;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import com.sun.enterprise.cli.framework.*;
-import com.sun.enterprise.util.SystemPropertyConstants;
-import com.sun.enterprise.glassfish.bootstrap.Main;
-import com.sun.enterprise.admin.cli.util.CLIUtil;
 
-public class StartDomainCommand extends Command
-{
-    private static final String GLASSFISH_V3_JAR = "glassfish-10.0-SNAPSHOT.jar";
-    private static final String VERBOSE = "verbose";
-    private static String PASSWORDFILE = "passwordfile";
-    
-    
-    public boolean validateOptions() throws CommandValidationException
-    {
-        return true;
-    }
+/**
+ *  CLI Utility class
+ */
+public class CLIUtil {
 
+    public final static String ENV_PREFIX = "AS_ADMIN_";
     
     /**
-     *  An abstract method that Executes the command
-     *  @throws CommandException
+     *   Read passwords from the password file and save it in java.util.Map
+     *   @param passwordFileName - password file name
+     *   @returns Map - map of the password name and value
      */
-    public void runCommand() throws CommandException, CommandValidationException
-    {
-        final String passwordFile = getOption(PASSWORDFILE);
-        Map passwordOptions = null;
-        if (passwordFile != null) {
-                //currently this is not used
-            passwordOptions = CLIUtil.readPasswordFileOptions(passwordFile);
-        }
+    public static Map<String, String> readPasswordFileOptions(final String passwordFileName) throws CommandException {
+        File file = new File(passwordFileName);
         
-        if (getBooleanOption(VERBOSE)) {
-             //not sure what arguments are needed
-             //for now, just send an empty String array
-            (new Main()).run(new String[]{});
+        Map passwordOptions = new HashMap<String, String>();
+        InputStream is = null;
+        try {
+            is = new BufferedInputStream(new FileInputStream(file));
+            final Properties prop = new Properties();
+            prop.load(is);
+            for ( Object key : prop.keySet() ) {
+                final String entry = (String)key;
+                if (entry.startsWith(ENV_PREFIX)) {
+                    final String optionName = entry.substring(ENV_PREFIX.length()).toLowerCase();
+                    final String optionValue = prop.getProperty(entry);
+                    passwordOptions.put(optionName, optionValue);
+                }
+            }
         }
-        else {
+        catch(final Exception e) {
+            throw new CommandException(e);
+        } finally {
             try {
-                new CLIProcessExecutor().execute(startDomainCmd(), false);
-                    //exit the daemon thread
-                System.exit(0);
-            }
-            catch (Exception e) {
-                throw new CommandException(getLocalizedString("CommandUnSuccessful",
-                                                              new Object[] {name}), e);
-            }
+                if (is != null)
+                    is.close();
+            } catch(final Exception ignore){}
         }
-    }
-
-
-    /**
-     *  defines the command to start the domain
-     */
-    private String[] startDomainCmd() throws Exception
-    {
-        final String root = System.getProperty(SystemPropertyConstants.INSTALL_ROOT_PROPERTY);
-        return new String [] {
-            System.getProperty("java.home")+File.separator+"bin"+File.separator+"java",
-            "-jar",
-            root+File.separator+"modules"+File.separator+GLASSFISH_V3_JAR
-            };
+        return passwordOptions;
     }
 }
-
-
