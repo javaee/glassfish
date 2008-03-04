@@ -85,9 +85,11 @@
                     <subtract>
                         <subGraph artifactId="@{artifactId}" />
                         <packaging not="jar"><!-- = subgraph X -->
-                            <excludeArtifactsTransitively>
-                                <artifact artifactId="@{artifactId}" />
-                            </excludeArtifactsTransitively>
+                            <scope level="compile,runtime">
+                                <excludeArtifactsTransitively>
+                                    <artifact artifactId="@{artifactId}" />
+                                </excludeArtifactsTransitively>
+                            </scope>
                         </packaging>
                     </subtract>
                 </scope>
