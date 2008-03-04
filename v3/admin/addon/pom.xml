@@ -37,6 +37,11 @@
             <artifactId>kernel</artifactId>
             <version>${project.version}</version>
         </dependency>
+      <dependency>
+          <groupId>org.glassfish.admin</groupId>
+          <artifactId>config-api</artifactId>
+          <version>${project.version}</version>
+      </dependency>
         <dependency>
             <!-- junit is main dependency inside tests -->
             <groupId>junit</groupId>
