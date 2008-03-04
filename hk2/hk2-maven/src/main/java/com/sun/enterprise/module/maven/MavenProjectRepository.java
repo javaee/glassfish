@@ -48,7 +48,7 @@ public class MavenProjectRepository extends AbstractRepositoryImpl {
      */
     private final Map<String,Artifact> artifacts = new HashMap<String,Artifact>();
     
-    public MavenProjectRepository(MavenProject project, ArtifactResolver artifactResolver, ArtifactRepository localRepository, ArtifactFactory artifactFactory) throws IOException {
+    public MavenProjectRepository(MavenProject project, ArtifactResolver artifactResolver, ArtifactRepository localRepository, ArtifactFactory artifactFactory) {
         super(project.getName(),project.getFile().toURI());
         this.project = project;
         this.artifactResolver = artifactResolver;
@@ -57,9 +57,32 @@ public class MavenProjectRepository extends AbstractRepositoryImpl {
 
         // adds the ones that we already know of.
         Artifact ma = project.getArtifact();
+        if(ma.getFile()!=null) {
+            // if the 'ma' is the distribution module, it won't have its own output.
+            artifacts.put(ma.getId(),ma);
+        }
+
+        for (Artifact a : (Set<Artifact>) project.getArtifacts())
+            artifacts.put(a.getId(),a);
+    }
+
+    /**
+     * When creating {@link MavenProjectRepository} from the current project (which is used
+     * to launch mvn), and if the compile phase has run yet, then the main artifact is
+     * still null.
+     *
+     * <p>
+     * However, it's often convenient to pick up the files that were left in the file system
+     * from the previous execution. This method checks this situation and updates {@link MavenProject}
+     * accordingly, so that it can be then passed to the constructor of {@link MavenProjectRepository}.
+     *
+     * <p>
+     * Think of this as a pre-processing phase to compensate for the lack of the compile phase
+     * invocation.
+     */
+    public static void prepareProject(MavenProject project) throws IOException {
+        Artifact ma = project.getArtifact();
         if(!project.getPackaging().equals("pom") && ma.getFile()==null) {
-            // allow people to run "hk2:run" without executing the compilie phase.
-            // so pick up the default
             File outdir = new File(project.getBuild().getOutputDirectory());
             if(!outdir.exists())
                 logger.warning("No output directory "+outdir);
@@ -69,15 +92,11 @@ public class MavenProjectRepository extends AbstractRepositoryImpl {
 
         if(ma.getFile()!=null) {
             // if the 'ma' is the distribution module, it won't have its own output.
-            artifacts.put(ma.getId(),ma);
             if(ma.getFile().isDirectory()) {
                 // if the main artifact is from target/classes, create META-INF.MF
                 new Packager().writeManifest(project,ma.getFile());
             }
         }
-
-        for (Artifact a : (Set<Artifact>) project.getArtifacts())
-            artifacts.put(a.getId(),a);
     }
 
     @Override
