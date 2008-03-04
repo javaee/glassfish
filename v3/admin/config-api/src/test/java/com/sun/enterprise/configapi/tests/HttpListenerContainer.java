@@ -31,8 +31,8 @@ public class HttpListenerContainer implements ConfigListener {
         }
         assertTrue(events.length==1);
         String listenerName = ((HttpListener) events[0].getSource()).getId();
-        assertTrue(listenerName.equals("http-listener-1"));
-        assertTrue(events[0].getNewValue().toString().equals("8989"));
+        assertEquals("http-listener-1",listenerName);
+        assertEquals("8989",events[0].getNewValue().toString());
         received = true;
     }
 

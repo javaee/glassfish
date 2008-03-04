@@ -75,7 +75,7 @@ public class PersistenceTest extends ConfigApiTest {
                  *          to the configuration
                  */
                 public Object run(HttpListener param) throws PropertyVetoException, TransactionFailure {
-                    param.setAcceptorThreads("9782");
+                    param.setAcceptorThreads("8989");
                     return null;
                 }
             }, service.getHttpListener().get(0));
@@ -87,6 +87,6 @@ public class PersistenceTest extends ConfigApiTest {
         // now check if we persisted correctly...
 
         final String resultingXml = baos.toString();
-        assertTrue(resultingXml.indexOf("acceptor-threads=\"9782\"")!=-1);
+        assertTrue(resultingXml.indexOf("acceptor-threads=\"8989\"")!=-1);
     }
 }
