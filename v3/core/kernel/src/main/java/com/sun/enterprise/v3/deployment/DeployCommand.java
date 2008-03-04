@@ -101,7 +101,7 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
     String libraries = null;
 
     @Param(optional=true)
-    String force = Boolean.TRUE.toString();
+    String force = Boolean.FALSE.toString();
 
     @Param(optional=true)
     String precompilejsp = Boolean.FALSE.toString();
@@ -340,8 +340,8 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
         boolean isRegistered = isRegistered(name);
         if (isRegistered && !isForce) {
             String msg = localStrings.getLocalString(
-                "application.alreadyreg",
-                "Application {0} already registered", name);
+                "application.alreadyreg.redeploy",
+                "Application {0} already registered, please use deploy --force=true to redeploy", name);
             throw new Exception(msg);
         }
         else if (isRegistered && isForce) 
