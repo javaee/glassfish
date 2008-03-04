@@ -76,7 +76,7 @@
 					</goals>
 					<configuration>
 					  <resourceBundles>
-						<resourceBundle>org.glassfish.build:legal:1.0</resourceBundle>
+						<resourceBundle>org.glassfish:legal:1.1</resourceBundle>
 					  </resourceBundles>
 					</configuration>
 				  </execution>
