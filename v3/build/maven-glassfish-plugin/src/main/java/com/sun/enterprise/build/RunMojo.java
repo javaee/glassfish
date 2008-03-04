@@ -217,9 +217,20 @@ public class RunMojo extends DistributionAssemblyMojo {
     protected ModulesRegistry createModuleRegistry(MavenProject root) throws IOException {
         ModulesRegistry r = AbstractFactory.getInstance().createModulesRegistry();
         r.setParentClassLoader(this.getClass().getClassLoader());
+        // one repository for loading all the modules from distribution
         MavenProjectRepository lib = new MavenProjectRepository(root,artifactResolver,localRepository,artifactFactory);
         r.addRepository(lib);
         lib.initialize();
+
+        // another for loading the current module from which mvn gf:run is invoked.
+        // if this module is already referenced from the distribution, this new repository
+        // won't add anything new. This is for the situation where people develop
+        // modules that are not yet in the distribution.
+        MavenProjectRepository.prepareProject(project);
+        lib = new MavenProjectRepository(project,artifactResolver,localRepository,artifactFactory);
+        r.addRepository(lib);
+        lib.initialize();
+
         return r;
     }
 
