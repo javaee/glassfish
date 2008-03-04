@@ -53,6 +53,7 @@
         <module>jstl</module>
         <module>jsf-connector</module>
         <module>webtier</module>
+        <module>webtier-all</module>
         <module>tomcat-connector</module>
         <module>admin</module>
     </modules>
