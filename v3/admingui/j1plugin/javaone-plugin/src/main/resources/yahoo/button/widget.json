@@ -1,0 +1,56 @@
+{
+    'name': 'Button',
+    'type': 'yahoo',
+    'version': '1.0', 
+    'jmakiVersion' : '1.0',
+    'image': 'images/yahoo-button.jpg',
+    'description': 'A generic button widget.',
+    'args': [
+    {'topic':{'type':'STRING', 'defaultValue': '/yahoo/button', 'description': 'The topic published to'}},
+    {'type': {
+         'type':'STRING', 
+         'defaultValue': 'button', 
+         'description': 'Button type',
+         'values': [
+         {'value': 'button', 'description': 'Basic push button'},
+         {'value': 'link','description': 'Navigates to a specified url when pressed'},
+         {'value': 'submit','description': 'Navigates to a specified url when pressed'},
+         {'value': 'reset','description': 'Resets the parent form when pressed'},
+         {'value': 'checkbox','description': 'Maintains a "checked" state that can be toggled on and off.'},
+         {'value': 'radio','description': 'Checking one button in the set will uncheck all others in the group'}
+         ]
+     }},
+     {'name':{'type':'STRING', 'defaultValue': 'name', 'description': 'form name'}},
+     {'val':{'type':'STRING', 'defaultValue': 'value', 'description': 'form value'}},
+     {'label':{'type':'STRING', 'defaultValue': 'Push me', 'description': 'Button label'}},
+     {'checked':{'type':'BOOLEAN', 'defaultValue': false, 'description': 'Checkbox status'}},
+     {'href':{'type':'STRING', 'defaultValue': 'http://ajax.dev.java.net', 'description': 'URL for link buttons'}},
+     {'container':{'type':'STRING', 'defaultValue': 'mycontainer', 'description': 'Container for button'}}
+     ],
+     'value': {
+         'required':'false',
+         'type': 'OBJECT',
+         'defaultValue':{
+         }
+     },    
+     'config' : {
+         'type': {
+             'id' : 'yahoo.button',
+             'libs': [ 
+             '../resources/libs/yahoo/v2.4.1/yahoo-dom-event/yahoo-dom-event.js',
+             '../resources/libs/yahoo/v2.4.1/element/element-beta-min.js',
+             '../resources/libs/yahoo/v2.4.1/container/container_core-min.js',
+             '../resources/libs/yahoo/v2.4.1/button/button-min.js'],
+             'styles': [
+             '../resources/libs/yahoo/v2.4.1/button/assets/skins/sam/button.css'],
+        'resources': [
+                '../resources/libs/yahoo/v2.4.1/assets',
+                '../resources/libs/yahoo/v2.4.1/button/assets']     
+         }
+     },
+    'topicInfo': {
+       'type': 'publish',
+       'topicName': ['/yahoo/button/onClick','/yahoo/button/onChange'],
+       'description':'Both publish to their topicName when the button is clicked or changed. onChange only is sent from checkbox buttons. Both publish an object with id and value. onClick\'s value is {}. onChange value is {oldValue,newValue}.'
+    }
+}
