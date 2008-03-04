@@ -76,7 +76,7 @@
 					</goals>
 					<configuration>
 					  <resourceBundles>
-						<resourceBundle>org.glassfish.build:legal:10.0-SNAPSHOT</resourceBundle>
+						<resourceBundle>org.glassfish.build:legal:1.0</resourceBundle>
 					  </resourceBundles>
 					</configuration>
 				  </execution>
