@@ -11,7 +11,7 @@ AS_INSTALL=${script.home}
 AS_LIBS=#{AS_INSTALL}/modules
 # no [shell.vars]
 [jvm]
-main.class=com.sun.enterprise.admin.cli.Main
+main.class=com.sun.enterprise.admin.cli.AsadminMain
 [classpath]
 CP1=#{AS_LIBS}/admin-cli-${glassfish.version}.jar
 CP2=#{AS_LIBS}/cli-framework-${glassfish.version}.jar

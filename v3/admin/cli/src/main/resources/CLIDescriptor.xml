@@ -10,12 +10,21 @@
 	<Option name="verbose" type="boolean" value-required="false" default="false">
 	    <shortoption>v</shortoption>
 	</Option>
+	<Option name="user" type="string" value-required="true">
+	    <shortoption>u</shortoption>
+	</Option>
+	<Option name="passwordfile" type="string" value-required="true">
+	    <shortoption>f</shortoption>
+	</Option>
     </Options>
     <Commands>
 	<Command name="dummy" classname="com.sun.enterprise.admin.cli.DummyCommand" numberofoperands="?" usage-text="dummy">
 	</Command>
 	<Command name="start-domain" classname="com.sun.enterprise.admin.cli.StartDomainCommand" numberofoperands="?" usage-text="start-domain">
 	    <ValidOption name="verbose"/>
+            <ValidOption name="user"/>
+            <ValidOption name="passwordfile"/>
 	</Command>
     </Commands>
 </CommandsAndOptions>
+
