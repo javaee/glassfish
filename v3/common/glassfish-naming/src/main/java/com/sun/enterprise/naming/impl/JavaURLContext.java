@@ -143,13 +143,19 @@ public final class JavaURLContext implements Context, Cloneable {
         }
 
         try {
+            Object obj = null;
             if (fullName.startsWith("java:comp/env")) {
                 // name is in component specific namespace
-                return namingManager.lookup(fullName, serialContext);
+                obj = namingManager.lookup(fullName, serialContext);
             } else {
-                // try GlassfishNamingManager
-                return namingManager.lookup(fullName, serialContext);
+                obj = NamedNamingObjectManager.tryNamedProxies(name);
+                if (obj == null) {
+                    // try GlassfishNamingManager
+                    obj = namingManager.lookup(fullName, serialContext);
+                }
             }
+
+            return obj;
         } catch (NamingException ex) {
             throw ex;
         } catch (Exception ex) {
