@@ -34,6 +34,8 @@ import org.glassfish.api.Param;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 
+import java.util.logging.Level;
+
 /**
  * Disable command
  */
@@ -57,8 +59,25 @@ public class DisableCommand extends ApplicationLifecycle implements AdminCommand
     public void execute(AdminCommandContext context) {
         ActionReport report = context.getActionReport();
         
-        report.setMessage(localStrings.getLocalString("disable.command.sucess", "{0} disabled successfully", component));
-        report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
-        return;
+        if (!isRegistered(component)) {
+            report.setMessage(localStrings.getLocalString("application.notreg","Application {0} not registered", component));
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            return;
+        }
+
+        try {
+            disable(component, report);
+
+            if (report.getActionExitCode().equals(
+                ActionReport.ExitCode.SUCCESS)) {
+                setEnableAttributeInDomainXML(component, false);
+                report.setMessage(localStrings.getLocalString("disable.command.success", "{0} disabled successfully", component));
+            }
+
+        } catch(Exception e) {
+            logger.log(Level.SEVERE, "Error during disabling: ", e);
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            report.setMessage(e.getMessage());
+        }
     }        
 }

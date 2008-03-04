@@ -62,6 +62,7 @@ import org.jvnet.hk2.config.TransactionFailure;
 
 import java.util.*;
 import java.util.Properties;
+import java.util.Arrays;
 import java.util.jar.Manifest;
 import java.util.jar.JarFile;
 import java.util.logging.Level;
@@ -294,6 +295,15 @@ abstract public class ApplicationLifecycle {
         }
     }
 
+    
+    public void disable(String appName, ActionReport report) {
+
+        ApplicationInfo appInfo = appRegistry.get(appName); 
+
+        if (appInfo != null) {
+            stopModules(Arrays.asList(appInfo.getModuleInfos()), logger); 
+        }
+    }
     
     // set up containers and prepare the sorted ModuleInfos
     protected LinkedList<ContainerInfo> setupContainerInfos(
