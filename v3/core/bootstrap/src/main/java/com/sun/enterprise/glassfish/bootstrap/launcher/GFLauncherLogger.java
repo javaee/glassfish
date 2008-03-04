@@ -22,29 +22,27 @@
  */
 package com.sun.enterprise.glassfish.bootstrap.launcher;
 
-import com.sun.enterprise.module.bootstrap.BootException;
-import java.util.*;
-import com.sun.enterprise.glassfish.bootstrap.Main;
+import com.sun.enterprise.glassfish.bootstrap.launcher.util.LocalStringsImpl;
+import java.util.logging.*;
 
 /**
- * GFDomainLauncher
- * This class is a package-private subclass of GFLauncher designed for
- * domain launching
+ *
  * @author bnevins
  */
-class GFDomainLauncher extends GFLauncher {
+public class GFLauncherLogger {
 
-    void internalLaunch() throws GFLauncherException {
-        try {
-            getInfo().setup();
-            Main main = new Main();
-            main.start(getInfo().getArgsAsStringArray());
-            GFLauncherLogger.info("FINISHED EMBEDDED LAUNCH");
-        }
-        catch (BootException ex) 
-        {
-            throw new GFLauncherException("unknownError", ex);
-        }
+    static void info(String msg, Object... objs)
+    {
+        logger.info(strings.get(msg, objs));
     }
-}
+    static void severe(String msg, Object... objs)
+    {
+        logger.severe(strings.get(msg, objs));
+    }
 
+    
+    private GFLauncherLogger() {
+    }
+    private final static Logger logger = Logger.getAnonymousLogger();
+    private final static LocalStringsImpl strings = new LocalStringsImpl(GFLauncherLogger.class);
+}

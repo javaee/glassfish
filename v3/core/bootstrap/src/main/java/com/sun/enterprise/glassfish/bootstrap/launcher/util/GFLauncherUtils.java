@@ -20,7 +20,7 @@
  * 
  * Copyright 2008 Sun Microsystems, Inc. All rights reserved.
  */
-package com.sun.enterprise.glassfish.bootstrap.launcher;
+package com.sun.enterprise.glassfish.bootstrap.launcher.util;
 
 import java.io.*;
 import java.net.*;
@@ -30,25 +30,25 @@ import java.util.*;
  * Package private static utility methods
  * @author bnevins
  */
-class GFLauncherUtils {
+public class GFLauncherUtils {
 
     private GFLauncherUtils() {
     // all static methods
     }
 
-    static boolean ok(String s) {
+    public static boolean ok(String s) {
         return s != null && s.length() > 0;
     }
 
-    static boolean safeExists(File f) {
+    public static boolean safeExists(File f) {
         return f != null && f.exists();
     }
 
-    static boolean safeIsDirectory(File f) {
+    public static boolean safeIsDirectory(File f) {
         return f != null && f.isDirectory();
     }
 
-    static File absolutize(File f) {
+    public static File absolutize(File f) {
         if (f == null) {
             return null;
         }
@@ -61,7 +61,7 @@ class GFLauncherUtils {
         }
     }
 
-    static File getInstallDir() {
+    public static File getInstallDir() {
         String resourceName = GFLauncherUtils.class.getName().replace(".", "/") + ".class";
         URL resource = GFLauncherUtils.class.getClassLoader().getResource(resourceName);
 

@@ -23,7 +23,6 @@
 package com.sun.enterprise.glassfish.bootstrap.launcher;
 
 import com.sun.enterprise.glassfish.bootstrap.launcher.util.LocalStringsImpl;
-import com.sun.enterprise.module.bootstrap.BootException;
 
 /**
  * The one and only type of Exception that will be thrown out of this package.
@@ -78,8 +77,6 @@ public class GFLauncherException extends Exception {
     {
         super(strings.get(msg, objs), t);
     }
-    private final static LocalStringsImpl strings = new LocalStringsImpl(GFLauncherException.class);
-
     /**
      * 
      * @param t The causing Throwable.
@@ -88,4 +85,5 @@ public class GFLauncherException extends Exception {
     {
         super(t);
     }
+    private final static LocalStringsImpl strings = new LocalStringsImpl(GFLauncherException.class);
 }

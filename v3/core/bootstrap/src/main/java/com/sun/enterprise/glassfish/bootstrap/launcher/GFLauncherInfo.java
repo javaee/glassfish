@@ -22,12 +22,11 @@
  */
 package com.sun.enterprise.glassfish.bootstrap.launcher;
 
-import com.sun.enterprise.module.bootstrap.ArgumentManager;
+import com.sun.enterprise.glassfish.bootstrap.launcher.util.GFLauncherUtils;
 import java.io.*;
 import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
+//import com.sun.enterprise.glassfish.bootstrap.launcher.util.ArgumentManager;
+import com.sun.enterprise.module.bootstrap.ArgumentManager;
 /**
  * @author bnevins
  */
@@ -44,6 +43,95 @@ public class GFLauncherInfo {
         }
     }
 
+    /**
+     * Set the (optional) domain name.  This can also be sent in as a String arg
+     * like so: "-domainname" "theName"
+     * @param domainName
+     */
+    public void setDomainName(String domainName)
+    {
+        this.domainName = domainName;
+    }
+    /**
+     * Set the (optional) domain parent directory.  
+     * This can also be sent in as a String arg
+     * like so: "-domaindir" "parentDirPath"
+     * @param domainParentName The parent directory of the domain
+     */
+    public void setDomainParentDir(String domainParentName)
+    {
+        this.domainParentDir = new File(domainParentName);
+    }
+    
+    /**
+     * Starts the server in verbose mode
+     * @param b 
+     */
+    public void setVerbose(boolean b)
+    {
+        verbose = b;
+    }
+    /**
+     * Starts the server embedded in the caller's JVM
+     * @param b 
+     */
+    public void setEmbedded(boolean b)
+    {
+        embedded = b;
+    }
+    /**
+     * Starts the server in debug mode
+     * @param b 
+     */
+    public void setDebug(boolean b)
+    {
+        debug = b;
+    }
+    /**
+     *  TEMPORARY.  The guts of HK2 and V3 bootstrapping wants String[]
+     * -- this will be changed soon, but it is messy to change it right now.
+     * so temporarily we will humor HK2 by sending in String[]
+     * @return an array of String arguments
+     * @throws com.sun.enterprise.glassfish.bootstrap.launcher.GFLauncherException
+     */
+    public String[] getArgsAsStringArray() throws GFLauncherException
+    {
+        // TEMPORARY CODE!
+        Map<String,String> map = getArgs();
+        Set<String> keys = map.keySet();
+        String[] arr = new String[map.size() * 2];
+        int i = 0;
+        
+        for(String key : keys)
+        {
+            arr[i++] = key;
+            arr[i++] = map.get(key);
+        }
+        return arr;
+    }
+   
+    /**
+     * 
+     * @return a Map<String,String> of processed and packaged args
+     * @throws com.sun.enterprise.glassfish.bootstrap.launcher.GFLauncherException
+     */
+    public Map<String, String> getArgs() throws GFLauncherException
+    {
+        // args processed and packaged for AppServer
+        
+        if(!valid)
+            throw new GFLauncherException("internalError", "Call to getArgs() on an invalid GFLauncherInfo object.");
+        
+        Map<String, String> map = new HashMap<String, String>();
+        map.put("-domaindir", domainRootDir.getPath());
+        map.put("-verbose", Boolean.toString(verbose));
+        map.put("-embedded", Boolean.toString(embedded));
+        map.put("-debug", Boolean.toString(debug));
+        map.put("-domainname", domainName);
+        map.put("-instancename", instanceName);
+
+        return map;
+    }
     void setup() throws GFLauncherException {
         setupFromArgs();
         finalSetup();
@@ -67,7 +155,7 @@ public class GFLauncherInfo {
             instanceDir = f;
         }
 
-        if ((f = getFile("-domainrootdir")) != null) {
+        if ((f = getFile("domainroot")) != null) {
             domainRootDir = f;
         }
 
@@ -133,7 +221,11 @@ public class GFLauncherInfo {
             throw new GFLauncherException("noConfigFile", configFile);
         }
 
-    // if we made it here -- we're in pretty good shape!
+        if(instanceName == null)
+            instanceName = "server";
+        
+        // if we made it here -- we're in pretty good shape!
+        valid = true;
     }
 
     private void setupDomainRootDir() throws GFLauncherException {
@@ -209,17 +301,17 @@ public class GFLauncherInfo {
     }
 
     // yes these variables are all accessible from any class in the package...
-    boolean verbose = false;
-    boolean debug = false;
-    boolean embedded = false;
-    File installDir;
-    File domainParentDir;
-    File domainRootDir;
-    File instanceDir;
-    File configDir;
-    File configFile; // domain.xml
-    String domainName;
-    String instanceName;
+    private boolean verbose = false;
+    private boolean debug = false;
+    private boolean embedded = false;
+    private File installDir;
+    private File domainParentDir;
+    private File domainRootDir;
+    private File instanceDir;
+    private File configDir;
+    private File configFile; // domain.xml
+    private String domainName;
+    private String instanceName;
     private boolean valid = false;
     private Map<String, String> argsMap;
     private ArrayList<String> argsRaw = new ArrayList<String>();
