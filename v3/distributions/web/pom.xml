@@ -68,25 +68,26 @@
     </build>
 
     <dependencies>
+        <!-- base distribution image -->
+        <dependency>
+            <groupId>org.glassfish.distributions</groupId>
+            <artifactId>nucleus</artifactId>
+            <version>${nucleus.version}</version>
+            <type>zip</type>
+        </dependency>
+        
+        <!--
+          modules to be included in this bundle
+          
+          As a general rule of thumb, this list should only include feature-level
+          modules. For one, all the modules that are transitively depended on are included
+          in the end, and more importantly, keeping this list short helps other people
+          (and us) to build custom distributions.
+        -->
         <dependency>
             <groupId>javadb</groupId>
             <artifactId>javadb</artifactId>
             <version>10.2.2.1-20070823</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.common</groupId>
-            <artifactId>dol</artifactId>
-            <version>${pe.version}</version>
-        </dependency>   
-        <dependency>
-            <groupId>com.sun.grizzly</groupId>
-            <artifactId>grizzly-comet</artifactId>
-            <version>${grizzly.version}</version>
-        </dependency>          
-        <dependency>
-            <groupId>org.glassfish.web</groupId>
-            <artifactId>war-util</artifactId>
-            <version>${pe.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.ejb</groupId>
@@ -113,17 +114,9 @@
             <artifactId>javaee</artifactId>
             <version>${javaee-api.version}</version>
         </dependency>
-        <!-- base distribution image -->
         <dependency>
-            <groupId>org.glassfish.distributions</groupId>
-            <artifactId>nucleus</artifactId>
-            <version>${nucleus.version}</version>
-            <type>zip</type>
-        </dependency>
-        
-        <dependency>
-        	<groupId>org.glassfish.common</groupId>
-        	<artifactId>glassfish-naming</artifactId>        
+            <groupId>org.glassfish.common</groupId>
+            <artifactId>glassfish-naming</artifactId>        
             <version>${pe.version}</version>
         </dependency>
         <dependency>
