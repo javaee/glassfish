@@ -95,7 +95,7 @@ public interface Sniffer {
      *
      * @throws java.io.IOException exception if something goes sour
      */
-    public Module setup(String containerHome, Logger logger) throws IOException;
+    public Module[] setup(String containerHome, Logger logger) throws IOException;
 
    /**
      * Tears down a container, remove all imported libraries from the module

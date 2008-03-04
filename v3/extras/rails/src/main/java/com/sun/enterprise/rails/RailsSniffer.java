@@ -59,7 +59,7 @@ public class RailsSniffer extends GenericSniffer implements Sniffer {
      * @return the module definition of the core container implementation.
      * @throws java.io.IOException exception if something goes sour
      */
-    public Module setup(String containerHome, Logger logger) throws IOException {
+    public Module[] setup(String containerHome, Logger logger) throws IOException {
         super.setup(containerHome, logger);
 
 
@@ -100,7 +100,8 @@ public class RailsSniffer extends GenericSniffer implements Sniffer {
         if (grizzlyRails != null) {
             grizzlyRails.addImport(jrubyModule);
         }
-        return grizzlyRails;
+        Module[] modules = { grizzlyRails, jrubyModule };
+        return modules;
     }
 
     public String[] getContainersNames() {

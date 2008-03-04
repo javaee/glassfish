@@ -95,14 +95,16 @@ public class ContainerStarter {
         assert containerHome!=null;
 
 
-        Module mainModule = null;
+        Module[] modules = null;
         // I do the container setup first so the code has a chance to set up
         // repositories which would allow access to the connector module.
         try {
 
-            mainModule = sniffer.setup(containerHome, logger);
-            if (mainModule!=null) {
-                snifferModule.addImport(mainModule);
+            modules = sniffer.setup(containerHome, logger);
+            if (modules!=null) {
+                for (Module module : modules) {
+                    snifferModule.addImport(module);
+                }
             }
         } catch(FileNotFoundException fnf) {
             logger.log(Level.SEVERE, fnf.getMessage());

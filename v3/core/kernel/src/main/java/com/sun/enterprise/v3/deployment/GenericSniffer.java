@@ -119,7 +119,7 @@ public abstract class GenericSniffer implements Sniffer {
      *
      * @throws java.io.IOException exception if something goes sour
      */
-    public Module setup(String containerHome, Logger logger) throws IOException {
+    public Module[] setup(String containerHome, Logger logger) throws IOException {
        return null;
     }
 

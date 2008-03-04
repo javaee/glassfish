@@ -46,7 +46,7 @@ public class SecuritySniffer extends GenericSniffer {
      * @throws java.io.IOException exception if something goes sour
      */
     @Override
-     public Module setup(String containerHome, Logger logger) throws IOException {
+     public Module[] setup(String containerHome, Logger logger) throws IOException {
         lifecycle = habitat.getInhabitantByType(SecurityLifecycle.class);
         lifecycle.get();
         return null;

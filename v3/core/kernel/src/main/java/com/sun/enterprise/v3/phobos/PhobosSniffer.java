@@ -58,7 +58,7 @@ public class PhobosSniffer extends GenericSniffer implements Sniffer {
      * @throws java.io.IOException exception if something goes sour
      */
     @Override
-    public Module setup(String containerHome, Logger logger) throws IOException {
+    public Module[] setup(String containerHome, Logger logger) throws IOException {
         // In most cases, the location of the jar files for a
         // particular container is in <containerHome>/lib.
         if (!(new File(containerHome).exists())) {
