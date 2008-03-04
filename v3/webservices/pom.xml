@@ -47,7 +47,7 @@
     <groupId>org.glassfish.webservices</groupId>
     <artifactId>webservices</artifactId>
     <packaging>pom</packaging>
-    <name>GlassFish Web Servuces related modules</name>  
+    <name>GlassFish Web Services related modules</name>  
     <modules>
         <module>jsr109-impl</module>
     </modules>
