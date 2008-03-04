@@ -1,0 +1,50 @@
+.jmaki-charting-marker-pointer {
+  visibility : hidden;
+  position: absolute;    
+  width : 2px;
+  height : 20px;
+  zIndex : 9999;  
+  background-image : url(images/marker.gif);
+}
+
+.jmaki-charting-marker-label {
+  visibility : hidden;
+  position: absolute;
+  zIndex : 9999;
+  border : 2px solid #000;
+  background : #FFF;
+  font-Size : 10px;
+  height : 11px;
+  padding : 1px;
+  cursor : pointer;
+}
+
+.jmakiChartingLegend {
+  margin : 0;
+  border :0;
+  padding : 10px 0 10px 10px;
+  border : 1px solid #000;
+}
+
+.jmakiChartingLegendItem {
+  clear : both;
+  height : 14px;
+  padding : 0 3px 0 3px;
+}
+
+.jmakiChartingLegend ul {
+  list-style : none;
+}
+
+.jmakiChartingLegendColorSwatch{
+  float : left;
+  margin-top : 2px;
+  width : 10px;
+  height : 10px;
+  border : 1px solid #000;
+}
+
+.jmakiChartingLegendLabel{
+  float : left;
+  padding-left : 5px;
+}

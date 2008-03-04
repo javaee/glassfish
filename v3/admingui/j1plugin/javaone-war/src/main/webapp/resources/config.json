@@ -1,0 +1,9 @@
+{
+  "config": {
+    "version": "1.0",
+    "logLevel" : "off",
+    "glue" : {
+       "includes": ["/glue.js"]
+    }
+   }
+ }

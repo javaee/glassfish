@@ -1,0 +1,62 @@
+{
+    "name": "Pie Chart",
+    "type": "Yahoo",
+    "image": "images/yahoo-pie-chart.jpg",
+    "description": "A pie chart.",
+    "args": [
+        {"axisLabelColor":{"type":"STRING",  "description": "The color for the labels 'rgb(0,0,0)'."}},
+    	{"height":{"type":"NUMBER", "defaultValue": 250, "description": "The default height."}},
+    	{"width":{"type":"NUMBER", "defaultValue": 700, "description": "The default width."}},
+    	{"paddingRight":{"type":"NUMBER", "defaultValue": 30, "description": "The default right padding."}},
+    	{"paddingLeft":{"type":"NUMBER", "defaultValue": 50, "description": "The default left padding."}},
+    	{"legend":{"type":"STRING",  "description": "The id of a HTML component to add the legend to. If not found the legend will be added to the document body."}},
+        {"colorScheme": {"type":"NUMBER", "defaultValue": 0,
+                  "values": [
+                    {"name" : "0", "value" : 0, "description" : "Office Basic"},
+                    {"name" : "1", "value" : 1, "description" : "Office Red"},
+                    {"name" : "2", "value" : 2, "description" : "Office Green"},
+                    {"name" : "3", "value" : 3, "description" : "Office Purple"},
+                    {"name" : "4", "value" : 4, "description" : "Office Cyan"},
+                    {"name" : "5", "value" : 5, "description" : "Office Orange"},
+                    {"name" : "6", "value" : 6, "description" : "Office Black"}
+                    ]
+                    }},
+        {"backgroundColor":{"type":"STRING",  "description": "The color pattern for the background like 'rgb(255,255, 255)'."}}
+     ],
+     "value": {"required":"false", "type": "ARRAY",
+              "description":"An object containing chart data and the x and y axis information.",
+              "defaultValue": {
+                 "xTicks" :
+                    [{ "label" : "Etsuko", "id" : "e"},
+                    { "label" : "Kitty", "id" : "k"}, 
+                    { "label" : "Greg", "id" : "g"}
+                    ],
+                "data" : [
+                    { "id" : "k", "value" : 18 },                    
+                    { "id" : "g", "value" : 8 },
+                    { "id" : "e", "value" : 8 }
+                    
+                    ]
+         }
+                         
+     }, 
+     "config" : {
+   	    "type": 
+	        {"id": "yahoo",
+	         "libs": [
+                    "../resources/yahoo/v2.4.1/yahoo-dom-event/yahoo-dom-event.js",
+                    "../resources/yahoo/v2.4.1/element/element-beta-min.js",
+                    "../resources/yahoo/v2.4.1/datasource/datasource-beta-min.js",
+                    "../resources/yahoo/v2.4.1/json/json-beta-min.js",
+                    "../resources/yahoo/v2.4.1/charts/charts-experimental-min.js",
+                    "../resources/base.js"
+	          ],
+	         "styles": [
+                   "../resources/jmaki-charting.css"
+	          ],
+                  "resources": [
+                        "../resources/yahoo/v2.4.1/charts/assets",
+                  ]               
+	        }
+	 }
+}
