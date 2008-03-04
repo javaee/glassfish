@@ -27,6 +27,7 @@ import java.io.*;
 import java.util.*;
 //import com.sun.enterprise.glassfish.bootstrap.launcher.util.ArgumentManager;
 import com.sun.enterprise.module.bootstrap.ArgumentManager;
+
 /**
  * @author bnevins
  */
@@ -36,8 +37,7 @@ public class GFLauncherInfo {
      * Add the string arguments in the order given.
      * @param args The string arguments
      */
-    public void addArgs(String... args)
-    {
+    public void addArgs(String... args) {
         for (String s : args) {
             argsRaw.add(s);
         }
@@ -48,45 +48,44 @@ public class GFLauncherInfo {
      * like so: "-domainname" "theName"
      * @param domainName
      */
-    public void setDomainName(String domainName)
-    {
+    public void setDomainName(String domainName) {
         this.domainName = domainName;
     }
+
     /**
      * Set the (optional) domain parent directory.  
      * This can also be sent in as a String arg
      * like so: "-domaindir" "parentDirPath"
      * @param domainParentName The parent directory of the domain
      */
-    public void setDomainParentDir(String domainParentName)
-    {
+    public void setDomainParentDir(String domainParentName) {
         this.domainParentDir = new File(domainParentName);
     }
-    
+
     /**
      * Starts the server in verbose mode
      * @param b 
      */
-    public void setVerbose(boolean b)
-    {
+    public void setVerbose(boolean b) {
         verbose = b;
     }
+
     /**
      * Starts the server embedded in the caller's JVM
      * @param b 
      */
-    public void setEmbedded(boolean b)
-    {
+    public void setEmbedded(boolean b) {
         embedded = b;
     }
+
     /**
      * Starts the server in debug mode
      * @param b 
      */
-    public void setDebug(boolean b)
-    {
+    public void setDebug(boolean b) {
         debug = b;
     }
+
     /**
      *  TEMPORARY.  The guts of HK2 and V3 bootstrapping wants String[]
      * -- this will be changed soon, but it is messy to change it right now.
@@ -94,34 +93,32 @@ public class GFLauncherInfo {
      * @return an array of String arguments
      * @throws com.sun.enterprise.glassfish.bootstrap.launcher.GFLauncherException
      */
-    public String[] getArgsAsStringArray() throws GFLauncherException
-    {
+    public String[] getArgsAsStringArray() throws GFLauncherException {
         // TEMPORARY CODE!
-        Map<String,String> map = getArgs();
+        Map<String, String> map = getArgs();
         Set<String> keys = map.keySet();
         String[] arr = new String[map.size() * 2];
         int i = 0;
-        
-        for(String key : keys)
-        {
+
+        for (String key : keys) {
             arr[i++] = key;
             arr[i++] = map.get(key);
         }
         return arr;
     }
-   
+
     /**
      * 
      * @return a Map<String,String> of processed and packaged args
      * @throws com.sun.enterprise.glassfish.bootstrap.launcher.GFLauncherException
      */
-    public Map<String, String> getArgs() throws GFLauncherException
-    {
+    public Map<String, String> getArgs() throws GFLauncherException {
         // args processed and packaged for AppServer
-        
-        if(!valid)
+
+        if (!valid) {
             throw new GFLauncherException("internalError", "Call to getArgs() on an invalid GFLauncherInfo object.");
-        
+        }
+
         Map<String, String> map = new HashMap<String, String>();
         map.put("-domaindir", domainRootDir.getPath());
         map.put("-verbose", Boolean.toString(verbose));
@@ -132,6 +129,7 @@ public class GFLauncherInfo {
 
         return map;
     }
+
     void setup() throws GFLauncherException {
         setupFromArgs();
         finalSetup();
@@ -221,9 +219,10 @@ public class GFLauncherInfo {
             throw new GFLauncherException("noConfigFile", configFile);
         }
 
-        if(instanceName == null)
+        if (instanceName == null) {
             instanceName = "server";
-        
+        }
+
         // if we made it here -- we're in pretty good shape!
         valid = true;
     }
@@ -274,33 +273,45 @@ public class GFLauncherInfo {
 
     private Boolean getBoolean(String key) {
         // 3 return values -- true, false, null
-        if (argsMap.containsKey(key)) {
-            String s = argsMap.get(key);
-            //argsMap.remove(key);
+        String s = getValueIgnoreCommandDelimiter(key);
+        
+        if (s != null)
             return Boolean.valueOf(s);
-        }
-        return null;
+        else
+            return null;
     }
 
     private File getFile(String key) {
-        if (argsMap.containsKey(key)) {
-            File f = new File(argsMap.get(key));
-            //argsMap.remove(key);
-            return f;
-        }
-        return null;
+        String s = getString(key);
+
+        if (s == null)
+            return null;
+        else
+            return new File(s);
     }
 
     private String getString(String key) {
+        return getValueIgnoreCommandDelimiter(key);
+    }
+
+    private String getValueIgnoreCommandDelimiter(String key) {
+        // it can be confusing trying to remember -- is it "--option"?
+        // or "-option" or "option".  So look for any such match.
+
         if (argsMap.containsKey(key)) {
-            String s = argsMap.get(key);
-            //argsMap.remove(key);
-            return s;
+            return argsMap.get(key);
+        }
+        key = "-" + key;
+        if (argsMap.containsKey(key)) {
+            return argsMap.get(key);
+        }
+        key = "-" + key;
+        if (argsMap.containsKey(key)) {
+            return argsMap.get(key);
         }
         return null;
     }
-
-    // yes these variables are all accessible from any class in the package...
+    
     private boolean verbose = false;
     private boolean debug = false;
     private boolean embedded = false;
