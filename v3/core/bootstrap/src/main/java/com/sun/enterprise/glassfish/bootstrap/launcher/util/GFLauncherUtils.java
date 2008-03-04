@@ -92,5 +92,46 @@ public class GFLauncherUtils {
             return null;
         }
     }
+    public static boolean isWindows()
+    {
+        String osname = System.getProperty("os.name");
+        
+        if(osname == null || osname.length() <= 0)
+            return false;
+        
+        // case insensitive compare...
+        osname	= osname.toLowerCase();
+
+        if(osname.indexOf("windows") >= 0)
+            return true;
+        
+        return false;
+    }
+	/**
+         * This method returns the fully qualified name of the host.  If
+         * the name can't be resolved (on windows if there isn't a domain specified), just 
+         * host name is returned
+         *
+     * @return 
+     * @throws UnknownHostException so it can be handled on a case by case basis
+         */
+        public static String getCanonicalHostName() throws UnknownHostException {
+            String hostname=null;
+            String defaultHostname=InetAddress.getLocalHost().getHostName();
+            // look for full name
+            hostname=InetAddress.getLocalHost().getCanonicalHostName();
+
+            // check to see if ip returned or canonical hostname is different than hostname
+            // It is possible for dhcp connected computers to have an erroneous name returned
+            // that is created by the dhcp server.  If that happens, return just the default hostname
+            if (hostname.equals(InetAddress.getLocalHost().getHostAddress()) || 
+                !hostname.startsWith(defaultHostname)) {
+                // don't want IP or canonical hostname, this will cause a lot of problems for dhcp users
+                // get just plan host name instead
+                hostname=defaultHostname;
+            }
+            
+            return hostname;
+	}
 }
 

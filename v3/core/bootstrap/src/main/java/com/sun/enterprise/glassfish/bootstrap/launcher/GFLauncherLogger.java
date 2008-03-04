@@ -31,11 +31,11 @@ import java.util.logging.*;
  */
 public class GFLauncherLogger {
 
-    static void info(String msg, Object... objs)
+    public static void info(String msg, Object... objs)
     {
         logger.info(strings.get(msg, objs));
     }
-    static void severe(String msg, Object... objs)
+    public static void severe(String msg, Object... objs)
     {
         logger.severe(strings.get(msg, objs));
     }

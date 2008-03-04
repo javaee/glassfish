@@ -70,6 +70,6 @@ public abstract class GFLauncher {
             throw new GFLauncherException("unknownError", t);
         }
     }
-    private GFLauncherInfo info = new GFLauncherInfo();
+    GFLauncherInfo info = new GFLauncherInfo();
 }
 

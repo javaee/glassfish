@@ -79,6 +79,7 @@
                     <archive>
                         <manifest>
                             <mainClass>com.sun.enterprise.glassfish.bootstrap.Main</mainClass>
+                            <!-- <mainClass>com.sun.enterprise.glassfish.bootstrap.Main</mainClass> -->
                             <!-- <mainClass>com.sun.enterprise.glassfish.bootstrap.launcher.GFLauncherMain</mainClass> -->
                         </manifest>
                         <!-- this specifies the bootstrap module -->

@@ -87,6 +87,22 @@ public class GFLauncherInfo {
     }
 
     /**
+     * 
+     * @return true if this is an embedded server
+     */
+    public boolean isEmbedded()
+    {
+        return embedded;
+    }
+    /**
+     * 
+     * @return The domain name
+     */
+    public String getDomainName()
+    {
+        return domainName;
+    }
+    /**
      *  TEMPORARY.  The guts of HK2 and V3 bootstrapping wants String[]
      * -- this will be changed soon, but it is messy to change it right now.
      * so temporarily we will humor HK2 by sending in String[]
@@ -315,7 +331,7 @@ public class GFLauncherInfo {
     private boolean verbose = false;
     private boolean debug = false;
     private boolean embedded = false;
-    private File installDir;
+    File installDir;
     private File domainParentDir;
     private File domainRootDir;
     private File instanceDir;
