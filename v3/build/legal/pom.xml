@@ -53,12 +53,12 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.glassfish.build</groupId>
     <artifactId>legal</artifactId>
-    <version>1.0</version>
+    <version>1.1-SNAPSHOT</version>
 
     <scm>
         <!-- should we move this module outside v3, given that it has its own life cycle? -->
-        <connection>scm:svn:https://kohsuke@svn.dev.java.net/svn/glassfish-svn/tags/legal-1.0</connection>
-        <developerConnection>scm:svn:https://kohsuke@svn.dev.java.net/svn/glassfish-svn/tags/legal-1.0</developerConnection>
+        <connection>scm:svn:https://kohsuke@svn.dev.java.net/svn/glassfish-svn/trunk/v3/build/legal</connection>
+        <developerConnection>scm:svn:https://kohsuke@svn.dev.java.net/svn/glassfish-svn/trunk/v3/build/legal</developerConnection>
     </scm>
     
     <name>Legal License for glassfish code</name>
