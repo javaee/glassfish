@@ -55,6 +55,7 @@
         <module>shared</module>
         <module>javaee-core</module>
         <module>security</module>
+        <module>deployment-client</module>
         <module>jta</module>
     </modules>
 </project>
