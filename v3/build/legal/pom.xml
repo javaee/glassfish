@@ -36,8 +36,7 @@
 * holder. 
 */ 
 --> 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <parent>
         <!--
           this module inherits directly from the super POM so that
@@ -54,12 +53,12 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.glassfish.build</groupId>
     <artifactId>legal</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0</version>
 
     <scm>
         <!-- should we move this module outside v3, given that it has its own life cycle? -->
-        <connection>scm:svn:https://kohsuke@svn.dev.java.net/svn/glassfish-svn/trunk/v3/build/legal</connection>
-        <developerConnection>scm:svn:https://kohsuke@svn.dev.java.net/svn/glassfish-svn/trunk/v3/build/legal</developerConnection>
+        <connection>scm:svn:https://kohsuke@svn.dev.java.net/svn/glassfish-svn/tags/legal-1.0</connection>
+        <developerConnection>scm:svn:https://kohsuke@svn.dev.java.net/svn/glassfish-svn/tags/legal-1.0</developerConnection>
     </scm>
     
     <name>Legal License for glassfish code</name>
