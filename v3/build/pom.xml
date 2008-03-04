@@ -46,7 +46,6 @@
     <packaging>pom</packaging>
     <name>GlassFish Build Utilities</name>  
     <modules>
-        <module>legal</module>
         <module>maven-glassfish-plugin</module>
         <module>maven-glassfish-extension</module>
     </modules>
