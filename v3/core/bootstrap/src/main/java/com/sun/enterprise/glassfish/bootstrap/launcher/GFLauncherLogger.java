@@ -39,6 +39,10 @@ public class GFLauncherLogger {
     {
         logger.severe(strings.get(msg, objs));
     }
+    public static void fine(String msg, Object... objs)
+    {
+        logger.fine(strings.get(msg, objs));
+    }
 
     
     private GFLauncherLogger() {

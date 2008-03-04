@@ -34,32 +34,33 @@ import com.sun.enterprise.glassfish.bootstrap.launcher.util.ASenvPropertyReader;
  * @author bnevins
  */
 class GFDomainLauncher extends GFLauncher {
+
     void internalLaunch() throws GFLauncherException {
         try {
             info.setup();
-            
+
             //if(info.isEmbedded())
-                launchEmbedded();
-            //else
-                //launchExternal();
+            launchEmbedded();
+        //else
+        //launchExternal();
         }
-        catch (BootException ex) 
-        {
+        catch (BootException ex) {
             throw new GFLauncherException("unknownError", ex);
         }
     }
-    
+
     private void launchEmbedded() throws GFLauncherException, BootException {
-            System.out.println("Java.Home= " + System.getProperty("java.home"));
-            ASenvPropertyReader pr = new ASenvPropertyReader(info.installDir);
-            Main main = new Main();
-            main.start(info.getArgsAsStringArray());
-            GFLauncherLogger.info("FinishedEmbedded", info.getDomainName());
-        
+        System.out.println("Java.Home= " + System.getProperty("java.home"));
+        ASenvPropertyReader pr = new ASenvPropertyReader(info.installDir);
+        GFLauncherLogger.info("asenv properties:\n" + pr.toString());
+        Main main = new Main();
+        main.start(info.getArgsAsStringArray());
+        GFLauncherLogger.info("FinishedEmbedded", info.getDomainName());
+
     }
-    
+
     private void launchExternal() {
-        
+
     }
 }
 

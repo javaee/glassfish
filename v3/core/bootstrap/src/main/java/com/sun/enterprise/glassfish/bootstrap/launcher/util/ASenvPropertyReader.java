@@ -55,13 +55,26 @@ public class ASenvPropertyReader {
     public ASenvPropertyReader(File installDir) {
         this.configDir = new File(installDir, "config");
         setEnvToPropMap();
-        props.putAll(System.getProperties());
-        props.put(SystemPropertyConstants.INSTALL_ROOT_PROPERTY, installDir);
+
+        //props.putAll(System.getProperties());
+        props.put(SystemPropertyConstants.INSTALL_ROOT_PROPERTY, installDir.getPath());
         setProperties();
+        postProcess();
     }
 
-    public Properties getProperties() {
+    public Map<String, String> getProperties() {
         return props;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        Set<String> keys = props.keySet();
+
+        for (String key : keys) {
+            sb.append(key).append("=").append(props.get(key)).append('\n');
+        }
+        return sb.toString();
     }
 
     /**
@@ -70,20 +83,15 @@ public class ASenvPropertyReader {
      * system properties. 
      */
     private void setProperties() {
-        //Set static properties. Currently this includes com.sun.aas.hostName. This
-        //property is used to avoid placing hardcoded host names into domain.xml 
-        //making it non-relocatable.
-        if (props.getProperty(SystemPropertyConstants.HOST_NAME_PROPERTY) == null) {
-            String hostname = "localhost";
-            try {
-                // canonical name checks to make sure host is proper
-                hostname = GFLauncherUtils.getCanonicalHostName();
-            }
-            catch (Exception ex) {
-            // todo
-            }
-            props.setProperty(SystemPropertyConstants.HOST_NAME_PROPERTY, hostname);
+        String hostname = "localhost";
+        try {
+            // canonical name checks to make sure host is proper
+            hostname = GFLauncherUtils.getCanonicalHostName();
         }
+        catch (Exception ex) {
+        // ignore, go with "localhost"
+        }
+        props.put(SystemPropertyConstants.HOST_NAME_PROPERTY, hostname);
 
         //Read in asenv.conf/bat and set system properties accordingly
         File asenv;
@@ -160,14 +168,44 @@ public class ASenvPropertyReader {
             String systemPropertyName = envToPropMap.get(lhs);
 
             if (systemPropertyName != null) {
-                if (props.getProperty(systemPropertyName) == null) {
-                    props.setProperty(systemPropertyName, rhs);
-                    GFLauncherLogger.severe("****** SET:  " + systemPropertyName + "=" + rhs);
+                props.put(systemPropertyName, rhs);
+            }
+        }
+    }
+
+    /* 
+     * 2 things to do
+     * 1) change reltive paths to absolute
+     * 2) change env. variables to the actual values in the environment
+     */
+    private void postProcess() {
+        final Map<String, String> env = System.getenv();
+        Map<String, String> all = new HashMap<String, String>(props);
+        all.putAll(env);
+        TokenResolver tr = new TokenResolver(all);
+        tr.resolve(props);
+
+        // props have all tokens replaced now (if they exist)
+        // now make the paths absolute.
+
+        Set<String> keys = props.keySet();
+
+        for (String key : keys) {
+            String value = props.get(key);
+            if (GFLauncherUtils.isRelativePath(value)) {
+                // we have to handle both of these:
+                // /x/y/../z
+                // ../x/y/../z
+
+                File f;
+                if (value.startsWith(".")) {
+                    f = GFLauncherUtils.absolutize(new File(configDir, value));
                 }
                 else {
-                    GFLauncherLogger.severe("****** NO SET: " + systemPropertyName + "=" + rhs);
+                    f = GFLauncherUtils.absolutize(new File(value));
                 }
 
+                props.put(key, f.getPath());
             }
         }
     }
@@ -226,6 +264,6 @@ public class ASenvPropertyReader {
                 SystemPropertyConstants.MFWK_HOME_PROPERTY);
     }
     private Map<String, String> envToPropMap = new HashMap<String, String>();
-    private Properties props = new Properties();
+    private Map<String, String> props = new HashMap<String, String>();
     private File configDir;
 }
