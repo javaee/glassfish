@@ -23,6 +23,11 @@
       <artifactId>console-core</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+	<groupId>com.sun.jsfcompounds</groupId>
+	<artifactId>jsfcompounds</artifactId>
+	<version>0.0.5-SNAPSHOT</version>
+    </dependency>
   </dependencies>
 
   <profiles>
