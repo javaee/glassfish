@@ -63,6 +63,7 @@
     </developers>
     
     <modules>
-        <module>rtapt</module>
+        <!-- rtapt module and its descendants have its own lifecycle, so don't include it in the module list. -->
+        <!--module>rtapt</module-->
     </modules>
 </project>
