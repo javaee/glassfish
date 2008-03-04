@@ -7,6 +7,17 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
 
+    <build>
+	<resources>
+	    <resource>
+		<directory> src/main/resources </directory>
+		<excludes>
+		    <exclude> **/*.jar </exclude>
+		</excludes>
+	    </resource>
+	</resources>
+    </build>
+
     <artifactId>console-core</artifactId>
     <packaging>hk2-jar</packaging>
     <name>Admin Console Core</name>
