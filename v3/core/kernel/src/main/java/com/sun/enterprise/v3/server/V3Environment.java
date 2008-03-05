@@ -118,7 +118,7 @@ public class V3Environment  {
     */
     public String getApplicationCompileJspPath() {
         String[] onlyFolderNames = new String[] {root,
-            kGeneratedDirName, kCompileJspDirName, kApplicationDirName};
+            kGeneratedDirName, kCompileJspDirName};
         return StringUtils.makeFilePath(onlyFolderNames, false);
     }
 
@@ -128,9 +128,7 @@ public class V3Environment  {
         should lie in the same folder.
     */
     public String getWebModuleCompileJspPath() {        
-        String[] onlyFolderNames = new String[] {root,
-            kGeneratedDirName, kCompileJspDirName, kModuleDirName};
-        return StringUtils.makeFilePath(onlyFolderNames, false);
+       return getApplicationCompileJspPath();
     }
    
     /**
