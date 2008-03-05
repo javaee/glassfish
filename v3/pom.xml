@@ -149,6 +149,7 @@
       	<module>connectors</module>
       	<module>extras</module>
       	<module>distributions</module>
+            <module>security</module>
     </modules> 
     <repositories>
         <repository>
