@@ -122,6 +122,14 @@
                     </configFiles>
                     <destDir>target/classes</destDir>
                     <!-- optional: <forPlatform></forPlatform> -->
+                    <archive>
+                        <manifest>
+                            <mainClass>com.sun.enterprise.admin.cli.AsadminMain</mainClass> 
+                        </manifest>
+                        <manifestEntries>
+                            <Class-Path>cli-framework-10.0-SNAPSHOT.jar glassfish-10.0-SNAPSHOT.jar</Class-Path>
+                        </manifestEntries>
+                    </archive>
                 </configuration>
                 <executions>
                   <execution>
