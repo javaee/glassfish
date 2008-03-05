@@ -20,7 +20,7 @@
         <integration-point 
                 id="Third" 
                 type="tree" 
-                priority="100" 
+                priority="300" 
                 parentId="j1root" 
                 content="treenode-ex3.jsf" 
         />
