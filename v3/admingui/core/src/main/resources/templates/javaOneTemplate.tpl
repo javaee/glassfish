@@ -6,6 +6,10 @@
     />
 </define>
 <!define name="head">
-<sun:head id="j1Head" title="Customizing Glassfish Administration Console Lab Exercise" />
+    <sun:markup tag="head">
+	<sun:markup tag="title">
+	    <staticText value="Customizing Glassfish Administration Console Lab Exercise" />
+	</sun:markup>
+    </sun:markup>
 </define>
 </composition>

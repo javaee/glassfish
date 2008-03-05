@@ -9,11 +9,19 @@
 
 <sun:html>
     <!insert name="head">
-	<sun:head title="Default Title" />
+// Remove for now
+//	<sun:head title="Default Title" />
+	<sun:markup tag="head">
+	    <sun:markup tag="title">
+		<staticText value="jMaki Charting!" />
+	    </sun:markup>
+	</sun:markup>
     </insert>
-    <sun:body onLoad="javascript: synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
+// Remove for now
+//    <sun:body onLoad="javascript: synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
+<sun:markup tag="body">
     <sun:form id="form"> 
-// commenting this out since there is not support for this yet in V3
+// Remove for now
 // #include treeBreadcrumbs.inc
 	<!insert name="pageTitle">
             <sun:title title="Default Page Title" />
@@ -23,6 +31,8 @@
 	</insert>
 	<!insert name="helpkey" />
     </sun:form>
-    </sun:body>
+</sun:markup>
+// Remove for now
+//    </sun:body>
 </sun:html>
 </sun:page>
