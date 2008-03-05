@@ -1,4 +1,11 @@
 <sun:page>
+	<!beforeCreate
+		getjMakiValues(values=>$attribute{pievalues});
+		getjMakiValues(values=>$attribute{gryvalues});
+		getjMakiValues(values=>$attribute{bluvalues});
+		getjMakiValues(values=>$attribute{pnkvalues});
+		getjMakiValues(values=>$attribute{redvalues});
+	/>
 <sun:html>
 <sun:markup tag="head">
     <sun:markup tag="title">
@@ -43,7 +50,7 @@
 		},
 	data : [ {
 	    label : 'Set 1',
-	    values : [25, 45, 25, 45, 50, 25, 35, 25, 25, 20, 35, 45]
+	    values : $attribute{pievalues}
 	    } ] }"/>
 
 </sun:markup>
@@ -86,10 +93,10 @@
                               ]
                               },                              
                               data : [
-                   {label : 'Gray Series', values : [25, 45, 25, 45, 50, 25, 35, 25, 25, 20, 35, 45] },
-                   {label : 'Pink Series', values : [20, 40, 30, 35, 45, 20, 25, 15, 20, 25, 30, 40] },
-                   {label : 'Blue Series', values : [15, 35, 15, 40, 30, 15, 20, 10, 15, 20, 30, 35] },                   
-                   {label : 'Red Series',  values :  [10, 25, 10,  5, 20,  5, 15,  5, 10, 15, 25, 30] }
+                   {label : 'Gray Series', values : $attribute{gryvalues} },
+                   {label : 'Pink Series', values : $attribute{pnkvalues} },
+                   {label : 'Blue Series', values : $attribute{bluvalues} },                   
+                   {label : 'Red Series',  values : $attribute{redvalues} }
                    ]
                }"/>
 </sun:markup>
