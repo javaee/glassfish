@@ -1,7 +1,0 @@
-<sun:treeNode   id="javaOneTopNode"
-                text="JavaOne Node"
-                url="javaone/hello.jsf"
-                target="main"
-		imageURL="resource/images/instance.gif"
-                />
-
