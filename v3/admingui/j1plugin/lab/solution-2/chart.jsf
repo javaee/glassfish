@@ -1,0 +1,99 @@
+<sun:page>
+<sun:html>
+<sun:markup tag="head">
+    <sun:markup tag="title">
+	<staticText value="jMaki Charting!" />
+    </sun:markup>
+    <sun:script url="/resources/jmaki.js" />
+</sun:markup>
+
+<sun:markup tag="body">
+
+<sun:form id="form">
+
+
+<sun:markup tag="div" style="width:380px; height: 380px;">
+
+//  Uncomment the one at a time to try
+//<jmaki:widget name="jmaki.charting.yahoo.pie"
+//<jmaki:widget name="jmaki.charting.google.pie"
+<jmaki:widget name="jmaki.charting.plotkit.pie"
+    args="{colorScheme:2}"
+    value="{
+	xAxis : {
+	    title : 'Months',
+	    labels : [
+		{label : 'January'},
+		{label : 'February'},
+		{label : 'March'},
+		{label : 'April'},
+		{label : 'May'},
+		{label : 'June'},
+		{label : 'July'},
+		{label : 'August'},
+		{label : 'September'},
+		{label : 'October'},
+		{label : 'November'},
+		{label : 'December'} ]
+		},
+	data : [ {
+	    label : 'Set 1',
+	    values : [25, 45, 25, 45, 50, 25, 35, 25, 25, 20, 35, 45]
+	    } ] }"/>
+
+</sun:markup>
+<sun:markup tag="div" style="width: 600px; height: 280px;">
+
+//  Uncomment the one at a time to try
+<jmaki:widget name="jmaki.charting.dojo.area" 
+//<jmaki:widget name="jmaki.charting.dojo.line" 
+//<jmaki:widget name="jmaki.charting.dojo.bar" 
+//<jmaki:widget name="jmaki.charting.plotkit.area" 
+//<jmaki:widget name="jmaki.charting.plotkit.line" 
+//<jmaki:widget name="jmaki.charting.plotkit.bar" 
+//<jmaki:widget name="jmaki.charting.google.area" 
+//<jmaki:widget name="jmaki.charting.google.bar" 
+//<jmaki:widget name="jmaki.charting.google.line" 
+//<jmaki:widget name="jmaki.charting.yahoo.line" 
+//<jmaki:widget name="jmaki.charting.yahoo.bar" 
+          value="{
+                    xAxis : {
+                    title : 'Months',
+                    labels : [{ label : 'January'},
+                              { label : 'February'},
+                              { label : 'March'},
+                              { label : 'April'},
+                              { label : 'May'},
+                              { label : 'June'},
+                              { label : 'July'},
+                              { label : 'August'},
+                              { label : 'September'},
+                              { label : 'October'},
+                              { label : 'November'},
+                              { label : 'December'}
+                              ]
+                              },
+                    yAxis : {
+                    title : 'Temperature',
+                    labels : [{ label : '0', value : 0},
+                              { label : '10s', value : 10},
+                              { label : '20s', value : 20},
+                              { label : '30s', value : 30},
+                              { label : '40s', value : 40},
+                              { label : '50s', value : 50}
+                              ]
+                              },                              
+                              data : [
+                   {label : 'Gray Series', values : [25, 45, 25, 45, 50, 25, 35, 25, 25, 20, 35, 45] },
+                   {label : 'Pink Series', values : [20, 40, 30, 35, 45, 20, 25, 15, 20, 25, 30, 40] },
+                   {label : 'Blue Series', values : [15, 35, 15, 40, 30, 15, 20, 10, 15, 20, 30, 35] },                   
+                   {label : 'Red Series',  values :  [10, 25, 10,  5, 20,  5, 15,  5, 10, 15, 25, 30] }
+                   ]
+               }"/>
+</sun:markup>
+
+</sun:form>
+
+</sun:markup>
+</sun:html>
+</sun:page>

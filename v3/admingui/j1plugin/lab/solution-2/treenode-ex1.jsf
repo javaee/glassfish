@@ -1,0 +1,14 @@
+<sun:treeNode   
+        id="j1root"
+        text="J1 TreeNode"
+        imageURL="resource/images/tree_folder.gif"
+        target="main">
+            
+    <sun:treeNode 
+        id="first" 
+        text="Exercise #1"
+        url="javaone/hello.jsf"
+        imageURL="resource/images/instance.gif"
+        target="main" />
+
+</sun:treeNode>
