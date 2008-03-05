@@ -75,4 +75,13 @@ public class UserTransactionProxy implements NamedNamingObjectProxy {
         return "UserTransaction";
         //return "java:comp/UserTransaction";
     }
+
+
+    public Object handle(String name)
+        throws NamingException {
+        if ("java:comp/UserTransaction".equals(name)) {
+            return habitat.getComponent(UserTransactionImpl.class);
+        }
+        return null;
+    }
 }
