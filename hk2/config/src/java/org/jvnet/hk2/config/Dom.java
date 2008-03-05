@@ -761,10 +761,23 @@ public class Dom extends LazyInhabitant implements InvocationHandler, Observable
      */
     private static final Pattern TOKENIZER;
     private static String split(String lookback,String lookahead) {
-        return "(?<="+lookback+")(?="+lookahead+')';
+        return "((?<="+lookback+")(?="+lookahead+"))";
+    }
+    private static String or(String... tokens) {
+        StringBuilder buf = new StringBuilder();
+        for (String t : tokens) {
+            if(buf.length()>0)  buf.append('|');
+            buf.append(tokens);
+        }
+        return buf.toString();
     }
     static {
-        String pattern = String.format("(%1s)|(%2s)", split("x","X"), split("X","Xx"));
+        String pattern = or(
+                split("x","X"),     // AbcDef -> Abc|Def
+                split("X","Xx"),    // USArmy -> US|Army
+                split("\\D","\\d"), // SSL2 -> SSL|2
+                split("\\d","\\D")  // SSL2Connector -> SSL|2|Connector
+        );
         pattern = pattern.replace("x","\\p{Lower}").replace("X","\\p{Upper}");
         TOKENIZER = Pattern.compile(pattern);
     }
