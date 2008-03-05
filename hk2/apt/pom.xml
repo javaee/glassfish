@@ -8,7 +8,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>auto-depends-plugin</artifactId>
     <packaging>jar</packaging>
-    <name>Inhabitats index generator</name>
+    <name>Inhabitants' index generator</name>
     <description>Index generator for auto-depends</description>    
     <build>
         <sourceDirectory>src/java</sourceDirectory>  
