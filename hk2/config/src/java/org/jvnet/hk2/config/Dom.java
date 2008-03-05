@@ -767,7 +767,7 @@ public class Dom extends LazyInhabitant implements InvocationHandler, Observable
         StringBuilder buf = new StringBuilder();
         for (String t : tokens) {
             if(buf.length()>0)  buf.append('|');
-            buf.append(tokens);
+            buf.append(t);
         }
         return buf.toString();
     }
