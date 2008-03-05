@@ -37,8 +37,9 @@ public class RemoteCommandTest {
             assertEquals("uploadFile=false and fileName=test", "test",
                          rc.getFileParam(false, new File("test")));
                 //testing absolute path
+            final String userDir = new File(System.getProperty("user.dir")).getCanonicalPath();
             assertEquals("uploadFile=false and fileName=RemoteCommandTest",
-                         System.getProperty("user.dir"),
+                         userDir,
                          rc.getFileParam(false, new File(System.getProperty("user.dir"))));
                 //testing relative path
             assertEquals("uploadFile=false and fileName=current-directory",
