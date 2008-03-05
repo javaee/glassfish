@@ -36,10 +36,15 @@
 
 package com.sun.enterprise.security.integration;
 
+import java.security.Principal;
+
 /**
  * Interface to facilitate Initialization of the injected Realm Instance with Application Descriptor info 
  *  see com.sun.enterprise.web.WebContainer  and com.sun.web.security.RealmAdapter
  */
-public interface RealmInitializer  {
+public interface RealmAdapterProxy  {
  public void initializeRealm(Object bundledescriptor, boolean isSystemApp,String realmName);
+ public void logout();
+ public void setCurrentSecurityContext(Principal principal);
+ public void setCurrentSecurityContextWithWebPrincipal(Principal principal);
 }
