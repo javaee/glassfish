@@ -15,9 +15,14 @@
 <sun:markup tag="div" style="width:380px; height: 380px;">
 
 //  Uncomment the one at a time to try
-//<jmaki:widget name="jmaki.charting.yahoo.pie"
-//<jmaki:widget name="jmaki.charting.google.pie"
-<jmaki:widget name="jmaki.charting.plotkit.pie"
+
+<sun:dropDown labels={"jmaki.charting.yahoo.pie" "jmaki.charting.google.pie" "jmaki.charting.plotkit.pie"} value="#{requestScope.chart1}">
+    <!beforeCreate
+	setAttribute(key="chart1", value="jmaki.charting.yahoo.pie");
+    />
+</sun:dropDown>
+<sun:button value=" Refresh " />
+<jmaki:widget name="#{requestScope.chart1}"
     args="{colorScheme:2}"
     value="{
 	xAxis : {
@@ -42,20 +47,17 @@
 	    } ] }"/>
 
 </sun:markup>
+
+<sun:dropDown labels={"jmaki.charting.plotkit.area" "jmaki.charting.plotkit.line" "jmaki.charting.plotkit.bar" "jmaki.charting.google.area" "jmaki.charting.google.bar" "jmaki.charting.google.line" "jmaki.charting.yahoo.line" "jmaki.charting.yahoo.bar" "jmaki.charting.dojo.bar" "jmaki.charting.dojo.line" "jmaki.charting.dojo.area"} value="#{requestScope.chart2}">
+    <!beforeCreate
+	setAttribute(key="chart2", value="jmaki.charting.plotkit.area");
+    />
+</sun:dropDown>
+<sun:button value=" Refresh " />
 <sun:markup tag="div" style="width: 600px; height: 280px;">
 
 //  Uncomment the one at a time to try
-<jmaki:widget name="jmaki.charting.dojo.area" 
-//<jmaki:widget name="jmaki.charting.dojo.line" 
-//<jmaki:widget name="jmaki.charting.dojo.bar" 
-//<jmaki:widget name="jmaki.charting.plotkit.area" 
-//<jmaki:widget name="jmaki.charting.plotkit.line" 
-//<jmaki:widget name="jmaki.charting.plotkit.bar" 
-//<jmaki:widget name="jmaki.charting.google.area" 
-//<jmaki:widget name="jmaki.charting.google.bar" 
-//<jmaki:widget name="jmaki.charting.google.line" 
-//<jmaki:widget name="jmaki.charting.yahoo.line" 
-//<jmaki:widget name="jmaki.charting.yahoo.bar" 
+<jmaki:widget name="#{requestScope.chart2}"
           value="{
                     xAxis : {
                     title : 'Months',
