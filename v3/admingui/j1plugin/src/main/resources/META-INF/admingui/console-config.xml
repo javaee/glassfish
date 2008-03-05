@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<console-config id="test">
-    <integration-point id="jbiRootNode" type="tree" priority="840" parentId="rootNode" uri="/myTreeNode.jsf" content="test" />
-    <integration-point id="myTab" type="webApplicationTab" priority="22" parentId="webApplicationTab" uri="/myTab.jsf" />
-    <integration-point id="jbiRootNode" type="tree" priority="840" parentId="rootNode" uri="/myTreeNode.jsf"  content="test2"/>
-</console-config>  
