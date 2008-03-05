@@ -23,6 +23,7 @@
 
 package com.sun.enterprise.v3.services.impl;
 
+import com.sun.grizzly.Controller;
 import com.sun.grizzly.DefaultProtocolChainInstanceHandler;
 import com.sun.grizzly.ProtocolChain;
 import com.sun.grizzly.ProtocolFilter;
@@ -38,6 +39,7 @@ import com.sun.grizzly.http.SecureSelector;
 import com.sun.grizzly.http.SelectorThread;
 import com.sun.grizzly.util.net.SSLImplementation;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.logging.Level;
 import javax.net.ssl.SSLContext;
 
 /**
@@ -92,7 +94,12 @@ public class GrizzlyServiceListener extends SelectorThread implements SecureSele
             
     // ---------------------------------------------------------------------/.
 
+    public GrizzlyServiceListener() {
+    }
     
+    public GrizzlyServiceListener(Controller controller) {
+        this.controller = controller;
+    }
     /**
      * Load using reflection the <code>Algorithm</code> class.
      */
@@ -152,6 +159,7 @@ public class GrizzlyServiceListener extends SelectorThread implements SecureSele
      */
     @Override
     protected void configureFilters(ProtocolChain protocolChain) {
+        logger.log(Level.INFO, "Port: " + getPort() + " PortUnification: " + (portUnificationFilter != null));
         if (portUnificationFilter != null) {
             protocolChain.addFilter(portUnificationFilter);
             // ProtocolFilter are added on the fly by their respective

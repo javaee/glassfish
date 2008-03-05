@@ -40,6 +40,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.glassfish.api.deployment.ApplicationContainer;
 
 
@@ -109,18 +110,23 @@ public class WebProtocolHandler implements ProtocolHandler, EndpointMapper<Adapt
     private Mapper mapper;
 
     
+    /**
+     * Logger
+     */
+    private Logger logger;
     // --------------------------------------------------------------------//
     
     
     public WebProtocolHandler(GrizzlyServiceListener grizzlyListener) {
-        this(Mode.HTTP,grizzlyListener);
+        this(Mode.HTTP, grizzlyListener);
     }
     
     
-    public WebProtocolHandler(Mode mode,GrizzlyServiceListener grizzlyListener) {
+    public WebProtocolHandler(Mode mode, GrizzlyServiceListener grizzlyListener) {
         this.mode = mode;
         this.grizzlyListener = grizzlyListener;
         this.mapper = new Mapper(grizzlyListener);
+        logger = GrizzlyServiceListener.getLogger();
     }
 
     
@@ -137,7 +143,7 @@ public class WebProtocolHandler implements ProtocolHandler, EndpointMapper<Adapt
         
         boolean wasMap = mapper.map(
                 (GlassfishProtocolChain)context.getProtocolChain(),
-                protocolRequest.getByteBuffer());        
+                protocolRequest.getByteBuffer());
         if (!wasMap){
             //TODO: Some Application might not have Adapter. Might want to
             //add a dummy one instead of sending a 404.
@@ -145,7 +151,7 @@ public class WebProtocolHandler implements ProtocolHandler, EndpointMapper<Adapt
                 ByteBuffer bb = HtmlHelper.getErrorPage("Not Found", "HTTP/1.1 404 Not Found\n");
                 OutputWriter.flushChannel(protocolRequest.getChannel(), bb);
             } catch (IOException ex){
-                GrizzlyServiceListener.logger().log(Level.FINE,"Send Error failed", ex);
+                GrizzlyServiceListener.logger().log(Level.FINE, "Send Error failed", ex);
             } finally{
                 ((WorkerThread)Thread.currentThread()).getByteBuffer().clear();
             }
@@ -179,7 +185,7 @@ public class WebProtocolHandler implements ProtocolHandler, EndpointMapper<Adapt
         adapters.put(contextRoot, pair);
         ArrayList<ProtocolFilter> filter = new ArrayList<ProtocolFilter>(1);
         filter.add(grizzlyListener.getHttpProtocolFilter());
-        contextProtocolFilters.put(contextRoot,filter);
+        contextProtocolFilters.put(contextRoot, filter);
         mapper.register(adapters,contextProtocolFilters);
     }
 
@@ -191,7 +197,7 @@ public class WebProtocolHandler implements ProtocolHandler, EndpointMapper<Adapt
         if (adapters.remove(contextRoot) != null) {
             contextProtocolFilters.remove(contextRoot);
         }
-        mapper.register(adapters,contextProtocolFilters);
+        mapper.register(adapters, contextProtocolFilters);
     }
     
     

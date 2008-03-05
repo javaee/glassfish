@@ -39,11 +39,13 @@ import com.sun.enterprise.config.serverbeans.HttpProtocol;
 import com.sun.enterprise.config.serverbeans.HttpService;
 import com.sun.enterprise.config.serverbeans.Property; 
 import com.sun.enterprise.config.serverbeans.RequestProcessing;
+import com.sun.enterprise.config.serverbeans.Ssl;
 import com.sun.grizzly.Controller;
 import com.sun.grizzly.arp.DefaultAsyncHandler;
 import com.sun.grizzly.comet.CometAsyncFilter;
 import com.sun.grizzly.http.AsyncHandler;
 import com.sun.logging.LogDomains;
+import java.util.LinkedList;
 
 /**
  * Utility class that creates Grizzly's SelectorThread instance based on 
@@ -69,7 +71,7 @@ public class GrizzlyHttpEmbed {
     // TODO: Must get the information from domain.xml Config objects.
     // TODO: Pending Grizzly issue 54
     public static GrizzlyServiceListener createListener(HttpService httpService,
-            int port, Controller controller){
+            HttpListener httpListener, int port, Controller controller){
         
         System.setProperty("product.name", "GlassFish/v3");      
         GrizzlyServiceListener grizzlyListener = new GrizzlyServiceListener();
@@ -82,14 +84,8 @@ public class GrizzlyHttpEmbed {
         GrizzlyServiceListener.setWebAppRootPath(
                 System.getProperty("com.sun.aas.instanceRoot") + "/docroot");
         
-        for (HttpListener httpListener : httpService.getHttpListener()) {
-            if (httpListener.getPort().equalsIgnoreCase(String.valueOf(port))){
-                boolean isSecure = Boolean.getBoolean(httpListener.getSecurityEnabled());
-                configureGrizzlyListener(grizzlyListener,httpListener,isSecure,httpService);
-                break;
-            }
-        }
-              
+        boolean isSecure = Boolean.parseBoolean(httpListener.getSecurityEnabled());
+        configureGrizzlyListener(grizzlyListener, httpListener, isSecure, httpService);
         return grizzlyListener;        
     }
 
@@ -118,6 +114,9 @@ public class GrizzlyHttpEmbed {
         configureRequestProcessing(httpService.getRequestProcessing(),grizzlyListener);
         configureFileCache(grizzlyListener, httpService.getHttpFileCache());
 
+        if (isSecure) {
+            configureSSL(grizzlyListener, httpService, httpListener);
+        }
         // acceptor-threads
         String acceptorThreads = httpListener.getAcceptorThreads();
         if (acceptorThreads != null) {
@@ -162,60 +161,81 @@ public class GrizzlyHttpEmbed {
      *
      * @param grizzlyListener PECoyoteConnector to configure
      * @param httpListener HTTP listener whose SSL config to use
-     *
-    private void configureSSL(GrizzlyServiceListener grizzlyListener,
-                              HttpListener httpListener) {
+     */
+    private static void configureSSL(GrizzlyServiceListener grizzlyListener,
+                              HttpService httpService, HttpListener httpListener) {
 
         Ssl sslConfig = httpListener.getSsl();
+
         if (sslConfig == null) {
             return;
         }
 
         // client-auth
         if (Boolean.getBoolean(sslConfig.getClientAuthEnabled())) {
-            grizzlyListener.setClientAuth(true);
+            grizzlyListener.setNeedClientAuth(true);
         }
 
+        List<String> tmpSSLArtifactsList = new LinkedList<String>();
         // ssl protocol variants
-        StringBuffer sslProtocolsBuf = new StringBuffer();
-        boolean needComma = false;
         if (Boolean.getBoolean(sslConfig.getSsl2Enabled())) {
-            sslProtocolsBuf.append("SSLv2");
-            needComma = true;
+            tmpSSLArtifactsList.add("SSLv2");
         }
+        
         if (Boolean.getBoolean(sslConfig.getSsl3Enabled())) {
-            if (needComma) {
-                sslProtocolsBuf.append(", ");
-            } else {
-                needComma = true;
-            }
-            sslProtocolsBuf.append("SSLv3");
+            tmpSSLArtifactsList.add("SSLv3");
         }
         if (Boolean.getBoolean(sslConfig.getTlsEnabled())) {
-            if (needComma) {
-                sslProtocolsBuf.append(", ");
-            }
-            sslProtocolsBuf.append("TLSv1");
+            tmpSSLArtifactsList.add("TLSv1");
         }
         if (Boolean.getBoolean(sslConfig.getSsl3Enabled()) || Boolean.getBoolean(sslConfig.getTlsEnabled())) {
-            sslProtocolsBuf.append(", SSLv2Hello");
+            tmpSSLArtifactsList.add("SSLv2Hello");
         }
 
-        if (sslProtocolsBuf.length() == 0) {
+        if (tmpSSLArtifactsList.isEmpty()) {
             logger.log(Level.WARNING,
                         "pewebcontainer.all_ssl_protocols_disabled",
                         httpListener.getId());
         } else {
-            grizzlyListener.setSslProtocols(sslProtocolsBuf.toString());
+            String[] enabledProtocols = new String[tmpSSLArtifactsList.size()];
+            tmpSSLArtifactsList.toArray(enabledProtocols);
+            grizzlyListener.setEnabledProtocols(enabledProtocols);
         }
 
         // cert-nickname
         String certNickname = sslConfig.getCertNickname();
         if (certNickname != null && certNickname.length() > 0) {
-            grizzlyListener.setKeyAlias(sslConfig.getCertNickname());
+            String keyAlias = sslConfig.getCertNickname();
+//            connector.setKeyAlias(sslConfig.getCertNickname());
         }
 
         // ssl3-tls-ciphers
+//        String ciphers = sslConfig.getSsl3TlsCiphers();
+//        if (ciphers != null) {
+//            String jsseCiphers = getJSSECiphers(ciphers);
+//            if (jsseCiphers == null) {
+//                _logger.log(Level.WARNING,
+//                            "pewebcontainer.all_ciphers_disabled",
+//                            httpListener.getId());
+//            } else {
+//                connector.setCiphers(jsseCiphers);
+//            }
+//        }
+        
+        //TODO: Enabled SSL.
+   /*     try{
+            if (Boolean.parseBoolean(httpListener.getSecurityEnabled())){
+                SSLImplementation sslHelper = SSLImplementation.getInstance();
+                ServerSocketFactory serverSF = 
+                        sslHelper.getServerSocketFactory();
+                serverSF.setAttribute("keystoreType","JKS");
+                serverSF.setAttribute("keystore",
+                        System.getProperty("javax.net.ssl.keyStore"));
+                serverSF.setAttribute("truststoreType","JKS");
+                serverSF.setAttribute("truststore",
+                        System.getProperty("javax.net.ssl.trustStore"));                    
+                serverSF.init();
+                grizzlyListener.setSSLContext(serverSF.getSSLContext());                
         String ciphers = sslConfig.getSsl3TlsCiphers();
         if (ciphers != null) {
             String jsseCiphers = getJSSECiphers(ciphers);
@@ -226,8 +246,10 @@ public class GrizzlyHttpEmbed {
             } else {
                 grizzlyListener.setCiphers(jsseCiphers);
             }
-        }            
-    }*/
+        } catch (Throwable t){
+            logger.severe("Unable to configure SSL");
+        }*/        
+    }
     
     
     /*

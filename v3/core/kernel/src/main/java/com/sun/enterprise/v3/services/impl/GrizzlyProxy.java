@@ -142,11 +142,10 @@ public class GrizzlyProxy implements NetworkProxy{
      * configuration object.
      * @param port the port on which we need to listen.
      */
-    private void configureGrizzly(int port,Controller controller){
-        grizzlyListener = GrizzlyHttpEmbed.createListener(httpService, port, controller);
+    private void configureGrizzly(int port, Controller controller) {
+        grizzlyListener = GrizzlyHttpEmbed.createListener(httpService, httpListener, port, controller);
         
-        if (!isWebProfile){
-            PUPreProcessor preProcessor = null;
+        if (!isWebProfile) {
             SSLContext sslContext = grizzlyListener.getSSLContext();
 
             // [1] Detect TLS requests.
@@ -155,11 +154,10 @@ public class GrizzlyProxy implements NetworkProxy{
             // sure TLS is always enabled. We can always do what we did for 
             // GlassFish v2, which is to located the keystore/trustore by ourself.
             // TODO: Enable TLS support on all ports using com.sun.Grizzly.SSLConfig
-            if (sslContext != null) {
-                preProcessor = new TLSPUPreProcessor(sslContext);
-            }
             ArrayList<PUPreProcessor> puPreProcessors = new ArrayList<PUPreProcessor>();
-            if (preProcessor != null){
+            
+            if (sslContext != null) {
+                PUPreProcessor preProcessor = new TLSPUPreProcessor(sslContext);
                 puPreProcessors.add(preProcessor);
             }
 
@@ -172,8 +170,8 @@ public class GrizzlyProxy implements NetworkProxy{
             ArrayList<ProtocolHandler> 
                     protocolHandlers = new ArrayList<ProtocolHandler>();
             endPointMapper = new WebProtocolHandler(grizzlyListener);
-            protocolHandlers.add((ProtocolHandler)endPointMapper);
-            
+            protocolHandlers.add((ProtocolHandler) endPointMapper);
+
             grizzlyListener.configurePortUnification
                    (protocolFinders, protocolHandlers, puPreProcessors); 
         } else {

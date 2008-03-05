@@ -34,6 +34,7 @@ import org.glassfish.api.Startup;
 import org.glassfish.api.deployment.ApplicationContainer;
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.HttpListener;
+import com.sun.enterprise.config.serverbeans.HttpService;
 import com.sun.enterprise.config.serverbeans.VirtualServer;
 import com.sun.enterprise.util.StringUtils;
 import com.sun.grizzly.Controller;
@@ -41,6 +42,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -86,37 +88,49 @@ public class GrizzlyService implements Startup, PostConstruct, PreDestroy {
      * will be placed into commission by the subsystem.
      */
     public void postConstruct() {
-        
-        for (HttpListener listener : config.getHttpService().getHttpListener()) {
-            // create the proxy for the port.
-            NetworkProxy proxy = null;
-            if (enablePU){
-                proxy = new GrizzlyProxy(logger, habitat, listener, controller, 
-                        config.getHttpService());
-            } else {
-                proxy = new GrizzlyAdapter(logger, habitat, listener, controller);
-            }
-            proxy.setVsMapper(new VirtualHostMapper(logger, listener));
-            
-             // attach all virtual servers to this port
-            for (VirtualServer vs : config.getHttpService().getVirtualServer()) {
-                List<String> vsListeners = StringUtils.parseStringList(vs.getHttpListeners()," ,");
-                if (vsListeners.contains(listener.getId())) {
-                    proxy.getVsMapper().addVirtualServer(vs);
+        HttpService httpService = config.getHttpService();
+        try {
+            for (HttpListener listener : httpService.getHttpListener()) {
+                // create the proxy for the port.
+                NetworkProxy proxy = null;
+                if (enablePU) {
+                    proxy = new GrizzlyProxy(logger, habitat, listener, controller, httpService);
+                } else {
+                    proxy = new GrizzlyAdapter(logger, habitat, listener, controller);
                 }
-            }           
-            proxy.start();
-            
-            // add the new proxy to our list of proxies.
-            proxies.add(proxy);
+                proxy.setVsMapper(new VirtualHostMapper(logger, listener));
 
-            // todo : this neeed some rework...
-            // now register all proxies you can find out there !
-            // TODO : so far these qets registered everywhere, maybe not the right thing ;-)
-            for (org.glassfish.api.container.Adapter subAdapter : habitat.getAllByContract(org.glassfish.api.container.Adapter.class)) {
-                logger.fine("Registering proxy " + subAdapter.getContextRoot());
-                registerEndpoint(subAdapter.getContextRoot(), null, subAdapter, null);
+                // attach all virtual servers to this port
+                for (VirtualServer vs : httpService.getVirtualServer()) {
+                    List<String> vsListeners = StringUtils.parseStringList(vs.getHttpListeners(), " ,");
+                    if (vsListeners.contains(listener.getId())) {
+                        proxy.getVsMapper().addVirtualServer(vs);
+                    }
+                }
+                proxy.start();
+
+                // add the new proxy to our list of proxies.
+                proxies.add(proxy);
+
+                // todo : this neeed some rework...
+                // now register all proxies you can find out there !
+                // TODO : so far these qets registered everywhere, maybe not the right thing ;-)
+                for (org.glassfish.api.container.Adapter subAdapter : habitat.getAllByContract(org.glassfish.api.container.Adapter.class)) {
+                    logger.fine("Registering proxy " + subAdapter.getContextRoot());
+                    registerEndpoint(subAdapter.getContextRoot(), null, subAdapter, null);
+                }
             }
+        } catch(RuntimeException e) { // So far postConstruct can not throw any other exception type
+            logger.warning("Closing initialized network proxies");
+            for(NetworkProxy proxy : proxies) {
+                try {
+                    proxy.stop();
+                } catch(Exception proxyStopException) {
+                    logger.log(Level.SEVERE, "Stop network proxy error ", proxyStopException);
+                }
+            }
+            
+            throw e;
         }
     }
 

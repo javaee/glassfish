@@ -216,7 +216,7 @@ public class Mapper {
 
         for(;;) {            
             pair = adapters.get(contextRoot);
-            if (pair!=null) {
+            if (pair != null) {
                 Adapter adapter = pair.getFirstElement();
                 ApplicationContainer container = pair.getSecondElement();
                 ClassLoader cl = null;
