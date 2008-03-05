@@ -43,9 +43,7 @@ import java.security.Policy;
 import java.security.ProtectionDomain;
 import java.security.Principal;
 import java.text.MessageFormat;
-import javax.security.auth.Subject;
 import javax.transaction.Transaction;
-import javax.servlet.Servlet;
 import javax.servlet.ServletRequest; // IASRI 4713234
 import javax.servlet.ServletRequestWrapper;
 import javax.servlet.http.HttpServletRequest;
@@ -53,7 +51,6 @@ import org.apache.catalina.Realm;
 import org.apache.catalina.InstanceEvent;
 import org.apache.catalina.InstanceListener;
 import org.apache.catalina.Context;
-import org.apache.catalina.Wrapper;
 import org.apache.jasper.servlet.JspServlet;
 import org.apache.catalina.servlets.DefaultServlet;
 import org.apache.coyote.tomcat5.CoyoteRequestFacade;
@@ -65,19 +62,19 @@ import com.sun.enterprise.container.common.spi.util.InjectionManager;
 import com.sun.enterprise.deployment.*;
 //XXX
 //import com.sun.enterprise.appverification.factory.AppVerification;
-//import com.sun.enterprise.security.SecurityContext; // IASRI 4688449
+// IASRI 4688449
+import com.sun.enterprise.security.integration.RealmAdapterProxy;
 import com.sun.enterprise.server.ServerContext;
 import com.sun.enterprise.web.WebComponentInvocation;
 import com.sun.enterprise.web.WebModule;
-//XXX
-//import com.sun.web.security.RealmAdapter;
-//import com.sun.web.security.WebPrincipal;
-
 
 //START OF IASRI 4660742
 import java.util.logging.*;
 import com.sun.logging.*;
 //END OF IASRI 4660742
+import javax.security.auth.Subject;
+import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Service;
 
 /**
  * This class implements the Tomcat InstanceListener interface and
@@ -85,6 +82,7 @@ import com.sun.logging.*;
  * @author Vivek Nagar
  * @author Tony Ng
  */
+@Service
 public final class J2EEInstanceListener implements InstanceListener {
 
     // START OF IASRI 4660742
@@ -95,6 +93,9 @@ public final class J2EEInstanceListener implements InstanceListener {
     private static final HashSet beforeEvents = new HashSet(4);
     private static final HashSet afterEvents = new HashSet(4);
 
+    @Inject(optional=true)
+    private Realm realmAdapter;
+    
     static {
         beforeEvents.add(InstanceEvent.BEFORE_SERVICE_EVENT);
         beforeEvents.add(InstanceEvent.BEFORE_FILTER_EVENT);
@@ -236,15 +237,10 @@ public final class J2EEInstanceListener implements InstanceListener {
 		    break;
 		}
 
-//XXX
-//no SecurityContext and WebPrincipal in this moment
-/*
-		if (prin != null && prin == basePrincipal && 
-		    prin instanceof WebPrincipal) {
-
-		    SecurityContext.setCurrent
-			(getSecurityContextForPrincipal(prin));
-		    
+		if (prin != null && prin == basePrincipal) {
+                    if (realmAdapter != null && realmAdapter instanceof RealmAdapterProxy) {
+                        ((RealmAdapterProxy)realmAdapter).setCurrentSecurityContextWithWebPrincipal(prin);
+                    }    
 		} else if (prin != basePrincipal) {
 		    
 		    // the wrapper has overridden getUserPrincipal
@@ -252,11 +248,11 @@ public final class J2EEInstanceListener implements InstanceListener {
 		    // the necessary permission.
 
 		    checkObjectForDoAsPermission(hreq);
-
-		    SecurityContext.setCurrent
-			(getSecurityContextForPrincipal(prin));
+                    if (realmAdapter != null && realmAdapter instanceof RealmAdapterProxy) {
+                        ((RealmAdapterProxy)realmAdapter).setCurrentSecurityContext(prin);
+                    }
 		}
-*/
+
 	    }
         }
         // END OF IASRI 4713234
@@ -333,27 +329,6 @@ public final class J2EEInstanceListener implements InstanceListener {
 	}
     }
 
-//XXX no SecurityContext in this moment
-/*
-    private static SecurityContext 
-    getSecurityContextForPrincipal(final Principal p) {
-	if (p == null) {
-	    return null;
-	} else if (p instanceof WebPrincipal) {
-	    return ((WebPrincipal) p).getSecurityContext();
-	} else {
-	    return (SecurityContext) 
-		AccessController.doPrivileged(new PrivilegedAction() {
-		    public Object run() {
-			Subject s = new Subject();
-			s.getPrincipals().add(p);
-			return new SecurityContext(p.getName(),s);
-		    }
-		});
-	}
-    }
-*/
-
     private void handleAfterEvent(InstanceEvent event, String eventType) {
 
         Context context = (Context) event.getWrapper().getParent();
@@ -416,12 +391,9 @@ public final class J2EEInstanceListener implements InstanceListener {
                     try {
                         // clear security context
                         Realm ra = context.getRealm();
-//XXX no RealmAdapter in this moment
-/*
-                        if (ra != null && (ra instanceof RealmAdapter)) {
-                            ((RealmAdapter)ra).logout();
+                        if (ra != null && (ra instanceof RealmAdapterProxy)) {
+                            ((RealmAdapterProxy)ra).logout();
                         }
-*/
                     } catch (Exception ex) {
                         /** IASRI 4660742
                         ex.printStackTrace();

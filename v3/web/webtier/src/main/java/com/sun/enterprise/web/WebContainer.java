@@ -172,7 +172,7 @@ import java.lang.reflect.Method;
 import org.apache.jasper.runtime.JspFactoryImpl;
 import org.apache.catalina.Realm;
 
-import com.sun.enterprise.security.integration.RealmInitializer;
+import com.sun.enterprise.security.integration.RealmAdapterProxy;
 
 /**
  * Web container service
@@ -2996,14 +2996,14 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                      * the virtual server on which they are being deployed,
                      * unless they specify their own
                      */
-                    if (realm != null && realm instanceof RealmInitializer) {
-                        ((RealmInitializer)realm).initializeRealm(
+                    if (realm != null && realm instanceof RealmAdapterProxy) {
+                        ((RealmAdapterProxy)realm).initializeRealm(
                                 wbd, isSystem, vs.getAuthRealmName());
                         ctx.setRealm(realm);
                     }
                 } else {
-                    if (realm != null && realm instanceof RealmInitializer) {
-                        ((RealmInitializer)realm).initializeRealm(
+                    if (realm != null && realm instanceof RealmAdapterProxy) {
+                        ((RealmAdapterProxy)realm).initializeRealm(
                                 wbd, isSystem, null);
                         ctx.setRealm(realm);
                     }
