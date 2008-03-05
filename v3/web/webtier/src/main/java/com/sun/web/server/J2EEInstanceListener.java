@@ -57,6 +57,7 @@ import org.apache.coyote.tomcat5.CoyoteRequestFacade;
 import org.glassfish.api.invocation.ComponentInvocation;
 import org.glassfish.api.invocation.InvocationManager;
 
+import com.sun.enterprise.container.common.spi.JavaEETransactionManager;
 import com.sun.enterprise.container.common.spi.util.InjectionException;
 import com.sun.enterprise.container.common.spi.util.InjectionManager;
 import com.sun.enterprise.deployment.*;
@@ -109,8 +110,7 @@ public final class J2EEInstanceListener implements InstanceListener {
     }
 
     private InvocationManager im;
-    //XXX
-    //private J2EETransactionManager tm;
+    private JavaEETransactionManager tm;
     private InjectionManager injectionMgr;
     private boolean initialized = false;
 
@@ -148,6 +148,8 @@ public final class J2EEInstanceListener implements InstanceListener {
         }
         im = serverContext.getDefaultHabitat().getByContract(
                 InvocationManager.class);
+        tm = serverContext.getDefaultHabitat().getByContract(
+                JavaEETransactionManager.class);
         injectionMgr = serverContext.getDefaultHabitat().getByContract(
                 InjectionManager.class);
         initialized = true;
@@ -272,13 +274,10 @@ public final class J2EEInstanceListener implements InstanceListener {
             if (eventType.equals(InstanceEvent.BEFORE_SERVICE_EVENT)) {
                 // enlist resources with TM for service method
                 Transaction tran = null;
-                //XXX
-                /*
                 if ((tran = tm.getTransaction()) != null) {
                     inv.setTransaction(tran);
                 }
                 tm.enlistComponentResources();
-                */
             } else if (eventType.equals(InstanceEvent.BEFORE_INIT_EVENT)) {
                 
                 // Perform any required resource injection on the servlet 
@@ -365,10 +364,7 @@ public final class J2EEInstanceListener implements InstanceListener {
                 ex);
         } finally {
             if (eventType.equals(InstanceEvent.AFTER_DESTROY_EVENT)) {
-//XXX
-/*
                 tm.componentDestroyed(instance);                
-*/
                 JndiNameEnvironment desc = wm.getWebBundleDescriptor();
                 if (desc != null
                         && instance.getClass() != DefaultServlet.class
@@ -404,18 +400,14 @@ public final class J2EEInstanceListener implements InstanceListener {
                                         ex);
                         // END OF IASRI 4660742
                     }
-//XXX
-/*
                     try {
                         if (tm.getTransaction() != null) {
                             tm.rollback();
                         }
                         tm.cleanTxnTimeout();
                     } catch (Exception ex) {}
-*/
                 }
-//XXX
-//                tm.componentDestroyed(instance);
+                tm.componentDestroyed(instance);
             }
         }
     }
