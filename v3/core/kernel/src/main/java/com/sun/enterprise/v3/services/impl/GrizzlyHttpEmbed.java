@@ -459,7 +459,10 @@ public class GrizzlyHttpEmbed {
         } else if ("rcmSupport".equals(propName)) {
             grizzlyListener.setProperty(
                     propName,ConfigBeansUtilities.toBoolean(propValue));
-            return true;    
+            return true;   
+        } else if ("cometSupport".equals(propName)) {
+            configureComet(grizzlyListener);
+            return true;               
         } else if ("connectionUploadTimeout".equals(propName)) {
             grizzlyListener.setUploadTimeout(Integer.parseInt(propValue));
             return true;            
