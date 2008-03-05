@@ -755,6 +755,23 @@ public class Dom extends LazyInhabitant implements InvocationHandler, Observable
         return model.findIgnoreCase(name);
     }
 
+    public static String convertName(String name) {
+        // first, trim off the prefix
+        for (String p : PROPERTY_PREFIX) {
+            if(name.startsWith(p)) {
+                name = name.substring(p.length());
+                break;
+            }
+        }
+
+        // tokenize by finding 'x|X' and 'X|Xx' then insert '-'.
+        StringBuilder buf = new StringBuilder(name.length()+5);
+        for(String t : TOKENIZER.split(name)) {
+            if(buf.length()>0)  buf.append('-');
+            buf.append(t.toLowerCase());
+        }
+        return buf.toString();        
+    }
 
     /**
      * Used to tokenize the property name into XML name.
@@ -775,7 +792,7 @@ public class Dom extends LazyInhabitant implements InvocationHandler, Observable
         String pattern = or(
                 split("x","X"),     // AbcDef -> Abc|Def
                 split("X","Xx"),    // USArmy -> US|Army
-                split("\\D","\\d"), // SSL2 -> SSL|2
+                //split("\\D","\\d"), // SSL2 -> SSL|2
                 split("\\d","\\D")  // SSL2Connector -> SSL|2|Connector
         );
         pattern = pattern.replace("x","\\p{Lower}").replace("X","\\p{Upper}");

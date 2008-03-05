@@ -172,7 +172,7 @@ public class ConfigInjectorGenerator extends SimpleDeclarationVisitor implements
                 }
             } else {
                 if(elementName.length()==0) // infer default
-                    elementName = NAME_UTIL.toHyphenated(clz.getSimpleName());
+                    elementName = Dom.convertName(clz.getSimpleName());
             }
 
             service = injector.annotate(Service.class).param("name",elementName);
@@ -838,6 +838,4 @@ public class ConfigInjectorGenerator extends SimpleDeclarationVisitor implements
             throw new UnsupportedOperationException();
         }
     };
-
-    private static final NameUtil NAME_UTIL = new NameUtil();
 }

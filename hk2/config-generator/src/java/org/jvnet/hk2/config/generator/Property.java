@@ -9,6 +9,7 @@ import com.sun.mirror.declaration.MethodDeclaration;
 import com.sun.mirror.type.TypeMirror;
 import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.Element;
+import org.jvnet.hk2.config.Dom;
 
 import java.beans.Introspector;
 import java.lang.annotation.Annotation;
@@ -31,7 +32,9 @@ abstract class Property {
      * Name used as a seed for the XML name of this property.
      * This is the property name / field name.
      */
-    abstract String seedName();
+    String seedName() {
+        return decl().getSimpleName();
+    };
 
     /**
      * The type of the property.
@@ -67,7 +70,7 @@ abstract class Property {
 
     String inferName(String name) {
         if(name.length()==0)
-            name = NAME_UTIL.toHyphenated(seedName());
+            name = Dom.convertName(seedName());
         return name;
     }
 
@@ -88,13 +91,6 @@ abstract class Property {
 
         MemberDeclaration decl() {
             return decl;
-        }
-
-        String seedName() {
-            String name = decl.getSimpleName();
-            if(name.startsWith("set") || name.startsWith("add") || name.startsWith("get")) // cut off the set prefix
-                name = Introspector.decapitalize(name.substring(3));
-            return name;
         }
 
         TypeMirror type() {
@@ -123,10 +119,6 @@ abstract class Property {
             return decl;
         }
 
-        String seedName() {
-            return decl.getSimpleName();
-        }
-
         TypeMirror type() {
             return decl.getType();
         }
@@ -135,6 +127,4 @@ abstract class Property {
             block.assign($target.ref(decl.getSimpleName()),rhs);
         }
     }
-
-    private static final NameUtil NAME_UTIL = new NameUtil();
 }
