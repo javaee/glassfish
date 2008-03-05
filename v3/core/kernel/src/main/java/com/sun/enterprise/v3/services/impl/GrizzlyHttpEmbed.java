@@ -83,10 +83,6 @@ public class GrizzlyHttpEmbed {
                 System.getProperty("com.sun.aas.instanceRoot") + "/docroot");
         
         for (HttpListener httpListener : httpService.getHttpListener()) {
-            //TODO: Uncomment when issue 4300 is fixed.
-        /*  if (!Boolean.getBoolean(httpListener.getEnabled())) {
-                continue;
-            } */
             if (httpListener.getPort().equalsIgnoreCase(String.valueOf(port))){
                 boolean isSecure = Boolean.getBoolean(httpListener.getSecurityEnabled());
                 configureGrizzlyListener(grizzlyListener,httpListener,isSecure,httpService);
@@ -94,8 +90,7 @@ public class GrizzlyHttpEmbed {
             }
         }
               
-        return grizzlyListener;
-        
+        return grizzlyListener;        
     }
 
     
@@ -153,7 +148,7 @@ public class GrizzlyHttpEmbed {
         // Override http-service property if defined.
         configureHttpListenerProperties(httpListener,grizzlyListener);
         
-        if(System.getProperty("v3.grizzly.comet.disabled") == null
+        if((Boolean.valueOf(System.getProperty("v3.grizzly.cometSupport","false")))
                 && !httpListener.getId().equalsIgnoreCase("admin-listener")){       
             configureComet(grizzlyListener);       
         } 
@@ -329,10 +324,12 @@ public class GrizzlyHttpEmbed {
                                     HttpFileCache httpFileCache){
         if ( httpFileCache == null ) return;
                
-        grizzlyListener.setFileCacheIsEnabled(
+   /*     grizzlyListener.setFileCacheIsEnabled(
                 ConfigBeansUtilities.toBoolean(httpFileCache.getGloballyEnabled()));         
         grizzlyListener.setLargeFileCacheEnabled(
-            ConfigBeansUtilities.toBoolean(httpFileCache.getFileCachingEnabled()));
+            ConfigBeansUtilities.toBoolean(httpFileCache.getFileCachingEnabled()));*/
+        grizzlyListener.setFileCacheIsEnabled(true);         
+        grizzlyListener.setLargeFileCacheEnabled(true);
         
         if (httpFileCache.getMaxAgeInSeconds() != null){
             grizzlyListener.setSecondsMaxAge(

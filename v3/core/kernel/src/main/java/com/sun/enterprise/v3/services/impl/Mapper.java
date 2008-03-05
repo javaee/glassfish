@@ -149,8 +149,7 @@ public class Mapper {
         
         // If no Adapter has been found, add a default one. This is the equivalent
         // of having virtual host.
-        // TODO: Allow configuring the docroot of those virtual host
-        if (pair == null && contextRoot.equals(ROOT)){
+        if (pair == null){
             Adapter adapter = new StaticResourcesAdapter();
             ((StaticResourcesAdapter)adapter)
                     .setRootFolder(GrizzlyServiceListener.getWebAppRootPath());

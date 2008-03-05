@@ -28,7 +28,12 @@ import com.sun.grizzly.ProtocolChain;
 import com.sun.grizzly.ProtocolFilter;
 import com.sun.grizzly.UDPSelectorHandler;
 import com.sun.grizzly.SSLConfig;
+import com.sun.grizzly.arp.AsyncProtocolFilter;
 import com.sun.grizzly.filter.ReadFilter;
+import com.sun.grizzly.http.DefaultProcessorTask;
+import com.sun.grizzly.http.DefaultProtocolFilter;
+import com.sun.grizzly.http.HttpWorkerThread;
+import com.sun.grizzly.http.ProcessorTask;
 import com.sun.grizzly.http.SecureSelector;
 import com.sun.grizzly.http.SelectorThread;
 import com.sun.grizzly.util.net.SSLImplementation;
@@ -169,12 +174,49 @@ public class GrizzlyServiceListener extends SelectorThread implements SecureSele
     
     
     /**
+     * Return a <code>ProcessorTask</code> from the pool. If the pool is empty,
+     * create a new instance.
+     */
+    @Override
+    public ProcessorTask getProcessorTask(){
+        if (asyncExecution){        
+            HttpWorkerThread httpWorkerThread = 
+                    (HttpWorkerThread)Thread.currentThread();
+            DefaultProcessorTask contextPt = 
+                    (DefaultProcessorTask)httpWorkerThread.getProcessorTask();
+
+            if (contextPt == null){
+                return super.getProcessorTask();
+            } else {
+                DefaultProcessorTask pt = 
+                        (DefaultProcessorTask)super.getProcessorTask();
+                // With Async, we cannot re-use the Context ProcessorTask. Since
+                // The adapter has been set on it, rebind it to the current one.
+                if (contextPt != null){
+                    pt.setAdapter(contextPt.getAdapter());
+                }
+                return pt;  
+            }
+        } else {
+            return super.getProcessorTask();
+        }
+
+    }
+    
+    
+    /**
      * Create the HttpProtocolFilter used to map request to their Adapter
      * at runtime.
      */
     public HttpProtocolFilter createHttpProtocolFilter(){
         initAlgorithm();
-        httpProtcolFilter = new HttpProtocolFilter(algorithmClass,port,this);    
+        ProtocolFilter wrappedFilter;
+        if (asyncExecution){
+            wrappedFilter = new AsyncProtocolFilter(algorithmClass,port);
+        } else {
+           wrappedFilter = new DefaultProtocolFilter(algorithmClass, port);
+        }
+        httpProtcolFilter = new HttpProtocolFilter(wrappedFilter,this);    
         return (HttpProtocolFilter)httpProtcolFilter;
     }
     

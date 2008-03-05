@@ -24,7 +24,7 @@
 package com.sun.enterprise.v3.services.impl;
 
 import com.sun.grizzly.Context;
-import com.sun.grizzly.http.DefaultProtocolFilter;
+import com.sun.grizzly.ProtocolFilter;
 import com.sun.grizzly.http.HtmlHelper;
 import com.sun.grizzly.tcp.Adapter;
 import com.sun.grizzly.util.OutputWriter;
@@ -42,7 +42,7 @@ import org.glassfish.api.deployment.ApplicationContainer;
  * 
  * @author Jeanfrancois Arcand
  */
-public class HttpProtocolFilter extends DefaultProtocolFilter implements EndpointMapper<Adapter>{
+public class HttpProtocolFilter implements ProtocolFilter,EndpointMapper<Adapter>{
     
     
     private final static String ROOT = "/";
@@ -64,14 +64,19 @@ public class HttpProtocolFilter extends DefaultProtocolFilter implements Endpoin
     private GrizzlyServiceListener grizzlyListener;
     
     
-    public HttpProtocolFilter(Class algorithmClass, int port, GrizzlyServiceListener grizzlyListener) {
-        super(algorithmClass,port);
+    /**
+     * The Grizzly's wrapped ProtocolFilter.
+     */
+    private final ProtocolFilter wrappedFilter;
+    
+    
+    public HttpProtocolFilter(ProtocolFilter wrappedFilter, GrizzlyServiceListener grizzlyListener) {
         this.grizzlyListener = grizzlyListener;
-        this.mapper = new Mapper(grizzlyListener);        
+        this.mapper = new Mapper(grizzlyListener);  
+        this.wrappedFilter = wrappedFilter;
     }
 
     
-    @Override
     public boolean execute(Context ctx) throws IOException {
         ByteBuffer byteBuffer = 
                 ((WorkerThread)Thread.currentThread()).getByteBuffer();
@@ -96,9 +101,16 @@ public class HttpProtocolFilter extends DefaultProtocolFilter implements Endpoin
             GrizzlyServiceListener.logger().severe(ex.getMessage());
         }
 
-        return super.execute(ctx);
+        return wrappedFilter.execute(ctx);
     }
+
     
+    /**
+     * Execute the wrapped ProtocolFilter.
+     */
+    public boolean postExecute(Context ctx) throws IOException {
+        return wrappedFilter.postExecute(ctx);
+    }    
     
     /*
      * Registers a new endpoint (adapter implementation) for a particular
@@ -126,5 +138,6 @@ public class HttpProtocolFilter extends DefaultProtocolFilter implements Endpoin
         adapters.remove(contextRoot);
         mapper.register(adapters,null);
     }
+
     
 }
