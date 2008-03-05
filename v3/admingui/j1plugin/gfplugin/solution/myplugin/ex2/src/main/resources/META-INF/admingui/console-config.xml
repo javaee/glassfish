@@ -17,12 +17,4 @@
                 content="treenode-ex2.jsf" 
         />
         
-        <integration-point 
-                id="Third" 
-                type="tree" 
-                priority="300" 
-                parentId="j1root" 
-                content="treenode-ex3.jsf" 
-        />
-        
 </console-config>
