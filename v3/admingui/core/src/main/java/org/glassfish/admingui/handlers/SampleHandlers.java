@@ -54,6 +54,7 @@ import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
 //import com.sun.webui.jsf.component.Hyperlink;
 
 import java.util.Map;
+import java.util.Random;
 
 /**
  *
@@ -85,5 +86,36 @@ public class SampleHandlers {
         Object key = (Object) handlerCtx.getInputValue("Key");
         handlerCtx.setOutputValue("Value", (Object) map.get(key));        
     }
+
+	@Handler(id="getjMakiValues",
+    	output={
+        	@HandlerOutput(name="values", type=String.class)
+    	})
+	 public static void getjMakiValues(HandlerContext handlerCtx) {
+         Random generator = new Random();
+        String values = "[15";
+
+        for(int i=0; i < MAX; i++) {
+                values = values + ",";
+            int x = generator.nextInt(LIMIT);
+            x = x - x%DIVISOR;
+            if(x > MID_WAY) {
+                x = x - DIFF;
+            }
+            else {
+                x = x + DIFF;
+            }
+                values = values + x;
+        }
+        values = values + "]";
+        //String values = "[25, 45, 25, 45, 50, 25, 35, 25, 25, 20, 35, 45]";
+            handlerCtx.setOutputValue("values", values);
+    }
+
+	private static int MAX = 11;
+    private static int LIMIT = 100;
+    private static int DIVISOR = 5;
+    private static int DIFF = 10;
+    private static int MID_WAY = 50;
     
 }
