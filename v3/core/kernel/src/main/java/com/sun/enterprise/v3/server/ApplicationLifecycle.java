@@ -247,9 +247,9 @@ abstract public class ApplicationLifecycle {
                 tracker.actOn(logger);
             }
 
-            // if enable attribute is set to false
-            // we don't start the application and just return
-            if (!Boolean.valueOf(context.getCommandParameters().getProperty(
+            // if enable attribute is set to true
+            // we start the application
+            if (Boolean.valueOf(context.getCommandParameters().getProperty(
                 DeployCommand.ENABLED))) {
                 startModules(appInfo, context, report, tracker);
             }
