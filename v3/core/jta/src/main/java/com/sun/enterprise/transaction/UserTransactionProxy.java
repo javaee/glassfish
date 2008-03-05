@@ -55,31 +55,9 @@ public class UserTransactionProxy implements NamedNamingObjectProxy {
     @Inject
     private Habitat habitat;
 
-    /**
-     * Create and return an object.
-     *
-     * @return an object
-     */
-    public Object create(Context ic) throws NamingException {
-
-// XXX TODO: Check permissions to lookup UserTransaction
-        return habitat.getComponent(UserTransactionImpl.class);
-    }
-
-    /**
-     * Return the JNDI name for the object to be looked up
-     *
-     * @return JNDI name as a String
-     */
-    public String getName() {
-        return "UserTransaction";
-        //return "java:comp/UserTransaction";
-    }
-
-
-    public Object handle(String name)
-        throws NamingException {
+    public Object handle(String name) throws NamingException {
         if ("java:comp/UserTransaction".equals(name)) {
+// XXX TODO: Check permissions to lookup UserTransaction
             return habitat.getComponent(UserTransactionImpl.class);
         }
         return null;
