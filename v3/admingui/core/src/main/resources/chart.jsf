@@ -8,10 +8,15 @@
 	/>
 <sun:html>
 <sun:markup tag="head">
+	<sun:link url="/theme/com/sun/webui/jsf/suntheme/css/css_master.css" />
     <sun:markup tag="title">
 	<staticText value="jMaki Charting!" />
     </sun:markup>
     <sun:script url="/resources/jmaki.js" />
+    <sun:script url="/theme/META-INF/dojo/dojo.js" />
+    <sun:script url="/theme/META-INF/json/json.js" />
+    <sun:script url="/theme/META-INF/prototype/prototype.js" />
+    <sun:script url="/theme/META-INF/com_sun_faces_ajax.js" />
 </sun:markup>
 
 <sun:markup tag="body">
