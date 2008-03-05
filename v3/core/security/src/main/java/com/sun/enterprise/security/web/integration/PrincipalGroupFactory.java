@@ -40,7 +40,7 @@
  * Created on October 28, 2004, 12:34 PM
  */
 
-package com.sun.web.security;
+package com.sun.enterprise.security.web.integration;
 
 import com.sun.enterprise.deployment.PrincipalImpl;
 import com.sun.enterprise.deployment.Group;

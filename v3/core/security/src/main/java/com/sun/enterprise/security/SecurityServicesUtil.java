@@ -4,7 +4,6 @@
  */
 package com.sun.enterprise.security;
 
-import com.sun.enterprise.server.ServerContext;
 import com.sun.enterprise.server.pluggable.SecuritySupport;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.v3.server.V3Environment;
@@ -17,21 +16,23 @@ import java.io.IOException;
 import java.security.SecureRandom;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.glassfish.api.Startup;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Singleton;
 
 @Service
 @Scoped(Singleton.class)
-public class SecurityServicesUtil {
+public class SecurityServicesUtil implements Startup {
 
     @Inject(name = "PE")
     private SecuritySupport peSecSupport;
     @Inject
     private V3Environment v3env;
     @Inject
-    private ServerContext serverContext;
+    private static Habitat habitat;
     
     private static final LocalStringManagerImpl _localStrings =
             new LocalStringManagerImpl(SecurityServicesUtil.class);
@@ -124,5 +125,18 @@ public class SecurityServicesUtil {
             _logger.log(Level.WARNING, errmsg);
         }
 
+    }
+
+    public Habitat getHabitat() {
+        return habitat;
+    }
+
+    public Lifecycle getLifecycle() {
+        return Lifecycle.START;
+    }
+
+    public static SecurityServicesUtil getInstance() {
+        // return my singleton service
+        return (SecurityServicesUtil)habitat.getComponent(SecurityServicesUtil.class);
     }
 }

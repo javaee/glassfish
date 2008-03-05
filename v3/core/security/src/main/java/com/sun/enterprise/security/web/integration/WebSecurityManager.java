@@ -34,8 +34,10 @@
  * holder.
  */
 
-package com.sun.web.security;
+package com.sun.enterprise.security.web.integration;
 
+import com.sun.enterprise.security.*;
+import com.sun.enterprise.security.web.integration.WebPrincipal;
 import com.sun.enterprise.server.ServerContext;
 import java.security.*;
 import java.util.Set;
@@ -73,7 +75,7 @@ import com.sun.enterprise.deployment.web.LoginConfiguration;
 import com.sun.enterprise.deployment.runtime.web.SunWebApp;
 import com.sun.enterprise.deployment.interfaces.SecurityRoleMapperFactory;
 import com.sun.enterprise.deployment.interfaces.SecurityRoleMapperFactoryMgr;
-import org.apache.catalina.Globals;
+//import org.apache.catalina.Globals;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 
@@ -98,6 +100,13 @@ public class WebSecurityManager {
     @Inject
     private  AuditManager auditManager;
  
+    /**
+     * Request path. Copied from org.apache.catalina.Globals;
+     * Required to break dependence on WebTier of Security Module
+     */
+    public static final String CONSTRAINT_URI =
+        "org.apache.catalina.CONSTRAINT_URI";
+    
     private static final String RESOURCE = "hasResourcePermission";
     private static final String USERDATA = "hasUserDataPermission";
     private static final String ROLEREF = "hasRoleRefPermission";
@@ -289,7 +298,7 @@ public class WebSecurityManager {
         return wbd.getApplication().getRegistrationName();
     }
 
-    boolean permitAll(HttpServletRequest req) {
+    public boolean permitAll(HttpServletRequest req) {
         WebResourcePermission webResPerm = new WebResourcePermission(req);
         boolean ret = uncheckedPermissionCache.checkPermission(webResPerm);
         if (ret == false) {
@@ -391,7 +400,8 @@ public class WebSecurityManager {
     
     private WebResourcePermission createWebResourcePermission(
             HttpServletRequest httpsr) {
-        String uri = (String)httpsr.getAttribute(Globals.CONSTRAINT_URI);
+        //TODO: V3 String uri = (String)httpsr.getAttribute(Globals.CONSTRAINT_URI);
+        String uri = (String)httpsr.getAttribute(CONSTRAINT_URI);
         if (uri == null) {
             uri = httpsr.getRequestURI();
         }

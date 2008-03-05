@@ -95,7 +95,6 @@ import com.sun.enterprise.security.jmac.config.GFServerConfigProvider;
 import com.sun.enterprise.security.jmac.config.HandlerContext;
 import com.sun.enterprise.security.store.IdentityManager;
 import com.sun.enterprise.security.store.PasswordAdapter;
-import com.sun.enterprise.server.ServerContext;
 import com.sun.logging.LogDomains;
 
 import sun.security.util.DerValue;
@@ -147,8 +146,6 @@ abstract class BaseContainerCallbackHandler
      */
     protected abstract void handleSupportedCallbacks(Callback[] callbacks)
             throws IOException, UnsupportedCallbackException; 
-    
-    protected abstract ServerContext getServerContext();
     
     public void handle(Callback[] callbacks) 
             throws IOException, UnsupportedCallbackException {
@@ -228,7 +225,7 @@ abstract class BaseContainerCallbackHandler
                 }
             } else {
                 // 196 unauthenticated caller principal
-                principal = SecurityContext.getDefaultCallerPrincipal(getServerContext());
+                principal = SecurityContext.getDefaultCallerPrincipal();
             }
         }
 

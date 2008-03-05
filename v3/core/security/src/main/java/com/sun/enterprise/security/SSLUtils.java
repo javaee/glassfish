@@ -63,7 +63,7 @@ import com.sun.enterprise.security.ssl.J2EEKeyManager;
 import com.sun.enterprise.security.ssl.UnifiedX509KeyManager;
 import com.sun.enterprise.security.ssl.UnifiedX509TrustManager;
 import com.sun.enterprise.server.pluggable.SecuritySupport;
-import com.sun.web.security.SSLSocketFactory;
+//V3:Commented import com.sun.web.security.SSLSocketFactory;
 
 import java.util.logging.*;
 import com.sun.logging.*;
@@ -80,7 +80,7 @@ public final class SSLUtils {
 
     private static final String KEYSTORE_PASS_PROP = "javax.net.ssl.keyStorePassword";
     private static final String TRUSTSTORE_PASS_PROP = "javax.net.ssl.trustStorePassword";
-    private static final String HTTPS_OUTBOUND_KEY_ALIAS = "com.sun.enterprise.security.httpsOutboundKeyAlias";
+    public static final String HTTPS_OUTBOUND_KEY_ALIAS = "com.sun.enterprise.security.httpsOutboundKeyAlias";
 
     private static Logger _logger=null;
     private static SecuritySupport secSupp = null;
@@ -126,16 +126,17 @@ public final class SSLUtils {
     //XXX initStoresAtStartup may call more than once, should clean up later
     private static boolean initialized = false;
 
-    //V3:Commented private static Ssl appclientSsl = null;
-
+    //V3:Commented private static Ssl appclientSsl = null
     public static synchronized void initStoresAtStartup()
 	throws Exception
     {
         if (initialized) {
             return;
         }
-
-	SSLSocketFactory.setManagers(getKeyManagers(), getTrustManagers());
+        //V3:Commented to break dependency on WebTier.
+        //The SSLSocketFactory CTOR will now take care of setting the kmgr and tmgr
+	//SSLSocketFactory.setManagers(getKeyManagers(), getTrustManagers());
+        
         // Creating a default SSLContext and HttpsURLConnection for clients 
         // that use Https
         SSLContext ctx = SSLContext.getInstance("TLS");

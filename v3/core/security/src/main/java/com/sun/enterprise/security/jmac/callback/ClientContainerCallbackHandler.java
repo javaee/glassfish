@@ -42,7 +42,7 @@
 
 package com.sun.enterprise.security.jmac.callback;
 
-import com.sun.enterprise.server.ServerContext;
+import com.sun.enterprise.security.SecurityUtil;
 import java.io.IOException;
 
 import javax.security.auth.callback.Callback;
@@ -59,9 +59,7 @@ import javax.security.auth.message.callback.PrivateKeyCallback;
 import javax.security.auth.message.callback.SecretKeyCallback;
 import javax.security.auth.message.callback.TrustStoreCallback;
 
-import com.sun.enterprise.appclient.AppContainer;
 import com.sun.enterprise.security.UsernamePasswordStore;
-import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 
 /**
@@ -69,12 +67,8 @@ import org.jvnet.hk2.annotations.Service;
  * @author  Harpreet Singh
  * @author  Shing Wai Chan
  */
-@Service
 final class ClientContainerCallbackHandler
         extends BaseContainerCallbackHandler {
-
-    @Inject
-    private ServerContext serverContext;
     
     private static final String LOGIN_NAME = "j2eelogin.name";
     private static final String LOGIN_PASSWORD = "j2eelogin.password";
@@ -112,7 +106,8 @@ final class ClientContainerCallbackHandler
                     if (doSet) {
                         UsernamePasswordStore.set(loginName, password);
                     }
-                    CallbackHandler callbackHandler = AppContainer.getCallbackHandler();
+                    //TODO: V3 CallbackHandler callbackHandler = AppContainer.getCallbackHandler();
+                    CallbackHandler callbackHandler = SecurityUtil.getAppContainerCallbackHandler();
                     if(loginName != null && password != null){
                         // username/password set already
                         for(int j = 0; j < callbacks.length; j++){
@@ -156,11 +151,6 @@ final class ClientContainerCallbackHandler
             supported = true;
         }
         return supported;
-    }
-
-    @Override
-    protected ServerContext getServerContext() {
-        return serverContext;
     }
     
 }

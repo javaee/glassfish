@@ -44,10 +44,11 @@ import javax.security.auth.message.config.AuthConfigProvider;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.web.LoginConfiguration;
 import com.sun.enterprise.deployment.runtime.web.SunWebApp;
+import com.sun.enterprise.security.web.integration.WebSecurityManager;
 import com.sun.enterprise.security.auth.realm.certificate.CertificateRealm;
 import com.sun.enterprise.security.jmac.config.GFServerConfigProvider;
 import com.sun.enterprise.security.jmac.config.HandlerContext;
-import com.sun.web.security.WebSecurityManager;
+
 
 public class HttpServletHelper extends ConfigHelper {
     private String realmName = null;

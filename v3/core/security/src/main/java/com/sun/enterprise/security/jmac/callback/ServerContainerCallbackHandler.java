@@ -42,7 +42,6 @@
 
 package com.sun.enterprise.security.jmac.callback;
 
-import com.sun.enterprise.server.ServerContext;
 import java.io.IOException;
 
 import javax.security.auth.callback.Callback;
@@ -55,20 +54,15 @@ import javax.security.auth.message.callback.PasswordValidationCallback;
 import javax.security.auth.message.callback.PrivateKeyCallback;
 import javax.security.auth.message.callback.SecretKeyCallback;
 import javax.security.auth.message.callback.TrustStoreCallback;
-import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.annotations.Service;
 
 /**
  * Callback Handler for ServerContainer
  * @author  Harpreet Singh
  * @author  Shing Wai Chan
  */
-@Service
 final class ServerContainerCallbackHandler
         extends BaseContainerCallbackHandler {
     
-    @Inject
-    private ServerContext serverContext;
     ServerContainerCallbackHandler() {
     }
 
@@ -92,10 +86,5 @@ final class ServerContainerCallbackHandler
             isSupported = true;
         }
         return isSupported;
-    }
-
-    @Override
-    protected ServerContext getServerContext() {
-        return serverContext;
     }
 }

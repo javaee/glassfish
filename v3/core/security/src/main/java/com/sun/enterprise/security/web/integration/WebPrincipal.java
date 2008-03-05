@@ -33,8 +33,9 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.web.security;
+package com.sun.enterprise.security.web.integration;
 
+import com.sun.enterprise.security.*;
 import java.security.Principal;
 import java.security.cert.X509Certificate;
 import com.sun.enterprise.deployment.PrincipalImpl;

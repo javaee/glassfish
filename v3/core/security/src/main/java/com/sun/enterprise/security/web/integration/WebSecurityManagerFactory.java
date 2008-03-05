@@ -33,7 +33,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.web.security;
+package com.sun.enterprise.security.web.integration;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -47,6 +47,7 @@ import com.sun.logging.LogDomains;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.logging.*;
 import java.util.logging.*;
+import javax.security.auth.callback.CallbackHandler;
 /** 
   * This utility class encloses all the calls to a ejb method
   * in a specified subject
@@ -55,6 +56,11 @@ import java.util.logging.*;
   */
 public class SecurityUtil{
 
+    //TODO V3: Temporary till we have AppContainer integration design sorted out
+    public static final int APPCONTAINER_USERNAME_PASSWORD = 1;
+    public static final int APPCONTAINER_CERTIFICATE = 2;
+    //TODO  V3 -------------------------------------
+    
     private static final LocalStringManagerImpl localStrings =
 	new LocalStringManagerImpl(SecurityUtil.class);
     private static final Logger _logger =
@@ -354,5 +360,10 @@ public class SecurityUtil{
      */
     public static SecuritySupport getSecuritySupport() {
         return (new SecurityServicesUtil()).getSecuritySupport();
+    }
+    
+    //TODO V3: Temporary till we have AppContainer integration design sorted out
+    public static CallbackHandler getAppContainerCallbackHandler() {
+        throw new UnsupportedOperationException("V3: AppContainer Integration not yet sorted out");
     }
 }

@@ -46,8 +46,8 @@ import javax.net.ssl.X509KeyManager;
 import javax.security.auth.Subject;
 
 //import com.sun.enterprise.Switch;
-import com.sun.enterprise.appclient.AppContainer;
 import com.sun.enterprise.security.ClientSecurityContext;
+import com.sun.enterprise.security.SecurityUtil;
 import com.sun.enterprise.security.auth.login.X509CertificateCredential;
 import com.sun.enterprise.security.auth.LoginContextDriver;
 import java.util.logging.*;
@@ -128,8 +128,10 @@ public final class J2EEKeyManager implements X509KeyManager {
                     Subject s = ctx.getSubject();
                     if(s == null) {
                         // pass the handler and do the login
-                        LoginContextDriver.doClientLogin(AppContainer.CERTIFICATE,
-                        AppContainer.getCallbackHandler());
+                        //TODO V3: LoginContextDriver.doClientLogin(AppContainer.CERTIFICATE,
+                        //AppContainer.getCallbackHandler());
+                        LoginContextDriver.doClientLogin(SecurityUtil.APPCONTAINER_CERTIFICATE,
+                        SecurityUtil.getAppContainerCallbackHandler());
                         s = ctx.getSubject();
                     }
                     Iterator itr = s.getPrivateCredentials().iterator();

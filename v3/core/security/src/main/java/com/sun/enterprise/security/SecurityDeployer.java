@@ -22,6 +22,8 @@
  */
 package com.sun.enterprise.security;
 
+import com.sun.enterprise.security.web.integration.WebSecurityManagerFactory;
+import com.sun.enterprise.security.web.integration.WebSecurityManager;
 import com.sun.enterprise.deployment.interfaces.SecurityRoleMapperFactory;
 import com.sun.enterprise.deployment.interfaces.SecurityRoleMapperFactoryMgr;
 import org.glassfish.api.deployment.DeploymentContext;
@@ -37,8 +39,7 @@ import com.sun.enterprise.security.util.IASSecurityException;
 import com.sun.enterprise.server.ServerContext;
 import com.sun.enterprise.v3.deployment.DeployCommand;
 import com.sun.logging.LogDomains;
-import com.sun.web.security.WebSecurityManager;
-import com.sun.web.security.WebSecurityManagerFactory;
+
 
 import java.util.ArrayList;
 import java.util.List;

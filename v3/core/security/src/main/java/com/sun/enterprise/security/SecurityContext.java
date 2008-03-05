@@ -50,11 +50,8 @@ import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.config.*;
 import com.sun.enterprise.security.auth.login.DistinguishedPrincipalCredential;
 //V3:Comment import com.sun.enterprise.server.ApplicationServer;
-import com.sun.enterprise.server.ServerContext;
-import com.sun.web.security.PrincipalGroupFactory;
+import com.sun.enterprise.security.web.integration.PrincipalGroupFactory;
 import com.sun.logging.*;
-import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PostConstruct;
 
 /**
@@ -73,12 +70,8 @@ import org.jvnet.hk2.component.PostConstruct;
  * @author Harish Prabandham
  * @author Harpreet Singh
  */
-@Service
 public class SecurityContext extends AbstractSecurityContext implements PostConstruct {
-
-    @Inject
-    private ServerContext serverContext; 
-    
+   
     private static Logger _logger=null;
     static {
         _logger=LogDomains.getLogger(LogDomains.SECURITY_LOGGER);
@@ -172,7 +165,7 @@ public class SecurityContext extends AbstractSecurityContext implements PostCons
     
     private void initDefaultCallerPrincipal() {
          if (this.initiator == null) {
-            this.initiator = getDefaultCallerPrincipal(serverContext);
+            this.initiator = getDefaultCallerPrincipal();
         }
     }
 
@@ -244,7 +237,9 @@ public class SecurityContext extends AbstractSecurityContext implements PostCons
                                     SecurityService securityService = _serverContext.getDefaultHabitat().getComponent(SecurityService.class);
 				    assert(securityService != null);
 				    return securityService.getDefaultPrincipal();*/
-                                    return null;
+                                    SecurityService securityService =(SecurityService) SecurityServicesUtil.getInstance().getHabitat().getComponent(SecurityService.class);
+                                    assert(securityService != null);
+                                    return securityService.getDefaultPrincipal();
 				}
 			    });
 		} catch (Exception e) {
@@ -261,34 +256,6 @@ public class SecurityContext extends AbstractSecurityContext implements PostCons
 	return defaultSecurityContext.initiator;
     }
       
-     public static Principal getDefaultCallerPrincipal(final ServerContext serverContext){
-        synchronized(SecurityContext.class) {
-	    if (defaultSecurityContext.initiator == null) { 
-		String guestUser = null;
-		try {
-		    guestUser = (String)
-			AppservAccessController.doPrivileged(new PrivilegedExceptionAction() {
-				public java.lang.Object run() throws Exception {
-                                    assert(serverContext != null);
-                                    SecurityService securityService = serverContext.getDefaultHabitat().getComponent(SecurityService.class);
-				    assert(securityService != null);
-				    return securityService.getDefaultPrincipal();
-				}
-			    });
-		} catch (Exception e) {
-		    _logger.log(Level.SEVERE,
-				"java_security.default_user_login_Exception", e);
-		} finally {
-		    if (guestUser == null) {
-			guestUser = "ANONYMOUS";
-		    }
-		}
-		defaultSecurityContext.initiator = new PrincipalImpl(guestUser);
-	    }
-	}
-	return defaultSecurityContext.initiator;
-    }
-     
     private static SecurityContext generateDefaultSecurityContext() {
         synchronized (SecurityContext.class) {
 	    try{
@@ -395,7 +362,7 @@ public class SecurityContext extends AbstractSecurityContext implements PostCons
      * @return The caller Principal. 
      */
     public Principal getCallerPrincipal() {
-	return this == defaultSecurityContext ? getDefaultCallerPrincipal(serverContext) : initiator;
+	return this == defaultSecurityContext ? getDefaultCallerPrincipal() : initiator;
     }
 
     

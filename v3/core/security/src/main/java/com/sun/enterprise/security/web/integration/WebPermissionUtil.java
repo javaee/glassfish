@@ -34,8 +34,10 @@
  * holder.
  */
 
-package com.sun.web.security;
+package com.sun.enterprise.security.web.integration;
 
+import com.sun.enterprise.security.web.*;
+import com.sun.enterprise.security.*;
 import java.util.*;
 import javax.security.jacc.PolicyConfiguration;
 import javax.security.jacc.WebResourcePermission;

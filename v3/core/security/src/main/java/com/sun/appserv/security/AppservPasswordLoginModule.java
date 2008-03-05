@@ -50,7 +50,7 @@ import com.sun.enterprise.deployment.Group;
 import com.sun.enterprise.security.auth.login.LoginCallbackHandler;
 import com.sun.enterprise.security.auth.realm.Realm;
 import com.sun.enterprise.security.auth.login.PasswordCredential;
-import com.sun.web.security.PrincipalGroupFactory;
+import com.sun.enterprise.security.web.integration.PrincipalGroupFactory;
 
 
 /**

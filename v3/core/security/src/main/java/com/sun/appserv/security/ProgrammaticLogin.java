@@ -37,6 +37,9 @@
 
 package com.sun.appserv.security;
 
+import com.sun.enterprise.config.serverbeans.SecurityService;
+import com.sun.enterprise.security.SecurityServicesUtil;
+import com.sun.enterprise.security.SecurityUtil;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 import java.security.AccessController;
@@ -47,14 +50,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
                          
 import com.sun.logging.LogDomains;
-import com.sun.enterprise.appclient.AppContainer;
 import com.sun.enterprise.security.auth.LoginContextDriver;
-import com.sun.web.security.WebProgrammaticLogin;
+
 
 import com.sun.enterprise.security.UsernamePasswordStore;
-import com.sun.enterprise.server.ServerContext;
-import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.annotations.Service;
+import com.sun.enterprise.security.web.integration.WebProgrammaticLogin;
+import org.jvnet.hk2.component.Habitat;
 
 /**
  * Implement programmatic login.
@@ -78,9 +79,10 @@ import org.jvnet.hk2.annotations.Service;
  *
  * 
  */
-@Service
 public class ProgrammaticLogin
 {
+    private WebProgrammaticLogin webProgrammaticLogin;
+    
     private static Logger logger =
         LogDomains.getLogger(LogDomains.SECURITY_LOGGER);
 
@@ -90,16 +92,16 @@ public class ProgrammaticLogin
     private static ProgrammaticLoginPermission plLogout =
         new ProgrammaticLoginPermission("logout");
 
+    private static final String DEFAULT_WEBPROGRAMMATICLOGIN_IMPL="com.sun.web.security.WebProgrammaticLoginImpl";
     /*V3:Commented 
      private static boolean isServer =
         (ApplicationServer.getServerContext() != null);*/
     
-    //TODO: V3, check if below is a correct replacement for above
-    @Inject
-    private  ServerContext serverContext;
-
     private static javax.security.auth.callback.CallbackHandler handler = new com.sun.enterprise.security.auth.login.LoginCallbackHandler(false);
     
+    public ProgrammaticLogin() {
+        resolveWebProgrammaticLogin();
+    }
     /**
      * Attempt to login.
      *
@@ -143,10 +145,12 @@ public class ProgrammaticLogin
                     public java.lang.Object run() {
                     // if realm is null, LCD will log into the default realm
                         //V3:Commented if (isServer) {
-                        if (serverContext != null) {
+                        if (isServer()) {
                             LoginContextDriver.login(user, password, realm);
                         } else {
-                            int type = AppContainer.USERNAME_PASSWORD;
+                            //TODO:V3 commented int type = AppContainer.USERNAME_PASSWORD;
+                            int type = SecurityUtil.APPCONTAINER_USERNAME_PASSWORD;
+                            
                             //should not set realm here
 
                             // Bugfix# 6387278. The UsernamePasswordStore 
@@ -242,7 +246,7 @@ public class ProgrammaticLogin
             authenticated = (Boolean)
                 AccessController.doPrivileged(new PrivilegedAction() {
                     public java.lang.Object run() {
-                        return WebProgrammaticLogin.login(user, password, realm,
+                        return webProgrammaticLogin.login(user, password, realm,
                                                           request, response);
                     }
                 });
@@ -324,7 +328,7 @@ public class ProgrammaticLogin
             AccessController.doPrivileged(new PrivilegedAction() {
                 public java.lang.Object run() {
                     //V3:Commentedif (isServer) {
-                    if (serverContext != null) {
+                    if (isServer()) {
                         LoginContextDriver.logout();
                     } else {
                         // Reset the username/password state on logout
@@ -394,7 +398,7 @@ public class ProgrammaticLogin
             loggedout = (Boolean)
                 AccessController.doPrivileged(new PrivilegedExceptionAction() {
                 public java.lang.Object run() throws Exception{
-                    return WebProgrammaticLogin.logout(request, response);
+                    return webProgrammaticLogin.logout(request, response);
                 }
             });
         }catch(Exception e){
@@ -452,7 +456,29 @@ public class ProgrammaticLogin
         }
     }
     
+    private boolean isServer() {
+        try {
+            SecurityService securityService = (SecurityService) SecurityServicesUtil.getInstance().getHabitat().getComponent(SecurityService.class);
+            if (securityService != null) {
+                return true;
+            }
+        } catch (Exception e) {
+        //ignore
+        }
+        return false;
+    }
 
+    private void resolveWebProgrammaticLogin() {
+        Habitat habitat = SecurityServicesUtil.getInstance().getHabitat();
+        this.webProgrammaticLogin = habitat.getComponent(WebProgrammaticLogin.class);
+    }
 
+    private WebProgrammaticLogin getWebProgrammaticLogin() {
+        if (this.webProgrammaticLogin != null) {
+            return this.webProgrammaticLogin;
+        }
+        //TODO: localize this.
+        throw new RuntimeException("Unresolved Reference : Could not Locate implementation class for WebProgrammaticLogin");
+    }
 
 }
