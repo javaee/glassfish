@@ -59,7 +59,7 @@ import com.sun.enterprise.util.web.JarURLPattern;
 @Service(name="jsfTld")
 @Scoped(Singleton.class)
 public class GlassFishTldProvider implements TldProvider, PostConstruct {
-    private List<URL> tldList = new ArrayList();
+    private List<URL> tldList = null;
  
     /**
      * Get a list of URL that corresponding to Tld entries
