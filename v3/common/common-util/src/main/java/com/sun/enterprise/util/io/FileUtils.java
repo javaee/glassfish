@@ -754,6 +754,78 @@ public class FileUtils {
             return result;
         }    
 
+    /** Appends the given line at the end of given text file. If the given
+     * file does not exist, an attempt is made to create it.
+     * Note that this method can handle only text files.
+     * @param fileName name of the text file that needs to be appended to
+     * @param line the line to append to
+     * @throws RuntimeException in case of any error - that makes it callable
+     * from a code not within try-catch. Note that NPE will be thrown if either
+     * argument is null.
+     * Note that this method is not tested with String containing characters
+     * with 2 bytes.
+     */
+    public static void appendText(String fileName, String line) throws
+        RuntimeException    {
+        RandomAccessFile file = null;
+        try {
+            final String MODE = "rw";
+            file = new RandomAccessFile(fileName, MODE);
+            file.seek(file.getFilePointer() + file.length());
+            file.writeBytes(line);
+        }
+        catch(Exception e) {
+            throw new RuntimeException("FileUtils.appendText()", e);
+        }
+        finally {
+            try {
+                if (file != null)
+                    file.close();
+            }
+            catch(Exception e){}
+        }
+    }
+    public static void appendText(String fileName, StringBuffer buffer)
+    throws IOException, FileNotFoundException
+    {
+        appendText(fileName, buffer.toString());
+    }
+    ///////////////////////////////////////////////////////////////////////////
+    
+    /** A utility routine to read a <b> text file </b> efficiently and return
+     * the contents as a String. Sometimes while reading log files of spawned
+     * processes this kind of facility is handy. Instead of opening files, coding
+     * FileReaders etc. this method could be employed. It is expected that the
+     * file to be read is <code> small </code>.
+     * @param fileName String representing absolute path of the file
+     * @return String representing the contents of the file, empty String for an empty file
+     * @throws java.io.IOException if there is an i/o error.
+     * @throws java.io.FileNotFoundException if the file could not be found
+     */
+    public static String readSmallFile(final String fileName) 
+            throws IOException, FileNotFoundException {
+        return (readSmallFile(new File(fileName)) );
+    }
+    
+    public static String readSmallFile(final File file) 
+            throws IOException {
+        final BufferedReader bf = new BufferedReader(new FileReader(file));
+        final StringBuilder sb = new StringBuilder(); //preferred over StringBuffer, no need to synchronize
+        String line = null;
+        try {
+            while ( (line = bf.readLine()) != null ) {
+                sb.append(line);
+                sb.append(System.getProperty("line.separator"));
+            }
+        }
+        finally {
+            try {
+                bf.close();
+            }
+            catch (Exception e) {}
+        }
+        return ( sb.toString() );
+    }
 
     /**
      * Represents a unit of work that should be retried, if needed, until it
