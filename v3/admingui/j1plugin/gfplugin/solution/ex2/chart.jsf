@@ -1,10 +1,22 @@
 <sun:page>
+	<!beforeCreate
+		getjMakiValues(values=>$attribute{pievalues});
+		getjMakiValues(values=>$attribute{gryvalues});
+		getjMakiValues(values=>$attribute{bluvalues});
+		getjMakiValues(values=>$attribute{pnkvalues});
+		getjMakiValues(values=>$attribute{redvalues});
+	/>
 <sun:html>
 <sun:markup tag="head">
+	<sun:link url="/theme/com/sun/webui/jsf/suntheme/css/css_master.css" />
     <sun:markup tag="title">
 	<staticText value="jMaki Charting!" />
     </sun:markup>
     <sun:script url="/resources/jmaki.js" />
+    <sun:script url="/theme/META-INF/dojo/dojo.js" />
+    <sun:script url="/theme/META-INF/json/json.js" />
+    <sun:script url="/theme/META-INF/prototype/prototype.js" />
+    <sun:script url="/theme/META-INF/com_sun_faces_ajax.js" />
 </sun:markup>
 
 <sun:markup tag="body">
@@ -15,9 +27,14 @@
 <sun:markup tag="div" style="width:380px; height: 380px;">
 
 //  Uncomment the one at a time to try
-//<jmaki:widget name="jmaki.charting.yahoo.pie"
-//<jmaki:widget name="jmaki.charting.google.pie"
-<jmaki:widget name="jmaki.charting.plotkit.pie"
+
+<sun:dropDown labels={"jmaki.charting.yahoo.pie" "jmaki.charting.google.pie" "jmaki.charting.plotkit.pie"} value="#{requestScope.chart1}">
+    <!beforeCreate
+	setAttribute(key="chart1", value="jmaki.charting.google.pie");
+    />
+</sun:dropDown>
+<sun:button value=" Refresh " />
+<jmaki:widget name="#{requestScope.chart1}"
     args="{colorScheme:2}"
     value="{
 	xAxis : {
@@ -38,24 +55,21 @@
 		},
 	data : [ {
 	    label : 'Set 1',
-	    values : [25, 45, 25, 45, 50, 25, 35, 25, 25, 20, 35, 45]
+	    values : $attribute{pievalues}
 	    } ] }"/>
 
 </sun:markup>
+
+<sun:dropDown labels={"jmaki.charting.plotkit.area" "jmaki.charting.plotkit.line" "jmaki.charting.plotkit.bar" "jmaki.charting.google.area" "jmaki.charting.google.bar" "jmaki.charting.google.line" "jmaki.charting.yahoo.line" "jmaki.charting.yahoo.bar" "jmaki.charting.dojo.bar" "jmaki.charting.dojo.line" "jmaki.charting.dojo.area"} value="#{requestScope.chart2}">
+    <!beforeCreate
+	setAttribute(key="chart2", value="jmaki.charting.yahoo.area");
+    />
+</sun:dropDown>
+<sun:button value=" Refresh " />
 <sun:markup tag="div" style="width: 600px; height: 280px;">
 
 //  Uncomment the one at a time to try
-<jmaki:widget name="jmaki.charting.dojo.area" 
-//<jmaki:widget name="jmaki.charting.dojo.line" 
-//<jmaki:widget name="jmaki.charting.dojo.bar" 
-//<jmaki:widget name="jmaki.charting.plotkit.area" 
-//<jmaki:widget name="jmaki.charting.plotkit.line" 
-//<jmaki:widget name="jmaki.charting.plotkit.bar" 
-//<jmaki:widget name="jmaki.charting.google.area" 
-//<jmaki:widget name="jmaki.charting.google.bar" 
-//<jmaki:widget name="jmaki.charting.google.line" 
-//<jmaki:widget name="jmaki.charting.yahoo.line" 
-//<jmaki:widget name="jmaki.charting.yahoo.bar" 
+<jmaki:widget name="#{requestScope.chart2}"
           value="{
                     xAxis : {
                     title : 'Months',
@@ -84,10 +98,10 @@
                               ]
                               },                              
                               data : [
-                   {label : 'Gray Series', values : [25, 45, 25, 45, 50, 25, 35, 25, 25, 20, 35, 45] },
-                   {label : 'Pink Series', values : [20, 40, 30, 35, 45, 20, 25, 15, 20, 25, 30, 40] },
-                   {label : 'Blue Series', values : [15, 35, 15, 40, 30, 15, 20, 10, 15, 20, 30, 35] },                   
-                   {label : 'Red Series',  values :  [10, 25, 10,  5, 20,  5, 15,  5, 10, 15, 25, 30] }
+                   {label : 'Gray Series', values : $attribute{gryvalues} },
+                   {label : 'Pink Series', values : $attribute{pnkvalues} },
+                   {label : 'Blue Series', values : $attribute{bluvalues} },                   
+                   {label : 'Red Series',  values : $attribute{redvalues} }
                    ]
                }"/>
 </sun:markup>
