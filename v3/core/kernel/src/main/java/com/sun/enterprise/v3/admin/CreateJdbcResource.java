@@ -44,16 +44,11 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PerLookup;
-import org.jvnet.hk2.config.ConfigSupport;
-import org.jvnet.hk2.config.SingleConfigCode;
-import org.jvnet.hk2.config.TransactionFailure;
+import com.sun.enterprise.config.serverbeans.Property;
 import com.sun.enterprise.config.serverbeans.Resources;
-import com.sun.enterprise.config.serverbeans.JdbcResource;
-import com.sun.enterprise.config.serverbeans.Resource;
 import com.sun.enterprise.config.serverbeans.ServerTags;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 
-import java.beans.PropertyVetoException;
 import java.util.HashMap;
 import java.util.Properties;
 
@@ -76,6 +71,12 @@ public class CreateJdbcResource implements AdminCommand {
 
     @Param(optional=true)
     String description;
+    
+    @Param(optional=true)
+    Properties properties;
+    
+    @Param(optional=true)
+    String target;
 
     @Param(name="jndi_name", primary=true)
     String jndiName;
@@ -98,10 +99,10 @@ public class CreateJdbcResource implements AdminCommand {
         attrList.put(ResourceConstants.CONNECTION_POOL_NAME, connectionPoolId);
         attrList.put(ServerTags.DESCRIPTION, description);
         attrList.put(ResourceConstants.ENABLED, enabled);
-        Properties props = null;
         ResourceStatus rs;
+ 
         try {
-            rs = jdbcMgr.create(resources, attrList, props, jndiName);
+            rs = jdbcMgr.create(resources, attrList, properties, jndiName);
         } catch(Exception e) {
             report.setMessage(localStrings.getLocalString("create.jdbc.resource.failed",
                     "JDBC resource {0} creation failed", jndiName));

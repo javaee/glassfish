@@ -47,6 +47,7 @@ import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.TransactionFailure;
 import java.beans.PropertyVetoException;
+import com.sun.enterprise.config.serverbeans.Property;
 import com.sun.enterprise.config.serverbeans.Resources;
 import com.sun.enterprise.config.serverbeans.JdbcResource;
 import com.sun.enterprise.util.LocalStringManagerImpl;
@@ -73,7 +74,7 @@ public class JDBCResourceManager implements ResourceManager {
     String enabled = Boolean.TRUE.toString();
 
     public ResourceStatus create(Resources resources, HashMap attrList, 
-                                    Properties props, String tgtName) 
+                                    final Properties props, String tgtName) 
            throws Exception {
 
         jndiName = (String) attrList.get(JNDI_NAME);
@@ -111,10 +112,19 @@ public class JDBCResourceManager implements ResourceManager {
                     }
                     newResource.setPoolName(poolName);
                     newResource.setEnabled(enabled);
+                    for ( java.util.Map.Entry e : props.entrySet()) {
+                        Property prop = ConfigSupport.createChildOf(newResource, 
+                                Property.class);
+                        prop.setName((String)e.getKey());
+                        prop.setValue((String)e.getValue());
+                        newResource.getProperty().add(prop);
+                    }
                     param.getResources().add(newResource);                    
                     return newResource;
                 }
             }, resources);
+            
+           
 
         } catch(TransactionFailure tfe) {
             String msg = localStrings.getLocalString("create.jdbc.resource.fail", 
