@@ -19,17 +19,22 @@ import java.util.Set;
  * The common issue we have is that often distribution modules like PE and nucleus
  * end up containing tons of modules, which makes it unclear as to what functionalities
  * are really added.
+ * </p>
  *
  * <p>
  * This mojo is intended to be used interactively to solve this problem.
  * The mojo will list up all the dependencies that are declared explicitly in POM,
  * yet it's also available through transitive dependencies.
+ * </p>
  *
  * <p>
- * Those are often modules that aren't top-level modules, and as such one can
- * consider de-listing them from the module. Since they are parts of the transitive
- * dependencies anyway, de-listing them won't have any semantic difference; it just
- * makes POM cleaner.
+ * It is then a human's job to decide if the explicit dependency is justified;
+ * for exmaple, if your module X depends on another module Y, and both just
+ * so happens to rely on the same utility code Z, then you still want to keep
+ * that dependency explicit, because Y might stop depending on Z any time.
+ * On the other hand, if you depend on JSP, then the dependency to servlet
+ * is implified in JSP, so your explicit dependency to servle is probably unnecessary.
+ * </p>
  *
  * @goal analyze-dependency
  * @requiresProject
