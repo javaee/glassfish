@@ -190,7 +190,7 @@ public abstract class AbstractCompilerMojo
      * varies based on the compiler version.
      * </p>
      *
-     * @parameter
+     * @parameter expression="${maven.compiler.argument}"
      */
     private String compilerArgument;
 
