@@ -53,11 +53,11 @@
     <packaging>maven-plugin</packaging>
     <name>GlassFish v3 Maven2 plugin</name>
 
-    <distributionManagement>
+    <!--distributionManagement>
         <site>
             <url>java-net:/glassfish-svn/trunk/www/maven-glassfish-plugin/</url>
         </site>
-    </distributionManagement>
+    </distributionManagement-->
 
     <build>
         <sourceDirectory>src/main/java</sourceDirectory>
