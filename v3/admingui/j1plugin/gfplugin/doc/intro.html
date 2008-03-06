@@ -8,30 +8,50 @@
                  page in the first tab will be used to set the title for the
                  page.  If such a tag cannot be found, the page title will be
                  the generic title from the index page. -->
-            <div id="j1holtitleid" class="pagetitle"><a name="Intro"></a>LAB-xxxx: Title of Your Hands-on Lab</div>
+            <div id="j1holtitleid" class="pagetitle"><a name="Intro"></a>LAB-4520: Plug Your JavaServer Faces Application into the GlassFish v3 Admin Console</div>
             
             <div class="j1holduration xbig">Expected duration: 120 minutes</div>
             
             <div class="j1holcontacts">Contacts:
-                <a href="mailto:jeff.kesselman@sun.com">Andr&eacute;s Gonz&aacute;lez</a>
-            and <a href="mailto:dan.templeton@sun.com">Daniel Templeton</a></div>
+                <a href="mailto:ken.paulsen@sun.com">Ken Paulsen (ken.paulsen@sun.com)</a>,
+		<a href="mailto:anissa.lam@sun.com">Anissa Lam (anissa.lam@sun.com)</a>
+		<a href="mailto:chock.chidambaram@sun.com">Senthil Chidambaram (chock.chidambaram@sun.com)</a>
+		<a href="mailto:ana.caballero@sun.com">Ana Caballero (ana.caballero@sun.com)</a>
+	    </div>
             
-            <div class="j1holupdated">Last Updated: May 8, 2007</div>
+            <div class="j1holupdated">Last Updated: Mar 5, 2008</div>
             
-            <p>[Write your abstract here.
-                An example follows.] JavaServer Faces (JSF) is a standard-based server
-                side user
-                interface component framework for Java technology based Web
-                applications.
-                In this hands-on lab, your will learn basic concept, architecture
-                and features of JavaServer Faces by building, deploying, and
-                running
-                a set of sample Web applications. You will also learn the usage of
-                basic UI components through JavaServer Faces custom
-                tags, specify page selection through JavaServer Faces navigation
-                model, perform input validation, handle
-                event handling, and so on.
-            </p>
+<p>
+  Glassfish Application Server has been widely adopted by many companies as well
+  as individuals.&nbsp; This broad user base means there is a wide variety of
+  needs from GlassFish, both in terms of the services it provides, as well as
+  the management of those services.&nbsp; GlassFish v3 addresses the wide
+  variety of requirements its users have through a modular architecture, which
+  allows server components such as EJB, WebServices, JDBC, as well as numerous
+  frameworks to be added and removed from the server as needed.
+</p>
+<p>
+  The Administration Console for GlassFish has not been left out when it comes
+  to plugability.&nbsp; In order to manage a dynamic Application Server like v3,
+  the Admin Console must itself be dynamic.&nbsp; This presents a big challenge
+  for a JavaServer Faces web application.&nbsp; How are resources (pages,
+  images, etc.) discovered when the bits are not available at install
+  time?&nbsp; How do you accommodate multiple "plugins" which want to contribute
+  to the same page?
+</p>
+<p>
+  In this lab, we will explore these issues and learn how creating a pluggable
+  JavaServer Faces application is addressed in GlassFish.&nbsp; The lab will
+  demonstrate how any individual, or company, may create a plugin for GlassFish
+  which integrates tightly with its Admin Console.&nbsp; This lab will guide you
+  through the process of adding new tree nodes to the GlassFish navigation tree,
+  adding new JavaServer Faces pages, including a jMaki Chart, and will show you
+  how to bundle it together in a neat plugin.&nbsp; And because GlassFish is an
+  Open Source, Open Community Application Server, all the source code is
+  available -- no secrets!&nbsp; Even better yet, since GlassFish is an open
+  community, we welcome everyone to add their own custom GlassFish v3 plugins to
+  the community!<br>
+</p>
             
             <div class="j1holcopyright">
                 <p>Copyright</p>
@@ -45,96 +65,86 @@
             basic knowledge or programming experience on the following technologies.</p>
             
             <ul>
-                <li>Servlet and JSP Programming</li>
-                <li>MVC (Model, View, and Controller) architecture</li>
+                <li>Java</li>
             </ul>
+
+            <p class="j1holheader">Helpful Knowledge</p>
+
+<ul>
+  <li>GlassFish</li>
+  <li>JSFTemplating / Facelets</li>
+  <li>JSF</li>
+  <li>NetBeans</li>
+  <li>Subversion</li>
+  <li>Maven</li>
+</ul>
             
             <p class="j1holheader">System Requirements</p>
             
             <ul>
-                <li>Supported OS: Windows 2000/ XP, Solaris 8/9, Linux</li>
-                <li>Memory requirement: 256M minimum, 512M recommended</li>
-                <li>Disk space requirement: 300M bytes</li>
+                <li>Supported OS: Windows, Solaris, Linux, MacOS</li>
+		<li>Memory requirement: 512M minimum, 2GB recommended</li>
+		<li>Disk space requirement: 500 MB</li>
             </ul>
             
             <p class="j1holheader">Software needed for the lab</p>
             
-            <p>[List the list of platform software that need to
-            be downloaded. The following is an example.]</p>
-            
-            <p>Please download and install the following set of software. If you have any
-                questions on installation, please feel free to send questions to the
-            email alias mentioned below.</p>
+<p>
+  The following set of software will be used in this lab. This software should
+  have been already made available to you, however, if you are setting up the
+  environment yourself you will need to have the following software.&nbsp; If
+  you have any questions on installation, please feel free to send questions to
+  the email alias mentioned below.
+</p>
             
             <ul class="j1hollist">
-                <li>Download and install <a href="http://java.sun.com/javase/downloads/?intcmp=1281">JDK 6</a></li>
-                
-                <li>Download and install
-                    <a href="http://www.netbeans.info/downloads/download.php?a=b&amp;p=1">
-                    <a href="http://download.netbeans.org/netbeans/6.0/final/">NetBeans IDE 6.0</a> or higher</a>
-                    <ul>
-                        <li>On the download page, choose either the Web & Java EE download
-                            or the All download.
-                        </li>
-
-                        <li>The instruction of how to build and deploy the lab exercises
-                            in this lab is provided as an optional exercise.
-                        </li>
-                    </ul>
-                </li>
-                
-                <li>
-                    Download and install <a href="http://dev.mysql.com/downloads/mysql/5.0.html#downloads">MySQL 5.0</a> (required for Exercise NNN only)
-                </li>
-                
-                <li>Download and unzip
-                    <a href="http://developers.sun.com/learning/javaoneonline/j1lab.jsp?lab=LAB-4205&yr=2008&track=1">lab
-                    zip file (4205_basicstruts.zip)</a> under a directory of your
-                    choice, &lt;lab_root&gt;
-                    <ul>
-                        <li>Read &lt;lab_root&gt;/basicstruts/index.html to proceed</li>
-                    </ul>
-                </li>
-            </ul>
+  <li>Java SE <a href=http://java.sun.com/javase/downloads/?intcmp=1281>JDK 6</a></li>
+  <li><a href=http://www.netbeans.info/downloads/download.php?a=b&amp;p=1></a><a href=http://download.netbeans.org/netbeans/6.0/final/>NetBeans IDE 6.0</a> or higher
+      <ul><li>On the download page, choose either the Web &amp; Java EE download orthe All download.</li>
+	  <li>The instruction of how to build and deploy the lab exercises in this lab is provided as optional exercise #0.</li>
+	  </ul></li>
+  <li><a href=https://glassfish.dev.java.net id=blts title="Glassfish V3">Glassfish V3</a></li>
+  <li><a href=http://developers.sun.com/learning/javaoneonline/j1lab.jsp?lab=LAB-4205&amp;yr=2008&amp;track=1>Lab zip file (4520_j1plugin.zip)</a> under a directory of your choice, &lt;lab_root&gt;
+      <ul><li>Read &lt;lab_root&gt;/index.html to proceed</li></ul></li>
+	    </ul>
             
             <p class="j1holheader"">Notations used in this documentation</p>
             
             <ul class="j1hollist">
-                <li>&lt;J2EE14_HOME&gt; or &lt;INSTALL_DIR&gt;
-                    <ul>
-                        <li>It is the installation directory of J2EE 1.4 SDK</li>
-                        <ul>
-                            <li>For Windows, the default is C:\Sun\AppServer</li>
-                            <li>For Solaris/Linux, the default is /opt/SUNWappserver</li>
-                        </ul>
-                    </ul>
-                </li>
-                
-                <li>&lt;lab_root&gt; - directory into which lab zip file is unzipped
-                    
-                    <ul>
-                        <li>
-                            This document uses &lt;lab_root&gt; to denote the directory
-                            under which you have
-                            unzipped the lab zip file of this handson lab. The name of the lab zip
-                            file of this handson lab is <span style="font-weight: bold;">7622_netbeans40.zip</span>.
-                        </li>
-                        <li>
-                            Once you
-                            unzipped the lab zip file under &lt;lab_root&gt;, it will create
-                            a subdirectory called <span style="font-weight: bold;">netbeans40</span>.
-                            For example, under Windows, if you
-                            have unzipped the lab zip file in the root of drive <span
-                                style="font-weight: bold;">E:\</span>, it will create <span
-                                style="font-weight: bold;">E:\netbeans40</span>.
-                            
-                            Under Linux/Solaris, if you have unzipped the
-                            lab zip file in the <span style="font-weight: bold;">/home/sang</span>
-                            directory, it will create <span style="font-weight: bold;">$HOME/netbeans40</span>
-                            directory.
-                        </li>
-                    </ul>
-                </li>
+  <li>
+    &lt;INSTALL_DIR&gt;
+    <ul>
+      <li>
+        It is the installation directory of Glassfish V3
+      </li>
+      <ul>
+        <li>
+          For Windows, the default is C:\Sun\AppServer
+        </li>
+        <li>
+          For Solaris/Linux, the default is /opt/SUNWappserver
+        </li>
+      </ul>
+    </ul>
+  </li>
+  <li>
+    &lt;lab_root&gt; - directory into which lab zip file is unzipped
+    <ul>
+      <li>
+        This document uses &lt;lab_root&gt; to denote the directory under which
+        you have unzipped the lab zip file of this lab. The name of the lab zip
+        file is <b>4520_gfplugin.zip</b>.
+      </li>
+      <li>
+        Once you unzipped the lab zip file under &lt;lab_root&gt;, it will
+        create a subdirectory called <b>gfplugin</b> For example, under Windows,
+        if you have unzipped the lab zip file in the root of drive <b>E:\</b>,
+        it will create <b>E</b><b>fplugin.</b> Under Linux/Solaris, if you have
+        unzipped the lab zip file in the <b>$HOME</b> directory, it will create
+        <b>$HOME/</b><b>gfPlugin</b> directory.
+      </li>
+    </ul>
+  </li>
             </ul>
             
             <p class="j1holheader j1holnote"><a name="Notes">Notes to
@@ -164,49 +174,23 @@
             <p class="j1holheader"">Lab exercises</p>
             
             <ul>
-                <li><a href="#Exercise_0">Exercise 0: Install and configure the lab
-                environment</a></li>
-                <li><a href="#Exercise_1">Exercise 1: Do this</a></li>
-                <li><a href="#Exercise_2">Exercise 2: Do that</a></li>
+                <li><a href="#Exercise_0">Exercise 0: Configuring your environment</a></li>
+                <li><a href="#Exercise_1">Exercise 1: Plugging into GlassFish</a></li>
+                <li><a href="#Exercise_2">Exercise 2: Charting with jMaki</a></li>
+                <li><a href="#Exercise_3">Exercise 3: Templating your Plugin</a></li>
             </ul>
             
             <p class="j1holheader">Resources</p>
             
             <ul>
-                <li>
-                    <a href="#Appendix_A">Appendix A: Stuff</a>
-                </li>
-                <li>
-                    <a href="0000_Template.pdf">Lab presentation</a>
-                </li>
-                <li>
-                    <a href="http://java.sun.com/j2ee/1.4/docs/tutorial/doc/JSFIntro.html#wp114889">JSF
-                    tutorial chapters (Chapter 17</a>,
-                    <a href="http://java.sun.com/j2ee/1.4/docs/tutorial/doc/JSFPage.html#wp114889">18,</a>
-                    <a href="http://java.sun.com/j2ee/1.4/docs/tutorial/doc/JSFDevelop.html#wp998388">19,</a>
-                    <a href="http://java.sun.com/j2ee/1.4/docs/tutorial/doc/JSFCustom.html#wp113904">20,</a>
-                    <a href="http://java.sun.com/j2ee/1.4/docs/tutorial/doc/JSFConfigure.html#wp998388">21</a>)
-                    of <a href="http://java.sun.com/j2ee/1.4/docs/tutorial/doc/index.html">J2EE
-                    1.4 tutorial</a>
-                </li>
-                <li>
-                    <a href="http://www.jsfcentral.com/">JSFCentral website (JSF
-                    community)</a>
-                </li>
-                <li>
-                    <a href="http://java.sun.com/j2ee/javaserverfaces/1.0/docs/api/index.html">JSF
-                    API online documentation</a>
-                </li>
-                <li>
-                    <a href="http://java.sun.com/j2ee/javaserverfaces/1.0/docs/tlddocs/overview-summary.html">JSF
-                    Tags online documentation</a>
-                </li>
-                
-                <li>
-                    <a href="http://www.javapassion.com/j2eeadvanced/ClassAdvanced.html#Class_5">JSF
-                        related contents in the "Advanced J2EE programming with
-                    Passion!" online course</a>
-                </li>
+                <li><a href="../4520_gfplugin.pdf">Lab Presentation</a></li>
+		<li><a href="https://glassfish.dev.java.net">GlassFish v3</a></li>
+<!-- FIXME: TBD: Get URL for wiki page -->
+		<li><a href="https://glassfishwiki">GlassFish Admin Console Plugin Documentation</a></li>
+		<li><a href="https://jsftemplating.dev.java.net">JSFTemplating</a></li>
+		<li><a href="https://ajax.dev.java.net">jMaki</a></li>
+		<li><a href="https://jmaki-charting.dev.java.net">jMaki Charting</a></li>
+		<li><a href="https://hk2.dev.java.net">HK2</a></li>
             </ul>
             
             <p class="j1holheader">Where to send questions or feedbacks
@@ -217,30 +201,24 @@
                     You can send technical questions via email to the authors of this
                     Hands-on lab (and experts on the subject) or you can post the questions
                     to the web. <br>
-                    Please post questions that are relevant only to this
-                    hands-on lab.
+                    Please post questions that are relevant only to this hands-on lab.
                     
                     <ul>
                         <li>
-                            <a href="https://hands-on-labs.dev.java.net/servlets/ForumMessageList?forumID=2548">6340_JavaME_StreamingVideo
+                            <a href="https://hands-on-labs.dev.java.net/servlets/ForumMessageList?forumID=2548">4520_GlassFish_Plugin
                             forum at hands-on-labs.dev.java.net</a>
                         </li>
                     </ul>
                 </li>
                 
-                <li>
-                    You can send your other questions to the public mailing lists and
+                <li>You can send your other questions to the public mailing lists and
                     forums.
                     
                     <ul>
-                        <li>
-                            <a href="http://mobility.netbeans.org/servlets/SummarizeList?listName=users">Mobility
-                            users mailing list archive </a>
-                        </li>
-                        <li>
-                            <a href="http://forum.java.sun.com/forum.jspa?forumID=76">Forum:
-                            Java ME Technologies - CLDC and MIDP</a>
-                        </li>
+		      <li><a href="http://forums.java.net/jive/category.jspa?categoryID=58">GlassFish Forums</a></li>
+		      <li><a href="https://glassfish.dev.java.net/servlets/ProjectMailingListList">GlassFish Email Lists (admin, users, or dev)</a></li>
+		      <li><a href="https://jsftemplating.dev.java.net/servlets/ProjectMailingListList">JSFTemplating Email List</a></li>
+		      <li><a href="https://ajax.dev.java.net/servlets/ProjectMailingListList">jMaki Email List</a></li>
                     </ul>
                 </li>
             </ul>
