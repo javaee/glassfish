@@ -1,0 +1,2868 @@
+
+<html xmlns:gdoc="">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<style type="text/css">
+
+
+/* default css */
+
+table {
+  font-size: 1em;
+  line-height: inherit;
+}
+
+
+div, address, ol, ul, li, option, select { 
+  margin-top: 0px;
+  margin-bottom: 0px;
+}
+
+p {
+  margin: 0px;
+}
+
+body {
+  
+  
+    margin: 0px;
+  
+  
+  
+    padding: 0px;
+  
+  font-family: Verdana, sans-serif;
+  font-size: 10pt;
+  background-color: #ffffff;
+}
+
+h6 { font-size: 10pt }
+h5 { font-size: 11pt }
+h4 { font-size: 12pt }
+h3 { font-size: 13pt }
+h2 { font-size: 14pt }
+h1 { font-size: 16pt }
+
+blockquote {padding: 10px; border: 1px #DDD dashed }
+
+a img {border: 0}
+
+div.google_header, div.google_footer {
+  position: relative;
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
+/* end default css */
+
+
+  /* default print css */
+  
+  @media print {
+    body { 
+      padding: 0; 
+      margin: 0; 
+    }
+
+    div.google_header, div.google_footer {
+      display: block;
+      min-height: 0;
+      border: none;
+    }
+
+    div.google_header {
+      flow: static(header);
+    }
+
+    /* used to insert page numbers */
+    div.google_header::before, div.google_footer::before {
+      position: absolute;
+      top: 0;
+    }
+
+    div.google_footer {
+      flow: static(footer);
+    }
+
+    /* always consider this element at the start of the doc */
+    div#google_footer {
+      flow: static(footer, start);
+    }
+
+    span.google_pagenumber {
+      content: counter(page);
+    }
+
+    span.google_pagecount {
+      content: counter(pages);
+    }
+  }
+
+  @page {
+    @top {
+      content: flow(header);
+    }
+    @bottom {
+      content: flow(footer);
+    }
+  }
+  /* end default print css */
+ 
+
+/* custom css */
+
+
+/* end custom css */
+
+
+
+  /* ui edited css */
+  
+  body {
+    font-family: Verdana;
+    
+    font-size: 10.0pt;
+    line-height: normal;
+    background-color: #ffffff;
+  }
+  
+  .documentBG {
+    background-color: #ffffff;
+  }
+  /* end ui edited css */
+
+
+
+
+</style>
+
+
+</head>
+
+<body
+    
+    revision="dfkws5tg_35dxhv7dg2:3382">
+
+    
+    
+<br>
+<br>
+For all the labs that are candidates for the machine provided room, we will have
+two zip files from the developers.<br>
+I will explain this in detail in our next conference call next week, but here is
+a short description of the zip files.<br>
+<br>
+1) LAB#_Labname.zip<br>
+&nbsp;&nbsp;&nbsp;&nbsp;which contains all the lab documents (like in
+template.zip) including the html and source files.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;This zip file will be copied on the CD and will be
+available on the internet.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;This should not have any of the machine configuration
+files needed for the machine provided room.<br>
+<br>
+2) LAB#_other.zip&nbsp;&nbsp; [BYOL-only labs need not do this]<br>
+&nbsp;&nbsp;&nbsp;&nbsp;to include all the additional configuration files needed
+for the lab.&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;For example:&nbsp; .bash_login, bash_aliases,&nbsp;
+.netbeans,&nbsp; .mozilla,&nbsp; or any additional files that you want copied to
+the home directory of your lab user.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;This is to customize and simplify the setup required for
+your lab.<br>
+<br>
+Both these zip files will be extracted in the home directory of the users.<br>
+<br>
+HTHs,<br>
+Sridhar<br>
+<br>
+<b>For the final zip file, we need to ensure the following:<br>
+</b>1. No security is turn on for admingui, ie no login required<br>
+2.&nbsp; admingui war is predeployed, and user can use port 8080<br>
+3.&nbsp; console-core-1.0.SNAPSHOT.jar is&nbsp; in&nbsp; glassfish/modules<br>
+4.&nbsp; console-plugin-service-1.0.SNAPSHOT.jar is in glassfish/modules<br>
+<br>
+<br>
+<br>
+<b>Deliverables:</b><br>
+solution/<br>
+http://hi-new.sfbay.sun.com/te-slides/handson2007/j1hol2008/J1HOL_developers.html<br>
+<br>
+<ul>
+  <li>
+    Lab zip file which includes:
+  </li>
+  <ul>
+    <li>
+      Instructions
+    </li>
+    <ul>
+      <li>
+        Introduction
+      </li>
+      <li>
+        Exercise 0 + Solution<br>
+      </li>
+      <li>
+        Exercise 1 + Solution
+      </li>
+      <li>
+        Exercise 2 + Solution
+      </li>
+      <li>
+        Exercise 3 + Solution
+      </li>
+      <li>
+        Summary<br>
+      </li>
+    </ul>
+    <li>
+      Presentation
+    </li>
+    <li>
+      Starter app
+    </li>
+    <li>
+      Completed app (solution)
+    </li>
+    <li>
+      ?
+    </li>
+  </ul>
+  <li>
+    Dependency files (glassfish, netbeans, etc)
+  </li>
+  <li>
+    Start / stop scripts to configure lab environment
+  </li>
+  <li>
+    Testing on lab machines to ensure things work<br>
+  </li>
+</ul>
+<br>
+<br>
+<b>Zip File Layout </b><br>
+LAB4520_other.zip (still submit, for setting up the lab, eg login script)<br>
+<ul>
+  <li>
+    setup
+  </li>
+  <li>
+    6.0&nbsp; (with Maven plugin,&nbsp; Subversion plugin)<br>
+  </li>
+</ul>
+<br>
+LAB4520_gfPlugin.zip (give to user, on CD)<br>
+&nbsp;&nbsp;&nbsp; glPlugin<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+<br>
+<ul style=MARGIN-LEFT:40px>
+  <li>
+    gfplugin/&nbsp; (when zip up, the zip file is called 4520_gfplugin.zip)<br>
+  </li>
+  <ul>
+    <li>
+      4520_gfplugin.odp
+    </li>
+    <li>
+      4520_gfplugin.pdf<br>
+    </li>
+    <li>
+      index.html&nbsp; &lt;-- refresh to html_files/index.html
+    </li>
+    <li>
+      doc/
+    </li>
+    <ul>
+      <li>
+        index.html (the instructions that we working on)
+      </li>
+      <li>
+        exercise0.html
+      </li>
+      <li>
+        exercise1.html
+      </li>
+      <li>
+        exercise2.html
+      </li>
+      <li>
+        exercise3.html
+      </li>
+      <li>
+        solution1.html
+      </li>
+      <li>
+        solution2.html
+      </li>
+      <li>
+        solution3.html
+      </li>
+      <li>
+        intro.html
+      </li>
+      <li>
+        summary.html<br>
+      </li>
+    </ul>
+    <ul>
+      <li>
+        index_files&nbsp;&nbsp; (css)<br>
+      </li>
+    </ul>
+    <li>
+      glassfish/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (the app server) (Not
+      in SVN)
+    </li>
+    <li>
+      glassfish-src/ &nbsp; (Not in SVN)
+    </li>
+    <ul>
+      <li>
+        v3
+      </li>
+      <ul>
+        <li>
+          common
+        </li>
+        <li>
+          admin
+        </li>
+        <li>
+          admingui
+        </li>
+        <li>
+          api
+        </li>
+        <li>
+          glassfish
+        </li>
+      </ul>
+    </ul>
+  </ul>
+  <ul>
+    <li>
+      myplugin/&nbsp; &lt;-- Start app (with directory created already)
+    </li>
+    <ul>
+      <li>
+        pom.xml
+      </li>
+      <li>
+        src<br>
+      </li>
+    </ul>
+  </ul>
+  <ul>
+    <li>
+      solution/
+    </li>
+    <ul>
+      <li>
+        ex1/
+      </li>
+      <ul>
+        <li>
+          README.txt<br>
+        </li>
+      </ul>
+      <ul>
+        <li>
+          console-config.xml
+        </li>
+        <li>
+          treenode-ex1.jsf
+        </li>
+        <li>
+          hello.jsf
+        </li>
+      </ul>
+      <li>
+        ex2/
+      </li>
+      <ul>
+        <li>
+          README.txt<br>
+        </li>
+      </ul>
+      <ul>
+        <li>
+          console-config.xml
+        </li>
+        <li>
+          treenode-ex2.jsf
+        </li>
+        <li>
+          chart.jsf
+        </li>
+      </ul>
+      <li>
+        ex3/
+      </li>
+      <ul>
+        <li>
+          README.txt<br>
+        </li>
+      </ul>
+      <ul>
+        <li>
+          console-config.xml
+        </li>
+        <li>
+          treenode-ex3.jsf
+        </li>
+        <li>
+          chart3.jsf
+        </li>
+      </ul>
+    </ul>
+  </ul>
+  <ul>
+    <ul>
+      <li>
+        myplugin
+      </li>
+      <ul>
+        <li>
+          README.txt<br>
+        </li>
+      </ul>
+      <ul>
+        <li>
+          ex1&nbsp; (entire directory + target)<br>
+        </li>
+        <li>
+          ex2
+        </li>
+        <li>
+          ex3<br>
+        </li>
+      </ul>
+    </ul>
+  </ul>
+</ul>
+<br>
+<br>
+<ul>
+  <ul>
+    <ul>
+      <ul>
+        <br>
+      </ul>
+    </ul>
+  </ul>
+</ul>
+<br>
+Other dependencies:<br>
+<ul>
+  <li>
+    Java 5/6
+  </li>
+  <li>
+    Firefox 2.0.0.12+
+  </li>
+</ul>
+<br>
+<br>
+Outline:<br>
+<br>
+<ul>
+  <li>
+    Introduction
+  </li>
+  <ul>
+    <li>
+      General overview of lab and what they will learn<br>
+    </li>
+    <li>
+      Prerequisites
+    </li>
+    <li>
+      System Requirements, etc.<br>
+    </li>
+    <li>
+      Links to exercises
+    </li>
+    <li>
+      Links to resources (GlassFish, JSFT, etc)
+    </li>
+  </ul>
+  <li>
+    Exercise 0: (Optional) Install / Setup Lab Environment
+  </li>
+  <ul>
+    <li>
+      Expected Duration - 15 minutes. (this should already be done for most
+      users, however, I expect delays and problems -- they always happen).<br>
+    </li>
+  </ul>
+  <li>
+    Exercise 1: (Anissa)
+  </li>
+  <ul>
+    <li>
+      Title: Introduction to the GlassFish Management Console plugin environment
+    </li>
+  </ul>
+  <ul>
+    <li>
+      Objective: Students will be shown how to easily create JSF-based pages
+      from templates and integrate them as a plugin to the GlassFish
+      Administration console.&nbsp; HelloWorld example in this case.
+    </li>
+    <li>
+      Expected Duration - 45 minutes. (We need time to talk to get them started,
+      and then let them work)<br>
+    </li>
+    <li>
+      Intro -- What the lab will do, what they will learn
+    </li>
+    <li>
+      Background Info -- Not essential to the lab, but may explain what GF is,
+      or other concepts introduced in this lab -- needed as this lab is the only
+      material some users will have in front of them.&nbsp; Try to be brief, but
+      provide enough to not lose the beginner-level developer.
+    </li>
+    <li>
+      "Step-by-Step Instructions:" -- Walk user step-by-step what they need to
+      get done.&nbsp; Screenshots and all required commands should be included.
+    </li>
+    <li>
+      Summarize what they've accomplished
+    </li>
+  </ul>
+  <li>
+    Solution 1:
+  </li>
+  <ul>
+    <li>
+      Show src code and screenshots of the end result.
+    </li>
+  </ul>
+  <li>
+    Exercise 2: (Senthil)
+  </li>
+  <ul>
+    <li>
+      Title: GlassFish Monitoring Plugin
+    </li>
+    <li>
+      Objective: Demonstrate jMaki Charting features, and how it can be added as
+      a plugin to monitor V3. Students will be introduced to jMaki, particularly
+      the Charting features.
+    </li>
+  </ul>
+  <ul>
+    <li>
+      Expected Duration - 30 minutes.<br>
+    </li>
+    <li>
+      Intro -- Students will be introduced to how to add a monitoring plugin to
+      V3 admin-console. This plugin will display server statistics using jMaki
+      charting widgets.
+    </li>
+    <li>
+      Background Info -- Not essential to the lab, but may explain what GF is,
+      or other concepts introduced in this lab -- needed as this lab is the only
+      material some users will have in front of them.&nbsp; Try to be brief, but
+      provide enough to not lose the beginner-level developer.
+    </li>
+    <li>
+      "Step-by-Step Instructions:" -- Walk user step-by-step what they need to
+      get done.&nbsp; Screenshots and all required commands should be included.
+    </li>
+    <li>
+      Summarize what they've accomplished
+    </li>
+  </ul>
+  <li>
+    Solution 2:
+  </li>
+  <ul>
+    <li>
+      Show src code and screenshots of the end result.
+    </li>
+  </ul>
+  <li>
+    Exercise 3: (Ana)
+  </li>
+  <ul>
+    <li>
+      Title: Putting it all together
+    </li>
+  </ul>
+  <ul>
+    <li>
+      Objective: Combine lab 1 &amp; 2 concepts.<br>
+    </li>
+    <li>
+      Expected Duration - 30 minutes.<br>
+    </li>
+    <li>
+      Intro -- What the lab will do, what they will learn
+    </li>
+    <li>
+      Background Info -- Not essential to the lab, but may explain what GF is,
+      or other concepts introduced in this lab -- needed as this lab is the only
+      material some users will have in front of them.&nbsp; Try to be brief, but
+      provide enough to not lose the beginner-level developer.
+    </li>
+    <li>
+      "Step-by-Step Instructions:" -- Walk user step-by-step what they need to
+      get done.&nbsp; Screenshots and all required commands should be included.
+    </li>
+    <li>
+      More info from Senthil's original outline: Complete Management Plugin.
+      Students will add a GlassFish Administration Console plugin which provides
+      monitoring features for their custom application using Ajax with the jMaki
+      charting widget. This portion of the lab puts all the pieces together from
+      the previous labs to demonstrate all the features working together.
+    </li>
+    <li>
+      Summarize what they've accomplished
+    </li>
+  </ul>
+  <li>
+    Solution 3:
+  </li>
+  <ul>
+    <li>
+      Show src code and screenshots of the end result.
+    </li>
+  </ul>
+  <li>
+    Summary (Ken)<br>
+  </li>
+</ul>
+<br>
+<br>
+<p class=pb style=page-break-after:always>
+</p>
+<br>
+<b>Introduction:</b><br>
+<br>
+<br>
+<div class=pagetitle id=j1holtitleid>
+  LAB-4520: Plug Your JavaServer Faces Application into the GlassFish v3 Admin
+  Console<br>
+</div>
+<div class="j1holduration xbig">
+  Expected duration: 120 minutes
+</div>
+<div class=j1holcontacts>
+  Contacts: Ken Paulsen (ken.paulsen@sun.com), Anissa Lam (anissa.lam@sun.com),
+  Senthil Chidambaram (chock.chidambaram@sun.com), Ana Caballero
+  (ana.caballero@sun.com)<br>
+</div>
+<div class=j1holupdated>
+  Last Updated: Mar 2, 2008<br>
+  <br>
+</div>
+<p>
+  Glassfish Application Server has been widely adopted by many companies as well
+  as individuals.&nbsp; This broad user base means there is a wide variety of
+  needs from GlassFish, both in terms of the services it provides, as well as
+  the management of those services.&nbsp; GlassFish v3 addresses the wide
+  variety of requirements its users have through a modular architecture, which
+  allows server components such as EJB, WebServices, JDBC, as well as numerous
+  frameworks to be added and removed from the server as needed.
+</p>
+<p>
+  <br>
+</p>
+<p>
+  The Administration Console for GlassFish has not been left out when it comes
+  to plugability.&nbsp; In order to manage a dynamic Application Server like v3,
+  the Admin Console must itself be dynamic.&nbsp; This presents a big challenge
+  for a JavaServer Faces web application.&nbsp; How are resources (pages,
+  images, etc.) discovered when the bits are not available at install
+  time?&nbsp; How do you accommodate multiple "plugins" which want to contribute
+  to the same page?
+</p>
+<p>
+  <br>
+</p>
+<p>
+  In this lab, we will explore these issues and learn how creating a pluggable
+  JavaServer Faces application is addressed in GlassFish.&nbsp; The lab will
+  demonstrate how any individual, or company, may create a plugin for GlassFish
+  which integrates tightly with its Admin Console.&nbsp; This lab will guide you
+  through the process of adding new tree nodes to the GlassFish navigation tree,
+  adding new JavaServer Faces pages, including a jMaki Chart, and will show you
+  how to bundle it together in a neat plugin.&nbsp; And because GlassFish is an
+  Open Source, Open Community Application Server, all the source code is
+  available -- no secrets!&nbsp; Even better yet, since GlassFish is an open
+  community, we welcome everyone to add their own custom GlassFish v3 plugins to
+  the community!<br>
+</p>
+<p>
+  <br>
+</p>
+<br>
+<div class=j1holcopyright>
+  <p>
+    Copyright
+  </p>
+  <pre>Copyright 2008 Sun Microsystems, Inc. All rights reserved. Sun, Sun Microsystems, the Sun logo, Solaris, Java, the Java Coffee Cup logo, JavaOne, the JavaOne logo, and all Solaris-based and Java-based marks and logos are trademarks or registered trademarks of Sun Microsystems, Inc. in the United States and other countries.</pre>
+</div>
+<p class=j1holheader>
+  Prerequisites
+</p>
+<p>
+  This hands-on lab assumes you have some basic knowledge or programming
+  experience on the following technologies.
+</p>
+<ul>
+  <li>
+    Java
+  </li>
+</ul>
+&nbsp; Familiarity with the following technologies is helpful, but not required:<br>
+<ul>
+  <li>
+    GlassFish
+  </li>
+  <li>
+    JSFTemplating / Facelets
+  </li>
+  <li>
+    JSF
+  </li>
+  <li>
+    NetBeans
+  </li>
+  <li>
+    Subversion
+  </li>
+  <li>
+    Maven
+  </li>
+</ul>
+<br>
+<p class=j1holheader>
+  System Requirements
+</p>
+<ul>
+  <li>
+    Supported OS: Windows, Solaris, Linux, MacOS
+  </li>
+  <li>
+    Memory requirement: 512M minimum, 2GB recommended
+  </li>
+  <li>
+    Disk space requirement: 500 MB
+  </li>
+</ul>
+<p class=j1holheader>
+  <br>
+</p>
+<p class=j1holheader>
+  Software needed for the lab
+</p>
+<p>
+  <br>
+</p>
+<p>
+  The following set of software will be used in this lab. This software should
+  have been already made available to you, however, if you are setting up the
+  environment yourself you will need to have the following software.&nbsp; If
+  you have any questions on installation, please feel free to send questions to
+  the email alias mentioned below.
+</p>
+<ul class=j1hollist>
+  <li>
+    Java SE <a href=http://java.sun.com/javase/downloads/?intcmp=1281>JDK 6</a>
+  </li>
+  <li>
+    <a href=http://www.netbeans.info/downloads/download.php?a=b&amp;p=1></a><a href=http://download.netbeans.org/netbeans/6.0/final/>NetBeans
+    IDE 6.0</a> or higher
+    <ul>
+      <li>
+        On the download page, choose either the Web &amp; Java EE download or
+        the All download.
+      </li>
+      <li>
+        The instruction of how to build and deploy the lab exercises in this lab
+        is provided as optional exercise #0.
+      </li>
+    </ul>
+  </li>
+  <li>
+    <a href=https://glassfish.dev.java.net id=blts title="Glassfish V3">Glassfish
+    V3</a>
+  </li>
+  <li>
+    <a href=http://developers.sun.com/learning/javaoneonline/j1lab.jsp?lab=LAB-4205&amp;yr=2008&amp;track=1>Lab
+    zip file (4520_j1plugin.zip)</a> under a directory of your choice,
+    &lt;lab_root&gt;
+    <ul>
+      <li>
+        Read &lt;lab_root&gt;/index.html to proceed
+      </li>
+    </ul>
+  </li>
+</ul>
+<p class=j1holheader>
+  <br>
+</p>
+<p class=j1holheader>
+  Notations used in this documentation
+</p>
+<ul class=j1hollist>
+  <li>
+    &lt;INSTALL_DIR&gt;
+    <ul>
+      <li>
+        It is the installation directory of Glassfish V3
+      </li>
+      <ul>
+        <li>
+          For Windows, the default is C:\Sun\AppServer
+        </li>
+        <li>
+          For Solaris/Linux, the default is /opt/SUNWappserver
+        </li>
+      </ul>
+    </ul>
+  </li>
+  <li>
+    &lt;lab_root&gt; - directory into which lab zip file is unzipped
+    <ul>
+      <li>
+        This document uses &lt;lab_root&gt; to denote the directory under which
+        you have unzipped the lab zip file of this lab. The name of the lab zip
+        file is <b>4520_gfplugin.zip</b>.
+      </li>
+      <li>
+        Once you unzipped the lab zip file under &lt;lab_root&gt;, it will
+        create a subdirectory called <b>gfplugin</b> For example, under Windows,
+        if you have unzipped the lab zip file in the root of drive <b>E:\</b>,
+        it will create <b>E</b><b>fplugin.</b> Under Linux/Solaris, if you have
+        unzipped the lab zip file in the <b>$HOME</b> directory, it will create
+        <b>$HOME/</b><b>gfPlugin</b> directory.
+      </li>
+    </ul>
+  </li>
+</ul>
+<p class="j1holheader j1holnote">
+  <a name=Notes><br>
+  </a>
+</p>
+<p class="j1holheader j1holnote">
+  <a name=Notes>Notes to JavaOne attendees using lab machines provided (this
+  does not apply to those who use their own machines):</a>
+</p>
+<p class="j1holheader j1holnote">
+  <a name=Notes><br>
+  </a>
+</p>
+<ul class=j1hollist>
+  <li>
+    The lab machines are running Java Desktop System on Solaris 10
+  </li>
+  <li>
+    In order to open a terminal window in Java Desktop System, right click any
+    point in the background of the desktop, and select Open Terminal in the
+    pop-up menu.
+  </li>
+  <li>
+    The following source code editors are provided on the lab machines
+    <ul>
+      <li>
+        vi (type vi in a terminal window)
+      </li>
+      <li>
+        emacs (type emacs in a terminal window)
+      </li>
+      <li>
+        jedit (type jedit in a terminal window)
+      </li>
+      <li>
+        NetBeans (either click NetBeans icon or type netbeans in a terminal
+        window)
+      </li>
+    </ul>
+  </li>
+</ul>
+<p class=j1holheader>
+  <br>
+</p>
+<p class=j1holheader>
+  Lab exercises
+</p>
+<ul>
+  <li>
+    Exercise 0: Configuring your environment<br>
+  </li>
+  <li>
+    Exercise 1: Plugging into GlassFish
+  </li>
+  <li>
+    Exercise 2: Charting with jMaki<br>
+  </li>
+  <li>
+    Exercise 3: Templating your Plugin<br>
+  </li>
+</ul>
+<p class=j1holheader>
+  <br>
+</p>
+<p class=j1holheader>
+  Resources
+</p>
+<ul>
+  <li>
+    Lab presentation
+  </li>
+  <li>
+    GlassFish v3
+  </li>
+  <li>
+    GlassFish Admin Console Plugin Documentation<br>
+  </li>
+  <li>
+    JSFTemplating
+  </li>
+  <li>
+    jMaki
+  </li>
+  <li>
+    jMaki Charting
+  </li>
+  <li>
+    HK2<br>
+  </li>
+</ul>
+<p class=j1holheader>
+  <br>
+</p>
+<p class=j1holheader>
+  Where to send questions or feedbacks on this lab and public discussion forums
+</p>
+<p class=j1holheader>
+  <br>
+</p>
+<ul class=j1hollist>
+  <li>
+    You can send technical questions via email to the authors of this Hands-on
+    lab (and experts on the subject) or you can post the questions to the web.<br>
+    Please post questions that are relevant only to this hands-on lab.
+    <ul>
+      <li>
+        <a href=https://hands-on-labs.dev.java.net/servlets/ForumMessageList?forumID=2548>6340_JavaME_StreamingVideo
+        forum at hands-on-labs.dev.java.net</a>
+      </li>
+    </ul>
+  </li>
+  <li>
+    You can send your other questions to the public mailing lists and forums.
+    <ul>
+      <li>
+        <a href=http://mobility.netbeans.org/servlets/SummarizeList?listName=users>GlassFish
+        Users Email List</a>
+      </li>
+      <li>
+        GlassFish Admin Email List
+      </li>
+      <li>
+        JSFTemplating Email List
+      </li>
+      <li>
+        jMaki Email List<br>
+      </li>
+    </ul>
+  </li>
+</ul>
+<br>
+<br>
+<p class=pb style=page-break-after:always>
+</p>
+<br>
+<br>
+<h1>
+  Exercise 0: Configuring your environment
+</h1>
+<p class=j1holwarn>
+  <font color=#ff0000> If you are using a lab machine provided at JavaOne the
+  following steps in Exercise 0 have been completed for you.&nbsp; Please skip
+  this section and go to Exercise 1 if you environment is already
+  configured.</font>
+</p>
+<ol class=j1hollist>
+  <li>
+    Launch NetBeans 6.0 IDE
+    <ul>
+      <li>
+        On Windows, <b>Start &gt; Programs &gt; NetBeans &gt; NetBeans IDE 6.0
+        &gt; NetBeans IDE </b>or click NetBeans 6.0 desktop icon<br>
+      </li>
+      <li>
+        On Solaris, UNIX, or Linux, open a terminal window, then type
+        <b>&lt;netbeans60_HOME&gt;</b><span style=FONT-FAMILY:helvetica,arial,sans-serif><b>/bin/netbeans</b></span>
+      </li>
+    </ul>
+  </li>
+  <li>
+    Install the Maven 2 plugin for NetBeans 6.0 if you do not have that
+    installed.&nbsp; (TBD, this image shows the plugin installed.&nbsp; should
+    redo this)<br>
+  </li>
+  <ul>
+    <li>
+      Choose Plugins from the Tools menu.&nbsp; Select the Available Plugins
+      Tab.
+    </li>
+  </ul>
+  <ul>
+    <li>
+      Select the Maven 2 Plugin and press the Install Button
+    </li>
+  </ul>
+</ol>
+<div id=n28w style="PADDING:1em 0pt; TEXT-ALIGN:left; MARGIN-LEFT:40px">
+  <img src=images/ex0-mavenplugin.jpg style="WIDTH:795px; HEIGHT:474px"><br>
+</div>
+<div id=n28w style="PADDING:1em 0pt; TEXT-ALIGN:left">
+  &nbsp;&nbsp;<br>
+  3. Installing Subversion is <u>optional</u>.&nbsp;&nbsp; Subversion is an open
+  source version control system.&nbsp; For the purposes of this lab you are not
+  required to checkout the Glassfish V3 source code since it has already been
+  installed for you.&nbsp; If you would like to view the latest source code this
+  plugin is necessary.&nbsp; In step 4 you will learn how to checkout Glassfish
+  V3 and build it.<br>
+  <ul style=MARGIN-LEFT:40px>
+    <li>
+      Choose Plugins from the Tools menu.&nbsp; Select the Available Plugins
+      Tab.
+    </li>
+  </ul>
+  <ul style=MARGIN-LEFT:40px>
+    <li>
+      Select the Subversion Plugin and press the Install Button
+    </li>
+  </ul>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  <div id=pqw_ style="PADDING:1em 0pt; TEXT-ALIGN:left; MARGIN-LEFT:40px">
+    <img src=images/ex0-subversion.jpg style="WIDTH:795px; HEIGHT:474px">
+    <p class=j1holheader>
+      <br>
+    </p>
+    <br>
+  </div>
+  &nbsp; 4.&nbsp; This step is also <u>optional</u> and is not required for this
+  lab.&nbsp;&nbsp; A snap shot of the&nbsp; GlassFish V3 source code is included
+  in this lab's zip file, and GlassFish V3 has been installed for you under
+  &lt;lab4520_guiPlugin&gt;/v3/glassfish.&nbsp;&nbsp; However, if you want to
+  checkout and build the latest version of the source code, then do the
+  following:<br>
+  <br>
+  &nbsp;&nbsp;&nbsp; Checkout Source code<br>
+  &nbsp;&nbsp;&nbsp; <font color=#000000 style=BACKGROUND-COLOR:#eeeeee>svn
+  checkout https://svn.dev.java.net/svn/glassfish-svn/trunk/v3<br>
+  <br>
+  <span style=BACKGROUND-COLOR:#ffffff>&nbsp;&nbsp;&nbsp; Build the GlassFish
+  server </span><br>
+  <span style=BACKGROUND-COLOR:#ffffff>&nbsp;&nbsp;&nbsp; </span>cd
+  v3;&nbsp;&nbsp; mvn install<br>
+  <br style=BACKGROUND-COLOR:#ffffff>
+  <span style=BACKGROUND-COLOR:#ffffff>&nbsp;&nbsp;&nbsp; Installing the server
+  by unzipping the image.&nbsp;&nbsp; The instructions in the following exercise
+  is based on the assumption that the installation is at v3/glassfish.<br>
+  <span style=BACKGROUND-COLOR:#cccccc>&nbsp;&nbsp;&nbsp; cd v3;&nbsp; unzip
+  v3/distribution/glassfish/target/glassfish.zip</span><br>
+  </span></font><br>
+  &nbsp;&nbsp;&nbsp; For more information regarding GlassFish V3 development
+  environment and the workspace, please refer to the full build instructions at
+  http://wiki.glassfish.java.net/Wiki.jsp?page=V3FullBuildInstruction<br>
+</div>
+<p>
+  <br>
+</p>
+<p class=pb style=page-break-after:always>
+</p>
+<br>
+<br>
+<h1>
+  Exercise 1: Plugging into GlassFish (45 mins)<br>
+</h1>
+<div class="j1holduration xbig">
+  Expected duration: 45 minutes<br>
+  <br>
+</div>
+<p class=j1holheader>
+  <font size=3><b><u> Introduction:</u></b></font>
+</p>
+<p class=j1holheader>
+  <br>
+</p>
+<p>
+  The goal of this exercise is to develop a GlassFish plugin module.&nbsp; You
+  will be adding a page and tree node to the GlassFish Administration
+  Console.&nbsp;&nbsp; We've already pre-configured your build environment
+  leaving you with more time to to get "hands-on" with the code.&nbsp; In this
+  exercise, you will do the following:
+</p>
+<p>
+  <br>
+</p>
+<ul>
+  <li>
+    Build a plugin using the Maven plugin in NetBeans 6.0 (or command line)<br>
+  </li>
+  <li>
+    Integrate a module into GlassFish V3 which extends the Admin Console<br>
+  </li>
+  <li>
+    Access the GlassFish v3 Administration Console and see your plugin
+  </li>
+</ul>
+<br>
+<br>
+<p class=j1holheader>
+  <font size=3><b><u> Background information:</u></b></font>
+</p>
+<p>
+  This section provides more detail about the GlassFish V3 build environment and
+  architecture.&nbsp; This information is non-essential for completing this lab,
+  however, it will give you better insight into the design of GlassFish
+  V3.&nbsp; To proceed with the lab, conintue to the "Step-by-Step Instructions"
+  section.<br>
+</p>
+<br>
+<b>GlassFish (HK2) Modules</b><br>
+<br>
+<p class=j1holheader>
+  GlassFish uses the HK2 project (https://hk2.dev.java.net) to provide "modules"
+  which can be plugged together to build an application server with unique
+  capabilities.&nbsp; These GlassFish (or HK2) modules need only be placed in
+  the &lt;install-root&gt;/modules directory to be found by the
+  environment.&nbsp; The modules describe themselves to GlassFish so that
+  GlassFish knows how to interact with them.&nbsp; This is done by using the HK2
+  @Contract and @Service annotations.<br>
+</p>
+<p class=j1holheader>
+  <br>
+</p>
+<p class=j1holheader>
+  The @Contract annotation is typically placed on a Java Interface.&nbsp; Doing
+  this makes the interface known to HK2.&nbsp; Here is an example Java Interface
+  annotated with the @Contract annotation:
+</p>
+<br>
+<p class=j1holheader>
+  @Contract<br>
+  public interface ConsoleProvider {<br>
+  <br>
+  &nbsp;&nbsp;&nbsp; /**<br>
+  &nbsp;&nbsp;&nbsp;&nbsp; *&nbsp; &lt;p&gt; Returns a
+  &lt;code&gt;URL&lt;/code&gt; to the
+  &lt;code&gt;console-config.xml&lt;/code&gt;<br>
+  &nbsp;&nbsp;&nbsp;&nbsp; *&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; file, or
+  &lt;code&gt;null&lt;/code&gt;.&nbsp; If &lt;code&gt;null&lt;/code&gt; is
+  returned, the<br>
+  &nbsp;&nbsp;&nbsp;&nbsp; *&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; default (@{link
+  #DEFAULT_CONFIG_FILENAME}) will be used.&lt;/p&gt;<br>
+  &nbsp;&nbsp;&nbsp;&nbsp; */<br>
+  &nbsp;&nbsp;&nbsp; public URL getConfiguration();<br>
+  <br>
+  &nbsp;&nbsp;&nbsp; /**<br>
+  &nbsp;&nbsp;&nbsp;&nbsp; *&nbsp; &lt;p&gt; The default location of the
+  &lt;code&gt;console-config.xml&lt;/code&gt;.&lt;/p&gt;<br>
+  &nbsp;&nbsp;&nbsp;&nbsp; */<br>
+  &nbsp;&nbsp;&nbsp; public String DEFAULT_CONFIG_FILENAME&nbsp;&nbsp; =<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  "META-INF/admingui/console-config.xml";<br>
+  }<br>
+</p>
+<p class=j1holheader>
+  <br>
+</p>
+<p class=j1holheader>
+  The @Service annotation is placed on a Java Class which typically implements a
+  Java Interface which is annotated by the @Contract annotation.&nbsp; When
+  @Service annotations are processed by the Annotation Processor Tool at
+  compile-time, the HK2 processor creates an entry in the
+  META-INF/inhabitants/default file, such as:
+</p>
+<br>
+<p class=j1holheader>
+  class=org.example.glassfish.admingui.JavaOnePlugin,index=org.glassfish.api.admingui.ConsoleProvider
+</p>
+<p class=j1holheader>
+  <br>
+</p>
+<p class=j1holheader>
+  This is used to efficiently locate all implementations of a @Contract in the
+  system.
+</p>
+<p class=j1holheader>
+  <br>
+</p>
+<p class=j1holheader>
+  Lets look at an example of how this is used.&nbsp; The GlassFish
+  Administration Console needs to find GlassFish Modules that wish to integrate
+  content.&nbsp; To do this, each of these GlassFish Modules must provide an
+  implementation of the ConsoleProvider "@Contract" Interface which is annotated
+  with the @Service annotation.&nbsp; The GlassFish Admin Console is then able
+  to easily find these implementations and access the configuration file they
+  specify via their interface (see fig TBD).&nbsp; Once the configuration
+  information is obtained, the task of integrating the new content is easily
+  performed.
+</p>
+<p class=j1holheader>
+  <br>
+</p>
+You can find more information about this architecture at the GlassFish or HK2
+web sites:<br>
+<br>
+https://glassfish.dev.java.net<br>
+https://hk2.dev.java.net<br>
+<br>
+The exercises in this lab aim to describe in detail the specific steps required
+to create a module and to integrate with the GlassFish Administrative Console.<br>
+<p class=j1holheader>
+  <br>
+</p>
+<p class=j1holheader>
+  <font size=3><font size=2><b>Source code system layout</b></font><br>
+  </font>
+</p>
+<p class=j1holheader>
+  <br>
+</p>
+<p class=j1holheader>
+  This section of the document describes the file layout found in the lab
+  exercises, as well as the layout of all GlassFish Modules.&nbsp; A snapshot of
+  the GlassFish V3 source code can be found under the
+  <span style="FONT-FAMILY:Times New Roman">gfplugin/glassfish-src</span>
+  directory.&nbsp; This is for your reference only and is <b>NOT</b> needed for
+  any exercises in this lab.&nbsp; To obtain the latest GlassFish source code,
+  you can follow the instructions found on the GlassFish v3 build instructions
+  web site:
+  http://wiki.glassfish.java.net/Wiki.jsp?page=V3FullBuildInstructions.
+</p>
+<p class=j1holheader>
+  <br>
+</p>
+<p class=j1holheader>
+  When viewing the top-level directory of the GlassFish source, you should note
+  all the sub-directories are Maven Modules, which follow a standard maven 2
+  project layout.&nbsp; The java source files are under
+  &lt;maven-module&gt;/src/main/java.&nbsp; Additional resources are under
+  &lt;maven-module&gt;/src/main/resources.&nbsp; Unit tests are under
+  &lt;maven-module&gt;/src/test/java.&nbsp; There is a pom.xml file for each
+  maven module that specifies information such as: parent Maven Module, groupId,
+  artifactId, version number, build dependencies, and build and packaging
+  instructions.&nbsp; Configuration information from a parent Maven Module is
+  inherited.
+</p>
+<p class=j1holheader>
+</p>
+<p class=j1holheader>
+  <br>
+</p>
+<p class=j1holheader>
+  The source code for the GlassFish Administration Console is located in the
+  directory named "admingui".&nbsp; This lab does not touch any of the files in
+  the GlassFish Administration Console, it instead provides a plugin which is
+  integrated seamlessly with the GlassFish Administrative Console.&nbsp; If you
+  want to know more details about the GlassFish Administration Console, below is
+  an explanation of all the admingui sub-modules.&nbsp; The specifics of the
+  Adminstration Console itself are, however, outside the scope of this
+  lab.&nbsp; You may become involved the the GlassFish Administration Console
+  team or find out more information by going to https://glassfish.dev.java.net
+  or emailing admin@glassfish.dev.java.net.<br>
+</p>
+<br>
+<p class=j1holheader>
+  <b>Plugin Service Module<br>
+  </b>This module detects all GlassFish Modules that provide IntegrationPoints
+  to the console.&nbsp; It also contains code to discover and serve all
+  additional resources provided by other plugin modules (JSFTemplating
+  JavaServer Faces Pages, Images, Java code, etc.).<br>
+</p>
+<pre style="BACKGROUND-COLOR:#f3f3f3; MARGIN-LEFT:40px">v3/admingui/plugin-service/pom.xml<br>v3/admingui/plugin-service/src/main/java/org/glassfish/admingui/plugin/ConsoleClassLoader.java<br>v3/admingui/plugin-service/src/main/java/org/glassfish/admingui/plugin/ConsoleConfig.java<br>v3/admingui/plugin-service/src/main/java/org/glassfish/admingui/plugin/ConsolePluginService.java<br>v3/admingui/plugin-service/src/main/java/org/glassfish/admingui/plugin/IntegrationPoint.java<br></pre>
+<p class=j1holheader>
+</p>
+<b>Core Module for Admin Console<br>
+</b>This is the module that provides the infrastructure for the GlassFish
+Administration Console.&nbsp; It contains code for initialization, setting up
+the home page, building the navigation tree, common utilities, etc.&nbsp; It
+also contains the JavaServer Faces pages such as the common task page, header,
+version window, top-level tree node's corresponding pages, etc.<br>
+<pre style="BACKGROUND-COLOR:#f3f3f3; MARGIN-LEFT:40px">v3/admingui/pom.xml<br>v3/admingui/core/src/main/java/com/sun/enterprise/tools/admingui/handlers<br>v3/admingui/core/src/main/resources/home.jsf</pre>
+<p class=j1holheader>
+  <b><br>
+  </b>
+</p>
+<p class=j1holheader>
+  <b> Admin Console Web Application </b>
+</p>
+<p class=j1holheader>
+  This is the war packaging module which contains the deployment descriptor and
+  includes the console-core-1.2-SNAPSHOT.jar which is built from the core
+  module.&nbsp; After the build cycle, a war file is created ready for
+  deployment.<br>
+</p>
+<br>
+<p class=j1holheader style="BACKGROUND-COLOR:#f3f3f3; MARGIN-LEFT:40px">
+</p>
+<pre style="BACKGROUND-COLOR:#f3f3f3; MARGIN-LEFT:40px">v3/admingui/war/src/main/webapp/WEB-INF/web.xml<br><br></pre>
+<p class=j1holheader style="BACKGROUND-COLOR:#f3f3f3; MARGIN-LEFT:40px">
+</p>
+<p class=j1holheader>
+</p>
+<p class=j1holheader>
+  <br>
+</p>
+<p class=j1holheader>
+  <br>
+</p>
+<p class=j1holheader>
+  <font size=3><b><u>Step-by-Step Instructions:</u></b><br>
+  <br>
+  </font>
+</p>
+<b>Overview:</b><br>
+<br>
+In this excercise, you will complete the following:<br>
+<ul>
+  <li>
+    Implement the ConsoleProvider @Contract<br>
+    This step is done so your plugin to be discovered by the GlassFish v3
+    Administration Console.&nbsp; It will show you how to implment the
+    ConsoleProvider interface and to annotate your implementation with the
+    @Service annotation.<br>
+  </li>
+  <li>
+    Provide a console-config.xml file<br>
+    This file is necessary to declare your "IntegrationPoints."&nbsp; In this
+    step, you'll learn what an IntegrationPoint is and how to declare them.<br>
+  </li>
+  <li>
+    Create a couple JavaServer Faces pages<br>
+    JavaServer Faces pages are needed to produce the content you are
+    providing.&nbsp; You will create 2 very simple JSFTemplating JavaServer
+    Faces pages.<br>
+  </li>
+  <li>
+    Install your first GlassFish v3 plugin<br>
+    In this step you will install and test your plugin.<br>
+  </li>
+</ul>
+<br>
+<b>Steps:</b><br>
+<br>
+<b> 1-A&nbsp; Open the plugin module in NetBeans</b><br>
+<br>
+<ol>
+  <li>
+    Launch NetBeans IDE 6.0
+  </li>
+  <li>
+    Open plugin module<br>
+  </li>
+  <ol>
+    <li>
+      Choose Open Project from the File menu.
+    </li>
+    <li>
+      Browse to &lt;gfplugin&gt; and select myplugin
+    </li>
+    <li>
+      Press the Open Project button
+    </li>
+  </ol>
+</ol>
+<br>
+&nbsp;
+<div id=ag3d style="PADDING:1em 0pt; TEXT-ALIGN:left; MARGIN-LEFT:40px">
+  <img src=images/ex1-1-openproject.jpg style="WIDTH:586px; HEIGHT:352px">
+</div>
+Figure:&nbsp; Ex1-1&nbsp; Open Project javaone-plugin<br>
+<div id=gl_g style="PADDING:1em 0pt; TEXT-ALIGN:left">
+  <br>
+  <br>
+  &nbsp;&nbsp; 3.&nbsp; You should see the following directory layout under the
+  Projects tab
+  <div id=r6:h style="PADDING:1em 0pt; TEXT-ALIGN:left; MARGIN-LEFT:80px">
+    <img src=images/ex1-2-project-layout.jpg style="WIDTH:637px; HEIGHT:319px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+  </div>
+  <div id=tp:s style="PADDING:1em 0pt; TEXT-ALIGN:left">
+    <div id=k33z style="PADDING:1em 0pt; TEXT-ALIGN:left">
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      Figure:&nbsp; Ex1-2&nbsp;&nbsp;&nbsp; Project javaone-plugin layout<br>
+      <br>
+      <hr style="WIDTH:100%; HEIGHT:2px"><br>
+      <b> 1-B.&nbsp;&nbsp; Add configuration files to indicate&nbsp; integration
+      points.<br>
+      </b>
+      <div id=rbo: style="PADDING:1em 0pt; TEXT-ALIGN:left">
+        <div style=MARGIN-LEFT:40px>
+          4.&nbsp; You are now ready to add the console-config.xml file which
+          specifies the integration point for your module.&nbsp;&nbsp; You will
+          add this XML file under&nbsp;
+          myplugin/src/main/resources/META-INF/admingui,&nbsp; since the default
+          location of this file in a plugin jar is
+          META-INF/admingui/console-config.xml. &nbsp; In this file, you will be
+          adding the following two xml entries:<br>
+        </div>
+        <div style=MARGIN-LEFT:80px>
+          <i>console-config</i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          id:&nbsp; javaone<br>
+          I<i>ntegration Point </i>:&nbsp;&nbsp; id: JavaOneNode,&nbsp;
+          type:tree,&nbsp; priority:210,&nbsp;&nbsp; parentId:tree,&nbsp;
+          content:&nbsp; treenode-ex1.jsf<br>
+        </div>
+        <div style=MARGIN-LEFT:80px>
+          <br>
+        </div>
+        <div style=MARGIN-LEFT:40px>
+          Follow these steps in NetBeans:<br>
+        </div>
+        <div style=MARGIN-LEFT:40px>
+          <ol>
+            <li>
+              Right click on 'admingui' under 'Other
+              Resources-&gt;Resources-&gt;META-INF-&gt;admingui'
+            </li>
+            <li>
+              Select 'New' and 'Other...'<br>
+            </li>
+            <li>
+              Select 'Other' in the Categories column on the right and 'Empty
+              File' in File Types categories on the left. Select Next.
+            </li>
+            <li>
+              Enter 'console-config.xml' as the file name. Select
+              Finish.&nbsp;&nbsp;<br>
+            </li>
+            <li>
+              Open the file. Copy and paste the following code.&nbsp; (Note: the
+              full path of this file is:
+              myplugin/src/main/resources/META-INF/admingui/console-config.xml)
+            </li>
+          </ol>
+          <br style=BACKGROUND-COLOR:#cccccc>
+          <div style="MARGIN-LEFT:40px; BACKGROUND-COLOR:#cccccc">
+            &lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>
+            &lt;console-config id="javaone"&gt;<br>
+            &nbsp;&nbsp;&nbsp; &lt;integration-point id="JavaOneNode"
+            type="tree" priority="210" parentId="tree"
+            content="treenode-ex1.jsf" /&gt;<br>
+            &lt;/console-config&gt;<br>
+          </div>
+          <br>
+        </div>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        TBD: (Ana: I don't think we need all these screen shots showing how to
+        create a fille??)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        (I guess we can delete this first one, but would like to keep the next
+        one to ensure they have it at right directory &nbsp; anissa)<br>
+        <div id=hhf4 style="PADDING:1em 0pt; TEXT-ALIGN:left; MARGIN-LEFT:80px">
+          <img src=images/ex1-3-createConfig1.jpg style="WIDTH:840px; HEIGHT:508px"><br>
+          <br>
+          Figure: Ex1-3&nbsp; Creating console-config.xml (step 1)<br>
+          <div style=MARGIN-LEFT:40px>
+            <div id=v6gz style="PADDING:1em 0pt; TEXT-ALIGN:left">
+              <div id=dqfl style="PADDING:1em 0pt; TEXT-ALIGN:left">
+                <div id=bd-l style="PADDING:1em 0pt; TEXT-ALIGN:left">
+                  <img src=images/ex1-4-createConfig2.jpg style="WIDTH:839px; HEIGHT:507px">
+                </div>
+                <br>
+                Figure: Ex1-4 Creating console-config.xml (step 2)<br>
+                <br>
+                <br>
+                <div id=q_x4 style="PADDING:1em 0pt; TEXT-ALIGN:left">
+                  <img src=images/ex1-5-editConfig.jpg style="WIDTH:759px; HEIGHT:486px">
+                </div>
+                Figure: Ex1-5&nbsp; Editing&nbsp; console-config.xml<br>
+              </div>
+            </div>
+            <br>
+            <hr style="WIDTH:100%; HEIGHT:2px"><br style=FONT-WEIGHT:bold>
+          </div>
+        </div>
+        <b>1-C&nbsp; Add JSF Pages</b><br>
+        <br>
+        &nbsp;&nbsp; 5 .&nbsp; In this step you will be creating the JSF pages
+        which will be displayed in the Administration Console when your JavaOne
+        tree node is displayed and clicked.&nbsp;&nbsp;<br>
+        In the first JSF file you will specify a top level JavaOne tree node and
+        a sub node underneath.&nbsp; In the second JSF file you will be using
+        Facelets syntax to create a simple 'hello world' page that is displayed
+        when the sub node is clicked. &nbsp; To learn more about JSF or Facelets
+        you can visit the JSFTemplating web site:
+        https://jsftemplating.dev.java.net, or the Facelets web site:
+        https://facelets.dev.java.net.<br>
+        <br>
+        <div style=MARGIN-LEFT:40px>
+          Step-by-step instructions in NetBeans<br>
+        </div>
+        <ol>
+          <ol>
+            <li>
+              Right click on Resources.&nbsp; Select 'New' and 'Other...'
+            </li>
+            <li>
+              Select 'Other' in the Categories column on the right and 'Empty
+              File' in File Types categories on the left. Select Next.
+            </li>
+            <li>
+              Fill in 'treenode-ex1.jsf' as&nbsp; the file name.&nbsp;&nbsp;
+              This corresponds to the 'content' specified in console-config.xml
+            </li>
+            <li>
+              Open the file. Copy and paste the following code.&nbsp;&nbsp;
+              (Note: the full path of this file is
+              myplugin/src/main/resources/treenode-ex1.jsf)
+            </li>
+          </ol>
+        </ol>
+        <br style=BACKGROUND-COLOR:#cccccc>
+        <div style="MARGIN-LEFT:40px; BACKGROUND-COLOR:#cccccc">
+          &lt;sun:treeNode&nbsp;&nbsp; id="j1root"<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          text="J1 TreeNode"<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          imageURL="theme/com/sun/webui/jsf/suntheme/images/tree/tree_folder.gif"<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          target="main"&gt;<br>
+          &nbsp;&nbsp;&nbsp; &lt;sun:treeNode id="first" t<br>
+          <div style=MARGIN-LEFT:80px>
+            ext="First Node"<br>
+          </div>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          url="javaone/hello.jsf"<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          imageURL="resource/images/instance.gif"<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          target="main" /&gt;<br>
+          &lt;/sun:treeNode&gt;<br>
+        </div>
+        <p class=pb style=page-break-after:always>
+        </p>
+        <br>
+        <br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+        <div id=b0tu style="PADDING:1em 0pt; TEXT-ALIGN:left; MARGIN-LEFT:40px">
+          <img src=images/ex1-6-createTreenode.jpg style="WIDTH:756px; HEIGHT:450px">
+        </div>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Figure Ex1-6&nbsp; Create
+        treenode-ex1.jsf (Step 2)<br>
+        <br>
+        <div id=x130 style="PADDING:1em 0pt; TEXT-ALIGN:left; MARGIN-LEFT:40px">
+          <div id=hre9 style="PADDING:1em 0pt; TEXT-ALIGN:left">
+            <br>
+          </div>
+          <br>
+          <div id=w-zh style="PADDING:1em 0pt; TEXT-ALIGN:left">
+            <img src=images/ex1-7-editTreenode-1.jpg style="WIDTH:956px; HEIGHT:414px">&nbsp;
+            &nbsp;&nbsp;&nbsp; Figure:&nbsp; Ex1-7&nbsp; Edit treenode-ex1.jsf<br>
+          </div>
+          <br>
+          6.&nbsp; In this step you will be creating the hello.jsf&nbsp; page
+          which will be displayed on the right frame of the Administration
+          Console when the 'Exercise #1' tree node is clicked.&nbsp; The file
+          will be created in the same directory where you created
+          'treenode-1.jsf'.&nbsp;<br>
+          &nbsp;The full path to this file is
+          'myplugin/src/main/resources/hello.jsf'.&nbsp;&nbsp;&nbsp;<br>
+          <br>
+          Step-by-step instructions in NetBeans<br>
+          <ol>
+            <li>
+              Right click on Resources.&nbsp; Select 'New' and 'Other...'
+            </li>
+            <li>
+              Select <b>'</b>Other' in the left Categories column and 'Empty
+              File' on the File Type column.
+            </li>
+            <li>
+              Enter 'hello.jsf<b>'</b> as&nbsp; the file name.&nbsp;&nbsp; This
+              corresponds to the 'url' specified in&nbsp; the 'treenode-ex1.jsf'
+              file you created in step 5 above.<br>
+            </li>
+            <li>
+              Open the file.&nbsp; Add the following code.&nbsp;&nbsp; (Note:
+              the full path to this file is
+              myplugin/src/main/resources/hello.jsf)<br style=BACKGROUND-COLOR:#cccccc>
+            </li>
+          </ol>
+        </div>
+        <div id=x130 style="PADDING:1em 0pt; TEXT-ALIGN:left">
+          <div style="MARGIN-LEFT:40px; BACKGROUND-COLOR:#cccccc">
+            &lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"&gt;<br>
+            &lt;html xmlns="http://www.w3.org/1999/xhtml"<br>
+            &nbsp;&nbsp;&nbsp; xmlns:ui="http://java.sun.com/jsf/facelets"<br>
+            &nbsp;&nbsp;&nbsp; xmlns:h="http://java.sun.com/jsf/html"<br>
+            &nbsp;&nbsp;&nbsp; xmlns:f="http://java.sun.com/jsf/core"&gt;<br>
+            &lt;head&gt;<br>
+            &nbsp;&nbsp;&nbsp; &lt;title&gt; Hello World &lt;/title&gt;<br>
+            &lt;/head&gt;<br>
+            &lt;body&gt;<br>
+            &nbsp;&nbsp;&nbsp; &lt;h:outputText value="Your plugin is working,
+            Congratulation !!!" /&gt;<br>
+            &lt;/body&gt;<br>
+            &lt;/html&gt;<br>
+            <br>
+          </div>
+        </div>
+        <div id=x130 style="PADDING:1em 0pt; TEXT-ALIGN:left; MARGIN-LEFT:40px">
+          <br>
+          <div id=enfz style="PADDING:1em 0pt; TEXT-ALIGN:left">
+            <img src=images/ex1-8-editHello.jpg style="WIDTH:934px; HEIGHT:462px">
+          </div>
+          Figure: Ex1-8&nbsp; Edit
+          hello.jsf<hr style="WIDTH:100%; HEIGHT:2px"><br>
+        </div>
+        1-D&nbsp; Add Java Class<br>
+        <div id=aaga style="PADDING:1em 0pt; TEXT-ALIGN:left">
+          <div style=MARGIN-LEFT:40px>
+            7.&nbsp;&nbsp; Next we are going to finish the implementation of
+            this plugin module.&nbsp; All we need now is a&nbsp; Java Class that
+            is a Service and implements the ConsoleProvider.&nbsp;&nbsp;
+            ConsoleProvider is an interface that requires the method
+            getConfiguration that returns the URL to the config-console.xml
+            file.&nbsp; If this method returns null, the plugin framework will
+            look for a default configuration file
+            META-INF/admingui/console-config.java.<br>
+            <br>
+            For your information,&nbsp; ConsoleProvider.java resides under
+            glassfish-src/v3/common/glassfish-api/src/main/java/org/glassfish/api/admingui.<br>
+            (TBD: is the above sentence necessary ?)<br>
+            <div id=ne15 style="PADDING:1em 0pt; TEXT-ALIGN:left">
+              Follow these steps in NetBeans:<br>
+              <ol>
+                <li>
+                  Locate&nbsp; the directory 'org.example.glassfish.admingui'
+                  under&nbsp; 'Source Packages'.<br>
+                </li>
+                <li>
+                  Right click on it and select&nbsp; 'New' and 'Java
+                  Class".&nbsp; A pop up window will display.<br>
+                </li>
+                <li>
+                  Enter the class name 'JavaOnePlugin' &nbsp; (Note:&nbsp; do
+                  not enter the .java extension)
+                </li>
+                <li>
+                  Select Finish
+                </li>
+              </ol>
+              <div style=MARGIN-LEFT:40px>
+                <div id=nab5 style="PADDING:1em 0pt; TEXT-ALIGN:left">
+                  <img src=images/ex1-9-createJava.jpg style="WIDTH:866px; HEIGHT:463px">
+                </div>
+                Figure: Ex1-9 Create JavaOnePlugin.java<br>
+                <br>
+                7.&nbsp;&nbsp;&nbsp; Now open this newly created Java File and
+                add the necessary implementation for the plugin.&nbsp;&nbsp;
+                (Note: the full path of this file is
+                '&lt;gfplugin&gt;/myplugin/src/main/java/org/example/glassfish/admingui/JavaOnePlugin.java')<br>
+                <br>
+                Here are some hints for the implementation. (TBD: when changing
+                to the lab template, they have a special DIV for hints, may want
+                to use that)<br>
+              </div>
+              <ol style=MARGIN-LEFT:40px>
+                <li>
+                  Add @Service Annotation
+                </li>
+                <li>
+                  Implements ConsoleProvider
+                </li>
+                <li>
+                  A Public method getConfiguration() that returns a
+                  URL.&nbsp;&nbsp; If this returns Null, the system will get the
+                  configuration from a default location.
+                </li>
+              </ol>
+              <div style=MARGIN-LEFT:40px>
+                <br>
+                <span style=BACKGROUND-COLOR:#ffffff>Or you can copy and paste
+                the following code to your file:&nbsp; </span>
+              </div>
+              <br style=BACKGROUND-COLOR:#cccccc>
+              <div style="MARGIN-LEFT:40px; BACKGROUND-COLOR:#cccccc">
+                <span style=BACKGROUND-COLOR:#cccccc><br>
+                package
+                org.example.glassfish.admingui;</span><br style=BACKGROUND-COLOR:#cccccc>
+                <span style=BACKGROUND-COLOR:#cccccc>import
+                org.glassfish.api.admingui.ConsoleProvider;</span><br style=BACKGROUND-COLOR:#cccccc>
+                <span style=BACKGROUND-COLOR:#cccccc>import
+                org.jvnet.hk2.annotations.Service;</span><br style=BACKGROUND-COLOR:#cccccc>
+                <span style=BACKGROUND-COLOR:#cccccc>import
+                java.net.URL;</span><br style=BACKGROUND-COLOR:#cccccc>
+                <br style=BACKGROUND-COLOR:#cccccc>
+                <span style=BACKGROUND-COLOR:#cccccc>/**</span><br style=BACKGROUND-COLOR:#cccccc>
+                <span style=BACKGROUND-COLOR:#cccccc>&nbsp;*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                &lt;p&gt; Returns the URL of the Integration Point configuration
+                file console-config.xml
+                &lt;/p&gt;</span><br style=BACKGROUND-COLOR:#cccccc>
+                <span style=BACKGROUND-COLOR:#cccccc>&nbsp;*</span><br style=BACKGROUND-COLOR:#cccccc>
+                <span style=BACKGROUND-COLOR:#cccccc>&nbsp;*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                @return URL of configration file.&nbsp;
+                </span><br style=BACKGROUND-COLOR:#cccccc>
+                <span style=BACKGROUND-COLOR:#cccccc>&nbsp;*/</span><br style=BACKGROUND-COLOR:#cccccc>
+                <span style=BACKGROUND-COLOR:#cccccc>@Service</span><br style=BACKGROUND-COLOR:#cccccc>
+                <span style=BACKGROUND-COLOR:#cccccc>public class JavaOnePlugin
+                implements ConsoleProvider
+                {</span><br style=BACKGROUND-COLOR:#cccccc>
+                <span style=BACKGROUND-COLOR:#cccccc>&nbsp;&nbsp;&nbsp;
+                </span><br style=BACKGROUND-COLOR:#cccccc>
+                <span style=BACKGROUND-COLOR:#cccccc>&nbsp;&nbsp;&nbsp; public
+                URL getConfiguration() { return null;
+                }</span><br style=BACKGROUND-COLOR:#cccccc>
+                <span style=BACKGROUND-COLOR:#cccccc>}<br>
+                <br>
+                </span>
+              </div>
+              <div style=MARGIN-LEFT:80px>
+                <br>
+                <br>
+              </div>
+              <div style=MARGIN-LEFT:40px>
+                <div id=p0p4 style="PADDING:1em 0pt; TEXT-ALIGN:left">
+                  <div style=MARGIN-LEFT:40px>
+                    <div id=wk70 style="PADDING:1em 0pt; TEXT-ALIGN:left">
+                      <img src=images/ex1-10-editJavaOnePlugin.jpg style="WIDTH:864px; HEIGHT:459px">
+                    </div>
+                    Figure: Ex1-10&nbsp; Edit&nbsp; JavaOnePlugin.java<br>
+                    <br>
+                  </div>
+                </div>
+              </div>
+              <div id=p0p4 style="PADDING:1em 0pt; TEXT-ALIGN:left; MARGIN-LEFT:40px">
+                8.&nbsp;&nbsp; The last step of this implementation is to build
+                the project.<br>
+                <br>
+                Note:&nbsp; If you are using a command line and have 'maven 2'
+                installed on your system you can build the project by doing the
+                following:<br>
+                &nbsp;&nbsp;&nbsp;<span style=BACKGROUND-COLOR:#999999>
+                %cd&nbsp; &lt;gfplugin&gt;/plugin;&nbsp; mvn install</span><br>
+              </div>
+              <div id=p0p4 style="PADDING:1em 0pt; TEXT-ALIGN:left">
+                <div style=MARGIN-LEFT:40px>
+                  &nbsp;&nbsp;&nbsp; Steps in NetBeans:<br>
+                </div>
+                <ol>
+                  <ol>
+                    <li>
+                      Right click on the project 'Java One 2008 Admin Console
+                      Plugin'
+                    </li>
+                    <li>
+                      Select Build.
+                    </li>
+                  </ol>
+                </ol>
+                <br>
+                After the above steps is finished,&nbsp;
+                <span style=BACKGROUND-COLOR:#cfe2f3><span style=BACKGROUND-COLOR:#ffffff>you&nbsp;
+                will&nbsp; have the jar file
+                'myplugin</span></span><span style=BACKGROUND-COLOR:#ffffff>/target/console-javaone-plugin-1.0-SNAPSHOT.jar'&nbsp;
+                and this is ready to be integrated into GlassFish.</span><br>
+              </div>
+              <div id=p0p4 style="PADDING:1em 0pt; TEXT-ALIGN:left; MARGIN-LEFT:40px">
+                <div style=MARGIN-LEFT:40px>
+                </div>
+              </div>
+              <div id=ne15 style="PADDING:1em 0pt; TEXT-ALIGN:left">
+                <hr style="WIDTH:100%; HEIGHT:2px"><br>
+                <b>1-E.&nbsp; Integrate this plugin module to GlassFish V3<br>
+                <br>
+                </b>You now need a Terminal to enter some commands.&nbsp; Please
+                bring up a terminal window.<br>
+                <br>
+                9.&nbsp; The GlassFish V3 server is installed as
+                'gfplugin/glassfish'. &nbsp; It is already running.<br>
+                10.&nbsp; In the browser enter the following URL to bring up the
+                Admin Console.<br>
+                http://localhost:8080/admingui/index.jsf<br>
+                <br>
+                Note that the Navigation tree on the left does not have the
+                JavaOne tree node yet since you have not integrated your jar.<br>
+                <br>
+                <div id=rlz1 style="PADDING:1em 0pt; TEXT-ALIGN:left">
+                  <img src=images/ex1-11-before.jpg style="WIDTH:801px; HEIGHT:585px">
+                </div>
+                Figure: Ex1-11 Before Integration<br>
+                <br>
+                11. Shut down the server<br>
+                <span style=BACKGROUND-COLOR:#eeeeee> %
+                &lt;gfplugin&gt;/glassfish/bin/stop-domain</span><br>
+                <br>
+                12. Integrate the jar to GlassFish by copying it to
+                &lt;gfplugin&gt;/glassfish/modules directory<br>
+                <span style=BACKGROUND-COLOR:#eeeeee> % cp&nbsp;
+                &lt;gfplugin&gt;/myplugin</span><span style=BACKGROUND-COLOR:#ffffff><span style=BACKGROUND-COLOR:#eeeeee>/target/console-javaone-plugin-1.0-SNAPSHOT.jar&nbsp;
+                to
+                &lt;gfplugin&gt;/glassfish/modules/console-javaone-plugin-1.0-SNAPSHOT.jar</span><br>
+                </span><br>
+                13.&nbsp; Start the server again,<br>
+                <span style=BACKGROUND-COLOR:#eeeeee> % glassfish/bin/asadmin
+                start-domain&nbsp;</span><br style=BACKGROUND-COLOR:#eeeeee>
+                <br>
+                14. Go to
+                <span style=BACKGROUND-COLOR:#eeeeee>http://localhost:8080/admingui/index.jsf</span><br>
+                &nbsp;Note that the JavaOne tree node is displayed in the
+                Navigation Tree and clicking on the tree node displays the
+                'Hello World' page.<br>
+                <br>
+                <div style=MARGIN-LEFT:40px>
+                  <div id=ep_a style="PADDING:1em 0pt; TEXT-ALIGN:left">
+                    <div id=ni67 style="PADDING:1em 0pt; TEXT-ALIGN:left">
+                      <div id=u30h style="PADDING:1em 0pt; TEXT-ALIGN:left">
+                        <div id=eocd style="PADDING:1em 0pt; TEXT-ALIGN:left">
+                          <img src=images/ex1-12-ex1result.jpg style="WIDTH:752px; HEIGHT:458px">
+                        </div>
+                        <br>
+                      </div>
+                      Figure: Ex1-12 &nbsp; Browser showing the plugin page.
+                    </div>
+                  </div>
+                  <b>You have just customized the Administration Console and
+                  plugged in your own tree node and page,&nbsp; Congratulations
+                  !!<br>
+                  <br>
+                  </b><hr style="WIDTH:100%; HEIGHT:2px">Summary:<br>
+                  <br>
+                  (TBD)<br>
+                  <br>
+                  Go to solution<br>
+                  <br>
+                  Go on to next exercise<br>
+                  <br>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class=codebox>
+  <h1>
+    Exercise 1 Solution: Plugging into GlassFish<br>
+  </h1>
+  <pre>S1-B  :  Content for <b>&lt;gfplugin&gt;/myplugin/src/main/resources/META-INF/admingui/console-config.xml</b><br></pre>
+  <div style="MARGIN-LEFT:40px; BACKGROUND-COLOR:#cccccc">
+    &lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>
+    &lt;console-config id="javaone"&gt;<br>
+    &nbsp;&nbsp;&nbsp; &lt;integration-point id="JavaOneNode" type="tree"
+    priority="210" parentId="tree" content="treenode-ex1.jsf" /&gt;<br>
+    &lt;/console-config&gt;<br>
+  </div>
+  <pre><br><br>S1-C: Content for <b>&lt;gfplugin&gt;/myplugin/src/main/resources/treenode-ex1.jsf</b><br></pre>
+  <br style=BACKGROUND-COLOR:#cccccc>
+  <div style="MARGIN-LEFT:40px; BACKGROUND-COLOR:#cccccc">
+    &lt;sun:treeNode&nbsp;&nbsp; id="j1root"<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    text="J1 TreeNode"<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    imageURL="theme/com/sun/webui/jsf/suntheme/images/tree/tree_folder.gif"<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    target="main"&gt;<br>
+    &nbsp;&nbsp;&nbsp; &lt;sun:treeNode id="first" t<br>
+    <div style=MARGIN-LEFT:80px>
+      ext="First Node"<br>
+    </div>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    url="javaone/hello.jsf"<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    imageURL="resource/images/instance.gif"<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    target="main" /&gt;<br>
+    &lt;/sun:treeNode&gt;<br>
+  </div>
+  <pre><br><br>&nbsp;&nbsp;&nbsp;&nbsp;Content for <b>&lt;gfplugin&gt;/myplugin</b><b>/src/main/resources/hello.jsf</b><br>          <br></pre>
+  <div style="MARGIN-LEFT:40px; BACKGROUND-COLOR:#cccccc">
+    <pre>&lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"&gt;<br>&lt;html xmlns="http://www.w3.org/1999/xhtml"<br>&nbsp;&nbsp;&nbsp; xmlns:ui="http://java.sun.com/jsf/facelets"<br>&nbsp;&nbsp;&nbsp; xmlns:h="http://java.sun.com/jsf/html"<br>&nbsp;&nbsp;&nbsp; xmlns:f="http://java.sun.com/jsf/core"&gt;<br><br>&lt;head&gt;<br>&nbsp;&nbsp;&nbsp; &lt;title&gt; Hello World &lt;/title&gt;<br>&lt;/head&gt;<br><br>&lt;body&gt;<br>&nbsp;&nbsp;&nbsp; &lt;h:outputText value="Your plugin is working, Congratulation !!!" /&gt;<br>&lt;/body&gt;<br><br>&lt;/html&gt;</pre>
+  </div>
+  <pre><br style=FONT-WEIGHT:bold><b>S1-D</b>  Source code for <b>&lt;gfplugin/myplugin/src/main/java/org.example.glassfish.admingui.JavaOnePlugin.java<br><br></b></pre>
+  <div style="MARGIN-LEFT:40px; BACKGROUND-COLOR:#cccccc">
+    <span style=BACKGROUND-COLOR:#cccccc><br>
+    package
+    org.example.glassfish.admingui;</span><br style=BACKGROUND-COLOR:#cccccc>
+    <span style=BACKGROUND-COLOR:#cccccc>import
+    org.glassfish.api.admingui.ConsoleProvider;</span><br style=BACKGROUND-COLOR:#cccccc>
+    <span style=BACKGROUND-COLOR:#cccccc>import
+    org.jvnet.hk2.annotations.Service;</span><br style=BACKGROUND-COLOR:#cccccc>
+    <span style=BACKGROUND-COLOR:#cccccc>import
+    java.net.URL;</span><br style=BACKGROUND-COLOR:#cccccc>
+    <br style=BACKGROUND-COLOR:#cccccc>
+    <span style=BACKGROUND-COLOR:#cccccc>/**</span><br style=BACKGROUND-COLOR:#cccccc>
+    <span style=BACKGROUND-COLOR:#cccccc>&nbsp;*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    &lt;p&gt; Returns the URL of the Integration Point configuration file
+    console-config.xml &lt;/p&gt;</span><br style=BACKGROUND-COLOR:#cccccc>
+    <span style=BACKGROUND-COLOR:#cccccc>&nbsp;*</span><br style=BACKGROUND-COLOR:#cccccc>
+    <span style=BACKGROUND-COLOR:#cccccc>&nbsp;*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    @return URL of configration file.&nbsp;
+    </span><br style=BACKGROUND-COLOR:#cccccc>
+    <span style=BACKGROUND-COLOR:#cccccc>&nbsp;*/</span><br style=BACKGROUND-COLOR:#cccccc>
+    <span style=BACKGROUND-COLOR:#cccccc>@Service</span><br style=BACKGROUND-COLOR:#cccccc>
+    <span style=BACKGROUND-COLOR:#cccccc>public class JavaOnePlugin implements
+    ConsoleProvider {</span><br style=BACKGROUND-COLOR:#cccccc>
+    <span style=BACKGROUND-COLOR:#cccccc>&nbsp;&nbsp;&nbsp;
+    </span><br style=BACKGROUND-COLOR:#cccccc>
+    <span style=BACKGROUND-COLOR:#cccccc>&nbsp;&nbsp;&nbsp; public URL
+    getConfiguration() { return null;
+    }</span><br style=BACKGROUND-COLOR:#cccccc>
+    <span style=BACKGROUND-COLOR:#cccccc>}<br>
+    <br>
+    </span>
+  </div>
+  <br>
+  <pre>Final view:<br></pre>
+  <div id=u30h style="PADDING:1em 0pt; TEXT-ALIGN:left">
+    <div id=eocd style="PADDING:1em 0pt; TEXT-ALIGN:left; MARGIN-LEFT:40px">
+      <img src=images/ex1-12-ex1result.jpg style="WIDTH:752px; HEIGHT:458px">
+    </div>
+    <br>
+  </div>
+</div>
+<p class=pb style=page-break-after:always>
+</p>
+<br>
+<br>
+<h1>
+  Exercise 2:&nbsp; Charting with jMaki (25 min)<br>
+</h1>
+<h1>
+</h1>
+<div class="j1holduration xbig">
+  Expected duration: 25 minutes
+</div>
+<p class=j1holheader>
+  <br>
+  <b> Introduction:&nbsp; </b><br>
+</p>
+<p class=j1holheader>
+  The goal of this exercise is to create a JSF page which utilizes the JMaki
+  Charting component and create another integration point to the Administration
+  Console.&nbsp;&nbsp; Through this exercise you will learn how to include a
+  JMaki widget in a JSF page and add another plugin to the Administration
+  Console.<br>
+</p>
+<br>
+<p class=j1holheader>
+  <font size=2> Background information:</font>
+</p>
+<br>
+<p>
+  &nbsp;
+</p>
+<font color=#ff0000>TBD:</font>&nbsp; More info relating to JMaki<br>
+<br>
+Step-by-Step Instructions:<br>
+<span style=BACKGROUND-COLOR:#f3f3f3>Note:&nbsp;<br>
+This exercise is based (TBD: or should we say continuation ) on exercise
+1.&nbsp; If you have not completed exercise 1,&nbsp; please do the following so
+that you can work on exercise 2 now</span><br style=BACKGROUND-COLOR:#f3f3f3>
+<span style=BACKGROUND-COLOR:#f3f3f3>Solaris/Linux :&nbsp;&nbsp; % mv
+lab/javaone-plugin&nbsp;
+lab/my-javaone-plugin</span><br style=BACKGROUND-COLOR:#f3f3f3>
+<span style=BACKGROUND-COLOR:#f3f3f3>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+% mkdir&nbsp;
+lab/javaone-plugin&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;== TBD&nbsp; I should combine this and next command into
+one</span><br style=BACKGROUND-COLOR:#f3f3f3>
+<span style=BACKGROUND-COLOR:#f3f3f3>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+% cp -R lab/solutions/solution_1/javaone-plugin/ to&nbsp; lab/javaone-plugin
+</span><br style=BACKGROUND-COLOR:#f3f3f3>
+<br style=BACKGROUND-COLOR:#f3f3f3>
+<span style=BACKGROUND-COLOR:#f3f3f3>Window:&nbsp; TBD</span><br>
+<br>
+Step-by-Step Instructions:<br>
+This exercise consists of the following sequences (TBD should use the same word
+as in ex1)<br>
+&nbsp;&nbsp;&nbsp; 2-A.&nbsp; Open the plugin module in NetBeans<br>
+&nbsp;&nbsp;&nbsp; 2-B.&nbsp; Create the JSF page that contains a JMaki Charting
+component<br>
+&nbsp;&nbsp;&nbsp; 2.C.&nbsp; Modify configuration file and add jsf page
+for&nbsp; new tree node<br>
+&nbsp;&nbsp;&nbsp; 2-D&nbsp;&nbsp; Build and Integrate this plugin module to
+GlassFish V3<br>
+&nbsp;&nbsp;&nbsp; 2-E&nbsp;&nbsp; Observe the added tree node and your JMaki
+Chart by clicking the tree node<br>
+<br>
+<b>2-A&nbsp;&nbsp;&nbsp;&nbsp;Open the plugin module in NetBeans<br>
+&nbsp;&nbsp;&nbsp; </b>You should have myplugin project still open in
+NetBeans.&nbsp; If you have already closed the project, follow this step to open
+it again.&nbsp; (more detailed info can be found in 1-A. (TBD provide a link)<br>
+&nbsp;<br>
+<div style=MARGIN-LEFT:40px>
+  &nbsp;&nbsp;&nbsp; 1.&nbsp; Launch NetBeans IDE 6.0&nbsp;<br>
+  &nbsp;&nbsp;&nbsp; 2.&nbsp; Open plugin module
+</div>
+<ol style=MARGIN-LEFT:40px>
+  <ol>
+    <li>
+      Choose Open Project from the File menu.
+    </li>
+    <li>
+      Browse to &lt;gfplugin&gt; and select myplugin module
+    </li>
+    <li>
+      Press the Open Project button
+    </li>
+  </ol>
+</ol>
+<div style=MARGIN-LEFT:40px>
+  &nbsp;Here is what your NetBeans Projects tab should show.<br>
+  <div id=xzyo style="PADDING:1em 0pt; TEXT-ALIGN:left">
+    <img src=images/ex2-1-editConfig.jpg style="WIDTH:854px; HEIGHT:439px">
+  </div>
+  Figure:&nbsp; Ex2-1&nbsp; opened&nbsp; Javaone-plugin module to start exercise
+  2.<br>
+  <br>
+  <br>
+</div>
+<b>2-B.&nbsp; Create your JSF page that shows the&nbsp; JMaki chart<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </b>TBD.&nbsp; We need to
+add a few sentence here about jmaki charting ??<br>
+<div style=MARGIN-LEFT:40px>
+  &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Steps in NetBeans:<br>
+  <ol>
+    <li>
+      Select Other Sources -&gt; resources.<br>
+    </li>
+    <li>
+      Create an empty file named 'chart.jsf' &nbsp; (refer to 1-A on how to
+      create empty file)
+    </li>
+    <li>
+      Edit chart.jsf to add the JMaki charting component.&nbsp; We suggest you
+      copy &amp; paste the following to your editor.<br>
+    </li>
+  </ol>
+  <br style=BACKGROUND-COLOR:#cccccc>
+  <div style="MARGIN-LEFT:40px; BACKGROUND-COLOR:#cccccc">
+    <br>
+    &nbsp;&lt;sun:page&gt;<br>
+    &lt;sun:html&gt;<br>
+    &lt;sun:markup tag="head"&gt;<br>
+    &nbsp;&nbsp;&nbsp; &lt;sun:markup tag="title"&gt;<br>
+    &nbsp;&nbsp;&nbsp; &lt;staticText value="jMaki Charting!" /&gt;<br>
+    &nbsp;&nbsp;&nbsp; &lt;/sun:markup&gt;<br>
+    &nbsp;&nbsp;&nbsp; &lt;sun:script url="/resources/jmaki.js" /&gt;<br>
+    &lt;/sun:markup&gt;<br>
+    <br>
+    &lt;sun:markup tag="body"&gt;<br>
+    <br>
+    &lt;sun:form id="form"&gt;<br>
+    <br>
+    <br>
+    &lt;sun:markup tag="div" style="width:380px; height: 380px;"&gt;<br>
+    <br>
+    //&nbsp; Uncomment the one at a time to try<br>
+    //&lt;jmaki:widget name="jmaki.charting.yahoo.pie"<br>
+    //&lt;jmaki:widget name="jmaki.charting.google.pie"<br>
+    &lt;jmaki:widget name="jmaki.charting.plotkit.pie"<br>
+    &nbsp;&nbsp;&nbsp; args="{colorScheme:2}"<br>
+    &nbsp;&nbsp;&nbsp; value="{<br>
+    &nbsp;&nbsp;&nbsp; xAxis : {<br>
+    &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; title : 'Months',<br>
+    &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; labels : [<br>
+    &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; {label : 'January'},<br>
+    &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; {label : 'February'},<br>
+    &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; {label : 'March'},<br>
+    &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; {label : 'April'},<br>
+    &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; {label : 'May'},<br>
+    &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; {label : 'June'},<br>
+    &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; {label : 'July'},<br>
+    &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; {label : 'August'},<br>
+    &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; {label : 'September'},<br>
+    &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; {label : 'October'},<br>
+    &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; {label : 'November'},<br>
+    &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; {label : 'December'} ]<br>
+    &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; },<br>
+    &nbsp;&nbsp;&nbsp; data : [ {<br>
+    &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; label : 'Set 1',<br>
+    &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; values : [25, 45, 25, 45, 50, 25, 35,
+    25, 25, 20, 35, 45]<br>
+    &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; } ] }"/&gt;<br>
+    <br>
+    &lt;/sun:markup&gt;<br>
+    &lt;sun:markup tag="div" style="width: 600px; height: 280px;"&gt;<br>
+    <br>
+    //&nbsp; Uncomment the one at a time to try<br>
+    &lt;jmaki:widget name="jmaki.charting.dojo.area"<br>
+    //&lt;jmaki:widget name="jmaki.charting.dojo.line"<br>
+    //&lt;jmaki:widget name="jmaki.charting.dojo.bar"<br>
+    //&lt;jmaki:widget name="jmaki.charting.plotkit.area"<br>
+    //&lt;jmaki:widget name="jmaki.charting.plotkit.line"<br>
+    //&lt;jmaki:widget name="jmaki.charting.plotkit.bar"<br>
+    //&lt;jmaki:widget name="jmaki.charting.google.area"<br>
+    //&lt;jmaki:widget name="jmaki.charting.google.bar"<br>
+    //&lt;jmaki:widget name="jmaki.charting.google.line"<br>
+    //&lt;jmaki:widget name="jmaki.charting.yahoo.line"<br>
+    //&lt;jmaki:widget name="jmaki.charting.yahoo.bar"<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; value="{<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    xAxis : {<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    title : 'Months',<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    labels : [{ label : 'January'},<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    { label : 'February'},<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    { label : 'March'},<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    { label : 'April'},<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    { label : 'May'},<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    { label : 'June'},<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    { label : 'July'},<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    { label : 'August'},<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    { label : 'September'},<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    { label : 'October'},<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    { label : 'November'},<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    { label : 'December'}<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    ]<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    },<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    yAxis : {<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    title : 'Temperature',<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    labels : [{ label : '0', value : 0},<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    { label : '10s', value : 10},<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    { label : '20s', value : 20},<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    { label : '30s', value : 30},<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    { label : '40s', value : 40},<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    { label : '50s', value : 50}<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    ]<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    },&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    data : [<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    {label : 'Gray Series', values : [25, 45, 25, 45, 50, 25, 35, 25, 25, 20,
+    35, 45] },<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    {label : 'Pink Series', values : [20, 40, 30, 35, 45, 20, 25, 15, 20, 25,
+    30, 40] },<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    {label : 'Blue Series', values : [15, 35, 15, 40, 30, 15, 20, 10, 15, 20,
+    30, 35]
+    },&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    {label : 'Red Series',&nbsp; values :&nbsp; [10, 25, 10,&nbsp; 5, 20,&nbsp;
+    5, 15,&nbsp; 5, 10, 15, 25, 30] }<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    ]<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    }"/&gt;<br>
+    &lt;/sun:markup&gt;<br>
+    <br>
+    &lt;/sun:form&gt;<br>
+    <br>
+    &lt;/sun:markup&gt;<br>
+    &lt;/sun:html&gt;<br>
+    &lt;/sun:page&gt;<br>
+    <br>
+  </div>
+  <br>
+</div>
+<div id=r9u6 style="PADDING:1em 0pt; TEXT-ALIGN:left">
+  <div style=MARGIN-LEFT:40px>
+    <div id=sa9u style="PADDING:1em 0pt; TEXT-ALIGN:left">
+      <img src=images/ex2-2-editChart.jpg style="WIDTH:879px; HEIGHT:499px"><br>
+      <br>
+      Figure : Ex2-2&nbsp; Edit of chart.jsf<br>
+    </div>
+    <b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+    </b>
+  </div>
+</div>
+<b>2-C. Modify configuration file and add jsf page for&nbsp; new tree node<br>
+</b><br>
+<br>
+<div style=MARGIN-LEFT:40px>
+  You now need to add an integration point for plugging the exercise 2 tree node
+  to the Admin Console. &nbsp; Each plugin module should have 1
+  console-config.xml, and you can specify as many integration point as needed in
+  this configuration file. &nbsp; Since you have created this file in exercise
+  1, all we need to do now is to edit it and add the second integration point.
+  &nbsp; You want the exercise 2 node to be under the JavaOne tree node.&nbsp;
+  So, we specify the parentId to be 'j1root'. &nbsp; You can refer to
+  treenode-ex1.jsf to see this.&nbsp;&nbsp; You also need to create the file
+  treenode-ex2.jsf which will point to the JSF jMaki chart page.<br>
+</div>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Steps in NetBeans:<br>
+<ol>
+  <li>
+    Double click on Other Sources -&gt;resources -&gt;META-INF -&gt;admingui
+    -&gt; console-config.xml&nbsp;
+  </li>
+  <li>
+    Add the following integration point to the file.<br>
+  </li>
+</ol>
+<pre style="BACKGROUND-COLOR:#f3f3f3; MARGIN-LEFT:40px">&lt;integration-point <br>&nbsp;&nbsp;&nbsp;&nbsp; id="Another" <br>  &nbsp;&nbsp; type="tree" <br>&nbsp;&nbsp;&nbsp;&nbsp; priority="230" <br>&nbsp;&nbsp;&nbsp;&nbsp; parentId="j1root" <br>&nbsp;&nbsp;&nbsp;&nbsp; content="treenode-ex2.jsf" <br>/&gt;<br>
+  <br></pre>
+<p class=j1holheader>
+</p>
+<div style=MARGIN-LEFT:40px>
+  <div id=vhzl style="PADDING:1em 0pt; TEXT-ALIGN:left">
+    <img src=images/ex2-3-editConfig.jpg style="WIDTH:866px; HEIGHT:461px"><br>
+    Figure: Ex2-3&nbsp;&nbsp; Modify console-config.xml<br>
+  </div>
+  <br>
+  3. Select Other Sources -&gt; resources<br>
+  4. Create an empty file named 'treenode-ex2.jsf' &nbsp; (refer to 1-A on how
+  to create empty file)<br>
+  5. Edit treenode-ex2.jsf to specify the information regarding this second tree
+  node.<br>
+  <pre style="BACKGROUND-COLOR:#f3f3f3; MARGIN-LEFT:40px">&lt;sun:treeNode<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; id="second" <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; text="Exercise #2"<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; url="javaone/chart.jsf"<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; imageURL="resource/images/instance.gif"<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; target="main" <br>/&gt;<br><br></pre>
+  <p class=j1holheader>
+  </p>
+  &nbsp;
+  <div id=oys7 style="PADDING:1em 0pt; TEXT-ALIGN:left">
+    <img src=images/ex2-4-editTreenode.jpg style="WIDTH:871px; HEIGHT:449px">
+  </div>
+  Figure: Ex2-4&nbsp; Edit of treenode-ex2.jsf<br>
+  <br>
+</div>
+<br>
+2-D&nbsp;&nbsp; Build and Integrate this plugin module to GlassFish V3<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; You have implemented all that is needed to
+add a JSF Page with JMaki Charting to the Administration Console.&nbsp; You now
+need to build this module and copy the jar file to GlassFish.&nbsp; When you
+restart the server you will be able to see this new tree node and JSF page.<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Steps in
+NetBeans:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+<ol style=MARGIN-LEFT:40px>
+  <li>
+    Right click on the project "Java One 2008 Admin Console Plugin"
+  </li>
+  <li>
+    Select Build.
+  </li>
+</ol>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The results are displayed in the output
+window.<br>
+&nbsp;&nbsp;&nbsp; <span style=BACKGROUND-COLOR:#cfe2f3><br>
+</span>
+<div style=MARGIN-LEFT:40px>
+  <span style=BACKGROUND-COLOR:#cfe2f3>[hk2:package]</span><br style=BACKGROUND-COLOR:#cfe2f3>
+  <span style=BACKGROUND-COLOR:#cfe2f3>Building jar:
+  v3/javaone-plugin/target/console-javaone-plugin-1.0-SNAPSHOT.jar</span><br style=BACKGROUND-COLOR:#cfe2f3>
+  <span style=BACKGROUND-COLOR:#cfe2f3>[install:install]</span><br style=BACKGROUND-COLOR:#cfe2f3>
+  <span style=BACKGROUND-COLOR:#cfe2f3>Installing
+  v3/javaone-plugin/target/console-javaone-plugin-10.0-SNAPSHOT.jar to
+  /Users/anilam/.m2/repository/org/glassfish/admingui/console-javaone-plugin/1.0-SNAPSHOT/console-javaone-plugin-1.0-SNAPSHOT.jar</span><br style=BACKGROUND-COLOR:#cfe2f3>
+  <span style=BACKGROUND-COLOR:#cfe2f3>------------------------------------------------------------------------</span><br style=BACKGROUND-COLOR:#cfe2f3>
+  <span style=BACKGROUND-COLOR:#cfe2f3>BUILD
+  SUCCESSFUL</span><br style=BACKGROUND-COLOR:#cfe2f3>
+  <span style=BACKGROUND-COLOR:#cfe2f3>------------------------------------------------------------------------</span><br style=BACKGROUND-COLOR:#cfe2f3>
+  <span style=BACKGROUND-COLOR:#cfe2f3>Total time: 8
+  seconds</span><br style=BACKGROUND-COLOR:#cfe2f3>
+  <span style=BACKGROUND-COLOR:#cfe2f3>Finished at: Tue Mar 04 16:15:15 PST
+  2008</span><br style=BACKGROUND-COLOR:#cfe2f3>
+  <span style=BACKGROUND-COLOR:#cfe2f3>Final Memory:
+  60M/107M</span><br style=BACKGROUND-COLOR:#cfe2f3>
+  <span style=BACKGROUND-COLOR:#cfe2f3>----------------------------------------------------------------------</span>
+</div>
+<div style=MARGIN-LEFT:40px>
+  <br>
+  &nbsp;<br>
+  Now, open a Terminal window to enter the follow command.&nbsp; This is to copy
+  over the module (jar) that was just built to GlassFish.<br>
+  <br>
+  11. Shut down the server<br>
+  % glassfish/bin/stop-domain<br>
+  <br>
+  12. Now, Integrate the jar to GlassFish by copying it to
+  glassfish/modules&nbsp; directory<br>
+  % cp&nbsp;
+  lab<span style=BACKGROUND-COLOR:#ffffff>/javaone-plugin/target/console-javaone-plugin-1.0-SNAPSHOT.jar&nbsp;
+  v3/glassfish/modules/console-javaone-plugin-1.0-SNAPSHOT.jar<br>
+  </span><br>
+  13.&nbsp; Start the server again,<br>
+  % glassfish/bin/asadmin start-domain&nbsp;<br>
+  <br>
+  14. Goto http://localhost:8080/admingui<br>
+  You can now see both Exercise #1 and Exercise #2&nbsp; nodes under the J1
+  TreeNode.&nbsp; Click on Exercise #2 node and you can see the JMaki Chart on
+  the right hand frame.<br>
+  <br>
+  <div id=re2- style="PADDING:1em 0pt; TEXT-ALIGN:left">
+    <img src=images/ex2-5-ex2result.jpg style="WIDTH:822px; HEIGHT:774px">
+  </div>
+  Figure:&nbsp; JSF Page with Chart.<br>
+  <br>
+  Congratulations !!&nbsp; You have completed exercise 2 and successfully
+  plugged the JSF page to the Admin Console.<br>
+  <br>
+  <hr style="WIDTH:100%; HEIGHT:2px">Summry:<br>
+  (TBD)<br>
+  <br>
+</div>
+<div style=MARGIN-LEFT:40px>
+</div>
+<br>
+<p class=pb style=page-break-after:always>
+</p>
+<br>
+<h1>
+  Exercise 2 Solution: Charting with jMaki<br>
+</h1>
+In exercise 2,&nbsp; you created and modified the following files:&nbsp;&nbsp;
+console-config.xml,&nbsp; treenode-ex2.jsf&nbsp; and chart.jsf.<br>
+Here is the content of all 3 files:<br>
+<br>
+S2-B:&nbsp; Content of&nbsp;&nbsp;
+<b>lab/javaone-plugin/src/main/resources/chart.jsf<br>
+</b><br>
+<div style="MARGIN-LEFT:40px; BACKGROUND-COLOR:#cccccc">
+  &lt;sun:page&gt;<br>
+  &lt;sun:html&gt;<br>
+  &lt;sun:markup tag="head"&gt;<br>
+  &nbsp;&nbsp;&nbsp; &lt;sun:markup tag="title"&gt;<br>
+  &nbsp;&nbsp;&nbsp; &lt;staticText value="jMaki Charting!" /&gt;<br>
+  &nbsp;&nbsp;&nbsp; &lt;/sun:markup&gt;<br>
+  &nbsp;&nbsp;&nbsp; &lt;sun:script url="/resources/jmaki.js" /&gt;<br>
+  &lt;/sun:markup&gt;<br>
+  <br>
+  &lt;sun:markup tag="body"&gt;<br>
+  <br>
+  &lt;sun:form id="form"&gt;<br>
+  <br>
+  <br>
+  &lt;sun:markup tag="div" style="width:380px; height: 380px;"&gt;<br>
+  <br>
+  //&nbsp; Uncomment the one at a time to try<br>
+  //&lt;jmaki:widget name="jmaki.charting.yahoo.pie"<br>
+  //&lt;jmaki:widget name="jmaki.charting.google.pie"<br>
+  &lt;jmaki:widget name="jmaki.charting.plotkit.pie"<br>
+  &nbsp;&nbsp;&nbsp; args="{colorScheme:2}"<br>
+  &nbsp;&nbsp;&nbsp; value="{<br>
+  &nbsp;&nbsp;&nbsp; xAxis : {<br>
+  &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; title : 'Months',<br>
+  &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; labels : [<br>
+  &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; {label : 'January'},<br>
+  &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; {label : 'February'},<br>
+  &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; {label : 'March'},<br>
+  &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; {label : 'April'},<br>
+  &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; {label : 'May'},<br>
+  &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; {label : 'June'},<br>
+  &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; {label : 'July'},<br>
+  &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; {label : 'August'},<br>
+  &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; {label : 'September'},<br>
+  &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; {label : 'October'},<br>
+  &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; {label : 'November'},<br>
+  &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; {label : 'December'} ]<br>
+  &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; },<br>
+  &nbsp;&nbsp;&nbsp; data : [ {<br>
+  &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; label : 'Set 1',<br>
+  &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; values : [25, 45, 25, 45, 50, 25, 35,
+  25, 25, 20, 35, 45]<br>
+  &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; } ] }"/&gt;<br>
+  <br>
+  &lt;/sun:markup&gt;<br>
+  &lt;sun:markup tag="div" style="width: 600px; height: 280px;"&gt;<br>
+  <br>
+  //&nbsp; Uncomment the one at a time to try<br>
+  &lt;jmaki:widget name="jmaki.charting.dojo.area"<br>
+  //&lt;jmaki:widget name="jmaki.charting.dojo.line"<br>
+  //&lt;jmaki:widget name="jmaki.charting.dojo.bar"<br>
+  //&lt;jmaki:widget name="jmaki.charting.plotkit.area"<br>
+  //&lt;jmaki:widget name="jmaki.charting.plotkit.line"<br>
+  //&lt;jmaki:widget name="jmaki.charting.plotkit.bar"<br>
+  //&lt;jmaki:widget name="jmaki.charting.google.area"<br>
+  //&lt;jmaki:widget name="jmaki.charting.google.bar"<br>
+  //&lt;jmaki:widget name="jmaki.charting.google.line"<br>
+  //&lt;jmaki:widget name="jmaki.charting.yahoo.line"<br>
+  //&lt;jmaki:widget name="jmaki.charting.yahoo.bar"<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; value="{<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  xAxis : {<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  title : 'Months',<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  labels : [{ label : 'January'},<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  { label : 'February'},<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  { label : 'March'},<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  { label : 'April'},<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  { label : 'May'},<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  { label : 'June'},<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  { label : 'July'},<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  { label : 'August'},<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  { label : 'September'},<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  { label : 'October'},<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  { label : 'November'},<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  { label : 'December'}<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  ]<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  },<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  yAxis : {<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  title : 'Temperature',<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  labels : [{ label : '0', value : 0},<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  { label : '10s', value : 10},<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  { label : '20s', value : 20},<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  { label : '30s', value : 30},<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  { label : '40s', value : 40},<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  { label : '50s', value : 50}<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  ]<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  },&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  data : [<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  {label : 'Gray Series', values : [25, 45, 25, 45, 50, 25, 35, 25, 25, 20, 35,
+  45] },<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  {label : 'Pink Series', values : [20, 40, 30, 35, 45, 20, 25, 15, 20, 25, 30,
+  40] },<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  {label : 'Blue Series', values : [15, 35, 15, 40, 30, 15, 20, 10, 15, 20, 30,
+  35]
+  },&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  {label : 'Red Series',&nbsp; values :&nbsp; [10, 25, 10,&nbsp; 5, 20,&nbsp; 5,
+  15,&nbsp; 5, 10, 15, 25, 30] }<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  ]<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  }"/&gt;<br>
+  &lt;/sun:markup&gt;<br>
+  <br>
+  &lt;/sun:form&gt;<br>
+  <br>
+  &lt;/sun:markup&gt;<br>
+  &lt;/sun:html&gt;<br>
+  &lt;/sun:page&gt;<br>
+  <br>
+</div>
+<br>
+<pre>S2-C  :  Content for  <b>lab/javaone-plugin/src/main/resources/META-INF/admingui/console-config.xml</b><br></pre>
+<div style="MARGIN-LEFT:40px; BACKGROUND-COLOR:#cccccc">
+  &lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>
+  <br>
+  &lt;console-config id="javaone"&gt;<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;integration-point<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  id="JavaOneNode"<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  type="tree"<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  priority="210"<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  parentId="tree"<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  content="treenode-ex1.jsf"<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /&gt;<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;integration-point<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  id="Another"<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  type="tree"<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  priority="230"<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  parentId="j1root"<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  content="treenode-ex2.jsf"<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /&gt;<br>
+  &lt;/console-config&gt;<br>
+  <br>
+</div>
+<pre><br><b><br></b>S2-C  :  Content for  <b>lab/javaone-plugin/src/main/resources/treenode-ex2.jsf</b><br></pre>
+<div style="MARGIN-LEFT:40px; BACKGROUND-COLOR:#cccccc">
+  <pre style=MARGIN-LEFT:40px>&lt;sun:treeNode<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; id="second" <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; text="Exercise #2"<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; url="javaone/chart.jsf"<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; imageURL="resource/images/instance.gif"<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; target="main" <br>/&gt;</pre>
+</div>
+<pre><br></pre>
+<br>
+<p class=pb style=page-break-after:always>
+</p>
+<br>
+<h1>
+  Exercise 3: Templating your Plugin<br>
+</h1>
+<div class="j1holduration xbig">
+  Expected duration: 25 minutes
+</div>
+<p class=j1holheader>
+  Introduction: (TBD)
+</p>
+<p class=j1holheader>
+  In this exercise,&nbsp; we will show you how you can easily customize your
+  page by using JSFTemplating.<br>
+</p>
+<p class=j1holheader>
+  Background: (TBD)
+</p>
+<br>
+<p class=j1holheader>
+  <br>
+</p>
+<p class=j1holheader>
+  <b><u>Step-by-step Instructions:</u></b>
+</p>
+<p class=j1holheader>
+  <span style=BACKGROUND-COLOR:#f3f3f3>Note:&nbsp;<br>
+  This exercise is based (TBD: or should we say continuation ) on exercise
+  1.&nbsp; If you have not completed exercise 1,&nbsp; please do the following
+  so that you can work on exercise 3
+  now</span><br style=BACKGROUND-COLOR:#f3f3f3>
+  <span style=BACKGROUND-COLOR:#f3f3f3>Solaris/Linux :&nbsp;&nbsp; % mv
+  lab/javaone-plugin&nbsp;
+  lab/my-javaone-plugin</span><br style=BACKGROUND-COLOR:#f3f3f3>
+  <span style=BACKGROUND-COLOR:#f3f3f3>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  % mkdir&nbsp;
+  lab/javaone-plugin&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  &lt;== TBD&nbsp; I should combine this and next command into
+  one</span><br style=BACKGROUND-COLOR:#f3f3f3>
+  <span style=BACKGROUND-COLOR:#f3f3f3>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  % cp -R lab/solutions/solution_3/javaone-plugin/&nbsp; lab/javaone-plugin
+  </span><br style=BACKGROUND-COLOR:#f3f3f3>
+  <br style=BACKGROUND-COLOR:#f3f3f3>
+  <span style=BACKGROUND-COLOR:#f3f3f3>Window:&nbsp; TBD</span>
+</p>
+<p class=j1holheader>
+  <br>
+</p>
+<p class=j1holheader>
+  This exercise consists of the following sequences.
+</p>
+<p class=j1holheader>
+  &nbsp;&nbsp;&nbsp; 3-A. Customize the charting page in exercise 2 by using a
+  template.
+</p>
+<p class=j1holheader>
+  &nbsp;&nbsp;&nbsp; 3-B&nbsp; Modify configuration file and add jsf page
+  for&nbsp; new tree node<br>
+  &nbsp;&nbsp;&nbsp; 3-C&nbsp; Build and Integrate this plugin module to
+  GlassFish V3<br>
+  &nbsp;&nbsp;&nbsp; 3-D&nbsp; Observe the added tree node and your customized
+  JSF page.
+</p>
+<br>
+<p class=j1holheader>
+  <br>
+</p>
+<p class=j1holheader>
+  3-A Customize the charting page
+</p>
+<br>
+<p class=j1holheader>
+  <br>
+</p>
+<p class=j1holheader>
+  &nbsp;&nbsp;&nbsp; Steps in NetBeans:
+</p>
+<p class=j1holheader>
+  &nbsp;&nbsp;&nbsp; 1.&nbsp; Open the javaone-plugin module if it is not open.
+</p>
+<p class=j1holheader>
+  &nbsp;&nbsp;&nbsp; 2&nbsp;&nbsp; Select Other Rsources -&gt; resources<br>
+  &nbsp;&nbsp;&nbsp; 3.&nbsp; Create an empty file named 'chart3.jsf '<br>
+</p>
+<p class=j1holheader>
+  &nbsp;&nbsp;&nbsp; 4.&nbsp; Edit chart3.jsf to use a template<br>
+</p>
+<p class=j1holheader>
+  <br>
+</p>
+&nbsp;&nbsp; TBD:&nbsp;&nbsp; Show chart3.jsf code here for user to copy &amp;
+paste<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Show screen
+shot of NB<br>
+<br>
+3-B&nbsp;&nbsp; Modify configuration file and add jsf page for&nbsp; new tree
+node<br>
+&nbsp;&nbsp;&nbsp; You are going to repeat the same steps in the previous 2
+exercise to add an Integration point and a tree node.&nbsp; This consists of<br>
+<ul>
+  <li>
+    Modify console-config.xml to add the third integration point
+  </li>
+</ul>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (Refer to
+Solution-3 for the entire file if needed)<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style=BACKGROUND-COLOR:#cccccc>&nbsp;
+&lt;integration-point&nbsp;&nbsp; id="Third"&nbsp; type="tree"&nbsp;
+priority="300"&nbsp; parentId="j1root"&nbsp; content="treenode-ex3.jsf"
+/&gt;</span><br>
+<p class=j1holheader>
+  <br>
+</p>
+<ul>
+  <li>
+    Create the jsf file that has the information about the tree node, such as
+    the text, the url that should be displayed when the tree code is clicked.
+  </li>
+</ul>
+<p class=j1holheader>
+</p>
+&nbsp;&nbsp;&nbsp; <span style=BACKGROUND-COLOR:#cccccc><br>
+</span>
+<div style="MARGIN-LEFT:40px; BACKGROUND-COLOR:#cccccc">
+  <span style=BACKGROUND-COLOR:#cccccc>&lt;sun:treeNode
+  </span><br style=BACKGROUND-COLOR:#cccccc>
+  <span style=BACKGROUND-COLOR:#cccccc>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;id="third"
+  text="Exercise #3"&nbsp;<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;url="javaone/chart3.jsf"&nbsp;<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;imageURL="resource/images/instance.gif"</span><br style=BACKGROUND-COLOR:#cccccc>
+  <span style=BACKGROUND-COLOR:#cccccc>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  target="main" </span><br style=BACKGROUND-COLOR:#cccccc>
+  <span style=BACKGROUND-COLOR:#cccccc>&nbsp; /&gt;</span><br>
+  <br>
+</div>
+<br>
+3-C&nbsp;&nbsp; Build and&nbsp; Integrate the module to GlassFish<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Steps
+in NetBeans:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+<ol style=MARGIN-LEFT:40px>
+  <li>
+    Right click on the project "Java One 2008 Admin Console Plugin"
+  </li>
+  <li>
+    Select Build.
+  </li>
+</ol>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The output window will show the following:<br>
+&nbsp;&nbsp;&nbsp;
+<div style=MARGIN-LEFT:40px>
+  <span style=BACKGROUND-COLOR:#cfe2f3>------------------------------------------------------------------------</span><br style=BACKGROUND-COLOR:#cfe2f3>
+  <span style=BACKGROUND-COLOR:#cfe2f3>BUILD
+  SUCCESSFUL</span><br style=BACKGROUND-COLOR:#cfe2f3>
+  <span style=BACKGROUND-COLOR:#cfe2f3>------------------------------------------------------------------------</span><br style=BACKGROUND-COLOR:#cfe2f3>
+  <span style=BACKGROUND-COLOR:#cfe2f3>Total time: 8
+  seconds</span><br style=BACKGROUND-COLOR:#cfe2f3>
+  <span style=BACKGROUND-COLOR:#cfe2f3>Finished at: Tue Mar 04 19:15:15 PST
+  2008</span><br style=BACKGROUND-COLOR:#cfe2f3>
+  <span style=BACKGROUND-COLOR:#cfe2f3>Final Memory:
+  60M/107M</span><br style=BACKGROUND-COLOR:#cfe2f3>
+  <span style=BACKGROUND-COLOR:#cfe2f3>----------------------------------------------------------------------</span>
+</div>
+<br>
+&nbsp;<br>
+Now, open a Terminal window to enter the follow command.&nbsp; This is to copy
+over the module (jar) that was just built to GlassFish.<br>
+<br>
+6. Shut down the server<br>
+% glassfish/bin/stop-domain<br>
+<br>
+7. Now, Integrate the jar to GlassFish by copying it to glassfish/modules&nbsp;
+directory<br>
+% cp&nbsp;
+&lt;j1Plugin&gt;/lab<span style=BACKGROUND-COLOR:#ffffff>/javaone-plugin/target/console-javaone-plugin-1.0-SNAPSHOT.jar&nbsp;
+&lt;j1Plugin&gt;/glassfish/modules/console-javaone-plugin-1.0-SNAPSHOT.jar<br>
+</span><br>
+13.&nbsp; Start the server again,<br>
+% glassfish/bin/asadmin start-domain&nbsp;<br>
+<br>
+14. Goto http://localhost:8080/admingui<br>
+You can now see all 3 exercises tree nodes under the J1 TreeNode.&nbsp; Click on
+Exercise #3 node - you can see the custom header and the&nbsp; JMaki Chart on
+the right hand frame.<br>
+<p class=j1holheader>
+  <br>
+</p>
+<p class=j1holheader>
+  Summary:
+</p>
+<p class=j1holheader>
+  TBD<br>
+</p>
+<p class=j1holheader>
+  <br>
+</p>
+<h1>
+</h1>
+<br>
+<br>
+<p class=pb style=page-break-after:always>
+</p>
+<br>
+<h1>
+  Exercise 3 Solution: Templating your Plugin<br>
+</h1>
+<br>
+File content:&nbsp;
+&lt;j1Plugin&gt;/lab/javaone-plugin/src/main/resources/chart3.jsf<br>
+&nbsp;&nbsp;&nbsp; TBD.<br>
+<br>
+File content :&nbsp;
+&lt;j1Plugin&gt;/lab/javaone-plugin/src/main/resources/META-INF/admingui/console-config.xml<br>
+<br>
+<div style="MARGIN-LEFT:40px; BACKGROUND-COLOR:#cccccc">
+  <span style=BACKGROUND-COLOR:#cccccc>&lt;?xml version="1.0"
+  encoding="UTF-8"?&gt;<br>
+  <br>
+  &lt;console-config id="javaone"&gt;<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;integration-point<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  id="JavaOneNode"<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  type="tree"<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  priority="210"<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  parentId="tree"<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  content="treenode-ex1.jsf"<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /&gt;<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;integration-point<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  id="Another"<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  type="tree"<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  priority="230"<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  parentId="j1root"<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  content="treenode-ex2.jsf"<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /&gt;<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;integration-point<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  id="Third"<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  type="tree"<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  priority="100"<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  parentId="j1root"<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  content="treenode-ex3.jsf"<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /&gt;<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+  &lt;/console-config&gt;<br>
+  </span><br>
+  <br>
+</div>
+<br>
+<p class=j1holheader>
+</p>
+<br>
+File content :&nbsp;
+&lt;j1Plugin&gt;/lab/javaone-plugin/src/main/resources/treenode-ex3.jsf&nbsp;
+<div style="MARGIN-LEFT:40px; BACKGROUND-COLOR:#cccccc">
+  <span style=BACKGROUND-COLOR:#cccccc>&lt;sun:treeNode
+  </span><br style=BACKGROUND-COLOR:#cccccc>
+  <span style=BACKGROUND-COLOR:#cccccc>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;id="third"
+  text="Exercise #3"&nbsp;<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;url="javaone/chart3.jsf"&nbsp;<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;imageURL="resource/images/instance.gif"</span><br style=BACKGROUND-COLOR:#cccccc>
+  <span style=BACKGROUND-COLOR:#cccccc>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  target="main" </span><br style=BACKGROUND-COLOR:#cccccc>
+  <span style=BACKGROUND-COLOR:#cccccc>&nbsp; /&gt;</span><br>
+  <br>
+</div>
+<br>
+<br>
+<br>
+<p class=pb style=page-break-after:always>
+</p>
+<br>
+<h1 style=TEXT-ALIGN:center>
+  Congratulations! You have successfully completed the "LAB-4520: Plug Your
+  JavaServer Faces Application into the GlassFish v3 Admin Console" Hands-on
+  Lab.
+</h1>
+<p>
+  <b>Where to send questions or feedbacks on this lab and public discussion
+  forums:</b>
+</p>
+<ul class=j1hollist>
+  <li>
+    You can send technical questions via email to the authors of this Hands-on
+    lab (and experts on the subject) or you can post the questions to the web.<br>
+    Please post questions that are relevant only to this hands-on lab.
+    <ul>
+      <li>
+        <a href=https://hands-on-labs.dev.java.net/servlets/ForumMessageList?forumID=2548>6340_JavaME_StreamingVideo
+        forum at hands-on-labs.dev.java.net</a>
+      </li>
+    </ul>
+  </li>
+</ul>
+<ul class=j1hollist>
+  <li>
+    You can send your other questions to the public mailing lists and forums.
+    <ul>
+      <li>
+        <a href=http://mobility.netbeans.org/servlets/SummarizeList?listName=users>Mobility
+        users mailing list archive </a>
+      </li>
+      <li>
+        <a href=http://forum.java.sun.com/forum.jspa?forumID=76>Forum: Java ME
+        Technologies - CLDC and MIDP</a>
+      </li>
+    </ul>
+  </li>
+</ul>
+<p class=j1holheader>
+  Note for developers:
+</p>
+<p>
+  You have to update it according to your lab. It means change the forum link
+  and name (list of forums -
+  <a class=moz-txt-link-freetext href=https://hands-on-labs.dev.java.net/servlets/ProjectForumView>https://hands-on-labs.dev.java.net/servlets/ProjectForumView</a>),
+  change the public forums and mailing list
+</p>
+<br>
+<p>
+  <br>
+</p>
+<p>
+  <br>
+</p>
+<p>
+  <br>
+</p>
+<br>
+<br></body>
+</html>
