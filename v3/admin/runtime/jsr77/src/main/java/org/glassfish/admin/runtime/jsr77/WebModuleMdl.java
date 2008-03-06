@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2008 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -34,50 +34,52 @@
  * holder.
  */
 
-package com.sun.enterprise.deployment.util;
+package org.glassfish.admin.runtime.jsr77;
 
+import java.util.*;
+import javax.management.*;
 
-import com.sun.enterprise.deployment.Application;
-import org.jvnet.hk2.annotations.Contract;
+public class WebModuleMdl extends J2EEModuleMdl {
 
-/**
- * This interface defines a cisitor API for the Application related DOL descriptors
- *
- * @author  Jerome Dochez
- * @version 
- */
-@Contract
-public interface ApplicationVisitor {
+    private static String MANAGED_OBJECT_TYPE = "WebModule";
+    private String webModuleName = null;
+    private String applicationName = null;
+
+    public WebModuleMdl(String name,boolean state, boolean statistics) {
+        // FIXME
+        super(name,state,statistics); 
+    }
+
+    public String[] getservlets() {
+        Set appMods = findNames("j2eeType=Servlet,WebModule=" + this.webModuleName +
+            ",J2EEServer=" + getJ2EEServer()+",J2EEApplication="+this.applicationName);
+        Iterator it = appMods.iterator();
+        String [] mods = new String[appMods.size()];
+        int i =0;
+        while(it.hasNext()) {
+            mods[i++] = ((ObjectName)it.next()).toString();
+        }
+        return mods;
+    }
     
     /**
-     * visit an application object
-     * @param application the application descriptor
+     * The type of the J2EEManagedObject as specified by JSR77. 
+     * The class that implements a specific type must override this 
+     * method and return the appropriate type string.
      */
-    public void accept(Application application);
+    public String getj2eeType() {
+        return MANAGED_OBJECT_TYPE;
+    }
     
-    /**
-     * @return an implementation of the ejbBundleVisitor (if any)
-     * to visit ejb bundle descriptors
+    /** 
+     * Accessor method for the parent key 
      */
-    public EjbBundleVisitor getEjbBundleVisitor();        
-
-    /**
-     * @return an implementation of the ConnectorVisitor (if any)
-     * to visit connector descriptors
-     */
-    public ConnectorVisitor getConnectorVisitor();        
+    public String getJ2EEApplication() {
+        return this.applicationName;
+    }
     
-    /**
-     * @return an implementation of the webBundleVisitor (if any)
-     * to visit web bundle descriptors
-     */
-    public WebBundleVisitor getWebBundleVisitor();
-
-    /**
-     * @return an implementation of the AppClientVisitor (if any)
-     * to visit app client descriptors
-     */
-    public AppClientVisitor getAppClientVisitor();
-
+    public String getModuleName() {
+        return this.webModuleName;
+    }
+    
 }
-
