@@ -22,6 +22,10 @@
  */
 package com.sun.enterprise.glassfish.bootstrap.launcher;
 
+import com.sun.enterprise.glassfish.bootstrap.launcher.util.ASenvPropertyReader;
+import com.sun.enterprise.glassfish.bootstrap.launcher.util.SystemPropertyConstants;
+import java.util.*;
+
 /**
  * This is the main Launcher class designed for external and internal usage.
  * Each of the 3 kinds of server -- domain, node-agent and instance -- need
@@ -60,6 +64,7 @@ public abstract class GFLauncher {
     public void launch() throws GFLauncherException
     {
         try {
+            setup();
             internalLaunch();
         }
         catch (GFLauncherException gfe) {
@@ -70,6 +75,25 @@ public abstract class GFLauncher {
             throw new GFLauncherException("unknownError", t);
         }
     }
+
+    private void setup() throws GFLauncherException {
+        ASenvPropertyReader pr = new ASenvPropertyReader();
+        asenvProps = pr.getProps();
+        GFLauncherLogger.info("asenv properties:\n" + pr.toString());
+        info.setup();
+    }
+    private void getJavaExe() {
+        /* possible locations:
+         * JAVA_HOME
+         * java.home
+         * asenv
+         * Path
+         */
+        //SystemPropertyConstants.JAVA_ROOT_PROPERTY
+        
+    }
     GFLauncherInfo info = new GFLauncherInfo();
+    Map<String,String> asenvProps;
+
 }
 

@@ -52,7 +52,8 @@ import java.util.*;
  */
 public class ASenvPropertyReader {
 
-    public ASenvPropertyReader(File installDir) {
+    public ASenvPropertyReader() {
+        File installDir = GFLauncherUtils.getInstallDir();
         this.configDir = new File(installDir, "config");
         setEnvToPropMap();
 
@@ -62,7 +63,7 @@ public class ASenvPropertyReader {
         postProcess();
     }
 
-    public Map<String, String> getProperties() {
+    public Map<String, String> getProps() {
         return props;
     }
 

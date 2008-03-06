@@ -61,36 +61,40 @@ public class GFLauncherUtils {
         }
     }
 
-    public static File getInstallDir() {
-        String resourceName = GFLauncherUtils.class.getName().replace(".", "/") + ".class";
-        URL resource = GFLauncherUtils.class.getClassLoader().getResource(resourceName);
+    public static synchronized File getInstallDir() {
+        if(installDir == null)
+        {
+            String resourceName = GFLauncherUtils.class.getName().replace(".", "/") + ".class";
+            URL resource = GFLauncherUtils.class.getClassLoader().getResource(resourceName);
 
-        if (resource == null) {
-            return null;
-        }
-
-        if (!resource.getProtocol().equals("jar")) {
-            return null;
-        }
-
-        try {
-            JarURLConnection c = (JarURLConnection) resource.openConnection();
-            URL jarFile = c.getJarFileURL();
-            File f = new File(jarFile.toURI());
-
-            f = f.getParentFile();  // <install>/modules
-
-            if (f == null) {
+            if (resource == null) {
                 return null;
             }
 
-            f = f.getParentFile(); // <install>/
+            if (!resource.getProtocol().equals("jar")) {
+                return null;
+            }
 
-            return absolutize(f);
+            try {
+                JarURLConnection c = (JarURLConnection) resource.openConnection();
+                URL jarFile = c.getJarFileURL();
+                File f = new File(jarFile.toURI());
+
+                f = f.getParentFile();  // <install>/modules
+
+                if (f == null) {
+                    return null;
+                }
+
+                f = f.getParentFile(); // <install>/
+
+                installDir = absolutize(f);
+            }
+            catch (Exception e) {
+                installDir = null;
+            }
         }
-        catch (Exception e) {
-            return null;
-        }
+        return installDir;
     }
 
     public static boolean isWindows() {
@@ -181,5 +185,6 @@ public class GFLauncherUtils {
             return false;
         }
     }
+    private static File installDir;
 }
 
