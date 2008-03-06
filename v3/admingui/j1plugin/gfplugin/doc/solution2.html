@@ -12,148 +12,138 @@ S2-B:&nbsp; Content of&nbsp;&nbsp;
 <b>lab/javaone-plugin/src/main/resources/chart.jsf</b><br>    
         <div class="codebox">
             <pre>
-&lt;sun:page&gt;<br>
-  &lt;sun:html&gt;<br>
-  &lt;sun:markup tag="head"&gt;<br>
-  &nbsp;&nbsp;&nbsp; &lt;sun:markup tag="title"&gt;<br>
-  &nbsp;&nbsp;&nbsp; &lt;staticText value="jMaki Charting!" /&gt;<br>
-  &nbsp;&nbsp;&nbsp; &lt;/sun:markup&gt;<br>
-  &nbsp;&nbsp;&nbsp; &lt;sun:script url="/resources/jmaki.js" /&gt;<br>
-  &lt;/sun:markup&gt;<br>
-  <br>
-  &lt;sun:markup tag="body"&gt;<br>
-  <br>
-  &lt;sun:form id="form"&gt;<br>
-  <br>
-  <br>
-  &lt;sun:markup tag="div" style="width:380px; height: 380px;"&gt;<br>
-  <br>
-  //&nbsp; Uncomment the one at a time to try<br>
-  //&lt;jmaki:widget name="jmaki.charting.yahoo.pie"<br>
-  //&lt;jmaki:widget name="jmaki.charting.google.pie"<br>
-  &lt;jmaki:widget name="jmaki.charting.plotkit.pie"<br>
-  &nbsp;&nbsp;&nbsp; args="{colorScheme:2}"<br>
-  &nbsp;&nbsp;&nbsp; value="{<br>
-  &nbsp;&nbsp;&nbsp; xAxis : {<br>
-  &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; title : 'Months',<br>
-  &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; labels : [<br>
-  &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; {label : 'January'},<br>
-  &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; {label : 'February'},<br>
-  &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; {label : 'March'},<br>
-  &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; {label : 'April'},<br>
-  &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; {label : 'May'},<br>
-  &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; {label : 'June'},<br>
-  &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; {label : 'July'},<br>
-  &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; {label : 'August'},<br>
-  &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; {label : 'September'},<br>
-  &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; {label : 'October'},<br>
-  &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; {label : 'November'},<br>
-  &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; {label : 'December'} ]<br>
-  &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; },<br>
-  &nbsp;&nbsp;&nbsp; data : [ {<br>
-  &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; label : 'Set 1',<br>
-  &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; values : [25, 45, 25, 45, 50, 25, 35,
-  25, 25, 20, 35, 45]<br>
-  &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; } ] }"/&gt;<br>
-  <br>
-  &lt;/sun:markup&gt;<br>
-  &lt;sun:markup tag="div" style="width: 600px; height: 280px;"&gt;<br>
-  <br>
-  //&nbsp; Uncomment the one at a time to try<br>
-  &lt;jmaki:widget name="jmaki.charting.dojo.area"<br>
-  //&lt;jmaki:widget name="jmaki.charting.dojo.line"<br>
-  //&lt;jmaki:widget name="jmaki.charting.dojo.bar"<br>
-  //&lt;jmaki:widget name="jmaki.charting.plotkit.area"<br>
-  //&lt;jmaki:widget name="jmaki.charting.plotkit.line"<br>
-  //&lt;jmaki:widget name="jmaki.charting.plotkit.bar"<br>
-  //&lt;jmaki:widget name="jmaki.charting.google.area"<br>
-  //&lt;jmaki:widget name="jmaki.charting.google.bar"<br>
-  //&lt;jmaki:widget name="jmaki.charting.google.line"<br>
-  //&lt;jmaki:widget name="jmaki.charting.yahoo.line"<br>
-  //&lt;jmaki:widget name="jmaki.charting.yahoo.bar"<br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; value="{<br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  xAxis : {<br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  title : 'Months',<br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  labels : [{ label : 'January'},<br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  { label : 'February'},<br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  { label : 'March'},<br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  { label : 'April'},<br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  { label : 'May'},<br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  { label : 'June'},<br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  { label : 'July'},<br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  { label : 'August'},<br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  { label : 'September'},<br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  { label : 'October'},<br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  { label : 'November'},<br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  { label : 'December'}<br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  ]<br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  },<br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  yAxis : {<br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  title : 'Temperature',<br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  labels : [{ label : '0', value : 0},<br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  { label : '10s', value : 10},<br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  { label : '20s', value : 20},<br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  { label : '30s', value : 30},<br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  { label : '40s', value : 40},<br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  { label : '50s', value : 50}<br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  ]<br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  },&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  data : [<br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  {label : 'Gray Series', values : [25, 45, 25, 45, 50, 25, 35, 25, 25, 20, 35,
-  45] },<br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  {label : 'Pink Series', values : [20, 40, 30, 35, 45, 20, 25, 15, 20, 25, 30,
-  40] },<br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  {label : 'Blue Series', values : [15, 35, 15, 40, 30, 15, 20, 10, 15, 20, 30,
-  35]
-  },&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  {label : 'Red Series',&nbsp; values :&nbsp; [10, 25, 10,&nbsp; 5, 20,&nbsp; 5,
-  15,&nbsp; 5, 10, 15, 25, 30] }<br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  ]<br>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  }"/&gt;<br>
-  &lt;/sun:markup&gt;<br>
-  <br>
-  &lt;/sun:form&gt;<br>
-  <br>
-  &lt;/sun:markup&gt;<br>
-  &lt;/sun:html&gt;<br>
-  &lt;/sun:page&gt;<br>
-  <br>
+&lt;sun:page&gt;
+	&lt;!beforeCreate
+		getjMakiValues(values=&gt;$attribute{pievalues});
+		getjMakiValues(values=&gt;$attribute{gryvalues});
+		getjMakiValues(values=&gt;$attribute{bluvalues});
+		getjMakiValues(values=&gt;$attribute{pnkvalues});
+		getjMakiValues(values=&gt;$attribute{redvalues});
+	/&gt;
+&lt;sun:html&gt;
+&lt;sun:markup tag="head"&gt;
+	&lt;sun:link url="/theme/com/sun/webui/jsf/suntheme/css/css_master.css" /&gt;
+    &lt;sun:markup tag="title"&gt;
+	&lt;staticText value="jMaki Charting!" /&gt;
+    &lt;/sun:markup&gt;
+    &lt;sun:script url="/resources/jmaki.js" /&gt;
+    &lt;sun:script url="/theme/META-INF/dojo/dojo.js" /&gt;
+    &lt;sun:script url="/theme/META-INF/json/json.js" /&gt;
+    &lt;sun:script url="/theme/META-INF/prototype/prototype.js" /&gt;
+    &lt;sun:script url="/theme/META-INF/com_sun_faces_ajax.js" /&gt;
+&lt;/sun:markup&gt;
+
+&lt;sun:markup tag="body"&gt;
+
+&lt;sun:form id="form"&gt;
+
+
+&lt;sun:markup tag="div" style="width:380px; height: 380px;"&gt;
+
+//  Uncomment the one at a time to try
+
+&lt;sun:dropDown labels={
+    "jmaki.charting.yahoo.pie"
+    "jmaki.charting.google.pie"
+    "jmaki.charting.plotkit.pie"}
+    value="#{requestScope.chart1}"&gt;
+    &lt;!beforeCreate
+	setAttribute(key="chart1", value="jmaki.charting.google.pie");
+    /&gt;
+&lt;/sun:dropDown&gt;
+&lt;sun:button value=" Refresh " /&gt;
+&lt;jmaki:widget name="#{requestScope.chart1}"
+    args="{colorScheme:2}"
+    value="{
+	xAxis : {
+	    title : 'Months',
+	    labels : [
+		{label : 'January'},
+		{label : 'February'},
+		{label : 'March'},
+		{label : 'April'},
+		{label : 'May'},
+		{label : 'June'},
+		{label : 'July'},
+		{label : 'August'},
+		{label : 'September'},
+		{label : 'October'},
+		{label : 'November'},
+		{label : 'December'} ]
+		},
+	data : [ {
+	    label : 'Set 1',
+	    values : $attribute{pievalues}
+	    } ] }"/&gt;
+
+&lt;/sun:markup&gt;
+
+&lt;sun:dropDown labels={
+    "jmaki.charting.plotkit.area"
+    "jmaki.charting.plotkit.line"
+    "jmaki.charting.plotkit.bar"
+    "jmaki.charting.google.area"
+    "jmaki.charting.google.bar"
+    "jmaki.charting.google.line"
+    "jmaki.charting.yahoo.line"
+    "jmaki.charting.yahoo.bar"
+    "jmaki.charting.dojo.bar"
+    "jmaki.charting.dojo.line"
+    "jmaki.charting.dojo.area"}
+    value="#{requestScope.chart2}"&gt;
+    &lt;!beforeCreate
+	setAttribute(key="chart2", value="jmaki.charting.yahoo.area");
+    /&gt;
+&lt;/sun:dropDown&gt;
+&lt;sun:button value=" Refresh " /&gt;
+&lt;sun:markup tag="div" style="width: 600px; height: 280px;"&gt;
+
+//  Uncomment the one at a time to try
+&lt;jmaki:widget name="#{requestScope.chart2}"
+          value="{
+                    xAxis : {
+                    title : 'Months',
+                    labels : [{ label : 'January'},
+                              { label : 'February'},
+                              { label : 'March'},
+                              { label : 'April'},
+                              { label : 'May'},
+                              { label : 'June'},
+                              { label : 'July'},
+                              { label : 'August'},
+                              { label : 'September'},
+                              { label : 'October'},
+                              { label : 'November'},
+                              { label : 'December'}
+                              ]
+                              },
+                    yAxis : {
+                    title : 'Temperature',
+                    labels : [{ label : '0', value : 0},
+                              { label : '10s', value : 10},
+                              { label : '20s', value : 20},
+                              { label : '30s', value : 30},
+                              { label : '40s', value : 40},
+                              { label : '50s', value : 50}
+                              ]
+                              },                              
+                              data : [
+                   {label : 'Gray Series', values : $attribute{gryvalues} },
+                   {label : 'Pink Series', values : $attribute{pnkvalues} },
+                   {label : 'Blue Series', values : $attribute{bluvalues} },
+                   {label : 'Red Series',  values : $attribute{redvalues} }
+                   ]
+               }"/&gt;
+&lt;/sun:markup&gt;
+
+&lt;/sun:form&gt;
+
+&lt;/sun:markup&gt;
+&lt;/sun:html&gt;
+&lt;/sun:page&gt;
             </pre>
         </div>
-S2-C  :  Content for  <b>lab/javaone-plugin/src/main/resources/META-INF/admingui/console-config.xml</b><br>        
+S2-C  :  Content for  <b>lab/javaone-plugin/src/main/resources/META-INF/admingui/console-config.xml</b><br>
 <div class="codebox">
                 <pre>
   &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
