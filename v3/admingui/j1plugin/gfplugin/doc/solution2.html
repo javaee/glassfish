@@ -1,0 +1,188 @@
+<html>
+<head></head>
+<body>
+    <div class="j1holcontents">
+        
+        <h1>Exercise 2 Solution: Charting with jMaki</h1>
+        In exercise 2 you created and modified the following files:  
+chart.jsf, console-config.xml and treenode-ex2.jsf.<br>
+Here is the content of all 3 files:<br>
+<br>
+S2-B:&nbsp; Content of&nbsp;&nbsp;
+<b>lab/javaone-plugin/src/main/resources/chart.jsf</b><br>    
+        <div class="codebox">
+            <pre>
+&lt;sun:page&gt;<br>
+  &lt;sun:html&gt;<br>
+  &lt;sun:markup tag="head"&gt;<br>
+  &nbsp;&nbsp;&nbsp; &lt;sun:markup tag="title"&gt;<br>
+  &nbsp;&nbsp;&nbsp; &lt;staticText value="jMaki Charting!" /&gt;<br>
+  &nbsp;&nbsp;&nbsp; &lt;/sun:markup&gt;<br>
+  &nbsp;&nbsp;&nbsp; &lt;sun:script url="/resources/jmaki.js" /&gt;<br>
+  &lt;/sun:markup&gt;<br>
+  <br>
+  &lt;sun:markup tag="body"&gt;<br>
+  <br>
+  &lt;sun:form id="form"&gt;<br>
+  <br>
+  <br>
+  &lt;sun:markup tag="div" style="width:380px; height: 380px;"&gt;<br>
+  <br>
+  //&nbsp; Uncomment the one at a time to try<br>
+  //&lt;jmaki:widget name="jmaki.charting.yahoo.pie"<br>
+  //&lt;jmaki:widget name="jmaki.charting.google.pie"<br>
+  &lt;jmaki:widget name="jmaki.charting.plotkit.pie"<br>
+  &nbsp;&nbsp;&nbsp; args="{colorScheme:2}"<br>
+  &nbsp;&nbsp;&nbsp; value="{<br>
+  &nbsp;&nbsp;&nbsp; xAxis : {<br>
+  &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; title : 'Months',<br>
+  &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; labels : [<br>
+  &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; {label : 'January'},<br>
+  &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; {label : 'February'},<br>
+  &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; {label : 'March'},<br>
+  &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; {label : 'April'},<br>
+  &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; {label : 'May'},<br>
+  &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; {label : 'June'},<br>
+  &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; {label : 'July'},<br>
+  &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; {label : 'August'},<br>
+  &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; {label : 'September'},<br>
+  &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; {label : 'October'},<br>
+  &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; {label : 'November'},<br>
+  &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; {label : 'December'} ]<br>
+  &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; },<br>
+  &nbsp;&nbsp;&nbsp; data : [ {<br>
+  &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; label : 'Set 1',<br>
+  &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; values : [25, 45, 25, 45, 50, 25, 35,
+  25, 25, 20, 35, 45]<br>
+  &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; } ] }"/&gt;<br>
+  <br>
+  &lt;/sun:markup&gt;<br>
+  &lt;sun:markup tag="div" style="width: 600px; height: 280px;"&gt;<br>
+  <br>
+  //&nbsp; Uncomment the one at a time to try<br>
+  &lt;jmaki:widget name="jmaki.charting.dojo.area"<br>
+  //&lt;jmaki:widget name="jmaki.charting.dojo.line"<br>
+  //&lt;jmaki:widget name="jmaki.charting.dojo.bar"<br>
+  //&lt;jmaki:widget name="jmaki.charting.plotkit.area"<br>
+  //&lt;jmaki:widget name="jmaki.charting.plotkit.line"<br>
+  //&lt;jmaki:widget name="jmaki.charting.plotkit.bar"<br>
+  //&lt;jmaki:widget name="jmaki.charting.google.area"<br>
+  //&lt;jmaki:widget name="jmaki.charting.google.bar"<br>
+  //&lt;jmaki:widget name="jmaki.charting.google.line"<br>
+  //&lt;jmaki:widget name="jmaki.charting.yahoo.line"<br>
+  //&lt;jmaki:widget name="jmaki.charting.yahoo.bar"<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; value="{<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  xAxis : {<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  title : 'Months',<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  labels : [{ label : 'January'},<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  { label : 'February'},<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  { label : 'March'},<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  { label : 'April'},<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  { label : 'May'},<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  { label : 'June'},<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  { label : 'July'},<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  { label : 'August'},<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  { label : 'September'},<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  { label : 'October'},<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  { label : 'November'},<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  { label : 'December'}<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  ]<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  },<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  yAxis : {<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  title : 'Temperature',<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  labels : [{ label : '0', value : 0},<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  { label : '10s', value : 10},<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  { label : '20s', value : 20},<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  { label : '30s', value : 30},<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  { label : '40s', value : 40},<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  { label : '50s', value : 50}<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  ]<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  },&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  data : [<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  {label : 'Gray Series', values : [25, 45, 25, 45, 50, 25, 35, 25, 25, 20, 35,
+  45] },<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  {label : 'Pink Series', values : [20, 40, 30, 35, 45, 20, 25, 15, 20, 25, 30,
+  40] },<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  {label : 'Blue Series', values : [15, 35, 15, 40, 30, 15, 20, 10, 15, 20, 30,
+  35]
+  },&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  {label : 'Red Series',&nbsp; values :&nbsp; [10, 25, 10,&nbsp; 5, 20,&nbsp; 5,
+  15,&nbsp; 5, 10, 15, 25, 30] }<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  ]<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  }"/&gt;<br>
+  &lt;/sun:markup&gt;<br>
+  <br>
+  &lt;/sun:form&gt;<br>
+  <br>
+  &lt;/sun:markup&gt;<br>
+  &lt;/sun:html&gt;<br>
+  &lt;/sun:page&gt;<br>
+  <br>
+            </pre>
+        </div>
+S2-C  :  Content for  <b>lab/javaone-plugin/src/main/resources/META-INF/admingui/console-config.xml</b><br>        
+<div class="codebox">
+                <pre>
+  &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+  
+  &lt;console-config id=&quot;javaone&quot;&gt;
+  &nbsp;&nbsp;&nbsp;&nbsp;&lt;integration-point
+  &nbsp;&nbsp;&nbsp;&nbsp;id=&quot;JavaOneNode&quot;
+  &nbsp;&nbsp;&nbsp;&nbsp;type=&quot;tree&quot;
+  &nbsp;&nbsp;&nbsp;&nbsp;priority=&quot;210&quot;
+  &nbsp;&nbsp;&nbsp;&nbsp;parentId=&quot;tree&quot;
+  &nbsp;&nbsp;&nbsp;&nbsp;content=&quot;treenode-ex1.jsf&quot;
+  &nbsp;&nbsp;&nbsp;&nbsp;/&gt;
+  
+  &nbsp;&nbsp;&nbsp;&nbsp;&lt;integration-point
+  &nbsp;&nbsp;&nbsp;&nbsp;id=&quot;Another&quot;
+  &nbsp;&nbsp;&nbsp;&nbsp;type=&quot;tree&quot;
+  &nbsp;&nbsp;&nbsp;&nbsp;priority=&quot;230&quot;
+  &nbsp;&nbsp;&nbsp;&nbsp;parentId=&quot;j1root&quot;
+  &nbsp;&nbsp;&nbsp;&nbsp;content=&quot;treenode-ex2.jsf&quot;
+  &nbsp;&nbsp;&nbsp;&nbsp;/&gt;
+  &lt;/console-config&gt;
+  </pre>
+            </div>
+S2-D  :  Content for  <b>lab/javaone-plugin/src/main/resources/treenode-ex2.jsf</b><br>
+   <div class="codebox">
+                <pre> &lt;sun:treeNode<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; id="second" <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; text="Exercise #2"<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; url="javaone/chart.jsf"<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; imageURL="resource/images/instance.gif"<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; target="main" <br>/&gt;
+                </pre>
+            </div>
+        <p><a href="#Summary">Go on to summary</a></p>
+    </div>
+    
+</body>
