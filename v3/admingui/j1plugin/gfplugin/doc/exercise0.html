@@ -3,205 +3,94 @@
     <body>
         <div class="j1holcontents">
             
-            <h1>Exercise 0: Install and Configure Lab Environment</h1>
+            <h1>Exercise 0: Configuring your environment</h1>
             
             <p class="j1holwarn">
-                For JavaOne attendees using the lab machines provided, the steps in
-                Exercise 0 are done for you as part of the login process. So please
-                proceed to <a href="#Exercise_1">Exercise 1</a>.
+  If you are using a lab machine provided at JavaOne the
+  following steps in Exercise 0 have been completed for you.&nbsp; Please skip
+  this section and go to <a href="#Exercise_1">Exercise 1</a> if your environment is already
+  configured.
             </p>
             
             <ol class="j1hollist">
-                <li>Start the NetBeans 4.1 IDE and see if the IDE comes up.
+                <li>Launch NetBeans 6.0 IDE
                     
                     <ul>
                         <li>On Windows, <span style="font-weight: bold;">Start &gt;
-                            Programs &gt; NetBeans IDE &gt; NetBeans IDE 4.1 &gt; NetBeans IDE </span>or
-                            click NetBeans 4.1 desktop icon<span style="font-weight: bold;"><br>
-                                
-                        </span></li>
+                            Programs &gt; NetBeans IDE &gt; NetBeans IDE 6.0 &gt; NetBeans IDE </span>or
+                            click the NetBeans 6.0 desktop icon<br>
+                        </li>
                         <li>On Solaris, UNIX, or Linux, open a terminal window, then type <span
-                                style="font-weight: bold;">&lt;netbeans41_HOME&gt;</span><span
+                                style="font-weight: bold;">&lt;netbeans60_HOME&gt;</span><span
                             style="font-family: helvetica,arial,sans-serif; font-weight: bold;">/bin/netbeans</span></li>
                     </ul>
                 </li>
                 <li>
-                    Add Sun Java App Server 8.1 as an
-                    additional Runtime platform (in addition to Tomcat 5) if you installed
-                    NetBeans that does not contain Sun Java System App Server PE 8.1.
-                    <ol>
-                        <li>
-                            Select <span style="font-weight: bold;">Runtime</span> tab
-                        </li>
-                        
-                        <li>
-                            Right-click <span style="font-weight: bold;">Servers</span>
-                            and select <span style="font-weight: bold;">Add Server</span>.
-                            
-                            <p><img src="index_files/addserver.jpg" style="width: 671px; height: 509px;"></p>
-                        </li>
-                        
-                        <li>
-                            <a name="Demo"></a>
-                            In the <span style="font-weight: bold;">Choose
-                            Server</span> pane of the <span style="font-weight: bold;">Add Server
-                            Instance</span> window, drop down the Server field and choose <span
-                                style="font-weight: bold;">Sun Java System Application Server 8.1</span>.
-                            Click <span style="font-weight: bold;">Next</span>.
-                            
-                            <p><img src="index_files/addserverinstance.jpg" style="width: 608px; height: 448px;"></p>
-                        </li>
-                        
-                        <li>
-                            In the <span style="font-weight: bold;">Enter
-                            the Application Server location</span> pane, select Browse button and
-                            select installation location of the Sun Java System App server.
-                            It is c:\Sun\AppServer under Windows and $HOME/SUNWappserver
-                            under Linux/Solaris. Click <span style="font-weight: bold;">Next</span>.
-                        </li>
-                        
-                        <li>
-                            In the <span style="font-weight: bold;">Choose
-                            Application Server Instance</span> pane:
-                            <ul>
-                                <li>
-                                    for <span style="font-weight: bold;">Local
-                                    Server Instance (Default Location)</span> field, select <span
-                                        style="font-weight: bold;">localhost:4848 (domain1)</span>
-                                </li>
-                                <li>
-                                    for <span style="font-weight: bold;">Admin User Name</span> and
-                                    <span style="font-weight: bold;">Admin
-                                    Password</span> fields, type in the admin username and password.
-                                </li>
-                                <li>
-                                    Click <span style="font-weight: bold;">Finish</span>.
-                                    
-                                    <p><img src="index_files/addserverinstance2.jpg" style="width: 608px; height: 448px;"></p>
-                                </li>
-                            </ul>
-                        </li>
-                    </ol>
-                </li>
-                <li>Start the Sun Java System App Server. You can choose one
-                    of the following 3 options to start the App Server.
-                    
-                    <ul>
-                        <li>
-                            Option 1: From the Start menu (Windows platform)
-                            
-                            <ol>
-                                <li>
-                                    Start-&gt;All Programs-&gt;Sun
-                                    Microsystems-&gt;Application Server PE-&gt;Start Default Server
-                                </li>
-                            </ol>
-                        </li>
-                        <li>
-                            Option 2: From the command line
-                            
-                            <ol>
-                                <li>Windows: c:\Sun\AppServer\bin\asadmin
-                                    start-domain domain1 (to start admin server of domain1 and app server
-                                    instance server1 under domain1)
-                                </li>
-                                <li>Solaris/Linux:
-                                    /opt/SUNWappserver/bin/asadmin start-domain domain1
-                                    (to start admin server of domain1 and app server instance
-                                    server1 under domain1)
-                                </li>
-                            </ol>
-                        </li>
-                        <li>
-                            Option 3: Within NetBeans IDE
-                            
-                            <ol>
-                                
-                                <li>
-                                    Select <span style="font-weight: bold;">Runtime</span> tab
-                                </li>
-                                <li>
-                                    Expand <span style="font-weight: bold;">Servers</span>
-                                </li>
-                                <li>
-                                    Right click <span style="font-weight: bold;">Sun
-                                    Java System Application Server 8.1</span> and
-                                    select <span style="font-weight: bold;">Start/Stop Server</span>
-                                </li>
-                                <li>
-                                    If the App Server is in &quot;<span
-                                        style="font-weight: bold;">Server is stopped</span>&quot; state,
-                                    click <span style="font-weight: bold;">Start Server </span>button
-                                </li>
-                            </ol>
-                        </li>
-                    </ul>
-                </li>
-                
-                <li>
-                    Change configuration files
-                    
-                    <ol>
-                        <li>
-                            Set <code>&lt;j2ee1.4tutorial_install&gt;/j2eetutorial14/examples/common/build.properties</code>
-                            file as described in <a href="http://java.sun.com/j2ee/1.4/docs/tutorial/doc/About.html#wp85042">Chapter
-                            About This Tutorial, Section About the Examples</a> of J2EE 1.4
-                            tutorial. Basically, you set the &quot;j2ee.home&quot; and
-                            &quot;j2ee.tutorial.home&quot;
-                            properties. (If you encounter build failure later on, it is very
-                            likely that you did not set these variables or did not set them
-                            correctly.) Examples are as following:
-                            <ul>
-                                <li>Windows: (Windows: Use forward slash / not
-                                    backward slash
-                                    \; if you are using backward slash, you have to double it like \\ )
-                                    <ul>
-                                        <li>
-                                            j2ee.home=<span style="font-weight: bold;">c:\\Sun\\AppServer
-                                            </span> or <span style="font-weight: bold;">
-                                            c:/Sun/AppServer</span>
-                                        </li>
-                                        <li>
-                                            j2ee.tutorial.home=<span style="font-weight: bold;">c:\\j2eetutorial14</span> or <span
-                                                style="font-weight: bold;">
-                                            c:/j2eetutorial14</span>
-                                        </li>
-                                        
-                                    </ul>
-                                </li>
-                                <li>
-                                    Linux/Solaris:
-                                    <ul>
-                                        <li>
-                                            j2ee.home=<span style="font-weight: bold;">$HOME/SUNWappserver</span>
-                                        </li>
-                                        <li>
-                                            j2ee.tutorial.home=<span
-                                                style="font-weight: bold;">$HOME/j2eetutorial14</span>
-                                        </li>
-                                    </ul>
-                                </li>
-                            </ul>
-                        </li>
-                        <li>
-                            Set the admin user's password in
-                            <code>&lt;j2ee1.4tutorial_install&gt;/j2eetutorial14/examples/common/admin-password.txt</code>
-                            as described under <a href="http://java.sun.com/j2ee/1.4/docs/tutorial/doc/About.html#wp85042">Chapter
-                            About This Tutorial, Section About the Examples</a> of J2EE 1.4
-                            tutorial. Examples are as following:
-                            <ul>
-                                <li>
-                                    AS_ADMIN_PASSWORD=<span
-                                        style="font-weight: bold;">adminadmin</span> (or whatever
-                                    password you set when you install J2EE 1.4 SDK)
-                                </li>
-                            </ul>
-                        </li>
-                    </ol>
+    Install the Maven 2 plugin for NetBeans 6.0 if you do not have that
+    installed.&nbsp; (TBD, this image shows the plugin installed.&nbsp; should
+    redo this)
+
+    <ul><li>Choose Plugins from the Tools menu.&nbsp; Select the Available Plugins Tab.</li>
+        <li>Select the Maven 2 Plugin and press the Install Button</li></ul>
+
+    <div id=n28w style="PADDING:1em 0pt; TEXT-ALIGN:left; MARGIN-LEFT:40px">
+	<img src="images/ex0-mavenplugin.jpg" style="WIDTH:795px; HEIGHT:474px"><br>
+    </div>
+
+  </li>
+  <li>
+  Installing Subversion is <u>optional</u>.&nbsp;&nbsp; Subversion is an open
+  source version control system.&nbsp; For the purposes of this lab you are not
+  required to checkout the Glassfish V3 source code since it has already been
+  installed for you.&nbsp; If you would like to view the latest source code this
+  plugin is necessary.&nbsp; In step 4 you will learn how to checkout Glassfish
+  V3 and build it.<br>
+  <ul style=MARGIN-LEFT:40px>
+    <li>
+      Choose Plugins from the Tools menu.&nbsp; Select the Available Plugins
+      Tab.
+    </li>
+    <li>
+      Select the Subversion Plugin and press the Install Button
+    </li>
+  </ul>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  <div id=pqw_ style="PADDING:1em 0pt; TEXT-ALIGN:left; MARGIN-LEFT:40px">
+    <img src="images/ex0-subversion.jpg" style="WIDTH:795px; HEIGHT:474px">
+  </div>
+  </li>
+  <li>
+  <p>This step is also <u>optional</u> and is not required for this
+  lab.&nbsp;&nbsp;A snap shot of the&nbsp; GlassFish V3 source code is included
+  in this lab's zip file, and GlassFish V3 has been installed for you under
+  &lt;lab4520_guiPlugin&gt;/v3/glassfish.&nbsp;&nbsp; However, if you want to
+  checkout and build the latest version of the source code, then do the
+  following:</p>
+
+    <p><b>Checkout Source code</b></p>
+  &nbsp;&nbsp;&nbsp; <font color=#000000 style=BACKGROUND-COLOR:#eeeeee>svn
+  checkout https://svn.dev.java.net/svn/glassfish-svn/trunk/v3<br>
+  <br>
+  <span style=BACKGROUND-COLOR:#ffffff>&nbsp;&nbsp;&nbsp; Build the GlassFish
+  server </span><br>
+  <span style=BACKGROUND-COLOR:#ffffff>&nbsp;&nbsp;&nbsp; </span>cd
+  v3;&nbsp;&nbsp; mvn install<br>
+  <br style=BACKGROUND-COLOR:#ffffff>
+  <span style=BACKGROUND-COLOR:#ffffff>&nbsp;&nbsp;&nbsp; Installing the server
+  by unzipping the image.&nbsp;&nbsp; The instructions in the following exercise
+  is based on the assumption that the installation is at v3/glassfish.<br>
+  <span style=BACKGROUND-COLOR:#cccccc>&nbsp;&nbsp;&nbsp; cd v3;&nbsp; unzip
+  v3/distribution/glassfish/target/glassfish.zip</span><br>
+  </span></font><br>
+  &nbsp;&nbsp;&nbsp; For more information regarding GlassFish V3 development
+  environment and the workspace, please refer to the full build instructions at
+  <a href="http://wiki.glassfish.java.net/Wiki.jsp?page=V3FullBuildInstruction">http://wiki.glassfish.java.net/Wiki.jsp?page=V3FullBuildInstruction"</a>
+</div>
+
                 </li>
             </ol>
             
-            <p><a href="#Exercise_1">Go on to next exercise</a></p>
+            <p><a href="#Exercise_1">Go to the next exercise</a></p>
         </div>
     </body>
 </html>
