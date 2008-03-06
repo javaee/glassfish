@@ -26,7 +26,6 @@ import com.sun.enterprise.module.bootstrap.BootException;
 import java.util.*;
 import com.sun.enterprise.glassfish.bootstrap.Main;
 import com.sun.enterprise.glassfish.bootstrap.launcher.util.ASenvPropertyReader;
-import org.glassfish.universal.Test;
 
 /**
  * GFDomainLauncher
@@ -38,10 +37,12 @@ class GFDomainLauncher extends GFLauncher {
 
     void internalLaunch() throws GFLauncherException {
         try {
-            if(info.isEmbedded())
+            if (info.isEmbedded()) {
                 launchEmbedded();
-            else
+            }
+            else {
                 launchExternal();
+            }
         }
         catch (BootException ex) {
             throw new GFLauncherException("unknownError", ex);

@@ -92,7 +92,6 @@
                             <HK2-Repository-shared>uri=. weight=35 type=directory</HK2-Repository-shared>
                             <HK2-Repository-lib>uri=../lib weight=10 type=directory</HK2-Repository-lib>
                             <HK2-Main-Bundle>org.glassfish.core:kernel</HK2-Main-Bundle>
-                            <Class-Path>universal-10.0-SNAPSHOT.jar</Class-Path>
                         </manifestEntries>
                     </archive>
                 </configuration>
@@ -110,11 +109,6 @@
             <groupId>com.sun.xml.stream</groupId>
             <artifactId>sjsxp</artifactId>
             <version>1.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.common</groupId>
-            <artifactId>universal</artifactId>
-            <version>${project.version}</version>
         </dependency>
     </dependencies>
 </project>
