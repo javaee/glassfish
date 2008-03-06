@@ -30,10 +30,9 @@
 that you can continue with Exercise 2:</div>
     <div class="console">
         <pre>
-            % mv lab/javaone-plugin lab/my-javaone-plugin
-            % mkdir&nbsp; lab/javaone-plugin &lt;== TBD&nbsp; I should combine this and next command into one
-            % cp -R lab/solutions/solution_1/javaone-plugin/ to&nbsp; lab/javaone-plugin
-        </pre>
+% mv lab/javaone-plugin lab/my-javaone-plugin
+% mkdir&nbsp; lab/javaone-plugin &lt;== TBD&nbsp; I should combine this and next command into one
+% cp -R lab/solutions/solution_1/javaone-plugin/ lab/javaone-plugin</pre>
     </div>
     
 <span style=BACKGROUND-COLOR:#f3f3f3>Window:&nbsp; TBD</span><br><br>
@@ -105,144 +104,120 @@ add a few sentence here about jmaki charting ??<br>
   </ul><br>
 <div class="codebox">
                 <pre>      
-&nbsp;&lt;sun:page&gt;<br>
-    &lt;sun:html&gt;<br>
-    &lt;sun:markup tag="head"&gt;<br>
-    &nbsp;&nbsp;&nbsp; &lt;sun:markup tag="title"&gt;<br>
-    &nbsp;&nbsp;&nbsp; &lt;staticText value="jMaki Charting!" /&gt;<br>
-    &nbsp;&nbsp;&nbsp; &lt;/sun:markup&gt;<br>
-    &nbsp;&nbsp;&nbsp; &lt;sun:script url="/resources/jmaki.js" /&gt;<br>
-    &lt;/sun:markup&gt;<br>
-    <br>
-    &lt;sun:markup tag="body"&gt;<br>
-    <br>
-    &lt;sun:form id="form"&gt;<br>
-    <br>
-    <br>
-    &lt;sun:markup tag="div" style="width:380px; height: 380px;"&gt;<br>
-    <br>
-    //&nbsp; Uncomment the one at a time to try<br>
-    //&lt;jmaki:widget name="jmaki.charting.yahoo.pie"<br>
-    //&lt;jmaki:widget name="jmaki.charting.google.pie"<br>
-    &lt;jmaki:widget name="jmaki.charting.plotkit.pie"<br>
-    &nbsp;&nbsp;&nbsp; args="{colorScheme:2}"<br>
-    &nbsp;&nbsp;&nbsp; value="{<br>
-    &nbsp;&nbsp;&nbsp; xAxis : {<br>
-    &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; title : 'Months',<br>
-    &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; labels : [<br>
-    &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; {label : 'January'},<br>
-    &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; {label : 'February'},<br>
-    &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; {label : 'March'},<br>
-    &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; {label : 'April'},<br>
-    &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; {label : 'May'},<br>
-    &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; {label : 'June'},<br>
-    &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; {label : 'July'},<br>
-    &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; {label : 'August'},<br>
-    &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; {label : 'September'},<br>
-    &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; {label : 'October'},<br>
-    &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; {label : 'November'},<br>
-    &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; {label : 'December'} ]<br>
-    &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; },<br>
-    &nbsp;&nbsp;&nbsp; data : [ {<br>
-    &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; label : 'Set 1',<br>
+&nbsp;&lt;sun:page&gt;
+    &lt;sun:html&gt;
+    &lt;sun:markup tag="head"&gt;
+    &nbsp;&nbsp;&nbsp; &lt;sun:markup tag="title"&gt;
+    &nbsp;&nbsp;&nbsp; &lt;staticText value="jMaki Charting!" /&gt;
+    &nbsp;&nbsp;&nbsp; &lt;/sun:markup&gt;
+    &nbsp;&nbsp;&nbsp; &lt;sun:script url="/resources/jmaki.js" /&gt;
+    &lt;/sun:markup&gt;
+    
+    &lt;sun:markup tag="body"&gt;
+    
+    &lt;sun:form id="form"&gt;
+    
+    
+    &lt;sun:markup tag="div" style="width:380px; height: 380px;"&gt;
+    
+    //&nbsp; Uncomment the one at a time to try
+    //&lt;jmaki:widget name="jmaki.charting.yahoo.pie"
+    //&lt;jmaki:widget name="jmaki.charting.google.pie"
+    &lt;jmaki:widget name="jmaki.charting.plotkit.pie"
+    &nbsp;&nbsp;&nbsp; args="{colorScheme:2}"
+    &nbsp;&nbsp;&nbsp; value="{
+    &nbsp;&nbsp;&nbsp; xAxis : {
+    &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; title : 'Months',
+    &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; labels : [
+    &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; {label : 'January'},
+    &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; {label : 'February'},
+    &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; {label : 'March'},
+    &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; {label : 'April'},
+    &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; {label : 'May'},
+    &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; {label : 'June'},
+    &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; {label : 'July'},
+    &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; {label : 'August'},
+    &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; {label : 'September'},
+    &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; {label : 'October'},
+    &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; {label : 'November'},
+    &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; {label : 'December'} ]
+    &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; },
+    &nbsp;&nbsp;&nbsp; data : [ {
+    &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; label : 'Set 1',
     &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; values : [25, 45, 25, 45, 50, 25, 35,
-    25, 25, 20, 35, 45]<br>
-    &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; } ] }"/&gt;<br>
-    <br>
-    &lt;/sun:markup&gt;<br>
-    &lt;sun:markup tag="div" style="width: 600px; height: 280px;"&gt;<br>
-    <br>
-    //&nbsp; Uncomment the one at a time to try<br>
-    &lt;jmaki:widget name="jmaki.charting.dojo.area"<br>
-    //&lt;jmaki:widget name="jmaki.charting.dojo.line"<br>
-    //&lt;jmaki:widget name="jmaki.charting.dojo.bar"<br>
-    //&lt;jmaki:widget name="jmaki.charting.plotkit.area"<br>
-    //&lt;jmaki:widget name="jmaki.charting.plotkit.line"<br>
-    //&lt;jmaki:widget name="jmaki.charting.plotkit.bar"<br>
-    //&lt;jmaki:widget name="jmaki.charting.google.area"<br>
-    //&lt;jmaki:widget name="jmaki.charting.google.bar"<br>
-    //&lt;jmaki:widget name="jmaki.charting.google.line"<br>
-    //&lt;jmaki:widget name="jmaki.charting.yahoo.line"<br>
-    //&lt;jmaki:widget name="jmaki.charting.yahoo.bar"<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; value="{<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    xAxis : {<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    title : 'Months',<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    labels : [{ label : 'January'},<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    { label : 'February'},<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    { label : 'March'},<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    { label : 'April'},<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    { label : 'May'},<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    { label : 'June'},<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    { label : 'July'},<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    { label : 'August'},<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    { label : 'September'},<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    { label : 'October'},<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    { label : 'November'},<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    { label : 'December'}<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    ]<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    },<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    yAxis : {<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    title : 'Temperature',<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    labels : [{ label : '0', value : 0},<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    { label : '10s', value : 10},<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    { label : '20s', value : 20},<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    { label : '30s', value : 30},<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    { label : '40s', value : 40},<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    { label : '50s', value : 50}<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    ]<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    },&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    data : [<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    25, 25, 20, 35, 45]
+    &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; } ] }"/&gt;
+    
+    &lt;/sun:markup&gt;
+    &lt;sun:markup tag="div" style="width: 600px; height: 280px;"&gt;
+    
+    //&nbsp; Uncomment the one at a time to try
+    &lt;jmaki:widget name="jmaki.charting.dojo.area"
+    //&lt;jmaki:widget name="jmaki.charting.dojo.line"
+    //&lt;jmaki:widget name="jmaki.charting.dojo.bar"
+    //&lt;jmaki:widget name="jmaki.charting.plotkit.area"
+    //&lt;jmaki:widget name="jmaki.charting.plotkit.line"
+    //&lt;jmaki:widget name="jmaki.charting.plotkit.bar"
+    //&lt;jmaki:widget name="jmaki.charting.google.area"
+    //&lt;jmaki:widget name="jmaki.charting.google.bar"
+    //&lt;jmaki:widget name="jmaki.charting.google.line"
+    //&lt;jmaki:widget name="jmaki.charting.yahoo.line"
+    //&lt;jmaki:widget name="jmaki.charting.yahoo.bar"
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; value="{
+    
+    xAxis : {
+    
+    title : 'Months',
+    
+    labels : [{ label : 'January'},
+    { label : 'February'},
+    { label : 'March'},
+    { label : 'April'},
+    { label : 'May'},
+    { label : 'June'},
+    { label : 'July'},
+    { label : 'August'},
+    { label : 'September'},
+    { label : 'October'},
+    { label : 'November'},
+    { label : 'December'}
+    ]
+    },
+    yAxis : {
+    title : 'Temperature',
+    labels : [{ label : '0', value : 0},
+    { label : '10s', value : 10},
+    { label : '20s', value : 20},
+    { label : '30s', value : 30},
+    { label : '40s', value : 40},
+    { label : '50s', value : 50}
+    ]
+    },
+    data : [
+    
     {label : 'Gray Series', values : [25, 45, 25, 45, 50, 25, 35, 25, 25, 20,
-    35, 45] },<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    35, 45] },
+    
     {label : 'Pink Series', values : [20, 40, 30, 35, 45, 20, 25, 15, 20, 25,
-    30, 40] },<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    30, 40] },
+    
     {label : 'Blue Series', values : [15, 35, 15, 40, 30, 15, 20, 10, 15, 20,
     30, 35]
-    },&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    {label : 'Red Series',&nbsp; values :&nbsp; [10, 25, 10,&nbsp; 5, 20,&nbsp;
-    5, 15,&nbsp; 5, 10, 15, 25, 30] }<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    ]<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    }"/&gt;<br>
-    &lt;/sun:markup&gt;<br>
-    <br>
-    &lt;/sun:form&gt;<br>
-    <br>
-    &lt;/sun:markup&gt;<br>
-    &lt;/sun:html&gt;<br>
-    &lt;/sun:page&gt;<br>
+    },
+    
+    {label : 'Red Series',&nbsp; values :&nbsp; [10, 25, 10,&nbsp; 5, 20,
+    5, 15,&nbsp; 5, 10, 15, 25, 30] }
+    
+    ]
+    
+    }"/&gt;
+    &lt;/sun:markup&gt;
+    
+    &lt;/sun:form&gt;
+    
+    &lt;/sun:markup&gt;
+    &lt;/sun:html&gt;
+    &lt;/sun:page&gt;
 </pre> 
 </div>
 <div id=r9u6 style="PADDING:1em 0pt; TEXT-ALIGN:left">
@@ -263,7 +238,7 @@ add a few sentence here about jmaki charting ??<br>
   to the Administration Console. Each plugin module should have 1
   console-config.xml, and you can specify as many integration point as needed in
   this configuration file. Since you have created this file in exercise
-  1, all we need to do now is to edit it and add the second integration point.  You want the exercise 2 node to be under the JavaOne tree node.&nbsp;
+  1, all we need to do now is to edit it and add the second integration point.  You want the exercise 2 node to be under the JavaOne tree node.
   So, we specify the parentId to be 'j1root'. You can refer to
   treenode-ex1.jsf to see this.  You also need to create the file
   treenode-ex2.jsf which will point to the JSF jMaki chart page.<br>
@@ -326,7 +301,8 @@ The results are displayed in the output window.<br>
 [hk2:package]
 Building jar: v3/javaone-plugin/target/console-javaone-plugin-1.0-SNAPSHOT.jar
 [install:install]
-Installing v3/javaone-plugin/target/console-javaone-plugin-10.0-SNAPSHOT.jar to /Users/anilam/.m2/repository/org/glassfish/admingui/console-javaone-plugin/1.0-SNAPSHOT/console-javaone-plugin-1.0-SNAPSHOT.jar
+Installing v3/javaone-plugin/target/console-javaone-plugin-10.0-SNAPSHOT.jar to
+...i/console-javaone-plugin/1.0-SNAPSHOT/console-javaone-plugin-1.0-SNAPSHOT.jar
 ------------------------------------------------------------------------
 BUILD SUCCESSFUL
 ------------------------------------------------------------------------
@@ -343,8 +319,8 @@ Now, open a Terminal window to enter the follow command.&nbsp; This is to copy
   <br>
   4. Now, Integrate the jar to GlassFish by copying it to
   glassfish/modules&nbsp; directory<br>
-  % cp&nbsp;
-  lab<span style=BACKGROUND-COLOR:#ffffff>/javaone-plugin/target/console-javaone-plugin-1.0-SNAPSHOT.jar&nbsp;
+  % cp
+  lab<span style=BACKGROUND-COLOR:#ffffff>/javaone-plugin/target/console-javaone-plugin-1.0-SNAPSHOT.jar
   v3/glassfish/modules/console-javaone-plugin-1.0-SNAPSHOT.jar<br>
   </span><br>
   5.&nbsp; Start the server again,<br>
