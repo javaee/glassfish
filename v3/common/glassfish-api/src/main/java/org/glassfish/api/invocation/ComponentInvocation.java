@@ -26,7 +26,6 @@ public class ComponentInvocation {
 
     public Object jndiEnvironment;
 
-
     public String componentId;
 
     public Object transaction;
@@ -40,6 +39,8 @@ public class ComponentInvocation {
     // the old logged in security context is stored in here.
     public Object oldSecurityContext;
     
+    private Object resourceTableKey;
+
     public ComponentInvocation() {
         
     }
@@ -118,4 +119,13 @@ public class ComponentInvocation {
     public void setTransactionCompeting(boolean value) {
         transactionCompleting = value;
     }
+
+    public void setResourceTableKey(Object key) {
+        this.resourceTableKey = key;
+    }
+
+    public Object getResourceTableKey() {
+        return resourceTableKey;
+    }
+
 }
