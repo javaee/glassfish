@@ -642,13 +642,15 @@ public class TldLocationsCache {
         List<URL> tldURLs = (List<URL>)ctxt.getAttribute(
                 "com.sun.appserv.tld.urls");
         // Scan system impl TLD directly
-        for (URL tldURL : tldURLs) {
-            JarURLConnection juConn =
-                    (JarURLConnection)tldURL.openConnection();
-            String resourcePath = juConn.getJarFileURL().toString();
-            String entryName = juConn.getEntryName();
-            InputStream is = juConn.getInputStream();
-            scanTld(resourcePath, entryName, is);
+        if (tldURLs != null) {
+            for (URL tldURL : tldURLs) {
+                JarURLConnection juConn =
+                        (JarURLConnection)tldURL.openConnection();
+                String resourcePath = juConn.getJarFileURL().toString();
+                String entryName = juConn.getEntryName();
+                InputStream is = juConn.getInputStream();
+                scanTld(resourcePath, entryName, is);
+            }
         }
     }
 
