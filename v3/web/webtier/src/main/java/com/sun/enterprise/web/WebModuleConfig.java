@@ -67,6 +67,12 @@ public class WebModuleConfig {
      * by the web application (i.e compiled JSP class files etc) resides.
      */
     private String _baseDir = null;
+            
+    /**
+     * The directory under which the work directory for files generated
+     * by the web application (i.e compiled JSP class files etc) resides.
+     */
+    private String _workDir = null;
     
     /**
      * The source directory for the web application
@@ -224,7 +230,7 @@ public class WebModuleConfig {
      *   generated/j2ee-modules/$moduleID
      */
     public String getWorkDir() {
-        return getWebDir(_baseDir);
+        return _workDir;
     }
 
 
@@ -239,6 +245,15 @@ public class WebModuleConfig {
     }
     // END S1AS 6178005
 
+    
+    /**
+     * Set the work directory for this web application.
+     *
+     * @param workDir The work directory for this web application
+     */
+    public void setWorkDir(String workDir) {
+        _workDir = workDir;
+    }
 
     /**
      * Set the base work directory for this web application.
