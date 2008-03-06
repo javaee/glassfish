@@ -23,6 +23,10 @@
 
 package com.sun.enterprise.web;
 
+import javax.servlet.Filter;
+import javax.servlet.Servlet;
+import javax.servlet.SingleThreadModel;
+
 import org.glassfish.api.invocation.ComponentInvocation;
 
 public class WebComponentInvocation extends ComponentInvocation {
@@ -37,5 +41,71 @@ public class WebComponentInvocation extends ComponentInvocation {
         jndiEnvironment = wm.getWebBundleDescriptor();
         container = wm;
         this.instance = instance;
+        setResourceTableKey(_getResourceTableKey());
+    }
+
+    private Object _getResourceTableKey() {
+        Object resourceTableKey = null;
+        if (instance instanceof Servlet || instance instanceof Filter) {
+            // Servlet or Filter
+            if (instance instanceof SingleThreadModel) {
+                resourceTableKey = instance;
+            } else {
+                resourceTableKey =
+                        new PairKey(instance, Thread.currentThread());
+            }
+        } else {
+            resourceTableKey = instance;
+        }
+
+        return resourceTableKey;
+    }
+
+    class PairKey {
+        private Object instance = null;
+        private Thread thread = null;
+        int hCode = 0;
+
+        private PairKey(Object inst, Thread thr) {
+            instance = inst;
+            thread = thr;
+            if (inst != null) {
+                hCode = 7 * inst.hashCode();
+            }
+            if (thr != null) {
+                hCode += thr.hashCode();
+            }
+        }
+
+        @Override
+        public int hashCode() {
+            return hCode;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj == this) {
+                return true;
+            }
+
+            boolean eq = false;
+            if (obj != null && obj instanceof PairKey) {
+                PairKey p = (PairKey)obj;
+                if (instance != null) {
+                    eq = (instance.equals(p.instance));
+                } else {
+                    eq = (p.instance == null);
+                }
+
+                if (eq) {
+                    if (thread != null) {
+                        eq = (thread.equals(p.thread));
+                    } else {
+                        eq = (p.thread == null);
+                    }
+                }
+            }
+            return eq;
+        }
     }
 }
