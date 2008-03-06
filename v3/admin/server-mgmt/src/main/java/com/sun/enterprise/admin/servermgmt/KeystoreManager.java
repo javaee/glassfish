@@ -67,9 +67,10 @@ import java.util.List;
  */
 public class KeystoreManager {
     
-    private static final String KEYTOOL_CMD = 
-        System.getProperty(SystemPropertyConstants.JAVA_ROOT_PROPERTY) + "/bin/keytool";
-    
+    private static final String KEYTOOL_CMD =
+            System.getenv("JAVA_HOME") == null ? "keytool" : 
+                System.getenv("JAVA_HOME") + "/bin/keytool";
+
     private static String CERTIFICATE_DN_PREFIX = "CN=";
     
     private static String CERTIFICATE_DN_SUFFIX = 
