@@ -1,0 +1,7 @@
+                        ---------------------
+                        GlassFish maven plugin
+                        ---------------------
+                        ---------------------
+
+  This plugin defines a set of goals/mojos that are used for <<building>> GlassFish v3
+  (this is not a plugin for using GlassFish v3.)
