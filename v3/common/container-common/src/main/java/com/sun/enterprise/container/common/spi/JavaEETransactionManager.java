@@ -146,6 +146,17 @@ public interface JavaEETransactionManager extends TransactionManager {
     /**
      * This is called by Container to indicate that a component
      * is being destroyed. All resources registered in the context
+     * should be released. The ComponentInvocation will be used for 
+     * callback to calculate the resource table key.
+     *
+     * @param instance The component instance
+     */
+    public void componentDestroyed(Object instance, ComponentInvocation inv);
+
+
+    /**
+     * This is called by Container to indicate that a component
+     * is being destroyed. All resources registered in the context
      * should be released
      *
      * @param instance The component instance

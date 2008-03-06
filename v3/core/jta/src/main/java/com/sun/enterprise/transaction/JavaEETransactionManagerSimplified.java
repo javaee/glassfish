@@ -323,11 +323,15 @@ public class JavaEETransactionManagerSimplified
         if (instance == null) return;
         h.setComponentInstance(null);
         ComponentInvocation inv = invMgr.getCurrentInvocation();
-        List l = null;
+        List l = getExistingResourceList(instance, inv);
+
+/** XXX TRY IT WITH ComponentInvocation ALWAYS
         if (inv != null)
             l = getExistingResourceList(instance, inv);
         else
             l = getExistingResourceList(instance);
+*** XXX */
+
         if (l != null) {
             l.remove(h);
         }
@@ -382,7 +386,7 @@ public class JavaEETransactionManagerSimplified
 ** XXX EJB CONTAINER ONLY XXX **/
         }
         else {
-            Object key = getInstanceKey(instance);
+            Object key = inv.getResourceTableKey();
             if (key == null)
                 return new ArrayList(0);
             l = (List) resourceTable.get(key);
@@ -465,13 +469,16 @@ public class JavaEETransactionManagerSimplified
         }
     }
 
-    public List getExistingResourceList(Object instance) {
+    private List getExistingResourceList(Object instance) {
+        throw new IllegalStateException("Should not be called");
+/**
         if (instance == null)
             return null;
         Object key = getInstanceKey(instance);
         if (key == null)
             return null;
         return (List) resourceTable.get(key);
+**/
     }
 
     public List getExistingResourceList(Object instance, ComponentInvocation inv) {
@@ -488,7 +495,7 @@ public class JavaEETransactionManagerSimplified
             return l;
         }
         else {
-            Object key = getInstanceKey(instance);
+            Object key = inv.getResourceTableKey();
             if (key == null)
                 return null;
             return (List) resourceTable.get(key);
@@ -521,15 +528,18 @@ public class JavaEETransactionManagerSimplified
     }
 
     public void componentDestroyed(Object instance) {
+// XXX FIX IT
+        _logger.log(Level.WARNING, "TM: componentDestroyed called without ComponentInvocation ref");
+    }
+
+    public void componentDestroyed(Object instance, ComponentInvocation inv) {
         if (_logger.isLoggable(Level.FINE))
             _logger.log(Level.FINE,"TM: componentDestroyed" + instance);
-        // START IASRI 4705808 TTT002 -- use List instead of Vector
-        // Mod: remove the bad behavior of adding an empty list then remove it
-        List l = (List)resourceTable.get(getInstanceKey(instance));
+
+        // Access resourceTable directly to avoid adding an empty list then removing it
+        List l = (List)resourceTable.get(inv.getResourceTableKey());
         if (l != null && l.size() > 0) {
-                        //START IASRI 4720840
-            resourceTable.remove(getInstanceKey(instance));
-                        //END IASRI 4720840
+            resourceTable.remove(inv.getResourceTableKey());
             Iterator it = l.iterator();
             while (it.hasNext()) {
                 ResourceHandle h = (ResourceHandle) it.next();
@@ -541,11 +551,7 @@ public class JavaEETransactionManagerSimplified
                 }
             }
             l.clear();
-                        //START IASRI 4720840
-            // resourceTable.remove(getInstanceKey(instance));
-                        //END IASRI 4720840
         }
-        // END IASRI 4705808 TTT002
     }
 
     public void ejbDestroyed(ComponentContext context) {
@@ -1247,7 +1253,7 @@ public class JavaEETransactionManagerSimplified
     }
 
     private Object getInstanceKey(Object instance) {
-        return instance;
+        throw new IllegalStateException("Should not be called");
 /** XXX Servlet || Filter ??? XXX 
         Object key = null;
         if (instance instanceof Servlet ||
