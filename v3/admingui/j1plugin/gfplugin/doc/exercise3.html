@@ -3,25 +3,167 @@
     <body>
         <div class="j1holcontents">
             
-            <h1>Exercise 3: Something</h1>
+            <h1>Exercise 3: Templating your Plugin</h1>
             
-            <div class="j1holduration xbig">Expected duration: 45 minutes</div>
+            <div class="j1holduration xbig">Expected duration: 25 minutes</div>
             
             <p class="j1holheader">Introduction:</p>
             
             <p>
-                In this exercise, you learn
-                the internal architecture of the "guessNumber" application by following
-                step-by-step development process.&nbsp; You can follow this development
-                process to build your own JSF application later on.
+               In this exercise you will be customizing your
+  JSF page by using JSFTemplating. 
+  TBD
             </p>
-            
+            <p class="j1holsubheader">Background: (TBD)</p>
             <p class="j1holheader">Steps to follow:</p>
-            
+<div class="j1holtip">This exercise is based on Exercise 1 and 2.  If you have not completed these exercises do the following so
+that you can continue with Exercise 3:</div>
+    <div class="console">
+        <pre>
+            % mv lab/javaone-plugin lab/my-javaone-plugin
+            % mkdir&nbsp; lab/javaone-plugin &lt;== TBD&nbsp; I should combine this and next command into one
+            % cp -R lab/solutions/solution_3/javaone-plugin/ to&nbsp; lab/javaone-plugin
+        </pre>
+    </div>
+    
+<span style=BACKGROUND-COLOR:#f3f3f3>Window:&nbsp; TBD</span><br><br> 
+<p class="j1holsubheader">This exercise consists of the following sequences:</p>
+    &nbsp;&nbsp;&nbsp; 3-A. Customize the charting page in exercise 2 by using a
+  template.<br>
+&nbsp;&nbsp;&nbsp; 3-B&nbsp; Modify configuration file and add jsf page
+  for&nbsp; new tree node<br>
+&nbsp;&nbsp;&nbsp; 3-C&nbsp; Build and Integrate this plugin module to
+  GlassFish V3<br>
+&nbsp;&nbsp;&nbsp; 3-D&nbsp; Observe the added tree node and your customized
+  JSF page.<br>
+<br>
+<p class="j1holsubheader">3-A Customize the charting page</p>
+<ul>
+    <li>Steps in NetBeans:
             <ol class="j1hollist">
-                <li>TBD</li>
+                <li>Open the javaone-plugin module if it is not open.</li>
+                <li>Select Other Resources -&gt; resources</li>
+                <li>Create an empty file named 'chart3.jsf'</li>
+                <li>Edit chart3.jsf to use a template</li>
             </ol>
             
+        </li>
+    </ul>
+<div class="codebox">
+                <pre>   TBD: code
+                </pre> 
+</div>    
+    <div id=r9u<6 style="PADDING:1em 0pt; TEXT-ALIGN:left">
+  <div style=MARGIN-LEFT:40px>
+    <div id=sa9u style="PADDING:1em 0pt; TEXT-ALIGN:left">
+      TBD: IMAGE<br>
+      <br>
+      Figure : Ex3-A&nbsp; Adding Chart3.jsf<br>
+    </div>
+    <b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+    </b>
+  </div>
+</p>
+<p class="j1holsubheader">3-B&nbsp;&nbsp; Modify configuration file and add jsf page for&nbsp; new tree
+node</p>
+You are going to repeat the same steps in the previous 2
+exercise to add an Integration point and a tree node.  This consists of<br>
+    <ul>
+  <li>
+    Modify console-config.xml to add the third integration point
+  </li>
+</ul>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (Refer to
+Solution-3 for the entire file if needed)<br>
+<br>
+    <div class="codebox">
+                <pre>
+                    &lt;integration-point id="Third" type="tree" priority="300" parentId="j1root"&nbsp; content="treenode-ex3.jsf"/&gt;
+                </pre> 
+</div>   
+<div id=r9u<6 style="PADDING:1em 0pt; TEXT-ALIGN:left">
+  <div style=MARGIN-LEFT:40px>
+    <div id=sa9u style="PADDING:1em 0pt; TEXT-ALIGN:left">
+      <img src=images/ex3-1-editConfig.jpg style="WIDTH:879px; HEIGHT:499px"><br>
+      <br>
+      Figure : Ex3-B&nbsp; Edit console-config.xml<br>
+    </div>
+    <b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+    </b>
+  </div>
+</span>
+    <ul>
+  <li>
+    Create 'treenode-ex3.jsf' file that has the information about the tree node, such as
+    the text, the url that should be displayed when the tree code is clicked.
+  </li>
+</ul>
+<div class="codebox">
+                <pre>
+                &lt;sun:treeNode
+                    id="third" text="Exercise #3" 
+                    url="javaone/chart3.jsf" 
+                    imageURL="resource/images/instance.gif"
+                    target="main"
+                /&gt;                    
+                </pre> 
+</div>   
+<div id=r9u<6 style="PADDING:1em 0pt; TEXT-ALIGN:left">
+  <div style=MARGIN-LEFT:40px>
+    <div id=sa9u style="PADDING:1em 0pt; TEXT-ALIGN:left">
+      <img src=images/ex3-2-editTreenode.jpg style="WIDTH:879px; HEIGHT:499px"><br>
+      <br>
+      Figure : Ex3-B&nbsp; Edit treenode-ex3.jsf<br>
+    </div>
+    <b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+    </b>
+  </div>
+  
+  <p class="j1holsubheader">3-C&nbsp;&nbsp; Build and&nbsp; Integrate the module to GlassFish</p>
+  <p class="j1holsubheader">Steps in
+NetBeans:</p>
+<ol style=MARGIN-LEFT:40px>
+  <li>
+    Right click on the project "Java One 2008 Admin Console Plugin"
+  </li>
+  <li>
+    Select Build.
+  </li>
+</ol>
+<div class="console"> <pre>
+------------------------------------------------------------------------
+BUILD SUCCESSFUL
+------------------------------------------------------------------------
+Total time: 8 seconds
+Finished at: Tue Mar 04 19:15:15 PST 2008
+Final Memory: 60M/107M
+---------------------------------------------------------------------- 
+</pre></div>
+Now, open a Terminal window to enter the follow command.&nbsp; This is to copy
+  over the module (jar) that was just built to GlassFish.<br>
+  <br>
+  % cp&nbsp;
+&lt;j1Plugin&gt;/lab<span style=BACKGROUND-COLOR:#ffffff>/javaone-plugin/target/console-javaone-plugin-1.0-SNAPSHOT.jar&nbsp;
+&lt;j1Plugin&gt;/glassfish/modules/console-javaone-plugin-1.0-SNAPSHOT.jar<br>
+</span><br>
+13.&nbsp; Start the server again,<br>
+% glassfish/bin/asadmin start-domain&nbsp;<br>
+<br>
+14. Goto http://localhost:8080/admingui<br>
+You can now see all 3 exercises tree nodes under the J1 TreeNode.&nbsp; Click on
+Exercise #3 node - you can see the custom header and the&nbsp; JMaki Chart on
+the right hand frame.<br>
+<div id=r9u<6 style="PADDING:1em 0pt; TEXT-ALIGN:left">
+  <div style=MARGIN-LEFT:40px>
+    <div id=sa9u style="PADDING:1em 0pt; TEXT-ALIGN:left">
+      <img src=images/ex3-final.jpg style="WIDTH:879px; HEIGHT:499px"><br>
+      <br>
+      Figure : Ex3-C&nbsp; Final View<br>
+    </div>
+    <b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+    </b>
+  </div>    
+  <br>
             <p class="j1holheader">Summary:</p>
             
             <p>TBD</p>
