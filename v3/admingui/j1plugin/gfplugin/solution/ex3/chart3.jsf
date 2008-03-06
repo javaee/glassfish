@@ -1,3 +1,6 @@
+<!composition template="templates/javaOneTemplate.tpl">
+<!define name="content">
+
 <sun:page>
 	<!beforeCreate
 		getjMakiValues(values=>$attribute{pievalues});
@@ -62,7 +65,7 @@
 
 <sun:dropDown labels={"jmaki.charting.plotkit.area" "jmaki.charting.plotkit.line" "jmaki.charting.plotkit.bar" "jmaki.charting.google.area" "jmaki.charting.google.bar" "jmaki.charting.google.line" "jmaki.charting.yahoo.line" "jmaki.charting.yahoo.bar" "jmaki.charting.dojo.bar" "jmaki.charting.dojo.line" "jmaki.charting.dojo.area"} value="#{requestScope.chart2}">
     <!beforeCreate
-	setAttribute(key="chart2", value="jmaki.charting.plotkit.area");
+	setAttribute(key="chart2", value="jmaki.charting.google.area");
     />
 </sun:dropDown>
 <sun:button value=" Refresh " />
@@ -111,3 +114,6 @@
 </sun:markup>
 </sun:html>
 </sun:page>
+
+</define>
+</composition>
