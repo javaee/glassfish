@@ -42,6 +42,32 @@ public class CommandRunnerTest {
         assertEquals("value is null", null, value);        
     }
 
+    @Test
+    public void parsePropertiesTest() {
+        String propsStr = "prop1=valA:prop2=valB:prop3=valC";
+        Properties propsExpected = new Properties();
+        propsExpected.put("prop1", "valA");
+        propsExpected.put("prop2", "valB");
+        propsExpected.put("prop3", "valC");
+        Properties propsActual = cr.parseProperties(propsStr);
+        assertEquals(propsExpected, propsActual);
+    }
+    
+    @Test
+    public void getParamValueTest() {
+        String paramValueStr = "prop1=valA:prop2=valB:prop3=valC";
+        Object paramValActual = cr.getParamValue(String.class, paramValueStr);
+        Object paramValExpected =  "prop1=valA:prop2=valB:prop3=valC";
+        assertEquals("String type", paramValExpected, paramValActual);
+        
+        paramValActual = cr.getParamValue(Properties.class, paramValueStr);
+        paramValExpected = new Properties();        
+        ((Properties)paramValExpected).put("prop1", "valA");
+        ((Properties)paramValExpected).put("prop2", "valB");
+        ((Properties)paramValExpected).put("prop3", "valC");
+        assertEquals("Properties type", paramValExpected, paramValActual);
+    }
+    
     @Before
     public void setup() {
         cr = new CommandRunner();

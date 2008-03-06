@@ -122,7 +122,8 @@ public class CommandRunner {
                         return value;
                     }
                 }
-                return getPropertiesValue(parameters, getParamName(param, target), true);
+                String paramValueStr = getPropertiesValue(parameters, getParamName(param, target), true);
+                return getParamValue(type, paramValueStr);
             }
         };
 
@@ -219,6 +220,16 @@ public class CommandRunner {
         }
         return "";
     }
+    
+    Object getParamValue(Class type, String paramValStr)  {
+        Object paramValue = paramValStr;
+        if (type.isAssignableFrom(String.class)) {
+           paramValue = paramValStr;
+       } else if (type.isAssignableFrom(Properties.class)) {
+           paramValue = parseProperties(paramValStr);
+       }
+       return paramValue;
+    }
 
     
         /**
@@ -310,6 +321,22 @@ public class CommandRunner {
     
     private boolean ok(String s) {
         return s != null && s.length() > 0;
+    }
+    
+    Properties parseProperties(String propsString) {
+        final Properties properties = new Properties();
+        if (propsString != null) {
+            java.util.StringTokenizer stoken = new java.util.StringTokenizer(propsString, ":");
+            while (stoken.hasMoreTokens()) {
+                String token = stoken.nextToken();
+                if (token.indexOf("=")==-1)
+                    continue;
+                String propName = token.substring(0, token.lastIndexOf("="));
+                String value = token.substring(token.lastIndexOf("=")+1);
+                properties.setProperty(propName, value);
+            }
+        }
+        return properties;
     }
 
 }
