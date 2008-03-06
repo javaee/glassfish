@@ -13,6 +13,19 @@
         <Option name="domaindir" type="string" value-required="true"/>
         <Option name="debug" type="boolean" value-required="false"/>
         <Option name="embedded" type="boolean" value-required="false"/>
+	<Option name="terse" type="boolean" value-required="false" default="false">
+	    <shortoption>t</shortoption>
+	</Option>
+	<Option name="echo" type="boolean" value-required="false" default="false">
+            <shortoption>e</shortoption>
+	</Option>
+	<Option name="user" type="string" value-required="true">
+	    <shortoption>u</shortoption>
+	</Option>
+	<Option name="interactive" type="boolean" value-required="false" default="true">
+	    <shortoption>I</shortoption>
+	</Option>
+	<Option name="passwordfile" type="string" value-required="true"/>
     </Options>
     <Commands>
 	<Command name="dummy" classname="com.sun.enterprise.admin.cli.DummyCommand" numberofoperands="?" usage-text="dummy">
@@ -23,6 +36,11 @@
             <ValidOption name="domaindir"/>
             <ValidOption name="debug"/>
             <ValidOption name="embedded"/>
+	    <ValidOption name="terse"/>
+	    <ValidOption name="echo"/>
+            <ValidOption name="user"/>
+	    <ValidOption name="interactive"/>
+	    <ValidOption name="passwordfile"/>			
 	</Command>
     </Commands>
 </CommandsAndOptions>
