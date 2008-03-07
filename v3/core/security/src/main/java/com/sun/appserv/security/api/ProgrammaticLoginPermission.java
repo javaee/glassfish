@@ -33,21 +33,27 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.enterprise.security.auth.realm;
+
+package com.sun.appserv.security.api;
+
+import java.security.BasicPermission;
 
 
 /**
- * Exception thrown when an operation is invoked on a realm that does not
- * support it. 
- * e.g. Invoking getGroups (username) is not supported by a certificate realm.
- * @author Harpreet Singh
+ * Permission for using programmatic login.
+ *
+ * <P>This permission is used by ProgrammaticLogin to verify whether
+ * the invoking code has been granted the use of this interface.
+ *
+ * <P>The name of this permission is the name of the method being invoked.
+ *
  */
-public class InvalidOperationException extends Exception
+public class ProgrammaticLoginPermission extends BasicPermission
 {
-    /**
-     * Constructs the exception, with descriptive information.
-     *
-     * @param info describes the problem with the realm
-     */
-    public InvalidOperationException (String info) { super (info); }
+    public ProgrammaticLoginPermission(String name)
+    {
+        super(name);
+    }
+
+
 }

@@ -65,7 +65,7 @@ import com.sun.enterprise.deployment.Role;
 import com.sun.enterprise.deployment.interfaces.SecurityRoleMapper;
 import javax.servlet.http.HttpServletRequest;
 
-import com.sun.appserv.security.AuditModule;
+import com.sun.enterprise.security.audit.AuditModule;
 
 /**
  * Audit support class.

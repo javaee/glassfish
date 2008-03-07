@@ -35,7 +35,7 @@
  */
 
 
-package com.sun.appserv.security;
+package com.sun.appserv.security.api;
 
 import com.sun.enterprise.config.serverbeans.SecurityService;
 import com.sun.enterprise.security.SecurityServicesUtil;

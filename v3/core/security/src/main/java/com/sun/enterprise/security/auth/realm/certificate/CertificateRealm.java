@@ -36,7 +36,6 @@
 
 package com.sun.enterprise.security.auth.realm.certificate;
 
-import java.lang.*;
 import java.util.*;
 import java.util.logging.Level;
 import java.io.*;

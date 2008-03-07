@@ -40,7 +40,7 @@
  * Created on July 27, 2003, 11:32 PM
  */
 
-package com.sun.appserv.security;
+package com.sun.enterprise.security.audit;
 
 import java.util.Properties;
 import javax.servlet.http.HttpServletRequest;

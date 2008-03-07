@@ -34,7 +34,7 @@
  * holder.
  */
 
-package com.sun.appserv.security;
+package com.sun.appserv.security.api;
 
 import java.util.*;
 import java.util.logging.Logger;
