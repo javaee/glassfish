@@ -85,7 +85,7 @@ public class SecurityLifecycle implements  PostConstruct, PreDestroy {
     @Inject 
     private AuditManager auditManager;
     
-    @Inject 
+    @Inject
     private SecurityServicesUtil secServUtil;
     
     private static final LocalStringManagerImpl _localStrings =

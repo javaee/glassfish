@@ -33,21 +33,61 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.internal.api;
 
-import org.jvnet.hk2.annotations.Contract;
+package com.sun.common.util.logging;
+
+import java.util.logging.Logger;
+import java.util.logging.Level;
+import java.io.IOException;
+import java.io.ByteArrayOutputStream;
+import java.io.OutputStream;
 
 /**
- * Init services are run at server start. They are run after the component manager
- * is initialized but before the Startup services are run. Startup are meant to be
- * public API where users can add their own start up services. This is not the case
- * for Init services which results are expected to be fully constructed at the time
- * the first startup service is ran.
+ * Implementation of a OutputStream that flush the records to a Logger.
+ * This is useful to redirect stderr and stdout to loggers.
  *
- * One of the thing that an Init service can do is initialize the security manager
- * or logging or even add modules and repositories to GlassFish where Startup services
- * can be loaded from.
+ * User: Jerome Dochez
  */
-@Contract
-public interface Init {
+public class LoggingOutputStream extends ByteArrayOutputStream {
+
+    private String lineSeparator;
+
+    private Logger logger;
+    private Level level;
+
+    /**
+     * Constructor
+     *
+     * @param logger Logger to write to
+     * @param level  Level at which to write the log message
+     */
+    public LoggingOutputStream(Logger logger, Level level) {
+        super();
+        this.logger = logger;
+        this.level = level;
+        lineSeparator = System.getProperty("line.separator");
+    }
+
+    /**
+     * upon flush() write the existing contents of the OutputStream
+     * to the logger as a log record.
+     *
+     * @throws java.io.IOException in case of error
+     */
+    public void flush() throws IOException {
+
+        String record;
+        synchronized (this) {
+            super.flush();
+            record = this.toString();
+            super.reset();
+
+            if (record.length() == 0 || record.equals(lineSeparator)) {
+                // avoid empty records
+                return;
+            }
+
+            logger.logp(level, "", "", record);
+        }
+    }
 }

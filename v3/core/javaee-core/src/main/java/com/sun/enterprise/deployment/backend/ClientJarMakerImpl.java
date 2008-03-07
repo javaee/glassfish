@@ -108,7 +108,7 @@ class ClientJarMakerImpl implements ClientJarMaker {
         ReadableArchive source2, WritableArchive target,ZipItem[] stubs, 
         Properties props) throws IOException {
         
-        ArchivistFactory archivistFactory = Globals.getGlobals().
+        ArchivistFactory archivistFactory = Globals.
             getDefaultHabitat().getComponent(ArchivistFactory.class);
 
         // in all cases we copy the stubs file in the target archive

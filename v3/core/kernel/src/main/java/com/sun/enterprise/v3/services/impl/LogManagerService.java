@@ -27,6 +27,7 @@ import com.sun.enterprise.admin.monitor.callflow.Agent;
 import com.sun.enterprise.server.logging.FormatterDelegate;
 import com.sun.enterprise.server.logging.UniformLogFormatter;
 import com.sun.enterprise.v3.logging.AgentFormatterDelegate;
+import com.sun.common.util.logging.LoggingOutputStream;
 import org.glassfish.internal.api.Init;
 import com.sun.enterprise.v3.server.V3Environment;
 import org.jvnet.hk2.annotations.Inject;
@@ -36,6 +37,7 @@ import org.jvnet.hk2.component.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.logging.Handler;
@@ -61,9 +63,6 @@ public class LogManagerService implements Init, PostConstruct, PreDestroy {
 
     @Inject
     Habitat habitat;
-
-    @Inject
-    CmdLineParamProcessor cmdLineParamProcessor;
 
     @Inject(optional=true)
     Agent agent=null;
@@ -119,6 +118,14 @@ public class LogManagerService implements Init, PostConstruct, PreDestroy {
 
             }
         }
+
+        // redirect stderr and stdout
+        LoggingOutputStream los = new LoggingOutputStream(Logger.getAnonymousLogger(), Level.INFO);
+        System.setOut(new PrintStream(los, true));
+
+        los = new LoggingOutputStream(Logger.getAnonymousLogger(), Level.SEVERE);
+        System.setErr(new PrintStream(los, true));
+
     }
 
     public void preDestroy() {

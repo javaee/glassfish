@@ -123,7 +123,7 @@ public class GrizzlyConfig implements MonitoringLevelListener{
     
     private void initMonitoringLevel() {
         try{
-            Config cfg = com.sun.enterprise.v3.server.Globals.getGlobals().getDefaultHabitat().getComponent(Config.class);
+            Config cfg = com.sun.enterprise.v3.server.Globals.getDefaultHabitat().getComponent(Config.class);
             
             MonitoringLevel monitoringLevel = MonitoringLevel.OFF; // default per DTD
 

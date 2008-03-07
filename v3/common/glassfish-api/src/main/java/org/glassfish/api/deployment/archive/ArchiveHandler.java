@@ -27,6 +27,7 @@ import org.glassfish.api.deployment.DeploymentContext;
 import org.jvnet.hk2.annotations.Contract;
 
 import java.io.IOException;
+import java.util.jar.Manifest;
 
 /**
  * ArchiveHandlers are handling certain archive type. An archive has a unique type which is usually defines how
@@ -65,4 +66,14 @@ public interface ArchiveHandler {
      * @param target of the expanding
      */
     public void expand(ReadableArchive source, WritableArchive target) throws IOException;
+
+    /**
+     * Returns the manifest file for this archive, this file is usually located at
+     * the META-INF/MANIFEST location, however, certain archive type can change this
+     * default location or use another mean of expressing manifest information.
+     *
+     * @param archive file
+     * @return manifest instance or null if this archive has no manifest
+     */
+    public Manifest getManifest(ReadableArchive archive) throws IOException;
 }

@@ -554,7 +554,7 @@ public class VirtualServer extends StandardHost {
     protected String getDefaultContextPath(Server serverBean) {
 
         String contextRoot = null;
-        Domain domain = com.sun.enterprise.v3.server.Globals.getGlobals().getDefaultHabitat().getComponent(Domain.class);
+        Domain domain = com.sun.enterprise.v3.server.Globals.getDefaultHabitat().getComponent(Domain.class);
         Applications appsBean = domain.getApplications();
 
         String wmID = getDefaultWebModuleID();
@@ -863,7 +863,7 @@ public class VirtualServer extends StandardHost {
      */
     private String getVirtualServers(String appName) {
         String ret = null;
-        Server server = com.sun.enterprise.v3.server.Globals.getGlobals().getDefaultHabitat().getComponent(Server.class);
+        Server server = com.sun.enterprise.v3.server.Globals.getDefaultHabitat().getComponent(Server.class);
         for (ApplicationRef appRef : server.getApplicationRef()) {
             if (appRef.getRef().equals(appName)) {
                 return appRef.getVirtualServers();

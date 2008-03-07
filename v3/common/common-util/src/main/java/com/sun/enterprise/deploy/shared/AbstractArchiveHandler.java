@@ -10,6 +10,8 @@ import java.io.InputStream;
 import java.io.BufferedInputStream;
 import java.io.OutputStream;
 import java.util.Enumeration;
+import java.util.jar.Manifest;
+import java.util.jar.JarFile;
 
 import com.sun.enterprise.util.io.FileUtils;
 import org.glassfish.api.deployment.archive.ArchiveHandler;
@@ -48,6 +50,14 @@ public abstract class AbstractArchiveHandler implements ArchiveHandler {
                 }
             }
         }
+
+        // last is manifest is existing.
+        Manifest m = source.getManifest();
+        if (m!=null) {
+            OutputStream os  = target.putNextEntry(JarFile.MANIFEST_NAME);
+            m.write(os);
+            target.closeEntry();
+        }
     }
     
     /**
@@ -73,5 +83,16 @@ public abstract class AbstractArchiveHandler implements ArchiveHandler {
         }
         return appName;
     }
-    
+
+    /**
+     * Returns the manifest file for this archive, this file is usually located at
+     * the META-INF/MANIFEST location, however, certain archive type can change this
+     * default location or use another mean of expressing manifest information.
+     *
+     * @param archive file
+     * @return manifest instance or null if this archive has no manifest
+     */
+    public Manifest getManifest(ReadableArchive archive) throws IOException {
+        return archive.getManifest();                                      
+    }
 }

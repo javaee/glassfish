@@ -122,7 +122,7 @@ public class ClientJarMakerThread extends Thread {
         DeploymentContext dc, File clientJar, ZipItem[] clientStubs, 
         String clientJarChoice) throws DeploymentException {
         try {         
-            ArchiveFactory archiveFactory = Globals.getGlobals().
+            ArchiveFactory archiveFactory = Globals.
                 getDefaultHabitat().getComponent(ArchiveFactory.class);
 
             // client jar naming convension is <app-name>Client.jar

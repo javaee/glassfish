@@ -7,6 +7,7 @@ package com.sun.enterprise.security;
 import com.sun.enterprise.server.pluggable.SecuritySupport;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.v3.server.V3Environment;
+import com.sun.enterprise.v3.server.Globals;
 import com.sun.logging.LogDomains;
 import java.io.BufferedReader;
 import java.io.File;
@@ -16,23 +17,13 @@ import java.io.IOException;
 import java.security.SecureRandom;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.glassfish.api.Startup;
-import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.annotations.Scoped;
-import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
-import org.jvnet.hk2.component.Singleton;
+import org.jvnet.hk2.annotations.Service;
 
 @Service
-@Scoped(Singleton.class)
-public class SecurityServicesUtil implements Startup {
+public class SecurityServicesUtil {
 
-    @Inject(name = "PE")
-    private SecuritySupport peSecSupport;
-    @Inject
-    private V3Environment v3env;
-    @Inject
-    private static Habitat habitat;
+    private static Habitat habitat = Globals.getDefaultHabitat();
     
     private static final LocalStringManagerImpl _localStrings =
             new LocalStringManagerImpl(SecurityServicesUtil.class);
@@ -51,6 +42,7 @@ public class SecurityServicesUtil implements Startup {
         //if EE Impl class is in a different module then we can remove
         // the named injection above.
         //TODO:V3 somehow the injection isn't working
+        SecuritySupport peSecSupport = habitat.getComponent(SecuritySupport.class, "PE");
         if (peSecSupport == null) {
             peSecSupport = new SecuritySupportImpl();
         }
@@ -61,7 +53,7 @@ public class SecurityServicesUtil implements Startup {
      * code moved from J2EEServer.run()
      */
     public void initSecureSeed() {
-        String seedFile = v3env.getConfigDirPath() +
+        String seedFile = habitat.getComponent(V3Environment.class).getConfigDirPath() +
                 File.separator + "secure.seed";
         File secureSeedFile = new File(seedFile);
 
@@ -129,10 +121,6 @@ public class SecurityServicesUtil implements Startup {
 
     public Habitat getHabitat() {
         return habitat;
-    }
-
-    public Lifecycle getLifecycle() {
-        return Lifecycle.START;
     }
 
     public static SecurityServicesUtil getInstance() {

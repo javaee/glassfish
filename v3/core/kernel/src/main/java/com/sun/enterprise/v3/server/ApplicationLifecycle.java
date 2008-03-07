@@ -25,6 +25,7 @@ package com.sun.enterprise.v3.server;
 
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import com.sun.enterprise.module.*;
+import com.sun.enterprise.module.common_impl.Tokenizer;
 import com.sun.enterprise.module.impl.ClassLoaderProxy;
 import com.sun.enterprise.v3.data.*;
 import com.sun.enterprise.v3.deployment.DeploymentContextImpl;
@@ -157,9 +158,10 @@ abstract public class ApplicationLifecycle {
      * @return class loader capable of loading public APIs identified by the deployers
      * @throws ResolveError if one of the deployer's public API module is not found.
      */
-    protected ClassLoader createApplicationParentCL(ClassLoader parent, Collection<Deployer> deployers)
+    protected ClassLoader createApplicationParentCL(ClassLoader parent, ReadableArchive source, Collection<Deployer> deployers)
         throws ResolveError {
 
+        // we add of the involved deployers public APIs
         List<ModuleDefinition> defs = new ArrayList<ModuleDefinition>();
         for (Deployer deployer : deployers) {
             final MetaData deployMetadata = deployer.getMetaData();
@@ -167,6 +169,28 @@ abstract public class ApplicationLifecycle {
                 ModuleDefinition[] moduleDefs = deployMetadata.getPublicAPIs();
                 if (moduleDefs!=null) {
                     defs.addAll(Arrays.asList(moduleDefs));
+                }
+            }
+        }
+        // now let's see if the application is requesting any module imports
+        Manifest m=null;
+        try {
+            m = source.getManifest();
+        } catch (IOException e) {
+            logger.log(Level.SEVERE, "Cannot load application's manifest file :", e.getMessage());
+            if (logger.isLoggable(Level.FINE)) {
+                logger.log(Level.FINE, e.getMessage(), e);
+            }
+        }
+        if (m!=null) {
+            String importedBundles = m.getMainAttributes().getValue(ManifestConstants.BUNDLE_IMPORT_NAME);
+            if (importedBundles!=null) {
+                for( String token : new Tokenizer(importedBundles,",")) {
+                    // will throw ResolveError if not found.
+                    Module module = modulesRegistry.makeModuleFor(token, null);
+                    if (module!=null) {
+                        defs.add(module.getModuleDefinition());
+                    }
                 }
             }
         }
@@ -312,6 +336,7 @@ abstract public class ApplicationLifecycle {
 
         //List<ContainerInfo> startedContainers = new ArrayList<ContainerInfo>();
         for (Sniffer sniffer : sniffers) {
+            
             if (sniffer.getContainersNames()==null || sniffer.getContainersNames().length==0) {
                 failure(logger, "no container associated with application of type : " + sniffer.getModuleType(), null, report);
                 return null;
@@ -443,7 +468,7 @@ abstract public class ApplicationLifecycle {
 
         // Ok we now have all we need to create the parent class loader for our application
         // which will be stored in the deployment context.
-        ClassLoader parentCL = createApplicationParentCL(null, deployers);
+        ClassLoader parentCL = createApplicationParentCL(null, context.getSource(), deployers);
         ArchiveHandler handler = getArchiveHandler(context.getSource());
         context.setClassLoader(handler.getClassLoader(parentCL, context.getSource()));
         boolean atLeastOne = false;

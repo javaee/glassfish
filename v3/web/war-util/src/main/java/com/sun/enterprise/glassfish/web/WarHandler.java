@@ -9,6 +9,8 @@ import org.apache.naming.resources.FileDirContext;
 
 import java.io.*;
 import java.net.MalformedURLException;
+import java.util.jar.Manifest;
+import java.util.jar.JarFile;
 
 import com.sun.enterprise.deploy.shared.AbstractArchiveHandler;
 
@@ -68,6 +70,4 @@ public class WarHandler extends AbstractArchiveHandler implements ArchiveHandler
         }
         return cloader;
     }
-
-
 }
