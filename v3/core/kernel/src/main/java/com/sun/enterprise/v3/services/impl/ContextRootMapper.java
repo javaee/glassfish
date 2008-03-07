@@ -63,12 +63,22 @@ public class ContextRootMapper {
     
     public void register(String contextRoot, Adapter adapter, ApplicationContainer container,
             List<ProtocolFilter> contextProtocolFilters) {
+        if (logger.isLoggable(Level.FINE)) {
+            logger.fine("MAPPER(" + this + ") REGISTER contextRoot: " + contextRoot +
+                    " adapter: " + adapter + " container: " + container +
+                    " contextProtocolFilters: " + contextProtocolFilters);
+        }
+        
         contextRootInfoMap.put(contextRoot, 
                 new ContextRootInfo(adapter, container, contextProtocolFilters));
     }
 
     
     public void unregister(String contextRoot) {
+        if (logger.isLoggable(Level.FINE)) {
+            logger.fine("MAPPER (" + this + ") UNREGISTER contextRoot: " + contextRoot);
+        }
+        
         contextRootInfoMap.remove(contextRoot);
     }
 
@@ -85,7 +95,12 @@ public class ContextRootMapper {
         //we can safely add our ProtocolFilter (which are stateless) to it.
         //TODO: Add support for statefull ProtocolFilter
 
-        if (logger.isLoggable(Level.FINE)){
+        if (logger.isLoggable(Level.FINE)) {
+            logger.fine("MAP (" + this + ") defaultProtocolFilters: " + 
+                    defaultProtocolFilters + 
+                    " fallback: " + fallbackContextRootInfo + 
+                    " CurrentMapState: " + contextRootInfoMap);
+
             logger.fine(dump(byteBuffer));
         }
              
@@ -95,6 +110,11 @@ public class ContextRootMapper {
         Adapter adapter = null;
         if (contextRootInfo != null) {
             adapter = contextRootInfo.getAdapter();
+        }
+        
+        if (logger.isLoggable(Level.FINE)) {
+            logger.info("MAP (" + this + ") contextRoot: " + contextRoot + 
+                    " info: " + contextRootInfo + " adapter: " + adapter);
         }
         
         if (adapter == null && fallbackContextRootInfo != null) {
@@ -116,10 +136,10 @@ public class ContextRootMapper {
             
             filtersToInject = contextRootProtocolFilters != null ? 
                 contextRootProtocolFilters : defaultProtocolFilters;
-        }
-        
-        if (filtersToInject != null) {
-            protocolChain.setDynamicProtocolFilters(filtersToInject);
+
+            if (filtersToInject != null) {
+                protocolChain.setDynamicProtocolFilters(filtersToInject);
+            }
         } else if (fallbackContextRootInfo != null) {
             List<ProtocolFilter> fallbackProtocolFilters = 
                     fallbackContextRootInfo.getProtocolFilters();

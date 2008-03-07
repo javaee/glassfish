@@ -84,7 +84,7 @@ public class HttpProtocolFilter implements ProtocolFilter, EndpointMapper<Adapte
     public boolean execute(Context ctx) throws IOException {
         ByteBuffer byteBuffer = 
                 ((WorkerThread)Thread.currentThread()).getByteBuffer();
-        
+
         try {
             boolean wasMap = mapper.map(
                     (GlassfishProtocolChain) ctx.getProtocolChain(),

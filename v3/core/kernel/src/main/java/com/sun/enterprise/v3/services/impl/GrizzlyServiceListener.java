@@ -89,7 +89,7 @@ public class GrizzlyServiceListener extends SelectorThread implements SecureSele
     private boolean wantClientAuth = false;
     
     
-    private ProtocolFilter httpProtocolFilter;
+    private volatile ProtocolFilter httpProtocolFilter;
     
     private boolean algorithInitialized = false;
     
@@ -120,35 +120,33 @@ public class GrizzlyServiceListener extends SelectorThread implements SecureSele
     @Override
     protected void initController() {
         super.initController();
-        if (portUnificationFilter != null){
-            DefaultProtocolChainInstanceHandler instanceHandler = new DefaultProtocolChainInstanceHandler() {
+        DefaultProtocolChainInstanceHandler instanceHandler = new DefaultProtocolChainInstanceHandler() {
 
-                private final ConcurrentLinkedQueue<ProtocolChain> 
-                        chains = new ConcurrentLinkedQueue<ProtocolChain>();
+            private final ConcurrentLinkedQueue<ProtocolChain> chains = 
+                    new ConcurrentLinkedQueue<ProtocolChain>();
 
-                /**
-                 * Always return instance of ProtocolChain.
-                 */
-                @Override
-                public ProtocolChain poll() {
-                    ProtocolChain protocolChain = chains.poll();
-                    if (protocolChain == null) {
-                        protocolChain = new GlassfishProtocolChain();
-                        configureFilters(protocolChain);
-                    }
-                    return protocolChain;
+            /**
+             * Always return instance of ProtocolChain.
+             */
+            @Override
+            public ProtocolChain poll() {
+                ProtocolChain protocolChain = chains.poll();
+                if (protocolChain == null) {
+                    protocolChain = new GlassfishProtocolChain();
+                    configureFilters(protocolChain);
                 }
+                return protocolChain;
+            }
 
-                /**
-                 * Pool an instance of ProtocolChain.
-                 */
-                @Override
-                public boolean offer(ProtocolChain instance) {
-                    return chains.offer(instance);
-                }
+            /**
+             * Pool an instance of ProtocolChain.
+             */
+            @Override
+            public boolean offer(ProtocolChain instance) {
+                return chains.offer(instance);
+            }
             };
-            controller.setProtocolChainInstanceHandler(instanceHandler);
-        }
+        controller.setProtocolChainInstanceHandler(instanceHandler);
 
         controller.setReadThreadsCount(readThreadsCount);
         // TODO: Do we want to support UDP all the time?
@@ -173,10 +171,7 @@ public class GrizzlyServiceListener extends SelectorThread implements SecureSele
             protocolChain.addFilter(readFilter);
         }
         
-        Collection<ProtocolFilter> httpProtocolFilters = getDefaultHttpProtocolFilters();
-        for(ProtocolFilter protocolFilter : httpProtocolFilters) {
-            protocolChain.addFilter(protocolFilter);
-        }
+        protocolChain.addFilter(createHttpProtocolFilter());
     }
     
     
@@ -234,14 +229,22 @@ public class GrizzlyServiceListener extends SelectorThread implements SecureSele
      * at runtime.
      */
     public HttpProtocolFilter createHttpProtocolFilter() {
-        initAlgorithm();
-        ProtocolFilter wrappedFilter;
-        if (asyncExecution) {
-            wrappedFilter = new AsyncProtocolFilter(algorithmClass, port);
-        } else {
-            wrappedFilter = new DefaultProtocolFilter(algorithmClass, port);
+        if (httpProtocolFilter == null) {
+            synchronized (this) {
+                if (httpProtocolFilter == null) {
+                    initAlgorithm();
+                    ProtocolFilter wrappedFilter;
+                    if (asyncExecution) {
+                        wrappedFilter = new AsyncProtocolFilter(algorithmClass, port);
+                    } else {
+                        wrappedFilter = new DefaultProtocolFilter(algorithmClass, port);
+                    }
+                    httpProtocolFilter = new HttpProtocolFilter(wrappedFilter, this);
+
+                }
+            }
         }
-        httpProtocolFilter = new HttpProtocolFilter(wrappedFilter, this);    
+
         return (HttpProtocolFilter) httpProtocolFilter;
     }
     
