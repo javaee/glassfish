@@ -106,7 +106,6 @@ public class JavaEETransactionManagerSimplified
 
     private Cache resourceTable;
 
-    // XXXX ???? private static com.sun.jts.CosTransactions.RWLock freezeLock = new com.sun.jts.CosTransactions.RWLock();
     private static java.util.concurrent.locks.ReentrantReadWriteLock freezeLock = new java.util.concurrent.locks.ReentrantReadWriteLock();
 
     static {
@@ -386,7 +385,7 @@ public class JavaEETransactionManagerSimplified
 ** XXX EJB CONTAINER ONLY XXX **/
         }
         else {
-            Object key = inv.getResourceTableKey();
+            Object key = getResourceTableKey(instance, inv);
             if (key == null)
                 return new ArrayList(0);
             l = (List) resourceTable.get(key);
@@ -474,7 +473,7 @@ public class JavaEETransactionManagerSimplified
 /**
         if (instance == null)
             return null;
-        Object key = getInstanceKey(instance);
+        Object key = getResourceTableKey(instance);
         if (key == null)
             return null;
         return (List) resourceTable.get(key);
@@ -495,7 +494,7 @@ public class JavaEETransactionManagerSimplified
             return l;
         }
         else {
-            Object key = inv.getResourceTableKey();
+            Object key = getResourceTableKey(instance, inv);
             if (key == null)
                 return null;
             return (List) resourceTable.get(key);
@@ -528,8 +527,7 @@ public class JavaEETransactionManagerSimplified
     }
 
     public void componentDestroyed(Object instance) {
-// XXX FIX IT
-        _logger.log(Level.WARNING, "TM: componentDestroyed called without ComponentInvocation ref");
+        componentDestroyed(instance, null);
     }
 
     public void componentDestroyed(Object instance, ComponentInvocation inv) {
@@ -537,9 +535,9 @@ public class JavaEETransactionManagerSimplified
             _logger.log(Level.FINE,"TM: componentDestroyed" + instance);
 
         // Access resourceTable directly to avoid adding an empty list then removing it
-        List l = (List)resourceTable.get(inv.getResourceTableKey());
+        List l = (List)resourceTable.get(getResourceTableKey(instance, inv));
         if (l != null && l.size() > 0) {
-            resourceTable.remove(inv.getResourceTableKey());
+            resourceTable.remove(getResourceTableKey(instance, inv));
             Iterator it = l.iterator();
             while (it.hasNext()) {
                 ResourceHandle h = (ResourceHandle) it.next();
@@ -1252,26 +1250,14 @@ public class JavaEETransactionManagerSimplified
         }
     }
 
-    private Object getInstanceKey(Object instance) {
-        throw new IllegalStateException("Should not be called");
-/** XXX Servlet || Filter ??? XXX 
+    private Object getResourceTableKey(Object instance, ComponentInvocation inv) {
         Object key = null;
-        if (instance instanceof Servlet ||
-            instance instanceof Filter) {
-            // Servlet or Filter
-            if (instance instanceof SingleThreadModel) {
-                key = instance;
-            } else {
-                Vector pair = new Vector(2);
-                pair.addElement(instance);
-                pair.addElement(Thread.currentThread());
-                key = pair;
-            }
+        if ( inv != null) {
+            key = inv.getResourceTableKey();
         } else {
             key = instance;
         }
         return key;
-** XXX **/
     }
 
     private boolean isTransactionActive(Transaction tran) {
