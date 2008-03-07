@@ -85,11 +85,17 @@ import com.sun.appserv.management.config.CustomMBeanConfig;
 //import com.sun.appserv.management.helper.LBConfigHelper;
 import com.sun.appserv.management.util.misc.GSetUtil; 
 
+import com.sun.appserv.management.client.ProxyFactory;
+import java.lang.management.ManagementFactory;
+import javax.management.MBeanServer;
+
 
 import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;  
 
 
 public class AMXRoot {
+
+    private static AMXRoot amxRoot = null  ;
 
     private  final DomainRoot domainRoot;
     private  final DomainConfig domainConfig;
@@ -100,9 +106,11 @@ public class AMXRoot {
     private  final WebServiceMgr webServiceMgr;
     //private  final LBConfigHelper lbConfigHelper;
 
-    public AMXRoot(DomainRoot dd) {
+    private AMXRoot(DomainRoot dd) {
+        System.out.println("=========== In AMX Root constructor, DomainRoot  = " + dd);
         domainRoot = dd;
         domainConfig = domainRoot.getDomainConfig();
+        System.out.println("========= getDomainConfig() returns " + domainConfig);
         j2eeDomain = domainRoot.getJ2EEDomain();
         monitoringRoot = domainRoot.getMonitoringRoot();
         queryMgr = domainRoot.getQueryMgr();
@@ -111,6 +119,18 @@ public class AMXRoot {
         //lbConfigHelper = new LBConfigHelper(domainRoot);
     }
     
+    public static AMXRoot getAMXRoot(){
+	if (amxRoot == null){
+    	    MBeanServer mMBeanServer = ManagementFactory.getPlatformMBeanServer();
+            DomainRoot domainRoot = ProxyFactory.getInstance( mMBeanServer ).getDomainRoot();
+        System.out.println("=============== domainRoot = " + domainRoot);
+        System.out.println("============== domainRoot name = " + domainRoot.getAppserverDomainName());
+            domainRoot.waitAMXReady();
+	    amxRoot = new AMXRoot(domainRoot);
+	System.out.println("========== amxRoot = " + amxRoot);
+	} 
+	return amxRoot;
+    }
     public  DomainConfig getDomainConfig() {
         return domainConfig;
     }
