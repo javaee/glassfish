@@ -18,7 +18,7 @@
  * you own identifying information: 
  * "Portions Copyrighted [year] [name of copyright owner]"
  * 
- * Copyright 2006 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2008 Sun Microsystems, Inc. All rights reserved.
  */
 
 package org.glassfish.javaee.core.deployment;
@@ -110,6 +110,38 @@ public abstract class JavaEEDeployer<T extends Container, U extends ApplicationC
         }
         return new MetaData(false, apis.toArray(new ModuleDefinition[apis.size()]), null, null);
     }
+
+
+    /*
+     * Gets the common instance classpath, which is composed of the
+     * pathnames of domain_root/lib/classes and
+     * domain_root/lib/[*.jar|*.zip] (in this
+     * order), separated by the path-separator character.
+     * @return The instance classpath
+     */
+    protected String getCommonClassPath() {
+        StringBuffer sb = new StringBuffer();
+
+        File libDir = new File(env.getLibPath());
+        String libDirPath = libDir.getAbsolutePath();
+
+        // Append domain_root/lib/classes
+        sb.append(libDirPath + File.separator + "classes");
+        sb.append(File.pathSeparator);
+
+        // Append domain_root/lib/[*.jar|*.zip]
+        String[] files = libDir.list();
+        if (files != null) {
+            for (int i=0; i<files.length; i++) {
+                if (files[i].endsWith(".jar") || files[i].endsWith(".zip")) {
+                    sb.append(libDirPath + File.separator + files[i]);
+                    sb.append(File.pathSeparator);
+                }
+            }
+        }
+        return sb.toString();
+    }
+
 
     /**
      * Prepares the application bits for running in the application server.
