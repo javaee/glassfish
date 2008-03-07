@@ -18,7 +18,7 @@
  * you own identifying information:
  * "Portions Copyrighted [year] [name of copyright owner]"
  *
- * Copyright 2006 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2008 Sun Microsystems, Inc. All rights reserved.
  */
 
 package com.sun.enterprise.v3.deployment;
@@ -75,6 +75,7 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
     public static final String DIRECTORY_DEPLOYED = "directorydeployed";
     public static final String LOCATION = "location";
     public static final String ENABLED = "enabled";
+    public static final String PRECOMPILE_JSP = "precompilejsp";
     
     @Inject
     V3Environment env;
