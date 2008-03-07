@@ -58,8 +58,8 @@ import java.util.logging.Logger;
  */
 public class Utils {
 
-    final String habitatName = "default";
-    final String inhabitantPath = "META-INF/inhabitants";
+    final static String habitatName = "default";
+    final static String inhabitantPath = "META-INF/inhabitants";
 
     Map<String, Habitat> habitats = new HashMap<String, Habitat>();
     static Utils instance;
@@ -75,6 +75,13 @@ public class Utils {
            return habitats.get(fileName);
         }
 
+        Habitat habitat = getNewHabitat(fileName);
+        habitats.put(fileName, habitat);
+        return habitat;
+    }
+
+    public static synchronized Habitat getNewHabitat(final String fileName) {
+
         try {
             Holder<ClassLoader> holder = new Holder<ClassLoader>() {
                 public ClassLoader get() {
@@ -82,7 +89,7 @@ public class Utils {
                 }
             };
 
-            Enumeration<URL> resources = getClass().getClassLoader().getResources(this.inhabitantPath + "/" + habitatName);
+            Enumeration<URL> resources = Utils.class.getClassLoader().getResources(inhabitantPath + "/" + habitatName);
             if (resources == null) {
                 System.out.println("Cannot find any inhabitant file in the classpath");
                 return null;
@@ -110,7 +117,7 @@ public class Utils {
                     }
                 }).run(configParser);
             }
-            habitats.put(fileName, habitat);
+
             return habitat;
         } catch (Exception e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
