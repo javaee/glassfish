@@ -49,13 +49,14 @@
     <packaging>pom</packaging>
     <name>GlassFish Administration related modules</name>  
     <modules>
-    	<module>config-api</module>
+        <module>config-api</module>
         <module>util</module>
         <module>monitor</module>
         <module>admin-core</module>
-		<module>cli</module>
-		<module>cli-framework</module>
-		<module>jmx-remote</module>
-		<module>backup</module>
+        <module>server-mgmt</module>
+        <module>cli</module>
+        <module>cli-framework</module>
+        <module>jmx-remote</module>
+        <module>backup</module>
     </modules>
 </project>
