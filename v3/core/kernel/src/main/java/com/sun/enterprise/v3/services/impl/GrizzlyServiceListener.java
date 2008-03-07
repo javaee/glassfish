@@ -38,6 +38,8 @@ import com.sun.grizzly.http.ProcessorTask;
 import com.sun.grizzly.http.SecureSelector;
 import com.sun.grizzly.http.SelectorThread;
 import com.sun.grizzly.util.net.SSLImplementation;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import javax.net.ssl.SSLContext;
 
@@ -87,9 +89,11 @@ public class GrizzlyServiceListener extends SelectorThread implements SecureSele
     private boolean wantClientAuth = false;
     
     
-    private ProtocolFilter httpProtcolFilter;
+    private ProtocolFilter httpProtocolFilter;
     
     private boolean algorithInitialized = false;
+    
+    private volatile Collection<ProtocolFilter> defaultHttpFilters;
             
     // ---------------------------------------------------------------------/.
 
@@ -169,27 +173,42 @@ public class GrizzlyServiceListener extends SelectorThread implements SecureSele
             protocolChain.addFilter(readFilter);
         }
         
-        if (rcmSupport){
-            protocolChain.addFilter(createRaFilter());
+        Collection<ProtocolFilter> httpProtocolFilters = getDefaultHttpProtocolFilters();
+        for(ProtocolFilter protocolFilter : httpProtocolFilters) {
+            protocolChain.addFilter(protocolFilter);
         }
-        if (httpProtcolFilter == null){
-            httpProtcolFilter = createHttpParserFilter();
-        }
-        protocolChain.addFilter(httpProtcolFilter);
     }
     
+    
+    protected Collection<ProtocolFilter> getDefaultHttpProtocolFilters() {
+        if (defaultHttpFilters == null) {
+            synchronized(this) {
+                if (defaultHttpFilters == null) {
+                    Collection<ProtocolFilter> tmpList = new ArrayList<ProtocolFilter>(4);
+                    if (rcmSupport) {
+                        tmpList.add(createRaFilter());
+                    }
+
+                    tmpList.add(createHttpParserFilter());
+                    defaultHttpFilters = tmpList;
+                }
+            }
+        }
+        
+        return defaultHttpFilters;
+    }
     
     /**
      * Return a <code>ProcessorTask</code> from the pool. If the pool is empty,
      * create a new instance.
      */
     @Override
-    public ProcessorTask getProcessorTask(){
-        if (asyncExecution){        
+    public ProcessorTask getProcessorTask() {
+        if (asyncExecution) {        
             HttpWorkerThread httpWorkerThread = 
                     (HttpWorkerThread)Thread.currentThread();
             DefaultProcessorTask contextPt = 
-                    (DefaultProcessorTask)httpWorkerThread.getProcessorTask();
+                    (DefaultProcessorTask) httpWorkerThread.getProcessorTask();
 
             if (contextPt == null){
                 return super.getProcessorTask();
@@ -198,7 +217,7 @@ public class GrizzlyServiceListener extends SelectorThread implements SecureSele
                         (DefaultProcessorTask)super.getProcessorTask();
                 // With Async, we cannot re-use the Context ProcessorTask. Since
                 // The adapter has been set on it, rebind it to the current one.
-                if (contextPt != null){
+                if (contextPt != null) {
                     pt.setAdapter(contextPt.getAdapter());
                 }
                 return pt;  
@@ -214,21 +233,21 @@ public class GrizzlyServiceListener extends SelectorThread implements SecureSele
      * Create the HttpProtocolFilter used to map request to their Adapter
      * at runtime.
      */
-    public HttpProtocolFilter createHttpProtocolFilter(){
+    public HttpProtocolFilter createHttpProtocolFilter() {
         initAlgorithm();
         ProtocolFilter wrappedFilter;
-        if (asyncExecution){
-            wrappedFilter = new AsyncProtocolFilter(algorithmClass,port);
+        if (asyncExecution) {
+            wrappedFilter = new AsyncProtocolFilter(algorithmClass, port);
         } else {
-           wrappedFilter = new DefaultProtocolFilter(algorithmClass, port);
+            wrappedFilter = new DefaultProtocolFilter(algorithmClass, port);
         }
-        httpProtcolFilter = new HttpProtocolFilter(wrappedFilter,this);    
-        return (HttpProtocolFilter)httpProtcolFilter;
+        httpProtocolFilter = new HttpProtocolFilter(wrappedFilter, this);    
+        return (HttpProtocolFilter) httpProtocolFilter;
     }
     
     
     public HttpProtocolFilter getHttpProtocolFilter(){
-        return (HttpProtocolFilter)httpProtcolFilter; 
+        return (HttpProtocolFilter) httpProtocolFilter; 
     }
     
     /**

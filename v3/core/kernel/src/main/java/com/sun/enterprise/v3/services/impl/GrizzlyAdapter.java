@@ -24,12 +24,9 @@
 package com.sun.enterprise.v3.services.impl;
 
 import com.sun.enterprise.config.serverbeans.HttpListener;
-import com.sun.enterprise.config.serverbeans.VirtualServer;
 import com.sun.grizzly.Controller;
 import com.sun.grizzly.http.SelectorThread;
 import com.sun.grizzly.standalone.StaticStreamAlgorithm;
-import com.sun.grizzly.tcp.Request;
-import com.sun.grizzly.tcp.Response;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;

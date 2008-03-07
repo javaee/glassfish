@@ -111,14 +111,13 @@ public class GrizzlyService implements Startup, PostConstruct, PreDestroy {
 
                 // add the new proxy to our list of proxies.
                 proxies.add(proxy);
-
-                // todo : this neeed some rework...
-                // now register all proxies you can find out there !
-                // TODO : so far these qets registered everywhere, maybe not the right thing ;-)
-                for (org.glassfish.api.container.Adapter subAdapter : habitat.getAllByContract(org.glassfish.api.container.Adapter.class)) {
-                    logger.fine("Registering proxy " + subAdapter.getContextRoot());
-                    registerEndpoint(subAdapter.getContextRoot(), null, subAdapter, null);
-                }
+            }
+            
+            // todo : this neeed some rework...
+            // now register all proxies you can find out there !
+            // TODO : so far these qets registered everywhere, maybe not the right thing ;-)
+            for (org.glassfish.api.container.Adapter subAdapter : habitat.getAllByContract(org.glassfish.api.container.Adapter.class)) {
+                registerEndpoint(subAdapter.getContextRoot(), null, subAdapter, null);
             }
         } catch(RuntimeException e) { // So far postConstruct can not throw any other exception type
             logger.warning("Closing initialized network proxies");

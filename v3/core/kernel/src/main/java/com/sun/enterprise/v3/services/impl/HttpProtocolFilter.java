@@ -27,13 +27,12 @@ import com.sun.grizzly.Context;
 import com.sun.grizzly.ProtocolFilter;
 import com.sun.grizzly.http.HtmlHelper;
 import com.sun.grizzly.tcp.Adapter;
+import com.sun.grizzly.tcp.StaticResourcesAdapter;
 import com.sun.grizzly.util.OutputWriter;
 import com.sun.grizzly.util.WorkerThread;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.logging.Level;
 import org.glassfish.api.deployment.ApplicationContainer;
 
@@ -42,23 +41,16 @@ import org.glassfish.api.deployment.ApplicationContainer;
  * 
  * @author Jeanfrancois Arcand
  */
-public class HttpProtocolFilter implements ProtocolFilter,EndpointMapper<Adapter>{
+public class HttpProtocolFilter implements ProtocolFilter, EndpointMapper<Adapter> {
     
     
     private final static String ROOT = "/";
     
     
     /**
-     * Grizzly's Adapter associated with its context-root.
-     */
-    private Map<String, Pair<Adapter, ApplicationContainer>> adapters = 
-            new HashMap<String, Pair<Adapter, ApplicationContainer>>();
-
-        
-    /**
      * The Mapper used to find and configure the endpoint.
      */
-    private Mapper mapper;
+    private ContextRootMapper mapper;
     
     
     private GrizzlyServiceListener grizzlyListener;
@@ -69,11 +61,23 @@ public class HttpProtocolFilter implements ProtocolFilter,EndpointMapper<Adapter
      */
     private final ProtocolFilter wrappedFilter;
     
+    /**
+     *  Fallback context-root information
+     */
+    private ContextRootMapper.ContextRootInfo fallbackContextRootInfo;
+
     
     public HttpProtocolFilter(ProtocolFilter wrappedFilter, GrizzlyServiceListener grizzlyListener) {
         this.grizzlyListener = grizzlyListener;
-        this.mapper = new Mapper(grizzlyListener);  
+        this.mapper = new ContextRootMapper(grizzlyListener);  
         this.wrappedFilter = wrappedFilter;
+        
+        StaticResourcesAdapter adapter = new StaticResourcesAdapter();
+        adapter.setRootFolder(GrizzlyServiceListener.getWebAppRootPath());
+                        
+        fallbackContextRootInfo = new ContextRootMapper.ContextRootInfo(adapter,
+                null, null);
+        
     }
 
     
@@ -81,9 +85,12 @@ public class HttpProtocolFilter implements ProtocolFilter,EndpointMapper<Adapter
         ByteBuffer byteBuffer = 
                 ((WorkerThread)Thread.currentThread()).getByteBuffer();
         
-        try{
-            String contextRoot = mapper.mapContextRoot(byteBuffer);
-            if (mapper.mapAdapter(contextRoot) == null){
+        try {
+            boolean wasMap = mapper.map(
+                    (GlassfishProtocolChain) ctx.getProtocolChain(),
+                    byteBuffer, null,
+                    fallbackContextRootInfo);
+            if (!wasMap) {
                 //TODO: Some Application might not have Adapter. Might want to
                 //add a dummy one instead of sending a 404.
                 try {
@@ -91,13 +98,13 @@ public class HttpProtocolFilter implements ProtocolFilter,EndpointMapper<Adapter
                     OutputWriter.flushChannel
                             (ctx.getSelectionKey().channel(),bb);
                 } catch (IOException ex){
-                    GrizzlyServiceListener.logger().log(Level.FINE,"Send Error failed", ex);
+                    GrizzlyServiceListener.logger().log(Level.FINE, "Send Error failed", ex);
                 } finally {
                     ((WorkerThread)Thread.currentThread()).getByteBuffer().clear();
                 }
                 return false;               
             }
-        } catch (IOException ex){
+        } catch (IOException ex) {
             GrizzlyServiceListener.logger().severe(ex.getMessage());
         }
 
@@ -112,6 +119,14 @@ public class HttpProtocolFilter implements ProtocolFilter,EndpointMapper<Adapter
         return wrappedFilter.postExecute(ctx);
     }    
     
+    public void setFallbackAdapter(Adapter adapter) {
+        fallbackContextRootInfo.setAdapter(adapter);
+    }
+    
+    public Adapter getFallbackAdapter() {
+        return fallbackContextRootInfo.getAdapter();
+    }
+    
     /*
      * Registers a new endpoint (adapter implementation) for a particular
      * context-root. All request coming with the context root will be dispatched
@@ -121,13 +136,7 @@ public class HttpProtocolFilter implements ProtocolFilter,EndpointMapper<Adapter
      */
     public void registerEndpoint(String contextRoot, Collection<String> vs, Adapter adapter,
                                  ApplicationContainer container) {
-        if (!contextRoot.startsWith(ROOT)) {
-            contextRoot = ROOT + contextRoot;
-        }
-        Pair<Adapter, ApplicationContainer> pair = 
-                new Pair<Adapter, ApplicationContainer>(adapter, container);
-        adapters.put(contextRoot, pair);
-        mapper.register(adapters,null);
+        mapper.register(ensureStartsWithSlash(contextRoot), adapter, null, null);
     }
 
     
@@ -135,9 +144,14 @@ public class HttpProtocolFilter implements ProtocolFilter,EndpointMapper<Adapter
      * Removes the context-root from our list of adapters.
      */
     public void unregisterEndpoint(String contextRoot, ApplicationContainer app) {
-        adapters.remove(contextRoot);
-        mapper.register(adapters,null);
+        mapper.unregister(ensureStartsWithSlash(contextRoot));
     }
-
     
+    private String ensureStartsWithSlash(String path) {
+        if (!path.startsWith(ROOT)) {
+            return ROOT + path;
+        }
+        
+        return path;
+    }
 }

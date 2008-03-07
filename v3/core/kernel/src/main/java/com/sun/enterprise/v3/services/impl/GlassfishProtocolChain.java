@@ -35,7 +35,9 @@ import java.util.logging.Level;
  * 
  * @author Jeanfrancois Arcand
  */
-class GlassfishProtocolChain extends DefaultProtocolChain{
+public class GlassfishProtocolChain extends DefaultProtocolChain {
+    
+    private List<ProtocolFilter> dynamicProtocolFilters;
     
     /**
      * Execute the ProtocolFilter.execute method. If a ProtocolFilter.execute
@@ -51,9 +53,11 @@ class GlassfishProtocolChain extends DefaultProtocolChain{
         int currentPosition = 0;
         ProtocolFilter protocolFilter = null;
         
-        for (int i=0; i < protocolFilters.size(); i++) {
+        for (int i=0; ; i++) {
             try {
-                protocolFilter = protocolFilters.get(i);
+                protocolFilter = getProtocolFilter(i);
+                if (protocolFilter == null) break;
+                
                 invokeNext = protocolFilter.execute(ctx);
             } catch (Exception ex){
                 invokeNext = false;
@@ -68,10 +72,69 @@ class GlassfishProtocolChain extends DefaultProtocolChain{
         }
         return currentPosition;
     }
+
+    @Override
+    protected boolean postExecuteProtocolFilter(int currentPosition, Context ctx) {
+        boolean invokeNext = true;
+        ProtocolFilter tmpHandler = null;
+        boolean reinvokeChain = false;
+        for (int i = currentPosition; i > -1; i--){
+            try{
+                tmpHandler = getProtocolFilter(i);
+                if (tmpHandler == null) break;
+                invokeNext = tmpHandler.postExecute(ctx);                 
+            } catch (Exception ex){
+                Controller.logger().log(Level.SEVERE,
+                        "ProtocolChain exception",ex);
+                notifyException(Phase.POST_EXECUTE, tmpHandler, ex);
+            }
+            if ( !invokeNext ) {
+               break;
+            }
+        }
+        
+        if (continousExecution 
+            && currentPosition >= protocolFilters.size() -1
+            && (Boolean)ctx.removeAttribute(ProtocolFilter.SUCCESSFUL_READ) 
+                == Boolean.TRUE) {
+            reinvokeChain = true;    
+        } 
+
+        dynamicProtocolFilters = null;
+        return reinvokeChain;    
+    }
     
+    
+    /**
+     * Get's ProtocolFilter either from basic or dynamic filter list depending on
+     * index
+     * 
+     * @param index
+     * @return <code>ProtocolFilter</code>
+     */
+    protected ProtocolFilter getProtocolFilter(int index) {
+        int basicFiltersNum = protocolFilters.size();
+        if (index < basicFiltersNum) {
+            return protocolFilters.get(index);
+        } else if (dynamicProtocolFilters != null) {
+            int dynamicFilterIndex = index - basicFiltersNum;
+            if (dynamicFilterIndex < dynamicProtocolFilters.size()) {
+                return dynamicProtocolFilters.get(dynamicFilterIndex);
+            }
+        }
+        
+        return null;
+    }
     
     public List<ProtocolFilter> protocolFilters(){
         return protocolFilters;
     }
 
+    public List<ProtocolFilter> getDynamicProtocolFilters() {
+        return dynamicProtocolFilters;
+    }
+
+    public void setDynamicProtocolFilters(List<ProtocolFilter> dynamicProtocolFilters) {
+        this.dynamicProtocolFilters = dynamicProtocolFilters;
+    }
 }
