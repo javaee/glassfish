@@ -29,7 +29,7 @@ public final class ConfigModel {
     /**
      * Legal attribute names.
      */
-    final Map<String,Leaf> attributes = new HashMap<String,Leaf>();
+    final Map<String,AttributeLeaf> attributes = new HashMap<String,AttributeLeaf>();
 
     /**
      * Legal child element names and how they should be handled
@@ -359,6 +359,7 @@ public final class ConfigModel {
         }
     }
 
+    // TODO: extend this to remember the default value
     static final class AttributeLeaf extends Leaf {
 
         AttributeLeaf(String xmlName) {

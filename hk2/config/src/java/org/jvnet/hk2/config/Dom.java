@@ -868,8 +868,11 @@ public class Dom extends LazyInhabitant implements InvocationHandler, Observable
             throw new IllegalArgumentException("Trying t write a local element "+this+" w/o a tag name");
         w.writeStartElement(tagName);
 
-        for (Map.Entry<String, String> a : attributes.entrySet())
+        for (Map.Entry<String, String> a : attributes.entrySet()) {
+            ConfigModel.AttributeLeaf am = model.attributes.get(a.getKey());
+            // TODO: compare with the default value and don't write back if it's the same.
             w.writeAttribute(a.getKey(),a.getValue());
+        }
 
         for (Child c : children)
             c.writeTo(w);

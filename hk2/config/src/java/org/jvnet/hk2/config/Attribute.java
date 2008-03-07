@@ -73,4 +73,7 @@ public @interface Attribute {
      * See {@link Element#variableExpansion()} for more details.
      */
     boolean variableExpansion() default true;
+
+    // TODO
+    String defaultValue() default "\u0000";
 }
