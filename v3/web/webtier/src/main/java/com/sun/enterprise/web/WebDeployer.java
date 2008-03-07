@@ -18,14 +18,13 @@
  * you own identifying information: 
  * "Portions Copyrighted [year] [name of copyright owner]"
  * 
- * Copyright 2006 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2008 Sun Microsystems, Inc. All rights reserved.
  */
 
 package com.sun.enterprise.web;
 
 
 import com.sun.enterprise.config.serverbeans.Domain;
-import com.sun.enterprise.config.serverbeans.Applications;
 import com.sun.enterprise.config.serverbeans.ServerTags;
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
@@ -38,6 +37,7 @@ import com.sun.enterprise.v3.services.impl.GrizzlyService;
 import com.sun.enterprise.v3.common.Result;
 import com.sun.enterprise.module.ModuleDefinition;
 import com.sun.enterprise.module.Module;
+import com.sun.appserv.server.util.ASClassLoaderUtil;
 import com.sun.logging.LogDomains;
 import org.apache.catalina.Container;
 import org.apache.catalina.core.StandardContext;
@@ -50,6 +50,8 @@ import org.glassfish.javaee.core.deployment.JavaEEDeployer;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.config.*;
+import org.glassfish.web.JSPCompiler;
+import org.glassfish.deployment.common.DeploymentException;
 
 import java.util.*;
 import java.util.logging.Level;
@@ -81,10 +83,6 @@ public class WebDeployer extends JavaEEDeployer<WebContainer, WebApplication>{
     @Inject
     GrizzlyService grizzlyAdapter;
 
-    @Inject
-    Applications applications;
-
-    
     private static final String ADMIN_VS = "__asadmin";
 
     private static final String DEFAULT_WEB_XML = "default-web.xml";
@@ -168,6 +166,7 @@ public class WebDeployer extends JavaEEDeployer<WebContainer, WebApplication>{
         return app;
     }
 
+    
     private WebModuleConfig loadWebModuleConfig(DeploymentContext dc) {
         
         WebModuleConfig wmInfo = null;
@@ -187,21 +186,32 @@ public class WebDeployer extends JavaEEDeployer<WebContainer, WebApplication>{
             wmInfo.setVirtualServers(virtualServers);
             wmInfo.setLocation(dc.getSourceDir().getAbsolutePath());
             wmInfo.setObjectType(dc.getProps().getProperty(ServerTags.OBJECT_TYPE));
-            wmInfo.setWorkDir(dc.getScratchDir("jsp").getAbsolutePath());
-        
+            wmInfo.setWorkDir(dc.getScratchDir(env.kCompileJspDirName).getAbsolutePath());
         } catch (Exception ex) {
             dc.getLogger().log(Level.WARNING, "loadWebModuleConfig", ex);
         }
         
         return wmInfo;
         
-    } 
+    }
+    
+    @Override
+    protected void generateArtifacts(DeploymentContext dc) 
+        throws DeploymentException {
+        final Properties params = dc.getCommandParameters();
+        final boolean precompileJSP = Boolean.parseBoolean(params.getProperty(DeployCommand.PRECOMPILE_JSP));
+        if (precompileJSP) {
+            //call JSPCompiler... 
+            runJSPC(dc);
+        }
+    }
+
          
     public WebApplication load(WebContainer container, DeploymentContext dc) {
         
         WebModuleConfig wmInfo = loadWebModuleConfig(dc);    
-        WebBundleDescriptor wbd = wmInfo.getDescriptor();   
-        
+        WebBundleDescriptor wbd = wmInfo.getDescriptor();
+
         String vsIDs = wmInfo.getVirtualServers();
         List<String> vsList = StringUtils.parseStringList(vsIDs, " ,");
 
@@ -368,4 +378,28 @@ public class WebDeployer extends JavaEEDeployer<WebContainer, WebApplication>{
         }
     }
 
+    /**
+     * This method setups the in/outDir and classpath and invoke
+     * JSPCompiler.
+     * @param dc - DeploymentContext to get command parameters and
+     *             source directory and compile jsp directory.
+     * @throws DeploymentException if JSPCompiler is unsuccessful.
+     */
+    void runJSPC(final DeploymentContext dc) throws DeploymentException {
+        final WebBundleDescriptor wbd = (WebBundleDescriptor)dc.getModuleMetaData(
+              Application.class).getStandaloneBundleDescriptor();
+        try {
+            final File outDir = dc.getScratchDir(env.kCompileJspDirName);
+            final File inDir  = dc.getSourceDir();
+            StringBuffer classpath = new StringBuffer();
+            classpath.append(super.getCommonClassPath());
+            classpath.append(File.pathSeparatorChar);
+            classpath.append(ASClassLoaderUtil.getWebModuleClassPath(
+                             sc.getDefaultHabitat(), wbd.getApplication().getName()));
+            JSPCompiler.compile(inDir, outDir, wbd, classpath.toString(), sc);
+        } catch (DeploymentException de) {
+            dc.getLogger().log(Level.SEVERE, "Error compiling JSP", de);
+            throw de;
+        }
+    }
 }
