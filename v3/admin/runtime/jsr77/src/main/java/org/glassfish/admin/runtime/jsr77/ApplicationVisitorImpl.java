@@ -53,7 +53,7 @@ import javax.management.MBeanServer;
  * @author  Sreenivas Munnangi
  */
 
-@Service
+@Service(name="application_deploy")
 public class ApplicationVisitorImpl implements ApplicationVisitor {
     
     @Inject
@@ -67,7 +67,7 @@ public class ApplicationVisitorImpl implements ApplicationVisitor {
      * @param application the application descriptor
      */
     public void accept(Application application) {
-        System.out.println("MSR: ApplicationVisitorImpl accept ...");
+        System.out.println("MSR: ApplicationVisitorImpl accept ..." + application);
         // create mbean for application
     }
     
