@@ -44,22 +44,40 @@ import javax.naming.Context;
 import javax.naming.NamingException;
 
 /**
- * Holder for a UserTransaction configuration that gets registered in the naming manager.
- * NamingManager will call the create() method when the UserTransaction is looked up.
+ * Proxy for creating JTA instances that get registered in the naming manager.
+ * NamingManager will call the handle() method when the JNDI name is looked up.
+ * Will return the instance that corresponds to the known name.
  *
  * @author Marina Vatkina
  */
 @Service
-public class UserTransactionProxy implements NamedNamingObjectProxy {
+public class TransactionNamingProxy implements NamedNamingObjectProxy {
 
     @Inject
     private Habitat habitat;
 
+    private static final String USER_TX = "java:comp/UserTransaction";
+
+    private static final String TRANSACTION_SYNC_REGISTRY 
+            = "java:comp/TransactionSynchronizationRegistry";
+
+    private static final String TRANSACTION_MGR 
+            = "java:pm/TransactionManager";
+
+    private static final String APPSERVER_TRANSACTION_MGR 
+            = "java:appserver/TransactionManager";
+
     public Object handle(String name) throws NamingException {
-        if ("java:comp/UserTransaction".equals(name)) {
+
+        if (USER_TX.equals(name)) {
 // XXX TODO: Check permissions to lookup UserTransaction
             return habitat.getComponent(UserTransactionImpl.class);
+        } else if (TRANSACTION_SYNC_REGISTRY.equals(name)) {
+            return habitat.getComponent(TransactionSynchronizationRegistryImpl.class);
+        } else if (APPSERVER_TRANSACTION_MGR.equals(name)) {
+            return habitat.getComponent(TransactionManagerHelper.class);
         }
+
         return null;
     }
 }

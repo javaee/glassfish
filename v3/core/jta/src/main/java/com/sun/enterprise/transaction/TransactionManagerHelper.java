@@ -103,10 +103,6 @@ public class TransactionManagerHelper implements TransactionManager, Transaction
         return transactionManager.suspend();
     }
 
-    public static TransactionManager getTransactionManager() {
-        return tmHelper;
-    }
-    
     public void recreate(Xid xid, long timeout) {
         final JavaEETransactionManager tm = transactionManager;
         
@@ -222,9 +218,4 @@ public class TransactionManagerHelper implements TransactionManager, Transaction
         }
         return timeout;
     }
-
-    private static TransactionManagerHelper tmHelper = new TransactionManagerHelper();
-
 }
-
-

@@ -245,11 +245,4 @@ public class TransactionSynchronizationRegistryImpl
                 return false;
         }
     }
-
-    public static TransactionSynchronizationRegistry getInstance() {
-        return _instance;
-    }
-    
-    private static TransactionSynchronizationRegistryImpl _instance  = 
-                       new TransactionSynchronizationRegistryImpl();
 }
