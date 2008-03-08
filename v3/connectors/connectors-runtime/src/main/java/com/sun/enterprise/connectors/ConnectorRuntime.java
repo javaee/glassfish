@@ -489,6 +489,10 @@ public class ConnectorRuntime implements ConnectorConstants, com.sun.appserv.con
         if (module!=null) {
             defs.add(module.getModuleDefinition());
         }
+        module = registry.makeModuleFor("org.glassfish.common:common-util", null);
+        if (module!=null) {
+            defs.add(module.getModuleDefinition());
+        }
         ConnectorClassLoader.getInstance(registry.getModulesClassLoader(null, defs));
 
 
