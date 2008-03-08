@@ -178,7 +178,8 @@ public class RunMojo extends DistributionAssemblyMojo {
 
         try {
             // Glassfish wants $GF_HOME/lib as the bootstrap directory
-            new Main().launch(createModuleRegistry(distPom),new File(rootDir,"lib"),args);
+            StartupContext context = new StartupContext(new File(rootDir,"lib"),args);
+            new Main().launch(createModuleRegistry(distPom), context);
 
             // TODO: what's the orderly shutdown sequence of Glassfish?
             // block forever for now.

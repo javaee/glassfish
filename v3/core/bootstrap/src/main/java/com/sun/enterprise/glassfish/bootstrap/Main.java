@@ -27,6 +27,7 @@ import com.sun.enterprise.module.*;
 import com.sun.enterprise.module.impl.ModulesRegistryImpl;
 import com.sun.enterprise.module.common_impl.DirectoryBasedRepository;
 import com.sun.enterprise.module.bootstrap.BootException;
+import com.sun.enterprise.module.bootstrap.StartupContext;
 
 import java.net.URLClassLoader;
 import java.net.URL;
@@ -34,13 +35,14 @@ import java.net.URI;
 import java.net.MalformedURLException;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Properties;
+import java.util.Map;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 import java.util.jar.Manifest;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.io.File;
-import java.io.FileFilter;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
 
 /**
  * Tag Main to get the manifest file 
@@ -48,12 +50,15 @@ import java.io.IOException;
 public class Main extends com.sun.enterprise.module.bootstrap.Main {
 
     final static Logger logger = Logger.getAnonymousLogger();
+    private final static String DEFAULT_DOMAINS_DIR_PROPNAME = "AS_DEF_DOMAINS_PATH";
+    private final static String INSTANCE_ROOT_PROP_NAME = "com.sun.aas.instanceRoot";
+    
     
     public static void main(final String args[]) {
         (new Main()).run(args);   
     }
 
-    protected void setParentClassLoader(ModulesRegistry mr) throws BootException {
+    protected void setParentClassLoader(StartupContext context, ModulesRegistry mr) throws BootException {
 
         ClassLoader cl = this.getClass().getClassLoader();
         mr.setParentClassLoader(cl);
@@ -89,13 +94,32 @@ public class Main extends com.sun.enterprise.module.bootstrap.Main {
         if(parentModule!=null) {
             cl = parentModule.getClassLoader();
         }
-        
+
+        parseAsEnv(context.getRootDirectory().getParentFile());
+        File domainRoot = getDomainRoot(context);
+        verifyDomainRoot(domainRoot);
 
 
         // do we have a lib ?
         Repository lib = mr.getRepository("lib");
         if (lib!=null) {
-            cl = setupSharedCL(cl, lib);    
+            List<Repository> libs = new ArrayList<Repository>();
+            libs.add(lib);
+
+            // do we have a domain lib ?
+            File domainlib = new File(domainRoot, "lib");
+            if (domainlib.exists()) {
+                Repository domainLib = new DirectoryBasedRepository("domnainlib", domainlib);
+                try {
+                    domainLib.initialize();
+                    mr.addRepository(domainLib);
+                    libs.add(domainLib);
+                } catch (IOException e) {
+                    logger.log(Level.SEVERE, "Error while initializing domain lib repository", e);
+                }
+
+            }
+            cl = setupSharedCL(cl, libs);
         }
 
         // finally
@@ -138,10 +162,13 @@ public class Main extends com.sun.enterprise.module.bootstrap.Main {
         }
     }
 
-    private ClassLoader setupSharedCL(ClassLoader parent, Repository sharedRepo) {
+    private ClassLoader setupSharedCL(ClassLoader parent, List<Repository> sharedRepos) {
 
 
-        List<URI> uris = sharedRepo.getJarLocations();
+        List<URI> uris = new ArrayList<URI>();
+        for (Repository repo : sharedRepos) {
+            uris.addAll(repo.getJarLocations());
+        }
         URL[] urls = new URL[uris.size()];
         int i=0;
         for (URI uri : uris) {
@@ -152,15 +179,17 @@ public class Main extends com.sun.enterprise.module.bootstrap.Main {
             }
         }
 
-        return new ExtensibleClassLoader(urls, parent, sharedRepo);
+        return new ExtensibleClassLoader(urls, parent, sharedRepos);
     }
 
     private class ExtensibleClassLoader extends URLClassLoader
         implements RepositoryChangeListener {
 
-        public ExtensibleClassLoader(URL[] urls, ClassLoader parent, Repository repo) {
+        public ExtensibleClassLoader(URL[] urls, ClassLoader parent, List<Repository> repos) {
             super(urls, parent);
-            repo.addListener(this);
+            for (Repository repo : repos) {
+                repo.addListener(this);
+            }
         }
 
         public void jarAdded(URI uri) {
@@ -179,6 +208,186 @@ public class Main extends com.sun.enterprise.module.bootstrap.Main {
         }
 
         public void moduleRemoved(ModuleDefinition moduleDefinition) {
+        }
+    }
+
+    private void parseAsEnv(File installRoot) {
+
+        Properties asenvProps = new Properties();
+        asenvProps.putAll(System.getProperties());
+        asenvProps.put("com.sun.aas.installRoot", installRoot.getPath());
+
+        // let's read the asenv.conf
+        File configDir = new File(installRoot, "config");
+        File asenv = getAsEnvConf(configDir);
+
+        LineNumberReader lnReader = null;
+        try {
+            lnReader = new LineNumberReader(new FileReader(asenv));
+            String line = lnReader.readLine();
+            // most of the asenv.conf values have surrounding "", remove them
+            // and on Windows, they start with SET XXX=YYY
+            Pattern p = Pattern.compile("[Ss]?[Ee]?[Tt]? *([^=]*)=\"?([^\"]*)\"?");
+            while (line != null) {
+                Matcher m = p.matcher(line);
+                if (m.matches()) {
+                    File f = new File(m.group(2));
+                    if (!f.isAbsolute()) {
+                        f = new File(configDir, m.group(2));
+                        if (f.exists()) {
+                            asenvProps.put(m.group(1), f.getAbsolutePath());
+                        } else {
+                            asenvProps.put(m.group(1), m.group(2));
+                        }
+                    } else {
+                        asenvProps.put(m.group(1), m.group(2));
+                    }
+                }
+                line = lnReader.readLine();
+            }
+        } catch (IOException ioe) {
+            throw new RuntimeException("Error opening asenv.conf : ", ioe);
+        } finally {
+            try {
+                if (lnReader != null)
+                    lnReader.close();
+            } catch (IOException ioe) {
+                // ignore
+            }
+        }
+
+        // install the new system properties
+        System.setProperties(asenvProps);
+    }
+
+    /**
+     * Figures out the asenv.conf file to load.
+     */
+    private File getAsEnvConf(File configDir) {
+        String osName = System.getProperty("os.name");
+        if (osName.indexOf("Windows") == -1) {
+            return new File(configDir, "asenv.conf");
+        } else {
+            return new File(configDir, "asenv.bat");
+        }
+    }
+
+    /**
+     * Determines the root directory of the domain that we'll start.
+     */
+    private File getDomainRoot(StartupContext context)
+    {
+        // first see if it is specified directly
+        Map<String,String> args = context.getArguments();
+
+        String domainDir = getParam(args, "domaindir");
+
+        if(ok(domainDir))
+            return new File(domainDir);
+
+        // now see if they specified the domain name -- we will look in the
+        // default domains-dir
+
+        File defDomainsRoot = getDefaultDomainsDir();
+        String domainName = getParam(args, "domain");
+
+        if(ok(domainName))
+            return new File(defDomainsRoot, domainName);
+
+        // OK -- they specified nothing.  Get the one-and-only domain in the
+        // domains-dir
+        return getDefaultDomain(defDomainsRoot);
+    }
+
+    /**
+     * Determines the root directory of the domain that we'll start.
+     */
+    private void verifyDomainRoot(File domainRoot)
+    {
+        String msg = null;
+
+        if(domainRoot == null)
+            msg = "Internal Error: The domain dir is null.";
+        else if(!domainRoot.isDirectory())
+            msg = "the domain directory is not a directory.";
+        else if(!domainRoot.canWrite())
+            msg = "the domain directory is not writable.";
+        else if(!new File(domainRoot, "config").isDirectory())
+            msg = "the domain directory is corrupt - there is no config subdirectory.";
+
+        if(msg != null)
+            throw new RuntimeException(msg);
+
+        domainRoot = absolutize(domainRoot);
+        System.setProperty(INSTANCE_ROOT_PROP_NAME, domainRoot.getPath() );
+    }
+
+    private File getDefaultDomainsDir()
+    {
+        // note: 99% error detection!
+
+        String dirname = System.getProperty(DEFAULT_DOMAINS_DIR_PROPNAME);
+
+        if(!ok(dirname))
+            throw new RuntimeException(DEFAULT_DOMAINS_DIR_PROPNAME + " is not set.");
+
+        File domainsDir = absolutize(new File(dirname));
+
+        if(!domainsDir.isDirectory())
+            throw new RuntimeException(DEFAULT_DOMAINS_DIR_PROPNAME +
+                    "[" + dirname + "]" +
+                    " is specifying a file that is NOT a directory.");
+
+        return domainsDir;
+    }
+
+
+    private File getDefaultDomain(File domainsDir)
+    {
+        File[] domains = domainsDir.listFiles(new FileFilter()
+            {
+                public boolean accept(File f) { return f.isDirectory(); }
+            });
+
+        // By default we will start an unspecified domain iff it is the only
+        // domain in the default domains dir
+
+        if(domains == null || domains.length == 0)
+            throw new RuntimeException("no domain directories found under " + domainsDir);
+
+        if(domains.length > 1)
+            throw new RuntimeException("More than one domain found under "
+                    + domainsDir + " -- you must specify one domain.");
+
+        return domains[0];
+    }
+
+
+    private boolean ok(String s)
+    {
+        return s != null && s.length() > 0;
+    }
+
+    private String getParam(Map<String,String> map, String name)
+    {
+        // allow both "-" and "--"
+        String val = map.get("-" + name);
+
+        if(val == null)
+            val = map.get("--" + name);
+
+        return val;
+    }
+
+    private File absolutize(File f)
+    {
+        try
+        {
+            return f.getCanonicalFile();
+        }
+        catch(Exception e)
+        {
+            return f.getAbsoluteFile();
         }
     }    
 

@@ -2,9 +2,8 @@ package com.sun.enterprise.v3.server;
 
 import com.sun.enterprise.module.bootstrap.Populator;
 import com.sun.enterprise.module.bootstrap.StartupContext;
+import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.hk2.component.ExistingSingletonInhabitant;
-import java.io.FileFilter;
-import org.glassfish.api.Absolutized;
 import org.glassfish.config.support.GlassFishDocument;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
@@ -17,16 +16,11 @@ import javax.xml.stream.XMLStreamReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.LineNumberReader;
-import java.util.Map;
-import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.net.URLClassLoader;
 
 
 /**
@@ -48,13 +42,11 @@ public class DomainXml implements Populator {
     Habitat habitat;
 
     @Inject
+    ModulesRegistry registry;
+
+    @Inject
     XMLInputFactory xif;
 
-    /**
-     * Root of GlassFish installation.
-     */
-    @Absolutized
-    File glassFishRoot;
 
     private final static String DEFAULT_DOMAINS_DIR_PROPNAME = "AS_DEF_DOMAINS_PATH";
     private final static String INSTANCE_ROOT_PROP_NAME = "com.sun.aas.instanceRoot";
@@ -68,21 +60,12 @@ public class DomainXml implements Populator {
             logger.fine("Startup class : " + this.getClass().getName());
         }
 
-        // our bootstrap directory is <appserver>/lib, need to calculate
-        // our real root installation from there.
-        File bootstrapDirectory = context.getRootDirectory();
-        glassFishRoot = bootstrapDirectory.getParentFile();
-        if (!glassFishRoot.exists()) {
-            throw new RuntimeException("No such path exists " + glassFishRoot);
-        }
-
-        parseAsEnv(glassFishRoot);
-
-        // which domain are we starting ?
-        setDomainRoot();
+        domainRoot = new File(System.getProperty(INSTANCE_ROOT_PROP_NAME));
 
         V3Environment env = new V3Environment(domainRoot.getPath(), context);
         habitat.add(new ExistingSingletonInhabitant(V3Environment.class, env));
+        habitat.addComponent("parent-class-loader",
+                new ExistingSingletonInhabitant(URLClassLoader.class, registry.getParentClassLoader()));
         File domainXml = new File(env.getConfigDirPath(), V3Environment.kConfigXMLFileName);
 
         parseDomainXml(parser, domainXml);
@@ -107,191 +90,6 @@ public class DomainXml implements Populator {
         }
     }
 
-    private void parseAsEnv(File installRootFile) {
-        Properties asenvProps = new Properties();
-        asenvProps.putAll(System.getProperties());
-        asenvProps.put("com.sun.aas.installRoot", glassFishRoot.getPath());
-
-        // let's read the asenv.conf
-        File configDir = new File(installRootFile, "config");
-        File asenv = getAsEnvConf(configDir);
-
-        LineNumberReader lnReader = null;
-        try {
-            lnReader = new LineNumberReader(new FileReader(asenv));
-            String line = lnReader.readLine();
-            // most of the asenv.conf values have surrounding "", remove them
-            // and on Windows, they start with SET XXX=YYY
-            Pattern p = Pattern.compile("[Ss]?[Ee]?[Tt]? *([^=]*)=\"?([^\"]*)\"?");
-            while (line != null) {
-                Matcher m = p.matcher(line);
-                if (m.matches()) {
-                    File f = new File(m.group(2));
-                    if (!f.isAbsolute()) {
-                        f = new File(configDir, m.group(2));
-                        if (f.exists()) {
-                            asenvProps.put(m.group(1), f.getAbsolutePath());
-                        } else {
-                            asenvProps.put(m.group(1), m.group(2));
-                        }
-                    } else {
-                        asenvProps.put(m.group(1), m.group(2));
-                    }
-                }
-                line = lnReader.readLine();
-            }
-        } catch (IOException ioe) {
-            throw new RuntimeException("Error opening asenv.conf : ", ioe);
-        } finally {
-            try {
-                if (lnReader != null)
-                    lnReader.close();
-            } catch (IOException ioe) {
-                // ignore
-            }
-        }
-
-        // install the new system properties
-        System.setProperties(asenvProps);
-    }
-
-    /**
-     * Figures out the asenv.conf file to load.
-     */
-    private File getAsEnvConf(File configDir) {
-        String osName = System.getProperty("os.name");
-        if (osName.indexOf("Windows") == -1) {
-            return new File(configDir, "asenv.conf");
-        } else {
-            return new File(configDir, "asenv.bat");
-        }
-    }
-
-    private void setDomainRoot() 
-    {
-        domainRoot = getDomainRoot();
-        verifyDomainRoot();
-        
-    }
-    /**
-     * Determines the root directory of the domain that we'll start.
-     */
-    @Absolutized
-    private File getDomainRoot() 
-    {
-        // first see if it is specified directly
-        Map<String,String> args = context.getArguments();
-        
-        String domainDir = getParam(args, "domaindir");
-        
-        if(ok(domainDir))
-            return new File(domainDir);
- 
-        // now see if they specified the domain name -- we will look in the 
-        // default domains-dir
-        
-        File defDomainsRoot = getDefaultDomainsDir();
-        String domainName = getParam(args, "domain");
-
-        if(ok(domainName))
-            return new File(defDomainsRoot, domainName);
-        
-        // OK -- they specified nothing.  Get the one-and-only domain in the
-        // domains-dir
-        return getDefaultDomain(defDomainsRoot);
-    }
-    /**
-     * Determines the root directory of the domain that we'll start.
-     */
-    @Absolutized
-    private void verifyDomainRoot() 
-    {
-        String msg = null;
-        
-        if(domainRoot == null)
-            msg = "Internal Error: The domain dir is null.";
-        else if(!domainRoot.isDirectory())
-            msg = "the domain directory is not a directory.";
-        else if(!domainRoot.canWrite())
-            msg = "the domain directory is not writable.";
-        else if(!new File(domainRoot, "config").isDirectory())
-            msg = "the domain directory is corrupt - there is no config subdirectory.";
-        
-        if(msg != null)
-            throw new RuntimeException(msg);
-
-        domainRoot = absolutize(domainRoot);
-        System.setProperty(INSTANCE_ROOT_PROP_NAME, domainRoot.getPath() );
-    }
-
-    private File getDefaultDomainsDir() 
-    {
-        // note: 99% error detection!
-        
-        String dirname = System.getProperty(DEFAULT_DOMAINS_DIR_PROPNAME);
-        
-        if(!ok(dirname))
-            throw new RuntimeException(DEFAULT_DOMAINS_DIR_PROPNAME + " is not set.");
-            
-        File domainsDir = absolutize(new File(dirname));
-        
-        if(!domainsDir.isDirectory())
-            throw new RuntimeException(DEFAULT_DOMAINS_DIR_PROPNAME + 
-                    "[" + dirname + "]" +
-                    " is specifying a file that is NOT a directory.");
-
-        return domainsDir;
-    }
-    
-    
-    private File getDefaultDomain(File domainsDir)
-    {
-        File[] domains = domainsDir.listFiles(new FileFilter()
-            {
-                public boolean accept(File f) { return f.isDirectory(); }
-            });
-        
-        // By default we will start an unspecified domain iff it is the only
-        // domain in the default domains dir
-            
-        if(domains == null || domains.length == 0)
-            throw new RuntimeException("no domain directories found under " + domainsDir);
-        
-        if(domains.length > 1)
-            throw new RuntimeException("More than one domain found under " 
-                    + domainsDir + " -- you must specify one domain.");
-
-        return domains[0];
-    }               
-                    
-                    
-    private boolean ok(String s)
-    {
-        return s != null && s.length() > 0;
-    }
-
-    private String getParam(Map<String,String> map, String name)
-    {
-        // allow both "-" and "--"
-        String val = map.get("-" + name);
-        
-        if(val == null)
-            val = map.get("--" + name);
-        
-        return val;
-    }
-
-    private File absolutize(File f)
-    {
-        try 
-        { 
-            return f.getCanonicalFile(); 
-        }
-        catch(Exception e)
-        {
-            return f.getAbsoluteFile();
-        }
-    }
     /**
      * {@link XMLStreamReader} that skips irrelvant &lt;config> elements that we shouldn't see.
      */

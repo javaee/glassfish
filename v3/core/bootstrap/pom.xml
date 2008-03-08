@@ -83,7 +83,7 @@
                         <!-- this specifies the bootstrap module -->
                         <manifestEntries>
                             <HK2-Bundle-Name>glassfish-bootstrap</HK2-Bundle-Name>
-                            <HK2-Repositories>shared lib</HK2-Repositories>
+                            <HK2-Repositories>shared lib </HK2-Repositories>
                             <HK2-Repository-shared>uri=. weight=35 type=directory</HK2-Repository-shared>
                             <HK2-Repository-lib>uri=../lib weight=10 type=directory</HK2-Repository-lib>
                             <HK2-Main-Bundle>org.glassfish.core:kernel</HK2-Main-Bundle>

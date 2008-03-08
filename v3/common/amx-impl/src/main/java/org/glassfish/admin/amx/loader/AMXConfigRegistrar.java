@@ -18,14 +18,14 @@ import com.sun.appserv.management.config.AMXConfig;
     
  * @author llc
  */
-//@Service //(name="AMXConfigRegistrar")
-public final class AMXConfigRegistrar // implements CageBuilder
+@Service(name="AMXConfigRegistrar")
+public final class AMXConfigRegistrar implements CageBuilder
 {
     private static void debug( final String s ) { System.out.println(s); }
     private AMXConfigLoader  mConfigLoader;
         
-        private
-    AMXConfigRegistrar()
+
+    public AMXConfigRegistrar()
     {
         //debug( "#### AMXConfigRegistrar.AMXConfigRegistrar  #####" );
         

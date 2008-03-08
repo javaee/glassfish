@@ -36,6 +36,7 @@ import com.sun.enterprise.util.zip.ZipItem;
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.RootDeploymentDescriptor;
+import com.sun.enterprise.deployment.util.ApplicationVisitor;
 import com.sun.enterprise.deployment.archivist.ApplicationFactory;
 import com.sun.enterprise.deployment.archivist.ArchivistFactory;
 import com.sun.enterprise.deployment.archivist.Archivist;
@@ -88,6 +89,12 @@ public abstract class JavaEEDeployer<T extends Container, U extends ApplicationC
 
     @Inject
     protected ModulesRegistry modulesRegistry;
+
+    @Inject(name="application_deploy", optional=true)
+    ApplicationVisitor deploymentVisitor=null;
+
+    @Inject(name="application_undeploy", optional=true)
+    ApplicationVisitor undeploymentVisitor=null;
 
     private static String CLIENT_JAR_MAKER_CHOICE = System.getProperty(
         DeploymentImplConstants.CLIENT_JAR_MAKER_CHOICE);
@@ -185,6 +192,11 @@ public abstract class JavaEEDeployer<T extends Container, U extends ApplicationC
     protected Application parseModuleMetaData(DeploymentContext dc)
         throws Exception {
 
+        Application application = dc.getModuleMetaData(Application.class);
+        if (application!=null) {
+            return application;
+        }
+
         ReadableArchive sourceArchive = dc.getSource();
         ClassLoader cl = dc.getClassLoader();
         Properties props = dc.getCommandParameters();
@@ -199,13 +211,19 @@ public abstract class JavaEEDeployer<T extends Container, U extends ApplicationC
         archivist.setDefaultBundleDescriptor(
                 getDefaultBundleDescriptor());
 
-        Application application = applicationFactory.openArchive(
+        application = applicationFactory.openArchive(
                 name, archivist, sourceArchive, true);
 
         if (application!=null) {
             archivist.validate(cl);
             dc.addModuleMetaData(application);
         }
+
+        // this may not be the best location for this but it will suffice.
+        if (deploymentVisitor!=null) {
+            deploymentVisitor.accept(application);
+        }
+
         return application;
     }
 
@@ -264,6 +282,9 @@ public abstract class JavaEEDeployer<T extends Container, U extends ApplicationC
      * @param context deployment context
      */
     public void clean(DeploymentContext context) {
+        if (undeploymentVisitor!=null) {
+            undeploymentVisitor.accept(context.getModuleMetaData(Application.class));
+        }
     }
         
     protected void saveAppDescriptor(DeploymentContext context) 

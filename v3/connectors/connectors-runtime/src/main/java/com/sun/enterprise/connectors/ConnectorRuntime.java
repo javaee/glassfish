@@ -52,6 +52,9 @@ import com.sun.enterprise.util.ConnectorClassLoader;
 import com.sun.enterprise.container.common.spi.util.ComponentEnvManager;
 import com.sun.enterprise.container.common.spi.JavaEETransaction;
 import com.sun.enterprise.container.common.spi.JavaEETransactionManager;
+import com.sun.enterprise.module.ModulesRegistry;
+import com.sun.enterprise.module.ModuleDefinition;
+import com.sun.enterprise.module.Module;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.naming.GlassfishNamingManager;
 import org.glassfish.api.invocation.InvocationManager;
@@ -70,10 +73,7 @@ import javax.transaction.SystemException;
 import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
 import java.io.PrintWriter;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Set;
-import java.util.Timer;
+import java.util.*;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 
@@ -111,6 +111,9 @@ public class ConnectorRuntime implements ConnectorConstants, com.sun.appserv.con
 
     @Inject
     private JavaEETransactionManager transactionManager;
+
+    @Inject
+    ModulesRegistry registry;
 
     private final Object getTimerLock = new Object();
     private Timer timer;
@@ -475,7 +478,18 @@ public class ConnectorRuntime implements ConnectorConstants, com.sun.appserv.con
                 ConnectorAdminServicesFactory.getService(ConnectorConstants.SEC);
 
         //TODO V3 class-loader (temprorarily initializing with current thread's context cl)
-        ConnectorClassLoader.getInstance(Thread.currentThread().getContextClassLoader());
+
+        // add the APIs visibility...
+        List<ModuleDefinition> defs = new ArrayList<ModuleDefinition>();
+        Module module = registry.makeModuleFor("org.glassfish.common:glassfish-api", null);
+        if (module!=null) {
+            defs.add(module.getModuleDefinition());
+        }
+        module = registry.makeModuleFor("org.glassfish.common:glassfish-ee-api", null);
+        if (module!=null) {
+            defs.add(module.getModuleDefinition());
+        }
+        ConnectorClassLoader.getInstance(registry.getModulesClassLoader(null, defs));
 
 
         System.out.println("Time taken to initialize connector runtime : " + (System.currentTimeMillis() - startTime));
