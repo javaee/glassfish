@@ -30,9 +30,9 @@
 that you can continue with Exercise 2:</div>
     <div class="console">
         <pre>
-% mv lab/javaone-plugin lab/my-javaone-plugin
-% mkdir&nbsp; lab/javaone-plugin &lt;== TBD&nbsp; I should combine this and next command into one
-% cp -R lab/solutions/solution_1/javaone-plugin/ lab/javaone-plugin</pre>
+% mv lab/myplugin lab/my-myplugin
+% mkdir&nbsp; lab/myplugin &lt;== TBD&nbsp; I should combine this and next command into one
+% cp -R lab/solutions/solution_1/myplugin/ lab/myplugin</pre>
     </div>
     
 <span style=BACKGROUND-COLOR:#f3f3f3>Window:&nbsp; TBD</span><br><br>
@@ -75,7 +75,7 @@ it again.&nbsp; (more detailed info can be found in 1-A. (TBD provide a link)
   <div id=xzyo style="PADDING:1em 0pt; TEXT-ALIGN:left">
     <img src=images/ex2-1-editConfig.jpg style="WIDTH:854px; HEIGHT:439px">
   </div>
-  Figure:&nbsp; Ex2-1&nbsp; opened&nbsp; Javaone-plugin module to start exercise
+  Figure:&nbsp; Ex2-1&nbsp; opened&nbsp; <code>myplugin</code> module to start exercise
   2.<br>         
   
   <br>
@@ -299,10 +299,10 @@ NetBeans:</p>
 The results are displayed in the output window.<br>   
 <div class="console"> <pre>
 [hk2:package]
-Building jar: v3/javaone-plugin/target/console-javaone-plugin-1.0-SNAPSHOT.jar
+Building jar: v3/myplugin/target/console-myplugin-1.0-SNAPSHOT.jar
 [install:install]
-Installing v3/javaone-plugin/target/console-javaone-plugin-10.0-SNAPSHOT.jar to
-...i/console-javaone-plugin/1.0-SNAPSHOT/console-javaone-plugin-1.0-SNAPSHOT.jar
+Installing v3/myplugin/target/console-myplugin-10.0-SNAPSHOT.jar to
+...i/console-myplugin/1.0-SNAPSHOT/console-myplugin-1.0-SNAPSHOT.jar
 ------------------------------------------------------------------------
 BUILD SUCCESSFUL
 ------------------------------------------------------------------------
@@ -320,8 +320,8 @@ Now, open a Terminal window to enter the follow command.&nbsp; This is to copy
   4. Now, Integrate the jar to GlassFish by copying it to
   glassfish/modules&nbsp; directory<br>
   % cp
-  lab<span style=BACKGROUND-COLOR:#ffffff>/javaone-plugin/target/console-javaone-plugin-1.0-SNAPSHOT.jar
-  v3/glassfish/modules/console-javaone-plugin-1.0-SNAPSHOT.jar<br>
+  lab<span style=BACKGROUND-COLOR:#ffffff>/myplugin/target/console-myplugin-1.0-SNAPSHOT.jar
+  v3/glassfish/modules/console-myplugin-1.0-SNAPSHOT.jar<br>
   </span><br>
   5.&nbsp; Start the server again,<br>
   % glassfish/bin/asadmin start-domain&nbsp;<br>

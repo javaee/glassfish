@@ -180,15 +180,15 @@ This exercise is based (TBD: or should we say continuation ) on exercise
 1.&nbsp; If you have not completed exercise 1,&nbsp; please do the following so
 that you can work on exercise 2 now</span><br style=BACKGROUND-COLOR:#f3f3f3>
 <span style=BACKGROUND-COLOR:#f3f3f3>Solaris/Linux :&nbsp;&nbsp; % mv
-lab/javaone-plugin&nbsp;
-lab/my-javaone-plugin</span><br style=BACKGROUND-COLOR:#f3f3f3>
+lab/myplugin&nbsp;
+lab/my-myplugin</span><br style=BACKGROUND-COLOR:#f3f3f3>
 <span style=BACKGROUND-COLOR:#f3f3f3>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 % mkdir&nbsp;
-lab/javaone-plugin&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+lab/myplugin&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 &lt;== TBD&nbsp; I should combine this and next command into
 one</span><br style=BACKGROUND-COLOR:#f3f3f3>
 <span style=BACKGROUND-COLOR:#f3f3f3>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-% cp -R lab/solutions/solution_1/javaone-plugin/ to&nbsp; lab/javaone-plugin
+% cp -R lab/solutions/solution_1/myplugin/ to&nbsp; lab/myplugin
 </span><br style=BACKGROUND-COLOR:#f3f3f3>
 <br style=BACKGROUND-COLOR:#f3f3f3>
 <span style=BACKGROUND-COLOR:#f3f3f3>Window:&nbsp; TBD</span><br>
@@ -233,7 +233,7 @@ it again.&nbsp; (more detailed info can be found in 1-A. (TBD provide a link)<br
   <div id=xzyo style="PADDING:1em 0pt; TEXT-ALIGN:left">
     <img src=images/ex2-1-editConfig.jpg style="WIDTH:854px; HEIGHT:439px">
   </div>
-  Figure:&nbsp; Ex2-1&nbsp; opened&nbsp; Javaone-plugin module to start exercise
+  Figure:&nbsp; Ex2-1&nbsp; opened&nbsp; <code>myplugin</code> module to start exercise
   2.<br>
   <br>
   <br>
@@ -488,11 +488,11 @@ window.<br>
 <div style=MARGIN-LEFT:40px>
   <span style=BACKGROUND-COLOR:#cfe2f3>[hk2:package]</span><br style=BACKGROUND-COLOR:#cfe2f3>
   <span style=BACKGROUND-COLOR:#cfe2f3>Building jar:
-  v3/javaone-plugin/target/console-javaone-plugin-1.0-SNAPSHOT.jar</span><br style=BACKGROUND-COLOR:#cfe2f3>
+  v3/myplugin/target/console-myplugin-1.0-SNAPSHOT.jar</span><br style=BACKGROUND-COLOR:#cfe2f3>
   <span style=BACKGROUND-COLOR:#cfe2f3>[install:install]</span><br style=BACKGROUND-COLOR:#cfe2f3>
   <span style=BACKGROUND-COLOR:#cfe2f3>Installing
-  v3/javaone-plugin/target/console-javaone-plugin-10.0-SNAPSHOT.jar to
-  /Users/anilam/.m2/repository/org/glassfish/admingui/console-javaone-plugin/1.0-SNAPSHOT/console-javaone-plugin-1.0-SNAPSHOT.jar</span><br style=BACKGROUND-COLOR:#cfe2f3>
+  v3/myplugin/target/console-myplugin-10.0-SNAPSHOT.jar to
+  /Users/anilam/.m2/repository/org/glassfish/admingui/console-myplugin/1.0-SNAPSHOT/console-myplugin-1.0-SNAPSHOT.jar</span><br style=BACKGROUND-COLOR:#cfe2f3>
   <span style=BACKGROUND-COLOR:#cfe2f3>------------------------------------------------------------------------</span><br style=BACKGROUND-COLOR:#cfe2f3>
   <span style=BACKGROUND-COLOR:#cfe2f3>BUILD
   SUCCESSFUL</span><br style=BACKGROUND-COLOR:#cfe2f3>
@@ -517,8 +517,8 @@ window.<br>
   12. Now, Integrate the jar to GlassFish by copying it to
   glassfish/modules&nbsp; directory<br>
   % cp&nbsp;
-  lab<span style=BACKGROUND-COLOR:#ffffff>/javaone-plugin/target/console-javaone-plugin-1.0-SNAPSHOT.jar&nbsp;
-  v3/glassfish/modules/console-javaone-plugin-1.0-SNAPSHOT.jar<br>
+  lab<span style=BACKGROUND-COLOR:#ffffff>/myplugin/target/console-myplugin-1.0-SNAPSHOT.jar&nbsp;
+  v3/glassfish/modules/console-myplugin-1.0-SNAPSHOT.jar<br>
   </span><br>
   13.&nbsp; Start the server again,<br>
   % glassfish/bin/asadmin start-domain&nbsp;<br>
@@ -554,7 +554,7 @@ console-config.xml,&nbsp; treenode-ex2.jsf&nbsp; and chart.jsf.<br>
 Here is the content of all 3 files:<br>
 <br>
 S2-B:&nbsp; Content of&nbsp;&nbsp;
-<b>lab/javaone-plugin/src/main/resources/chart.jsf<br>
+<b>lab/myplugin/src/main/resources/chart.jsf<br>
 </b><br>
 <div style="MARGIN-LEFT:40px; BACKGROUND-COLOR:#cccccc">
   &lt;sun:page&gt;<br>
@@ -698,7 +698,7 @@ S2-B:&nbsp; Content of&nbsp;&nbsp;
   <br>
 </div>
 <br>
-<pre>S2-C  :  Content for  <b>lab/javaone-plugin/src/main/resources/META-INF/admingui/console-config.xml</b><br></pre>
+<pre>S2-C  :  Content for  <b>lab/myplugin/src/main/resources/META-INF/admingui/console-config.xml</b><br></pre>
 <div style="MARGIN-LEFT:40px; BACKGROUND-COLOR:#cccccc">
   &lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>
   <br>
@@ -730,7 +730,7 @@ S2-B:&nbsp; Content of&nbsp;&nbsp;
   &lt;/console-config&gt;<br>
   <br>
 </div>
-<pre><br><b><br></b>S2-C  :  Content for  <b>lab/javaone-plugin/src/main/resources/treenode-ex2.jsf</b><br></pre>
+<pre><br><b><br></b>S2-C  :  Content for  <b>lab/myplugin/src/main/resources/treenode-ex2.jsf</b><br></pre>
 <div style="MARGIN-LEFT:40px; BACKGROUND-COLOR:#cccccc">
   <pre style=MARGIN-LEFT:40px>&lt;sun:treeNode<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; id="second" <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; text="Exercise #2"<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; url="javaone/chart.jsf"<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; imageURL="resource/images/instance.gif"<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; target="main" <br>/&gt;</pre>
 </div>
@@ -769,15 +769,15 @@ S2-B:&nbsp; Content of&nbsp;&nbsp;
   so that you can work on exercise 3
   now</span><br style=BACKGROUND-COLOR:#f3f3f3>
   <span style=BACKGROUND-COLOR:#f3f3f3>Solaris/Linux :&nbsp;&nbsp; % mv
-  lab/javaone-plugin&nbsp;
-  lab/my-javaone-plugin</span><br style=BACKGROUND-COLOR:#f3f3f3>
+  lab/myplugin&nbsp;
+  lab/my-myplugin</span><br style=BACKGROUND-COLOR:#f3f3f3>
   <span style=BACKGROUND-COLOR:#f3f3f3>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
   % mkdir&nbsp;
-  lab/javaone-plugin&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  lab/myplugin&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
   &lt;== TBD&nbsp; I should combine this and next command into
   one</span><br style=BACKGROUND-COLOR:#f3f3f3>
   <span style=BACKGROUND-COLOR:#f3f3f3>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  % cp -R lab/solutions/solution_3/javaone-plugin/&nbsp; lab/javaone-plugin
+  % cp -R lab/solutions/solution_3/myplugin/&nbsp; lab/myplugin
   </span><br style=BACKGROUND-COLOR:#f3f3f3>
   <br style=BACKGROUND-COLOR:#f3f3f3>
   <span style=BACKGROUND-COLOR:#f3f3f3>Window:&nbsp; TBD</span>
@@ -815,7 +815,7 @@ S2-B:&nbsp; Content of&nbsp;&nbsp;
   &nbsp;&nbsp;&nbsp; Steps in NetBeans:
 </p>
 <p class=j1holheader>
-  &nbsp;&nbsp;&nbsp; 1.&nbsp; Open the javaone-plugin module if it is not open.
+  &nbsp;&nbsp;&nbsp; 1.&nbsp; Open the myplugin module if it is not open.
 </p>
 <p class=j1holheader>
   &nbsp;&nbsp;&nbsp; 2&nbsp;&nbsp; Select Other Rsources -&gt; resources<br>
@@ -912,8 +912,8 @@ over the module (jar) that was just built to GlassFish.<br>
 7. Now, Integrate the jar to GlassFish by copying it to glassfish/modules&nbsp;
 directory<br>
 % cp&nbsp;
-&lt;j1Plugin&gt;/lab<span style=BACKGROUND-COLOR:#ffffff>/javaone-plugin/target/console-javaone-plugin-1.0-SNAPSHOT.jar&nbsp;
-&lt;j1Plugin&gt;/glassfish/modules/console-javaone-plugin-1.0-SNAPSHOT.jar<br>
+&lt;j1Plugin&gt;/lab<span style=BACKGROUND-COLOR:#ffffff>/myplugin/target/console-myplugin-1.0-SNAPSHOT.jar&nbsp;
+&lt;j1Plugin&gt;/glassfish/modules/console-myplugin-1.0-SNAPSHOT.jar<br>
 </span><br>
 13.&nbsp; Start the server again,<br>
 % glassfish/bin/asadmin start-domain&nbsp;<br>
@@ -946,11 +946,11 @@ the right hand frame.<br>
 </h1>
 <br>
 File content:&nbsp;
-&lt;j1Plugin&gt;/lab/javaone-plugin/src/main/resources/chart3.jsf<br>
+&lt;j1Plugin&gt;/lab/myplugin/src/main/resources/chart3.jsf<br>
 &nbsp;&nbsp;&nbsp; TBD.<br>
 <br>
 File content :&nbsp;
-&lt;j1Plugin&gt;/lab/javaone-plugin/src/main/resources/META-INF/admingui/console-config.xml<br>
+&lt;j1Plugin&gt;/lab/myplugin/src/main/resources/META-INF/admingui/console-config.xml<br>
 <br>
 <div style="MARGIN-LEFT:40px; BACKGROUND-COLOR:#cccccc">
   <span style=BACKGROUND-COLOR:#cccccc>&lt;?xml version="1.0"
@@ -1005,7 +1005,7 @@ File content :&nbsp;
 </p>
 <br>
 File content :&nbsp;
-&lt;j1Plugin&gt;/lab/javaone-plugin/src/main/resources/treenode-ex3.jsf&nbsp;
+&lt;j1Plugin&gt;/lab/myplugin/src/main/resources/treenode-ex3.jsf&nbsp;
 <div style="MARGIN-LEFT:40px; BACKGROUND-COLOR:#cccccc">
   <span style=BACKGROUND-COLOR:#cccccc>&lt;sun:treeNode
   </span><br style=BACKGROUND-COLOR:#cccccc>
@@ -1040,7 +1040,8 @@ File content :&nbsp;
     Please post questions that are relevant only to this hands-on lab.
     <ul>
       <li>
-        <a href=https://hands-on-labs.dev.java.net/servlets/ForumMessageList?forumID=2548>6340_JavaME_StreamingVideo
+      <!-- FIXME: TBD: get URL -->
+        <a href=https://hands-on-labs.dev.java.net/servlets/ForumMessageList?forumID=2548>4520_GlassFish_Plugin
         forum at hands-on-labs.dev.java.net</a>
       </li>
     </ul>
