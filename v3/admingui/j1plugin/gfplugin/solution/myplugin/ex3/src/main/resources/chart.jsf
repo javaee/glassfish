@@ -19,7 +19,7 @@
     <sun:script url="/theme/META-INF/com_sun_faces_ajax.js" />
 </sun:markup>
 
-<sun:markup tag="body"
+<sun:markup tag="body">
 
 <sun:form id="form">
 
