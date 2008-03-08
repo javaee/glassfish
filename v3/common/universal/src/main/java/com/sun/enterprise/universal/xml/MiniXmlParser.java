@@ -24,6 +24,8 @@ package com.sun.enterprise.universal.xml;
 
 import java.io.*;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
@@ -40,9 +42,15 @@ class MiniXmlParser {
 
     public static void main(String[] args) {
         try {
-            File dxml = new File("C:/glassfish/domains/domain1/config/domain.xml");
+            String xmlFilename;
+
+            if (args.length >= 1)
+                xmlFilename = args[0];
+            else
+                xmlFilename = "C:/glassfish/domains/domain1/config/domain.xml";
+            debug = true;
+            File dxml = new File(xmlFilename);
             MiniXmlParser parser = new MiniXmlParser(dxml, "server");
-            parser.read();
         }
         catch (Exception e) {
             System.out.println("EXCEPTION: " + e);
@@ -51,30 +59,45 @@ class MiniXmlParser {
 
     MiniXmlParser(File domainXml, String serverName) {
         this.serverName = serverName;
+        this.domainXml = domainXml;
         try {
-            FileInputStream stream = new FileInputStream(domainXml);
-            XMLInputFactory xif = XMLInputFactory.newInstance();
-            parser = xif.createXMLStreamReader(domainXml.toURI().toString(), stream);
+            read();
         }
         catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    void read() {
+    void read() throws XMLStreamException, EndDocumentException, FileNotFoundException {
+        createParser();
+        getConfigRefName();
+        
         try {
-            getConfigRefName();
+            // this will fail if config is above servers in domain.xml!
             getConfig();
+            return; // this is important!
         }
-        catch (Exception e) {
-            throw new RuntimeException(e);
+        catch (EndDocumentException ex) {
+            // we do the following code only if EndDocumentException is caught
+            // success returns
+            // other exceptions get thrown back
         }
+        createParser();
+        skipRoot("domain");
+        getConfig();
+        Logger.getLogger(MiniXmlParser.class.getName()).log(Level.WARNING, "Second Pass Required");
     }
 
+    private void createParser() throws FileNotFoundException, XMLStreamException
+    {
+        FileInputStream stream = new FileInputStream(domainXml);
+        XMLInputFactory xif = XMLInputFactory.newInstance();
+        parser = xif.createXMLStreamReader(domainXml.toURI().toString(), stream);
+    }
     /**
      * @throws javax.xml.stream.XMLStreamException
      */
-    private void getConfigRefName() throws XMLStreamException {
+    private void getConfigRefName() throws XMLStreamException, EndDocumentException {
         if (configRef != null) {
             return;
         }   // second pass!
@@ -97,12 +120,13 @@ class MiniXmlParser {
 
             if (serverName.equals(thisName)) {
                 configRef = mgr.getValue("config-ref");
+                skipToEnd("servers");
                 return;
             }
         }
     }
 
-    private void getConfig() throws XMLStreamException {
+    private void getConfig() throws XMLStreamException, EndDocumentException {
         skipTo("configs");
         while (true) {
             skipTo("config");
@@ -118,29 +142,33 @@ class MiniXmlParser {
         }
     }
 
-    private void getJavaConfig() throws XMLStreamException {
+    private void getJavaConfig() throws XMLStreamException, EndDocumentException {
         // cursor --> <config>
         skipTo("java-config");
 
         // get the attributes for <java-config>
         javaConfigAttributeManager = parseAttributes();
+        if (debug)
+            javaConfigAttributeManager.dump();
+
         getJvmOptions();
     }
 
-    private void getJvmOptions() throws XMLStreamException {
+    private void getJvmOptions() throws XMLStreamException, EndDocumentException {
         while (skipToButNotPast("jvm-options", "java-config")) {
             jvmOptions.add(parser.getElementText());
         }
 
-        for (String s : jvmOptions) {
-            System.out.println("JVM OPTION: " + s);
-        }
+        if (debug)
+            for (String s : jvmOptions) {
+                debug("JVM OPTION: " + s);
+            }
 
     }
 
-    private void skipNonStartElements() throws XMLStreamException {
+    private void skipNonStartElements() throws XMLStreamException, EndDocumentException {
         while (true) {
-            int event = parser.next();
+            int event = next();
 
             if (event == START_ELEMENT) {
                 return;
@@ -148,12 +176,12 @@ class MiniXmlParser {
         }
     }
 
-    private void skipRoot(String name) throws XMLStreamException {
+    private void skipRoot(String name) throws XMLStreamException, EndDocumentException {
         // The cursor is pointing at the start of the document
         // Move to the first 'top-level' element under name
         // Return with cursor pointing to first sub-element
         while (true) {
-            int event = parser.next();
+            int event = next();
 
             if (event == START_ELEMENT) {
                 if (!name.equals(parser.getLocalName())) {
@@ -172,7 +200,7 @@ class MiniXmlParser {
      * @param name the Element to skip to
      * @throws javax.xml.stream.XMLStreamException
      */
-    private void skipTo(String name) throws XMLStreamException {
+    private void skipTo(String name) throws XMLStreamException, EndDocumentException {
         while (true) {
             skipNonStartElements();
             // cursor is at a START_ELEMENT
@@ -194,9 +222,9 @@ class MiniXmlParser {
      * @param name the Element to skip to
      * @throws javax.xml.stream.XMLStreamException
      */
-    private boolean skipToButNotPast(String startName, String endName) throws XMLStreamException {
+    private boolean skipToButNotPast(String startName, String endName) throws XMLStreamException, EndDocumentException {
         while (true) {
-            int event = parser.next();
+            int event = next();
 
             if (event == START_ELEMENT) {
                 if (parser.getLocalName().equals(startName)) {
@@ -212,18 +240,42 @@ class MiniXmlParser {
         }
     }
 
-    private void skipTree(String name) throws XMLStreamException {
+    private void skipTree(String name) throws XMLStreamException, EndDocumentException {
         // The cursor is pointing at the start-element of name.
         // throw everything in this element away and return with the cursor
         // pointing at its end-element.
         while (true) {
-            int event = parser.next();
+            int event = next();
 
             if (event == END_ELEMENT && name.equals(parser.getLocalName())) {
                 //System.out.println("END: " + parser.getLocalName());
                 return;
             }
         }
+    }
+
+    private void skipToEnd(String name) throws XMLStreamException, EndDocumentException {
+        // The cursor is pointing who-knows-where
+        // throw everything away and return with the cursor
+        // pointing at the end-element.
+        while (true) {
+            int event = next();
+
+            if (event == END_ELEMENT && name.equals(parser.getLocalName())) {
+                return;
+            }
+        }
+    }
+
+    private int next() throws XMLStreamException, EndDocumentException {
+        int event = parser.next();
+
+        if (event == END_DOCUMENT) {
+            parser.close();
+            throw new EndDocumentException();
+        }
+        
+        return event;
     }
 
     private void dump() throws XMLStreamException {
@@ -266,10 +318,23 @@ class MiniXmlParser {
 
         return mgr;
     }
+
+    private void debug(String s) {
+        if (debug)
+            System.out.println(s);
+    }
+    private File domainXml;
     private XMLStreamReader parser;
     private String serverName;
     private String configRef;
     private AttributeManager javaConfigAttributeManager;
     private List<String> jvmOptions = new ArrayList<String>();
+    private static boolean debug = false;
+
+    // this is so we can return from arbitrarily nested calls
+    private static class EndDocumentException extends Exception {
+        EndDocumentException() {
+        }
+    }
 }
 
