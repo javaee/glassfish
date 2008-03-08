@@ -22,6 +22,7 @@
  */
 package com.sun.enterprise.universal.xml;
 
+import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import java.io.*;
 import java.util.*;
 import java.util.logging.Level;
@@ -40,35 +41,41 @@ import static javax.xml.stream.XMLStreamConstants.*;
  */
 class MiniXmlParser {
 
-    public static void main(String[] args) {
-        try {
-            String xmlFilename;
-
-            if (args.length >= 1)
-                xmlFilename = args[0];
-            else
-                xmlFilename = "C:/glassfish/domains/domain1/config/domain.xml";
-            debug = true;
-            File dxml = new File(xmlFilename);
-            MiniXmlParser parser = new MiniXmlParser(dxml, "server");
-        }
-        catch (Exception e) {
-            System.out.println("EXCEPTION: " + e);
-        }
-    }
-
-    MiniXmlParser(File domainXml, String serverName) {
+    public MiniXmlParser(File domainXml, String serverName) throws MiniXmlParserException {
         this.serverName = serverName;
         this.domainXml = domainXml;
         try {
             read();
+            valid = true;
+        }
+        catch (EndDocumentException e) {
+            throw new MiniXmlParserException(strings.get("enddocument", configRef, serverName));
         }
         catch (Exception e) {
-            throw new RuntimeException(e);
+            String msg = strings.get("toplevel", e);
+            throw new MiniXmlParserException(e);
         }
     }
 
-    void read() throws XMLStreamException, EndDocumentException, FileNotFoundException {
+    public Map<String,String> getJavaConfig() throws MiniXmlParserException
+    {
+        if(!valid)
+            throw new MiniXmlParserException(strings.get("invalid"));
+        return javaConfig;
+    }
+
+    public List<String> getJvmOptions() throws MiniXmlParserException
+    {
+        if(!valid)
+            throw new MiniXmlParserException(strings.get("invalid"));
+        return jvmOptions;
+    }
+    
+    ///////////////////////////////////////////////////////////////////////////
+    ////////   Everything below here is private    ////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////
+    
+    private void read() throws XMLStreamException, EndDocumentException, FileNotFoundException {
         createParser();
         getConfigRefName();
         
@@ -85,7 +92,8 @@ class MiniXmlParser {
         createParser();
         skipRoot("domain");
         getConfig();
-        Logger.getLogger(MiniXmlParser.class.getName()).log(Level.WARNING, "Second Pass Required");
+        Logger.getLogger(MiniXmlParser.class.getName()).log(
+                Level.WARNING, strings.get("secondpass"));
     }
 
     private void createParser() throws FileNotFoundException, XMLStreamException
@@ -94,9 +102,7 @@ class MiniXmlParser {
         XMLInputFactory xif = XMLInputFactory.newInstance();
         parser = xif.createXMLStreamReader(domainXml.toURI().toString(), stream);
     }
-    /**
-     * @throws javax.xml.stream.XMLStreamException
-     */
+
     private void getConfigRefName() throws XMLStreamException, EndDocumentException {
         if (configRef != null) {
             return;
@@ -115,11 +121,11 @@ class MiniXmlParser {
             }
 
             // get the attributes for this <server>
-            AttributeManager mgr = parseAttributes();
-            String thisName = mgr.getValue("name");
+            Map<String,String> map = parseAttributes();
+            String thisName = map.get("name");
 
             if (serverName.equals(thisName)) {
-                configRef = mgr.getValue("config-ref");
+                configRef = map.get("config-ref");
                 skipToEnd("servers");
                 return;
             }
@@ -132,38 +138,29 @@ class MiniXmlParser {
             skipTo("config");
 
             // get the attributes for this <config>
-            AttributeManager mgr = parseAttributes();
-            String thisName = mgr.getValue("name");
+            Map<String,String> map = parseAttributes();
+            String thisName = map.get("name");
 
             if (configRef.equals(thisName)) {
-                getJavaConfig();
+                parseJavaConfig();
                 return;
             }
         }
     }
 
-    private void getJavaConfig() throws XMLStreamException, EndDocumentException {
+    private void parseJavaConfig() throws XMLStreamException, EndDocumentException {
         // cursor --> <config>
         skipTo("java-config");
 
         // get the attributes for <java-config>
-        javaConfigAttributeManager = parseAttributes();
-        if (debug)
-            javaConfigAttributeManager.dump();
-
-        getJvmOptions();
+        javaConfig = parseAttributes();
+        parseJvmOptions();
     }
 
-    private void getJvmOptions() throws XMLStreamException, EndDocumentException {
+    private void parseJvmOptions() throws XMLStreamException, EndDocumentException {
         while (skipToButNotPast("jvm-options", "java-config")) {
             jvmOptions.add(parser.getElementText());
         }
-
-        if (debug)
-            for (String s : jvmOptions) {
-                debug("JVM OPTION: " + s);
-            }
-
     }
 
     private void skipNonStartElements() throws XMLStreamException, EndDocumentException {
@@ -281,56 +278,28 @@ class MiniXmlParser {
     private void dump() throws XMLStreamException {
         StringBuilder sb = new StringBuilder();
 
-        sb.append("\ngetName(): ").append(parser.getName());
-        sb.append("\ngetLocalName(): ").append(parser.getLocalName());
-        sb.append("\ngetNamespaceURI(): ").append(parser.getNamespaceURI());
-        try {
-            sb.append("\ngetText(): ").append(parser.getText());
-        }
-        catch (Exception e) {
-        }
-        try {
-            sb.append("\ngetElementText(): ").append(parser.getElementText());
-        }
-        catch (Exception e) {
-        }
-        sb.append("\ngetEventType(): ").append(parser.getEventType());
-        sb.append("\ngetLocation(): ").append(parser.getLocation());
-        try {
-            sb.append("\ngetAttributeCount(): ").append(parser.getAttributeCount());
-        }
-        catch (Exception e) {
-        }
-
         System.out.println(sb.toString());
     }
 
-    private AttributeManager parseAttributes() {
-        // HINT: there is probably a MUCH better way to do this
-
-        AttributeManager mgr = new AttributeManager();
-
+    private Map<String,String> parseAttributes() {
         int num = parser.getAttributeCount();
-
+        Map<String,String> map = new HashMap<String,String>();
         for (int i = 0; i < num; i++) {
-            mgr.add(parser.getAttributeName(i).getLocalPart(), parser.getAttributeValue(i));
+            map.put(parser.getAttributeName(i).getLocalPart(), parser.getAttributeValue(i));
         }
 
-        return mgr;
+        return map;
     }
 
-    private void debug(String s) {
-        if (debug)
-            System.out.println(s);
-    }
+
     private File domainXml;
     private XMLStreamReader parser;
     private String serverName;
     private String configRef;
-    private AttributeManager javaConfigAttributeManager;
     private List<String> jvmOptions = new ArrayList<String>();
-    private static boolean debug = false;
-
+    private Map<String,String> javaConfig;
+    private boolean valid = false;
+    private static LocalStringsImpl strings = new LocalStringsImpl(MiniXmlParser.class);
     // this is so we can return from arbitrarily nested calls
     private static class EndDocumentException extends Exception {
         EndDocumentException() {
