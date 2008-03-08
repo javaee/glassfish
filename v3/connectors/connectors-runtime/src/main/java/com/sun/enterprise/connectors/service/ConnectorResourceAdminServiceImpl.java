@@ -40,22 +40,18 @@ import com.sun.appserv.connectors.spi.ConnectorConstants;
 import com.sun.appserv.connectors.spi.ConnectorRuntimeException;
 import com.sun.enterprise.connectors.ConnectorConnectionPool;
 import com.sun.enterprise.connectors.ConnectorDescriptorInfo;
-import com.sun.enterprise.connectors.ConnectorRuntime;
 import com.sun.enterprise.connectors.naming.ConnectorResourceNamingEventNotifier;
 import com.sun.enterprise.connectors.naming.ConnectorNamingEvent;
 import com.sun.enterprise.connectors.naming.ConnectorNamingEventNotifier;
-import com.sun.enterprise.connectors.util.ConnectorsUtil;
+import com.sun.appserv.connectors.spi.ConnectorsUtil;
 import com.sun.enterprise.resource.ConnectorObjectFactory;
 
 import javax.naming.Context;
 import javax.naming.NameNotFoundException;
 import javax.naming.NamingException;
-import javax.sql.DataSource;
+import javax.naming.InitialContext;
 import java.util.Hashtable;
 import java.util.logging.Level;
-import java.io.PrintWriter;
-import java.sql.Connection;
-import java.sql.SQLException;
 
 /**
  * This is connector resource admin service. It creates and deletes the
@@ -183,7 +179,9 @@ public class ConnectorResourceAdminServiceImpl extends ConnectorService {
             ht.put(ConnectorConstants.JNDI_SUFFIX_PROPERTY, suffix);
             name = name.substring(0, name.lastIndexOf(suffix));
         }
-        Context ic = _runtime.getNamingManager().getInitialContext();
+        //Context ic = _runtime.getNamingManager().getInitialContext();
+		//To pass suffix that will be used by connector runtime during lookup
+        Context ic = new InitialContext(ht);
         return ic.lookup(name);
     }
 }

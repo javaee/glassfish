@@ -42,7 +42,7 @@ import com.sun.enterprise.connectors.ConnectorRegistry;
 import com.sun.enterprise.connectors.ConnectorRuntime;
 import com.sun.enterprise.connectors.DeferredResourceConfig;
 import com.sun.enterprise.connectors.util.ConnectorDDTransformUtils;
-import com.sun.enterprise.connectors.util.ConnectorsUtil;
+import com.sun.appserv.connectors.spi.ConnectorsUtil;
 import com.sun.enterprise.connectors.util.ResourcesUtil;
 import com.sun.enterprise.deployment.ConnectorDescriptor;
 import com.sun.enterprise.resource.pool.PoolManager;
@@ -55,6 +55,7 @@ import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.Collection;
 
 
 /**
@@ -73,6 +74,7 @@ public class ConnectorService implements ConnectorConstants {
     private boolean debug = true;
     protected static int environment = SERVER;
     protected ConnectorRuntime _runtime;
+    protected ResourceDeployerFactory factory = new ResourceDeployerFactory();
 
     /**
      * Default Constructor
@@ -222,7 +224,7 @@ public class ConnectorService implements ConnectorConstants {
             } else /* TODO V3 handle later once configBeans (resource.isEnabled()) is available
                     if (resourceUtil.isEnabled(resource))*/ {
                 resourceType = resourceUtil.getResourceType(resource);
-                ResourceDeployerFactory factory = new ResourceDeployerFactory();
+
                 deployer = factory.getResourceDeployer(resourceType);
                 if (deployer != null) {
                     deployer.deployResource(resource);
@@ -299,4 +301,42 @@ public class ConnectorService implements ConnectorConstants {
     protected ConnectorRuntime getRuntime() {
         return ConnectorRuntime.getRuntime();
     }
+
+    private void deleteResource(Object resource) throws ConnectorRuntimeException {
+        try{
+            factory.getResourceDeployer(resource).undeployResource(resource);
+        }catch(Exception e){
+            ConnectorRuntimeException cre = new ConnectorRuntimeException(e.getMessage());
+            cre.initCause(e);
+            throw cre;
+        }
+    }
+
+    private void destroyConnectionPools(Collection pools) {
+        for (Object pool : pools) {
+            try {
+                deleteResource(pool);
+            } catch (ConnectorRuntimeException cre) {
+                cre.printStackTrace();
+                //TODO V3 handle / log exceptions
+            }
+        }
+    }
+
+    private void destroyResources(Collection resources) {
+        for (Object resource : resources) {
+            try {
+                deleteResource(resource);
+            } catch (ConnectorRuntimeException cre) {
+                cre.printStackTrace();
+                //TODO V3 handle / log exceptions
+            }
+        }
+    }
+
+    public void destroyResourcesAndPools(Collection resources, Collection pools) {
+        destroyResources(resources);
+        destroyConnectionPools(pools);
+    }
+
 }

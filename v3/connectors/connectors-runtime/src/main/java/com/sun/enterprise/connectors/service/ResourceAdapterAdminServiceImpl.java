@@ -41,7 +41,7 @@ import com.sun.enterprise.connectors.ActiveRAFactory;
 import com.sun.enterprise.connectors.ActiveResourceAdapter;
 import com.sun.enterprise.connectors.ConnectorRegistry;
 import com.sun.enterprise.connectors.util.ConnectorDDTransformUtils;
-import com.sun.enterprise.connectors.util.ConnectorsUtil;
+import com.sun.appserv.connectors.spi.ConnectorsUtil;
 import com.sun.enterprise.connectors.util.ResourcesUtil;
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.ConnectorDescriptor;
@@ -361,7 +361,7 @@ public class ResourceAdapterAdminServiceImpl extends ConnectorService {
         }
 
         if (ConnectorsUtil.belongsToSystemRA(moduleName)) {
-            moduleDir = com.sun.enterprise.connectors.util.ConnectorsUtil.getSystemModuleLocation(moduleName);
+            moduleDir = ConnectorsUtil.getSystemModuleLocation(moduleName);
         }
 
         ConnectorDescriptor connectorDescriptor = ConnectorDDTransformUtils.getConnectorDescriptor(moduleDir);

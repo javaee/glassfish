@@ -50,11 +50,10 @@
 package com.sun.enterprise.resource.deployer;
 
 import com.sun.enterprise.connectors.ConnectorRuntime;
-import com.sun.enterprise.connectors.util.ConnectorsUtil;
+import com.sun.appserv.connectors.spi.ConnectorsUtil;
 import com.sun.enterprise.server.ResourceDeployer;
 import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.logging.LogDomains;
-import com.sun.appserv.connectors.spi.ConnectorConstants;
 
 import java.util.logging.Logger;
 

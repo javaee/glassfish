@@ -51,11 +51,16 @@ package com.sun.enterprise.server;
 
 
 import com.sun.appserv.connectors.spi.ConnectorConstants;
+import com.sun.appserv.connectors.spi.ConnectorRuntimeException;
 import com.sun.enterprise.resource.deployer.ConnectorConnectionPoolDeployer;
 import com.sun.enterprise.resource.deployer.ConnectorResourceDeployer;
 import com.sun.enterprise.resource.deployer.JdbcConnectionPoolDeployer;
 import com.sun.enterprise.resource.deployer.JdbcResourceDeployer;
 import com.sun.enterprise.util.i18n.StringManager;
+import com.sun.enterprise.config.serverbeans.JdbcResource;
+import com.sun.enterprise.config.serverbeans.ConnectorResource;
+import com.sun.enterprise.config.serverbeans.ConnectorConnectionPool;
+import com.sun.enterprise.config.serverbeans.JdbcConnectionPool;
 import com.sun.logging.LogDomains;
 
 import java.util.logging.Logger;
@@ -130,4 +135,31 @@ public class ResourceDeployerFactory {
         }
         return deployer;
     }
+
+    /**
+     * Returns a resource deployer for the given resource type.
+     *
+     * @param resource Object
+     * @throws Exception if unknown resource type
+     */
+    public ResourceDeployer getResourceDeployer(Object resource) throws Exception {
+
+        ResourceDeployer deployer = null;
+
+        if (resource instanceof JdbcResource) {
+            deployer = this.jdbcResourceDeployer_;
+        } else if (resource instanceof ConnectorResource) {
+            deployer = this.connectorResourceDeployer_;
+        } else if (resource instanceof ConnectorConnectionPool) {
+            deployer = this.connectorConnectionPoolDeployer_;
+        } else if (resource instanceof JdbcConnectionPool) {
+            deployer = this.JdbcConnectionPoolDeployer_;
+        } else {
+            String msg = localStrings.getString(
+                    "resource.deployment.resource_type_not_implemented", resource);
+            throw new ConnectorRuntimeException(msg);
+        }
+        return deployer;
+    }
+
 }

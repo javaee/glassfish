@@ -42,15 +42,13 @@ import com.sun.enterprise.config.serverbeans.Property;
 import com.sun.enterprise.config.serverbeans.SecurityMap;
 import com.sun.enterprise.connectors.service.*;
 import com.sun.enterprise.connectors.util.RAWriterAdapter;
-import com.sun.enterprise.connectors.util.ResourcesUtil;
-import com.sun.enterprise.connectors.util.ConnectorsUtil;
+import com.sun.appserv.connectors.spi.ConnectorsUtil;
 import com.sun.enterprise.connectors.authentication.AuthenticationService;
 import com.sun.enterprise.connectors.naming.ConnectorNamingEventNotifier;
 import com.sun.enterprise.deployment.ConnectorDescriptor;
 import com.sun.enterprise.resource.pool.PoolManager;
 import com.sun.enterprise.util.ConnectorClassLoader;
 import com.sun.enterprise.container.common.spi.util.ComponentEnvManager;
-import com.sun.enterprise.container.common.spi.JavaEETransaction;
 import com.sun.enterprise.container.common.spi.JavaEETransactionManager;
 import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.module.ModuleDefinition;
@@ -71,11 +69,12 @@ import javax.resource.spi.ConnectionManager;
 import javax.resource.spi.ManagedConnectionFactory;
 import javax.transaction.SystemException;
 import javax.transaction.Transaction;
-import javax.transaction.TransactionManager;
 import java.io.PrintWriter;
 import java.util.*;
 import java.util.logging.Logger;
+
 import java.util.logging.Level;
+
 
 
 @Service
@@ -86,8 +85,7 @@ public class ConnectorRuntime implements ConnectorConstants, com.sun.appserv.con
     private volatile int environment = CLIENT;*/
     private volatile int environment = SERVER;
     private static ConnectorRuntime _runtime;
-    protected final static Logger _logger = LogDomains.getLogger(LogDomains.RSR_LOGGER);
-
+    private Logger _logger = LogDomains.getLogger(LogDomains.RSR_LOGGER);
     private ConnectorConnectionPoolAdminServiceImpl ccPoolAdmService;
     private ConnectorResourceAdminServiceImpl connectorResourceAdmService;
     private ConnectorService connectorService;
@@ -581,36 +579,13 @@ public class ConnectorRuntime implements ConnectorConstants, com.sun.appserv.con
         resourceAdapterAdmService.stopAllActiveResourceAdapters();
     }
 
-    public void shutdownAllActiveResourceAdapters(List<String> poolNames, List<String> resourceNames) {
+    public void shutdownAllActiveResourceAdapters(Collection<String> poolNames, Collection<String> resourceNames) {
         destroyResourcesAndPools(resourceNames, poolNames);
         stopAllActiveResourceAdapters();
     }
 
-    public void destroyResourcesAndPools(List<String> resourceNames, List<String> poolNames) {
-        destroyConnectorResources(resourceNames);
-        destroyConnectionPools(poolNames);
-    }
-
-    private void destroyConnectionPools(List<String> poolNames) {
-        for (String poolName : poolNames) {
-            try {
-                ccPoolAdmService.deleteConnectorConnectionPool(poolName);
-            } catch (ConnectorRuntimeException cre) {
-                cre.printStackTrace();
-                //TODO V3 handle / log exceptions
-            }
-        }
-    }
-
-    private void destroyConnectorResources(List<String> resourceNames) {
-        for (String resourceName : resourceNames) {
-            try {
-                connectorResourceAdmService.deleteConnectorResource(resourceName);
-            } catch (ConnectorRuntimeException cre) {
-                cre.printStackTrace();
-                //TODO V3 handle / log exceptions
-            }
-        }
+    public void destroyResourcesAndPools(Collection resources, Collection pools) {
+        connectorService.destroyResourcesAndPools(resources, pools);
     }
 
     public PoolManager getPoolManager() {
@@ -668,6 +643,7 @@ public class ConnectorRuntime implements ConnectorConstants, com.sun.appserv.con
         //TODO V3 static method using instance ?
         return getRuntime().connectorService.isServer();
     }
+
 
     public Transaction getTransaction() throws SystemException {
         return transactionManager.getTransaction();
