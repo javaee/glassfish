@@ -19,12 +19,12 @@
     <sun:script url="/theme/META-INF/com_sun_faces_ajax.js" />
 </sun:markup>
 
-<sun:markup tag="body">
+<sun:markup tag="body"
 
 <sun:form id="form">
 
 
-<sun:markup tag="div" style="width:380px; height: 380px;">
+<sun:markup tag="div" style="width:380px; height: 310px;">
 
 //  Uncomment the one at a time to try
 
@@ -62,11 +62,11 @@
 
 <sun:dropDown labels={"jmaki.charting.plotkit.area" "jmaki.charting.plotkit.line" "jmaki.charting.plotkit.bar" "jmaki.charting.google.area" "jmaki.charting.google.bar" "jmaki.charting.google.line" "jmaki.charting.yahoo.line" "jmaki.charting.yahoo.bar" "jmaki.charting.dojo.bar" "jmaki.charting.dojo.line" "jmaki.charting.dojo.area"} value="#{requestScope.chart2}">
     <!beforeCreate
-	setAttribute(key="chart2", value="jmaki.charting.yahoo.area");
+	setAttribute(key="chart2", value="jmaki.charting.yahoo.bar");
     />
 </sun:dropDown>
 <sun:button value=" Refresh " />
-<sun:markup tag="div" style="width: 600px; height: 280px;">
+<sun:markup tag="div" style="width: 500px; height: 280px;">
 
 //  Uncomment the one at a time to try
 <jmaki:widget name="#{requestScope.chart2}"
