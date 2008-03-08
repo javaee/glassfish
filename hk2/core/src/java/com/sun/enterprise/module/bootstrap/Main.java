@@ -150,12 +150,14 @@ public class Main {
         }
 
         createRepository(root,bootstrap,mf,mr);
-        setParentClassLoader(mr);
-        launch(mr, targetModule, root, args);
+
+        StartupContext context = new StartupContext(root, args);        
+        setParentClassLoader(context, mr);
+        launch(mr, targetModule, context);
     }
 
 
-    protected void setParentClassLoader(ModulesRegistry mr) throws BootException {
+    protected void setParentClassLoader(StartupContext context, ModulesRegistry mr) throws BootException {
         mr.setParentClassLoader(this.getClass().getClassLoader());
     }
     
@@ -255,14 +257,12 @@ public class Main {
      * This version of the method auto-discoveres the main module.
      * If there's more than one {@link ModuleStartup} implementation, it is an error.
      *
-     * @param root
-     *      This becomes {@link StartupContext#getRootDirectory()}
-     * @param args
-     *      This becomes {@link StartupContext#getArguments()}
+     * @param context
+     *      startup context instance
      *
      */
-    public void launch(ModulesRegistry registry, File root, String[] args) throws BootException {
-        launch(registry,null,root,args);
+    public void launch(ModulesRegistry registry, StartupContext context) throws BootException {
+        launch(registry,null, context);
     }
 
     /**
@@ -272,17 +272,14 @@ public class Main {
      * @param mainModuleName
      *      The module that will provide {@link ModuleStartup}. If null,
      *      one will be auto-discovered.
-     * @param root
-     *      This becomes {@link StartupContext#getRootDirectory()}
-     * @param args
-     *      This becomes {@link StartupContext#getArguments()}
+     * @param context
+     *      startup context instance
      *
      */
-    public void launch(ModulesRegistry registry, String mainModuleName, File root, String[] args) throws BootException {
+    public void launch(ModulesRegistry registry, String mainModuleName, StartupContext context) throws BootException {
         final String habitatName = "default"; // TODO: take this as a parameter
 
         // create a habitat and initialize them
-        StartupContext context = new StartupContext(root, args);
         Habitat mgr = registry.newHabitat();
         mgr.add(new ExistingSingletonInhabitant<StartupContext>(context));
         mgr.add(new ExistingSingletonInhabitant<Logger>(Logger.global));

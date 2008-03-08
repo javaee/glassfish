@@ -98,10 +98,11 @@ public class RunMojo extends AbstractMojo {
             rootDir = project.getBasedir();
     
         try {
+            StartupContext context = new StartupContext(rootDir, args);
             if(mainModule==null)
-                new Main().launch(createModuleRegistry(),rootDir,args);
+                new Main().launch(createModuleRegistry(), context);
             else
-                new Main().launch(createModuleRegistry(),mainModule,rootDir,args);
+                new Main().launch(createModuleRegistry(),mainModule, context);
         } catch (BootException e) {
             throw new MojoExecutionException("Failed to boot up the module system",e);
         } catch (IOException e) {
