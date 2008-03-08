@@ -8,8 +8,8 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>universal</artifactId>
     <packaging>jar</packaging>
-    <name>Universal Utilities</name>
-    <description>Backup Restore</description>
+    <name>universal</name>
+    <description>Universal Utilities</description>
     <developers>
         <developer>
             <id>bnevins</id>
