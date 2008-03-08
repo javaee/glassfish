@@ -58,5 +58,6 @@
         <module>cli-framework</module>
         <module>jmx-remote</module>
         <module>backup</module>
+        <module>launcher</module>
     </modules>
 </project>
