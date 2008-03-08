@@ -19,7 +19,7 @@
   leaving you with more time to to get "hands-on" with the code.&nbsp; In this
   exercise, you will do the following:
 </p>
-<ul>
+<ul class="j1hollist">
   <li>
     Build a plugin using the Maven plugin in NetBeans 6.0 (or command line)<br>
   </li>
@@ -212,8 +212,8 @@ v3/admingui/core/src/main/resources/home.jsf</pre>
 
 <p> In this excercise, you will complete the following:</p>
 
-    <ol class="j1hollist">
-	<li><a href="#ex1step1">Implement the ConsoleProvider @Contract</a>
+    <ol class="j1hollist" style="list-style-type: upper-alpha;">
+	<li><b><a href="#ex1stepA">Implement the ConsoleProvider @Contract</a></b>
 	    <p>
 In this step, you will create a Java Class which implements the
 <code>ConsoleProvider @Contract</code>.  This is done so your plugin can be
@@ -221,18 +221,18 @@ discovered by the GlassFish v3 Administration Console.&nbsp; Implementing the
 <code>ConsoleProvider</code> interface is simply a matter of annotating your
 class with the <code>@Service</code> annotation and implementing 1 method.
 	    </p></li>
-	<li><a href="#ex1step2">Provide a console-config.xml file</a>
+	<li><b><a href="#ex1stepB">Provide a console-config.xml file</a></b>
 	    <p>
 This file is necessary to declare your "IntegrationPoints."&nbsp; In this
 step, you'll learn what an IntegrationPoint is and how to declare them.<br>
 	    </p></li>
-	<li><a href="#ex1step3">Create a couple JavaServer Faces pages</a>
+	<li><b><a href="#ex1stepC">Create a couple JavaServer Faces pages</a></b>
 	    <p>
 JavaServer Faces pages are needed to produce the content you are
 providing.&nbsp; You will create 2 very simple JSFTemplating JavaServer
 Faces pages.
 	    </p></li>
-	<li><a href="#ex1step4">Install your first GlassFish v3 plugin</a>
+	<li><b><a href="#ex1stepD">Install your first GlassFish v3 plugin</a></b>
 	    <p>
 In this step you will install and test your plugin.
 	    </p></li>
@@ -241,8 +241,8 @@ In this step you will install and test your plugin.
 <br>
 <p class="j1holsubheader">Steps:</p>
 
-<a name="ex1step1">
-<b>1. Implement the ConsoleProvider @Contract</b>
+<a name="ex1stepA">
+<b>A. Implement the ConsoleProvider @Contract</b>
 </a>
 <p>
 In this step, you will create a Java Class which implements the
@@ -257,37 +257,31 @@ For more background information, please the <a href="#hk2background">GlassFish
 <a href="https://hk2.dev.java.net/components.html">HK2 Component Model web
 page</a>.
 </p>
-<ol>  <!-- Start Step 1 Ordered List -->
-  <li><b>Open the plugin module in NetBeans</b>
-<ol>
-    <li>Launch NetBeans IDE 6.0.</li>
-    <li>Open plugin module.
-	<ol>
-	    <li>Choose <code>Open Project</code> from the <code>File</code> menu.</li>
-	    <li>Browse to <code>&lt;gfplugin&gt;</code> and select <code>myplugin</code>.</li>
-	    <li>Press the <code>Open Project</code> button.
+<ol class="j1hollist">  <!-- Start Step 1 Ordered List -->
+  <li><b>Open the plugin module in NetBeans</b> (<a href="#ex1stepA2">Skip to step A-2</a> if you are not using NetBeans.)
+    <ol class="j1hollist">
+	<li>Launch NetBeans IDE 6.0.</li>
+	<li>Open plugin module.
+	    <ol class="j1hollist">
+		<li>Choose <code>Open Project</code> from the <code>File</code> menu.</li>
+		<li>Browse to <code>&lt;gfplugin&gt;</code> and select <code>myplugin</code>.</li>
+		<li>Press the <code>Open Project</code> button.
+		<p>&nbsp;</p>
+		<p><img src="images/ex1-1-openproject.jpg" /></p>
+		Figure:&nbsp; Ex1-1&nbsp; Open Project myplugin
+		</li>
+	    </ol>
 	    <p>&nbsp;</p>
-	    <p><img src="images/ex1-1-openproject.jpg" /></p>
-	    Figure:&nbsp; Ex1-1&nbsp; Open Project myplugin
 	    </li>
-	</ol></li>
-</ol>
 
-<div id=gl_g style="PADDING:1em 0pt; TEXT-ALIGN:left">
-  <br>
-  <br>
-  &nbsp;&nbsp; 3.&nbsp; You should see the following directory layout under the
-  Projects tab
-  <div id=r6:h style="PADDING:1em 0pt; TEXT-ALIGN:left; MARGIN-LEFT:80px">
-    <img src=images/ex1-2-project-layout.jpg style="WIDTH:637px; HEIGHT:319px"><br>
-  </div>
-
-  <div id=tp:s style="PADDING:1em 0pt; TEXT-ALIGN:left">
-    <div id=k33z style="PADDING:1em 0pt; TEXT-ALIGN:left">
-      Figure:&nbsp; Ex1-2&nbsp;&nbsp;&nbsp; Project myplugin layout
+  <li>You should see the following directory layout under the Projects tab:
+    <p>&nbsp;</p>
+    <p><img src="images/ex1-2-project-layout.jpg"></p>
+    Figure:&nbsp; Ex1-2&nbsp;&nbsp;&nbsp; Project <code>myplugin</code> layout
 
 <br>
 
+<a name="ex1stepA2">
         1-D&nbsp; Add Java Class<br>
         <div id=aaga style="PADDING:1em 0pt; TEXT-ALIGN:left">
           <div style=MARGIN-LEFT:40px>
@@ -305,7 +299,7 @@ page</a>.
             (TBD: is the above sentence necessary ?)<br>
             <div id=ne15 style="PADDING:1em 0pt; TEXT-ALIGN:left">
               Follow these steps in NetBeans:<br>
-              <ol>
+              <ol class="j1hollist">
                 <li>
                   Locate&nbsp; the directory 'org.example.glassfish.admingui'
                   under&nbsp; 'Source Packages'.<br>
@@ -324,7 +318,7 @@ page</a>.
               </ol>
               <div style=MARGIN-LEFT:40px>
                 <div id=nab5 style="PADDING:1em 0pt; TEXT-ALIGN:left">
-                  <img src=images/ex1-9-createJava.jpg style="WIDTH:866px; HEIGHT:463px">
+                  <img src="images/ex1-9-createJava.jpg">
                 </div>
                 Figure: Ex1-9 Create JavaOnePlugin.java<br>
                 <br>
@@ -337,7 +331,7 @@ page</a>.
                 to the lab template, they have a special DIV for hints, may want
                 to use that)<br>
               </div>
-              <ol style=MARGIN-LEFT:40px>
+              <ol class="j1hollist">
                 <li>
                   Add @Service Annotation
                 </li>
@@ -398,7 +392,7 @@ page</a>.
                 <div id=p0p4 style="PADDING:1em 0pt; TEXT-ALIGN:left">
                   <div style=MARGIN-LEFT:40px>
                     <div id=wk70 style="PADDING:1em 0pt; TEXT-ALIGN:left">
-                      <img src=images/ex1-10-editJavaOnePlugin.jpg style="WIDTH:864px; HEIGHT:459px">
+                      <img src="images/ex1-10-editJavaOnePlugin.jpg">
                     </div>
                     Figure: Ex1-10&nbsp; Edit&nbsp; JavaOnePlugin.java<br>
                     <br>
@@ -419,8 +413,8 @@ page</a>.
                 <div style=MARGIN-LEFT:40px>
                   &nbsp;&nbsp;&nbsp; Steps in NetBeans:<br>
                 </div>
-                <ol>
-                  <ol>
+                <ol class="j1hollist">
+                  <ol class="j1hollist">
                     <li>
                       Right click on the project 'Java One 2008 Admin Console
                       Plugin'
@@ -431,11 +425,9 @@ page</a>.
                   </ol>
                 </ol>
                 <br>
-                After the above steps is finished,&nbsp;
-                <span style=BACKGROUND-COLOR:#cfe2f3><span style=BACKGROUND-COLOR:#ffffff>you&nbsp;
-                will&nbsp; have the jar file
-                'myplugin</span></span><span style=BACKGROUND-COLOR:#ffffff>/target/console-myplugin-1.0-SNAPSHOT.jar'&nbsp;
-                and this is ready to be integrated into GlassFish.</span><br>
+                After the above steps are finished, you will have the jar file named 
+                <code>myplugin</span></span><span style=BACKGROUND-COLOR:#ffffff>/target/console-myplugin-1.0-SNAPSHOT.jar</code>.
+                This jar file is ready to be integrated into GlassFish.</span><br>
               </div>
               <div id=p0p4 style="PADDING:1em 0pt; TEXT-ALIGN:left; MARGIN-LEFT:40px">
                 <div style=MARGIN-LEFT:40px>
@@ -443,7 +435,8 @@ page</a>.
               </div>
               <div id=ne15 style="PADDING:1em 0pt; TEXT-ALIGN:left">
                 <hr style="WIDTH:100%; HEIGHT:2px"><br>
-
+    </ol>
+</a></li>
 
 
 
@@ -480,7 +473,7 @@ page</a>.
           Follow these steps in NetBeans:<br>
         </div>
         <div style=MARGIN-LEFT:40px>
-          <ol>
+          <ol class="j1hollist">
             <li>
               Right click on 'admingui' under 'Other
               Resources-&gt;Resources-&gt;META-INF-&gt;admingui'
@@ -520,21 +513,21 @@ page</a>.
         (I guess we can delete this first one, but would like to keep the next
         one to ensure they have it at right directory &nbsp; anissa)<br>
         <div id=hhf4 style="PADDING:1em 0pt; TEXT-ALIGN:left; MARGIN-LEFT:80px">
-          <img src=images/ex1-3-createConfig1.jpg style="WIDTH:840px; HEIGHT:508px"><br>
+          <img src="images/ex1-3-createConfig1.jpg"><br>
           <br>
           Figure: Ex1-3&nbsp; Creating console-config.xml (step 1)<br>
           <div style=MARGIN-LEFT:40px>
             <div id=v6gz style="PADDING:1em 0pt; TEXT-ALIGN:left">
               <div id=dqfl style="PADDING:1em 0pt; TEXT-ALIGN:left">
                 <div id=bd-l style="PADDING:1em 0pt; TEXT-ALIGN:left">
-                  <img src=images/ex1-4-createConfig2.jpg style="WIDTH:839px; HEIGHT:507px">
+                  <img src="images/ex1-4-createConfig2.jpg">
                 </div>
                 <br>
                 Figure: Ex1-4 Creating console-config.xml (step 2)<br>
                 <br>
                 <br>
                 <div id=q_x4 style="PADDING:1em 0pt; TEXT-ALIGN:left">
-                  <img src=images/ex1-5-editConfig.jpg style="WIDTH:759px; HEIGHT:486px">
+                  <img src="images/ex1-5-editConfig.jpg">
                 </div>
                 Figure: Ex1-5&nbsp; Editing&nbsp; console-config.xml<br>
               </div>
@@ -559,8 +552,8 @@ page</a>.
         <div style=MARGIN-LEFT:40px>
           Step-by-step instructions in NetBeans<br>
         </div>
-        <ol>
-          <ol>
+        <ol class="j1hollist">
+          <ol class="j1hollist">
             <li>
               Right click on Resources.&nbsp; Select 'New' and 'Other...'
             </li>
@@ -606,7 +599,7 @@ page</a>.
         <br>
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
         <div id=b0tu style="PADDING:1em 0pt; TEXT-ALIGN:left; MARGIN-LEFT:40px">
-          <img src=images/ex1-6-createTreenode.jpg style="WIDTH:756px; HEIGHT:450px">
+          <img src="images/ex1-6-createTreenode.jpg">
         </div>
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Figure Ex1-6&nbsp; Create
         treenode-ex1.jsf (Step 2)<br>
@@ -617,7 +610,7 @@ page</a>.
           </div>
           <br>
           <div id=w-zh style="PADDING:1em 0pt; TEXT-ALIGN:left">
-            <img src=images/ex1-7-editTreenode-1.jpg style="WIDTH:956px; HEIGHT:414px">&nbsp;
+            <img src="images/ex1-7-editTreenode-1.jpg">&nbsp;
             &nbsp;&nbsp;&nbsp; Figure:&nbsp; Ex1-7&nbsp; Edit treenode-ex1.jsf<br>
           </div>
           <br>
@@ -630,7 +623,7 @@ page</a>.
           'myplugin/src/main/resources/hello.jsf'.&nbsp;&nbsp;&nbsp;<br>
           <br>
           Step-by-step instructions in NetBeans<br>
-          <ol>
+          <ol class="j1hollist">
             <li>
               Right click on Resources.&nbsp; Select 'New' and 'Other...'
             </li>
@@ -672,14 +665,12 @@ page</a>.
         <div id=x130 style="PADDING:1em 0pt; TEXT-ALIGN:left; MARGIN-LEFT:40px">
           <br>
           <div id=enfz style="PADDING:1em 0pt; TEXT-ALIGN:left">
-            <img src=images/ex1-8-editHello.jpg style="WIDTH:934px; HEIGHT:462px">
+            <img src="images/ex1-8-editHello.jpg">
           </div>
           Figure: Ex1-8&nbsp; Edit
           hello.jsf<hr style="WIDTH:100%; HEIGHT:2px"><br>
         </div>
 
-XXXXXXXXXXXXXXX
-XXXXXXXXXXXXXXX
                 <b>1-E.&nbsp; Integrate this plugin module to GlassFish V3<br>
                 <br>
                 </b>You now need a Terminal to enter some commands.&nbsp; Please
@@ -695,7 +686,7 @@ XXXXXXXXXXXXXXX
                 JavaOne tree node yet since you have not integrated your jar.<br>
                 <br>
                 <div id=rlz1 style="PADDING:1em 0pt; TEXT-ALIGN:left">
-                  <img src=images/ex1-11-before.jpg style="WIDTH:801px; HEIGHT:585px">
+                  <img src="images/ex1-11-before.jpg">
                 </div>
                 Figure: Ex1-11 Before Integration<br>
                 <br>
@@ -725,7 +716,7 @@ XXXXXXXXXXXXXXX
                     <div id=ni67 style="PADDING:1em 0pt; TEXT-ALIGN:left">
                       <div id=u30h style="PADDING:1em 0pt; TEXT-ALIGN:left">
                         <div id=eocd style="PADDING:1em 0pt; TEXT-ALIGN:left">
-                          <img src=images/ex1-12-ex1result.jpg style="WIDTH:752px; HEIGHT:458px">
+                          <img src="images/ex1-12-ex1result.jpg">
                         </div>
                         <br>
                       </div>
