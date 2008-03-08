@@ -1,3 +1,6 @@
+<!composition template="templates/javaOneTemplate.tpl">
+<!define name="content">
+
 <sun:page>
 	<!beforeCreate
 		getjMakiValues(values=>$attribute{pievalues});
@@ -111,3 +114,5 @@
 </sun:markup>
 </sun:html>
 </sun:page>
+</define>
+</composition>
