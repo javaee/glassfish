@@ -62,8 +62,8 @@
     </build>
     <dependencies>
         <dependency>
-            <groupId>org.glassfish.core.security</groupId>
-            <artifactId>core-security</artifactId>
+            <groupId>org.glassfish.core</groupId>
+            <artifactId>security</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
         <dependency>
