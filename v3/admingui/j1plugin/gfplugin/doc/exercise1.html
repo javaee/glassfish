@@ -252,13 +252,14 @@ discovered by the GlassFish v3 Administration Console.&nbsp; Implementing the
 class with the <code>@Service</code> annotation and implementing 1 method.
 </p>
 <p>
-For more background information, please the <a href="#hk2background">GlassFish
+For more background information, please see the <a href="#hk2background">GlassFish
 (HK2) Modules</a> section above.  Or the
 <a href="https://hk2.dev.java.net/components.html">HK2 Component Model web
 page</a>.
 </p>
+
 <ol class="j1hollist">  <!-- Start Step 1 Ordered List -->
-  <li><b>Open the plugin module in NetBeans</b> (<a href="#ex1stepA2">Skip to step A-2</a> if you are not using NetBeans.)
+  <li><b>Open the plugin module in NetBeans</b> (<a href="#ex1stepA2">Skip to step A-2 "Create your plugin Java @Service Class"</a> if you are not using NetBeans.)
     <ol class="j1hollist">
 	<li>Launch NetBeans IDE 6.0.</li>
 	<li>Open plugin module.
@@ -266,37 +267,44 @@ page</a>.
 		<li>Choose <code>Open Project</code> from the <code>File</code> menu.</li>
 		<li>Browse to <code>&lt;gfplugin&gt;</code> and select <code>myplugin</code>.</li>
 		<li>Press the <code>Open Project</code> button.
-		<p>&nbsp;</p>
-		<p><img src="images/ex1-1-openproject.jpg" /></p>
-		Figure:&nbsp; Ex1-1&nbsp; Open Project myplugin
+		    <p>&nbsp;</p>
+		    <p><img src="images/ex1-1-openproject.jpg" /></p>
+		    Figure:&nbsp; Ex1-1&nbsp; Open Project myplugin
 		</li>
 	    </ol>
 	    <p>&nbsp;</p>
-	    </li>
+	</li>
 
-  <li>You should see the following directory layout under the Projects tab:
-    <p>&nbsp;</p>
-    <p><img src="images/ex1-2-project-layout.jpg"></p>
-    Figure:&nbsp; Ex1-2&nbsp;&nbsp;&nbsp; Project <code>myplugin</code> layout
+	<li>You should see the following directory layout under the Projects tab:
+	    <p>&nbsp;</p>
+	    <p><img src="images/ex1-2-project-layout.jpg"></p>
+	    Figure:&nbsp; Ex1-2&nbsp;&nbsp;&nbsp; Project <code>myplugin</code> layout
 
-<br>
+	    <p>&nbsp;</p>
+	</li>
+    </ol>
+  </li>
 
-<a name="ex1stepA2">
-        1-D&nbsp; Add Java Class<br>
-        <div id=aaga style="PADDING:1em 0pt; TEXT-ALIGN:left">
-          <div style=MARGIN-LEFT:40px>
-            7.&nbsp;&nbsp; Next we are going to finish the implementation of
-            this plugin module.&nbsp; All we need now is a&nbsp; Java Class that
-            is a Service and implements the ConsoleProvider.&nbsp;&nbsp;
-            ConsoleProvider is an interface that requires the method
-            getConfiguration that returns the URL to the config-console.xml
-            file.&nbsp; If this method returns null, the plugin framework will
-            look for a default configuration file
-            META-INF/admingui/console-config.java.<br>
-            <br>
-            For your information,&nbsp; ConsoleProvider.java resides under
-            glassfish-src/v3/common/glassfish-api/src/main/java/org/glassfish/api/admingui.<br>
-            (TBD: is the above sentence necessary ?)<br>
+  <li><a name="ex1stepA2"><b>Create your plugin Java @Service Class</b>
+	<p> We need a Java Class that is a <code>@Service</code> and
+	    implements the <code>ConsoleProvider</code> interface.&nbsp;
+            <code>ConsoleProvider</code> is an interface that requires the
+	    method <code>getConfiguration()</code> that returns the
+	    <code>java.net.URL</code> pointing to the
+	    <code>config-console.xml</code> file.&nbsp; If this method returns
+	    <code>null</code>, the plugin framework will look for a default
+	    configuration file
+	    <code>META-INF/admingui/console-config.xml</code>.</p>
+
+	<p> For more background information, please see the
+	    <a href="#hk2background">GlassFish (HK2) Modules</a> section
+	    above.  Or the
+	    <a href="https://hk2.dev.java.net/components.html">HK2 Component
+	    Model web page</a>.</p>
+
+	<p> If you are <b>not</b> using NetBeans, create a file similar to that found in <a href="#TBD">...</a>
+
+	<ol class="j1hollist">
             <div id=ne15 style="PADDING:1em 0pt; TEXT-ALIGN:left">
               Follow these steps in NetBeans:<br>
               <ol class="j1hollist">
@@ -305,7 +313,7 @@ page</a>.
                   under&nbsp; 'Source Packages'.<br>
                 </li>
                 <li>
-                  Right click on it and select&nbsp; 'New' and 'Java
+                  Right click on it and select&nbsp; "New" --&gt; "Java
                   Class".&nbsp; A pop up window will display.<br>
                 </li>
                 <li>
