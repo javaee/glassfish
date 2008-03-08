@@ -1,12 +1,12 @@
 package com.sun.enterprise.admin.cli;
 
+import com.sun.enterprise.admin.launcher.GFLauncher;
+import com.sun.enterprise.admin.launcher.GFLauncherException;
+import com.sun.enterprise.admin.launcher.GFLauncherFactory;
+import com.sun.enterprise.admin.launcher.GFLauncherInfo;
 import com.sun.enterprise.cli.framework.*;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.glassfish.bootstrap.Main;
-import com.sun.enterprise.glassfish.bootstrap.launcher.GFLauncher;
-import com.sun.enterprise.glassfish.bootstrap.launcher.GFLauncherException;
-import com.sun.enterprise.glassfish.bootstrap.launcher.GFLauncherFactory;
-import com.sun.enterprise.glassfish.bootstrap.launcher.GFLauncherInfo;
 import java.io.File;
 import java.util.logging.*;
 
