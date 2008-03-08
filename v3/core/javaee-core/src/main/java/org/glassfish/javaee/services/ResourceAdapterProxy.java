@@ -38,7 +38,9 @@ package org.glassfish.javaee.services;
 import org.glassfish.api.naming.NamingObjectProxy;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.component.PerLookup;
 
 import javax.naming.Context;
 import javax.naming.NamingException;
@@ -49,9 +51,10 @@ import com.sun.appserv.connectors.spi.ConnectorRuntime;
  * Holder for a resource adapter configuration that gets registered in the naming manager.
  * NamingManager will call the create() method when the resource adapter is looked up.
  *
- * @author Jerome Dochez
+ * @author Jerome Dochez, Jagadish Ramu
  */
 @Service
+@Scoped(PerLookup.class)
 public class ResourceAdapterProxy implements NamingObjectProxy {
 
     private Object resource;

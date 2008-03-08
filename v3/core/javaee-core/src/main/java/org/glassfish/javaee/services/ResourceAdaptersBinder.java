@@ -37,19 +37,13 @@ package org.glassfish.javaee.services;
 
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.Habitat;
-import org.jvnet.hk2.component.PreDestroy;
-import org.jvnet.hk2.config.ConfigListener;
-import org.jvnet.hk2.config.ConfigSupport;
-import org.jvnet.hk2.config.ConfigBeanProxy;
-import org.glassfish.api.Startup;
-import org.glassfish.api.Async;
 import org.glassfish.api.naming.GlassfishNamingManager;
-import org.jvnet.hk2.config.Changed;
+import org.glassfish.api.Startup;
 import com.sun.enterprise.config.serverbeans.JdbcResource;
 import com.sun.enterprise.config.serverbeans.JdbcConnectionPool;
-import com.sun.enterprise.config.serverbeans.Resources;
+import com.sun.enterprise.config.serverbeans.ConnectorResource;
+import com.sun.enterprise.config.serverbeans.ConnectorConnectionPool;
 import com.sun.appserv.connectors.spi.ConnectorConstants;
 
 import javax.naming.NamingException;
@@ -57,53 +51,31 @@ import java.util.logging.Logger;
 import java.util.logging.Level;
 import java.util.List;
 import java.util.ArrayList;
-import java.beans.PropertyChangeEvent;
 
 /**
- * Binds proxy objects in the jndi namespace for all the JdbcResources defined in the
- * configuration. Those objects will delay the instantiation of the associated
- * resource adapeters until code looks them up in the naming manager.
+ * Binds proxy objects in the jndi namespace for all the resources and pools defined in the
+ * configuration. Those objects will delay the instantiation of the actual resources and pools
+ * until code looks them up in the naming manager.
  *
- * @author Jerome Dochez
+ * @author Jerome Dochez, Jagadish Ramu
  */
 @Service
-@Async
-public class ResourceAdaptersBinder implements Startup, PostConstruct, PreDestroy, ConfigListener {
+public class ResourceAdaptersBinder {
 
     @Inject
-    JdbcResource[] jdbcResources;
+    private GlassfishNamingManager manager;
 
     @Inject
-    JdbcConnectionPool[] pools;
+    private Logger logger;
 
     @Inject
-    Resources resources;
+    private Habitat raProxyHabitat;
 
-    @Inject
-    GlassfishNamingManager manager;
-
-    @Inject
-    Logger logger;
-
-    @Inject
-    Habitat raProxyHabitat;
-
-    @Inject
-    Habitat connectorRuntimeHabitat;
-
-    /**
-     * The component has been injected with any dependency and
-     * will be placed into commission by the subsystem.
-     */
-    public void postConstruct() {
-
-        deployAllJdbcResourcesAndPools();
-    }
-
-    private void deployAllJdbcResourcesAndPools() {
+    //TODO V3, if JdbcResource and ConnectorResource has a common super class, pool name can be got and mergeed.
+    public void deployAllJdbcResourcesAndPools(JdbcResource[] jdbcResources, JdbcConnectionPool[] jdbcPools) {
         for (JdbcResource resource : jdbcResources) {
             try {
-                JdbcConnectionPool pool = getAssociatedPool(resource.getPoolName());
+                JdbcConnectionPool pool = getAssociatedJdbcPool(resource.getPoolName(), jdbcPools);
                 if (pool == null) {
                     logger.log(Level.SEVERE, "Could not get the pool [ " + resource.getPoolName() + " ] of resource [ " +
                             resource.getJndiName() + " ]");
@@ -116,7 +88,26 @@ public class ResourceAdaptersBinder implements Startup, PostConstruct, PreDestro
         }
     }
 
-    public void bindResource(Object resource, Object pool, String resourceName, String resourceType) throws NamingException {
+    public void deployAllConnectorResourcesAndPools(ConnectorResource[] connectorResources,
+                                                    ConnectorConnectionPool[] connectorPools) {
+        for (ConnectorResource resource : connectorResources) {
+            try {
+                ConnectorConnectionPool pool = getAssociatedConnectorPool(resource.getPoolName(), connectorPools);
+                if (pool == null) {
+                    logger.log(Level.SEVERE, "Could not get the pool [ " + resource.getPoolName() + " ] of resource [ " +
+                            resource.getJndiName() + " ]");
+                    continue;
+                }
+                bindResource(resource, pool, resource.getJndiName(), ConnectorConstants.RES_TYPE_CR);
+            } catch (NamingException e) {
+                logger.log(Level.SEVERE, "Cannot bind " + resource.getPoolName() + " to naming manager", e);
+            }
+        }
+    }
+
+
+    public void bindResource(Object resource, Object pool, String resourceName, String resourceType)
+            throws NamingException {
         ResourceAdapterProxy raProxy = constructResourceProxy(resource, pool, resourceType, resourceName);
         manager.publishObject(resourceName, raProxy, true);
     }
@@ -135,10 +126,11 @@ public class ResourceAdaptersBinder implements Startup, PostConstruct, PreDestro
      * get the associated pool's name for the jdbc-resource
      * @param  poolName Pool Name
      * @return JdbcConnectionPool
+     * @param jdbcPools JdbcConnectionPools
      */
-    private JdbcConnectionPool getAssociatedPool(String poolName) {
+    private JdbcConnectionPool getAssociatedJdbcPool(String poolName, JdbcConnectionPool[] jdbcPools) {
         JdbcConnectionPool result = null;
-        for (JdbcConnectionPool pool : pools) {
+        for (JdbcConnectionPool pool : jdbcPools) {
             if (pool.getName().equalsIgnoreCase(poolName)) {
                 result = pool;
                 break;
@@ -148,75 +140,29 @@ public class ResourceAdaptersBinder implements Startup, PostConstruct, PreDestro
     }
 
     /**
-     * Returns the life expectency of the service
-     *
-     * @return the life expectency.
+     * get the associated pool's name for the jdbc-resource
+     * @param  poolName Pool Name
+     * @param connectorPools Connector Connection Pools
+     * @return ConnectorConnectionPool
      */
-    public Lifecycle getLifecycle() {
-        return Lifecycle.SERVER;
-    }
 
-    /**
-     * The component is about to be removed from commission
-     */
-    public void preDestroy() {
-        raProxyHabitat.getInhabitant(com.sun.appserv.connectors.spi.ConnectorRuntime.class, null).release();
-        
-        /*ConnectorRuntime runtime = connectorRuntimeHabitat.getComponent(ConnectorRuntime.class, null);
-
-        List<String> poolNames = getAllPoolNames(pools);
-        List<String> resourceNames = getAllResourceNames(resources);
-
-        runtime.shutdownAllActiveResourceAdapters(poolNames, resourceNames);
-        */
+    private ConnectorConnectionPool getAssociatedConnectorPool(String poolName, ConnectorConnectionPool[] connectorPools) {
+        ConnectorConnectionPool result = null;
+        for (ConnectorConnectionPool pool : connectorPools) {
+            if (pool.getName().equalsIgnoreCase(poolName)) {
+                result = pool;
+                break;
+            }
+        }
+        return result;
     }
 
     private List<String> getAllPoolNames(JdbcConnectionPool[] pools) {
         List<String> poolNames = new ArrayList<String>();
         for(JdbcConnectionPool pool : pools){
             poolNames.add(pool.getName());
+
         }
         return poolNames;
-    }
-
-    private List<String> getAllResourceNames(JdbcResource[] resources) {
-        List<String> resourceNames = new ArrayList<String>();
-        for(JdbcResource resource : resources){
-            resourceNames.add(resource.getJndiName());
-        }
-        return resourceNames;           
-    }
-
-    /**
-     * Notification that @Configured objects that were injected have changed
-     *
-     * @param events list of changes
-     */
-    public void changed(PropertyChangeEvent[] events) {
-        // I am not so interested with the list of events, just sort who got added or removed for me.
-        ConfigSupport.sortAndDispatch(events, new Changed() {
-            /**
-             * Notification of a change on a configuration object
-             *
-             * @param type            type of change : ADD mean the changedInstance was added to the parent
-             *                        REMOVE means the changedInstance was removed from the parent, CHANGE means the
-             *                        changedInstance has mutated.
-             * @param changedType     type of the configuration object
-             * @param changedInstance changed instance.
-             */
-            public <T extends ConfigBeanProxy> void changed(TYPE type, Class<T> changedType, T changedInstance) {
-                switch(type) {
-                    case ADD : logger.info("A new " + changedType.getName() + " was added : " + changedInstance);
-                        break;
-
-                    case CHANGE : logger.info("A " + changedType.getName() + " was changed : " + changedInstance);
-                        break;
-
-                    case REMOVE : logger.info("A " + changedType.getName() + " was removed : " + changedInstance);
-                        break;
-                }
-            }
-        }, logger);
-
     }
 }

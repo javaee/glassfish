@@ -38,17 +38,61 @@ package com.sun.appserv.connectors.spi;
 
 import org.jvnet.hk2.annotations.Contract;
 
+import javax.naming.NamingException;
 import java.util.Hashtable;
-import java.util.List;
+import java.util.Collection;
+
 
 
 @Contract
 public interface ConnectorRuntime {
+        //TODO V3 javadoc 
         public Object createConnectionFactory(String jndiName, String moduleName, String poolName, Hashtable env);
         public void createActiveResourceAdapter(String sourcePath, String moduleName) throws ConnectorRuntimeException;
         public void destroyActiveResourceAdapter(String moduleName, boolean cascade) throws ConnectorRuntimeException;
         public boolean checkAndLoadResource(Object resource, Object pool, String resourceType, String resourceName,
                                                 String raName) throws ConnectorRuntimeException;
-        public void shutdownAllActiveResourceAdapters(List<String> poolNames, List<String> resourceNames);
-        public void destroyResourcesAndPools(List<String> resourceNames, List<String> poolNames);
+        public void shutdownAllActiveResourceAdapters(Collection<String> poolNames, Collection<String> resourceNames);
+        public void destroyResourcesAndPools(Collection resources, Collection pools);
+
+        /**
+         * Does lookup of non-tx-datasource. If found, it will be returned.<br><br>
+         *
+         * If not found and <b>force</b> is true,  this api will try to get a wrapper datasource specified
+         * by the jdbcjndi name. The motivation for having this
+         * API is to provide the CMP backend/ JPA-Java2DB a means of acquiring a connection during
+         * the codegen phase. If a user is trying to deploy an JPA-Java2DB app on a remote server,
+         * without this API, a resource reference has to be present both in the DAS
+         * and the server instance. This makes the deployment more complex for the
+         * user since a resource needs to be forcibly created in the DAS Too.
+         * This API will mitigate this need.
+         *
+         * @param jndiName  jndi name of the resource
+         * @param force provide the resource (in DAS)  even if it is not enabled in DAS
+         * @return DataSource representing the resource.
+         * @throws javax.naming.NamingException when not able to get the datasource.
+         */
+        public Object lookupNonTxResource(String jndiName, boolean force) throws NamingException;
+
+        /**
+         * Does lookup of "__pm" datasource. If found, it will be returned.<br><br>
+         *
+         * If not found and <b>force</b> is true, this api will try to get a wrapper datasource specified
+         *  by the jdbcjndi name. The motivation for having this
+         * API is to provide the CMP backend/ JPA-Java2DB a means of acquiring a connection during
+         * the codegen phase. If a user is trying to deploy an JPA-Java2DB app on a remote server,
+         * without this API, a resource reference has to be present both in the DAS
+         * and the server instance. This makes the deployment more complex for the
+         * user since a resource needs to be forcibly created in the DAS Too.
+         * This API will mitigate this need.
+         * When the resource is not enabled, datasource wrapper provided will not be of
+         * type "__pm"
+         *
+         * @param jndiName  jndi name of the resource
+         * @param force provide the resource (in DAS)  even if it is not enabled in DAS
+         * @return DataSource representing the resource.
+         * @throws javax.naming.NamingException when not able to get the datasource.
+         */
+        public Object lookupPMResource(String jndiName, boolean force) throws NamingException;
+
 }
