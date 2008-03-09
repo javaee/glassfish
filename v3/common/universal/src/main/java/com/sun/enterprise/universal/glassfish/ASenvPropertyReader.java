@@ -44,22 +44,39 @@ import java.util.*;
 /**
  * Class ASenvPropertyReader
  * 
- * This class converts the envrionment variables stored in asenv.conf (UNIX)
+ * This class converts the environment variables stored in asenv.conf (UNIX)
  * or asenv.bat (WINDOWS) into their equivalent system properties. 
  * This means that a number of system properties with fixed values do 
  * not have to be passed on the java command line using -D.
+ * <p>This class <strong>guarantees</strong> that no Exception will get thrown back.
+ * You may however, have a bad javaRoot set even though we tried everything to find
+ * one
  */
 public class ASenvPropertyReader {
-
+    /**
+     * Read and process the information in asenv
+     */
     public ASenvPropertyReader() {
-        File installDir = GFLauncherUtils.getInstallDir();
-        this.configDir = new File(installDir, "config");
-        setEnvToPropMap();
-
-        //props.putAll(System.getProperties());
-        props.put(SystemPropertyConstants.INSTALL_ROOT_PROPERTY, installDir.getPath());
-        setProperties();
-        postProcess();
+        this(GFLauncherUtils.getInstallDir());
+    }
+    /**
+     * Read and process the information in asenv.[bat|conf]
+     * This constructor should normally not be called.  It is designed for
+     * unit test classes that are not running from an official installation.
+     * @param installDir The Glassfish installation directory
+     */
+    ASenvPropertyReader(File installDir)
+    {
+        try {
+            this.installDir = installDir;
+            configDir = new File(installDir, "config");
+            getBusy();
+        }
+        catch(Exception e)
+        {
+            // ignore -- this is universal utility code there isn't much we can
+            // do.
+        }
     }
 
     public Map<String, String> getProps() {
@@ -77,11 +94,118 @@ public class ASenvPropertyReader {
         return sb.toString();
     }
 
-    /**
-     * Method setSystemProperties
-     * Iterate through the lines of asenv.conf or asenv.bat and convert to 
-     * system properties. 
+    private void getBusy() {
+        setEnvToPropMap();
+        //props.putAll(System.getProperties());
+        props.put(SystemPropertyConstants.INSTALL_ROOT_PROPERTY, installDir.getPath());
+        setProperties();
+        postProcess();
+        
+    }
+
+    /* 
+     * 2 things to do
+     * 1) change relative paths to absolute
+     * 2) change env. variables to either the actual values in the environment
+     *  or to another prop in asenv
      */
+    private void postProcess() {
+        final Map<String, String> env = System.getenv();
+        //put env props in first
+        Map<String, String> all = new HashMap<String, String>(env);
+        // now override with our props
+        all.putAll(props);
+        TokenResolver tr = new TokenResolver(all);
+        tr.resolve(props);
+
+        // props have all tokens replaced now (if they exist)
+        // now make the paths absolute.
+        absolutize();
+        setJavaRoot();
+    }
+    
+    private void absolutize() {
+        Set<String> keys = props.keySet();
+
+        for (String key : keys) {
+            String value = props.get(key);
+            if (GFLauncherUtils.isRelativePath(value)) {
+                // we have to handle both of these:
+                // /x/y/../z
+                // ../x/y/../z
+
+                File f;
+                if (value.startsWith(".")) {
+                    f = GFLauncherUtils.absolutize(new File(configDir, value));
+                }
+                else {
+                    f = GFLauncherUtils.absolutize(new File(value));
+                }
+
+                props.put(key, f.getPath());
+            }
+        }
+    }
+    
+    private void setJavaRoot() {
+        // make sure we have a folder with java in it!
+        // note that we are not in a position to set it from domain.xml yet
+        
+        // first choice -- whatever is in asenv
+        String javaRootName = props.get(SystemPropertyConstants.JAVA_ROOT_PROPERTY);
+        
+        if(isValidJavaRoot(javaRootName))
+            return; // we are already done!
+            
+        // try JAVA_HOME
+        javaRootName = System.getenv("JAVA_HOME");
+
+        if(isValidJavaRoot(javaRootName))
+        {
+            javaRootName = GFLauncherUtils.absolutize(new File(javaRootName)).getPath();
+            props.put(SystemPropertyConstants.JAVA_ROOT_PROPERTY, javaRootName);
+            return;
+        }
+        // try java.home with ../
+        // usually java.home is pointing at jre and ".." goes to the jdk
+        javaRootName = System.getProperty("java.home") + "/..";
+
+        if(isValidJavaRoot(javaRootName))
+        {
+            javaRootName = GFLauncherUtils.absolutize(new File(javaRootName)).getPath();
+            props.put(SystemPropertyConstants.JAVA_ROOT_PROPERTY, javaRootName);
+            return;
+        }
+
+        // try java.home as-is
+        javaRootName = System.getProperty("java.home");
+
+        if(isValidJavaRoot(javaRootName))
+        {
+            javaRootName = GFLauncherUtils.absolutize(new File(javaRootName)).getPath();
+            props.put(SystemPropertyConstants.JAVA_ROOT_PROPERTY, javaRootName);
+            return;
+        }
+
+        // TODO - should this be an Exception?  A log message?
+        props.put(SystemPropertyConstants.JAVA_ROOT_PROPERTY, null);
+    }
+
+    private boolean isValidJavaRoot(String javaRootName) {
+        if(!GFLauncherUtils.ok(javaRootName))
+            return false;
+        
+        // look for ${javaRootName}/bin/java[.exe]
+        File f = new File(javaRootName);
+        
+        if(GFLauncherUtils.isWindows())
+            f = new File(f, "bin/java.exe");
+        else
+            f = new File(f, "bin/java");
+        
+        return f.exists();
+    }
+
     private void setProperties() {
         String hostname = "localhost";
         try {
@@ -172,44 +296,6 @@ public class ASenvPropertyReader {
             }
         }
     }
-
-    /* 
-     * 2 things to do
-     * 1) change reltive paths to absolute
-     * 2) change env. variables to the actual values in the environment
-     */
-    private void postProcess() {
-        final Map<String, String> env = System.getenv();
-        Map<String, String> all = new HashMap<String, String>(props);
-        all.putAll(env);
-        TokenResolver tr = new TokenResolver(all);
-        tr.resolve(props);
-
-        // props have all tokens replaced now (if they exist)
-        // now make the paths absolute.
-
-        Set<String> keys = props.keySet();
-
-        for (String key : keys) {
-            String value = props.get(key);
-            if (GFLauncherUtils.isRelativePath(value)) {
-                // we have to handle both of these:
-                // /x/y/../z
-                // ../x/y/../z
-
-                File f;
-                if (value.startsWith(".")) {
-                    f = GFLauncherUtils.absolutize(new File(configDir, value));
-                }
-                else {
-                    f = GFLauncherUtils.absolutize(new File(value));
-                }
-
-                props.put(key, f.getPath());
-            }
-        }
-    }
-
     private void setEnvToPropMap() {
         //The envToPropMap keeps the mapping between environment variable
         //name and system property name.
@@ -266,4 +352,5 @@ public class ASenvPropertyReader {
     private Map<String, String> envToPropMap = new HashMap<String, String>();
     private Map<String, String> props = new HashMap<String, String>();
     private File configDir;
+    private File installDir;
 }
