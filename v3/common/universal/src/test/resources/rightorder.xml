@@ -178,11 +178,13 @@
 	<module-monitoring-levels thread-pool="OFF" orb="OFF" ejb-container="OFF" web-container="OFF" transaction-service="OFF" http-service="OFF" jdbc-connection-pool="OFF" connector-connection-pool="OFF" connector-service="OFF" jms-service="OFF" jvm="OFF"/>
     </monitoring-service>
     <diagnostic-service compute-checksum="true" verify-config="true" capture-install-log="true" capture-system-info="true" capture-hadb-info="true" capture-app-dd="true" min-log-level="INFO" max-log-entries="500"/>
+   <system-property name="beforeJavaConfig" value="true"/>
     <java-config test="test" java-home="${com.sun.aas.javaRoot}" debug-enabled="false" debug-options="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=9009" rmic-options="-iiop -poa -alwaysgenerate -keepgenerated -g" javac-options="-g" system-classpath="${com.sun.aas.installRoot}/lib/appserv-launch.jar" classpath-suffix="" env-classpath-ignored="true">
     <!-- various required jvm-options -->
     <jvm-options>JVMOPTION1</jvm-options>
     <jvm-options>JVMOPTION2</jvm-options>
    </java-config>
+   <system-property name="afterJavaConfig" value="true"/>
    <thread-pools>
         <thread-pool thread-pool-id="thread-pool-1" min-thread-pool-size="0" max-thread-pool-size="200" idle-thread-timeout-in-seconds="120" num-work-queues="1"/>
 

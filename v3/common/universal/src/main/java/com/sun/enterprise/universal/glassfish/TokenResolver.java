@@ -56,14 +56,15 @@ import java.util.*;
  * This is the KISS principle in action...
  * @author bnevins
  */
-class TokenResolver {
+public class TokenResolver {
 
-    TokenResolver(Map<String, String> map) {
+    public TokenResolver(Map<String, String> map) {
         props = map;
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    void resolve(Map<String, String> map) {
+    
+    public void resolve(Map<String, String> map) {
         Set<String> keys = map.keySet();
 
         for (String key : keys) {
@@ -75,7 +76,7 @@ class TokenResolver {
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    void resolve(List<String> list) {
+    public void resolve(List<String> list) {
         for (int i = 0; i < list.size(); i++) {
             String s = list.get(i);
 

@@ -39,8 +39,7 @@ import static javax.xml.stream.XMLStreamConstants.*;
  * Currently it is all package private.
  * @author bnevins
  */
-class MiniXmlParser {
-
+public class MiniXmlParser {
     public MiniXmlParser(File domainXml, String serverName) throws MiniXmlParserException {
         this.serverName = serverName;
         this.domainXml = domainXml;
@@ -59,17 +58,27 @@ class MiniXmlParser {
 
     public Map<String,String> getJavaConfig() throws MiniXmlParserException
     {
-        if(!valid)
+        if(!valid) {
             throw new MiniXmlParserException(strings.get("invalid"));
+        }
         return javaConfig;
     }
 
     public List<String> getJvmOptions() throws MiniXmlParserException
     {
-        if(!valid)
+        if(!valid) {
             throw new MiniXmlParserException(strings.get("invalid"));
+        }
         return jvmOptions;
     }
+    
+    public Map<String,String> getSystemProperties() throws MiniXmlParserException {
+        if(!valid) {
+            throw new MiniXmlParserException(strings.get("invalid"));
+        }
+        return sysProps;
+    }
+            
     
     ///////////////////////////////////////////////////////////////////////////
     ////////   Everything below here is private    ////////////////////////////
@@ -142,15 +151,51 @@ class MiniXmlParser {
             String thisName = map.get("name");
 
             if (configRef.equals(thisName)) {
-                parseJavaConfig();
+                parseConfig();
                 return;
             }
         }
     }
 
-    private void parseJavaConfig() throws XMLStreamException, EndDocumentException {
+    private void parseConfig() throws XMLStreamException, EndDocumentException {
         // cursor --> <config>
-        skipTo("java-config");
+        // as we cruise through the section pull off any found <system-property>
+        // I.e. <system-property> AND <java-config> are both children of <config>
+        while (true) {
+            int event = next();
+            // return when we get to the </config>
+            if (event == END_ELEMENT) {
+                if(parser.getLocalName().equals("config")) {
+                    return;
+                }
+            }
+            else if(event == START_ELEMENT)
+            {
+                String name = parser.getLocalName();
+                if(name.equals("system-property")) {
+                    parseSystemProperty();
+                }
+                else if(name.equals("java-config")) {
+                    parseJavaConfig();
+                }
+                else {
+                    skipTree(name);
+                }
+            }
+        }
+    }
+
+    private void parseSystemProperty() {
+        // cursor --> <system-property>
+        Map<String,String> map = parseAttributes();
+        String name = map.get("name");
+        String value = map.get("value");
+        
+        if(name != null)
+            sysProps.put(name, value);
+    }
+    private void parseJavaConfig() throws XMLStreamException, EndDocumentException {
+        // cursor --> <java-config>
 
         // get the attributes for <java-config>
         javaConfig = parseAttributes();
@@ -211,7 +256,6 @@ class MiniXmlParser {
             }
         }
     }
-
     /**
      * The cursor will be pointing at the START_ELEMENT of name when it returns
      * note that skipTree must be called.  Otherwise we could be fooled by a 
@@ -298,6 +342,7 @@ class MiniXmlParser {
     private String configRef;
     private List<String> jvmOptions = new ArrayList<String>();
     private Map<String,String> javaConfig;
+    private Map<String,String> sysProps = new HashMap<String,String>();
     private boolean valid = false;
     private static LocalStringsImpl strings = new LocalStringsImpl(MiniXmlParser.class);
     // this is so we can return from arbitrarily nested calls

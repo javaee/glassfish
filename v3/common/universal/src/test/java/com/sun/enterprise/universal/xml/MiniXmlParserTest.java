@@ -123,6 +123,29 @@ public class MiniXmlParserTest {
             throw ex;
         }        
     }
+    /*
+     * Positive test cases -- look at <system-property>
+     */
+    @Test
+    public void test6() {
+        try {
+            MiniXmlParser instance = new MiniXmlParser(rightOrder, "server");
+            Map<String, String> javaConfig = instance.getJavaConfig();
+            List<String> jvmOptions = instance.getJvmOptions();
+            Map<String,String> sysProps = instance.getSystemProperties();
+            assertEquals(jvmOptions.get(0), "JVMOPTION1");
+            assertEquals(jvmOptions.get(1), "JVMOPTION2");
+            assertEquals(javaConfig.get("test"), "test");
+            assertEquals(sysProps.get("beforeJavaConfig"), "true");
+            assertEquals(sysProps.get("afterJavaConfig"), "true");
+            assertNull(sysProps.get("foo"));
+            assertEquals(sysProps.size(), 2);
+        }
+        catch (MiniXmlParserException ex) {
+            Logger.getLogger(MiniXmlParserTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+    }
 
     private static File wrongOrder;
     private static File rightOrder;
