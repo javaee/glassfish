@@ -63,34 +63,34 @@
   <p>This step is also <u>optional</u> and is not required for this
   lab.&nbsp;&nbsp;A snap shot of the&nbsp; GlassFish V3 source code is included
   in this lab's zip file, and GlassFish V3 has been installed for you under
-  &lt;lab4520_guiPlugin&gt;/v3/glassfish.&nbsp;&nbsp; However, if you want to
-  checkout and build the latest version of the source code, then do the
-  following:</p>
+  &lt;lab4520_root&gt;/glassfish-src/v3/glassfish.&nbsp;&nbsp; However, if you want to
+  checkout and build the latest version of the source code, then folow the steps below
+  </p>
 
-    <p><b>Checkout Source code</b></p>
-  &nbsp;&nbsp;&nbsp; <font color=#000000 style=BACKGROUND-COLOR:#eeeeee>svn
-  checkout https://svn.dev.java.net/svn/glassfish-svn/trunk/v3<br>
-  <br>
-  <span style=BACKGROUND-COLOR:#ffffff>&nbsp;&nbsp;&nbsp; Build the GlassFish
-  server </span><br>
-  <span style=BACKGROUND-COLOR:#ffffff>&nbsp;&nbsp;&nbsp; </span>cd
-  v3;&nbsp;&nbsp; mvn install<br>
-  <br style=BACKGROUND-COLOR:#ffffff>
-  <span style=BACKGROUND-COLOR:#ffffff>&nbsp;&nbsp;&nbsp; Installing the server
-  by unzipping the image.&nbsp;&nbsp; The instructions in the following exercise
-  is based on the assumption that the installation is at v3/glassfish.<br>
-  <span style=BACKGROUND-COLOR:#cccccc>&nbsp;&nbsp;&nbsp; cd v3;&nbsp; unzip
-  v3/distribution/glassfish/target/glassfish.zip</span><br>
-  </span></font><br>
-  &nbsp;&nbsp;&nbsp; For more information regarding GlassFish V3 development
+    <div MARGIN-LEFT:40px">
+      Step-by-step instructions to checkout and build GlassFish V3
+            <ol class="j1hollist">
+            <ol class="j1hollist">
+	   <li>
+	    checkout GlassFish V3 source code <br>
+	    <code> svn checkout https://svn.dev.java.net/svn/glassfish-svn/trunk/v3</code><br>
+	    </li>
+
+	    <li>
+	    Build the GlassFish server <br>
+	    <code> cd v3; mvn install </code>
+	    </li>
+	    <li>
+	    install the server by unzipping the image.<br> 
+	    <code>unzip v3/distribution/glassfish/target/glassfish.zip</code><br>
+	    </li>
+	</ol>
+	</ol>
+    </div>
+</ol>
+	    For more information regarding GlassFish V3 development
   environment and the workspace, please refer to the full build instructions at
   <a href="http://wiki.glassfish.java.net/Wiki.jsp?page=V3FullBuildInstruction">http://wiki.glassfish.java.net/Wiki.jsp?page=V3FullBuildInstruction"</a>
-</div>
-
-                </li>
-            </ol>
-            
             <p><a href="#Exercise_1">Go to the next exercise</a></p>
-        </div>
     </body>
 </html>

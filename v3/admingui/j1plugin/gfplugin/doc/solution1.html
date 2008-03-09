@@ -36,7 +36,13 @@ public class MyPlugin implements ConsoleProvider {
             <pre>
 &lt;?xml version="1.0" encoding="UTF-8"?&gt;
 &lt;console-config id="javaone"&gt;
-&nbsp;&nbsp;&nbsp; &lt;integration-point id="JavaOneNode" type="tree" priority="210" parentId="tree" content="treenode-ex1.jsf" /&gt;
+    &lt;integration-point 
+	id="JavaOneNode"
+	type="tree"
+	priority="210"
+	parentId="tree"
+	content="treenode-ex1.jsf"
+	/&gt;
 &lt;/console-config&gt;</pre>
 	</div>
 
@@ -46,9 +52,10 @@ public class MyPlugin implements ConsoleProvider {
         <div class="codebox">
             <pre>
 &lt;sun:treeNode id="j1root"
-    text="J1 TreeNode"
-    imageURL="theme/com/sun/webui/jsf/suntheme/images/tree/tree_folder.gif"
-    target="main"&gt;
+	text="J1 TreeNode"
+	imageURL="theme/com/sun/webui/jsf/suntheme/images/tree/tree_folder.gif"
+	target="main"&gt;
+
 	&lt;sun:treeNode id="first"
 	    text="First Node"
 	    url="javaone/hello.jsf"
