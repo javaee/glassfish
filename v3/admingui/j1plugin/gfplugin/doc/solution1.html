@@ -6,6 +6,29 @@
         <h1>Exercise 1 Solution: Plugging into GlassFish</h1>
         
   <p>&nbsp;</p>
+
+    <p class="j1holsubheader">S1-A: <code>&lt;gfplugin&gt;/myplugin/src/main/java/org.example.glassfish.admingui.MyPlugin.java</code></p>
+  
+        <div class="codebox">
+            <pre>
+package org.example.glassfish.admingui;
+
+import org.glassfish.api.admingui.ConsoleProvider;
+import org.jvnet.hk2.annotations.Service;
+import java.net.URL;
+
+/**
+ *  &lt;p&gt; Returns the URL of the Integration Point configuration file console-config.xml &lt;/p&gt;
+ *
+ *  @return URL of configration file.
+ */
+@Service
+public class MyPlugin implements ConsoleProvider {
+    public URL getConfiguration() { return null; }
+}</pre>
+  </div>
+  </br> </br> </br>
+
   
     <p class="j1holsubheader">S1-B: <code>&lt;gfplugin&gt;/myplugin/src/main/resources/META-INF/admingui/console-config.xml</code></p>
 
@@ -17,6 +40,7 @@
 &lt;/console-config&gt;</pre>
 	</div>
 
+  </br> </br> </br>
     <p class="j1holsubheader">S1-C: <code>&lt;gfplugin&gt;/myplugin/src/main/resources/treenode-ex1.jsf</code></p>
 
         <div class="codebox">
@@ -34,6 +58,7 @@
 &lt;/sun:treeNode&gt;</pre>
   </div>
 
+  </br> </br> </br>
     <p class="j1holsubheader">S1-C: <code>&lt;gfplugin&gt;/myplugin/src/main/resources/hello.jsf</code></p>
   
         <div class="codebox">
@@ -55,37 +80,14 @@
 &lt;/html&gt;</pre>
   </div>
 
-
-    <p class="j1holsubheader">S1-D: <code>&lt;gfplugin/myplugin/src/main/java/org.example.glassfish.admingui.MyPlugin.java</code></p>
-  
-        <div class="codebox">
-            <pre>
-package org.example.glassfish.admingui;
-
-import org.glassfish.api.admingui.ConsoleProvider;
-import org.jvnet.hk2.annotations.Service;
-import java.net.URL;
-
-/**
- *  &lt;p&gt; Returns the URL of the Integration Point configuration file console-config.xml &lt;/p&gt;
- *
- *  @return URL of configration file.
- */
-@Service
-public class MyPlugin implements ConsoleProvider {
-    public URL getConfiguration() { return null; }
-}</pre>
-  </div>
-
+  </br> </br> </br>
     <p class="j1holsubheader">Final View:</p>
 
   <div id=u30h style="PADDING:1em 0pt; TEXT-ALIGN:left">
     <div id=eocd style="PADDING:1em 0pt; TEXT-ALIGN:left; MARGIN-LEFT:40px">
-      <img src=images/ex1-12-ex1result.jpg>
+	<img src=images/ex1-result.jpg>
     </div>
   </div>
-
-
 
         <p><a href="#Exercise_2">Go to Exercise 2</a></p>
     </div>

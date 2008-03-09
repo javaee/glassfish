@@ -88,7 +88,7 @@ public interface ConsoleProvider {
 </p>
 
 <div class="codebox"><pre>
-  class=org.example.glassfish.admingui.JavaOnePlugin,index=org.glassfish.api.admingui.ConsoleProvider</pre></div>
+  class=org.example.glassfish.admingui.MyPlugin,index=org.glassfish.api.admingui.ConsoleProvider</pre></div>
 
 <p> This is used to efficiently locate all implementations of a @Contract in the system.</p>
 
@@ -268,7 +268,7 @@ page</a>.
 		<li>Browse to <code>&lt;gfplugin&gt;</code> and select <code>myplugin</code>.</li>
 		<li>Press the <code>Open Project</code> button.
 		    <p>&nbsp;</p>
-		    <p><img src="images/ex1-1-openproject.jpg" /></p>
+		    <p><img src="images/ex1-project-open.jpg" /></p>
 		    Figure 1-1:&nbsp; Open Project myplugin
 		</li>
 	    </ol>
@@ -277,7 +277,7 @@ page</a>.
 
 	<li>You should see the following directory layout under the Projects tab:
 	    <p>&nbsp;</p>
-	    <p><img src="images/ex1-2-project-layout.jpg"></p>
+	    <p><img src="images/ex1-project-layout.jpg"></p>
 	    Figure 1-2:&nbsp; Project myplugin layout
 
 	    <p>&nbsp;</p>
@@ -317,7 +317,7 @@ page</a>.
                   Class".&nbsp; A pop up window will display.<br>
                 </li>
                 <li>
-                  Enter the class name 'JavaOnePlugin' &nbsp; (Note:&nbsp; do
+                  Enter the class name 'MyPlugin' &nbsp; (Note:&nbsp; do
                   not enter the .java extension)
                 </li>
                 <li>
@@ -326,14 +326,14 @@ page</a>.
               </ol>
               <div style=MARGIN-LEFT:40px>
                 <div id=nab5 style="PADDING:1em 0pt; TEXT-ALIGN:left">
-                  <img src="images/ex1-9-createJava.jpg">
+                  <img src="images/ex1-createMyPlugin.jpg">
                 </div>
-                Figure 1-9: Create JavaOnePlugin.java
+                Figure 1-9: Create MyPlugin.java
                 <br>
-                7.&nbsp;&nbsp;&nbsp; Now open this newly created Java File and
+                &nbsp;&nbsp;&nbsp; Now open this newly created Java File and
                 add the necessary implementation for the plugin.&nbsp;&nbsp;
                 (Note: the full path of this file is
-                '&lt;gfplugin&gt;/myplugin/src/main/java/org/example/glassfish/admingui/JavaOnePlugin.java')<br>
+                '&lt;gfplugin&gt;/myplugin/src/main/java/org/example/glassfish/admingui/MyPlugin.java')<br>
                 <br>
                 Here are some hints for the implementation. (TBD: when changing
                 to the lab template, they have a special DIV for hints, may want
@@ -400,7 +400,7 @@ page</a>.
                 <div id=p0p4 style="PADDING:1em 0pt; TEXT-ALIGN:left">
                   <div style=MARGIN-LEFT:40px>
                     <div id=wk70 style="PADDING:1em 0pt; TEXT-ALIGN:left">
-                      <img src="images/ex1-10-editJavaOnePlugin.jpg">
+                      <img src="images/ex1-editMyPlugin.jpg">
                     </div>
                     Figure 1-10:&nbsp; Edit MyPlugin.java
                     <br>
@@ -408,50 +408,16 @@ page</a>.
                 </div>
               </div>
               <div id=p0p4 style="PADDING:1em 0pt; TEXT-ALIGN:left; MARGIN-LEFT:40px">
-                8.&nbsp;&nbsp; The last step of this implementation is to build
-                the project.<br>
-                <br>
-                Note:&nbsp; If you are using a command line and have 'maven 2'
-                installed on your system you can build the project by doing the
-                following:<br>
-                &nbsp;&nbsp;&nbsp;<span style=BACKGROUND-COLOR:#999999>
-                %cd&nbsp; &lt;gfplugin&gt;/plugin;&nbsp; mvn install</span><br>
-              </div>
-              <div id=p0p4 style="PADDING:1em 0pt; TEXT-ALIGN:left">
-                <div style=MARGIN-LEFT:40px>
-                  &nbsp;&nbsp;&nbsp; Steps in NetBeans:<br>
-                </div>
-                <ol class="j1hollist">
-                  <ol class="j1hollist">
-                    <li>
-                      Right click on the project 'Java One 2008 Admin Console
-                      Plugin'
-                    </li>
-                    <li>
-                      Select Build.
-                    </li>
-                  </ol>
-                </ol>
-                <br>
-                After the above steps are finished, you will have the jar file named 
-                <code>myplugin</span></span><span style=BACKGROUND-COLOR:#ffffff>/target/console-myplugin-1.0-SNAPSHOT.jar</code>.
-                This jar file is ready to be integrated into GlassFish.</span><br>
-              </div>
-              <div id=p0p4 style="PADDING:1em 0pt; TEXT-ALIGN:left; MARGIN-LEFT:40px">
                 <div style=MARGIN-LEFT:40px>
                 </div>
               </div>
               <div id=ne15 style="PADDING:1em 0pt; TEXT-ALIGN:left">
                 <hr style="WIDTH:100%; HEIGHT:2px"><br>
+	    </div>
     </ol>
 </a></li>
 
-
-
-
 </ol> <!-- End Steps Ordered List -->
-
-
 
       <hr style="WIDTH:100%; HEIGHT:2px"><br>
       <b> 1-B.&nbsp;&nbsp; Add configuration files to indicate&nbsp; integration
@@ -514,30 +480,24 @@ page</a>.
           </div>
           <br>
         </div>
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        TBD: (Ana: I don't think we need all these screen shots showing how to
-        create a fille??)<br>
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        (I guess we can delete this first one, but would like to keep the next
-        one to ensure they have it at right directory &nbsp; anissa)<br>
         <div id=hhf4 style="PADDING:1em 0pt; TEXT-ALIGN:left; MARGIN-LEFT:80px">
-          <img src="images/ex1-3-createConfig1.jpg"><br>
+          <img src="images/ex1-createConsoleConfig1.jpg"><br>
           <br>
           Figure 1-3:&nbsp; Creating console-config.xml (step 1)
           <div style=MARGIN-LEFT:40px>
             <div id=v6gz style="PADDING:1em 0pt; TEXT-ALIGN:left">
               <div id=dqfl style="PADDING:1em 0pt; TEXT-ALIGN:left">
                 <div id=bd-l style="PADDING:1em 0pt; TEXT-ALIGN:left">
-                  <img src="images/ex1-4-createConfig2.jpg">
+		    <img src="images/ex1-createConsoleConfig2.jpg">
                 </div>
                 <br>
                 Figure 1-4:&nbsp; Creating console-config.xml (step 2)
                 <br>
                 <br>
                 <div id=q_x4 style="PADDING:1em 0pt; TEXT-ALIGN:left">
-                  <img src="images/ex1-5-editConfig.jpg">
+		    <img src="images/ex1-editConsoleConfig.jpg">
                 </div>
-                Figure 1-5:&nbsp; Editing console-config.xml
+                Figure 1-5:&nbsp; Eit console-config.xml
               </div>
             </div>
             <br>
@@ -607,10 +567,9 @@ page</a>.
         <br>
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
         <div id=b0tu style="PADDING:1em 0pt; TEXT-ALIGN:left; MARGIN-LEFT:40px">
-          <img src="images/ex1-6-createTreenode.jpg">
+          <img src="images/ex1-createTreenode.jpg">
         </div>
-        Figure 1-6:&nbsp; Create
-        treenode-ex1.jsf (Step 2)<br>
+        Figure 1-6:&nbsp; Create treenode-ex1.jsf <br>
         <br>
         <div id=x130 style="PADDING:1em 0pt; TEXT-ALIGN:left; MARGIN-LEFT:40px">
           <div id=hre9 style="PADDING:1em 0pt; TEXT-ALIGN:left">
@@ -618,7 +577,7 @@ page</a>.
           </div>
           <br>
           <div id=w-zh style="PADDING:1em 0pt; TEXT-ALIGN:left">
-            <img src="images/ex1-7-editTreenode-1.jpg">&nbsp;
+            <img src="images/ex1-editTreenode.jpg">&nbsp;
             Figure Ex1-7:&nbsp; Edit treenode-ex1.jsf
           </div>
           <br>
@@ -673,14 +632,48 @@ page</a>.
         <div id=x130 style="PADDING:1em 0pt; TEXT-ALIGN:left; MARGIN-LEFT:40px">
           <br>
           <div id=enfz style="PADDING:1em 0pt; TEXT-ALIGN:left">
-            <img src="images/ex1-8-editHello.jpg">
+            <img src="images/ex1-editHello.jpg">
           </div>
           Figure 1-8:&nbsp; Edit hello.jsf
 	  <hr style="WIDTH:100%; HEIGHT:2px"><br>
         </div>
 
-                <b>1-E.&nbsp; Integrate this plugin module to GlassFish V3<br>
+
+
+	<b>1-E.&nbsp; Build and Integrate this plugin module to GlassFish V3</b><br>
                 <br>
+		
+              <div id=p0p4 style="PADDING:1em 0pt; TEXT-ALIGN:left; MARGIN-LEFT:40px">
+                8.&nbsp;&nbsp; The last step of this implementation is to build
+                the project.<br>
+                <br>
+                Note:&nbsp; If you are using a command line and have 'maven 2'
+                installed on your system you can build the project by doing the
+                following:<br>
+                &nbsp;&nbsp;&nbsp;<span style=BACKGROUND-COLOR:#999999>
+                %cd&nbsp; &lt;gfplugin&gt;/plugin;&nbsp; mvn install</span><br>
+              </div>
+              <div id=p0p4 style="PADDING:1em 0pt; TEXT-ALIGN:left">
+                <div style=MARGIN-LEFT:40px>
+                  &nbsp;&nbsp;&nbsp; Steps in NetBeans:<br>
+                </div>
+                <ol class="j1hollist">
+                  <ol class="j1hollist">
+                    <li>
+                      Right click on the project 'Java One 2008 Admin Console
+                      Plugin'
+                    </li>
+                    <li>
+                      Select Build.
+                    </li>
+                  </ol>
+                </ol>
+                <br>
+                After the above steps are finished, you will have the jar file named 
+                <code>myplugin</span></span><span style=BACKGROUND-COLOR:#ffffff>/target/console-myplugin-1.0-SNAPSHOT.jar</code>.
+                This jar file is ready to be integrated into GlassFish.</span><br>
+              </div>
+
                 </b>You now need a Terminal to enter some commands.&nbsp; Please
                 bring up a terminal window.<br>
                 <br>
@@ -694,7 +687,7 @@ page</a>.
                 JavaOne tree node yet since you have not integrated your jar.<br>
                 <br>
                 <div id=rlz1 style="PADDING:1em 0pt; TEXT-ALIGN:left">
-                  <img src="images/ex1-11-before.jpg">
+                  <img src="images/ex1-before.jpg">
                 </div>
                 Figure 1-11:&nbsp; Before Integration
                 <br>
@@ -710,7 +703,7 @@ page</a>.
                 &lt;gfplugin&gt;/glassfish/modules/console-myplugin-1.0-SNAPSHOT.jar</span><br>
                 </span><br>
                 13.&nbsp; Start the server again,<br>
-                <span style=BACKGROUND-COLOR:#eeeeee> % glassfish/bin/asadmin
+		<span style=BACKGROUND-COLOR:#eeeeee> %&lt;gfplugin&gt;/glassfish/bin/asadmin
                 start-domain&nbsp;</span><br style=BACKGROUND-COLOR:#eeeeee>
                 <br>
                 14. Go to
@@ -724,7 +717,7 @@ page</a>.
                     <div id=ni67 style="PADDING:1em 0pt; TEXT-ALIGN:left">
                       <div id=u30h style="PADDING:1em 0pt; TEXT-ALIGN:left">
                         <div id=eocd style="PADDING:1em 0pt; TEXT-ALIGN:left">
-                          <img src="images/ex1-12-ex1result.jpg">
+                          <img src="images/ex1-result.jpg">
                         </div>
                         <br>
                       </div>
@@ -738,7 +731,7 @@ page</a>.
 
 <p class="j1holheader">Summary:</p>
             
-<p>In this exercise, you learned how to create your hands-on lab document. (TBD)</p>
+<p>In this exercise, you have learned about GlassFish plugin module and developed a plugin modue to the Admin Console where you added a tree node to the navigation tree.</p>
             
             <p><a href="#Solution_1">Go to solution</a></p>
             <p><a href="#Exercise_2">Go on to next exercise</a></p>
