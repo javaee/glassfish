@@ -46,9 +46,20 @@ import com.sun.enterprise.resource.ResourceHandle;
  */
 public interface ConnectionLeakListener {
 
+    /**
+     * listener method to handle in the event of connection leak detected
+     */
     public void potentialConnectionLeakFound();
 
+    /**
+     * to print the stack trace of the caller of getConnection
+     * @param stackTrace Stack trace of the caller
+     */
     public void printConnectionLeakTrace(StringBuffer stackTrace);
 
+    /**
+     * reclaim the leaked connection
+     * @param handle Resource to be reclaimed
+     */
     public void reclaimConnection(ResourceHandle handle);
 }

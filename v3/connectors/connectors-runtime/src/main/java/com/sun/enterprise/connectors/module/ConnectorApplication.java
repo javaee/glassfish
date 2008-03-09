@@ -36,18 +36,11 @@
 
 package com.sun.enterprise.connectors.module;
 
-import com.sun.appserv.connectors.spi.ConnectorConstants;
 import com.sun.appserv.connectors.spi.ConnectorRuntime;
-import com.sun.enterprise.config.serverbeans.ConnectorConnectionPool;
-import com.sun.enterprise.config.serverbeans.ConnectorResource;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.deployment.ApplicationContainer;
-import org.glassfish.javaee.services.ResourceAdaptersBinder;
 import org.glassfish.javaee.services.ResourceManager;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -92,25 +85,18 @@ public class ConnectorApplication implements ApplicationContainer {
         return started;
     }
 
+    /**
+     * deploy all resources/pools pertaining to this resource adapter
+     * @param resourceAdapterName resource-adapter name
+     */
     private void deployResources(String resourceAdapterName){
         resourceManager.deployResourcesForModule(resourceAdapterName);
     }
 
-    private void deployResources(ResourceAdaptersBinder binder,
-                                 Map<ConnectorResource, ConnectorConnectionPool> raResourcePoolMap) {
-
-        for (Map.Entry<ConnectorResource, ConnectorConnectionPool> entry : raResourcePoolMap.entrySet()) {
-            ConnectorResource resource = entry.getKey();
-            ConnectorConnectionPool pool = entry.getValue();
-            try {
-                binder.bindResource(resource, pool, resource.getJndiName(), ConnectorConstants.RES_TYPE_CR);
-            } catch (Exception e) {
-                //TODO V3 log
-                e.printStackTrace();
-            }
-        }
-    }
-
+    /**
+     * undeploy all resources/pools pertaining to this resource adapter
+     * @param resourceAdapterName resource-adapter-name
+     */
     private void undeployResources(String resourceAdapterName){
         resourceManager.undeployResourcesForModule(resourceAdapterName);
     }
@@ -127,20 +113,6 @@ public class ConnectorApplication implements ApplicationContainer {
         stopped = true;
         logFine("Resource Adapter [ " + moduleName + " ] stopped");
         return stopped;
-    }
-
-    private void undeployResources(Map<ConnectorResource, ConnectorConnectionPool> raResourcePoolMap, String moduleName) {
-        List<String> resources = new ArrayList<String>();
-        List<String> pools = new ArrayList<String>();
-
-        for (Map.Entry<ConnectorResource, ConnectorConnectionPool> entry : raResourcePoolMap.entrySet()) {
-            ConnectorResource resource = entry.getKey();
-            ConnectorConnectionPool pool = entry.getValue();
-            resources.add(resource.getJndiName());
-            pools.add(pool.getName());
-
-            runtime.destroyResourcesAndPools(pools, resources);
-        }
     }
 
     /**

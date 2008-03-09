@@ -79,7 +79,8 @@ import java.util.logging.Level;
 
 @Service
 @Scoped(Singleton.class)
-public class ConnectorRuntime implements ConnectorConstants, com.sun.appserv.connectors.spi.ConnectorRuntime, PostConstruct, PreDestroy {
+public class ConnectorRuntime implements ConnectorConstants, com.sun.appserv.connectors.spi.ConnectorRuntime,
+        PostConstruct, PreDestroy {
 
     /* TODO V3 environment set to server as of today
     private volatile int environment = CLIENT;*/

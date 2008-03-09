@@ -50,13 +50,37 @@ import java.util.Set;
  */
 public interface ResourceHandler {
 
+    /**
+     * destroys the given resource
+     * @param resourceHandle resource to be destroyed
+     */
     void deleteResource(ResourceHandle resourceHandle);
 
+    /**
+     * create a new resource using the given resource-allocator
+     * @param allocator allocator to create a resource
+     * @return newly created resource
+     * @throws PoolingException when unable to create a resource
+     */
     ResourceHandle createResource(ResourceAllocator allocator) throws PoolingException;
 
+    /**
+     * create a new resource and add it to pool (using default resource-allocator)
+     * @throws PoolingException when unable to create a resource
+     */
     void createResourceAndAddToPool() throws PoolingException;
 
+    /**
+     * gets the invalid connections from the given connections set
+     * @param connections that need to be validated
+     * @return invalid connections set
+     * @throws ResourceException when unable to validate
+     */
     Set getInvalidConnections(Set connections) throws ResourceException;
 
+    /**
+     * callback method to handle the case of invalid connection detected
+     * @param h connection that is invalid
+     */
     void invalidConnectionDetected(ResourceHandle h);
 }

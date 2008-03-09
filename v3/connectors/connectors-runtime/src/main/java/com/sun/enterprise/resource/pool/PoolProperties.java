@@ -42,13 +42,33 @@ package com.sun.enterprise.resource.pool;
  */
 public interface PoolProperties {
 
+    /**
+     * gets the steady pool size of the pool
+     * @return steady pool size
+     */
     int getSteadyPoolSize();
 
+    /**
+     * gets the max pool size of the pool
+     * @return max pool size
+     */
     int getMaxPoolSize();
 
+    /**
+     * gets the resize quantity of the pool
+     * @return resize quantity
+     */
     int getResizeQuantity();
 
+    /**
+     * gets the idle connection timeout value
+     * @return idle timeout value
+     */
     long getIdleTimeout();
 
+    /**
+     * gets the current wait queue length
+     * @return wait queue length
+     */
     int getWaitQueueLength();
 }
