@@ -3,58 +3,209 @@
 <body>
     <div class="j1holcontents">
         
-        <h1>Exercise 3 Solution: Templating your Plugin</h1><br>
-        <p class="j1holsubheader">File content:&nbsp;
-        &lt;j1Plugin&gt;/lab/myplugin/src/main/resources/chart3.jsf</p>
-&nbsp;&nbsp;&nbsp; TBD: Code
-<br>
-<p class="j1holsubheader">File content :&nbsp;
-&lt;j1Plugin&gt;/lab/myplugin/src/main/resources/META-INF/admingui/console-config.xml</p>
-        <div class="codebox">
-            <pre>
-  &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
-  &lt;console-config id=&quot;javaone&quot;&gt;
-  &lt;integration-point
-  id=&quot;JavaOneNode&quot;
-  type=&quot;tree&quot;
-  priority=&quot;210&quot;
-  parentId=&quot;tree&quot;
-  content=&quot;treenode-ex1.jsf&quot;
-  /&gt;
-  
-  &lt;integration-point
-  id=&quot;Another&quot;
-  type=&quot;tree&quot;
-  priority=&quot;230&quot;
-  parentId=&quot;j1root&quot;
-  content=&quot;treenode-ex2.jsf&quot;
-  /&gt;
-  
-  &lt;integration-point
-  id=&quot;Third&quot;
-  type=&quot;tree&quot;
-  priority=&quot;100&quot;
-  parentId=&quot;j1root&quot;
-  content=&quot;treenode-ex3.jsf&quot;
-  /&gt;
-  &lt;/console-config&gt;
-        </pre>
-    </div>
-                
- <p class="j1holsubheader">File content :&nbsp;
- &lt;j1Plugin&gt;/lab/myplugin/src/main/resources/treenode-ex3.jsf&nbsp;</p>
+        <h1>Exercise 3 Solution: Templating your Plugin</h1>
+        In exercise 3 you created and modified the following files:  
+chart3.jsf, console-config.xml and treenode-ex3.jsf.<br>
+Here is the content of all 3 files:<br>
+        
+  <p class="j1holsubheader">S3-A: <code>&lt;lab4520_root&gt;/gfplugin/myplugin/src/main/resources/chart3.jsf</code></p>
 
 <div class="codebox">
+<pre>
+
+&lt;!composition template="templates/javaOneTemplate.tpl"&gt;
+&lt;!define name="content"&gt;
+
+  &lt;sun:page&gt;
+    &lt;!beforeCreate
+        getjMakiValues(values=&gt;$attribute{pievalues});
+        getjMakiValues(values=&gt;$attribute{gryvalues});
+        getjMakiValues(values=&gt;$attribute{bluvalues});
+        getjMakiValues(values=&gt;$attribute{pnkvalues});
+        getjMakiValues(values=&gt;$attribute{redvalues});
+    /&gt;
+    &lt;sun:html&gt;
+    &lt;sun:markup tag="head"&gt;
+        &lt;sun:link url="/theme/com/sun/webui/jsf/suntheme/css/css_master.css" /&gt;
+        &lt;sun:markup tag="title"&gt;
+            &lt;staticText value="jMaki Charting!" /&gt;
+        &lt;/sun:markup&gt;
+        &lt;sun:script url="/resources/jmaki.js" /&gt;
+        &lt;sun:script url="/theme/META-INF/dojo/dojo.js" /&gt;
+        &lt;sun:script url="/theme/META-INF/json/json.js" /&gt;
+        &lt;sun:script url="/theme/META-INF/prototype/prototype.js" /&gt;
+        &lt;sun:script url="/theme/META-INF/com_sun_faces_ajax.js" /&gt;
+    &lt;/sun:markup&gt;
+
+&lt;sun:markup tag="body"&gt;
+
+&lt;sun:form id="form"&gt;
+
+
+&lt;sun:markup tag="div" style="width:380px; height: 310px;"&gt;
+
+&lt;sun:dropDown labels={"jmaki.charting.yahoo.pie"
+        "jmaki.charting.google.pie"
+        "jmaki.charting.plotkit.pie"}
+        value="#{requestScope.chart1}"&gt;
+    &lt;!beforeCreate
+    setAttribute(key="chart1", value="jmaki.charting.google.pie");
+    /&gt;
+&lt;/sun:dropDown&gt;
+&lt;sun:button value=" Refresh " /&gt;
+&lt;jmaki:widget name="#{requestScope.chart1}"
+    args="{colorScheme:2}"
+    value="{
+    xAxis : {
+        title : 'Months',
+        labels : [
+        {label : 'January'},
+        {label : 'February'},
+        {label : 'March'},
+        {label : 'April'},
+        {label : 'May'},
+        {label : 'June'},
+        {label : 'July'},
+        {label : 'August'},
+        {label : 'September'},
+        {label : 'October'},
+        {label : 'November'},
+        {label : 'December'} ]
+        },
+    data : [ {
+        label : 'Set 1',
+        values : $attribute{pievalues}
+        } ] }"/&gt;
+
+&lt;/sun:markup&gt;
+
+&lt;sun:dropDown labels={"jmaki.charting.plotkit.area"
+        "jmaki.charting.plotkit.line"
+        "jmaki.charting.plotkit.bar"
+        "jmaki.charting.google.area"
+        "jmaki.charting.google.bar"
+        "jmaki.charting.google.line"
+        "jmaki.charting.yahoo.line"
+        "jmaki.charting.yahoo.bar"
+        "jmaki.charting.dojo.bar"
+        "jmaki.charting.dojo.line"
+        "jmaki.charting.dojo.area"}
+        value="#{requestScope.chart2}"&gt;
+    &lt;!beforeCreate
+    setAttribute(key="chart2", value="jmaki.charting.yahoo.bar");
+    /&gt;
+&lt;/sun:dropDown&gt;
+&lt;sun:button value=" Refresh " /&gt;
+&lt;sun:markup tag="div" style="width: 500px; height: 280px;"&gt;
+
+&lt;jmaki:widget name="#{requestScope.chart2}"
+        value="{
+            xAxis : {
+                title : 'Months',
+                labels : [{ label : 'January'},
+                    { label : 'February'},
+                    { label : 'March'},
+                    { label : 'April'},
+                    { label : 'May'},
+                    { label : 'June'},
+                    { label : 'July'},
+                    { label : 'August'},
+                    { label : 'September'},
+                    { label : 'October'},
+                    { label : 'November'},
+                    { label : 'December'}
+                    ]
+                    },
+            yAxis : {
+                title : 'Temperature',
+                labels : [{ label : '0', value : 0},
+                    { label : '10s', value : 10},
+                    { label : '20s', value : 20},
+                    { label : '30s', value : 30},
+                    { label : '40s', value : 40},
+                    { label : '50s', value : 50}
+                    ]
+                    },                              
+            data : [
+                    {label : 'Gray Series', values : $attribute{gryvalues} },
+                    {label : 'Pink Series', values : $attribute{pnkvalues} },
+                    {label : 'Blue Series', values : $attribute{bluvalues} },                   
+                    {label : 'Red Series',  values : $attribute{redvalues} }
+                    ]
+                    }"/&gt;
+        &lt;/sun:markup&gt;
+        &lt;/sun:form&gt;
+        &lt;/sun:markup&gt;
+        &lt;/sun:html&gt;
+  &lt;/sun:page&gt;
+&lt;/define&gt;
+&lt;/composition&gt;
+
+</pre>
+</div>
+
+
+  </br> </br> </br>
+  
+    <p class="j1holsubheader">S3-B: <code>&lt;lab4520_root&gt;/gfplugin/myplugin/src/main/resources/META-INF/admingui/console-config.xml</code></p>
+
+
+	<div class="codebox">
+  <pre>
+
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+
+&lt;console-config id="javaone"&gt;
+        &lt;integration-point 
+                id="JavaOneNode" 
+                type="tree" 
+                priority="210" 
+                parentId="tree" 
+                content="treenode-ex1.jsf" 
+        /&gt;
+        &lt;integration-point 
+                id="Another" 
+                type="tree" 
+                priority="230" 
+                parentId="j1root" 
+                content="treenode-ex2.jsf" 
+        /&gt;
+        &lt;integration-point 
+                id="Third" 
+                type="tree" 
+                priority="300" 
+                parentId="j1root" 
+                content="treenode-ex3.jsf" 
+        /&gt;
+&lt;/console-config&gt;
+  </pre>
+  </div>
+
+  </br> </br> </br>
+    <p class="j1holsubheader">S3-C: <code>&lt;lab4520_root&gt;/gfplugin/myplugin/src/main/resources/treenode-ex3.jsf</code></p>
+
+        <div class="codebox">
             <pre>
-        &lt;sun:treeNode
-            id=&quot;third&quot; text=&quot;Exercise #3&quot; 
-            url=&quot;javaone/chart3.jsf&quot; 
-            imageURL=&quot;resource/images/instance.gif&quot;
-            target=&quot;main&quot;
-        /&gt; 
-        </pre>
-    </div>
-        
-        <p><a href="#Summary">Go on to summary</a></p>
+
+&lt;sun:treeNode
+        id="third" 
+        text="Exercise #3"
+        url="javaone/chart3.jsf"
+        imageURL="resource/images/instance.gif"
+        target="main" 
+/&gt;
+
+</pre>
+  </div>
+
+  </br> </br> </br>
+    <p class="j1holsubheader">Final View:</p>
+
+	<img src=images/ex3-result.jpg>
+  </div>
+
+<br><br>
+        <p><a href="#Exercise_3">Go to Exercise 3</a></p>
     </div>
 </body>
+
