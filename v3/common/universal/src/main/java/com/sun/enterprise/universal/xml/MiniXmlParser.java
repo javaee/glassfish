@@ -135,6 +135,7 @@ public class MiniXmlParser {
 
             if (serverName.equals(thisName)) {
                 configRef = map.get("config-ref");
+                parseSysPropsFromServer();
                 skipToEnd("servers");
                 return;
             }
@@ -161,6 +162,8 @@ public class MiniXmlParser {
         // cursor --> <config>
         // as we cruise through the section pull off any found <system-property>
         // I.e. <system-property> AND <java-config> are both children of <config>
+        // Note that if the system-property already exists -- we do NOT override it.
+        // the <server> system-property takes precedence
         while (true) {
             int event = next();
             // return when we get to the </config>
@@ -173,7 +176,7 @@ public class MiniXmlParser {
             {
                 String name = parser.getLocalName();
                 if(name.equals("system-property")) {
-                    parseSystemProperty();
+                    parseSystemPropertyNoOverride();
                 }
                 else if(name.equals("java-config")) {
                     parseJavaConfig();
@@ -185,14 +188,50 @@ public class MiniXmlParser {
         }
     }
 
-    private void parseSystemProperty() {
+    private void parseSysPropsFromServer() throws XMLStreamException, EndDocumentException {
+        // cursor --> <server>
+        // these are the system-properties that OVERRIDE the ones in the <config>
+        // This code executes BEFORE the <config> is read so we can just add them to the Map here
+        // w/o doing anything special.
+        
+        while (true) {
+            int event = next();
+            // return when we get to the </config>
+            if (event == END_ELEMENT) {
+                if(parser.getLocalName().equals("server")) {
+                    return;
+                }
+            }
+            else if(event == START_ELEMENT)
+            {
+                String name = parser.getLocalName();
+                if(name.equals("system-property")) {
+                    parseSystemPropertyWithOverride();
+                }
+                else {
+                    skipTree(name);
+                }
+            }
+        }
+    }
+
+    private void parseSystemPropertyNoOverride() {
+        parseSystemProperty(false);
+    }
+    private void parseSystemPropertyWithOverride() {
+        parseSystemProperty(true);
+    }
+    
+    private void parseSystemProperty(boolean override) {
         // cursor --> <system-property>
         Map<String,String> map = parseAttributes();
         String name = map.get("name");
         String value = map.get("value");
         
-        if(name != null)
-            sysProps.put(name, value);
+        if(name != null) {
+            if(override || !sysProps.containsKey(name))
+                sysProps.put(name, value);
+        }
     }
     private void parseJavaConfig() throws XMLStreamException, EndDocumentException {
         // cursor --> <java-config>

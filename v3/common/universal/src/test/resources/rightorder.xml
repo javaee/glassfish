@@ -51,6 +51,7 @@
     <application-ref enabled="true" ref="JBIFramework" lb-enabled="false" disable-timeout-in-minutes="30"/>
     <application-ref enabled="true" ref="WSTXServices" lb-enabled="false" disable-timeout-in-minutes="30"/>
     <application-ref enabled="true" ref="WSTCPConnectorLCModule" lb-enabled="false" disable-timeout-in-minutes="30"/> 
+    <system-property name="test-prop" value="valueFromServer"/>
     <resource-ref enabled="true" ref="jdbc/__TimerPool"/>
     <resource-ref enabled="true" ref="jdbc/__CallFlowPool"/>
     <resource-ref enabled="true" ref="jdbc/__default"/>
@@ -185,6 +186,7 @@
     <jvm-options>JVMOPTION2</jvm-options>
    </java-config>
    <system-property name="afterJavaConfig" value="true"/>
+   <system-property name="test-prop" value="valueFromConfig"/>
    <thread-pools>
         <thread-pool thread-pool-id="thread-pool-1" min-thread-pool-size="0" max-thread-pool-size="200" idle-thread-timeout-in-seconds="120" num-work-queues="1"/>
 

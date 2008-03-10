@@ -139,7 +139,23 @@ public class MiniXmlParserTest {
             assertEquals(sysProps.get("beforeJavaConfig"), "true");
             assertEquals(sysProps.get("afterJavaConfig"), "true");
             assertNull(sysProps.get("foo"));
-            assertEquals(sysProps.size(), 2);
+            assertEquals(sysProps.size(), 3);
+        }
+        catch (MiniXmlParserException ex) {
+            Logger.getLogger(MiniXmlParserTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+    }
+    /*
+     * Positive test case -- make sure system-property in <server> overrides the one in <config>
+     */
+    @Test
+    public void test7() {
+        try {
+            MiniXmlParser instance = new MiniXmlParser(rightOrder, "server");
+            Map<String, String> javaConfig = instance.getJavaConfig();
+            Map<String,String> sysProps = instance.getSystemProperties();
+            assertEquals(sysProps.get("test-prop"), "valueFromServer");
         }
         catch (MiniXmlParserException ex) {
             Logger.getLogger(MiniXmlParserTest.class.getName()).log(Level.SEVERE, null, ex);
