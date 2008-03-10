@@ -47,12 +47,16 @@ import org.jvnet.hk2.component.PerLookup;
 import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.TransactionFailure;
+import com.sun.enterprise.config.serverbeans.Property;
 import com.sun.enterprise.config.serverbeans.Resource;
 import com.sun.enterprise.config.serverbeans.Resources;
 import com.sun.enterprise.config.serverbeans.JdbcConnectionPool;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 
 import java.beans.PropertyVetoException;
+import java.util.Map;
+import java.util.Properties;
+
 
 /**
  * Create JDBC Connection Pool Command
@@ -113,7 +117,8 @@ public class CreateJdbcConnectionPool implements AdminCommand {
     @Param(name="description", optional=true)
     String description;
     
-    //@Param(name="property", optional=true)
+    @Param(name="property", optional=true)
+    Properties property;
     
     @Param(name="jdbc_connection_pool_id", primary=true)
     String jdbc_connection_pool_id; 
@@ -176,6 +181,13 @@ public class CreateJdbcConnectionPool implements AdminCommand {
                     newResource.setValidateAtmostOncePeriodInSeconds(restype);
                     newResource.setValidationTableName(validationtable);
                     //newResource.setWrapJdbcObjects(restype);
+                    for ( Map.Entry e : property.entrySet()) {
+                        Property prop = ConfigSupport.createChildOf(newResource, 
+                                Property.class);
+                        prop.setName((String)e.getKey());
+                        prop.setValue((String)e.getValue());
+                        newResource.getProperty().add(prop);
+                    }
                     param.getResources().add(newResource);                    
                     return newResource;
                 }
