@@ -46,6 +46,11 @@ import org.jvnet.hk2.component.Singleton;
 import java.io.IOException;
 import java.util.logging.Logger;
 
+/**
+ * Sniffer for detecting resource-adapter modules
+ *
+ * @author Jagadish Ramu
+ */
 @Service(name = "connectors")
 @Scoped(Singleton.class)
 public class ConnectorSniffer extends GenericSniffer implements Sniffer {

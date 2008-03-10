@@ -44,6 +44,12 @@ import java.io.IOException;
 import java.io.InputStream;
 
 
+
+/**
+ * Archive handler for resource-adapters
+ *
+ * @author Jagadish Ramu 
+ */
 @Service
 public class ConnectorHandler extends AbstractArchiveHandler implements ArchiveHandler {
 
