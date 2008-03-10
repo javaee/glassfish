@@ -72,7 +72,7 @@ public class CreateJdbcResource implements AdminCommand {
     @Param(optional=true)
     String description;
     
-    @Param(optional=true)
+    @Param(name="property", optional=true)
     Properties properties;
     
     @Param(optional=true)
