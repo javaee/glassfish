@@ -43,8 +43,6 @@ package com.sun.appserv.connectors.spi;
  *
  * @author Binod P.G
  */
-
-
 public class ConnectorRuntimeException extends Exception {
 
     /**
@@ -52,7 +50,6 @@ public class ConnectorRuntimeException extends Exception {
      *
      * @param msg Error message
      */
-
     public ConnectorRuntimeException(String msg) {
         super(msg);
     }

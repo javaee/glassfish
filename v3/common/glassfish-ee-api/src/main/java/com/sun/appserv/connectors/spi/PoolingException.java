@@ -46,6 +46,9 @@ package com.sun.appserv.connectors.spi;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 
+/**
+ * Generic exception class to indicate exceptions pertaining to pooling infrastructure
+ */
 public class PoolingException extends Exception {
 
     private Exception ex;

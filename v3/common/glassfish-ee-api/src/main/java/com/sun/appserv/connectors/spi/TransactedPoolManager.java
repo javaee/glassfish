@@ -39,14 +39,20 @@ import org.jvnet.hk2.annotations.Contract;
 
 import javax.transaction.Transaction;
 
-import com.sun.appserv.connectors.spi.ResourceHandle;
 
 /**
  * TransactedPoolManager manages jdbc and connector connection pool
+ * @author Jagadish Ramu
  */
 @Contract
 public interface TransactedPoolManager {
 
+    /**
+     * Indicate that a resource is enlisted.
+     * @param tran Transaction to which the resource is enlisted
+     * @param res Resource that is enlisted
+     * @throws IllegalStateException when unable to enlist the resource
+     */
     void resourceEnlisted(Transaction tran, ResourceHandle res) throws IllegalStateException;
 }
 

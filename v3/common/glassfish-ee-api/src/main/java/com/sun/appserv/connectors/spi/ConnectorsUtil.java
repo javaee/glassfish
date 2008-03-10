@@ -39,6 +39,9 @@ package com.sun.appserv.connectors.spi;
 import java.io.File;
 import java.util.Hashtable;
 
+/**
+ * Util class for connector related classes
+ */
 public class ConnectorsUtil {
 
 
