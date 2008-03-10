@@ -6,7 +6,7 @@
             
     <sun:treeNode 
         id="first" 
-        text="Exercise #1"
+        text="First Node"
         url="javaone/hello.jsf"
         imageURL="resource/images/instance.gif"
         target="main" />
