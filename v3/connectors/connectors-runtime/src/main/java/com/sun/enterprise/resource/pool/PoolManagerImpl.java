@@ -314,6 +314,40 @@ public class PoolManagerImpl extends AbstractPoolManager {
         putbackResourceToPool(resource, false);
     }
 
+    public void badResourceClosed(ResourceHandle resource){
+        ResourceManager rm = getResourceManager(resource.getResourceSpec());
+        rm.delistResource(resource, XAResource.TMSUCCESS);
+        putbackBadResourceToPool(resource);
+    }
+
+    public void resourceErrorOccurred(ResourceHandle resource) {
+        putbackResourceToPool(resource, true);
+    }
+
+    public void putbackBadResourceToPool(ResourceHandle h) {
+
+        // cleanup resource
+        try {
+            ResourceAllocator alloc = h.getResourceAllocator();
+            alloc.cleanup(h);
+        } catch (PoolingException ex) {
+            //ignore, this connection will be destroyed anyway
+        }
+
+        // notify pool
+        String poolName = h.getResourceSpec().getConnectionPoolName();
+        if (poolName != null) {
+            ResourcePool pool = (ResourcePool) poolTable.get(poolName);
+            if (pool != null) {
+                synchronized (pool) {
+                    pool.resourceClosed(h);
+                    h.setConnectionErrorOccurred();
+                    pool.resourceErrorOccurred(h);
+                }
+            }
+        }
+    }
+
     public void putbackResourceToPool(ResourceHandle h,
                                       boolean errorOccurred) {
 
