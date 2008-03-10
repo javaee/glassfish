@@ -45,6 +45,12 @@ import org.jvnet.hk2.component.PreDestroy;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+
+/**
+ * Represents the container for connector runtime module
+ *
+ * @author Jagadish Ramu
+ */
 @Service(name = "com.sun.enterprise.connectors.module.ConnectorContainer")
 public class ConnectorContainer implements org.glassfish.api.container.Container, PostConstruct, PreDestroy {
 

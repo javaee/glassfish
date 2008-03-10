@@ -44,6 +44,13 @@ import org.glassfish.javaee.services.ResourceManager;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Represents a connector application, one per resource-adapter.
+ * GlassFish kernel will call start/stop of connector application during start/stop of server and
+ * deploy/undeploy of the resource-adapter.
+ *
+ * @author Jagadish Ramu
+ */
 public class ConnectorApplication implements ApplicationContainer {
     private static Logger _logger = LogDomains.getLogger(LogDomains.RSR_LOGGER);
     private String moduleName = "";

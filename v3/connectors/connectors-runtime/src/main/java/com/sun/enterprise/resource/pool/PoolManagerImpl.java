@@ -248,7 +248,8 @@ public class PoolManagerImpl extends AbstractPoolManager {
         }
     }
 
-    public void resourceEnlisted(Transaction tran, com.sun.appserv.connectors.spi.ResourceHandle h) throws IllegalStateException {
+    public void resourceEnlisted(Transaction tran, com.sun.appserv.connectors.spi.ResourceHandle h)
+            throws IllegalStateException {
         ResourceHandle res = (ResourceHandle)h;
 
         String poolName = res.getResourceSpec().getConnectionPoolName();

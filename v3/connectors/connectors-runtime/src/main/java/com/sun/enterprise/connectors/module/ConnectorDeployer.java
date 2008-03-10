@@ -60,6 +60,12 @@ import java.util.logging.Logger;
 //TODO V3 shouldn't the Deployer be Deployer<ConnectorContainer, ConnectorApplication> ??
 
 //TODO V3 why should it be Deployer<CC,CA> ??
+
+/**
+ * Deployer for a resource-adapter.
+ *
+ * @author Jagadish Ramu
+ */
 @Service
 public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, ConnectorApplication> implements PostConstruct {
 
@@ -119,6 +125,12 @@ public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, Connec
         return new ConnectorApplication(moduleName, resourceManager, runtime);
     }
 
+    /**
+     * retrives all the connection pools of the given resource adapter.
+     * @param ccp All connector connection pools
+     * @param raName Resource-adapter name
+     * @return connection pools of the given resource-adapter
+     */
     private Map<String, ConnectorConnectionPool> getConnectorPoolsForRA(ConnectorConnectionPool[] ccp, String raName) {
         Map<String, ConnectorConnectionPool> raPools = new HashMap<String, ConnectorConnectionPool>();
         for (ConnectorConnectionPool pool : ccp) {
