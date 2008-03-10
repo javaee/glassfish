@@ -4,11 +4,19 @@
     <div class="j1holcontents">
         
         <h1>Exercise 1 Solution: Plugging into GlassFish</h1>
-        
-  <p>&nbsp;</p>
 
+        In exercise 1 you created and modified the following files:  
+	<ul>
+	    <li><a href="#MyPlugin">MyPlugin.java</a><br></li>
+	    <li><a href="#config.jsf">console-config.jsf</a><br></li>
+	    <li><a href="#treenode-ex1.jsf">treenode-ex1.jsf</a><br></li>
+	    <li><a href="#hello.jsf">hello.jsf</a><br></li>
+	</ul>
+        
+	<a name="MyPlugin">
   <p class="j1holsubheader">S1-A: <code>&lt;lab4520_root&gt;/gfplugin/myplugin/src/main/java/org/example/glassfish/admingui/MyPlugin.java</code></p>
   
+  </a>
         <div class="codebox">
             <pre>
 package org.example.glassfish.admingui;
@@ -30,7 +38,9 @@ public class MyPlugin implements ConsoleProvider {
   </br> </br> </br>
 
   
+	<a name="config.jsf">
     <p class="j1holsubheader">S1-B: <code>&lt;lab4520_root&gt;/gfplugin/myplugin/src/main/resources/META-INF/admingui/console-config.xml</code></p>
+</a>
 
         <div class="codebox">
             <pre>
@@ -47,7 +57,9 @@ public class MyPlugin implements ConsoleProvider {
 	</div>
 
   </br> </br> </br>
+	<a name="treenode-ex1.jsf">
     <p class="j1holsubheader">S1-C: <code>&lt;lab4520_root&gt;/gfplugin/myplugin/src/main/resources/treenode-ex1.jsf</code></p>
+</a>
 
         <div class="codebox">
             <pre>
@@ -66,7 +78,9 @@ public class MyPlugin implements ConsoleProvider {
   </div>
 
   </br> </br> </br>
+	<a name="hello.jsf">
     <p class="j1holsubheader">S1-C: <code>&lt;gfplugin&gt;/myplugin/src/main/resources/hello.jsf</code></p>
+</a>
   
         <div class="codebox">
             <pre>
