@@ -80,13 +80,14 @@ import org.glassfish.admin.amx.loader.StartAMX;
 @I18n("amx.command")
 public final class AMXCommand extends AMXCommandBase implements AdminCommand
 {
-    private final AMXConfigRegistrar mConfigRegistrar;
+    @Inject
+    private AMXConfigRegistrar mConfigRegistrar;
 
     private boolean mInitialized;
     
     public AMXCommand()
     {
-        mConfigRegistrar    = AMXConfigRegistrar.getInstance();
+        //mConfigRegistrar    = AMXConfigRegistrar.getInstance();
     }
     
                     
@@ -102,22 +103,6 @@ public final class AMXCommand extends AMXCommandBase implements AdminCommand
          final TimingDelta allDelta = new TimingDelta();
             
         if ( ! mInitialized ) {
-        /*
-import com.sun.enterprise.management.support.XTypesMapper;
-import com.sun.enterprise.management.support.J2EETypesMapper;
-import com.sun.enterprise.management.support.AllTypesMapper;
-            final TimingDelta delta = new TimingDelta();
-            
-            final Class c = XTypesMapper.class;
-            debug( "Reference XTypesMapper: " + delta.elapsedMillis()  + " " + c.getName() );
-            XTypesMapper.getInstance();
-            debug( "Load XTypesMapper: " + delta.elapsedMillis() );
-            J2EETypesMapper.getInstance();
-            debug( "Load J2EETypesMapper: " + delta.elapsedMillis() );
-            AllTypesMapper.getInstance();
-            debug( "Load AllTypesMapper: " + delta.elapsedMillis() );
-        */
-        
             StartAMX.startAMX( getMBeanServer(), mConfigRegistrar );
             mInitialized    = true;
             timingMsg = " (" + allDelta.elapsedMillis() + " ms)";

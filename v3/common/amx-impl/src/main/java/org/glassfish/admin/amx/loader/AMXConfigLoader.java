@@ -192,8 +192,9 @@ public final class AMXConfigLoader
                 
                 try 
                 {
-                    // recursive algorithm--parents need to be registered first,
-                    // but might be later in the queue
+                    // If the ObjectName is null, then it hasn't been registered
+                    // Due to recursive registration of parents, we could encounter beans
+                    // that are parents, and thus already registered.
                     if ( cb.getObjectName() == null )
                     {
                         registerConfigBeanAsMBean( cb );

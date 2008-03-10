@@ -9,6 +9,7 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.config.ConfigBean;
 
 import com.sun.appserv.management.config.AMXConfig;
+import org.glassfish.admin.amx.util.SingletonEnforcer;
 
 
 /**
@@ -23,20 +24,16 @@ public final class AMXConfigRegistrar implements CageBuilder
 {
     private static void debug( final String s ) { System.out.println(s); }
     private AMXConfigLoader  mConfigLoader;
-        
-
+    
+    /**
+        Singleton: there should be only one instance and hence a private constructor.
+        But the framework using this wants to instantiate things with a public constructor.
+     */
     public AMXConfigRegistrar()
     {
-        //debug( "#### AMXConfigRegistrar.AMXConfigRegistrar  #####" );
+        SingletonEnforcer.register( this.getClass(), this );
         
         mConfigLoader = new AMXConfigLoader();
-    }
-    
-    private static AMXConfigRegistrar INSTANCE = new AMXConfigRegistrar();
-        public static AMXConfigRegistrar
-    getInstance()
-    {
-        return INSTANCE;
     }
     
     /**
