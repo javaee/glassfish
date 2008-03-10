@@ -44,10 +44,8 @@ import java.util.*;
 /**
  * Class ASenvPropertyReader
  * 
- * This class converts the environment variables stored in asenv.conf (UNIX)
- * or asenv.bat (WINDOWS) into their equivalent system properties. 
- * This means that a number of system properties with fixed values do 
- * not have to be passed on the java command line using -D.
+ * This class converts the variables stored in asenv.conf (UNIX)
+ * or asenv.bat (WINDOWS) into their equivalent system properties.
  * <p>This class <strong>guarantees</strong> that no Exception will get thrown back.
  * You may however, have a bad javaRoot set even though we tried everything to find
  * one
@@ -55,6 +53,11 @@ import java.util.*;
 public class ASenvPropertyReader {
     /**
      * Read and process the information in asenv
+     * There are no arguments because the installation directory is calculated
+     * relative to the jar file you are calling from.
+     * Unlike V2 this class will not set any System Properties.  Instead it will
+     * give you a Map<String,String> containing the properties.
+     * <p>To use the class, create an instance and then call getProps().
      */
     public ASenvPropertyReader() {
         this(GFLauncherUtils.getInstallDir());
@@ -79,10 +82,21 @@ public class ASenvPropertyReader {
         }
     }
 
-    public Map<String, String> getProps() {
+    /**
+     * Returns the properties that were processed.  This includes going to a bit of
+     * trouble setting up the hostname and java root.
+     * @return A Map<String,String> with all the properties
+     */
+    public Map<String, String> getProps()
+    {
         return props;
     }
 
+    /**
+     * Returns a string representation of the properties in the Map<String,String>.
+     * Format:  name=value\nname2=value2\n etc.
+     * @return the string representation.
+     */
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
