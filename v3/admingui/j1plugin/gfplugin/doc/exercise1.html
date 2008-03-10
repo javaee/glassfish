@@ -123,7 +123,7 @@ Complete this lab to gain a better understanding of these steps.
   This section of the document describes the file layout found in the lab
   exercises, as well as the layout of all GlassFish Modules.&nbsp; A snapshot of
   the GlassFish V3 source code can be found under the
-  <code>gfplugin/glassfish-src</code>
+  <code>&lt;lab4520_root&gt;/gfplugin/glassfish-src</code>
   directory.&nbsp; This is for your reference only and is <span class="j1holnote">NOT</span> needed for
   any exercises in this lab.&nbsp; To obtain the latest GlassFish source code,
   you can follow the instructions found on the GlassFish v3 build instructions
@@ -265,7 +265,7 @@ page</a>.
 	<li>Open plugin module.
 	    <ol class="j1hollist">
 		<li>Choose <code>Open Project</code> from the <code>File</code> menu.</li>
-		<li>Browse to <code>&lt;gfplugin&gt;</code> and select <code>myplugin</code>.</li>
+		<li>Browse to <code>&lt;lab4520_root&gt;/gfplugin</code> and select <code>myplugin</code>.</li>
 		<li>Press the <code>Open Project</code> button.
 		    <p>&nbsp;</p>
 		    <p><img src="images/ex1-project-open.jpg" /></p>
@@ -334,7 +334,7 @@ page</a>.
                 Now open this newly created Java File and
                 add the necessary implementation for the plugin.&nbsp;&nbsp;
                 (Note: the full path of this file is
-                '&lt;gfplugin&gt;/myplugin/src/main/java/org/example/glassfish/admingui/MyPlugin.java')<br>
+		<code>&lt;lab4520_root&gt;/gfplugin/myplugin/src/main/java/org/example/glassfish/admingui/MyPlugin.java</code>)<br>
                 <br>
                 Here are some hints for the implementation.
               <ol class="j1hollist">
@@ -379,11 +379,10 @@ public class MyPlugin implements ConsoleProvider {
 
 </ol> <!-- End Steps Ordered List -->
 
-<a name="ex1stepB">
       <hr style="WIDTH:100%; HEIGHT:2px"><br>
-      <b> 1-B.&nbsp;&nbsp; Add configuration files to indicate&nbsp; integration
-      points.<br>
-      </b>
+<a name="ex1stepB">
+      <b> 1-B Add configuration files to indicate&nbsp; integration points. </b>
+  </a>
       <div id=rbo: style="PADDING:1em 0pt; TEXT-ALIGN:left">
 
         <div style=MARGIN-LEFT:40px>
@@ -457,7 +456,7 @@ public class MyPlugin implements ConsoleProvider {
 
 <a name="ex1stepC">
       <hr style="WIDTH:100%; HEIGHT:2px"><br>
-       <b>1-C Add JSF Pages</b><br>
+       <b>1-C Create a couple JavaServer Faces pages</b></br>
         <br>
         In this step you will be creating the JSF pages
         which will be displayed in the Administration Console when your JavaOne
@@ -511,7 +510,7 @@ public class MyPlugin implements ConsoleProvider {
   <img src="images/ex1-createTreenode.jpg"></br></br>
         Figure 1-8:&nbsp; Create treenode-ex1.jsf</br></br></br></br></br><br>
 
-  <img src="images/ex1-createTreenode.jpg"></br></br>
+  <img src="images/ex1-editTreenode.jpg"></br></br>
             Figure 1-9:&nbsp; Edit treenode-ex1.jsf</br></br></br></br></br><br>
           </div>
 
@@ -581,7 +580,7 @@ public class MyPlugin implements ConsoleProvider {
                 Note:&nbsp; If you are using a command line and have 'maven 2'
                 installed on your system you can build the project by doing the
                 following:<br>
-		<code>%cd&nbsp; gfplugin/plugin;&nbsp;&nbsp; mvn install;</code><br><br>
+		<code>%cd&nbsp; &lt;lab4520_root&gt;/gfplugin/plugin;&nbsp;&nbsp; mvn install;</code><br><br>
 
 		or you can do this in NetBeans by following these steps.<br>
 
@@ -598,14 +597,14 @@ public class MyPlugin implements ConsoleProvider {
 
                 <br>
                 After the above steps are finished, you will have the jar file named 
-                <code>gfplugin/myplugin/target/console-myplugin-1.0-SNAPSHOT.jar</code>.
+                <code>&lt;lab4520_root&gt;/gfplugin/myplugin/target/console-myplugin-1.0-SNAPSHOT.jar</code>.
                 This jar file is ready to be integrated into GlassFish.</span><br>
 
                 </b>You now need a Terminal to enter some commands.&nbsp; Please
                 bring up a terminal window.<br>
                 <br>
                 The GlassFish V3 server is installed as
-		<code>gfplugin/glassfish</code> &nbsp; It is already running.<br>
+		<code>&lt;lab4520_root&gt;/gfplugin/glassfish</code> &nbsp; It is already running.<br>
 		The following steps show you how to integrate and test your plugin module.<br>
 
 
@@ -627,18 +626,22 @@ public class MyPlugin implements ConsoleProvider {
 
 		</li>
 		<li>
+		go to your <code>&lt;lab4520_root&gt;</code> directory<br>
+		<code>cd &lt;lab4520_root&gt;</code><br><br>
+		</li>
+		<li>
                 Shut down the server<br>
-		<code>gfplugin/glassfish/bin/stop-domain</code><br>
+		<code>gfplugin/glassfish/bin/stop-domain</code><br><br>
 		</li>
 		<li>
 		Integrate the jar to GlassFish by copying it to the glassfish modules directory
 		<br>
 		<code>
-		    %cp gfplugin/myplugin/target/console-myplugin-1.0-SNAPSHOT.jar gfplugin/glassfish/modules/console-myplugin-1.0-SNAPSHOT.jar<br>
+		    %cp gfplugin/myplugin/target/console-myplugin-1.0-SNAPSHOT.jar gfplugin/glassfish/modules/console-myplugin-1.0-SNAPSHOT.jar<br><br>
 		    </li>
 		    <li>
                 Start the server again,<br>
-		<code>gfplugin/glassfish/bin/asadmin&nbsp; start-domain</code>
+		<code>gfplugin/glassfish/bin/asadmin&nbsp; start-domain</code><br>
                 <br>
 		</li>
 		<li>

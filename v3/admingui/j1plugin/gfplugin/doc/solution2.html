@@ -7,172 +7,195 @@
         In exercise 2 you created and modified the following files:  
 chart.jsf, console-config.xml and treenode-ex2.jsf.<br>
 Here is the content of all 3 files:<br>
-<br>
-S2-B:&nbsp; Content of&nbsp;&nbsp;
-<b>lab/myplugin/src/main/resources/chart.jsf</b><br>    
-        <div class="codebox">
-            <pre>
+        
+  <p class="j1holsubheader">S2-A: <code>&lt;lab4520_root&gt;/gfplugin/myplugin/src/main/resources/chart.jsf</code></p>
+
+<div class="codebox">
+<pre>
+
 &lt;sun:page&gt;
-	&lt;!beforeCreate
-		getjMakiValues(values=&gt;$attribute{pievalues});
-		getjMakiValues(values=&gt;$attribute{gryvalues});
-		getjMakiValues(values=&gt;$attribute{bluvalues});
-		getjMakiValues(values=&gt;$attribute{pnkvalues});
-		getjMakiValues(values=&gt;$attribute{redvalues});
-	/&gt;
-&lt;sun:html&gt;
-&lt;sun:markup tag="head"&gt;
-	&lt;sun:link url="/theme/com/sun/webui/jsf/suntheme/css/css_master.css" /&gt;
-    &lt;sun:markup tag="title"&gt;
-	&lt;staticText value="jMaki Charting!" /&gt;
+    &lt;!beforeCreate
+        getjMakiValues(values=&gt;$attribute{pievalues});
+        getjMakiValues(values=&gt;$attribute{gryvalues});
+        getjMakiValues(values=&gt;$attribute{bluvalues});
+        getjMakiValues(values=&gt;$attribute{pnkvalues});
+        getjMakiValues(values=&gt;$attribute{redvalues});
+    /&gt;
+    &lt;sun:html&gt;
+    &lt;sun:markup tag="head"&gt;
+        &lt;sun:link url="/theme/com/sun/webui/jsf/suntheme/css/css_master.css" /&gt;
+        &lt;sun:markup tag="title"&gt;
+            &lt;staticText value="jMaki Charting!" /&gt;
+        &lt;/sun:markup&gt;
+        &lt;sun:script url="/resources/jmaki.js" /&gt;
+        &lt;sun:script url="/theme/META-INF/dojo/dojo.js" /&gt;
+        &lt;sun:script url="/theme/META-INF/json/json.js" /&gt;
+        &lt;sun:script url="/theme/META-INF/prototype/prototype.js" /&gt;
+        &lt;sun:script url="/theme/META-INF/com_sun_faces_ajax.js" /&gt;
     &lt;/sun:markup&gt;
-    &lt;sun:script url="/resources/jmaki.js" /&gt;
-    &lt;sun:script url="/theme/META-INF/dojo/dojo.js" /&gt;
-    &lt;sun:script url="/theme/META-INF/json/json.js" /&gt;
-    &lt;sun:script url="/theme/META-INF/prototype/prototype.js" /&gt;
-    &lt;sun:script url="/theme/META-INF/com_sun_faces_ajax.js" /&gt;
-&lt;/sun:markup&gt;
 
 &lt;sun:markup tag="body"&gt;
 
 &lt;sun:form id="form"&gt;
 
 
-&lt;sun:markup tag="div" style="width:380px; height: 380px;"&gt;
+&lt;sun:markup tag="div" style="width:380px; height: 310px;"&gt;
 
-//  Uncomment the one at a time to try
-
-&lt;sun:dropDown labels={
-    "jmaki.charting.yahoo.pie"
-    "jmaki.charting.google.pie"
-    "jmaki.charting.plotkit.pie"}
-    value="#{requestScope.chart1}"&gt;
+&lt;sun:dropDown labels={"jmaki.charting.yahoo.pie"
+        "jmaki.charting.google.pie"
+        "jmaki.charting.plotkit.pie"}
+        value="#{requestScope.chart1}"&gt;
     &lt;!beforeCreate
-	setAttribute(key="chart1", value="jmaki.charting.google.pie");
+    setAttribute(key="chart1", value="jmaki.charting.google.pie");
     /&gt;
 &lt;/sun:dropDown&gt;
 &lt;sun:button value=" Refresh " /&gt;
 &lt;jmaki:widget name="#{requestScope.chart1}"
     args="{colorScheme:2}"
     value="{
-	xAxis : {
-	    title : 'Months',
-	    labels : [
-		{label : 'January'},
-		{label : 'February'},
-		{label : 'March'},
-		{label : 'April'},
-		{label : 'May'},
-		{label : 'June'},
-		{label : 'July'},
-		{label : 'August'},
-		{label : 'September'},
-		{label : 'October'},
-		{label : 'November'},
-		{label : 'December'} ]
-		},
-	data : [ {
-	    label : 'Set 1',
-	    values : $attribute{pievalues}
-	    } ] }"/&gt;
+    xAxis : {
+        title : 'Months',
+        labels : [
+        {label : 'January'},
+        {label : 'February'},
+        {label : 'March'},
+        {label : 'April'},
+        {label : 'May'},
+        {label : 'June'},
+        {label : 'July'},
+        {label : 'August'},
+        {label : 'September'},
+        {label : 'October'},
+        {label : 'November'},
+        {label : 'December'} ]
+        },
+    data : [ {
+        label : 'Set 1',
+        values : $attribute{pievalues}
+        } ] }"/&gt;
 
 &lt;/sun:markup&gt;
 
-&lt;sun:dropDown labels={
-    "jmaki.charting.plotkit.area"
-    "jmaki.charting.plotkit.line"
-    "jmaki.charting.plotkit.bar"
-    "jmaki.charting.google.area"
-    "jmaki.charting.google.bar"
-    "jmaki.charting.google.line"
-    "jmaki.charting.yahoo.line"
-    "jmaki.charting.yahoo.bar"
-    "jmaki.charting.dojo.bar"
-    "jmaki.charting.dojo.line"
-    "jmaki.charting.dojo.area"}
-    value="#{requestScope.chart2}"&gt;
+&lt;sun:dropDown labels={"jmaki.charting.plotkit.area"
+        "jmaki.charting.plotkit.line"
+        "jmaki.charting.plotkit.bar"
+        "jmaki.charting.google.area"
+        "jmaki.charting.google.bar"
+        "jmaki.charting.google.line"
+        "jmaki.charting.yahoo.line"
+        "jmaki.charting.yahoo.bar"
+        "jmaki.charting.dojo.bar"
+        "jmaki.charting.dojo.line"
+        "jmaki.charting.dojo.area"}
+        value="#{requestScope.chart2}"&gt;
     &lt;!beforeCreate
-	setAttribute(key="chart2", value="jmaki.charting.yahoo.area");
+    setAttribute(key="chart2", value="jmaki.charting.yahoo.bar");
     /&gt;
 &lt;/sun:dropDown&gt;
 &lt;sun:button value=" Refresh " /&gt;
-&lt;sun:markup tag="div" style="width: 600px; height: 280px;"&gt;
+&lt;sun:markup tag="div" style="width: 500px; height: 280px;"&gt;
 
-//  Uncomment the one at a time to try
 &lt;jmaki:widget name="#{requestScope.chart2}"
-          value="{
-                    xAxis : {
-                    title : 'Months',
-                    labels : [{ label : 'January'},
-                              { label : 'February'},
-                              { label : 'March'},
-                              { label : 'April'},
-                              { label : 'May'},
-                              { label : 'June'},
-                              { label : 'July'},
-                              { label : 'August'},
-                              { label : 'September'},
-                              { label : 'October'},
-                              { label : 'November'},
-                              { label : 'December'}
-                              ]
-                              },
-                    yAxis : {
-                    title : 'Temperature',
-                    labels : [{ label : '0', value : 0},
-                              { label : '10s', value : 10},
-                              { label : '20s', value : 20},
-                              { label : '30s', value : 30},
-                              { label : '40s', value : 40},
-                              { label : '50s', value : 50}
-                              ]
-                              },                              
-                              data : [
-                   {label : 'Gray Series', values : $attribute{gryvalues} },
-                   {label : 'Pink Series', values : $attribute{pnkvalues} },
-                   {label : 'Blue Series', values : $attribute{bluvalues} },
-                   {label : 'Red Series',  values : $attribute{redvalues} }
-                   ]
-               }"/&gt;
-&lt;/sun:markup&gt;
-
-&lt;/sun:form&gt;
-
-&lt;/sun:markup&gt;
-&lt;/sun:html&gt;
+        value="{
+            xAxis : {
+                title : 'Months',
+                labels : [{ label : 'January'},
+                    { label : 'February'},
+                    { label : 'March'},
+                    { label : 'April'},
+                    { label : 'May'},
+                    { label : 'June'},
+                    { label : 'July'},
+                    { label : 'August'},
+                    { label : 'September'},
+                    { label : 'October'},
+                    { label : 'November'},
+                    { label : 'December'}
+                    ]
+                    },
+            yAxis : {
+                title : 'Temperature',
+                labels : [{ label : '0', value : 0},
+                    { label : '10s', value : 10},
+                    { label : '20s', value : 20},
+                    { label : '30s', value : 30},
+                    { label : '40s', value : 40},
+                    { label : '50s', value : 50}
+                    ]
+                    },                              
+            data : [
+                    {label : 'Gray Series', values : $attribute{gryvalues} },
+                    {label : 'Pink Series', values : $attribute{pnkvalues} },
+                    {label : 'Blue Series', values : $attribute{bluvalues} },                   
+                    {label : 'Red Series',  values : $attribute{redvalues} }
+                    ]
+                    }"/&gt;
+        &lt;/sun:markup&gt;
+        &lt;/sun:form&gt;
+        &lt;/sun:markup&gt;
+        &lt;/sun:html&gt;
 &lt;/sun:page&gt;
-            </pre>
-        </div>
-S2-C  :  Content for  <b>lab/myplugin/src/main/resources/META-INF/admingui/console-config.xml</b><br>
-<div class="codebox">
-                <pre>
-  &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+
+
+
+</pre>
+</div>
+
+
+  </br> </br> </br>
   
-  &lt;console-config id=&quot;javaone&quot;&gt;
-  &nbsp;&nbsp;&nbsp;&nbsp;&lt;integration-point
-  &nbsp;&nbsp;&nbsp;&nbsp;id=&quot;JavaOneNode&quot;
-  &nbsp;&nbsp;&nbsp;&nbsp;type=&quot;tree&quot;
-  &nbsp;&nbsp;&nbsp;&nbsp;priority=&quot;210&quot;
-  &nbsp;&nbsp;&nbsp;&nbsp;parentId=&quot;tree&quot;
-  &nbsp;&nbsp;&nbsp;&nbsp;content=&quot;treenode-ex1.jsf&quot;
-  &nbsp;&nbsp;&nbsp;&nbsp;/&gt;
-  
-  &nbsp;&nbsp;&nbsp;&nbsp;&lt;integration-point
-  &nbsp;&nbsp;&nbsp;&nbsp;id=&quot;Another&quot;
-  &nbsp;&nbsp;&nbsp;&nbsp;type=&quot;tree&quot;
-  &nbsp;&nbsp;&nbsp;&nbsp;priority=&quot;230&quot;
-  &nbsp;&nbsp;&nbsp;&nbsp;parentId=&quot;j1root&quot;
-  &nbsp;&nbsp;&nbsp;&nbsp;content=&quot;treenode-ex2.jsf&quot;
-  &nbsp;&nbsp;&nbsp;&nbsp;/&gt;
-  &lt;/console-config&gt;
+    <p class="j1holsubheader">S2-B: <code>&lt;lab4520_root&gt;/gfplugin/myplugin/src/main/resources/META-INF/admingui/console-config.xml</code></p>
+
+
+	<div class="codebox">
+  <pre>
+
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+
+&lt;console-config id="javaone"&gt;
+        &lt;integration-point 
+                id="JavaOneNode" 
+                type="tree" 
+                priority="210" 
+                parentId="tree" 
+                content="treenode-ex1.jsf" 
+        /&gt;
+        &lt;integration-point 
+                id="Another" 
+                type="tree" 
+                priority="230" 
+                parentId="j1root" 
+                content="treenode-ex2.jsf" 
+        /&gt;
+&lt;/console-config&gt;
   </pre>
-            </div>
-S2-D  :  Content for  <b>lab/myplugin/src/main/resources/treenode-ex2.jsf</b><br>
-   <div class="codebox">
-                <pre> &lt;sun:treeNode<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; id="second" <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; text="Exercise #2"<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; url="javaone/chart.jsf"<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; imageURL="resource/images/instance.gif"<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; target="main" <br>/&gt;
-                </pre>
-            </div>
-        <p><a href="#Summary">Go on to summary</a></p>
+  </div>
+
+  </br> </br> </br>
+    <p class="j1holsubheader">S2-C: <code>&lt;lab4520_root&gt;/gfplugin/myplugin/src/main/resources/treenode-ex2.jsf</code></p>
+
+        <div class="codebox">
+            <pre>
+
+&lt;sun:treeNode
+        id="second" 
+        text="Exercise #2"
+        url="javaone/chart.jsf"
+        imageURL="resource/images/instance.gif"
+        target="main" 
+/&gt;
+
+</pre>
+  </div>
+
+  </br> </br> </br>
+    <p class="j1holsubheader">Final View:</p>
+
+	<img src=images/ex2-result.jpg>
+  </div>
+
+<br><br>
+        <p><a href="#Exercise_2">Go to Exercise 2</a></p>
     </div>
-    
 </body>
+
