@@ -36,10 +36,18 @@
 package com.sun.enterprise.resource;
 
 import com.sun.enterprise.connectors.ConnectorRuntime;
+import com.sun.enterprise.connectors.ConnectionManagerImpl;
+import com.sun.appserv.connectors.spi.ConnectorRuntimeException;
+import com.sun.appserv.connectors.spi.ConnectorsUtil;
+import com.sun.logging.LogDomains;
 import org.glassfish.api.naming.NamingObjectProxy;
 
 import javax.naming.Context;
 import javax.naming.NamingException;
+import javax.naming.ConfigurationException;
+import javax.resource.spi.ManagedConnectionFactory;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * An object factory to handle creation of Connection Factories
@@ -53,6 +61,8 @@ public class ConnectorObjectFactory implements NamingObjectProxy {
     private String poolName;
     private String moduleName;
     private String connectionFactoryName;
+
+    private static Logger _logger = LogDomains.getLogger(LogDomains.JNDI_LOGGER);
 
     public ConnectorObjectFactory(String jndiName, String connectionFactoryName, String moduleName, String poolName) {
         this.jndiName = jndiName;
@@ -79,6 +89,49 @@ public class ConnectorObjectFactory implements NamingObjectProxy {
      * @return an object
      */
     public Object create(Context ic) throws NamingException {
-        return runtime.createConnectionFactory(jndiName, moduleName, poolName, ic.getEnvironment());
+
+        Object cf = null;
+        try {
+            ManagedConnectionFactory mcf = getRuntime().obtainManagedConnectionFactory(poolName);
+            if (mcf == null) {
+                _logger.log(Level.FINE, "Failed to create MCF ", poolName);
+                throw new ConnectorRuntimeException("Failed to create MCF");
+            }
+
+            boolean forceNoLazyAssoc = false;
+
+            if (jndiName.endsWith(com.sun.appserv.connectors.spi.ConnectorConstants.PM_JNDI_SUFFIX)) {
+                forceNoLazyAssoc = true;
+            }
+
+            String derivedJndiName = ConnectorsUtil.deriveJndiName(jndiName, ic.getEnvironment());
+            ConnectionManagerImpl mgr = (ConnectionManagerImpl)
+                    getRuntime().obtainConnectionManager(poolName, forceNoLazyAssoc);
+            mgr.setJndiName(derivedJndiName);
+            mgr.setRarName(moduleName);
+            mgr.initialize();
+
+            cf = mcf.createConnectionFactory(mgr);
+            if (cf == null) {
+                /* TODO V3 handle later
+                    String msg = localStrings.getLocalString
+                        ("no.resource.adapter", "");
+                */
+                String msg = "No resource adapter found";
+                throw new RuntimeException(new ConfigurationException(msg));
+            }
+
+            if (_logger.isLoggable(Level.FINE)) {
+                _logger.log(Level.FINE, "Connection Factory:" + cf);
+            }
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return cf;
+    }
+
+    private ConnectorRuntime getRuntime() {
+        return runtime;
     }
 }

@@ -42,7 +42,6 @@ import com.sun.enterprise.config.serverbeans.Property;
 import com.sun.enterprise.config.serverbeans.SecurityMap;
 import com.sun.enterprise.connectors.service.*;
 import com.sun.enterprise.connectors.util.RAWriterAdapter;
-import com.sun.appserv.connectors.spi.ConnectorsUtil;
 import com.sun.enterprise.connectors.authentication.AuthenticationService;
 import com.sun.enterprise.connectors.naming.ConnectorNamingEventNotifier;
 import com.sun.enterprise.deployment.ConnectorDescriptor;
@@ -63,7 +62,6 @@ import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.Singleton;
 import org.jvnet.hk2.component.PreDestroy;
 
-import javax.naming.ConfigurationException;
 import javax.naming.NamingException;
 import javax.resource.spi.ConnectionManager;
 import javax.resource.spi.ManagedConnectionFactory;
@@ -76,6 +74,16 @@ import java.util.logging.Logger;
 import java.util.logging.Level;
 
 
+/**
+ * This class is the entry point to connector backend module.
+ * It exposes different API's called by external entities like JPA, admin
+ * to perform various connector backend related  operations.
+ * It delegates calls to various connetcor admin services and other
+ * connector services which actually implement the functionality.
+ * This is a delegating class.
+ *
+ * @author Binod P.G, Srikanth P, Aditya Gore, Jagadish Ramu
+ */
 
 @Service
 @Scoped(Singleton.class)
@@ -172,11 +180,10 @@ public class ConnectorRuntime implements ConnectorConstants, com.sun.appserv.con
      * Returns the generated default connection poolName for a
      * connection definition.
      *
+     * @param moduleName        rar module name
+     * @param connectionDefName connection definition name
      * @return generated connection poolname
-     * @moduleName rar module name
-     * @connectionDefName connection definition name
      */
-
     public String getDefaultPoolName(String moduleName,
                                      String connectionDefName) {
         return connectorService.getDefaultPoolName(moduleName, connectionDefName);
@@ -188,7 +195,6 @@ public class ConnectorRuntime implements ConnectorConstants, com.sun.appserv.con
      * @param poolName Name of the pool to delete
      * @throws ConnectorRuntimeException if pool deletion operation fails
      */
-
     public void deleteConnectorConnectionPool(String poolName)
             throws ConnectorRuntimeException {
         ccPoolAdmService.deleteConnectorConnectionPool(poolName);
@@ -201,7 +207,6 @@ public class ConnectorRuntime implements ConnectorConstants, com.sun.appserv.con
      *                         object contains the pool properties.
      * @throws ConnectorRuntimeException When creation of pool fails.
      */
-
     public void createConnectorConnectionPool(
             ConnectorConnectionPool connectorPoolObj)
             throws ConnectorRuntimeException {
@@ -216,7 +221,6 @@ public class ConnectorRuntime implements ConnectorConstants, com.sun.appserv.con
      * @param resourceType Unused.
      * @throws ConnectorRuntimeException If the resouce creation fails.
      */
-
     public void createConnectorResource(String jndiName, String poolName,
                                         String resourceType) throws ConnectorRuntimeException {
 
@@ -227,18 +231,21 @@ public class ConnectorRuntime implements ConnectorConstants, com.sun.appserv.con
      * Returns the generated default connector resource for a
      * connection definition.
      *
+     * @param moduleName        rar module name
+     * @param connectionDefName connection definition name
      * @return generated default connector resource name
-     * @moduleName rar module name
-     * @connectionDefName connection definition name
      */
-
     public String getDefaultResourceName(String moduleName,
                                          String connectionDefName) {
         return connectorService.getDefaultResourceName(
                 moduleName, connectionDefName);
     }
 
-
+    /**
+     * Provides resource adapter log writer to be given to MCF of a resource-adapter
+     *
+     * @return PrintWriter
+     */
     public PrintWriter getResourceAdapterLogWriter() {
         Logger logger = LogDomains.getLogger(LogDomains.RSR_LOGGER);
         RAWriterAdapter writerAdapter = new RAWriterAdapter(logger);
@@ -251,7 +258,6 @@ public class ConnectorRuntime implements ConnectorConstants, com.sun.appserv.con
      * @param jndiName JNDI name of the resource to delete.
      * @throws ConnectorRuntimeException if connector resource deletion fails.
      */
-
     public void deleteConnectorResource(String jndiName)
             throws ConnectorRuntimeException {
         connectorResourceAdmService.deleteConnectorResource(jndiName);
@@ -265,6 +271,7 @@ public class ConnectorRuntime implements ConnectorConstants, com.sun.appserv.con
      *
      * @param rarName Name of the rar
      * @return ConnectorDescriptor pertaining to rar.
+     * @throws ConnectorRuntimeException when unable to get descriptor
      */
     public ConnectorDescriptor getConnectorDescriptor(String rarName)
             throws ConnectorRuntimeException {
@@ -273,15 +280,8 @@ public class ConnectorRuntime implements ConnectorConstants, com.sun.appserv.con
     }
 
     /**
-     * Creates Active resource Adapter which abstracts the rar module.
-     * During the creation of ActiveResourceAdapter, default pools and
-     * resources also are created.
-     *
-     * @param moduleDir  Directory where rar module is exploded.
-     * @param moduleName Name of the module
-     * @throws ConnectorRuntimeException if creation fails.
+     * {@inheritDoc}
      */
-
     public void createActiveResourceAdapter(String moduleDir,
                                             String moduleName) throws ConnectorRuntimeException {
         resourceAdapterAdmService.createActiveResourceAdapter(
@@ -289,24 +289,7 @@ public class ConnectorRuntime implements ConnectorConstants, com.sun.appserv.con
     }
 
     /**
-     * Destroys/deletes the Active resource adapter object from the
-     * connector container. Active resource adapter abstracts the rar
-     * deployed. It checks whether any resources (pools and connector
-     * resources) are still present. If they are present and cascade option
-     * is false the deletion fails and all the objects and datastructures
-     * pertaining to  the resource adapter are left untouched.
-     * If cascade option is true, even if resources are still present, they are
-     * also destroyed with the active resource adapter
-     *
-     * @param moduleName Name of the rarModule to destroy/delete
-     * @param cascade    If true all the resources belonging to the rar are
-     *                   destroyed recursively.
-     *                   If false, and if resources pertaining to resource adapter
-     *                   /rar are present deletetion is failed. Then cascade
-     *                   should be set to true or all the resources have to
-     *                   deleted explicitly before destroying the rar/Active
-     *                   resource adapter.
-     * @throws ConnectorRuntimeException if the deletion fails
+     * {@inheritDoc}
      */
     public void destroyActiveResourceAdapter(String moduleName, boolean cascade)
             throws ConnectorRuntimeException {
@@ -328,6 +311,15 @@ public class ConnectorRuntime implements ConnectorConstants, com.sun.appserv.con
         return ccPoolAdmService.obtainManagedConnectionFactory(poolName);
     }
 
+    /**
+     * provides connection manager for a pool
+     *
+     * @param poolName         pool name
+     * @param forceNoLazyAssoc when set to true, lazy association feature will be turned off (even if it is ON via
+     *                         pool attribute)
+     * @return ConnectionManager for the pool
+     * @throws ConnectorRuntimeException when unable to provide a connection manager
+     */
     public ConnectionManager obtainConnectionManager(String poolName,
                                                      boolean forceNoLazyAssoc)
             throws ConnectorRuntimeException {
@@ -337,56 +329,27 @@ public class ConnectorRuntime implements ConnectorConstants, com.sun.appserv.con
     }
 
     /**
-     * Does lookup of "__pm" datasource. If found, it will be returned.<br><br>
-     *
-     * If not found and <b>force</b> is true, this api will try to get a wrapper datasource specified
-     *  by the jdbcjndi name. The motivation for having this
-     * API is to provide the CMP backend/ JPA-Java2DB a means of acquiring a connection during
-     * the codegen phase. If a user is trying to deploy an JPA-Java2DB app on a remote server,
-     * without this API, a resource reference has to be present both in the DAS
-     * and the server instance. This makes the deployment more complex for the
-     * user since a resource needs to be forcibly created in the DAS Too.
-     * This API will mitigate this need.
-     * When the resource is not enabled, datasource wrapper provided will not be of
-     * type "__pm"
-     *
-     * @param jndiName  jndi name of the resource
-     * @param force provide the resource (in DAS)  even if it is not enabled in DAS
-     * @return DataSource representing the resource.
-     * @throws javax.naming.NamingException when not able to get the datasource.
+     * {@inheritDoc}
      */
     public Object lookupPMResource(String jndiName, boolean force) throws NamingException {
         //TODO V3 handle clustering later (  --createtables, nonDAS)
-        if(force){
-            _logger.log(Level.INFO, "lookup PM Resource [ "+jndiName+" ] with force=true is not supported");
+        if (force) {
+            _logger.log(Level.INFO, "lookup PM Resource [ " + jndiName + " ] with force=true is not supported");
         }
-        return connectorResourceAdmService.lookup(jndiName+PM_JNDI_SUFFIX);
+        return connectorResourceAdmService.lookup(jndiName + PM_JNDI_SUFFIX);
     }
+
     /**
-     * Does lookup of non-tx-datasource. If found, it will be returned.<br><br>
-     *
-     * If not found and <b>force</b> is true,  this api will try to get a wrapper datasource specified
-     * by the jdbcjndi name. The motivation for having this
-     * API is to provide the CMP backend/ JPA-Java2DB a means of acquiring a connection during
-     * the codegen phase. If a user is trying to deploy an JPA-Java2DB app on a remote server,
-     * without this API, a resource reference has to be present both in the DAS
-     * and the server instance. This makes the deployment more complex for the
-     * user since a resource needs to be forcibly created in the DAS Too.
-     * This API will mitigate this need.
-     *
-     * @param jndiName  jndi name of the resource
-     * @param force provide the resource (in DAS)  even if it is not enabled in DAS
-     * @return DataSource representing the resource.
-     * @throws NamingException when not able to get the datasource.
+     * {@inheritDoc}
      */
-    public Object lookupNonTxResource(String jndiName, boolean force) throws NamingException{
+    public Object lookupNonTxResource(String jndiName, boolean force) throws NamingException {
         //TODO V3 handle clustering later (  --createtables, nonDAS)
-        if(force){
-            _logger.log(Level.INFO, "lookup NonTx Resource [ "+jndiName+" ] with force=true is not supported");
+        if (force) {
+            _logger.log(Level.INFO, "lookup NonTx Resource [ " + jndiName + " ] with force=true is not supported");
         }
-        return connectorResourceAdmService.lookup(jndiName+NON_TX_JNDI_SUFFIX);
+        return connectorResourceAdmService.lookup(jndiName + NON_TX_JNDI_SUFFIX);
     }
-    
+
 
     /**
      * Causes pool to switch on the matching of connections.
@@ -410,49 +373,6 @@ public class ConnectorRuntime implements ConnectorConstants, com.sun.appserv.con
     public void switchOnMatchingInJndi(String poolName)
             throws ConnectorRuntimeException {
         ccPoolAdmService.switchOnMatching(poolName);
-    }
-
-    public Object createConnectionFactory(String jndiName, String moduleName, String poolName, Hashtable env)
-            throws RuntimeException {
-        Object cf = null;
-        try {
-            ManagedConnectionFactory mcf = getRuntime().obtainManagedConnectionFactory(poolName);
-            if (mcf == null) {
-                _logger.log(Level.FINE,"Failed to create MCF ",poolName);
-                throw new ConnectorRuntimeException("Failed to create MCF");
-            }
-
-            boolean forceNoLazyAssoc = false;
-
-            if ( jndiName.endsWith( com.sun.appserv.connectors.spi.ConnectorConstants.PM_JNDI_SUFFIX ) ) {
-                forceNoLazyAssoc = true;
-            }
-
-            String derivedJndiName = ConnectorsUtil.deriveJndiName(jndiName, env);
-            ConnectionManagerImpl mgr = (ConnectionManagerImpl)
-                    getRuntime().obtainConnectionManager(poolName, forceNoLazyAssoc);
-            mgr.setJndiName(derivedJndiName);
-            mgr.setRarName(moduleName);
-            mgr.initialize();
-
-            cf = mcf.createConnectionFactory(mgr);
-            if (cf == null) {
-                /* TODO V3 handle later
-                    String msg = localStrings.getLocalString
-                        ("no.resource.adapter", "");
-                */
-                String msg = "No resource adapter found";
-                throw new RuntimeException(new ConfigurationException(msg));
-            }
-            
-                if(_logger.isLoggable(Level.FINE)) {
-                _logger.log(Level.FINE,"Connection Factory:" + cf);
-            }
-
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-        return cf;
     }
 
     public GlassfishNamingManager getNamingManager() {
@@ -481,21 +401,21 @@ public class ConnectorRuntime implements ConnectorConstants, com.sun.appserv.con
         // add the APIs visibility...
         List<ModuleDefinition> defs = new ArrayList<ModuleDefinition>();
         Module module = registry.makeModuleFor("org.glassfish.common:glassfish-api", null);
-        if (module!=null) {
+        if (module != null) {
             defs.add(module.getModuleDefinition());
         }
         module = registry.makeModuleFor("org.glassfish.common:glassfish-ee-api", null);
-        if (module!=null) {
+        if (module != null) {
             defs.add(module.getModuleDefinition());
         }
         module = registry.makeModuleFor("org.glassfish.common:common-util", null);
-        if (module!=null) {
+        if (module != null) {
             defs.add(module.getModuleDefinition());
         }
         ConnectorClassLoader.getInstance(registry.getModulesClassLoader(null, defs));
 
 
-        System.out.println("Time taken to initialize connector runtime : " + (System.currentTimeMillis() - startTime));
+        _logger.fine("Time taken to initialize connector runtime : " + (System.currentTimeMillis() - startTime));
     }
 
     /**
@@ -539,7 +459,6 @@ public class ConnectorRuntime implements ConnectorConstants, com.sun.appserv.con
      *
      * @param ccp - the ConnectorConnectionPool to publish
      */
-
     public void recreateConnectorConnectionPool(ConnectorConnectionPool ccp)
             throws ConnectorRuntimeException {
         ccPoolAdmService.recreateConnectorConnectionPool(ccp);
@@ -558,7 +477,6 @@ public class ConnectorRuntime implements ConnectorConstants, com.sun.appserv.con
      * @param securityMaps             Array fo security maps.
      * @throws ConnectorRuntimeException When creation of pool fails.
      */
-
     public void createConnectorConnectionPool(ConnectorConnectionPool ccp,
                                               String connectionDefinitionName, String rarName,
                                               List<Property> props,
@@ -568,6 +486,9 @@ public class ConnectorRuntime implements ConnectorConstants, com.sun.appserv.con
     }
 
 
+    /**
+     * {@inheritDoc}
+     */
     public boolean checkAndLoadResource(Object resource, Object pool, String resourceType, String resourceName,
                                         String raName) throws ConnectorRuntimeException {
         return connectorService.checkAndLoadResource(resource, pool, resourceType, resourceName, raName);
@@ -580,11 +501,17 @@ public class ConnectorRuntime implements ConnectorConstants, com.sun.appserv.con
         resourceAdapterAdmService.stopAllActiveResourceAdapters();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void shutdownAllActiveResourceAdapters(Collection<String> poolNames, Collection<String> resourceNames) {
         destroyResourcesAndPools(resourceNames, poolNames);
         stopAllActiveResourceAdapters();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void destroyResourcesAndPools(Collection resources, Collection pools) {
         connectorService.destroyResourcesAndPools(resources, pools);
     }
@@ -593,7 +520,7 @@ public class ConnectorRuntime implements ConnectorConstants, com.sun.appserv.con
         return poolManager;
     }
 
-    public InvocationManager getInvocationManager(){
+    public InvocationManager getInvocationManager() {
         return invocationManager;
     }
 
@@ -608,7 +535,7 @@ public class ConnectorRuntime implements ConnectorConstants, com.sun.appserv.con
         return timer;
     }
 
-    public Set getResourceReferenceDescriptor(){
+    public Set getResourceReferenceDescriptor() {
         return componentEnvManager.getCurrentJndiNameEnvironment().getResourceReferenceDescriptors();
     }
 
@@ -616,49 +543,62 @@ public class ConnectorRuntime implements ConnectorConstants, com.sun.appserv.con
      * The component is about to be removed from commission
      */
     public void preDestroy() {
-        if (timer!=null) {
+        if (timer != null) {
             timer.cancel();
         }
     }
 
     /**
-     *  Obtain the authentication service associated with rar module.
-     *  Currently only the BasicPassword authentication is supported.
-     *  @param rarName Rar module Name
-     *  @param poolName Name of the pool. Used for creation of
-     *                              BasicPasswordAuthenticationService
+     * Obtain the authentication service associated with rar module.
+     * Currently only the BasicPassword authentication is supported.
+     *
+     * @param rarName  Rar module Name
+     * @param poolName Name of the pool. Used for creation of
+     *                 BasicPasswordAuthenticationService
      * @return AuthenticationService connector runtime's authentication service
      */
-
     public AuthenticationService getAuthenticationService(String rarName,
-                           String poolName) {
+                                                          String poolName) {
 
-        return connectorSecurityAdmService.getAuthenticationService(rarName,poolName);
+        return connectorSecurityAdmService.getAuthenticationService(rarName, poolName);
     }
 
-    /** Checks whether the executing environment is application server
-     *  @return true if execution environment is server
-     *          false if it is client
+    /**
+     * Checks whether the executing environment is application server
+     *
+     * @return true if execution environment is server
+     *         false if it is client
      */
     public static boolean isServer() {
         //TODO V3 static method using instance ?
         return getRuntime().connectorService.isServer();
     }
 
-
+    /**
+     * provides the current transaction
+     *
+     * @return Transaction
+     * @throws SystemException when unable to get the transaction
+     */
     public Transaction getTransaction() throws SystemException {
         return transactionManager.getTransaction();
     }
 
-    public JavaEETransactionManager getTransactionManager(){
+    /**
+     * provides the transactionManager
+     *
+     * @return TransactionManager
+     */
+    public JavaEETransactionManager getTransactionManager() {
         return transactionManager;
     }
 
     /**
      * Gets Connector Resource Rebind Event notifier.
-     * @return   ConnectorNamingEventNotifier
+     *
+     * @return ConnectorNamingEventNotifier
      */
-    private ConnectorNamingEventNotifier getResourceRebindEventNotifier(){
+    private ConnectorNamingEventNotifier getResourceRebindEventNotifier() {
         return connectorResourceAdmService.getResourceRebindEventNotifier();
     }
 }
