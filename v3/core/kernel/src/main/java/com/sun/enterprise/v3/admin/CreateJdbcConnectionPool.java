@@ -44,19 +44,13 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PerLookup;
-import org.jvnet.hk2.config.ConfigSupport;
-import org.jvnet.hk2.config.SingleConfigCode;
-import org.jvnet.hk2.config.TransactionFailure;
-import com.sun.enterprise.config.serverbeans.Property;
-import com.sun.enterprise.config.serverbeans.Resource;
+import com.sun.enterprise.config.serverbeans.ServerTags;
+import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.config.serverbeans.Resources;
 import com.sun.enterprise.config.serverbeans.JdbcConnectionPool;
-import com.sun.enterprise.util.LocalStringManagerImpl;
 
-import java.beans.PropertyVetoException;
-import java.util.Map;
+import java.util.HashMap;
 import java.util.Properties;
-
 
 /**
  * Create JDBC Connection Pool Command
@@ -114,15 +108,51 @@ public class CreateJdbcConnectionPool implements AdminCommand {
     @Param(name="nontransactionalconnections", optional=true)
     String nontransactionalconnections = Boolean.FALSE.toString();
     
+    @Param(name="validateatmostonceperiod", optional=true)
+    String validateatmostonceperiod = "0";
+    
+    @Param(name="leaktimeout", optional=true)
+    String leaktimeout = "0";
+    
+    @Param(name="leakreclaim", optional=true)
+    String leakreclaim = Boolean.FALSE.toString();
+    
+    @Param(name="creationretryattempts", optional=true)
+    String creationretryattempts = "0";
+    
+    @Param(name="creationretryinterval", optional=true)
+    String creationretryinterval = "10";
+    
+    @Param(name="statementtimeout", optional=true)
+    String statementtimeout = "-1";
+    
+    @Param(name="lazyconnectionenlistment", optional=true)
+    String lazyconnectionenlistment = Boolean.FALSE.toString();
+    
+    @Param(name="lazyconnectionassociation", optional=true)
+    String lazyconnectionassociation = Boolean.FALSE.toString();
+    
+    @Param(name="associatewiththread", optional=true)
+    String associatewiththread = Boolean.FALSE.toString();
+    
+    @Param(name="matchconnections", optional=true)
+    String matchconnections = Boolean.FALSE.toString();
+    
+    @Param(name="maxconnectionusagecount", optional=true)
+    String maxconnectionusagecount = "0";
+    
+    @Param(name="wrapjdbcobjects", optional=true)
+    String wrapjdbcobjects = Boolean.FALSE.toString();
+    
     @Param(name="description", optional=true)
     String description;
     
     @Param(name="property", optional=true)
-    Properties property;
+    Properties properties;
     
     @Param(name="jdbc_connection_pool_id", primary=true)
     String jdbc_connection_pool_id; 
-
+  
     @Inject
     Resources resources;
 
@@ -133,72 +163,61 @@ public class CreateJdbcConnectionPool implements AdminCommand {
      * @param context information
      */
     public void execute(AdminCommandContext context) {
-        final ActionReport report = context.getActionReport();
+       final ActionReport report = context.getActionReport();
+
+        HashMap attrList = new HashMap();
+        attrList.put(ResourceConstants.CONNECTION_POOL_NAME, jdbc_connection_pool_id);
+        attrList.put(ResourceConstants.DATASOURCE_CLASS, datasourceclassname);
+        attrList.put(ServerTags.DESCRIPTION, description);
+        attrList.put(ResourceConstants.RES_TYPE, restype);
+        attrList.put(ResourceConstants.STEADY_POOL_SIZE, steadypoolsize);
+        attrList.put(ResourceConstants.MAX_POOL_SIZE, maxpoolsize);
+        attrList.put(ResourceConstants.MAX_WAIT_TIME_IN_MILLIS, maxwait);
+        attrList.put(ResourceConstants.POOL_SIZE_QUANTITY, poolresize);
+        attrList.put(ResourceConstants.IDLE_TIME_OUT_IN_SECONDS, idletimeout);
+        attrList.put(ResourceConstants.TRANS_ISOLATION_LEVEL, isolationlevel);
+        attrList.put(ResourceConstants.IS_ISOLATION_LEVEL_GUARANTEED, isisolationguaranteed);
+        attrList.put(ResourceConstants.IS_CONNECTION_VALIDATION_REQUIRED, isconnectvalidatereq);
+        attrList.put(ResourceConstants.CONNECTION_VALIDATION_METHOD, validationmethod);
+        attrList.put(ResourceConstants.VALIDATION_TABLE_NAME, validationtable);
+        attrList.put(ResourceConstants.CONN_FAIL_ALL_CONNECTIONS, failconnection);
+        attrList.put(ResourceConstants.NON_TRANSACTIONAL_CONNECTIONS, nontransactionalconnections);
+        attrList.put(ResourceConstants.ALLOW_NON_COMPONENT_CALLERS, allownoncomponentcallers);
+        attrList.put(ResourceConstants.VALIDATE_ATMOST_ONCE_PERIOD, validateatmostonceperiod);
+        attrList.put(ResourceConstants.CONNECTION_LEAK_TIMEOUT, leaktimeout);
+        attrList.put(ResourceConstants.CONNECTION_LEAK_RECLAIM, leakreclaim);
+        attrList.put(ResourceConstants.CONNECTION_CREATION_RETRY_ATTEMPTS, creationretryattempts);
+        attrList.put(ResourceConstants.CONNECTION_CREATION_RETRY_INTERVAL, creationretryinterval);
+        attrList.put(ResourceConstants.STATEMENT_TIMEOUT, statementtimeout);
+        attrList.put(ResourceConstants.LAZY_CONNECTION_ENLISTMENT, lazyconnectionenlistment);
+        attrList.put(ResourceConstants.ASSOCIATE_WITH_THREAD, associatewiththread);
+        attrList.put(ResourceConstants.MATCH_CONNECTIONS, matchconnections);
+        attrList.put(ResourceConstants.MAX_CONNECTION_USAGE_COUNT, maxconnectionusagecount);
+        attrList.put(ResourceConstants.WRAP_JDBC_OBJECTS, wrapjdbcobjects);
         
-        // ensure we don't already have one of this name
-        for (Resource resource : resources.getResources()) {
-            if (resource instanceof JdbcConnectionPool) {
-                if (((JdbcConnectionPool) resource).getName().equals(jdbc_connection_pool_id)) {
-                    report.setMessage(localStrings.getLocalString("create.jdbc.connection.pool.duplicate",
-                            "A JDBC connection pool named {0} already exists.", jdbc_connection_pool_id));
-                    report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-                    return;                    
-                }
-            }
-        }
-        
+        ResourceStatus rs;
+ 
         try {
-            ConfigSupport.apply(new SingleConfigCode<Resources>() {
-
-                public Object run(Resources param) throws PropertyVetoException, TransactionFailure {
-                    JdbcConnectionPool newResource = ConfigSupport.createChildOf(param, JdbcConnectionPool.class);
-                    newResource.setAllowNonComponentCallers(allownoncomponentcallers);
-                    //newResource.setAssociateWithThread(restype);
-                    //newResource.setConnectionCreationRetryAttempts(restype);
-                    //newResource.setConnectionCreationRetryIntervalInSeconds(restype);
-                    //newResource.setConnectionLeakReclaim(restype);
-                    //newResource.setConnectionLeakTimeoutInSeconds(restype);
-                    //newResource.setConnectionValidationMethod(restype);
-                    newResource.setDatasourceClassname(datasourceclassname);
-                    newResource.setDescription(description);
-                    newResource.setFailAllConnections(failconnection);
-                    newResource.setIdleTimeoutInSeconds(idletimeout);
-                    newResource.setIsConnectionValidationRequired(isconnectvalidatereq);
-                    newResource.setIsIsolationLevelGuaranteed(isisolationguaranteed);
-                    //newResource.setLazyConnectionAssociation(restype);
-                    //newResource.setLazyConnectionEnlistment(restype);
-                    //newResource.setMatchConnections(restype);
-                    //newResource.setMaxConnectionUsageCount(restype);
-                    newResource.setMaxPoolSize(maxpoolsize);
-                    newResource.setMaxWaitTimeInMillis(maxwait);
-                    newResource.setName(jdbc_connection_pool_id);
-                    newResource.setNonTransactionalConnections(nontransactionalconnections);    
-                    newResource.setPoolResizeQuantity(poolresize);
-                    newResource.setResType(restype);
-                    //newResource.setStatementTimeoutInSeconds(restype);
-                    newResource.setSteadyPoolSize(steadypoolsize);
-                    newResource.setTransactionIsolationLevel(isolationlevel);
-                    newResource.setValidateAtmostOncePeriodInSeconds(restype);
-                    newResource.setValidationTableName(validationtable);
-                    //newResource.setWrapJdbcObjects(restype);
-                    for ( Map.Entry e : property.entrySet()) {
-                        Property prop = ConfigSupport.createChildOf(newResource, 
-                                Property.class);
-                        prop.setName((String)e.getKey());
-                        prop.setValue((String)e.getValue());
-                        newResource.getProperty().add(prop);
-                    }
-                    param.getResources().add(newResource);                    
-                    return newResource;
-                }
-            }, resources);
-
-        } catch(TransactionFailure e) {
-            report.setMessage(localStrings.getLocalString("create.jdbc.connection.pool.fail", "{0} create failed ", jdbc_connection_pool_id));
+            JDBCConnectionPoolManager connPoolMgr = new JDBCConnectionPoolManager();
+            rs = connPoolMgr.create(resources, attrList, properties, jdbc_connection_pool_id);
+        } catch(Exception e) {
+            report.setMessage(localStrings.getLocalString("create.jdbc.connection.pool.fail",
+                    "JDBC connection pool {0} creation failed", jdbc_connection_pool_id));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
+            return;
         }
-        report.setMessage(localStrings.getLocalString("create.jdbc.connection.pool.success", "{0} created successfully", jdbc_connection_pool_id));
-        report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
+        ActionReport.ExitCode ec = ActionReport.ExitCode.SUCCESS;
+        if (rs.getStatus() == ResourceStatus.FAILURE) {
+            ec = ActionReport.ExitCode.FAILURE;
+            report.setMessage(localStrings.getLocalString("create.jdbc.connection.pool.fail",
+                    "JDBC connection pool {0} creation failed", jdbc_connection_pool_id));
+            if (rs.getException() != null)
+                report.setFailureCause(rs.getException());
+        } else {
+            report.setMessage(localStrings.getLocalString("create.jdbc.connection.pool.success",
+                    "JDBC connection pool {0} created successfully", jdbc_connection_pool_id));
+        }
+        report.setActionExitCode(ec);
     }
 }
