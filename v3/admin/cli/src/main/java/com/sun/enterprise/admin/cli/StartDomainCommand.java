@@ -24,7 +24,7 @@ public class StartDomainCommand extends Command {
      *  @throws CommandException
      */
     @Deprecated
-    public void runCommandOld() throws CommandException, CommandValidationException {
+    public void runCommand() throws CommandException, CommandValidationException {
         if (getBooleanOption(VERBOSE)) {
             //not sure what arguments are needed
             //for now, just send an empty String array
@@ -43,7 +43,8 @@ public class StartDomainCommand extends Command {
         }
     }
 
-    public void runCommand() throws CommandException, CommandValidationException {
+/*
+    public void runCommandnew() throws CommandException, CommandValidationException {
         try {
             // temporary TODO TODO
             // temporary TODO TODO
@@ -85,6 +86,7 @@ public class StartDomainCommand extends Command {
                     new Object[]{name, ex}), ex);
         }
     }
+	*/
 
     /**
      *  defines the command to start the domain
