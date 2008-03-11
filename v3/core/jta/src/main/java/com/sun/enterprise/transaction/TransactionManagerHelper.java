@@ -40,6 +40,7 @@ import javax.resource.spi.XATerminator;
 import javax.transaction.xa.Xid;
 
 import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Service;
 import org.glassfish.api.invocation.InvocationManager;
 import org.glassfish.api.invocation.ComponentInvocation;
 
@@ -51,6 +52,7 @@ import com.sun.enterprise.container.common.spi.JavaEETransactionManager;
 * see the com/sun/enterprise/naming/java/javaURLContext.java
 **/
 
+@Service
 public class TransactionManagerHelper implements TransactionManager, TransactionImport {
 
     @Inject
