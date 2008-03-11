@@ -35,9 +35,11 @@
  */
 package com.sun.enterprise.container.common.impl;
 
-import com.sun.enterprise.container.common.spi.*;
-import com.sun.enterprise.container.common.spi.util.ContainerUtil;
+import com.sun.enterprise.container.common.spi.JavaEEContainer;
+import com.sun.enterprise.container.common.spi.JavaEETransaction;
+import com.sun.enterprise.container.common.spi.JavaEETransactionManager;
 import com.sun.enterprise.container.common.spi.util.CallFlowAgent;
+import com.sun.enterprise.container.common.spi.util.ContainerUtil;
 import com.sun.enterprise.container.common.spi.util.EntityManagerMethod;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.invocation.ComponentInvocation;
@@ -76,6 +78,8 @@ public class EntityManagerWrapper implements EntityManager, Serializable {
     transient private JavaEETransactionManager txManager;
 
     transient private ContainerUtil containerUtil;
+
+    transient private InvocationManager invMgr;
     
     // Only used to cache entity manager with EXTENDED persistence context
     transient private EntityManager extendedEntityManager;
@@ -85,16 +89,18 @@ public class EntityManagerWrapper implements EntityManager, Serializable {
     
     public EntityManagerWrapper(String unitName,
                                 PersistenceContextType contextType,
+                                InvocationManager invMgr,
                                 Map emProperties) {
         this.unitName = unitName;
         this.contextType = contextType;
+        this.invMgr = invMgr;
         this.emProperties = emProperties;
     }
 
     private void init() {
 
         entityManagerFactory = EntityManagerFactoryWrapper.
-            lookupEntityManagerFactory(unitName);
+            lookupEntityManagerFactory(invMgr, unitName);
         
         if( entityManagerFactory == null ) {
             throw new IllegalStateException

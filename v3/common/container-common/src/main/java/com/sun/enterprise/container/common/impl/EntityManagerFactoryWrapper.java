@@ -36,13 +36,11 @@
 package com.sun.enterprise.container.common.impl;
 
 import com.sun.enterprise.container.common.spi.JavaEEContainer;
-import com.sun.enterprise.container.common.spi.util.ComponentEnvManager;
 import com.sun.enterprise.deployment.*;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.invocation.ComponentInvocation;
 import static org.glassfish.api.invocation.ComponentInvocation.ComponentInvocationType;
 import org.glassfish.api.invocation.InvocationManager;
-import org.jvnet.hk2.annotations.Service;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -59,7 +57,6 @@ import java.util.logging.Logger;
  *
  * @author Kenneth Saks
  */
-@Service
 public class EntityManagerFactoryWrapper
         implements EntityManagerFactory, Serializable {
 
@@ -67,21 +64,20 @@ public class EntityManagerFactoryWrapper
 
     private String unitName;
 
-    private transient ComponentEnvManager compEnvMgr;
-    
-    private static transient InvocationManager invMgr;
-    
-    private static transient EntityManagerFactory entityManagerFactory;
+    private transient InvocationManager invMgr;
 
-    public EntityManagerFactoryWrapper(String unitName) {
+    private transient EntityManagerFactory entityManagerFactory;
+
+    public EntityManagerFactoryWrapper(String unitName, InvocationManager invMgr) {
 
         this.unitName = unitName;
+        this.invMgr = invMgr;
     }
 
     private EntityManagerFactory getDelegate() {
 
         if( entityManagerFactory == null ) {
-            entityManagerFactory = lookupEntityManagerFactory(unitName);
+            entityManagerFactory = lookupEntityManagerFactory(invMgr, unitName);
             
             if( entityManagerFactory == null ) {
                 throw new IllegalStateException
@@ -112,16 +108,18 @@ public class EntityManagerFactoryWrapper
 
     /**
      * Lookup physical EntityManagerFactory based on current component
-     * invocation.  
+     * invocation.
+     * @param invMgr invocationmanager 
      * @param emfUnitName unit name of entity manager factory or null if not
      *                    specified.
      * @return EntityManagerFactory or null if no matching factory could be
      *         found.
      **/
-    static EntityManagerFactory lookupEntityManagerFactory(String emfUnitName)
+    static EntityManagerFactory lookupEntityManagerFactory(InvocationManager invMgr,
+                                                           String emfUnitName)
     {
 
-        ComponentInvocation inv  = invMgr.getCurrentInvocation();
+        ComponentInvocation inv  =  invMgr.getCurrentInvocation();
 
         EntityManagerFactory emf = null;
 
