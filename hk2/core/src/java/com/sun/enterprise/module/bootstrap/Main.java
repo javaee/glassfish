@@ -152,7 +152,6 @@ public class Main {
         createRepository(root,bootstrap,mf,mr);
 
         StartupContext context = new StartupContext(root, args);        
-        setParentClassLoader(context, mr);
         launch(mr, targetModule, context);
     }
 
@@ -279,8 +278,11 @@ public class Main {
     public void launch(ModulesRegistry registry, String mainModuleName, StartupContext context) throws BootException {
         final String habitatName = "default"; // TODO: take this as a parameter
 
+        // set the parent class loader before we start loading modules
+        setParentClassLoader(context, registry);
+
         // create a habitat and initialize them
-        Habitat mgr = registry.newHabitat();
+        Habitat mgr = registry.newHabitat();                        
         mgr.add(new ExistingSingletonInhabitant<StartupContext>(context));
         mgr.add(new ExistingSingletonInhabitant<Logger>(Logger.global));
         // the root registry must be added as other components sometimes inject it 

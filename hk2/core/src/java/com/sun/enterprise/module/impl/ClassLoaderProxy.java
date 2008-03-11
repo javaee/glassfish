@@ -69,7 +69,12 @@ public class ClassLoaderProxy extends URLClassLoader {
         if (resolve) {
 	        resolveClass(c);
 	    }
+    } else {
+        if (c.getClassLoader()==this) {
+            return c;
+        } else  throw new ClassNotFoundException(name);
     }
+
     return c;
     }
     protected Class<?> findClass(String name) throws ClassNotFoundException {

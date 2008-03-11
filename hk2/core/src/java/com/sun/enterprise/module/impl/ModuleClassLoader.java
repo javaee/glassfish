@@ -80,7 +80,7 @@ final class ModuleClassLoader extends ClassLoaderProxy {
             }
 
             // no such resource
-            return null;
+            return super.getResource(name);
         } else {
             // normal service look up
             URL url = super.getResource(name);
