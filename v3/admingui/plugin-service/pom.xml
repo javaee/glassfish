@@ -35,15 +35,16 @@
 * only if the new code is made subject to such option by the copyright 
 * holder. 
 */ 
---> 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.glassfish.admingui</groupId>
         <artifactId>admingui</artifactId>
         <version>1.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
-    </parent>    
+    </parent>
     <artifactId>console-plugin-service</artifactId>
     <packaging>hk2-jar</packaging>
     <name>Admin GUI Integration</name>
@@ -63,9 +64,9 @@
 
     <dependencies>
         <dependency>
-	    <groupId>org.glassfish.common</groupId>
-	    <artifactId>glassfish-api</artifactId>
-	    <version>10.0-SNAPSHOT</version>
+            <groupId>org.glassfish.common</groupId>
+            <artifactId>glassfish-api</artifactId>
+            <version>10.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
 </project>

@@ -84,12 +84,12 @@
             <version>1.2_07</version>
         </dependency>
         <dependency>
-	    <groupId>javax.servlet</groupId>
-	    <artifactId>servlet-api</artifactId>
-	    <version>2.5</version>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+            <version>2.5</version>
         </dependency>
 
-	<!-- Woodstock dependency -->
+        <!-- Woodstock dependency -->
         <dependency>
             <groupId>com.sun.woodstock</groupId>
             <artifactId>woodstock</artifactId>
@@ -102,30 +102,30 @@
             <version>4.0.2-SNAPSHOT</version>
         </dependency>
         <dependency>
-	    <groupId>com.sun.woodstock</groupId>
-	    <artifactId>webui-jsf</artifactId>
-	    <version>0.1-SNAPSHOT</version>
+            <groupId>com.sun.woodstock</groupId>
+            <artifactId>webui-jsf</artifactId>
+            <version>0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
-	    <groupId>com.sun.woodstock</groupId>
-	    <artifactId>prototype</artifactId>
-	    <version>1.5.0-SNAPSHOT</version>
+            <groupId>com.sun.woodstock</groupId>
+            <artifactId>prototype</artifactId>
+            <version>1.5.0-SNAPSHOT</version>
         </dependency>
 
         <dependency>
-	    <groupId>com.sun.woodstock</groupId>
-	    <artifactId>dojo</artifactId>
-	    <version>0.4.1-SNAPSHOT</version>
+            <groupId>com.sun.woodstock</groupId>
+            <artifactId>dojo</artifactId>
+            <version>0.4.1-SNAPSHOT</version>
         </dependency>
         <dependency>
-	    <groupId>com.sun.woodstock</groupId>
-	    <artifactId>dataprovider</artifactId>
-	    <version>1.4.2-SNAPSHOT</version>
+            <groupId>com.sun.woodstock</groupId>
+            <artifactId>dataprovider</artifactId>
+            <version>1.4.2-SNAPSHOT</version>
         </dependency>
         <dependency>
-	    <groupId>com.sun.woodstock</groupId>
-	    <artifactId>json</artifactId>
-	    <version>1.0-SNAPSHOT</version>
+            <groupId>com.sun.woodstock</groupId>
+            <artifactId>json</artifactId>
+            <version>1.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
     
