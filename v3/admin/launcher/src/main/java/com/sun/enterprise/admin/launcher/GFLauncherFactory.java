@@ -48,7 +48,8 @@ public class GFLauncherFactory {
         switch(type)
         {
             case domain:  
-                return new GFDomainLauncher();
+                return new GFDomainLauncher(
+                        new GFLauncherInfo(GFLauncherFactory.ServerType.domain));
             default:
                 throw new GFLauncherException("Only domain launching is currently supported.");
         }

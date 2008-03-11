@@ -22,6 +22,7 @@
  */
 package com.sun.enterprise.admin.launcher;
 
+import com.sun.enterprise.admin.launcher.GFLauncherFactory.ServerType;
 import com.sun.enterprise.universal.glassfish.GFLauncherUtils;
 import java.io.*;
 import java.util.*;
@@ -84,6 +85,13 @@ public class GFLauncherInfo {
         debug = b;
     }
 
+    public void setDomainRootDir(File f) {
+        domainRootDir = f;
+    }
+
+    public boolean isDomain() {
+        return type == ServerType.domain;
+    }
     /**
      * 
      * @return true if this is an embedded server
@@ -120,10 +128,23 @@ public class GFLauncherInfo {
         return instanceName;
     }
 
-    public void setDomainRootDir(File f) {
-        domainRootDir = f;
+    public GFLauncherFactory.ServerType getType() {
+        return type;
     }
-    
+    public File getInstanceRootDir() throws GFLauncherException {
+        if (!valid) {
+            throw new GFLauncherException("internalError", "Call to getInstanceRootDir() on an invalid GFLauncherInfo object.");
+        }
+        if(instanceRootDir != null) {
+            return instanceRootDir;
+        }
+        else if(isDomain()) {
+            return domainRootDir;
+        }
+        else {
+            throw new GFLauncherException("internalError", "Call to getInstanceRootDir() on an invalid GFLauncherInfo object.");
+        }
+    }
     /**
      *  TEMPORARY.  The guts of HK2 and V3 bootstrapping wants String[]
      * -- this will be changed soon, but it is messy to change it right now.
@@ -132,17 +153,23 @@ public class GFLauncherInfo {
      * @throws com.sun.enterprise.admin.launcher.GFLauncherException 
      */
     public String[] getArgsAsStringArray() throws GFLauncherException {
-        // TEMPORARY CODE!
+        List<String> list = getArgsAsList();
+        String[] ss = new String[list.size()];
+        return list.toArray(ss);
+    }
+
+    public List<String> getArgsAsList() throws GFLauncherException {
         Map<String, String> map = getArgs();
         Set<String> keys = map.keySet();
-        String[] arr = new String[map.size() * 2];
+        List<String> argList = new ArrayList<String>();
+        
         int i = 0;
 
         for (String key : keys) {
-            arr[i++] = key;
-            arr[i++] = map.get(key);
+            argList.add(key);
+            argList.add(map.get(key));
         }
-        return arr;
+        return argList;
     }
 
     /**
@@ -168,6 +195,9 @@ public class GFLauncherInfo {
         return map;
     }
 
+    GFLauncherInfo(GFLauncherFactory.ServerType type) {
+        this.type = type;
+    }
     void setup() throws GFLauncherException {
         setupFromArgs();
         finalSetup();
@@ -187,8 +217,8 @@ public class GFLauncherInfo {
             domainParentDir = f;
         }
 
-        if ((f = getFile("instancedir")) != null) {
-            instanceDir = f;
+        if ((f = getFile("instanceRootDir")) != null) {
+            instanceRootDir = f;
         }
 
         if ((f = getFile("domainroot")) != null) {
@@ -349,13 +379,14 @@ public class GFLauncherInfo {
         }
         return null;
     }
+    private ServerType type;
     private boolean verbose = false;
     private boolean debug = false;
     private boolean embedded = false;
     File installDir;
     private File domainParentDir;
     private File domainRootDir;
-    private File instanceDir;
+    private File instanceRootDir;
     private File configDir;
     private File configFile; // domain.xml
     private String domainName;

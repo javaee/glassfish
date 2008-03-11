@@ -22,8 +22,15 @@
  */
 package com.sun.enterprise.admin.launcher;
 
-import com.sun.enterprise.universal.glassfish.ASenvPropertyReader;
+import com.sun.enterprise.universal.collections.CollectionUtils;
+import com.sun.enterprise.universal.glassfish.GFLauncherUtils;
+import com.sun.enterprise.universal.glassfish.TokenResolver;
+import com.sun.enterprise.universal.xml.MiniXmlParserException;
+import java.io.*;
 import java.util.*;
+import com.sun.enterprise.universal.glassfish.ASenvPropertyReader;
+import com.sun.enterprise.universal.xml.MiniXmlParser;
+import static com.sun.enterprise.universal.glassfish.SystemPropertyConstants.*;
 
 /**
  * This is the main Launcher class designed for external and internal usage.
@@ -32,27 +39,16 @@ import java.util.*;
  * @author bnevins
  */
 public abstract class GFLauncher {
-
+    ///////////////////////////////////////////////////////////////////////////
+    //////     PUBLIC api area starts here             ////////////////////////
+    ///////////////////////////////////////////////////////////////////////////
     /**
      * 
      * @return The info object that contains startup info
      */
-    public final GFLauncherInfo getInfo()
-    {
+    public final GFLauncherInfo getInfo() {
         return info;
     }
-
-    /**
-     * An info object is created automatically use this method to set your own
-     * instance.
-     * @param info the info instance
-     */
-    public final void setInfo(GFLauncherInfo info)
-    {
-        this.info = info;
-    }
-
-    abstract void internalLaunch() throws GFLauncherException;
 
     /**
      * Launches the server.  Any fatal error results in a GFLauncherException
@@ -60,12 +56,13 @@ public abstract class GFLauncher {
      * 
      * @throws com.sun.enterprise.admin.launcher.GFLauncherException 
      */
-    public void launch() throws GFLauncherException
-    {
+    public final void launch() throws GFLauncherException {
         try {
-            System.out.println("CLASSLOADER: " + getClass().getClassLoader());
+            startTime = System.currentTimeMillis();
             setup();
             internalLaunch();
+            long endTime = System.currentTimeMillis();
+            GFLauncherLogger.info("launchTime", (endTime - startTime));
         }
         catch (GFLauncherException gfe) {
             throw gfe;
@@ -76,24 +73,158 @@ public abstract class GFLauncher {
         }
     }
 
-    private void setup() throws GFLauncherException {
+    ///////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////
+    //////     ALL private and package-private below   ////////////////////////
+    ///////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////
+    abstract void internalLaunch() throws GFLauncherException;
+
+    abstract List<File> getMainClasspath() throws GFLauncherException;
+
+    abstract String getMainClass() throws GFLauncherException;
+
+    GFLauncher(GFLauncherInfo info) {
+        this.info = info;
+    }
+
+    final Map<String, String> getEnvProps() {
+        return asenvProps;
+    }
+
+    final List<String> getCommandLine() {
+        return commandLine;
+    }
+    private void setup() throws GFLauncherException, MiniXmlParserException {
         ASenvPropertyReader pr = new ASenvPropertyReader();
         asenvProps = pr.getProps();
-        GFLauncherLogger.info("asenv properties:\n" + pr.toString());
         info.setup();
+        MiniXmlParser parser = new MiniXmlParser(getInfo().getConfigFile(), getInfo().getInstanceName());
+        javaConfig = new JavaConfig(parser.getJavaConfig());
+        jvmOptions = new JvmOptions(parser.getJvmOptions());
+        sysPropsFromXml = parser.getSystemProperties();
+        asenvProps.put(INSTANCE_ROOT_PROPERTY, getInfo().getInstanceRootDir().getPath());
+        resolveAllTokens();
+        setJavaExecutable();
+        setClasspath();
+        setCommandLine();
     }
-    private void getJavaExe() {
-        /* possible locations:
-         * JAVA_HOME
-         * java.home
-         * asenv
-         * Path
-         */
-        //SystemPropertyConstants.JAVA_ROOT_PROPERTY
-        
+    
+    private void setCommandLine() throws GFLauncherException {
+        // todo handle stuff in javaConfig like debug...
+        commandLine = new ArrayList<String>();
+        commandLine.add(javaExe);
+        commandLine.add("-cp");
+        commandLine.add(classpath);
+        commandLine.addAll(jvmOptions.toStringArray());
+        commandLine.add(getMainClass());
+        commandLine.addAll(getInfo().getArgsAsList());
     }
-    GFLauncherInfo info = new GFLauncherInfo();
-    Map<String,String> asenvProps;
 
+    private void resolveAllTokens() {
+        // resolve jvm-options against:
+        // 1. itself
+        // 2. <system-property>'s from domain.xml
+        // 3. system properties -- essential there is, e.g. "${path.separator}" in domain.xml
+        // 4. asenvProps
+        // 5. env variables
+        // i.e. add in reverse order to get the precedence right
+
+        Map<String, String> all = new HashMap<String, String>();
+        Map<String, String> envProps = System.getenv();
+        Map<String, String> sysProps =
+                CollectionUtils.propertiesToStringMap(System.getProperties());
+        all.putAll(envProps);
+        all.putAll(sysProps);
+        all.putAll(asenvProps);
+        all.putAll(sysPropsFromXml);
+        all.putAll(jvmOptions.getCombinedMap());
+        TokenResolver resolver = new TokenResolver(all);
+        resolver.resolve(jvmOptions.xProps);
+        resolver.resolve(jvmOptions.xxProps);
+        resolver.resolve(jvmOptions.plainProps);
+        resolver.resolve(jvmOptions.sysProps);
+        resolver.resolve(javaConfig.getMap());
+
+    // TODO ?? Resolve sysPropsFromXml ???
+    }
+
+    private void setJavaExecutable() throws GFLauncherException {
+        // first choice is from domain.xml
+        if (setJavaExecutableIfValid(javaConfig.getJavaHome()))
+            return;
+
+        // second choice is from asenv
+        if (!setJavaExecutableIfValid(asenvProps.get(JAVA_ROOT_PROPERTY)))
+            throw new GFLauncherException("nojvm");
+
+    }
+
+    private void setClasspath() throws GFLauncherException {
+        List<File> mainCP = getMainClasspath(); // subclass provides this
+        List<File> envCP = javaConfig.getEnvClasspath();
+        List<File> sysCP = javaConfig.getSystemClasspath();
+        List<File> prefixCP = javaConfig.getPrefixClasspath();
+        List<File> suffixCP = javaConfig.getSuffixClasspath();
+
+        // create a list of all the classpath pieces in the right order
+        List<File> all = new ArrayList<File>();
+        all.addAll(prefixCP);
+        all.addAll(mainCP);
+        all.addAll(sysCP);
+        all.addAll(envCP);
+        all.addAll(suffixCP);
+
+        // note: ALL files have been absolutized already.
+        // let's use forward slashes for neatness...
+        
+        StringBuilder sb = new StringBuilder();
+        boolean firstFile = true;
+        
+        for (File f : all) {
+            if(firstFile) {
+                firstFile = false;
+            }
+            else {
+                sb.append(File.pathSeparatorChar);
+            }
+            sb.append(f.getPath().replace('\\', '/'));
+        }
+        classpath = sb.toString();
+    }
+
+    private boolean setJavaExecutableIfValid(String filename) {
+        if (!GFLauncherUtils.ok(filename)) {
+            return false;
+        }
+
+        File f = new File(filename);
+
+        if (!f.isDirectory()) {
+            return false;
+        }
+
+        if (GFLauncherUtils.isWindows()) {
+            f = new File(f, "bin/java.exe");
+        }
+        else {
+            f = new File(f, "bin/java");
+        }
+
+        if (f.exists()) {
+            javaExe = GFLauncherUtils.absolutize(f).getPath();
+            return true;
+        }
+        return false;
+    }
+    private GFLauncherInfo info;
+    private Map<String, String> asenvProps;
+    private JavaConfig javaConfig;
+    private JvmOptions jvmOptions;
+    private Map<String, String> sysPropsFromXml;
+    private String javaExe;
+    private String classpath;
+    private List<String> commandLine;
+    private long startTime;
 }
 
