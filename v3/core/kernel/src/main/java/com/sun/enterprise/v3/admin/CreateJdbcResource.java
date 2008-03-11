@@ -96,7 +96,7 @@ public class CreateJdbcResource implements AdminCommand {
         JDBCResourceManager jdbcMgr = new JDBCResourceManager();
         HashMap attrList = new HashMap();
         attrList.put(ResourceConstants.JNDI_NAME, jndiName);
-        attrList.put(ResourceConstants.CONNECTION_POOL_NAME, connectionPoolId);
+        attrList.put(ResourceConstants.POOL_NAME, connectionPoolId);
         attrList.put(ServerTags.DESCRIPTION, description);
         attrList.put(ResourceConstants.ENABLED, enabled);
         ResourceStatus rs;
