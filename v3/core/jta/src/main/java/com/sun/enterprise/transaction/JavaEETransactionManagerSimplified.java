@@ -59,6 +59,7 @@ import org.jvnet.hk2.annotations.Service;
 import org.glassfish.api.invocation.ComponentInvocation;
 import org.glassfish.api.invocation.InvocationManager;
 import org.glassfish.api.invocation.InvocationException;
+import org.glassfish.api.invocation.ResourceHandler;
 
 /**
  * A wrapper over JavaEETransactionManagerImpl that provides optimized local
@@ -373,16 +374,25 @@ public class JavaEETransactionManagerSimplified
         if (inv == null)
             return new ArrayList(0);
         List l = null;
+
+/** XXX EJB CONTAINER ONLY XXX -- NEED TO CHECK THE NEW CODE BELOW **
         if (inv.getInvocationType() == 
                 ComponentInvocation.ComponentInvocationType.EJB_INVOCATION) {
-/** XXX EJB CONTAINER ONLY XXX **
             ComponentContext ctx = inv.context;
             if (ctx != null)
                 l = ctx.getResourceList();
             else {
                 l = new ArrayList(0);
             }
+        }
 ** XXX EJB CONTAINER ONLY XXX **/
+
+        ResourceHandler rh = inv.getResourceHandler();
+        if (rh != null) {
+            l = rh.getResourceList();
+            if (l == null) {
+                l = new ArrayList(0);
+            }
         }
         else {
             Object key = getResourceTableKey(instance, inv);
@@ -484,21 +494,27 @@ public class JavaEETransactionManagerSimplified
        if (inv == null)
            return null;
         List l = null;
+
+/** XXX EJB CONTAINER ONLY XXX -- NEED TO CHECK THE NEW CODE BELOW **
         if (inv.getInvocationType() == 
                 ComponentInvocation.ComponentInvocationType.EJB_INVOCATION) {
-/** XXX EJB CONTAINER ONLY XXX **
             ComponentContext ctx = inv.context;
             if (ctx != null)
                 l = ctx.getResourceList();
-** XXX EJB CONTAINER ONLY XXX **/
             return l;
+        }
+** XXX EJB CONTAINER ONLY XXX **/
+
+        ResourceHandler rh = inv.getResourceHandler();
+        if (rh != null) {
+            l = rh.getResourceList();
         }
         else {
             Object key = getResourceTableKey(instance, inv);
-            if (key == null)
-                return null;
-            return (List) resourceTable.get(key);
-       }
+            if (key != null)
+                l =  (List) resourceTable.get(key);
+        }
+        return l;
     }
 
     public void preInvoke(ComponentInvocation prev)

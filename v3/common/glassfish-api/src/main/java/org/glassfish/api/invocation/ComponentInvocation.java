@@ -41,6 +41,8 @@ public class ComponentInvocation {
     
     private Object resourceTableKey;
 
+    private ResourceHandler resourceHandler;
+
     public ComponentInvocation() {
         
     }
@@ -126,6 +128,14 @@ public class ComponentInvocation {
 
     public Object getResourceTableKey() {
         return resourceTableKey;
+    }
+
+    public void setResourceHandler(ResourceHandler h) {
+        resourceHandler = h;
+    }
+
+    public ResourceHandler getResourceHandler() {
+        return resourceHandler;
     }
 
 }
