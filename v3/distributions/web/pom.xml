@@ -165,6 +165,11 @@
            <artifactId>jta</artifactId>
            <version>${pe.version}</version>
         </dependency>           
+        <dependency>
+           <groupId>org.glassfish.persistence</groupId>
+           <artifactId>jpa-connector</artifactId>
+           <version>${pe.version}</version>
+        </dependency>           
     </dependencies>
 </project>
 
