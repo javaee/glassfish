@@ -39,6 +39,7 @@ import com.sun.enterprise.container.common.spi.JavaEEContainer;
 import com.sun.enterprise.container.common.spi.JavaEETransaction;
 import com.sun.enterprise.container.common.spi.JavaEETransactionManager;
 import com.sun.enterprise.container.common.spi.util.CallFlowAgent;
+import com.sun.enterprise.container.common.spi.util.ComponentEnvManager;
 import com.sun.enterprise.container.common.spi.util.ContainerUtil;
 import com.sun.enterprise.container.common.spi.util.EntityManagerMethod;
 import com.sun.logging.LogDomains;
@@ -86,21 +87,25 @@ public class EntityManagerWrapper implements EntityManager, Serializable {
 
     // set and cleared after each non-tx, non EXTENDED call to _getDelegate()
     transient private EntityManager nonTxEntityManager;
+
+    transient private ComponentEnvManager compEnvMgr;
     
     public EntityManagerWrapper(String unitName,
                                 PersistenceContextType contextType,
                                 InvocationManager invMgr,
+                                ComponentEnvManager compEnvMgr,
                                 Map emProperties) {
         this.unitName = unitName;
         this.contextType = contextType;
         this.invMgr = invMgr;
+        this.compEnvMgr = compEnvMgr;
         this.emProperties = emProperties;
     }
 
     private void init() {
 
         entityManagerFactory = EntityManagerFactoryWrapper.
-            lookupEntityManagerFactory(invMgr, unitName);
+            lookupEntityManagerFactory(invMgr, compEnvMgr, unitName);
         
         if( entityManagerFactory == null ) {
             throw new IllegalStateException
