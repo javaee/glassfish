@@ -31,7 +31,7 @@ public class FactoryForEntityManagerFactoryWrapper
     public Object create(Context ic)
         throws NamingException {
 
-        return new EntityManagerFactoryWrapper(unitName, invMgr);
+        return new EntityManagerFactoryWrapper(unitName, invMgr, compEnvMgr);
     }
 
 }

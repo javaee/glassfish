@@ -36,6 +36,7 @@
 package com.sun.enterprise.container.common.impl;
 
 import com.sun.enterprise.container.common.spi.JavaEEContainer;
+import com.sun.enterprise.container.common.spi.util.ComponentEnvManager;
 import com.sun.enterprise.deployment.*;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.invocation.ComponentInvocation;
@@ -68,16 +69,20 @@ public class EntityManagerFactoryWrapper
 
     private transient EntityManagerFactory entityManagerFactory;
 
-    public EntityManagerFactoryWrapper(String unitName, InvocationManager invMgr) {
+    private transient ComponentEnvManager compEnvMgr;
+
+    public EntityManagerFactoryWrapper(String unitName, InvocationManager invMgr,
+                                       ComponentEnvManager compEnvMgr) {
 
         this.unitName = unitName;
         this.invMgr = invMgr;
+        this.compEnvMgr = compEnvMgr;
     }
 
     private EntityManagerFactory getDelegate() {
 
         if( entityManagerFactory == null ) {
-            entityManagerFactory = lookupEntityManagerFactory(invMgr, unitName);
+            entityManagerFactory = lookupEntityManagerFactory(invMgr, compEnvMgr, unitName);
             
             if( entityManagerFactory == null ) {
                 throw new IllegalStateException
@@ -116,7 +121,7 @@ public class EntityManagerFactoryWrapper
      *         found.
      **/
     static EntityManagerFactory lookupEntityManagerFactory(InvocationManager invMgr,
-                                                           String emfUnitName)
+            ComponentEnvManager compEnvMgr, String emfUnitName)
     {
 
         ComponentInvocation inv  =  invMgr.getCurrentInvocation();
@@ -124,11 +129,8 @@ public class EntityManagerFactoryWrapper
         EntityManagerFactory emf = null;
 
         if( inv != null ) {
-
-            Object cc = inv.getContainer();
-            if (cc instanceof JavaEEContainer) {
-                Object desc = ((JavaEEContainer) cc).getDescriptor();
-
+            Object desc = compEnvMgr.getCurrentJndiNameEnvironment();
+            if (desc != null) {
                 emf = lookupEntityManagerFactory(inv.getInvocationType(),
                     emfUnitName, desc);
             }
