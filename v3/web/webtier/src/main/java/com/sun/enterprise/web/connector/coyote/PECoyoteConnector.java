@@ -52,11 +52,10 @@ import org.apache.catalina.LifecycleException;
 
 public class PECoyoteConnector extends CoyoteConnector{
 
-    private static final String USE_COYOTE_CONNECTOR = 
-                "com.sun.enterprise.web.connector.useCoyoteConnector";
 
-    private static final String GRIZZLY_CONNECTOR = 
-                "com.sun.enterprise.web.connector.grizzly.GrizzlyConnectorLauncher";
+    private static final String DUMMY_CONNECTOR_LAUNCHER = 
+                com.sun.enterprise.web.
+                    connector.grizzly.DummyConnectorLauncher.class.getName();
 
    
     /**
@@ -254,16 +253,7 @@ public class PECoyoteConnector extends CoyoteConnector{
    
     
     public PECoyoteConnector() {
-        boolean coyoteOn = false;
-        if (System.getProperty(USE_COYOTE_CONNECTOR) != null){
-            coyoteOn =
-                   Boolean.valueOf(System.getProperty(USE_COYOTE_CONNECTOR))
-                                                               .booleanValue();
-        }
-        
-        // By default, turn on the Coyote Connector
-        if (!coyoteOn) 
-            setProtocolHandlerClassName(GRIZZLY_CONNECTOR);
+        setProtocolHandlerClassName(DUMMY_CONNECTOR_LAUNCHER);
     }
     
 
@@ -292,6 +282,7 @@ public class PECoyoteConnector extends CoyoteConnector{
      * Create (or allocate) and return a Request object suitable for
      * specifying the contents of a Request to the responsible ContractProvider.
      */
+    @Override
     public Request createRequest() {
         
         PwcCoyoteRequest request = new PwcCoyoteRequest();
@@ -306,6 +297,7 @@ public class PECoyoteConnector extends CoyoteConnector{
      *
      * @return Response object
      */ 
+    @Override
     public Response createResponse() {
 
         PECoyoteResponse response = new PECoyoteResponse(isChunkingDisabled());
@@ -775,26 +767,12 @@ public class PECoyoteConnector extends CoyoteConnector{
     /**
      * Initialize this connector.
      */
+    @Override
     public void initialize() throws LifecycleException{
         super.initialize();
-        
-        if ( !getProtocolHandler().getClass()
-                .getName().equals(GRIZZLY_CONNECTOR)){
-            return;
-        }
- 
         // Set the monitoring.
         grizzlyMonitor = new GrizzlyConfig(domain,getPort());
- 
-        // Set the logger
-        try{
-            Method loggerMethod = getProtocolHandler().getClass().getMethod
-                   ("setLogger", new Class[]{java.util.logging.Logger.class});
-            loggerMethod.invoke(getProtocolHandler(), new Object[]{logger});
-        } catch(Exception ex) {
-            logger.log(Level.WARNING,
-                    "Unable to set logger on " + getProtocolHandler(), ex);
-        }
+
     }
     
     

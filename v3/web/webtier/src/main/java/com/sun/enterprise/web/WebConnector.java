@@ -45,6 +45,7 @@ import org.apache.coyote.tomcat5.CoyoteConnector;
  */ 
 public class WebConnector extends PECoyoteConnector {
 
+    @Override
     public void start() throws LifecycleException {        
         if( !initialized )
             initialize();
@@ -70,6 +71,7 @@ public class WebConnector extends PECoyoteConnector {
          */
     }
     
+    @Override
     public void stop() throws LifecycleException {
         if ( domain != null){
             try {
