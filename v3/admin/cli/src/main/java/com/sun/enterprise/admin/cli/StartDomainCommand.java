@@ -1,7 +1,6 @@
 package com.sun.enterprise.admin.cli;
 
 import com.sun.enterprise.admin.launcher.GFLauncher;
-import com.sun.enterprise.admin.launcher.GFLauncherException;
 import com.sun.enterprise.admin.launcher.GFLauncherFactory;
 import com.sun.enterprise.admin.launcher.GFLauncherInfo;
 import com.sun.enterprise.cli.framework.*;
@@ -24,7 +23,7 @@ public class StartDomainCommand extends Command {
      *  @throws CommandException
      */
     @Deprecated
-    public void runCommand() throws CommandException, CommandValidationException {
+    public void runCommandOld() throws CommandException, CommandValidationException {
         if (getBooleanOption(VERBOSE)) {
             //not sure what arguments are needed
             //for now, just send an empty String array
@@ -43,25 +42,23 @@ public class StartDomainCommand extends Command {
         }
     }
 
-/*
-    public void runCommandnew() throws CommandException, CommandValidationException {
+    public void runCommand() throws CommandException, CommandValidationException {
         try {
+            
             // temporary TODO TODO
             // temporary TODO TODO
             // temporary TODO TODO
-
-            // Launcher currently supports embedded only WBN 3/5/08
-            if (getBooleanOption("embedded") == false && getBooleanOption(VERBOSE) == false) {
+            String s = System.getenv("NEW_LAUNCHER");
+            if(s == null || !s.equals("true")) {
                 runCommandOld();
+                return;
             }
-
             // temporary TODO TODO
             // temporary TODO TODO
             // temporary TODO TODO
             // temporary TODO TODO
             // temporary TODO TODO
-
-
+            
             GFLauncher launcher = GFLauncherFactory.getInstance(
                     GFLauncherFactory.ServerType.domain);
             GFLauncherInfo info = launcher.getInfo();
@@ -81,12 +78,11 @@ public class StartDomainCommand extends Command {
             info.setEmbedded(getBooleanOption("embedded"));
             launcher.launch();
         }
-        catch (GFLauncherException ex) {
+        catch (Throwable t) {
             throw new CommandException(getLocalizedString("CommandUnSuccessful",
-                    new Object[]{name, ex}), ex);
+                    new Object[]{name, t}), t);
         }
     }
-	*/
 
     /**
      *  defines the command to start the domain

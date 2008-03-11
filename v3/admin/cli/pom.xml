@@ -47,7 +47,7 @@
     <artifactId>admin-cli</artifactId>
     <packaging>hk2-jar</packaging>
     <name>Admin CLI for v3</name>
-
+    
     <developers>
         <developer>
             <id>janey</id>
@@ -101,7 +101,7 @@
         </developer>
     </developers>
     <build>
-    <resources>
+        <resources>
             <resource>
                 <directory>src/main/resources</directory>
                 <includes>
@@ -116,10 +116,10 @@
             </resource>
         </resources>
         <plugins>
-           <plugin>
+            <plugin>
                 <groupId>com.sun.enterprise</groupId>
                 <artifactId>hk2-maven-plugin</artifactId>
-           </plugin>
+            </plugin>
             <plugin>
                 <groupId>com.sun.enterprise</groupId>
                 <artifactId>hk2-maven-plugin</artifactId>
@@ -134,7 +134,9 @@
                         <manifest>
                             <mainClass>com.sun.enterprise.admin.cli.AsadminMain</mainClass> 
                         </manifest>
-
+                        <manifestEntries>
+                            <Class-Path>cli-framework-10.0-SNAPSHOT.jar glassfish-10.0-SNAPSHOT.jar</Class-Path>
+                        </manifestEntries>
                         <!--
                             java -jar admin-cli-10.0-SNAPSHOT.jar does NOT work with
                             this change?!?
@@ -148,12 +150,12 @@
                     </archive>
                 </configuration>
                 <executions>
-                  <execution>
-                    <phase>compile</phase>
-                    <goals>
-                      <goal>createscripts</goal>
-                    </goals>
-                  </execution>
+                    <execution>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>createscripts</goal>
+                        </goals>
+                    </execution>
                 </executions>
             </plugin>
         </plugins>
@@ -162,13 +164,8 @@
         <dependency>
             <groupId>org.glassfish.admin</groupId>
             <artifactId>cli-framework</artifactId>
-            <version>${project.version}</version>
+            <version>${project.parent.version}</version>
         </dependency>
-        <!--dependency>
-            <groupId>org.glassfish.admin</groupId>
-            <artifactId>server-mgmt</artifactId>
-            <version>${project.version}</version>
-        </dependency-->
         <dependency>
             <groupId>org.glassfish.common</groupId>
             <artifactId>common-util</artifactId>
@@ -179,10 +176,15 @@
             <artifactId>glassfish</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
-	    <dependency>
+        <dependency>
             <groupId>org.glassfish.admin</groupId>
             <artifactId>launcher</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
-     </dependencies>
+        <dependency>    
+            <groupId>org.glassfish.common</groupId>
+            <artifactId>universal</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+    </dependencies>
 </project>

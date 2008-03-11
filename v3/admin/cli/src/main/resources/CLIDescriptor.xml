@@ -12,7 +12,6 @@
 	</Option>
         <Option name="domaindir" type="string" value-required="true"/>
         <Option name="debug" type="boolean" value-required="false"/>
-        <Option name="embedded" type="boolean" value-required="false"/>
 	<Option name="terse" type="boolean" value-required="false" default="false">
 	    <shortoption>t</shortoption>
 	</Option>
@@ -31,11 +30,10 @@
 	<Command name="dummy" classname="com.sun.enterprise.admin.cli.DummyCommand" numberofoperands="?" usage-text="dummy">
 	</Command>
 	<Command name="start-domain" classname="com.sun.enterprise.admin.cli.StartDomainCommand" numberofoperands="?" 
-             usage-text=" [--domaindir domain_directory] [--verbose=false] [--debug=false] [--embedded=false] [domain_name]">
+             usage-text=" [--domaindir domain_directory] [--verbose=false] [--debug=false] [domain_name]">
 	    <ValidOption name="verbose"/>
             <ValidOption name="domaindir"/>
             <ValidOption name="debug"/>
-            <ValidOption name="embedded"/>
 	    <ValidOption name="terse"/>
 	    <ValidOption name="echo"/>
             <ValidOption name="user"/>

@@ -33,7 +33,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package com.sun.enterprise.admin.cli;
 
 import com.sun.enterprise.cli.framework.*;
@@ -42,22 +41,71 @@ import com.sun.enterprise.cli.framework.*;
  * my v3 main, basically some throw away code
  */
 public class AsadminMain {
+
     public static void main(String[] args) {
         try {
             new com.sun.enterprise.cli.framework.CLIMain().invokeCommand(args);
-        } catch (InvalidCommandException ice) {
+        }
+        catch (InvalidCommandException ice) {
             if (TRACE) {
                 System.out.println("REMOTE COMMAND!!!");
             }
             RemoteCommand rc = RemoteCommand.getInstance();
             rc.handleRemoteCommand(args);
-        } catch (Throwable ex) {
+        }
+        catch (Throwable ex) {
             CLILogger.getInstance().printExceptionStackTrace(ex);
             CLILogger.getInstance().printError(ex.getLocalizedMessage());
             System.exit(1);
         }
     }
     public static final boolean TRACE = Boolean.getBoolean("trace");
+
+    private final static boolean foundClass(String s) {
+        try {
+            Class.forName(s);
+            return true;
+        }
+        catch (Throwable t) {
+            System.out.println("Can not find class: " + s);
+            return false;
+        }
+    }
+    private final static String[] requiredClassnames =
+            {
+        // one from launcher jar        
+        "com.sun.enterprise.admin.launcher.GFLauncher",
+        // one from universal jar
+        "com.sun.enterprise.universal.xml.MiniXmlParser",
+        // one from cli-framework jar
+        "com.sun.enterprise.cli.framework.CLIMain",
+        // one from glassfish bootstrap jar
+        "com.sun.enterprise.glassfish.bootstrap.Main",
+        // one from stax-api
+        "javax.xml.stream.XMLInputFactory",
+    
+    };
+    static {
+        // check RIGHT NOW to make sure all the classes we need are
+        // available
+        boolean gotError = false;
+        for (String s : requiredClassnames) {
+            if(!foundClass(s))
+                gotError = true;
+        }
+        // final test -- see if sjsxp is available
+        try {
+            javax.xml.stream.XMLInputFactory.newInstance().getXMLReporter();
+        }
+        catch(Throwable t) {
+            gotError = true;
+            System.out.println("Can't access STAX classes");
+        }
+        if(gotError) {
+            // messages already sent to stdout...
+            System.exit(1);
+        }
+    }
 }
 
 
