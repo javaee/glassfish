@@ -38,19 +38,14 @@ package com.sun.enterprise.v3.admin;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.I18n;
-import org.glassfish.api.Param;
 import org.glassfish.api.ActionReport;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PerLookup;
-import org.jvnet.hk2.config.ConfigSupport;
-import org.jvnet.hk2.config.SingleConfigCode;
-import org.jvnet.hk2.config.TransactionFailure;
 import com.sun.enterprise.config.serverbeans.JdbcConnectionPool;
 import com.sun.enterprise.util.LocalStringManagerImpl;
-
-import java.beans.PropertyVetoException;
+import java.util.ArrayList;
 
 /**
  * List JDBC Connection Pools command
@@ -65,6 +60,7 @@ public class ListJdbcConnectionPools implements AdminCommand {
 
     @Inject
     JdbcConnectionPool[] connPools;
+    
 
     /**
      * Executes the command with the command parameters passed as Properties
@@ -77,9 +73,19 @@ public class ListJdbcConnectionPools implements AdminCommand {
 
         report.getTopMessagePart().setMessage(localStrings.getLocalString("list.jdbc.connection.pools.success", "list-jdbc-connection-pools successful"));
         report.getTopMessagePart().setChildrenType("jdbc-connection-pool");
-        for (JdbcConnectionPool cp : connPools) {
-            final ActionReport.MessagePart part = report.getTopMessagePart().addChild();
-            part.setMessage(cp.getName());
+         try {
+            JDBCConnectionPoolManager connPoolMgr = new JDBCConnectionPoolManager();
+            ArrayList<String> list = connPoolMgr.list(connPools);
+            for (String cpName : list) {
+                final ActionReport.MessagePart part = report.getTopMessagePart().addChild();
+                part.setMessage(cpName);
+            }
+        } catch (Exception e) {
+            report.setMessage(localStrings.getLocalString("list.jdbc.connection.pools.failed",
+                    "List JDBC connection pools failed"));
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            report.setFailureCause(e);
+            return;
         }
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
     }

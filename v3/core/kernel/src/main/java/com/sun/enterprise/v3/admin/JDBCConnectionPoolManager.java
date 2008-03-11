@@ -5,6 +5,7 @@
 
 package com.sun.enterprise.v3.admin;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Properties;
 import java.beans.PropertyVetoException;
@@ -253,6 +254,14 @@ class JDBCConnectionPoolManager implements ResourceManager{
         ResourceStatus status = new ResourceStatus(ResourceStatus.SUCCESS, msg);
         return status;
     }
+    
+    public ArrayList list(JdbcConnectionPool[] connPools) {
+        ArrayList<String> list = new ArrayList();
+        for (JdbcConnectionPool cp : connPools) {
+            list.add(cp.getName());
+        }
+        return list;
+    } 
     
     private boolean isResourceExists(Resources resources, String jdbcconnectionpoolid) {
         
