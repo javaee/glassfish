@@ -176,14 +176,14 @@ class JDBCConnectionPoolManager implements ResourceManager{
 
     public void setParams(HashMap attrList) {
         datasourceclassname = (String) attrList.get(DATASOURCE_CLASS);
-        restype = (String) attrList.get(RESOURCE_TYPE);
+        restype = (String) attrList.get(RES_TYPE);
         steadypoolsize = (String) attrList.get(STEADY_POOL_SIZE);
         maxpoolsize = (String) attrList.get(MAX_POOL_SIZE);
         maxwait = (String) attrList.get(MAX_WAIT_TIME_IN_MILLIS);
         poolresize = (String) attrList.get(POOL_SIZE_QUANTITY);
         idletimeout = (String) attrList.get(IDLE_TIME_OUT_IN_SECONDS);
         isolationlevel = (String) attrList.get(TRANS_ISOLATION_LEVEL);
-        isolationlevel = (String) attrList.get(IS_ISOLATION_LEVEL_GUARANTEED);
+        isisolationguaranteed = (String) attrList.get(IS_ISOLATION_LEVEL_GUARANTEED);
         isconnectvalidatereq = (String) attrList.get(IS_CONNECTION_VALIDATION_REQUIRED);
         validationmethod = (String) attrList.get(CONNECTION_VALIDATION_METHOD);
         validationtable = (String) attrList.get(VALIDATION_TABLE_NAME);
