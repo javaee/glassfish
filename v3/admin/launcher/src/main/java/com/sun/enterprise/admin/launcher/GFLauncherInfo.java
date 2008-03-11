@@ -25,7 +25,6 @@ package com.sun.enterprise.admin.launcher;
 import com.sun.enterprise.universal.glassfish.GFLauncherUtils;
 import java.io.*;
 import java.util.*;
-import com.sun.enterprise.module.bootstrap.ArgumentManager;
 
 /**
  * @author bnevins
@@ -89,18 +88,42 @@ public class GFLauncherInfo {
      * 
      * @return true if this is an embedded server
      */
-    public boolean isEmbedded()
-    {
+    public boolean isEmbedded() {
         return embedded;
     }
+
+    /**
+     * 
+     * @return true if verbose mode is on.
+     */
+    public boolean isVerbose() {
+        return verbose;
+    }
+
     /**
      * 
      * @return The domain name
      */
-    public String getDomainName()
-    {
+    public String getDomainName() {
         return domainName;
     }
+
+    public File getConfigFile() {
+        return configFile;
+    }
+
+    public File getDomainRootDir() {
+        return domainRootDir;
+    }
+
+    public String getInstanceName() {
+        return instanceName;
+    }
+
+    public void setDomainRootDir(File f) {
+        domainRootDir = f;
+    }
+    
     /**
      *  TEMPORARY.  The guts of HK2 and V3 bootstrapping wants String[]
      * -- this will be changed soon, but it is messy to change it right now.
@@ -289,7 +312,7 @@ public class GFLauncherInfo {
     private Boolean getBoolean(String key) {
         // 3 return values -- true, false, null
         String s = getValueIgnoreCommandDelimiter(key);
-        
+
         if (s != null)
             return Boolean.valueOf(s);
         else
@@ -326,7 +349,6 @@ public class GFLauncherInfo {
         }
         return null;
     }
-    
     private boolean verbose = false;
     private boolean debug = false;
     private boolean embedded = false;

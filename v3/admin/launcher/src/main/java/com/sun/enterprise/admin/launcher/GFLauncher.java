@@ -63,6 +63,7 @@ public abstract class GFLauncher {
     public void launch() throws GFLauncherException
     {
         try {
+            System.out.println("CLASSLOADER: " + getClass().getClassLoader());
             setup();
             internalLaunch();
         }
