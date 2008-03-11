@@ -68,8 +68,9 @@ public class EjbSniffer  extends GenericSniffer implements Sniffer {
      * @return true if this sniffer handles this application type
      */
     public boolean handles(ReadableArchive location, ClassLoader loader) {
-System.out.println(">> EjbSniffer.handles.....");
         boolean result = super.handles(location, loader);
+        /*
+System.out.println(">> EjbSniffer.handles.....");
         if (result == false) {
             InputStream is;
             try {
@@ -84,6 +85,7 @@ System.out.println("Got Ejb30.class");
             }
         }
 System.out.println("<< EjbSniffer result: " + result);
+        */
         return result;
     }
 
