@@ -17,7 +17,8 @@ import static org.junit.Assert.*;
 /**
  *
  * @author bnevins
- *
+ */
+
 public class ASenvPropertyReaderTest {
 
     public ASenvPropertyReaderTest() {
@@ -55,5 +56,3 @@ public class ASenvPropertyReaderTest {
     ASenvPropertyReader pr;
     private static File installDir;
 }
- * 
- */
