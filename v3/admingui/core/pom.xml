@@ -5,6 +5,7 @@
         <groupId>org.glassfish.admingui</groupId>
         <artifactId>admingui</artifactId>
         <version>1.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <build>
@@ -41,12 +42,12 @@
         <dependency>
 	    <groupId>javax.servlet.jsp</groupId>
 	    <artifactId>jsp-api</artifactId>
-	    <version>${jsp-api.version}</version>
+	    <version>2.1</version>
         </dependency>
         <dependency>
 	    <groupId>org.glassfish.common</groupId>
 	    <artifactId>amx-api</artifactId>
-	    <version>${amx-api.version}</version>
+	    <version>2.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
 </project>
