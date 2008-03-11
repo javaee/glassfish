@@ -2,6 +2,9 @@
     <head>
 	<!-- Change this to change the name of this tab -->
         <meta name="j1holtabname" content="Exercise 1">
+	<style type="text/css">
+.j1hollist img { border: 5px ridge #888; }
+	</style>
     </head>
     <body>
         <div class="j1holcontents">
@@ -13,12 +16,13 @@
             <p class="j1holheader">Introduction:</p>
             
 <p>
-  The goal of this exercise is to develop a GlassFish plugin module.&nbsp; You
+  The goal of this exercise is to develop a GlassFish plugin module. You
   will be adding a page and tree node to the GlassFish Administration
-  Console.&nbsp;&nbsp; We've already pre-configured your build environment
-  leaving you with more time to to get "hands-on" with the code.&nbsp; In this
+  Console. We have pre-configured your build environment
+  leaving you with more time to to get "hands-on" with the code. In this
   exercise, you will do the following:
 </p>
+
 <ul class="j1hollist">
   <li>
     Build a plugin using the Maven plugin in NetBeans 6.0 (or command line)<br>
@@ -37,9 +41,9 @@
             
 <p>
   This section provides more detail about the GlassFish V3 build environment and
-  architecture.&nbsp; This information is non-essential for completing this lab,
+  architecture. This information is non-essential for completing this lab,
   however, it will give you better insight into the design of GlassFish
-  V3.&nbsp; <span class="j1holnote">To proceed with the lab, conintue to the "<a href="#ex1steps">Step-by-Step Instructions</a>"
+  V3. <span class="j1holnote">To proceed with the lab, conintue to the "<a href="#ex1steps">Step-by-Step Instructions</a>"
   section.</span><br>
 </p>
             
@@ -50,15 +54,15 @@
 <p>
   GlassFish uses the HK2 project (https://hk2.dev.java.net) to provide "modules"
   which can be plugged together to build an application server with unique
-  capabilities.&nbsp; These GlassFish (or HK2) modules need only be placed in
+  capabilities. These GlassFish (or HK2) modules need only be placed in
   the &lt;install-root&gt;/modules directory to be found by the
-  environment.&nbsp; The modules describe themselves to GlassFish so that
-  GlassFish knows how to interact with them.&nbsp; This is done by using the HK2
+  environment. The modules describe themselves to GlassFish so that
+  GlassFish knows how to interact with them. This is done by using the HK2
   @Contract and @Service annotations.
 </p>
 <p>
-  The @Contract annotation is typically placed on a Java Interface.&nbsp; Doing
-  this makes the interface known to HK2.&nbsp; Here is an example Java Interface
+  The @Contract annotation is typically placed on a Java Interface. Doing
+  this makes the interface known to HK2. Here is an example Java Interface
   annotated with the @Contract annotation:
 </p>
 <div class="codebox"><pre>
@@ -81,7 +85,7 @@ public interface ConsoleProvider {
 
 <p>
   The @Service annotation is placed on a Java Class which typically implements a
-  Java Interface which is annotated by the @Contract annotation.&nbsp; When
+  Java Interface which is annotated by the @Contract annotation. When
   @Service annotations are processed by the Annotation Processor Tool at
   compile-time, the HK2 processor creates an entry in the
   META-INF/inhabitants/default file, such as:
@@ -93,13 +97,13 @@ public interface ConsoleProvider {
 <p> This is used to efficiently locate all implementations of a @Contract in the system.</p>
 
 <p>
-  Lets consider an example of how this is used.&nbsp; The GlassFish
+  Lets consider an example of how this is used. The GlassFish
   Administration Console needs to find GlassFish Modules that wish to integrate
-  content.&nbsp; To do this, each of these GlassFish Modules must provide an
+  content. To do this, each of these GlassFish Modules must provide an
   implementation of the ConsoleProvider "@Contract" Interface which is annotated
-  with the @Service annotation.&nbsp; The GlassFish Admin Console is then able
+  with the @Service annotation. The GlassFish Admin Console is then able
   to easily find these implementations and access the configuration file they
-  specify via their interface (see fig TBD).&nbsp; Once the configuration
+  specify via their interface (see fig TBD). Once the configuration
   information is obtained, the task of integrating the new content is easily
   performed.
 </p>
@@ -113,7 +117,7 @@ public interface ConsoleProvider {
 
 <p>
 The exercises in this lab aim to describe in detail the specific steps required
-to create a module and to integrate with the GlassFish Administrative Console.
+to create a module and to integrate with the GlassFish Administration Console.
 Complete this lab to gain a better understanding of these steps.
 </p>
 
@@ -121,11 +125,11 @@ Complete this lab to gain a better understanding of these steps.
 
 <p>
   This section of the document describes the file layout found in the lab
-  exercises, as well as the layout of all GlassFish Modules.&nbsp; A snapshot of
+  exercises, as well as the layout of all GlassFish Modules. A snapshot of
   the GlassFish V3 source code can be found under the
-  <code>&lt;lab4520_root&gt;/gfplugin/glassfish-src</code>
-  directory.&nbsp; This is for your reference only and is <span class="j1holnote">NOT</span> needed for
-  any exercises in this lab.&nbsp; To obtain the latest GlassFish source code,
+  <code>gfplugin/glassfish-src</code>
+  directory. This is for your reference only and is <span class="j1holnote">NOT</span> needed for
+  any exercises in this lab. To obtain the latest GlassFish source code,
   you can follow the instructions found on the GlassFish v3 build instructions
   web site:
   <a href="http://wiki.glassfish.java.net/Wiki.jsp?page=V3FullBuildInstructions">http://wiki.glassfish.java.net/Wiki.jsp?page=V3FullBuildInstructions</a>.
@@ -134,25 +138,25 @@ Complete this lab to gain a better understanding of these steps.
 <p>
   When viewing the top-level directory of the GlassFish source, you should note
   all the sub-directories are Maven Modules, which follow a standard maven 2
-  project layout.&nbsp; The java source files are under
-  &lt;maven-module&gt;/src/main/java.&nbsp; Additional resources are under
-  &lt;maven-module&gt;/src/main/resources.&nbsp; Unit tests are under
-  &lt;maven-module&gt;/src/test/java.&nbsp; There is a pom.xml file for each
+  project layout. The java source files are under
+  <code>&lt;maven-module&gt;/src/main/java</code>. Additional resources are under
+  <code>&lt;maven-module&gt;/src/main/resources</code>. Unit tests are under
+  <code>&lt;maven-module&gt;/src/test/java</code>. There is a pom.xml file for each
   maven module that specifies information such as: parent Maven Module, groupId,
   artifactId, version number, build dependencies, and build and packaging
-  instructions.&nbsp; Configuration information from a parent Maven Module is
+  instructions. Configuration information from a parent Maven Module is
   inherited.
 </p>
 
 <p>
   The source code for the GlassFish Administration Console is located in the
-  directory named "admingui".&nbsp; This lab does not touch any of the files in
+  directory named "admingui". This lab does not touch any of the files in
   the GlassFish Administration Console, it instead provides a plugin which is
-  integrated seamlessly with the GlassFish Administrative Console.&nbsp; If you
+  integrated seamlessly with the GlassFish Administration Console. If you
   want to know more details about the GlassFish Administration Console, below is
-  an explanation of all the admingui sub-modules.&nbsp; The specifics of the
+  an explanation of all the admingui sub-modules. The specifics of the
   Adminstration Console itself are, however, outside the scope of this
-  lab.&nbsp; You may become involved the the GlassFish Administration Console
+  lab. You may become involved the the GlassFish Administration Console
   team or find out more information by going to https://glassfish.dev.java.net
   or emailing admin@glassfish.dev.java.net.
 </p>
@@ -160,10 +164,10 @@ Complete this lab to gain a better understanding of these steps.
 <p> <b>Plugin Service Module</b></p>
 
 <p>
-  This module detects all GlassFish Modules that provide IntegrationPoints
-  to the console.&nbsp; It also contains code to discover and serve all
-  additional resources provided by other plugin modules (JSFTemplating
-  JavaServer Faces Pages, Images, Java code, etc.).
+  This module detects all GlassFish Modules that provide
+  <code>IntegrationPoint</code>s to the console. It also contains code
+  to discover and serve all additional resources provided by other plugin
+  modules (JSFTemplating JavaServer Faces Pages, Images, Java code, etc.).
 </p>
 </p>
 <div class="codebox"><pre>
@@ -177,11 +181,11 @@ v3/admingui/plugin-service/src/main/java/org/glassfish/admingui/plugin/Integrati
 <b>Core Module for Admin Console</b>
 
 <p>
-This is the module that provides the infrastructure for the GlassFish
-Administration Console.&nbsp; It contains code for initialization, setting up
-the home page, building the navigation tree, common utilities, etc.&nbsp; It
-also contains the JavaServer Faces pages such as the common task page, header,
-version window, top-level tree node's corresponding pages, etc.</p>
+This module provides infrastructure for the GlassFish Administration Console.
+It contains code for initialization, setting up the home page, building the
+navigation tree, common utilities, etc.  This includes the JavaServer Faces
+pages such as the common task page, header, version window, top-level tree
+nodes and their corresponding pages.</p>
 
 <div class="codebox"><pre>
 v3/admingui/pom.xml
@@ -194,7 +198,7 @@ v3/admingui/core/src/main/resources/home.jsf</pre>
 <p>
   This is the war packaging module which contains the deployment descriptor and
   includes the <code>console-core-1.2-SNAPSHOT.jar</code> which is built from the core
-  module.&nbsp; After the build cycle, a war file is created ready for
+  module. After the build cycle, a war file is created ready for
   deployment.
 <div class="codebox"><pre>
 v3/admingui/war/
@@ -217,19 +221,20 @@ v3/admingui/war/src/main/webApp
 	    <p>
 In this step, you will create a Java Class which implements the
 <code>ConsoleProvider @Contract</code>.  This is done so your plugin can be
-discovered by the GlassFish v3 Administration Console.&nbsp; Implementing the
+discovered by the GlassFish v3 Administration Console. Implementing the
 <code>ConsoleProvider</code> interface is simply a matter of annotating your
 class with the <code>@Service</code> annotation and implementing 1 method.
 	    </p></li>
 	<li><b><a href="#ex1stepB">Provide a console-config.xml file</a></b>
 	    <p>
-This file is necessary to declare your "IntegrationPoints."&nbsp; In this
-step, you'll learn what an IntegrationPoint is and how to declare them.<br>
+This file is necessary to declare your "<code>IntegrationPoints</code>."
+In this step, you will learn what an <code>IntegrationPoint</code> is and how
+to define them.<br>
 	    </p></li>
 	<li><b><a href="#ex1stepC">Create a couple JavaServer Faces pages</a></b>
 	    <p>
 JavaServer Faces pages are needed to produce the content you are
-providing.&nbsp; You will create 2 very simple JSFTemplating JavaServer
+providing. You will create 2 very simple JSFTemplating JavaServer
 Faces pages.
 	    </p></li>
 	<li><b><a href="#ex1stepD">Build and Install your first GlassFish v3 plugin</a></b>
@@ -247,7 +252,7 @@ In this step you will install and test your plugin.
 <p>
 In this step, you will create a Java Class which implements the
 <code>ConsoleProvider @Contract</code>.  This is done so your plugin can be
-discovered by the GlassFish v3 Administration Console.&nbsp; Implementing the
+discovered by the GlassFish v3 Administration Console. Implementing the
 <code>ConsoleProvider</code> interface is simply a matter of annotating your
 class with the <code>@Service</code> annotation and implementing 1 method.
 </p>
@@ -259,17 +264,17 @@ page</a>.
 </p>
 
 <ol class="j1hollist">  <!-- Start Step 1 Ordered List -->
-  <li><b>Open the plugin module in NetBeans</b> (<a href="#ex1stepA2">Skip to step A-2 "Create your plugin Java @Service Class"</a> if you are not using NetBeans.)
+  <li><b>Open the plugin module in NetBeans</b> (<a href="#ex1stepA2">Skip to step A-2 "Create your plugin Java @Service Class"</a> if you are <span class="j1holnote">not</span> using NetBeans.)
     <ol class="j1hollist">
 	<li>Launch NetBeans IDE 6.0.</li>
 	<li>Open plugin module.
 	    <ol class="j1hollist">
 		<li>Choose <code>Open Project</code> from the <code>File</code> menu.</li>
-		<li>Browse to <code>&lt;lab4520_root&gt;/gfplugin</code> and select <code>myplugin</code>.</li>
+		<li>Browse to <code>gfplugin</code> and select <code>myplugin</code>.</li>
 		<li>Press the <code>Open Project</code> button.
 		    <p>&nbsp;</p>
 		    <p><img src="images/ex1-project-open.jpg" /></p>
-		    Figure 1-1:&nbsp; Open Project myplugin
+		    Figure 1-1: Open Project myplugin
 		</li>
 	    </ol>
 	    <p>&nbsp;</p>
@@ -278,7 +283,7 @@ page</a>.
 	<li>You should see the following directory layout under the Projects tab:
 	    <p>&nbsp;</p>
 	    <p><img src="images/ex1-project-layout.jpg"></p>
-	    Figure 1-2:&nbsp; Project myplugin layout
+	    Figure 1-2: Project myplugin layout
 
 	    <p>&nbsp;</p>
 	</li>
@@ -286,12 +291,12 @@ page</a>.
   </li>
 
   <li><a name="ex1stepA2"><b>Create your plugin Java @Service Class</b>
-	<p> We need a Java Class that is a <code>@Service</code> and
-	    implements the <code>ConsoleProvider</code> interface.&nbsp;
+	<p> We need a Java Class annotated with <code>@Service</code> that
+	    implements the <code>ConsoleProvider</code> interface.
             <code>ConsoleProvider</code> is an interface that requires the
 	    method <code>getConfiguration()</code> that returns the
 	    <code>java.net.URL</code> pointing to the
-	    <code>config-console.xml</code> file.&nbsp; If this method returns
+	    <code>config-console.xml</code> file. If this method returns
 	    <code>null</code>, the plugin framework will look for a default
 	    configuration file
 	    <code>META-INF/admingui/console-config.xml</code>.</p>
@@ -302,22 +307,30 @@ page</a>.
 	    <a href="https://hk2.dev.java.net/components.html">HK2 Component
 	    Model web page</a>.</p>
 
-	<p> If you are <b>not</b> using NetBeans, create a file similar to that found in <a href="#TBD">...</a>.  You may use any filename or package you'd like, however, the lab material will refer to this file as 
+	<p> If you are <span class="j1holnote">not</span> using NetBeans,
+	    create a file similar to that found in <a href="#ex1fig13">Figure
+	    1-13</a> with any filename or package you like.  The lab
+	    material, however, will refer to this file as
+	    <code>MyPlugin.java</code> and the package will by named
+	    <code>org.example.glassfish.admingui</code>.  Skip to step A-3
+	    "<a href="#ex1stepA3">Compiling your plugin</a>".</p>
+
+	<p> NetBeans users, follow these steps:</p>
 
 	<ol class="j1hollist">
             <div id=ne15 style="PADDING:1em 0pt; TEXT-ALIGN:left">
 		Step-by-step instructions in NetBeans:<br>
               <ol class="j1hollist">
                 <li>
-                  Locate&nbsp; the directory 'org.example.glassfish.admingui'
-                  under&nbsp; 'Source Packages'.<br>
+                  Locate the directory "org.example.glassfish.admingui"
+                  under "Source Packages".<br>
                 </li>
                 <li>
-                  Right click on it and select&nbsp; "New" --&gt; "Java
-                  Class".&nbsp; A pop up window will display.<br>
+                  Right click on it and select "New" --&gt; "Java
+                  Class". A pop up window will display.<br>
                 </li>
                 <li>
-                  Enter the class name 'MyPlugin' &nbsp; (Note:&nbsp; do
+                  Enter the class name "MyPlugin"  (Note: do
                   not enter the .java extension)
                 </li>
                 <li>
@@ -332,9 +345,9 @@ page</a>.
                 <br>
                 <br>
                 Now open this newly created Java File and
-                add the necessary implementation for the plugin.&nbsp;&nbsp;
+                add the necessary implementation for the plugin.
                 (Note: the full path of this file is
-		<code>&lt;lab4520_root&gt;/gfplugin/myplugin/src/main/java/org/example/glassfish/admingui/MyPlugin.java</code>)<br>
+		<code>gfplugin/myplugin/src/main/java/org/example/glassfish/admingui/MyPlugin.java</code>)<br>
                 <br>
                 Here are some hints for the implementation.
               <ol class="j1hollist">
@@ -346,7 +359,7 @@ page</a>.
                 </li>
                 <li>
                   A Public method getConfiguration() that returns a
-                  URL.&nbsp;&nbsp; If this returns Null, the system will get the
+                  URL. If this returns Null, the system will get the
                   configuration from a default location.
                 </li>
               </ol>
@@ -373,7 +386,7 @@ public class MyPlugin implements ConsoleProvider {
   </div>
   </br></br>
   <img src="images/ex1-editMyPlugin.jpg"></br>
-  Figure 1-4:&nbsp; Edit MyPlugin.java</br></br></br>
+  Figure 1-4: Edit MyPlugin.java</br></br></br>
     </ol>
 </a></li>
 
@@ -381,45 +394,43 @@ public class MyPlugin implements ConsoleProvider {
 
       <hr style="WIDTH:100%; HEIGHT:2px"><br>
 <a name="ex1stepB">
-      <b> 1-B Add configuration files to indicate&nbsp; integration points. </b>
+      <b> 1-B Add configuration files to indicate IntegrationPoints. </b>
   </a>
       <div id=rbo: style="PADDING:1em 0pt; TEXT-ALIGN:left">
 
-        <div style=MARGIN-LEFT:40px>
-          You need add the console-config.xml file which
-          specifies the integration point for your module.&nbsp;&nbsp; You will
-          add this XML file under&nbsp;
-          myplugin/src/main/resources/META-INF/admingui,&nbsp; since the default
-          location of this file in a plugin jar is
-          META-INF/admingui/console-config.xml. &nbsp; In this file, you will be
-          adding the following two xml entries:<br>
-        </div>
+        <p>
+          You need add the <code>console-config.xml</code> file which
+          specifies the <code>IntegrationPoint</code> for your module. You will
+          add this XML file under <code>
+          myplugin/src/main/resources/META-INF/admingui</code>. The
+	  default location of this file for a plugin jar is
+          <code>META-INF/admingui/console-config.xml</code>, we have located
+	  this file to ensure it will be found. In this file, you will
+	  be adding the following two xml entries:<br>
+        </p>
 
-        <div style=MARGIN-LEFT:80px>
-          <i>console-config</i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-          id:&nbsp; javaone<br>
-          I<i>ntegration Point </i>:&nbsp;&nbsp; id: JavaOneNode,&nbsp;
-          type:tree,&nbsp; priority:210,&nbsp;&nbsp; parentId:tree,&nbsp;
-          content:&nbsp; treenode-ex1.jsf<br>
-        </div>
+          <code><pre>
+	  console-config: {id: javaone}
+          Integration Point: {id: JavaOneNode, type:tree, priority:210, parentId:tree, content: treenode-ex1.jsf}
+	  </pre></code>
 
         <div style=MARGIN-LEFT:40px>
 		Step-by-step instructions in NetBeans:<br>
           <ol class="j1hollist">
             <li>
-              Right click on 'admingui' under 'Other
-              Resources-&gt;Resources-&gt;META-INF-&gt;admingui'
+              Right click on "admingui" under "Other
+              Resources-&gt;Resources-&gt;META-INF-&gt;admingui"
             </li>
             <li>
-              Select 'New' and 'Other...'<br>
+              Select "New" and "Other..."<br>
             </li>
             <li>
-              Select 'Other' in the Categories column on the right and 'Empty
-              File' in File Types categories on the left. Select Next.
+              Select "Other" in the Categories column on the right and "Empty
+              File" in File Types categories on the left. Select Next.
             </li>
             <li>
-              Enter 'console-config.xml' as the file name. Select
-              Finish.&nbsp;&nbsp;<br>
+              Enter "console-config.xml" as the file name. Select
+              Finish.<br>
             </li>
             <li>
 	    Edit the file to specify the integration point (Note: the
@@ -444,13 +455,13 @@ public class MyPlugin implements ConsoleProvider {
 
 	</br> </br></br>
 	<img src="images/ex1-createConsoleConfig1.jpg"></br></br>
-	Figure 1-5:&nbsp; Creating console-config.xml (step 1)</br></br></br></br></br>
+	Figure 1-5: Creating console-config.xml (step 1)</br></br></br></br></br>
 
 	<img src="images/ex1-createConsoleConfig2.jpg"></br></br>
-	Figure 1-6:&nbsp; Creating console-config.xml (step 2)</br></br></br></br></br>
+	Figure 1-6: Creating console-config.xml (step 2)</br></br></br></br></br>
 
 	<img src="images/ex1-editConsoleConfig.jpg"></br></br>
-	Figure 1-7:&nbsp; Edit console-config.xml</br></br></br></br></br>
+	Figure 1-7: Edit console-config.xml</br></br></br></br></br>
       </div>
 
 
@@ -462,9 +473,9 @@ public class MyPlugin implements ConsoleProvider {
         which will be displayed in the Administration Console when your JavaOne
         tree node is displayed and clicked.<br>
         In the first JSF file you will specify a top level JavaOne tree node and
-        a sub node underneath.&nbsp; In the second JSF file you will be using
-        Facelets syntax to create a simple 'hello world' page that is displayed
-        when the sub node is clicked. &nbsp; To learn more about JSF or Facelets
+        a sub node underneath. In the second JSF file you will be using
+        Facelets syntax to create a simple "hello world" page that is displayed
+        when the sub node is clicked.  To learn more about JSF or Facelets
         you can visit the JSFTemplating web site:
         https://jsftemplating.dev.java.net, or the Facelets web site:
         https://facelets.dev.java.net.<br>
@@ -475,15 +486,15 @@ public class MyPlugin implements ConsoleProvider {
 
           <ol class="j1hollist">
             <li>
-              Right click on Resources.&nbsp; Select 'New' and 'Other...'
+              Right click on Resources. Select "New" and "Other..."
             </li>
             <li>
-              Select 'Other' in the Categories column on the right and 'Empty
-              File' in File Types categories on the left. Select Next.
+              Select "Other" in the Categories column on the right and "Empty
+              File" in File Types categories on the left. Select Next.
             </li>
             <li>
-              Fill in 'treenode-ex1.jsf' as&nbsp; the file name.&nbsp;&nbsp;
-              This corresponds to the 'content' specified in console-config.xml
+              Fill in "treenode-ex1.jsf" as the file name.
+              This corresponds to the "content" specified in console-config.xml
             </li>
             <li>
               Edit the file to specify the tree nodes layout 
@@ -508,40 +519,40 @@ public class MyPlugin implements ConsoleProvider {
 &lt;/sun:treeNode&gt;</pre>
   </div>
   <img src="images/ex1-createTreenode.jpg"></br></br>
-        Figure 1-8:&nbsp; Create treenode-ex1.jsf</br></br></br></br></br><br>
+        Figure 1-8: Create treenode-ex1.jsf</br></br></br></br></br><br>
 
   <img src="images/ex1-editTreenode.jpg"></br></br>
-            Figure 1-9:&nbsp; Edit treenode-ex1.jsf</br></br></br></br></br><br>
+            Figure 1-9: Edit treenode-ex1.jsf</br></br></br></br></br><br>
           </div>
 
   <hr style="WIDTH:80%; HEIGHT:1px"><br>
 
           <br>
-          Now, You will create the hello.jsf&nbsp; page
+          Now, You will create the <code>hello.jsf</code> page
           which will be displayed on the right frame of the Administration
-          Console when the 'Exercise #1' tree node is clicked.&nbsp; The file
+          Console when the "Exercise #1" tree node is clicked. The file
           will be created in the same directory where you created
-          'treenode-1.jsf'.&nbsp;<br>
-          &nbsp;The full path to this file is
-          'myplugin/src/main/resources/hello.jsf'.&nbsp;&nbsp;&nbsp;<br>
+          "<code>treenode-1.jsf</code>".<br>
+          The full path to this file is
+          "<code>myplugin/src/main/resources/hello.jsf</code>".<br>
           <br>
         <div style=MARGIN-LEFT:40px>
           Step-by-step instructions in NetBeans:<br>
           <ol class="j1hollist">
             <li>
-              Right click on Resources.&nbsp; Select 'New' and 'Other...'
+              Right click on Resources. Select "New" and "Other..."
             </li>
             <li>
-              Select <b>'</b>Other' in the left Categories column and 'Empty
-              File' on the File Type column.
+              Select "Other" in the left Categories column and "Empty
+              File" on the File Type column.
             </li>
             <li>
-              Enter 'hello.jsf<b>'</b> as&nbsp; the file name.&nbsp;&nbsp; This
-              corresponds to the 'url' specified in&nbsp; the 'treenode-ex1.jsf'
+              Enter "hello.jsf" as the file name. This
+              corresponds to the "url" specified in the "treenode-ex1.jsf"
               file you created in step 5 above.<br>
             </li>
             <li>
-              Open the file.&nbsp; Add the following code.&nbsp;&nbsp; (Note:
+              Open the file. Add the following code. (Note:
               the full path to this file is
               myplugin/src/main/resources/hello.jsf)<br style=BACKGROUND-COLOR:#cccccc>
             </li>
@@ -568,26 +579,26 @@ public class MyPlugin implements ConsoleProvider {
 
 
   <img src="images/ex1-editHello.jpg"></br></br>
-  Figure 1-10:&nbsp; Edit hello.jsf </br></br></br></br></br><br>
+  Figure 1-10: Edit hello.jsf </br></br></br></br></br><br>
   </div>
 
   <hr style="WIDTH:100%; HEIGHT:2px"><br>
 <a name="ex1stepD">
-    <b>1-D.&nbsp; Build and Install your first GlassFish v3 plugin</b><br>
+    <b>1-D. Build and Install your first GlassFish v3 plugin</b><br>
         <br>
          The last step of this implementation is to build the project.<br>
                 <br>
-                Note:&nbsp; If you are using a command line and have 'maven 2'
+                Note: If you are using a command line and have "maven 2"
                 installed on your system you can build the project by doing the
                 following:<br>
-		<code>%cd&nbsp; &lt;lab4520_root&gt;/gfplugin/plugin;&nbsp;&nbsp; mvn install;</code><br><br>
+		<code>%cd gfplugin/plugin; mvn install;</code><br><br>
 
 		or you can do this in NetBeans by following these steps.<br>
 
           <ol class="j1hollist">
           <ol class="j1hollist">
             <li>
-              Right click on the project 'Java One 2008 Admin Console Plugin'
+              Right click on the project "Java One 2008 Admin Console Plugin"
             </li>
             <li>
               Select Build.
@@ -597,14 +608,14 @@ public class MyPlugin implements ConsoleProvider {
 
                 <br>
                 After the above steps are finished, you will have the jar file named 
-                <code>&lt;lab4520_root&gt;/gfplugin/myplugin/target/console-myplugin-1.0-SNAPSHOT.jar</code>.
+                <code>gfplugin/myplugin/target/console-myplugin-1.0-SNAPSHOT.jar</code>.
                 This jar file is ready to be integrated into GlassFish.</span><br>
 
-                </b>You now need a Terminal to enter some commands.&nbsp; Please
+                </b>You now need a Terminal to enter some commands. Please
                 bring up a terminal window.<br>
                 <br>
                 The GlassFish V3 server is installed as
-		<code>&lt;lab4520_root&gt;/gfplugin/glassfish</code> &nbsp; It is already running.<br>
+		<code>gfplugin/glassfish</code>  It is already running.<br>
 		The following steps show you how to integrate and test your plugin module.<br>
 
 
@@ -622,26 +633,26 @@ public class MyPlugin implements ConsoleProvider {
                 <div id=rlz1 style="PADDING:1em 0pt; TEXT-ALIGN:left">
                   <img src="images/ex1-before.jpg">
                 </div>
-		Figure 1-11:&nbsp; Before Integration<br><br><br>
+		Figure 1-11: Before Integration<br><br><br>
 
 		</li>
-		<li>
-		go to your <code>&lt;lab4520_root&gt;</code> directory<br>
-		<code>cd &lt;lab4520_root&gt;</code><br><br>
+		<li> go to your <code>gfplugin</code> directory<br>
+		<code>cd &lt;path-to-gfplugin&gt;</code><br><br>
 		</li>
 		<li>
                 Shut down the server<br>
-		<code>gfplugin/glassfish/bin/stop-domain</code><br><br>
+		<code>glassfish/bin/stop-domain</code><br><br>
 		</li>
 		<li>
 		Integrate the jar to GlassFish by copying it to the glassfish modules directory
 		<br>
 		<code>
-		    %cp gfplugin/myplugin/target/console-myplugin-1.0-SNAPSHOT.jar gfplugin/glassfish/modules/console-myplugin-1.0-SNAPSHOT.jar<br><br>
+		    cp myplugin/target/console-myplugin-1.0-SNAPSHOT.jar glassfish/modules/console-myplugin-1.0-SNAPSHOT.jar<br><br>
+		</code>
 		    </li>
 		    <li>
                 Start the server again,<br>
-		<code>gfplugin/glassfish/bin/asadmin&nbsp; start-domain</code><br>
+		<code>glassfish/bin/asadmin start-domain</code><br>
                 <br>
 		</li>
 		<li>
@@ -651,23 +662,25 @@ public class MyPlugin implements ConsoleProvider {
                 <br>
                 Note that the JavaOne tree node is displayed in the
                 Navigation Tree and clicking on the tree node displays the
-                'Hello World' page.<br>
+                "Hello World" page.<br>
 		</li>
 	    </ol>
 
                 <br>
 		<img src="images/ex1-result.jpg"><br><br><br>
-		Figure 1-12:&nbsp; Browser showing the plugin page.<br><br>
+		Figure 1-12: Browser showing the plugin page.<br><br>
              </div>
                   <span class="j1holnote">You have just customized the Administration Console and
-                  plugged in your own tree node and page.&nbsp; Congratulations
-                  !!</span>
+                  plugged in your own tree node and page. Congratulations !!</span>
 	  </div>
 	  <br><br>
 
 <p class="j1holheader">Summary:</p>
             
-<p>In this exercise, you have learned about GlassFish plugin module and developed a plugin modue to the Admin Console where you added a tree node to the navigation tree.  Clicking this tree node shows you the plugin page</p>
+<p> In this exercise, you have learned about GlassFish plugin module and
+    developed a plugin modue to the Admin Console where you added a tree node
+    to the navigation tree.  Clicking this tree node shows you the plugin
+    page.</p>
             
             <p><a href="#Solution_1">Go to solution</a></p>
             <p><a href="#Exercise_2">Go on to next exercise</a></p>
