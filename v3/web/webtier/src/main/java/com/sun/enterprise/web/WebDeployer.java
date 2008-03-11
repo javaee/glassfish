@@ -111,18 +111,20 @@ public class WebDeployer extends JavaEEDeployer<WebContainer, WebApplication>{
         if (module!=null) {
             apis.add(module.getModuleDefinition());
         }
-        module = modulesRegistry.makeModuleFor("org.glassfish.web:webtier", null);
-        if (module!=null) {
-            apis.add(module.getModuleDefinition());
+
+        String[] otherExportedPackages = new String[] {
+                "org.glassfish.web:webtier",
+                "org.glassfish.web:jsf-connector",
+                "org.glassfish.web:jstl-impl",
+                "org.glassfish.external:grizzly-module" };
+
+        for (String otherExportedPackage : otherExportedPackages) {
+            module = modulesRegistry.makeModuleFor(otherExportedPackage, null);
+            if (module != null) {
+                apis.add(module.getModuleDefinition());
+            }
         }
-        module = modulesRegistry.makeModuleFor("org.glassfish.web:jsf-connector", null);
-        if (module!=null) {
-            apis.add(module.getModuleDefinition());
-        }
-        module = modulesRegistry.makeModuleFor("org.glassfish.web:jstl-impl", null);
-        if (module!=null) {
-            apis.add(module.getModuleDefinition());
-        }
+
         return new MetaData(false, apis.toArray(new ModuleDefinition[apis.size()]), new Class[] { Application.class }, null );
     }    
 
