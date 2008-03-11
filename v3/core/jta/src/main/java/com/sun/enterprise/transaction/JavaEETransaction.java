@@ -525,6 +525,13 @@ public final class JavaEETransaction extends TimerTask implements
         } finally {
             ((JavaEETransactionManagerSimplified) javaEETM).clearThreadTx();
             if ( jtsTx == null ) {
+                for ( int i=0; i<interposedSyncs.size(); i++ ) {
+                    try { 
+                        Synchronization sync = (Synchronization)interposedSyncs.elementAt(i);
+                        sync.afterCompletion(Status.STATUS_ROLLEDBACK);
+                    } catch ( Exception ex ) {}
+                }
+
                 // call afterCompletions
                 for ( int i=0; i<syncs.size(); i++ ) {
                     try {
