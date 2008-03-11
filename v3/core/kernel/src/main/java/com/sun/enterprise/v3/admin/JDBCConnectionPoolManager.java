@@ -6,7 +6,6 @@
 package com.sun.enterprise.v3.admin;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Properties;
 import java.beans.PropertyVetoException;
 import org.glassfish.api.I18n;
@@ -17,6 +16,7 @@ import static com.sun.enterprise.v3.admin.ResourceConstants.*;
 import com.sun.enterprise.config.serverbeans.Resources;
 import com.sun.enterprise.config.serverbeans.ServerTags;
 import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.enterprise.config.serverbeans.Property;
 import com.sun.enterprise.config.serverbeans.Resources;
 import com.sun.enterprise.config.serverbeans.JdbcConnectionPool;
 
@@ -66,7 +66,7 @@ class JDBCConnectionPoolManager implements ResourceManager{
     }
 
     public ResourceStatus create(Resources resources, HashMap attrList, 
-                                    Properties props, String tgtName) 
+                                    final Properties props, String tgtName) 
                                     throws Exception {
         setParams(attrList);
         if (jdbcconnectionpoolid == null) {
@@ -144,6 +144,13 @@ class JDBCConnectionPoolManager implements ResourceManager{
                         newResource.setDescription(description);
                     }
                     newResource.setName(jdbcconnectionpoolid);
+                    for ( java.util.Map.Entry e : props.entrySet()) {
+                        Property prop = ConfigSupport.createChildOf(newResource, 
+                                Property.class);
+                        prop.setName((String)e.getKey());
+                        prop.setValue((String)e.getValue());
+                        newResource.getProperty().add(prop);
+                    }
                     param.getResources().add(newResource);                    
                     return newResource;
                 }
@@ -196,6 +203,69 @@ class JDBCConnectionPoolManager implements ResourceManager{
         wrapJDBCObjects = (String) attrList.get(WRAP_JDBC_OBJECTS);
         description = (String) attrList.get(DESCRIPTION);
         jdbcconnectionpoolid = (String) attrList.get(CONNECTION_POOL_NAME);
+    }
+    
+    public ResourceStatus delete (Resources resources, final JdbcConnectionPool[] connPools, final String jdbcconnectionpoolid) 
+            throws Exception {
+        
+        if (jdbcconnectionpoolid == null) {
+            String msg = localStrings.getLocalString("jdbcConnPool.resource.noJndiName",
+                            "No id defined for JDBC Connection pool.");
+            ResourceStatus status = new ResourceStatus(ResourceStatus.FAILURE, msg);
+            return status;
+        }
+
+        // ensure we already have this resource
+        if (!isResourceExists(resources, jdbcconnectionpoolid)) {
+            String msg = localStrings.getLocalString("jdbcConnPool.resource.resourceDoesNotExist",
+                    "A JDBC Connection pool named {0} does not exits.", jdbcconnectionpoolid);
+            ResourceStatus status = new ResourceStatus(ResourceStatus.FAILURE, msg);
+            return status;
+        }
+
+        try {
+            if (ConfigSupport.apply(new SingleConfigCode<Resources>() {
+                public Object run(Resources param) throws PropertyVetoException, TransactionFailure {
+                    for (JdbcConnectionPool cp : connPools) {
+                        if (cp.getName().equals(jdbcconnectionpoolid)) {
+                            return param.getResources().remove(cp);
+                        }
+                    }
+                    // not found
+                    return null;
+                }
+            }, resources) == null) {
+                String msg = localStrings.getLocalString("jdbcConnPool.resource.deletionFailed", 
+                                "JDBC Connection pool {0} delete failed ", jdbcconnectionpoolid);
+                ResourceStatus status = new ResourceStatus(ResourceStatus.FAILURE, msg);
+                return status;
+            }
+        } catch(TransactionFailure tfe) {
+            String msg = localStrings.getLocalString("jdbcConnPool.resource.deletionFailed", 
+                            "JDBC Connection pool {0} delete failed ", jdbcconnectionpoolid);
+            ResourceStatus status = new ResourceStatus(ResourceStatus.FAILURE, msg);
+            status.setException(tfe);
+            return status;
+        }
+
+        String msg = localStrings.getLocalString("jdbcConnPool.resource.deleteSuccess",
+                "JDBC Connection pool {0} deleted successfully", jdbcconnectionpoolid);
+        ResourceStatus status = new ResourceStatus(ResourceStatus.SUCCESS, msg);
+        return status;
+    }
+    
+    private boolean isResourceExists(Resources resources, String jdbcconnectionpoolid) {
+        
+        // ensure we don't already have one of this name
+        for (com.sun.enterprise.config.serverbeans.Resource resource : resources.getResources()) {
+            if (resource instanceof JdbcConnectionPool) {
+                if (((JdbcConnectionPool) resource).getName().equals(jdbcconnectionpoolid)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
         
 }

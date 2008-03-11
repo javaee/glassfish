@@ -44,14 +44,9 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PerLookup;
-import org.jvnet.hk2.config.ConfigSupport;
-import org.jvnet.hk2.config.SingleConfigCode;
-import org.jvnet.hk2.config.TransactionFailure;
 import com.sun.enterprise.config.serverbeans.Resources;
 import com.sun.enterprise.config.serverbeans.JdbcConnectionPool;
 import com.sun.enterprise.util.LocalStringManagerImpl;
-
-import java.beans.PropertyVetoException;
 
 /**
  * Delete JDBC Connection Pool Command
@@ -66,7 +61,7 @@ public class DeleteJdbcConnectionPool implements AdminCommand {
 
     @Param(name="jdbc_connection_pool_id", primary=true)
     String jdbc_connection_pool_id;
-
+    
     @Inject
     Resources resources;
     
@@ -82,27 +77,19 @@ public class DeleteJdbcConnectionPool implements AdminCommand {
     public void execute(AdminCommandContext context) {
         final ActionReport report = context.getActionReport();
         try {
-           if (ConfigSupport.apply(new SingleConfigCode<Resources>() {
-                public Object run(Resources param) throws PropertyVetoException, TransactionFailure {
-                    for (JdbcConnectionPool cp : connPools) {
-                        if (cp.getName().equals(jdbc_connection_pool_id)) {
-                            return param.getResources().remove(cp);
-                        }
-                    }
-                    // not found
-                    report.setMessage(localStrings.getLocalString("delete.jdbc.connection.pool.notfound", "{0} delete failed, resource not found", jdbc_connection_pool_id));
-                    report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-                    return null;
-                }
-            }, resources) !=null) {
-                report.setMessage(localStrings.getLocalString("delete.jdbc.connection.pool.success", "{0} deleted successfully", jdbc_connection_pool_id));
+            JDBCConnectionPoolManager jdbcConnMgr = new JDBCConnectionPoolManager();
+            ResourceStatus rs = jdbcConnMgr.delete(resources, connPools, jdbc_connection_pool_id);
+            if (rs.getStatus() == ResourceStatus.SUCCESS) {
+                report.setMessage(rs.getMessage());
                 report.setActionExitCode(ActionReport.ExitCode.SUCCESS);       
+            } else {
+                report.setMessage(rs.getMessage());
+                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             }
-
-        } catch(TransactionFailure e) {
+        } catch(Exception e) {
             report.setMessage(localStrings.getLocalString("delete.jdbc.connection.pool.fail", "{0} delete failed ", jdbc_connection_pool_id));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            report.setFailureCause(e);
+            
         }        
     }
 }
