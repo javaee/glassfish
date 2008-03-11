@@ -36,6 +36,7 @@
 
 package com.sun.enterprise.v3.admin;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Properties;
 
@@ -190,6 +191,14 @@ public class JDBCResourceManager implements ResourceManager {
         ResourceStatus status = new ResourceStatus(ResourceStatus.SUCCESS, msg);
         return status;
     }
+    
+    public ArrayList list(JdbcResource[] jdbcResources) {
+        ArrayList<String> list = new ArrayList();
+        for (JdbcResource r : jdbcResources) {
+            list.add(r.getJndiName());
+        }
+        return list;
+    } 
     
     private boolean isResourceExists(Resources resources, String jndiName) {
         

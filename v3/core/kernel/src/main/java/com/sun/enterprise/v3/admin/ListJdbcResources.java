@@ -38,24 +38,16 @@ package com.sun.enterprise.v3.admin;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.I18n;
-import org.glassfish.api.Param;
 import org.glassfish.api.ActionReport;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PerLookup;
-import org.jvnet.hk2.config.ConfigSupport;
-import org.jvnet.hk2.config.SingleConfigCode;
-import org.jvnet.hk2.config.TransactionFailure;
-import com.sun.enterprise.config.serverbeans.Resource;
-import com.sun.enterprise.config.serverbeans.Resources;
 import com.sun.enterprise.config.serverbeans.JdbcResource;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 
-import java.beans.PropertyVetoException;
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+
 
 /**
  * List JDBC Resources command
@@ -67,7 +59,7 @@ import java.util.List;
 public class ListJdbcResources implements AdminCommand {
     
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(ListJdbcResources.class);    
-
+ 
     @Inject
     JdbcResource[] resources;
 
@@ -83,9 +75,19 @@ public class ListJdbcResources implements AdminCommand {
 
         report.getTopMessagePart().setMessage(localStrings.getLocalString("list.jdbc.resources.success", "list-jdbc-resources successful"));
         report.getTopMessagePart().setChildrenType("jdbc-resource");
-        for (JdbcResource r : resources) {
-            final ActionReport.MessagePart part = report.getTopMessagePart().addChild();
-            part.setMessage(r.getJndiName());
+        try {
+            JDBCResourceManager jdbcMgr = new JDBCResourceManager();
+            ArrayList<String> list = jdbcMgr.list(resources);
+            for (String jndiName : list) {
+                final ActionReport.MessagePart part = report.getTopMessagePart().addChild();
+                part.setMessage(jndiName);
+            }
+        } catch (Exception e) {
+            report.setMessage(localStrings.getLocalString("list.jdbc.resources.failed",
+                    "List JDBC resources failed"));
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            report.setFailureCause(e);
+            return;
         }
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
     }
