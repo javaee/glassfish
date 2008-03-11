@@ -20,13 +20,13 @@
             <p class="j1holheader">Background Information:</p>
             
             <p>
-                <font color=#ff0000>TBD:</font>&nbsp; More info relating to jMaki
+                <font color=#ff0000>TBD:</font> More info relating to jMaki
             </p>
 
 			<div class="j1holtip">This exercise is based on Exercise 1.  If you have not completed exercise 1 do the following so that you can continue with Exercise 2<br>
 <code>
 	% mv gfplugin/myplugin gfplugin/myplugin.save<br>
-	% mkdir&nbsp; gfplugin/myplugin <br>
+	% mkdir gfplugin/myplugin <br>
 	% cp -R gfplugin/solution/myplugin/ex1 gfplugin/myplugin<br></code>
     </div>
     
@@ -80,7 +80,7 @@ it again. More detailed instructions can be found in <a href="#ex1stepA">exercis
 				Choose Open Project from the File menu.
 				</li>
 				<li>
-				Browse to &lt;lab4520_lab&gt;/gfplugin and select myplugin module
+				Browse to <code>gfplugin</code> and select <code>myplugin</code> module
 				</li>
 				<li>
 				Press the Open Project button
@@ -330,15 +330,15 @@ Step-by-step instructions in NetBeans:<br>
 <hr style="WIDTH:100%; HEIGHT:2px"><br>
 <div style=MARGIN-LEFT:40px>
 <a name="ex2stepD">
-    <b>2-D.&nbsp; Build and Install your first GlassFish v3 plugin</b>
+    <b>2-D. Build and Install your first GlassFish v3 plugin</b>
 </a>
         <br>
          The last step of this implementation is to build the project.<br>
                 <br>
-                Note:&nbsp; If you are using a command line and have 'maven 2'
+                Note: If you are using a command line and have 'maven 2'
                 installed on your system you can build the project by doing the
                 following:<br>
-		<code>%cd&nbsp; &lt;lab4520_root&gt;/gfplugin/plugin;&nbsp;&nbsp; mvn install;</code><br><br>
+		<code>%cd gfplugin/plugin; mvn install;</code><br><br>
 
 		or you can do this in NetBeans by following these steps.<br>
 
@@ -355,36 +355,36 @@ Step-by-step instructions in NetBeans:<br>
 
                 <br>
                 After the above steps are finished, you will have the jar file named 
-                <code>&lt;lab4520_root&gt;/gfplugin/myplugin/target/console-myplugin-1.0-SNAPSHOT.jar</code>.
+                <code>gfplugin/myplugin/target/console-myplugin-1.0-SNAPSHOT.jar</code>.
                 This jar file is ready to be integrated into GlassFish.</span><br>
 
-                </b>You now need a Terminal to enter some commands.&nbsp; Please
+                </b>You now need a Terminal to enter some commands. Please
                 bring up a terminal window.<br>
                 <br>
                 The GlassFish V3 server is installed as
-		<code>&lt;lab4520_root&gt;/gfplugin/glassfish</code> &nbsp; It is already running.<br>
+		<code>gfplugin/glassfish</code> It is already running.<br>
 		The following steps show you how to integrate and test your plugin module.<br>
 
         <div style=MARGIN-LEFT:40px>
 		<br>Step-by-step instruction:
               <ol class="j1hollist">
 		<li>
-		go to your <code>&lt;lab4520_root&gt;</code> directory<br>
-		<code>cd &lt;lab4520_root&gt;</code><br><br>
+		go to your <code>gfplugin</code> directory<br>
+		<code>cd &lt;path-to-gfplugin&gt;</code><br><br>
 		</li>
 		<li>
-        Shut down the server which was started in exercise-1<br>
-		<code>gfplugin/glassfish/bin/stop-domain</code><br><br>
+        Shut down the server which may have been started in <a href="#Exercise_1">Exercise 1</a><br>
+		<code>glassfish/bin/stop-domain</code><br><br>
 		</li>
 		<li>
 		Integrate the jar to GlassFish by copying it to the glassfish modules directory
 		<br>
 		<code>
-		    %cp gfplugin/myplugin/target/console-myplugin-1.0-SNAPSHOT.jar gfplugin/glassfish/modules/console-myplugin-1.0-SNAPSHOT.jar<br><br>
+		    %cp myplugin/target/console-myplugin-1.0-SNAPSHOT.jar glassfish/modules/console-myplugin-1.0-SNAPSHOT.jar<br><br>
 		    </li>
 		    <li>
                 Start the server again,<br>
-		<code>gfplugin/glassfish/bin/asadmin&nbsp; start-domain</code><br>
+		<code>glassfish/bin/asadmin start-domain</code><br>
                 <br>
 		</li>
 		<li>
@@ -399,7 +399,7 @@ Step-by-step instructions in NetBeans:<br>
 
                 <br>
 		<img src="images/ex2-result.jpg"><br><br><br>
-		Figure 2-5:&nbsp; Browser showing the plugin page with charts.<br><br>
+		Figure 2-5: Browser showing the plugin page with charts.<br><br>
              </div>
 			 <p>You have customized the Administration Console and
                   plugged in your own tree node to show the JMaki Charts.
