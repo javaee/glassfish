@@ -55,6 +55,7 @@ import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
 
 import java.util.Map;
 import java.util.Random;
+import java.util.HashSet;
 
 /**
  *
@@ -93,10 +94,11 @@ public class SampleHandlers {
     	})
 	 public static void getjMakiValues(HandlerContext handlerCtx) {
          Random generator = new Random();
-        String values = "[15";
+	HashSet<Integer> hset = new HashSet<Integer>();
+        String values = "[";
+	int i = 0;
 
-        for(int i=0; i < MAX; i++) {
-                values = values + ",";
+        while(i < 12) {
             int x = generator.nextInt(LIMIT);
             x = x - x%DIVISOR;
             if(x > MID_WAY) {
@@ -105,9 +107,14 @@ public class SampleHandlers {
             else {
                 x = x + DIFF;
             }
-                values = values + x;
+		if(!(hset.contains(x))) {
+			hset.add(x);
+			i++;
+			values = values + x + ",";
+		}
         }
-        values = values + "]";
+	values = values.substring(0, values.lastIndexOf(','));
+        values += "]";
         //String values = "[25, 45, 25, 45, 50, 25, 35, 25, 25, 20, 35, 45]";
             handlerCtx.setOutputValue("values", values);
     }
