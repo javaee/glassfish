@@ -66,7 +66,7 @@ final class NameMapping
     matchAMXName( final String amxName, final Set<String> xmlCandidates )
     {
         final String amxCanonical = amxName.toLowerCase();
-        String xmlName = amxCanonical;
+        String xmlName = null;
         
         for (final String xmlCandidate : xmlCandidates )
         {
@@ -78,7 +78,11 @@ final class NameMapping
             }
         }
         
-        INSTANCE.mAMXToXML.put( amxName, xmlName );
+        if ( xmlName != null )
+        {
+            INSTANCE.mAMXToXML.put( amxName, xmlName );
+        }
+        
         return xmlName;
     }
 }

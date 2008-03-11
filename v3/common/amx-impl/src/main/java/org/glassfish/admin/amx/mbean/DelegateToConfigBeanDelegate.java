@@ -39,6 +39,8 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.Set;
 
+import java.beans.PropertyVetoException;
+
 import javax.management.ObjectName;
 import javax.management.MBeanServer;
 import javax.management.MBeanServerConnection;
@@ -54,8 +56,12 @@ import javax.management.ReflectionException;
 import com.sun.appserv.management.util.misc.CollectionUtil;
 import com.sun.appserv.management.util.misc.ExceptionUtil;
 
-
 import org.jvnet.hk2.config.ConfigBean;
+import org.jvnet.hk2.config.ConfigSupport;
+import org.jvnet.hk2.config.SingleConfigCode;
+import org.jvnet.hk2.config.TransactionFailure;
+import org.jvnet.hk2.config.ConfigBeanProxy;
+
 
 /**
 	Delegate which delegates to another MBean.
@@ -76,6 +82,15 @@ public final class DelegateToConfigBeanDelegate extends DelegateBase
 	}
 	
      
+		public boolean
+	supportsAttribute( final String attrName )
+	{
+        final String xmlName = getXMLName(attrName);
+        
+        //debug( "DelegateToConfigBeanDelegate.supportsAttribute: " + attrName + " => " + xmlName );
+        return xmlName != null;
+	}
+    
     /**
         Get the XML attribute name corresponding to the AMX attribute name.
      */
@@ -116,13 +131,97 @@ public final class DelegateToConfigBeanDelegate extends DelegateBase
     {
         throw new AttributeNotFoundException( name );
     }
-	
+
 		public void
 	setAttribute( final Attribute attr )
 		throws AttributeNotFoundException, InvalidAttributeValueException
 	{
+        //debug( "DelegateToConfigBeanDelegate.setAttribute: " + attr.getName() );
+        
+        final AttributeList attrs = new AttributeList();
+        attrs.add( attr );
+        
+        final AttributeList result = this.setAttributes( attrs );
+        if ( result.size() != 1 )
+        {
+            throw new RuntimeException( "Couldn't setAttribute: " + attr.getName() + " to " + attr.getValue() );
+        }
+	}
+        
+        private void
+	_setAttribute( final Attribute attr )
+		throws AttributeNotFoundException, InvalidAttributeValueException
+	{
         mConfigBean.attribute( getXMLName(attr.getName()), "" + attr.getValue() );
 	}
+    
+		public AttributeList
+	setAttributes( final AttributeList attrs )
+	{
+        final SetAttributes setter = new SetAttributes( attrs, mConfigBean );
+        
+        final ConfigBeanProxy cbp = mConfigBean.getProxy( ConfigBeanProxy.class );
+        try
+        {
+            ConfigSupport.apply( setter, cbp );
+        }
+        catch( Exception e )
+        {
+            debug( ExceptionUtil.toString(e) );
+            throw new RuntimeException( ExceptionUtil.toString(e) );
+        }
+		
+		return setter.getResults();
+	}
+    
+    private final class SetAttributes implements SingleConfigCode<ConfigBeanProxy>
+    {
+        private final AttributeList mRequestedChanges;
+        private  AttributeList      mResults;
+        
+        public SetAttributes( final AttributeList attrs, final ConfigBean configBean)
+        {
+            mRequestedChanges = attrs;
+            mResults = new AttributeList();
+        }
+        
+        public Object run( final ConfigBeanProxy configBean )
+            throws PropertyVetoException, TransactionFailure
+        {
+            final int numAttrs	= mRequestedChanges.size();
+            final AttributeList	successList	= new AttributeList();
+            
+            //debug( "Setting " + numAttrs + " attributes " );
+            for( int i = 0; i < numAttrs; ++i )
+            {
+                final Attribute attr	= (Attribute)mRequestedChanges.get( i );
+                //debug( "attrs[" + i + "] : " + attr.getName() + " = " + attr.getValue() );
+                try
+                {
+                    _setAttribute( attr );
+                    successList.add( attr );
+                }
+                catch( Exception e )
+                {
+                    // ignore, as per spec
+                    debug( ExceptionUtil.toString(e) );
+                }
+            }
+            mResults    = successList;
+            
+            return successList;
+        }
+        
+        /**
+            Call only after running.
+         */
+            public AttributeList
+        getResults()
+        {
+            return mResults;
+        }
+    }
+
 	
 		public MBeanInfo
 	getMBeanInfo()

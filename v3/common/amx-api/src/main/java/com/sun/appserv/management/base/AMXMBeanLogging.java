@@ -46,12 +46,12 @@ public interface AMXMBeanLogging
 		Get the log level.  If the String form is desired, use Level.toString().
 		@return the log Level for this MBean
 	*/
-	public Level	getMBeanLogLevel();
+	public String	getMBeanLogLevel();
 	
 	/**
 	    Set the log level for this MBean.
 	 */
-	public void		setMBeanLogLevel( Level level );
+	public void		setMBeanLogLevel( String level );
 	
 	/**
 	    @return the name of the java.util.logging.Logger used by

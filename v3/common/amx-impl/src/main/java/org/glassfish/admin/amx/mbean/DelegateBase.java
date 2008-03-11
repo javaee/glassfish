@@ -205,7 +205,7 @@ public abstract class DelegateBase implements Delegate
 		return( matches );
 	}
 
-		public synchronized boolean
+		public boolean
 	supportsAttribute( String 		attrName )
 	{
         return true;

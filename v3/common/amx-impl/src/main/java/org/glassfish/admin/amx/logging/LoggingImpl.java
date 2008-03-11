@@ -242,27 +242,6 @@ public final class LoggingImpl extends AMXNonConfigImplBase
         }
     }
     
-    @Override
-        protected synchronized ObjectName
-    getContainerObjectName()
-    {
-        ObjectName  containerObjectName = null;
-        
-        // work is needed to flesh out the hierarchy in non-DAS server instances.
-        // return null for now if that hierarchy is missing
-        try
-        {
-            containerObjectName = super.getContainerObjectName();
-        }
-        catch( Exception e )
-        {
-            // can occur for non-DAS instances
-            containerObjectName = null;
-        }
-        return containerObjectName;
-    }
-
-
         public void
     setModuleLogLevel(
         final String module,
@@ -807,9 +786,9 @@ public final class LoggingImpl extends AMXNonConfigImplBase
         public void
     testEmitLogMessage( final String level, final String message )
     {
-        final Level saveLevel   = getMBeanLogLevel();
+        final String saveLevel   = getMBeanLogLevel();
         
-        setMBeanLogLevel( Level.parse( level ) );
+        setMBeanLogLevel( level );
         try
         {
             debug( "testEmitLogMessage: logging: message = " + message );

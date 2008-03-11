@@ -127,7 +127,9 @@ final class ContainerSupport
 		public synchronized Set<String>
 	getContaineeJ2EETypes()
 	{
-        return Collections.unmodifiableSet( mContainees.keySet() );
+        // don't just return the internal key set; it might not be Serializable!
+        final HashSet<String> items = new HashSet<String>( mContainees.keySet() );
+        return items;
 	}
     
     

@@ -504,7 +504,7 @@ public class AMXImplBase extends MBeanImplBase
 		return(  getProxyFactory().getProxy( objectName, Container.class) );
 	}
 	
-		protected ObjectName
+		public ObjectName
 	getContainerObjectName()
 	{
         return mContainerObjectName;
@@ -844,27 +844,31 @@ public class AMXImplBase extends MBeanImplBase
 
 
 		protected Object
-	getAttributeInternal( String name )
-		throws AttributeNotFoundException,
-				ReflectionException, MBeanException
+	getAttributeInternal( final String name )
+		throws AttributeNotFoundException, ReflectionException, MBeanException
 	{
 		Object	result	= null;
 		boolean	handleManually	= false;
 		
+        //System.out.println( "getAttributeInternal: " + name );
+        
         // see if a getter exists
         final Method m	= findGetter( name );
         if ( m != null )
         {
+        //System.out.println( "getAttributeInternal: found getter method for: " + name );
             result	= getAttributeByMethod( name, m );
             debug( "getAttribute: " + name + " CALLED GETTER: " + m + " = " + result);
             handleManually	= false;
         }
         else if ( isSpecialAMXAttr( name ) )
         {
+       // System.out.println( "getAttributeInternal: isSpecialAMXAttr for: " + name );
             handleManually = true;
         }
         else if ( haveDelegate() )
         {
+       // System.out.println( "getAttributeInternal: haveDelegate() for: " + name );
             trace( "getAttribute: " + name + " HAVE DELEGATE " );
                 
             if ( getDelegate().supportsAttribute( name ) )
@@ -1205,11 +1209,46 @@ public class AMXImplBase extends MBeanImplBase
 		sendNotification( n );
 	}
 	
+    
+    /**
+        Split the attributes into two lists: those supported via a delegate and those not.
+        This is done so that a single transaction can be done for setAttributes().
+     */
+        protected void
+    splitAttributes(
+        final AttributeList attrsIn,
+        final AttributeList delegatedAttrs,
+        final AttributeList otherAttrs )
+    {
+        if ( haveDelegate() )
+        {
+            final Delegate delegate = getDelegate();
+            for( final Object attrO: attrsIn )
+            {
+                final Attribute attr = (Attribute)attrO;
+                if ( delegate.supportsAttribute( attr.getName() ) )
+                {
+                    delegatedAttrs.add( attr );
+                }
+                else
+                {
+                    otherAttrs.add( attr );
+                }
+            }
+        }
+        else
+        {
+            otherAttrs.addAll( attrsIn );
+        }
+    }
+    
+    
 	/**
-		Bulk get.  Note that is is important for this implementation to
+		Bulk set.  Note that is is important for this implementation to
 		call setAttribute() for each name so that each may be processed
 		appropriately; some Attributes may be in this MBean itself, and some
-		may reside in a {@link Delegate}.
+		may reside in a {@link Delegate}.  However, for those in a Delegate, we pass
+        them as a group so that a single transaction may be done.
 		
 		@param attrs	attributes to be set
 		@return AttributeList containing Attributes successfully set
@@ -1217,26 +1256,38 @@ public class AMXImplBase extends MBeanImplBase
 		public AttributeList
 	setAttributes( final AttributeList attrs )
 	{
+		final AttributeList	successList	= new AttributeList();
+        
 		trace( "AMXImplBase.setAttributes = " + SmartStringifier.toString( attrs ) );
 		
-		final int			numAttrs	= attrs.size();
-		final AttributeList	successList	= new AttributeList();
-		
-		for( int i = 0; i < numAttrs; ++i )
-		{
-			final Attribute attr	= (Attribute)attrs.get( i );
-			trace( "setAttributes: " + attr.getName() );
-			try
-			{
-				setAttribute( attr );
-				
-				successList.add( attr );
-			}
-			catch( Exception e )
-			{
-				// ignore, as per spec
-			}
-		}
+        final AttributeList delegatedAttrs = new AttributeList();
+        final AttributeList otherAttrs = new AttributeList();
+        
+        splitAttributes( attrs, delegatedAttrs, otherAttrs );
+        
+        if ( delegatedAttrs.size() != 0 )
+        {
+            successList.addAll( getDelegate().setAttributes( delegatedAttrs ) );
+        }
+        
+        if ( otherAttrs.size() != 0 )
+        {
+            for( int i = 0; i < otherAttrs.size(); ++i )
+            {
+                final Attribute attr	= (Attribute)otherAttrs.get( i );
+                try
+                {
+                    setAttribute( attr );
+                    
+                    successList.add( attr );
+                }
+                catch( Exception e )
+                {
+                    // ignore, as per spec
+                    debug( ExceptionUtil.toString(e) );
+                }
+            }
+        }
 		return( successList );
 	}
 	
@@ -2281,18 +2332,21 @@ public class AMXImplBase extends MBeanImplBase
         getContainerSupport().removeContainee( objectName );
     }
 
-        protected synchronized ContainerSupport
+        protected ContainerSupport
     getContainerSupport()
     {
 		if ( ! isContainer() )
 		{
-            final ObjectName containerObjectName = getContainerObjectName();
+    System.out.println("NOT A CONTAINER: " + getObjectName() );
 			throw new UnsupportedOperationException("MBean " + StringUtil.quote(getObjectName()) + " is not an AMX 'Container'");
 		}
         
-        if ( mContainerSupport == null )
+        synchronized(this)
         {
-            mContainerSupport = new ContainerSupport( getMBeanServer(), getObjectName() );
+            if ( mContainerSupport == null )
+            {
+                mContainerSupport = new ContainerSupport( getMBeanServer(), getObjectName() );
+            }
         }
         return mContainerSupport;
     }	
@@ -2300,7 +2354,9 @@ public class AMXImplBase extends MBeanImplBase
         public Set<String>
     getContaineeJ2EETypes()
     {
-        return getContainerSupport().getContaineeJ2EETypes();
+        final Set<String> j2eeTypes = getContainerSupport().getContaineeJ2EETypes();
+        
+        return j2eeTypes;
     }
 	
         public Map<String,Map<String,ObjectName>>

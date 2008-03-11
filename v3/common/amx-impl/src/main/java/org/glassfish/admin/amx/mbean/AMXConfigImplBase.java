@@ -124,6 +124,29 @@ public class AMXConfigImplBase extends AMXImplBase
 	}
     
     
+        public Set<String>
+    getContaineeJ2EETypes()
+    {
+        final Set<String> j2eeTypes = super.getContaineeJ2EETypes();
+        
+        // since properties are optional (might or might not be currently present),
+        // add the j2eeType if they are supported.
+        if ( supportsProperties() )
+        {
+            j2eeTypes.add( PropertyConfig.J2EE_TYPE );
+        }
+        
+        // since system properties are optional (might or might not be currently present),
+        // add the j2eeType if they are supported.
+        if ( supportsSystemProperties() )
+        {
+            j2eeTypes.add( SystemPropertyConfig.J2EE_TYPE );
+        }
+        
+        return j2eeTypes;
+    }
+
+
 	    protected boolean
 	supportsProperties()
 	{

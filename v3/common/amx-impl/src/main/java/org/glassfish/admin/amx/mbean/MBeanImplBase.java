@@ -373,9 +373,8 @@ public abstract class MBeanImplBase
 	    return Logger.getLogger( "MBeans" );
 	}
 	
-	
-		public final Level
-	getMBeanLogLevel()
+        protected final Level
+	_getMBeanLogLevel()
 	{
 		Logger	logger	= getMBeanLogger();
 		assert( logger != null );
@@ -389,18 +388,24 @@ public abstract class MBeanImplBase
 		
 		return( level );
 	}
+    
+		public final String
+	getMBeanLogLevel()
+	{
+        return "" + _getMBeanLogLevel();
+	}
 	
 	
 		public final void
-	setMBeanLogLevel( final Level level )
+	setMBeanLogLevel( final String level )
 	{
-		getMBeanLogger().setLevel( level );
+		getMBeanLogger().setLevel( Level.parse(level) );
 	}
 	
 		protected final int
 	getMBeanLogLevelInt()
 	{
-		return( getMBeanLogLevel().intValue() );
+		return( _getMBeanLogLevel().intValue() );
 	}
 	
 		public final String
@@ -409,38 +414,6 @@ public abstract class MBeanImplBase
 		return( getMBeanLogger().getName() );
 	}
 	
-	private static final Level[]	LOG_LEVELS	=
-	{
-		Level.ALL,
-		Level.SEVERE,
-		Level.WARNING,
-		Level.INFO,
-		Level.FINE,
-		Level.FINER,
-		Level.FINEST,
-		Level.OFF,
-	};
-	
-		public final void
-	setMBeanLogLevelString( final String levelString )
-	{
-		Level	level	= null;
-		for( int i = 0; i < LOG_LEVELS.length; ++i )
-		{
-			if ( levelString.equals( LOG_LEVELS[ i ].getName() ) )
-			{
-				level	= LOG_LEVELS[ i ];
-				break;
-			}
-		}
-		
-		if ( level == null )
-		{
-			throw new IllegalArgumentException( levelString );
-		}
-
-		setMBeanLogLevel( level );
-	}
 	
 		protected static String
 	quote( final Object o )
