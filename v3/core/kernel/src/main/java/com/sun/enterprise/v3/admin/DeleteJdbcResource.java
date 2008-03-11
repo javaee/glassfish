@@ -44,17 +44,10 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PerLookup;
-import org.jvnet.hk2.config.ConfigSupport;
-import org.jvnet.hk2.config.SingleConfigCode;
-import org.jvnet.hk2.config.TransactionFailure;
-import com.sun.enterprise.config.serverbeans.Resource;
-import com.sun.enterprise.config.serverbeans.Resources;
 import com.sun.enterprise.config.serverbeans.JdbcResource;
+import com.sun.enterprise.config.serverbeans.Resources;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 
-import java.beans.PropertyVetoException;
-import java.util.Iterator;
-import java.util.List;
 
 /**
  * Delete JDBC Resource command
@@ -72,7 +65,7 @@ public class DeleteJdbcResource implements AdminCommand {
 
     @Inject
     Resources resources;
-
+    
     @Inject
     JdbcResource[] jdbcResources;
 
@@ -86,26 +79,18 @@ public class DeleteJdbcResource implements AdminCommand {
 
         final ActionReport report = context.getActionReport();
         try {
-            if (ConfigSupport.apply(new SingleConfigCode<Resources>() {
-                public Object run(Resources param) throws PropertyVetoException, TransactionFailure {
-                    for (JdbcResource resource : jdbcResources) {
-                        if (resource.getJndiName().equals(jndiName)) {
-                            return param.getResources().remove(resource);
-                        }
-                    }
-                    // not found
-                    report.setMessage(localStrings.getLocalString("delete.jdbc.resource.notfound", "{0} delete failed, resource not found", jndiName));
-                    report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-                    return null;
-                }
-            }, resources) !=null) {
-                report.setMessage(localStrings.getLocalString("delete.jdbc.resource.success", "{0} deleted successfully", jndiName));
-                report.setActionExitCode(ActionReport.ExitCode.SUCCESS);            
+            JDBCResourceManager jdbcResMgr = new JDBCResourceManager();
+            ResourceStatus rs = jdbcResMgr.delete(resources, jdbcResources, jndiName);
+            if (rs.getStatus() == ResourceStatus.SUCCESS) {
+                report.setMessage(rs.getMessage());
+                report.setActionExitCode(ActionReport.ExitCode.SUCCESS);       
+            } else {
+                report.setMessage(rs.getMessage());
+                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             }
-        } catch(TransactionFailure e) {
+        } catch(Exception e) {
             report.setMessage(localStrings.getLocalString("delete.jdbc.resource.fail", "{0} delete failed ", jndiName));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            report.setFailureCause(e);
         }
     }
 }

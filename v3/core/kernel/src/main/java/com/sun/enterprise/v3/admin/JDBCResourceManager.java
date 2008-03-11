@@ -60,7 +60,7 @@ import org.jvnet.hk2.config.ConfiguredBy;
  * The JDBC resource manager allows you to create and delete the config element
  * Will be used by the add-resources, deployment and CLI command
  */
-@I18n("create.jdbc.resource")
+@I18n("jdbc.resource.manager")
 @ConfiguredBy(Resources.class)
 public class JDBCResourceManager implements ResourceManager {
 
@@ -140,5 +140,66 @@ public class JDBCResourceManager implements ResourceManager {
                 "JDBC resource {0} created successfully", jndiName);
         ResourceStatus status = new ResourceStatus(ResourceStatus.SUCCESS, msg);
         return status;
+    }
+    
+    public ResourceStatus delete (Resources resources, final JdbcResource[] jdbcResources,  final String jndiName) 
+            throws Exception {
+        
+        if (jndiName == null) {
+            String msg = localStrings.getLocalString("jdbc.resource.noJndiName",
+                            "No JNDI name defined for JDBC resource.");
+            ResourceStatus status = new ResourceStatus(ResourceStatus.FAILURE, msg);
+            return status;
+        }
+
+        // ensure we already have this resource
+        if (!isResourceExists(resources, jndiName)) {
+            String msg = localStrings.getLocalString("jdbc.resource.resourceDoesNotExist",
+                    "A JDBC resource named {0} does not exits.", jndiName);
+            ResourceStatus status = new ResourceStatus(ResourceStatus.FAILURE, msg);
+            return status;
+        }
+
+        try {
+            if (ConfigSupport.apply(new SingleConfigCode<Resources>() {
+                public Object run(Resources param) throws PropertyVetoException, TransactionFailure {
+                    for (JdbcResource resource : jdbcResources) {
+                        if (resource.getJndiName().equals(jndiName)) {
+                            return param.getResources().remove(resource);
+                        }
+                    }
+                    // not found
+                    return null;
+                }
+            }, resources) == null) {
+                String msg = localStrings.getLocalString("jdbc.resource.deletionFailed", 
+                                "JDBC resource {0} delete failed ", jndiName);
+                ResourceStatus status = new ResourceStatus(ResourceStatus.FAILURE, msg);
+                return status;
+            }
+        } catch(TransactionFailure tfe) {
+            String msg = localStrings.getLocalString("jdbc.resource.deletionFailed", 
+                            "JDBC resource {0} delete failed ", jndiName);
+            ResourceStatus status = new ResourceStatus(ResourceStatus.FAILURE, msg);
+            status.setException(tfe);
+            return status;
+        }
+
+        String msg = localStrings.getLocalString("jdbc.resource.deleteSuccess",
+                "JDBC resource {0} deleted successfully", jndiName);
+        ResourceStatus status = new ResourceStatus(ResourceStatus.SUCCESS, msg);
+        return status;
+    }
+    
+    private boolean isResourceExists(Resources resources, String jndiName) {
+        
+        for (com.sun.enterprise.config.serverbeans.Resource resource : resources.getResources()) {
+            if (resource instanceof JdbcResource) {
+                if (((JdbcResource) resource).getJndiName().equals(jndiName)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }
