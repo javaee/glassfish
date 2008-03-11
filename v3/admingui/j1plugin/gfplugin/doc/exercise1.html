@@ -223,7 +223,8 @@ In this step, you will create a Java Class which implements the
 <code>ConsoleProvider @Contract</code>.  This is done so your plugin can be
 discovered by the GlassFish v3 Administration Console. Implementing the
 <code>ConsoleProvider</code> interface is simply a matter of annotating your
-class with the <code>@Service</code> annotation and implementing 1 method.
+class with the <code>@Service</code> annotation and implementing its single
+method.
 	    </p></li>
 	<li><b><a href="#ex1stepB">Provide a console-config.xml file</a></b>
 	    <p>
@@ -247,14 +248,15 @@ In this step you will install and test your plugin.
 <p class="j1holsubheader">Steps:</p>
 
 <a name="ex1stepA">
-<b>1-A. Implement the ConsoleProvider @Contract</b>
+<b>A. Implement the ConsoleProvider @Contract</b>
 </a>
 <p>
 In this step, you will create a Java Class which implements the
 <code>ConsoleProvider @Contract</code>.  This is done so your plugin can be
 discovered by the GlassFish v3 Administration Console. Implementing the
 <code>ConsoleProvider</code> interface is simply a matter of annotating your
-class with the <code>@Service</code> annotation and implementing 1 method.
+class with the <code>@Service</code> annotation and implementing its single
+method.
 </p>
 <p>
 For more background information, please see the <a href="#hk2background">GlassFish
@@ -394,7 +396,7 @@ public class MyPlugin implements ConsoleProvider {
 
       <hr style="WIDTH:100%; HEIGHT:2px"><br>
 <a name="ex1stepB">
-      <b> 1-B Add configuration files to indicate IntegrationPoints. </b>
+      <b>B Add configuration files to indicate IntegrationPoints.</b>
   </a>
       <div id=rbo: style="PADDING:1em 0pt; TEXT-ALIGN:left">
 
@@ -467,7 +469,7 @@ public class MyPlugin implements ConsoleProvider {
 
 <a name="ex1stepC">
       <hr style="WIDTH:100%; HEIGHT:2px"><br>
-       <b>1-C Create a couple JavaServer Faces pages</b></br>
+       <b>C Create a couple JavaServer Faces pages</b></br>
         <br>
         In this step you will be creating the JSF pages
         which will be displayed in the Administration Console when your JavaOne
@@ -584,7 +586,7 @@ public class MyPlugin implements ConsoleProvider {
 
   <hr style="WIDTH:100%; HEIGHT:2px"><br>
 <a name="ex1stepD">
-    <b>1-D. Build and Install your first GlassFish v3 plugin</b><br>
+    <b>D. Build and Install your first GlassFish v3 plugin</b><br>
         <br>
          The last step of this implementation is to build the project.<br>
                 <br>
