@@ -185,6 +185,27 @@ public class GFLauncherUtils {
             return false;
         }
     }
+
+    /**
+     * Convert a classpath like string, e.g. c:/a;c:/b, and convert to List of File
+     * @param cp The classpath-like string
+     * @return the list of File
+     */
+    public static List<File> stringToFiles(String cp)
+    {
+        List<File> list = new ArrayList<File>();
+        
+        if(ok(cp)) {
+            String[] ss = cp.split(File.pathSeparator);
+
+            for(String s : ss) {
+                list.add(absolutize(new File(s)));
+            }
+        }
+        
+        return list;
+    }
+
     private static File installDir;
 }
 
