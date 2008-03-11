@@ -1,10 +1,12 @@
 package com.sun.enterprise.build;
 
 import com.sun.enterprise.module.ModulesRegistry;
+import com.sun.enterprise.module.Module;
+import com.sun.enterprise.module.impl.HK2Factory;
 import com.sun.enterprise.module.common_impl.AbstractFactory;
 import com.sun.enterprise.module.bootstrap.BootException;
-import com.sun.enterprise.module.bootstrap.Main;
 import com.sun.enterprise.module.bootstrap.StartupContext;
+import com.sun.enterprise.module.bootstrap.Main;
 import com.sun.enterprise.module.maven.MavenProjectRepository;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
@@ -177,9 +179,25 @@ public class RunMojo extends DistributionAssemblyMojo {
         assert rootDir!=null;
 
         try {
-            // Glassfish wants $GF_HOME/lib as the bootstrap directory
-            StartupContext context = new StartupContext(new File(rootDir,"lib"),args);
-            new Main().launch(createModuleRegistry(distPom), context);
+            // Glassfish wants $GF_HOME/modules as the bootstrap directory
+            StartupContext context = new StartupContext(new File(rootDir,"modules"),args);
+
+            HK2Factory.initialize();
+            ModulesRegistry mr = createModuleRegistry(distPom);
+            mr.setParentClassLoader(this.getClass().getClassLoader());
+            Module mainModule = mr.makeModuleFor("org.glassfish.core:glassfish", null);
+            if (mainModule!=null) {
+                try {
+                    Class mainClass = mainModule.getClassLoader().loadClass("com.sun.enterprise.glassfish.bootstrap.Main");
+                    Object instance = mainClass.newInstance();
+                    Main mainInstance = Main.class.cast(instance);
+                    mainInstance.launch(mr, context);
+                } catch (Exception e) {
+                    throw new MojoExecutionException("Exception while loading or running glassfish main class", e);
+                }
+            } else {
+                throw new MojoExecutionException("Cannot find glassfish main module org.glassfish.core:glassfish");
+            }
 
             // TODO: what's the orderly shutdown sequence of Glassfish?
             // block forever for now.
@@ -188,8 +206,6 @@ public class RunMojo extends DistributionAssemblyMojo {
                 x.wait();
             }
 
-        } catch (BootException e) {
-            throw new MojoExecutionException("Failed to boot up the module system",e);
         } catch (IOException e) {
             throw new MojoExecutionException("Failed to boot up the module system",e);
         } catch (InterruptedException e) {
