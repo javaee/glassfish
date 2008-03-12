@@ -67,6 +67,7 @@
             <groupId>org.glassfish.common</groupId>
             <artifactId>glassfish-api</artifactId>
             <version>10.0-SNAPSHOT</version>
+	    <scope>provided</scope>
         </dependency>
     </dependencies>
 </project>

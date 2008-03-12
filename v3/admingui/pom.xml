@@ -60,6 +60,7 @@
             <groupId>com.sun.enterprise</groupId>
             <artifactId>hk2</artifactId>
             <version>${hk2.version}</version>
+	    <scope>provided</scope>
         </dependency>
 
         <dependency>
@@ -72,6 +73,7 @@
             <groupId>com.sun.jsftemplating</groupId>
             <artifactId>jsftemplating-dt</artifactId>
             <version>1.2-SNAPSHOT</version>
+	    <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.sun.jsftemplating</groupId>
@@ -82,11 +84,13 @@
             <groupId>javax.faces</groupId>
             <artifactId>jsf-api</artifactId>
             <version>1.2_07</version>
+	    <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>servlet-api</artifactId>
             <version>2.5</version>
+	    <scope>provided</scope>
         </dependency>
 
         <!-- Woodstock dependency -->
