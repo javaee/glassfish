@@ -11,7 +11,35 @@
     <name>Addon classes</name>
     <description>Addon</description>
 
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>com.sun.enterprise</groupId>
+                <artifactId>hk2-maven-plugin</artifactId>
+                <configuration>
+                    <processors>
+                        <processor>
+                            <groupId>org.glassfish.admin.runtime.rtapt</groupId>
+                            <artifactId>apt</artifactId>
+                            <version>1.1-SNAPSHOT</version>
+                        </processor>
+                    </processors>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
     <dependencies>
+        <dependency>
+            <groupId>org.glassfish.admin.runtime.rtapt</groupId>
+            <artifactId>annotations</artifactId>
+            <version>1.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.admin.runtime.rtapt</groupId>
+            <artifactId>apt</artifactId>
+            <version>1.1-SNAPSHOT</version>
+        </dependency>
         <dependency>
             <groupId>org.glassfish.admin</groupId>
             <artifactId>admin-util</artifactId>
