@@ -81,16 +81,22 @@
             <groupId>org.glassfish.common</groupId>
             <artifactId>glassfish-api</artifactId>
             <version>10.0-SNAPSHOT</version>
+	    <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.glassfish.admingui</groupId>
             <artifactId>console-plugin-service</artifactId>
             <version>1.0-SNAPSHOT</version>
+	    <scope>provided</scope>
         </dependency>
+    <!--
+// FIXME: Can't depend on this b/c core is not a module and it fails at runtime
         <dependency>
             <groupId>org.glassfish.admingui</groupId>
             <artifactId>console-core</artifactId>
             <version>1.0-SNAPSHOT</version>
+	    <scope>provided</scope>
         </dependency>
+    -->
     </dependencies>
 </project>
