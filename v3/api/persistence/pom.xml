@@ -51,9 +51,9 @@
     <name>Java(TM) Persistence API Specification</name>
     <developers>
         <developer>
-            <id>marina</id>
-            <name>Marina Vatkina</name>
-			<url>http://blogs.sun.com/marina/</url>
+            <id>mm110999</id>
+            <name>Mitesh Meswani</name>
+	    <url>http://blogs.sun.com/GlassFishPersistence/</url>
             <organization>Sun Microsystems, Inc.</organization>
             <roles>
                 <role>lead</role>
