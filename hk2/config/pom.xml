@@ -53,18 +53,18 @@
         <dependency>
             <groupId>com.sun.enterprise</groupId>
             <artifactId>auto-depends</artifactId>
-            <version>${project.version}</version>            
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.jvnet</groupId>
             <artifactId>tiger-types</artifactId>
             <version>RELEASE</version>
         </dependency>
-      <dependency>
+        <dependency>
             <groupId>com.sun.xml.stream</groupId>
             <artifactId>sjsxp</artifactId>
             <version>1.0</version>
             <scope>runtime</scope>
-      </dependency>
+        </dependency>
     </dependencies>
 </project>
