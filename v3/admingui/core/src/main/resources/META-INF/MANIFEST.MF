@@ -1,0 +1,6 @@
+Manifest-Version: 1.0
+Archiver-Version: Plexus Archiver
+Created-By: Apache Maven
+Built-By: paulsen
+Build-Jdk: 1.6.0_03
+HK2-Import-Bundles: com.sun.enterprise:hk2, org.glassfish.admingui:console-plugin-service, org.glassfish.common:amx-api
