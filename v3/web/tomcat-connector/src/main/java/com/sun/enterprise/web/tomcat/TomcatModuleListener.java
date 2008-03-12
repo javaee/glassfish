@@ -31,6 +31,7 @@ import javax.servlet.Servlet;
 import com.sun.enterprise.module.Module;
 import com.sun.enterprise.module.ModuleDefinition;
 import com.sun.enterprise.module.ModulesRegistry;
+import com.sun.enterprise.v3.server.Globals;
 
 import org.apache.catalina.Context;
 import org.apache.catalina.Lifecycle;
@@ -54,15 +55,14 @@ public class TomcatModuleListener implements LifecycleListener {
 
 
     public TomcatModuleListener() {
-
-        Module module = com.sun.enterprise.module.impl.ModuleImpl.find(LifecycleListener.class);
+        ModulesRegistry mr = Globals.getDefaultHabitat().getByContract(ModulesRegistry.class);
+        Module module = mr.find(LifecycleListener.class);
         ModuleDefinition moduleDef = module.getModuleDefinition();
         URI[] uris = moduleDef.getLocations();
         javacClassPath = uris[0].getPath() + File.pathSeparator;
         for (int i=1; i<uris.length; i++) {
             javacClassPath += uris[i].getPath() + File.pathSeparator;
         }
-        module = com.sun.enterprise.module.impl.ModuleImpl.find(Servlet.class);
         moduleDef = module.getModuleDefinition();
         uris = moduleDef.getLocations();
         for (int i=0; i<uris.length; i++) {
