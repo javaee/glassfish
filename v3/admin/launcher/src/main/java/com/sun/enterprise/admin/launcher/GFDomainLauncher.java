@@ -97,6 +97,10 @@ class GFDomainLauncher extends GFLauncher {
         catch (IOException e) {
             throw new GFLauncherException("jvmfailure", e, e);
         }
+
+        long endTime = System.currentTimeMillis();
+        GFLauncherLogger.info("launchTime", (endTime - getStartTime()));
+        
         //if verbose, hang round until the domain stops
         try {
             if (getInfo().isVerbose())

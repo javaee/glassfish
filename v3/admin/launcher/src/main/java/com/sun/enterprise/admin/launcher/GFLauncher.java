@@ -61,8 +61,6 @@ public abstract class GFLauncher {
             startTime = System.currentTimeMillis();
             setup();
             internalLaunch();
-            long endTime = System.currentTimeMillis();
-            GFLauncherLogger.info("launchTime", (endTime - startTime));
         }
         catch (GFLauncherException gfe) {
             throw gfe;
@@ -94,6 +92,9 @@ public abstract class GFLauncher {
 
     final List<String> getCommandLine() {
         return commandLine;
+    }
+    final long getStartTime() {
+        return startTime;
     }
     private void setup() throws GFLauncherException, MiniXmlParserException {
         ASenvPropertyReader pr = new ASenvPropertyReader();
