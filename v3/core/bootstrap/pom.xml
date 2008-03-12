@@ -100,11 +100,6 @@
             <artifactId>hk2-core</artifactId>
             <version>${hk2.version}</version>
         </dependency>
-        <dependency>
-            <groupId>com.sun.xml.stream</groupId>
-            <artifactId>sjsxp</artifactId>
-            <version>1.0</version>
-        </dependency>
     </dependencies>
 </project>
 

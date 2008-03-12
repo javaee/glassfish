@@ -34,10 +34,22 @@
         </resources>
     </build>
     <dependencies>
+        <!--
+          depend on StAX API and not implementation,
+          so that the choice of implementation can be controlled elsewhere.
+          
+          But we need some implementation for testing, hence SJSXP for test scope.
+        -->
+        <dependency>
+            <groupId>javax.xml.stream</groupId>
+            <artifactId>stax-api</artifactId>
+            <version>1.0</version>
+        </dependency>
         <dependency>
             <groupId>com.sun.xml.stream</groupId>
             <artifactId>sjsxp</artifactId>
             <version>1.0</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>
