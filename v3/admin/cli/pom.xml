@@ -181,6 +181,11 @@
             <artifactId>launcher</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.glassfish.admin</groupId>
+            <artifactId>server-mgmt</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
         <dependency>    
             <groupId>org.glassfish.common</groupId>
             <artifactId>universal</artifactId>
