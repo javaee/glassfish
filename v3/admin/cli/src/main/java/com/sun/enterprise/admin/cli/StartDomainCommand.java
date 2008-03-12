@@ -49,7 +49,7 @@ public class StartDomainCommand extends Command {
             // temporary TODO TODO
             // temporary TODO TODO
             String s = System.getenv("NEW_LAUNCHER");
-            if(s == null || !s.equals("true")) {
+            if(s != null && s.equals("false")) {
                 runCommandOld();
                 return;
             }
