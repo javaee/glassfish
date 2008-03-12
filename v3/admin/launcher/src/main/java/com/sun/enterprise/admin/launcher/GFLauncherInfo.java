@@ -110,6 +110,14 @@ public class GFLauncherInfo {
 
     /**
      * 
+     * @return true if debug mode is on.
+     */
+    public boolean isDebug() {
+        return debug;
+    }
+
+    /**
+     * 
      * @return The domain name
      */
     public String getDomainName() {

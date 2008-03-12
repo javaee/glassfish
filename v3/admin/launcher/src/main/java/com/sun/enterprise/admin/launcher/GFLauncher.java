@@ -104,6 +104,7 @@ public abstract class GFLauncher {
         jvmOptions = new JvmOptions(parser.getJvmOptions());
         sysPropsFromXml = parser.getSystemProperties();
         asenvProps.put(INSTANCE_ROOT_PROPERTY, getInfo().getInstanceRootDir().getPath());
+        debugOptions = getDebug();
         resolveAllTokens();
         setJavaExecutable();
         setClasspath();
@@ -116,6 +117,7 @@ public abstract class GFLauncher {
         commandLine.add(javaExe);
         commandLine.add("-cp");
         commandLine.add(classpath);
+        commandLine.addAll(debugOptions);
         commandLine.addAll(jvmOptions.toStringArray());
         commandLine.add(getMainClass());
         commandLine.addAll(getInfo().getArgsAsList());
@@ -145,7 +147,7 @@ public abstract class GFLauncher {
         resolver.resolve(jvmOptions.plainProps);
         resolver.resolve(jvmOptions.sysProps);
         resolver.resolve(javaConfig.getMap());
-
+        resolver.resolve(debugOptions);
     // TODO ?? Resolve sysPropsFromXml ???
     }
 
@@ -217,6 +219,13 @@ public abstract class GFLauncher {
         }
         return false;
     }
+    private List<String> getDebug() {
+        if(info.isDebug() || javaConfig.isDebugEnabled()) {
+            return javaConfig.getDebugOptions();
+        }
+        return Collections.emptyList();
+    }
+    
     private GFLauncherInfo info;
     private Map<String, String> asenvProps;
     private JavaConfig javaConfig;
@@ -224,6 +233,7 @@ public abstract class GFLauncher {
     private Map<String, String> sysPropsFromXml;
     private String javaExe;
     private String classpath;
+    private List<String> debugOptions;
     private List<String> commandLine;
     private long startTime;
 }
