@@ -58,7 +58,6 @@ import com.sun.enterprise.security.auth.realm.BadRealmException;
 import com.sun.enterprise.security.auth.realm.NoSuchRealmException;
 import com.sun.enterprise.security.util.IASSecurityException;
 import com.sun.enterprise.security.store.PasswordAdapter;
-import com.sun.enterprise.security.RealmConfig;
 
 //import com.sun.enterprise.admin.common.Status;
 //import com.sun.enterprise.util.system.GFSystem;
@@ -80,7 +79,7 @@ import java.util.List;
 import com.sun.enterprise.util.zip.ZipFile;
 
 
-import javax.management.remote.JMXAuthenticator;
+//import javax.management.remote.JMXAuthenticator;
 //import com.sun.enterprise.admin.server.core.jmx.auth.ASJMXAuthenticator;
 //import com.sun.enterprise.admin.server.core.jmx.auth.ASLoginDriverImpl;
 
@@ -92,7 +91,7 @@ import javax.management.remote.JMXAuthenticator;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.util.OS;
 import com.sun.enterprise.util.ProcessExecutor;
-import com.sun.enterprise.util.ExecException;
+//import com.sun.enterprise.util.ExecException;
 
 /**
  * The RepositoryManager serves as a common base class for the following
