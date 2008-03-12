@@ -40,6 +40,7 @@ import static javax.xml.stream.XMLStreamConstants.*;
  * @author bnevins
  */
 public class MiniXmlParser {
+
     public MiniXmlParser(File domainXml, String serverName) throws MiniXmlParserException {
         this.serverName = serverName;
         this.domainXml = domainXml;
@@ -56,47 +57,64 @@ public class MiniXmlParser {
         }
     }
 
-    public Map<String,String> getJavaConfig() throws MiniXmlParserException
-    {
-        if(!valid) {
+    public Map<String, String> getJavaConfig() throws MiniXmlParserException {
+        if (!valid) {
             throw new MiniXmlParserException(strings.get("invalid"));
         }
         return javaConfig;
     }
 
-    public List<String> getJvmOptions() throws MiniXmlParserException
-    {
-        if(!valid) {
+    public List<String> getJvmOptions() throws MiniXmlParserException {
+        if (!valid) {
             throw new MiniXmlParserException(strings.get("invalid"));
         }
         return jvmOptions;
     }
-    
-    public Map<String,String> getSystemProperties() throws MiniXmlParserException {
-        if(!valid) {
+
+    public Map<String, String> getProfilerConfig() throws MiniXmlParserException {
+        if (!valid) {
+            throw new MiniXmlParserException(strings.get("invalid"));
+        }
+        return profilerConfig;
+    }
+
+    public List<String> getProfilerJvmOptions() throws MiniXmlParserException {
+        if (!valid) {
+            throw new MiniXmlParserException(strings.get("invalid"));
+        }
+        return profilerJvmOptions;
+    }
+
+    public Map<String, String> getProfilerSystemProperties() throws MiniXmlParserException {
+        if (!valid) {
+            throw new MiniXmlParserException(strings.get("invalid"));
+        }
+        return profilerSysProps;
+    }
+
+    public Map<String, String> getSystemProperties() throws MiniXmlParserException {
+        if (!valid) {
             throw new MiniXmlParserException(strings.get("invalid"));
         }
         return sysProps;
     }
-            
-    
+
     ///////////////////////////////////////////////////////////////////////////
     ////////   Everything below here is private    ////////////////////////////
     ///////////////////////////////////////////////////////////////////////////
-    
     private void read() throws XMLStreamException, EndDocumentException, FileNotFoundException {
         createParser();
         getConfigRefName();
-        
+
         try {
             // this will fail if config is above servers in domain.xml!
             getConfig();
             return; // this is important!
         }
         catch (EndDocumentException ex) {
-            // we do the following code only if EndDocumentException is caught
-            // success returns
-            // other exceptions get thrown back
+        // we do the following code only if EndDocumentException is caught
+        // success returns
+        // other exceptions get thrown back
         }
         createParser();
         skipRoot("domain");
@@ -105,8 +123,7 @@ public class MiniXmlParser {
                 Level.WARNING, strings.get("secondpass"));
     }
 
-    private void createParser() throws FileNotFoundException, XMLStreamException
-    {
+    private void createParser() throws FileNotFoundException, XMLStreamException {
         FileInputStream stream = new FileInputStream(domainXml);
         XMLInputFactory xif = XMLInputFactory.newInstance();
         parser = xif.createXMLStreamReader(domainXml.toURI().toString(), stream);
@@ -130,7 +147,7 @@ public class MiniXmlParser {
             }
 
             // get the attributes for this <server>
-            Map<String,String> map = parseAttributes();
+            Map<String, String> map = parseAttributes();
             String thisName = map.get("name");
 
             if (serverName.equals(thisName)) {
@@ -148,7 +165,7 @@ public class MiniXmlParser {
             skipTo("config");
 
             // get the attributes for this <config>
-            Map<String,String> map = parseAttributes();
+            Map<String, String> map = parseAttributes();
             String thisName = map.get("name");
 
             if (configRef.equals(thisName)) {
@@ -168,23 +185,24 @@ public class MiniXmlParser {
             int event = next();
             // return when we get to the </config>
             if (event == END_ELEMENT) {
-                if(parser.getLocalName().equals("config")) {
+                if (parser.getLocalName().equals("config")) {
                     return;
                 }
             }
-            else if(event == START_ELEMENT)
-            {
-                String name = parser.getLocalName();
-                if(name.equals("system-property")) {
-                    parseSystemPropertyNoOverride();
+            else
+                if (event == START_ELEMENT) {
+                    String name = parser.getLocalName();
+                    if (name.equals("system-property")) {
+                        parseSystemPropertyNoOverride();
+                    }
+                    else
+                        if (name.equals("java-config")) {
+                            parseJavaConfig();
+                        }
+                        else {
+                            skipTree(name);
+                        }
                 }
-                else if(name.equals("java-config")) {
-                    parseJavaConfig();
-                }
-                else {
-                    skipTree(name);
-                }
-            }
         }
     }
 
@@ -193,57 +211,92 @@ public class MiniXmlParser {
         // these are the system-properties that OVERRIDE the ones in the <config>
         // This code executes BEFORE the <config> is read so we can just add them to the Map here
         // w/o doing anything special.
-        
+
         while (true) {
             int event = next();
             // return when we get to the </config>
             if (event == END_ELEMENT) {
-                if(parser.getLocalName().equals("server")) {
+                if (parser.getLocalName().equals("server")) {
                     return;
                 }
             }
-            else if(event == START_ELEMENT)
-            {
-                String name = parser.getLocalName();
-                if(name.equals("system-property")) {
-                    parseSystemPropertyWithOverride();
+            else
+                if (event == START_ELEMENT) {
+                    String name = parser.getLocalName();
+                    if (name.equals("system-property")) {
+                        parseSystemPropertyWithOverride();
+                    }
+                    else {
+                        skipTree(name);
+                    }
                 }
-                else {
-                    skipTree(name);
-                }
-            }
         }
     }
 
     private void parseSystemPropertyNoOverride() {
         parseSystemProperty(false);
     }
+
     private void parseSystemPropertyWithOverride() {
         parseSystemProperty(true);
     }
-    
+
     private void parseSystemProperty(boolean override) {
         // cursor --> <system-property>
-        Map<String,String> map = parseAttributes();
+        Map<String, String> map = parseAttributes();
         String name = map.get("name");
         String value = map.get("value");
-        
-        if(name != null) {
-            if(override || !sysProps.containsKey(name))
+
+        if (name != null) {
+            if (override || !sysProps.containsKey(name))
                 sysProps.put(name, value);
         }
     }
+
     private void parseJavaConfig() throws XMLStreamException, EndDocumentException {
         // cursor --> <java-config>
 
         // get the attributes for <java-config>
         javaConfig = parseAttributes();
-        parseJvmOptions();
+        parseJvmAndProfilerOptions();
     }
 
-    private void parseJvmOptions() throws XMLStreamException, EndDocumentException {
-        while (skipToButNotPast("jvm-options", "java-config")) {
-            jvmOptions.add(parser.getElementText());
+    private void parseJvmAndProfilerOptions() throws XMLStreamException, EndDocumentException {
+        while (skipToButNotPast("java-config", "jvm-options", "profiler")) {
+            if (parser.getLocalName().equals("jvm-options")) {
+                jvmOptions.add(parser.getElementText());
+            }
+            else {// profiler
+                parseProfiler();
+            }
+        }
+    }
+
+    private void parseProfiler() throws XMLStreamException, EndDocumentException {
+        // cursor --> START_ELEMENT of profiler
+        // it has attributes and <jvm-options>'s and <property>'s
+        profilerConfig = parseAttributes();
+
+        while (skipToButNotPast("profiler", "jvm-options", "property")) {
+            if (parser.getLocalName().equals("jvm-options")) {
+                profilerJvmOptions.add(parser.getElementText());
+            }
+            else {
+                parseProperty(profilerSysProps);
+            }
+        }
+    }
+
+    private void parseProperty(Map<String,String> map) throws XMLStreamException, EndDocumentException {
+        // cursor --> START_ELEMENT of property
+        // it has 2 attributes:  name and value
+        Map<String,String> prop = parseAttributes();
+
+        String name = prop.get("name");
+        String value = prop.get("value");
+        
+        if(name != null) {
+            map.put(name, value);
         }
     }
 
@@ -295,20 +348,24 @@ public class MiniXmlParser {
             }
         }
     }
+
     /**
      * The cursor will be pointing at the START_ELEMENT of name when it returns
      * note that skipTree must be called.  Otherwise we could be fooled by a 
      * sub-element with the same name as an outer element
+     * Multiple startNames are accepted.
      * @param name the Element to skip to
      * @throws javax.xml.stream.XMLStreamException
      */
-    private boolean skipToButNotPast(String startName, String endName) throws XMLStreamException, EndDocumentException {
+    private boolean skipToButNotPast(String endName, String... startNames) throws XMLStreamException, EndDocumentException {
         while (true) {
             int event = next();
 
             if (event == START_ELEMENT) {
-                if (parser.getLocalName().equals(startName)) {
-                    return true;
+                for (String s : startNames) {
+                    if (parser.getLocalName().equals(s)) {
+                        return true;
+                    }
                 }
             }
 
@@ -354,7 +411,7 @@ public class MiniXmlParser {
             parser.close();
             throw new EndDocumentException();
         }
-        
+
         return event;
     }
 
@@ -364,28 +421,30 @@ public class MiniXmlParser {
         System.out.println(sb.toString());
     }
 
-    private Map<String,String> parseAttributes() {
+    private Map<String, String> parseAttributes() {
         int num = parser.getAttributeCount();
-        Map<String,String> map = new HashMap<String,String>();
+        Map<String, String> map = new HashMap<String, String>();
         for (int i = 0; i < num; i++) {
             map.put(parser.getAttributeName(i).getLocalPart(), parser.getAttributeValue(i));
         }
 
         return map;
     }
-
-
     private File domainXml;
     private XMLStreamReader parser;
     private String serverName;
     private String configRef;
     private List<String> jvmOptions = new ArrayList<String>();
-    private Map<String,String> javaConfig;
-    private Map<String,String> sysProps = new HashMap<String,String>();
+    private List<String> profilerJvmOptions = new ArrayList<String>();
+    private Map<String, String> javaConfig;
+    private Map<String, String> profilerConfig;
+    private Map<String, String> sysProps = new HashMap<String, String>();
+    private Map<String, String> profilerSysProps = new HashMap<String, String>();
     private boolean valid = false;
     private static LocalStringsImpl strings = new LocalStringsImpl(MiniXmlParser.class);
     // this is so we can return from arbitrarily nested calls
     private static class EndDocumentException extends Exception {
+
         EndDocumentException() {
         }
     }

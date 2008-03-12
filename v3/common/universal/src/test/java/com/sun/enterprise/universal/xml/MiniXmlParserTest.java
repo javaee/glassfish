@@ -35,10 +35,12 @@ public class MiniXmlParserTest {
            MiniXmlParserTest.class.getClassLoader().getResource("rightorder.xml").getPath());
         noconfig = new File(
            MiniXmlParserTest.class.getClassLoader().getResource("noconfig.xml").getPath());
+        hasProfiler = new File(
+           MiniXmlParserTest.class.getClassLoader().getResource("hasProfiler.xml").getPath());
         assertTrue(wrongOrder.exists());
         assertTrue(rightOrder.exists());
         assertTrue(noconfig.exists());
-
+        assertTrue(hasProfiler.exists());
     }
 
     @AfterClass
@@ -162,7 +164,53 @@ public class MiniXmlParserTest {
         }
         
     }
-
+    /*
+     * Positive test case -- make sure profiler is parsed correctly
+     * here is the piece of xml it will be parsing:
+     * 
+            <profiler classpath="/profiler/class/path" enabled="true" name="MyProfiler" native-library-path="/bin">
+                <jvm-options>-Dprofiler3=foo3</jvm-options>
+                <jvm-options>-Dprofiler2=foo2</jvm-options>
+                <jvm-options>-Dprofiler1=foof</jvm-options>
+            </profiler>
+     * 
+     */
+    @Test
+    public void test8() {
+        try {
+            MiniXmlParser instance = new MiniXmlParser(hasProfiler, "server");
+            Map<String, String> config = instance.getProfilerConfig();
+            List<String> jvm = instance.getProfilerJvmOptions();
+            Map<String,String> sysProps = instance.getProfilerSystemProperties();
+            assertEquals(jvm.size(), 3);
+            assertEquals(jvm.get(0), "-Dprofiler3=foo3");
+            assertEquals(jvm.get(1), "-Dprofiler2=foo2");
+            assertEquals(jvm.get(2), "-Dprofiler1=foof");
+            assertNotNull(config);
+            assertEquals(config.size(), 4);
+            assertEquals(config.get("classpath"), "/profiler/class/path");
+            assertEquals(config.get("enabled"), "true");
+            assertEquals(config.get("name"), "MyProfiler");
+            assertEquals(config.get("native-library-path"), "/bin");
+            assertEquals(sysProps.size(), 2);
+            assertEquals(sysProps.get("name1"), "value1");
+            assertEquals(sysProps.get("name2"), "value2");
+            
+        }
+        catch (MiniXmlParserException ex) {
+            Logger.getLogger(MiniXmlParserTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+    }
+/*
+*/
+    
+    
+    
+    
+    
+    
+    private static File hasProfiler;
     private static File wrongOrder;
     private static File rightOrder;
     private static File noconfig;
