@@ -3665,7 +3665,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
         Level level = Level.SEVERE;
         setLogLevel(level);
-
+        
         if (logserviceBean != null) {
             try {
                 level = Level.parse(logserviceBean.getModuleLogLevels().getRoot());
@@ -3678,7 +3678,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         // log-level setting then use that
         try {
             Config config = _serverContext.getDefaultHabitat().getComponent(Config.class);
-            level = Level.parse(config.getMonitoringService().getModuleMonitoringLevels().getWebContainer());
+            level = Level.parse(logserviceBean.getModuleLogLevels().getWebContainer());
             setLogLevel(level);
         } catch (NullPointerException e) {
             if (_debug > 0)
