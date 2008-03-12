@@ -89,14 +89,12 @@
             <version>1.0-SNAPSHOT</version>
 	    <scope>provided</scope>
         </dependency>
-    <!--
-// FIXME: Can't depend on this b/c core is not a module and it fails at runtime
         <dependency>
             <groupId>org.glassfish.admingui</groupId>
             <artifactId>console-core</artifactId>
             <version>1.0-SNAPSHOT</version>
+	    <optional>true</optional>
 	    <scope>provided</scope>
         </dependency>
-    -->
     </dependencies>
 </project>
