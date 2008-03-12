@@ -47,6 +47,7 @@
        -->
       <id>dev</id>
       <build>
+        <defaultGoal>install</defaultGoal>
         <plugins>
           <plugin>
             <artifactId>maven-war-plugin</artifactId>
