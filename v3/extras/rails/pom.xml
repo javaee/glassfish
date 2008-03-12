@@ -85,6 +85,11 @@
             <version>${grizzly.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.glassfish.common</groupId>
+            <artifactId>common-util</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.glassfish.external</groupId>
             <artifactId>grizzly-module</artifactId>
             <version>${grizzly.version}</version>
