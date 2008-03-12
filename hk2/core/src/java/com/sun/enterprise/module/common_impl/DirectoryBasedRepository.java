@@ -85,7 +85,7 @@ public class DirectoryBasedRepository extends AbstractRepositoryImpl {
         try {
             File[] files = repository.listFiles();
             for (File aFile : files) {
-                if (aFile.getName().endsWith(".jar")) {
+                if (aFile.getName().endsWith(".jar") && !isDisabled(aFile)) {
                     ModuleDefinition moduleDef = loadJar(aFile);
                     if (moduleDef!=null) {
                         moduleDefs.put(moduleDef.getName(), moduleDef);
@@ -100,6 +100,17 @@ public class DirectoryBasedRepository extends AbstractRepositoryImpl {
             x.initCause(e);
             throw x;
         }
+    }
+
+    /**
+     * Checks the <tt>xyz.disabled</tt> file for <tt>xyz.jar</tt> and return true
+     * if the file exists.
+     */
+    private boolean isDisabled(File jar) {
+        String fileName = jar.getName();
+        fileName = fileName.substring(0,fileName.lastIndexOf('.'))+".disabled";
+        File disabledFile = new File(jar.getParent(),fileName);
+        return disabledFile.exists();
     }
 
     private synchronized void directoryChanged() {
