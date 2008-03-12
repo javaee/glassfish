@@ -37,15 +37,17 @@
 
 package com.sun.enterprise.module.impl;
 
-import com.sun.enterprise.module.Module;
-import com.sun.enterprise.module.ModulesRegistry;
-import com.sun.enterprise.module.ModuleDefinition;
-import com.sun.enterprise.module.ResolveError;
+import com.sun.enterprise.module.*;
 import com.sun.enterprise.module.common_impl.AbstractModulesRegistryImpl;
 import com.sun.hk2.component.InhabitantsParser;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.List;
+import java.util.Collections;
+import java.util.logging.Logger;
+import java.util.logging.Level;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.net.URL;
 
 /**
@@ -53,6 +55,8 @@ import java.net.URL;
  */
 public class ModulesRegistryImpl extends AbstractModulesRegistryImpl {
     private ClassLoader parentLoader;
+
+    /*package*/ final List<ModuleLifecycleListener> lifecycleListeners = new CopyOnWriteArrayList<ModuleLifecycleListener>();
 
     /* package */ ModulesRegistryImpl(AbstractModulesRegistryImpl parent) {
         super(parent);
@@ -63,6 +67,10 @@ public class ModulesRegistryImpl extends AbstractModulesRegistryImpl {
      */
     public ModulesRegistry createChild() {
         return new ModulesRegistryImpl(this);
+    }
+
+    protected Module newModule(ModuleDefinition moduleDef) {
+        return new ModuleImpl(this, moduleDef);
     }
 
     protected void parseInhabitants(
@@ -144,4 +152,60 @@ public class ModulesRegistryImpl extends AbstractModulesRegistryImpl {
         }
         return cl;
     }
+
+    public Module find(Class clazz) {
+        ClassLoader cl = clazz.getClassLoader();
+        if(cl==null)    return null;
+        if (cl instanceof ModuleClassLoader)
+            return ((ModuleClassLoader) cl).getOwner();
+        return null;
+    }
+
+    /**
+     * Add a <code>ModuleLifecycleListener</code> to this registry. The listener
+     * will be notified for each module startup and shutdown.
+     * @param listener the listener implementation
+     */
+    public void register(ModuleLifecycleListener listener) {
+        lifecycleListeners.add(listener);
+    }
+
+    /**
+     * Removes an <code>ModuleLifecycleListener</code> from this registry.
+     * Notification of module startup and shutdown will not be emitted to this
+     * listener any longer.
+     * @param listener the listener to unregister
+     */
+    public void unregister(ModuleLifecycleListener listener) {
+        lifecycleListeners.remove(listener);
+    }
+
+    public List<ModuleLifecycleListener> getLifecycleListeners() {
+        return Collections.unmodifiableList(lifecycleListeners);
+    }
+
+    /**
+     * Detaches all the modules from this registry. The modules are not
+     * deconstructed when calling this method.
+     */
+    public void detachAll() {
+        modules.clear();
+    }
+
+    /**
+     * Shuts down this module's registry, apply housekeeping tasks
+     *
+     */
+    public void shutdown() {
+        detachAll();
+        for (Repository repo : repositories.values()) {
+            try {
+                repo.shutdown();
+            } catch(Exception e) {
+                Logger.getAnonymousLogger().log(Level.SEVERE, "Error while closing repository " + repo, e);
+                // swallows
+            }
+        }
+    }
+
 }

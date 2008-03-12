@@ -39,13 +39,7 @@ package org.jvnet.hk2.osgiadapter;
 
 import static org.jvnet.hk2.osgiadapter.Logger.logger;
 import com.sun.enterprise.module.common_impl.AbstractFactory;
-import com.sun.enterprise.module.Module;
-import com.sun.enterprise.module.ModulesRegistry;
-import com.sun.enterprise.module.ModuleDefinition;
-import org.jvnet.hk2.component.Habitat;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleException;
 
 import java.util.logging.Level;
 
@@ -68,25 +62,8 @@ public class OSGiFactoryImpl extends AbstractFactory {
         this.ctx = ctx;
     }
 
-    public ModulesRegistry createModulesRegistry() {
-        return new OSGiModulesRegistryImpl(null);
+    public OSGiModulesRegistryImpl createModulesRegistry() {
+        return new OSGiModulesRegistryImpl(ctx);
     }
 
-    public Module createModule(
-            ModulesRegistry registry, ModuleDefinition moduleDef) {
-        try {
-            final String location = moduleDef.getLocations()[0].toString();
-            logger.logp(Level.INFO, "AbstractModulesRegistryImpl", "add",
-                    "location = {0}", location);
-            Bundle bundle = ctx.installBundle(location);
-            // wrap Bundle by a Module object
-            return new OSGiModuleImpl(registry, bundle, moduleDef);
-        } catch (BundleException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public OSGiInhabitantsParser createInhabitantsParser(Habitat habitat) {
-        return new OSGiInhabitantsParser(habitat, ctx);
-    }
 }

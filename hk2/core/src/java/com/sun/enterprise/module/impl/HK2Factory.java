@@ -38,11 +38,7 @@
 package com.sun.enterprise.module.impl;
 
 import com.sun.enterprise.module.common_impl.AbstractFactory;
-import com.sun.enterprise.module.Module;
 import com.sun.enterprise.module.ModulesRegistry;
-import com.sun.enterprise.module.ModuleDefinition;
-import com.sun.hk2.component.InhabitantsParser;
-import org.jvnet.hk2.component.Habitat;
 
 /**
  * @author Sanjeeb.Sahoo@Sun.COM
@@ -56,17 +52,8 @@ public class HK2Factory extends AbstractFactory {
         Instance = new HK2Factory();
     }
 
-    public Module createModule(
-            ModulesRegistry registry, ModuleDefinition modeuleDef) {
-        return new ModuleImpl((ModulesRegistryImpl)registry, modeuleDef);
-    }
-
     public ModulesRegistry createModulesRegistry() {
         return new ModulesRegistryImpl(null);
-    }
-
-    public InhabitantsParser createInhabitantsParser(Habitat habitat) {
-        return new InhabitantsParser(habitat);
     }
 
 }

@@ -70,7 +70,6 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry {
      */
     protected final AbstractModulesRegistryImpl parent;
     protected final ConcurrentMap<String,Module> modules = new ConcurrentHashMap<String,Module>();
-    /*package*/ final List<ModuleLifecycleListener> lifecycleListeners = new CopyOnWriteArrayList<ModuleLifecycleListener>();
 
     protected final Map<Integer,Repository> repositories = new TreeMap<Integer,Repository>();
 
@@ -280,9 +279,12 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry {
         return null;
     }
 
-    protected Module newModule(ModuleDefinition moduleDef) {
-        return AbstractFactory.getInstance().createModule(this, moduleDef);
-    }
+    /**
+     * Factory method for creating new instances of Module.
+     * @param moduleDef module definition of the new module to be created
+     * @return a new Module instance
+     */
+    protected abstract Module newModule(ModuleDefinition moduleDef);
 
     /**
      * Add a new module to this registry. Once added, the module will be 
@@ -311,9 +313,6 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry {
         //if (Utils.isLoggable(Level.INFO)) {
         //    Utils.getDefaultLogger().info("Removed module " + module);
         //}
-        for (ModuleLifecycleListener listener : lifecycleListeners) {
-            listener.moduleStopped(module);
-        }
         assert module.getRegistry()==this;
         modules.remove(module.getModuleDefinition().getName());
 
@@ -330,7 +329,7 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry {
      *
      * @return an umodifiable list of loaded modules
      */
-    public Collection<Module> getModules() {
+    public synchronized Collection<Module> getModules() {
         // force repository extraction
         Set<Integer> keys = repositories.keySet();
         TreeSet<Integer> sortedKeys = new TreeSet<Integer>();
@@ -366,14 +365,6 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry {
     }   
     
     /**
-     * Detaches all the modules from this registry. The modules are not 
-     * deconstructed when calling this method. 
-     */
-    public void detachAll() {
-        modules.clear();
-    }
-
-    /**
      * Registers a new DefaultModuleDefinition in this registry. Using this module
      * definition, the registry will be capable of created shared and private
      * <code>Module</code> instances.
@@ -404,25 +395,6 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry {
         }
     }
 
-    /**
-     * Add a <code>ModuleLifecycleListener</code> to this registry. The listener
-     * will be notified for each module startup and shutdown. 
-     * @param listener the listener implementation
-     */
-    public void register(ModuleLifecycleListener listener) {
-        lifecycleListeners.add(listener);
-    }
-    
-    /**
-     * Removes an <code>ModuleLifecycleListener</code> from this registry. 
-     * Notification of module startup and shutdown will not be emitted to this
-     * listener any longer.
-     * @param listener the listener to unregister
-     */
-    public void unregister(ModuleLifecycleListener listener) {
-        lifecycleListeners.remove(listener);
-    }
-    
     public <T> Iterable<Class<? extends T>> getProvidersClass(final Class<T> serviceClass) {
         // oh boy, it really hurts not to have type inference.
         return new Iterable<Class<? extends T>>() {
@@ -501,22 +473,6 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry {
     }
 
     /**
-     * Shuts down this module's registry, apply housekeeping tasks
-     *
-     */
-    public void shutdown() {
-        detachAll();
-        for (Repository repo : repositories.values()) {
-            try {
-                repo.shutdown();
-            } catch(Exception e) {
-                Logger.getAnonymousLogger().log(Level.SEVERE, "Error while closing repository " + repo, e);
-                // swallows
-            }
-        }
-    }
-
-    /**
      * Gets the {@link Module} that provides the provider of the given name.
      */
     public Module getProvidingModule(String providerClassName) {
@@ -535,10 +491,6 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry {
             writer.println("Registered Module " + module.getModuleDefinition().getName());
             module.dumpState(writer);
         }
-    }
-
-    public List<ModuleLifecycleListener> getLifecycleListeners() {
-        return Collections.unmodifiableList(lifecycleListeners);
     }
 
 }

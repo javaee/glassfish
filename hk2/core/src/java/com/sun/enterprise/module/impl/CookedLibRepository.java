@@ -11,8 +11,6 @@ package com.sun.enterprise.module.impl;
 
 import com.sun.enterprise.module.ModuleDefinition;
 import com.sun.enterprise.module.Repository;
-import com.sun.enterprise.module.Module;
-import com.sun.enterprise.module.ModulesRegistry;
 
 import java.io.File;
 import java.io.IOException;
@@ -122,7 +120,4 @@ public abstract class CookedLibRepository implements Repository {
         return s.toString();
     }
 
-    public Module newModule(ModulesRegistry registry, ModuleDefinition def) {
-        return new ModuleImpl(ModulesRegistryImpl.class.cast(registry),def);
-    }
 }

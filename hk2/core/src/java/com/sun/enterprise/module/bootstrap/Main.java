@@ -10,9 +10,7 @@
 package com.sun.enterprise.module.bootstrap;
 
 import com.sun.enterprise.module.ManifestConstants;
-import com.sun.enterprise.module.impl.ModuleImpl;
 import com.sun.enterprise.module.ModuleMetadata.InhabitantsDescriptor;
-import com.sun.enterprise.module.impl.ModulesRegistryImpl;
 import com.sun.enterprise.module.impl.HK2Factory;
 import com.sun.enterprise.module.impl.Utils;
 import com.sun.enterprise.module.Repository;
@@ -337,13 +335,13 @@ public class Main {
                 Iterator<ModuleStartup> itr = startups.iterator();
                 ModuleStartup a = itr.next();
                 ModuleStartup b = itr.next();
-                Module am = ModuleImpl.find(a.getClass());
-                Module bm = ModuleImpl.find(b.getClass());
+                Module am = registry.find(a.getClass());
+                Module bm = registry.find(b.getClass());
                 throw new BootException(String.format("Multiple ModuleStartup found: %s from %s and %s from %s",a,am,b,bm));
             }
 
             startupCode = startups.iterator().next();
-            mainModule = ModuleImpl.find(startupCode.getClass());
+            mainModule = registry.find(startupCode.getClass());
         }
 
         mainModule.setSticky(true);

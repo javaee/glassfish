@@ -88,19 +88,6 @@ public interface Repository {
     public void shutdown() throws IOException;
 
     /**
-     * Creates a module instance from a Module definition.
-     * Different implementation of repositories may need to use different means
-     * of initializing a Module instance depending on the module's definition nature.
-     * For instance, an Netbeans module or a JSR277/Glassfish module could use different
-     * implementation of Module.
-     *
-     * @param registry is the registry that will own the module
-     * @param moduleDef the requested module definition
-     * @return the uninitialized Module instance
-     */
-    public Module newModule(ModulesRegistry registry, ModuleDefinition moduleDef);
-
-    /**
      * Returns the plain jar files installed in this repository. Plain jar files
      * are not modules, they do not have the module's metadata and can only be used
      * when referenced from a module dependency list or when added to a class
