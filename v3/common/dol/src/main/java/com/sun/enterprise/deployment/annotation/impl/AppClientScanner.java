@@ -46,6 +46,10 @@ import java.util.logging.Level;
 import java.util.jar.JarFile;
 import java.util.jar.JarEntry;
 
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.component.PerLookup;
+
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 
@@ -57,6 +61,8 @@ import com.sun.enterprise.deployment.ServiceReferenceDescriptor;
  *
  * @author Shing Wai Chan
  */
+@Service(name="appclient")
+@Scoped(PerLookup.class)
 public class AppClientScanner extends ModuleScanner<ApplicationClientDescriptor> {
     private ApplicationClientDescriptor descriptor;    
 
