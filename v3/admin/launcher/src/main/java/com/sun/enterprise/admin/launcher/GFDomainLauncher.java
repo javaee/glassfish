@@ -74,8 +74,8 @@ class GFDomainLauncher extends GFLauncher {
 
         // Temporary
         System.out.println("****************************************************");
-        System.out.println("************ Important Messages: *******************");
-        System.out.println("** The TP2 Launcher does not yet support debugging");
+        System.out.println("************ TP2 Launcher  *******************");
+        System.out.println("** The TP2 Launcher does not support profiling");
         System.out.println("** The commandline below is here for your info.  When logging is setup " +
                 "it will go to the log file.");
         System.out.println("**   jvm command line  **");
