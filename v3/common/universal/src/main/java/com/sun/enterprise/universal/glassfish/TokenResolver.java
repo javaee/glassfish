@@ -61,9 +61,11 @@ public class TokenResolver {
     public TokenResolver(Map<String, String> map) {
         props = map;
     }
-
-    ///////////////////////////////////////////////////////////////////////////
-    
+    /**
+     * Replace $[variables} in map with a matching property from the map that this
+     *  instance was constructed with.  Both names and vlues are replaced.
+     * @param map Map of Strings to be token-replaced
+     */
     public void resolve(Map<String, String> map) {
         Set<String> keys = map.keySet();
 
@@ -74,8 +76,10 @@ public class TokenResolver {
             }
         }
     }
-
-    ///////////////////////////////////////////////////////////////////////////
+    /**
+     * Replace $[variables} in list with a matching property from the map
+     * @param list List of Strings to be token-replaced
+     */
     public void resolve(List<String> list) {
         for (int i = 0; i < list.size(); i++) {
             String s = list.get(i);
@@ -87,7 +91,14 @@ public class TokenResolver {
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    String resolve(String s) {
+    
+    /**
+     * Replace $[variables} with a matching property in the map
+     * @param s String to be token-replaced
+     * @return the replaced String
+     */
+    private String resolve(String s)
+    {
         if (hasWindowsToken(s)) {
             s = windowsToUnixTokens(s);
         }
