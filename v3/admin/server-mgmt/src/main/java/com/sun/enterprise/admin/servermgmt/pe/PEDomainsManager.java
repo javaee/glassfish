@@ -39,7 +39,6 @@ package com.sun.enterprise.admin.servermgmt.pe;
 import com.sun.enterprise.admin.servermgmt.InstanceException;
 import com.sun.enterprise.admin.servermgmt.InstancesManager;
 //import com.sun.enterprise.admin.servermgmt.launch.LaunchConstants;
-import com.sun.enterprise.util.SystemPropertyConstants;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;

@@ -44,6 +44,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.Map;
 
+import com.sun.enterprise.universal.glassfish.ASenvPropertyReader;
 import com.sun.enterprise.util.SystemPropertyConstants;
 
 /**
@@ -99,7 +100,11 @@ public class DomainConfig extends RepositoryConfig
         try {            
             put(K_DOMAINS_ROOT, domainRoot);
             // net to get fully qualified host, not just hostname
-            put(K_HOST_NAME, System.getProperty(SystemPropertyConstants.HOST_NAME_PROPERTY));
+            ASenvPropertyReader pr = new ASenvPropertyReader();
+            Map<String, String> envProperties = pr.getProps();
+            put(K_HOST_NAME, 
+                envProperties.get(SystemPropertyConstants.INSTALL_ROOT_PROPERTY));
+                    //System.getProperty(SystemPropertyConstants.HOST_NAME_PROPERTY));
         } catch (Exception ex) {
             throw new DomainException(ex);
         }

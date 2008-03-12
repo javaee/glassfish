@@ -43,12 +43,13 @@
 package com.sun.enterprise.admin.servermgmt;
 
 import java.util.HashMap;
-
 import java.io.File;
+import java.util.Map;
 
 import com.sun.enterprise.util.SystemPropertyConstants;
 
 import com.sun.enterprise.util.io.FileUtils;
+import com.sun.enterprise.universal.glassfish.ASenvPropertyReader;
 
 /**
  * This class represents a repository configuration. A repository can 
@@ -111,6 +112,7 @@ public class RepositoryConfig extends HashMap<String, Object> {
     //Name of the configuration. May be null
     private String _configurationName;
     
+    
     /** 
      * Creates a new instance of RepositoryConfig 
      * The K_INSTALL_ROOT and K_CONFIG_ROOT attributes are implicitly set     
@@ -121,8 +123,13 @@ public class RepositoryConfig extends HashMap<String, Object> {
         _repositoryName = repositoryName;        
         _repositoryRoot = repositoryRoot;
         _configurationName = configName;
-        put(K_INSTALL_ROOT, getFilePath(SystemPropertyConstants.INSTALL_ROOT_PROPERTY));        
-        put(K_CONFIG_ROOT, getFilePath(SystemPropertyConstants.CONFIG_ROOT_PROPERTY));   
+        final Map<String, String> envProperties = getEnvProps();
+        put(K_INSTALL_ROOT, getFilePath(
+                envProperties.get(SystemPropertyConstants.INSTALL_ROOT_PROPERTY)));
+                //SystemPropertyConstants.INSTALL_ROOT_PROPERTY));        
+        put(K_CONFIG_ROOT, getFilePath(
+                envProperties.get(SystemPropertyConstants.INSTALL_ROOT_PROPERTY)));
+                //SystemPropertyConstants.CONFIG_ROOT_PROPERTY));   
         put(K_REFRESH_CONFIG_CONTEXT, true);
         /* Since the changes for the startup, we have the problem of refreshing
          * config context. So, by default, I am making a change to refresh the
@@ -156,8 +163,11 @@ public class RepositoryConfig extends HashMap<String, Object> {
         _repositoryName = repositoryDir.getName();
         _repositoryRoot = FileUtils.makeForwardSlashes(repositoryDir.getParentFile().getAbsolutePath());
         _configurationName = null;
-        put(K_INSTALL_ROOT, getFilePath(SystemPropertyConstants.INSTALL_ROOT_PROPERTY));        
-        put(K_CONFIG_ROOT, getFilePath(SystemPropertyConstants.CONFIG_ROOT_PROPERTY));  
+        final Map<String, String> envProperties = getEnvProps();
+        put(K_INSTALL_ROOT, 
+            envProperties.get(SystemPropertyConstants.INSTALL_ROOT_PROPERTY));        
+        put(K_CONFIG_ROOT, 
+            getFilePath(envProperties.get(SystemPropertyConstants.CONFIG_ROOT_PROPERTY)));        
     }
 
     public String toString()
@@ -168,7 +178,7 @@ public class RepositoryConfig extends HashMap<String, Object> {
     
     protected String getFilePath(String propertyName) 
     {
-        File f = new File(System.getProperty(propertyName));
+        File f = new File(propertyName);
         return FileUtils.makeForwardSlashes(f.getAbsolutePath());
     }
 
@@ -222,5 +232,10 @@ public class RepositoryConfig extends HashMap<String, Object> {
     
     public void setRefreshConfingContext(final boolean refresh) {
         this.put(K_REFRESH_CONFIG_CONTEXT, refresh);
+    }
+    
+    private Map<String,String> getEnvProps() {
+        ASenvPropertyReader pr = new ASenvPropertyReader();
+        return pr.getProps();
     }
 }

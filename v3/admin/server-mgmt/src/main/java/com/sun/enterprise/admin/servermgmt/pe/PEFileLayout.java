@@ -37,8 +37,6 @@
 package com.sun.enterprise.admin.servermgmt.pe;
 
 import java.util.Locale;
-import java.util.Vector;
-import java.util.Iterator;
 import java.io.File;
 
 import com.sun.enterprise.util.OS;
@@ -71,28 +69,30 @@ public class PEFileLayout
         createDirectory(getRepositoryRootDir());
         createDirectory(getRepositoryDir());
         createDirectory(getConfigRoot());
-        createDirectory(getAddonRoot());
+        createDirectory(getBinDir());
+        createDirectory(getLogsDir());
         createDirectory(getDocRoot());
+        createDirectory(getApplicationsRootDir());
+        createDirectory(getAutoDeployDir());
+        createDirectory(getAutoDeployStatusDir());
+        /*
+        createDirectory(getAddonRoot());
         createDirectory(getJavaWebStartRoot());
         createDirectory(getLibDir());
-        createDirectory(getBinDir());
         createDirectory(getClassesDir());
         createDirectory(getExtLibDir());
         createDirectory(getAppLibsDir());
-        createDirectory(getLogsDir());
         createDirectory(getGeneratedDir());
         createDirectory(getJspRootDir());
         createDirectory(getEjbRootDir());
         createDirectory(getXmlRootDir());
-        createDirectory(getApplicationsRootDir());
         createDirectory(getJ2EEAppsDir());
         createDirectory(getJ2EEModulesDir());
         createDirectory(getLifecycleModulesDir());
         createDirectory(getMbeansDir());
         createDirectory(getSessionStore());
-        createDirectory(getAutoDeployDir());
-        createDirectory(getAutoDeployStatusDir());
         createDirectory(getTimerDatabaseDir());
+         */
     }
 
     protected RepositoryConfig getConfig() {
@@ -454,7 +454,7 @@ public class PEFileLayout
     public File getProfileFolder(final String profileName)
     {
         assert profileName != null : "Name of the profile can't be null";
-        final File pf = new File(getTemplatesDir(), profileName);
+        final File pf = new File(getTemplatesDir(), profileName);        
         return pf;
     }
 
