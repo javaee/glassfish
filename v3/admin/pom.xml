@@ -53,7 +53,7 @@
         <module>util</module>
         <module>monitor</module>
         <module>admin-core</module>
-        <!--module>server-mgmt</module-->
+        <module>server-mgmt</module>
         <module>cli</module>
         <module>cli-framework</module>
         <module>jmx-remote</module>
