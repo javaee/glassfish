@@ -185,6 +185,9 @@ public class EjbContainerUtil
 
     }
 
+    public void addWork(Runnable task) {
+        task.run();
+    }
         // Various pieces of data associated with a tx.  Store directly
     // in J2EETransaction to avoid repeated Map<tx, data> lookups.
     private  class TxData {

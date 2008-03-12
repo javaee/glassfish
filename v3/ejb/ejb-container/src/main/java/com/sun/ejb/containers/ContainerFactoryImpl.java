@@ -71,7 +71,7 @@ public final class ContainerFactoryImpl implements ContainerFactory {
             if (ejbDescriptor instanceof EjbSessionDescriptor) {
                 EjbSessionDescriptor sd = (EjbSessionDescriptor)ejbDescriptor;
                 if ( sd.isStateless() ) {
-                    //container = new StatelessSessionContainer(ejbDescriptor, loader);
+                    container = new StatelessSessionContainer(ejbDescriptor, loader);
                 } else {
                     /*TODO
                     //container = new StatefulSessionContainer(ejbDescriptor, loader);

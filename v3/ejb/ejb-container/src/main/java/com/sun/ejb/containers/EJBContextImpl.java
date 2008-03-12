@@ -204,12 +204,6 @@ public abstract class EJBContextImpl
         return lastTimeUsed;
     }
     
-    void setSoftRef(SoftReference softRef) {
-    }
-    
-    void setHardRef(Object referent) {
-    }
-    
     void touch() {
         lastTimeUsed = System.currentTimeMillis();
     }
