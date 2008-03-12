@@ -42,21 +42,19 @@ import static org.jvnet.hk2.osgiadapter.Logger.logger;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.BundleEvent;
+import org.osgi.service.packageadmin.RequiredBundle;
 import com.sun.hk2.component.Holder;
 import com.sun.hk2.component.InhabitantsParser;
-import com.sun.enterprise.module.ModuleMetadata;
-import com.sun.enterprise.module.ModuleDefinition;
-import com.sun.enterprise.module.Module;
-import com.sun.enterprise.module.ModulesRegistry;
-import com.sun.enterprise.module.ModuleState;
-import com.sun.enterprise.module.ResolveError;
-import com.sun.enterprise.module.ModuleChangeListener;
-import com.sun.enterprise.module.ModuleDependency;
+import com.sun.enterprise.module.*;
 
 import java.io.IOException;
 import java.io.PrintStream;
+import java.io.InputStream;
+import java.io.File;
 import java.util.logging.Level;
-import java.util.List;
+import java.util.*;
+import java.net.URL;
+import java.net.URI;
 
 /**
  * @author Sanjeeb.Sahoo@Sun.COM
@@ -66,12 +64,24 @@ public class OSGiModuleImpl implements Module {
 
     private ModuleDefinition md;
 
-    private ModulesRegistry registry;
+    private OSGiModulesRegistryImpl registry;
 
-    public OSGiModuleImpl(ModulesRegistry registry, Bundle bundle, ModuleDefinition md) {
+    private ModuleState state;
+
+    /* TODO (Sahoo): Change hk2-apt to generate an equivalent BundleActivator
+       corresponding to LifecyclerPolicy class. That way, LifecyclePolicy class
+       will be invoked even when underlying OSGi bundle is stopped or started
+       using any OSGi bundle management tool.
+     */
+    private LifecyclePolicy lifecyclePolicy;
+
+    private boolean sticky;
+
+    public OSGiModuleImpl(OSGiModulesRegistryImpl registry, Bundle bundle, ModuleDefinition md) {
         this.registry = registry;
         this.bundle = bundle;
         this.md = md;
+        this.state = ModuleState.NEW;
     }
 
     public ModuleDefinition getModuleDefinition() {
@@ -87,50 +97,107 @@ public class OSGiModuleImpl implements Module {
     }
 
     public ModuleState getState() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return state;
     }
 
-    public void resolve() throws ResolveError {
-        // TODO
-        throw new UnsupportedOperationException("Not yet implemented");
-    }
-
-    public void start() throws ResolveError {
+    public synchronized void resolve() throws ResolveError {
+        if (state==ModuleState.RESOLVED) {
+            return;
+        }
         try {
             bundle.start();
+            state = ModuleState.RESOLVED;
         } catch (BundleException e) {
             throw new ResolveError(e);
         }
     }
 
+    public synchronized void start() throws ResolveError {
+        if (state == ModuleState.READY) {
+            return;
+        }
+
+        resolve();
+
+        // TODO(Sahoo): Remove this when hk2-apt generates equivalent BundleActivator
+        // if there is a LifecyclePolicy, then instantiate and invoke.
+        if (md.getLifecyclePolicyClassName()!=null) {
+            try {
+                Class<LifecyclePolicy> lifecyclePolicyClass =
+                        (Class<LifecyclePolicy>) bundle.loadClass(md.getLifecyclePolicyClassName());
+                lifecyclePolicy = lifecyclePolicyClass.newInstance();
+            } catch(ClassNotFoundException e) {
+                state = ModuleState.ERROR;
+                throw new ResolveError("ClassNotFound : " + e.getMessage(), e);
+            } catch(java.lang.InstantiationException e) {
+                state = ModuleState.ERROR;
+                throw new ResolveError(e);
+            } catch(IllegalAccessException e) {
+                state = ModuleState.ERROR;
+                throw new ResolveError(e);
+            }
+        }
+        if (lifecyclePolicy!=null) {
+            lifecyclePolicy.start(this);
+        }
+        state = ModuleState.READY;
+    }
+
     public synchronized boolean stop() {
-        if ((bundle.getState() & BundleEvent.STARTED) != 0) {
+        if(isSticky()) {
+            // sticky modules can't be stopped.
             return false;
         }
-        try {
-            bundle.stop();
-        } catch (BundleException e) {
-            throw new RuntimeException(e);
-        }
+        detach();
+        registry.getPackageAdmin().refreshPackages(new Bundle[]{bundle});
+        state = ModuleState.NEW;
         return true;
     }
 
-    public void uninstall() {
+    public void detach() {
+        if ((bundle.getState() & BundleEvent.STARTED) != 0) {
+            return;
+        }
+
+        if (lifecyclePolicy!=null) {
+            lifecyclePolicy.stop(this);
+            lifecyclePolicy=null;
+        }
+
+        try {
+            bundle.stop();
+            bundle.uninstall();
+        } catch (BundleException e) {
+            throw new RuntimeException(e);
+        }
+        state = ModuleState.NEW;
+
+    }
+
+    /* package */ void uninstall() {
+        // This method is called when the hk2-osgi-adapter module is stopped.
+        // During that time, we need to stop all the modules, hence no sticky check is
+        // performed in this method.
         try {
             bundle.uninstall();
         } catch (BundleException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    public void detach() {
-        // TODO
-        throw new UnsupportedOperationException("Not yet implemented");
+        registry.remove(this);
+        this.registry = null;
     }
 
     public void refresh() {
-        // TODO
-        throw new UnsupportedOperationException("Not yet implemented");
+        URI location = md.getLocations()[0];
+        File f = new File(location);
+        if (f.lastModified() > bundle.getLastModified()) {
+            try {
+                bundle.update();
+                registry.getPackageAdmin().refreshPackages(new Bundle[]{bundle});
+            } catch (BundleException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     public ModuleMetadata getMetadata() {
@@ -151,18 +218,15 @@ public class OSGiModuleImpl implements Module {
     }
 
     public void addListener(ModuleChangeListener listener) {
-        // TODO
-        throw new UnsupportedOperationException("Not yet implemented");
+        registry.addModuleChangeListener(listener, this);
     }
 
     public void removeListener(ModuleChangeListener listener) {
-        // TODO
-        throw new UnsupportedOperationException("Not yet implemented");
+        registry.removeModuleChangeListener(listener);
     }
 
     public void dumpState(PrintStream writer) {
-        // TODO
-        throw new UnsupportedOperationException("Not yet implemented");
+        writer.print(bundle.toString());
     }
 
     /**
@@ -174,6 +238,7 @@ public class OSGiModuleImpl implements Module {
                 return new ClassLoader() {
                     @Override public synchronized Class<?> loadClass(
                             String name) throws ClassNotFoundException {
+                        logger.logp(Level.INFO, "ModuleImpl", "loadClass", "Loading {0}", name);
                         final Class aClass = bundle.loadClass(name);
                         logger.logp(Level.INFO, "ModuleImpl", "loadClass",
                                 name+".class.getClassLoader() = {0}",
@@ -198,30 +263,83 @@ public class OSGiModuleImpl implements Module {
     }
 
     public ClassLoader getClassLoader() {
-        throw new UnsupportedOperationException("Not Yet Implemented"); // TODO
+        return new ClassLoader() {
+
+            @Override
+            public Class<?> loadClass(String name) throws ClassNotFoundException {
+                return bundle.loadClass(name);
+            }
+
+            @Override
+            protected synchronized Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
+                return bundle.loadClass(name);
+            }
+
+            @Override
+            public URL getResource(String name) {
+                return bundle.getResource(name);
+            }
+
+            @Override
+            public Enumeration<URL> getResources(String name) throws IOException {
+                return bundle.getResources(name);
+            }
+
+            @Override
+            public InputStream getResourceAsStream(String name) {
+                URL url = getResource(name);
+                try {
+                    return url != null ? url.openStream() : null;
+                } catch (IOException e) {
+                    return null;
+                }
+            }
+
+            @Override
+            public String toString() {
+                return "Class Loader for Bundle [" + bundle.toString() + " ]";
+            }
+        };
     }
 
     public void addImport(Module module) {
-        throw new UnsupportedOperationException("Not Yet Implemented"); // TODO
+        throw new UnsupportedOperationException("Not Yet Implemented"); // TODO(Sahoo)
     }
 
     public Module addImport(ModuleDependency dependency) {
-        throw new UnsupportedOperationException("Not Yet Implemented"); // TODO
+        throw new UnsupportedOperationException("Not Yet Implemented"); // TODO(Sahoo)
     }
 
     public boolean isSticky() {
-        throw new UnsupportedOperationException("Not Yet Implemented"); // TODO
+        return sticky;
     }
 
     public void setSticky(boolean sticky) {
-        throw new UnsupportedOperationException("Not Yet Implemented"); // TODO
+        this.sticky = sticky;
     }
 
     public List<Module> getImports() {
-        throw new UnsupportedOperationException("Not Yet Implemented"); // TODO
+        List<Module> result = new ArrayList<Module>();
+        RequiredBundle[] requiredBundles =
+                registry.getPackageAdmin().getRequiredBundles(bundle.getSymbolicName());
+        for(RequiredBundle rb : requiredBundles) {
+            Module m = registry.getModule(rb.getBundle());
+            if (m!=null) {
+                // module is known to the module system
+                result.add(m);
+            } else {
+                // module is not known to us - may be the OSgi bundle depends on a native
+                // OSGi bundle
+            }
+        }
+        return result;
     }
 
     public boolean isShared() {
-        throw new UnsupportedOperationException("Not Yet Implemented"); // TODO
+        return true; // all OSGi bundles are always shared.
+    }
+
+    public Bundle getBundle() {
+        return bundle;
     }
 }

@@ -4,8 +4,6 @@ import com.sun.enterprise.module.Repository;
 import com.sun.enterprise.module.ModuleDefinition;
 import com.sun.enterprise.module.RepositoryChangeListener;
 import com.sun.enterprise.module.ManifestConstants;
-import com.sun.enterprise.module.Module;
-import com.sun.enterprise.module.ModulesRegistry;
 
 import java.io.*;
 import java.net.URI;
@@ -157,13 +155,6 @@ public abstract class AbstractRepositoryImpl implements Repository {
             s.append(moduleDef.getName()).append(":");
         }
         return s.toString();
-    }
-
-    public Module newModule(
-            ModulesRegistry registry, ModuleDefinition moduleDef) {
-        // TODO (Sahoo): Should newModule be really a part of Repository i/f?
-        // Check with Jerome
-        return AbstractFactory.getInstance().createModule(registry, moduleDef);
     }
 
     /**

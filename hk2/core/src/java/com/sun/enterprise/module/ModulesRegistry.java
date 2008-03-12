@@ -238,4 +238,11 @@ public interface ModulesRegistry extends ModuleChangeListener {
     ClassLoader getModulesClassLoader(ClassLoader parent, Collection<ModuleDefinition> defs)
         throws ResolveError;
 
+    /**
+     * Finds the {@link Module} that owns the given class.
+     *
+     * @return
+     *      null if the class is loaded outside the module system.
+     */
+    Module find(Class clazz);
 }

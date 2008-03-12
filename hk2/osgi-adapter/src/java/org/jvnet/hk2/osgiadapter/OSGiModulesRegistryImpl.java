@@ -37,13 +37,18 @@
 
 package org.jvnet.hk2.osgiadapter;
 
-import org.osgi.framework.BundleContext;
+import org.osgi.framework.*;
+import org.osgi.service.packageadmin.PackageAdmin;
+import static org.jvnet.hk2.osgiadapter.Logger.logger;
 import com.sun.enterprise.module.*;
-import com.sun.hk2.component.*;
 import com.sun.hk2.component.InhabitantsParser;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Collections;
+import java.util.logging.*;
 
 /**
  * @author Sanjeeb.Sahoo@Sun.COM
@@ -55,10 +60,30 @@ public class OSGiModulesRegistryImpl
      * OSGi BundleContext - used to install/uninstall, start/stop bundles
      */
     BundleContext bctx;
+    private PackageAdmin pa;
+    private Map<ModuleChangeListener, BundleListener> moduleChangeListeners =
+            new HashMap<ModuleChangeListener, BundleListener>();
+    private Map<ModuleLifecycleListener, BundleListener> moduleLifecycleListeners =
+            new HashMap<ModuleLifecycleListener, BundleListener>();
 
     /*package*/ OSGiModulesRegistryImpl(BundleContext bctx) {
         super(null);
         this.bctx = bctx;
+        ServiceReference ref = bctx.getServiceReference(PackageAdmin.class.getName());
+        pa = PackageAdmin.class.cast(bctx.getService(ref));
+    }
+
+    protected Module newModule(ModuleDefinition moduleDef) {
+        try {
+            final String location = moduleDef.getLocations()[0].toString();
+            logger.logp(Level.INFO, "AbstractModulesRegistryImpl", "add",
+                    "location = {0}", location);
+            Bundle bundle = bctx.installBundle(location);
+            // wrap Bundle by a Module object
+            return new OSGiModuleImpl(this, bundle, moduleDef);
+        } catch (BundleException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     protected void parseInhabitants(
@@ -68,14 +93,28 @@ public class OSGiModulesRegistryImpl
     }
 
     public ModulesRegistry createChild() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        throw new UnsupportedOperationException("Not Yet Implemented"); // TODO(Sahoo)
     }
 
-    public void shutdown() {
+    public synchronized void detachAll() {
+        for (Module m : modules.values()) {
+            m.detach();
+        }
+    }
+
+    public synchronized void shutdown() {
         for (Module m : modules.values()) {
             OSGiModuleImpl.class.cast(m).uninstall();
         }
         modules.clear();
+        for (Repository repo : repositories.values()) {
+            try {
+                repo.shutdown();
+            } catch(Exception e) {
+                java.util.logging.Logger.getAnonymousLogger().log(Level.SEVERE, "Error while closing repository " + repo, e);
+                // swallows
+            }
+        }
     }
 
     /**
@@ -84,7 +123,7 @@ public class OSGiModulesRegistryImpl
      * @param parent parent class loader
      */
     public void setParentClassLoader(ClassLoader parent) {
-        throw new UnsupportedOperationException("Not Yet Implemented"); // TODO
+        throw new UnsupportedOperationException("Not Yet Implemented"); // TODO(Sahoo)
     }
 
     /**
@@ -93,7 +132,7 @@ public class OSGiModulesRegistryImpl
      * @return the parent classloader
      */
     public ClassLoader getParentClassLoader() {
-        throw new UnsupportedOperationException("Not Yet Implemented"); // TODO
+        throw new UnsupportedOperationException("Not Yet Implemented"); // TODO(Sahoo)
     }
 
     /**
@@ -109,5 +148,78 @@ public class OSGiModulesRegistryImpl
     public ClassLoader getModulesClassLoader(ClassLoader parent, Collection<ModuleDefinition> defs)
         throws ResolveError {
         throw new UnsupportedOperationException("Not Yet Implemented"); // TODO
+    }
+
+    public Module find(Class clazz) {
+        Bundle b = pa.getBundle(clazz);
+        if (b!=null) {
+            // locate the corresponding HK2 module
+            Object hk2ModuleName = b.getHeaders().get(ManifestConstants.BUNDLE_NAME);
+            if(hk2ModuleName!=null) {
+                return modules.get(hk2ModuleName);
+            }
+        }
+        return null;
+    }
+
+    public PackageAdmin getPackageAdmin() {
+        return pa;
+    }
+
+    public void addModuleChangeListener(final ModuleChangeListener listener, final OSGiModuleImpl module) {
+        SynchronousBundleListener bundleListener = new SynchronousBundleListener() {
+            public void bundleChanged(BundleEvent event) {
+                if ((event.getBundle() == module.getBundle()) &&
+                        ((event.getType() & BundleEvent.UPDATED) == BundleEvent.UPDATED)) {
+                    listener.changed(module);
+                }
+            }
+        };
+        bctx.addBundleListener(bundleListener);
+        moduleChangeListeners.put(listener, bundleListener);
+    }
+
+    public boolean removeModuleChangeListener(ModuleChangeListener listener) {
+        BundleListener bundleListener = moduleChangeListeners.remove(listener);
+        if (bundleListener!= null) {
+            bctx.removeBundleListener(bundleListener);
+            return true;
+        }
+        return false;
+    }
+
+    public void register(final ModuleLifecycleListener listener) {
+        SynchronousBundleListener bundleListener = new SynchronousBundleListener() {
+            public void bundleChanged(BundleEvent event) {
+                if ((event.getType() & BundleEvent.STARTED) == BundleEvent.STARTED) {
+                    listener.moduleStarted(getModule(event.getBundle()));
+                }
+            }
+        };
+        bctx.addBundleListener(bundleListener);
+        moduleLifecycleListeners.put(listener,  bundleListener);
+    }
+
+
+    public void unregister(ModuleLifecycleListener listener) {
+        BundleListener bundleListener = moduleLifecycleListeners.remove(listener);
+        if (bundleListener!=null) {
+            bctx.removeBundleListener(bundleListener);
+        }
+    }
+
+    /**
+     * This method is needed because {@link super#getModules()} always goes thru'
+     * all the repositories and installs new modules. When such a side effect is not
+     * necessary, this method can be called. The returned collection does not include
+     * modules known to ancestors of this registry.
+     * @return a readonly map of module name to module.
+     */
+    /*package*/Map<String, Module> getExistingModules() {
+        return Collections.unmodifiableMap(modules);
+    }
+
+    /*package*/ Module getModule(Bundle bundle) {
+        return modules.get(bundle.getHeaders().get(ManifestConstants.BUNDLE_NAME));
     }
 }

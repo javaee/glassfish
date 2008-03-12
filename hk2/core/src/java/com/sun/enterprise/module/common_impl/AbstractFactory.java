@@ -53,12 +53,6 @@ public abstract class AbstractFactory {
 
     public abstract ModulesRegistry createModulesRegistry();
 
-    public abstract Module createModule(
-            ModulesRegistry registry,
-            ModuleDefinition moduleDef);
-
-    public abstract InhabitantsParser createInhabitantsParser(Habitat habitat);
-
     public static AbstractFactory getInstance() {
         assert(Instance != null);
         return Instance;

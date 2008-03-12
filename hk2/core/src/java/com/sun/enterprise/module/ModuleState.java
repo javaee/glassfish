@@ -35,17 +35,11 @@ public enum ModuleState {
      */
     NEW,
     /**
-     * a Module is in PREPARING state when the module looks for its import 
-     * policy class if any or use the default import policy to construct the 
+     * a Module is in PREPARING state when the module looks for its import
+     * policy class if any or use the default import policy to construct the
      * network of dependency modules.
      */
     PREPARING,
-    /**
-     * a Module is in VALIDATING state when the system ensures that all 
-     * declared dependencies are statisfied (all used Modules in RESOLVED, 
-     * READY state
-     */ 
-    VALIDATING,
     /**
      * a Module is in RESOLVED state when the validation is finished and 
      * successful and before the module is started

@@ -127,8 +127,8 @@ final class ModuleClassLoader extends ClassLoaderProxy {
 
         synchronized(this) {
             if(!initialized) {
-                // if we are validating, we should just not initiate initialization. 
-                if (module.getState().equals(ModuleState.VALIDATING)) {
+                // if we are preparing, we should just not initiate initialization.
+                if (module.getState().equals(ModuleState.PREPARING)) {
                     return;
                 }
                 initialized = true;

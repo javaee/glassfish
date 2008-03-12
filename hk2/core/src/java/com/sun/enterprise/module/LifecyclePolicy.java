@@ -40,17 +40,7 @@ import org.jvnet.hk2.annotations.Service;
  */
 @Contract
 public interface LifecyclePolicy {
-    
     /**
-     * Callback when the module enters the {@link ModuleState#RESOLVED RESOLVED}
-     * state (all classloaders dependencies are resolved). 
-     * Each submodule is guaranteed to be in at least
-     * {@link ModuleState#RESOLVED RESOLVED} state. 
-     * @param module the module instance
-     */
-    public void load(Module module);
-    
-    /** 
      * Callback when the module enters the {@link ModuleState#READY READY} state.
      * This is a good time to do any type of one time initialization 
      * or set up access to resources
@@ -65,17 +55,4 @@ public interface LifecyclePolicy {
      */
     public void stop(Module module);
     
-    /**
-     * Requests a service offered by this module. 
-     * The module's user can pass a context defining the 
-     * requested service characteristics. A service initialization routine
-     * can also update the context to add accessors to get the 
-     * service specific hooks.
-     *
-     * @param serviceContext the context information
-     * @return a flag with the service's initialization success 
-     * 
-     */ 
-    public boolean getService(Object serviceContext);
-   
 }

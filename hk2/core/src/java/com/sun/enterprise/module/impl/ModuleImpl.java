@@ -239,19 +239,21 @@ public final class ModuleImpl implements Module {
      */
     public void refresh() {
         URI[] urls = moduleDef.getLocations();
+        boolean notify = false;
         for (URI lib : urls) {
             File f = new File(lib);
             if (f.exists() && lastModifieds.containsKey(f.getAbsolutePath())) {
                 if (lastModifieds.get(f.getAbsolutePath()) !=f.lastModified()) {
                     //Utils.getDefaultLogger().info("Changed : " + this);
-                    fireChangeEvent();                       
-                    // detach for now...
-                    detach();
-                    return;
+                    notify = true;
+                    break;
                 }
             }
         }
-    }   
+        if(notify) {
+            fireChangeEvent();
+        }
+    }
     
     /**
      * Gets the metadata of this module.
@@ -295,11 +297,11 @@ public final class ModuleImpl implements Module {
         if (state.compareTo(ModuleState.RESOLVED)>=0)
             return;
 
-        if (state==ModuleState.VALIDATING) {
+        if (state==ModuleState.PREPARING) {
             Utils.identifyCyclicDependency(this, Logger.getAnonymousLogger());
             throw new ResolveError("Cyclic dependency with " + getName());
         }
-        state = ModuleState.VALIDATING;
+        state = ModuleState.PREPARING;
         
         if (moduleDef.getImportPolicyClassName()!=null) {
             try {
@@ -329,28 +331,7 @@ public final class ModuleImpl implements Module {
         }
         state = ModuleState.RESOLVED;
         
-        // time to initialize the lifecycle instance
-        if (moduleDef.getLifecyclePolicyClassName()!=null) {
-            try {
-                Class<LifecyclePolicy> lifecyclePolicyClass = (Class<LifecyclePolicy>) getPrivateClassLoader().loadClass(moduleDef.getLifecyclePolicyClassName());
-                lifecyclePolicy = lifecyclePolicyClass.newInstance();
-            } catch(ClassNotFoundException e) {
-                state = ModuleState.ERROR;
-                throw new ResolveError("ClassNotFound : " + e.getMessage(), e);
-            } catch(java.lang.InstantiationException e) {
-                state = ModuleState.ERROR;
-                throw new ResolveError(e);
-            } catch(IllegalAccessException e) {
-                state = ModuleState.ERROR;                
-                throw new ResolveError(e);
-            }
-            lifecyclePolicy.load(this); 
-        }
         //Logger.global.info("Module " + getName() + " resolved");
-
-        // module resolution complete. notify listeners
-        for (ModuleLifecycleListener listener : registry.getLifecycleListeners())
-            listener.moduleStarted(this);
     }
     
     /**
@@ -368,20 +349,36 @@ public final class ModuleImpl implements Module {
         // ensure RESOLVED state
         resolve();      
         
-        state = ModuleState.READY;
-        try {
-            for (Module subModules : dependencies) {
-                subModules.start();
-            }
-        } catch(ResolveError e) {
-            state = ModuleState.RESOLVED;
-            throw e;
+        for (Module subModules : dependencies) {
+            subModules.start();
         }
-        
+
+        // time to initialize the lifecycle instance
+        if (moduleDef.getLifecyclePolicyClassName()!=null) {
+            try {
+                Class<LifecyclePolicy> lifecyclePolicyClass = (Class<LifecyclePolicy>) getPrivateClassLoader().loadClass(moduleDef.getLifecyclePolicyClassName());
+                lifecyclePolicy = lifecyclePolicyClass.newInstance();
+            } catch(ClassNotFoundException e) {
+                state = ModuleState.ERROR;
+                throw new ResolveError("ClassNotFound : " + e.getMessage(), e);
+            } catch(java.lang.InstantiationException e) {
+                state = ModuleState.ERROR;
+                throw new ResolveError(e);
+            } catch(IllegalAccessException e) {
+                state = ModuleState.ERROR;
+                throw new ResolveError(e);
+            }
+        }
         if (lifecyclePolicy!=null) {
             lifecyclePolicy.start(this);
         }
+        state = ModuleState.READY;
+
         //Logger.global.info("Module " + getName() + " started");
+
+        // module started. notify listeners
+        for (ModuleLifecycleListener listener : registry.getLifecycleListeners())
+            listener.moduleStarted(this);
     }
     
     /** 
@@ -423,6 +420,11 @@ public final class ModuleImpl implements Module {
         dependencies.clear();
         
         state = ModuleState.NEW;
+
+        // notify interested listeners that I have stopped.
+        for (ModuleLifecycleListener listener : registry.getLifecycleListeners()) {
+            listener.moduleStopped(this);
+        }
         return true;
     }
     
@@ -577,17 +579,4 @@ public final class ModuleImpl implements Module {
         }
     }
 
-    /**
-     * Finds the {@link ModuleImpl} that owns the given class.
-     *
-     * @return
-     *      null if the class is loaded outside the module system.
-     */
-    public static ModuleImpl find(Class clazz) {
-        ClassLoader cl = clazz.getClassLoader();
-        if(cl==null)    return null;
-        if (cl instanceof ModuleClassLoader)
-            return ((ModuleClassLoader) cl).getOwner();
-        return null;
-    }
 }
