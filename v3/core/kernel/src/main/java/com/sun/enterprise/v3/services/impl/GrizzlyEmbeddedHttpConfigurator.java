@@ -52,8 +52,9 @@ import java.util.LinkedList;
  * the HttpService of domain.xml
  * 
  * @author Jeanfrancois Arcand
+ * @author Alexey Stashok
  */
-public class GrizzlyHttpEmbed {
+public class GrizzlyEmbeddedHttpConfigurator {
     
     
     /**
@@ -67,29 +68,6 @@ public class GrizzlyHttpEmbed {
      */
     protected static final ResourceBundle _rb = logger.getResourceBundle();
     
-
-    // TODO: Must get the information from domain.xml Config objects.
-    // TODO: Pending Grizzly issue 54
-    public static GrizzlyServiceListener createListener(HttpService httpService,
-            HttpListener httpListener, int port, Controller controller){
-        
-        System.setProperty("product.name", "GlassFish/v3");      
-        GrizzlyServiceListener grizzlyListener = new GrizzlyServiceListener();
-        
-	//TODO: Configure via domain.xml
-        //grizzlyListener.setController(controller);
-        grizzlyListener.setPort(port); 
-        
-        // TODO: This is not the right way to do.
-        GrizzlyServiceListener.setWebAppRootPath(
-                System.getProperty("com.sun.aas.instanceRoot") + "/docroot");
-        
-        boolean isSecure = Boolean.parseBoolean(httpListener.getSecurityEnabled());
-        configureGrizzlyListener(grizzlyListener, httpListener, isSecure, httpService);
-        return grizzlyListener;        
-    }
-
-    
     /*
      * Configures the given grizzlyListener.
      *
@@ -100,23 +78,47 @@ public class GrizzlyHttpEmbed {
      * otherwise
      * @param httpServiceProps The http-service properties
      */
-    private static void configureGrizzlyListener(
-            GrizzlyServiceListener grizzlyListener,
-            HttpListener httpListener,
-            boolean isSecure,
-            HttpService httpService) {
+    // TODO: Must get the information from domain.xml Config objects.
+    // TODO: Pending Grizzly issue 54
+    public static void configureEmbeddedHttp(
+            GrizzlyServiceListener grizzlyListener, HttpService httpService,
+            HttpListener httpListener, int port, Controller controller){
+        
+        System.setProperty("product.name", "GlassFish/v3");      
 
+        //TODO: Configure via domain.xml
+        //grizzlyListener.setController(controller);
+        grizzlyListener.setPort(port); 
+        
+        // TODO: This is not the right way to do.
+        GrizzlyEmbeddedHttp.setWebAppRootPath(
+                System.getProperty("com.sun.aas.instanceRoot") + "/docroot");
+        
+        boolean isSecure = Boolean.parseBoolean(httpListener.getSecurityEnabled());
+    
+    
         //TODO: Use the grizzly-config name.
-        grizzlyListener.setName("grizzly-v3-" + httpListener.getPort());
-        GrizzlyServiceListener.setLogger(logger);                 
-        configureKeepAlive(grizzlyListener, httpService.getKeepAlive());
-        configureHttpProtocol(grizzlyListener, httpService.getHttpProtocol());     
-        configureRequestProcessing(httpService.getRequestProcessing(),grizzlyListener);
-        configureFileCache(grizzlyListener, httpService.getHttpFileCache());
-
+        grizzlyListener.initializeEmbeddedHttp(isSecure);
+        grizzlyListener.setName("grizzly-v3-" + port);
+        
+        GrizzlyEmbeddedHttp grizzlyEmbeddedHttp = grizzlyListener.getEmbeddedHttp();
+        
         if (isSecure) {
-            configureSSL(grizzlyListener, httpService, httpListener);
+            configureSSL(grizzlyEmbeddedHttp, httpService, httpListener);
         }
+
+        GrizzlyEmbeddedHttp.setLogger(logger);                 
+
+        configureHttpServiceProperties(grizzlyEmbeddedHttp, httpService);      
+
+        // Override http-service property if defined.
+        configureHttpListenerProperties(grizzlyEmbeddedHttp, httpListener);
+        
+        configureKeepAlive(grizzlyEmbeddedHttp, httpService.getKeepAlive());
+        configureHttpProtocol(grizzlyEmbeddedHttp, httpService.getHttpProtocol());     
+        configureRequestProcessing(grizzlyEmbeddedHttp, httpService.getRequestProcessing());
+        configureFileCache(grizzlyEmbeddedHttp, httpService.getHttpFileCache());
+
         // acceptor-threads
         String acceptorThreads = httpListener.getAcceptorThreads();
         if (acceptorThreads != null) {
@@ -124,7 +126,7 @@ public class GrizzlyHttpEmbed {
                 // Acceptor-Thread needs to be > 1 to be used by Grizzly
                 int readController = Integer.parseInt(acceptorThreads) -1;
                 if (readController > 0){
-                    grizzlyListener.setSelectorReadThreadsCount
+                    grizzlyEmbeddedHttp.setSelectorReadThreadsCount
                         (readController);
                 }
             } catch (NumberFormatException nfe) {
@@ -133,23 +135,13 @@ public class GrizzlyHttpEmbed {
                     new Object[] {
                         acceptorThreads,
                         httpListener.getId(),
-                        Integer.toString(grizzlyListener.getMaxProcessorWorkerThreads()) });
+                        Integer.toString(grizzlyEmbeddedHttp.getMaxProcessorWorkerThreads()) });
             }  
         }
-        /* TODO: Enable for SSL
-        // Configure Connector with keystore password and location
-        if (isSecure) {
-            configureConnectorKeysAndCerts(grizzlyListener);
-        }*/
-        
-        configureHttpServiceProperties(httpService,grizzlyListener);      
 
-        // Override http-service property if defined.
-        configureHttpListenerProperties(httpListener,grizzlyListener);
-        
         if((Boolean.valueOf(System.getProperty("v3.grizzly.cometSupport","false")))
                 && !httpListener.getId().equalsIgnoreCase("admin-listener")){       
-            configureComet(grizzlyListener);       
+            configureComet(grizzlyEmbeddedHttp);       
         } 
     }      
     
@@ -162,18 +154,25 @@ public class GrizzlyHttpEmbed {
      * @param grizzlyListener PECoyoteConnector to configure
      * @param httpListener HTTP listener whose SSL config to use
      */
-    private static void configureSSL(GrizzlyServiceListener grizzlyListener,
+    private static boolean configureSSL(GrizzlyEmbeddedHttp grizzlyEmbeddedHttp,
                               HttpService httpService, HttpListener httpListener) {
-
         Ssl sslConfig = httpListener.getSsl();
 
         if (sslConfig == null) {
-            return;
+            if (logger.isLoggable(Level.WARNING)) {
+                logger.log(Level.WARNING,
+                        "HTTP listener on port: " + httpListener.getPort() + 
+                        " is secured, but SSL configuration is not found!");
+            }
+            
+            return false;
         }
 
+        GrizzlyEmbeddedHttps grizzlyEmbeddedHttps = (GrizzlyEmbeddedHttps) grizzlyEmbeddedHttp;
+        
         // client-auth
         if (Boolean.getBoolean(sslConfig.getClientAuthEnabled())) {
-            grizzlyListener.setNeedClientAuth(true);
+            grizzlyEmbeddedHttps.setNeedClientAuth(true);
         }
 
         List<String> tmpSSLArtifactsList = new LinkedList<String>();
@@ -199,56 +198,55 @@ public class GrizzlyHttpEmbed {
         } else {
             String[] enabledProtocols = new String[tmpSSLArtifactsList.size()];
             tmpSSLArtifactsList.toArray(enabledProtocols);
-            grizzlyListener.setEnabledProtocols(enabledProtocols);
+            grizzlyEmbeddedHttps.setEnabledProtocols(enabledProtocols);
         }
 
         // cert-nickname
         String certNickname = sslConfig.getCertNickname();
         if (certNickname != null && certNickname.length() > 0) {
-            String keyAlias = sslConfig.getCertNickname();
-//            connector.setKeyAlias(sslConfig.getCertNickname());
+            grizzlyEmbeddedHttps.setCertNickname(certNickname);
         }
 
+        tmpSSLArtifactsList.clear();
+
         // ssl3-tls-ciphers
-//        String ciphers = sslConfig.getSsl3TlsCiphers();
-//        if (ciphers != null) {
-//            String jsseCiphers = getJSSECiphers(ciphers);
-//            if (jsseCiphers == null) {
-//                _logger.log(Level.WARNING,
-//                            "pewebcontainer.all_ciphers_disabled",
-//                            httpListener.getId());
-//            } else {
-//                connector.setCiphers(jsseCiphers);
-//            }
-//        }
+        String ssl3Ciphers = sslConfig.getSsl3TlsCiphers();
         
-        //TODO: Enabled SSL.
-   /*     try{
-            if (Boolean.parseBoolean(httpListener.getSecurityEnabled())){
-                SSLImplementation sslHelper = SSLImplementation.getInstance();
-                ServerSocketFactory serverSF = 
-                        sslHelper.getServerSocketFactory();
-                serverSF.setAttribute("keystoreType","JKS");
-                serverSF.setAttribute("keystore",
-                        System.getProperty("javax.net.ssl.keyStore"));
-                serverSF.setAttribute("truststoreType","JKS");
-                serverSF.setAttribute("truststore",
-                        System.getProperty("javax.net.ssl.trustStore"));                    
-                serverSF.init();
-                grizzlyListener.setSSLContext(serverSF.getSSLContext());                
-        String ciphers = sslConfig.getSsl3TlsCiphers();
-        if (ciphers != null) {
-            String jsseCiphers = getJSSECiphers(ciphers);
-            if (jsseCiphers == null) {
-                logger.log(Level.WARNING,
-                            "pewebcontainer.all_ciphers_disabled",
-                            httpListener.getId());
-            } else {
-                grizzlyListener.setCiphers(jsseCiphers);
+        if (ssl3Ciphers != null && ssl3Ciphers.length() > 0) {
+            String[] ssl3CiphersArray = ssl3Ciphers.split(",");
+            for(String cipher : ssl3CiphersArray) {
+                tmpSSLArtifactsList.add(cipher.trim());
             }
-        } catch (Throwable t){
-            logger.severe("Unable to configure SSL");
-        }*/        
+        }
+        
+        // ssl2-tls-ciphers
+        String ssl2Ciphers = sslConfig.getSsl2Ciphers();
+
+        if (ssl2Ciphers != null && ssl2Ciphers.length() > 0) {
+            String[] ssl2CiphersArray = ssl2Ciphers.split(",");
+            for(String cipher : ssl2CiphersArray) {
+                tmpSSLArtifactsList.add(cipher.trim());
+            }
+        }
+
+        if (tmpSSLArtifactsList.isEmpty()) {
+            logger.log(Level.WARNING,
+                        "pewebcontainer.all_ssl_ciphers_disabled",
+                        httpListener.getId());
+        } else {
+            String[] enabledCiphers = new String[tmpSSLArtifactsList.size()];
+            tmpSSLArtifactsList.toArray(enabledCiphers);
+            grizzlyEmbeddedHttps.setEnabledCipherSuites(enabledCiphers);
+        }
+
+        try {
+            grizzlyEmbeddedHttps.initializeSSL();
+            return true;
+        } catch(Exception e) {
+            logger.log(Level.WARNING, "SSL support could not be configured!", e);
+        }
+        
+        return false;
     }
     
     
@@ -259,7 +257,7 @@ public class GrizzlyHttpEmbed {
      * @param grizzlyListener PECoyoteConnector to configure
      * @param keepAlive Keep-alive config to use
      */
-    private static void configureKeepAlive(GrizzlyServiceListener grizzlyListener,
+    private static void configureKeepAlive(GrizzlyEmbeddedHttp grizzlyEmbeddedHttp,
                                     KeepAlive keepAlive) {
 
         // timeout-in-seconds, default is 60 as per sun-domain_1_1.dtd
@@ -314,9 +312,9 @@ public class GrizzlyHttpEmbed {
             }
         }
         
-        grizzlyListener.setKeepAliveTimeoutInSeconds(timeoutInSeconds);
-        grizzlyListener.setMaxKeepAliveRequests(maxConnections);
-        grizzlyListener.setKeepAliveThreadCount(threadCount);
+        grizzlyEmbeddedHttp.setKeepAliveTimeoutInSeconds(timeoutInSeconds);
+        grizzlyEmbeddedHttp.setMaxKeepAliveRequests(maxConnections);
+        grizzlyEmbeddedHttp.setKeepAliveThreadCount(threadCount);
     }
     
     /*
@@ -326,7 +324,7 @@ public class GrizzlyHttpEmbed {
      * @param grizzlyListener HTTP grizzlyListener to configure
      * @param httpProtocol http-protocol config to use
      */
-    private static void configureHttpProtocol(GrizzlyServiceListener grizzlyListener,
+    private static void configureHttpProtocol(GrizzlyEmbeddedHttp grizzlyEmbeddedHttp,
                                        HttpProtocol httpProtocol) {
     
         if (httpProtocol == null) {
@@ -334,15 +332,15 @@ public class GrizzlyHttpEmbed {
         }
 
         //grizzlyListener.setEnableLookups(httpProtocol.isDnsLookupEnabled());
-        grizzlyListener.setForcedRequestType(httpProtocol.getForcedType());
-        grizzlyListener.setDefaultResponseType(httpProtocol.getDefaultType());
+        grizzlyEmbeddedHttp.setForcedRequestType(httpProtocol.getForcedType());
+        grizzlyEmbeddedHttp.setDefaultResponseType(httpProtocol.getDefaultType());
     }
     
         
     /**
      * Configure the Grizzly FileCache mechanism
      */
-    private static void configureFileCache(GrizzlyServiceListener grizzlyListener,
+    private static void configureFileCache(GrizzlyEmbeddedHttp grizzlyEmbeddedHttp,
                                     HttpFileCache httpFileCache){
         if ( httpFileCache == null ) return;
                
@@ -350,36 +348,36 @@ public class GrizzlyHttpEmbed {
                 ConfigBeansUtilities.toBoolean(httpFileCache.getGloballyEnabled()));         
         grizzlyListener.setLargeFileCacheEnabled(
             ConfigBeansUtilities.toBoolean(httpFileCache.getFileCachingEnabled()));*/
-        grizzlyListener.setFileCacheIsEnabled(true);         
-        grizzlyListener.setLargeFileCacheEnabled(true);
+        grizzlyEmbeddedHttp.setFileCacheIsEnabled(true);         
+        grizzlyEmbeddedHttp.setLargeFileCacheEnabled(true);
         
         if (httpFileCache.getMaxAgeInSeconds() != null){
-            grizzlyListener.setSecondsMaxAge(
+            grizzlyEmbeddedHttp.setSecondsMaxAge(
                 Integer.parseInt(httpFileCache.getMaxAgeInSeconds()));
         }
         
         if (httpFileCache.getMaxFilesCount() != null){
-            grizzlyListener.setMaxCacheEntries(
+            grizzlyEmbeddedHttp.setMaxCacheEntries(
                 Integer.parseInt(httpFileCache.getMaxFilesCount()));
         }
         
         if (httpFileCache.getSmallFileSizeLimitInBytes() != null){
-            grizzlyListener.setMinEntrySize(
+            grizzlyEmbeddedHttp.setMinEntrySize(
                 Integer.parseInt(httpFileCache.getSmallFileSizeLimitInBytes()));
         }
         
         if (httpFileCache.getMediumFileSizeLimitInBytes() != null){
-            grizzlyListener.setMaxEntrySize(
+            grizzlyEmbeddedHttp.setMaxEntrySize(
                 Integer.parseInt(httpFileCache.getMediumFileSizeLimitInBytes()));
         }
         
         if (httpFileCache.getMediumFileSpaceInBytes() != null){
-            grizzlyListener.setMaxLargeCacheSize(
+            grizzlyEmbeddedHttp.setMaxLargeCacheSize(
                 Integer.parseInt(httpFileCache.getMediumFileSpaceInBytes()));
         }
         
         if (httpFileCache.getSmallFileSpaceInBytes() != null){
-            grizzlyListener.setMaxSmallCacheSize(
+            grizzlyEmbeddedHttp.setMaxSmallCacheSize(
                 Integer.parseInt(httpFileCache.getSmallFileSpaceInBytes())); 
         }
     }    
@@ -391,20 +389,20 @@ public class GrizzlyHttpEmbed {
      * @param RequestProcessing http-service config to use
      * @param grizzlyListener the grizzlyListener used.
      */
-    protected static void configureRequestProcessing(RequestProcessing rp, 
-                                              GrizzlyServiceListener grizzlyListener){
+    protected static void configureRequestProcessing(GrizzlyEmbeddedHttp grizzlyEmbeddedHttp,
+            RequestProcessing rp) {
         if (rp == null) return;
 
         try{
-            grizzlyListener.setMaxProcessorWorkerThreads(
+            grizzlyEmbeddedHttp.setMaxProcessorWorkerThreads(
                     Integer.parseInt(rp.getThreadCount()));
-            grizzlyListener.setMinWorkerThreads(
+            grizzlyEmbeddedHttp.setMinWorkerThreads(
                     Integer.parseInt(rp.getInitialThreadCount()));
-            grizzlyListener.setThreadsTimeout(
+            grizzlyEmbeddedHttp.setThreadsTimeout(
                     Integer.parseInt(rp.getRequestTimeoutInSeconds())); 
-            grizzlyListener.setThreadsIncrement(
+            grizzlyEmbeddedHttp.setThreadsIncrement(
                     Integer.parseInt(rp.getThreadIncrement()));
-            grizzlyListener.setMaxHttpHeaderSize(
+            grizzlyEmbeddedHttp.setMaxHttpHeaderSize(
                    Integer.parseInt(rp.getHeaderBufferLengthInBytes()));
         } catch (NumberFormatException ex){
             logger.log(Level.WARNING, " Invalid request-processing attribute", 
@@ -415,15 +413,14 @@ public class GrizzlyHttpEmbed {
     /**
      * Configure http-listener properties
      */
-    private static void configureHttpListenerProperties(HttpListener httpListener,
-                                                GrizzlyServiceListener grizzlyListener){
+    private static void configureHttpListenerProperties(GrizzlyEmbeddedHttp grizzlyEmbeddedHttp,
+            HttpListener httpListener) {
         // Configure Connector with <http-service> properties
-        for (Property httpListenerProp  : httpListener.getProperty()) { 
+        for (Property httpListenerProp  : httpListener.getProperty()) {
             String propName = httpListenerProp.getName();
             String propValue = httpListenerProp.getValue();
-            if (!configureHttpListenerProperty(propName,
-                                               propValue,
-                                               grizzlyListener)){
+            if (!configureHttpListenerProperty(grizzlyEmbeddedHttp, 
+                    propName, propValue)) {
                 logger.log(Level.WARNING,
                     "pewebcontainer.invalid_http_listener_property",
                     propName);                    
@@ -437,78 +434,76 @@ public class GrizzlyHttpEmbed {
      * return true if the property exists and has been set.
      */
     private static boolean configureHttpListenerProperty(
-                                            String propName, 
-                                            String propValue,
-                                            GrizzlyServiceListener grizzlyListener)
-                                            throws NumberFormatException {
+            GrizzlyEmbeddedHttp grizzlyEmbeddedHttp, String propName, String propValue)
+            throws NumberFormatException {
         
         if ("bufferSize".equals(propName)) {
-            grizzlyListener.setBufferSize(Integer.parseInt(propValue)); 
+            grizzlyEmbeddedHttp.setBufferSize(Integer.parseInt(propValue)); 
             return true; 
         } else if ("recycle-objects".equals(propName)) {
-            grizzlyListener.setRecycleTasks(
+            grizzlyEmbeddedHttp.setRecycleTasks(
                     ConfigBeansUtilities.toBoolean(propValue));
             return true;
         } else if ("use-nio-direct-bytebuffer".equals(propName)) {
-            grizzlyListener.setUseByteBufferView(
+            grizzlyEmbeddedHttp.setUseByteBufferView(
                     ConfigBeansUtilities.toBoolean(propValue));
             return true;   
         } else if ("maxKeepAliveRequests".equals(propName)) {
-            grizzlyListener.setMaxKeepAliveRequests(Integer.parseInt(propValue));
+            grizzlyEmbeddedHttp.setMaxKeepAliveRequests(Integer.parseInt(propValue));
             return true;           
         } else if ("authPassthroughEnabled".equals(propName)) {
-            grizzlyListener.setProperty(propName,
+            grizzlyEmbeddedHttp.setProperty(propName,
                     ConfigBeansUtilities.toBoolean(propValue));
             return true;
         } else if ("maxPostSize".equals(propName)) {
-            grizzlyListener.setMaxPostSize(Integer.parseInt(propValue));
+            grizzlyEmbeddedHttp.setMaxPostSize(Integer.parseInt(propValue));
             return true;
         } else if ("compression".equals(propName)) {
-            grizzlyListener.setCompression(propValue);
+            grizzlyEmbeddedHttp.setCompression(propValue);
             return true;
         } else if ("compressableMimeType".equals(propName)) {
-            grizzlyListener.setCompressableMimeTypes(propValue);
+            grizzlyEmbeddedHttp.setCompressableMimeTypes(propValue);
             return true;       
         } else if ("noCompressionUserAgents".equals(propName)) {
-            grizzlyListener.setNoCompressionUserAgents(propValue);
+            grizzlyEmbeddedHttp.setNoCompressionUserAgents(propValue);
             return true;   
         } else if ("compressionMinSize".equals(propName)) {
-            grizzlyListener.setCompressionMinSize(Integer.parseInt(propValue));
+            grizzlyEmbeddedHttp.setCompressionMinSize(Integer.parseInt(propValue));
             return true;             
         } else if ("restrictedUserAgents".equals(propName)) {
-            grizzlyListener.setRestrictedUserAgents(propValue);
+            grizzlyEmbeddedHttp.setRestrictedUserAgents(propValue);
             return true;             
         } else if ("rcmSupport".equals(propName)) {
-            grizzlyListener.setProperty(
+            grizzlyEmbeddedHttp.setProperty(
                     propName,ConfigBeansUtilities.toBoolean(propValue));
             return true;   
         } else if ("cometSupport".equals(propName)) {
-            configureComet(grizzlyListener);
+            configureComet(grizzlyEmbeddedHttp);
             return true;               
         } else if ("connectionUploadTimeout".equals(propName)) {
-            grizzlyListener.setUploadTimeout(Integer.parseInt(propValue));
+            grizzlyEmbeddedHttp.setUploadTimeout(Integer.parseInt(propValue));
             return true;            
         } else if ("disableUploadTimeout".equals(propName)) {
-            grizzlyListener.setDisableUploadTimeout(
+            grizzlyEmbeddedHttp.setDisableUploadTimeout(
                     ConfigBeansUtilities.toBoolean(propValue));
             return true;             
         } else if ("proxiedProtocols".equals(propName)) {
-            grizzlyListener.setProperty(propName,propValue);
+            grizzlyEmbeddedHttp.setProperty(propName,propValue);
             return true;    
         // TODO: Add support
         } else if ("chunkingDisabled".equals(propName)
                 || "chunking-disabled".equals(propName)) {
-            grizzlyListener.setProperty(propName,
+            grizzlyEmbeddedHttp.setProperty(propName,
                     ConfigBeansUtilities.toBoolean(propValue));
             return true;
         } else if ("crlFile".equals(propName)) {
-            grizzlyListener.setProperty(propName,propValue);
+            grizzlyEmbeddedHttp.setProperty(propName,propValue);
             return true;
         } else if ("trustAlgorithm".equals(propName)) {
-            grizzlyListener.setProperty(propName,propValue);
+            grizzlyEmbeddedHttp.setProperty(propName,propValue);
             return true;
         } else if ("trustMaxCertLength".equals(propName)) {
-            grizzlyListener.setProperty(propName,propValue);
+            grizzlyEmbeddedHttp.setProperty(propName,propValue);
             return true;
         } else {
             return false;
@@ -519,39 +514,38 @@ public class GrizzlyHttpEmbed {
     /**
      * Configure http-service properties.
      */
-    private static void configureHttpServiceProperties(HttpService httpService,
-                                               GrizzlyServiceListener grizzlyListener){
+    private static void configureHttpServiceProperties(GrizzlyEmbeddedHttp grizzlyEmbeddedHttp, 
+            HttpService httpService) {
         // Configure Connector with <http-service> properties
         List<Property> httpServiceProps = httpService.getProperty();
         if (httpServiceProps != null) {
             for (Property httpServiceProp : httpServiceProps) {
                 String propName = httpServiceProp.getName();
                 String propValue = httpServiceProp.getValue();
-                               
-                if (configureHttpListenerProperty(propName,
-                                                  propValue, 
-                                                  grizzlyListener)){
+                
+                if (configureHttpListenerProperty(grizzlyEmbeddedHttp, propName,
+                        propValue)) {
                     continue;
                 }
                 
-
                 if ("connectionTimeout".equals(propName)) {
-                    grizzlyListener.setSoTimeout(Integer.parseInt(propValue));
+                    grizzlyEmbeddedHttp.setSoTimeout(Integer.parseInt(propValue));
                 } else if ("tcpNoDelay".equals(propName)) {
-                    grizzlyListener.setTcpNoDelay(
+                    grizzlyEmbeddedHttp.setTcpNoDelay(
                             ConfigBeansUtilities.toBoolean(propValue));
                 } else if ("traceEnabled".equals(propName)) {
-                    grizzlyListener.setProperty(
+                    grizzlyEmbeddedHttp.setProperty(
                             propName,ConfigBeansUtilities.toBoolean(propValue));
                     
                 // TODO: ENABLE FOR SSL
-                } /*else if ("ssl-session-timeout".equals(propName)) {
+                // (oleksiys): there is no such properties in domain.xml dtd
+/*                } else if ("ssl-session-timeout".equals(propName)) {
                     grizzlyListener.setSSLSessionTimeout(propValue);
                 } else if ("ssl3-session-timeout".equals(propName)) {
                     grizzlyListener.setSSL3SessionTimeout(propValue);
                 } else if ("ssl-cache-entries".equals(propName)) {
-                    grizzlyListener.setSSLSessionCacheSize(propValue);
-                }*/ else {
+                    grizzlyListener.setSSLSessionCacheSize(propValue); */
+                } else {
                     //TODO: Turn it to WARNING
                     if (logger.isLoggable(Level.FINE)){
                         logger.log(Level.FINE,
@@ -567,11 +561,11 @@ public class GrizzlyHttpEmbed {
     /**
      * Enable Comet/Poll request support.
      */
-    private final static void configureComet(GrizzlyServiceListener grizzlyListener){
-        grizzlyListener.setEnableAsyncExecution(true);
+    private final static void configureComet(GrizzlyEmbeddedHttp grizzlyEmbeddedHttp) {
+        grizzlyEmbeddedHttp.setEnableAsyncExecution(true);
         AsyncHandler asyncHandler = new DefaultAsyncHandler();
         asyncHandler.addAsyncFilter(new CometAsyncFilter()); 
-        grizzlyListener.setAsyncHandler(asyncHandler);
+        grizzlyEmbeddedHttp.setAsyncHandler(asyncHandler);
     }
     
         

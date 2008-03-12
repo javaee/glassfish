@@ -38,12 +38,10 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.glassfish.api.deployment.ApplicationContainer;
 
 
 
@@ -59,10 +57,7 @@ import org.glassfish.api.deployment.ApplicationContainer;
  * TODO: Make it work dynamically like MInnow, allocating Service on the fly.
  * @author Jeanfrancois Arcand
  */
-public class WebProtocolHandler implements ProtocolHandler, EndpointMapper<Adapter> {
-    
-    private final static String ROOT = "/";
-
+public class WebProtocolHandler implements ProtocolHandler {
     
     public enum Mode {
         HTTP, HTTPS, HTTP_HTTPS, SIP, SIP_TLS;
@@ -78,7 +73,7 @@ public class WebProtocolHandler implements ProtocolHandler, EndpointMapper<Adapt
     private Mode mode;
     
     
-    private GrizzlyServiceListener grizzlyListener;
+    private GrizzlyEmbeddedHttp grizzlyEmbeddedHttp;
 
     
     /** 
@@ -94,12 +89,6 @@ public class WebProtocolHandler implements ProtocolHandler, EndpointMapper<Adapt
     
     
     /**
-     * The Mapper used to find and configure the endpoint.
-     */
-    private ContextRootMapper mapper;
-
-    
-    /**
      * Logger
      */
     private Logger logger;
@@ -107,16 +96,15 @@ public class WebProtocolHandler implements ProtocolHandler, EndpointMapper<Adapt
     // --------------------------------------------------------------------//
     
     
-    public WebProtocolHandler(GrizzlyServiceListener grizzlyListener) {
-        this(Mode.HTTP, grizzlyListener);
+    public WebProtocolHandler(GrizzlyEmbeddedHttp grizzlyEmbeddedHttp) {
+        this(Mode.HTTP, grizzlyEmbeddedHttp);
     }
     
     
-    public WebProtocolHandler(Mode mode, GrizzlyServiceListener grizzlyListener) {
+    public WebProtocolHandler(Mode mode, GrizzlyEmbeddedHttp grizzlyEmbeddedHttp) {
         this.mode = mode;
-        this.grizzlyListener = grizzlyListener;
-        this.mapper = new ContextRootMapper(grizzlyListener);
-        logger = GrizzlyServiceListener.getLogger();
+        this.grizzlyEmbeddedHttp = grizzlyEmbeddedHttp;
+        logger = GrizzlyEmbeddedHttp.getLogger();
     }
 
     
@@ -133,7 +121,7 @@ public class WebProtocolHandler implements ProtocolHandler, EndpointMapper<Adapt
         
         initDefaultHttpArtifactsIfRequired();
         
-        boolean wasMap = mapper.map(
+        boolean wasMap = grizzlyEmbeddedHttp.getContextRootMapper().map(
                 (GlassfishProtocolChain)context.getProtocolChain(),
                 protocolRequest.getByteBuffer(), defaultProtocolFilters, 
                 fallbackContextRootInfo);
@@ -158,28 +146,6 @@ public class WebProtocolHandler implements ProtocolHandler, EndpointMapper<Adapt
         
 
     // -------------------------------------------------------------------- //
-    
-    
-    /*
-     * Registers a new endpoint (adapter implementation) for a particular
-     * context-root. All request coming with the context root will be dispatched
-     * to the adapter instance passed in.
-     * @param contextRoot for the adapter
-     * @param adapter servicing requests.
-     */
-    public void registerEndpoint(String contextRoot, Collection<String> vs, Adapter adapter,
-                                 ApplicationContainer container) {
-        // null value of ProtocolFilter list means default one will be used
-        mapper.register(ensureStartsWithSlash(contextRoot), adapter, container, null);
-    }
-
-    
-    /**
-     * Removes the context-root from our list of adapters.
-     */
-    public void unregisterEndpoint(String contextRoot, ApplicationContainer app) {
-        mapper.unregister(ensureStartsWithSlash(contextRoot));
-    }
     
     
     /**filter
@@ -232,16 +198,16 @@ public class WebProtocolHandler implements ProtocolHandler, EndpointMapper<Adapt
         if (defaultProtocolFilters == null) {
             synchronized (this) {
                 if (defaultProtocolFilters == null) {
-                    grizzlyListener.initAlgorithm();
+                    grizzlyEmbeddedHttp.initAlgorithm();
                     List<ProtocolFilter> tmpProtocolFilters = new ArrayList<ProtocolFilter>(4);
-                    tmpProtocolFilters.addAll(grizzlyListener.getDefaultHttpProtocolFilters());
+                    tmpProtocolFilters.addAll(grizzlyEmbeddedHttp.getDefaultHttpProtocolFilters());
 
                     StaticResourcesAdapter adapter = new StaticResourcesAdapter();
-                    adapter.setRootFolder(GrizzlyServiceListener.getWebAppRootPath());
+                    adapter.setRootFolder(GrizzlyEmbeddedHttp.getWebAppRootPath());
 
                     fallbackContextRootInfo = new ContextRootMapper.ContextRootInfo(adapter,
                             null, Collections.<ProtocolFilter>singletonList(new DefaultProtocolFilter(
-                            StaticStreamAlgorithm.class, grizzlyListener.getPort())));
+                            StaticStreamAlgorithm.class, grizzlyEmbeddedHttp.getPort())));
                     
                     defaultProtocolFilters = tmpProtocolFilters;
                 }
@@ -255,13 +221,5 @@ public class WebProtocolHandler implements ProtocolHandler, EndpointMapper<Adapt
      */    
     public ByteBuffer getByteBuffer(){
         return null;
-    }
-    
-    private String ensureStartsWithSlash(String path) {
-        if (!path.startsWith(ROOT)) {
-            return ROOT + path;
-        }
-        
-        return path;
     }
 }

@@ -31,7 +31,7 @@ import org.glassfish.api.deployment.ApplicationContainer;
  * 
  * @author Jeanfrancois Arcand
  */
-interface EndpointMapper<E> {
+public interface EndpointMapper<E> {
     
     
     /**

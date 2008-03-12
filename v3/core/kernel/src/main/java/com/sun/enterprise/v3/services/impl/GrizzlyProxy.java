@@ -26,11 +26,6 @@ package com.sun.enterprise.v3.services.impl;
 import com.sun.enterprise.config.serverbeans.HttpListener;
 import com.sun.enterprise.config.serverbeans.HttpService;
 import com.sun.grizzly.Controller;
-import com.sun.grizzly.http.portunif.HttpProtocolFinder;
-import com.sun.grizzly.portunif.PUPreProcessor;
-import com.sun.grizzly.portunif.ProtocolFinder;
-import com.sun.grizzly.portunif.ProtocolHandler;
-import com.sun.grizzly.portunif.TLSPUPreProcessor;
 import com.sun.grizzly.tcp.Adapter;
 import java.io.IOException;
 
@@ -41,7 +36,6 @@ import java.util.logging.Level;
 import org.glassfish.api.deployment.ApplicationContainer;
 
 import java.util.logging.Logger;
-import javax.net.ssl.SSLContext;
 import org.jvnet.hk2.component.Habitat;
 
 /**
@@ -53,7 +47,7 @@ import org.jvnet.hk2.component.Habitat;
  * @author Jerome Dochez
  * @author Jeanfrancois Arcand
  */
-public class GrizzlyProxy implements NetworkProxy{
+public class GrizzlyProxy implements NetworkProxy {
     
     
     protected GrizzlyServiceListener grizzlyListener;
@@ -115,25 +109,6 @@ public class GrizzlyProxy implements NetworkProxy{
         }
         
         configureGrizzly(portNumber, controller);  
-      
-        //TODO: Enabled SSL.
-   /*     try{
-            if (Boolean.parseBoolean(httpListener.getSecurityEnabled())){
-                SSLImplementation sslHelper = SSLImplementation.getInstance();
-                ServerSocketFactory serverSF = 
-                        sslHelper.getServerSocketFactory();
-                serverSF.setAttribute("keystoreType","JKS");
-                serverSF.setAttribute("keystore",
-                        System.getProperty("javax.net.ssl.keyStore"));
-                serverSF.setAttribute("truststoreType","JKS");
-                serverSF.setAttribute("truststore",
-                        System.getProperty("javax.net.ssl.trustStore"));                    
-                serverSF.init();
-                grizzlyListener.setSSLContext(serverSF.getSSLContext());                
-            }
-        } catch (Throwable t){
-            logger.severe("Unable to configure SSL");
-        }*/
     }
 
     
@@ -143,40 +118,12 @@ public class GrizzlyProxy implements NetworkProxy{
      * @param port the port on which we need to listen.
      */
     private void configureGrizzly(int port, Controller controller) {
-        grizzlyListener = GrizzlyHttpEmbed.createListener(httpService, httpListener, port, controller);
+        grizzlyListener = new GrizzlyServiceListener();
         
-        if (!isWebProfile) {
-            SSLContext sslContext = grizzlyListener.getSSLContext();
-
-            // [1] Detect TLS requests.
-            // If sslContext is null, that means TLS is not enabled on that port.
-            // We need to revisit the way GlassFish is configured and make
-            // sure TLS is always enabled. We can always do what we did for 
-            // GlassFish v2, which is to located the keystore/trustore by ourself.
-            // TODO: Enable TLS support on all ports using com.sun.Grizzly.SSLConfig
-            ArrayList<PUPreProcessor> puPreProcessors = new ArrayList<PUPreProcessor>();
-            
-            if (sslContext != null) {
-                PUPreProcessor preProcessor = new TLSPUPreProcessor(sslContext);
-                puPreProcessors.add(preProcessor);
-            }
-
-            // [2] Add our supported ProtocolFinder. By default, we support http/sip
-            // TODO: The list of ProtocolFinder is retrieved using System.getProperties().
-            ArrayList<ProtocolFinder> protocolFinders = new ArrayList<ProtocolFinder>();
-            protocolFinders.add(new HttpProtocolFinder());
-
-            // [3] Add our supported ProtocolHandler. By default we support http/sip.
-            ArrayList<ProtocolHandler> 
-                    protocolHandlers = new ArrayList<ProtocolHandler>();
-            endPointMapper = new WebProtocolHandler(grizzlyListener);
-            protocolHandlers.add((ProtocolHandler) endPointMapper);
-
-            grizzlyListener.configurePortUnification
-                   (protocolFinders, protocolHandlers, puPreProcessors); 
-        } else {
-            endPointMapper = grizzlyListener.createHttpProtocolFilter();
-        }
+        GrizzlyEmbeddedHttpConfigurator.configureEmbeddedHttp(grizzlyListener, 
+                httpService, httpListener, port, controller);
+        
+        endPointMapper = grizzlyListener.configureEndpointMapper(isWebProfile);
     }
     
   
@@ -184,7 +131,7 @@ public class GrizzlyProxy implements NetworkProxy{
      * Stops the Grizzly service.
      */
     public void stop() {
-        grizzlyListener.stopEndpoint();
+        grizzlyListener.stop();
     }
     
     
@@ -241,8 +188,7 @@ public class GrizzlyProxy implements NetworkProxy{
             @Override
             public void run() {
                 try {
-                    grizzlyListener.initEndpoint();
-                    grizzlyListener.startEndpoint();
+                    grizzlyListener.start();
                 } catch(InstantiationException e) {
                     logger.log(Level.SEVERE, "Cannot start grizzly listener", e);
                 } catch(IOException e) {

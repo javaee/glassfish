@@ -32,28 +32,17 @@ import com.sun.grizzly.util.OutputWriter;
 import com.sun.grizzly.util.WorkerThread;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.Collection;
 import java.util.logging.Level;
-import org.glassfish.api.deployment.ApplicationContainer;
 
 /**
  * Specialized ProtocolFilter that properly configure the Http Adapter on the fly.
  * 
  * @author Jeanfrancois Arcand
  */
-public class HttpProtocolFilter implements ProtocolFilter, EndpointMapper<Adapter> {
+public class HttpProtocolFilter implements ProtocolFilter {
+
     
-    
-    private final static String ROOT = "/";
-    
-    
-    /**
-     * The Mapper used to find and configure the endpoint.
-     */
-    private ContextRootMapper mapper;
-    
-    
-    private GrizzlyServiceListener grizzlyListener;
+    private GrizzlyEmbeddedHttp grizzlyEmbeddedHttp;
     
     
     /**
@@ -67,13 +56,12 @@ public class HttpProtocolFilter implements ProtocolFilter, EndpointMapper<Adapte
     private ContextRootMapper.ContextRootInfo fallbackContextRootInfo;
 
     
-    public HttpProtocolFilter(ProtocolFilter wrappedFilter, GrizzlyServiceListener grizzlyListener) {
-        this.grizzlyListener = grizzlyListener;
-        this.mapper = new ContextRootMapper(grizzlyListener);  
+    public HttpProtocolFilter(ProtocolFilter wrappedFilter, GrizzlyEmbeddedHttp grizzlyEmbeddedHttp) {
+        this.grizzlyEmbeddedHttp = grizzlyEmbeddedHttp;
         this.wrappedFilter = wrappedFilter;
         
         StaticResourcesAdapter adapter = new StaticResourcesAdapter();
-        adapter.setRootFolder(GrizzlyServiceListener.getWebAppRootPath());
+        adapter.setRootFolder(GrizzlyEmbeddedHttp.getWebAppRootPath());
                         
         fallbackContextRootInfo = new ContextRootMapper.ContextRootInfo(adapter,
                 null, null);
@@ -86,7 +74,7 @@ public class HttpProtocolFilter implements ProtocolFilter, EndpointMapper<Adapte
                 ((WorkerThread)Thread.currentThread()).getByteBuffer();
 
         try {
-            boolean wasMap = mapper.map(
+            boolean wasMap = grizzlyEmbeddedHttp.getContextRootMapper().map(
                     (GlassfishProtocolChain) ctx.getProtocolChain(),
                     byteBuffer, null,
                     fallbackContextRootInfo);
@@ -98,14 +86,14 @@ public class HttpProtocolFilter implements ProtocolFilter, EndpointMapper<Adapte
                     OutputWriter.flushChannel
                             (ctx.getSelectionKey().channel(),bb);
                 } catch (IOException ex){
-                    GrizzlyServiceListener.logger().log(Level.FINE, "Send Error failed", ex);
+                    GrizzlyEmbeddedHttp.logger().log(Level.FINE, "Send Error failed", ex);
                 } finally {
                     ((WorkerThread)Thread.currentThread()).getByteBuffer().clear();
                 }
                 return false;               
             }
         } catch (IOException ex) {
-            GrizzlyServiceListener.logger().severe(ex.getMessage());
+            GrizzlyEmbeddedHttp.logger().severe(ex.getMessage());
         }
 
         return wrappedFilter.execute(ctx);
@@ -125,33 +113,5 @@ public class HttpProtocolFilter implements ProtocolFilter, EndpointMapper<Adapte
     
     public Adapter getFallbackAdapter() {
         return fallbackContextRootInfo.getAdapter();
-    }
-    
-    /*
-     * Registers a new endpoint (adapter implementation) for a particular
-     * context-root. All request coming with the context root will be dispatched
-     * to the adapter instance passed in.
-     * @param contextRoot for the adapter
-     * @param adapter servicing requests.
-     */
-    public void registerEndpoint(String contextRoot, Collection<String> vs, Adapter adapter,
-                                 ApplicationContainer container) {
-        mapper.register(ensureStartsWithSlash(contextRoot), adapter, null, null);
-    }
-
-    
-    /**
-     * Removes the context-root from our list of adapters.
-     */
-    public void unregisterEndpoint(String contextRoot, ApplicationContainer app) {
-        mapper.unregister(ensureStartsWithSlash(contextRoot));
-    }
-    
-    private String ensureStartsWithSlash(String path) {
-        if (!path.startsWith(ROOT)) {
-            return ROOT + path;
-        }
-        
-        return path;
-    }
+    }    
 }

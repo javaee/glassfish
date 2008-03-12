@@ -37,7 +37,10 @@ import java.util.logging.Logger;
 import org.glassfish.api.deployment.ApplicationContainer;
 
 /**
- *
+ * Context-root map, which maps <code>String</code> context-root representation 
+ * with its <code>Adapter</code>, <code>ApplicationContainer</code> and 
+ * <code>ProtocolFilter</code> chain.
+ * 
  * @author Jeanfrancois Arcand
  * @author Alexey Stashok
  */
@@ -45,7 +48,7 @@ public class ContextRootMapper {
     private final static String ROOT = "/";
 
     
-    private GrizzlyServiceListener grizzlyListener;
+    private GrizzlyEmbeddedHttp grizzlyEmbeddedHttp;
 
     /**
      * Grizzly's context-root associated artifacts
@@ -55,9 +58,9 @@ public class ContextRootMapper {
     
     private Logger logger;
     
-    public ContextRootMapper(GrizzlyServiceListener grizzlyListener) {
-        this.grizzlyListener = grizzlyListener;
-        logger = GrizzlyServiceListener.getLogger();
+    public ContextRootMapper(GrizzlyEmbeddedHttp grizzlyEmbeddedHttp) {
+        this.grizzlyEmbeddedHttp = grizzlyEmbeddedHttp;
+        logger = GrizzlyEmbeddedHttp.getLogger();
     }
 
     
@@ -113,12 +116,15 @@ public class ContextRootMapper {
         }
         
         if (logger.isLoggable(Level.FINE)) {
-            logger.info("MAP (" + this + ") contextRoot: " + contextRoot + 
+            logger.fine("MAP (" + this + ") contextRoot: " + contextRoot + 
                     " info: " + contextRootInfo + " adapter: " + adapter);
         }
         
         if (adapter == null && fallbackContextRootInfo != null) {
             adapter = fallbackContextRootInfo.getAdapter();
+            if (logger.isLoggable(Level.FINE)) {
+                logger.fine("Fallback adapter is taken: " + adapter);
+            }
         }
         
         if (adapter == null) {
@@ -203,7 +209,7 @@ public class ContextRootMapper {
         if (processorTask == null){
             try{
                 //TODO: Promote setAdapter to ProcessorTask?
-                processorTask = (DefaultProcessorTask) grizzlyListener.getProcessorTask();
+                processorTask = (DefaultProcessorTask) grizzlyEmbeddedHttp.getProcessorTask();
             } catch (ClassCastException ex) {
                 logger.log(Level.SEVERE,
                         "Invalid ProcessorTask instance", ex);
@@ -261,6 +267,9 @@ public class ContextRootMapper {
         return contextRootInfo;
     }
     
+    /**
+     * Class represents context-root associated information
+     */
     public static class ContextRootInfo {
         protected Adapter adapter;
         protected ApplicationContainer container;

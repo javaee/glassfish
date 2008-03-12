@@ -24,27 +24,18 @@
 package com.sun.enterprise.v3.services.impl;
 
 import com.sun.grizzly.Controller;
-import com.sun.grizzly.DefaultProtocolChainInstanceHandler;
-import com.sun.grizzly.ProtocolChain;
-import com.sun.grizzly.ProtocolFilter;
-import com.sun.grizzly.UDPSelectorHandler;
-import com.sun.grizzly.SSLConfig;
-import com.sun.grizzly.arp.AsyncProtocolFilter;
-import com.sun.grizzly.filter.ReadFilter;
-import com.sun.grizzly.http.DefaultProcessorTask;
-import com.sun.grizzly.http.DefaultProtocolFilter;
-import com.sun.grizzly.http.HttpWorkerThread;
-import com.sun.grizzly.http.ProcessorTask;
-import com.sun.grizzly.http.SecureSelector;
-import com.sun.grizzly.http.SelectorThread;
-import com.sun.grizzly.util.net.SSLImplementation;
+import com.sun.grizzly.http.portunif.HttpProtocolFinder;
+import com.sun.grizzly.portunif.PUPreProcessor;
+import com.sun.grizzly.portunif.ProtocolFinder;
+import com.sun.grizzly.portunif.ProtocolHandler;
+import com.sun.grizzly.portunif.TLSPUPreProcessor;
+import com.sun.grizzly.tcp.Adapter;
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import javax.net.ssl.SSLContext;
 
 /**
- * <p>The GrizzlyServiceMapper is responsible of mapping incoming requests
+ * <p>The GrizzlyServiceListener is responsible of mapping incoming requests
  * to the proper Container or Grizzly extensions. Registered Containers can be
  * notified by Grizzly using three mode:</p>
  * <ul><li>At the transport level: Containers can be notified when TCP, TLS or UDP
@@ -56,343 +47,114 @@ import javax.net.ssl.SSLContext;
  *
  * @author Jeanfrancois Arcand
  */
-public class GrizzlyServiceListener extends SelectorThread implements SecureSelector<SSLImplementation> {
-
-    /**
-     * The <code>SSLImplementation</code>
-     */
-    private SSLImplementation sslImplementation;
-    /**
-     * The <code>SSLContext</code> associated with the SSL implementation
-     * we are running on.
-     */
-    protected SSLContext sslContext;
-    /**
-     * The list of cipher suite
-     */
-    private String[] enabledCipherSuites = null;
-    /**
-     * the list of protocols
-     */
-    private String[] enabledProtocols = null;
-    /**
-     * Client mode when handshaking.
-     */
-    private boolean clientMode = false;
-    /**
-     * Require client Authentication.
-     */
-    private boolean needClientAuth = false;
-    /**
-     * True when requesting authentication.
-     */
-    private boolean wantClientAuth = false;
+public class GrizzlyServiceListener {
+    private Controller controller;
     
+    private int port;
     
-    private volatile ProtocolFilter httpProtocolFilter;
+    private boolean isEmbeddedHttpSecured;
+    private GrizzlyEmbeddedHttp embeddedHttp;
     
-    private boolean algorithInitialized = false;
+    private String name;
     
-    private volatile Collection<ProtocolFilter> defaultHttpFilters;
-            
-    // ---------------------------------------------------------------------/.
-
     public GrizzlyServiceListener() {
     }
     
     public GrizzlyServiceListener(Controller controller) {
         this.controller = controller;
     }
-    /**
-     * Load using reflection the <code>Algorithm</code> class.
-     */
-    @Override
-    protected void initAlgorithm(){
-        if (algorithInitialized) return;
-        algorithInitialized = true;
-        super.initAlgorithm();
+
+    public void start() throws IOException, InstantiationException {
+        embeddedHttp.initEndpoint();
+        embeddedHttp.startEndpoint();
     }
     
-    
-    /**
-     * Initialize the Grizzly Framework classes.
-     */
-    @Override
-    protected void initController() {
-        super.initController();
-        DefaultProtocolChainInstanceHandler instanceHandler = new DefaultProtocolChainInstanceHandler() {
-
-            private final ConcurrentLinkedQueue<ProtocolChain> chains = 
-                    new ConcurrentLinkedQueue<ProtocolChain>();
-
-            /**
-             * Always return instance of ProtocolChain.
-             */
-            @Override
-            public ProtocolChain poll() {
-                ProtocolChain protocolChain = chains.poll();
-                if (protocolChain == null) {
-                    protocolChain = new GlassfishProtocolChain();
-                    configureFilters(protocolChain);
-                }
-                return protocolChain;
-            }
-
-            /**
-             * Pool an instance of ProtocolChain.
-             */
-            @Override
-            public boolean offer(ProtocolChain instance) {
-                return chains.offer(instance);
-            }
-            };
-        controller.setProtocolChainInstanceHandler(instanceHandler);
-
-        controller.setReadThreadsCount(readThreadsCount);
-        // TODO: Do we want to support UDP all the time?
-        controller.addSelectorHandler(createUDPSelectorHandler());
+    public void stop() {
+        embeddedHttp.stopEndpoint();
     }
- 
     
-    /**
-     * Adds and configures <code>ProtocolChain</code>'s filters
-     * @param <code>ProtocolChain</code> to configure
-     */
-    @Override
-    protected void configureFilters(ProtocolChain protocolChain) {
-        if (portUnificationFilter != null) {
-            protocolChain.addFilter(portUnificationFilter);
-            // ProtocolFilter are added on the fly by their respective
-            // ProtocolHandler, so here we just add a single ProtocolFilter.
-            return;
+    public void initializeEmbeddedHttp(boolean isSecured) {
+        this.isEmbeddedHttpSecured = isSecured;
+        if (isSecured) {
+            embeddedHttp = new GrizzlyEmbeddedHttps();
         } else {
-            ReadFilter readFilter = new ReadFilter();
-            readFilter.setContinuousExecution(true);
-            protocolChain.addFilter(readFilter);
+            embeddedHttp = new GrizzlyEmbeddedHttp();
         }
         
-        protocolChain.addFilter(createHttpProtocolFilter());
+        embeddedHttp.setPort(port);
     }
     
-    
-    protected Collection<ProtocolFilter> getDefaultHttpProtocolFilters() {
-        if (defaultHttpFilters == null) {
-            synchronized(this) {
-                if (defaultHttpFilters == null) {
-                    Collection<ProtocolFilter> tmpList = new ArrayList<ProtocolFilter>(4);
-                    if (rcmSupport) {
-                        tmpList.add(createRaFilter());
-                    }
+    public EndpointMapper<Adapter> configureEndpointMapper(boolean isWebProfileMode) {
+        // [1] Detect TLS requests.
+        // If sslContext is null, that means TLS is not enabled on that port.
+        // We need to revisit the way GlassFish is configured and make
+        // sure TLS is always enabled. We can always do what we did for 
+        // GlassFish v2, which is to located the keystore/trustore by ourself.
+        // TODO: Enable TLS support on all ports using com.sun.Grizzly.SSLConfig
+        if (!isWebProfileMode) {
+            ArrayList<PUPreProcessor> puPreProcessors = new ArrayList<PUPreProcessor>();
 
-                    tmpList.add(createHttpParserFilter());
-                    defaultHttpFilters = tmpList;
-                }
-            }
-        }
-        
-        return defaultHttpFilters;
-    }
-    
-    /**
-     * Return a <code>ProcessorTask</code> from the pool. If the pool is empty,
-     * create a new instance.
-     */
-    @Override
-    public ProcessorTask getProcessorTask() {
-        if (asyncExecution) {        
-            HttpWorkerThread httpWorkerThread = 
-                    (HttpWorkerThread)Thread.currentThread();
-            DefaultProcessorTask contextPt = 
-                    (DefaultProcessorTask) httpWorkerThread.getProcessorTask();
-
-            if (contextPt == null){
-                return super.getProcessorTask();
+            WebProtocolHandler.Mode webProtocolHandlerMode;
+            
+            if (isEmbeddedHttpSecured) {
+                SSLContext sslContext = ((GrizzlyEmbeddedHttps) embeddedHttp).getSSLContext();
+                PUPreProcessor preProcessor = new TLSPUPreProcessor(sslContext);
+                puPreProcessors.add(preProcessor);
+                webProtocolHandlerMode = WebProtocolHandler.Mode.HTTPS;
             } else {
-                DefaultProcessorTask pt = 
-                        (DefaultProcessorTask)super.getProcessorTask();
-                // With Async, we cannot re-use the Context ProcessorTask. Since
-                // The adapter has been set on it, rebind it to the current one.
-                if (contextPt != null) {
-                    pt.setAdapter(contextPt.getAdapter());
-                }
-                return pt;  
+                webProtocolHandlerMode = WebProtocolHandler.Mode.HTTP;
             }
-        } else {
-            return super.getProcessorTask();
+
+            // [2] Add our supported ProtocolFinder. By default, we support http/sip
+            // TODO: The list of ProtocolFinder is retrieved using System.getProperties().
+            ArrayList<ProtocolFinder> protocolFinders = new ArrayList<ProtocolFinder>();
+            protocolFinders.add(new HttpProtocolFinder());
+
+            // [3] Add our supported ProtocolHandler. By default we support http/sip.
+            ArrayList<ProtocolHandler> protocolHandlers = new ArrayList<ProtocolHandler>();
+            WebProtocolHandler webProtocolHandler = 
+                    new WebProtocolHandler(webProtocolHandlerMode, embeddedHttp);
+            protocolHandlers.add(webProtocolHandler);
+
+            embeddedHttp.configurePortUnification(protocolFinders, protocolHandlers, puPreProcessors);
         }
-
+        
+        return embeddedHttp;
     }
-    
-    
-    /**
-     * Create the HttpProtocolFilter used to map request to their Adapter
-     * at runtime.
-     */
-    public HttpProtocolFilter createHttpProtocolFilter() {
-        if (httpProtocolFilter == null) {
-            synchronized (this) {
-                if (httpProtocolFilter == null) {
-                    initAlgorithm();
-                    ProtocolFilter wrappedFilter;
-                    if (asyncExecution) {
-                        wrappedFilter = new AsyncProtocolFilter(algorithmClass, port);
-                    } else {
-                        wrappedFilter = new DefaultProtocolFilter(algorithmClass, port);
-                    }
-                    httpProtocolFilter = new HttpProtocolFilter(wrappedFilter, this);
 
-                }
-            }
+    public Controller getController() {
+        return controller;
+    }
+
+    public void setController(Controller controller) {
+        this.controller = controller;
+    }
+
+    public GrizzlyEmbeddedHttp getEmbeddedHttp() {
+        return embeddedHttp;
+    }
+
+    public boolean isEmbeddedHttpSecured() {
+        return isEmbeddedHttpSecured;
+    }
+
+    public int getPort() {
+        return port;
+    }
+
+    public void setPort(int port) {
+        this.port = port;
+        
+        if (embeddedHttp != null) {
+            embeddedHttp.setPort(port);
         }
-
-        return (HttpProtocolFilter) httpProtocolFilter;
-    }
-    
-    
-    public HttpProtocolFilter getHttpProtocolFilter(){
-        return (HttpProtocolFilter) httpProtocolFilter; 
-    }
-    
-    /**
-     * Create <code>TCPSelectorHandler</code>
-     */
-    protected UDPSelectorHandler createUDPSelectorHandler() {
-        UDPSelectorHandler udpSelectorHandler = new UDPSelectorHandler();
-        udpSelectorHandler.setPort(port);
-        udpSelectorHandler.setPipeline(processorPipeline);
-        return udpSelectorHandler;
     }
 
-    
-    /**
-     * Configure <code>TCPSelectorHandler</code>
-     */
-    protected void configureSelectorHandler(UDPSelectorHandler selectorHandler) {
-        selectorHandler.setPort(port);
-        selectorHandler.setReuseAddress(getReuseAddress());
-        selectorHandler.setPipeline(processorPipeline);
-    }
-    // ---------------------------------------------- Public get/set ----- //
-
-    
-    /**
-     * Set the SSLContext required to support SSL over NIO.
-     */
-    public void setSSLConfig(SSLConfig sslConfig) {
-        this.sslContext = sslConfig.createSSLContext();
+    public String getName() {
+        return name;
     }
 
-    /**
-     * Set the SSLContext required to support SSL over NIO.
-     */
-    public void setSSLContext(SSLContext sslContext) {
-        this.sslContext = sslContext;
-    }
-
-    /**
-     * Return the SSLContext required to support SSL over NIO.
-     */
-    public SSLContext getSSLContext() {
-        return sslContext;
-    }
-
-    /**
-     * Set the Coyote SSLImplementation.
-     */
-    public void setSSLImplementation(SSLImplementation sslImplementation) {
-        this.sslImplementation = sslImplementation;
-    }
-
-    /**
-     * Return the current <code>SSLImplementation</code> this Thread
-     */
-    public SSLImplementation getSSLImplementation() {
-        return sslImplementation;
-    }
-
-    /**
-     * Returns the list of cipher suites to be enabled when {@link SSLEngine}
-     * is initialized.
-     *
-     * @return <tt>null</tt> means 'use {@link SSLEngine}'s default.'
-     */
-    public String[] getEnabledCipherSuites() {
-        return enabledCipherSuites;
-    }
-
-    /**
-     * Sets the list of cipher suites to be enabled when {@link SSLEngine}
-     * is initialized.
-     *
-     * @param cipherSuites <tt>null</tt> means 'use {@link SSLEngine}'s default.'
-     */
-    public void setEnabledCipherSuites(String[] enabledCipherSuites) {
-        this.enabledCipherSuites = enabledCipherSuites;
-    }
-
-    /**
-     * Returns the list of protocols to be enabled when {@link SSLEngine}
-     * is initialized.
-     *
-     * @return <tt>null</tt> means 'use {@link SSLEngine}'s default.'
-     */
-    public String[] getEnabledProtocols() {
-        return enabledProtocols;
-    }
-
-    /**
-     * Sets the list of protocols to be enabled when {@link SSLEngine}
-     * is initialized.
-     *
-     * @param enabledProtocols <tt>null</tt> means 'use {@link SSLEngine}'s default.'
-     */
-    public void setEnabledProtocols(String[] enabledProtocols) {
-        this.enabledProtocols = enabledProtocols;
-    }
-
-    /**
-     * Returns <tt>true</tt> if the SSlEngine is set to use client mode
-     * when handshaking.
-     * @return is client mode enabled
-     */
-    public boolean isClientMode() {
-        return clientMode;
-    }
-
-    /**
-     * Configures the engine to use client (or server) mode when handshaking.
-     */
-    public void setClientMode(boolean clientMode) {
-        this.clientMode = clientMode;
-    }
-
-    /**
-     * Returns <tt>true</tt> if the SSLEngine will <em>require</em>
-     * client authentication.
-     */
-    public boolean isNeedClientAuth() {
-        return needClientAuth;
-    }
-
-    /**
-     * Configures the engine to <em>require</em> client authentication.
-     */
-    public void setNeedClientAuth(boolean needClientAuth) {
-        this.needClientAuth = needClientAuth;
-    }
-
-    /**
-     * Returns <tt>true</tt> if the engine will <em>request</em> client
-     * authentication.
-     */
-    public boolean isWantClientAuth() {
-        return wantClientAuth;
-    }
-
-    /**
-     * Configures the engine to <em>request</em> client authentication.
-     */
-    public void setWantClientAuth(boolean wantClientAuth) {
-        this.wantClientAuth = wantClientAuth;
+    public void setName(String name) {
+        this.name = name;
     }
 }
