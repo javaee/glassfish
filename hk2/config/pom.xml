@@ -61,9 +61,9 @@
             <version>RELEASE</version>
         </dependency>
         <dependency>
-            <groupId>com.sun.xml.stream</groupId>
-            <artifactId>sjsxp</artifactId>
-            <version>1.0</version>
+            <groupId>woodstox</groupId>
+            <artifactId>wstx-asl</artifactId>
+            <version>3.2.3</version>
             <scope>runtime</scope>
         </dependency>
     </dependencies>
