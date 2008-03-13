@@ -48,7 +48,9 @@ import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.TransactionFailure;
 import com.sun.enterprise.config.serverbeans.HttpListener;
+import com.sun.enterprise.config.serverbeans.IiopListener;
 import com.sun.enterprise.config.serverbeans.HttpService;
+import com.sun.enterprise.config.serverbeans.IiopService;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 
 import java.beans.PropertyVetoException;
@@ -79,8 +81,10 @@ public class DeleteSsl implements AdminCommand {
     String listenerId;
 
     @Inject
-    HttpListener httpListener;
+    HttpService httpService;
 
+    @Inject
+    IiopService iiopService;
     /**
      * Executes the command with the command parameters passed as Properties
      * where the keys are the paramter names and the values the parameter values
@@ -89,14 +93,57 @@ public class DeleteSsl implements AdminCommand {
      */
     public void execute(AdminCommandContext context) {
         ActionReport report = context.getActionReport();
-        try {
-            ConfigSupport.apply(new SingleConfigCode<HttpListener>() {
 
-                public Object run(HttpListener param) throws PropertyVetoException, TransactionFailure {
-                    param.setSsl(null);
-                    return null;
+        try {
+            if (type.equals("http-listener")) {
+                
+                HttpListener httpListener = null;
+                for (HttpListener listener : httpService.getHttpListener()) {
+                    if (listener.getId().equals(listenerId)) {
+                        httpListener = listener;
+                    }
                 }
-            }, httpListener);
+                
+                if (httpListener == null) {
+                    report.setMessage(localStrings.getLocalString(
+                        "delete.ssl.http.listener.notfound", 
+                        "HTTP Listener named {0} not found", listenerId));
+                    report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                    return;
+                }
+                
+                ConfigSupport.apply(new SingleConfigCode<HttpListener>() {
+                    public Object run(HttpListener param) 
+                    throws PropertyVetoException, TransactionFailure {
+                        param.setSsl(null);
+                        return null;
+                    }
+                }, httpListener);
+                
+            } else if (type.equals("iiop-listener")) {
+                IiopListener iiopListener = null;
+                for (IiopListener listener : iiopService.getIiopListener()) {
+                    if (listener.getId().equals(listenerId)) {
+                        iiopListener = listener;
+                    }
+                }
+                
+                if (iiopListener == null) {
+                    report.setMessage(localStrings.getLocalString(
+                        "delete.ssl.iiop.listener.notfound", 
+                        "Iiop Listener named {0} not found", listenerId));
+                    report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                    return;
+                }
+                
+                ConfigSupport.apply(new SingleConfigCode<IiopListener>() {
+                    public Object run(IiopListener param) 
+                    throws PropertyVetoException, TransactionFailure {
+                        param.setSsl(null);
+                        return null;
+                    }
+                }, iiopListener);
+            }
         } catch(TransactionFailure e) {
             report.setMessage(localStrings.getLocalString("delete.ssl.fail", "Deletion of Ssl in {0} failed", listenerId));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
