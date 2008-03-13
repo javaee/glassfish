@@ -99,6 +99,11 @@
             <artifactId>webtier-all</artifactId>
             <version>${pe.version}</version>
         </dependency>
+         <dependency>
+            <groupId>org.glassfish.web</groupId>
+            <artifactId>web-cli</artifactId>
+            <version>10.0-SNAPSHOT</version>
+        </dependency>
         <dependency>
             <groupId>org.glassfish.extras</groupId>
             <artifactId>gf-jruby-connector</artifactId>
