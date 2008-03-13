@@ -44,6 +44,7 @@ import java.lang.reflect.ParameterizedType;
 import java.beans.PropertyChangeEvent;
 import java.beans.VetoableChangeSupport;
 import java.beans.PropertyVetoException;
+import java.beans.PropertyChangeListener;
 import java.util.*;
 
 /**
@@ -98,22 +99,29 @@ public class WriteableView implements InvocationHandler, Transactor, ConfigView 
                 return value;
             }
         } else {
-            // are we still in a transaction
-            if (currentTx==null) {
-                throw new IllegalStateException("Not part of a transation");
-            }
-
-            // setter
-            Object oldValue = bean.getter(property, method.getGenericParameterTypes()[0]);
-            Object newValue = args[0];
-            if (args[0] instanceof ConfigBeanProxy) {
-                ConfigView bean = (ConfigView) Proxy.getInvocationHandler((ConfigBeanProxy) args[0]);
-                newValue = bean.getMasterView();
-            }
-            PropertyChangeEvent evt = new PropertyChangeEvent(readView,property.xmlName(), oldValue, newValue);
-            changedAttributes.put(property.xmlName(), evt);
+            setter(property, args[0], method.getGenericParameterTypes()[0]);
             return null;
         }
+    }
+
+    public void setter(ConfigModel.Property property, Object newValue, java.lang.reflect.Type t)  {
+        // are we still in a transaction
+        if (currentTx==null) {
+            throw new IllegalStateException("Not part of a transation");
+        }
+
+        // setter
+        Object oldValue = bean.getter(property, t);
+        if (newValue instanceof ConfigBeanProxy) {
+            ConfigView bean = (ConfigView) Proxy.getInvocationHandler((ConfigBeanProxy) newValue);
+            newValue = bean.getMasterView();
+        }
+        PropertyChangeEvent evt = new PropertyChangeEvent(readView,property.xmlName(), oldValue, newValue);
+        changedAttributes.put(property.xmlName(), evt);
+    }
+
+    public ConfigModel.Property getProperty(String xmlName) {
+        return bean.model.findIgnoreCase(xmlName);
     }
 
     /**
@@ -162,7 +170,18 @@ public class WriteableView implements InvocationHandler, Transactor, ConfigView 
             List<PropertyChangeEvent> appliedChanges = new ArrayList<PropertyChangeEvent>();
             for (PropertyChangeEvent event : changedAttributes.values()) {
                 ConfigModel.Property property = bean.model.findIgnoreCase(event.getPropertyName());
+                ConfigBeanInterceptor interceptor  = bean.getOptionalFeature(ConfigBeanInterceptor.class);
+                try {
+                    if (interceptor!=null) {
+                        interceptor.beforeChange(event);
+                    }
+                } catch (PropertyVetoException e) {
+                    throw new TransactionFailure(e.getMessage(), e);
+                }
                 property.set(bean, event.getNewValue());
+                if (interceptor!=null) {
+                    interceptor.afterChange(event, System.currentTimeMillis());
+                }
                 appliedChanges.add(event);
             }
             for (ProtectedList entry :  changedCollections.values())  {

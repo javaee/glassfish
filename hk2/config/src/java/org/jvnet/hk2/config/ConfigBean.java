@@ -134,6 +134,10 @@ public class ConfigBean extends Dom implements ConfigView {
         if (!writeLock) {
             throw new PropertyVetoException("Not part of a transaction !", null);
         }
+        _setter(target, value);
+    }
+
+    void _setter(ConfigModel.Property target, Object value) throws Exception  {    
         Object oldValue = super.getter(target, value.getClass());
         PropertyChangeEvent evt = new PropertyChangeEvent(this, target.xmlName(), oldValue, value);
         for (ConfigBeanInterceptor interceptor : optionalFeatures.values()) {

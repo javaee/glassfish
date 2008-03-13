@@ -47,6 +47,7 @@ import java.util.logging.Logger;
 import java.util.logging.Level;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Map;
 
 /**
   * <p>
@@ -162,7 +163,8 @@ public class ConfigSupport {
         for (WriteableView view : views) {
             if (!view.join(t)) {
                 t.rollback();
-                return null;
+                throw new TransactionFailure("Cannot enlist " + view.getMasterView().getProxyType()
+                    + " in transaction", null);
             }
         }
         
@@ -265,7 +267,7 @@ public class ConfigSupport {
      * per event type, per object, meaning that if an object has had 3 attributes changes, the
      * Changed interface implementation will get notified only once.
      *
-     * @param list of events that resulted of a successful configuration transaction
+     * @param events of events that resulted of a successful configuration transaction
      * @param target the intended receiver of the changes notification
      * @param logger to log any issues.
      */
@@ -311,6 +313,41 @@ public class ConfigSupport {
             } catch (Exception e) {
                 logger.log(Level.SEVERE, "Exception while processing config bean changes : ", e);
             }
+        }
+    }
+
+    public static void apply(Map<ConfigBean, Map<String, String>> mapOfChanges) throws TransactionFailure {
+
+        Transaction t = new Transaction();
+        for (Map.Entry<ConfigBean, Map<String, String>> configBeanChange : mapOfChanges.entrySet()) {
+
+            ConfigBean source = configBeanChange.getKey();
+            ConfigBeanProxy readableView = source.getProxy(source.getProxyType());
+            WriteableView writeable = ConfigSupport.getWriteableView(readableView, source);
+            if (!writeable.join(t)) {
+                t.rollback();
+                throw new TransactionFailure("Cannot enlist " + source.getProxyType() + " in transaction",null);
+            }
+            for (Map.Entry<String, String> change : configBeanChange.getValue().entrySet()) {
+                String xmlName = change.getKey();
+                ConfigModel.Property prop = writeable.getProperty(xmlName);
+                if (prop==null) {
+                    throw new TransactionFailure("Unknown property name " + xmlName + " on " + source.getProxyType(), null);
+                }
+                writeable.setter(writeable.getProperty(xmlName), change.getValue(), String.class);
+            }
+        }
+        try {
+            t.commit();
+        } catch (RetryableException e) {
+            System.out.println("Retryable...");
+            // TODO : do something meaninful here
+            t.rollback();
+            throw new TransactionFailure(e.getMessage(), e);
+        } catch (TransactionFailure e) {
+            System.out.println("failure, not retryable...");
+            t.rollback();
+            throw e;
         }
     }
  }
