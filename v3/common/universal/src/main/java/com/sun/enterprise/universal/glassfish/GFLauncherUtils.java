@@ -205,6 +205,23 @@ public class GFLauncherUtils {
         
         return list;
     }
+    
+    public static String fileListToPathString(List<File> files) {
+        StringBuilder sb = new StringBuilder();
+        boolean firstFile = true;
+
+        for (File f : files) {
+            if(firstFile) {
+                firstFile = false;
+            }
+            else {
+                sb.append(File.pathSeparatorChar);
+            }
+            // let's use forward slashes for neatness...
+            sb.append(f.getPath().replace('\\', '/'));
+        }
+        return sb.toString();
+    }
 
     private static File installDir;
 }

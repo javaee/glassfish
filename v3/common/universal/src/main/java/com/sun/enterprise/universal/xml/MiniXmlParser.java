@@ -437,7 +437,7 @@ public class MiniXmlParser {
     private List<String> jvmOptions = new ArrayList<String>();
     private List<String> profilerJvmOptions = new ArrayList<String>();
     private Map<String, String> javaConfig;
-    private Map<String, String> profilerConfig;
+    private Map<String, String> profilerConfig = Collections.emptyMap();
     private Map<String, String> sysProps = new HashMap<String, String>();
     private Map<String, String> profilerSysProps = new HashMap<String, String>();
     private boolean valid = false;
