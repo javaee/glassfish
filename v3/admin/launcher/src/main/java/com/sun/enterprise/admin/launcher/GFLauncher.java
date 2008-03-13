@@ -102,7 +102,7 @@ public abstract class GFLauncher {
         info.setup();
         MiniXmlParser parser = new MiniXmlParser(getInfo().getConfigFile(), getInfo().getInstanceName());
         javaConfig = new JavaConfig(parser.getJavaConfig());
-        jvmOptions = new JvmOptions(parser.getJvmOptions());
+        setupProfilerAndJvmOptions(parser);
         sysPropsFromXml = parser.getSystemProperties();
         asenvProps.put(INSTANCE_ROOT_PROPERTY, getInfo().getInstanceRootDir().getPath());
         debugOptions = getDebug();
@@ -120,6 +120,7 @@ public abstract class GFLauncher {
         commandLine.add(classpath);
         commandLine.addAll(debugOptions);
         commandLine.addAll(jvmOptions.toStringArray());
+        commandLine.addAll(getNativePathCommandLine());
         commandLine.add(getMainClass());
         commandLine.addAll(getInfo().getArgsAsList());
     }
@@ -142,12 +143,14 @@ public abstract class GFLauncher {
         all.putAll(asenvProps);
         all.putAll(sysPropsFromXml);
         all.putAll(jvmOptions.getCombinedMap());
+        all.putAll(profiler.getConfig());
         TokenResolver resolver = new TokenResolver(all);
         resolver.resolve(jvmOptions.xProps);
         resolver.resolve(jvmOptions.xxProps);
         resolver.resolve(jvmOptions.plainProps);
         resolver.resolve(jvmOptions.sysProps);
         resolver.resolve(javaConfig.getMap());
+        resolver.resolve(profiler.getConfig());
         resolver.resolve(debugOptions);
     // TODO ?? Resolve sysPropsFromXml ???
     }
@@ -169,31 +172,17 @@ public abstract class GFLauncher {
         List<File> sysCP = javaConfig.getSystemClasspath();
         List<File> prefixCP = javaConfig.getPrefixClasspath();
         List<File> suffixCP = javaConfig.getSuffixClasspath();
+        List<File> profilerCP = profiler.getClasspath();
 
         // create a list of all the classpath pieces in the right order
         List<File> all = new ArrayList<File>();
         all.addAll(prefixCP);
+        all.addAll(profilerCP);
         all.addAll(mainCP);
         all.addAll(sysCP);
         all.addAll(envCP);
         all.addAll(suffixCP);
-
-        // note: ALL files have been absolutized already.
-        // let's use forward slashes for neatness...
-        
-        StringBuilder sb = new StringBuilder();
-        boolean firstFile = true;
-        
-        for (File f : all) {
-            if(firstFile) {
-                firstFile = false;
-            }
-            else {
-                sb.append(File.pathSeparatorChar);
-            }
-            sb.append(f.getPath().replace('\\', '/'));
-        }
-        classpath = sb.toString();
+        classpath = GFLauncherUtils.fileListToPathString(all);
     }
 
     private boolean setJavaExecutableIfValid(String filename) {
@@ -220,22 +209,72 @@ public abstract class GFLauncher {
         }
         return false;
     }
+
     private List<String> getDebug() {
         if(info.isDebug() || javaConfig.isDebugEnabled()) {
             return javaConfig.getDebugOptions();
         }
         return Collections.emptyList();
     }
+
+    private void setupProfilerAndJvmOptions(MiniXmlParser parser) throws MiniXmlParserException {
+        // add JVM options from Profiler *last* so they override config's
+        // JVM options
+        
+        profiler  = new Profiler(
+                parser.getProfilerConfig(), 
+                parser.getProfilerJvmOptions(), 
+                parser.getProfilerSystemProperties());
+
+        List<String> rawJvmOptions = parser.getJvmOptions();
+        
+        if(profiler.isEnabled()) {
+            rawJvmOptions.addAll(profiler.getJvmOptions());
+        }
+        jvmOptions = new JvmOptions(rawJvmOptions);
+    }
+
+    private List<String> getNativePathCommandLine() {
+        // do nothing unless we have something to add.
+        // in that case, concatenate rather than replace.
+        List<String> list = new ArrayList<String>();
+        
+        // if not enabled -- fagetaboutit
+        if(!profiler.isEnabled())
+            return list;
+        
+        List<File> profilerNativeFiles = profiler.getNativePath();
+        
+        // if no native path configured -- color me GONE!
+        if(profilerNativeFiles.size() <= 0)
+            return list;
+        
+        // OK -- we have at least one file in the path.  Append it/them...
+        List<File> nativeFiles = GFLauncherUtils.stringToFiles(
+                System.getProperty(JAVA_NATIVE_SYSPROP_NAME));
+
+        // put the existing files first, then append the profiler paths
+        nativeFiles.addAll(profilerNativeFiles);
+        String nativeCommand = "-D" + JAVA_NATIVE_SYSPROP_NAME + "=";
+        nativeCommand += GFLauncherUtils.fileListToPathString(nativeFiles);
+        list.add(nativeCommand);
+        return list;
+    }
+
     
+
     private GFLauncherInfo info;
     private Map<String, String> asenvProps;
     private JavaConfig javaConfig;
     private JvmOptions jvmOptions;
+    private Profiler profiler;
     private Map<String, String> sysPropsFromXml;
     private String javaExe;
     private String classpath;
     private List<String> debugOptions;
     private List<String> commandLine;
     private long startTime;
+    private final static String JAVA_NATIVE_SYSPROP_NAME = "java.library.path";
 }
+
 

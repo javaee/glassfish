@@ -75,8 +75,7 @@ class GFDomainLauncher extends GFLauncher {
         // Temporary
         System.out.println("****************************************************");
         System.out.println("************ TP2 Launcher  *******************");
-        System.out.println("** The TP2 Launcher does not support profiling");
-        System.out.println("** The commandline below is here for your info.  When logging is setup " +
+        System.out.println("** The commandline below is temporarily here for your info.  When logging is setup " +
                 "it will go to the log file.");
         System.out.println("**   jvm command line  **");
         System.out.println("---------------------------------------------------");
@@ -132,3 +131,12 @@ class GFDomainLauncher extends GFLauncher {
     private static final String BOOTSTRAP_JAR_RELATIVE_PATH = "modules/glassfish-10.0-SNAPSHOT.jar";
 }
 
+/* sample profiler config
+ * 
+       <java-config classpath-suffix="" debug-enabled="false" debug-options="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=9009" env-classpath-ignored="true" java-home="${com.sun.aas.javaRoot}" javac-options="-g" rmic-options="-iiop -poa -alwaysgenerate -keepgenerated -g" system-classpath="">
+        <profiler classpath="c:/dev/elf/dist/elf.jar" enabled="false" name="MyProfiler" native-library-path="c:/bin">
+          <jvm-options>-Dprofiler3=foo3</jvm-options>
+          <jvm-options>-Dprofiler2=foo2</jvm-options>
+          <jvm-options>-Dprofiler1=foof</jvm-options>
+        </profiler>
+ */
