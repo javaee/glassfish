@@ -86,7 +86,7 @@ import java.util.logging.Logger;
  *
  */    
 
-public final class StatelessSessionContainer
+public class StatelessSessionContainer
     extends BaseContainer 
     implements StatelessSessionBeanStatsProvider
 {
@@ -491,9 +491,7 @@ public final class StatelessSessionContainer
             // after the container suspended any client Tx.
             // setSessionContext is also called before context.setEJBStub
             // because the bean is not allowed to do EJBContext.getEJBObject
-            if( ejb instanceof SessionBean ) {
-                ((SessionBean)ejb).setSessionContext(context);
-            }
+            setSessionContext(ejb, context);
 
             // Perform injection right after where setSessionContext
             // would be called.  This is important since injection methods
@@ -549,6 +547,16 @@ public final class StatelessSessionContainer
         }
         context.touch();
         return context;
+    }
+
+    /**
+     * Allow overriding this method by the TimerBeanContainer
+     */
+    void setSessionContext(Object ejb, SessionContextImpl context)
+            throws Exception {
+        if( ejb instanceof SessionBean ) {
+            ((SessionBean)ejb).setSessionContext(context);
+        }
     }
 
     void doTimerInvocationInit(EjbInvocation inv, RuntimeTimerState timerState)
