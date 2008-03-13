@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+  <jdbc-connection-pool datasource-classname="org.apache.derby.jdbc.EmbeddedXADataSource" 
+                        res-type="javax.sql.XADataSource" 
+                        name="__CallFlowPool">
+      <property name="databaseName" value="${com.sun.aas.instanceRoot}/lib/databases/sun-callflow"/>
+      <property name="connectionAttributes" value=";create=true"/>
+    </jdbc-connection-pool>
