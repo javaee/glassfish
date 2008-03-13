@@ -61,8 +61,6 @@ import com.sun.enterprise.container.common.spi.JavaEETransactionManager;
 import com.sun.enterprise.container.common.spi.util.InjectionException;
 import com.sun.enterprise.container.common.spi.util.InjectionManager;
 import com.sun.enterprise.deployment.*;
-//XXX
-//import com.sun.enterprise.appverification.factory.AppVerification;
 // IASRI 4688449
 import com.sun.enterprise.security.integration.RealmAdapterProxy;
 import com.sun.enterprise.server.ServerContext;
@@ -336,16 +334,6 @@ public final class J2EEInstanceListener implements InstanceListener {
         }
 
         WebModule wm = (WebModule)context;
-//XXX no AppVerification in this moment
-/*
-        if (AppVerification.doInstrument() 
-                && (eventType.equals(InstanceEvent.AFTER_SERVICE_EVENT)
-                        || eventType.equals(InstanceEvent.AFTER_INIT_EVENT)
-                        || eventType.equals(InstanceEvent.AFTER_DISPATCH_EVENT))) {
-            
-            AppVerification.getInstrumentLogger().doInstrumentForWeb(event);
-        }
-*/
         
         Object instance = null;
         if (eventType.equals(InstanceEvent.AFTER_FILTER_EVENT)) {
