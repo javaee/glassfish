@@ -726,11 +726,18 @@ public class ConfigInjectorGenerator extends SimpleDeclarationVisitor implements
                 return false;
             }
 
+            protected boolean hasDefault() {
+                boolean noDefaultValue = 
+                    a.defaultValue().length() == 1 && a.defaultValue().charAt(0) == '\u0000';
+                return (!noDefaultValue);
+            }
             /**
              * Generates the injector that reads an attribute and sets the value.
              */
             protected void generate() {
                 metadata.add(xmlTokenName(),isRequired()?"required":"optional");
+                if (this.hasDefault())
+                    metadata.add(xmlTokenName(), "default:" + a.defaultValue());
                 super.generate();
             }
 
