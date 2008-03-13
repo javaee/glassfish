@@ -359,8 +359,7 @@ public final class ConfigModel {
         }
     }
 
-    // TODO: extend this to remember the default value
-    static final class AttributeLeaf extends Leaf {
+    static class AttributeLeaf extends Leaf {
 
         AttributeLeaf(String xmlName) {
             super(xmlName);
@@ -399,6 +398,21 @@ public final class ConfigModel {
         }
     }
 
+    static final class AttributeLeafWithDefaultValue extends AttributeLeaf {
+        String dv;
+        AttributeLeafWithDefaultValue(String xmlName, String dv) {
+            super(xmlName);
+            this.dv = dv;
+        }
+        @Override
+        public Object get(Dom dom, Type rt) {
+            Object value = super.get(dom, rt);
+            if (value == null)
+                return (dv);
+            return ( null );
+        }
+    }
+    
     static final class SingleLeaf extends Leaf {
         SingleLeaf(String xmlName) {
             super(xmlName);
@@ -442,7 +456,11 @@ public final class ConfigModel {
             if(name.startsWith("@")) {
                 // TODO: handle value.equals("optional") and value.equals("required") distinctively.
                 String attributeName = name.substring(1);
-                attributes.put(attributeName, new AttributeLeaf(attributeName));
+                String dv = getDefaultFromMetaData(e.getValue());
+                if (dv == null)
+                    attributes.put(attributeName, new AttributeLeaf(attributeName));
+                else
+                    attributes.put(attributeName, new AttributeLeafWithDefaultValue(attributeName, dv));
             } else
             if(name.startsWith("<")) {
                 String elementName = name.substring(1, name.length() - 1);
@@ -527,5 +545,18 @@ public final class ConfigModel {
             return new CollectionNode(model,elementName);
         else
             return new SingleNode(model,elementName);
+    }
+    
+    private static String getDefaultFromMetaData(List<String> strings) {
+        if (strings == null || strings.size() == 0)
+            return ( null );
+        String dv = null, PREFIX="default:";
+        for (String s : strings) {
+            if (s.startsWith(PREFIX)) {
+                dv = s.substring(PREFIX.length());
+                break;
+            }
+        }
+        return ( dv );
     }
 }
