@@ -125,5 +125,10 @@
             <version>1.0</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.glassfish.common</groupId>
+            <artifactId>glassfish-api</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
     </dependencies>    
 </project>
