@@ -38,10 +38,18 @@ package com.sun.enterprise.management.mbeanserver;
 import javax.management.MBeanServer;
 import java.lang.management.ManagementFactory;
 
+import org.jvnet.hk2.annotations.Extract;
+import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.FactoryFor;
+
+import org.jvnet.hk2.component.PostConstruct;
+import org.jvnet.hk2.component.PreDestroy;
+import org.jvnet.hk2.component.Singleton;
 import org.jvnet.hk2.component.Factory;
-import org.jvnet.hk2.annotations.Extract;
+
+import org.glassfish.api.Startup;
+import org.glassfish.api.Async;
 
 
 /**
@@ -57,18 +65,39 @@ import org.jvnet.hk2.annotations.Extract;
     PlatformMBeanServer (default), but instead another MBeanServer entirely to avoid startup
     incompatibilities.
  */
-@Service(name="AppserverMBeanServerFactory")
-@FactoryFor(MBeanServer.class)
-public final class AppserverMBeanServerFactory implements Factory
+@Service
+@Scoped(Singleton.class)
+@Async
+@FactoryFor( MBeanServer.class )
+public final class AppserverMBeanServerFactory implements Startup, PostConstruct, PreDestroy, Factory
 {
+    protected static void debug( final String s ) { System.out.println(s); }
+    
+    // we'd ideally like to name things, but @Extract is not working
     public static final String OFFICIAL_MBEANSERVER = "Official_MBeanServer";
     
-    @Extract
+    //@Extract    //(name=OFFICIAL_MBEANSERVER)
     private final MBeanServer officialMBeanServer;
     
     public AppserverMBeanServerFactory()
     {
+        final long start = System.currentTimeMillis();
         officialMBeanServer = ManagementFactory.getPlatformMBeanServer();
+        System.out.println( "AppserverMBeanServerFactory initialized in " + (System.currentTimeMillis() - start) + " ms" );
+    }
+    
+    public void postConstruct()
+    {
+        //debug( "AppserverMBeanServerFactory: postConstruct" );
+    }
+    
+    public void preDestroy()
+    {
+        //debug( "AppserverMBeanServerFactory: preDestroy" );
+    }
+
+    public Startup.Lifecycle getLifecycle() {
+        return Startup.Lifecycle.SERVER;
     }
     
     public Object getObject() {
