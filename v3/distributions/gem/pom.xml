@@ -96,7 +96,7 @@
                       <tasks>
                           <copy file="glassfish_rails" todir="target/dependency/glassfish/bin"/>
                           <copy file="glassfish.rb" todir="target/dependency/glassfish/modules"/>
-                          <copy file="target/dependency/glassfish/domains/domain1/config/domain.xml" toFile="target/dependency/glassfish/domains/domain1/config/domain.xml_ORIG"/>
+                          <move file="target/dependency/glassfish/domains/domain1/config/domain.xml" toFile="target/dependency/glassfish/domains/domain1/config/domain.xml_ORIG"/>
                           <copy file="domain.xml" todir="target/dependency/glassfish/domains/domain1/config"/>
                       </tasks>
                   </configuration>
