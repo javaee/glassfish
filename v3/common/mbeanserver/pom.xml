@@ -69,10 +69,12 @@
             <artifactId>hk2</artifactId>
             <version>${hk2.version}</version>
         </dependency>
-	    <!--dependency>
+        
+        <dependency>
             <groupId>org.glassfish.common</groupId>
-            <artifactId>internal-api</artifactId>
+            <artifactId>glassfish-api</artifactId>
             <version>${project.parent.version}</version>
-        </dependency-->
+        </dependency>
+
     </dependencies>
 </project>
