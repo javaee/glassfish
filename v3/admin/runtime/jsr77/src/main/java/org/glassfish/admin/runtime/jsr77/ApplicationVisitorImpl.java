@@ -68,6 +68,7 @@ public class ApplicationVisitorImpl implements ApplicationVisitor {
      */
     public void accept(Application application) {
         System.out.println("MSR: ApplicationVisitorImpl accept ..." + application);
+        System.out.println("MSR: ApplicationRegistry = " + appReg);
         // create mbean for application
     }
     

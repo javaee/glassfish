@@ -65,5 +65,7 @@
     <modules>
         <!-- rtapt module and its descendants have its own lifecycle, so don't include it in the module list. -->
         <!--module>rtapt</module-->
+
+        <module>mgmt-infra</module>
     </modules>
 </project>
