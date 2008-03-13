@@ -25,6 +25,9 @@ package com.sun.enterprise.v3.server;
 
 import com.sun.enterprise.util.StringUtils;
 import com.sun.enterprise.module.bootstrap.StartupContext;
+import com.sun.enterprise.universal.glassfish.ASenvPropertyReader;
+import com.sun.enterprise.universal.glassfish.SystemPropertyConstants;
+import java.util.*;
 
 /**
  * Fake for V2 InstanceEnvironment.
@@ -68,6 +71,7 @@ public class V3Environment  {
     public V3Environment(String root, StartupContext startupContext) {
         this.root = root;
         this.startupContext = startupContext;
+        asenv.getProps().put(SystemPropertyConstants.INSTANCE_ROOT_PROPERTY, root);
     }
     
     public String getDomainRoot() {
@@ -154,5 +158,10 @@ public class V3Environment  {
     public String getModuleStubPath() {
         return null;
     }
+    public Map<String,String> getProps() {
+        return Collections.unmodifiableMap(asenv.getProps());
+    }
+
+    private static final ASenvPropertyReader asenv = new ASenvPropertyReader();
 }
 
