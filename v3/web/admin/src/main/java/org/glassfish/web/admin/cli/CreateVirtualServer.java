@@ -36,6 +36,7 @@
 package org.glassfish.web.admin.cli;
 
 import java.util.List;
+import java.util.Properties;
 
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
@@ -54,6 +55,7 @@ import org.jvnet.hk2.config.TransactionFailure;
 import com.sun.enterprise.config.serverbeans.Configs;
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.HttpService;
+import com.sun.enterprise.config.serverbeans.Property;
 import com.sun.enterprise.config.serverbeans.VirtualServer;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 
@@ -85,8 +87,8 @@ public class CreateVirtualServer implements AdminCommand {
     @Param(name="logfile", optional=true)
     String logFile;
 
-    @Param(name="properties", optional=true)
-    String properties;  //FIXME
+    @Param(name="property", optional=true)
+    Properties properties;
 
     @Param(name="virtual_server_id", primary=true)
     String virtualServerId;
@@ -128,6 +130,16 @@ public class CreateVirtualServer implements AdminCommand {
                     newVirtualServer.setDefaultWebModule(defaultWebModule);
                     newVirtualServer.setState(state);
                     newVirtualServer.setLogFile(logFile);
+
+                    //add properties
+                    for (java.util.Map.Entry entry : properties.entrySet()) {
+                        Property property =
+                            ConfigSupport.createChildOf(newVirtualServer, Property.class);
+                        property.setName((String)entry.getKey());
+                        property.setValue((String)entry.getValue());
+                        newVirtualServer.getProperty().add(property);
+                    }
+
                     param.getVirtualServer().add(newVirtualServer);
                     return newVirtualServer;
                 }

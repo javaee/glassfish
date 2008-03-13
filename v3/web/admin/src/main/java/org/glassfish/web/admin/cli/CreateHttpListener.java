@@ -35,7 +35,9 @@
  */
 package org.glassfish.web.admin.cli;
 
+import java.beans.PropertyVetoException;
 import java.util.List;
+import java.util.Properties;
 
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
@@ -49,13 +51,12 @@ import org.jvnet.hk2.component.PerLookup;
 import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.TransactionFailure;
+import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.Configs;
 import com.sun.enterprise.config.serverbeans.HttpListener;
 import com.sun.enterprise.config.serverbeans.HttpService;
-import com.sun.enterprise.config.serverbeans.Config;
+import com.sun.enterprise.config.serverbeans.Property;
 import com.sun.enterprise.util.LocalStringManagerImpl;
-
-import java.beans.PropertyVetoException;
 
 /**
  * Create Http Listener Command
@@ -89,6 +90,9 @@ public class CreateHttpListener implements AdminCommand {
     @Param(name="redirectport", optional=true)
     String redirectPort;
     
+    @Param(name="externalport", optional=true)
+    String externalPort;
+    
     @Param(name="securityenabled", optional=true)
     String securityEnabled = Boolean.FALSE.toString();
 
@@ -97,6 +101,15 @@ public class CreateHttpListener implements AdminCommand {
 
     @Param(optional=true)
     String secure = Boolean.FALSE.toString(); //FIXME
+
+    @Param(name="family", optional=true)
+    String family;
+
+    @Param(name="blockingenabled", optional=true)
+    String blockingEnabled = Boolean.FALSE.toString();
+
+    @Param(name="property", optional=true)
+    Properties properties;
 
     @Param(name="listener_id", primary=true)
     String listenerId;
@@ -135,7 +148,7 @@ public class CreateHttpListener implements AdminCommand {
                     newListener.setId(listenerId);
                     newListener.setAddress(listenerAddress);
                     newListener.setPort(listenerPort);
-                    //newListener.setExternalPort(externalPort);  FIXME: new element
+                    newListener.setExternalPort(externalPort);
                     newListener.setAcceptorThreads(acceptorThreads);
                     newListener.setSecurityEnabled(securityEnabled);
                     newListener.setDefaultVirtualServer(defaultVirtualServer);
@@ -143,6 +156,19 @@ public class CreateHttpListener implements AdminCommand {
                     newListener.setXpoweredBy(xPoweredBy);
                     //newListener.Ssl(ssl); FIXME
                     newListener.setEnabled(enabled);
+                    newListener.setServerName(serverName);
+                    newListener.setFamily(family);
+                    newListener.setBlockingEnabled(blockingEnabled);
+
+                    //add properties
+                    for ( java.util.Map.Entry entry : properties.entrySet()) {
+                        Property property = 
+                            ConfigSupport.createChildOf(newListener, Property.class);
+                        property.setName((String)entry.getKey());
+                        property.setValue((String)entry.getValue());
+                        newListener.getProperty().add(property);
+                    }
+
                     param.getHttpListener().add(newListener);
                     return newListener;
                 }
