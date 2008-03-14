@@ -164,6 +164,27 @@ public class CreateDomainCommand extends BaseLifeCycleCommand
         sb.append(String.valueOf(portbase+PORTBASE_JMX_SUFFIX));
         setOption(DOMAIN_PROPERTIES, sb.toString());
     }
+
+    /* validates adminpassword and masterpassword */
+    public void validatePasswords() throws CommandValidationException
+    {
+        //verify adminpassword is greater than 8 characters	
+        if (!isPasswordValid(adminPassword)) {
+            throw new CommandValidationException(getLocalizedString("PasswordLimit",
+                new Object[]{ADMIN_PASSWORD}));
+        }
+        
+        //verify masterpassword is greater than 8 characters
+        if (!isPasswordValid(masterPassword)) {
+            throw new CommandValidationException(getLocalizedString("PasswordLimit",
+                new Object[]{MASTER_PASSWORD}));
+        }
+
+        //verify that domainName is valid
+        CLILogger.getInstance().printDebugMessage("domainName = " + domainName);
+    }
+
+    
     
     /**
      *  this methods returns the admin password and is used to get the admin password
@@ -233,14 +254,8 @@ public class CreateDomainCommand extends BaseLifeCycleCommand
         adminUser = getAdminUser();
         adminPassword = getAdminPassword();
         masterPassword = getMasterPassword();
-        // Fix this..
-        //adminPassword = "adminadmin";
-        masterPassword = "changeit";
-
-        /*
         
         validatePasswords();
-        */
         
         try
         {
