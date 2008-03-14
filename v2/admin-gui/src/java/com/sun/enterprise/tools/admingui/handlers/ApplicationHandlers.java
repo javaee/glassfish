@@ -51,7 +51,6 @@
 
 package com.sun.enterprise.tools.admingui.handlers;
 
-import java.io.File;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.HashMap;
@@ -62,7 +61,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Collection;
 import java.util.Properties;
-import java.util.ListIterator;
 
 import com.sun.webui.jsf.component.TableRowGroup;
 
@@ -80,8 +78,6 @@ import com.sun.enterprise.tools.admingui.util.TargetUtil;
 import com.sun.enterprise.web.VirtualServer;
 
 import com.sun.appserv.management.base.AMX;
-import com.sun.appserv.management.base.Util;
-import com.sun.appserv.management.config.AMXConfig;
 import com.sun.appserv.management.config.AppClientModuleConfig;
 import com.sun.appserv.management.config.ClusterConfig;
 import com.sun.appserv.management.config.ClusteredServerConfig;
@@ -100,10 +96,10 @@ import com.sun.appserv.management.config.RARModuleConfig;
 import com.sun.appserv.management.config.ResourceAdapterConfig;
 import com.sun.appserv.management.config.StandaloneServerConfig;
 import com.sun.appserv.management.config.WebModuleConfig;
-import com.sun.appserv.management.util.misc.GSetUtil; 
 import com.sun.appserv.management.j2ee.StateManageable;
 import com.sun.appserv.management.j2ee.J2EEServer;
 
+import java.util.StringTokenizer;
 import javax.management.Attribute;
 import javax.management.AttributeList;
 
@@ -691,12 +687,17 @@ public class ApplicationHandlers {
             WebModuleConfig appConfig = iter.next();
             if (ObjectTypeValues.USER.equals(appConfig.getObjectType())){
                 HashMap oneRow = new HashMap();
+                String protocol = "http" ;
                 String enable =  TargetUtil.getEnabledStatus(appConfig, true);
                 oneRow.put("name", appConfig.getName());
                 oneRow.put("enabled", enable);
                 String contextRoot = appConfig.getContextRoot();
                 oneRow.put("contextRoot", contextRoot);
                 String port = getPortForApplication(appConfig.getName());
+                if (port.startsWith("-") ){
+                    protocol="https";
+                    port = port.substring(1);
+                }
                 oneRow.put("port", port);
                 if(AMXUtil.isEE()){
                     if (enable.equals(GuiUtil.getMessage("deploy.allDisabled")) ||
@@ -707,7 +708,7 @@ public class ApplicationHandlers {
                 }else{
                     oneRow.put("hasLaunch", Boolean.parseBoolean(enable) );
                     String ctxRoot = calContextRoot(contextRoot);
-                    oneRow.put("launchLink", "http://"+serverName+":"+ port + ctxRoot);
+                    oneRow.put("launchLink", protocol+"://"+serverName+":"+ port + ctxRoot);
                 }
                 oneRow.put("selected", false);
                 List<String> targets = TargetUtil.getDeployedTargets(appConfig, true);
@@ -1713,14 +1714,25 @@ public class ApplicationHandlers {
         input={
             @HandlerInput(name="AppID", type=String.class, required=true)},
         output={
-            @HandlerOutput(name="Port", type=String.class)})
+            @HandlerOutput(name="Port", type=String.class),
+            @HandlerOutput(name="secure", type=Boolean.class)})
     public static void getPortForApplication(HandlerContext ctx) {
         String appName = (String)ctx.getInputValue("AppID");
         String port = getPortForApplication(appName);
-        ctx.setOutputValue("Port", port);
+        if (port.startsWith("-") ){
+            ctx.setOutputValue("Port", port.substring(1));
+            ctx.setOutputValue("secure", true);
+        }else{
+            ctx.setOutputValue("Port", port);
+            ctx.setOutputValue("secure", false);
+        }
+        
     }
     
-    /* returns the port number on which appName could be executed */
+    /* returns the port number on which appName could be executed 
+     * will try to get a port number that is not secured.  But if it can't find one, a
+     * secured port will be returned, prepanded with '-'
+     */
     static String getPortForApplication(String appName) {
         ObjectName appRef = null;
         try {
@@ -1751,6 +1763,7 @@ public class ApplicationHandlers {
             return ""; // no vs found for this app..
 
         String port = null;
+        Boolean secure = false;
         try{
         ObjectName vsObjectName = (ObjectName)
             JMXUtil.invoke("com.sun.appserv:type=configs,category=config",
@@ -1758,20 +1771,24 @@ public class ApplicationHandlers {
             new Object[]{vsId, null},
             new String[]{"java.lang.String", "java.lang.String"});
         if (vsObjectName != null) {
-            String listener = (String)JMXUtil.getAttribute(vsObjectName, "http-listeners");
-            if (listener != null) {
-                if (listener.indexOf(",") > 0) {
-                    listener = listener.substring(0, listener.indexOf(","));
+            String listeners = (String)JMXUtil.getAttribute(vsObjectName, "http-listeners");
+            if (listeners != null) {
+                StringTokenizer tok = new StringTokenizer(listeners, ",");
+                String listener = "";
+                while (tok.hasMoreTokens()) {
+                    listener = tok.nextToken();
+                    ObjectName listenerObjectName = (ObjectName)
+                        JMXUtil.invoke("com.sun.appserv:type=configs,category=config",
+                        "getHttpListener",
+                        new Object[]{listener, null},
+                        new String[]{"java.lang.String", "java.lang.String"});
+                    secure = Boolean.valueOf((String) JMXUtil.getAttribute(listenerObjectName, "security-enabled"));
+                    port = (String)JMXUtil.getAttribute(listenerObjectName, "port");
+                    if (! secure) break;
                 }
-                ObjectName listenerObjectName = (ObjectName)
-                    JMXUtil.invoke("com.sun.appserv:type=configs,category=config",
-                    "getHttpListener",
-                    new Object[]{listener, null},
-                    new String[]{"java.lang.String", "java.lang.String"});
-                port = (String)JMXUtil.getAttribute(listenerObjectName, "port");
             }
         }
-        return port;
+        return (secure) ? "-" + port : port;
         }catch(Exception ex){
             //Maybe the vitrual server is not found, maybe there is no http listener
             //this can be the case due to user error during deployment. refer to issue#2807.
@@ -1802,7 +1819,10 @@ public class ApplicationHandlers {
     }
     
     static private boolean includeAppRef( String appName, String appType, String filterValue ){ 
-        
+        //for non-j2ee type apps, eg SIP, appType may be empty. Ignore it since we don't have code to handle non-standard j2ee apps
+        if (GuiUtil.isEmpty(appType)){
+            return false;
+        }
         if (!GuiUtil.isEmpty(filterValue)){
             if (!appType.equals(filterValue))
                 return false;
