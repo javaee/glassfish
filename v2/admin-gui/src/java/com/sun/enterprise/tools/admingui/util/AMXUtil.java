@@ -364,7 +364,9 @@ public class AMXUtil {
               if (GuiUtil.isEmpty(propValue))
                   config.removeProperty(propName);
               else
+              if (! propValue.equals(config.getPropertyValue(propName)))
                   config.setPropertyValue(propName, propValue);
+              //don't change the value if it is equal.
            }else{
               if (!GuiUtil.isEmpty(propValue))
                     config.createProperty(propName, propValue);
