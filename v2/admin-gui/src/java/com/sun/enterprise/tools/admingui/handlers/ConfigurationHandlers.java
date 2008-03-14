@@ -3630,6 +3630,7 @@ public class ConfigurationHandlers {
      *  <p> Output value: "RedirectPort"       -- Type: <code>java.lang.String</code></p>
      *  <p> Output value: "Acceptor"           -- Type: <code>java.lang.String</code></p>
      *  <p> Output value: "PoweredBy"          -- Type: <code>java.lang.Boolean</code></p>
+     *  <p> Output value: "Blocking"           -- Type: <code>java.lang.Boolean</code></p>
      *  <p> Output value: "Properties"         -- Type: <code>java.util.Map</code></p>
      *	@param	context	The HandlerContext.
      */
@@ -3649,6 +3650,7 @@ public class ConfigurationHandlers {
         @HandlerOutput(name="RedirectPort",      type=String.class),
         @HandlerOutput(name="Acceptor",          type=String.class),
         @HandlerOutput(name="PoweredBy",         type=Boolean.class),
+        @HandlerOutput(name="Blocking",          type=Boolean.class),
         @HandlerOutput(name="Properties",        type=Map.class)})
         
         public static void getHttpListenerValues(HandlerContext handlerCtx) {
@@ -3663,7 +3665,8 @@ public class ConfigurationHandlers {
                     handlerCtx.setOutputValue("Listener", httpAttrMap.get("enabled"));
                     handlerCtx.setOutputValue("security", httpAttrMap.get("security-enabled"));
                     handlerCtx.setOutputValue("Acceptor", httpAttrMap.get("acceptor-threads"));
-                    handlerCtx.setOutputValue("PoweredBy", httpAttrMap.get("xpowered-by"));    
+                    handlerCtx.setOutputValue("PoweredBy", httpAttrMap.get("xpowered-by"));
+                    handlerCtx.setOutputValue("Blocking", httpAttrMap.get("blocking-enabled"));
                 }else{
                     Map props = (Map) handlerCtx.getFacesContext().getExternalContext().getSessionMap().get("httpProps");
                     handlerCtx.setOutputValue("Listener", props.get("enabled"));
@@ -3675,6 +3678,7 @@ public class ConfigurationHandlers {
                     handlerCtx.setOutputValue("RedirectPort", props.get("redirectPort"));
                     handlerCtx.setOutputValue("Acceptor", props.get("acceptor-threads"));
                     handlerCtx.setOutputValue("PoweredBy", props.get("xpowered-by"));
+                    handlerCtx.setOutputValue("Blocking", props.get("blocking-enabled"));
                     handlerCtx.setOutputValue("Properties", props.get("options"));
                 }
                 return;
@@ -3692,6 +3696,7 @@ public class ConfigurationHandlers {
             handlerCtx.setOutputValue("RedirectPort", httpListConfig.getRedirectPort());
             handlerCtx.setOutputValue("Acceptor", httpListConfig.getAcceptorThreads());
             handlerCtx.setOutputValue("PoweredBy", httpListConfig.getXpoweredBy());
+            handlerCtx.setOutputValue("Blocking", httpListConfig.getBlockingEnabled());
             Map<String, String> pMap = httpListConfig.getProperties();
             
             //refer to issue#2920; If we want to hide this property, just uncomment the following 2 lines.
@@ -3719,6 +3724,7 @@ public class ConfigurationHandlers {
      *  <p> Input value: "RedirectPort"      -- Type: <code>java.lang.String</code></p>
      *  <p> Input value: "Acceptor"          -- Type: <code>java.lang.String</code></p>
      *  <p> Input value: "PoweredBy"         -- Type: <code>java.lang.Boolean</code></p>
+     *  <p> Input value: "Blocking"          -- Type: <code>java.lang.Boolean</code></p>
      *  <p> Input value: "AddProps"          -- Type: <code>java.util.Map</code></p>
      *  <p> Input value: "RemoveProps"       -- Type: <code>java.util.ArrayList</code></p>
      *	@param	context	The HandlerContext.
@@ -3737,6 +3743,7 @@ public class ConfigurationHandlers {
         @HandlerInput(name="RedirectPort",      type=String.class),
         @HandlerInput(name="Acceptor",          type=String.class),
         @HandlerInput(name="PoweredBy",         type=Boolean.class),
+        @HandlerInput(name="Blocking",          type=Boolean.class),
         @HandlerInput(name="AddProps",          type=Map.class),
         @HandlerInput(name="RemoveProps",       type=ArrayList.class) })
         
@@ -3763,6 +3770,7 @@ public class ConfigurationHandlers {
                 httpPropsMap.put("redirectPort", (String)handlerCtx.getInputValue("RedirectPort"));
                 httpPropsMap.put("acceptor-threads", (String)handlerCtx.getInputValue("Acceptor"));
                 httpPropsMap.put("xpowered-by", (Boolean)handlerCtx.getInputValue("PoweredBy")); 
+                httpPropsMap.put("blocking-enabled", (Boolean)handlerCtx.getInputValue("Blocking")); 
                 handlerCtx.getFacesContext().getExternalContext().getSessionMap().put("httpProps", httpPropsMap);
                 //the actual creation is in step 2 of the wizard.
             } else {
@@ -3777,6 +3785,7 @@ public class ConfigurationHandlers {
                 httpListConfig.setRedirectPort((String)handlerCtx.getInputValue("RedirectPort"));
                 httpListConfig.setAcceptorThreads((String)handlerCtx.getInputValue("Acceptor"));
                 httpListConfig.setXpoweredBy((Boolean)handlerCtx.getInputValue("PoweredBy"));
+                httpListConfig.setBlockingEnabled((Boolean)handlerCtx.getInputValue("Blocking"));
                 AMXUtil.editProperties(handlerCtx, httpListConfig);
                 
                 //refer to issue #2920
@@ -4924,6 +4933,10 @@ public class ConfigurationHandlers {
     }
     
     public static SelectItem[] getOptions(String[] values){
+        if (values == null){
+           SelectItem[] options = (SelectItem []) Array.newInstance(SUN_OPTION_CLASS, 0);
+           return options;
+        }
         SelectItem[] options =
                 (SelectItem []) Array.newInstance(SUN_OPTION_CLASS, values.length);
         for (int i =0; i < values.length; i++) {
@@ -4962,8 +4975,9 @@ public class ConfigurationHandlers {
     }
     
     public static SelectItem[] getModOptions(String[] values){
+        int size = (values == null)? 1 : values.length +1;
         SelectItem[] options =
-	    (SelectItem []) Array.newInstance(SUN_OPTION_CLASS, values.length+1);
+	    (SelectItem []) Array.newInstance(SUN_OPTION_CLASS, size);
         options[0] = getSunOption("", "");
 	for (int i = 0; i < values.length; i++) {
 	    SelectItem option = getSunOption(values[i], values[i]);
