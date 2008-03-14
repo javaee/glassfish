@@ -409,7 +409,7 @@ public final class ConfigModel {
             Object value = super.get(dom, rt);
             if (value == null)
                 return (dv);
-            return ( null );
+            return value;
         }
     }
     
