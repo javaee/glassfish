@@ -31,17 +31,7 @@
         </dependency>
         <dependency>
             <groupId>com.sun.corba</groupId>
-            <artifactId>glassfish-corba-peorb</artifactId>
-            <version>1.0</version>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.corba</groupId>
             <artifactId>glassfish-corba-orblib</artifactId>
-            <version>1.0</version>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.corba</groupId>
-            <artifactId>glassfish-corba-omgapi</artifactId>
             <version>1.0</version>
         </dependency>
         <dependency>
