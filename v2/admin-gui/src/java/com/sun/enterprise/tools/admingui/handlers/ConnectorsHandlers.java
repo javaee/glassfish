@@ -51,7 +51,6 @@
 
 package com.sun.enterprise.tools.admingui.handlers;
 
-import com.sun.enterprise.security.util.SSHA;
 import com.sun.jsftemplating.annotation.Handler; 
 import com.sun.jsftemplating.annotation.HandlerInput;
 import com.sun.jsftemplating.annotation.HandlerOutput;
@@ -62,7 +61,6 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Set;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Collection;
 import java.util.Properties;
@@ -1767,19 +1765,15 @@ public class ConnectorsHandlers {
     public static void changeEnableForTarget(HandlerContext handlerCtx){
         List<Map> selectedRows = (List) handlerCtx.getInputValue("selectedRows");
         boolean enabled = ((Boolean)handlerCtx.getInputValue("enabled")).booleanValue();
-        boolean isServer = ((Boolean)handlerCtx.getInputValue("isServer")).booleanValue();
         String target = (String)handlerCtx.getInputValue("target");
-        Map<String, ResourceRefConfig> refs = new HashMap();
-        if (isServer){
-            StandaloneServerConfig server = AMXUtil.getDomainConfig().getStandaloneServerConfigMap().get(target);
-            refs = server.getResourceRefConfigMap();
-        }else{
-            ClusterConfig cluster = AMXUtil.getDomainConfig().getClusterConfigMap().get(target);
-            refs = cluster.getResourceRefConfigMap();
-        }
+       
+        List<Map<String, ResourceRefConfig>> allResourceRefs = TargetUtil.getAllResourceRefConfig(target);
         for(Map oneRow: selectedRows){
-            ResourceRefConfig ref = refs.get(oneRow.get("name"));
-            ref.setEnabled(enabled);
+            String name = (String) oneRow.get("name");
+            for(Map<String, ResourceRefConfig> oneResourceMap : allResourceRefs){
+                ResourceRefConfig ref = oneResourceMap.get(name);
+                ref.setEnabled(enabled);
+            }
         }
     }
     
