@@ -66,44 +66,27 @@ import org.glassfish.api.Async;
     incompatibilities.
  */
 @Service
-@Scoped(Singleton.class)
 @Async
-@FactoryFor( MBeanServer.class )
-public final class AppserverMBeanServerFactory implements Startup, PostConstruct, PreDestroy, Factory
+public final class AppserverMBeanServerFactory implements Startup
 {
-    protected static void debug( final String s ) { System.out.println(s); }
-    
     // we'd ideally like to name things, but @Extract is not working
     public static final String OFFICIAL_MBEANSERVER = "Official_MBeanServer";
     
-    //@Extract    //(name=OFFICIAL_MBEANSERVER)
-    private final MBeanServer officialMBeanServer;
+    @Extract(name=OFFICIAL_MBEANSERVER)
+    private MBeanServer officialMBeanServer;
     
-    public AppserverMBeanServerFactory()
+    public void AppserverMBeanServerFactory()
     {
         final long start = System.currentTimeMillis();
         officialMBeanServer = ManagementFactory.getPlatformMBeanServer();
         //System.out.println( "AppserverMBeanServerFactory initialized in " + (System.currentTimeMillis() - start) + " ms" );
     }
     
-    public void postConstruct()
-    {
-        //debug( "AppserverMBeanServerFactory: postConstruct" );
-    }
-    
-    public void preDestroy()
-    {
-        //debug( "AppserverMBeanServerFactory: preDestroy" );
-    }
-
     public Startup.Lifecycle getLifecycle() {
         return Startup.Lifecycle.SERVER;
     }
     
-    public Object getObject() {
-        return officialMBeanServer;
-    }
-};
+}
 
 
 
