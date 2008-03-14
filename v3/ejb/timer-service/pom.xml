@@ -1,0 +1,31 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.glassfish.ejb</groupId>
+        <artifactId>ejb</artifactId>
+        <version>10.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>timer-service</artifactId>
+    <packaging>hk2-jar</packaging>
+    <name>EJB Timer Service implementation</name>
+
+    <developers>
+        <developer>
+            <id>mvatkina</id>
+            <name>Marina Vatkina</name>
+            <organization>Sun Microsystems, Inc.</organization>
+            <roles>
+                <role>developer</role>
+            </roles>
+        </developer>
+    </developers>
+    <dependencies>
+        <dependency>
+            <groupId>org.glassfish.ejb</groupId>
+            <artifactId>ejb-container</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
+</project>

@@ -5,6 +5,8 @@ import com.sun.enterprise.container.common.spi.JavaEETransactionManager;
 import com.sun.enterprise.container.common.spi.util.ComponentEnvManager;
 import com.sun.enterprise.container.common.spi.util.InjectionManager;
 import com.sun.enterprise.config.serverbeans.EjbContainer;
+import com.sun.enterprise.config.serverbeans.Application;
+import com.sun.enterprise.config.serverbeans.ApplicationHelper;
 import com.sun.enterprise.deployment.EjbDescriptor;
 import com.sun.enterprise.server.ServerContext;
 import org.glassfish.api.invocation.ComponentInvocation;
@@ -64,6 +66,9 @@ public class EjbContainerUtil
 
     @Inject
     private EjbContainer ejbContainer;
+
+    @Inject
+    private ApplicationHelper applicationHelper;
 
     private  static EjbContainerUtil _me;
 
@@ -174,6 +179,10 @@ public class EjbContainerUtil
 
     public EjbContainer getEjbContainer() {
         return ejbContainer;
+    }
+
+    public Application findApplicationByName(String appName) {
+        return applicationHelper.findApplicationByName(appName);
     }
 
     public  Vector getBeans(Transaction jtx) {
