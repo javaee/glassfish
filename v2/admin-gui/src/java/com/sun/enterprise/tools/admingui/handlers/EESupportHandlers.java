@@ -402,12 +402,17 @@ public class EESupportHandlers {
             List<String> strList = GuiUtil.convertListOfStrings(serverList);
             availableOptions = GuiUtil.getSunOptions(strList);
         }
+        
         String defaultTarget = (String)handlerCtx.getInputValue("defaultTarget");
-        if (GuiUtil.isEmpty(defaultTarget))
-            defaultTarget="server";
-        String[] selected = { defaultTarget};
-        handlerCtx.setOutputValue("AvailableTargets", availableOptions);
+        if (defaultTarget == null) {
+            defaultTarget = "server";
+        }
+        String [] selected = { defaultTarget };
+        if (defaultTarget.trim().equals("")) {
+            selected = new String[0];
+        }
         handlerCtx.setOutputValue("SelectedTargets", selected);
+        handlerCtx.setOutputValue("AvailableTargets", availableOptions);
     }
 
     
