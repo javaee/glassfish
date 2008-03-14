@@ -48,17 +48,16 @@ import com.sun.appserv.management.base.AMX;
 import com.sun.appserv.management.config.DeployedItemRefConfig;
 import com.sun.appserv.management.config.DeployedItemRefConfigCR;
 import com.sun.appserv.management.config.ClusterConfig;
+import com.sun.appserv.management.config.ClusteredServerConfig;
 import com.sun.appserv.management.config.ConfigConfig;
 import com.sun.appserv.management.config.ResourceRefConfig;
 import com.sun.appserv.management.config.ResourceRefConfigCR;
 import com.sun.appserv.management.config.Enabled;
-import com.sun.appserv.management.config.ServerConfig;
 import com.sun.appserv.management.config.StandaloneServerConfig;
 import com.sun.appserv.management.config.ServerRefConfig;
 import com.sun.enterprise.util.SystemPropertyConstants; 
 import javax.management.ObjectName;
 
-import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;  
 
 public class TargetUtil {
 
@@ -118,13 +117,16 @@ public class TargetUtil {
      */
     static public void setResourceEnabled(Enabled resource, String target, boolean enabledFlag)
     {
-	//We use the ref to control enable status
-	String name = ((AMX)resource).getName();
-	ResourceRefConfig ref = getResourceRef(name, target);
-	if (enabledFlag)
+
+        if (enabledFlag)
 	    resource.setEnabled(true);
-	if (ref != null)
-	    ref.setEnabled((Boolean)enabledFlag);
+        //We use the ref to control enable status
+        String name = ((AMX)resource).getName();
+	List<Map<String, ResourceRefConfig>> allResourceRefs = getAllResourceRefConfig(target);
+        for(Map<String, ResourceRefConfig> oneResourceMap : allResourceRefs){
+            ResourceRefConfig ref = oneResourceMap.get(name);
+            ref.setEnabled(enabledFlag);
+        }
     }
 
 
@@ -142,6 +144,31 @@ public class TargetUtil {
 	    }
             return ref;
 	}
+        
+        
+        /*
+	 * Given the name of a  target, return the resource-ref object of this target.
+         * If the target is a cluster, all the resource-ref object of that clusteredInstance will also be included.
+	 */
+	static public List<Map<String, ResourceRefConfig>> getAllResourceRefConfig(String target){
+            List<Map<String, ResourceRefConfig>> allResourceRefs = new ArrayList();
+            
+            if (isCluster(target)){
+                ClusterConfig cluster = AMXUtil.getDomainConfig().getClusterConfigMap().get(target);
+                allResourceRefs.add(cluster.getResourceRefConfigMap());
+                //For every server in this cluster, we have to change the source ref status also.
+                Map<String,ClusteredServerConfig> clusteredServerConfigMap = cluster.getClusteredServerConfigMap();
+                Collection <ClusteredServerConfig> csConfigs = clusteredServerConfigMap.values();
+                for(ClusteredServerConfig csConfig : csConfigs){
+                    allResourceRefs.add(csConfig.getResourceRefConfigMap());
+                }
+            }else{
+                StandaloneServerConfig server = AMXUtil.getDomainConfig().getStandaloneServerConfigMap().get(target);
+                allResourceRefs.add(server.getResourceRefConfigMap());
+            }
+            return allResourceRefs;
+        }
+                
         
         /*
 	 * Given the name of a resource and the target, create the resource-ref object
