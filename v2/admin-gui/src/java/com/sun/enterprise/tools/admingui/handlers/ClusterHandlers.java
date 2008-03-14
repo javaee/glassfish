@@ -51,47 +51,32 @@ import com.sun.jsftemplating.component.dataprovider.MultipleListDataProvider;
 import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.ListIterator;
 
-import javax.faces.model.SelectItem;
-import javax.management.MBeanException;
 import javax.management.ObjectName;
 
-import java.lang.reflect.Array;
-import java.lang.reflect.Constructor;
-import java.lang.Integer;
-
-import com.sun.enterprise.tools.admingui.handlers.StandAloneInstanceHandlers;
 import com.sun.enterprise.tools.admingui.util.JMXUtil;
 import com.sun.enterprise.tools.admingui.util.AMXUtil;
 import com.sun.enterprise.tools.admingui.util.GuiUtil;
 
 import com.sun.webui.jsf.component.TableRowGroup;
 
-import com.sun.appserv.management.config.DomainConfig;
 import com.sun.appserv.management.config.ClusterConfig;
 import com.sun.appserv.management.config.ConfigConfig;
-import com.sun.appserv.management.config.ServerConfig;
 import com.sun.appserv.management.config.ServerRefConfig;
 import com.sun.appserv.management.config.ClusteredServerConfig;
 import com.sun.appserv.management.config.ConfigConfigKeys;
-import com.sun.appserv.management.config.ServerConfigKeys;
 import com.sun.appserv.management.j2ee.StateManageable;
 import com.sun.appserv.management.j2ee.J2EEServer;
 import com.sun.appserv.management.j2ee.J2EECluster;
 import com.sun.enterprise.tools.admingui.util.JMXUtil;
-import javax.faces.context.FacesContext;
 import com.sun.enterprise.ee.admin.PortReplacedException;
 import com.sun.enterprise.admin.common.Status;
 import com.sun.enterprise.admin.servermgmt.RuntimeStatus;
-
-import com.sun.enterprise.tools.admingui.handlers.ConfigurationHandlers;
 
 
 /**
@@ -117,7 +102,6 @@ public class ClusterHandlers{
         String copyFlag = (String)handlerCtx.getInputValue("CopyConfig");
         List<Map> instances = (List)handlerCtx.getInputValue("Instances");
         boolean clusterCreated = false;
-        boolean configCreated = false;
         try {
             if (AMXUtil.getConfig(clusterName+"-config") != null){
                GuiUtil.handleError(handlerCtx, GuiUtil.getMessage("msg.cluster.creationError", new 
