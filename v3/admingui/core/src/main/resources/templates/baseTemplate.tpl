@@ -1,8 +1,8 @@
 <sun:page>
 // commenting this out since there is not support for this yet in V3
   <!beforeCreate 
-//      setResourceBundle(key="i18n" bundle="com.sun.enterprise.tools.admingui.resources.Strings")
-//	setResourceBundle(key="help" bundle="com.sun.enterprise.tools.admingui.resources.Helplinks")
+      setResourceBundle(key="i18n" bundle="core.Strings")
+    #setResourceBundle(key="help" bundle="core.Helplinks")
     />
 // commenting this out since there is not support for this yet in V3
 // #include "shared/restart.inc"
