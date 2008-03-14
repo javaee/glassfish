@@ -33,13 +33,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
- 
-/*
- * $Header: /cvs/glassfish/appserv-api/src/java/com/sun/appserv/management/util/jmx/AttributeChangeNotificationBuilder.java,v 1.2 2007/05/05 05:31:03 tcfujii Exp $
- * $Revision: 1.2 $
- * $Date: 2007/05/05 05:31:03 $
- */
-
 package com.sun.appserv.management.util.jmx;
 
 import javax.management.Notification;
@@ -80,10 +73,23 @@ public class AttributeChangeNotificationBuilder extends NotificationBuilder
 		final Object	oldValue,
 		final Object	newValue )
 	{
+        return buildAttributeChange( msg, attributeName, attributeType, now(), oldValue, newValue );
+	}
+    
+    
+		public final AttributeChangeNotification
+	buildAttributeChange(
+		final String	msg,
+		final String	attributeName,
+		final String	attributeType,
+        final long      when,
+		final Object	oldValue,
+		final Object	newValue )
+	{
 		final AttributeChangeNotification notif	= new AttributeChangeNotification(
 			getSource(),
 			nextSequenceNumber(),
-			now(),
+			when,
 			msg,
 			attributeName,
 			attributeType,

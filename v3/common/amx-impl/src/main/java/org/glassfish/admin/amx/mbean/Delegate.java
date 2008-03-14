@@ -35,6 +35,8 @@
  */
 package org.glassfish.admin.amx.mbean;
 
+import java.util.Map;
+
 import javax.management.ObjectName;
 import javax.management.MBeanInfo;
 import javax.management.AttributeList;
@@ -45,6 +47,8 @@ import javax.management.InstanceNotFoundException;
 import javax.management.ReflectionException;
 import javax.management.MBeanException;
 
+
+import java.beans.PropertyChangeEvent;
 
 
 /**
@@ -64,11 +68,13 @@ public interface Delegate
 
 	public AttributeList getAttributes( final String[] attrNames );
 	
-	public void setAttribute( final Attribute attrName )
-		throws	AttributeNotFoundException,
-				InvalidAttributeValueException;
-	
-	public AttributeList	setAttributes( final AttributeList mappedAttrs );
+    /**
+        Note: singular form of setAttribute() is not supported.
+        
+        @param attrs the Attributes to change
+        @param oldValue oldValues corresponding to each changed Attribute
+     */
+	public AttributeList setAttributes( final AttributeList attrs, final Map<String,Object> oldValues);
 	
 	/**
 		Return true if the Attribute is supported

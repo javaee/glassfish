@@ -55,6 +55,8 @@ import javax.management.*;
 
 import com.sun.appserv.management.util.stringifier.SmartStringifier;
 import com.sun.appserv.management.util.stringifier.ArrayStringifier;
+import com.sun.appserv.management.util.jmx.stringifier.AttributeChangeNotificationStringifier;
+
 
 import com.sun.appserv.management.base.AMX;
 import com.sun.appserv.management.base.AMXDebug;
@@ -707,7 +709,10 @@ public class AMXImplBase extends MBeanImplBase
 			throw new RuntimeException( e );
 		}
 	}
-	
+    
+	/*
+        March 14 2008: retain this code until we're sure it's not needed
+        
 		protected void
 	delegateSetAttribute(
 		final String	name,
@@ -735,6 +740,7 @@ public class AMXImplBase extends MBeanImplBase
 			throw ee;
 		}
 	}
+    */
 	
 	
 	
@@ -1119,7 +1125,6 @@ public class AMXImplBase extends MBeanImplBase
 		}
 	}
 	
-	
 	/**
 		Set an Attribute value, first by looking for a setter method
 		of the correct name and signature, then by looking for a delegate,
@@ -1138,7 +1143,7 @@ public class AMXImplBase extends MBeanImplBase
 		boolean			handleManually	= false;
 		final Method	m	= findSetter( attr );
 		
-		final boolean	shouldEmitNotifications	= shouldEmitNotifications();
+		boolean	shouldEmitNotifications	= shouldEmitNotifications();
 		// note that this will fail if an Attribute is write-only
 		final Object	oldValue	= shouldEmitNotifications ?
 						getAttribute( attr.getName() ) : null;
@@ -1151,14 +1156,11 @@ public class AMXImplBase extends MBeanImplBase
 		{
 			if ( getDelegate().supportsAttribute( attr.getName() ) )
 			{
-				try
-				{
-					getDelegate().setAttribute( attr );
-				}
-				catch( JMException e )
-				{
-					handleManually	= true;
-				}
+                // For delegated attributes, treat singles as a list
+                final AttributeList attrList = new AttributeList();
+                attrList.add( attr );
+                setAttributes( attrList );
+                shouldEmitNotifications = false; // already handled
 			}
 			else
 			{
@@ -1179,7 +1181,7 @@ public class AMXImplBase extends MBeanImplBase
 		{
 			final String	attrType	= getAttributeType( attr.getName() );
 			
-			sendAttributeChangeNotification( "", attrType, oldValue, attr );
+			sendAttributeChangeNotification( "", attr.getName(), attrType, System.currentTimeMillis(), oldValue, attr.getValue() );
 		}
 	}
 	
@@ -1195,21 +1197,29 @@ public class AMXImplBase extends MBeanImplBase
 		protected synchronized void
 	sendAttributeChangeNotification(
 		final String	msg,
+        final String    name,
 		final String	attrType,
+        final long      when,
 		final Object	oldValue,
-		final Attribute	newAttr)
+		final Object    newValue )
 	{
-		final AttributeChangeNotificationBuilder builder	=
-		(AttributeChangeNotificationBuilder)
-			getNotificationBuilder( AttributeChangeNotification.ATTRIBUTE_CHANGE );
+        //
+        // do not send a Notification when nothing has changed
+        //
+        if ( oldValue != null  && ! oldValue.equals(newValue) )
+        {
+            final AttributeChangeNotificationBuilder builder	=
+            (AttributeChangeNotificationBuilder)
+                getNotificationBuilder( AttributeChangeNotification.ATTRIBUTE_CHANGE );
 		
-		final AttributeChangeNotification	n	= 
-			builder.buildAttributeChange( msg, newAttr.getName(), attrType, oldValue, newAttr.getValue() );
-			
-		sendNotification( n );
+            final AttributeChangeNotification	n	= 
+                builder.buildAttributeChange( msg, name, attrType, when, oldValue, newValue );
+            
+            System.out.println( "AttributeChangeNotification: " + AttributeChangeNotificationStringifier.DEFAULT.stringify(n) );
+            sendNotification( n );
+        }
 	}
 	
-    
     /**
         Split the attributes into two lists: those supported via a delegate and those not.
         This is done so that a single transaction can be done for setAttributes().
@@ -1242,6 +1252,30 @@ public class AMXImplBase extends MBeanImplBase
         }
     }
     
+        private void
+    sendAttributeChangeNotifications(
+        final AttributeList      attrList,
+        final Map<String,Object> oldValues )
+    {
+        // issue all of them using the same time-of-change
+        final long when = System.currentTimeMillis();
+        
+        final Map<String, String> attrsMap = JMXUtil.attributeListToStringMap( attrList );
+        if ( ! attrsMap.keySet().equals( oldValues.keySet() ) )
+        {
+            throw new IllegalArgumentException();
+        }
+        
+        final String msg = "";
+        for (final String attrName : attrsMap.keySet() )
+        {
+            final String attrType = getAttributeType(attrName);
+            final Object oldValue = oldValues.get(attrName);
+            final Object newValue = attrsMap.get(attrName);
+            
+			sendAttributeChangeNotification( "", attrName, attrType, when, oldValue, newValue );
+        }
+    }
     
 	/**
 		Bulk set.  Note that is is important for this implementation to
@@ -1267,7 +1301,12 @@ public class AMXImplBase extends MBeanImplBase
         
         if ( delegatedAttrs.size() != 0 )
         {
-            successList.addAll( getDelegate().setAttributes( delegatedAttrs ) );
+            final Map<String,Object> oldValues = new HashMap<String,Object>();
+            
+            final AttributeList delegateSuccess = getDelegate().setAttributes( delegatedAttrs, oldValues );
+            successList.addAll( delegateSuccess );
+            
+            sendAttributeChangeNotifications( delegateSuccess, oldValues );
         }
         
         if ( otherAttrs.size() != 0 )
@@ -1278,6 +1317,7 @@ public class AMXImplBase extends MBeanImplBase
                 try
                 {
                     setAttribute( attr );
+                    // AttributeChangeNotification should now be sent
                     
                     successList.add( attr );
                 }

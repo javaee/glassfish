@@ -83,7 +83,7 @@ public final class AppserverMBeanServerFactory implements Startup, PostConstruct
     {
         final long start = System.currentTimeMillis();
         officialMBeanServer = ManagementFactory.getPlatformMBeanServer();
-        System.out.println( "AppserverMBeanServerFactory initialized in " + (System.currentTimeMillis() - start) + " ms" );
+        //System.out.println( "AppserverMBeanServerFactory initialized in " + (System.currentTimeMillis() - start) + " ms" );
     }
     
     public void postConstruct()

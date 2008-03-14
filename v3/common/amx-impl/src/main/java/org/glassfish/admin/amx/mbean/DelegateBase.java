@@ -36,6 +36,7 @@
 package org.glassfish.admin.amx.mbean;
 
 import java.util.Set;
+import java.util.Map;
 
 import javax.management.ObjectName;
 import javax.management.MBeanServer;
@@ -144,37 +145,10 @@ public abstract class DelegateBase implements Delegate
 	
 	
 	/**
-		Default behavior is too loop over each Attribute; subclass
+		Default behavior is to loop over each Attribute; subclass
 		may wish to maintain atomicity by implementing directly.
 	 */
-		public AttributeList
-	setAttributes( final AttributeList attrs )
-	{
-		final int			numAttrs	= attrs.size();
-		final AttributeList	successList	= new AttributeList();
-		
-		for( int i = 0; i < numAttrs; ++i )
-		{
-			final Attribute attr	= (Attribute)attrs.get( i );
-			try
-			{
-				setAttribute( attr );
-				
-				successList.add( attr );
-			}
-			catch( AttributeNotFoundException e )
-			{
-				// ignore, as per spec
-			}
-			catch( InvalidAttributeValueException e )
-			{
-				// ignore, as per spec
-			}
-		}
-		return( successList );
-	}
-	
-	
+	public abstract AttributeList setAttributes( final AttributeList attrs, final Map<String,Object> oldValues);
 	
 	/**
 		Do the classnames match the parameter infos?

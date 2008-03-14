@@ -35,11 +35,13 @@
  */
 package org.glassfish.admin.amx.mbean;
 
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.Set;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Collections;
 
-import java.beans.PropertyVetoException;
+import java.beans.PropertyChangeEvent;
 
 import javax.management.ObjectName;
 import javax.management.MBeanServer;
@@ -53,14 +55,20 @@ import javax.management.InstanceNotFoundException;
 import javax.management.IntrospectionException;
 import javax.management.ReflectionException;
 
-import com.sun.appserv.management.util.misc.CollectionUtil;
-import com.sun.appserv.management.util.misc.ExceptionUtil;
-
 import org.jvnet.hk2.config.ConfigBean;
 import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.TransactionFailure;
 import org.jvnet.hk2.config.ConfigBeanProxy;
+import org.jvnet.hk2.config.Transactions;
+import org.jvnet.hk2.config.TransactionListener;
+
+
+import com.sun.appserv.management.util.misc.CollectionUtil;
+import com.sun.appserv.management.util.misc.ExceptionUtil;
+
+import com.sun.appserv.management.util.jmx.JMXUtil;
+
 
 
 /**
@@ -132,96 +140,107 @@ public final class DelegateToConfigBeanDelegate extends DelegateBase
         throw new AttributeNotFoundException( name );
     }
 
-		public void
-	setAttribute( final Attribute attr )
-		throws AttributeNotFoundException, InvalidAttributeValueException
-	{
-        //debug( "DelegateToConfigBeanDelegate.setAttribute: " + attr.getName() );
+    private static final class MyTransactionListener implements TransactionListener
+    {
+        private static final List<PropertyChangeEvent> EMPTY = Collections.emptyList();
+        private volatile List<PropertyChangeEvent> mChangeEvents = EMPTY;
         
-        final AttributeList attrs = new AttributeList();
-        attrs.add( attr );
+        MyTransactionListener() {}
         
-        final AttributeList result = this.setAttributes( attrs );
-        if ( result.size() != 1 )
-        {
-            throw new RuntimeException( "Couldn't setAttribute: " + attr.getName() + " to " + attr.getValue() );
+        public void transactionCommited(List<PropertyChangeEvent> changes) {
+            if ( mChangeEvents != EMPTY )
+            {
+                throw new IllegalStateException( "can commit only once!" );
+            }
+            
+            mChangeEvents = changes;
         }
-	}
+        List<PropertyChangeEvent>  getChangeEvents() { return mChangeEvents; }
+    };
+
+    /**
+        Make a Map keyed by the property name of the PropertyChangeEvent, verifying that each
+        name is non-null.
+     */
+        private  Map<String,PropertyChangeEvent>
+    makePropertyChangeEventMap( final List<PropertyChangeEvent> changeEvents )
+    {
+        final Map<String,PropertyChangeEvent>   m = new HashMap<String,PropertyChangeEvent>();
         
-        private void
-	_setAttribute( final Attribute attr )
-		throws AttributeNotFoundException, InvalidAttributeValueException
-	{
-        mConfigBean.attribute( getXMLName(attr.getName()), "" + attr.getValue() );
-	}
+        for( final PropertyChangeEvent changeEvent : changeEvents )
+        {
+            if ( changeEvent.getPropertyName() == null )
+            {
+                throw new IllegalArgumentException( "PropertyChangeEvent property names must be specified" );
+            }
+            
+            m.put( changeEvent.getPropertyName(), changeEvent );
+        }
+        return m;
+    }
     
 		public AttributeList
-	setAttributes( final AttributeList attrs )
+	setAttributes( final AttributeList attrsIn, final Map<String,Object> oldValues )
 	{
-        final SetAttributes setter = new SetAttributes( attrs, mConfigBean );
+        oldValues.clear();
         
-        final ConfigBeanProxy cbp = mConfigBean.getProxy( ConfigBeanProxy.class );
+        // note that attributeListToStringMap() auto-converts types to 'String' which is desired here
+        final Map<String, String> attrs = JMXUtil.attributeListToStringMap( attrsIn );
+        final Map<ConfigBean, Map<String, String>> changes = new HashMap<ConfigBean, Map<String, String>>();
+        changes.put( mConfigBean, attrs );
+        
+        debug( "DelegateToConfigBeanDelegate.setAttributes(): " + attrsIn.size() + " attributes: " + CollectionUtil.toString(attrs.keySet()) );
+        
+        final MyTransactionListener  myListener = new MyTransactionListener();
+        Transactions.get().addTransactionsListener(myListener);
+            
+        // results should contain only those that succeeded which will be all or none
+        // depending on whether the transaction worked or not
+        final AttributeList successfulAttrs = new AttributeList();
         try
         {
-            ConfigSupport.apply( setter, cbp );
+            ConfigSupport.apply( changes );
+            // use 'attrsIn' vs 'attrs' in case not all values are 'String'
+            successfulAttrs.addAll( attrsIn );
         }
-        catch( Exception e )
+        catch( final TransactionFailure tf )
         {
-            debug( ExceptionUtil.toString(e) );
-            throw new RuntimeException( ExceptionUtil.toString(e) );
+            // empty results -- no Exception should be thrown per JMX spec
+            debug( ExceptionUtil.toString(tf) );
         }
-		
-		return setter.getResults();
-	}
-    
-    private final class SetAttributes implements SingleConfigCode<ConfigBeanProxy>
-    {
-        private final AttributeList mRequestedChanges;
-        private  AttributeList      mResults;
-        
-        public SetAttributes( final AttributeList attrs, final ConfigBean configBean)
+        finally
         {
-            mRequestedChanges = attrs;
-            mResults = new AttributeList();
+            Transactions.get().waitForDrain();
+            Transactions.get().removeTransactionsListener(myListener);
         }
         
-        public Object run( final ConfigBeanProxy configBean )
-            throws PropertyVetoException, TransactionFailure
+        if ( successfulAttrs.size() != 0 )
         {
-            final int numAttrs	= mRequestedChanges.size();
-            final AttributeList	successList	= new AttributeList();
-            
-            //debug( "Setting " + numAttrs + " attributes " );
-            for( int i = 0; i < numAttrs; ++i )
+            // verify that the size of the PropertyChangeEvent list matches
+            final List<PropertyChangeEvent> changeEvents = myListener.getChangeEvents();
+            if ( successfulAttrs.size() != changeEvents.size() )
             {
-                final Attribute attr	= (Attribute)mRequestedChanges.get( i );
-                //debug( "attrs[" + i + "] : " + attr.getName() + " = " + attr.getValue() );
-                try
-                {
-                    _setAttribute( attr );
-                    successList.add( attr );
-                }
-                catch( Exception e )
-                {
-                    // ignore, as per spec
-                    debug( ExceptionUtil.toString(e) );
-                }
+                throw new IllegalStateException( "List<PropertyChangeEvent> does not match the number of Attributes" );
             }
-            mResults    = successList;
             
-            return successList;
+            //
+            // provide details on old values for the caller. Note that config always returns
+            // type 'String' which no ability to map back to 'Integer', etc, so the MBeanInfo info
+            // of the MBean should not be using anything but String.
+            // 
+            final Map<String,PropertyChangeEvent> eventsMap = makePropertyChangeEventMap( changeEvents );
+            final Map<String, String> attrsS = JMXUtil.attributeListToStringMap( successfulAttrs );
+            
+            // supply all the old values to caller using the AMX attribute name
+            for( final String amxAttrName : attrsS.keySet() )
+            {
+                final PropertyChangeEvent changeEvent = eventsMap.get( getXMLName( amxAttrName ) );
+                oldValues.put( amxAttrName, changeEvent.getOldValue() );
+            }
         }
-        
-        /**
-            Call only after running.
-         */
-            public AttributeList
-        getResults()
-        {
-            return mResults;
-        }
-    }
-
+    
+		return successfulAttrs;
+	}
 	
 		public MBeanInfo
 	getMBeanInfo()
