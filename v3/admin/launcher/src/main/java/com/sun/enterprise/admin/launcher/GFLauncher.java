@@ -101,6 +101,11 @@ public abstract class GFLauncher {
         asenvProps = pr.getProps();
         info.setup();
         MiniXmlParser parser = new MiniXmlParser(getInfo().getConfigFile(), getInfo().getInstanceName());
+        
+        String domainName = parser.getDomainName();
+        if(GFLauncherUtils.ok(domainName)) {
+            info.setDomainName(parser.getDomainName());
+        }
         javaConfig = new JavaConfig(parser.getJavaConfig());
         setupProfilerAndJvmOptions(parser);
         sysPropsFromXml = parser.getSystemProperties();
