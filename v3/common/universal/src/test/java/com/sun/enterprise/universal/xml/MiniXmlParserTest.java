@@ -7,6 +7,7 @@ package com.sun.enterprise.universal.xml;
 
 import java.io.File;
 import java.net.*;
+import java.util.*;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -37,6 +38,8 @@ public class MiniXmlParserTest {
            MiniXmlParserTest.class.getClassLoader().getResource("noconfig.xml").getPath());
         hasProfiler = new File(
            MiniXmlParserTest.class.getClassLoader().getResource("hasprofiler.xml").getPath());
+        adminport = new File(
+           MiniXmlParserTest.class.getClassLoader().getResource("adminport.xml").getPath());
         assertTrue(wrongOrder.exists());
         assertTrue(rightOrder.exists());
         assertTrue(noconfig.exists());
@@ -200,19 +203,31 @@ public class MiniXmlParserTest {
         catch (MiniXmlParserException ex) {
             Logger.getLogger(MiniXmlParserTest.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+        
+     /*
+     * Exercise the parsing of asadmin virtual server, http-listener and port numbers
+     * 
+     */
+    @Test
+    public void test9() {
+        try {
+            MiniXmlParser instance = new MiniXmlParser(adminport, "server");
+            Set<Integer> ports = instance.getAdminPorts();
+            assertEquals(ports.size(), 2);
+            assertTrue(ports.contains(new Integer(3333)));
+            assertTrue(ports.contains(new Integer(4444)));
+        }
+        catch (MiniXmlParserException ex) {
+            Logger.getLogger(MiniXmlParserTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
         
     }
-/*
-*/
-    
-    
-    
-    
-    
     
     private static File hasProfiler;
     private static File wrongOrder;
     private static File rightOrder;
     private static File noconfig;
+    private static File adminport;
 }
 

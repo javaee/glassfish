@@ -22,6 +22,7 @@
  */
 package com.sun.enterprise.universal.xml;
 
+import com.sun.enterprise.universal.glassfish.GFLauncherUtils;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import java.io.*;
 import java.util.*;
@@ -101,6 +102,11 @@ public class MiniXmlParser {
     public String getDomainName() {
         return domainName;
     }
+
+    public Set<Integer> getAdminPorts() {
+        return adminPorts;
+    }
+ 
     ///////////////////////////////////////////////////////////////////////////
     ////////   Everything below here is private    ////////////////////////////
     ///////////////////////////////////////////////////////////////////////////
@@ -210,20 +216,22 @@ public class MiniXmlParser {
                     return;
                 }
             }
-            else
-                if (event == START_ELEMENT) {
-                    String name = parser.getLocalName();
-                    if (name.equals("system-property")) {
-                        parseSystemPropertyNoOverride();
-                    }
-                    else
-                        if (name.equals("java-config")) {
-                            parseJavaConfig();
-                        }
-                        else {
-                            skipTree(name);
-                        }
+            else if (event == START_ELEMENT) {
+                String name = parser.getLocalName();
+
+                if (name.equals("system-property")) {
+                    parseSystemPropertyNoOverride();
                 }
+                else if (name.equals("java-config")) {
+                        parseJavaConfig();
+                }
+                else if (name.equals("http-service")) {
+                    parseHttpService();
+                }
+                else {
+                    skipTree(name);
+                }
+            }
         }
     }
 
@@ -496,15 +504,108 @@ public class MiniXmlParser {
         }
     }
 
+    
+    private void parseHttpService() throws XMLStreamException, EndDocumentException {
+        // cursor --> <http-service> in <config>
+        // we are looking for the virtual server: "__asadmin".
+        // inside it will be a ref. to a listener.  We get the port from the listener.
+        // So -- squirrel away a copy of all the listeners and all the virt. servers --
+        //then post-process.
+        List<Map<String,String>> listenerAttributes = new ArrayList<Map<String,String>>();
+        List<Map<String,String>> vsAttributes = new ArrayList<Map<String,String>>();
+        
+        // Load the collections with both kinds of elements' attributes
+        while(true) {
+            skipToButNotPast("http-service", "http-listener", "virtual-server");
+            String name = parser.getLocalName();
+
+            if(name.equals("http-listener")) {
+                listenerAttributes.add(parseAttributes());
+            }
+            else if(name.equals("virtual-server")) {
+                vsAttributes.add(parseAttributes());
+            } 
+            else if(name.equals("http-service")) {
+                break; 
+            }
+        }
+        
+        String[] listenerNames = getListenerNamesForVS("__asadmin", vsAttributes);
+        if(listenerNames == null || listenerNames.length <= 0) {
+            return; // can not find ports
+        }
+        
+        addPortsForListeners(listenerAttributes, listenerNames);
+    }
+    
+    private String[] getListenerNamesForVS(String vsid, List<Map<String, String>> vsAttributes) {
+        String listeners = null;
+        String[] listenerArray = null;
+        
+        // find the virtual server
+        for(Map<String,String> atts : vsAttributes) {
+            String id = atts.get("id");
+            
+            if(id != null && id.equals(vsid)) {
+                listeners = atts.get("http-listeners");
+                break;
+            }
+        }
+
+        // make sure the "http-listeners" is kosher
+        if(GFLauncherUtils.ok(listeners)) {
+            listenerArray = listeners.split(",");
+            if(listenerArray!= null && listenerArray.length <= 0) {
+                listenerArray = null;
+            }
+        }
+        
+        if(listenerArray == null) {
+            listenerArray = new String[0];
+        }
+        
+        return listenerArray;
+    }
+   
+    private void addPortsForListeners(List<Map<String, String>> listenerAttributes, String[] listenerNames) {
+        // get the port numbers for all the listeners 
+        // normally there is one listener
+        
+        for(Map<String,String> atts : listenerAttributes) {
+            String id = atts.get("id");
+            String port = atts.get("port");
+            String vs = atts.get("default-virtual-server");
+            if(id == null) {
+                continue;
+            }
+            for(String listenerName : listenerNames) {
+                if(id.equals(listenerName)) {
+                    addPort(port);
+                    break;
+                }
+            }
+        }
+   }
+
+    private void addPort(String portString) {
+        try {
+            int port = Integer.parseInt(portString);
+            adminPorts.add(port);
+        }
+        catch(Exception e) {
+            // ignore, just return....
+        }
+    }
+    
     private Map<String, String> parseAttributes() {
         int num = parser.getAttributeCount();
         Map<String, String> map = new HashMap<String, String>();
         for (int i = 0; i < num; i++) {
             map.put(parser.getAttributeName(i).getLocalPart(), parser.getAttributeValue(i));
         }
-
         return map;
     }
+    
     private File domainXml;
     private XMLStreamReader parser;
     private String serverName;
@@ -516,6 +617,7 @@ public class MiniXmlParser {
     private Map<String, String> sysProps = new HashMap<String, String>();
     private Map<String, String> profilerSysProps = new HashMap<String, String>();
     private boolean valid = false;
+    private Set<Integer> adminPorts = new HashSet<Integer>();
     private String domainName;
     private static LocalStringsImpl strings = new LocalStringsImpl(MiniXmlParser.class);
     // this is so we can return from arbitrarily nested calls
