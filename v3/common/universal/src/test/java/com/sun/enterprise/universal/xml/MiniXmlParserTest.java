@@ -40,6 +40,8 @@ public class MiniXmlParserTest {
            MiniXmlParserTest.class.getClassLoader().getResource("hasprofiler.xml").getPath());
         adminport = new File(
            MiniXmlParserTest.class.getClassLoader().getResource("adminport.xml").getPath());
+        adminport2 = new File(
+           MiniXmlParserTest.class.getClassLoader().getResource("adminport2.xml").getPath());
         assertTrue(wrongOrder.exists());
         assertTrue(rightOrder.exists());
         assertTrue(noconfig.exists());
@@ -207,16 +209,33 @@ public class MiniXmlParserTest {
         
      /*
      * Exercise the parsing of asadmin virtual server, http-listener and port numbers
-     * 
+     * this one tests for TWO listeners
      */
     @Test
     public void test9() {
         try {
-            MiniXmlParser instance = new MiniXmlParser(adminport, "server");
+            MiniXmlParser instance = new MiniXmlParser(adminport2, "server");
             Set<Integer> ports = instance.getAdminPorts();
             assertEquals(ports.size(), 2);
             assertTrue(ports.contains(new Integer(3333)));
             assertTrue(ports.contains(new Integer(4444)));
+        }
+        catch (MiniXmlParserException ex) {
+            Logger.getLogger(MiniXmlParserTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+    }
+     /*
+     * Exercise the parsing of asadmin virtual server, http-listener and port numbers
+     * this one tests for ONE listener
+     */
+    @Test
+    public void test10() {
+        try {
+            MiniXmlParser instance = new MiniXmlParser(adminport, "server");
+            Set<Integer> ports = instance.getAdminPorts();
+            assertEquals(ports.size(), 1);
+            assertTrue(ports.contains(new Integer(3333)));
         }
         catch (MiniXmlParserException ex) {
             Logger.getLogger(MiniXmlParserTest.class.getName()).log(Level.SEVERE, null, ex);
@@ -229,5 +248,6 @@ public class MiniXmlParserTest {
     private static File rightOrder;
     private static File noconfig;
     private static File adminport;
+    private static File adminport2;
 }
 
