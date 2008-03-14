@@ -280,7 +280,7 @@ public class LoadBalancerHandlers {
             if (targets != null){
                 if (enableAllInstances == true){
                     for(int i=0; i< targets.length; i++){
-                        AMXUtil.getLBConfigHelper().enableServer(targets[i]);
+                        AMXUtil.getLBConfigHelper().enableServer(targets[i], true);
                     }
                 }
                 if (enableAllApps == true){
@@ -872,7 +872,7 @@ public class LoadBalancerHandlers {
         }
         try{
             loadBalancer.applyLBChanges();
-            GuiUtil.prepareAlert(handlerCtx, "success", GuiUtil.getMessage("msg.loadBalancer.ApplyLBSuccessful"), null);
+            GuiUtil.prepareAlert(handlerCtx, "success", GuiUtil.getMessage("msg.ApplyLBSuccessful"), null);
         }catch(Exception ex){
             GuiUtil.handleException(handlerCtx, ex);
         }
