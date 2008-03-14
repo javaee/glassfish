@@ -277,6 +277,7 @@ FIXME:	 should be handled via WebServiceTreeAdaptor (to be written).
 	    //	     CommandEvent.
 	    setProperty(props, "actionListener", desc.getOption("actionListener"));
 	    setProperty(props, "expanded", desc.getOption("expanded"));
+	    setProperty(props, "rendered", desc.getOption("rendered"));
 	} else {
 	    // This case deals with the children
 
