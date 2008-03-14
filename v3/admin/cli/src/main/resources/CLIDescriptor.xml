@@ -24,7 +24,26 @@
 	<Option name="interactive" type="boolean" value-required="false" default="true">
 	    <shortoption>I</shortoption>
 	</Option>
-	<Option name="passwordfile" type="string" value-required="true"/>
+        <Option name="adminport" type="string" value-required="true"/>
+        <Option name="adminuser" type="string" value-required="true"/>
+        <Option name="adminpassword" type="string" value-required="true"/>
+        <Option name="password" type="string" value-required="true">
+            <shortoption>w</shortoption>
+        </Option>
+        <Option name="profile" type="string" value-required="true"/>
+        <Option name="template" type="string" value-required="true"/>
+        <Option name="instance" type="string" value-required="true">
+                <shortoption>i</shortoption>
+        </Option>
+        <Option name="instanceport" type="string" value-required="true"/>
+        <Option name="portbase" type="string" value-required="true"/>
+        <Option name="domainproperties" type="string" value-required="true"/>
+        <Option name="path" type="string" value-required="true"/>
+        <Option name="passwordfile" type="string" value-required="true"/>
+        <Option name="checkports" type="boolean" value-required="true" default="true"/>
+        <Option name="masterpassword" type="string" value-required="true"/>
+        <Option name="savemasterpassword" type="boolean" value-required="false" default="false"/>
+        <Option name="savelogin" type="boolean" value-required="false" default="false"/>           
     </Options>
     <Commands>
 	<Command name="dummy" classname="com.sun.enterprise.admin.cli.DummyCommand" numberofoperands="?" usage-text="dummy">
@@ -40,6 +59,28 @@
 	    <ValidOption name="interactive"/>
 	    <ValidOption name="passwordfile"/>			
 	</Command>
+        <Command name="create-domain" classname="com.sun.enterprise.admin.cli.CreateDomainCommand" numberofoperands="1" usage-text="create-domain [--user admin] [--adminport port_number] [--terse=false] [--echo=false] [--interactive=true] [--domaindir domain_directory] [--profile profile_name] [--template domain_template]  [--passwordfile filename ] [--instanceport port_number] [--savemasterpassword=false] [--domainproperties (name=value)[:name=value]*] [--portbase portbase] [--savelogin=false] [--checkports=true] domain_name">
+                <ValidOption name="adminport"/>
+                <ValidOption name="adminuser"/>
+                <ValidOption name="adminpassword"/>
+                <ValidOption name="user" deprecatedoption="adminuser"/>
+                <ValidOption name="password" />
+                <ValidOption name="interactive"/>
+                <ValidOption name="profile"/>
+                <ValidOption name="template"/>
+                <ValidOption name="terse"/>
+                <ValidOption name="echo"/>
+                <ValidOption name="instanceport"/>
+                <ValidOption name="domainproperties"/>
+                <ValidOption name="portbase"/>
+                <ValidOption name="path"/>
+                <ValidOption name="domaindir" deprecatedoption="path"/>
+                <ValidOption name="passwordfile"/>
+                <ValidOption name="checkports"/>
+                <ValidOption name="masterpassword"/>
+                <ValidOption name="savemasterpassword"/>
+                <ValidOption name="savelogin"/>
+        </Command>
     </Commands>
 </CommandsAndOptions>
 

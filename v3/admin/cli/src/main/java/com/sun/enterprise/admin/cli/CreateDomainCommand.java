@@ -100,11 +100,70 @@ public class CreateDomainCommand extends BaseLifeCycleCommand
         return true;
     }
 
-    public boolean verifyPortBase() throws CommandValidationException
+    public void verifyPortBase() throws CommandValidationException
     {
-        return true;
+        if (usePortBase())
+        {
+            final int portbase = convertPortStr(getOption(PORTBASE_OPTION));
+            setOptionsWithPortBase(portbase);
+        }
+        else if (getOption(ADMIN_PORT)==null)
+        {
+            throw new CommandValidationException(getLocalizedString("RequireEitherOrOption",
+                                                                     new Object[]{ADMIN_PORT,
+                                                                                  PORTBASE_OPTION}
+                                                                    ));
+        }
     }
+    
 
+    private void setOptionsWithPortBase(final int portbase) throws CommandValidationException
+    {
+        //set the option name and value in the options list
+        verifyPortBasePortIsValid(ADMIN_PORT, portbase+PORTBASE_ADMINPORT_SUFFIX);
+        setOption(ADMIN_PORT,String.valueOf(portbase + PORTBASE_ADMINPORT_SUFFIX));
+        
+        verifyPortBasePortIsValid(INSTANCE_PORT, portbase+PORTBASE_INSTANCE_SUFFIX);
+        setOption(INSTANCE_PORT, String.valueOf(portbase + PORTBASE_INSTANCE_SUFFIX));
+        
+        StringBuffer sb = new StringBuffer();
+        verifyPortBasePortIsValid(DomainConfig.K_HTTP_SSL_PORT, portbase+PORTBASE_HTTPSSL_SUFFIX);        
+        sb.append(DomainConfig.K_HTTP_SSL_PORT);
+        sb.append("=");
+        sb.append(String.valueOf(portbase+PORTBASE_HTTPSSL_SUFFIX));
+        sb.append(":");
+
+        verifyPortBasePortIsValid(DomainConfig.K_IIOP_SSL_PORT, portbase+PORTBASE_IIOPSSL_SUFFIX);        
+        sb.append(DomainConfig.K_IIOP_SSL_PORT);
+        sb.append("=");
+        sb.append(String.valueOf(portbase+PORTBASE_IIOPSSL_SUFFIX));
+        sb.append(":");
+
+        verifyPortBasePortIsValid(DomainConfig.K_IIOP_MUTUALAUTH_PORT,
+                                  portbase+PORTBASE_IIOPMUTUALAUTH_SUFFIX);                
+        sb.append(DomainConfig.K_IIOP_MUTUALAUTH_PORT);
+        sb.append("=");
+        sb.append(String.valueOf(portbase+PORTBASE_IIOPMUTUALAUTH_SUFFIX));
+        sb.append(":");
+
+        verifyPortBasePortIsValid(DomainConfig.K_JMS_PORT, portbase+PORTBASE_JMS_SUFFIX);
+        sb.append(DomainConfig.K_JMS_PORT);
+        sb.append("=");
+        sb.append(String.valueOf(portbase+PORTBASE_JMS_SUFFIX));
+        sb.append(":");
+
+        verifyPortBasePortIsValid(DomainConfig.K_ORB_LISTENER_PORT, portbase+PORTBASE_IIOP_SUFFIX);
+        sb.append(DomainConfig.K_ORB_LISTENER_PORT);
+        sb.append("=");
+        sb.append(String.valueOf(portbase+PORTBASE_IIOP_SUFFIX));
+        sb.append(":");
+
+        verifyPortBasePortIsValid(DomainConfig.K_JMX_PORT, portbase+PORTBASE_JMX_SUFFIX);
+        sb.append(DomainConfig.K_JMX_PORT);
+        sb.append("=");
+        sb.append(String.valueOf(portbase+PORTBASE_JMX_SUFFIX));
+        setOption(DOMAIN_PROPERTIES, sb.toString());
+    }
     
     /**
      *  this methods returns the admin password and is used to get the admin password
@@ -603,6 +662,31 @@ public class CreateDomainCommand extends BaseLifeCycleCommand
     }
 
 
+    /**
+     * check if portbase option is specified.
+     * portbase is mutually exclusive to adminport and domainproperties options
+     * if portbase options is specfied and also adminport or domainproperties
+     * is specified as well, then throw an exception
+     */
+    private boolean usePortBase() throws CommandValidationException
+    {
+        if (getOption(PORTBASE_OPTION) != null)
+        {
+            if (getCLOption(ADMIN_PORT) != null)
+                throw new CommandValidationException(getLocalizedString("MutuallyExclusiveOption",
+                                                                        new Object[] {ADMIN_PORT, PORTBASE_OPTION}));
+            else if (getOption(INSTANCE_PORT) != null)
+                throw new CommandValidationException(getLocalizedString("MutuallyExclusiveOption",
+                                                                        new Object[] {INSTANCE_PORT, PORTBASE_OPTION}));
+            else if (getOption(DOMAIN_PROPERTIES) != null)
+                throw new CommandValidationException(getLocalizedString("MutuallyExclusiveOption",
+                                                                        new Object[] {DOMAIN_PROPERTIES, PORTBASE_OPTION}));
+            else
+                return true;
+        }
+        return false;
+    }
+    
         /**
          * check if any of the port values are below 1024.
          * if below 1024, then display a warning message.
