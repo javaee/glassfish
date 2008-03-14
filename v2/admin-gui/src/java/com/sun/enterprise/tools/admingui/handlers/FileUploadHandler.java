@@ -125,6 +125,12 @@ public class FileUploadHandler {
         String[] targets = (String[])handlerCtx.getInputValue("targets");
         if (targets == null || targets.length==0 || !AMXUtil.isEE())
             targets = null;
+        
+        if(origPath == null || origPath == "") {
+            String mesg = GuiUtil.getMessage("msg.deploy.nullArchiveError");
+            GuiUtil.handleError(handlerCtx, mesg);
+            return;
+	}            
 
 	deploymentProps.setProperty(ARCHIVE_NAME, origPath);
 	deploymentProps.setProperty(NAME, appName != null ? appName : "");
