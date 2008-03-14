@@ -42,9 +42,7 @@ import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.component.Injectable;
-
 import java.beans.PropertyVetoException;
-import java.io.Serializable;
 
 
 import com.sun.appserv.management.annotation.AMXConfigInfo;
@@ -62,7 +60,7 @@ public interface AccessLog extends ConfigBeanProxy, Injectable {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="%client.name% %auth-user-name% %datetime% %request% %status% %response.length%")
     public String getFormat();
 
     /**
@@ -79,7 +77,7 @@ public interface AccessLog extends ConfigBeanProxy, Injectable {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="time")
     public String getRotationPolicy();
 
     /**
@@ -96,7 +94,7 @@ public interface AccessLog extends ConfigBeanProxy, Injectable {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="1440")
     public String getRotationIntervalInMinutes();
 
     /**
@@ -113,7 +111,7 @@ public interface AccessLog extends ConfigBeanProxy, Injectable {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="yyyyMMdd-HH'h'mm'm'ss's'")
     public String getRotationSuffix();
 
     /**
@@ -130,7 +128,7 @@ public interface AccessLog extends ConfigBeanProxy, Injectable {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="true")
     public String getRotationEnabled();
 
     /**

@@ -45,7 +45,6 @@ import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.component.Injectable;
 
 import java.beans.PropertyVetoException;
-import java.io.Serializable;
 import java.util.List;
 
 
@@ -118,7 +117,7 @@ public interface AdminObjectResource extends ConfigBeanProxy, Injectable, Resour
      * @return possible object is
      *         {@link String }
      */
-    @Attribute    
+    @Attribute (defaultValue="user")
     public String getObjectType();
 
     /**
@@ -135,7 +134,7 @@ public interface AdminObjectResource extends ConfigBeanProxy, Injectable, Resour
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="true")
     public String getEnabled();
 
     /**

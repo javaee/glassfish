@@ -61,13 +61,6 @@ public class JdbcConnectionPoolDefaultsTest extends ConfigApiTest {
     public String getFileName() {
         return ("JdbcConnectionPoolDefaults"); //this is the xml to load
     }
-    @BeforeClass
-    public static void setUpClass() throws Exception {
-    }
-
-    @AfterClass
-    public static void tearDownClass() throws Exception {
-    }
 
     @Before
     public void setUp() {
