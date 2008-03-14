@@ -40,11 +40,8 @@ public class AccessLogAllDefaultsTest extends ConfigApiTest {
     }
     @Test 
     public void testAllDefaults() {
-        assertEquals("%client.name% %auth-user-name% %datetime% %request% %status% %response.length%",
-                al.getFormat());
         assertEquals("true", al.getRotationEnabled());
         assertEquals("1440", al.getRotationIntervalInMinutes());
         assertEquals("time", al.getRotationPolicy());
-        assertEquals("yyyyMMdd-HH'h'mm'm'ss's'", al.getRotationSuffix());
     }
 }
