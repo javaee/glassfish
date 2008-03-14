@@ -123,7 +123,16 @@ public class CommandRunner {
                     }
                 }
                 String paramValueStr = getPropertiesValue(parameters, getParamName(param, target), true);
-                return getParamValue(type, paramValueStr);
+                Object paramVal = null;
+                try {
+                    paramVal = getParamValue(type, paramValueStr);
+                } catch (Exception e) {
+                    logger.severe(e.getMessage());
+                    report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                    report.setMessage(e.getMessage());
+                    report.setFailureCause(e);
+                }
+                return paramVal;
             }
         };
 
@@ -326,14 +335,18 @@ public class CommandRunner {
     Properties parseProperties(String propsString) {
         final Properties properties = new Properties();
         if (propsString != null) {
-            java.util.StringTokenizer stoken = new java.util.StringTokenizer(propsString, ":");
+            PropertiesTokenizer stoken = new PropertiesTokenizer(propsString, ":");
             while (stoken.hasMoreTokens()) {
                 String token = stoken.nextToken();
                 if (token.indexOf("=")==-1)
                     continue;
-                String propName = token.substring(0, token.lastIndexOf("="));
-                String value = token.substring(token.lastIndexOf("=")+1);
-                properties.setProperty(propName, value);
+                final PropertiesTokenizer nameTok = new PropertiesTokenizer(token, "=");
+                if (nameTok.countTokens() == 2) {
+                    properties.setProperty(nameTok.nextTokenWithoutEscapeAndQuoteChars(),
+                                       nameTok.nextTokenWithoutEscapeAndQuoteChars());
+                } else {
+                    throw new IllegalArgumentException(adminStrings.getLocalString("InvalidPropertySyntax", "Invalid property syntax."));
+                }
             }
         }
         return properties;
