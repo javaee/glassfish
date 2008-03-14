@@ -67,19 +67,20 @@ public class DomainXml implements Populator {
         habitat.addComponent("parent-class-loader",
                 new ExistingSingletonInhabitant(URLClassLoader.class, registry.getParentClassLoader()));
         File domainXml = new File(env.getConfigDirPath(), V3Environment.kConfigXMLFileName);
-
-        parseDomainXml(parser, domainXml);
-    }
+        
+        String instanceName = context.getArguments().get("-instancename");
+        if(instanceName == null || instanceName.length() <= 0)
+            instanceName = "server";
+        
+        parseDomainXml(parser, domainXml, instanceName);
+     }
 
 
     /**
      * Parses <tt>domain.xml</tt>
      */
-    private void parseDomainXml(ConfigParser parser, final File domainXml) {
+    private void parseDomainXml(ConfigParser parser, final File domainXml, final String serverName) {
         try {
-            // TODO: in reality we need to get the server name from somewhere
-            final String serverName = "server";
-
             DomainXmlReader xsr = new DomainXmlReader(domainXml, serverName);
             parser.parse(xsr, new GlassFishDocument(habitat));
             xsr.close();
