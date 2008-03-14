@@ -54,12 +54,22 @@ public class CommandRunnerTest {
     }
     
     @Test
-    public void getParamValueTest() {
+    public void parsePropertiesEscapeCharTest() {
+        String propsStr = "connectionAttributes=\\;create\\\\=true";
+        Properties propsExpected = new Properties();
+        propsExpected.put("connectionAttributes", ";create\\=true");
+        Properties propsActual = null;
+        propsActual = cr.parseProperties(propsStr);
+        assertEquals(propsExpected, propsActual);
+    }
+    
+    @Test
+    public void getParamValueTest() throws Exception {
         String paramValueStr = "prop1=valA:prop2=valB:prop3=valC";
         Object paramValActual = cr.getParamValue(String.class, paramValueStr);
         Object paramValExpected =  "prop1=valA:prop2=valB:prop3=valC";
         assertEquals("String type", paramValExpected, paramValActual);
-        
+  
         paramValActual = cr.getParamValue(Properties.class, paramValueStr);
         paramValExpected = new Properties();        
         ((Properties)paramValExpected).put("prop1", "valA");
