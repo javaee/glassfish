@@ -33,14 +33,32 @@
  only if the new code is made subject to such option by the copyright
  holder.
 -->
-<!-- commonTask.jsf -->
-<sun:page>
-    <sun:html>
-	 <sun:head id="propertyhead" />
-	 <sun:body>
-	     <sun:form id="propertyForm"> 
-                <sun:staticText id="text"  text="common Task Page 2 (mock up cluster support)" />
-	     </sun:form>           
-	 </sun:body> 
-     </sun:html>  
- </sun:page>
+<!-- applications/descriptorsTable.jsf -->
+
+<!-- Descriptos Table .... -->
+               
+<sun:table id="basicTable" style="padding: 10pt" deselectMultipleButton="$boolean{false}" selectMultipleButton="$boolean{false}"
+    title="$resource{i18n.deploy.descriptors}">
+
+    <sun:tableRowGroup id="rowGroup1" data={"$attribute{descriptors}"} sourceVar="td">      
+        <sun:tableColumn headerText="$resource{i18n.deploy.ApplicationName}" rowHeader="$boolean{false}" id="col1">
+        	<staticText id="name" value="#{td.value.name}" />
+        </sun:tableColumn>
+        <sun:tableColumn rendered="$pageSession{showSubComponentColumn}"  headerText="$resource{i18n.deploy.subCompName}" rowHeader="$boolean{false}" id="col2">
+        	<staticText id="name" value="#{td.value.moduleName}" />
+        </sun:tableColumn>
+        <sun:tableColumn headerText="$resource{i18n.deploy.descriptorFileName}" rowHeader="$boolean{false}" id="col3">
+        	<sun:hyperlink id="link" text="#{td.value.descriptor}"> 
+				<!command
+					descriptorDisplay(filePath="#{td.value.descriptorPath}"
+									  appName="#{name}"
+									  pageName="#{descriptorPage}"
+									  descriptor=>$attribute{descriptor}
+									  appName=>$attribute{appName}
+									  pageName=>$attribute{pageName});	
+					navigate(page="applications/descriptorDisplay.jsf");
+				/>
+			</sun:hyperlink>
+        </sun:tableColumn>
+    </sun:tableRowGroup>
+</sun:table>    

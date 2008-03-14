@@ -1,4 +1,3 @@
-
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  
@@ -35,27 +34,38 @@
  holder.
 -->
 
-<!-- version.jsf -->
+<event>
+        <!beforeEncode
+          if ($attribute{alertSummary}){
+            decodeString(str="$attribute{alertSummary}", output=>$attribute{alertSummary});
+            decodeString(str="$attribute{alertDetail}", output=>$attribute{alertDetail});
+          }
+          if (!$attribute{alertSummary}){
+            setAttribute(key="alertType" value="$requestParameter{alertType}");
+            setAttribute(key="alertSummary" value="$requestParameter{alertSummary}");
+            setAttribute(key="alertDetail" value="$requestParameter{alertDetail}");
+          }
+          
+        />
+</event>
 
-<sun:page id="page1">
+<sun:alert id="pageAlert"  
+            type="#{alertType}" 
+            summary="#{alertSummary}"
+            detail="#{alertDetail}" >
     <!beforeCreate
-        setResourceBundle(key="i18n" bundle="core.Strings");
-        setSessionAttribute(key="serverInstTabs" value="general");
-        getAppServerFullVersion(fullVersion=>$page{fullVersion});
-        />   
-    <sun:html id="html2">
-        <sun:head id="propertyhead" title="$pageSession{fullVersion}" />
-        <sun:body id="body3">
-            <sun:form id="propertyForm">
-            <sun:versionPage id="version" 
-                productImageURL="/resource/images/LoginProductName.png"
-                productImageDescription="$resource{i18n.versionImage.description}" 
-                productImageHeight="42"
-                productImageWidth="318"
-                versionString="$pageSession{fullVersion}"
-                copyrightString="$resource{i18n.copyright.shortMessage}"
-            />
-            </sun:form>
-        </sun:body>
-    </sun:html>
-</sun:page>
+        if ($attribute{alertSummary}){
+            decodeString(str="$attribute{alertSummary}", output=>$attribute{alertSummary});
+            decodeString(str="$attribute{alertDetail}", output=>$attribute{alertDetail});
+          }
+          if (!$attribute{alertSummary}){
+            setAttribute(key="alertType" value="$requestParameter{alertType}");
+            setAttribute(key="alertSummary" value="$requestParameter{alertSummary}");
+            setAttribute(key="alertDetail" value="$requestParameter{alertDetail}");
+          }
+          
+      />
+      
+</sun:alert>
+
+

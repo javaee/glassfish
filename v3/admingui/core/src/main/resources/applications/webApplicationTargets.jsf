@@ -1,4 +1,3 @@
-
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  
@@ -34,28 +33,42 @@
  only if the new code is made subject to such option by the copyright
  holder.
 -->
+<!-- applications/webApplicationsTargets.jsf -->
 
-<!-- version.jsf -->
-
-<sun:page id="page1">
+<sun:page id="page1" >
     <!beforeCreate
         setResourceBundle(key="i18n" bundle="core.Strings");
-        setSessionAttribute(key="serverInstTabs" value="general");
-        getAppServerFullVersion(fullVersion=>$page{fullVersion});
-        />   
-    <sun:html id="html2">
-        <sun:head id="propertyhead" title="$pageSession{fullVersion}" />
-        <sun:body id="body3">
+        #setResourceBundle(key="help" bundle="core.Helplinks");
+        setSessionAttribute(key="appGeneralTabs" value="targetTab");
+        setPageSessionAttribute(key="generalPage" value="webApplicationsEdit.jsf");
+        setPageSessionAttribute(key="descriptorPage" value="webApplicationDesc.jsf");
+        setPageSessionAttribute(key="targetPage" value="webApplicationTargets.jsf");
+        setPageSessionAttribute(key="targetPageHelp" value="$resource{help.webApplicationTargets}");
+        setPageSessionAttribute(key="hasActionColumn" value="#{true}");
+        getRequestValue(key="appName" value=>$page{name});
+        setPageSessionAttribute(key="appType" value="webApp");
+        setPageSessionAttribute(key="pageTitle" value="$resource{i18n.webApp.targetPageTitle}");
+        setPageSessionAttribute(key="pageTitleHelp" value="$resource{i18n.webApp.targetPageTitleHelp}");
+    />
+#include "shared/restart.inc"    
+     <sun:html id="html2">
+        <sun:head id="propertyhead" title="#{pageTitle}" >
+            <sun:script url="/resources/js/restart.js" />
+        </sun:head>
+        <sun:body id="body3" onLoad="javascript: synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
             <sun:form id="propertyForm">
-            <sun:versionPage id="version" 
-                productImageURL="/resource/images/LoginProductName.png"
-                productImageDescription="$resource{i18n.versionImage.description}" 
-                productImageHeight="42"
-                productImageWidth="318"
-                versionString="$pageSession{fullVersion}"
-                copyrightString="$resource{i18n.copyright.shortMessage}"
-            />
+#include treeBreadcrumbs.inc
+#include "applications/appGeneralTabs.inc"
+#include "alertMsg.inc"
+                <!-- Page Title -->
+                 <sun:title id="propertyContentPage" title="#{pageTitle}" helpText="#{pageTitleHelp}"/>
+                 "<br />
+
+#include "applications/targetTable.inc"
+            <sun:hidden id="helpKey" value="$resource{help.webApplicationTargets}" />
             </sun:form>
         </sun:body>
-    </sun:html>
+#include "changeButtonsJS.inc"
+  </sun:html>
+
 </sun:page>

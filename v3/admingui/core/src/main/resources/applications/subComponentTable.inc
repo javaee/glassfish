@@ -1,4 +1,3 @@
-
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  
@@ -35,27 +34,30 @@
  holder.
 -->
 
-<!-- version.jsf -->
+<!-- applications/subComponentTable.inc -->
 
-<sun:page id="page1">
-    <!beforeCreate
-        setResourceBundle(key="i18n" bundle="core.Strings");
-        setSessionAttribute(key="serverInstTabs" value="general");
-        getAppServerFullVersion(fullVersion=>$page{fullVersion});
-        />   
-    <sun:html id="html2">
-        <sun:head id="propertyhead" title="$pageSession{fullVersion}" />
-        <sun:body id="body3">
-            <sun:form id="propertyForm">
-            <sun:versionPage id="version" 
-                productImageURL="/resource/images/LoginProductName.png"
-                productImageDescription="$resource{i18n.versionImage.description}" 
-                productImageHeight="42"
-                productImageWidth="318"
-                versionString="$pageSession{fullVersion}"
-                copyrightString="$resource{i18n.copyright.shortMessage}"
-            />
-            </sun:form>
-        </sun:body>
-    </sun:html>
-</sun:page>
+  "<br /><br />
+      <sun:table id="components"  title="$resource{i18n.common.SubComponents}" style="padding: 8pt; width:95%" >
+        <!beforeCreate
+            getSubComponents(appName="#{name}" appType="#{appType}" result=>$attribute{listOfRows});
+        />
+        <sun:tableRowGroup id="rowGroup1" data={"$attribute{listOfRows}"} sourceVar="td">
+        
+            <sun:tableColumn headerText="$resource{i18n.ComponentTable.colName}" rowHeader="$boolean{true}" id="col1">
+                <staticText id="nameCol" value="#{td.value.componentName}" />
+            </sun:tableColumn>
+            
+            <sun:tableColumn headerText="$resource{i18n.ComponentTable.colType}" rowHeader="$boolean{true}" id="col2">
+                <staticText id="typeCol" value="#{td.value.componentType}" />
+            </sun:tableColumn>
+            
+            <sun:tableColumn headerText="$resource{i18n.ComponentTable.colAction}" rendered="#{hasActionColumn}" embeddedActions="#{true}" rowHeader="$boolean{true}" id="col3">
+                <sun:hyperlink id="link" text="#{td.value.downloadText}" 
+                    url="/download/#{td.value.componentName}?contentSourceId=clientStubs&appName=#{name}&appClientName=#{td.value.componentName}" />
+                <sun:hyperlink id="link2" rendered="#{td.value.javaWebStart}" text="$resource{i18n.deployTable.launch}" 
+                    url="appclientLaunch.jsf?appID=#{name}&appName=#{name}&appClientName=#{td.value.componentName}&nextPage=enterpriseApplicationsEdit.jsf&appType=#{appType}" />
+            </sun:tableColumn>
+            
+        </sun:tableRowGroup>
+     </sun:table>
+

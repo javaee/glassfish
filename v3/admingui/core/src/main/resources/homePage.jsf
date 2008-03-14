@@ -36,7 +36,7 @@
 
 <sun:page>
    <!beforeCreate
-	setResourceBundle(key="i18n" bundle="org.glassfish.admingui.resources.Strings")
+	setResourceBundle(key="i18n" bundle="core.Strings")
         initSessionAttributes();
    />
     <sun:html> 

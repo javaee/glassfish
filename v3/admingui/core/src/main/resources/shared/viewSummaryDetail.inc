@@ -1,4 +1,3 @@
-
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  
@@ -34,28 +33,14 @@
  only if the new code is made subject to such option by the copyright
  holder.
 -->
+<!-- shared/viewSummaryDetail.inc -->
 
-<!-- version.jsf -->
-
-<sun:page id="page1">
-    <!beforeCreate
-        setResourceBundle(key="i18n" bundle="core.Strings");
-        setSessionAttribute(key="serverInstTabs" value="general");
-        getAppServerFullVersion(fullVersion=>$page{fullVersion});
-        />   
-    <sun:html id="html2">
-        <sun:head id="propertyhead" title="$pageSession{fullVersion}" />
-        <sun:body id="body3">
-            <sun:form id="propertyForm">
-            <sun:versionPage id="version" 
-                productImageURL="/resource/images/LoginProductName.png"
-                productImageDescription="$resource{i18n.versionImage.description}" 
-                productImageHeight="42"
-                productImageWidth="318"
-                versionString="$pageSession{fullVersion}"
-                copyrightString="$resource{i18n.copyright.shortMessage}"
-            />
-            </sun:form>
-        </sun:body>
-    </sun:html>
-</sun:page>
+setPageSessionAttribute(key="viewKey" value="$pageSession{viewKeyValue}");
+setPageSessionAttribute(key="showDetail" value="$boolean{false}");
+setPageSessionAttribute(key="viewValue" value="summary");
+if( $session{supportCluster}){
+    if ( !$session{$pageSession{viewKeyValue}} ){
+	setPageSessionAttribute(key="showDetail" value="$boolean{true}");
+	setPageSessionAttribute(key="viewValue" value="detail");
+    }
+}

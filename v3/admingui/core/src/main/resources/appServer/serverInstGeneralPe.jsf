@@ -41,8 +41,8 @@
 
 <sun:page id="page1">
     <!beforeCreate
-        setResourceBundle(key="i18n" bundle="com.sun.enterprise.tools.admingui.resources.Strings");
-	setResourceBundle(key="help" bundle="com.sun.enterprise.tools.admingui.resources.Helplinks");
+        setResourceBundle(key="i18n" bundle="core.Strings");
+	#setResourceBundle(key="help" bundle="core.Helplinks");
         setPageSessionAttribute(key="PE" value="#{false}");
         setPageSessionAttribute(key="instanceName" value="server");
         setSessionAttribute(key="serverInstTabs" value="general");
@@ -58,8 +58,8 @@
 #include "shared/restart.inc"
     <sun:html id="html2">
         <sun:head id="propertyhead" title="$resource{i18n.instance.GeneralTitle}">
-            <sun:script url="/resource/js/restart.js" />
-            <sun:script url="/resource/js/adminjsf.js" />
+            <sun:script url="/resources/js/restart.js" />
+            <sun:script url="/resources/js/adminjsf.js" />
         </sun:head>
         <sun:body id="body3" onLoad="javascript: synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
             <sun:form id="propertyForm">

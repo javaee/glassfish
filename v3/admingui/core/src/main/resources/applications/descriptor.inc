@@ -1,4 +1,3 @@
-
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  
@@ -35,27 +34,12 @@
  holder.
 -->
 
-<!-- version.jsf -->
+<!-- applications/descriptor.inc -->
+<!-- used in enterpriseApplicationsDesc.jsf  ejbModulesDesc.jsf  webApplicationsDesc.jsf connectorModulesDesc.jsf  -->
+#include "applications/appGeneralTabs.inc"
+    <!-- Page Title -->
+    <sun:title id="propertyContentPage" title="#{pageTitle}" helpText="#{pageTitleHelp}" >
+    </sun:title>
+#include "applications/descriptorsTable.inc"
+	
 
-<sun:page id="page1">
-    <!beforeCreate
-        setResourceBundle(key="i18n" bundle="core.Strings");
-        setSessionAttribute(key="serverInstTabs" value="general");
-        getAppServerFullVersion(fullVersion=>$page{fullVersion});
-        />   
-    <sun:html id="html2">
-        <sun:head id="propertyhead" title="$pageSession{fullVersion}" />
-        <sun:body id="body3">
-            <sun:form id="propertyForm">
-            <sun:versionPage id="version" 
-                productImageURL="/resource/images/LoginProductName.png"
-                productImageDescription="$resource{i18n.versionImage.description}" 
-                productImageHeight="42"
-                productImageWidth="318"
-                versionString="$pageSession{fullVersion}"
-                copyrightString="$resource{i18n.copyright.shortMessage}"
-            />
-            </sun:form>
-        </sun:body>
-    </sun:html>
-</sun:page>

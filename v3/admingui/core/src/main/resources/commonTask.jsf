@@ -36,8 +36,8 @@
 <!-- commonTask.jsf -->
 
 <!initPage
-    setResourceBundle(key="i18n" bundle="org.glassfish.admingui.resources.Strings");
-    setResourceBundle(key="help" bundle="org.glassfish.admingui.resources.Helplinks");
+    setResourceBundle(key="i18n" bundle="core.Strings");
+    #setResourceBundle(key="help" bundle="core.Helplinks");
 />
 <sun:page>
     <sun:html>
