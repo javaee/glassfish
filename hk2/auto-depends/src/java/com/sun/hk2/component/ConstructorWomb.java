@@ -82,7 +82,7 @@ public class ConstructorWomb<T> extends AbstractWombImpl<T> {
 //                        LOGGER.log(Level.FINER, "Extracting resource " + value + " returned from " + field);
 //                    }
                     if (value!=null) {
-                        extractValue(value, si, type);
+                        extractValue(value, si, extract.name(), type);
                     } else {
 //                        if (LOGGER.isLoggable(Level.FINE)) {
 //                            LOGGER.log(Level.FINE, "Resource returned from " + field + " is null");
@@ -113,7 +113,7 @@ public class ConstructorWomb<T> extends AbstractWombImpl<T> {
 //                        LOGGER.log(Level.FINER, "Extracting resource " + value + " returned from " + method);
 //                    }
                     if (value!=null) {
-                        extractValue(value, si, type);
+                        extractValue(value, si, extract.name(), type);
                     } else {
 //                        if (LOGGER.isLoggable(Level.FINE)) {
 //                            LOGGER.log(Level.FINE, "Resource returned from " + method + " is null");
@@ -132,23 +132,23 @@ public class ConstructorWomb<T> extends AbstractWombImpl<T> {
     }
 
     @SuppressWarnings("unchecked")
-    private void extractValue(Object value, ScopeInstance si, Class type) {
+    private void extractValue(Object value, ScopeInstance si, String name,  Class type) {
         if(value instanceof Iterable) {
             for (Object o : (Iterable)value) {
-                extractSingleValue(o,si);
+                extractSingleValue(o,name, type, si);
             }
         } else
         if (type.isArray()) {
             Object[] values = (Object[]) value;
             for (Object o : values) {
-                extractSingleValue(o,si);
+                extractSingleValue(o,name, type, si);
             }
         } else {
-            extractSingleValue(value,si);
+            extractSingleValue(value, name, type, si);
         }
     }
 
-    private <T> void extractSingleValue(T o, final ScopeInstance si) {
+    private <T> void extractSingleValue(T o, String name, Class type, final ScopeInstance si) {
         // TODO: name support. Wouldn't it be nice if Map<String,Object> extracts to named objects?
         // or recognize the "Named" interface?
         Inhabitant<T> i = new AbstractWombImpl<T>((Class<T>)o.getClass(),MultiMap.<String,String>emptyMap()) {
@@ -158,7 +158,11 @@ public class ConstructorWomb<T> extends AbstractWombImpl<T> {
                 return si.get(this);
             }
         };
-        habitat.add(i);
+        if (name==null) {
+            habitat.add(i);
+        } else {
+            habitat.addIndex(i, type.getName(), name);
+        }
         si.put(i,o);
     }
 
