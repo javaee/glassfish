@@ -28,6 +28,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.annotation.Annotation;
+import java.util.logging.Logger;
 
 /**
  * InjectionManager is responsible for injecting resources into a component.
@@ -75,8 +76,10 @@ public abstract class InjectionManager<T extends Annotation> {
                             }
 
                         } else {
-                            if(!isOptional(inject))
+                            if(!isOptional(inject)) {
+                                Logger.getAnonymousLogger().info("Cannot inject " + field + " in component" + component);   
                                 throw new UnsatisfiedDepedencyException(field);
+                            }
                         }
                     } catch (ComponentException e) {
                         if (!isOptional(inject)) {
