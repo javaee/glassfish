@@ -37,10 +37,6 @@
 <target name="startDomainUnix" depends="init-common" if="isUnix">
     <exec executable="${ASADMIN}" failonerror="true">
         <arg line="start-domain"/>
-        <arg line="--user ${admin.user}"/>
-        <arg line="--passwordfile ${admin.password.file}"/>
-        <arg line="--domaindir ${admin.domain.dir}"/>
-        <arg line="${admin.domain}"/>
     </exec>
     <echo message="run.xml:doing wait for ${http.host}:${http.port}..."/>
     <waitfor>
@@ -52,10 +48,6 @@
 <target name="startDomainWindows" depends="init-common" if="isWindows">
     <exec executable="${ASADMIN}" spawn="true">
         <arg line="start-domain"/>
-        <arg line="--user ${admin.user}"/>
-        <arg line="--passwordfile ${admin.password.file}"/>
-        <arg line="--domaindir ${admin.domain.dir}"/>        
-        <arg line="${admin.domain}"/>
     </exec>
     <waitfor>
       <http url="http://${http.host}:${http.port}"/>
@@ -66,8 +58,6 @@
     <echo message="run.xml:stopping domain..."/>
     <exec executable="${ASADMIN}" failonerror="true">
         <arg line="stop-domain"/>
-        <arg line="--domaindir ${admin.domain.dir}"/>
-        <arg line="${admin.domain}"/>
     </exec>
 </target>
 
