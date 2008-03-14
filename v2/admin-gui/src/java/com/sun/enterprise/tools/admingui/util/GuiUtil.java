@@ -47,7 +47,6 @@
 
 package com.sun.enterprise.tools.admingui.util;
 
-import com.sun.jsftemplating.util.Util;
 import com.sun.jsftemplating.resource.ResourceBundleManager;
 import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
 
@@ -63,12 +62,9 @@ import java.util.ArrayList;
 import java.util.StringTokenizer;
 import java.util.ResourceBundle;
 import java.util.Vector;
-import java.io.File;
 import java.text.MessageFormat;
 import java.net.URLEncoder;
 
-import java.lang.Exception;
-import java.lang.NullPointerException;
 import java.io.UnsupportedEncodingException;
 import com.sun.appserv.management.util.misc.ExceptionUtil;
 
@@ -105,6 +101,18 @@ public class GuiUtil {
 		}
 		return value;
 	}
+        
+        
+        public static void setSessionValue(String key, Object value){
+            Map sessionMap = FacesContext.getCurrentInstance().getExternalContext().getSessionMap();
+            sessionMap.put(key, value);
+        }
+        
+        public static Object getSessionValue(String key){
+            Map sessionMap = FacesContext.getCurrentInstance().getExternalContext().getSessionMap();
+            return sessionMap.get(key);
+        }
+        
 
 	/**
 	 * <p> This method encodes the given String with the specified type.
@@ -185,6 +193,14 @@ public class GuiUtil {
         }catch (Exception ex1){
             return key;
         }
+    }
+    
+    
+    public static String getMessage(String resourceName, String key){
+        Locale  locale = com.sun.jsftemplating.util.Util.getLocale(FacesContext.getCurrentInstance());
+        ResourceBundle bundle = ResourceBundleManager.getInstance().getBundle(resourceName, locale);
+        String ret =  bundle.getString(key);
+        return (ret==null) ? key : ret;
     }
     
     public static Locale getLocale(){
@@ -284,7 +300,10 @@ public class GuiUtil {
 		return arrList;
 	}
 	public static Option[] getSunOptions(Collection<String> c) {
-		Option[] sunOptions = (c != null ? new Option[c.size()]:null);
+                if (c == null){
+                    return new Option[0];
+                }
+		Option[] sunOptions =  new Option[c.size()];
 		int index=0;
 		for(String str:c) {
 			sunOptions[index++] = new Option(str, str);	
