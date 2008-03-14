@@ -40,7 +40,6 @@ import static javax.xml.stream.XMLStreamConstants.*;
  * @author bnevins
  */
 public class MiniXmlParser {
-
     public MiniXmlParser(File domainXml, String serverName) throws MiniXmlParserException {
         this.serverName = serverName;
         this.domainXml = domainXml;
@@ -99,28 +98,28 @@ public class MiniXmlParser {
         return sysProps;
     }
 
+    public String getDomainName() {
+        return domainName;
+    }
     ///////////////////////////////////////////////////////////////////////////
     ////////   Everything below here is private    ////////////////////////////
     ///////////////////////////////////////////////////////////////////////////
     private void read() throws XMLStreamException, EndDocumentException, FileNotFoundException {
         createParser();
         getConfigRefName();
-
         try {
             // this will fail if config is above servers in domain.xml!
-            getConfig();
-            return; // this is important!
+            getConfig(); // might throw
+            findDomainName();
         }
         catch (EndDocumentException ex) {
-        // we do the following code only if EndDocumentException is caught
-        // success returns
-        // other exceptions get thrown back
+            createParser();
+            skipRoot("domain");
+            getConfig();
+            findDomainName();
+            Logger.getLogger(MiniXmlParser.class.getName()).log(
+                    Level.WARNING, strings.get("secondpass"));
         }
-        createParser();
-        skipRoot("domain");
-        getConfig();
-        Logger.getLogger(MiniXmlParser.class.getName()).log(
-                Level.WARNING, strings.get("secondpass"));
     }
 
     private void createParser() throws FileNotFoundException, XMLStreamException {
@@ -135,7 +134,18 @@ public class MiniXmlParser {
         }   // second pass!
 
         skipRoot("domain");
-        skipTo("servers");
+    
+        // complications -- look for this element as a child of Domain...
+        // <property name="administrative.domain.name" value="domain1"/>        
+        while(true) {
+            skipTo("servers", "property");
+            String name = parser.getLocalName();
+
+            if(name.equals("servers")) {
+                break;
+            }
+            parseDomainName(); // maybe it is the domain name?
+        }
 
         // the cursor is at the start-element of <servers>
         while (true) {
@@ -160,7 +170,18 @@ public class MiniXmlParser {
     }
 
     private void getConfig() throws XMLStreamException, EndDocumentException {
-        skipTo("configs");
+        // complications -- look for this element as a child of Domain...
+        // <property name="administrative.domain.name" value="domain1"/>        
+        while(true) {
+            skipTo("configs", "property");
+            String name = parser.getLocalName();
+
+            if(name.equals("configs")) {
+                break;
+            }
+            parseDomainName(); // maybe it is the domain name?
+        }
+        
         while (true) {
             skipTo("config");
 
@@ -348,6 +369,28 @@ public class MiniXmlParser {
             }
         }
     }
+    /**
+     * The cursor will be pointing at the START_ELEMENT of name1 or name2 when it returns
+     * note that skipTree must be called.  Otherwise we could be fooled by a 
+     * sub-element with the same name as an outer element
+     * @param the first eligible Element to skip to
+     * @param the second eligible Element to skip to
+     * @throws javax.xml.stream.XMLStreamException
+     */
+    private void skipTo(String name1, String name2) throws XMLStreamException, EndDocumentException {
+        while (true) {
+            skipNonStartElements();
+            // cursor is at a START_ELEMENT
+            String localName = parser.getLocalName();
+
+            if (name1.equals(localName) || name2.equals(localName)) {
+                return;
+            }
+            else {
+                skipTree(localName);
+            }
+        }
+    }
 
     /**
      * The cursor will be pointing at the START_ELEMENT of name when it returns
@@ -421,6 +464,38 @@ public class MiniXmlParser {
         System.out.println(sb.toString());
     }
 
+    private void findDomainName() throws XMLStreamException {
+        try {
+            while(domainName == null) {
+                skipTo("property");
+                parseDomainName(); // maybe it is the domain name?
+            }
+        }
+        catch(EndDocumentException e) {
+            // not fatal -- I guess the domain name isn't in here
+        }
+    }
+
+    private void parseDomainName() {
+        // cursor --> pointing at "property" element that is a child of "domain" element
+        // <property name="administrative.domain.name" value="domain1"/>        
+
+        if(domainName != null)
+            return; // found it already
+        
+        Map<String,String> map = parseAttributes();
+        
+        String name = map.get("name");
+        String value = map.get("value");
+        
+        if(name == null || value == null) {
+            return;
+        }
+        if(name.equals("administrative.domain.name")) {
+            domainName = value;
+        }
+    }
+
     private Map<String, String> parseAttributes() {
         int num = parser.getAttributeCount();
         Map<String, String> map = new HashMap<String, String>();
@@ -441,6 +516,7 @@ public class MiniXmlParser {
     private Map<String, String> sysProps = new HashMap<String, String>();
     private Map<String, String> profilerSysProps = new HashMap<String, String>();
     private boolean valid = false;
+    private String domainName;
     private static LocalStringsImpl strings = new LocalStringsImpl(MiniXmlParser.class);
     // this is so we can return from arbitrarily nested calls
     private static class EndDocumentException extends Exception {
