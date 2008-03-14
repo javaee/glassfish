@@ -461,18 +461,24 @@ public class JmxHandlers {
                         int port = Integer.parseInt((String)props.get("port"));
                         String vs = (String) props.get("virtualServer");
                         String httpName = (String) props.get("httpName");
+                        String serverName = (String)props.get("serverName");
+                        //issue 3714. we need to pass in a String with a space, instead of empty string so backend will take it.
+                        //server-name is allowed to be empty. see admin-core/admin/dtds/admin-mbeans-descriptors.xml
+                        if (GuiUtil.isEmpty(serverName))serverName = " ";
+                        
                         HTTPListenerConfig httpConfig = config.getHTTPServiceConfig().createHTTPListenerConfig(
                                 httpName,
                                 (String) props.get("address"),
                                 port,
                                 vs,
-                                (String) props.get("serverName"),
+                                serverName,
                                 options);
                         httpConfig.setEnabled((Boolean)props.get("enabled"));
                         httpConfig.setSecurityEnabled((Boolean)props.get("securityEnabled"));
                         httpConfig.setRedirectPort((String)props.get("redirectPort"));
                         httpConfig.setAcceptorThreads((String)props.get("acceptor-threads"));
                         httpConfig.setXpoweredBy((Boolean)props.get("xpowered-by"));
+                        httpConfig.setBlockingEnabled((Boolean)props.get("blocking-enabled"));
                         VirtualServerConfig vsConfig= config.getHTTPServiceConfig().getVirtualServerConfigMap().get(vs);
                         String listeners = vsConfig.getHTTPListeners();
                         if (GuiUtil.isEmpty(listeners))
