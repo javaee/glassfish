@@ -171,7 +171,7 @@ public class GuiUtil {
 		return encdString;
 	}
     /*
-     * returns the strings from org.glassfish.admingui.Strings 
+     * returns the strings from org.glassfish.admingui.core.Strings 
      * if no such key exists, return the key itself.
      */
     public static String getMessage(String key){
@@ -403,5 +403,5 @@ public class GuiUtil {
 	}
         
     public static final String I18N_RESOURCE_BUNDLE = "__i18n_resource_bundle";
-    public static final String RESOURCE_NAME = "org.glassfish.admingui.resources.Strings";
+    public static final String RESOURCE_NAME = "core.Strings";
 }

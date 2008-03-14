@@ -119,7 +119,7 @@ public class AMXRoot {
         //lbConfigHelper = new LBConfigHelper(domainRoot);
     }
     
-    public static AMXRoot getAMXRoot(){
+    public static AMXRoot getInstance(){
 	if (amxRoot == null){
     	    MBeanServer mMBeanServer = ManagementFactory.getPlatformMBeanServer();
             DomainRoot domainRoot = ProxyFactory.getInstance( mMBeanServer ).getDomainRoot();
@@ -163,7 +163,7 @@ public class AMXRoot {
 //    public LBConfigHelper getLBConfigHelper(){
 //        return lbConfigHelper;
 //    }
-//    
+    
     //IF the instance is not running or when no monitoring is on, null will be returned;
     public  ServerRootMonitor getServerRootMonitor(String instanceName){
         if (GuiUtil.isEmpty(instanceName))

@@ -96,7 +96,7 @@ public class CommonHandlers {
     output={
         @HandlerOutput(name="isEE", type=Boolean.class)})
         public static void isEE(HandlerContext handlerCtx) {
-            handlerCtx.setOutputValue("isEE", AMXRoot.getAMXRoot().isEE());    
+            handlerCtx.setOutputValue("isEE", AMXRoot.getInstance().isEE());    
     }
     
     /**
@@ -130,7 +130,7 @@ public class CommonHandlers {
     @Handler(id="initSessionAttributes")
     public static void initSessionAttributes(HandlerContext handlerCtx){
         Map sessionMap = handlerCtx.getFacesContext().getExternalContext().getSessionMap();
-	DomainRoot domainRoot = AMXRoot.getAMXRoot().getDomainRoot();
+	DomainRoot domainRoot = AMXRoot.getInstance().getDomainRoot();
          
         //Ensure this method is called once per session
         Object initialized = sessionMap.get("_SESSION_INITIALIZED");
@@ -188,7 +188,7 @@ public class CommonHandlers {
         sessionMap.put("reqPort", GuiUtil.getMessage("msg.JS.enterPortValue"));
         sessionMap.put("_SESSION_INITIALIZED","TRUE");
         
-        ConfigConfig config = AMXRoot.getAMXRoot().getConfig("server-config");
+        ConfigConfig config = AMXRoot.getInstance().getConfig("server-config");
         DASConfig dConfig = config.getAdminServiceConfig().getDASConfig();
         String timeOut = dConfig.getAdminSessionTimeoutInMinutes();
 
@@ -252,7 +252,7 @@ public class CommonHandlers {
     public static void getAppServerVersion(HandlerContext handlerCtx) {
         
         //TODO-V3-AMX
-        //J2EEServer server = AMXRoot.getAMXRoot().getJ2EEDomain().getJ2EEServerMap().get("server");
+        //J2EEServer server = AMXRoot.getInstance().getJ2EEDomain().getJ2EEServerMap().get("server");
         //handlerCtx.setOutputValue("version", server.getserverVersion());
         handlerCtx.setOutputValue("version", "Glassfish V3 TP2");
     }
@@ -294,10 +294,9 @@ public class CommonHandlers {
         @HandlerOutput(name="fullVersion", type=String.class)})
     public static void getAppServerFullVersion(HandlerContext handlerCtx) {
         //no AMX API to get the full version, use JMX util
-        //String fullVersion = AMXRoot.getAMXRoot().getJ2EEDomain().getapplicationServerFullVersion();
-         
+        //TODO-V3
         //String fullVersion = (String)JMXUtil.getAttribute("com.sun.appserv:j2eeType=J2EEDomain,name=com.sun.appserv,category=runtime", "applicationServerFullVersion");
-        handlerCtx.setOutputValue("fullVersion", "AMX API to get full Version"); //TODO JMX-AMX API
+        handlerCtx.setOutputValue("fullVersion", "Missing AMX API"); 
     }
     
     /**
@@ -316,7 +315,7 @@ public class CommonHandlers {
     public static void getConfigName(HandlerContext handlerCtx) {
         
         String target = (String) handlerCtx.getInputValue("target");
-        String configName = AMXRoot.getAMXRoot().getConfigName(target);
+        String configName = AMXRoot.getInstance().getConfigName(target);
         handlerCtx.setOutputValue("configName", configName);
    } 
     /**
@@ -513,7 +512,7 @@ public class CommonHandlers {
     )
     public void checkRestart(HandlerContext handlerCtx) {
         
-        //TODO-V3-AMX
+        //TODO-V3
         //Boolean restartRequired = (Boolean)JMXUtil.getAttribute("com.sun.appserv:j2eeType=J2EEServer,name=server,category=runtime", "restartRequired");
         handlerCtx.setOutputValue("RestartRequired", false); 
     }
@@ -571,7 +570,7 @@ public class CommonHandlers {
         for(int i=0; i<propsName.size(); i++){
            String newValue = propsValue.get(i);
            String nm = propsName.get(i);
-           AMXRoot.getAMXRoot().changeProperty(mbean, nm, newValue);
+           AMXRoot.getInstance().changeProperty(mbean, nm, newValue);
         }
     }
     
@@ -719,7 +718,7 @@ public class CommonHandlers {
         @HandlerOutput(name="supportCluster", type=Boolean.class),
         @HandlerOutput(name="supportHADB", type=Boolean.class)})
         public static void checkSupport(HandlerContext handlerCtx) {
-            handlerCtx.setOutputValue("supportCluster", AMXRoot.getAMXRoot().supportCluster());  
+            handlerCtx.setOutputValue("supportCluster", AMXRoot.getInstance().supportCluster());  
             handlerCtx.setOutputValue("supportHADB", false);
     }
     
