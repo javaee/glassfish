@@ -185,11 +185,25 @@ public final class DelegateToConfigBeanDelegate extends DelegateBase
         oldValues.clear();
         
         // note that attributeListToStringMap() auto-converts types to 'String' which is desired here
-        final Map<String, String> attrs = JMXUtil.attributeListToStringMap( attrsIn );
-        final Map<ConfigBean, Map<String, String>> changes = new HashMap<ConfigBean, Map<String, String>>();
-        changes.put( mConfigBean, attrs );
+        final Map<String, String> amxAttrs = JMXUtil.attributeListToStringMap( attrsIn );
         
-        debug( "DelegateToConfigBeanDelegate.setAttributes(): " + attrsIn.size() + " attributes: " + CollectionUtil.toString(attrs.keySet()) );
+        // now map the AMX attribute names to xml attribute names
+        final Map<String,String> xmlAttrs = new HashMap<String,String>();
+        for( final String amxAttrName : amxAttrs.keySet() )
+        {
+            final String xmlName = getXMLName(amxAttrName);
+            if ( xmlName != null )
+            {
+                xmlAttrs.put( xmlName, amxAttrs.get(amxAttrName));
+            }
+        }
+        
+        final Map<ConfigBean, Map<String, String>> changes = new HashMap<ConfigBean, Map<String, String>>();
+        changes.put( mConfigBean, xmlAttrs );
+        
+        debug( "DelegateToConfigBeanDelegate.setAttributes(): " + attrsIn.size() + " attributes: {" +
+            CollectionUtil.toString(amxAttrs.keySet()) +
+            "} mapped to xml names {" + CollectionUtil.toString(xmlAttrs.keySet()) + "}");
         
         final MyTransactionListener  myListener = new MyTransactionListener();
         Transactions.get().addTransactionsListener(myListener);
