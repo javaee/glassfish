@@ -88,7 +88,7 @@ import java.beans.PropertyVetoException;
 public class CreateFileUser implements AdminCommand {
     
     final private static LocalStringManagerImpl localStrings = 
-        new LocalStringManagerImpl(CreateFileUserORIG.class);    
+        new LocalStringManagerImpl(CreateFileUser.class);    
 
 //  @Param(name="groups", optional=true)
 //  List<String> groups;
