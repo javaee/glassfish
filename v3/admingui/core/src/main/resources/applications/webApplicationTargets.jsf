@@ -68,7 +68,7 @@
             <sun:hidden id="helpKey" value="$resource{help.webApplicationTargets}" />
             </sun:form>
         </sun:body>
-#include "changeButtonsJS.inc"
+#include "shared/changeButtonsJS.inc"
   </sun:html>
 
 </sun:page>

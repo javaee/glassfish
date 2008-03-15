@@ -55,6 +55,7 @@
         if( $session{supportCluster}) {
             #getTargetsOptionsList(defaultTarget="$pageSession{target}"AvailableTargets=>$pageSession{availableTargets}, SelectedTargets=>$pageSession{selectedTargets});
         }
+        println("===============appType = #{appType}");
         
     />
 #include "shared/restart.inc"    

@@ -195,6 +195,10 @@ public class AMXRoot {
      */
     public String getConfigName(String name){
         
+        Map sm = domainConfig.getStandaloneServerConfigMap();
+        Map cm = domainConfig.getClusteredServerConfigMap();
+        if(true)
+            return "server-config";
         //try to see if its a server, if not, try cluster.
         ServerConfig serverConfig = domainConfig.getServerConfigMap().get(name);
         if (serverConfig != null){
