@@ -85,6 +85,8 @@ public class AsadminMain {
         "javax.xml.stream.XMLInputFactory",
         // one from server-mgmt
         "com.sun.enterprise.admin.servermgmt.RepositoryException",
+        // one from common-utils
+        "com.sun.enterprise.util.net.NetUtils"
     
     };
     static {

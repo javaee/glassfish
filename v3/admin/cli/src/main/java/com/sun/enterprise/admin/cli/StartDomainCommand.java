@@ -4,8 +4,6 @@ import com.sun.enterprise.admin.launcher.GFLauncher;
 import com.sun.enterprise.admin.launcher.GFLauncherFactory;
 import com.sun.enterprise.admin.launcher.GFLauncherInfo;
 import com.sun.enterprise.cli.framework.*;
-import com.sun.enterprise.util.SystemPropertyConstants;
-import java.io.File;
 import java.util.logging.*;
 
 public class StartDomainCommand extends Command {
