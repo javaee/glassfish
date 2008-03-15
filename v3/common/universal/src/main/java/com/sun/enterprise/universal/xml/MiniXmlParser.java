@@ -41,6 +41,9 @@ import static javax.xml.stream.XMLStreamConstants.*;
  * @author bnevins
  */
 public class MiniXmlParser {
+    public MiniXmlParser(File domainXml) throws MiniXmlParserException {
+        this(domainXml, "server");  // default for a domain
+    }
     public MiniXmlParser(File domainXml, String serverName) throws MiniXmlParserException {
         this.serverName = serverName;
         this.domainXml = domainXml;
