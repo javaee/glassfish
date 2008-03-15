@@ -107,9 +107,7 @@ public class TimerBeanContainer
             String cmpResourceJndiName = cmpResource.getJndiName();
 
             // Get the timer data source name from the domain.xml
-            ServerContext sc = ApplicationServer.getServerContext();
-            EjbContainer ejbc = ServerBeansFactory.
-                getConfigBean(sc.getConfigContext()).getEjbContainer();
+            EjbContainer ejbc = ejbContainerUtil.getEjbContainer();
             EjbTimerService ejbt = ejbc.getEjbTimerService();
             // EjbTimerService is an optional element
             String ejbtDatasource = (ejbt != null) ?

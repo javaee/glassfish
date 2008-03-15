@@ -79,6 +79,7 @@ import com.sun.enterprise.admin.monitor.callflow.Agent;
 import com.sun.enterprise.server.ServerContext;
 import com.sun.enterprise.config.serverbeans.EjbContainer;
 import com.sun.enterprise.config.serverbeans.EjbTimerService;
+import com.sun.enterprise.v3.server.V3Environment;
 
 import com.sun.ejb.containers.EjbContainerUtil;
 
@@ -174,9 +175,9 @@ public class EJBTimerService
         shutdown_       = false;
         this.appID = appID;
 
-        domainName_ = ""; // XXX TO BE REPLACED ServerManager.instance().getDomainName();
-        // XXX InstanceEnvironment server = ApplicationServer.getServerContext().getInstanceEnvironment();
-        serverName_ = ""; // XXX TO BE REPLACED server.getName();
+        V3Environment env = ejbContainerUtil.getV3Environment();
+        domainName_ = env.getDomainName();
+        serverName_ = env.getInstanceName();
 
         initProperties();
     }
@@ -226,11 +227,7 @@ public class EJBTimerService
 
             // Compose owner id for all timers created with this 
             // server instance.  
-/** XXX TODO: FIND REPLACEMENT
-            InstanceEnvironment server = sc.getInstanceEnvironment();
-            String serverName = server.getName();
-** XXX TODO: FIND REPLACEMENT **/
-            ownerIdOfThisServer_ = ""; // XXX TODO: FIND REPLACEMENT *** serverName;
+            ownerIdOfThisServer_ = ejbContainerUtil.getV3Environment().getInstanceName();
 
         } catch(Exception e) {
             logger.log(Level.FINE, "Exception converting timer service " +

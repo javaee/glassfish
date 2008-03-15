@@ -9,6 +9,7 @@ import com.sun.enterprise.config.serverbeans.Application;
 import com.sun.enterprise.config.serverbeans.ApplicationHelper;
 import com.sun.enterprise.deployment.EjbDescriptor;
 import com.sun.enterprise.server.ServerContext;
+import com.sun.enterprise.v3.server.V3Environment;
 import org.glassfish.api.invocation.ComponentInvocation;
 import org.glassfish.api.invocation.InvocationManager;
 import org.glassfish.api.naming.GlassfishNamingManager;
@@ -69,6 +70,9 @@ public class EjbContainerUtil
 
     @Inject
     private ApplicationHelper applicationHelper;
+
+    @Inject
+    private V3Environment env;
 
     private  static EjbContainerUtil _me;
 
@@ -183,6 +187,10 @@ public class EjbContainerUtil
 
     public Application findApplicationByName(String appName) {
         return applicationHelper.findApplicationByName(appName);
+    }
+
+    public V3Environment getV3Environment() {
+        return env;
     }
 
     public  Vector getBeans(Transaction jtx) {
