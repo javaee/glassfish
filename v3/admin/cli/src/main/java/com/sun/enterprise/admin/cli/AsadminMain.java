@@ -86,8 +86,9 @@ public class AsadminMain {
         // one from server-mgmt
         "com.sun.enterprise.admin.servermgmt.RepositoryException",
         // one from common-utils
-        "com.sun.enterprise.util.net.NetUtils"
-    
+        "com.sun.enterprise.util.net.NetUtils",
+        // one from admin/util
+        "com.sun.enterprise.admin.util.TokenValueSet",
     };
     static {
         // check RIGHT NOW to make sure all the classes we need are
