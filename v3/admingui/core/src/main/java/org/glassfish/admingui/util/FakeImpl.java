@@ -35,6 +35,11 @@
  */
 package org.glassfish.admingui.util;
 
+import com.sun.jsftemplating.annotation.Handler;
+import com.sun.jsftemplating.annotation.HandlerInput;
+import com.sun.jsftemplating.annotation.HandlerOutput;
+import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
+
 import java.lang.reflect.Method;
 import java.util.HashMap;
 
@@ -93,6 +98,26 @@ public class FakeImpl extends HashMap {
     @Override
     public String toString() {
 	return theClass.getName() + ".toString()";
+    }
+
+    /**
+     *	<p> This handler creates a <code>FakeImpl</code> for the given class
+     *	    (or Object).</p>
+     */
+    @Handler(id="getFakeImpl",
+    	input={
+	    @HandlerInput(name="class", type=Object.class, required=true)},
+        output={
+	    @HandlerOutput(name="fakeImpl", type=FakeImpl.class)})
+    public static void getListElement(HandlerContext handlerCtx) {
+	Object obj = (Object) handlerCtx.getInputValue("class");
+	Class cls = null;
+	if (obj instanceof Class) {
+	    cls = (Class) obj;
+	} else {
+	    cls = obj.getClass();
+	}
+	handlerCtx.setOutputValue("fakeImpl", new FakeImpl(cls));
     }
 
     private Class theClass;
