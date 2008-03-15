@@ -83,6 +83,8 @@ public class AsadminMain {
         "com.sun.enterprise.glassfish.bootstrap.Main",
         // one from stax-api
         "javax.xml.stream.XMLInputFactory",
+        // one from server-mgmt
+        "com.sun.enterprise.admin.servermgmt.RepositoryException",
     
     };
     static {
