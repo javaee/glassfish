@@ -402,6 +402,7 @@ public class GFLauncherInfo {
     private boolean valid = false;
     private Map<String, String> argsMap;
     private ArrayList<String> argsRaw = new ArrayList<String>();
+    // BUG TODO get the def. domains dir from asenv 3/14/2008
     private final static String DEFAULT_DOMAIN_PARENT_DIR = "domains";
     private final static String CONFIG_DIR = "config";
     private final static String CONFIG_FILENAME = "domain.xml";
