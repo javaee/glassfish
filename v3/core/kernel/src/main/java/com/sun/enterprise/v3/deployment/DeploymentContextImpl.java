@@ -33,7 +33,7 @@ import java.util.HashMap;
 import java.util.logging.Logger;
 import java.io.File;
 
-import com.sun.enterprise.v3.server.V3Environment;
+import com.sun.enterprise.v3.server.ServerEnvironment;
 
 /**
  *
@@ -44,13 +44,13 @@ public class DeploymentContextImpl implements DeploymentContext {
     final ReadableArchive source;
     final Properties parameters;
     final Logger logger;
-    final V3Environment env;
+    final ServerEnvironment env;
     ClassLoader cloader;
     Properties props;
     Map<String, Object> modulesMetaData = new HashMap<String, Object>();
 
     /** Creates a new instance of DeploymentContext */
-    public DeploymentContextImpl(Logger logger, ReadableArchive source, Properties params, V3Environment env) {
+    public DeploymentContextImpl(Logger logger, ReadableArchive source, Properties params, ServerEnvironment env) {
         this.source = source;
         this.logger = logger;
         this.parameters = params;

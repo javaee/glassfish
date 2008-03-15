@@ -6,7 +6,7 @@ package com.sun.enterprise.security;
 
 import com.sun.enterprise.server.pluggable.SecuritySupport;
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.enterprise.v3.server.V3Environment;
+import com.sun.enterprise.v3.server.ServerEnvironment;
 import com.sun.enterprise.v3.server.Globals;
 import com.sun.logging.LogDomains;
 import java.io.BufferedReader;
@@ -53,7 +53,7 @@ public class SecurityServicesUtil {
      * code moved from J2EEServer.run()
      */
     public void initSecureSeed() {
-        String seedFile = habitat.getComponent(V3Environment.class).getConfigDirPath() +
+        String seedFile = habitat.getComponent(ServerEnvironment.class).getConfigDirPath() +
                 File.separator + "secure.seed";
         File secureSeedFile = new File(seedFile);
 

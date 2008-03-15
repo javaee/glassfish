@@ -31,7 +31,7 @@ import com.sun.enterprise.v3.data.ContainerInfo;
 import com.sun.enterprise.v3.deployment.DeployCommand;
 import com.sun.enterprise.v3.deployment.DeploymentContextImpl;
 import com.sun.enterprise.v3.server.ApplicationLifecycle;
-import com.sun.enterprise.v3.server.V3Environment;
+import com.sun.enterprise.v3.server.ServerEnvironment;
 import com.sun.enterprise.config.serverbeans.Applications;
 import com.sun.enterprise.config.serverbeans.Module;
 import com.sun.enterprise.config.serverbeans.Application;
@@ -87,7 +87,7 @@ public class ApplicationLoaderService extends ApplicationLifecycle
     ArchiveFactory archiveFactory;
 
     @Inject
-    V3Environment env;
+    ServerEnvironment env;
 
     @Inject
     Applications applications;

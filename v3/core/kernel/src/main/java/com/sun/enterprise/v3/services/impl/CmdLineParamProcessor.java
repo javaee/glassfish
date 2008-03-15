@@ -24,7 +24,7 @@
 package com.sun.enterprise.v3.services.impl;
 
 import org.glassfish.internal.api.Init;
-import com.sun.enterprise.v3.server.V3Environment;
+import com.sun.enterprise.v3.server.ServerEnvironment;
 import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.module.ModuleDefinition;
 import com.sun.enterprise.module.common_impl.DefaultModuleDefinition;
@@ -44,7 +44,7 @@ import java.util.logging.Level;
 public class CmdLineParamProcessor implements Init, PostConstruct {
 
     @Inject
-    V3Environment env;
+    ServerEnvironment env;
 
     @Inject
     ModulesRegistry registry;

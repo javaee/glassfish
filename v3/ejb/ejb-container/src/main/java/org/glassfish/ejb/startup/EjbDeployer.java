@@ -28,7 +28,7 @@ import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.EjbBundleDescriptor;
 import com.sun.enterprise.deployment.RootDeploymentDescriptor;
 import com.sun.enterprise.server.ServerContext;
-import com.sun.enterprise.v3.server.V3Environment;
+import com.sun.enterprise.v3.server.ServerEnvironment;
 import org.glassfish.api.deployment.Deployer;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.javaee.core.deployment.JavaEEDeployer;
@@ -52,7 +52,7 @@ public class EjbDeployer
     Domain domain;
 
     @Inject
-    V3Environment env;                                             
+    ServerEnvironment env;                                             
 
     /**
      * Constructor

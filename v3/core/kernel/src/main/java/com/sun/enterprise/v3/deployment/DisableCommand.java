@@ -23,7 +23,7 @@
 
 package com.sun.enterprise.v3.deployment;
 
-import com.sun.enterprise.v3.server.V3Environment;
+import com.sun.enterprise.v3.server.ServerEnvironment;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import com.sun.enterprise.v3.server.ApplicationLifecycle;
@@ -47,7 +47,7 @@ public class DisableCommand extends ApplicationLifecycle implements AdminCommand
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(DisableCommand.class);    
 
     @Inject
-    V3Environment env;
+    ServerEnvironment env;
 
     @Param(primary=true, name="component")
     String component = null;

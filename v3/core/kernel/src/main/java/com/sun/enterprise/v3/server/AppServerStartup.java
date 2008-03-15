@@ -53,7 +53,7 @@ public class AppServerStartup implements ModuleStartup {
     final static Logger logger = LogDomains.getLogger(LogDomains.CORE_LOGGER);
 
     @Inject
-    V3Environment env;
+    ServerEnvironment env;
 
     @Inject
     Habitat habitat;

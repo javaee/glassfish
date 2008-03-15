@@ -26,7 +26,7 @@
 package com.sun.enterprise.rails;
 
 import com.sun.enterprise.v3.deployment.DeployCommand;
-import com.sun.enterprise.v3.server.V3Environment;
+import com.sun.enterprise.v3.server.ServerEnvironment;
 import com.sun.enterprise.v3.services.impl.GrizzlyService;
 import com.sun.grizzly.arp.DefaultAsyncHandler;
 import org.glassfish.api.deployment.Deployer;
@@ -51,7 +51,7 @@ import org.jvnet.hk2.annotations.Service;
 public class RailsDeployer implements Deployer<RailsContainer, RailsApplication> {
     
     @Inject
-    V3Environment env;
+    ServerEnvironment env;
     
     @Inject
     GrizzlyService grizzlyAdapter;

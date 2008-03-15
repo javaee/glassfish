@@ -30,7 +30,7 @@ import org.glassfish.api.deployment.ApplicationContainer;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.archive.WritableArchive;
 import org.glassfish.api.container.Container;
-import com.sun.enterprise.v3.server.V3Environment;
+import com.sun.enterprise.v3.server.ServerEnvironment;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.util.zip.ZipItem;
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
@@ -70,7 +70,7 @@ public abstract class JavaEEDeployer<T extends Container, U extends ApplicationC
         implements Deployer<T, U> {
 
     @Inject
-    protected V3Environment env;
+    protected ServerEnvironment env;
 
     @Inject
     protected ArchiveFactory archiveFactory;

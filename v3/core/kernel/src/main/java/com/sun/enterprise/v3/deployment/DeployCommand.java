@@ -29,7 +29,7 @@ import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.v3.admin.CommandRunner;
 import com.sun.enterprise.v3.data.ApplicationInfo;
 import com.sun.enterprise.v3.server.ApplicationLifecycle;
-import com.sun.enterprise.v3.server.V3Environment;
+import com.sun.enterprise.v3.server.ServerEnvironment;
 import com.sun.enterprise.module.Module;
 import com.sun.enterprise.module.ModuleDefinition;
 import com.sun.enterprise.module.impl.ClassLoaderProxy;
@@ -78,7 +78,7 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
     public static final String PRECOMPILE_JSP = "precompilejsp";
     
     @Inject
-    V3Environment env;
+    ServerEnvironment env;
 
     @Inject
     ArchiveFactory archiveFactory;

@@ -158,7 +158,7 @@ import com.sun.enterprise.config.serverbeans.Servers;
 
 // V3 imports
 import com.sun.enterprise.container.common.spi.util.ComponentEnvManager;
-import com.sun.enterprise.v3.server.V3Environment;
+import com.sun.enterprise.v3.server.ServerEnvironment;
 import com.sun.enterprise.v3.common.Result;
 
 import org.jvnet.hk2.annotations.Inject;
@@ -245,7 +245,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
         setJspFactory();
 
-        instance = (V3Environment) _serverContext.getDefaultHabitat().getComponent(V3Environment.class);
+        instance = (ServerEnvironment) _serverContext.getDefaultHabitat().getComponent(ServerEnvironment.class);
         _modulesWorkRoot = instance.getWebModuleCompileJspPath();
         _appsWorkRoot = instance.getApplicationCompileJspPath();
         _modulesRoot = instance.getApplicationRepositoryPath();
@@ -1887,7 +1887,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
     // ----------------------------------------------------- Instance Variables
 
-    protected V3Environment instance = null;
+    protected ServerEnvironment instance = null;
     
     // TODO
     //protected WebModulesManager webModulesManager = null;
@@ -2889,7 +2889,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                     // if we have alt dd, it must be an embedded web module
                     String appName =  wmName.substring(0,
                             wmName.indexOf(Constants.NAME_SEPARATOR));
-                    V3Environment env = this._serverContext.getDefaultHabitat().getComponent(V3Environment.class);
+                    ServerEnvironment env = this._serverContext.getDefaultHabitat().getComponent(ServerEnvironment.class);
                     String appLoc = env.getApplicationGeneratedXMLPath() + File.separator +
                             appName;
                     if (! FileUtils.safeIsDirectory(appLoc)) {
@@ -4623,7 +4623,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
      *
      * @return The instance classpath
      */
-    private String getInstanceClassPath(V3Environment instanceEnv) {
+    private String getInstanceClassPath(ServerEnvironment instanceEnv) {
 
         if (instanceEnv == null) {
             return null;

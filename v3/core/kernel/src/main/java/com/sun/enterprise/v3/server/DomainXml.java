@@ -62,11 +62,11 @@ public class DomainXml implements Populator {
 
         domainRoot = new File(System.getProperty(INSTANCE_ROOT_PROP_NAME));
 
-        V3Environment env = new V3Environment(domainRoot.getPath(), context);
-        habitat.add(new ExistingSingletonInhabitant(V3Environment.class, env));
+        ServerEnvironment env = new ServerEnvironment(domainRoot.getPath(), context);
+        habitat.add(new ExistingSingletonInhabitant(ServerEnvironment.class, env));
         habitat.addComponent("parent-class-loader",
                 new ExistingSingletonInhabitant(URLClassLoader.class, registry.getParentClassLoader()));
-        File domainXml = new File(env.getConfigDirPath(), V3Environment.kConfigXMLFileName);
+        File domainXml = new File(env.getConfigDirPath(), ServerEnvironment.kConfigXMLFileName);
         
         String instanceName = context.getArguments().get("-instancename");
         if(instanceName == null || instanceName.length() <= 0)

@@ -41,7 +41,7 @@ import com.sun.enterprise.util.StringUtils;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.v3.common.BooleanLatch;
 import com.sun.enterprise.v3.logging.AgentFormatterDelegate;
-import com.sun.enterprise.v3.server.V3Environment;
+import com.sun.enterprise.v3.server.ServerEnvironment;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.logging.Task;
 import org.glassfish.config.support.TranslatedConfigView;
@@ -80,7 +80,7 @@ public class FileandSyslogHandler extends StreamHandler implements PostConstruct
     ServerContext serverContext;
 
     @Inject
-    V3Environment env;
+    ServerEnvironment env;
 
     @Inject(optional=true)
     Agent agent;

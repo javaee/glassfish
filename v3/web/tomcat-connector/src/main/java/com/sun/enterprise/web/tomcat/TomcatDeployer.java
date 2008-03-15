@@ -28,7 +28,7 @@ import com.sun.enterprise.server.ServerContext;
 import com.sun.enterprise.util.StringUtils;
 import org.glassfish.javaee.core.deployment.JavaEEDeployer;
 import com.sun.enterprise.v3.deployment.DeployCommand;
-import com.sun.enterprise.v3.server.V3Environment;
+import com.sun.enterprise.v3.server.ServerEnvironment;
 import com.sun.enterprise.v3.services.impl.GrizzlyService;
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import com.sun.enterprise.deployment.Application;
@@ -75,7 +75,7 @@ public class TomcatDeployer extends JavaEEDeployer<TomcatContainer, TomcatApplic
     Domain domain;
 
     @Inject
-    V3Environment env;
+    ServerEnvironment env;
 
     @Inject
     GrizzlyService grizzlyAdapter;

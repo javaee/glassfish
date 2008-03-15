@@ -74,7 +74,7 @@ import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.HttpProtocol;
 import com.sun.enterprise.config.serverbeans.HttpService;
 import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
-import com.sun.enterprise.v3.server.V3Environment;
+import com.sun.enterprise.v3.server.ServerEnvironment;
 import com.sun.enterprise.web.pluggable.WebContainerFeatureFactory;
 
 import com.sun.logging.LogDomains;
@@ -776,7 +776,7 @@ public final class PEAccessLogValve
             if (logRoot != null) {
                 dir = new File(logRoot, accessLog);
             } else {
-                V3Environment env = habitat.getComponent(V3Environment.class);
+                ServerEnvironment env = habitat.getComponent(ServerEnvironment.class);
                 dir = new File(env.getDomainRoot(), accessLog);
             }
         }

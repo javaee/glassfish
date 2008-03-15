@@ -46,7 +46,7 @@ import java.util.Map;
 public class ServerContextImpl implements ServerContext, PostConstruct {
 
     @Inject
-    V3Environment env;
+    ServerEnvironment env;
 
     @Inject
     StartupContext startupContext;
@@ -87,8 +87,8 @@ public class ServerContextImpl implements ServerContext, PostConstruct {
     }
 
     public String getServerConfigURL() {
-        File domainXML = new File(instanceRoot, V3Environment.kConfigDirName);
-        domainXML = new File(domainXML, V3Environment.kConfigXMLFileName);
+        File domainXML = new File(instanceRoot, ServerEnvironment.kConfigDirName);
+        domainXML = new File(domainXML, ServerEnvironment.kConfigXMLFileName);
         return domainXML.toURI().toString();
     }
 

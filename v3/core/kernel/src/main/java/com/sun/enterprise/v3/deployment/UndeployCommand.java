@@ -29,7 +29,7 @@ import com.sun.enterprise.v3.contract.ApplicationMetaDataPersistence;
 import com.sun.enterprise.v3.data.ApplicationInfo;
 import com.sun.enterprise.v3.data.ApplicationRegistry;
 import com.sun.enterprise.v3.server.ApplicationLifecycle;
-import com.sun.enterprise.v3.server.V3Environment;
+import com.sun.enterprise.v3.server.ServerEnvironment;
 import com.sun.enterprise.v3.services.impl.GrizzlyService;
 import com.sun.enterprise.config.serverbeans.Applications;
 import com.sun.enterprise.config.serverbeans.Module;
@@ -61,7 +61,7 @@ public class UndeployCommand extends ApplicationLifecycle implements AdminComman
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(UndeployCommand.class);
     
     @Inject
-    V3Environment env;
+    ServerEnvironment env;
 
     @Inject
     ApplicationRegistry appRegistry;

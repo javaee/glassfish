@@ -32,7 +32,7 @@ import com.sun.enterprise.deployment.io.WebDeploymentDescriptorFile;
 import com.sun.enterprise.server.ServerContext;
 import com.sun.enterprise.util.StringUtils;
 import com.sun.enterprise.v3.deployment.DeployCommand;
-import com.sun.enterprise.v3.server.V3Environment;
+import com.sun.enterprise.v3.server.ServerEnvironment;
 import com.sun.enterprise.v3.services.impl.GrizzlyService;
 import com.sun.enterprise.v3.common.Result;
 import com.sun.enterprise.module.ModuleDefinition;
@@ -78,7 +78,7 @@ public class WebDeployer extends JavaEEDeployer<WebContainer, WebApplication>{
     Domain domain;
 
     @Inject
-    V3Environment env;
+    ServerEnvironment env;
 
     @Inject
     GrizzlyService grizzlyAdapter;

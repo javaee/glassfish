@@ -62,7 +62,7 @@ import java.util.logging.Logger;
 public class DomainXmlPersistence implements ConfigurationPersistence {
 
     @Inject
-    V3Environment env;
+    ServerEnvironment env;
 
     @Inject
     Logger logger;
