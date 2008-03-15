@@ -129,12 +129,16 @@ public class DefaultModuleDefinition implements ModuleDefinition {
      * Parses <tt>{@value ManifestConstants#CLASS_PATH}</tt> from manifest attributes
      * and updates URI list.
      */
-    protected void parseClassPath(Attributes attr, URI baseURI) {
+    protected void parseClassPath(Attributes attr, URI baseURI) throws IOException {
         String classpath = attr.getValue(ManifestConstants.CLASS_PATH);
         for( String classpathElement : new Tokenizer(classpath," ")) {
             classpathElement = decorateClassPath(classpathElement);
             URI result;
             File ref = new File(classpathElement);
+
+            // look for /META-INF/services for classloader punch-in
+            Jar.create(ref).loadMetadata(metadata);
+
             if (!ref.isAbsolute()) {
                 try {
                     result = baseURI.resolve(classpathElement);
