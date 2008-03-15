@@ -68,7 +68,7 @@ public class FakeImpl extends HashMap {
 
 	    // Check Return type and decide what to return
 	    if (String.class.isAssignableFrom(returnType)) {
-		return STRING_DATA;
+		return key.toString() + STRING_DATA;
 	    } else if (Integer.TYPE.isAssignableFrom(returnType)) {
 		return INT_DATA;
 	    } else if (Integer.class.isAssignableFrom(returnType)) {
@@ -114,6 +114,14 @@ public class FakeImpl extends HashMap {
 	Class cls = null;
 	if (obj instanceof Class) {
 	    cls = (Class) obj;
+	} else if ((obj instanceof String) && ((String) obj).endsWith(".class")) {
+	    String className = (String) obj;
+	    className = className.substring(0, className.lastIndexOf(".class"));
+	    try {
+		cls = Class.forName(className);
+	    } catch (Exception ex) {
+		ex.printStackTrace();
+	    }
 	} else {
 	    cls = obj.getClass();
 	}
@@ -121,7 +129,7 @@ public class FakeImpl extends HashMap {
     }
 
     private Class theClass;
-    private static final String	    STRING_DATA	    = "String DATA";
+    private static final String	    STRING_DATA	    = " - FakeData";
     private static final Integer    INTEGER_DATA    = 9;
     private static final int	    INT_DATA	    = 5;
 }
