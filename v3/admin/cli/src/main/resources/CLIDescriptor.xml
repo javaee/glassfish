@@ -81,6 +81,14 @@
                 <ValidOption name="savemasterpassword"/>
                 <ValidOption name="savelogin"/>
         </Command>
+        <Command name="stop-domain" 
+              classname="com.sun.enterprise.admin.cli.StopDomainCommand" 
+              numberofoperands="?" 
+              usage-text=" [--terse=false] [--echo=false] [--domaindir domain_directory] [domain_name]">
+            <ValidOption name="domaindir"/>
+            <ValidOption name="terse"/>
+            <ValidOption name="echo"/>
+        </Command>
     </Commands>
 </CommandsAndOptions>
 
