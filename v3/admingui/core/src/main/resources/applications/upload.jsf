@@ -62,6 +62,8 @@
 <sun:html>
 	<sun:head id="propertyhead" title="$resource{i18n.deploy.pageTitle}">
                 <sun:script url="/resource/js/restart.js" />
+                <sun:script url="/resource/js/selectElements.js" />
+                <sun:script url="/resource/js/adminjsf.js" />
 	</sun:head>
 
 		<sun:body onLoad="javascript: disableComponent('form:title:sheet1:section1:prop1:dirPath', 'text');setVisible('#{appType}');synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">

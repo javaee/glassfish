@@ -35,7 +35,7 @@
 -->
 <!-- applications/uploadButtons.inc -->
 
-        <sun:button text=" Go!" >
+        <sun:button text=" U Go!" immediate="#{true}">
             <!command
                 println("HERE I AM");
                 redirect(page="../test.jsf");
