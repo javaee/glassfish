@@ -109,7 +109,7 @@ public class AppServerStartup implements ModuleStartup {
                     }
                 }
             }
-        });
+        }, "AppServerStartup");
         t.start();
         
     }
