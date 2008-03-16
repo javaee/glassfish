@@ -135,14 +135,6 @@ public class DefaultModuleDefinition implements ModuleDefinition {
             classpathElement = decorateClassPath(classpathElement);
             URI result;
             File ref = new File(classpathElement);
-
-            /* bnevins Mar 15, 7PM PDT -- this is breaking GF because some modules
-             * have relative ClassPath's.  
-             * I'm moving it below the next block.  Which looks OK to do
-             */
-            // look for /META-INF/services for classloader punch-in
-            //Jar.create(ref).loadMetadata(metadata);
-
             if (!ref.isAbsolute()) {
                 try {
                     result = baseURI.resolve(classpathElement);
@@ -152,12 +144,17 @@ public class DefaultModuleDefinition implements ModuleDefinition {
             } else
                 result = ref.toURI();
 
-            // bnevins -- Mar 15 here is the moved line
-            Jar.create(new File(result)).loadMetadata(metadata);
-            
-            
-            
             assert testClassPath(result);
+
+            // look for /META-INF/services for classloader punch-in
+            File file = new File(result);
+            if (file.exists()) {
+                Jar.create(file).loadMetadata(metadata);
+            } else {
+                LOGGER.warning(
+                        "Skipping loading metadata from file " + file + " pointed from "+name+" in classpath, " +
+                                "as it doesn't exist");
+            }
 
             classPath.add(result);
         }
