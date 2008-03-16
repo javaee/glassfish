@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<console-config id="web">
+        <integration-point 
+                id="webContainer" 
+                type="tree" 
+                priority="300" 
+                parentId="configuration" 
+                content="webContainerNode.jsf" 
+        />
+       
+</console-config>
