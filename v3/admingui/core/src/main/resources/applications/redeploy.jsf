@@ -47,8 +47,8 @@
 #include "shared/restart.inc"    
 <sun:html>
 	<sun:head id="propertyhead" title="$resource{i18n.redeploy.pageTitle}">
-                <sun:script url="/resources/js/restart.js" />
-                <sun:script url="/resources/js/adminjsf.js" />
+                <sun:script url="/resource/js/restart.js" />
+                <sun:script url="/resource/js/adminjsf.js" />
 	</sun:head>
 		<sun:body onLoad="javascript: synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
 	    	<sun:form id="form"> 

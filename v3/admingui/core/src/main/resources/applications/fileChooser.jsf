@@ -59,7 +59,7 @@
 <sun:html id="html2">
     <sun:head id="propertyhead">
 		"<SCRIPT language="JavaScript" src="../js/adminjsf.js"></script>
-        <sun:script url="/resources/js/restart.js" />
+        <sun:script url="/resource/js/restart.js" />
     </sun:head>
     <sun:body id="body3" onLoad="javascript: synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
         <sun:form id="propertyForm">

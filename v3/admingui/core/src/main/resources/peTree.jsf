@@ -84,9 +84,9 @@
 			  url="/appServer/serverInstGeneralPe.jsf?instanceName=server"
 			  imageURL="resource/images/instance.gif"
 			  target="main">
-<!facet image>
-    <sun:image id="xyz" url="/resource/images/instance.gif" />
-</facet>
+                <!facet image>
+                    <sun:image id="xyz" url="/resource/images/instance.gif" />
+                </facet>
 	    </sun:treeNode>
 
 	    <!--  ===================================== Applications ======================  -->

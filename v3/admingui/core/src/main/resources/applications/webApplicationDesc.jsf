@@ -50,7 +50,7 @@
 #include "shared/restart.inc"    
 <sun:html id="html2">
     <sun:head id="propertyhead" title="#{pageTitle}" >
-        <sun:script url="/resources/js/restart.js" />
+        <sun:script url="/resource/js/restart.js" />
     </sun:head>
 #include "alertMsg.inc"
     <sun:body id="body3" onLoad="javascript: synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
