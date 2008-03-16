@@ -43,7 +43,8 @@
         </sun:button>
 
     <sun:button id="uploadButton" text="$resource{i18n.button.OK}" 
-        onClick="javascript:
+        onClick="javascript: 
+            alert('in uploadButton');
             if (checkType(this, '#{typeId}', '#{extensionId}', '$resource{i18n.msg.JS.deploy.confirmType}')){
                 var result;
                 if(getSelectedValue('uploadRdBtn')=='client') {
@@ -54,9 +55,13 @@
                 }
                 if(result == true) {
                         if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'))
-                            return submitAndDisable(this, '$resource{i18n.button.Processing}'); 
+                            submitAndDisable(this, '$resource{i18n.button.Processing}');
+                            alert(' after guiValidate, return true');
+                            return true;
+                        }
                 }  
-              } 
+              }
+              alert('return false');
               return false;            
                 ">
         <!command
