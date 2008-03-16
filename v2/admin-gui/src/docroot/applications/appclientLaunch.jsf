@@ -88,8 +88,15 @@
                                         getPortForApplication(
                                             AppID="$requestParameter{appID}"
                                             Port=>$pageSession{port}
+                                            secure=>$pageSession{secure}
                                         );
-                                        setAttribute(key="url" value="http://#{request.serverName}:$pageSession{port}$pageSession{path}");
+                                        if(! $pageSession{secure}){
+                                            setPageSessionAttribute(key="protocol" value="http");
+                                        }
+                                        if($pageSession{secure}){
+                                            setPageSessionAttribute(key="protocol" value="https");
+                                        }
+                                        setAttribute(key="url" value="$pageSession{protocol}://#{request.serverName}:$pageSession{port}$pageSession{path}");
                                     }
                                 />
                             </sun:staticText>
