@@ -43,17 +43,23 @@
         </sun:button>
 
     <sun:button id="uploadButton" text="$resource{i18n.button.OK}" 
-        onClick="javascript: 
+        onClick="javascript:
             if (checkType(this, '#{typeId}', '#{extensionId}', '$resource{i18n.msg.JS.deploy.confirmType}')){
-                if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')){
-                    alert('about to submit');
-                    submitAndDisable(this, '$resource{i18n.button.Processing}');
-                    return true;
+                var result;
+                if(getSelectedValue('uploadRdBtn')=='client') {
+                    result = (checkRequired('#{fileuploadId}', '#{reqMsg}'));
+                         
+                } else {
+                    result = (checkRequired('#{dirPathId}', '#{reqMsg}'));
                 }
-            }
-            return false;" >
+                if(result == true) {
+                        if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'))
+                            return submitAndDisable(this, '$resource{i18n.button.Processing}'); 
+                }  
+              } 
+              return false;            
+                ">
         <!command
-println("============ in command");
          compare(obj1="#{uploadRdBtn}" obj2="client" objEqual=>$attribute{needUpload});
             if (${needUpload}){
                 uploadFileToTempDir(file="#{uploadedFile}" uploadedTempFile=>$attribute{filePath}, origPath=>$attribute{origPath});
@@ -93,7 +99,6 @@ println("============ in command");
 </sun:button>
 <sun:button id="cancelButton" text="$resource{i18n.button.Cancel}" primary="#{false}"  immediate="#{true}">
     <!command
-println("================= ../$pageSession{cancelPage}?name=$pageSession{target}");
             redirect(page="../$pageSession{cancelPage}?name=$pageSession{target}");
     />
 </sun:button>
