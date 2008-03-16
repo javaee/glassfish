@@ -136,8 +136,12 @@ public class DefaultModuleDefinition implements ModuleDefinition {
             URI result;
             File ref = new File(classpathElement);
 
+            /* bnevins Mar 15, 7PM PDT -- this is breaking GF because some modules
+             * have relative ClassPath's.  
+             * I'm moving it below the next block.  Which looks OK to do
+             */
             // look for /META-INF/services for classloader punch-in
-            Jar.create(ref).loadMetadata(metadata);
+            //Jar.create(ref).loadMetadata(metadata);
 
             if (!ref.isAbsolute()) {
                 try {
@@ -148,6 +152,11 @@ public class DefaultModuleDefinition implements ModuleDefinition {
             } else
                 result = ref.toURI();
 
+            // bnevins -- Mar 15 here is the moved line
+            Jar.create(new File(result)).loadMetadata(metadata);
+            
+            
+            
             assert testClassPath(result);
 
             classPath.add(result);
