@@ -96,19 +96,23 @@
         <!-- Woodstock dependency -->
         <dependency>
             <groupId>com.sun.woodstock</groupId>
-            <artifactId>woodstock</artifactId>
-            <version>0.1-SNAPSHOT</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.sun.woodstock</groupId>
             <artifactId>webui-jsf-suntheme</artifactId>
-            <version>4.0.2-SNAPSHOT</version>
+            <version>4.2-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.sun.woodstock</groupId>
             <artifactId>webui-jsf</artifactId>
-            <version>0.1-SNAPSHOT</version>
+            <version>4.2-SNAPSHOT</version>
+			<exclusions>
+        		<exclusion>
+          			<groupId>com.sun.faces.extensions</groupId>
+          			<artifactId>jsf-extensions-common</artifactId>
+        		</exclusion>
+        		<exclusion>
+          			<groupId>com.sun.faces.extensions</groupId>
+          			<artifactId>jsf-extensions-dynamic-faces</artifactId>
+        		</exclusion>
+      		</exclusions>	
         </dependency>
         <dependency>
             <groupId>com.sun.woodstock</groupId>
