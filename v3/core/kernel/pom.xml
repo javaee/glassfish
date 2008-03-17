@@ -46,7 +46,7 @@
     <artifactId>kernel</artifactId>
     <packaging>hk2-jar</packaging>
     <name>Kernel Classes</name>
-
+    
     <developers>
         <developer>
             <id>dochez</id>
@@ -59,7 +59,7 @@
             </roles>
         </developer>
     </developers>
-
+    
     <build>
         <plugins>
             <plugin>
@@ -105,7 +105,7 @@
             </resource>
         </resources>
     </build>
-
+    
     <dependencies>
         <dependency>
             <groupId>org.glassfish.common</groupId>
@@ -142,5 +142,11 @@
             <artifactId>realms</artifactId>
             <version>${project.version}</version>
         </dependency>        
+        <dependency>
+            <groupId>org.glassfish.common</groupId>
+            <artifactId>universal</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        
     </dependencies>
 </project>

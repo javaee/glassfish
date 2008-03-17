@@ -7,7 +7,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>universal</artifactId>
-    <packaging>jar</packaging>
+    <packaging>hk2-jar</packaging>
     <name>universal</name>
     <description>Universal Utilities</description>
     <developers>

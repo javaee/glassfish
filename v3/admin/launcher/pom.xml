@@ -45,7 +45,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>launcher</artifactId>
-    <packaging>jar</packaging>
+    <packaging>hk2-jar</packaging>
     <name>Launcher</name>
     <description>Server Launching</description>
     

@@ -54,18 +54,32 @@ import java.io.ByteArrayOutputStream;
  */
 public class CLILogger 
 {
-    
+    private static boolean debug;
     private static CLILogger logger;
     private Logger s1asLogger;
     private final static String DEBUG_FLAG = "Debug";
+    private final static String ENV_DEBUG_FLAG = "AS_DEBUG";
     private final static int	kDefaultBufferSize	= 512;
     private final static String PACKAGE_NAME = "com.sun.enterprise.cli.framework";
     
     /** Creates a new instance of CLILogger */
     protected CLILogger() 
     {
+        // System Prop just needs to exist
+        // Env Var. needs to be set to "true"
+        String sys = System.getProperty(DEBUG_FLAG);
+        boolean env = Boolean.parseBoolean(System.getenv(ENV_DEBUG_FLAG));
+        
+        
+        if ( sys != null || env) {
+            debug = true;
+        }
+        else {
+            debug = false;
+        }
+        
         s1asLogger = Logger.getLogger(PACKAGE_NAME, null);
-        if (System.getProperty(DEBUG_FLAG) != null) 
+        if (isDebug() ) 
             s1asLogger.setLevel(Level.FINEST);
         else
 	{
@@ -78,11 +92,7 @@ public class CLILogger
     
     public static boolean isDebug()
     {
-        if (System.getProperty(DEBUG_FLAG) != null) {
-            return true;
-        } else {
-            return false;
-        }
+        return debug;
     }
     
     /**
@@ -112,7 +122,7 @@ public class CLILogger
      */
     public void setOutputLevel(Level level)
     {
-        if (System.getProperty(DEBUG_FLAG) == null) 
+        if (!isDebug()) 
             s1asLogger.setLevel(level);
     }
     

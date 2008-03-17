@@ -97,8 +97,9 @@ public class CommandFactory
             command.setUsageText(commandMatched.getUsageText());        
             command.setProperties(commandMatched.getProperties());
         }
-        catch(Exception e)
+        catch(Throwable e)
         {
+            // Throwable because NoClassDedFoundError is *not* an Exception
             LocalStringsManager lsm = 
             LocalStringsManagerFactory.getFrameworkLocalStringsManager();
             throw new CommandValidationException(lsm.getString("UnableToCreateCommand",
