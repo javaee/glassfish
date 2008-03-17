@@ -2,15 +2,15 @@
 <head></head>
 <body>
     <div class="j1holcontents">
-        
-        <h1>Exercise 3 Solution: Templating your Plugin</h1>
-        In exercise 3, you created and modified the following files:  
+
+	<h1>Exercise 3 Solution: Templating your Plugin</h1>
+	In exercise 3, you created and modified the following files:
 	<ul>
 	    <li><a href="#chart3.jsf">chart3.jsf</a><br></li>
 	    <li><a href="#config3.jsf">console-config.jsf</a><br></li>
 	    <li><a href="#treenode-ex3.jsf">treenode-ex3.jsf</a><br></li>
 	</ul>
-        
+
 <a name="chart3.jsf">
   <p class="j1holsubheader">S3-A: <code>gfplugin/myplugin/src/main/resources/chart3.jsf</code></p>
   </a>
@@ -22,23 +22,23 @@
 
   &lt;sun:page&gt;
     &lt;!beforeCreate
-        getjMakiValues(values=&gt;$attribute{pievalues});
-        getjMakiValues(values=&gt;$attribute{gryvalues});
-        getjMakiValues(values=&gt;$attribute{bluvalues});
-        getjMakiValues(values=&gt;$attribute{pnkvalues});
-        getjMakiValues(values=&gt;$attribute{redvalues});
+	getjMakiValues(values=&gt;$attribute{pievalues});
+	getjMakiValues(values=&gt;$attribute{gryvalues});
+	getjMakiValues(values=&gt;$attribute{bluvalues});
+	getjMakiValues(values=&gt;$attribute{pnkvalues});
+	getjMakiValues(values=&gt;$attribute{redvalues});
     /&gt;
     &lt;sun:html&gt;
     &lt;sun:markup tag="head"&gt;
-        &lt;sun:link url="/theme/com/sun/webui/jsf/suntheme/css/css_master.css" /&gt;
-        &lt;sun:markup tag="title"&gt;
-            &lt;staticText value="jMaki Charting!" /&gt;
-        &lt;/sun:markup&gt;
-        &lt;sun:script url="/resources/jmaki.js" /&gt;
-        &lt;sun:script url="/theme/META-INF/dojo/dojo.js" /&gt;
-        &lt;sun:script url="/theme/META-INF/json/json.js" /&gt;
-        &lt;sun:script url="/theme/META-INF/prototype/prototype.js" /&gt;
-        &lt;sun:script url="/theme/META-INF/com_sun_faces_ajax.js" /&gt;
+	&lt;sun:link url="/theme/com/sun/webui/jsf/suntheme/css/css_master.css" /&gt;
+	&lt;sun:markup tag="title"&gt;
+	    &lt;staticText value="jMaki Charting!" /&gt;
+	&lt;/sun:markup&gt;
+	&lt;sun:script url="/resources/jmaki.js" /&gt;
+	&lt;sun:script url="/theme/META-INF/dojo/dojo.js" /&gt;
+	&lt;sun:script url="/theme/META-INF/json/json.js" /&gt;
+	&lt;sun:script url="/theme/META-INF/prototype/prototype.js" /&gt;
+	&lt;sun:script url="/theme/META-INF/com_sun_faces_ajax.js" /&gt;
     &lt;/sun:markup&gt;
 
 &lt;sun:markup tag="body"&gt;
@@ -49,9 +49,9 @@
 &lt;sun:markup tag="div" style="width:380px; height: 310px;"&gt;
 
 &lt;sun:dropDown labels={"jmaki.charting.yahoo.pie"
-        "jmaki.charting.google.pie"
-        "jmaki.charting.plotkit.pie"}
-        value="#{requestScope.chart1}"&gt;
+	"jmaki.charting.google.pie"
+	"jmaki.charting.plotkit.pie"}
+	value="#{requestScope.chart1}"&gt;
     &lt;!beforeCreate
     setAttribute(key="chart1", value="jmaki.charting.google.pie");
     /&gt;
@@ -61,40 +61,40 @@
     args="{colorScheme:2}"
     value="{
     xAxis : {
-        title : 'Months',
-        labels : [
-        {label : 'January'},
-        {label : 'February'},
-        {label : 'March'},
-        {label : 'April'},
-        {label : 'May'},
-        {label : 'June'},
-        {label : 'July'},
-        {label : 'August'},
-        {label : 'September'},
-        {label : 'October'},
-        {label : 'November'},
-        {label : 'December'} ]
-        },
+	title : 'Months',
+	labels : [
+	{label : 'January'},
+	{label : 'February'},
+	{label : 'March'},
+	{label : 'April'},
+	{label : 'May'},
+	{label : 'June'},
+	{label : 'July'},
+	{label : 'August'},
+	{label : 'September'},
+	{label : 'October'},
+	{label : 'November'},
+	{label : 'December'} ]
+	},
     data : [ {
-        label : 'Set 1',
-        values : $attribute{pievalues}
-        } ] }"/&gt;
+	label : 'Set 1',
+	values : $attribute{pievalues}
+	} ] }"/&gt;
 
 &lt;/sun:markup&gt;
 
 &lt;sun:dropDown labels={"jmaki.charting.plotkit.area"
-        "jmaki.charting.plotkit.line"
-        "jmaki.charting.plotkit.bar"
-        "jmaki.charting.google.area"
-        "jmaki.charting.google.bar"
-        "jmaki.charting.google.line"
-        "jmaki.charting.yahoo.line"
-        "jmaki.charting.yahoo.bar"
-        "jmaki.charting.dojo.bar"
-        "jmaki.charting.dojo.line"
-        "jmaki.charting.dojo.area"}
-        value="#{requestScope.chart2}"&gt;
+	"jmaki.charting.plotkit.line"
+	"jmaki.charting.plotkit.bar"
+	"jmaki.charting.google.area"
+	"jmaki.charting.google.bar"
+	"jmaki.charting.google.line"
+	"jmaki.charting.yahoo.line"
+	"jmaki.charting.yahoo.bar"
+	"jmaki.charting.dojo.bar"
+	"jmaki.charting.dojo.line"
+	"jmaki.charting.dojo.area"}
+	value="#{requestScope.chart2}"&gt;
     &lt;!beforeCreate
     setAttribute(key="chart2", value="jmaki.charting.yahoo.bar");
     /&gt;
@@ -103,44 +103,44 @@
 &lt;sun:markup tag="div" style="width: 500px; height: 280px;"&gt;
 
 &lt;jmaki:widget name="#{requestScope.chart2}"
-        value="{
-            xAxis : {
-                title : 'Months',
-                labels : [{ label : 'January'},
-                    { label : 'February'},
-                    { label : 'March'},
-                    { label : 'April'},
-                    { label : 'May'},
-                    { label : 'June'},
-                    { label : 'July'},
-                    { label : 'August'},
-                    { label : 'September'},
-                    { label : 'October'},
-                    { label : 'November'},
-                    { label : 'December'}
-                    ]
-                    },
-            yAxis : {
-                title : 'Temperature',
-                labels : [{ label : '0', value : 0},
-                    { label : '10s', value : 10},
-                    { label : '20s', value : 20},
-                    { label : '30s', value : 30},
-                    { label : '40s', value : 40},
-                    { label : '50s', value : 50}
-                    ]
-                    },                              
-            data : [
-                    {label : 'Gray Series', values : $attribute{gryvalues} },
-                    {label : 'Pink Series', values : $attribute{pnkvalues} },
-                    {label : 'Blue Series', values : $attribute{bluvalues} },                   
-                    {label : 'Red Series',  values : $attribute{redvalues} }
-                    ]
-                    }"/&gt;
-        &lt;/sun:markup&gt;
-        &lt;/sun:form&gt;
-        &lt;/sun:markup&gt;
-        &lt;/sun:html&gt;
+	value="{
+	    xAxis : {
+		title : 'Months',
+		labels : [{ label : 'January'},
+		    { label : 'February'},
+		    { label : 'March'},
+		    { label : 'April'},
+		    { label : 'May'},
+		    { label : 'June'},
+		    { label : 'July'},
+		    { label : 'August'},
+		    { label : 'September'},
+		    { label : 'October'},
+		    { label : 'November'},
+		    { label : 'December'}
+		    ]
+		    },
+	    yAxis : {
+		title : 'Temperature',
+		labels : [{ label : '0', value : 0},
+		    { label : '10s', value : 10},
+		    { label : '20s', value : 20},
+		    { label : '30s', value : 30},
+		    { label : '40s', value : 40},
+		    { label : '50s', value : 50}
+		    ]
+		    },
+	    data : [
+		    {label : 'Gray Series', values : $attribute{gryvalues} },
+		    {label : 'Pink Series', values : $attribute{pnkvalues} },
+		    {label : 'Blue Series', values : $attribute{bluvalues} },
+		    {label : 'Red Series',  values : $attribute{redvalues} }
+		    ]
+		    }"/&gt;
+	&lt;/sun:markup&gt;
+	&lt;/sun:form&gt;
+	&lt;/sun:markup&gt;
+	&lt;/sun:html&gt;
   &lt;/sun:page&gt;
 &lt;/define&gt;
 &lt;/composition&gt;
@@ -150,7 +150,7 @@
 
 
   </br> </br> </br>
-  
+
 <a name="config3.jsf">
     <p class="j1holsubheader">S3-B: <code>gfplugin/myplugin/src/main/resources/META-INF/admingui/console-config.xml</code></p>
 
@@ -162,27 +162,27 @@
 &lt;?xml version="1.0" encoding="UTF-8"?&gt;
 
 &lt;console-config id="javaone"&gt;
-        &lt;integration-point 
-                id="JavaOneNode" 
-                type="tree" 
-                priority="210" 
-                parentId="tree" 
-                content="treenode-ex1.jsf" 
-        /&gt;
-        &lt;integration-point 
-                id="Another" 
-                type="tree" 
-                priority="230" 
-                parentId="j1root" 
-                content="treenode-ex2.jsf" 
-        /&gt;
-        &lt;integration-point 
-                id="Third" 
-                type="tree" 
-                priority="300" 
-                parentId="j1root" 
-                content="treenode-ex3.jsf" 
-        /&gt;
+	&lt;integration-point
+		id="JavaOneNode"
+		type="tree"
+		priority="210"
+		parentId="tree"
+		content="treenode-ex1.jsf"
+	/&gt;
+	&lt;integration-point
+		id="Another"
+		type="tree"
+		priority="230"
+		parentId="j1root"
+		content="treenode-ex2.jsf"
+	/&gt;
+	&lt;integration-point
+		id="Third"
+		type="tree"
+		priority="300"
+		parentId="j1root"
+		content="treenode-ex3.jsf"
+	/&gt;
 &lt;/console-config&gt;
   </pre>
   </div>
@@ -192,15 +192,15 @@
     <p class="j1holsubheader">S3-C: <code>gfplugin/myplugin/src/main/resources/treenode-ex3.jsf</code></p>
 
 </a>
-        <div class="codebox">
-            <pre>
+	<div class="codebox">
+	    <pre>
 
 &lt;sun:treeNode
-        id="third" 
-        text="Exercise #3"
-        url="javaone/chart3.jsf"
-        imageURL="resource/images/instance.gif"
-        target="main" 
+	id="third"
+	text="Exercise #3"
+	url="javaone/chart3.jsf"
+	imageURL="resource/images/instance.gif"
+	target="main"
 /&gt;
 
 </pre>
@@ -213,7 +213,7 @@
   </div>
 
 <br><br>
-        <p><a href="#Exercise_3">Go to Exercise 3</a></p>
+	<p><a href="#Exercise_3">Go to Exercise 3</a></p>
     </div>
 </body>
 

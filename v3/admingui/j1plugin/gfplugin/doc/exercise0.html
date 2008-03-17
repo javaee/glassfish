@@ -1,36 +1,27 @@
 <html>
     <head></head>
     <body>
-        <div class="j1holcontents">
-            
-            <h1>Exercise 0: Configuring your environment</h1>
-            
-            <p class="j1holwarn">
+	<div class="j1holcontents">
+
+	    <h1>Exercise 0: Configuring your environment</h1>
+
+	    <p class="j1holwarn">
   If you are using a lab machine provided at JavaOne the
   following steps in Exercise 0 have been completed for you. Please skip
   this section and go to <a href="#Exercise_1">Exercise 1</a> if your environment is already
   configured.
-            </p>
-            
-            <ol class="j1hollist">
-                <li>Launch NetBeans 6.0 IDE
-                    
-                    <ul>
-                        <li>On Windows, <span style="font-weight: bold;">Start &gt;
-                            Programs &gt; NetBeans IDE &gt; NetBeans IDE 6.0 &gt; NetBeans IDE </span>or
-                            click the NetBeans 6.0 desktop icon<br>
-                        </li>
-                        <li>On Solaris, UNIX, or Linux, open a terminal window, then type <span
-                                style="font-weight: bold;">&lt;netbeans60_HOME&gt;</span><span
-                            style="font-family: helvetica,arial,sans-serif; font-weight: bold;">/bin/netbeans</span></li>
-                    </ul>
-                </li>
-                <li>
-    Install the Maven 2 plugin for NetBeans 6.0 if you do not have that
-    installed.
+	    </p>
 
-    <ul><li>Choose Plugins from the Tools menu. Select the Available Plugins Tab.</li>
-        <li>Select the Maven 2 Plugin and press the Install Button</li></ul>
+<ol class="j1hollist">
+    <li>Launch the NetBeans 6.0 IDE.
+	<ul><li>On Windows, <b>Start --&gt; Programs --&gt; NetBeans IDE --&gt;
+		    NetBeans IDE 6.0 --&gt; NetBeans IDE</b></li>
+	    <li>On Solaris or Linux, open a terminal window, and type "<code><b>netbeans</b></code>".</li>
+	</ul>
+    </li>
+    <li>Ensure the Maven 2 plugin for NetBeans 6.0 is installed.
+	<ul><li>Choose Plugins from the Tools menu. Select the Available Plugins Tab.</li>
+	    <li>Select the Maven 2 Plugin and press the Install Button.</li></ul>
 
     <div id=n28w style="PADDING:1em 0pt; TEXT-ALIGN:left; MARGIN-LEFT:40px">
 	<img src="images/ex0-mavenplugin.jpg"><br>
@@ -53,7 +44,7 @@
       Select the Subversion Plugin and press the Install Button
     </li>
   </ul>
-  
+
   <div id=pqw_ style="PADDING:1em 0pt; TEXT-ALIGN:left; MARGIN-LEFT:40px">
     <img src="images/ex0-subversion.jpg">
   </div>
@@ -68,8 +59,8 @@
 
     <div MARGIN-LEFT:40px">
       Step-by-step instructions to checkout and build GlassFish v3
-            <ol class="j1hollist">
-            <ol class="j1hollist">
+	    <ol class="j1hollist">
+	    <ol class="j1hollist">
 	   <li>
 	    checkout GlassFish v3 source code <br>
 	    <code> svn checkout https://svn.dev.java.net/svn/glassfish-svn/trunk/v3</code><br>
@@ -80,7 +71,7 @@
 	    <code> cd v3; mvn install </code>
 	    </li>
 	    <li>
-	    install the server by unzipping the image.<br> 
+	    install the server by unzipping the image.<br>
 	    <code>unzip v3/distribution/glassfish/target/glassfish.zip</code><br>
 	    </li>
 	</ol>
@@ -90,6 +81,6 @@
 	    For more information regarding GlassFish v3 development
   environment and the workspace, please refer to the full build instructions at
   <a href="http://wiki.glassfish.java.net/Wiki.jsp?page=V3FullBuildInstruction">http://wiki.glassfish.java.net/Wiki.jsp?page=V3FullBuildInstruction"</a>
-            <p><a href="#Exercise_1">Go to the next exercise</a></p>
+	    <p><a href="#Exercise_1">Go to the next exercise</a></p>
     </body>
 </html>

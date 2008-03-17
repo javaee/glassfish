@@ -1,27 +1,27 @@
 <html>
     <head></head>
     <body>
-        <div class="j1holcontents">
-            
-            <h1>Exercise 2: Charting with jMaki</h1>
-            
-            <div class="j1holduration xbig">Approximate duration: 25 minutes</div>
-            
-            <p class="j1holheader">Introduction:</p>
-            
-            <p>
-                The goal of this exercise is to create a JSF page which utilizes the jMaki
+	<div class="j1holcontents">
+
+	    <h1>Exercise 2: Charting with jMaki</h1>
+
+	    <div class="j1holduration xbig">Approximate duration: 25 minutes</div>
+
+	    <p class="j1holheader">Introduction:</p>
+
+	    <p>
+		The goal of this exercise is to create a JSF page which utilizes the jMaki
   Charting component and create another integration point to the Administration
   Console.  Through this exercise you will learn how to include a
   jMaki widget in a JSF page and add another plugin to the Administration
   Console.
-            </p>
-            
-            <p class="j1holheader">Background Information:</p>
-            
-            <p>
-                <font color=#ff0000>TBD:</font> More info relating to jMaki
-            </p>
+	    </p>
+
+	    <p class="j1holheader">Background Information:</p>
+
+	    <p>
+		<font color=#ff0000>TBD:</font> More info relating to jMaki
+	    </p>
 
 			<div class="j1holtip">This exercise is based on Exercise 1.  If you have not completed exercise 1 do the following so that you can continue with Exercise 2<br>
 <code>
@@ -29,7 +29,7 @@
 	% mkdir gfplugin/myplugin <br>
 	% cp -R gfplugin/solution/myplugin/ex1 gfplugin/myplugin<br></code>
     </div>
-    
+
 
 <a name="ex2steps">
     <p class="j1holheader">Step-by-Step Instructions:</p>
@@ -46,7 +46,7 @@
 	    </p></li>
 	<li><b><a href="#ex2stepB">Modify your console-config.xml </a></b>
 	    <p>
-You will modify your configuration file to add a new IntegrationPoint 
+You will modify your configuration file to add a new IntegrationPoint
 	    </p></li>
 	<li><b><a href="#ex2stepC">Specify your Tree Node layout</a></b>
 	    <p>
@@ -60,7 +60,7 @@ In this step you will install and test your plugin.
     </ol>
 	<br>
 
-	
+
 <p class="j1holsubheader">Steps:</p>
 
 	<a name="ex2stepA">
@@ -73,23 +73,23 @@ In this step you will install and test your plugin.
 <pre>
 &lt;sun:page&gt;
     &lt;!beforeCreate
-        getjMakiValues(values=&gt;$attribute{pievalues});
-        getjMakiValues(values=&gt;$attribute{gryvalues});
-        getjMakiValues(values=&gt;$attribute{bluvalues});
-        getjMakiValues(values=&gt;$attribute{pnkvalues});
-        getjMakiValues(values=&gt;$attribute{redvalues});
+	getjMakiValues(values=&gt;$attribute{pievalues});
+	getjMakiValues(values=&gt;$attribute{gryvalues});
+	getjMakiValues(values=&gt;$attribute{bluvalues});
+	getjMakiValues(values=&gt;$attribute{pnkvalues});
+	getjMakiValues(values=&gt;$attribute{redvalues});
     /&gt;
     &lt;sun:html&gt;
     &lt;sun:markup tag="head"&gt;
-        &lt;sun:link url="/theme/com/sun/webui/jsf/suntheme/css/css_master.css" /&gt;
-        &lt;sun:markup tag="title"&gt;
-            &lt;staticText value="jMaki Charting!" /&gt;
-        &lt;/sun:markup&gt;
-        &lt;sun:script url="/resources/jmaki.js" /&gt;
-        &lt;sun:script url="/theme/META-INF/dojo/dojo.js" /&gt;
-        &lt;sun:script url="/theme/META-INF/json/json.js" /&gt;
-        &lt;sun:script url="/theme/META-INF/prototype/prototype.js" /&gt;
-        &lt;sun:script url="/theme/META-INF/com_sun_faces_ajax.js" /&gt;
+	&lt;sun:link url="/theme/com/sun/webui/jsf/suntheme/css/css_master.css" /&gt;
+	&lt;sun:markup tag="title"&gt;
+	    &lt;staticText value="jMaki Charting!" /&gt;
+	&lt;/sun:markup&gt;
+	&lt;sun:script url="/resources/jmaki.js" /&gt;
+	&lt;sun:script url="/theme/META-INF/dojo/dojo.js" /&gt;
+	&lt;sun:script url="/theme/META-INF/json/json.js" /&gt;
+	&lt;sun:script url="/theme/META-INF/prototype/prototype.js" /&gt;
+	&lt;sun:script url="/theme/META-INF/com_sun_faces_ajax.js" /&gt;
     &lt;/sun:markup&gt;
 
 &lt;sun:markup tag="body"&gt;
@@ -100,9 +100,9 @@ In this step you will install and test your plugin.
 &lt;sun:markup tag="div" style="width:380px; height: 310px;"&gt;
 
 &lt;sun:dropDown labels={"jmaki.charting.yahoo.pie"
-        "jmaki.charting.google.pie"
-        "jmaki.charting.plotkit.pie"}
-        value="#{requestScope.chart1}"&gt;
+	"jmaki.charting.google.pie"
+	"jmaki.charting.plotkit.pie"}
+	value="#{requestScope.chart1}"&gt;
     &lt;!beforeCreate
     setAttribute(key="chart1", value="jmaki.charting.google.pie");
     /&gt;
@@ -112,40 +112,40 @@ In this step you will install and test your plugin.
     args="{colorScheme:2}"
     value="{
     xAxis : {
-        title : 'Months',
-        labels : [
-        {label : 'January'},
-        {label : 'February'},
-        {label : 'March'},
-        {label : 'April'},
-        {label : 'May'},
-        {label : 'June'},
-        {label : 'July'},
-        {label : 'August'},
-        {label : 'September'},
-        {label : 'October'},
-        {label : 'November'},
-        {label : 'December'} ]
-        },
+	title : 'Months',
+	labels : [
+	{label : 'January'},
+	{label : 'February'},
+	{label : 'March'},
+	{label : 'April'},
+	{label : 'May'},
+	{label : 'June'},
+	{label : 'July'},
+	{label : 'August'},
+	{label : 'September'},
+	{label : 'October'},
+	{label : 'November'},
+	{label : 'December'} ]
+	},
     data : [ {
-        label : 'Set 1',
-        values : $attribute{pievalues}
-        } ] }"/&gt;
+	label : 'Set 1',
+	values : $attribute{pievalues}
+	} ] }"/&gt;
 
 &lt;/sun:markup&gt;
 
 &lt;sun:dropDown labels={"jmaki.charting.plotkit.area"
-        "jmaki.charting.plotkit.line"
-        "jmaki.charting.plotkit.bar"
-        "jmaki.charting.google.area"
-        "jmaki.charting.google.bar"
-        "jmaki.charting.google.line"
-        "jmaki.charting.yahoo.line"
-        "jmaki.charting.yahoo.bar"
-        "jmaki.charting.dojo.bar"
-        "jmaki.charting.dojo.line"
-        "jmaki.charting.dojo.area"}
-        value="#{requestScope.chart2}"&gt;
+	"jmaki.charting.plotkit.line"
+	"jmaki.charting.plotkit.bar"
+	"jmaki.charting.google.area"
+	"jmaki.charting.google.bar"
+	"jmaki.charting.google.line"
+	"jmaki.charting.yahoo.line"
+	"jmaki.charting.yahoo.bar"
+	"jmaki.charting.dojo.bar"
+	"jmaki.charting.dojo.line"
+	"jmaki.charting.dojo.area"}
+	value="#{requestScope.chart2}"&gt;
     &lt;!beforeCreate
     setAttribute(key="chart2", value="jmaki.charting.yahoo.bar");
     /&gt;
@@ -154,57 +154,57 @@ In this step you will install and test your plugin.
 &lt;sun:markup tag="div" style="width: 500px; height: 280px;"&gt;
 
 &lt;jmaki:widget name="#{requestScope.chart2}"
-        value="{
-            xAxis : {
-                title : 'Months',
-                labels : [{ label : 'January'},
-                    { label : 'February'},
-                    { label : 'March'},
-                    { label : 'April'},
-                    { label : 'May'},
-                    { label : 'June'},
-                    { label : 'July'},
-                    { label : 'August'},
-                    { label : 'September'},
-                    { label : 'October'},
-                    { label : 'November'},
-                    { label : 'December'}
-                    ]
-                    },
-            yAxis : {
-                title : 'Temperature',
-                labels : [{ label : '0', value : 0},
-                    { label : '10s', value : 10},
-                    { label : '20s', value : 20},
-                    { label : '30s', value : 30},
-                    { label : '40s', value : 40},
-                    { label : '50s', value : 50}
-                    ]
-                    },                              
-            data : [
-                    {label : 'Gray Series', values : $attribute{gryvalues} },
-                    {label : 'Pink Series', values : $attribute{pnkvalues} },
-                    {label : 'Blue Series', values : $attribute{bluvalues} },                   
-                    {label : 'Red Series',  values : $attribute{redvalues} }
-                    ]
-                    }"/&gt;
-        &lt;/sun:markup&gt;
-        &lt;/sun:form&gt;
-        &lt;/sun:markup&gt;
-        &lt;/sun:html&gt;
+	value="{
+	    xAxis : {
+		title : 'Months',
+		labels : [{ label : 'January'},
+		    { label : 'February'},
+		    { label : 'March'},
+		    { label : 'April'},
+		    { label : 'May'},
+		    { label : 'June'},
+		    { label : 'July'},
+		    { label : 'August'},
+		    { label : 'September'},
+		    { label : 'October'},
+		    { label : 'November'},
+		    { label : 'December'}
+		    ]
+		    },
+	    yAxis : {
+		title : 'Temperature',
+		labels : [{ label : '0', value : 0},
+		    { label : '10s', value : 10},
+		    { label : '20s', value : 20},
+		    { label : '30s', value : 30},
+		    { label : '40s', value : 40},
+		    { label : '50s', value : 50}
+		    ]
+		    },
+	    data : [
+		    {label : 'Gray Series', values : $attribute{gryvalues} },
+		    {label : 'Pink Series', values : $attribute{pnkvalues} },
+		    {label : 'Blue Series', values : $attribute{bluvalues} },
+		    {label : 'Red Series',  values : $attribute{redvalues} }
+		    ]
+		    }"/&gt;
+	&lt;/sun:markup&gt;
+	&lt;/sun:form&gt;
+	&lt;/sun:markup&gt;
+	&lt;/sun:html&gt;
 &lt;/sun:page&gt;
 </pre>
 </div>
 <div class="figure">Figure 2-1: TBD</div>
 </a>
-		
+
 	<p>You should have <code>myplugin project</code> still open in
 NetBeans. If you have closed the project, follow these steps to open
 it again. More detailed instructions can be found in <a href="#Exercise_1=ex1stepA">exercise 1-A </a>
 
     <ol class="j1hollist">
-        <li>Launch NetBeans IDE 6.0.</li>
-        <li>Open <code>myplugin</code> module:
+	<li>Launch NetBeans IDE 6.0.</li>
+	<li>Open <code>myplugin</code> module:
 	    <ol class="j1hollis">
 		<li> Choose Open Project from the File menu.</li>
 		<li> Browse to <code>gfplugin</code> and select <code>myplugin</code> module.</li>
@@ -247,12 +247,12 @@ it again. More detailed instructions can be found in <a href="#Exercise_1=ex1ste
 <a name="figIntPoint">
 <div class="codebox">
   <pre>
-&lt;integration-point 
-	id="Another" 
-	type="tree" 
-	priority="230" 
-	parentId="j1root" 
-	content="treenode-ex2.jsf" 
+&lt;integration-point
+	id="Another"
+	type="tree"
+	priority="230"
+	parentId="j1root"
+	content="treenode-ex2.jsf"
 /&gt;
 </pre>
 </div>
@@ -285,14 +285,14 @@ it again. More detailed instructions can be found in <a href="#Exercise_1=ex1ste
 <div class="codebox">
     <pre>
 &lt;sun:treeNode
-        id="second" 
-        text="Exercise #2"
-        url="javaone/chart.jsf"
-        imageURL="resource/images/instance.gif"
-        target="main" 
+	id="second"
+	text="Exercise #2"
+	url="javaone/chart.jsf"
+	imageURL="resource/images/instance.gif"
+	target="main"
 /&gt;
     </pre>
-</div> 
+</div>
 <div class="figure">Figure 2-1: TBD</div>
 </a>
 </p>
@@ -330,9 +330,9 @@ mvn install
     <li>Select Build.</li>
 </ol>
 
-<p> After the above steps are finished, you will have the jar file named 
-                <code>gfplugin/myplugin/target/console-myplugin-1.0-SNAPSHOT.jar</code>.
-                This jar file is ready to be integrated into GlassFish.</span><br>
+<p> After the above steps are finished, you will have the jar file named
+		<code>gfplugin/myplugin/target/console-myplugin-1.0-SNAPSHOT.jar</code>.
+		This jar file is ready to be integrated into GlassFish.</span><br>
     </li>
     <li><p> Install your plugin in GlassFish v3</p>
 
@@ -386,23 +386,23 @@ glassfish/bin/asadmin start-domain
 		</li>
 	    </ol>
 			 <p>You have customized the Administration Console and
-                  plugged in your own tree node to show the jMaki Charts.
+		  plugged in your own tree node to show the jMaki Charts.
 				  <br>
 					Try to change the dropdown box to select another charting style
-                  </p>
+		  </p>
 
 <hr style="WIDTH:100%; HEIGHT:2px"><br>
 
 <p class="j1holheader">Summary:</p>
-            
+
 <p> In this exercise, you created a JSFTemplating page with jMaki Chart.  You
     added a new <code>IntegrationPoint</code> to your GlassFish plugin module
     which added an additional tree node. Clicking on this tree node navigated
     to your newly added chart page.</p>
-            
-            <p><a href="#Solution_2">Go to solution</a></p>
-            <p><a href="#Exercise_1">Go back to previous exercise</a></p>
-            <p><a href="#Exercise_3">Go on to next exercise</a></p>
-        </div>
+
+	    <p><a href="#Solution_2">Go to solution</a></p>
+	    <p><a href="#Exercise_1">Go back to previous exercise</a></p>
+	    <p><a href="#Exercise_3">Go on to next exercise</a></p>
+	</div>
     </body>
 </html>

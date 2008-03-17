@@ -1,7 +1,7 @@
 <html>
     <head>
 	<!-- Change this to change the name of this tab -->
-        <meta name="j1holtabname" content="Exercise 1">
+	<meta name="j1holtabname" content="Exercise 1">
 	<style type="text/css">
 .j1hollist img { border: 3px ridge #888; }
 .j1hollist li p { padding-top: 5px; padding-bottom: 5px;}
@@ -9,13 +9,13 @@
 	</style>
     </head>
     <body>
-        <div class="j1holcontents">
+	<div class="j1holcontents">
 
-            <h1>Exercise 1: Plugging into GlassFish</h1>
+	    <h1>Exercise 1: Plugging into GlassFish</h1>
 
-            <div class="j1holduration xbig">Approximate duration: 45 minutes</div>
+	    <div class="j1holduration xbig">Approximate duration: 45 minutes</div>
 
-            <p class="j1holheader">Introduction:</p>
+	    <p class="j1holheader">Introduction:</p>
 
 <p>
   The goal of this exercise is to develop a GlassFish plugin module. You
@@ -349,7 +349,7 @@ page</a>.
 		    implementation for the plugin.  (Note: The path to this file
 		    is <code>gfplugin/myplugin/src/main/java/org/example/glassfish/admingui/MyPlugin.java</code>.)</p>
 
-                <p> The important elements of any <code>ConsoleProvider</code>
+		<p> The important elements of any <code>ConsoleProvider</code>
 		    implementation are:</p>
 
 		    <ol class="j1hollist">
@@ -362,8 +362,8 @@ page</a>.
 
 		<p> Your implementation may look something like this:</p>
 
-        <div class="codebox">
-            <pre>
+	<div class="codebox">
+	    <pre>
 package org.example.glassfish.admingui;
 
 import org.glassfish.api.admingui.ConsoleProvider;
@@ -381,7 +381,7 @@ public class MyPlugin implements ConsoleProvider {
 }</pre>
   </div>
 <div class="figure">Figure 1-4: Edit MyPlugin.java</div>
-    
+
     <p> &nbsp;</p>
 
     <p>	As seen in NetBeans:</p>
@@ -417,51 +417,51 @@ FIXME: Add partial console output.</pre>
 <a name="ex1stepB">
       <p><b>B. Provide a console-config.xml file.</b></p>
 </a>
-        <p>
-          Next, you need to add the <code>console-config.xml</code> file which
-          specifies the <code>IntegrationPoint</code>s for your module.
+	<p>
+	  Next, you need to add the <code>console-config.xml</code> file which
+	  specifies the <code>IntegrationPoint</code>s for your module.
 	   The default location of this file is
-          <code>META-INF/admingui/console-config.xml</code> inside your plugin
+	  <code>META-INF/admingui/console-config.xml</code> inside your plugin
 	  jar file.  To place your file in this location, you should create
 	  the file under the following directory in your workspace:
 	  <code>myplugin/src/main/resources/META-INF/admingui</code>.
 	  In your <code>console-config.xml</code> file, you will be adding the
 	  following two xml entries:<br>
-        </p>
+	</p>
 
 	<code><pre>
 	  console-config: {id: javaone}
-          Integration Point: {id: JavaOneNode, type: tree, priority: 210, parentId: tree, content: treenode-ex1.jsf}
+	  Integration Point: {id: JavaOneNode, type: tree, priority: 210, parentId: tree, content: treenode-ex1.jsf}
 	</pre></code>
 
 	<p class="j1holnote">
 	    If you are not using NetBeans, simply create the
 	    <code>console-config.xml</code> file in the location described
-	    above.  Look at <a href="#ex1figCC">figure TBD</a> for an
+	    above.  Look at <a href="#ex1figCC">Figure TBD</a> for an
 	    example.
 	</p>
 
 	<ol class="j1hollist">
-            <li>
-              Right click on "admingui" under "Other
-              Resources-&gt;Resources-&gt;META-INF-&gt;admingui"
-            </li>
-            <li>
+	    <li>
+	      Right click on "admingui" under "Other
+	      Resources-&gt;Resources-&gt;META-INF-&gt;admingui"
+	    </li>
+	    <li>
 		Select "New" and "Other..."
-            </li>
-            <li>
+	    </li>
+	    <li>
 		Select "<code>Other</code>" in the Categories column on the right, and
 		"<code>Empty File</code>" in File Types categories on the left. Select <code>Next</code>.
 		<p><img src="images/ex1-createConsoleConfig1.jpg"></p>
     <div class="figure">Figure 1-5: Creating console-config.xml</div>
-            </li>
-            <li>
+	    </li>
+	    <li>
 		Enter "<code>console-config.xml</code>" as the file name.
 		Select <code>Finish</code>.
 		<p><img src="images/ex1-createConsoleConfig2.jpg"></p>
     <div class="figure">Figure 1-6: Creating console-config.xml (step 2)</div>
-            </li>
-            <li>
+	    </li>
+	    <li>
 		Edit the file to specify the <code>IntegrationPoint</code>
 		(note: the path to this file is:
 		<code>myplugin/src/main/resources/META-INF/admingui/console-config.xml</code>).
@@ -470,8 +470,8 @@ FIXME: Add partial console output.</pre>
     <div class="figure">Figure 1-7: Edit console-config.xml</div>
 
 <a name="ex1figCC">
-        <div class="codebox">
-            <pre>
+	<div class="codebox">
+	    <pre>
 &lt;?xml version="1.0" encoding="UTF-8"?&gt;
 &lt;console-config id="javaone"&gt;
     &lt;integration-point
@@ -487,7 +487,7 @@ FIXME: Add partial console output.</pre>
     <div class="figure">Figure 1-5: console-config.xml</div>
 </a>
 
-            </li>
+	    </li>
 	</ol>
 
 <p><a href="#ex1contents">Back to step overview</a></p>
@@ -514,30 +514,30 @@ FIXME: Add partial console output.</pre>
 	<p> FIXME: Provide instructions for (command line) users</p>
 
 	<ol class="j1hollist">
-            <li>
-              Right click on Resources. Select "New" and "Other..."
-            </li>
-            <li>
-              Select "Other" in the Categories column on the right and "Empty
-              File" in File Types categories on the left. Select Next.
-            </li>
-            <li>
+	    <li>
+	      Right click on Resources. Select "New" and "Other..."
+	    </li>
+	    <li>
+	      Select "Other" in the Categories column on the right and "Empty
+	      File" in File Types categories on the left. Select Next.
+	    </li>
+	    <li>
 		Fill in "<code>treenode-ex1.jsf</code>" as the file name.
 		This is referenced from the "content" specified in one of the
 		<code>integration-point<code>'s in the
 		<code>console-config.xml</code>.
 		<p><img src="images/ex1-createTreenode.jpg"></p>
     <div class="figure">Figure 1-8: Create treenode-ex1.jsf</div>
-            </li>
-            <li>
+	    </li>
+	    <li>
 		Edit the file to specify the tree nodes layout
 		(Note: the full path of this file is
 		<code>myplugin/src/main/resources/treenode-ex1.jsf</code>)
 		<p><img src="images/ex1-editTreenode.jpg"></p>
     <div class="figure">Figure 1-9: Edit treenode-ex1.jsf</div>
 
-        <div class="codebox">
-            <pre>
+	<div class="codebox">
+	    <pre>
 &lt;sun:treeNode id="j1root"
 	text="J1 TreeNode"
 	imageURL="theme/com/sun/webui/jsf/suntheme/images/tree/tree_folder.gif"
@@ -551,7 +551,7 @@ FIXME: Add partial console output.</pre>
 	&lt;/sun:treeNode&gt;
 &lt;/sun:treeNode&gt;</pre>
   </div>
-            </li>
+	    </li>
 
 	    <li>
 		<p> Next you will create the <code>hello.jsf</code> page which will
@@ -563,24 +563,24 @@ FIXME: Add partial console output.</pre>
 		    "<code>myplugin/src/main/resources/hello.jsf</code>".</p>
 
 		<p>Right click on Resources. Select "<code>New</code>" and "<code>Other...</code>"</p>
-            </li>
-            <li>
+	    </li>
+	    <li>
 		Select "<code>Other</code>" in the left Categories column and "<code>Empty File</code>"
 		on the File Type column.
-            </li>
-            <li>
+	    </li>
+	    <li>
 		Enter "<code>hello.jsf</code>" as the file name. This
 		corresponds to the "<code>content</code>" specified in the
 		"treenode-ex1.jsf" file you created.<br>
-            </li>
-            <li>
+	    </li>
+	    <li>
 		Open the file. Add the following code. (Note: the full path
 		to this file is <code>myplugin/src/main/resources/hello.jsf</code>)
 		<p> <img src="images/ex1-editHello.jpg"></p>
     <div class="figure">Figure 1-10: Edit hello.jsf</div>
 
-        <div class="codebox">
-            <pre>
+	<div class="codebox">
+	    <pre>
 &lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"&gt;
 &lt;html xmlns="http://www.w3.org/1999/xhtml"
 &nbsp;&nbsp;&nbsp; xmlns:ui="http://java.sun.com/jsf/facelets"
@@ -598,8 +598,8 @@ FIXME: Add partial console output.</pre>
 &lt;/html&gt;</pre>
   </div>
 
-            </li>
-          </ol>
+	    </li>
+	  </ol>
 
 
 <p><a href="#ex1contents">Back to step overview</a></p>
@@ -622,12 +622,12 @@ mvn install</pre>
 	<p> NetBeans users can build the module jar file by following these steps.</p>
 
 	<ol class="j1hollist">
-            <li>
-              Right click on the project "Java One 2008 Admin Console Plugin"
-            </li>
-            <li>
-              Select Build.
-            </li>
+	    <li>
+	      Right click on the project "Java One 2008 Admin Console Plugin"
+	    </li>
+	    <li>
+	      Select Build.
+	    </li>
 	</ol>
 
 	<p> After the above steps are finished, you will have the jar file named
@@ -672,7 +672,7 @@ cp myplugin/target/console-myplugin-1.0-SNAPSHOT.jar glassfish/modules/console-m
 	    <p>	<code>http://localhost:8080/admingui/index.jsf</code></p>
 
 	    <p> Note that the JavaOne tree node is now displayed in the
-                navigation tree. Note that clicking on the tree node displays
+		navigation tree. Note that clicking on the tree node displays
 		your "Hello World" page.</p>
 	    <p>	<img src="images/ex1-result.jpg"></p>
     <div class="figure">Figure 1-12: Browser showing the plugin page.</div>
@@ -695,8 +695,8 @@ cp myplugin/target/console-myplugin-1.0-SNAPSHOT.jar glassfish/modules/console-m
     to the navigation tree.  Clicking this tree node shows you the plugin
     page.</p>
 
-            <p><a href="#Solution_1">Go to solution</a></p>
-            <p><a href="#Exercise_2">Go on to next exercise</a></p>
-        </div>
+	    <p><a href="#Solution_1">Go to solution</a></p>
+	    <p><a href="#Exercise_2">Go on to next exercise</a></p>
+	</div>
     </body>
 </html>

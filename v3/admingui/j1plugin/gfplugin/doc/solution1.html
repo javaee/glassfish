@@ -2,23 +2,23 @@
 <head></head>
 <body>
     <div class="j1holcontents">
-        
-        <h1>Exercise 1 Solution: Plugging into GlassFish</h1>
 
-        In exercise 1 you created and modified the following files:  
+	<h1>Exercise 1 Solution: Plugging into GlassFish</h1>
+
+	In exercise 1 you created and modified the following files:
 	<ul>
 	    <li><a href="#MyPlugin">MyPlugin.java</a><br></li>
 	    <li><a href="#config.jsf">console-config.jsf</a><br></li>
 	    <li><a href="#treenode-ex1.jsf">treenode-ex1.jsf</a><br></li>
 	    <li><a href="#hello.jsf">hello.jsf</a><br></li>
 	</ul>
-        
+
 	<a name="MyPlugin">
   <p class="j1holsubheader">S1-A: <code>gfplugin/myplugin/src/main/java/org/example/glassfish/admingui/MyPlugin.java</code></p>
-  
+
   </a>
-        <div class="codebox">
-            <pre>
+	<div class="codebox">
+	    <pre>
 package org.example.glassfish.admingui;
 
 import org.glassfish.api.admingui.ConsoleProvider;
@@ -37,16 +37,16 @@ public class MyPlugin implements ConsoleProvider {
   </div>
   </br> </br> </br>
 
-  
+
 	<a name="config.jsf">
     <p class="j1holsubheader">S1-B: <code>gfplugin/myplugin/src/main/resources/META-INF/admingui/console-config.xml</code></p>
 </a>
 
-        <div class="codebox">
-            <pre>
+	<div class="codebox">
+	    <pre>
 &lt;?xml version="1.0" encoding="UTF-8"?&gt;
 &lt;console-config id="javaone"&gt;
-    &lt;integration-point 
+    &lt;integration-point
 	id="JavaOneNode"
 	type="tree"
 	priority="210"
@@ -61,8 +61,8 @@ public class MyPlugin implements ConsoleProvider {
     <p class="j1holsubheader">S1-C: <code>gfplugin/myplugin/src/main/resources/treenode-ex1.jsf</code></p>
 </a>
 
-        <div class="codebox">
-            <pre>
+	<div class="codebox">
+	    <pre>
 &lt;sun:treeNode id="j1root"
 	text="J1 TreeNode"
 	imageURL="theme/com/sun/webui/jsf/suntheme/images/tree/tree_folder.gif"
@@ -81,9 +81,9 @@ public class MyPlugin implements ConsoleProvider {
 	<a name="hello.jsf">
     <p class="j1holsubheader">S1-C: <code>&lt;gfplugin&gt;/myplugin/src/main/resources/hello.jsf</code></p>
 </a>
-  
-        <div class="codebox">
-            <pre>
+
+	<div class="codebox">
+	    <pre>
 &lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"&gt;
 &lt;html xmlns="http://www.w3.org/1999/xhtml"
     xmlns:ui="http://java.sun.com/jsf/facelets"
@@ -91,11 +91,11 @@ public class MyPlugin implements ConsoleProvider {
     xmlns:f="http://java.sun.com/jsf/core"&gt;
 
     &lt;head&gt;
-        &lt;title&gt; Hello World &lt;/title&gt;
+	&lt;title&gt; Hello World &lt;/title&gt;
     &lt;/head&gt;
 
     &lt;body&gt;
-        &lt;h:outputText value="Your plugin is working, Congratulation !!!" /&gt;
+	&lt;h:outputText value="Your plugin is working, Congratulation !!!" /&gt;
     &lt;/body&gt;
 
 &lt;/html&gt;</pre>
@@ -110,6 +110,6 @@ public class MyPlugin implements ConsoleProvider {
     </div>
   </div>
 
-        <p><a href="#Exercise_2">Go to Exercise 2</a></p>
+	<p><a href="#Exercise_2">Go to Exercise 2</a></p>
     </div>
 </body>
