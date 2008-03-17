@@ -25,6 +25,7 @@ package com.sun.enterprise.glassfish.bootstrap;
 
 import com.sun.enterprise.module.*;
 import com.sun.enterprise.module.impl.ModulesRegistryImpl;
+import com.sun.enterprise.module.common_impl.AbstractRepositoryImpl;
 import com.sun.enterprise.module.common_impl.DirectoryBasedRepository;
 import com.sun.enterprise.module.bootstrap.BootException;
 import com.sun.enterprise.module.bootstrap.StartupContext;
@@ -99,11 +100,28 @@ public class Main extends com.sun.enterprise.module.bootstrap.Main {
         File domainRoot = getDomainRoot(context);
         verifyDomainRoot(domainRoot);
 
+        List<Repository> libs = new ArrayList<Repository>();
+        //add jdk tools.jar
+        File javaHome = new File(System.getProperty("java.home"));
+        File jdktools = null;
+        if (javaHome.getParent() != null) {
+            jdktools = new File(javaHome.getParent(),
+                    "lib" + File.separator + "tools.jar");
+        }
+        if (jdktools != null && jdktools.exists()) {
+            Repository jdkToolsRepo =
+                    new PlainJarRepository("jdktools", jdktools);
+            try {
+                jdkToolsRepo.initialize();
+                libs.add(jdkToolsRepo);
+            } catch(IOException e) {
+                logger.log(Level.SEVERE, "Error while initializing jdk tools.jar", e);
+            }
+        }
 
         // do we have a lib ?
         Repository lib = mr.getRepository("lib");
         if (lib!=null) {
-            List<Repository> libs = new ArrayList<Repository>();
             libs.add(lib);
 
             // do we have a domain lib ?
@@ -119,6 +137,8 @@ public class Main extends com.sun.enterprise.module.bootstrap.Main {
                 }
 
             }
+        }
+        if (libs.size() > 0) {
             cl = setupSharedCL(cl, libs);
         }
 
@@ -208,6 +228,23 @@ public class Main extends com.sun.enterprise.module.bootstrap.Main {
         }
 
         public void moduleRemoved(ModuleDefinition moduleDefinition) {
+        }
+    }
+
+    private class PlainJarRepository extends AbstractRepositoryImpl {
+        File aFile = null;
+
+        public PlainJarRepository(String name, File aFile) {
+            super(name, aFile.toURI());
+            this.aFile = aFile;
+        }
+
+        protected void loadModuleDefs(
+                Map<String, ModuleDefinition> moduleDefs,
+                List<URI> libraries) throws IOException {
+            if (aFile.exists()) {
+                libraries.add(aFile.toURI());
+            }
         }
     }
 
