@@ -35,6 +35,8 @@
  */
 package com.sun.enterprise.v3.admin;
 
+import java.util.Properties;
+
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.I18n;
@@ -50,6 +52,7 @@ import org.jvnet.hk2.config.TransactionFailure;
 import com.sun.enterprise.config.serverbeans.JavaConfig;
 import com.sun.enterprise.config.serverbeans.Profiler;
 import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.enterprise.config.serverbeans.Property;
 
 import java.beans.PropertyVetoException;
 
@@ -76,9 +79,9 @@ public class CreateProfiler implements AdminCommand {
     @Param(name="profiler_name", primary=true)
     String name;
     
-    @Param(optional=true)
-    String property;
-
+    @Param(name="property", optional=true)
+    Properties properties;
+    
     @Param(optional=true)
     String target;
 
@@ -103,6 +106,13 @@ public class CreateProfiler implements AdminCommand {
                     newProfiler.setClasspath(classpath);
                     newProfiler.setEnabled(enabled);
                     newProfiler.setNativeLibraryPath(nativeLibraryPath);
+                    for ( java.util.Map.Entry e : properties.entrySet()) {
+                        Property prop = ConfigSupport.createChildOf(newProfiler, 
+                                Property.class);
+                        prop.setName((String)e.getKey());
+                        prop.setValue((String)e.getValue());
+                        newProfiler.getProperty().add(prop);
+                    }
                     param.setProfiler(newProfiler);                    
                     return newProfiler;
                 }
