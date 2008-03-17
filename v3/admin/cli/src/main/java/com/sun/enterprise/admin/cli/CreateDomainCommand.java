@@ -194,8 +194,6 @@ public class CreateDomainCommand extends BaseLifeCycleCommand
      *  first it checks if adminpassword option is specified on command line.
      *  if not, then it'll try to get AS_ADMIN_ADMINPASSWORD and AS_ADMIN_PASWORD from
      *  the password file.  If both are specified, the AS_ADMIN_PASSWORD takes precedence.
-     *  if that still does not exist then get AS_ADMIN_PASSWORD from 
-     *  ./asadminprefs file.
      *  if all else fails, then prompt the user for the password if interactive=true.
      *  @return admin password
      *  @throws CommandValidationException if could not get adminpassword option 
@@ -503,7 +501,7 @@ public class CreateDomainCommand extends BaseLifeCycleCommand
         manager.createDomain(domainConfig);
         CLILogger.getInstance().printDetailMessage(getLocalizedString("DomainCreated",
                                                                       new Object[] {domainName}));
-        checkAsadminPrefsFile();
+        //checkAsadminPrefsFile();
   //      if (getBooleanOption(SAVELOGIN_OPTION))
     //        saveLogin(adminPort, adminUser, adminPassword, domainName);
     }
@@ -532,29 +530,6 @@ public class CreateDomainCommand extends BaseLifeCycleCommand
             msg = getLocalizedString("UsingTemplate", new String[]{templateName});
         }
         CLILogger.getInstance().printMessage(msg);
-    }
-
-
-    
-    
-
-        /**
-         *  This routine checks if the .asadminprefs file exists in the home
-         *  directory.  If it exists, then a warning message is displayed.
-         *  This message is to warn user that the remote commands will
-         *  retrieve user and password from .asadminpref file if it is not
-         *  entered on the command line, environment variable or passwordfile
-         **/
-    private void checkAsadminPrefsFile()
-    {
-        try {
-            checkForFileExistence(System.getProperty("user.home"), ASADMINPREFS);
-            CLILogger.getInstance().printMessage(getLocalizedString("AsadminPrefFileDetected", new Object[] {domainName}));
-        }
-        catch(CommandException ce) {
-                //do nothing since we do not want to display a warning msg
-                //if the file does not exist.
-        }
     }
 
 

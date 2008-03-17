@@ -33,9 +33,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package com.sun.enterprise.admin.cli;
-
 
 import com.sun.enterprise.cli.framework.*;
 
@@ -49,7 +47,7 @@ import com.sun.enterprise.universal.glassfish.SystemPropertyConstants;
 import com.sun.appserv.management.client.prefs.LoginInfo;
 import com.sun.appserv.management.client.prefs.LoginInfoStore;
 import com.sun.appserv.management.client.prefs.LoginInfoStoreFactory;
-*/
+ */
 
 import java.util.Map;
 import java.io.IOException;
@@ -66,42 +64,35 @@ import java.io.InputStream;
  *  This class contains the method to create the JMX connector.
  *  @version  $Revision: 1.38 $
  */
-public abstract class S1ASCommand extends Command
-{
+public abstract class S1ASCommand extends Command {
 
-    public final static String JMX_PROTOCOL = "jmxmp";    
-    public final static String TERSE = "terse";    
+    public final static String JMX_PROTOCOL = "jmxmp";
+    public final static String TERSE = "terse";
     public final static String INTERACTIVE = "interactive";
     public final static String PASSWORDFILE = "passwordfile";
-    public final static String ECHO = "echo";    
-    public final static String HOST = "host";    
-    public final static String PORT = "port";    
-    public final static String USER = "user";    
-    public final static String PASSWORD = "password";    
-    public final static String SECURE = "secure";    
+    public final static String ECHO = "echo";
+    public final static String HOST = "host";
+    public final static String PORT = "port";
+    public final static String USER = "user";
+    public final static String PASSWORD = "password";
+    public final static String SECURE = "secure";
     public final static String MAPPED_PASSWORD = "mappedpassword";
-    public final static String OBJECT_NAME = "objectname";    
-    public final static String ARGUMENTS = "arguments";    
-    public final static String OPERATION = "operation";    
-    public final static String PARAMS = "params";    
-    public final static String PARAM_TYPES = "paramtypes";    
-    public final static String RETURN_TYPE = "returntype";    
+    public final static String OBJECT_NAME = "objectname";
+    public final static String ARGUMENTS = "arguments";
+    public final static String OPERATION = "operation";
+    public final static String PARAMS = "params";
+    public final static String PARAM_TYPES = "paramtypes";
+    public final static String RETURN_TYPE = "returntype";
     public final static String DISPLAY_TYPE = "displaytype";
     public final static String PROPERTY = "property.";
     public final static String DOMAIN = "domain";
-     
-    protected final static String ASADMINPREFS = ".asadminprefs";
     private final static String ASADMINENV = "asadminenv.conf";
-
     protected final static String ENV_PREFIX = "AS_ADMIN_";
-    
-    protected static final String DEFAULT_NOT_DEPRECATED_PASSWORDFILE_OPTIONS = 
-        "password|adminpassword|userpassword|masterpassword|aliaspassword|mappedpassword";
-    
+    protected static final String DEFAULT_NOT_DEPRECATED_PASSWORDFILE_OPTIONS =
+            "password|adminpassword|userpassword|masterpassword|aliaspassword|mappedpassword";
     // this variable ought to be renamed to avoid confusing it with a constant
     protected String NOT_DEPRECATED_PASSWORDFILE_OPTIONS =
-        DEFAULT_NOT_DEPRECATED_PASSWORDFILE_OPTIONS;
-    
+            DEFAULT_NOT_DEPRECATED_PASSWORDFILE_OPTIONS;
     protected final static String COMMENT_PREFIX = "#";
 
     //these are global variables so that .asadminpref file does not need to be read
@@ -109,17 +100,14 @@ public abstract class S1ASCommand extends Command
     private String userValue = null;
     private boolean warningDisplayed = false;
 
-
-    public S1ASCommand()
-    {
-        /*
-        //Use asenv.conf/bat to set up necessary system properties
-        final ASenvPropertyReader reader = new ASenvPropertyReader(
-            System.getProperty(SystemPropertyConstants.CONFIG_ROOT_PROPERTY));
-        reader.setSystemProperties();
-         */
+    public S1ASCommand() {
+    /*
+    //Use asenv.conf/bat to set up necessary system properties
+    final ASenvPropertyReader reader = new ASenvPropertyReader(
+    System.getProperty(SystemPropertyConstants.CONFIG_ROOT_PROPERTY));
+    reader.setSystemProperties();
+     */
     }
-    
 
     /**
      *  An abstract method that validates the options 
@@ -128,57 +116,52 @@ public abstract class S1ASCommand extends Command
      *  operands and if all the required options are supplied by the client.
      *  @return boolean returns true if success else returns false
      */
-    public boolean validateOptions() throws CommandValidationException
-    {
+    public boolean validateOptions() throws CommandValidationException {
         setLoggerLevel();
-        
+
         // echo the command if echo is turned on
-        if (getBooleanOption(ECHO))
-        {
+        if (getBooleanOption(ECHO)) {
             CLILogger.getInstance().printMessage(this.toString());
         }
         //Throw an error when password options are used on commandline
         // or ignore them when set through environment variables
         Map options = getOptions();
         Iterator optionNames = options.keySet().iterator();
-        while (optionNames.hasNext())
-        {
+        while (optionNames.hasNext()) {
             final String optionKey = (String) optionNames.next();
-            if (optionKey.matches(NOT_DEPRECATED_PASSWORDFILE_OPTIONS))
+            if (optionKey.matches(NOT_DEPRECATED_PASSWORDFILE_OPTIONS)) {
                 validatePasswordOption(optionKey);
+            }
         }
         readAsadminEnvFile();
-    	return true;
+        return true;
     }
 
-    
     private void validatePasswordOption(String passwordOptionName)
-                     throws CommandValidationException
-    {
+            throws CommandValidationException {
         //As per sun security policy reusable passwords should not be allowed on
         //command line (give an exception) or environment variables (ignore).
-        if (getCLOption(passwordOptionName) != null)
+        if (getCLOption(passwordOptionName) != null) {
             throw new CommandValidationException(getLocalizedString("PasswordsNotAllowedOnCommandLine",
-                                                    new Object[]{passwordOptionName}));
-/*        
-        if ((MultiProcessCommand.getLocalEnvironmentValue(passwordOptionName) == null) &&
-                (getENVOption(passwordOptionName) != null && getOption(PASSWORDFILE)==null))
-        {
-            CLILogger.getInstance().printWarning(getLocalizedString("PasswordsNotAllowedInEnvironment",
-                                                        new Object[]{passwordOptionName}));
+                    new Object[]{passwordOptionName}));
         }
- */
+    /*        
+    if ((MultiProcessCommand.getLocalEnvironmentValue(passwordOptionName) == null) &&
+    (getENVOption(passwordOptionName) != null && getOption(PASSWORDFILE)==null))
+    {
+    CLILogger.getInstance().printWarning(getLocalizedString("PasswordsNotAllowedInEnvironment",
+    new Object[]{passwordOptionName}));
+    }
+     */
     }
 
-        /**
-         * read asadminenv.conf file
-         * and set the entries as options.
-         * entries from asadminenv.conf file should have higher
-         * precedence over the default options specified in the descriptor file
-         **/
-    
-    private void readAsadminEnvFile()
-    {
+    /**
+     * read asadminenv.conf file
+     * and set the entries as options.
+     * entries from asadminenv.conf file should have higher
+     * precedence over the default options specified in the descriptor file
+     **/
+    private void readAsadminEnvFile() {
         final String cr = System.getProperty(SystemPropertyConstants.CONFIG_ROOT_PROPERTY);
         final File file = new File(cr, ASADMINENV);
         if (file.exists()) {
@@ -188,68 +171,58 @@ public abstract class S1ASCommand extends Command
                 is = new BufferedInputStream(new FileInputStream(file));
                 final Properties prop = new Properties();
                 prop.load(is);
-                for (Enumeration en=prop.propertyNames(); en.hasMoreElements();)
-                {
-                    final String entry = (String)en.nextElement();
-                    if (entry.startsWith(ENV_PREFIX))
-                    {
+                for (Enumeration en = prop.propertyNames(); en.hasMoreElements();) {
+                    final String entry = (String) en.nextElement();
+                    if (entry.startsWith(ENV_PREFIX)) {
                         final String optionName = entry.substring(ENV_PREFIX.length()).toLowerCase();
                         if (getCLOption(optionName) == null &&
-                            getENVOption(optionName) == null)
-                        {
+                                getENVOption(optionName) == null) {
                             final String optionValue = prop.getProperty(entry);
                             CLILogger.getInstance().printDebugMessage("asadminenv.conf: set the following options: " + optionName + "=" + optionValue);
                             setOption(optionName, optionValue);
                         }
                     }
                 }
-            } catch(final Exception e) {
-                    //ignore exception, this could either mean that the file is
-                    //corrupted or entries are corrupted but it should not impact
-                    //the execution of the command.
-                    //however print exception as a debug message
+            } catch (final Exception e) {
+                //ignore exception, this could either mean that the file is
+                //corrupted or entries are corrupted but it should not impact
+                //the execution of the command.
+                //however print exception as a debug message
                 e.printStackTrace();
                 CLILogger.getInstance().printDebugMessage(e.getLocalizedMessage());
             } finally {
                 try {
-                    if (is != null)
+                    if (is != null) {
                         is.close();
-                } catch(final Exception ignore){}
+                    }
+                } catch (final Exception ignore) {
+                }
             }
         }
     }
-    
 
-    
     /**
      *  This method sets the logger level depending on the terse option.
      *  If terse is true, then the logger level is set to INFO.
      *  If terse is false, then the logger level is set to FINE.
      */
-    protected void setLoggerLevel()
-    {
+    protected void setLoggerLevel() {
         final boolean terse = getBooleanOption(TERSE);
 
-        if (terse)
-        {
+        if (terse) {
             //set the logger level to INFO
             CLILogger.getInstance().setOutputLevel(java.util.logging.Level.INFO);
-        }
-        else
-        {
+        } else {
             //set the logger level to FINE
             CLILogger.getInstance().setOutputLevel(java.util.logging.Level.FINE);
         }
     }
-   
-
 
     /*
      * Returns the host option value
      * @return host returns host option value
      */
-    protected String getHost()
-    {
+    protected String getHost() {
         return getOption(HOST);
     }
 
@@ -258,10 +231,9 @@ public abstract class S1ASCommand extends Command
      * Returns the port option value
      * @return port returns port option value
      */
-    protected int getPort() throws CommandValidationException
-    {
+    protected int getPort() throws CommandValidationException {
 
-        final String port = getOption(PORT);                
+        final String port = getOption(PORT);
         return validatePort(port);
     }
 
@@ -272,74 +244,55 @@ public abstract class S1ASCommand extends Command
      * @throws CommandValidationException if the following is true:
      *  1.  --user option not on command line
      *  2.  user option not specified in environment
-     *  3.  user option not specified in ASADMINPREFS file
-     *  4.  user option not specified in .asadminpass file
-     *  5. --interactive is false, and no prompting is possible
+     *  3.  user option not specified in .asadminpass file
+     *  4. --interactive is false, and no prompting is possible
      */
-    protected String getUser() throws CommandValidationException
-    {
-        if (getOption(USER) == null && userValue == null)
-        {
+    protected String getUser() throws CommandValidationException {
+        if (getOption(USER) == null && userValue == null) {
             // read from .asadminpass
             userValue = getUserFromASADMINPASS();
-            if (userValue != null)
+            if (userValue != null) {
                 return userValue;
-            
-            // read from .asadminprefs
-            userValue= getValuesFromASADMINPREFS(USER);
-            if (userValue != null)
-            {
-                CLILogger.getInstance().printDebugMessage(
-                                "user value read from " + ASADMINPREFS);
-                return userValue;
-            }
-            else if (getBooleanOption(INTERACTIVE))
-            { 
+            } else if (getBooleanOption(INTERACTIVE)) {
                 //prompt for user
                 try {
                     InputsAndOutputs.getInstance().getUserOutput().print(
-                                        getLocalizedString("AdminUserPrompt"));
+                            getLocalizedString("AdminUserPrompt"));
                     return InputsAndOutputs.getInstance().getUserInput().getLine();
-                }
-                catch (IOException ioe)
-                {
+                } catch (IOException ioe) {
                     throw new CommandValidationException(
-                                getLocalizedString("CannotReadOption", 
-                                                        new Object[]{"user"}));
+                            getLocalizedString("CannotReadOption",
+                            new Object[]{"user"}));
                 }
             }
-        }
-        else if (getOption(USER) !=  null)
+        } else if (getOption(USER) != null) {
             return getOption(USER);
-
-        else if (userValue !=  null)
+        } else if (userValue != null) {
             return userValue;
+        }
 
         //if all else fails, then throw an exception
         throw new CommandValidationException(getLocalizedString("OptionIsRequired",
-                                                                new Object[] {USER}));
+                new Object[]{USER}));
     }
 
-
     /**
-     *   get user or password from ASADMINPREFS file
+     *   get user or password from ASADMINPASS file
      *   @params nameOfValue
-     *   @return user or password value from .asadminprefs file 
+     *   @return user or password value from .asadminpass file 
      *   if file not found then return null
      */
-    protected String getUserFromASADMINPASS() 
-    {
+    protected String getUserFromASADMINPASS() {
         String userValue = null;
         int port;
         String host = getHost();
-        if (host == null) return userValue;
-        try
-        {
+        if (host == null) {
+            return userValue;
+        }
+        try {
             //will be null for start-domain/node-agent/appserv commands
             port = getPort();
-        }
-        catch(CommandValidationException cve)
-        {
+        } catch (CommandValidationException cve) {
             // exception only for start-domain/node-agent/appserv commands
             // ignore the exception since we are trying to get user, not port
             // and dont read the .asadminpass
@@ -350,99 +303,40 @@ public abstract class S1ASCommand extends Command
         // get the user value from .asadminpass
         try
         {
-            final LoginInfoStore store = LoginInfoStoreFactory.getStore(null);
-            if (store.exists(host, port)) 
-            {
-                LoginInfo login = store.read(host, port);
-                userValue = login.getUser();
-                if (userValue != null)
-                {
-                    CLILogger.getInstance().printDebugMessage(
-                                    "user value read from " + store.getName());
-                }
-            }
+        final LoginInfoStore store = LoginInfoStoreFactory.getStore(null);
+        if (store.exists(host, port)) 
+        {
+        LoginInfo login = store.read(host, port);
+        userValue = login.getUser();
+        if (userValue != null)
+        {
+        CLILogger.getInstance().printDebugMessage(
+        "user value read from " + store.getName());
+        }
+        }
         }
         catch(final Exception e) {
-            final Object[] params = new String[] {host, "" + port};
-            final String msg = getLocalizedString("LoginInfoCouldNotBeRead", params);
-            CLILogger.getInstance().printWarning(msg);
-            CLILogger.getInstance().printExceptionStackTrace(e);
+        final Object[] params = new String[] {host, "" + port};
+        final String msg = getLocalizedString("LoginInfoCouldNotBeRead", params);
+        CLILogger.getInstance().printWarning(msg);
+        CLILogger.getInstance().printExceptionStackTrace(e);
         }
          */
         return userValue;
     }
-        
-    
-    /**
-     *   get user or password from ASADMINPREFS file
-     *   @params nameOfValue
-     *   @return user or password value from .asadminprefs file 
-     *   if file not found then return null
-     */
-    protected String getValuesFromASADMINPREFS(String nameOfValue) 
-    {
-        String returnVal = null;
-        File file = null;
-        try
-        {
-            file = checkForFileExistence(System.getProperty("user.home"), ASADMINPREFS);
-        }
-        catch (Exception e)
-        {
-            CLILogger.getInstance().printDebugMessage(e.getLocalizedMessage());            
-                //if file does not exist or cannot be read, return null
-            return returnVal;
-        }
-        InputStream is = null;
-        String optionValue = null;
-        try {
-            is = new BufferedInputStream(new FileInputStream(file));
-            final Properties prop = new Properties();
-            prop.load(is);
-            for (Enumeration en=prop.propertyNames(); en.hasMoreElements();)
-            {
-                final String entry = (String)en.nextElement();
-                if (entry.startsWith(ENV_PREFIX))
-                {
-                    final String optionName = entry.substring(ENV_PREFIX.length()).toLowerCase();
-                    if (optionName.equals(nameOfValue))
-                    {
-                        optionValue = prop.getProperty(entry);
-                        break;
-                    }
-                }
-            }
-        }
-        catch(final Exception e) {
-            //ignore exception, this could either mean that the file is
-            //corrupted or entries are corrupted but it should not impact
-            //the execution of the command.
-            //however print exception as a debug message
-            CLILogger.getInstance().printDebugMessage(e.getLocalizedMessage());
-        } finally {
-            try {
-                if (is != null)
-                    is.close();
-            } catch(final Exception ignore){}
-        }
-        return optionValue;
-    }
-
 
     /**
      * Returns the password option value. This is used by all asadmin commands that accept the --password
      * option.
      * @return password returns password option value
      */
-    protected String getPassword() throws CommandValidationException, CommandException
-    {
+    protected String getPassword() throws CommandValidationException, CommandException {
         //getPassword(optionName, allowedOnCommandLine, readPrefsFile, readPasswordOptionFromPrefs, readMasterPasswordFile, mgr, config,
         //promptUser, confirm, validate)
-        return getPassword(PASSWORD, "AdminPasswordPrompt", "AdminPasswordConfirmationPrompt", 
-                            true, true, false, false, null, null, true, false, false, true);       
+        return getPassword(PASSWORD, "AdminPasswordPrompt", "AdminPasswordConfirmationPrompt",
+                true, true, false, false, null, null, true, false, false, true);
     }
-    
-     
+
     protected boolean isPasswordValid(String passwd) {
         if (passwd.length() < 8) {
             return false;
@@ -451,24 +345,22 @@ public abstract class S1ASCommand extends Command
         }
     }
 
-    protected String getPassword(String optionName,               
-        boolean allowedOnCommandLine,
-        boolean readPrefsFile,
-        boolean readPasswordOptionFromPrefs, 
-        boolean readMasterPasswordFile, RepositoryManager mgr, RepositoryConfig config,
-        boolean promptUser, boolean confirm, boolean validate, boolean displayWarning) 
-            throws CommandValidationException, CommandException
-    {
+    protected String getPassword(String optionName,
+            boolean allowedOnCommandLine,
+            boolean readPrefsFile,
+            boolean readPasswordOptionFromPrefs,
+            boolean readMasterPasswordFile, RepositoryManager mgr, RepositoryConfig config,
+            boolean promptUser, boolean confirm, boolean validate, boolean displayWarning)
+            throws CommandValidationException, CommandException {
         return getPassword(optionName, "InteractiveOptionPrompt", "InteractiveOptionConfirmationPrompt",
-            allowedOnCommandLine, readPrefsFile, readPasswordOptionFromPrefs, 
-            readMasterPasswordFile, mgr, config, promptUser, confirm, validate, displayWarning);
+                allowedOnCommandLine, readPrefsFile, readPasswordOptionFromPrefs,
+                readMasterPasswordFile, mgr, config, promptUser, confirm, validate, displayWarning);
     }
-    
+
     /**
      *  this methods returns a password
      *  first it checks if the password option is specified on command line.
-     *  if not, then it'll try to get the password from the password file and 
-     *  optionally from the ./asadminprefs file.
+     *  if not, then it'll try to get the password from the password file 
      *  if all else fails, then prompt the user for the password if interactive=true.
      *  @param readPrefsFile indicates whether the preferences file should be searched 
      *  for the option.
@@ -487,16 +379,15 @@ public abstract class S1ASCommand extends Command
      *  @return admin password
      *  @throws CommandValidationException if could not get adminpassword option 
      */
-    protected String getPassword(String optionName,       
-        String promptMsg,
-        String confirmationPromptMsg,
-        boolean allowedOnCommandLine,
-        boolean readPrefsFile,
-        boolean readPasswordOptionFromPrefs, 
-        boolean readMasterPasswordFile, RepositoryManager mgr, RepositoryConfig config,
-        boolean promptUser, boolean confirm, boolean validate, boolean displayWarning) 
-            throws CommandValidationException, CommandException
-    {
+    protected String getPassword(String optionName,
+            String promptMsg,
+            String confirmationPromptMsg,
+            boolean allowedOnCommandLine,
+            boolean readPrefsFile,
+            boolean readPasswordOptionFromPrefs,
+            boolean readMasterPasswordFile, RepositoryManager mgr, RepositoryConfig config,
+            boolean promptUser, boolean confirm, boolean validate, boolean displayWarning)
+            throws CommandValidationException, CommandException {
         String passwordVal;
         //try to read the password from local environment 
         // which is set using export in multimode
@@ -504,7 +395,7 @@ public abstract class S1ASCommand extends Command
         /*
         passwordVal = (String) MultiProcessCommand.getLocalEnvironmentValue(optionName);
         if (passwordVal != null)
-            return passwordVal;
+        return passwordVal;
          */
         //try to read the password from the password file
         if (getOption(PASSWORDFILE) != null) {
@@ -514,104 +405,74 @@ public abstract class S1ASCommand extends Command
         // making sure its not read from the environment which is not supported.
         passwordVal = getOtherOption(optionName);
 
-        if (passwordVal == null) 
-        {
+        if (passwordVal == null) {
             //Next try the preferences file .asadminpass
-            if (readPrefsFile) 
-            {
+            if (readPrefsFile) {
                 // Read only when we are dealing with the --port not the 
                 // --adminport (in the case of create-domain).
-                if (getOption(PORT) != null && getHost() != null) 
-                {
+                if (getOption(PORT) != null && getHost() != null) {
                     String host = getHost();
                     int port = getPort();
-                    /* Comment out for now for LoginInfo dependency*/
-                    /*
-                    try
-                    {
-                        final LoginInfoStore store = LoginInfoStoreFactory.getStore(null);
-                        if (store.exists(host, port)) 
-                        {
-                            LoginInfo login = store.read(host, port);
-                            passwordVal = login.getPassword();
-                            if (passwordVal != null)
-                            {
-                                CLILogger.getInstance().printDebugMessage(
-                                        "password value read from " + store.getName());
-                            }
-                        }                         
-                    }
-                    catch(final Exception e) 
-                    {
-                        final Object[] params = new String[] {host, "" + port};
-                        final String msg = getLocalizedString("LoginInfoCouldNotBeRead", params);
-                        CLILogger.getInstance().printWarning(msg);
-                        CLILogger.getInstance().printExceptionStackTrace(e);
-                    }
-                     */
-                }
-                // now read from the .asadminprefs file
-                if (passwordVal == null)
+                /* Comment out for now for LoginInfo dependency*/
+                /*
+                try
                 {
-                    passwordVal = getValuesFromASADMINPREFS(optionName);
-                    if (passwordVal != null)
-                    {
-                        CLILogger.getInstance().printDebugMessage(
-                                "password value read from " + ASADMINPREFS);
-                    }
+                final LoginInfoStore store = LoginInfoStoreFactory.getStore(null);
+                if (store.exists(host, port)) 
+                {
+                LoginInfo login = store.read(host, port);
+                passwordVal = login.getPassword();
+                if (passwordVal != null)
+                {
+                CLILogger.getInstance().printDebugMessage(
+                "password value read from " + store.getName());
+                }
+                }                         
+                }
+                catch(final Exception e) 
+                {
+                final Object[] params = new String[] {host, "" + port};
+                final String msg = getLocalizedString("LoginInfoCouldNotBeRead", params);
+                CLILogger.getInstance().printWarning(msg);
+                CLILogger.getInstance().printExceptionStackTrace(e);
+                }
+                 */
                 }
             }
-            if (passwordVal == null) 
-            {     
-                //Next try the password element of the preferences file
-                if (readPrefsFile && readPasswordOptionFromPrefs) 
-                {
-                    passwordVal = getValuesFromASADMINPREFS(PASSWORD);
-                }
-                if (passwordVal == null) 
-                {                 
-                    //Next try the master password file
-                    if (readMasterPasswordFile && mgr != null && config != null) 
-                    {
-                        try 
-                        {
-                            passwordVal = mgr.readMasterPasswordFile(config);
-                        } catch (RepositoryException ex) 
-                        {
-                            throw new CommandException(ex);
-                        }
+            if (passwordVal == null) {
+                //Next try the master password file
+                if (readMasterPasswordFile && mgr != null && config != null) {
+                    try {
+                        passwordVal = mgr.readMasterPasswordFile(config);
+                    } catch (RepositoryException ex) {
+                        throw new CommandException(ex);
                     }
-                    if (passwordVal == null) 
-                    {                    
-                        //Finally prompt the user if all else fails. A confimation indicates that
-                        //the user must enter the password 2x to confirm its value.
-                        if (promptUser) 
-                        {
-                            if (confirm) 
-                            {
-                                passwordVal = getInteractiveOptionWithConfirmation(optionName,
-                                                                                   promptMsg,
-                                                                                   confirmationPromptMsg,
-                                                                                   validate);
-                            } else 
-                            {
-                                passwordVal = getInteractiveOption(optionName, 
-                                    getLocalizedString(promptMsg, new Object[] {optionName})); 
-                            }
-                        }	
+                }
+                if (passwordVal == null) {
+                    //Finally prompt the user if all else fails. A confimation indicates that
+                    //the user must enter the password 2x to confirm its value.
+                    if (promptUser) {
+                        if (confirm) {
+                            passwordVal = getInteractiveOptionWithConfirmation(optionName,
+                                    promptMsg,
+                                    confirmationPromptMsg,
+                                    validate);
+                        } else {
+                            passwordVal = getInteractiveOption(optionName,
+                                    getLocalizedString(promptMsg, new Object[]{optionName}));
+                        }
                     }
                 }
             }
         }
         //Validate the password 
-        if (validate && passwordVal != null && !isPasswordValid(passwordVal)) 
-        {
+        if (validate && passwordVal != null && !isPasswordValid(passwordVal)) {
             throw new CommandValidationException(getLocalizedString("PasswordLimit",
-                                                                    new Object[]{optionName}));
+                    new Object[]{optionName}));
         }
         return passwordVal;
     }
-    
+
     /**
      * If interactive is true, then prompt the user for the option value. The
      * user is then prompted to enter the option (i.e. a password) again and the
@@ -624,31 +485,30 @@ public abstract class S1ASCommand extends Command
      * value is null or if the two values entered do not match.
      */
     private String getInteractiveOptionWithConfirmation(final String optionName, final String promptMsg,
-        final String confirmationPromptMsg, final boolean validatePassword) 
-        throws CommandValidationException
-    {
-        final String prompt = getLocalizedString(promptMsg, new Object[] {optionName});
+            final String confirmationPromptMsg, final boolean validatePassword)
+            throws CommandValidationException {
+        final String prompt = getLocalizedString(promptMsg, new Object[]{optionName});
         final String confirmationPrompt = getLocalizedString(confirmationPromptMsg,
-                                                             new Object[] {optionName});
-        
-        String optionValue = getInteractiveOption(optionName, prompt);            
+                new Object[]{optionName});
+
+        String optionValue = getInteractiveOption(optionName, prompt);
         if (validatePassword && !isPasswordValid(optionValue)) {
             if (promptMsg.equals("AdminPasswordPrompt")) {
                 final String adminPassword = getLocalizedString("AdminPassword");
                 throw new CommandValidationException(getLocalizedString("PasswordLimit",
-                                                                        new Object[]{adminPassword}));
+                        new Object[]{adminPassword}));
             }
             throw new CommandValidationException(getLocalizedString("PasswordLimit",
-                new Object[]{optionName}));
+                    new Object[]{optionName}));
         }
         String optionValueAgain = getInteractiveOption(optionName, confirmationPrompt);
         if (!optionValue.equals(optionValueAgain)) {
             throw new CommandValidationException(getLocalizedString("OptionsDoNotMatch",
-                new Object[] {optionName}));
+                    new Object[]{optionName}));
         }
         return optionValue;
     }
-        
+
     /**
      * If interactive is true, then prompt the user for the option value.
      * @param optionName - name of option.
@@ -658,66 +518,49 @@ public abstract class S1ASCommand extends Command
      * value is null.
      * @return option value
      */
-    protected String getInteractiveOption(String optionName, String prompt) 
-        throws CommandValidationException
-    {
+    protected String getInteractiveOption(String optionName, String prompt)
+            throws CommandValidationException {
         //String optionValue = getOption(optionName);
         String optionValue;
         //if option value is null and interactive option is true
         //then prompt the user for the password.
         //if (optionValue == null && getBooleanOption(INTERACTIVE) )
-        if (getBooleanOption(INTERACTIVE))
-        {
-            try 
-            {
+        if (getBooleanOption(INTERACTIVE)) {
+            try {
                 InputsAndOutputs.getInstance().getUserOutput().print(prompt);
                 InputsAndOutputs.getInstance().getUserOutput().flush();
                 optionValue = new CliUtil().getPassword();
-            }
-            catch (java.lang.NoClassDefFoundError e)
-            {
+            } catch (java.lang.NoClassDefFoundError e) {
                 optionValue = readInput();
-            }
-            catch (java.lang.UnsatisfiedLinkError e)
-            {
+            } catch (java.lang.UnsatisfiedLinkError e) {
                 optionValue = readInput();
-            }
-            catch (Exception e)
-            {
+            } catch (Exception e) {
                 throw new CommandValidationException(e);
             }
-        }
-        //else if ((optionValue == null) && !getBooleanOption(INTERACTIVE))
-        else
+        } //else if ((optionValue == null) && !getBooleanOption(INTERACTIVE))
+        else {
             throw new CommandValidationException(getLocalizedString("OptionIsRequired",
-                                                                  new Object[] {optionName}));
+                    new Object[]{optionName}));
+        }
         return optionValue;
     }
 
-    
     /**
      *   Get input from user.
      */
-    protected String readInput()
-    {
+    protected String readInput() {
         try {
             return InputsAndOutputs.getInstance().getUserInput().getLine();
-        }
-        catch (IOException ioe)
-        {
+        } catch (IOException ioe) {
             return null;
         }
     }
-    
-    
 
-    
     /**
      *   Load the passwords from the password file. 
      *   This method should be called before checkInteractiveOption();
      */
-    private void loadPasswordFileOptions(String optionName) throws CommandException
-    {
+    private void loadPasswordFileOptions(String optionName) throws CommandException {
         final String passwordFileName = getOption(PASSWORDFILE);
         File file = checkForFileExistence(null, passwordFileName);
         boolean displayWarning = false;
@@ -726,38 +569,34 @@ public abstract class S1ASCommand extends Command
             is = new BufferedInputStream(new FileInputStream(file));
             final Properties prop = new Properties();
             prop.load(is);
-            for (Enumeration en=prop.propertyNames(); en.hasMoreElements();)
-            {
-                final String entry = (String)en.nextElement();
-                if (entry.startsWith(ENV_PREFIX))
-                {
+            for (Enumeration en = prop.propertyNames(); en.hasMoreElements();) {
+                final String entry = (String) en.nextElement();
+                if (entry.startsWith(ENV_PREFIX)) {
                     final String optionFromFile = entry.substring(ENV_PREFIX.length()).toLowerCase();
                     displayWarning = !optionFromFile.matches(NOT_DEPRECATED_PASSWORDFILE_OPTIONS) ||
-                                     displayWarning;
-                    if (optionFromFile.equalsIgnoreCase(optionName))
-                    {
+                            displayWarning;
+                    if (optionFromFile.equalsIgnoreCase(optionName)) {
                         final String optionValue = prop.getProperty(entry);
                         setOption(optionName, optionValue);
                     }
                 }
             }
-        }
-        catch(final Exception e) {
+        } catch (final Exception e) {
             throw new CommandException(e);
         } finally {
             try {
-                if (is != null)
+                if (is != null) {
                     is.close();
-            } catch(final Exception ignore){}
+                }
+            } catch (final Exception ignore) {
+            }
         }
-        if (displayWarning && !warningDisplayed)
-        {
+        if (displayWarning && !warningDisplayed) {
             CLILogger.getInstance().printWarning(getLocalizedString(
-                                                     "DeprecatedOptionsFromPasswordfile"));
+                    "DeprecatedOptionsFromPasswordfile"));
             warningDisplayed = true;
         }
     }
-
 
     /**
      *  Check for the existence of the file in the file system
@@ -765,39 +604,38 @@ public abstract class S1ASCommand extends Command
      *  @param fileName - the name of the file to check for existence
      *  @return File handler
      */
-    protected File checkForFileExistence(String parent, String fileName) 
-        throws CommandException
-    {
-        if (fileName == null) return null;
+    protected File checkForFileExistence(String parent, String fileName)
+            throws CommandException {
+        if (fileName == null) {
+            return null;
+        }
         File file = null;
-        if (parent == null)
+        if (parent == null) {
             file = new File(fileName);
-        else
+        } else {
             file = new File(parent, fileName);
-        if ( file.canRead() == false )
-        {
+        }
+        if (file.canRead() == false) {
             throw new CommandException(getLocalizedString("FileDoesNotExist",
-                                                          new Object[] {fileName}));
+                    new Object[]{fileName}));
         }
         return file;
-    }   
+    }
 
     /*
      * check if port number if valid
      */
-    protected int validatePort(final String port) throws CommandValidationException
-    {
+    protected int validatePort(final String port) throws CommandValidationException {
         int portNum = -1;
         try {
             portNum = Integer.parseInt(port);
-        }
-        catch (NumberFormatException nfe) {
+        } catch (NumberFormatException nfe) {
             throw new CommandValidationException(getLocalizedString("InvalidPortNumber",
-                                                 new Object[] {port}));
+                    new Object[]{port}));
         }
-        if (portNum < 0 || portNum > 65535)
+        if (portNum < 0 || portNum > 65535) {
             throw new CommandValidationException(getLocalizedString("InvalidPortRangeMsg"));
+        }
         return portNum;
     }
-
 }

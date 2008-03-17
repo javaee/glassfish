@@ -37,8 +37,8 @@
 /*
  * $Id: BaseLifeCycleCommand.java,v 1.11 2007/05/01 05:36:54 ne110415 Exp $
  */
-
 package com.sun.enterprise.admin.cli;
+
 import com.sun.enterprise.cli.framework.*;
 
 
@@ -60,28 +60,25 @@ import com.sun.enterprise.universal.glassfish.ASenvPropertyReader;
  *Abstract base class for the Lifecycle commands
  *
  */
-abstract public class BaseLifeCycleCommand extends S1ASCommand
-{   
-    protected static final String DOMAIN    = "domain";
+abstract public class BaseLifeCycleCommand extends S1ASCommand {
+
+    protected static final String DOMAIN = "domain";
     protected static final String DOMAINDIR = "domaindir";
     protected static final String MASTER_PASSWORD = "masterpassword";
     protected static final String NEW_MASTER_PASSWORD = "newmasterpassword";
-    protected static final String ADMIN_USER     = "adminuser";
+    protected static final String ADMIN_USER = "adminuser";
     protected static final String ADMIN_PASSWORD = "adminpassword";
     protected static final String PASSWORD = "password";
     protected static final String DEFAULT_MASTER_PASSWORD = RepositoryManager.DEFAULT_MASTER_PASSWORD;
-    protected static final String ADMIN_PORT     = "adminport";
-    protected static final String SAVE_MASTER_PASSWORD = "savemasterpassword"; 
-    
-    protected final static char   ESCAPE_CHAR = '\\';
-    protected final static char   EQUAL_SIGN  = '=';
-    protected final static String DELIMITER   = ":";
-    
+    protected static final String ADMIN_PORT = "adminport";
+    protected static final String SAVE_MASTER_PASSWORD = "savemasterpassword";
+    protected final static char ESCAPE_CHAR = '\\';
+    protected final static char EQUAL_SIGN = '=';
+    protected final static String DELIMITER = ":";
     protected final static String KILL = "kill";
 
     /** Creates new BaseLifeCycleCommand */
-    public BaseLifeCycleCommand()
-    {
+    public BaseLifeCycleCommand() {
     }
 
     /**
@@ -92,19 +89,17 @@ abstract public class BaseLifeCycleCommand extends S1ASCommand
         return LogDomains.getLogger(LogDomains.CORE_LOGGER);
     }
 
-
-    protected DomainConfig getDomainConfig(String domainName) throws CommandException
-    {
+    protected DomainConfig getDomainConfig(String domainName) throws CommandException {
         try {
             DomainConfig dc = new DomainConfig(domainName, getDomainsRoot());
 
-	    // add map entries for --verbose and --debug options to start-domain
-	    if ( getBooleanOption("verbose") ) {
-		dc.put(DomainConfig.K_VERBOSE, Boolean.TRUE);
-	    }
-	    if ( getBooleanOption("debug") ) {
-		dc.put(DomainConfig.K_DEBUG, Boolean.TRUE);
-	    }
+            // add map entries for --verbose and --debug options to start-domain
+            if (getBooleanOption("verbose")) {
+                dc.put(DomainConfig.K_VERBOSE, Boolean.TRUE);
+            }
+            if (getBooleanOption("debug")) {
+                dc.put(DomainConfig.K_DEBUG, Boolean.TRUE);
+            }
 
             return dc;
 
@@ -112,64 +107,58 @@ abstract public class BaseLifeCycleCommand extends S1ASCommand
             throw new CommandException(e);
         }
     }
-    
-    protected Boolean getSaveMasterPassword(String masterPassword) 
-    {
+
+    protected Boolean getSaveMasterPassword(String masterPassword) {
         Boolean saveMasterPassword = Boolean.valueOf(getBooleanOption(SAVE_MASTER_PASSWORD));
         if (masterPassword != null && masterPassword.equals(DEFAULT_MASTER_PASSWORD)) {
             saveMasterPassword = Boolean.TRUE;
         }
         return saveMasterPassword;
     }
-        
-    
-    protected String getDomainsRoot() throws CommandException
-    {
+
+    protected String getDomainsRoot() throws CommandException {
         String domainDir = getOption(DOMAINDIR);
-        if (domainDir == null)
-        {
+        if (domainDir == null) {
             final ASenvPropertyReader envProps = new ASenvPropertyReader();
             domainDir = envProps.getProps().get(SystemPropertyConstants.DOMAINS_ROOT_PROPERTY);
         }
-        if (domainDir == null)
-        {
+        if (domainDir == null) {
             throw new CommandException(getLocalizedString("InvalidDomainPath",
-				       new String[] {domainDir}) );
+                    new String[]{domainDir}));
         }
         return domainDir;
     }
 
-    protected String getDomainName() throws CommandException
-    {
+    protected String getDomainName() throws CommandException {
 
-	String domainName = null;
-        if (operands.isEmpty())
-        {
-	    // need to also support domain option for backward compatibility
-	    if (getOption(DOMAIN)!=null) 
-		domainName = getOption(DOMAIN);
-	    else 
-	    {
-		final String[] domains = getDomains();
-		if (domains.length == 0)
-		    throw new CommandException(getLocalizedString("NoDomains", 
-								  new Object[] {
-								  getDomainsRoot()}));
-		else if (domains.length > 1)
-		    throw new CommandException(getLocalizedString("NoDefaultDomain",
-								  new Object[] {
-								  getDomainsRoot()}));
-		else
-		    domainName = domains[0];  //assign the only domain
-	    }
+        String domainName = null;
+        if (operands.isEmpty()) {
+            // need to also support domain option for backward compatibility
+            if (getOption(DOMAIN) != null) {
+                domainName = getOption(DOMAIN);
+            } else {
+                final String[] domains = getDomains();
+                if (domains.length == 0) {
+                    throw new CommandException(getLocalizedString("NoDomains",
+                            new Object[]{
+                        getDomainsRoot()
+                    }));
+                } else if (domains.length > 1) {
+                    throw new CommandException(getLocalizedString("NoDefaultDomain",
+                            new Object[]{
+                        getDomainsRoot()
+                    }));
+                } else {
+                    domainName = domains[0];
+                }  //assign the only domain
+            }
+        } else {
+            domainName = (String) operands.firstElement();
         }
-	else
-	    domainName = (String)operands.firstElement();
         CLILogger.getInstance().printDebugMessage("domainName = " + domainName);
         return domainName;
     }
-      
-       
+
     /**
      *  this methods returns the admin user.
      *  first it checks if adminuser option is specified on command line.
@@ -179,48 +168,29 @@ abstract public class BaseLifeCycleCommand extends S1ASCommand
      *  @return admin user.
      *  @throws CommandValidationException if could not get adminuser option 
      */
-    protected String getAdminUser() throws CommandValidationException
-    {
+    protected String getAdminUser() throws CommandValidationException {
         String adminUserVal = getOption(USER);
-        if (adminUserVal != null)
+        if (adminUserVal != null) {
             return adminUserVal;
-        else
-        {
-            adminUserVal = getValuesFromASADMINPREFS(USER);
-            if (adminUserVal != null) 
-            {
-                return adminUserVal;
+        } else if (getBooleanOption(INTERACTIVE)) {
+            //prompt for user
+            try {
+                InputsAndOutputs.getInstance().getUserOutput().print(
+                        getLocalizedString("AdminUserPrompt"));
+                return InputsAndOutputs.getInstance().getUserInput().getLine();
+            } catch (IOException ioe) {
+                throw new CommandValidationException(
+                        getLocalizedString("CannotReadOption",
+                        new Object[]{"ADMIN_USER"}));
             }
-                //if adminUserVal is still null then read AS_ADMIN_ADMINUSER 
-                //from .asadminprefs file
-            else
-            {
-                adminUserVal = getValuesFromASADMINPREFS(ADMIN_USER);
-                if (adminUserVal != null)  return adminUserVal;
-                    //if all else fails, thrown and exception
-                else if (getBooleanOption(INTERACTIVE))
-                { 
-                    //prompt for user
-                    try {
-                        InputsAndOutputs.getInstance().getUserOutput().print(
-                                        getLocalizedString("AdminUserPrompt"));
-                        return InputsAndOutputs.getInstance().getUserInput().getLine();
-                    }
-                    catch (IOException ioe)
-                    {
-                        throw new CommandValidationException(
-                                    getLocalizedString("CannotReadOption", 
-                                                new Object[]{"ADMIN_USER"}));
-                    }
-                } 
-                else
-                    throw new CommandValidationException(getLocalizedString(
-                                                         "OptionIsRequired",
-                                                         new Object[] {ADMIN_USER}));
-            }
+        } else {
+            throw new CommandValidationException(getLocalizedString(
+                    "OptionIsRequired",
+                    new Object[]{ADMIN_USER}));
         }
+
     }
-    
+
     /**
      *  this methods returns the master password and is used to get the master password
      *  for both create-domain and create-nodeagent commands. The password can be passed in
@@ -233,12 +203,10 @@ abstract public class BaseLifeCycleCommand extends S1ASCommand
      *  @return admin password
      *  @throws CommandValidationException if could not get adminpassword option 
      */
-    protected String getMasterPassword(boolean confirmAndValidate) 
-        throws CommandValidationException, CommandException
-    {
-           return getMasterPassword(confirmAndValidate, false);
+    protected String getMasterPassword(boolean confirmAndValidate)
+            throws CommandValidationException, CommandException {
+        return getMasterPassword(confirmAndValidate, false);
     }
-    
 
     /**
      *  this methods returns the master password and is used to get the master password
@@ -253,21 +221,20 @@ abstract public class BaseLifeCycleCommand extends S1ASCommand
      *  @return admin password
      *  @throws CommandValidationException if could not get adminpassword option 
      */
-    protected String getMasterPassword(boolean confirmAndValidate, boolean alwaysPrompt) 
-        throws CommandValidationException, CommandException
-    {           
+    protected String getMasterPassword(boolean confirmAndValidate, boolean alwaysPrompt)
+            throws CommandValidationException, CommandException {
         //getPassword(optionName, allowedOnCommandLine, readPrefsFile, readPasswordOptionFromPrefs, readMasterPasswordFile, mgr, config,
         //promptUser, confirm, validate)
         String adminPassword = getPassword(ADMIN_PASSWORD, true, false, false, false, null, null,
-            false, false, false, false);
-        
+                false, false, false, false);
+
         if (adminPassword != null && !alwaysPrompt) {
             //If we got here, then the admin password was found in the command line, password file,
             //or environment variable
             //getPassword(optionName, allowedOnCommandLine, readPrefsFile, readPasswordOptionFromPrefs, readMasterPasswordFile, mgr, config,
             //promptUser, confirm, validate)
             String masterPassword = getPassword(MASTER_PASSWORD, false, false, false, false, null, null,
-                false, false, confirmAndValidate, false);
+                    false, false, confirmAndValidate, false);
             if (masterPassword == null) {
                 //If we got here, then the master password was not found in the command line or
                 //password file, so we return the default master password rather than prompting.
@@ -275,79 +242,68 @@ abstract public class BaseLifeCycleCommand extends S1ASCommand
             } else {
                 return masterPassword;
             }
-        } 
+        }
         //If the admin user was not provided on the command line (i.e. the user was prompted), then
         //we can prompt for the master password.
         //getPassword(optionName, allowedOnCommandLine, readPrefsFile, readPasswordOptionFromPrefs, readMasterPasswordFile, mgr, config,
         //promptUser, confirm, validate)
         return getPassword(MASTER_PASSWORD, "MasterPasswordPrompt", "MasterPasswordConfirmationPrompt",
-            false, false, false, false, null, null,  
-            true, confirmAndValidate, confirmAndValidate, false);      
-    }            
-   
-    
-    
+                false, false, false, false, null, null,
+                true, confirmAndValidate, confirmAndValidate, false);
+    }
+
     protected String getMasterPassword(RepositoryManager mgr, RepositoryConfig config)
-        throws CommandValidationException, CommandException
-    {
+            throws CommandValidationException, CommandException {
         //getPassword(optionName, allowedOnCommandLine, readPrefsFile, readPasswordOptionFromPrefs, readMasterPasswordFile, config,
         //promptUser, confirm, validate)
-        return getPassword(MASTER_PASSWORD, "MasterPasswordPrompt", null, 
-            false, false, false, true, mgr, config, 
-            true, false, false, false);
+        return getPassword(MASTER_PASSWORD, "MasterPasswordPrompt", null,
+                false, false, false, true, mgr, config,
+                true, false, false, false);
     }
-    
-    protected String getNewMasterPassword() 
-        throws CommandValidationException, CommandException
-    {
-        return getPassword(NEW_MASTER_PASSWORD, 
-            "NewMasterPasswordPrompt", "NewMasterPasswordConfirmationPrompt", 
-            false, false, false, false, null, null, 
-            true, true, true, false);
+
+    protected String getNewMasterPassword()
+            throws CommandValidationException, CommandException {
+        return getPassword(NEW_MASTER_PASSWORD,
+                "NewMasterPasswordPrompt", "NewMasterPasswordConfirmationPrompt",
+                false, false, false, false, null, null,
+                true, true, true, false);
     }
-    
+
     protected HashMap getExtraPasswords(String[] optionNames)
-        throws CommandValidationException, CommandException
-    {
+            throws CommandValidationException, CommandException {
         HashMap result = new HashMap();
         String password;
         String optionName;
-        for (int i = 0; i < optionNames.length; i++) {            
-            optionName = optionNames[i];            
+        for (int i = 0; i < optionNames.length; i++) {
+            optionName = optionNames[i];
             //Add the new option as a non-deprecated option, so a message will not be displayed.            
             NOT_DEPRECATED_PASSWORDFILE_OPTIONS += "|" + optionName;
             //getPassword(optionName, allowedOnCommandLine, readPrefsFile, readPasswordOptionFromPrefs, readMasterPasswordFile, config,
             //promptUser, confirm, validate)
-            password = getPassword(optionName, "ExtraPasswordPrompt", null, false, false, false, false, null, null, 
-                true, false, false, false);
+            password = getPassword(optionName, "ExtraPasswordPrompt", null, false, false, false, false, null, null,
+                    true, false, false, false);
             result.put(optionName, password);
         }
         return result;
     }
-   
-    protected String[] getDomains() throws CommandException
-    {
-        try
-        {
+
+    protected String[] getDomains() throws CommandException {
+        try {
             DomainsManager mgr = new PEDomainsManager();
-            return mgr.listDomains(getDomainConfig(null));            
-        }
-        catch(Exception e)
-        { 
+            return mgr.listDomains(getDomainConfig(null));
+        } catch (Exception e) {
             throw new CommandException(e.getLocalizedMessage());
-        }                
-    }       
-   
-    protected boolean isWindows()
-    {
+        }
+    }
+
+    protected boolean isWindows() {
         final String osname = System.getProperty("os.name").toLowerCase();
         CLILogger.getInstance().printDebugMessage("osname = " + osname);
         return osname.indexOf("windows") != -1;
-    }       
-   
-    protected boolean isSpaceInPath(String path)
-    {
+    }
+
+    protected boolean isSpaceInPath(String path) {
         return path.indexOf(' ') != -1;
-    }       
+    }
 }
 
