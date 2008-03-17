@@ -65,9 +65,9 @@
 	</sun:head>
 
 		<sun:body onLoad="javascript: 
-                     disableComponent('form:title:sheet1:section1:prop1:dirPath', 'text');
-                     setVisible('#{appType}');
-                     synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')
+                      disableComponent('form:title:sheet1:section1:prop1:dirPath', 'text');
+                      setVisible('#{appType}');
+                   synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')
                 if(getSelectedValue('uploadRdBtn')=='serverSide'){ 
                         enableComponent('#{dirPathId}', 'text'); 
                         enableBtnComponent('#{dirSelectBtnId}'); 
