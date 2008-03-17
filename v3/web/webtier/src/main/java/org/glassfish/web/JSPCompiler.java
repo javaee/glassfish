@@ -56,6 +56,7 @@ import java.io.*;
 import java.util.*;
 import java.util.logging.*;
 import org.apache.jasper.JspC;
+import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
@@ -106,8 +107,17 @@ public final class JSPCompiler {
         
         // START SJSAS 6311155
         String appName = wbd.getApplication().getName();
+        boolean delegate = true;
+        com.sun.enterprise.deployment.runtime.web.ClassLoader clBean =
+                wbd.getSunDescriptor().getClassLoader();
+        if (clBean != null) {
+            String value = clBean.getAttributeValue(
+                    com.sun.enterprise.deployment.runtime.web.ClassLoader.DELEGATE);
+            delegate = ConfigBeansUtilities.toBoolean(value);
+        }
+
         String sysClassPath = ASClassLoaderUtil.getWebModuleClassPath(
-            serverContext.getDefaultHabitat(), appName);
+            serverContext.getDefaultHabitat(), appName, delegate);
         jspc.setSystemClassPath(sysClassPath);
         // END SJSAS 6311155
 
