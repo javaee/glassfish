@@ -33,67 +33,43 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.admin.amx.util;
+package org.glassfish.admin.amx.j2ee;
+ 
+import java.util.Map;
+import com.sun.appserv.management.util.misc.CollectionUtil;
+import javax.management.ObjectName;
 
-import java.util.Set;
-import java.util.HashSet;
-import java.util.Collections;
+import com.sun.appserv.management.j2ee.ResourceAdapterModule;
 
+import com.sun.appserv.management.j2ee.J2EETypes;
+
+
+import org.glassfish.admin.amx.mbean.Delegate;
 /**
  */
-public final class Issues
+public final class ResourceAdapterModuleImpl
+	extends J2EEModuleImplBase 
 {
-    private final Set<String> mIssues = Collections.synchronizedSet( new HashSet<String>() );
-    
-    private Issues()
-    {
-        // disallow instantiation
-    }
-    
-    private static final Issues AMX_ISSUES = new Issues();
-    
-    public static Issues getAMXIssues() { return AMX_ISSUES; }
-    
-        public void
-    notDone( final String description )
-    {
-        final boolean wasMissing = mIssues.add( description );
-        if ( wasMissing )
-        {
-            System.out.println( "NOT DONE: " + description );
-        }
-    }
+        public
+	ResourceAdapterModuleImpl(
+        final String fullType,
+        final ObjectName parentObjectName,
+        final Delegate delegate )
+	{
+		super( J2EETypes.RESOURCE_ADAPTER_MODULE, fullType, parentObjectName, ResourceAdapterModule.class, delegate );
+	}
+	
+		public String[]
+	getresourceAdapters()
+	{
+		return( CollectionUtil.toStringArray( 
+			getResourceAdapterObjectNameMap().values() ) );
+	}
+	
+		public Map<String,ObjectName>
+	getResourceAdapterObjectNameMap()
+	{
+		return getContaineeObjectNameMap( J2EETypes.RESOURCE_ADAPTER );
+	}
+		
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

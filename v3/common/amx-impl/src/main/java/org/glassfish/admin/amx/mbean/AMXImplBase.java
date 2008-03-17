@@ -2405,8 +2405,8 @@ public class AMXImplBase extends MBeanImplBase
         return getContainerSupport().getMultiContaineeObjectNameMap( j2eeTypes );
     }
 	
-        public <T extends AMX> Map<String,ObjectName>
-    getContaineeMap( final String j2eeType )
+        public Map<String,ObjectName>
+    getContaineeObjectNameMap( final String j2eeType )
     {
         return getContainerSupport().getContaineeObjectNameMap( j2eeType );
     }

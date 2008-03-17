@@ -33,67 +33,66 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.admin.amx.util;
-
+package org.glassfish.admin.amx.j2ee;
+ 
 import java.util.Set;
-import java.util.HashSet;
-import java.util.Collections;
+
+import javax.management.ObjectName;
+
+import com.sun.appserv.management.j2ee.J2EEApplication;
+import com.sun.appserv.management.j2ee.J2EETypes;
+
+import com.sun.appserv.management.base.XTypes;
+
+import com.sun.appserv.management.util.misc.GSetUtil;
+
+import org.glassfish.admin.amx.mbean.Delegate;
 
 /**
  */
-public final class Issues
+public final class J2EEApplicationImpl
+	extends J2EEDeployedObjectImplBase
 {
-    private final Set<String> mIssues = Collections.synchronizedSet( new HashSet<String>() );
-    
-    private Issues()
-    {
-        // disallow instantiation
-    }
-    
-    private static final Issues AMX_ISSUES = new Issues();
-    
-    public static Issues getAMXIssues() { return AMX_ISSUES; }
-    
-        public void
-    notDone( final String description )
-    {
-        final boolean wasMissing = mIssues.add( description );
-        if ( wasMissing )
-        {
-            System.out.println( "NOT DONE: " + description );
-        }
-    }
+		public
+	J2EEApplicationImpl(
+        final String fullType,
+        final ObjectName parentObjectName,
+        final Delegate delegate )
+	{
+		super( J2EEApplication.J2EE_TYPE, fullType, parentObjectName, J2EEApplication.class, delegate );
+	}
+	
+	
+	private static final Set<String> MODULE_TYPES	= GSetUtil.newUnmodifiableStringSet(
+		J2EETypes.WEB_MODULE,
+		J2EETypes.EJB_MODULE,
+		J2EETypes.APP_CLIENT_MODULE,
+		J2EETypes.RESOURCE_ADAPTER_MODULE );
+	
+		public String[]
+	getmodules()
+	{
+		return( GSetUtil.toStringArray( getModuleObjectNameSet() ) );
+	}
+	
+		public Set
+	getModuleObjectNameSet()
+	{
+		return( getContaineeObjectNameSet( MODULE_TYPES ) );
+	}
+
+	/** jsr77 StateManageable impl. */
+
+		public boolean
+	isstateManageable()
+	{
+		return true;
+	}
+	
+	
+		protected String
+	getMonitoringPeerJ2EEType()
+	{
+		return( XTypes.APPLICATION_MONITOR );
+	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -33,66 +33,99 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.admin.amx.util;
+package org.glassfish.admin.amx.j2ee;
 
 import java.util.Set;
-import java.util.HashSet;
 import java.util.Collections;
+
+
+import javax.management.ObjectName;
+import javax.management.AttributeNotFoundException;
+
+
+import com.sun.appserv.management.j2ee.J2EEDeployedObject;
+import com.sun.appserv.management.j2ee.StateManageable;
+
+import com.sun.appserv.management.util.misc.GSetUtil;
+import org.glassfish.admin.amx.mbean.Delegate;
 
 /**
  */
-public final class Issues
+public class J2EEDeployedObjectImplBase extends J2EEManagedObjectImplBase
+	// implements J2EEDeployedObject
 {
-    private final Set<String> mIssues = Collections.synchronizedSet( new HashSet<String>() );
-    
-    private Issues()
-    {
-        // disallow instantiation
-    }
-    
-    private static final Issues AMX_ISSUES = new Issues();
-    
-    public static Issues getAMXIssues() { return AMX_ISSUES; }
-    
-        public void
-    notDone( final String description )
-    {
-        final boolean wasMissing = mIssues.add( description );
-        if ( wasMissing )
-        {
-            System.out.println( "NOT DONE: " + description );
-        }
-    }
+		public
+	J2EEDeployedObjectImplBase(
+        final String j2eeType,
+        final String fullType,
+        final ObjectName parentObjectName,
+        final Class<? extends J2EEDeployedObject> theInterface,
+        final Delegate delegate )
+	{
+		super( j2eeType, fullType, parentObjectName, theInterface, delegate );
+	}
+    	
+		public String
+	getdeploymentDescriptor()
+	{
+		return( (String)delegateGetAttributeNoThrow( "deploymentDescriptor" ) );
+	}
+	
+		public String
+	getserver()
+	{
+		return( getServerObjectName().toString() );
+	}
+	
+	private final static Set<String>	DONT_MAP_SET =
+	    GSetUtil.newUnmodifiableStringSet("deploymentDescriptor", "server" );
+	
+		protected Set<String>
+	getDontMapAttributeNames()
+	{
+		return( Collections.unmodifiableSet(
+		    GSetUtil.newSet( DONT_MAP_SET, super.getDontMapAttributeNames() ) ));
+	}
+	
+	/** jsr77 StateManageable impl. */
+
+		public boolean
+	isstateManageable()
+	{
+		return( false );
+	}
+
+		public void	
+	start()
+	{
+		checkstateManageable();
+		getDelegate().invoke( "start", null, null );
+		setstartTime( System.currentTimeMillis() );
+	}
+
+		public void	
+	startRecursive()
+	{
+ 		start();
+	}
+
+		public void	
+	stop()
+	{
+		checkstateManageable();
+		getDelegate().invoke( "stop", null, null );
+		setstartTime( 0 );
+	}
+
+		private void
+	checkstateManageable()
+	{
+		if ( !isstateManageable() )
+		{
+			throw new UnsupportedOperationException( "stateManageable is false" );
+		}
+	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

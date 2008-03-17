@@ -33,67 +33,29 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.admin.amx.util;
+package org.glassfish.admin.amx.j2ee;
+ 
+import javax.management.ObjectName;
 
-import java.util.Set;
-import java.util.HashSet;
-import java.util.Collections;
+import com.sun.appserv.management.j2ee.ResourceAdapter;
+
+
+import org.glassfish.admin.amx.mbean.Delegate;
 
 /**
  */
-public final class Issues
+public final class ResourceAdapterImpl
+	extends J2EEManagedObjectImplBase
 {
-    private final Set<String> mIssues = Collections.synchronizedSet( new HashSet<String>() );
-    
-    private Issues()
-    {
-        // disallow instantiation
-    }
-    
-    private static final Issues AMX_ISSUES = new Issues();
-    
-    public static Issues getAMXIssues() { return AMX_ISSUES; }
-    
-        public void
-    notDone( final String description )
-    {
-        final boolean wasMissing = mIssues.add( description );
-        if ( wasMissing )
-        {
-            System.out.println( "NOT DONE: " + description );
-        }
-    }
+        public
+	ResourceAdapterImpl(
+        final String fullType,
+        final ObjectName parentObjectName,
+        final Delegate delegate )
+	{
+		super( ResourceAdapter.J2EE_TYPE, fullType, parentObjectName, ResourceAdapter.class, delegate );
+	}
+
+	
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

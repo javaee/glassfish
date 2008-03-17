@@ -33,67 +33,60 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.admin.amx.util;
+package org.glassfish.admin.amx.j2ee;
 
 import java.util.Set;
-import java.util.HashSet;
+import java.util.Map;
 import java.util.Collections;
+
+import javax.management.ObjectName;
+
+import com.sun.appserv.management.j2ee.EJBModule;
+import com.sun.appserv.management.j2ee.J2EETypes;
+import com.sun.appserv.management.base.XTypes;
+import com.sun.appserv.management.base.Util;
+
+import com.sun.appserv.management.util.misc.GSetUtil;
+
+import org.glassfish.admin.amx.mbean.Delegate;
 
 /**
  */
-public final class Issues
+public final class EJBModuleImpl extends J2EEModuleImplBase 
 {
-    private final Set<String> mIssues = Collections.synchronizedSet( new HashSet<String>() );
+		public
+	EJBModuleImpl(
+        final String fullType,
+        final ObjectName parentObjectName,
+        final Delegate delegate )
+	{
+		super( J2EETypes.EJB_MODULE, fullType, parentObjectName, EJBModule.class, delegate );
+	}
     
-    private Issues()
-    {
-        // disallow instantiation
-    }
-    
-    private static final Issues AMX_ISSUES = new Issues();
-    
-    public static Issues getAMXIssues() { return AMX_ISSUES; }
-    
-        public void
-    notDone( final String description )
-    {
-        final boolean wasMissing = mIssues.add( description );
-        if ( wasMissing )
-        {
-            System.out.println( "NOT DONE: " + description );
-        }
-    }
+	
+	private static final Set<String> EJB_TYPES	=
+	    GSetUtil.newUnmodifiableStringSet(
+		J2EETypes.ENTITY_BEAN,
+		J2EETypes.STATELESS_SESSION_BEAN,
+		J2EETypes.STATEFUL_SESSION_BEAN,
+		J2EETypes.MESSAGE_DRIVEN_BEAN );
+	
+		public String[]
+	getejbs()
+	{
+		return( GSetUtil.toStringArray( getEJBObjectNameSet() ) );
+	}
+	
+		protected String
+	getMonitoringPeerJ2EEType()
+	{
+		return( XTypes.EJB_MODULE_MONITOR );
+	}
+
+	
+		public Set<ObjectName>
+	getEJBObjectNameSet()
+	{
+		return( getContaineeObjectNameSet( EJB_TYPES ) );
+	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -33,67 +33,90 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.admin.amx.util;
+package org.glassfish.admin.amx.j2ee;
 
 import java.util.Set;
-import java.util.HashSet;
-import java.util.Collections;
+
+import javax.management.ObjectName;
+import javax.management.AttributeNotFoundException;
+
+import com.sun.appserv.management.j2ee.J2EEModule;
+import com.sun.appserv.management.j2ee.J2EEServer;
+
+
+import com.sun.appserv.management.base.Util;
+
+
+import com.sun.appserv.management.util.jmx.JMXUtil;
+import com.sun.appserv.management.util.misc.GSetUtil;
+
+import com.sun.appserv.management.j2ee.J2EETypes;
+
+import org.glassfish.admin.amx.mbean.Delegate;
 
 /**
  */
-public final class Issues
+public class J2EEModuleImplBase extends J2EEDeployedObjectImplBase
 {
-    private final Set<String> mIssues = Collections.synchronizedSet( new HashSet<String>() );
-    
-    private Issues()
-    {
-        // disallow instantiation
-    }
-    
-    private static final Issues AMX_ISSUES = new Issues();
-    
-    public static Issues getAMXIssues() { return AMX_ISSUES; }
-    
-        public void
-    notDone( final String description )
-    {
-        final boolean wasMissing = mIssues.add( description );
-        if ( wasMissing )
-        {
-            System.out.println( "NOT DONE: " + description );
-        }
-    }
+		public
+	J2EEModuleImplBase(
+        final String j2eeType,
+        final String fullType,
+        final ObjectName parentObjectName,
+        final Class<? extends J2EEModule> theInterface,
+        final Delegate delegate )
+	{
+		super( j2eeType, fullType, parentObjectName, theInterface, delegate );
+	}
+	
+	private static final Set<String> NOT_SUPERFLUOUS =
+	    GSetUtil.newUnmodifiableStringSet(
+	        "getJVMObjectName"
+            );
+        protected Set<String>
+	getNotSuperfluousMethods()
+	{
+	    return NOT_SUPERFLUOUS;
+	}
+	
+	
+		protected boolean
+	isStandalone()
+	{
+		// caution--could be called when ObjectName is not yet set
+		return getObjectName() != null &&
+			getKeyProperty( J2EETypes.J2EE_APPLICATION ).equals( NULL_NAME );
+	}
+	
+		public boolean
+	isConfigProvider()
+	{
+		return( super.isConfigProvider() && getObjectName() != null && isStandalone() );
+	}
+	
+		public String[]
+	getjavaVMs()
+	{
+		return( getJ2EEServer().getjavaVMs() );
+	}
+	
+		public ObjectName
+	getJVMObjectName()
+	{
+		return Util.getObjectName( getJ2EEServer().getJVM() );
+	}
+
+	/** jsr77 StateManageable impl. */
+
+		public boolean
+	isstateManageable()
+	{
+		return isStandAlone();
+	}
+
+		private boolean
+	isStandAlone()
+	{
+		return !getContainer().getJ2EEType().equals( J2EETypes.J2EE_APPLICATION );
+	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

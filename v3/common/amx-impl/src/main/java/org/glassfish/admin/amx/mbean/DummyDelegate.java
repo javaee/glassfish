@@ -33,67 +33,68 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.admin.amx.util;
+package org.glassfish.admin.amx.mbean;
 
-import java.util.Set;
-import java.util.HashSet;
-import java.util.Collections;
+import java.util.Map;
+
+import javax.management.MBeanInfo;
+import javax.management.AttributeList;
+import javax.management.Attribute;
+import javax.management.AttributeNotFoundException;
 
 /**
+	Delegate which delegates to another MBean.
+	This is a dummy delegate which is used when the
+	remote server instance is yet to be started.
+		
  */
-public final class Issues
+public final class DummyDelegate extends DelegateBase
 {
-    private final Set<String> mIssues = Collections.synchronizedSet( new HashSet<String>() );
+		private
+	DummyDelegate()
+	{
+	    super( "DummyDelegate" );
+	}
     
-    private Issues()
+		public synchronized DummyDelegate
+	getInstance()
+	{
+		if ( INSTANCE == null )
+		{
+			INSTANCE = new DummyDelegate();
+		}
+		return( INSTANCE );
+	}
+
+	static public DummyDelegate INSTANCE = null;
+	
+		public Object
+	getAttribute( final String attrName )
+		throws AttributeNotFoundException
+	{
+		return null;
+	}
+	
+        public AttributeList
+    setAttributes( final AttributeList attrs, final Map<String,Object> oldValues)
     {
-        // disallow instantiation
+        return new AttributeList();
     }
-    
-    private static final Issues AMX_ISSUES = new Issues();
-    
-    public static Issues getAMXIssues() { return AMX_ISSUES; }
-    
-        public void
-    notDone( final String description )
-    {
-        final boolean wasMissing = mIssues.add( description );
-        if ( wasMissing )
-        {
-            System.out.println( "NOT DONE: " + description );
-        }
-    }
+
+		public MBeanInfo
+	getMBeanInfo()
+	{
+		return null;
+	}
+
+	/**
+	 */
+		public final Object
+	invoke(
+		String 		operationName,
+		Object[]	args,
+		String[]	types )
+	{
+		return null;
+	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

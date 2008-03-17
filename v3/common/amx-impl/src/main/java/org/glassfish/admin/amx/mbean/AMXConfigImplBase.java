@@ -84,6 +84,8 @@ import com.sun.appserv.management.helper.RefHelper;
 
 import org.glassfish.admin.amx.util.Issues;
 
+import org.jvnet.hk2.config.ConfigBean;
+
 /**
 	Base class from which all AMX Config MBeans should derive (but not "must").
 	<p>
@@ -259,6 +261,12 @@ public class AMXConfigImplBase extends AMXImplBase
 			throw new IllegalArgumentException( "null" );
 		}
     }
+    
+        private final DelegateToConfigBeanDelegate
+    getConfigDelegate()
+    {
+        return DelegateToConfigBeanDelegate.class.cast( getDelegate() );
+    }
 
 
 //========================================================================================
@@ -318,6 +326,11 @@ public class AMXConfigImplBase extends AMXImplBase
 	createProperty( final String propertyName, final String propertyValue )
 	{
 		validateNameValue( propertyName, propertyValue );
+        
+        final ConfigBean child = getConfigDelegate().createChild( XTypes.PROPERTY_CONFIG, propertyName, propertyValue );
+        
+        System.out.println( "ConfigBean has ObjectName: " + child.getObjectName() );
+        
         throw new UnsupportedOperationException( "Can't (yet) create new properties" );
 	}
 	
