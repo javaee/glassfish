@@ -10,7 +10,7 @@
         value="#{requestScope.chart1}">
     <!beforeCreate
         <!-- Set default pie chart, and random data -->
-        setAttribute(key="chart1", value="jmaki.charting.yahoo.pie");
+        setAttribute(key="chart1", value="jmaki.charting.plotkit.pie");
         getjMakiValues(values=>$attribute{pievalues});
     />
 </sun:dropDown>
@@ -31,7 +31,7 @@
         value="#{requestScope.chart2}">
     <!beforeCreate
         <!-- Set default chart type and random data -->
-        setAttribute(key="chart2", value="jmaki.charting.yahoo.bar");
+        setAttribute(key="chart2", value="jmaki.charting.dojo.area");
         getjMakiValues(values=>$attribute{gryvalues});
         getjMakiValues(values=>$attribute{bluvalues});
         getjMakiValues(values=>$attribute{pnkvalues});
@@ -41,7 +41,7 @@
 
 <sun:markup tag="div" style="width:380px; height: 310px;">
 <jmaki:widget name="#{requestScope.chart1}"
-    args="{colorScheme:2}"
+    args="{colorScheme:0}"
     value="{
         xAxis : {
             title : 'Months',
