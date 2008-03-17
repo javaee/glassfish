@@ -41,6 +41,7 @@ import org.osgi.framework.*;
 import org.osgi.service.packageadmin.PackageAdmin;
 import static org.jvnet.hk2.osgiadapter.Logger.logger;
 import com.sun.enterprise.module.*;
+import com.sun.enterprise.module.impl.ClassLoaderProxy;
 import com.sun.hk2.component.InhabitantsParser;
 
 import java.io.IOException;
