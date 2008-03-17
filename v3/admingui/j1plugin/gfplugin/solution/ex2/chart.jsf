@@ -1,42 +1,13 @@
 <sun:page>
-    <!beforeCreate
-        getjMakiValues(values=>$attribute{pievalues});
-        getjMakiValues(values=>$attribute{gryvalues});
-        getjMakiValues(values=>$attribute{bluvalues});
-        getjMakiValues(values=>$attribute{pnkvalues});
-        getjMakiValues(values=>$attribute{redvalues});
-    />
-    <sun:html>
-    <sun:markup tag="head">
-        <sun:link url="/theme/com/sun/webui/jsf/suntheme/css/css_master.css" />
-        <sun:markup tag="title">
-            <staticText value="jMaki Charting!" />
-        </sun:markup>
-        <sun:script url="/resources/jmaki.js" />
-        <sun:script url="/theme/META-INF/dojo/dojo.js" />
-        <sun:script url="/theme/META-INF/json/json.js" />
-        <sun:script url="/theme/META-INF/prototype/prototype.js" />
-        <sun:script url="/theme/META-INF/com_sun_faces_ajax.js" />
-    </sun:markup>
+<sun:html>
+    <sun:head title="chart" />
+    <sun:body>
+	<sun:form id="form">
 
-<sun:markup tag="body">
-
-<sun:form id="form">
-
-
+<!-- Pie Chart -->
 <sun:markup tag="div" style="width:380px; height: 310px;">
-
-<sun:dropDown labels={"jmaki.charting.yahoo.pie"
-        "jmaki.charting.google.pie"
-        "jmaki.charting.plotkit.pie"}
-        value="#{requestScope.chart1}">
-    <!beforeCreate
-    setAttribute(key="chart1", value="jmaki.charting.google.pie");
-    />
-</sun:dropDown>
-<sun:button value=" Refresh " />
-<jmaki:widget name="#{requestScope.chart1}"
-    args="{colorScheme:2}"
+<jmaki:widget name="jmaki.charting.plotkit.pie"
+    args="{colorScheme:4}"
     value="{
     xAxis : {
         title : 'Months',
@@ -52,74 +23,45 @@
         {label : 'September'},
         {label : 'October'},
         {label : 'November'},
-        {label : 'December'} ]
-        },
+        {label : 'December'} ] },
     data : [ {
         label : 'Set 1',
-        values : $attribute{pievalues}
-        } ] }"/>
-
+        values : [25, 45, 25, 45, 50, 25, 35, 25, 25, 20, 35, 45]
+        } ] }" />
 </sun:markup>
 
-<sun:dropDown labels={"jmaki.charting.plotkit.area"
-        "jmaki.charting.plotkit.line"
-        "jmaki.charting.plotkit.bar"
-        "jmaki.charting.google.area"
-        "jmaki.charting.google.bar"
-        "jmaki.charting.google.line"
-        "jmaki.charting.yahoo.line"
-        "jmaki.charting.yahoo.bar"
-        "jmaki.charting.dojo.bar"
-        "jmaki.charting.dojo.line"
-        "jmaki.charting.dojo.area"}
-        value="#{requestScope.chart2}">
-    <!beforeCreate
-    setAttribute(key="chart2", value="jmaki.charting.yahoo.bar");
-    />
-</sun:dropDown>
-<sun:button value=" Refresh " />
+<!-- Area Chart -->
 <sun:markup tag="div" style="width: 500px; height: 280px;">
-
-//  Uncomment the one at a time to try
-<jmaki:widget name="#{requestScope.chart2}"
-        value="{
-            xAxis : {
-                title : 'Months',
-                labels : [{ label : 'January'},
-                    { label : 'February'},
-                    { label : 'March'},
-                    { label : 'April'},
-                    { label : 'May'},
-                    { label : 'June'},
-                    { label : 'July'},
-                    { label : 'August'},
-                    { label : 'September'},
-                    { label : 'October'},
-                    { label : 'November'},
-                    { label : 'December'}
-                    ]
-                    },
-            yAxis : {
-                title : 'Temperature',
-                labels : [{ label : '0', value : 0},
-                    { label : '10s', value : 10},
-                    { label : '20s', value : 20},
-                    { label : '30s', value : 30},
-                    { label : '40s', value : 40},
-                    { label : '50s', value : 50}
-                    ]
-                    },                              
-            data : [
-                    {label : 'Gray Series', values : $attribute{gryvalues} },
-                    {label : 'Pink Series', values : $attribute{pnkvalues} },
-                    {label : 'Blue Series', values : $attribute{bluvalues} },                   
-                    {label : 'Red Series',  values : $attribute{redvalues} }
-                    ]
-                    }"/>
-        </sun:markup>
-        </sun:form>
-        </sun:markup>
-        </sun:html>
+<jmaki:widget name="jmaki.charting.dojo.area"
+    value="{
+	xAxis : {
+	    title : 'Months',
+	    labels : [{ label : 'January'},
+		{ label : 'February'},
+		{ label : 'March'},
+		{ label : 'April'},
+		{ label : 'May'},
+		{ label : 'June'},
+		{ label : 'July'},
+		{ label : 'August'},
+		{ label : 'September'},
+		{ label : 'October'},
+		{ label : 'November'},
+		{ label : 'December'} ] },
+	yAxis : {
+	    title : 'Temperature',
+	    labels : [{ label : '0', value : 0},
+		{ label : '10s', value : 10},
+		{ label : '20s', value : 20},
+		{ label : '30s', value : 30},
+		{ label : '40s', value : 40},
+		{ label : '50s', value : 50} ] },                              
+	data : [{label : 'Gray Series', values : [65, 45, 15, 45, 50, 25, 3, 25, 35, 27, 35, 39] },
+		{label : 'Pink Series', values : [25, 45, 50, 5, 45, 35, 25, 35, 25, 29, 27, 25] },
+		{label : 'Blue Series', values : [45, 50, 25, 35, 2, 45, 45, 55, 45, 47, 31, 41] },                   
+		{label : 'Red Series',  values : [20, 12, 4, 7, 5, 19, 35, 11, 20, 30, 15, 7] } ] }"/>
+</sun:markup>
+	</sun:form>
+    </sun:body>
+</sun:html>
 </sun:page>
-
-
