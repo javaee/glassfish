@@ -41,12 +41,6 @@ import java.lang.management.ManagementFactory;
 import org.jvnet.hk2.annotations.Extract;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.annotations.FactoryFor;
-
-import org.jvnet.hk2.component.PostConstruct;
-import org.jvnet.hk2.component.PreDestroy;
-import org.jvnet.hk2.component.Singleton;
-import org.jvnet.hk2.component.Factory;
 
 import org.glassfish.api.Startup;
 import org.glassfish.api.Async;
@@ -75,11 +69,9 @@ public final class AppserverMBeanServerFactory implements Startup
     @Extract(name=OFFICIAL_MBEANSERVER)
     private MBeanServer officialMBeanServer;
     
-    public void AppserverMBeanServerFactory()
+    public AppserverMBeanServerFactory()
     {
-        final long start = System.currentTimeMillis();
         officialMBeanServer = ManagementFactory.getPlatformMBeanServer();
-        //System.out.println( "AppserverMBeanServerFactory initialized in " + (System.currentTimeMillis() - start) + " ms" );
     }
     
     public Startup.Lifecycle getLifecycle() {
