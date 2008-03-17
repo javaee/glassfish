@@ -1,23 +1,23 @@
 /*
- * The contents of this file are subject to the terms 
- * of the Common Development and Distribution License 
+ * The contents of this file are subject to the terms
+ * of the Common Development and Distribution License
  * (the License).  You may not use this file except in
  * compliance with the License.
- * 
- * You can obtain a copy of the license at 
+ *
+ * You can obtain a copy of the license at
  * https://glassfish.dev.java.net/public/CDDLv1.0.html or
  * glassfish/bootstrap/legal/CDDLv1.0.txt.
- * See the License for the specific language governing 
+ * See the License for the specific language governing
  * permissions and limitations under the License.
- * 
- * When distributing Covered Code, include this CDDL 
- * Header Notice in each file and include the License file 
- * at glassfish/bootstrap/legal/CDDLv1.0.txt.  
- * If applicable, add the following below the CDDL Header, 
+ *
+ * When distributing Covered Code, include this CDDL
+ * Header Notice in each file and include the License file
+ * at glassfish/bootstrap/legal/CDDLv1.0.txt.
+ * If applicable, add the following below the CDDL Header,
  * with the fields enclosed by brackets [] replaced by
- * you own identifying information: 
+ * you own identifying information:
  * "Portions Copyrighted [year] [name of copyright owner]"
- * 
+ *
  * Copyright 2006 Sun Microsystems, Inc. All rights reserved.
  */
 package com.sun.enterprise.v3.services.impl;
@@ -76,7 +76,7 @@ import java.util.logging.Logger;
 @Async
 public class ApplicationLoaderService extends ApplicationLifecycle
         implements Startup, PreDestroy, PostConstruct {
-    
+
     @Inject
     GrizzlyService adapter;
 
@@ -96,25 +96,25 @@ public class ApplicationLoaderService extends ApplicationLifecycle
     Server server;
 
     /**
-     * Retuns the lifecyle of the service. 
+     * Retuns the lifecyle of the service.
      * Once the applications are loaded, this service does not need to remain
      * available
      */
     public Startup.Lifecycle getLifecycle() {
         return Startup.Lifecycle.SERVER;
     }
-    
+
     /**
      * Starts the application loader service.
-     * 
+     *
      * Look at the list of applications installed in our local repository
-     * Get a Deployer capable for each application found 
+     * Get a Deployer capable for each application found
      * Invoke the deployer load() method for each application.
      */
     public void postConstruct() {
-        
+
         assert env!=null;
-        
+
         for (Module module : applications.getModules()) {
             if (module instanceof Application) {
                 for (ApplicationRef appRef : server.getApplicationRef()) {
@@ -183,9 +183,9 @@ public class ApplicationLoaderService extends ApplicationLifecycle
                 }
             }
         }
-        
+
     }
-    
+
 
     private void processApplication(Application app, final Logger logger) {
 
@@ -216,7 +216,7 @@ public class ApplicationLoaderService extends ApplicationLifecycle
                 try {
 
                     archive = archiveFactory.openArchive(sourceFile);
-                    Properties deploymentParams = 
+                    Properties deploymentParams =
                         populateDeployParamsFromDomainXML(app);
 
                     DeploymentContextImpl depContext = new DeploymentContextImpl(
@@ -236,7 +236,7 @@ public class ApplicationLoaderService extends ApplicationLifecycle
                         if (sniffer!=null) {
                             sniffers.add(sniffer);
                         } else {
-                            logger.severe("Cannot find sniffer for module type : " + snifferType);        
+                            logger.severe("Cannot find sniffer for module type : " + snifferType);
                         }
                     }
                     if (sniffers.isEmpty()) {
@@ -263,9 +263,9 @@ public class ApplicationLoaderService extends ApplicationLifecycle
                 logger.log(Level.SEVERE, "IOException while opening deployed artifact", e);
 
             }
-            
+
         } else {
-            logger.severe("Application previously deployed is not at its original location any more : " + source);            
+            logger.severe("Application previously deployed is not at its original location any more : " + source);
         }
     }
 
@@ -275,6 +275,14 @@ public class ApplicationLoaderService extends ApplicationLifecycle
         assert deployer!=null;
 
         return new Deployer<T,U>() {
+            /**
+             * Loads the meta date associated with the application.
+             *
+             * @parameters type type of metadata that this deployer has declared providing.
+             */
+            public <V> V loadMetaData(Class<V> type, DeploymentContext context) {
+                return deployer.loadMetaData(type, context);
+            }
 
             /**
              * Prepares the application bits for running in the application server.
@@ -332,11 +340,11 @@ public class ApplicationLoaderService extends ApplicationLifecycle
         };
     }
 
-    
+
     public String toString() {
         return "Application Loader";
     }
-       
+
     /**
      * Stopped all loaded applications
      */

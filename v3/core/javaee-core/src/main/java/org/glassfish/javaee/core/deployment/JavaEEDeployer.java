@@ -58,6 +58,7 @@ import java.io.IOException;
 import java.util.Properties;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.logging.Level;
 import java.util.jar.Manifest;
 import java.util.jar.JarFile;
 import java.util.jar.Attributes;
@@ -77,7 +78,7 @@ public abstract class JavaEEDeployer<T extends Container, U extends ApplicationC
 
     @Inject
     protected ArchivistFactory archivistFactory;
-                                      
+
     @Inject
     protected ApplicationFactory applicationFactory;
 
@@ -149,10 +150,24 @@ public abstract class JavaEEDeployer<T extends Container, U extends ApplicationC
         return sb.toString();
     }
 
+    /**
+     * Loads the meta date associated with the application.
+     *
+     * @param type type of metadata that this deployer has declared providing.
+     * @param dc deployment context
+     */
+    public <V> V loadMetaData(Class<V> type, DeploymentContext dc) {
+        try {
+            return (V) parseModuleMetaData(dc);
+        } catch (Exception e) {
+            dc.getLogger().log(Level.SEVERE, e.getMessage(), e);
+            throw new RuntimeException(e.getMessage(), e);
+        }
+    }
 
     /**
      * Prepares the application bits for running in the application server.
-     * For certain cases, this is generating non portable 
+     * For certain cases, this is generating non portable
      * artifacts and other application specific tasks.
      * Failure to prepare should throw an exception which will cause the overall
      * deployment to fail.
@@ -171,7 +186,7 @@ public abstract class JavaEEDeployer<T extends Container, U extends ApplicationC
             }
             String objectType = getObjectType(dc);
             if (objectType != null) {
-                dc.getProps().setProperty(ServerTags.OBJECT_TYPE, 
+                dc.getProps().setProperty(ServerTags.OBJECT_TYPE,
                     objectType);
             }
 
@@ -192,11 +207,6 @@ public abstract class JavaEEDeployer<T extends Container, U extends ApplicationC
     protected Application parseModuleMetaData(DeploymentContext dc)
         throws Exception {
 
-        Application application = dc.getModuleMetaData(Application.class);
-        if (application!=null) {
-            return application;
-        }
-
         ReadableArchive sourceArchive = dc.getSource();
         ClassLoader cl = dc.getClassLoader();
         Properties props = dc.getCommandParameters();
@@ -211,12 +221,11 @@ public abstract class JavaEEDeployer<T extends Container, U extends ApplicationC
         archivist.setDefaultBundleDescriptor(
                 getDefaultBundleDescriptor());
 
-        application = applicationFactory.openArchive(
+        Application application = applicationFactory.openArchive(
                 name, archivist, sourceArchive, true);
 
         if (application!=null) {
             archivist.validate(cl);
-            dc.addModuleMetaData(application);
         }
 
         // this may not be the best location for this but it will suffice.

@@ -53,6 +53,14 @@ public class JPADeployer extends SimpleDeployer<JPAContainer, DummyApplication> 
         return "JPA-MODULE";
     }
 
+    /**
+     * Loads the meta date associated with the application.
+     *
+     * @parameters type type of metadata that this deployer has declared providing.
+     */
+    public <V> V loadMetaData(Class<V> type, DeploymentContext context) {
+        return null;
+    }
 
     @Override public boolean prepare(DeploymentContext dc) {
         boolean prepared = super.prepare(dc);

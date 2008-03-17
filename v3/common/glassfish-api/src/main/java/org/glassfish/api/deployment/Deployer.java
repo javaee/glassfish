@@ -50,6 +50,13 @@ public interface Deployer<T extends Container, U extends ApplicationContainer> {
     public MetaData getMetaData();
 
     /**
+     * Loads the meta date associated with the application.
+     *
+     * @parameters type type of metadata that this deployer has declared providing.
+     */
+    public <V> V loadMetaData(Class<V> type, DeploymentContext context);
+
+    /**
      * Prepares the application bits for running in the application server. 
      * For certain cases, this is generating non portable artifacts and
      * other application specific tasks. 

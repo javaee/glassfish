@@ -49,7 +49,16 @@ public abstract class SimpleDeployer <T extends Container,
     @Inject
     protected ModulesRegistry modulesRegistry;
 
-   /**
+    /**
+     * Loads the meta date associated with the application.
+     *
+     * @parameters type type of metadata that this deployer has declared providing.
+     */
+    public T loadMetaData(Class<T> type, DeploymentContext context) {
+        return null;
+    }
+
+    /**
      * Prepares the application bits for running in the application server.
      * For certain cases, this is generating non portable
      * artifacts and other application specific tasks.

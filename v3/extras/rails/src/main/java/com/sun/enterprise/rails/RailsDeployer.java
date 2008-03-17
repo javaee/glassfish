@@ -62,7 +62,16 @@ public class RailsDeployer implements Deployer<RailsContainer, RailsApplication>
     public boolean prepare(DeploymentContext context) {
         return true;
     }
-    
+
+    /**
+     * Loads the meta date associated with the application.
+     *
+     * @parameters type type of metadata that this deployer has declared providing.
+     */
+    public <T> T loadMetaData(Class<T> type, DeploymentContext context) {
+        return null;
+    }
+
     /**
      * Returns the meta data assocated with this Deployer
      *

@@ -36,6 +36,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.lang.instrument.ClassFileTransformer;
+import java.lang.instrument.IllegalClassFormatException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -49,12 +51,7 @@ import java.security.PrivilegedAction;
 import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Vector;
+import java.util.*;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 import java.util.jar.Attributes;
@@ -76,6 +73,7 @@ import org.apache.naming.JndiPermission;
 import org.apache.naming.resources.Resource;
 import org.apache.naming.resources.ResourceAttributes;
 import org.apache.naming.resources.FileDirContext;
+import org.glassfish.api.deployment.InstrumentableClassLoader;
 
 import com.sun.appserv.server.util.PreprocessorUtil;
 
@@ -122,7 +120,7 @@ import com.sun.logging.LogDomains;
  */
 public class WebappClassLoader
     extends URLClassLoader
-    implements Reloader, Lifecycle
+    implements Reloader, Lifecycle, InstrumentableClassLoader
  {
 
      private static Logger logger = LogDomains.getLogger(LogDomains.WEB_LOGGER);
@@ -2608,8 +2606,62 @@ public class WebappClassLoader
     }
     // END GlassFish Issue 587
 
+     /**
+     * Create and return a temporary loader with the same visibility
+      * as this loader. The temporary loader may be used to load
+      * resources or any other application classes for the purposes of
+      * introspecting them for annotations. The persistence provider
+      * should not maintain any references to the temporary loader,
+      * or any objects loaded by it.
+      *
+      * @return A temporary classloader with the same classpath as this loader
+      */
+     public ClassLoader copy() {
+            logger.entering("WebModuleListener$InstrumentableWebappClassLoader", "copy");
+            // set getParent() as the parent of the cloned class loader
+            return new URLClassLoader(getURLs(), getParent());
+     }
 
-    private String getJavaVersion() {
+     /**
+     * Add a new ClassFileTransformer to this class loader. This transfomer should be called for
+      * each class loading event.
+      *
+      * @param transformer new class file transformer to do byte code enhancement.
+      */
+     public void addTransformer(final ClassFileTransformer transformer) {
+        final WebappClassLoader cl = this;
+        addByteCodePreprocessor(new BytecodePreprocessor(){
+                /*
+                 * This class adapts ClassFileTransformer to ByteCodePreprocessor that
+                 * is used inside WebappClassLoader.
+                 */
+
+                public boolean initialize(Hashtable parameters) {
+                    return true;
+                }
+
+                public byte[] preprocess(String resourceName, byte[] classBytes) {
+                    try {
+                        // convert java/lang/Object.class to java/lang/Object
+                        String classname = resourceName.substring(0,
+                                resourceName.length() - 6); // ".class" size = 6
+                        byte[] newBytes = transformer.transform(
+                                cl, classname, null, null, classBytes);
+                        // ClassFileTransformer returns null if no transformation
+                        // took place, where as ByteCodePreprocessor is expected
+                        // to return non-null byte array.
+                        return newBytes == null ? classBytes : newBytes;
+                    } catch (IllegalClassFormatException e) {
+                        logger.logp(Level.WARNING,
+                                "WebModuleListener$InstrumentableClassLoader$BytecodePreprocessor",
+                                "preprocess", e.getMessage());
+                        throw new RuntimeException(e);
+                    }
+                }
+            });
+     }
+
+     private String getJavaVersion() {
 
         String version = null;
 

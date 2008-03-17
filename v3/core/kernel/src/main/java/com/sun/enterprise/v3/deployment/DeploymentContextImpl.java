@@ -27,13 +27,13 @@ import java.lang.instrument.ClassFileTransformer;
 import org.glassfish.api.deployment.DeploymentContext;
 
 import org.glassfish.api.deployment.archive.ReadableArchive;
-import java.util.Properties;
-import java.util.Map;
-import java.util.HashMap;
+
+import java.util.*;
 import java.util.logging.Logger;
 import java.io.File;
 
 import com.sun.enterprise.v3.server.ServerEnvironment;
+import com.sun.enterprise.module.ModuleDefinition;
 
 /**
  *
@@ -48,6 +48,8 @@ public class DeploymentContextImpl implements DeploymentContext {
     ClassLoader cloader;
     Properties props;
     Map<String, Object> modulesMetaData = new HashMap<String, Object>();
+    List<ClassFileTransformer> transformers = new ArrayList<ClassFileTransformer>();
+    List<ModuleDefinition> publicAPIs = new ArrayList<ModuleDefinition>();
 
     /** Creates a new instance of DeploymentContext */
     public DeploymentContextImpl(Logger logger, ReadableArchive source, Properties params, ServerEnvironment env) {
@@ -56,11 +58,11 @@ public class DeploymentContextImpl implements DeploymentContext {
         this.parameters = params;
         this.env = env;
     }
-        
+
     public ReadableArchive getSource() {
         return source;
     }
-    
+
     public Properties getCommandParameters() {
         return parameters;
     }
@@ -82,7 +84,7 @@ public class DeploymentContextImpl implements DeploymentContext {
      * @link {org.jvnet.glassfish.apu.deployment.archive.ArchiveHandler.getClassLoader()}
      */
     public ClassLoader getClassLoader() {
-        return cloader; 
+        return cloader;
     }
 
     /**
@@ -97,7 +99,7 @@ public class DeploymentContextImpl implements DeploymentContext {
 
     /**
      * Returns a scratch directory that can be used to store things in.
-     * The scratch directory will be persisted accross server restart but 
+     * The scratch directory will be persisted accross server restart but
      * not accross redeployment of the same application
      *
      * @param subDirName the sub directory name of the scratch dir
@@ -109,10 +111,10 @@ public class DeploymentContextImpl implements DeploymentContext {
         final String appName = parameters.getProperty(DeployCommand.NAME);
         File rootScratchDir;
         if (subDirName == null ) {
-            rootScratchDir = new File(env.getApplicationStubPath()); 
+            rootScratchDir = new File(env.getApplicationStubPath());
         } else {
-            rootScratchDir = new File(env.getApplicationStubPath(), 
-                subDirName); 
+            rootScratchDir = new File(env.getApplicationStubPath(),
+                subDirName);
         }
         return new File(rootScratchDir, appName);
     }
@@ -136,7 +138,7 @@ public class DeploymentContextImpl implements DeploymentContext {
     public <T> T getModuleMetaData(Class<T> metadataType) {
         Object moduleMetaData = modulesMetaData.get(metadataType.getName());
         if (moduleMetaData != null) {
-            return metadataType.cast(moduleMetaData); 
+            return metadataType.cast(moduleMetaData);
         } else {
             return null;
         }
@@ -166,9 +168,50 @@ public class DeploymentContextImpl implements DeploymentContext {
         this.props = props;
     }
 
-    public void addClassFileTransformer(ClassFileTransformer arg0) 
-            throws UnsupportedOperationException {
-        
-        throw new UnsupportedOperationException("Not supported yet.");
+    /**
+     * Add a new ClassFileTransformer to the context. Once all the deployers potentially
+     * invalidating the application class loader (as indicated by the
+     * @link {MetaData.invalidatesClassLoader()})
+     * the deployment backend will recreate the application's class loader registering
+     * all the ClassTransformers added by the deployers to this context.
+     *
+     * @param transformer the new class file transformer to register to the new application
+     * class loader
+     * @throws UnsupportedOperationException if the class loader we use does not support the
+     * registration of a ClassFileTransformer. In such case, the deployer should either fail
+     * deployment or revert to a mode without the byteocode enhancement feature.
+     */
+    public void addTransformer(ClassFileTransformer transformer) {
+
+        transformers.add(transformer);
+    }
+
+    /**
+     * Returns the list of transformers registered to this context.
+     *
+     * @return the transformers list
+     */
+    public List<ClassFileTransformer> getTransformers() {
+        return transformers;
+    }
+
+    /**
+     * Add a new ModuleDefinition to the public APIs of this application. This can be done before
+     * the load phase or it will generate an UnsupportedOpertationException
+     *
+     * @param def module definition to be added to the list of imports for that application
+     * @throws UnsupportedOperationException when it is too late to add a new public API
+     */
+    public void addPublicAPI(ModuleDefinition def) throws UnsupportedOperationException {
+        publicAPIs.add(def);
+    }
+
+    /**
+     * Returns the list of public APIs to be added to the application class loader
+     *
+     * @return list of public APIs
+     */
+    public List<ModuleDefinition> getPublicAPIs() {
+        return publicAPIs;
     }
 }

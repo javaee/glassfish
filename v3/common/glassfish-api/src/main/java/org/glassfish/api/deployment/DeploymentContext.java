@@ -30,6 +30,8 @@ import java.io.File;
 import java.lang.instrument.ClassFileTransformer;
 import java.util.Properties;
 
+import com.sun.enterprise.module.ModuleDefinition;
+
 /**
  * Useful services for Deployer service implementation
  *
@@ -128,7 +130,13 @@ public interface DeploymentContext extends ExecutionContext {
      * registration of a ClassFileTransformer. In such case, the deployer should either fail
      * deployment or revert to a mode without the byteocode enhancement feature.
      */
-    public void addClassFileTransformer(ClassFileTransformer transformer) throws UnsupportedOperationException;
+    public void addTransformer(ClassFileTransformer transformer);
 
-    
+    /**
+     * Add a new ModuleDefinition to the public APIs of this application. This can be done before
+     * the load phase or it will generate an UnsupportedOpertationException
+     *
+     * @param def module definition to be added to the list of imports for that application
+     */
+    public void addPublicAPI(ModuleDefinition def) throws UnsupportedOperationException;
 }

@@ -57,7 +57,6 @@ import com.sun.appserv.connectors.spi.ConnectorRuntime;
 
 
 @Service
-@Async
 /**
  * Resource manager to bind various allResources during startup, create/update/delete of resource/pool
  * @author Jagadish Ramu

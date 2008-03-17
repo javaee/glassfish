@@ -33,11 +33,23 @@ import java.lang.instrument.ClassFileTransformer;
 public interface InstrumentableClassLoader {
 
     /**
+     * Create and return a temporary loader with the same visibility
+     * as this loader. The temporary loader may be used to load
+     * resources or any other application classes for the purposes of
+     * introspecting them for annotations. The persistence provider
+     * should not maintain any references to the temporary loader,
+     * or any objects loaded by it.
+     *
+     * @return A temporary classloader with the same classpath as this loader
+     */
+    public ClassLoader copy();    
+
+    /**
      * Add a new ClassFileTransformer to this class loader. This transfomer should be called for
      * each class loading event.
      *
      * @param transformer new class file transformer to do byte code enhancement.
      */
-    public void addClassFileTransformer(ClassFileTransformer transformer);
+    public void addTransformer(ClassFileTransformer transformer);
 
 }

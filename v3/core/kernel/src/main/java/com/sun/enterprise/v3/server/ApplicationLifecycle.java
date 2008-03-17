@@ -154,13 +154,15 @@ abstract public class ApplicationLifecycle {
      * which we create and maintain.
      *
      * @param parent the parent class loader
+     * @param context deployment context 
      * @param deployers list of elligible deployers for this deployment.
      * @return class loader capable of loading public APIs identified by the deployers
      * @throws ResolveError if one of the deployer's public API module is not found.
      */
-    protected ClassLoader createApplicationParentCL(ClassLoader parent, ReadableArchive source, Collection<Deployer> deployers)
+    protected ClassLoader createApplicationParentCL(ClassLoader parent, DeploymentContextImpl context, Collection<Deployer> deployers)
         throws ResolveError {
 
+        final ReadableArchive source = context.getSource();
         // we add of the involved deployers public APIs
         List<ModuleDefinition> defs = new ArrayList<ModuleDefinition>();
         for (Deployer deployer : deployers) {
@@ -194,6 +196,10 @@ abstract public class ApplicationLifecycle {
                 }
             }
         }
+
+        // now maybe the deployer's have added extra APIs...
+        defs.addAll(context.getPublicAPIs());
+
         return modulesRegistry.getModulesClassLoader(parent, defs);
     }
 
@@ -236,7 +242,7 @@ abstract public class ApplicationLifecycle {
 
         List<Sniffer> appSniffers = new ArrayList<Sniffer>();
         for (Sniffer sniffer : sniffers) {
-            if (sniffer.handles(archive, cloader )) {
+            if (sniffer.handles(archive, cloader )) {                   
                 appSniffers.add(sniffer);
             }
         }
@@ -486,10 +492,44 @@ abstract public class ApplicationLifecycle {
 
         // Ok we now have all we need to create the parent class loader for our application
         // which will be stored in the deployment context.
-        ClassLoader parentCL = createApplicationParentCL(null, context.getSource(), deployers);
+        ClassLoader parentCL = createApplicationParentCL(null, context, deployers);
         ArchiveHandler handler = getArchiveHandler(context.getSource());
         context.setClassLoader(handler.getClassLoader(parentCL, context.getSource()));
-        boolean atLeastOne = false;
+
+        boolean invalidated = false;
+        for (ContainerInfo containerInfo : sortedContainerInfos) {
+
+            // get the deployer
+            Deployer deployer = containerInfo.getDeployer();
+
+
+            ClassLoader currentCL = Thread.currentThread().getContextClassLoader();
+            try {
+                Thread.currentThread().setContextClassLoader(containerInfo.getContainer().getClass().getClassLoader());
+                try {
+                    for (Class metadata : deployer.getMetaData().provides()) {
+                        context.addModuleMetaData(deployer.loadMetaData(metadata, context));
+                    }
+                } catch(Exception e) {
+                    failure(logger, "Exception while invoking " + deployer.getClass() + " prepare method",e, report);
+                    throw e;
+                }
+            } finally {
+                Thread.currentThread().setContextClassLoader(currentCL);
+            }
+        }
+
+        // now re-order to get the invalidator class loaders first...
+        deployers.clear();
+        for (ContainerInfo containerInfo : sortedContainerInfos) {
+            Deployer deployer = containerInfo.getDeployer();
+            if (deployer.getMetaData().invalidatesClassLoader()) {
+                deployers.add(0, deployer);
+            } else {
+                deployers.add(deployer);
+            }
+        }
+
         for (ContainerInfo containerInfo : sortedContainerInfos) {
 
             // get the deployer
@@ -502,7 +542,15 @@ abstract public class ApplicationLifecycle {
                 try {
                     deployer.prepare(context);
                     if (deployer.getMetaData().invalidatesClassLoader()) {
-                        atLeastOne = true;
+                        invalidated = true;
+                    } else {
+                        if (invalidated) {
+                            // we might need to flush the class loader used the load the application
+                            // bits in case we ran all the prepare() methods of the invalidating
+                            // deployers.
+                            context.setClassLoader(handler.getClassLoader(parentCL, context.getSource()));
+                            invalidated = false;
+                        }
                     }
                     // construct an incomplete ModuleInfo which will be later
                     // filled in at loading time
@@ -519,11 +567,11 @@ abstract public class ApplicationLifecycle {
             }
         }
 
-        // we might need to flush the class loader used the load the application
-        // bits in case we ran all the prepare() methods of the invalidating
-        // deployers.
-        if (atLeastOne) {
-            context.setClassLoader(handler.getClassLoader(parentCL, context.getSource()));
+        for (ModuleDefinition def : context.getPublicAPIs()) {
+            Module module = modulesRegistry.makeModuleFor(def.getName(), def.getVersion());
+            if (module!=null) {
+                logger.severe("TODO : add dependencies on the fly");
+            }
         }
 
         final String appName = context.getCommandParameters().getProperty(

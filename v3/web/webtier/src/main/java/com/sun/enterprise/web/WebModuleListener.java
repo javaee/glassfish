@@ -38,13 +38,11 @@ package com.sun.enterprise.web;
 
 import java.util.logging.Logger;
 import java.util.logging.Level;
-import java.util.ResourceBundle;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Hashtable;
-import java.text.MessageFormat;
 import java.lang.instrument.IllegalClassFormatException;
 import java.lang.instrument.ClassFileTransformer;
 import java.net.URLClassLoader;
@@ -52,8 +50,6 @@ import java.net.URL;
 import java.io.IOException;
 import java.io.InputStream;
 import javax.servlet.ServletContext;
-import javax.persistence.spi.ClassTransformer;
-import javax.persistence.EntityManagerFactory;
 
 import org.apache.catalina.Globals;
 import org.apache.catalina.Lifecycle;
@@ -67,8 +63,6 @@ import org.glassfish.api.web.TldProvider;
 import com.sun.enterprise.deployment.runtime.web.SunWebApp;
 import com.sun.enterprise.deployment.runtime.web.WebProperty;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
-import com.sun.enterprise.deployment.Application;
-import com.sun.enterprise.deployment.PersistenceUnitDescriptor;
 import com.sun.enterprise.deployment.util.WebValidatorWithCL;
 import com.sun.enterprise.deployment.util.WebBundleVisitor;
 import com.sun.enterprise.server.ServerContext;
@@ -79,7 +73,6 @@ import com.sun.appserv.server.util.ASClassLoaderUtil;
 import com.sun.appserv.BytecodePreprocessor;
 //import com.sun.enterprise.server.PersistenceUnitLoaderImpl;
 //import com.sun.enterprise.server.PersistenceUnitLoader;
-import com.sun.enterprise.loader.InstrumentableClassLoader;
 //import com.sun.enterprise.config.ConfigException;
 
 /**
@@ -278,111 +271,6 @@ final class WebModuleListener
         }
 
     } // class ApplicationInfoImpl*/
-
-    /**
-     * This class adapts WebappClassLoader to InstrumentableClassLoader that
-     * is used by {@link PersistenceUnitLoader}.
-     * It extends ClassLoader and overrides the public interfaces
-     * of ClassLoader to delegate the calls to WebappClassLoader.
-     */
-    private static final class InstrumentableWebappClassLoader extends ClassLoader
-            implements InstrumentableClassLoader {
-
-        // the delegate
-        private final WebappClassLoader webappClassLoader;
-
-        public InstrumentableWebappClassLoader(WebappClassLoader webappClassLoader) {
-            // set the delegate's parent as its parent
-            super(webappClassLoader.getParent());
-            this.webappClassLoader = webappClassLoader;
-        }
-
-        // implementation of InstrumentableClassLoader interface methods.
-
-        public ClassLoader copy() {
-            _logger.entering("WebModuleListener$InstrumentableWebappClassLoader", "copy");
-            // set getParent() as the parent of the cloned class loader
-            return new URLClassLoader(webappClassLoader.getURLs(), getParent());
-        }
-
-        public void addTransformer(final ClassFileTransformer transformer) {
-            webappClassLoader.addByteCodePreprocessor(new BytecodePreprocessor(){
-                /*
-                 * This class adapts ClassFileTransformer to ByteCodePreprocessor that
-                 * is used inside WebappClassLoader.
-                 */
-
-                public boolean initialize(Hashtable parameters) {
-                    return true;
-                }
-
-                public byte[] preprocess(String resourceName, byte[] classBytes) {
-                    try {
-                        // convert java/lang/Object.class to java/lang/Object
-                        String classname = resourceName.substring(0,
-                                resourceName.length() - 6); // ".class" size = 6
-                        byte[] newBytes = transformer.transform(
-                                webappClassLoader, classname, null, null, classBytes);
-                        // ClassFileTransformer returns null if no transformation
-                        // took place, where as ByteCodePreprocessor is expected
-                        // to return non-null byte array.
-                        return newBytes == null ? classBytes : newBytes;
-                    } catch (IllegalClassFormatException e) {
-                        _logger.logp(Level.WARNING,
-                                "WebModuleListener$InstrumentableClassLoader$BytecodePreprocessor",
-                                "preprocess", e.getMessage());
-                        throw new RuntimeException(e);
-                    }
-                }
-            });
-        }
-
-        // override public interfaces of java.lang.ClassLoader
-        // to delegate the calls to webappClassLoader
-
-        @Override public Class<?> loadClass(String name) throws ClassNotFoundException {
-            return webappClassLoader.loadClass(name);
-        }
-
-        @Override public URL getResource(String name) {
-            return webappClassLoader.getResource(name);
-        }
-
-        @Override public Enumeration<URL> getResources(String name)
-                throws IOException {
-            return webappClassLoader.getResources(name);
-        }
-
-        @Override public InputStream getResourceAsStream(String name) {
-            return webappClassLoader.getResourceAsStream(name);
-        }
-
-        @Override public synchronized void setDefaultAssertionStatus(boolean enabled) {
-            webappClassLoader.setDefaultAssertionStatus(enabled);
-        }
-
-        @Override public synchronized void setPackageAssertionStatus(
-                String packageName, boolean enabled) {
-            webappClassLoader.setPackageAssertionStatus(packageName, enabled);
-        }
-
-        @Override public synchronized void setClassAssertionStatus(
-                String className, boolean enabled) {
-            webappClassLoader.setClassAssertionStatus(className, enabled);
-        }
-
-        @Override public synchronized void clearAssertionStatus() {
-            webappClassLoader.clearAssertionStatus();
-        }
-
-        @Override public String toString() {
-            StringBuilder sb = new StringBuilder("InstrumentableWebappClassLoader\r\n");
-            sb.append(" Parent -> ");
-            sb.append(webappClassLoader);
-            return sb.toString();
-        }
-
-    } // class InstrumentableWebappClassLoader
 
     //------------------------------------------------------- Private Methods
 

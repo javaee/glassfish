@@ -138,6 +138,15 @@ public class SecurityDeployer extends SimpleDeployer<SecurityContainer, DummyApp
         }
     }
 
+    /**
+     * Loads the meta date associated with the application.
+     *
+     * @parameters type type of metadata that this deployer has declared providing.
+     */
+    public <V> V loadMetaData(Class<V> type, DeploymentContext context) {
+        return null;
+    }
+
     //TODO: check if this is correct returning the Security Module def in getMetaData
     public MetaData getMetaData() {
         List<ModuleDefinition> apis = new ArrayList<ModuleDefinition>();

@@ -46,7 +46,7 @@
     </parent>    
     <groupId>org.glassfish.security</groupId>
     <artifactId>realms</artifactId>
-    <packaging>jar</packaging>
+    <packaging>hk2-jar</packaging>
     <name>Security Realms</name>
     <developers>
         <developer>
