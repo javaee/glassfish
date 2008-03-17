@@ -100,13 +100,6 @@ final class WebModuleListener
             "com.sun.appserv.jsf.habitat";
 
     /**
-     * The instance classpath, which is composed of the pathnames of
-     * domain_root/lib/classes and domain_root/lib/[*.jar|*.zip] (in this
-     * order), separated by the path-separator character.
-     */
-    private String instanceClassPath;
-
-    /**
      * Descriptor object associated with this web application.
      * Used for loading persistence units.
      */
@@ -123,19 +116,14 @@ final class WebModuleListener
     /**
      * Constructor.
      *
-     * @param instanceClassPath The instance classpath, which is composed of
-     * the pathnames of domain_root/lib/classes and
-     * domain_root/lib/[*.jar|*.zip] (in this order), separated by the
-     * path-separator character.
+     * @param serverContext
      * @param explodedLocation The location where this web module is exploded
      * @param wbd descriptor for this module.
      */
     public WebModuleListener(ServerContext serverContext,
-                             String instanceClassPath,
                              String explodedLocation,
                              WebBundleDescriptor wbd) {
         this.serverContext = serverContext;
-        this.instanceClassPath = instanceClassPath;
         this.wbd = wbd;
         this.explodedLocation = explodedLocation;
     }
@@ -339,14 +327,11 @@ final class WebModuleListener
 
             // START SJSAS 6311155
             String sysClassPath = ASClassLoaderUtil.getWebModuleClassPath(
-                    serverContext.getDefaultHabitat(), webModule.getID());
+                    serverContext.getDefaultHabitat(), webModule.getID(),
+                    webModule.getLoader().getDelegate());
             if (_logger.isLoggable(Level.FINE)) {
                 _logger.fine(" sysClasspath for " + webModule.getID() + " is \n" 
                                                                + sysClassPath + "\n");
-            }
-            if (instanceClassPath != null
-                    && instanceClassPath.length() > 0) {
-                sysClassPath += instanceClassPath;
             }
             wrapper.addInitParameter("com.sun.appserv.jsp.classpath",
                                      sysClassPath);

@@ -249,7 +249,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         _modulesWorkRoot = instance.getWebModuleCompileJspPath();
         _appsWorkRoot = instance.getApplicationCompileJspPath();
         _modulesRoot = instance.getApplicationRepositoryPath();
-        instanceClassPath = getInstanceClassPath(instance);
 
         setTldScan();
 
@@ -2000,13 +1999,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
      * Are we using Tomcat deployment backend or DOL?
      */
     protected static boolean useDOLforDeployment = true;
-
-    /**
-     * The instance classpath, which is composed of the pathnames of
-     * domain_root/lib/classes and domain_root/lib/[*.jar|*.zip] (in this
-     * order), separated by the path-separator character.
-     */
-    private String instanceClassPath;
 
     /**
      * The value of the instance-level session property named "enableCookies"
@@ -4612,55 +4604,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                         params);
             }
         }
-    }
-
-    /*
-     * Gets the instance classpath, which is composed of the pathnames of
-     * domain_root/lib/classes and domain_root/lib/[*.jar|*.zip] (in this
-     * order), separated by the path-separator character.
-     *
-     * @param instanceEnv The instance whose classpath is to be determined
-     *
-     * @return The instance classpath
-     */
-    private String getInstanceClassPath(ServerEnvironment instanceEnv) {
-
-        if (instanceEnv == null) {
-            return null;
-        }
-
-        StringBuffer sb = new StringBuffer();
-
-        File libDir = new File(instanceEnv.getLibPath());
-        String libDirPath = libDir.getAbsolutePath();
-
-        // Append domain_root/lib/classes
-        sb.append(libDirPath + File.separator + "classes");
-        sb.append(File.pathSeparator);
-
-        // Append domain_root/lib/[*.jar|*.zip]
-        String[] files = libDir.list();
-        if (files != null) {
-            for (int i=0; i<files.length; i++) {
-                if (files[i].endsWith(".jar") || files[i].endsWith(".zip")) {
-                    sb.append(libDirPath + File.separator + files[i]);
-                    sb.append(File.pathSeparator);
-                }
-            }
-        }
-
-        return sb.toString();
-    }
-
-    /*
-     * Gets the instance classpath, which is composed of the pathnames of
-     * domain_root/lib/classes and domain_root/lib/[*.jar|*.zip] (in this
-     * order), separated by the path-separator character.
-     *
-     * @return The instance classpath
-     */
-    String getInstanceClassPath() {
-        return this.instanceClassPath;
     }
 
 

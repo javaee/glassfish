@@ -24,6 +24,7 @@
 package com.sun.enterprise.web;
 
 
+import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.ServerTags;
 import com.sun.enterprise.deployment.Application;
@@ -393,11 +394,21 @@ public class WebDeployer extends JavaEEDeployer<WebContainer, WebApplication>{
         try {
             final File outDir = dc.getScratchDir(env.kCompileJspDirName);
             final File inDir  = dc.getSourceDir();
+            boolean delegate = true;
+            com.sun.enterprise.deployment.runtime.web.ClassLoader clBean =
+                    wbd.getSunDescriptor().getClassLoader();
+            if (clBean != null) {
+                String value = clBean.getAttributeValue(
+                    com.sun.enterprise.deployment.runtime.web.ClassLoader.DELEGATE);
+                delegate = ConfigBeansUtilities.toBoolean(value);
+            }
+
             StringBuffer classpath = new StringBuffer();
             classpath.append(super.getCommonClassPath());
             classpath.append(File.pathSeparatorChar);
             classpath.append(ASClassLoaderUtil.getWebModuleClassPath(
-                             sc.getDefaultHabitat(), wbd.getApplication().getName()));
+                    sc.getDefaultHabitat(),
+                    wbd.getApplication().getName(), delegate));
             JSPCompiler.compile(inDir, outDir, wbd, classpath.toString(), sc);
         } catch (DeploymentException de) {
             dc.getLogger().log(Level.SEVERE, "Error compiling JSP", de);

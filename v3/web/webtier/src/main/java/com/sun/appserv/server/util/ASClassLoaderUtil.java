@@ -41,6 +41,7 @@ import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.*;
@@ -52,6 +53,7 @@ import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.WebModule;
 import com.sun.enterprise.deployment.util.FileUtil;
 import com.sun.enterprise.module.ModuleDefinition;
+import com.sun.enterprise.module.ModulesRegistry;
 //import com.sun.enterprise.server.ApplicationServer;
 //import com.sun.enterprise.server.PELaunch;
 import com.sun.enterprise.util.SystemPropertyConstants;
@@ -73,12 +75,15 @@ public class ASClassLoaderUtil {
     /**
      * Gets the classpath associated with a web module, suffixing libraries defined 
      * [if any] for the application
+     * @param habitat
      * @param moduleId Module id of the web module
+     * @param delegate
      * @return A <code>File.pathSeparator</code> separated list of classpaths
      * for the passed in web module, including the module specified "libraries"
      * defined for the web module.
      */
-    public static String getWebModuleClassPath(Habitat habitat, String moduleId) {
+    public static String getWebModuleClassPath(Habitat habitat,
+            String moduleId, boolean delegate) {
         
         if (_logger.isLoggable(Level.FINE)) {
             _logger.log(Level.FINE, "ASClassLoaderUtil.getWebModuleClassPath " +
@@ -88,6 +93,7 @@ public class ASClassLoaderUtil {
         synchronized(ASClassLoaderUtil.class) {
             if (sharedClasspathForWebModule == null) {
             	final StringBuilder tmpString = new StringBuilder();
+                
                 if (Boolean.getBoolean(USE_NEW_CLASSLOADER_PROPERTY)) {
                     final List<String> tmpList = new ArrayList<String>();
     	            tmpList.addAll(getSharedClasspath());
@@ -101,6 +107,7 @@ public class ASClassLoaderUtil {
                 } else {
     	            tmpString.append(FileUtil.getAbsolutePath(System.getProperty("java.class.path")));
                     tmpString.append(File.pathSeparatorChar);
+
     	        }
 
                 WebDeployer webDeployer = habitat.getComponent(WebDeployer.class);
@@ -122,30 +129,54 @@ public class ASClassLoaderUtil {
 
         StringBuilder classpath = new StringBuilder(sharedClasspathForWebModule);
             
-        classpath.append(FileUtil.getAbsolutePath(System.getProperty("java.class.path")));
-            
-            
-        if (moduleId != null) {
-            final String specifiedLibraries = getLibrariesForWebModule(habitat, moduleId);
-            final URL[] libs = getLibraries(specifiedLibraries);
-            if (libs == null)  {
-                if (_logger.isLoggable(Level.FINE)) {
-                    _logger.log(Level.FINE, "classpath: " + classpath.toString());
-                }
-                return classpath.toString();
-            }
-  
-            for (final URL u : libs) {
-                classpath.append(u + File.pathSeparator);
-            }
+        if (delegate) {
+            addLibrariesFromLibs(classpath, habitat);
+            addLibrariesForWebModule(classpath, habitat, moduleId);
+        } else {
+            addLibrariesForWebModule(classpath, habitat, moduleId);
+            addLibrariesFromLibs(classpath, habitat);
         }
-
+              
         if (_logger.isLoggable(Level.FINE)) {
             _logger.log(Level.FINE, "Final classpath: " + classpath.toString());    
         }
         
         return classpath.toString();
         
+    }
+
+    private static void addLibrariesForWebModule(StringBuilder sb,
+            Habitat habitat, String moduleId) {
+       if (moduleId != null) {
+            final String specifiedLibraries = getLibrariesForWebModule(habitat, moduleId);
+            final URL[] libs = getLibraries(specifiedLibraries);
+            if (libs != null)  {
+                for (final URL u : libs) {
+                    sb.append(u);
+                    sb.append(File.pathSeparator);
+                }
+            }
+        }
+    }
+
+    /**
+     * Add Libraries from lib and domain_root lib.
+     */
+    private static void addLibrariesFromLibs(StringBuilder sb, Habitat habitat) {
+        ModulesRegistry mreg = habitat.getComponent(ModulesRegistry.class);
+        if (mreg != null) {
+            ClassLoader cl = mreg.getParentClassLoader();
+            if (cl instanceof URLClassLoader) {
+                URLClassLoader urlCl = (URLClassLoader)cl;
+                URL[] urls = urlCl.getURLs();
+                if (urls != null) {
+                    for (URL u : urls) {
+                        sb.append(u);
+                        sb.append(File.pathSeparator);
+                    }
+                }
+            }
+        }
     }
  
     /**
@@ -263,7 +294,8 @@ public class ASClassLoaderUtil {
     }    
     
     public static synchronized List<String> getSharedClasspath() {
-    	return null;
+        // not yet implemented
+        return null;
     }
     
     public static synchronized List<String> getAddOnsClasspath() {
