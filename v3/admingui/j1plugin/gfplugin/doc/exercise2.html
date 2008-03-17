@@ -9,15 +9,32 @@
 
 	    <p class="j1holheader">Introduction:</p>
 
-	    <p>
-		The goal of this exercise is to create a JSF page which utilizes the jMaki
-  Charting component and create another integration point to the Administration
-  Console.  Through this exercise you will learn how to include a
-  jMaki widget in a JSF page and add another plugin to the Administration
-  Console.
-	    </p>
+	    <p> The goal of this exercise is to create a JSF page which
+		utilizes the jMaki Charting component and link the page to the
+		GlassFish Administration Console by adding another tree node in
+		the GlassFish Administration Console.  When you have completed
+		this exercise, your plugin will resemble the following
+		image:</p>
 
+	    <p> <img src="images/ex2-result.jpg"></p>
+	    <div class="figure">Figure 2-5: Browser showing the plugin page with charts.</div>
+
+	    <p> In this exercise you will learn the following concepts:</p>
+
+	    <ul class="j1hollist">
+		<li>How to add jMaki widget to a JSF page.</li>
+		<li>How to add a plugin to the Administration Console that
+		    links to another plugin <code>IntegrationPoint</code>.</li>
+	    </ul>
+
+	    <p>	To learn background information about jMaki, proceed to the
+		<a href="#ex2background">next section</a>.  To begin creating
+		the jMaki Charting JavaServer Faces page immediately, proceed
+		to the <a href="#ex2steps">Step-by-Step Instructions</a>.</p>
+
+<a name="ex2background">
 	    <p class="j1holheader">Background Information:</p>
+</a>
 
 	    <p>
 		<font color=#ff0000>TBD:</font> More info relating to jMaki
@@ -46,7 +63,7 @@
 	    </p></li>
 	<li><b><a href="#ex2stepB">Modify your console-config.xml </a></b>
 	    <p>
-You will modify your configuration file to add a new IntegrationPoint
+You will modify your configuration file to add a new <code>IntegrationPoint</code>
 	    </p></li>
 	<li><b><a href="#ex2stepC">Specify your Tree Node layout</a></b>
 	    <p>
@@ -216,8 +233,8 @@ it again. More detailed instructions can be found in <a href="#Exercise_1=ex1ste
 	</li>
 	<li>Create a page showing a jMaki chart:
 	    <ol class="j1hollist">
-		<li>Select Other Sources -&gt; resources.</li>
-		<li>Create an empty file named 'chart.jsf'</li>
+		<li>Select <b>Other Sources --&gt; resources</b>.</li>
+		<li>Create an empty file named "<codee>chart.jsf</code>".</li>
 		<li>Use <a href="#FigChartPage">Figure TBD</a> as the content for chart.jsf.
 		    <p> <img src=images/ex2-editChart.jpg></p>
 		    <div class="figure">Figure 2-2: Edit chart.jsf.</div>
