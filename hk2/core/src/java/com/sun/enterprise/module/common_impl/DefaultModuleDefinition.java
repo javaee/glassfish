@@ -150,13 +150,13 @@ public class DefaultModuleDefinition implements ModuleDefinition {
             File file = new File(result);
             if (file.exists()) {
                 Jar.create(file).loadMetadata(metadata);
+                classPath.add(result);
             } else {
-                LOGGER.warning(
-                        "Skipping loading metadata from file " + file + " pointed from "+name+" in classpath, " +
-                                "as it doesn't exist");
+                // even if the pointed resource doesn't exist, don't complain by default,
+                // which is consistent with ClassLoader behavior of silently ignoring URLs
+                // that doesn't resolve.
+                // When the assertion is on, testClassPath above would do the warning.
             }
-
-            classPath.add(result);
         }
     }
 
