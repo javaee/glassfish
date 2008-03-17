@@ -119,7 +119,7 @@ public class Packager {
             if(throughModule)
                 continue;   // yep
 
-            if(a.getScope().equals("system") || a.getScope().equals("provided"))
+            if(a.getScope().equals("system") || a.getScope().equals("provided") || a.getScope().equals("test"))
                 continue;   // ignore tools.jar and such dependencies.
 
             if(a.isOptional())

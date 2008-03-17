@@ -54,6 +54,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.NoSuchElementException;
+import java.util.logging.Logger;
 
 /**
  * A set of templates that constitute a world of objects.
@@ -281,7 +282,14 @@ public class Habitat {
             name=null;
         Inhabitant i = getInhabitant(contract, name);
         if(i!=null)
-            return contract.cast(i.get());
+            try {
+                return contract.cast(i.get());
+            } catch (ClassCastException e) {
+                Logger.getAnonymousLogger().severe("ClassCastException between contract " + contract + " and service " + i.get());
+                Logger.getAnonymousLogger().severe("Contract class loader " + contract.getClassLoader());
+                Logger.getAnonymousLogger().severe("Service class loader " + i.get().getClass().getClassLoader());
+                throw e;
+            }
         else
             return null;
     }    

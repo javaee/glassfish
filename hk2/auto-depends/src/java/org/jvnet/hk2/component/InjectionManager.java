@@ -87,6 +87,8 @@ public abstract class InjectionManager<T extends Annotation> {
                         }
                     } catch (IllegalAccessException e) {
                         throw new ComponentException("Injection failed on " + field.toGenericString(), e);
+                    } catch (RuntimeException e) {
+                        throw new ComponentException("Injection failed on " + field.toGenericString(), e);                        
                     }
                 }
                 for (Method method : currentClass.getDeclaredMethods()) {
@@ -125,6 +127,8 @@ public abstract class InjectionManager<T extends Annotation> {
                     } catch (IllegalAccessException e) {
                         throw new ComponentException("Injection failed on " + method.toGenericString(), e);
                     } catch (InvocationTargetException e) {
+                        throw new ComponentException("Injection failed on " + method.toGenericString(), e);
+                    } catch (RuntimeException e) {
                         throw new ComponentException("Injection failed on " + method.toGenericString(), e);
                     }
                 }
