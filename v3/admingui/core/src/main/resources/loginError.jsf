@@ -41,7 +41,7 @@
 
 <sun:html id="html1">
 <sun:head title="$resource{i18n.loginPageTitle}">
-"<link rel="stylesheet" type="text/css" href="/css/css_ns6up.css" />
+"<link rel="stylesheet" type="text/css" href="#{request.contextPath}/css/css_ns6up.css" />
     <sun:script url="/js/adminjsf.js" />
 </sun:head>
 
@@ -50,21 +50,21 @@
 
 "  <table border="0" cellpadding="0" cellspacing="0" align="center" title="">
 "    <tr>
-"      <td width="50%"><img src="/theme/com/sun/webui/jsf/suntheme/images/other/dot.gif" width="1" height="1" alt="" /></td>
-"      <td><img src="/theme/com/sun/webui/jsf/suntheme/images/other/dot.gif" width="728" height="1" alt="" /></td>
-"      <td width="50%"><img src="/theme/com/sun/webui/jsf/suntheme/images/other/dot.gif" width="1" height="1" alt="" /></td>
+"      <td width="50%"><img src="#{request.contextPath}/theme/com/sun/webui/jsf/suntheme/images/other/dot.gif" width="1" height="1" alt="" /></td>
+"      <td><img src="#{request.contextPath}/theme/com/sun/webui/jsf/suntheme/images/other/dot.gif" width="728" height="1" alt="" /></td>
+"      <td width="50%"><img src="#{request.contextPath}/theme/com/sun/webui/jsf/suntheme/images/other/dot.gif" width="1" height="1" alt="" /></td>
 "    </tr>
-"    <tr class="LogTopBnd" style="background-image: url(/theme/com/sun/webui/jsf/suntheme/images/login/gradlogtop.jpg); background-repeat: repeat-x; background-position: left top;">
-"      <td><img src="/theme/com/sun/webui/jsf/suntheme/images/other/dot.gif" width="1" height="30" alt="" /></td>
+"    <tr class="LogTopBnd" style="background-image: url(#{request.contextPath}/theme/com/sun/webui/jsf/suntheme/images/login/gradlogtop.jpg); background-repeat: repeat-x; background-position: left top;">
+"      <td><img src="#{request.contextPath}/theme/com/sun/webui/jsf/suntheme/images/other/dot.gif" width="1" height="30" alt="" /></td>
 "      <td nowrap="nowrap" valign="middle"></td>
 "      <td>&nbsp;</td>
 "    </tr>
 "    <tr>
-"      <td class="LogMidBnd" style="background-image: url(/theme/com/sun/webui/jsf/suntheme/images/login/gradlogsides.jpg);background-repeat:repeat-x;background-position:left top;">&nbsp;</td>
-"      <td class="LogCntTd" style="background-image: url(/images/login-backimage.jpg);background-repeat:no-repeat;background-position:left top;" height="435" align="center" valign="middle">
-"        <table border="0" background="/theme/com/sun/webui/jsf/suntheme/images/other/dot.gif" cellpadding="0" cellspacing="0" width="100%" title="">
+"      <td class="LogMidBnd" style="background-image: url(#{request.contextPath}/theme/com/sun/webui/jsf/suntheme/images/login/gradlogsides.jpg);background-repeat:repeat-x;background-position:left top;">&nbsp;</td>
+"      <td class="LogCntTd" style="background-image: url(#{request.contextPath}/images/login-backimage.jpg);background-repeat:no-repeat;background-position:left top;" height="435" align="center" valign="middle">
+"        <table border="0" background="#{request.contextPath}/theme/com/sun/webui/jsf/suntheme/images/other/dot.gif" cellpadding="0" cellspacing="0" width="100%" title="">
 "          <tr>
-"            <td width="260"><img src="/theme/com/sun/webui/jsf/suntheme/images/other/dot.gif" width="260" height="245" alt="" /></td>
+"            <td width="260"><img src="#{request.contextPath}/theme/com/sun/webui/jsf/suntheme/images/other/dot.gif" width="260" height="245" alt="" /></td>
 "            <td width="415" bgcolor="#FFFFFF" valign="top" align="left">&nbsp;
 "                <img name="Login.welcomeImg" src="#{loginProductImageURL}" 
                      "alt="#{fullProductName}" border="0" height="#{loginProductImageHeight}" width="#{loginProductImageWidth}" />
@@ -76,7 +76,7 @@
 "                    <tbody><tr>
 "                      <td valign="middle">
 "                      <div class="AlrtErrTxt">
-"                      <img src="/theme/com/sun/webui/jsf/suntheme/images/alerts/error_large.gif" alt="Error" height="21" width="21" />
+"                      <img src="#{request.contextPath}/theme/com/sun/webui/jsf/suntheme/images/alerts/error_large.gif" alt="Error" height="21" width="21" />
 							<sun:label text="$resource{i18n.alert.AuthenticationFailed}" />
 "                      </div>
 "                      <div class="AlrtMsgTxt">
@@ -111,7 +111,7 @@
 "<!-- clicks on it. Unless you have a really good reason do not change -->
 "<!-- this botton tag. -->
                 "  <tr>
-                "    <td><img src="/theme/com/sun/webui/jsf/suntheme/images/other/dot.gif" width="1" height="15" alt="" /></td>
+                "    <td><img src="#{request.contextPath}/theme/com/sun/webui/jsf/suntheme/images/other/dot.gif" width="1" height="15" alt="" /></td>
                 "    <td>  
 "<table border="0">
 "<tr><td>
@@ -136,7 +136,7 @@
 "                    <td>&nbsp;</td>
 "                  </tr>
 "		  <tr>
-"		    <td><img src="/theme/com/sun/webui/jsf/suntheme/images/other/dot.gif" width="1" height="33" alt="" /></td>
+"		    <td><img src="#{request.contextPath}/theme/com/sun/webui/jsf/suntheme/images/other/dot.gif" width="1" height="33" alt="" /></td>
 "	            <td>&nbsp;</td>
 "		  </tr>
 "              </table>
@@ -150,9 +150,9 @@
 "        </table>
 "      </td>
 "      <td class="LogMidBnd" 
-"          style="background-image: url(/theme/com/sun/webui/jsf/suntheme/images/login/gradlogsides.jpg);background-repeat:repeat-x;background-position:left top;">&nbsp;</td>
+"          style="background-image: url(#{request.contextPath}/theme/com/sun/webui/jsf/suntheme/images/login/gradlogsides.jpg);background-repeat:repeat-x;background-position:left top;">&nbsp;</td>
 "    </tr>
-"    <tr class="LogBotBnd" style="background-image: url(/theme/com/sun/webui/jsf/suntheme/images/login/gradlogbot.jpg);background-repeat:repeat-x;background-position:left top;">
+"    <tr class="LogBotBnd" style="background-image: url(#{request.contextPath}/theme/com/sun/webui/jsf/suntheme/images/login/gradlogbot.jpg);background-repeat:repeat-x;background-position:left top;">
 "      <td>&nbsp;</td>
 "      <td><div class="logCpy"><span class="logTxtCpy">
 	<sun:staticText id="text1" text="$resource{i18n.copyright.shortMessage}" />
