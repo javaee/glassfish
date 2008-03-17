@@ -110,17 +110,17 @@
 	        <url>http://download.java.net/maven/glassfish/</url>
         </pluginRepository>
 	</pluginRepositories>
- <reporting>
-    <plugins>
-      <plugin>
-        <artifactId>maven-javadoc-plugin</artifactId>
-      </plugin>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>jxr-maven-plugin</artifactId>
-      </plugin>
-    </plugins>
-  </reporting>
+    <reporting>
+        <plugins>
+            <plugin>
+                <artifactId>maven-javadoc-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>jxr-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </reporting>
     <build>
         <sourceDirectory>src/java</sourceDirectory>
         <testSourceDirectory>test/java</testSourceDirectory>
