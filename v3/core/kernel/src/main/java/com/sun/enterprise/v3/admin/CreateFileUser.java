@@ -128,7 +128,7 @@ public class CreateFileUser implements AdminCommand {
         // ensure we have the file authrealm
         AuthRealm fileAuthRealm = null;        
         for (AuthRealm authRealm : securityService.getAuthRealm()) {
-            if (authRealm.getName().equals("file"))                 
+            if (authRealm.getName().equals(authRealmName))                 
                 fileAuthRealm = authRealm;            
         }        
         if (fileAuthRealm == null) {
@@ -139,6 +139,21 @@ public class CreateFileUser implements AdminCommand {
             return;                                            
         }
         
+        // Get FileRealm class name, match it with what is expected.
+        String fileRealmClassName = fileAuthRealm.getClassname();
+        
+        // Report error if provided impl is not the one expected
+        if (fileRealmClassName != null && 
+            !fileRealmClassName.equals(
+                "com.sun.enterprise.security.auth.realm.file.FileRealm")) {
+            report.setMessage(
+                localStrings.getLocalString(
+                    "create.fileuser.realm.notsupported",
+                    "Configured FileRealm is not supported."));
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            return;                
+        }
+
         // ensure we have the file associated with the authrealm
         String keyFile = null;
         for (Property fileProp : fileAuthRealm.getProperty()) {
@@ -165,22 +180,7 @@ public class CreateFileUser implements AdminCommand {
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             return;
         }
-            
-        // Get FileRealm class name, match it with what is expected.
-        String fileRealmClassName = fileAuthRealm.getClassname();
-        
-        // Report error if provided impl is not the one expected
-        if (fileRealmClassName != null && 
-            !fileRealmClassName.equals(
-                "com.sun.enterprise.security.auth.realm.file.FileRealm")) {
-            report.setMessage(
-                localStrings.getLocalString(
-                    "create.fileuser.realm.notsupported",
-                    "Configured FileRealm is not supported."));
-            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            return;                
-        }
-        
+                    
         // We have the right impl so let's get to checking existing user and 
         // adding one if one does not exist
         FileRealm fr = null;
@@ -209,15 +209,10 @@ public class CreateFileUser implements AdminCommand {
             // Ignore. I want this exception. Now I can add the user
         }
         try {
-            String[] groups1 = {groups};
-            System.out.println("Before add user");
-            System.out.println("userName = " + userName + " , " + "password = " 
-                + password + " , " + "groups = " + groups1);
+            String[] groups1 = {groups}; 
             fr.addUser(userName, password, groups1);
             fr.writeKeyFile(keyFile);
-            System.out.println("After add user");
         } catch (Exception e) {
-            e.printStackTrace();
             report.setMessage(
                 localStrings.getLocalString("create.fileuser.useradd.failed",
                 "Adding User to this Filerealm failed"));
