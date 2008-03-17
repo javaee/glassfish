@@ -2,7 +2,7 @@
 <sun:html>
     <sun:head title="chart" />
     <sun:body>
-	<sun:form id="form">
+        <sun:form id="form">
 
 <!-- Pie Chart -->
 <sun:markup tag="div" style="width:380px; height: 310px;">
@@ -34,34 +34,35 @@
 <sun:markup tag="div" style="width: 500px; height: 280px;">
 <jmaki:widget name="jmaki.charting.dojo.area"
     value="{
-	xAxis : {
-	    title : 'Months',
-	    labels : [{ label : 'January'},
-		{ label : 'February'},
-		{ label : 'March'},
-		{ label : 'April'},
-		{ label : 'May'},
-		{ label : 'June'},
-		{ label : 'July'},
-		{ label : 'August'},
-		{ label : 'September'},
-		{ label : 'October'},
-		{ label : 'November'},
-		{ label : 'December'} ] },
-	yAxis : {
-	    title : 'Temperature',
-	    labels : [{ label : '0', value : 0},
-		{ label : '10s', value : 10},
-		{ label : '20s', value : 20},
-		{ label : '30s', value : 30},
-		{ label : '40s', value : 40},
-		{ label : '50s', value : 50} ] },                              
-	data : [{label : 'Gray Series', values : [65, 45, 15, 45, 50, 25, 3, 25, 35, 27, 35, 39] },
-		{label : 'Pink Series', values : [25, 45, 50, 5, 45, 35, 25, 35, 25, 29, 27, 25] },
-		{label : 'Blue Series', values : [45, 50, 25, 35, 2, 45, 45, 55, 45, 47, 31, 41] },                   
-		{label : 'Red Series',  values : [20, 12, 4, 7, 5, 19, 35, 11, 20, 30, 15, 7] } ] }"/>
+        xAxis : {
+            title : 'Months',
+            labels : [{ label : 'January'},
+                { label : 'February'},
+                { label : 'March'},
+                { label : 'April'},
+                { label : 'May'},
+                { label : 'June'},
+                { label : 'July'},
+                { label : 'August'},
+                { label : 'September'},
+                { label : 'October'},
+                { label : 'November'},
+                { label : 'December'} ] },
+        yAxis : {
+            title : 'Temperature',
+            labels : [{ label : '0', value : 0},
+                { label : '10s', value : 10},
+                { label : '20s', value : 20},
+                { label : '30s', value : 30},
+                { label : '40s', value : 40},
+                { label : '50s', value : 50} ] },
+        data : [{label : 'Gray Series', values : [65, 45, 15, 45, 50, 25, 3, 25, 35, 27, 35, 39] },
+                {label : 'Pink Series', values : [25, 45, 50, 5, 45, 35, 25, 35, 25, 29, 27, 25] },
+                {label : 'Blue Series', values : [45, 50, 25, 35, 2, 45, 45, 55, 45, 47, 31, 41] },
+                {label : 'Red Series',  values : [20, 12, 4, 7, 5, 19, 35, 11, 20, 30, 15, 7] } ] }"/>
 </sun:markup>
-	</sun:form>
+
+        </sun:form>
     </sun:body>
 </sun:html>
 </sun:page>

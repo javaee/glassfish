@@ -1,1 +1,1 @@
-This directory contains files that is needed to complete exercise #3
+This directory contains the solution files for exercise #3.
