@@ -65,7 +65,7 @@ import org.glassfish.admin.amx.loader.AMXConfigRegistrar;
     <li>Start the JMXMP connector</li>
     </ul>
  */
-public final class StartAMX
+final class StartAMX
 {
     protected static void debug( final String s ) { System.out.println(s); }
     
@@ -93,29 +93,11 @@ public final class StartAMX
         mConfigRegistrar= registrar;
     }
     
-        public static boolean
-    isStarted()
+        public static synchronized StartAMX
+    init(final MBeanServer mbs, final AMXConfigRegistrar registrar)
     {
-        return getInstance() != null;
-    }
-    
-        private synchronized void
-    start()
-    {
-        // loads the high-level AMX MBeans, like DomainRoot, QueryMgr, etc
-        mAMXLoaderObjectName = LoadAMX.loadAMX( mMBeanServer );
-        
-        // load config MBeans
-        mConfigRegistrar.getAMXConfigLoader().start( mMBeanServer );
-        
-        try
-        {
-            startJMXMPConnectorServer( mMBeanServer, JMXMP_PORT );
-        }
-        catch( Exception e )
-        {
-            throw new RuntimeException(e);
-        }
+        INSTANCE = new StartAMX( mbs, registrar );
+        return INSTANCE;
     }
     
     // @ return the instance or null if AMX has not yet been started
@@ -125,18 +107,45 @@ public final class StartAMX
         return INSTANCE;
     }
     
-        public static synchronized void
-    startAMX(final MBeanServer mbs, final AMXConfigRegistrar registrar)
+        public static boolean
+    isStarted()
     {
-        if ( INSTANCE == null )
+        return getInstance() != null;
+    }
+    
+        private synchronized void
+    loadMBeans()
+    {
+        // loads the high-level AMX MBeans, like DomainRoot, QueryMgr, etc
+        mAMXLoaderObjectName = LoadAMX.loadAMX( mMBeanServer );
+        
+        // load config MBeans
+        mConfigRegistrar.getAMXConfigLoader().start( mMBeanServer );
+    }
+    
+        public static synchronized void
+    startConnectors()
+    {
+        try
         {
-            INSTANCE = new StartAMX( mbs, registrar );
-            INSTANCE.start();
+            getInstance().startJMXMPConnectorServer( JMXMP_PORT );
+        }
+        catch( Exception e )
+        {
+            throw new RuntimeException(e);
         }
     }
     
+        public static synchronized void
+    startAMX()
+    {
+        startConnectors();
+        
+        getInstance().loadMBeans();
+    }
+    
         private synchronized JMXConnectorServer
-    startJMXMPConnectorServer( final MBeanServer mbeanServer, int port)
+    startJMXMPConnectorServer( int port)
         throws MalformedURLException, IOException
     {
         if ( mJMXMP == null )
@@ -151,7 +160,7 @@ public final class StartAMX
                 final ObjectName objectName = JMXUtil.newObjectName( "jmxremote:type=jmx-connector,name=jmxmp" );
                 try
                 {
-                    mJMXMPObjectName = mbeanServer.registerMBean( mJMXMP, objectName).getObjectName();
+                    mJMXMPObjectName = mMBeanServer.registerMBean( mJMXMP, objectName).getObjectName();
                     mJMXMP.start();
                 }
                 catch( Exception e )

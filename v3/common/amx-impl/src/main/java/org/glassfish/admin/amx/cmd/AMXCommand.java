@@ -53,23 +53,7 @@ import com.sun.appserv.management.util.jmx.JMXUtil;
 import com.sun.appserv.management.util.misc.StringUtil;
 import com.sun.appserv.management.util.misc.TimingDelta;
 
-import org.glassfish.admin.amx.support.LoadAMX;
-
-import java.net.MalformedURLException;
-import java.io.IOException;
-import javax.management.remote.JMXConnectorServerFactory;
-import javax.management.remote.JMXServiceURL;
-import javax.management.remote.JMXConnectorServer;
-import javax.management.remote.JMXConnector;
-
-
-//import java.rmi.registry.LocateRegistry;
-//import java.rmi.registry.Registry;
-
-import javax.management.remote.jmxmp.JMXMPConnectorServer;
-
-import org.glassfish.admin.amx.loader.AMXConfigRegistrar;
-import org.glassfish.admin.amx.loader.StartAMX;
+import org.glassfish.admin.amx.loader.AMXStartupService;
 
 
 /**
@@ -81,16 +65,10 @@ import org.glassfish.admin.amx.loader.StartAMX;
 @I18n("amx.command")
 public final class AMXCommand extends AMXCommandBase implements AdminCommand
 {
-    @Inject
-    private AMXConfigRegistrar mConfigRegistrar;
-
-    private boolean mInitialized;
-    
     public AMXCommand()
     {
         //mConfigRegistrar    = AMXConfigRegistrar.getInstance();
     }
-    
                     
     protected final String getCmdName() { return getLocalString("amx.command"); }
     
@@ -100,28 +78,14 @@ public final class AMXCommand extends AMXCommandBase implements AdminCommand
      */
     public final synchronized void _execute(AdminCommandContext context)
     {
-        String timingMsg = "";
-         final TimingDelta allDelta = new TimingDelta();
-            
-        if ( ! mInitialized ) {
-            StartAMX.startAMX( getMBeanServer(), mConfigRegistrar );
-            mInitialized    = true;
-            timingMsg = " (" + allDelta.elapsedMillis() + " ms)";
-        }
-        else
-        {
-            timingMsg = " (previously initialized)";
-        }
-        
         final DomainRoot domainRoot = ProxyFactory.getInstance(  getMBeanServer() ).getDomainRoot();
-        domainRoot.waitAMXReady();
         
         final ActionReport report = getActionReport();
         report.setActionExitCode(ExitCode.SUCCESS);
         
         report.getTopMessagePart().addChild().setMessage( JMXUtil.getMBeanServerDelegateInfo( getMBeanServer() ) );
 
-        report.getTopMessagePart().addChild().setMessage( "JMXServiceURL ===> " + StartAMX.getInstance().getJMXServiceURL() );
+        report.getTopMessagePart().addChild().setMessage( "JMXServiceURL ===> " + AMXStartupService.getAMXStartupServiceMBean(getMBeanServer()).getJMXServiceURL() );
         
         // get a nice sorted list of all AMX MBean ObjectNames
         final ObjectName amxPattern = JMXUtil.newObjectName( "amx:*" );
@@ -129,7 +93,7 @@ public final class AMXCommand extends AMXCommandBase implements AdminCommand
         final List<String> mbeanList = JMXUtil.objectNamesToStrings( mbeans );
         Collections.sort(mbeanList);
         
-        String msg = "AMX initialized and ready for use." + timingMsg + StringUtil.NEWLINE();
+        String msg = "AMX initialized and ready for use." + StringUtil.NEWLINE();
         report.setMessage( msg );
         for( final String on : mbeanList )
         {

@@ -37,6 +37,8 @@ import org.glassfish.api.ActionReport.ExitCode;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.management.mbeanserver.AppserverMBeanServerFactory;
 
+import org.glassfish.admin.amx.loader.AMXStartupService;
+
 /**
     Base class for AMX commands.
  */
@@ -68,12 +70,14 @@ abstract class AMXCommandBase implements AdminCommand {
 
     protected abstract String getCmdName();
     protected final String getCmdDescription() { return getLocalString( getCmdName() + ".description" ); }
-
+        
         protected void
     preExecute(final AdminCommandContext context) {
         //debug( "AMXCommandBase.preExecute: " + this.getClass().getName() + ", MBeanServer = " + getMBeanServer() );
         // presume success
         getActionReport().setActionExitCode(ExitCode.SUCCESS);
+        
+        AMXStartupService.invokeStartAMX(getMBeanServer());
     }
     
     protected abstract void _execute(final AdminCommandContext context);
