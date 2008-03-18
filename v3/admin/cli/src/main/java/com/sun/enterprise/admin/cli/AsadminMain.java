@@ -91,6 +91,8 @@ public class AsadminMain {
         "com.sun.enterprise.admin.util.TokenValueSet",
         // here's one that server-mgmt is dependent on
         "com.sun.enterprise.security.auth.realm.file.FileRealm",
+        // dol
+        "com.sun.enterprise.deployment.PrincipalImpl",
     };
     static {
         // check RIGHT NOW to make sure all the classes we need are
