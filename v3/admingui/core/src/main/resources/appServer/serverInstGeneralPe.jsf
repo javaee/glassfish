@@ -50,7 +50,7 @@
     />
     <event>
         <!beforeEncode
-        getInstanceGeneralAttributes(instanceName="#{instanceName}", hostName=>$attribute{hostName}, httpPorts=>$attribute{httpPorts},
+        getStandaloneInstanceGeneralAttributes(instanceName="#{instanceName}", isAdminServer="#{false}", hostName=>$attribute{hostName}, httpPorts=>$attribute{httpPorts},
                 iiopPorts=>$attribute{iiopPorts}, configDir=>$attribute{configDir}, 
                 version=>$attribute{version}, debugPort=>$attribute{debugPort});
         />   
@@ -71,7 +71,7 @@
                 <!-- Page Title -->
                 <sun:title id="propertyContentPage" title="$resource{i18n.instance.GeneralTitle}" > 
                      <!-- Buttons  -->
-                        <sun:button id="stopInstance" text="$resource{i18n.button.stopInstance}" disabled="#{false}" primary="#{false}"
+                        <!--<sun:button id="stopInstance" text="$resource{i18n.button.stopInstance}" disabled="#{false}" primary="#{false}"
                         onClick="if ( getConfirm(this, '$resource{i18n.msg.JS.confirmStopInstance}') )
                                   { return submitAndDisable(this, '$resource{i18n.button.Processing}', target='_top');} 
                                     else {return false;} " >
@@ -97,7 +97,7 @@
                             <!command  
                             redirect(page="recoverTransactions.jsf?instanceName=$pageSession{instanceName}&pageName=$pageSession{pageName}"); 
                             />
-                        </sun:button>
+                        </sun:button>-->
                 </sun:title>
                
                     <!-- PropertySheet .... -->
