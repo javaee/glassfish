@@ -23,8 +23,6 @@
 
 package com.sun.enterprise.module.impl;
 
-import com.sun.enterprise.module.impl.ClassLoaderFacade;
-
 import java.net.URLClassLoader;
 import java.net.URL;
 import java.util.*;
