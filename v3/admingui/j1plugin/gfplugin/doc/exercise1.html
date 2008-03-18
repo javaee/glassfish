@@ -23,7 +23,7 @@ img { border: 3px ridge #888; }
     plugin will look like this:</p>
 
     <p>	<img src="images/ex1-result.jpg"></p>
-    <div class="figure">Figure 1-12: Exercise 1 Completed.</div>
+    <div class="figure">Figure 1-1: Exercise 1 Completed.</div>
 
 <p> In this exercise, you will learn how to do the following:</p>
 
@@ -83,7 +83,7 @@ public interface ConsoleProvider {
 	     "META-INF/admingui/console-config.xml";
 }
 </pre></div>
-<div class="figure">Figure 1-1: </div>
+<div class="figure">Figure 1-2: </div>
 
 <p>
   The @Service annotation is placed on a Java Class which typically implements a
@@ -95,7 +95,7 @@ public interface ConsoleProvider {
 
 <div class="codebox"><pre>
   class=org.example.glassfish.admingui.MyPlugin,index=org.glassfish.api.admingui.ConsoleProvider</pre></div>
-<div class="figure">Figure 1-1: </div>
+<div class="figure">Figure 1-3: </div>
 
 <p> This is used to efficiently locate all implementations of a @Contract in the system.</p>
 
@@ -179,7 +179,7 @@ v3/admingui/plugin-service/src/main/java/org/glassfish/admingui/plugin/ConsoleCo
 v3/admingui/plugin-service/src/main/java/org/glassfish/admingui/plugin/ConsolePluginService.java
 v3/admingui/plugin-service/src/main/java/org/glassfish/admingui/plugin/IntegrationPoint.java</pre>
 </div>
-<div class="figure">Figure 1-1: </div>
+<div class="figure">Figure 1-4: </div>
 
 <b>Core Module for Administration Console</b>
 
@@ -195,7 +195,7 @@ v3/admingui/pom.xml
 v3/admingui/core/src/main/java/com/sun/enterprise/tools/admingui/handlers
 v3/admingui/core/src/main/resources/home.jsf</pre>
 </div>
-<div class="figure">Figure 1-1: </div>
+<div class="figure">Figure 1-5: </div>
 
   <b> Administration Console Web Application </b>
 
@@ -210,7 +210,7 @@ v3/admingui/war/
 v3/admingui/war/src/main/webApp
   </pre>
   </div>
-<div class="figure">Figure 1-1: </div>
+<div class="figure">Figure 1-6: </div>
 
 
 <a name="ex1steps">
@@ -286,7 +286,7 @@ page</a>.
 		<li>Press the <b>Open Project</b> button.
 		    <p>&nbsp;</p>
 		    <p><img src="images/ex1-project-open.jpg" /></p>
-<div class="figure">Figure 1-1: Open Project myplugin</div>
+<div class="figure">Figure 1-7: Open Project myplugin</div>
 		</li>
 	    </ol>
 	</li>
@@ -294,7 +294,7 @@ page</a>.
 	<li>You should see the following directory layout under the Projects tab:
 	    <p>&nbsp;</p>
 	    <p><img src="images/ex1-project-layout.jpg"></p>
-<div class="figure">Figure 1-2: Project myplugin layout</div>
+<div class="figure">Figure 1-8: Project myplugin layout</div>
 	</li>
     </ol>
   </li>
@@ -318,42 +318,14 @@ page</a>.
 
 <!-- FIXME: TBD: Fix broken links below -->
 	<p> <span class="j1holnote">If you are not using NetBeans</span>:
-	    create a file similar to that found in <a href="#ex1fig13">Figure
-	    1-13</a> with any filename or package you like.  The lab
+	    create a file similar to that found in <a href="#ex1plugincode">Figure
+	    1-10</a> with any filename or package you like.  The lab
 	    material, however, will refer to this file as
 	    <code>MyPlugin.java</code> and the package will by named
 	    <code>org.example.glassfish.admingui</code>.  Skip to step A-3
 	    "<a href="#ex1stepA3">Compiling your plugin</a>".</p>
 
-	<p> NetBeans users, follow these steps:</p>
-
-	<ol class="j1hollist">
-	    <li>Locate the package "<b>org.example.glassfish.admingui</b>" under "<b>Source Packages</b>".</li>
-	    <li>Right click on it and select "<b>New --&gt; Java Class</b>". A pop up window will display.</li>
-	    <li>Enter the class name "<b>MyPlugin</b>"  (Note: Do <b>not</b> enter the ".java" extension.)</li>
-	    <li>Select <b>Finish</b>.
-
-		<p> <img src="images/ex1-createMyPlugin.jpg"></p>
-		<div class="figure">Figure 1-3: Create MyPlugin Class</div>
-	    </li>
-	    <li><p> Now open this newly created Java File and add the necessary
-		    implementation for the plugin.  (Note: This file should be
-		    located at:
-		    <code>gfplugin/myplugin/src/main/java/org/example/glassfish/admingui/MyPlugin.java</code>.)</p>
-
-		<p> The important elements of any <code>ConsoleProvider</code>
-		    implementation are:</p>
-
-		    <ol class="j1hollist">
-			<li>Add @Service Annotation</li>
-			<li>Implements ConsoleProvider</li>
-			<li>A Public method getConfiguration() that returns a
-			    URL. If this returns Null, the system will get the
-			    configuration from a default location.</li>
-		    </ol>
-
-		<p> Your implementation may look something like this:</p>
-
+<a name="ex1plugincode">
 <div class="codebox">
 <pre>
 package org.example.glassfish.admingui;
@@ -374,21 +346,54 @@ public class MyPlugin implements ConsoleProvider {
 }
 </pre>
 </div>
+<div class="figure">Figure 1-10: Edit MyPlugin.java</div>
+</a>
 
-<div class="figure">Figure 1-4: Edit MyPlugin.java</div>
+	<p> NetBeans users, follow these steps:</p>
+
+	<ol class="j1hollist">
+	    <li>Locate the package "<b>org.example.glassfish.admingui</b>" under "<b>Source Packages</b>".</li>
+	    <li>Right click on it and select "<b>New --&gt; Java Class</b>". A pop up window will display.</li>
+	    <li>Enter the class name "<b>MyPlugin</b>"  (Note: Do <b>not</b> enter the ".java" extension.)</li>
+	    <li>Select <b>Finish</b>.
+
+		<p> <img src="images/ex1-createMyPlugin.jpg"></p>
+		<div class="figure">Figure 1-9: Create MyPlugin Class</div>
+	    </li>
+	    <li><p> Now open this newly created Java File and add the necessary
+		    implementation for the plugin.  (Note: This file should be
+		    located at:
+		    <code>gfplugin/myplugin/src/main/java/org/example/glassfish/admingui/MyPlugin.java</code>.)</p>
+
+		<p> The important elements of any <code>ConsoleProvider</code>
+		    implementation are:</p>
+
+		    <ol class="j1hollist">
+			<li>Add @Service Annotation</li>
+			<li>Implements ConsoleProvider</li>
+			<li>A Public method getConfiguration() that returns a
+			    URL. If this returns Null, the system will get the
+			    configuration from a default location.</li>
+		    </ol>
+
+		<p> Your implementation may look something like this:</p>
 
     <p> &nbsp;</p>
 
     <p>	As seen in NetBeans:</p>
 
     <p>	<img src="images/ex1-editMyPlugin.jpg"></p>
-    <div class="figure">Figure 1-4: Edit MyPlugin.java</div>
+    <div class="figure">Figure 1-11: Edit MyPlugin.java</div>
   </li>
     </ol>
 </a></li>
 
-<li><a name="#ex1stepA3"><b>Compiling your plugin</b></a>
-    <!-- FIXME: Add description of how we're going to build. -->
+<li><a name="ex1stepA3"><b>Compiling your plugin</b></a>
+    <p>	In this step we will compile the <code>MyPlugin.java</code> you just
+	created.  To do this you will need to enter the following commands on
+	the command line.  Or if you would prefer to do this in NetBeans,
+	skip to <a href="#ex1nbcompile">step d</a>.</p>
+
     <ol><li><p>	Go to your <code>gfplugin/myplugin</code> directory:</p>
 <div class="console">
 <pre>
@@ -402,14 +407,58 @@ cd gfplugin/myplugin
 mvn install
 </pre>
 </div>
-
+<br />
+The output will be similar to:
 <div class="console">
 <pre>
-FIXME: Add partial console output.
+[INFO] Scanning for projects...
+[INFO] ----------------------------------------------------------------------------
+[INFO] Building JavaOne2008 Admin Console Plugin
+[INFO]    task-segment: [install]
+[INFO] ----------------------------------------------------------------------------
+[INFO] [resources:resources]
+[INFO] Using default encoding to copy filtered resources.
+[INFO] snapshot org.glassfish.common:glassfish-api:10.0-SNAPSHOT: checking for updates from gfv3
+
+...
+
+[INFO] [hk2:hk2-compile]
+[INFO] Compiling 1 source file to .../gfplugin/myplugin/target/classes
+[INFO] Picked up annotation processor com.sun.istack.internal.ws.AnnotationProcessorFactoryImpl
+[INFO] Picked up annotation processor com.sun.jsftemplating.annotation.FormatDefinitionAPFactory
+[INFO] Picked up annotation processor com.sun.jsftemplating.annotation.UIComponentFactoryAPFactory
+[INFO] Picked up annotation processor com.sun.jsftemplating.annotation.HandlerAPFactory
+[INFO] [resources:testResources]
+[INFO] Using default encoding to copy filtered resources.
+[INFO] [surefire:test]
+[INFO] No tests to run.
+[INFO] [hk2:package]
+[INFO] Building jar: .../gfplugin/myplugin/target/console-myplugin-1.0-SNAPSHOT.jar
+[INFO] [install:install]
+[INFO] Installing .../gfplugin/myplugin/target/console-myplugin-1.0-SNAPSHOT.jar to ...
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESSFUL
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time: 55 seconds
+[INFO] Finished at: Tue Mar 18 02:45:32 GMT 2008
+[INFO] Final Memory: 12M/23M
+[INFO] ------------------------------------------------------------------------
 </pre>
 </div>
 	</li>
 	<li><p>	Fix any errors in your code that may be reported.</p></li>
+
+    <a name="ex1nbcompile">
+	<li><p>	<span class="j1holnote">NetBeans Only:</span> If you prefer to
+		build in NetBeans instead of from the commad line, follow
+		these simple steps:</p>
+
+	    <ol><li>Right click on the project "<b>Java One 2008 Admin Console Plugin</b>".</li>
+
+	        <li>Select <b>Build</b>.</li>
+
+	    </ol></li></a>
+
     </ol>
 </li>
 </ol> <!-- End Steps Ordered List -->
@@ -424,27 +473,16 @@ FIXME: Add partial console output.
       <p><b>B. Provide a console-config.xml file.</b></p>
 </a>
 	<p>
-	  Next, you need to add the <code>console-config.xml</code> file which
-	  specifies the <code>IntegrationPoint</code>s for your module.
-	   The default location of this file is
+	  Next, you will create the <code>console-config.xml</code> file which
+	  specifies <code>IntegrationPoint</code>s for your module.  The
+	  default location of this file is
 	  <code>META-INF/admingui/console-config.xml</code> inside your plugin
-	  jar file.  To place your file in this location, you should create
+	  jar file.  To place this file in this location, you should create
 	  the file under the following directory in your workspace:
-	  <code>myplugin/src/main/resources/META-INF/admingui</code>.
-	  In your <code>console-config.xml</code> file, you will be adding the
-	  following two xml entries:<br>
+	  <code><b>myplugin/src/main/resources/META-INF/admingui</b></code>.
+	  In your <code>console-config.xml</code> file, you will add the
+	  following:<br>
 	</p>
-
-	<code><pre>
-	  console-config: {id: javaone}
-	  integration-point: {id: JavaOneNode, type: tree, priority: 210, parentId: tree, content: treenode-ex1.jsf}
-	</pre></code>
-
-	<p class="j1holnote">
-	    If you are not using NetBeans, simply create the
-	    <code>console-config.xml</code> file in the location described
-	    above.  Look at <a href="#ex1figCC">Figure TBD</a> for an
-	    example.</p>
 
 <a name="ex1figCC">
 	<div class="codebox">
@@ -460,10 +498,14 @@ FIXME: Add partial console output.
 	/&gt;
 &lt;/console-config&gt;</pre>
 	</div>
-<!-- FIXME: Update figure # -->
-    <div class="figure">Figure 1-5: console-config.xml</div>
+    <div class="figure">Figure 1-12: console-config.xml</div>
 </a>
-	</p>
+
+	<p class="j1holnote">
+	    If you are not using NetBeans, simply create the
+	    <code>console-config.xml</code> file in the location described
+	    above.  Look at <a href="#ex1figCC">Figure 1-12</a> above for an
+	    example.  Proceed to <a href="#ex1stepC">step C</a> to continue.</p>
 
 	<ol class="j1hollist">
 	    <li>Right click on "<b>admingui</b>" under "<b>Other Sources --&gt; resources --&gt; META-INF --&gt; admingui</b>".</li>
@@ -475,13 +517,13 @@ FIXME: Add partial console output.
 		list on the right. Select <code>Next</code>.
 
 		<p><img src="images/ex1-createConsoleConfig1.jpg"></p>
-		<div class="figure">Figure 1-5: Creating console-config.xml.</div>
+		<div class="figure">Figure 1-13: Creating console-config.xml.</div>
 	    </li>
 	    <li>Enter "<code><b>console-config.xml</b></code>" as the file name.
 		Select <b>Finish</b>.
 
 		<p><img src="images/ex1-createConsoleConfig2.jpg"></p>
-		<div class="figure">Figure 1-6: Creating console-config.xml (step 2)</div>
+		<div class="figure">Figure 1-14: Creating console-config.xml (step 2)</div>
 	    </li>
 	    <li>Edit the "<code><b>console-config.xml</b></code>" file to
 		specify the <code>IntegrationPoint</code> (note: the path to
@@ -489,7 +531,7 @@ FIXME: Add partial console output.
 		<code>myplugin/src/main/resources/META-INF/admingui/console-config.xml</code>).
 
 		<p><img src="images/ex1-editConsoleConfig.jpg"></p>
-		<div class="figure">Figure 1-7: Edit console-config.xml</div>
+		<div class="figure">Figure 1-15: Edit console-config.xml</div>
 	    </li>
 	</ol>
 
@@ -501,9 +543,9 @@ FIXME: Add partial console output.
 	<p><b>C. Create a couple JavaServer Faces pages</b></p>
 </a>
 
-	<p> In this step you will be creating JSF pages to display your tree
-	    node, and to provide some content when your tree node is clicked.
-	    In the first JSF file you will specify a tree node to represent
+	<p> In this step you create JSF pages to display your tree node, and
+	    to provide content when your tree node is clicked.  In the first
+	    JSF file you will specify a tree node to represent
 	    a folder containing your lab pages.  You will also specify a
 	    second tree node in this file to represent the content for this
 	    first lab. This content will be using Facelets syntax to create
@@ -532,10 +574,12 @@ FIXME: Add partial console output.
 &lt;/sun:treeNode&gt;
 </pre>
 </div>
+<div class="figure">Figure 1-16: </div>
 
 <div class="codebox">
 <pre>
-&lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"&gt;
+&lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"&gt;
 &lt;html xmlns="http://www.w3.org/1999/xhtml"
     xmlns:ui="http://java.sun.com/jsf/facelets"
     xmlns:h="http://java.sun.com/jsf/html"
@@ -552,6 +596,8 @@ FIXME: Add partial console output.
 &lt;/html&gt;
 </pre>
 </div>
+<div class="figure">Figure 1-17: </div>
+
 	<ol class="j1hollist">
 	    <li>
 	      Right click on Resources. Select "New" and "Other..."
@@ -566,14 +612,14 @@ FIXME: Add partial console output.
 		<code>integration-point<code>'s in the
 		<code>console-config.xml</code>.
 		<p><img src="images/ex1-createTreenode.jpg"></p>
-    <div class="figure">Figure 1-8: Create treenode-ex1.jsf</div>
+    <div class="figure">Figure 1-18: Create treenode-ex1.jsf</div>
 	    </li>
 	    <li>
 		Edit the file to specify the tree nodes layout
 		(Note: the full path of this file is
 		<code>myplugin/src/main/resources/treenode-ex1.jsf</code>)
 		<p><img src="images/ex1-editTreenode.jpg"></p>
-    <div class="figure">Figure 1-9: Edit treenode-ex1.jsf</div>
+    <div class="figure">Figure 1-19: Edit treenode-ex1.jsf</div>
 
 	    </li>
 
@@ -599,7 +645,7 @@ FIXME: Add partial console output.
 		to this file is <code>myplugin/src/main/resources/hello.jsf</code>)
 
 		<p> <img src="images/ex1-editHello.jpg"></p>
-		<div class="figure">Figure 1-10: Edit hello.jsf</div>
+		<div class="figure">Figure 1-20: Edit hello.jsf</div>
 
 	    </li>
 	  </ol>
@@ -652,7 +698,7 @@ mvn install
 		plugin.</p>
 
 	    <p>	<img src="images/ex1-before.jpg"></p>
-	    <div class="figure">Figure 1-11: Before Integration</div>
+	    <div class="figure">Figure 1-21: Before Integration</div>
 	</li>
 	<li>Go to your <code>gfplugin</code> directory:
 <div class="console">
@@ -692,7 +738,7 @@ glassfish/bin/asadmin start-domain
 		tree node displays your "Hello World" page.</p>
 
 	    <p>	<img src="images/ex1-result.jpg"></p>
-	    <div class="figure">Figure 1-12: Browser showing the plugin page.</div>
+	    <div class="figure">Figure 1-22: Browser showing the plugin page.</div>
 	</li>
     </ol>
 
