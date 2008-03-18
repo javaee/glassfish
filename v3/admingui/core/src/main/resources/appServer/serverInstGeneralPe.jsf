@@ -50,7 +50,7 @@
     />
     <event>
         <!beforeEncode
-        getStandaloneInstanceGeneralAttributes(instanceName="server", isAdminServer="#{false}", hostName=>$attribute{hostName}, httpPorts=>$attribute{httpPorts},
+        getInstanceGeneralAttributes(instanceName="#{instanceName}", hostName=>$attribute{hostName}, httpPorts=>$attribute{httpPorts},
                 iiopPorts=>$attribute{iiopPorts}, configDir=>$attribute{configDir}, 
                 version=>$attribute{version}, debugPort=>$attribute{debugPort});
         />   
@@ -105,7 +105,7 @@
                         <!-- Text Field section -->               
                         <sun:propertySheetSection id="propertSectionTextField">
                             <sun:property id="hostName"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.inst.hostHomeLabel}" >
-                                <sun:staticText id="hostName"text="#{requestScope.hostName}" /> 
+                                <sun:staticText id="hostName" text="#{requestScope.hostName}" /> 
                             </sun:property>                       
                             <sun:property id="httpPortsProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.inst.httpPortsLabel}">                           
                                 <sun:staticText id="httpPorts" text="#{requestScope.httpPorts}"/>     
