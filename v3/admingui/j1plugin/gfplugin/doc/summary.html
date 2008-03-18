@@ -2,15 +2,106 @@
     <head></head>
     <body>
 	<div class="j1holcontents">
-	    <h1 style="text-align: center;">
-  Congratulations! You have successfully completed the "LAB-4520: Plug Your
-  JavaServer Faces Application into the GlassFish v3 Admin Console" Hands-on
-  Lab.</h1>
 
-  <p>&nbsp;</p>
+	    <h1 style="text-align: center;">Congratulations!<br />You have successfully
+		completed the<br />"LAB-4520: Plug Your JavaServer Faces Application
+		into the GlassFish v3 Admin Console"<br />Hands-on Lab!!</h1>
 
-	    <p><span style="font-weight: bold;">Where to send questions or feedbacks
-	    on this lab and public discussion forums:</span></p>
+    <p>&nbsp;</p>
+
+    <p>	In this lab you completed 3 exercises.  In each of those Exercises
+	you learned a little bit more about building a plugin module for the
+	GlassFish v3 Application Server.  Let us review what you have
+	accomplished.</p>
+
+    <p class="j1holheader">Exercise 1:</p>
+
+    <p>	In this exercise you completed your first GlassFish v3 Plugin Module.
+	This included implementing an HK2 GlassFish plugin module which was
+	installed in the <code>modules</code> directory of the GlassFish v3
+	Application Server.  In that plugin module, you implemented the
+	<code>ConsoleProvider @Contract interface</code>, and annotated your
+	implementation with the <code>@Service</code> annotation.  This allowed
+	the GlassFish v3 / HK2 environment to discover your plugin module,
+	making it available to the GlassFish Administration Console.  Your
+	<code>ConsoleProvider</code> implementation referenced your
+	<code>console-config.xml</code> file, which in turn declared an
+	<code>IntegrationPoint</code> enabling you to add a tree node to the
+	GlassFish Administration Console.  From this tree node, you created a
+	link to your "Hello World!" page.  Well done!</p>
+
+    <p>	Below is a picture of what Exercise 1 looked like at its completion.</p>
+
+    <p>	<img src="images/ex1-result.jpg"></p>
+    <div class="figure">Figure 1: Exercise 1 Completed.</div>
+
+    <p> &nbsp;</p>
+    <p class="j1holheader">Exercise 2:</p>
+
+    <p>	In Exercise 2, you learned out to use jMaki Charting.  You created
+	another JSFTemplating page, and another tree node.  You integrated
+	these into the GlassFish Administration Console by defining another
+	IntegrationPoint, this time using your previous IntegrationPoint as
+	the parent. This exercise demonstrated how easy it is to bring
+	graphing to the GlassFish Administration Console, or to any
+	application by leveraging jMaki. Congratulations!</p>
+
+    <p>	The result of Exercise 2 is shown in the image below.</p>
+
+    <p> <img src="images/ex2-result.jpg"></p>
+    <div class="figure">Figure 2: Browser showing the plugin page with charts.</div>
+
+    <p> &nbsp;</p>
+    <p class="j1holheader">Exercise 3:</p>
+
+    <p>	In Exercise 3, you learned how to use Facelets-style templating to
+	allow the template to specify parts of your page that don't change,
+	while allowing you provide content.  This technique greatly reduces
+	the effort required to maintain your content as it is less mixed
+	with ordinary template text.  For the GlassFish Administration
+	Console, it provide a convenient way for the infrastructure of a
+	page, and its look and feel, to be provided automatically.</p>
+
+    <p>	Additionally in the Exercise, you learned how to make use of
+	JSFTemplating handlers to perform actions during events.  You were
+	able to retrieve random data from the server to generate dynamic
+	charts, and you were able to modify the look of the charts via a
+	drop-down menu.  This menu demonstrated multiple charting frameworks,
+	however, you <b>did not</b> need to learn multiple charting
+	frameworks -- you only need to learn jMaki.</p>
+
+    <p>	This lab also had you integrate your plugin as in the previous labs.
+	You created your 3rd tree node and gained exerience in configuring
+	IntegrationPoints in the GlassFish Administration Console.  Great
+	job getting this far!</p>
+
+    <p>	The result of Exercise 3 is shown in the image below.</p>
+
+    <p> <img src="images/ex3-result.jpg"></p>
+    <div class="figure">Figure 3: Exercise 3 Completed.</div>
+
+    <p> &nbsp;</p>
+    <p class="j1holheader">Get Involved!</p>
+
+    <p>	Now that you have completed this Hands-on Lab, you have gain a
+	significant amount of experience integrating into GlassFish v3.  What
+	are you going to do what that experience?  The GlassFish community
+	welcomes you to participate!  You are encouraged to file bugs,
+	recommend features you would like to see.  You can integrate your
+	person, or company products and services into the GlassFish platform
+	and share it with the rest of the community.  You are welcome to take
+	GlassFish technology as a whole, or in pieces to help you in your
+	day-to-day work, or your weekend hobby.  You are invited to meet with
+	the GlassFish developers during planning meetings, day-to-day on IRC,
+	or on email or Forums.</p>
+
+    <p>	To learn more about how you can meet the people behind GlassFish, or to
+	become a "person behind GlassFish", visit some of the sites below.
+	Also come visit at the GlassFish booths at JavaOne or other
+	conferences.</p>
+
+    <p>&nbsp;</p>
+    <p class="j1holheader">Where to send questions or feedback on this lab or its content:</p>
 
 	    <ul class="j1hollist">
 		<li>You can send technical questions via email to the authors of this
@@ -32,14 +123,16 @@
 		<li>You can send your other questions to the public mailing lists and
 		    forums.
 		    <ul>
-		      <li><a href="http://forums.java.net/jive/category.jspa?categoryID=58">GlassFish Forums</a></li>
-		      <li><a href="https://glassfish.dev.java.net/servlets/ProjectMailingListList">GlassFish Email Lists (admin, users, or dev)</a></li>
-		      <li><a href="https://jsftemplating.dev.java.net/servlets/ProjectMailingListList">JSFTemplating Email List</a></li>
-		      <li><a href="https://ajax.dev.java.net/servlets/ProjectMailingListList">jMaki Email List</a></li>
+		      <li><a href="http://forums.java.net/jive/category.jspa?categoryID=58"><b>GlassFish Forums</b> (http://forums.java.net/jive/category.jspa?categoryID=58)</a></li>
+		      <li><a href="https://glassfish.dev.java.net/servlets/ProjectMailingListList"><b>GlassFish Email Lists</b> (https://glassfish.dev.java.net/servlets/ProjectMailingListList)</a></li>
+		      <li><a href="https://jsftemplating.dev.java.net/servlets/ProjectMailingListList"><b>JSFTemplating Email List</b> (https://jsftemplating.dev.java.net/servlets/ProjectMailingListList)</a></li>
+		      <li><a href="https://jsftemplating.dev.java.net/irc.html"><b>JSFTemplating IRC Channel</b> (https://jsftemplating.dev.java.net/irc.html)</a></li>
+		      <li><a href="https://ajax.dev.java.net/servlets/ProjectMailingListList"><b>jMaki Email List</b> (https://ajax.dev.java.net/servlets/ProjectMailingListList)</a></li>
 		    </ul>
 		</li>
 	    </ul>
 
+	    <p>&nbsp;</p>
 	    <!--
 	    <p class="j1holheader">Note for developers:</p>
 	    <p>You have to update it according to your lab. It means change the forum
@@ -48,6 +141,10 @@
 		   href="https://hands-on-labs.dev.java.net/servlets/ProjectForumView">https://hands-on-labs.dev.java.net/servlets/ProjectForumView</a>),
 	    change the public forums and mailing list</p>
 	    -->
+
+	    <h1 style="text-align: center;">Thank you for completing this Hands-on Lab!</h1>
+	    <p>&nbsp;</p>
+	    <p>&nbsp;</p>
 	</div>
     </body>
 </html>
