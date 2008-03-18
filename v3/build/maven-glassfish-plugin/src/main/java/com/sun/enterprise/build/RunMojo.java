@@ -4,7 +4,6 @@ import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.module.Module;
 import com.sun.enterprise.module.impl.HK2Factory;
 import com.sun.enterprise.module.common_impl.AbstractFactory;
-import com.sun.enterprise.module.bootstrap.BootException;
 import com.sun.enterprise.module.bootstrap.StartupContext;
 import com.sun.enterprise.module.bootstrap.Main;
 import com.sun.enterprise.module.maven.MavenProjectRepository;
@@ -32,6 +31,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Map.Entry;
 import java.util.Properties;
+import java.util.List;
+import java.util.ArrayList;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -51,11 +52,18 @@ import java.util.logging.Logger;
 public class RunMojo extends DistributionAssemblyMojo {
     /**
      * Distribution of Glassfish to be used as a basis.
+     * Either this or &lt;distributions> is required.
      *
      * @parameter
-     * @required
      */
     protected ArtifactInfo distribution;
+
+    /**
+     * Same as &lt;distribution> but allows you to specify multiple values.
+     *
+     * @parameter
+     */
+    protected ArtifactInfo[] distributions;
 
     /**
      * @component
@@ -108,53 +116,70 @@ public class RunMojo extends DistributionAssemblyMojo {
     public void execute() throws MojoExecutionException, MojoFailureException {
         configLogger();
         
-        Artifact dist;
+        List<Artifact> dist = new ArrayList<Artifact>();
         try {
-            dist = distribution.toArtifact(artifactFactory);
-            artifactResolver.resolve(dist,
-                project.getRemoteArtifactRepositories(), localRepository);
+            if(distribution!=null)
+                dist.add(resolve(distribution));
+            if(distributions!=null)
+                for (ArtifactInfo a : distributions)
+                    dist.add(resolve(a));
+            if(dist.isEmpty())
+                throw new MojoExecutionException("Either <distribution> or <distributions> is required");
         } catch (ArtifactResolutionException e1) {
             throw new MojoExecutionException("Error attempting to download the distribution POM", e1);
         } catch (ArtifactNotFoundException e11) {
             throw new MojoExecutionException("Distribution POM not found", e11);
         }
 
-        MavenProject distPom;
+        List<MavenProject> distPoms = new ArrayList<MavenProject>();
+
+        // normally we decide the module list by looking at <distribution> and <distributions>,
+        // but if the user is developing a single hk2-jar, repeating the same info in <distributions>
+        // would violate the DRY principle. So treat that case as a special and allow the module
+        // to be in the mix.
+        //
+        // TODO: we could also conceivably include child <module>s.
+        if(project.getPackaging().equals("hk2-jar"))
+            distPoms.add(project);
+
         try {
-            distPom = projectBuilder.buildFromRepository(dist, project.getRemoteArtifactRepositories(), localRepository);
-            distPom.setFile(dist.getFile()); // maven doesn't seem to set this. shouldn't it?
+            for (Artifact a : dist) {
+                MavenProject distPom = projectBuilder.buildFromRepository(a, project.getRemoteArtifactRepositories(), localRepository);
+                distPom.setFile(a.getFile()); // maven doesn't seem to set this. shouldn't it?
+                distPoms.add(distPom);
+
+                // resolve transitive dependencies
+                try {
+                    if (distPom.getDependencyArtifacts() == null )
+                        distPom.setDependencyArtifacts( distPom.createArtifacts( artifactFactory, null, null ) );
+
+                    ArtifactResolutionResult result = artifactResolver.resolveTransitively(
+                        distPom.getDependencyArtifacts(),
+                        a, localRepository,
+                        project.getRemoteArtifactRepositories(),
+                        artifactMetadataSource, new ScopeArtifactFilter("runtime") );
+                    distPom.setArtifacts( result.getArtifacts() );
+
+                    // download any missing artifacts
+                    for (Object dependency : distPom.getArtifacts())
+                        artifactResolver.resolve( (Artifact)dependency, project.getRemoteArtifactRepositories(), localRepository );
+                } catch (ArtifactResolutionException e) {
+                    throw new MojoExecutionException("Failed to resolve dependencies of distribution POM",e);
+                } catch (ArtifactNotFoundException e) {
+                    throw new MojoExecutionException("Failed to resolve dependencies of distribution POM",e);
+                } catch (InvalidDependencyVersionException e) {
+                    throw new MojoExecutionException("Failed to resolve dependencies of distribution POM",e);
+                }
+
+            }
         } catch (ProjectBuildingException e12) {
             throw new MojoExecutionException("Unable to parse distribution POM", e12);
-        }
-
-        // resolve transitive dependencies
-        try {
-            if (distPom.getDependencyArtifacts() == null )
-                distPom.setDependencyArtifacts( distPom.createArtifacts( artifactFactory, null, null ) );
-
-            ArtifactResolutionResult result = artifactResolver.resolveTransitively(
-                distPom.getDependencyArtifacts(),
-                dist, localRepository,
-                project.getRemoteArtifactRepositories(),
-                artifactMetadataSource, new ScopeArtifactFilter("runtime") );
-            distPom.setArtifacts( result.getArtifacts() );
-
-            // download any missing artifacts
-            for (Object a : distPom.getArtifacts()) {
-                artifactResolver.resolve( (Artifact)a, project.getRemoteArtifactRepositories(), localRepository );
-            }
-        } catch (ArtifactResolutionException e) {
-            throw new MojoExecutionException("Failed to resolve dependencies of distribution POM",e);
-        } catch (ArtifactNotFoundException e) {
-            throw new MojoExecutionException("Failed to resolve dependencies of distribution POM",e);
-        } catch (InvalidDependencyVersionException e) {
-            throw new MojoExecutionException("Failed to resolve dependencies of distribution POM",e);
         }
 
         // do we have rootDir ?
         if(rootDir==null) {
             // where's the base installation image?
-            Artifact baseImage = findBaseImage(distPom);
+            Artifact baseImage = findBaseImage(distPoms);
             rootDir = new File(new File(session.getExecutionRootDirectory()),"target/glassfish");
             if(!rootDir.exists()) {
                 getLog().info(
@@ -183,7 +208,7 @@ public class RunMojo extends DistributionAssemblyMojo {
             StartupContext context = new StartupContext(new File(rootDir,"modules"),args);
 
             HK2Factory.initialize();
-            ModulesRegistry mr = createModuleRegistry(distPom);
+            ModulesRegistry mr = createModuleRegistry(distPoms);
             mr.setParentClassLoader(this.getClass().getClassLoader());
             Module mainModule = mr.makeModuleFor("org.glassfish.core:glassfish", null);
             if (mainModule!=null) {
@@ -213,40 +238,42 @@ public class RunMojo extends DistributionAssemblyMojo {
         }
     }
 
+    private Artifact resolve(ArtifactInfo distribution) throws ArtifactResolutionException, ArtifactNotFoundException {
+        Artifact dist = distribution.toArtifact(artifactFactory);
+        artifactResolver.resolve(dist,
+                    project.getRemoteArtifactRepositories(), localRepository);
+        return dist;
+    }
+
     /**
      * Finds the base installation image artifact from the distribution POM,
      * or throw an exception if fails.
      */
-    private Artifact findBaseImage(MavenProject dist) throws MojoExecutionException {
-        for (Object o : dist.getArtifacts()) {
-            Artifact a = (Artifact) o;
-            String type = a.getType();
-            if(type!=null && type.equals("zip"))
-                return a;
+    private Artifact findBaseImage(List<MavenProject> distPoms) throws MojoExecutionException {
+        for (MavenProject dist : distPoms) {
+            for (Object o : dist.getArtifacts()) {
+                Artifact a = (Artifact) o;
+                String type = a.getType();
+                if(type!=null && type.equals("zip"))
+                    return a;
+            }
         }
 
-        throw new MojoExecutionException("No base image found for "+dist.getFile());
+        throw new MojoExecutionException("No base image found");
     }
 
     /**
      * Creates a fully configured module registry.
      */
-    protected ModulesRegistry createModuleRegistry(MavenProject root) throws IOException {
+    protected ModulesRegistry createModuleRegistry(List<MavenProject> groups) throws IOException {
         ModulesRegistry r = AbstractFactory.getInstance().createModulesRegistry();
         r.setParentClassLoader(this.getClass().getClassLoader());
-        // one repository for loading all the modules from distribution
-        MavenProjectRepository lib = new MavenProjectRepository(root,artifactResolver,localRepository,artifactFactory);
-        r.addRepository(lib);
-        lib.initialize();
-
-        // another for loading the current module from which mvn gf:run is invoked.
-        // if this module is already referenced from the distribution, this new repository
-        // won't add anything new. This is for the situation where people develop
-        // modules that are not yet in the distribution.
-        MavenProjectRepository.prepareProject(project);
-        lib = new MavenProjectRepository(project,artifactResolver,localRepository,artifactFactory);
-        r.addRepository(lib);
-        lib.initialize();
+        for (MavenProject group : groups) {
+            // one repository for loading all the modules from distribution
+            MavenProjectRepository lib = new MavenProjectRepository(group,artifactResolver,localRepository,artifactFactory);
+            r.addRepository(lib);
+            lib.initialize();
+        }
 
         return r;
     }
