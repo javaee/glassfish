@@ -44,7 +44,8 @@
         <version>10.0-SNAPSHOT</version>
     </parent>    
     <artifactId>deployment-client</artifactId>
-    <packaging>jar</packaging>
+    <version>${pe.version}</version>
+    <packaging>hk2-jar</packaging>
     <name>Deployment Client Classes and Interfaces</name>
 
     <developers>
