@@ -33,10 +33,15 @@
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>console-core</artifactId>
-      <version>${project.version}</version>
+	  <version>${project.version}</version>
+		<exclusions>
+			<exclusion>
+      			<groupId>${project.groupId}</groupId>
+      			<artifactId>console-plugin-service</artifactId>
+			</exclusion>
+		</exclusions>
     </dependency>
   </dependencies>
-
   <profiles>
     <profile>
       <!--
