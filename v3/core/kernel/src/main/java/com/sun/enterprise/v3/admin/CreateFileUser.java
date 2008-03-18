@@ -90,8 +90,8 @@ public class CreateFileUser implements AdminCommand {
     final private static LocalStringManagerImpl localStrings = 
         new LocalStringManagerImpl(CreateFileUser.class);    
 
-//  @Param(name="groups", optional=true)
-//  List<String> groups;
+    //@Param(name="groups", optional=true)
+    //List<String> groups;
 
     @Param(name="userpasswordfile")
     String passwordFile;
@@ -127,13 +127,13 @@ public class CreateFileUser implements AdminCommand {
 
         // ensure we have the file authrealm
         AuthRealm fileAuthRealm = null;        
-        for (AuthRealm authRealm : securityService.getAuthRealm()) {
+        for (AuthRealm authRealm : securityService.getAuthRealm()) {            
             if (authRealm.getName().equals(authRealmName))                 
                 fileAuthRealm = authRealm;            
         }        
         if (fileAuthRealm == null) {
             report.setMessage(localStrings.getLocalString(
-                "create.fileuser.filerealm.notfound",
+                "fileuser.filerealm.notfound",
                 "There is no File realm to perform this operation"));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             return;                                            
@@ -162,7 +162,7 @@ public class CreateFileUser implements AdminCommand {
         }
         if (keyFile == null) {
             report.setMessage(
-                localStrings.getLocalString("create.fileuser.keyfile.notfound",
+                localStrings.getLocalString("fileuser.keyfile.notfound",
                 "There is no physical file associated with this Filerealm"));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             return;                                            
@@ -189,7 +189,7 @@ public class CreateFileUser implements AdminCommand {
         } catch(BadRealmException e) {
             report.setMessage(
                 localStrings.getLocalString(
-                    "create.fileuser.realm.corrupted",
+                    "fileuser.realm.corrupted",
                     "Configured FileRealm is corrupted."));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
@@ -197,7 +197,7 @@ public class CreateFileUser implements AdminCommand {
         } catch(NoSuchRealmException e) {
             report.setMessage(
                 localStrings.getLocalString(
-                    "create.fileuser.realm.notsupported",
+                    "fileuser.realm.notsupported",
                     "Configured FileRealm is not supported."));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
@@ -209,7 +209,8 @@ public class CreateFileUser implements AdminCommand {
             // Ignore. I want this exception. Now I can add the user
         }
         try {
-            String[] groups1 = {groups}; 
+            String[] groups1 = {groups};            
+            //String[] groups1 = (String[]) groups.toArray();
             fr.addUser(userName, password, groups1);
             fr.writeKeyFile(keyFile);
         } catch (Exception e) {
