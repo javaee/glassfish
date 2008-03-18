@@ -58,7 +58,7 @@ import java.util.List;
     "description",
     "property"
 }) */
-@com.sun.appserv.management.annotation.AMXConfigInfo( amxInterface=com.sun.appserv.management.config.AppClientModuleConfig.class)
+@com.sun.appserv.management.annotation.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.AppClientModuleConfig")
 @Configured
 public interface AppclientModule extends ConfigBeanProxy, Injectable, Module {
     

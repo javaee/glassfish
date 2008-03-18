@@ -52,7 +52,7 @@ import java.io.Serializable;
  */
 
 /* @XmlType(name = "") */
-@com.sun.appserv.management.annotation.AMXConfigInfo( amxInterface=com.sun.appserv.management.config.RequestProcessingConfig.class, singleton=true)
+@com.sun.appserv.management.annotation.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.RequestProcessingConfig", singleton=true)
 @Configured
 public interface RequestProcessing extends ConfigBeanProxy, Injectable  {
 

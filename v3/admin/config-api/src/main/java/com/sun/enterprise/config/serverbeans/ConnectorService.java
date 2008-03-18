@@ -52,7 +52,7 @@ import java.io.Serializable;
  */
 
 /* @XmlType(name = "") */
-@com.sun.appserv.management.annotation.AMXConfigInfo( amxInterface=com.sun.appserv.management.config.ConnectorServiceConfig.class, singleton=true)
+@com.sun.appserv.management.annotation.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.ConnectorServiceConfig", singleton=true)
 @Configured
 public interface ConnectorService extends ConfigBeanProxy, Injectable  {
 

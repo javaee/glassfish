@@ -52,7 +52,7 @@ import java.io.Serializable;
  */
 
 /* @XmlType(name = "") */
-@com.sun.appserv.management.annotation.AMXConfigInfo( amxInterface=com.sun.appserv.management.config.HTTPFileCacheConfig.class, singleton=true)
+@com.sun.appserv.management.annotation.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.HTTPFileCacheConfig", singleton=true)
 @Configured
 public interface HttpFileCache extends ConfigBeanProxy, Injectable  {
 

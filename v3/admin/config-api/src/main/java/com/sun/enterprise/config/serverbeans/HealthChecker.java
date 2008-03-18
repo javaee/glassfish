@@ -52,7 +52,7 @@ import java.io.Serializable;
  */
 
 /* @XmlType(name = "") */
-@com.sun.appserv.management.annotation.AMXConfigInfo( amxInterface=com.sun.appserv.management.config.HealthCheckerConfig.class)
+@com.sun.appserv.management.annotation.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.HealthCheckerConfig")
 @Configured
 public interface HealthChecker extends ConfigBeanProxy, Injectable  {
 

@@ -48,7 +48,10 @@ import com.sun.appserv.management.base.Util;
 import com.sun.appserv.management.base.NotificationEmitterServiceKeys;
 import com.sun.appserv.management.base.NotificationEmitterService;
 
-import com.sun.appserv.management.j2ee.J2EETypes;
+import com.sun.appserv.management.j2ee.J2EEDomain;
+
+import org.glassfish.admin.amx.j2ee.J2EEDomainImpl;
+
 
 import com.sun.appserv.management.util.misc.GSetUtil;
 import com.sun.appserv.management.util.misc.GSetUtil;
@@ -158,16 +161,20 @@ public class DomainRootImplBase extends AMXNonConfigImplBase
 		mbean	= new BulkAccessImpl();
         registerChild( mbean, childObjectName );
         
-        
         childObjectName	= objectNames.buildContaineeObjectName( self, getFullType(),
                 XTypes.UPLOAD_DOWNLOAD_MGR, AMX.NO_NAME, false );
 		mbean	= new UploadDownloadMgrImpl();
         registerChild( mbean, childObjectName );
         
-        
         childObjectName	= objectNames.buildContaineeObjectName( self, getFullType(),
                 XTypes.SAMPLE, AMX.NO_NAME, false );
 		mbean	= new SampleImpl();
+        registerChild( mbean, childObjectName );
+        
+        final String j2eeDomainName = getObjectName().getDomain();
+        childObjectName	= objectNames.buildContaineeObjectName( self, getFullType(),
+                J2EEDomain.J2EE_TYPE, j2eeDomainName, false );
+		mbean	= new J2EEDomainImpl( getObjectName() );
         registerChild( mbean, childObjectName );
 
 	}
@@ -186,7 +193,6 @@ public class DomainRootImplBase extends AMXNonConfigImplBase
 	}
 	
 	
-	static private final long  AMX_READY_SLEEP_DURATION  = 100;
 	/**
 	    Notice when AMX has finished loading, the exit.
 	 */
@@ -218,6 +224,7 @@ public class DomainRootImplBase extends AMXNonConfigImplBase
 	    return BootUtil.getInstance().getAMXReady();
 	}
 	
+	static private final long  AMX_READY_SLEEP_DURATION  = 100;
 	    public void
 	waitAMXReady( )
 	{

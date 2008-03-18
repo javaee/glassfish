@@ -59,12 +59,9 @@ import org.glassfish.admin.amx.mbean.Delegate;
 public final class J2EEDomainImpl extends J2EEManagedObjectImplBase
 {
 		public
-	J2EEDomainImpl(
-        final String fullType,
-        final ObjectName parentObjectName,
-        final Delegate delegate )
+	J2EEDomainImpl( final ObjectName parentObjectName )
 	{
-		super( J2EETypes.J2EE_DOMAIN, fullType, parentObjectName, J2EEDomain.class, delegate );
+        super( J2EEDomain.J2EE_TYPE, J2EEDomain.J2EE_TYPE, parentObjectName, J2EEDomain.class, null);
 	}
 
 		public boolean

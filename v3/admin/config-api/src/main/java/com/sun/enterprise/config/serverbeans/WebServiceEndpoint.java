@@ -57,7 +57,7 @@ import java.util.List;
     "registryLocation",
     "transformationRule"
 }) */
-@com.sun.appserv.management.annotation.AMXConfigInfo( amxInterface=com.sun.appserv.management.config.WebServiceEndpointConfig.class)
+@com.sun.appserv.management.annotation.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.WebServiceEndpointConfig")
 @Configured
 public interface WebServiceEndpoint extends ConfigBeanProxy, Injectable  {
 

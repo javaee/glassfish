@@ -58,7 +58,7 @@ import java.util.List;
     "description",
     "property"
 }) */
-@com.sun.appserv.management.annotation.AMXConfigInfo( amxInterface=com.sun.appserv.management.config.CustomResourceConfig.class, nameHint="jndi-name")
+@com.sun.appserv.management.annotation.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.CustomResourceConfig", nameHint="jndi-name")
 @Configured
 public interface CustomResource extends ConfigBeanProxy, Injectable, Resource {
 

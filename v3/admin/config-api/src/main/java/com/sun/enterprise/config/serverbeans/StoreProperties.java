@@ -55,7 +55,7 @@ import java.util.List;
 /* @XmlType(name = "", propOrder = {
     "property"
 }) */
-@com.sun.appserv.management.annotation.AMXConfigInfo( amxInterface=com.sun.appserv.management.config.StorePropertiesConfig.class, singleton=true)
+@com.sun.appserv.management.annotation.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.StorePropertiesConfig", singleton=true)
 @Configured
 public interface StoreProperties extends ConfigBeanProxy, Injectable  {
 

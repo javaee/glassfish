@@ -50,7 +50,7 @@ import com.sun.appserv.management.annotation.AMXConfigInfo;
 
 
 /* @XmlType(name = "") */
-@AMXConfigInfo( amxInterface=com.sun.appserv.management.config.AccessLogConfig.class, singleton=true)
+@AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.AccessLogConfig", singleton=true)
 @Configured
 public interface AccessLog extends ConfigBeanProxy, Injectable {
 

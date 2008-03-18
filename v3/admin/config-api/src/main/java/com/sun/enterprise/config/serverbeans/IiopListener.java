@@ -57,7 +57,7 @@ import java.util.List;
     "ssl",
     "property"
 }) */
-@com.sun.appserv.management.annotation.AMXConfigInfo( amxInterface=com.sun.appserv.management.config.IIOPListenerConfig.class, nameHint="id")
+@com.sun.appserv.management.annotation.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.IIOPListenerConfig", nameHint="id")
 @Configured
 public interface IiopListener extends ConfigBeanProxy, Injectable  {
 

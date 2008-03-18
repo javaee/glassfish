@@ -58,7 +58,7 @@ import java.util.List;
     "description",
     "property"
 }) */
-@com.sun.appserv.management.annotation.AMXConfigInfo( amxInterface=com.sun.appserv.management.config.JDBCConnectionPoolConfig.class)
+@com.sun.appserv.management.annotation.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.JDBCConnectionPoolConfig")
 @Configured
 public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resource {
 

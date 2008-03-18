@@ -55,7 +55,7 @@ import java.util.List;
 /* @XmlType(name = "", propOrder = {
     "property"
 }) */
-@com.sun.appserv.management.annotation.AMXConfigInfo( amxInterface=com.sun.appserv.management.config.ModuleMonitoringLevelsConfig.class, singleton=true)
+@com.sun.appserv.management.annotation.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.ModuleMonitoringLevelsConfig", singleton=true)
 @Configured
 public interface ModuleMonitoringLevels extends ConfigBeanProxy, Injectable  {
 

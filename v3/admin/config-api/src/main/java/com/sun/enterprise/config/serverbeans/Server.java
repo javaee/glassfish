@@ -59,7 +59,7 @@ import java.util.List;
     "systemProperty",
     "property"
 }) */
-@com.sun.appserv.management.annotation.AMXConfigInfo( amxInterface=com.sun.appserv.management.config.StandaloneServerConfig.class)
+@com.sun.appserv.management.annotation.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.StandaloneServerConfig")
 @Configured
 public interface Server extends ConfigBeanProxy, Injectable  {
 

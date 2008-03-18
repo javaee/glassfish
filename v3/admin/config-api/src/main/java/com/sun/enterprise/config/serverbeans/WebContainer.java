@@ -56,7 +56,7 @@ import java.util.List;
     "sessionConfig",
     "property"
 }) */
-@com.sun.appserv.management.annotation.AMXConfigInfo( amxInterface=com.sun.appserv.management.config.WebContainerConfig.class, singleton=true)
+@com.sun.appserv.management.annotation.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.WebContainerConfig", singleton=true)
 @Configured
 public interface WebContainer extends ConfigBeanProxy, Injectable  {
 

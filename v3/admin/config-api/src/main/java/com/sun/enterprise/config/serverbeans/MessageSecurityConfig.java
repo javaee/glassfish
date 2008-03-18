@@ -56,7 +56,7 @@ import java.util.List;
 /* @XmlType(name = "", propOrder = {
     "providerConfig"
 }) */
-@com.sun.appserv.management.annotation.AMXConfigInfo( amxInterface=com.sun.appserv.management.config.MessageSecurityConfig.class, singleton=true)
+@com.sun.appserv.management.annotation.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.MessageSecurityConfig", singleton=true)
 @Configured
 public interface MessageSecurityConfig extends ConfigBeanProxy, Injectable  {
 

@@ -56,7 +56,7 @@ import java.util.List;
 /* @XmlType(name = "", propOrder = {
     "property"
 }) */
-@com.sun.appserv.management.annotation.AMXConfigInfo( amxInterface=com.sun.appserv.management.config.GroupManagementServiceConfig.class, singleton=true)
+@com.sun.appserv.management.annotation.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.GroupManagementServiceConfig", singleton=true)
 @Configured
 public interface GroupManagementService extends ConfigBeanProxy, Injectable  {
 

@@ -59,7 +59,7 @@ import java.util.List;
     "webServiceEndpoint",
     "property"
 }) */
-@com.sun.appserv.management.annotation.AMXConfigInfo( amxInterface=com.sun.appserv.management.config.J2EEApplicationConfig.class)
+@com.sun.appserv.management.annotation.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.J2EEApplicationConfig")
 @Configured
 public interface J2EeApplication extends ConfigBeanProxy, Injectable, Module {
 

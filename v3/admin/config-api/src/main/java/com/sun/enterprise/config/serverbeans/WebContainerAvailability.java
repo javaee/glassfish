@@ -55,7 +55,7 @@ import java.util.List;
 /* @XmlType(name = "", propOrder = {
     "property"
 }) */
-@com.sun.appserv.management.annotation.AMXConfigInfo( amxInterface=com.sun.appserv.management.config.WebContainerAvailabilityConfig.class)
+@com.sun.appserv.management.annotation.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.WebContainerAvailabilityConfig")
 @Configured
 public interface WebContainerAvailability extends ConfigBeanProxy, Injectable  {
 

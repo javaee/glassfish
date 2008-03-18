@@ -58,7 +58,7 @@ import java.util.List;
     "responsePolicy",
     "property"
 }) */
-@com.sun.appserv.management.annotation.AMXConfigInfo( amxInterface=com.sun.appserv.management.config.ProviderConfig.class, nameHint="provider-id")
+@com.sun.appserv.management.annotation.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.ProviderConfig", nameHint="provider-id")
 @Configured
 public interface ProviderConfig extends ConfigBeanProxy, Injectable  {
 

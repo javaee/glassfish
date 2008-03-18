@@ -65,7 +65,7 @@ import com.sun.appserv.management.annotation.AMXConfigInfo;
     "httpFileCache",
     "property"
 }) */
-@AMXConfigInfo( amxInterface=com.sun.appserv.management.config.HTTPServiceConfig.class, singleton=true)
+@AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.HTTPServiceConfig", singleton=true)
 @Configured
 public interface HttpService extends ConfigBeanProxy, Injectable  {
 

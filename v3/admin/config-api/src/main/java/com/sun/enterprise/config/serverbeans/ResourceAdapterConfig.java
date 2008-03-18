@@ -56,7 +56,7 @@ import java.util.List;
 /* @XmlType(name = "", propOrder = {
     "property"
 }) */
-@com.sun.appserv.management.annotation.AMXConfigInfo( amxInterface=com.sun.appserv.management.config.ResourceAdapterConfig.class)
+@com.sun.appserv.management.annotation.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.ResourceAdapterConfig")
 @Configured
 public interface ResourceAdapterConfig extends ConfigBeanProxy, Injectable, Resource {
 

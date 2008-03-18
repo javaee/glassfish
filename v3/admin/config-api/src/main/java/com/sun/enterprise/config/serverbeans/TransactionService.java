@@ -56,7 +56,7 @@ import com.sun.appserv.management.annotation.AMXConfigInfo;
 /* @XmlType(name = "", propOrder = {
     "property"
 }) */
-@AMXConfigInfo( amxInterface=com.sun.appserv.management.config.TransactionServiceConfig.class, singleton=true)
+@AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.TransactionServiceConfig", singleton=true)
 @Configured
 public interface TransactionService extends ConfigBeanProxy, Injectable  {
 

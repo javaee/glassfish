@@ -55,7 +55,7 @@ import java.util.List;
     "alertSubscription",
     "property"
 }) */
-//@com.sun.appserv.management.annotation.AMXConfigInfo( amxInterface=com.sun.appserv.management.config.AlertServiceConfig.class, singleton=true)
+//@com.sun.appserv.management.annotation.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.AlertServiceConfig", singleton=true)
 @Configured
 public interface AlertService extends ConfigBeanProxy, Injectable  {
 

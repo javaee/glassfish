@@ -54,7 +54,7 @@ import java.io.Serializable;
 /* @XmlType(name = "", propOrder = {
     "description"
 }) */
-@com.sun.appserv.management.annotation.AMXConfigInfo( amxInterface=com.sun.appserv.management.config.SystemPropertyConfig.class)
+@com.sun.appserv.management.annotation.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.SystemPropertyConfig")
 @Configured
 public interface SystemProperty extends ConfigBeanProxy, Injectable  {
 

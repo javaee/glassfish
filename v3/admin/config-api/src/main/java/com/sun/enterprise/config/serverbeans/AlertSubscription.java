@@ -56,7 +56,7 @@ import java.io.Serializable;
     "listenerConfig",
     "filterConfig"
 }) */
-//@com.sun.appserv.management.annotation.AMXConfigInfo( amxInterface=com.sun.appserv.management.config.AlertSubscriptionConfig.class)
+//@com.sun.appserv.management.annotation.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.AlertSubscriptionConfig")
 @Configured
 public interface AlertSubscription extends ConfigBeanProxy, Injectable  {
 

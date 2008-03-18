@@ -67,7 +67,7 @@ import com.sun.appserv.management.annotation.AMXConfigInfo;
     "systemProperty",
     "property"
 }) */
-@AMXConfigInfo( amxInterface=com.sun.appserv.management.config.DomainConfig.class, singleton=true, omitAsAncestorInChildObjectName=true)
+@AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.DomainConfig", singleton=true, omitAsAncestorInChildObjectName=true)
 @Configured
 public interface Domain extends ConfigBeanProxy, Injectable  {
 

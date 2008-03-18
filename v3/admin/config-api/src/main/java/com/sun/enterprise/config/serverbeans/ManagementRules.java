@@ -56,7 +56,7 @@ import java.util.List;
 /* @XmlType(name = "", propOrder = {
     "managementRule"
 }) */
-@com.sun.appserv.management.annotation.AMXConfigInfo( amxInterface=com.sun.appserv.management.config.ManagementRulesConfig.class, singleton=true)
+@com.sun.appserv.management.annotation.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.ManagementRulesConfig", singleton=true)
 @Configured
 public interface ManagementRules extends ConfigBeanProxy, Injectable  {
 

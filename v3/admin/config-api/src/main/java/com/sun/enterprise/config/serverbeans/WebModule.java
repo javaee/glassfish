@@ -60,7 +60,7 @@ import com.sun.appserv.management.annotation.AMXConfigInfo;
     "webServiceEndpoint",
     "property"
 }) */
-@AMXConfigInfo( amxInterface=com.sun.appserv.management.config.WebModuleConfig.class)
+@AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.WebModuleConfig")
 @Configured
 public interface WebModule extends ConfigBeanProxy, Injectable, Module {
 

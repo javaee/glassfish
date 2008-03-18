@@ -56,7 +56,7 @@ import com.sun.appserv.management.annotation.AMXConfigInfo;
     "description",
     "property"
 }) */
-@AMXConfigInfo( amxInterface=com.sun.appserv.management.config.MailResourceConfig.class, nameHint="id")
+@AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.MailResourceConfig", nameHint="id")
 @Configured
 public interface MailResource extends ConfigBeanProxy, Injectable, Resource {
 

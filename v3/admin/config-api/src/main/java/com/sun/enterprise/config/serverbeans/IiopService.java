@@ -55,7 +55,7 @@ import com.sun.appserv.management.annotation.AMXConfigInfo;
     "sslClientConfig",
     "iiopListener"
 }) */
-@AMXConfigInfo( amxInterface=com.sun.appserv.management.config.IIOPServiceConfig.class, singleton=true)
+@AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.IIOPServiceConfig", singleton=true)
 @Configured
 public interface IiopService extends ConfigBeanProxy, Injectable  {
 

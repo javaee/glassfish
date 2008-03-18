@@ -29,7 +29,7 @@ import com.sun.appserv.management.config.AMXConfig;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-@AMXMBeanMetadata(amxGroup=AMX.GROUP_CONFIGURATION)
+@AMXMBeanMetadata
 //@CagedBy(AMXConfigRegistrar.class)
 public @interface AMXConfigInfo {
     /**
@@ -37,8 +37,14 @@ public @interface AMXConfigInfo {
         Specify a sub-interface of {@link AMXConfig} if desired.  By specifying AMXConfig.class
         as the amxInterface(), the MBeanInfo will automagically include all attributes
         from the config interface.
+        <p>
+        Should really be:
+        <pre>Class&lt;? extends AMXConfig>  amxInterface() default AMXConfig.class;</pre>
+        But this creates compile and runtime dependencies, so a String is used.  Leave the value
+        empty to use the generic default (com.sun.appserv.management.config.AMXConfig).
       */
-    Class<? extends AMXConfig>  amxInterface() default AMXConfig.class;
+    public String amxInterfaceName() default "";
+    
      
     /**
        <em>If a generic AMX interface is used in {@link #amxInterface},

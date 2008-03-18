@@ -58,7 +58,7 @@ import java.util.List;
     "profiler",
     "jvmOptionsOrProperty"
 }) */
-@com.sun.appserv.management.annotation.AMXConfigInfo( amxInterface=com.sun.appserv.management.config.JavaConfig.class, singleton=true)
+@com.sun.appserv.management.annotation.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.JavaConfig", singleton=true)
 @Configured
 public interface JavaConfig extends ConfigBeanProxy, Injectable  {
 

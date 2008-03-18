@@ -55,7 +55,7 @@ import com.sun.appserv.management.annotation.AMXConfigInfo;
     "dasConfig",
     "property"
 }) */
-@AMXConfigInfo( amxInterface=com.sun.appserv.management.config.AdminServiceConfig.class, singleton=true)
+@AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.AdminServiceConfig", singleton=true)
 @Configured
 public interface AdminService extends ConfigBeanProxy, Injectable  {
 

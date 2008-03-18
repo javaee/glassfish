@@ -59,7 +59,7 @@ import com.sun.appserv.management.annotation.AMXConfigInfo;
     "messageSecurityConfig",
     "property"
 }) */
-@AMXConfigInfo( amxInterface=com.sun.appserv.management.config.SecurityServiceConfig.class, singleton=true)
+@AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.SecurityServiceConfig", singleton=true)
 @Configured
 public interface SecurityService extends ConfigBeanProxy, Injectable  {
 

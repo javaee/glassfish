@@ -55,7 +55,7 @@ import org.jvnet.hk2.config.Element;
 /* @XmlType(name = "", propOrder = {
     "property"
 }) */
-@com.sun.appserv.management.annotation.AMXConfigInfo( amxInterface=com.sun.appserv.management.config.AuthRealmConfig.class)
+@com.sun.appserv.management.annotation.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.AuthRealmConfig")
 @Configured
 public interface AuthRealm extends ConfigBeanProxy, Injectable  {
 

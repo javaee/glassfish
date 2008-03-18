@@ -55,7 +55,7 @@ import com.sun.appserv.management.annotation.AMXConfigInfo;
 /* @XmlType(name = "", propOrder = {
     "config"
 }) */
-@AMXConfigInfo( amxInterface=org.glassfish.admin.amx.loader.AMXConfigVoid.class )
+@AMXConfigInfo( amxInterfaceName="org.glassfish.admin.amx.loader.AMXConfigVoid" )
 @Configured
 public interface Configs extends ConfigBeanProxy, Injectable  {
 

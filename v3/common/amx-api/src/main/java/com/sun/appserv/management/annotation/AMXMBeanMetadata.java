@@ -66,7 +66,7 @@ public @interface AMXMBeanMetadata {
        the legal values returned by {@link com.sun.appserv.management.base.AMX#getGroup}.
        
      */
-    String amxGroup();
+    String amxGroup() default "na";
 }
 
 

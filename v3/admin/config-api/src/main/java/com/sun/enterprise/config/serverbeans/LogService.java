@@ -54,7 +54,7 @@ import com.sun.appserv.management.annotation.AMXConfigInfo;
     "moduleLogLevels",
     "property"
 }) */
-@AMXConfigInfo( amxInterface=com.sun.appserv.management.config.LogServiceConfig.class, singleton=true)
+@AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.LogServiceConfig", singleton=true)
 @Configured
 public interface LogService extends ConfigBeanProxy, Injectable  {
 

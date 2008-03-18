@@ -55,7 +55,7 @@ import com.sun.appserv.management.annotation.AMXConfigInfo;
     "httpAccessLog",
     "property"
 }) */
-@AMXConfigInfo( amxInterface=com.sun.appserv.management.config.VirtualServerConfig.class, nameHint="id" )
+@AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.VirtualServerConfig", nameHint="id" )
 @Configured
 public interface VirtualServer extends ConfigBeanProxy, Injectable  {
 

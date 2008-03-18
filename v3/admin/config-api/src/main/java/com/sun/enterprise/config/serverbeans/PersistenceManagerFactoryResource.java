@@ -57,7 +57,7 @@ import java.util.List;
     "description",
     "property"
 }) */
-@com.sun.appserv.management.annotation.AMXConfigInfo( amxInterface=com.sun.appserv.management.config.PersistenceManagerFactoryResourceConfig.class, nameHint="jndi-name")
+@com.sun.appserv.management.annotation.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.PersistenceManagerFactoryResourceConfig", nameHint="jndi-name")
 @Configured
 public interface PersistenceManagerFactoryResource extends ConfigBeanProxy, Injectable, Resource {
 

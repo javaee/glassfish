@@ -54,7 +54,7 @@ import com.sun.appserv.management.annotation.AMXConfigInfo;
     "moduleMonitoringLevels",
     "property"
 }) */
-@AMXConfigInfo( amxInterface=com.sun.appserv.management.config.MonitoringServiceConfig.class, singleton=true)
+@AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.MonitoringServiceConfig", singleton=true)
 @Configured
 public interface MonitoringService extends ConfigBeanProxy, Injectable  {
 

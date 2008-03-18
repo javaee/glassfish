@@ -59,7 +59,7 @@ import java.util.List;
     "webServiceEndpoint",
     "property"
 }) */
-@com.sun.appserv.management.annotation.AMXConfigInfo( amxInterface=com.sun.appserv.management.config.EJBModuleConfig.class)
+@com.sun.appserv.management.annotation.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.EJBModuleConfig")
 @Configured
 public interface EjbModule extends ConfigBeanProxy, Injectable, Module {
 

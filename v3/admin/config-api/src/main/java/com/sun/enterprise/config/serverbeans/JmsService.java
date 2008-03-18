@@ -55,7 +55,7 @@ import com.sun.appserv.management.annotation.AMXConfigInfo;
     "jmsHost",
     "property"
 }) */
-@AMXConfigInfo( amxInterface=com.sun.appserv.management.config.JMSServiceConfig.class, singleton=true)
+@AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.JMSServiceConfig", singleton=true)
 @Configured
 public interface JmsService extends ConfigBeanProxy, Injectable  {
 

@@ -54,7 +54,7 @@ import java.io.Serializable;
 /* @XmlType(name = "", propOrder = {
     "ssl"
 }) */
-@com.sun.appserv.management.annotation.AMXConfigInfo( amxInterface=com.sun.appserv.management.config.SSLConfig.class, singleton=true)
+@com.sun.appserv.management.annotation.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.SSLConfig", singleton=true)
 @Configured
 public interface SslClientConfig extends ConfigBeanProxy, Injectable  {
 

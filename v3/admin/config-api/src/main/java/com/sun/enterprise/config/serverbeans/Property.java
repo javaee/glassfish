@@ -55,7 +55,7 @@ import java.io.Serializable;
     "description"
 }) */
 @Configured
-@com.sun.appserv.management.annotation.AMXConfigInfo( amxInterface=com.sun.appserv.management.config.PropertyConfig.class)
+@com.sun.appserv.management.annotation.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.PropertyConfig")
 public interface Property extends ConfigBeanProxy, Injectable  {
 
     /**

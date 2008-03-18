@@ -30,6 +30,7 @@ import org.glassfish.admin.amx.mbean.DelegateToConfigBeanDelegate;
 import org.glassfish.admin.amx.mbean.AMXConfigImplBase;
 
 import org.glassfish.admin.amx.util.ObjectNames;
+import org.glassfish.admin.amx.util.AMXConfigInfoResolver;
 
 /**
  * @author llc
@@ -100,7 +101,8 @@ public final class AMXConfigLoader
                 }
                 
                 //debug( "amxInterface() for " + parent.getProxyType().getName() + " = " + amxConfigInfo.amxInterface().getName() );
-                if ( amxConfigInfo.amxInterface() == AMXConfigVoid.class )
+                final AMXConfigInfoResolver resolver = new AMXConfigInfoResolver(amxConfigInfo);
+                if ( resolver.amxInterface() == AMXConfigVoid.class )
                 {
                     parent = getActualParent( parent );
                 }
@@ -287,10 +289,10 @@ public final class AMXConfigLoader
         
         // don't process internal nodes like <configs>, <resources>, etc; these contain
         // nothing but child nodes.  Such nodes use AMXConfigVoid.
-        if ( amxConfigInfo.amxInterface() != AMXConfigVoid.class )
+        final AMXConfigInfoResolver resolver = new AMXConfigInfoResolver(amxConfigInfo);
+        final Class<? extends AMXConfig> amxInterface = resolver.amxInterface();
+        if ( amxInterface != AMXConfigVoid.class )
         {
-            final Class<? extends AMXConfig> amxInterface = amxConfigInfo.amxInterface();
-        
             // if the specified interface is the base interface AMXConfig, then
             // the resulting interface is a combination of AMXConfig and the interface of the ConfigBean
             final boolean autoInterface = amxInterface == AMXConfig.class;
@@ -300,7 +302,7 @@ public final class AMXConfigLoader
             
             // debug( "Preparing ConfigBean for registration with ObjectNameInfo = " + objectNameInfo.toString() + ", AMXMBeanMetaData = " + metadata );
 
-            objectName = buildObjectName( cb, amxConfigInfo );
+            objectName = buildObjectName( cb, resolver );
         
             objectName  = createAndRegister( cb, amxInterface, supplementaryIntf, objectName );
             /*debug( "REGISTERED MBEAN: " + JMXUtil.toString(objectName) + " ===> USING " +
@@ -401,7 +403,7 @@ public final class AMXConfigLoader
         private String
     getJ2EEType(
         final ConfigBean cb,
-        final AMXConfigInfo info)
+        final AMXConfigInfoResolver info)
     {
         final Class<? extends AMXConfig> amxInterface = info.amxInterface();
         
@@ -443,7 +445,7 @@ public final class AMXConfigLoader
         private String
     getName(
         final ConfigBean cb,
-        final AMXConfigInfo info)
+        final AMXConfigInfoResolver info)
     {
         String name = info.singleton() ? AMX.NO_NAME : cb.rawAttribute( info.nameHint() );
         
@@ -457,7 +459,7 @@ public final class AMXConfigLoader
         private ObjectName
     buildObjectName(
         final ConfigBean cb,
-        final AMXConfigInfo info )
+        final AMXConfigInfoResolver info )
     {
         final String j2eeType = getJ2EEType( cb, info );
         final String name     = getName( cb, info );

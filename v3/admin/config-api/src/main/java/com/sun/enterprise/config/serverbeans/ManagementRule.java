@@ -57,7 +57,7 @@ import java.io.Serializable;
     "action",
     "description"
 }) */
-@com.sun.appserv.management.annotation.AMXConfigInfo( amxInterface=com.sun.appserv.management.config.ManagementRuleConfig.class)
+@com.sun.appserv.management.annotation.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.ManagementRuleConfig")
 @Configured
 public interface ManagementRule extends ConfigBeanProxy, Injectable  {
 

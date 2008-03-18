@@ -55,7 +55,7 @@ import com.sun.appserv.management.annotation.AMXConfigInfo;
     "ssl",
     "property"
 }) */
-@AMXConfigInfo( amxInterface=com.sun.appserv.management.config.HTTPListenerConfig.class, nameHint="id")
+@AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.HTTPListenerConfig", nameHint="id")
 @Configured
 public interface HttpListener extends ConfigBeanProxy, Injectable  {
 
