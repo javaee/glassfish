@@ -89,6 +89,8 @@ public class AsadminMain {
         "com.sun.enterprise.util.net.NetUtils",
         // one from admin/util
         "com.sun.enterprise.admin.util.TokenValueSet",
+        // here's one that server-mgmt is dependent on
+        "com.sun.enterprise.security.auth.realm.file.FileRealm",
     };
     static {
         // check RIGHT NOW to make sure all the classes we need are
