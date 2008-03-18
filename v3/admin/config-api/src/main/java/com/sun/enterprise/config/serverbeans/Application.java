@@ -59,7 +59,7 @@ import java.util.List;
     "engine",
     "property"
 }) */
-@com.sun.appserv.management.annotation.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.J2EEApplicationConfig")
+@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.J2EEApplicationConfig")
 @Configured
 public interface Application extends ConfigBeanProxy, Injectable, Module {
 

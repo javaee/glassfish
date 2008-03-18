@@ -33,16 +33,13 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.appserv.management.annotation;
+package org.glassfish.api.amx;
 
 import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
 import java.lang.annotation.Retention;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import java.lang.annotation.Target;
-
-
-import com.sun.appserv.management.base.AMX;
 
 /**
     Holds meta information useful in generating and/or supplementing the default

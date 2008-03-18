@@ -54,7 +54,7 @@ import java.util.List;
 /* @XmlType(name = "", propOrder = {
     "loadBalancer"
 }) */
-@com.sun.appserv.management.annotation.AMXConfigInfo( amxInterfaceName="org.glassfish.admin.amx.loader.AMXConfigVoid", omitAsAncestorInChildObjectName=true)
+@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="org.glassfish.admin.amx.loader.AMXConfigVoid", omitAsAncestorInChildObjectName=true)
 @Configured
 public interface LoadBalancers extends ConfigBeanProxy, Injectable  {
 

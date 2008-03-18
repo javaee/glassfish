@@ -73,8 +73,7 @@ import com.sun.appserv.management.util.misc.CollectionUtil;
 import com.sun.appserv.management.util.misc.ExceptionUtil;
 import com.sun.appserv.management.util.jmx.JMXUtil;
 
-import com.sun.appserv.management.annotation.AMXConfigInfo;
-
+import org.glassfish.api.amx.AMXConfigInfo;
 
 
 /**

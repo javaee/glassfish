@@ -57,7 +57,7 @@ import java.util.List;
     "ejbTimerService",
     "property"
 }) */
-@com.sun.appserv.management.annotation.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.EJBContainerConfig", singleton=true)
+@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.EJBContainerConfig", singleton=true)
 @Configured
 public interface EjbContainer extends ConfigBeanProxy, Injectable  {
 

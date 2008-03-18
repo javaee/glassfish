@@ -57,7 +57,7 @@ import java.util.List;
 /* @XmlType(name = "", propOrder = {
     "jvmOptionsOrProperty"
 }) */
-@com.sun.appserv.management.annotation.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.ProfilerConfig")
+@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.ProfilerConfig")
 @Configured
 public interface Profiler extends ConfigBeanProxy, Injectable  {
 

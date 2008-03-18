@@ -47,7 +47,7 @@ import org.jvnet.hk2.config.Element;
 import java.beans.PropertyVetoException;
 import java.util.List;
 
-import com.sun.appserv.management.annotation.AMXConfigInfo;
+import org.glassfish.api.amx.AMXConfigInfo;
 
 /**
  *

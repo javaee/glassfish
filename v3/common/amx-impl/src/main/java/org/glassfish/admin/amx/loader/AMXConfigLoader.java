@@ -15,15 +15,15 @@ import org.jvnet.hk2.config.ConfigBeanProxy;
 import com.sun.appserv.management.util.misc.ExceptionUtil;
 import com.sun.appserv.management.util.jmx.JMXUtil;
 
+import org.glassfish.api.amx.AMXConfigInfo;
+import org.glassfish.api.amx.AMXMBeanMetadata;
+
 import com.sun.appserv.management.base.AMX;
 import com.sun.appserv.management.base.Util;
 import com.sun.appserv.management.base.XTypes;
 import com.sun.appserv.management.config.AMXConfig;
 import com.sun.appserv.management.util.misc.RunnableBase;
 import com.sun.appserv.management.util.misc.ClassUtil;
-import com.sun.appserv.management.annotation.AMXConfigInfo;
-import com.sun.appserv.management.annotation.AMXMBeanMetadata;
-
 
 import org.glassfish.admin.amx.mbean.Delegate;
 import org.glassfish.admin.amx.mbean.DelegateToConfigBeanDelegate;
@@ -59,19 +59,6 @@ public final class AMXConfigLoader
         protected void
     handleConfigBean( final ConfigBean cb )
     {
-        /*
-        Class<? extends ConfigBeanProxy> parentClass = null;
-        final Class<? extends ConfigBeanProxy> cbClass = cb.getProxyType();
-        final ConfigBean parent = asConfigBean( cb.parent() );
-        if ( parent != null )
-        {
-            parentClass = parent.getProxyType();
-        }
-        //debug( "RECEIVED: " + cbClass.getName()  +
-        //    ", PARENT = " + ((parentClass == null) ? "null" : parentClass.getName()) +
-        //    ", parent Object Name = " + parent.getObjectName() );
-        */
-        
         mPendingConfigBeans.add( cb );
     }
 

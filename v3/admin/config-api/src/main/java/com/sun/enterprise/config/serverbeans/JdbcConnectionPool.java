@@ -58,7 +58,7 @@ import java.util.List;
     "description",
     "property"
 }) */
-@com.sun.appserv.management.annotation.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.JDBCConnectionPoolConfig")
+@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.JDBCConnectionPoolConfig")
 @Configured
 public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resource {
 

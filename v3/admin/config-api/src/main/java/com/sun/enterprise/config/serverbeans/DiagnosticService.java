@@ -57,7 +57,7 @@ import java.util.List;
 /* @XmlType(name = "", propOrder = {
     "property"
 }) */
-@com.sun.appserv.management.annotation.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.DiagnosticServiceConfig", singleton=true)
+@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.DiagnosticServiceConfig", singleton=true)
 @Configured
 public interface DiagnosticService extends ConfigBeanProxy, Injectable  {
 

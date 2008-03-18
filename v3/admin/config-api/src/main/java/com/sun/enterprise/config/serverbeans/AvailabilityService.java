@@ -59,7 +59,7 @@ import java.util.List;
     "jmsAvailability",
     "property"
 }) */
-@com.sun.appserv.management.annotation.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.AvailabilityServiceConfig", singleton=true)
+@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.AvailabilityServiceConfig", singleton=true)
 @Configured
 public interface AvailabilityService extends ConfigBeanProxy, Injectable  {
 

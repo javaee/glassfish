@@ -39,7 +39,7 @@ import java.util.Set;
 import java.util.HashSet;
 import java.util.Collections;
 
-import com.sun.appserv.management.annotation.AMXConfigInfo;
+import org.glassfish.api.amx.AMXConfigInfo;
 import com.sun.appserv.management.config.AMXConfig;
 
 

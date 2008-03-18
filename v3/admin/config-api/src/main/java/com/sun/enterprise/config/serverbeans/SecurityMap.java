@@ -58,7 +58,7 @@ import java.util.List;
     "principalOrUserGroup",
     "backendPrincipal"
 }) */
-@com.sun.appserv.management.annotation.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.SecurityMapConfig")
+@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.SecurityMapConfig")
 @Configured
 public interface SecurityMap extends ConfigBeanProxy, Injectable  {
 

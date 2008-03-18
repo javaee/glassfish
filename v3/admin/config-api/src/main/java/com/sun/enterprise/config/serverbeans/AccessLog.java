@@ -45,7 +45,7 @@ import org.jvnet.hk2.component.Injectable;
 import java.beans.PropertyVetoException;
 
 
-import com.sun.appserv.management.annotation.AMXConfigInfo;
+import org.glassfish.api.amx.AMXConfigInfo;
 
 
 
