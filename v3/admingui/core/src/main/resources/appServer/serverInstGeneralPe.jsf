@@ -50,7 +50,7 @@
     />
     <event>
         <!beforeEncode
-        getStandaloneInstanceGeneralAttributes(instanceName="#{instanceName}", isAdminServer="#{false}", hostName=>$attribute{hostName}, httpPorts=>$attribute{httpPorts},
+        getStandaloneInstanceGeneralAttributes(instanceName="server", isAdminServer="#{false}", hostName=>$attribute{hostName}, httpPorts=>$attribute{httpPorts},
                 iiopPorts=>$attribute{iiopPorts}, configDir=>$attribute{configDir}, 
                 version=>$attribute{version}, debugPort=>$attribute{debugPort});
         />   
@@ -70,7 +70,7 @@
           
                 <!-- Page Title -->
                 <sun:title id="propertyContentPage" title="$resource{i18n.instance.GeneralTitle}" > 
-                     <!-- Buttons  -->
+                     <!-- Buttons   TODO-V3 -->
                         <!--<sun:button id="stopInstance" text="$resource{i18n.button.stopInstance}" disabled="#{false}" primary="#{false}"
                         onClick="if ( getConfirm(this, '$resource{i18n.msg.JS.confirmStopInstance}') )
                                   { return submitAndDisable(this, '$resource{i18n.button.Processing}', target='_top');} 
@@ -113,12 +113,13 @@
                             <sun:property id="iiopPortsProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.inst.iiopPortsLabel}">                           
                                 <sun:staticText id="iiopPorts" text="#{requestScope.iiopPorts}"/>     
                             </sun:property>
+                            <!-- TODO-V3
                             <sun:property id="jvmProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.inst.JVMLabel}">                           
                                 <sun:hyperlink id="jvmlink" text="$resource{i18n.inst.jvmReport}" 
                                     onClick="javascript:
                                     var jvmWin = window.open('jvmReport.jsf?instanceName=#{instanceName}&pageTitle=$resource{i18n.jvm.jvmReportPageName}','JVMReport','width='+(screen.width-300)+',height='+(screen.height-75)+',top=0,left=0,toolbar=no,status=no,menubar=no,scrollbars=yes,resizable=yes,directories=no,location=no');
                                     jvmWin.focus(); return false;" />
-                            </sun:property> 
+                            </sun:property> -->
                             <sun:property id="confiDirProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.inst.configDirLabel}">                           
                                 <sun:staticText id="configDir" text="#{requestScope.configDir}"/>     
                             </sun:property> 
