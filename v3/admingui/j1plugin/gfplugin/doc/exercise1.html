@@ -316,7 +316,6 @@ page</a>.
 	    <a href="https://hk2.dev.java.net/components.html">HK2 Component
 	    Model web page</a>.</p>
 
-<!-- FIXME: TBD: Fix broken links below -->
 	<p> <span class="j1holnote">If you are not using NetBeans</span>:
 	    create a file similar to that found in <a href="#ex1plugincode">Figure
 	    1-10</a> with any filename or package you like.  The lab
@@ -543,21 +542,29 @@ The output will be similar to:
 	<p><b>C. Create a couple JavaServer Faces pages</b></p>
 </a>
 
-	<p> In this step you create JSF pages to display your tree node, and
-	    to provide content when your tree node is clicked.  In the first
-	    JSF file you will specify a tree node to represent
-	    a folder containing your lab pages.  You will also specify a
-	    second tree node in this file to represent the content for this
-	    first lab. This content will be using Facelets syntax to create
-	    a simple "hello world" page that is displayed when it is clicked.
-	    To learn more about JSF or Facelets you can visit the
-	    JSFTemplating web site:
-	    <a href="https://jsftemplating.dev.java.net">https://jsftemplating.dev.java.net</a>,
+	<p> In this step you will create 2 JSF pages, 1 to display your tree
+	    nodes, and 1 to provide content when your tree node is clicked.  In
+	    the first JSF file you will specify 2 tree nodes: 1 tree node to
+	    contain other tree nodes, 1 tree node to link to the content for
+	    Exercise 1. The page content will be using the Facelets syntax in
+	    JSFTemplating to create a simple "hello world" page that is
+	    displayed when it is clicked.  To learn more about JSFTemplating
+	    or Facelets you can visit the JSFTemplating web site:
+	    <a href="https://jsftemplating.dev.java.net">https://jsftemplating.dev.java.net</a>;
 	    or the Facelets web site:
 	    <a href="https://facelets.dev.java.net">https://facelets.dev.java.net</a>.</p>
 
-	<p> FIXME: Provide instructions for (command line) users</p>
+	<p> <span class="j1holnote">If you are not using NetBeans</span>, then
+	    you will need to create 2 files in your
+	    <code>myplugin/src/main/resources/</code> directory.  The first
+	    file should be called <code><b>treenode-ex1.jsf</b></code> and
+	    should contain the code in <a href="#ex1tn">Figure 1-16</a>.  The
+	    second file should be called <code><b>hello.jsf</b></code> and
+	    should contain the code in <a href="#ex1hello">Figure 1-17</a>.
+	    After you have completed these files you may proceed to
+	    <a href="#ex1stepD">step D</a>.</p>
 
+<a name="ex1tn">
 <div class="codebox">
 <pre>
 &lt;sun:treeNode id="j1root"
@@ -574,8 +581,10 @@ The output will be similar to:
 &lt;/sun:treeNode&gt;
 </pre>
 </div>
-<div class="figure">Figure 1-16: </div>
+<div class="figure">Figure 1-16: treenode-ex1.jsf</div>
+</a>
 
+<a name="ex1hello">
 <div class="codebox">
 <pre>
 &lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
@@ -596,7 +605,8 @@ The output will be similar to:
 &lt;/html&gt;
 </pre>
 </div>
-<div class="figure">Figure 1-17: </div>
+<div class="figure">Figure 1-17: hello.jsf</div>
+</a>
 
 	<ol class="j1hollist">
 	    <li>
@@ -650,8 +660,18 @@ The output will be similar to:
 	    </li>
 	  </ol>
 
-<!-- FIXME: Provide a wrapup of what they just created -->
-    <p></p>
+    <p>	You have completed step C!  In this step you created 2 JSFTemplating
+	files which are to eventually be contained in your plugin .jar file.
+	One of these files (<code>treenode-ex1.jsf</code>) is referenced from
+	your IntegrationPoint that you defined in your
+	<code>console-config.xml</code> file.  This reference enables the
+	GlassFish Administration Console to find the
+	<code>treenode-ex1.jsf</code> file.  Once it is found and rendered to
+	the browser, it is able to link to your other file
+	(<code>hello.jsf</code>).  In the next step, we will see how to package
+	these files into a jar file -- along with the files created in step A
+	&amp; B -- so that you can install them as a GlassFish plugin module
+	and see it work!</p>
 
 <p><a href="#ex1contents">Back to step overview</a></p>
 
