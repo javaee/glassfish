@@ -50,6 +50,6 @@
     <name>GlassFish EJB container related modules</name>  
     <modules>
         <module>ejb-connector</module>
-        <module>ejb-container</module>
+        <!-- module>ejb-container</module -->
     </modules>
 </project>
