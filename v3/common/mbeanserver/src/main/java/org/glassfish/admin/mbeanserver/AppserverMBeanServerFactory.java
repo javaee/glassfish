@@ -33,7 +33,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.enterprise.management.mbeanserver;
+package org.glassfish.admin.mbeanserver;
 
 import javax.management.MBeanServer;
 import java.lang.management.ManagementFactory;
@@ -71,7 +71,8 @@ public final class AppserverMBeanServerFactory implements Startup
     
     public AppserverMBeanServerFactory()
     {
-        officialMBeanServer = ManagementFactory.getPlatformMBeanServer();
+        //officialMBeanServer = ManagementFactory.getPlatformMBeanServer();
+        officialMBeanServer = AppserverMBeanServer.getInstance();
     }
     
     public Startup.Lifecycle getLifecycle() {

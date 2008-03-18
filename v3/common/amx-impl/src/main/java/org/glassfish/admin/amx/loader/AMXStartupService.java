@@ -48,7 +48,7 @@ import com.sun.appserv.management.base.Util;
 import com.sun.appserv.management.util.jmx.JMXUtil;
 import com.sun.appserv.management.util.misc.TimingDelta;
 
-import com.sun.enterprise.management.mbeanserver.AppserverMBeanServerFactory;
+import org.glassfish.admin.mbeanserver.AppserverMBeanServerFactory;
 
 import org.glassfish.admin.amx.util.SingletonEnforcer;
 
