@@ -59,14 +59,6 @@ public @interface AMXMBeanMetadata {
        Very few MBeans have mutable MBeanInfo, so this defaults to 'true'.
      */
     boolean immutableMBeanInfo() default true;
-    
-    /**
-       Defines a category of MBean. Any non-empty string usable in an ObjectName may be used,
-       but by convention the value should be one of
-       the legal values returned by {@link com.sun.appserv.management.base.AMX#getGroup}.
-       
-     */
-    String amxGroup() default "na";
 }
 
 

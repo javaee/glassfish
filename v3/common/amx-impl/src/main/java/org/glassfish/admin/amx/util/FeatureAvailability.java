@@ -102,6 +102,9 @@ public final class FeatureAvailability
     /** feature stating that the AMX BootUtil class is available.  Data should not be used */
     public static final String AMX_BOOT_UTIL_FEATURE   = "AMXBootUtil";
     
+    /** feature stating that the AMX is ready for use after having been started.  Data should not be used */
+    public static final String AMX_READY_FEATURE   = "AMXReady";
+    
     /** feature stating that the CallFlow feature is available.  Data should not be used
         Data is of type com.sun.enterprise.admin.monitor.callflow.Agent */
     public static final String CALL_FLOW_FEATURE   = "CallFlow";

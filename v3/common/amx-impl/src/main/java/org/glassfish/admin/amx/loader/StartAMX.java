@@ -85,6 +85,8 @@ final class StartAMX
 
     public JMXServiceURL    getJMXServiceURL() { return mJMXMPServiceURL; }
     
+    private static volatile boolean    STARTED = false;
+    
     //public static final int RMI_REGISTRY_PORT = 8686;
     
     private StartAMX( final MBeanServer mbs, final AMXConfigRegistrar registrar )
@@ -139,9 +141,14 @@ final class StartAMX
         public static synchronized void
     startAMX()
     {
-        startConnectors();
-        
-        getInstance().loadMBeans();
+        if ( ! STARTED )
+        {
+            startConnectors();
+            getInstance().loadMBeans();
+            
+            STARTED = true;
+            // now starting asynchronously...
+        }
     }
     
         private synchronized JMXConnectorServer

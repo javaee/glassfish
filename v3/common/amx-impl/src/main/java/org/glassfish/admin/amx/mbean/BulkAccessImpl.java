@@ -50,16 +50,15 @@ import com.sun.appserv.management.base.AMX;
 import com.sun.appserv.management.util.jmx.JMXUtil;
 
 
-import org.glassfish.admin.amx.util.ObjectNames;
 /**
  */
 public class BulkAccessImpl extends AMXImplBase
 	implements BulkAccess
 {
 		public
-	BulkAccessImpl()
+	BulkAccessImpl( final ObjectName parentObjectName )
 	{
-        super( BulkAccess.J2EE_TYPE, BulkAccess.J2EE_TYPE, ObjectNames.getInstance().getDomainRootObjectName(), BulkAccess.class, null );
+        super( BulkAccess.J2EE_TYPE, BulkAccess.J2EE_TYPE, parentObjectName, BulkAccess.class, null );
 	}
 
 		public String

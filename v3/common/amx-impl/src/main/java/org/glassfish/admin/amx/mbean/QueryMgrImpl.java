@@ -63,8 +63,6 @@ import com.sun.appserv.management.base.XTypes;
 import com.sun.appserv.management.j2ee.J2EETypes;
 import com.sun.appserv.management.base.QueryMgr;
 
-import org.glassfish.admin.amx.util.ObjectNames;
-
 import com.sun.appserv.management.util.jmx.ObjectNameQueryImpl;
 import com.sun.appserv.management.util.jmx.JMXUtil;
 import com.sun.appserv.management.util.misc.RegexUtil;
@@ -82,9 +80,9 @@ public class QueryMgrImpl extends AMXNonConfigImplBase
 	// implements QueryMgr
 {
 		public
-	QueryMgrImpl( )
+	QueryMgrImpl(final ObjectName parentObjectName)
 	{
-        super( QueryMgr.J2EE_TYPE, QueryMgr.J2EE_TYPE, ObjectNames.getInstance().getDomainRootObjectName(), QueryMgr.class, null );
+        super( QueryMgr.J2EE_TYPE, QueryMgr.J2EE_TYPE, parentObjectName, QueryMgr.class, null );
 	}
 	
 		public final String

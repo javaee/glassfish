@@ -32,6 +32,9 @@ import org.glassfish.admin.amx.mbean.AMXConfigImplBase;
 import org.glassfish.admin.amx.util.ObjectNames;
 import org.glassfish.admin.amx.util.AMXConfigInfoResolver;
 
+import org.glassfish.admin.amx.util.FeatureAvailability;
+
+
 /**
  * @author llc
  */
@@ -185,37 +188,68 @@ public final class AMXConfigLoader
         
         void quit() { mQuit = true; }
         
+            private ObjectName
+        registerOne( final ConfigBean cb )
+        {
+            ObjectName objectName = cb.getObjectName();
+            try 
+            {
+                // If the ObjectName is null, then it hasn't been registered
+                // Due to recursive registration of parents, we could encounter beans
+                // that are parents, and thus already registered.
+                if ( objectName == null )
+                {
+                    objectName = registerConfigBeanAsMBean( cb );
+                }
+            }
+            catch( Throwable t )
+            {
+                t.printStackTrace();
+            }
+            
+            return objectName;
+        }
+        
             protected void
         doRun() throws Exception
         {
+            /*
+               First pass *only*: 
+               Note when we initially empty the queue; this signifies that
+               AMX is "ready" for callers that just started it.
+             */
+            ConfigBean cb = mQueue.take();  // block until first item is ready
+            while ( (! mQuit) && cb != null )
+            {
+                final ObjectName objectName = registerOne(cb);
+                //debug( "REGISTERED: " + objectName );
+                cb = mQueue.peek();  // don't block, loop exits when queue is first emptied
+                if ( cb != null )
+                {
+                    cb = mQueue.take();
+                }
+            }
+            
+            FeatureAvailability.getInstance().registerFeature( FeatureAvailability.AMX_READY_FEATURE, Boolean.TRUE );
+            
+            // ongoing processing once initial queue has been emptied: blocking behavior
             while ( ! mQuit )
             {
-                final ConfigBean cb = mQueue.take();
-                
-                try 
-                {
-                    // If the ObjectName is null, then it hasn't been registered
-                    // Due to recursive registration of parents, we could encounter beans
-                    // that are parents, and thus already registered.
-                    if ( cb.getObjectName() == null )
-                    {
-                        registerConfigBeanAsMBean( cb );
-                    }
-                }
-                catch( Throwable t )
-                {
-                    t.printStackTrace();
-                }
+                cb = mQueue.take();
+                registerOne(cb);
             }
         }
     }
+    
     /**
         Register the ConfigBean, first registering its parent, parent's parent, etc if not
         already present.
      */
-        private void
+        private ObjectName
     registerConfigBeanAsMBean( final ConfigBean cb )
     {
+        ObjectName objectName = null;
+        
         if ( getAMXConfigInfo(cb) != null )
         {
             final ConfigBean parentCB = getActualParent(cb);
@@ -225,13 +259,14 @@ public final class AMXConfigLoader
                 registerConfigBeanAsMBean( parentCB );
                 //debug( "REGISTERED parent: " + parentCB.getProxyType().getName() + " as " + JMXUtil.toString(parentCB.getObjectName()) );
             }
-           final ObjectName objectName =  _registerConfigBeanAsMBean( cb, parentCB );
+           objectName =  _registerConfigBeanAsMBean( cb, parentCB );
            assert cb.getObjectName() != null;
         }
         else
         {
             debug( "NOTE: ConfigBean has no @AMXConfigInfo: " + cb.getProxyType().getName() + " (IGNORING)");
         }
+        return objectName;
     }
     
         private AMXConfigInfo

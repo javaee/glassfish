@@ -53,9 +53,6 @@ import com.sun.appserv.management.util.jmx.JMXUtil;
 import com.sun.appserv.management.base.XTypes;
 
 
-import org.glassfish.admin.amx.util.ObjectNames;
-
-
 /**
 	@see Sample
  */
@@ -77,9 +74,9 @@ public final class SampleImpl extends AMXNonConfigImplBase
 	}
 		
 		public
-	SampleImpl( )
+	SampleImpl(final ObjectName parentObjectName)
 	{
-        super( Sample.J2EE_TYPE, Sample.J2EE_TYPE, ObjectNames.getInstance().getDomainRootObjectName(), Sample.class, null );
+        super( Sample.J2EE_TYPE, Sample.J2EE_TYPE, parentObjectName, Sample.class, null );
 		mAttributes	= Collections.synchronizedMap( new HashMap<String,Serializable>() );
 		mMBeanInfo	= null;
 	}

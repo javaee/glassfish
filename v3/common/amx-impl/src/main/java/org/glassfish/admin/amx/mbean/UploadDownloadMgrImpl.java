@@ -46,6 +46,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import javax.management.ObjectName;
+
 import com.sun.appserv.management.base.AMX;
 import com.sun.appserv.management.base.Utility;
 import com.sun.appserv.management.base.Singleton;
@@ -59,7 +61,6 @@ import org.glassfish.admin.amx.support.UpDownInfo;
 import com.sun.appserv.management.util.misc.GSetUtil;
 
 import org.glassfish.admin.amx.support.UniqueIDGenerator;
-import org.glassfish.admin.amx.util.ObjectNames;
 
 public final class UploadDownloadMgrImpl extends AMXNonConfigImplBase
 	implements Utility, Singleton, UploadDownloadMgr
@@ -79,9 +80,9 @@ public final class UploadDownloadMgrImpl extends AMXNonConfigImplBase
 	private final UniqueIDGenerator	mDownloadIDs;
 	
 		public
-	UploadDownloadMgrImpl( )
+	UploadDownloadMgrImpl(final ObjectName parentObjectName)
 	{
-        super( UploadDownloadMgr.J2EE_TYPE, UploadDownloadMgr.J2EE_TYPE, ObjectNames.getInstance().getDomainRootObjectName(), UploadDownloadMgr.class, null );
+        super( UploadDownloadMgr.J2EE_TYPE, UploadDownloadMgr.J2EE_TYPE, parentObjectName, UploadDownloadMgr.class, null );
         
 		mUploadInfos	= Collections.synchronizedMap( new HashMap<Object,UploadInfo>() );
 		mDownloadInfos	= Collections.synchronizedMap( new HashMap<Object,DownloadInfo>() );

@@ -56,8 +56,6 @@ import com.sun.appserv.management.base.Util;
 
 import org.glassfish.admin.amx.support.UniqueIDGenerator;
 
-import org.glassfish.admin.amx.util.ObjectNames;
-
 /**
  */
 public class NotificationServiceMgrImpl extends AMXNonConfigImplBase
@@ -67,9 +65,9 @@ public class NotificationServiceMgrImpl extends AMXNonConfigImplBase
 	private final UniqueIDGenerator	mUniqueIDs;
 	
 		public
-	NotificationServiceMgrImpl()
+	NotificationServiceMgrImpl(final ObjectName parentObjectName)
 	{
-        super( NotificationServiceMgr.J2EE_TYPE, NotificationServiceMgr.J2EE_TYPE, ObjectNames.getInstance().getDomainRootObjectName(), NotificationServiceMgr.class, null );
+        super( NotificationServiceMgr.J2EE_TYPE, NotificationServiceMgr.J2EE_TYPE, parentObjectName, NotificationServiceMgr.class, null );
         
 		mServices	= Collections.synchronizedMap( new HashMap<ObjectName,NotificationServiceImpl>() );
 		
@@ -127,7 +125,7 @@ public class NotificationServiceMgrImpl extends AMXNonConfigImplBase
 		final int		bufferSize )
 	{
 		final NotificationServiceImpl	service	=
-			new NotificationServiceImpl( userData, bufferSize );
+			new NotificationServiceImpl( getObjectName(), userData, bufferSize );
 		
 		final ObjectName	self	= getObjectName();
 		

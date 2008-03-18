@@ -77,7 +77,6 @@ public final class AMXStartupService
     private AMXConfigRegistrar mConfigRegistrar;
     
     private static final ObjectName OBJECT_NAME = JMXUtil.newObjectName( "amx-support:name=startup" );
-    private static final String  START_METHOD_NAME = "startAMX";
     
     public AMXStartupService()
     {
@@ -145,15 +144,17 @@ public final class AMXStartupService
         return getAMXStartupServiceMBean(mbs).startAMX();
     }
     
-    // START_METHOD_NAME  contains this method name
         public synchronized ObjectName
     startAMX()
     {
+        final TimingDelta delta = new TimingDelta();
+
         StartAMX.getInstance().startAMX();
         
         final DomainRoot domainRoot = ProxyFactory.getInstance( mMBeanServer ).getDomainRoot();
         domainRoot.waitAMXReady();
         
+        debug( "AMXStartupService: Loaded AMX MBeans in " + delta.elapsedMillis() + " ms " );
         return getDomainRootObjectName();
     }
     

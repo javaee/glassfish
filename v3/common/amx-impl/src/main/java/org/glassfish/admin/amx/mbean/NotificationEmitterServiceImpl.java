@@ -44,6 +44,7 @@ import java.util.Collections;
 
 import javax.management.Notification;
 import javax.management.MBeanNotificationInfo;
+import javax.management.ObjectName;
 
 
 import com.sun.appserv.management.base.AMX;
@@ -53,8 +54,6 @@ import com.sun.appserv.management.util.misc.GSetUtil;
 import com.sun.appserv.management.util.jmx.JMXUtil;
 
 
-
-import org.glassfish.admin.amx.util.ObjectNames;
 
 /**
 	A key aspect of the implementation is that it maintains a list of all types
@@ -75,9 +74,9 @@ public final class NotificationEmitterServiceImpl extends AMXNonConfigImplBase
 	private final Map<String,Set<String>>	mEmittedTypes;
 	
 		public
-	NotificationEmitterServiceImpl( )
+	NotificationEmitterServiceImpl(final ObjectName parentObjectName)
 	{
-        super( NotificationEmitterService.J2EE_TYPE, NotificationEmitterService.J2EE_TYPE, ObjectNames.getInstance().getDomainRootObjectName(), NotificationEmitterService.class, null );
+        super( NotificationEmitterService.J2EE_TYPE, NotificationEmitterService.J2EE_TYPE, parentObjectName, NotificationEmitterService.class, null );
         
 		mEmittedTypes	= Collections.synchronizedMap( new HashMap<String,Set<String>>() );
 	}

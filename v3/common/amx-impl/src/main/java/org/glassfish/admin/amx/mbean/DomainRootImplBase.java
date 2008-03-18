@@ -59,8 +59,7 @@ import com.sun.appserv.management.util.misc.GSetUtil;
 import org.glassfish.admin.amx.support.BootUtil;
 import org.glassfish.admin.amx.util.ObjectNames;
 
-
-//import org.glassfish.admin.amx.types.TypeInfo;
+import org.glassfish.admin.amx.util.FeatureAvailability;
 
 
 /**
@@ -98,9 +97,6 @@ public class DomainRootImplBase extends AMXNonConfigImplBase
 	    throws Exception
 	{
 		super.preRegisterDone();
-		
-	    final CheckStartedThread    t   = new CheckStartedThread();
-	    t.start();
 	}
 	
 	private static final Set<String> NOT_SUPERFLUOUS =
@@ -140,41 +136,41 @@ public class DomainRootImplBase extends AMXNonConfigImplBase
         
 		childObjectName	= objectNames.buildContaineeObjectName( self, getFullType(),
                 XTypes.NOTIFICATION_EMITTER_SERVICE, NotificationEmitterServiceKeys.DOMAIN_KEY, false );
-		mbean	= new NotificationEmitterServiceImpl();
+		mbean	= new NotificationEmitterServiceImpl(self);
         registerChild( mbean, childObjectName );
         
         
         childObjectName	= objectNames.buildContaineeObjectName( self, getFullType(),
                 XTypes.NOTIFICATION_SERVICE_MGR, AMX.NO_NAME, false );
-		mbean	= new NotificationServiceMgrImpl();
+		mbean	= new NotificationServiceMgrImpl(self);
         registerChild( mbean, childObjectName );
         
         
         childObjectName	= objectNames.buildContaineeObjectName( self, getFullType(),
                 XTypes.QUERY_MGR, AMX.NO_NAME, false );
-		mbean	= new QueryMgrImpl();
+		mbean	= new QueryMgrImpl(self);
         registerChild( mbean, childObjectName );
         
         
         childObjectName	= objectNames.buildContaineeObjectName( self, getFullType(),
                 XTypes.BULK_ACCESS, AMX.NO_NAME, false );
-		mbean	= new BulkAccessImpl();
+		mbean	= new BulkAccessImpl(self);
         registerChild( mbean, childObjectName );
         
         childObjectName	= objectNames.buildContaineeObjectName( self, getFullType(),
                 XTypes.UPLOAD_DOWNLOAD_MGR, AMX.NO_NAME, false );
-		mbean	= new UploadDownloadMgrImpl();
+		mbean	= new UploadDownloadMgrImpl(self);
         registerChild( mbean, childObjectName );
         
         childObjectName	= objectNames.buildContaineeObjectName( self, getFullType(),
                 XTypes.SAMPLE, AMX.NO_NAME, false );
-		mbean	= new SampleImpl();
+		mbean	= new SampleImpl(self);
         registerChild( mbean, childObjectName );
         
         final String j2eeDomainName = getObjectName().getDomain();
         childObjectName	= objectNames.buildContaineeObjectName( self, getFullType(),
                 J2EEDomain.J2EE_TYPE, j2eeDomainName, false );
-		mbean	= new J2EEDomainImpl( getObjectName() );
+		mbean	= new J2EEDomainImpl( self );
         registerChild( mbean, childObjectName );
 
 	}
@@ -188,50 +184,23 @@ public class DomainRootImplBase extends AMXNonConfigImplBase
 				getFullType(), XTypes.NOTIFICATION_EMITTER_SERVICE,
 					NotificationEmitterServiceKeys.DOMAIN_KEY, false );
 		
-		final NotificationEmitterService	domainNES	= new NotificationEmitterServiceImpl();
+		final NotificationEmitterService	domainNES	= new NotificationEmitterServiceImpl(getObjectName());
         registerChild( domainNES, childObjectName );
 	}
 	
-	
-	/**
-	    Notice when AMX has finished loading, the exit.
-	 */
-	private final class CheckStartedThread extends Thread
-	{
-	    public void CheckStartedThread()    {}
-	    
-	        public void
-	    run()
-	    {
-	        waitAMXReady();
-            amxNowReady();
-	    }
-	}
-	
-	    private void
-	amxNowReady()
-	{
-	    if ( ! getAMXReady() )
-	    {
-	        throw new IllegalStateException();
-	    }
-	    sendNotification( DomainRoot.AMX_READY_NOTIFICATION_TYPE );
-	}
-	
+			
 	    public boolean
 	getAMXReady()
 	{
-	    return BootUtil.getInstance().getAMXReady();
+        // just block until ready, no need to support polling
+        waitAMXReady();
+        return true;
 	}
 	
-	static private final long  AMX_READY_SLEEP_DURATION  = 100;
 	    public void
 	waitAMXReady( )
 	{
-        while ( ! getAMXReady() )
-        {
-            sleepMillis( AMX_READY_SLEEP_DURATION );
-        }
+        FeatureAvailability.getInstance().waitForFeature( FeatureAvailability.AMX_READY_FEATURE, this.getClass().getName() );
 	}
 	
 	static private final Set<String>  OFFLINE_INCAPABLE_J2EE_TYPES =

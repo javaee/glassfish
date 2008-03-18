@@ -67,8 +67,6 @@ import com.sun.appserv.management.util.jmx.JMXUtil;
 import com.sun.appserv.management.util.jmx.NotificationBuilder;
 
 
-
-import org.glassfish.admin.amx.util.ObjectNames;
 /**
  */
 public final class NotificationServiceImpl extends AMXNonConfigImplBase
@@ -84,10 +82,11 @@ public final class NotificationServiceImpl extends AMXNonConfigImplBase
 	
 		public
 	NotificationServiceImpl(
+        final ObjectName parentObjectName,
 		final Object	userData,
 		final int		bufferSize  )
 	{
-        super( NotificationService.J2EE_TYPE, NotificationService.J2EE_TYPE, ObjectNames.getInstance().getDomainRootObjectName(), NotificationService.class, null );
+        super( NotificationService.J2EE_TYPE, NotificationService.J2EE_TYPE, parentObjectName, NotificationService.class, null );
         
 		if ( userData == null || !(userData instanceof Serializable) )
 		{
