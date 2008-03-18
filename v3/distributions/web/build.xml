@@ -133,7 +133,20 @@
                 <artifact artifactId="gf-ejb-connector" />
             </excludeArtifactsTransitively>
         </resolveAll>
-       
+
+      <!-- find all fragments -->
+      <resolveAll todir="target/fragments">
+        <fullGraph />
+        <!-- now treat the full graph as the list and then do simple list filtering -->
+        <packaging value="distribution-fragment" />
+      </resolveAll>
+      <unzip dest="target/stage">
+        <patternset>
+          <exclude name="META-INF" />
+        </patternset>
+        <fileset dir="target/fragments" includes="*.zip" />
+      </unzip>
+
         <delete dir="target/stage/glassfish/modules" includes="*.zip, javadb*.*" />
 
         <graphDef id="generate-picture">
