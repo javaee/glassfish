@@ -311,8 +311,8 @@ public class RepositoryManager extends MasterPasswordFileManager {
     
     protected boolean isValidRepository(File f) 
     {
-        return new File(new File(f, PEFileLayout.BIN_DIR),
-            PEFileLayout.START_SERV_OS).exists();
+        return new File(new File(f, PEFileLayout.CONFIG_DIR),
+            PEFileLayout.DOMAIN_XML_FILE).exists();
     }
 
     protected boolean isValidRepository(RepositoryConfig config) {
