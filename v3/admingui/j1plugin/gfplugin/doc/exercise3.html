@@ -119,137 +119,110 @@ it again.</p>
 	pages and allows our page to contain much less redundant code.</p>
 
 <a name="chart3">
-	    <div class="codebox">
-		<pre>
+<div class="codebox">
+<pre>
+&lt;!-- Use composition to define template --&gt;
 &lt;!composition template="templates/javaOneTemplate.tpl"&gt;
 &lt;!define name="content"&gt;
 
-  &lt;sun:page&gt;
+&lt;sun:dropDown submitForm="true"
+        labels={
+            "jmaki.charting.google.pie"
+            "jmaki.charting.plotkit.pie"
+            "jmaki.charting.yahoo.pie"}
+        value="#{requestScope.chart1}"&gt;
     &lt;!beforeCreate
-	getjMakiValues(values=&gt;$attribute{pievalues});
-	getjMakiValues(values=&gt;$attribute{gryvalues});
-	getjMakiValues(values=&gt;$attribute{bluvalues});
-	getjMakiValues(values=&gt;$attribute{pnkvalues});
-	getjMakiValues(values=&gt;$attribute{redvalues});
+        &lt;!-- Set default pie chart, and random data --&gt;
+        setAttribute(key="chart1", value="jmaki.charting.plotkit.pie");
+        getjMakiValues(values=&gt;$attribute{pievalues});
     /&gt;
-    &lt;sun:html&gt;
-    &lt;sun:markup tag="head"&gt;
-	&lt;sun:link url="/theme/com/sun/webui/jsf/suntheme/css/css_master.css" /&gt;
-	&lt;sun:markup tag="title"&gt;
-	    &lt;staticText value="jMaki Charting!" /&gt;
-	&lt;/sun:markup&gt;
-	&lt;sun:script url="/resources/jmaki.js" /&gt;
-	&lt;sun:script url="/theme/META-INF/dojo/dojo.js" /&gt;
-	&lt;sun:script url="/theme/META-INF/json/json.js" /&gt;
-	&lt;sun:script url="/theme/META-INF/prototype/prototype.js" /&gt;
-	&lt;sun:script url="/theme/META-INF/com_sun_faces_ajax.js" /&gt;
-    &lt;/sun:markup&gt;
+&lt;/sun:dropDown&gt;
 
-&lt;sun:markup tag="body"&gt;
-
-&lt;sun:form id="form"&gt;
+&lt;sun:dropDown submitForm="true"
+        labels={
+            "jmaki.charting.plotkit.area"
+            "jmaki.charting.plotkit.line"
+            "jmaki.charting.plotkit.bar"
+            "jmaki.charting.google.area"
+            "jmaki.charting.google.bar"
+            "jmaki.charting.google.line"
+            "jmaki.charting.yahoo.line"
+            "jmaki.charting.yahoo.bar"
+            "jmaki.charting.dojo.bar"
+            "jmaki.charting.dojo.line"
+            "jmaki.charting.dojo.area"}
+        value="#{requestScope.chart2}"&gt;
+    &lt;!beforeCreate
+        &lt;!-- Set default chart type and random data --&gt;
+        setAttribute(key="chart2", value="jmaki.charting.dojo.area");
+        getjMakiValues(values=&gt;$attribute{gryvalues});
+        getjMakiValues(values=&gt;$attribute{bluvalues});
+        getjMakiValues(values=&gt;$attribute{pnkvalues});
+        getjMakiValues(values=&gt;$attribute{redvalues});
+    /&gt;
+&lt;/sun:dropDown&gt;
 
 &lt;sun:markup tag="div" style="width:380px; height: 310px;"&gt;
-
-&lt;sun:dropDown labels={"jmaki.charting.yahoo.pie"
-	"jmaki.charting.google.pie"
-	"jmaki.charting.plotkit.pie"}
-	value="#{requestScope.chart1}"&gt;
-    &lt;!beforeCreate
-    setAttribute(key="chart1", value="jmaki.charting.google.pie");
-    /&gt;
-&lt;/sun:dropDown&gt;
-&lt;sun:button value=" Refresh " /&gt;
 &lt;jmaki:widget name="#{requestScope.chart1}"
-    args="{colorScheme:2}"
+    args="{colorScheme:0}"
     value="{
-    xAxis : {
-	title : 'Months',
-	labels : [
-	{label : 'January'},
-	{label : 'February'},
-	{label : 'March'},
-	{label : 'April'},
-	{label : 'May'},
-	{label : 'June'},
-	{label : 'July'},
-	{label : 'August'},
-	{label : 'September'},
-	{label : 'October'},
-	{label : 'November'},
-	{label : 'December'} ]
-	},
-    data : [ {
-	label : 'Set 1',
-	values : $attribute{pievalues}
-	} ] }"/&gt;
-
+        xAxis : {
+            title : 'Months',
+            labels : [
+                {label : 'January'},
+                {label : 'February'},
+                {label : 'March'},
+                {label : 'April'},
+                {label : 'May'},
+                {label : 'June'},
+                {label : 'July'},
+                {label : 'August'},
+                {label : 'September'},
+                {label : 'October'},
+                {label : 'November'},
+                {label : 'December'} ] },
+        data : [ {
+            label : 'Set 1',
+            values : $attribute{pievalues}
+            } ] }"/&gt;
 &lt;/sun:markup&gt;
 
-&lt;sun:dropDown labels={"jmaki.charting.plotkit.area"
-	"jmaki.charting.plotkit.line"
-	"jmaki.charting.plotkit.bar"
-	"jmaki.charting.google.area"
-	"jmaki.charting.google.bar"
-	"jmaki.charting.google.line"
-	"jmaki.charting.yahoo.line"
-	"jmaki.charting.yahoo.bar"
-	"jmaki.charting.dojo.bar"
-	"jmaki.charting.dojo.line"
-	"jmaki.charting.dojo.area"}
-	value="#{requestScope.chart2}"&gt;
-    &lt;!beforeCreate
-    setAttribute(key="chart2", value="jmaki.charting.yahoo.bar");
-    /&gt;
-&lt;/sun:dropDown&gt;
-&lt;sun:button value=" Refresh " /&gt;
 &lt;sun:markup tag="div" style="width: 500px; height: 280px;"&gt;
-
 &lt;jmaki:widget name="#{requestScope.chart2}"
-	value="{
-	    xAxis : {
-		title : 'Months',
-		labels : [{ label : 'January'},
-		    { label : 'February'},
-		    { label : 'March'},
-		    { label : 'April'},
-		    { label : 'May'},
-		    { label : 'June'},
-		    { label : 'July'},
-		    { label : 'August'},
-		    { label : 'September'},
-		    { label : 'October'},
-		    { label : 'November'},
-		    { label : 'December'}
-		    ]
-		    },
-	    yAxis : {
-		title : 'Temperature',
-		labels : [{ label : '0', value : 0},
-		    { label : '10s', value : 10},
-		    { label : '20s', value : 20},
-		    { label : '30s', value : 30},
-		    { label : '40s', value : 40},
-		    { label : '50s', value : 50}
-		    ]
-		    },
-	    data : [
-		    {label : 'Gray Series', values : $attribute{gryvalues} },
-		    {label : 'Pink Series', values : $attribute{pnkvalues} },
-		    {label : 'Blue Series', values : $attribute{bluvalues} },
-		    {label : 'Red Series',  values : $attribute{redvalues} }
-		    ]
-		    }"/&gt;
-	&lt;/sun:markup&gt;
-	&lt;/sun:form&gt;
-	&lt;/sun:markup&gt;
-	&lt;/sun:html&gt;
-	 &lt;/sun:page&gt;
+value="{  xAxis : {
+    title : 'Months',
+    labels : [{ label : 'January'},
+        { label : 'February'},
+        { label : 'March'},
+        { label : 'April'},
+        { label : 'May'},
+        { label : 'June'},
+        { label : 'July'},
+        { label : 'August'},
+        { label : 'September'},
+        { label : 'October'},
+        { label : 'November'},
+        { label : 'December'} ] },
+    yAxis : {
+    title : 'Temperature',
+    labels : [{ label : '0', value : 0},
+        { label : '10s', value : 10},
+        { label : '20s', value : 20},
+        { label : '30s', value : 30},
+        { label : '40s', value : 40},
+        { label : '50s', value : 50} ] },
+    data : [
+        {label : 'Gray Series', values : $attribute{gryvalues} },
+        {label : 'Pink Series', values : $attribute{pnkvalues} },
+        {label : 'Blue Series', values : $attribute{bluvalues} },
+        {label : 'Red Series',  values : $attribute{redvalues} } ] }"/&gt;
+&lt;/sun:markup&gt;
+
 &lt;/define&gt;
 &lt;/composition&gt;
-		</pre>
-	    </div>
-    <div class="figure">Figure 3-3: TBD</div>
+</pre>
+</div>
+<div class="figure">Figure 3-3: TBD</div>
 </a>
 
     <p>	If you are using NetBeans, follow these steps to create "<code>chart3.jsf</code>":</p>
@@ -270,7 +243,7 @@ it again.</p>
 <hr style="WIDTH:100%; HEIGHT:2px"><br>
 
 <a name="ex3stepB">
-    <p><b>B. Modify Your console-config.xml.</b></p>
+    <p><b>B. Modify your console-config.xml.</b></p>
 </a>
 <p> You now need to add an <code>IntegrationPoint</code> to pluggin your
     Exercise 3 tree node into the Administration Console.  Just as in the
@@ -281,11 +254,12 @@ it again.</p>
 <div class="codebox">
 <pre>
 &lt;integration-point
-	 id="Third"
-	 type="tree"
-	 priority="300"
-	 parentId="j1root"
-	 content="treenode-ex3.jsf" /&gt;
+    id="Third"
+    type="tree"
+    priority="300"
+    parentId="j1root"
+    content="treenode-ex3.jsf"
+/&gt;
 </pre>
 </div>
 <div class="figure">Figure 3-5: TBD</div>
@@ -322,11 +296,11 @@ Step-by-step instructions in NetBeans:
 <div class="codebox">
 <pre>
 &lt;sun:treeNode
-	id="third"
-	text="Exercise #3"
-	url="javaone/chart3.jsf"
-	imageURL="resource/images/instance.gif"
-	target="main"
+    id="third"
+    text="Exercise #3"
+    url="javaone/chart3.jsf"
+    imageURL="resource/images/instance.gif"
+    target="main"
 /&gt;
 </pre>
 </div>
