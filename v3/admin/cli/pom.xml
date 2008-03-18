@@ -135,7 +135,7 @@
                             <mainClass>com.sun.enterprise.admin.cli.AsadminMain</mainClass> 
                         </manifest>
                         <manifestEntries>
-                            <Class-Path>cli-framework-10.0-SNAPSHOT.jar glassfish-10.0-SNAPSHOT.jar server-mgmt-10.0-SNAPSHOT.jar common-util-10.0-SNAPSHOT.jar admin-util-10.0-SNAPSHOT.jar launcher-10.0-SNAPSHOT.jar universal-10.0-SNAPSHOT.jar realms-10.0-SNAPSHOT.jar dol-10.0-SNAPSHOT.jar</Class-Path>
+                            <Class-Path>cli-framework-10.0-SNAPSHOT.jar glassfish-10.0-SNAPSHOT.jar server-mgmt-10.0-SNAPSHOT.jar common-util-10.0-SNAPSHOT.jar admin-util-10.0-SNAPSHOT.jar launcher-10.0-SNAPSHOT.jar universal-10.0-SNAPSHOT.jar realms-10.0-SNAPSHOT.jar dol-10.0-SNAPSHOT.jar kernel-10.0-SNAPSHOT.jar</Class-Path>
                         </manifestEntries>
 
                     </archive>

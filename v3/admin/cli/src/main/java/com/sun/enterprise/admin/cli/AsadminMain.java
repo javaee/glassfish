@@ -93,6 +93,8 @@ public class AsadminMain {
         "com.sun.enterprise.security.auth.realm.file.FileRealm",
         // dol
         "com.sun.enterprise.deployment.PrincipalImpl",
+        // kernel
+        "com.sun.appserv.server.util.Version",
     };
     static {
         // check RIGHT NOW to make sure all the classes we need are
