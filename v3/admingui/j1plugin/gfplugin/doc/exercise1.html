@@ -190,10 +190,12 @@ navigation tree, common utilities, etc.  This includes the JavaServer Faces
 pages such as the common task page, header, version window, top-level tree
 nodes and their corresponding pages.</p>
 
-<div class="codebox"><pre>
+<div class="codebox">
+<pre>
 v3/admingui/pom.xml
 v3/admingui/core/src/main/java/com/sun/enterprise/tools/admingui/handlers
-v3/admingui/core/src/main/resources/home.jsf</pre>
+v3/admingui/core/src/main/resources/home.jsf
+</pre>
 </div>
 <div class="figure">Figure 1-5: </div>
 
@@ -205,11 +207,12 @@ v3/admingui/core/src/main/resources/home.jsf</pre>
   module. After the build cycle, a war file is created ready for
   deployment.</p>
 
-<div class="codebox"><pre>
+<div class="codebox">
+<pre>
 v3/admingui/war/
 v3/admingui/war/src/main/webApp
-  </pre>
-  </div>
+</pre>
+</div>
 <div class="figure">Figure 1-6: </div>
 
 
@@ -333,9 +336,10 @@ import org.glassfish.api.admingui.ConsoleProvider;
 import org.jvnet.hk2.annotations.Service;
 import java.net.URL;
 
+
 /**
- *  &lt;p&gt; Returns the URL of the IntegrationPoint configuration file
- *	console-config.xml &lt;/p&gt;
+ *  &lt;p&gt; Returns the URL to &lt;code&gt;console-config.xml&lt;/code&gt; where
+ *      &lt;code&gt;IntegrationPoint&lt;/code&gt;s are defined.&lt;/p&gt;
  *
  *  @return URL of configration file.
  */
@@ -390,8 +394,7 @@ public class MyPlugin implements ConsoleProvider {
 <li><a name="ex1stepA3"><b>Compiling your plugin</b></a>
     <p>	In this step we will compile the <code>MyPlugin.java</code> you just
 	created.  To do this you will need to enter the following commands on
-	the command line.  Or if you would prefer to do this in NetBeans,
-	skip to <a href="#ex1nbcompile">step d</a>.</p>
+	the command line.</p>
 
     <ol><li><p>	Go to your <code>gfplugin/myplugin</code> directory:</p>
 <div class="console">
@@ -407,7 +410,7 @@ mvn install
 </pre>
 </div>
 <br />
-The output will be similar to:
+The output will look similar to:
 <div class="console">
 <pre>
 [INFO] Scanning for projects...
@@ -447,17 +450,6 @@ The output will be similar to:
 	</li>
 	<li><p>	Fix any errors in your code that may be reported.</p></li>
 
-    <a name="ex1nbcompile">
-	<li><p>	<span class="j1holnote">NetBeans Only:</span> If you prefer to
-		build in NetBeans instead of from the commad line, follow
-		these simple steps:</p>
-
-	    <ol><li>Right click on the project "<b>Java One 2008 Admin Console Plugin</b>".</li>
-
-	        <li>Select <b>Build</b>.</li>
-
-	    </ol></li></a>
-
     </ol>
 </li>
 </ol> <!-- End Steps Ordered List -->
@@ -487,15 +479,16 @@ The output will be similar to:
 	<div class="codebox">
 	    <pre>
 &lt;?xml version="1.0" encoding="UTF-8"?&gt;
+
 &lt;console-config id="javaone"&gt;
     &lt;integration-point
-	id="JavaOneNode"
-	type="tree"
-	priority="210"
-	parentId="tree"
-	content="treenode-ex1.jsf"
-	/&gt;
-&lt;/console-config&gt;</pre>
+        id="JavaOneNode"
+        type="tree"
+        priority="210"
+        parentId="tree"
+        content="treenode-ex1.jsf"
+    /&gt;
+&lt;/console-config&gt;
 	</div>
     <div class="figure">Figure 1-12: console-config.xml</div>
 </a>
@@ -567,17 +560,19 @@ The output will be similar to:
 <a name="ex1tn">
 <div class="codebox">
 <pre>
-&lt;sun:treeNode id="j1root"
-	text="J1 TreeNode"
-	imageURL="theme/com/sun/webui/jsf/suntheme/images/tree/tree_folder.gif"
-	target="main"&gt;
+&lt;sun:treeNode
+    id="j1root"
+    text="J1 TreeNode"
+    imageURL="theme/com/sun/webui/jsf/suntheme/images/tree/tree_folder.gif"
+    target="main"&gt;
 
-    &lt;sun:treeNode id="first"
-	text="First Node"
-	url="javaone/hello.jsf"
-	imageURL="resource/images/instance.gif"
-	target="main" /&gt;
-    &lt;/sun:treeNode&gt;
+    &lt;sun:treeNode
+        id="first"
+        text="First Node"
+        url="javaone/hello.jsf"
+        imageURL="resource/images/instance.gif"
+        target="main"
+    /&gt;
 &lt;/sun:treeNode&gt;
 </pre>
 </div>
@@ -588,18 +583,19 @@ The output will be similar to:
 <div class="codebox">
 <pre>
 &lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"&gt;
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"&gt;
+
 &lt;html xmlns="http://www.w3.org/1999/xhtml"
     xmlns:ui="http://java.sun.com/jsf/facelets"
     xmlns:h="http://java.sun.com/jsf/html"
     xmlns:f="http://java.sun.com/jsf/core"&gt;
 
     &lt;head&gt;
-	&lt;title&gt; Hello World &lt;/title&gt;
+        &lt;title&gt; Hello World &lt;/title&gt;
     &lt;/head&gt;
 
     &lt;body&gt;
-	&lt;h:outputText value="Your plugin is working, Congratulation !!!" /&gt;
+        &lt;h:outputText value="Your plugin is working, Congratulations!!" /&gt;
     &lt;/body&gt;
 
 &lt;/html&gt;
@@ -680,87 +676,103 @@ The output will be similar to:
 <a name="ex1stepD">
     <p><b>D. Build and Install your first GlassFish v3 plugin</b></p>
 </a>
-	<p> The last step of this implementation is to build the project.</p>
+    <p> The last step of this exercise is to build the project.  You
+        will need to open a terminal window and perform the following steps
+        using the command line.</p>
 
-	<p> Note: If you are using a command line and have "maven 2" installed
-	    on your system you can build the project by typing the following
-	    command:</p>
+    <ol class="j1hollist">
+        <li><b>Verify that you have not yet installed your plugin.</b>
+            <ol class="j1hollist">
+                <li>In the browser enter the following URL to bring up the Administration Console:
+                    <div class="codebox"><pre>http://localhost:8080/admingui/index.jsf</pre></div>
+
+                    <p> Note that the navigation tree on the left does not have the
+                        JavaOne tree node yet since you have not integrated your
+                        plugin.</p>
+
+                    <p> <img src="images/ex1-before.jpg"></p>
+                    <div class="figure">Figure 1-21: Before Integration</div>
+                </li>
+            </ol>
+        </li>
+        <li><b> Go to your <code>gfplugin/myplugin</code> directory:</b>
 <div class="console">
 <pre>
-cd gfplugin/plugin
+cd gfplugin/myplugin
+</pre>
+</div>
+	</li>
+	<li><b>	Compile your code.</b>
+<div class="console">
+<pre>
 mvn install
 </pre>
 </div>
+<br />
+</li>
+        <li><b> Intall your plugin.</b>
+            <p> You now have a jar file named
+                <code>gfplugin/myplugin/target/console-myplugin-1.0-SNAPSHOT.jar</code>.
+                This jar file is ready to plugin into the GlassFish v3
+                Application Server.</p>
 
-	<p> NetBeans users can build the module jar file by following these steps.</p>
+            <p> For your convenience, GlassFish v3 is installed in the
+                <code>gfplugin/glassfish</code> directory. The following steps
+                show you how to integrate your plugin module.</p>
 
-	<ol class="j1hollist">
-	    <li>Right click on the project "<b>Java One 2008 Admin Console Plugin</b>".</li>
-	    <li>Select <b>Build</b>.</li>
-	</ol>
-
-	<p> After the above steps are finished, you will have the jar file named
-	    <code>gfplugin/myplugin/target/console-myplugin-1.0-SNAPSHOT.jar</code>.
-	    This jar file is ready to install into GlassFish v3.</p>
-
-	<p> You now need a terminal to enter commands, please bring up a terminal window.
-	    For your convenience, GlassFish v3 has been installed as <code>gfplugin/glassfish</code>.
-	    The following steps show you how to integrate and test your plugin module.</p>
-
-
-    <ol class="j1hollist">
-	<li>In the browser enter the following URL to bring up the Administration Console:
-
-	    <div class="codebox"><pre>http://localhost:8080/admingui/index.jsf</pre></div>
-
-	    <p>	Note that the navigation tree on the left does not have the
-		JavaOne tree node yet since you have not integrated your
-		plugin.</p>
-
-	    <p>	<img src="images/ex1-before.jpg"></p>
-	    <div class="figure">Figure 1-21: Before Integration</div>
-	</li>
-	<li>Go to your <code>gfplugin</code> directory:
+                <ol class="j1hollist">
+                    <li>Go to your <code>gfplugin</code> directory:
 <div class="console">
 <pre>
 cd gfplugin
 </pre>
 </div>
-	</li>
-	<li>Stop the server:
-<!-- // FIXME: Use asadmin commands -->
+</li>
+                    <li>Stop the server:
 <div class="console">
 <pre>
-glassfish/bin/stop-domain
+glassfish/bin/asadmin stop-domain
 </pre>
 </div>
-	</li>
-	<li>Integrate the jar to GlassFish by copying it to the glassfish modules directory.
+                    </li>
+                    <li>Integrate the jar to GlassFish by copying it to the GlassFish modules directory.
 <div class="console">
 <pre>
-cp myplugin/target/console-myplugin-1.0-SNAPSHOT.jar glassfish/modules/console-myplugin-1.0-SNAPSHOT.jar<br><br>
+cp myplugin/target/console-myplugin-1.0-SNAPSHOT.jar glassfish/modules/console-myplugin-1.0-SNAPSHOT.jar
 </pre>
 </div>
-	</li>
-	<li>Start the server again:
+                    </li>
+                </ol>
+            </li>
+            <li><b> Test your plugin</b>
+                <ol class="h1hollist">
+                    <li>Start the server again:
 <div class="console">
 <pre>
 glassfish/bin/asadmin start-domain
 </pre>
 </div>
-	</li>
-	<li>Enter "<code><b>http://localhost:8080/admingui/index.jsf</b></code>"
-	    in your web browser to bring up the GlassFish v3 Administration
-	    Console.
+                    </li>
 
-	    <p> Note the "<b>JavaOne</b>" tree node is now displayed in the
-		navigation tree. Note that clicking on the "<b>First Node</b>"
-		tree node displays your "Hello World" page.</p>
+                    <li>In the browser enter the following URL to bring up the Administration Console:
+                        <div class="codebox"><pre>http://localhost:8080/admingui/index.jsf</pre></div>
+                        
+                        <ol class="h1hollist">
+                            <li>Note the "<b>JavaOne</b>" tree node is now
+                                displayed in the navigation tree.</li>
+                            <li>Note that clicking on the "<b>First Node</b>"
+                                tree node displays your "Hello World"
+                                page.</p></li>
+                        </ol>
 
-	    <p>	<img src="images/ex1-result.jpg"></p>
-	    <div class="figure">Figure 1-22: Browser showing the plugin page.</div>
-	</li>
-    </ol>
+                        <p>	<img src="images/ex1-result.jpg"></p>
+                        <div class="figure">Figure 1-22: Browser showing the plugin page.</div>
+                    </li>
+                </ol>
+            </li>
+        </ol>
+    </li>
+</ol>
 
     <div class="j1holwarn" style="text-align: center">
 	You have just customized the Administration Console!  You plugged in
