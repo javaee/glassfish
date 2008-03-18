@@ -28,9 +28,10 @@ import org.glassfish.api.admingui.ConsoleProvider;
 import org.jvnet.hk2.annotations.Service;
 import java.net.URL;
 
+
 /**
- *  &lt;p&gt; Returns the URL of the IntegrationPoint configuration file
- *	console-config.xml &lt;/p&gt;
+ *  &lt;p&gt; Returns the URL to &lt;code&gt;console-config.xml&lt;/code&gt; where
+ *      &lt;code&gt;IntegrationPoint&lt;/code&gt;s are defined.&lt;/p&gt;
  *
  *  @return URL of configration file.
  */
@@ -47,64 +48,72 @@ public class MyPlugin implements ConsoleProvider {
     <p class="j1holsubheader">Step B: <code>gfplugin/myplugin/src/main/resources/META-INF/admingui/console-config.xml</code></p>
 </a>
 
-	<div class="codebox">
-	    <pre>
+<div class="codebox">
+<pre>
 &lt;?xml version="1.0" encoding="UTF-8"?&gt;
+
 &lt;console-config id="javaone"&gt;
     &lt;integration-point
-	id="JavaOneNode"
-	type="tree"
-	priority="210"
-	parentId="tree"
-	content="treenode-ex1.jsf"
-	/&gt;
-&lt;/console-config&gt;</pre>
-	</div>
+        id="JavaOneNode"
+        type="tree"
+        priority="210"
+        parentId="tree"
+        content="treenode-ex1.jsf"
+    /&gt;
+&lt;/console-config&gt;
+</pre>
+</div>
 
   </br> </br> </br>
 	<a name="treenode-ex1.jsf">
     <p class="j1holsubheader">Step C: <code>gfplugin/myplugin/src/main/resources/treenode-ex1.jsf</code></p>
 </a>
 
-	<div class="codebox">
-	    <pre>
-&lt;sun:treeNode id="j1root"
-	text="J1 TreeNode"
-	imageURL="theme/com/sun/webui/jsf/suntheme/images/tree/tree_folder.gif"
-	target="main"&gt;
+<div class="codebox">
+<pre>
+&lt;sun:treeNode
+    id="j1root"
+    text="J1 TreeNode"
+    imageURL="theme/com/sun/webui/jsf/suntheme/images/tree/tree_folder.gif"
+    target="main"&gt;
 
-	&lt;sun:treeNode id="first"
-	    text="First Node"
-	    url="javaone/hello.jsf"
-	    imageURL="resource/images/instance.gif"
-	    target="main" /&gt;
-	&lt;/sun:treeNode&gt;
-&lt;/sun:treeNode&gt;</pre>
-  </div>
+    &lt;sun:treeNode
+        id="first"
+        text="First Node"
+        url="javaone/hello.jsf"
+        imageURL="resource/images/instance.gif"
+        target="main"
+    /&gt;
+&lt;/sun:treeNode&gt;
+</pre>
+</div>
 
   </br> </br> </br>
 	<a name="hello.jsf">
     <p class="j1holsubheader">Step C: <code>&lt;gfplugin&gt;/myplugin/src/main/resources/hello.jsf</code></p>
 </a>
 
-	<div class="codebox">
-	    <pre>
-&lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"&gt;
+<div class="codebox">
+<pre>
+&lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"&gt;
+
 &lt;html xmlns="http://www.w3.org/1999/xhtml"
     xmlns:ui="http://java.sun.com/jsf/facelets"
     xmlns:h="http://java.sun.com/jsf/html"
     xmlns:f="http://java.sun.com/jsf/core"&gt;
 
     &lt;head&gt;
-	&lt;title&gt; Hello World &lt;/title&gt;
+        &lt;title&gt; Hello World &lt;/title&gt;
     &lt;/head&gt;
 
     &lt;body&gt;
-	&lt;h:outputText value="Your plugin is working, Congratulation !!!" /&gt;
+        &lt;h:outputText value="Your plugin is working, Congratulations!!" /&gt;
     &lt;/body&gt;
 
-&lt;/html&gt;</pre>
-  </div>
+&lt;/html&gt;
+</pre>
+</div>
 
   </br> </br> </br>
     <p class="j1holheader">Final View:</p>
