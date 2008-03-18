@@ -45,6 +45,7 @@ import com.sun.enterprise.config.serverbeans.PersistenceManagerFactoryResource;
 import com.sun.enterprise.config.serverbeans.Resources;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.enterprise.universal.glassfish.SystemPropertyConstants;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.I18n;
@@ -71,7 +72,7 @@ public class CreateResourceRef implements AdminCommand {
     String enabled = Boolean.TRUE.toString();
     
     @Param(optional=true)
-    String target = ResourceConstants.SERVER;
+    String target = SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME;
 
     @Param(name="reference_name", primary=true)
     String refName;
