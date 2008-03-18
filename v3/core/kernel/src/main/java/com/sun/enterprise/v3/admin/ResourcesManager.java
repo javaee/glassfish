@@ -40,6 +40,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Iterator;
 import com.sun.enterprise.config.serverbeans.Resources;
+import com.sun.enterprise.config.serverbeans.Server;
 import java.util.HashMap;
 import java.util.Properties;
 
@@ -56,7 +57,7 @@ public class ResourcesManager {
      * the admin framework when the add-resources command is used to create
      * resources
      */
-    public ArrayList createResources(Resources resources, String resourceXMLFile, String tgtName)
+    public ArrayList createResources(Resources resources, String resourceXMLFile, Server targetServer)
                                                             throws Exception {
         ArrayList results = new ArrayList();
         ResourcesXMLParser resourcesParser =
@@ -76,7 +77,7 @@ public class ResourcesManager {
             ResourceStatus rs;
             try {
                 ResourceManager rm = ResourceFactory.getResourceManager(resource);
-                rs = rm.create(resources, attrList, props, tgtName);
+                rs = rm.create(resources, attrList, props, targetServer);
             } catch (Exception e) {
                 String msg = e.getMessage();
                 rs = new ResourceStatus(ResourceStatus.FAILURE, msg);
@@ -98,7 +99,7 @@ public class ResourcesManager {
             ResourceStatus rs;
             try {
                 ResourceManager rm = ResourceFactory.getResourceManager(resource);
-                rs = rm.create(resources, attrList, props, tgtName);
+                rs = rm.create(resources, attrList, props, targetServer);
             } catch (Exception e) {
                 String msg = e.getMessage();
                 rs = new ResourceStatus(ResourceStatus.FAILURE, msg);

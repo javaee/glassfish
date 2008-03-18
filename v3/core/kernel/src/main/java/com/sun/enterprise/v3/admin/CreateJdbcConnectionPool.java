@@ -45,9 +45,10 @@ import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PerLookup;
 import com.sun.enterprise.config.serverbeans.ServerTags;
+import com.sun.enterprise.universal.glassfish.SystemPropertyConstants;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.config.serverbeans.Resources;
-import com.sun.enterprise.config.serverbeans.JdbcConnectionPool;
+import com.sun.enterprise.config.serverbeans.Server;
 
 import java.util.HashMap;
 import java.util.Properties;
@@ -150,11 +151,17 @@ public class CreateJdbcConnectionPool implements AdminCommand {
     @Param(name="property", optional=true)
     Properties properties;
     
+    @Param(optional=true)
+    String target = SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME;
+    
     @Param(name="jdbc_connection_pool_id", primary=true)
     String jdbc_connection_pool_id; 
   
     @Inject
     Resources resources;
+    
+    @Inject
+    Server[] servers;
 
     /**
      * Executes the command with the command parameters passed as Properties
@@ -163,7 +170,9 @@ public class CreateJdbcConnectionPool implements AdminCommand {
      * @param context information
      */
     public void execute(AdminCommandContext context) {
-       final ActionReport report = context.getActionReport();
+        final ActionReport report = context.getActionReport();
+       
+        Server targetServer = ResourceUtils.getTargetServer(servers, target);
 
         HashMap attrList = new HashMap();
         attrList.put(ResourceConstants.CONNECTION_POOL_NAME, jdbc_connection_pool_id);
@@ -200,7 +209,7 @@ public class CreateJdbcConnectionPool implements AdminCommand {
  
         try {
             JDBCConnectionPoolManager connPoolMgr = new JDBCConnectionPoolManager();
-            rs = connPoolMgr.create(resources, attrList, properties, jdbc_connection_pool_id);
+            rs = connPoolMgr.create(resources, attrList, properties, targetServer);
         } catch(Exception e) {
             report.setMessage(localStrings.getLocalString("create.jdbc.connection.pool.fail",
                     "JDBC connection pool {0} creation failed", jdbc_connection_pool_id));

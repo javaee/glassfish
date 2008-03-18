@@ -5,16 +5,17 @@
 
 package com.sun.enterprise.v3.admin;
 
+import java.beans.PropertyVetoException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Properties;
-import java.beans.PropertyVetoException;
 import org.glassfish.api.I18n;
 import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.TransactionFailure;
 import static com.sun.enterprise.v3.admin.ResourceConstants.*;
 import com.sun.enterprise.config.serverbeans.Resources;
+import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.config.serverbeans.ServerTags;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.config.serverbeans.Property;
@@ -67,7 +68,7 @@ class JDBCConnectionPoolManager implements ResourceManager{
     }
 
     public ResourceStatus create(Resources resources, HashMap attrList, 
-                                    final Properties props, String tgtName) 
+                                    final Properties props, Server targetServer) 
                                     throws Exception {
         setParams(attrList);
         if (jdbcconnectionpoolid == null) {

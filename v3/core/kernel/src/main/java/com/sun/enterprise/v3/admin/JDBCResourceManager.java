@@ -36,20 +36,20 @@
 
 package com.sun.enterprise.v3.admin;
 
+import java.beans.PropertyVetoException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Properties;
 
 import static com.sun.enterprise.v3.admin.ResourceConstants.*;
 import com.sun.enterprise.config.serverbeans.ServerTags;
-
 import org.glassfish.api.I18n;
 import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.TransactionFailure;
-import java.beans.PropertyVetoException;
 import com.sun.enterprise.config.serverbeans.Property;
 import com.sun.enterprise.config.serverbeans.Resources;
+import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.config.serverbeans.JdbcResource;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import org.jvnet.hk2.config.ConfiguredBy;
@@ -75,7 +75,7 @@ public class JDBCResourceManager implements ResourceManager {
     String enabled = Boolean.TRUE.toString();
 
     public ResourceStatus create(Resources resources, HashMap attrList, 
-                                    final Properties props, String tgtName) 
+                                    final Properties props, Server targetServer) 
            throws Exception {
 
         jndiName = (String) attrList.get(JNDI_NAME);
@@ -125,7 +125,9 @@ public class JDBCResourceManager implements ResourceManager {
                 }
             }, resources);
             
-           
+            if (!ResourceUtils.isResourceRefExists(targetServer, jndiName)) {
+                ResourceUtils.createResourceRef(targetServer, enabled, jndiName);
+            }
 
         } catch(TransactionFailure tfe) {
             String msg = localStrings.getLocalString("create.jdbc.resource.fail", 
@@ -136,7 +138,6 @@ public class JDBCResourceManager implements ResourceManager {
         } /*catch(PropertyVetoException pve) {
             return (localStrings.getLocalString("create.jdbc.resource.fail", "{0} create failed ", id));
         }*/
-
         String msg = localStrings.getLocalString("create.jdbc.resource.success",
                 "JDBC resource {0} created successfully", jndiName);
         ResourceStatus status = new ResourceStatus(ResourceStatus.SUCCESS, msg);

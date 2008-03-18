@@ -42,11 +42,14 @@ import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.ActionReport;
+import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.PerLookup;
+import com.sun.enterprise.universal.glassfish.SystemPropertyConstants;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.config.serverbeans.Resources;
+import com.sun.enterprise.config.serverbeans.Server;
 import org.jvnet.hk2.annotations.Inject;
 
 import java.util.ArrayList;
@@ -64,13 +67,16 @@ public class AddResources implements AdminCommand {
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(AddResources.class);    
 
     @Param(optional=true)
-    String target;
+    String target = SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME;
 
     @Param(name="xml_file_name", primary=true)
     String xmlFileName;
     
     @Inject
     Resources resources;
+    
+    @Inject
+    Server[] servers;
     
     /**
      * Executes the command with the command parameters passed as Properties
@@ -81,9 +87,11 @@ public class AddResources implements AdminCommand {
     public void execute(AdminCommandContext context) {
         final ActionReport report = context.getActionReport();
         
+        Server targetServer = ResourceUtils.getTargetServer(servers, target);
+        
         try {
             final ResourcesManager resMgr = new ResourcesManager();
-            final ArrayList results = resMgr.createResources(resources, xmlFileName, target);
+            final ArrayList results = resMgr.createResources(resources, xmlFileName, targetServer);
             final Iterator resultsIter = results.iterator();
             report.getTopMessagePart().setChildrenType("Command");
             boolean isSuccess = false;

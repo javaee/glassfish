@@ -37,6 +37,7 @@
 package com.sun.enterprise.v3.admin;
 
 import com.sun.enterprise.config.serverbeans.Resources;
+import com.sun.enterprise.config.serverbeans.Server;
 import java.util.HashMap;
 import java.util.Properties;
 
@@ -50,6 +51,6 @@ public interface ResourceManager {
     ResourceStatus create( Resources resources,
                                        HashMap   attrList,
                                        Properties      props,
-                                       String          tgtName)
+                                       Server          targetServer)
         throws Exception;
 }

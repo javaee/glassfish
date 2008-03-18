@@ -44,9 +44,10 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PerLookup;
-import com.sun.enterprise.config.serverbeans.Property;
 import com.sun.enterprise.config.serverbeans.Resources;
+import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.config.serverbeans.ServerTags;
+import com.sun.enterprise.universal.glassfish.SystemPropertyConstants;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 
 import java.util.HashMap;
@@ -76,13 +77,16 @@ public class CreateJdbcResource implements AdminCommand {
     Properties properties;
     
     @Param(optional=true)
-    String target;
+    String target = SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME;
 
     @Param(name="jndi_name", primary=true)
     String jndiName;
     
     @Inject
     Resources resources;
+    
+    @Inject
+    Server[] servers;
 
     /**
      * Executes the command with the command parameters passed as Properties
@@ -93,6 +97,8 @@ public class CreateJdbcResource implements AdminCommand {
     public void execute(AdminCommandContext context) {
         final ActionReport report = context.getActionReport();
 
+        Server targetServer = ResourceUtils.getTargetServer(servers, target);
+        
         JDBCResourceManager jdbcMgr = new JDBCResourceManager();
         HashMap attrList = new HashMap();
         attrList.put(ResourceConstants.JNDI_NAME, jndiName);
@@ -102,7 +108,7 @@ public class CreateJdbcResource implements AdminCommand {
         ResourceStatus rs;
  
         try {
-            rs = jdbcMgr.create(resources, attrList, properties, jndiName);
+            rs = jdbcMgr.create(resources, attrList, properties, targetServer);
         } catch(Exception e) {
             report.setMessage(localStrings.getLocalString("create.jdbc.resource.failed",
                     "JDBC resource {0} creation failed", jndiName));
