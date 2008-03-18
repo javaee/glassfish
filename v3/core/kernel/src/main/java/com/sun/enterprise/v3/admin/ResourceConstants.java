@@ -186,8 +186,5 @@ public final class ResourceConstants {
     public static final String USER_NAME = "user-name";
 
     public static final String PASSWORD = "password";
-    
-    // default values
-    public static final String SERVER = "server";
 
 }
