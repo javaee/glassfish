@@ -14,7 +14,7 @@
         getjMakiValues(values=>$attribute{pievalues});
     />
 </sun:dropDown>
-
+&nbsp;
 <sun:dropDown submitForm="true"
         labels={
             "jmaki.charting.plotkit.area"

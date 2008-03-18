@@ -1,20 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <console-config id="javaone">
-        <integration-point 
-                id="JavaOneNode" 
-                type="tree" 
-                priority="210" 
-                parentId="tree" 
-                content="treenode-ex1.jsf" 
-        />
-        
-        <integration-point 
-                id="Another" 
-                type="tree" 
-                priority="230" 
-                parentId="j1root" 
-                content="treenode-ex2.jsf" 
-        />
-        
+    <integration-point 
+        id="JavaOneNode" 
+        type="tree" 
+        priority="210" 
+        parentId="tree" 
+        content="treenode-ex1.jsf" 
+    />
+    <integration-point 
+        id="Another" 
+        type="tree" 
+        priority="230" 
+        parentId="j1root" 
+        content="treenode-ex2.jsf" 
+    />
 </console-config>

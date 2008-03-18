@@ -1,8 +1,7 @@
 <sun:treeNode
-        id="third" 
-        text="Exercise #3"
-        url="javaone/chart3.jsf"
-        imageURL="resource/images/instance.gif"
-        target="main" 
-    />
-
+    id="third"
+    text="Exercise #3"
+    url="javaone/chart3.jsf"
+    imageURL="resource/images/instance.gif"
+    target="main"
+/>

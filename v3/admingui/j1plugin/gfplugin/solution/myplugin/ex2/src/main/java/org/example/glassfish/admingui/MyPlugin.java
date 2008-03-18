@@ -6,8 +6,8 @@ import java.net.URL;
 
 
 /**
- *  <p> Returns the URL of the Integration Point configuration file
- *	console-config.xml </p>
+ *  <p> Returns the URL to <code>console-config.xml</code> where
+ *      <code>IntegrationPoint</code>s are defined.</p>
  *
  *  @return URL of configration file.
  */
