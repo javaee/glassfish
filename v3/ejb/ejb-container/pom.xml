@@ -13,12 +13,20 @@
 
     <developers>
         <developer>
-            <id>dochez</id>
+            <id>mk111283</id>
             <name>Mahesh Kannan</name>
             <url>http://forum.java.sun.com/profile.jspa?userID=487934</url>
             <organization>Sun Microsystems, Inc.</organization>
             <roles>
                 <role>lead</role>
+                <role>developer</role>
+            </roles>
+        </developer>
+        <developer>
+            <id>mvatkina</id>
+            <name>Marina Vatkina</name>
+            <organization>Sun Microsystems, Inc.</organization>
+            <roles>
                 <role>developer</role>
             </roles>
         </developer>
