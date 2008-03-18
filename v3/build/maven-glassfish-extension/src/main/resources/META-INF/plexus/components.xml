@@ -57,5 +57,34 @@
         <addedToClasspath>false</addedToClasspath>
       </configuration>
     </component>
+
+    <!--
+      Custom life-cycle for creating resource bundles to be added to the final distribution.
+    -->
+    <component>
+      <role>org.apache.maven.lifecycle.mapping.LifecycleMapping</role>
+      <role-hint>distribution-fragment</role-hint>
+      <implementation>org.apache.maven.lifecycle.mapping.DefaultLifecycleMapping</implementation>
+      <configuration>
+        <phases>
+          <process-resources>org.apache.maven.plugins:maven-resources-plugin:resources</process-resources>
+          <package>org.apache.maven.plugins:maven-jar-plugin:jar</package>
+          <install>org.apache.maven.plugins:maven-install-plugin:install</install>
+          <deploy>org.apache.maven.plugins:maven-deploy-plugin:deploy</deploy>
+        </phases>
+      </configuration>
+    </component>
+    <component>
+      <role>org.apache.maven.artifact.handler.ArtifactHandler</role>
+      <role-hint>distribution-fragment</role-hint>
+      <implementation>org.apache.maven.artifact.handler.DefaultArtifactHandler</implementation>
+      <configuration>
+        <extension>zip</extension>
+        <type>distribution-fragment</type>
+        <packaging>distribution-fragment</packaging>
+        <language>java</language>
+        <addedToClasspath>false</addedToClasspath>
+      </configuration>
+    </component>
   </components>
 </component-set>
