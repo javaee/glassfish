@@ -53,6 +53,11 @@ public class AsadminMain {
             RemoteCommand rc = RemoteCommand.getInstance();
             rc.handleRemoteCommand(args);
         }
+        catch(NoClassDefFoundError ncdfe)
+        {
+            CLILogger.getInstance().printError(ncdfe.toString());
+            System.exit(1);
+        }
         catch (Throwable ex) {
             CLILogger.getInstance().printExceptionStackTrace(ex);
             CLILogger.getInstance().printError(ex.getLocalizedMessage());
@@ -99,6 +104,7 @@ public class AsadminMain {
     static {
         // check RIGHT NOW to make sure all the classes we need are
         // available
+        long start = System.currentTimeMillis();
         boolean gotError = false;
         for (String s : requiredClassnames) {
             if(!foundClass(s))
@@ -116,6 +122,8 @@ public class AsadminMain {
             // messages already sent to stdout...
             System.exit(1);
         }
+        long stop = System.currentTimeMillis();
+        System.out.println("Time to pre-load classes = " + (stop-start) + " msec");
     }
 }
 
