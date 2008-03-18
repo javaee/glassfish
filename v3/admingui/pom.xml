@@ -153,6 +153,10 @@
 					<groupId>commons-logging</groupId>
             		<artifactId>commons-logging</artifactId>
 				</exclusion>
+				<exclusion>
+					<groupId>com.sun.woodstock.dependlibs</groupId>
+            		<artifactId>dataprovider</artifactId>
+				</exclusion>
       		</exclusions>	
         </dependency>
         <dependency>
