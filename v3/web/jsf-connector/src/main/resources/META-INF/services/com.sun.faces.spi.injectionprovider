@@ -1,1 +1,1 @@
-org.glassfish.faces.integration.GlassFishInjectionProvider:com.sun.enterprise.container.common.spi.util.InjectionManager
+org.glassfish.faces.integration.GlassFishInjectionProvider:org.glassfish.faces.integration.GlassFishInjectionProvider
