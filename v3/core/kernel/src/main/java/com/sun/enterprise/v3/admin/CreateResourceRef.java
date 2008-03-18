@@ -35,7 +35,6 @@
  */
 package com.sun.enterprise.v3.admin;
 
-import java.beans.PropertyVetoException;
 import com.sun.enterprise.config.serverbeans.AdminObjectResource;
 import com.sun.enterprise.config.serverbeans.ConnectorResource;
 import com.sun.enterprise.config.serverbeans.CustomResource;
@@ -44,7 +43,6 @@ import com.sun.enterprise.config.serverbeans.JdbcResource;
 import com.sun.enterprise.config.serverbeans.MailResource;
 import com.sun.enterprise.config.serverbeans.PersistenceManagerFactoryResource;
 import com.sun.enterprise.config.serverbeans.Resources;
-import com.sun.enterprise.config.serverbeans.ResourceRef;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import org.glassfish.api.admin.AdminCommand;
@@ -56,8 +54,6 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PerLookup;
-import org.jvnet.hk2.config.ConfigSupport;
-import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.TransactionFailure;
 
 /**
@@ -75,7 +71,7 @@ public class CreateResourceRef implements AdminCommand {
     String enabled = Boolean.TRUE.toString();
     
     @Param(optional=true)
-    String target = "server";
+    String target = ResourceConstants.SERVER;
 
     @Param(name="reference_name", primary=true)
     String refName;
@@ -135,7 +131,7 @@ public class CreateResourceRef implements AdminCommand {
             for (Server server : servers) {
                 if (server.getName().equals(target)) {
                     // ensure we don't already have one of this name
-                    if (isResourceRefExists(server, refName)) {
+                    if (ResourceUtils.isResourceRefExists(server, refName)) {
                         report.setMessage(localStrings.getLocalString("create.resource.ref.existsAlready",
                         "Resource ref {0} already exists", refName));
                         report.setActionExitCode(ActionReport.ExitCode.FAILURE);
@@ -143,17 +139,7 @@ public class CreateResourceRef implements AdminCommand {
                     }
                     
                     // create new ResourceRef as a child of Server
-                    ConfigSupport.apply(new SingleConfigCode<Server>() {
-
-                        public Object run(Server param) throws PropertyVetoException, TransactionFailure {
-
-                            ResourceRef newResourceRef = ConfigSupport.createChildOf(param, ResourceRef.class);
-                            newResourceRef.setEnabled(enabled);
-                            newResourceRef.setRef(refName);
-                            param.getResourceRef().add(newResourceRef);                    
-                            return newResourceRef;
-                        }
-                    }, server);
+                    ResourceUtils.createResourceRef(server, enabled, refName);
                 }
             }
         } catch(TransactionFailure tfe) {
@@ -208,15 +194,6 @@ public class CreateResourceRef implements AdminCommand {
         }
         for (PersistenceManagerFactoryResource resource : persistenceMgrFactoryResources) {
             if (resource.getJndiName().equals(refName)) {
-                return true;
-            }
-        }
-        return false;
-    }
-    
-    private boolean isResourceRefExists(Server server, String refName) {
-        for (ResourceRef ref : server.getResourceRef()) {
-            if (ref.getRef().equals(refName)) {
                 return true;
             }
         }
