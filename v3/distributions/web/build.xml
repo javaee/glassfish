@@ -126,7 +126,7 @@
             </resolveAll>
             <unzip dest="target/stage">
                 <patternset>
-                    <exclude name="META-INF"/>
+                    <exclude name="META-INF/**"/>
                 </patternset>
                 <fileset dir="target/fragments" includes="*.zip"/>
             </unzip>
