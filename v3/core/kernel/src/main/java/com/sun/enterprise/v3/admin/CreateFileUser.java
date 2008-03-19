@@ -133,7 +133,7 @@ public class CreateFileUser implements AdminCommand {
         }        
         if (fileAuthRealm == null) {
             report.setMessage(localStrings.getLocalString(
-                "fileuser.filerealm.notfound",
+                "create.file.user.filerealmnotfound",
                 "There is no File realm to perform this operation"));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             return;                                            
@@ -148,7 +148,7 @@ public class CreateFileUser implements AdminCommand {
                 "com.sun.enterprise.security.auth.realm.file.FileRealm")) {
             report.setMessage(
                 localStrings.getLocalString(
-                    "create.fileuser.realm.notsupported",
+                    "create.file.user.realmnotsupported",
                     "Configured FileRealm is not supported."));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             return;                
@@ -162,7 +162,7 @@ public class CreateFileUser implements AdminCommand {
         }
         if (keyFile == null) {
             report.setMessage(
-                localStrings.getLocalString("fileuser.keyfile.notfound",
+                localStrings.getLocalString("create.file.user.keyfilenotfound",
                 "There is no physical file associated with this Filerealm"));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             return;                                            
@@ -175,7 +175,7 @@ public class CreateFileUser implements AdminCommand {
         String password = fetchPassword();
         if (password == null) {
             report.setMessage(localStrings.getLocalString(
-                "create.fileuser.keyfile.notreadable", "User password cannot " +
+                "create.file.user.keyfilenotreadable", "User password cannot " +
                 "be read from the file associated with this Filerealm"));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             return;
@@ -189,14 +189,14 @@ public class CreateFileUser implements AdminCommand {
         } catch(BadRealmException e) {
             report.setMessage(
                 localStrings.getLocalString(
-                    "fileuser.realm.corrupted",
+                    "create.file.user.realmcorrupted",
                     "Configured FileRealm is corrupted."));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
         } catch(NoSuchRealmException e) {
             report.setMessage(
                 localStrings.getLocalString(
-                    "fileuser.realm.notsupported",
+                    "create.file.user.realmnotsupported",
                     "Configured FileRealm is not supported."));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
@@ -208,7 +208,7 @@ public class CreateFileUser implements AdminCommand {
             fr.writeKeyFile(keyFile);
         } catch (Exception e) {
             report.setMessage(
-                localStrings.getLocalString("create.fileuser.useradd.failed",
+                localStrings.getLocalString("create.file.user.useraddfailed",
                 "Adding User to this Filerealm failed"));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);

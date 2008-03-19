@@ -126,7 +126,7 @@ public class DeleteFileUser implements AdminCommand {
         }        
         if (fileAuthRealm == null) {
             report.setMessage(localStrings.getLocalString(
-                "fileuser.filerealm.notfound",
+                "delete.file.user.filerealmnotfound",
                 "There is no File realm to perform this operation"));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             return;                                            
@@ -141,7 +141,7 @@ public class DeleteFileUser implements AdminCommand {
                 "com.sun.enterprise.security.auth.realm.file.FileRealm")) {
             report.setMessage(
                 localStrings.getLocalString(
-                    "create.fileuser.realm.notsupported",
+                    "delete.file.user.realmnotsupported",
                     "Configured FileRealm is not supported."));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             return;                
@@ -155,7 +155,7 @@ public class DeleteFileUser implements AdminCommand {
         }
         if (keyFile == null) {
             report.setMessage(
-                localStrings.getLocalString("fileuser.keyfile.notfound",
+                localStrings.getLocalString("delete.file.user.keyfilenotfound",
                 "There is no physical file associated with this Filerealm"));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             return;                                            
@@ -168,14 +168,14 @@ public class DeleteFileUser implements AdminCommand {
         } catch(BadRealmException e) {
             report.setMessage(
                 localStrings.getLocalString(
-                    "fileuser.realm.corrupted",
+                    "delete.file.user.realmcorrupted",
                     "Configured FileRealm is corrupted."));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
         } catch(NoSuchRealmException e) {
             report.setMessage(
                 localStrings.getLocalString(
-                    "fileuser.realm.notsupported",
+                    "delete.file.user.realmnotsupported",
                     "Configured FileRealm is not supported."));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
@@ -186,14 +186,14 @@ public class DeleteFileUser implements AdminCommand {
             fr.writeKeyFile(keyFile);
         } catch (NoSuchUserException e) {
             report.setMessage(
-                localStrings.getLocalString("delete.fileuser.user.notfound",
+                localStrings.getLocalString("delete.file.user.usernotfound",
                 "There is no such existing user with this name in the Filerealm."));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
         } catch (Exception e) {
             e.printStackTrace();
             report.setMessage(
-                localStrings.getLocalString("delete.fileuser.userdelete.failed",
+                localStrings.getLocalString("delete.file.user.userdeletefailed",
                 "Removing User from this Filerealm failed"));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
