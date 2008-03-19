@@ -44,7 +44,7 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLServerSocket;
 import javax.net.ssl.TrustManager;
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.enterprise.security.SSLUtils;
+import com.sun.enterprise.security.ssl.SSLUtils;
 //V3:Commented import com.sun.enterprise.ServerConfiguration;
 //V3:Commented import com.sun.web.server.*;
 //V3:Commented import com.sun.enterprise.server.J2EEServer;

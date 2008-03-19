@@ -81,6 +81,11 @@
             <version>${project.version}</version>
         </dependency>      
         <dependency>
+            <groupId>org.glassfish.security</groupId>
+            <artifactId>securitycommon</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.glassfish.admin</groupId>
             <artifactId>config-api</artifactId>
             <version>${project.version}</version>
@@ -114,6 +119,12 @@
         <dependency>
             <groupId>org.glassfish.web</groupId>
             <artifactId>webtier</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>            
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.web</groupId>
+            <artifactId>war-util</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>            
         </dependency>

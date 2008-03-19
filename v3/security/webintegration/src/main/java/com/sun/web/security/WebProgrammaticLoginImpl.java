@@ -53,7 +53,7 @@ import org.apache.catalina.Manager;
 
 import com.sun.logging.LogDomains;
 
-import com.sun.enterprise.security.auth.LoginContextDriver;
+import com.sun.enterprise.security.auth.login.LoginContextDriver;
 import com.sun.enterprise.security.SecurityContext;
 
 import org.apache.coyote.tomcat5.CoyoteRequest;

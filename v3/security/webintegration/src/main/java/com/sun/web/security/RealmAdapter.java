@@ -91,9 +91,9 @@ import com.sun.enterprise.deployment.interfaces.SecurityRoleMapper;
 import com.sun.enterprise.deployment.web.LoginConfiguration;
 import com.sun.enterprise.security.SecurityContext;
 import com.sun.enterprise.security.SecurityUtil;
-import com.sun.enterprise.security.auth.LoginContextDriver;
+import com.sun.enterprise.security.auth.login.LoginContextDriver;
 import com.sun.enterprise.security.auth.realm.certificate.CertificateRealm;
-import com.sun.enterprise.security.integration.RealmAdapterProxy;
+import com.sun.enterprise.security.integration.RealmInitializer;
 import com.sun.logging.LogDomains;
 import com.sun.enterprise.security.jmac.config.HttpServletConstants;
 import com.sun.enterprise.security.jmac.config.HttpServletHelper;
@@ -114,7 +114,7 @@ import org.jvnet.hk2.annotations.Service;
  * @author JeanFrancois Arcand
  */
 @Service
-public class RealmAdapter extends RealmBase implements RealmAdapterProxy {
+public class RealmAdapter extends RealmBase implements RealmInitializer {
 
     private static final String UNCONSTRAINED = "unconstrained";
     private static final Logger _logger = LogDomains.getLogger(LogDomains.WEB_LOGGER);
