@@ -118,6 +118,19 @@
         <attribute name="zipfile" />
         <attribute name="base" />
         <sequential>
+            <!-- find all fragments -->
+            <resolveAll todir="target/fragments">
+                <fullGraph/>
+                <!-- now treat the full graph as the list and then do simple list filtering -->
+                <packaging value="distribution-fragment"/>
+            </resolveAll>
+            <unzip dest="target/stage">
+                <patternset>
+                    <exclude name="META-INF"/>
+                </patternset>
+                <fileset dir="target/fragments" includes="*.zip"/>
+            </unzip>
+
             <zip file="@{zipfile}" basedir="target/stage">
                 <zipgroupfileset file="@{base}"/>
             </zip>
@@ -129,38 +142,25 @@
         <resolveAll todir="target/stage/glassfish/modules">
             <excludeArtifactsTransitively>
                 <scope level="compile,runtime"/>
-                <artifact artifactId="webtier-all" />
-                <artifact artifactId="gf-ejb-connector" />
+                <artifact artifactId="webtier-all"/>
+                <artifact artifactId="gf-ejb-connector"/>
             </excludeArtifactsTransitively>
         </resolveAll>
 
-      <!-- find all fragments -->
-      <resolveAll todir="target/fragments">
-        <fullGraph />
-        <!-- now treat the full graph as the list and then do simple list filtering -->
-        <packaging value="distribution-fragment" />
-      </resolveAll>
-      <unzip dest="target/stage">
-        <patternset>
-          <exclude name="META-INF" />
-        </patternset>
-        <fileset dir="target/fragments" includes="*.zip" />
-      </unzip>
-
-        <delete dir="target/stage/glassfish/modules" includes="*.zip, javadb*.*" />
+        <delete dir="target/stage/glassfish/modules" includes="*.zip, javadb*.*"/>
 
         <graphDef id="generate-picture">
             <visualize file="modules.png">
-                <scope level="compile,runtime" />
+                <scope level="compile,runtime"/>
                 <subGraph color="red">
                     <graphRef refid="web-modules"/>
                 </subGraph>
             </visualize>
         </graphDef>
 
-        <build-zip zipfile="target/web.zip" base="${nucleus-base.zip}" />
+        <build-zip zipfile="target/web.zip" base="${nucleus-base.zip}"/>
 
         <!-- this build script will be reused elsewhere -->
-        <attachArtifact file="build.xml" classifier="build" />
+        <attachArtifact file="build.xml" classifier="build"/>
     </target>
 </project>
