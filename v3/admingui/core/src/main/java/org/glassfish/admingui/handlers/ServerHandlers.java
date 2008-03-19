@@ -342,7 +342,7 @@ public class ServerHandlers {
         boolean debugEnabled = javaConfig.getDebugEnabled();
         String debugOptions = javaConfig.getDebugOptions();
         String rmicOptions = javaConfig.getRMICOptions();
-        String bytecodePreprocessors = javaConfig.getBytecodePreprocessors();
+        String bytecodePreprocessors = "AMX Attr not available"; //javaConfig.getBytecodePreprocessors();
         handlerCtx.setOutputValue("JavaHome", javaHome);
         handlerCtx.setOutputValue("JavacOptions", javacOptions);
         handlerCtx.setOutputValue("DebugEnabled", debugEnabled);
