@@ -42,7 +42,6 @@
                 var result;
                 if(getSelectedValue('uploadRdBtn')=='client') {
                     result = (checkRequired('#{fileuploadId}', '#{reqMsg}'));
-                         
                 } else {
                     result = (checkRequired('#{dirPathId}', '#{reqMsg}'));
                 }
@@ -95,8 +94,14 @@
            redirect(page="../$attribute{nextPage}?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}&name=$pageSession{target}");
         />
 </sun:button>
-<sun:button id="cancelButton" text="$resource{i18n.button.Cancel}" primary="#{false}"  immediate="#{true}">
+
+
+<sun:button id="cancelButton" text="AC$resource{i18n.button.Cancel}" primary="#{false}"  immediate="#{true}">
     <!command
-            redirect(page="../$pageSession{cancelPage}?name=$pageSession{target}");
+println("appType = $pageSession{appType}");
+println("::::::cancelPage = #{cancelPage}");
+println("------------- redirect to ../$pageSession{cancelPage}?name=$pageSession{target}");
+            #redirect(page="../$pageSession{cancelPage}?name=$pageSession{target}");
+        redirect(page="../applications/webApplications.jsf");
     />
 </sun:button>

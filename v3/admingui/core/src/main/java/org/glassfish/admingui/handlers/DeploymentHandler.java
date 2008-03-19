@@ -55,7 +55,6 @@ import java.util.Properties;
 
 import org.glassfish.deployment.client.DFDeploymentStatus;
 import org.glassfish.deployment.client.DeploymentFacility;
-import org.glassfish.deployment.client.DeploymentFacilityFactory;
 import org.glassfish.deployment.client.DFProgressObject;
 import org.glassfish.deployment.client.DFDeploymentProperties;
 
@@ -78,7 +77,6 @@ import javax.management.ObjectName;
 import org.glassfish.admingui.util.GuiUtil;
 import org.glassfish.admingui.util.AMXRoot;
 import org.glassfish.admingui.util.TargetUtil;
-import org.glassfish.deployment.client.ServerConnectionIdentifier;
 
 /**
  *
@@ -242,7 +240,7 @@ public class DeploymentHandler {
         
         List selectedRows = (List) obj;
         DFProgressObject progressObject = null;
-         DeploymentFacility df= DeploymentFacilityFactory.getDeploymentFacility();
+         DeploymentFacility df= GuiUtil.getDeploymentFacility();
         //Hard coding to server, fix me for actual targets in EE.
         String[] targetNames = new String[] {"server"};
         
@@ -258,7 +256,9 @@ public class DeploymentHandler {
                     targetNames=new String[]{"domain"};
             }
             progressObject = df.undeploy(df.createTargets(targetNames), appName, dProps);
-            DFDeploymentStatus status = df.waitFor(progressObject);
+            
+            progressObject.waitFor();
+            DFDeploymentStatus status = progressObject.getCompletedStatus();
             //we DO want it to continue and call the rest handlers, ie navigate(). This will
             //re-generate the table data because there may be some apps thats been undeployed 
             //successfully.  If we stopProcessing, the table data is stale and still shows the
@@ -444,7 +444,7 @@ public class DeploymentHandler {
     //Status of app-ref created will be the same as the app itself.
     static public void handleAppRefs(String appName, String[] targetNames, HandlerContext handlerCtx, boolean addFlag, Boolean enableFlag) {
         if (targetNames != null && targetNames.length > 0){
-            DeploymentFacility df= DeploymentFacilityFactory.getDeploymentFacility();
+            DeploymentFacility df= GuiUtil.getDeploymentFacility();        
             DFProgressObject progressObject = null;
             Properties dProps = new Properties();
 

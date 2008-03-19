@@ -946,7 +946,6 @@ function guiValidate(reqMsg,reqInt, reqPort){
 function guiValidateWithDropDown(reqMsg,reqInt, reqPort, reqMsgSelect){
     var selectFields = document.getElementsByTagName("select");
     var inputFields = document.getElementsByTagName("input");
-    alert('in guiValidate()');
     for ( i=0; i< inputFields.length; i++) {
         component = inputFields[i];
         styleClass = component.className;

@@ -62,7 +62,6 @@
 		selected="#{selectedVS}"
 	>
         	<!beforeCreate
-println("======== displayVs = #{displayVS}");
 			getAllVSList(
 				targetName="server"
 				PE="true"

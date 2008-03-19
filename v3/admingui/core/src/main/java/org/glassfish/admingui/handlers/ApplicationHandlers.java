@@ -142,12 +142,13 @@ public class ApplicationHandlers {
 	    module = amxRoot.getDomainConfig().getJ2EEApplicationConfigMap().get(name);
             if (module != null){
                 J2EEApplicationConfig j2eeApp = (J2EEApplicationConfig) module;
-		handlerCtx.setOutputValue("javaWebStart", j2eeApp.getJavaWebStartEnabled());
-		handlerCtx.setOutputValue("availEnabled", j2eeApp.getAvailabilityEnabled());
+		//handlerCtx.setOutputValue("javaWebStart", j2eeApp.getJavaWebStartEnabled());
+		//handlerCtx.setOutputValue("availEnabled", j2eeApp.getAvailabilityEnabled());
 		if(!amxRoot.supportCluster()) {
 			//We need this only for PE, so hard code it "server"
 			handlerCtx.setOutputValue("vs", TargetUtil.getAssociatedVS(name, "server"));
 		}
+                handlerCtx.setOutputValue("contextRoot", "AMX EXCEPTION" );  //j2eeApp.getContextRoot());
 	    }
 	}else
 	if ("ejbModule".equals(appType)){
@@ -183,8 +184,8 @@ public class ApplicationHandlers {
 	}
 
 	handlerCtx.setOutputValue("location", module.getLocation());
-	handlerCtx.setOutputValue("description", module.getDescription());
-	handlerCtx.setOutputValue("objectType", module.getObjectType());
+	handlerCtx.setOutputValue("description", "AMX EXCEPTION") ;  //module.getDescription());
+	handlerCtx.setOutputValue("objectType", "AMX EXCEPTION");  //module.getObjectType());
 	
         if(amxRoot.isEE())
             handlerCtx.setOutputValue("enabledString", TargetUtil.getEnabledStatus(module, true));
@@ -192,7 +193,10 @@ public class ApplicationHandlers {
             handlerCtx.setOutputValue("enabled", TargetUtil.isApplicationEnabled(module, "server" ));
         
         if (!"connector".equals(appType)){
-            String[] libArray = (String[]) ((Libraries)module).getLibraries();
+            //String[] libArray = (String[]) ((Libraries)module).getLibraries();
+            String[] libArray = new String[1];
+            libArray[0]="AMX EXCEPTION";
+            
             if (libArray != null){
                 StringBuffer libs = new StringBuffer();
                 for(int i=0; i< libArray.length; i++){
@@ -696,17 +700,17 @@ public class ApplicationHandlers {
     public static void getDeployedWebInfo(HandlerContext handlerCtx){
         
         String serverName = (String) handlerCtx.getInputValue("serverName");
-        Iterator<WebModuleConfig> iter = AMXRoot.getInstance().getDomainConfig().getWebModuleConfigMap().values().iterator();
+        Iterator<J2EEApplicationConfig> iter = AMXRoot.getInstance().getDomainConfig().getJ2EEApplicationConfigMap().values().iterator();
         List result = new ArrayList();
         while(iter.hasNext()){
-            WebModuleConfig appConfig = iter.next();
+            J2EEApplicationConfig appConfig = iter.next();
             if (ObjectTypeValues.USER.equals(appConfig.getObjectType())){
                 HashMap oneRow = new HashMap();
                 String protocol = "http" ;
                 String enable =  TargetUtil.getEnabledStatus(appConfig, true);
                 oneRow.put("name", appConfig.getName());
                 oneRow.put("enabled", enable);
-                String contextRoot = appConfig.getContextRoot();
+                String contextRoot = "AMX EXCEPTION";  //TODO-V3 appConfig.getContextRoot();
                 oneRow.put("contextRoot", contextRoot);
                 String port = getPortForApplication(appConfig.getName());
                 if (port.startsWith("-") ){

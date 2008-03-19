@@ -94,7 +94,8 @@ public class TargetUtil {
     static public void setVirtualServers(String appName, String targetName, String virtualServers)
     {
 		DeployedItemRefConfig appRef = getDeployedItemRefObject(appName, targetName);
-		appRef.setVirtualServers(virtualServers);
+                //AMX EXCEPTION,   cannot set VS
+		//appRef.setVirtualServers(virtualServers);
     }
 
     /*
@@ -103,7 +104,7 @@ public class TargetUtil {
     static public String getAssociatedVS(String appName, String targetName)
     {
 		DeployedItemRefConfig appRef = getDeployedItemRefObject(appName, targetName);
-		String vs = appRef.getVirtualServers();
+		String vs = "AMX EXCEPTION";  //appRef.getVirtualServers();
 		return vs;
     }
 
