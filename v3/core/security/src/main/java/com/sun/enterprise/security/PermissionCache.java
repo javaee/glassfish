@@ -35,6 +35,7 @@
  */
 package com.sun.enterprise.security;
 
+import com.sun.enterprise.security.common.AppservAccessController;
 import java.security.CodeSource;
 import java.security.AllPermission;
 import java.security.Permission;

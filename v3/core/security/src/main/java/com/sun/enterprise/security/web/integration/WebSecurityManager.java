@@ -55,7 +55,7 @@ import java.util.HashMap;
 import java.util.Map;
 import com.sun.logging.LogDomains;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
-import com.sun.enterprise.security.AppservAccessController;
+import com.sun.enterprise.security.common.AppservAccessController;
 import com.sun.enterprise.security.authorize.*;
 import com.sun.enterprise.security.CachedPermission;
 import com.sun.enterprise.security.CachedPermissionImpl;

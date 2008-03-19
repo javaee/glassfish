@@ -35,6 +35,7 @@
  */
 package com.sun.enterprise.security;
 
+import com.sun.enterprise.security.ssl.SSLUtils;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -48,16 +49,21 @@ import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.PreDestroy;
 
 import com.sun.enterprise.J2EESecurityManager;
+import com.sun.enterprise.config.serverbeans.AuthRealm;
+import com.sun.enterprise.config.serverbeans.Property;
+import com.sun.enterprise.config.serverbeans.SecurityService;
 import com.sun.enterprise.deployment.interfaces.SecurityRoleMapperFactory;
 import com.sun.enterprise.deployment.interfaces.SecurityRoleMapperFactoryMgr;
 import com.sun.enterprise.security.audit.AuditManager;
-import com.sun.enterprise.security.auth.LoginContextDriver;
+import com.sun.enterprise.security.auth.login.LoginContextDriver;
+import com.sun.enterprise.security.auth.realm.Realm;
 import com.sun.enterprise.security.authorize.PolicyContextHandlerImpl;
 import com.sun.enterprise.security.jmac.config.GFAuthConfigFactory;
 import com.sun.enterprise.server.ServerContext;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.logging.LogDomains;
-import org.glassfish.api.Startup;
+import java.util.List;
+import java.util.Properties;
 import org.glassfish.api.Startup.Lifecycle;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
@@ -76,8 +82,8 @@ public class SecurityLifecycle implements  PostConstruct, PreDestroy {
     @Inject
     private ServerContext sc;
     
-    @Inject 
-    private RealmConfig realmConfig;
+    //@Inject 
+    //private RealmConfig realmConfig;
     
     @Inject 
     private PolicyLoader policyLoader;
@@ -149,8 +155,7 @@ public class SecurityLifecycle implements  PostConstruct, PreDestroy {
             //policyLoader.loadPolicy();
             // create realms rather than creating RemoteObject RealmManager
             // which will init ORB prematurely
-            assert(realmConfig != null);
-            realmConfig.createRealms();
+            createRealms();
             // start the audit mechanism
             auditManager.loadAuditModules();
             
@@ -240,5 +245,101 @@ public class SecurityLifecycle implements  PostConstruct, PreDestroy {
             throw  cnfe;
         } 
     }
+    
+     /**
+     * Load all configured realms from server.xml and initialize each
+     * one.  Initialization is done by calling Realm.initialize() with
+     * its name, class and properties.  The name of the default realm
+     * is also saved in the Realm class for reference during server
+     * operation.
+     *
+     * <P>This method superceeds the RI RealmManager.createRealms() method.
+     *
+     * */
+    public  void createRealms()
+    {
+        
+        try {
+            if (_logger.isLoggable(Level.FINE)) {
+                _logger.fine("Initializing configured realms from SecurityService in Domain.xml....");
+            }
+            
+            SecurityService securityBean = sc.getDefaultHabitat().getComponent(SecurityService.class);
+            assert(securityBean != null);
+
+                                // grab default realm name
+            String defaultRealm = securityBean.getDefaultRealm();
+
+                                // get set of auth-realms and process each
+            List<AuthRealm> realms = securityBean.getAuthRealm();
+            assert(realms != null);
+
+            createRealms(defaultRealm, realms);
+            
+        } catch (Exception e) {
+            _logger.log(Level.SEVERE, "realmconfig.nogood", e);
+        }
+    }
+    
+    public static void createRealms(String defaultRealm, List<AuthRealm> realms) 
+    {
+        assert(realms != null);
+
+        String goodRealm = null; // need at least one good realm
+
+        for (AuthRealm aRealm : realms) {
+            String realmName = aRealm.getName();
+            String realmClass = aRealm.getClassname();
+            assert (realmName != null);
+            assert (realmClass != null);
+
+            try {
+                List<Property> realmProps = aRealm.getProperty();
+                /*V3 Commented ElementProperty[] realmProps =
+                    aRealm.getElementProperty();*/
+                Properties props = new Properties();
+                for (Property realmProp : realmProps) {
+                    props.setProperty(realmProp.getName(), realmProp.getValue());
+                }
+                Realm.instantiate(realmName, realmClass, props);
+
+                if (_logger.isLoggable(Level.FINE)) {
+                    _logger.fine("Configured realm: " + realmName);
+                }
+
+                if (goodRealm == null) {
+                    goodRealm = realmName;
+                }
+            } catch (Exception e) {
+                _logger.log(Level.WARNING,
+                           "realmconfig.disable", realmName);
+                _logger.log(Level.WARNING, "security.exception", e);
+            }
+        }
+
+        // done loading all realms, check that there is at least one
+        // in place and that default is installed, or change default
+        // to the first one loaded (arbitrarily).
+
+        if (goodRealm == null) {
+            _logger.severe("realmconfig.nogood");
+
+        } else {
+            try {
+                Realm def = Realm.getInstance(defaultRealm);
+                if (def == null) {
+                    defaultRealm = goodRealm;
+                }
+            } catch (Exception e) {
+                defaultRealm = goodRealm;
+            }
+            Realm.setDefaultRealm(defaultRealm);
+            if (_logger.isLoggable(Level.FINE)) {
+                _logger.fine("Default realm is set to: " + defaultRealm);
+            }
+        }
+    }
+    
+    
     
 }

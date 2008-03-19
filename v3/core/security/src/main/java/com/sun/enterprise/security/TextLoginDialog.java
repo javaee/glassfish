@@ -35,6 +35,7 @@
  */
 package com.sun.enterprise.security;
 
+import com.sun.enterprise.security.ssl.SSLUtils;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.IOException;

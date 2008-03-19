@@ -35,6 +35,7 @@
  */
 package com.sun.enterprise.security.auth.login;
 
+import com.sun.enterprise.security.auth.login.common.X509CertificateCredential;
 import java.util.Map;
 import java.util.Enumeration;
 import java.security.KeyStore;
@@ -48,9 +49,9 @@ import javax.security.auth.spi.LoginModule;
 import com.sun.enterprise.config.serverbeans.Ssl;
 
 import com.sun.enterprise.deployment.PrincipalImpl;
-import com.sun.enterprise.security.SSLUtils;
+import com.sun.enterprise.security.ssl.SSLUtils;
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.enterprise.security.auth.LoginContextDriver;
+import com.sun.enterprise.security.auth.login.LoginContextDriver;
 import java.util.logging.*;
 import com.sun.logging.*;
 

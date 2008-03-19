@@ -82,13 +82,13 @@ import javax.security.auth.x500.X500Principal;
 //V3:Commented import com.sun.enterprise.Switch;
 import com.sun.enterprise.deployment.Group;
 import com.sun.enterprise.deployment.PrincipalImpl;
-import com.sun.enterprise.security.AppservAccessController;
+import com.sun.enterprise.security.common.AppservAccessController;
 import com.sun.enterprise.security.SecurityContext;
 import com.sun.enterprise.security.SecurityUtil;
-import com.sun.enterprise.security.SSLUtils;
-import com.sun.enterprise.security.auth.LoginContextDriver;
+import com.sun.enterprise.security.ssl.SSLUtils;
+import com.sun.enterprise.security.auth.login.LoginContextDriver;
 import com.sun.enterprise.security.auth.login.DistinguishedPrincipalCredential;
-import com.sun.enterprise.security.LoginException;
+import com.sun.enterprise.security.auth.login.common.LoginException;
 import com.sun.enterprise.security.auth.realm.certificate.CertificateRealm;
 import com.sun.enterprise.security.jmac.config.CallbackHandlerConfig;
 import com.sun.enterprise.security.jmac.config.GFServerConfigProvider;
@@ -316,7 +316,7 @@ abstract class BaseContainerCallbackHandler
     }
 
     private void processPrivateKey(PrivateKeyCallback privKeyCallback) {
-        KeyStore[] kstores = SecurityUtil.getSecuritySupport().getKeyStores();
+        KeyStore[] kstores = SSLUtils.getSecuritySupport().getKeyStores();
         if (_logger.isLoggable(Level.FINE)) {
             _logger.log(Level.FINE, 
                 "JMAC: In PrivateKeyCallback Processor");
@@ -330,7 +330,7 @@ abstract class BaseContainerCallbackHandler
         }
 
         String[] passwords =
-            SecurityUtil.getSecuritySupport().getKeyStorePasswords();
+            SSLUtils.getSecuritySupport().getKeyStorePasswords();
 
         // get the request type
         PrivateKeyCallback.Request req = privKeyCallback.getRequest();

@@ -39,8 +39,6 @@ import java.security.*;
 import java.lang.reflect.*;
 
 import javax.security.jacc.*;
-import com.sun.enterprise.server.pluggable.SecuritySupport;
-//import com.sun.ejb.Container; 
 //import com.sun.ejb.Invocation; 
 import com.sun.enterprise.security.util.IASSecurityException;
 import com.sun.logging.LogDomains;
@@ -58,7 +56,7 @@ public class SecurityUtil{
 
     //TODO V3: Temporary till we have AppContainer integration design sorted out
     public static final int APPCONTAINER_USERNAME_PASSWORD = 1;
-    public static final int APPCONTAINER_CERTIFICATE = 2;
+    //public static final int APPCONTAINER_CERTIFICATE = 2;
     //TODO  V3 -------------------------------------
     
     private static final LocalStringManagerImpl localStrings =
@@ -354,16 +352,4 @@ public class SecurityUtil{
         return rvalue;
     }
 
-
-    /**
-     * This method provides a single place to get SecuritySupport for security.
-     */
-    public static SecuritySupport getSecuritySupport() {
-        return (new SecurityServicesUtil()).getSecuritySupport();
-    }
-    
-    //TODO V3: Temporary till we have AppContainer integration design sorted out
-    public static CallbackHandler getAppContainerCallbackHandler() {
-        throw new UnsupportedOperationException("V3: AppContainer Integration not yet sorted out");
-    }
 }

@@ -35,6 +35,9 @@
  */
 package com.sun.enterprise.security;
 
+import com.sun.enterprise.security.integration.AppServSecurityContext;
+import com.sun.enterprise.security.common.AppservAccessController;
+import com.sun.enterprise.security.common.AbstractSecurityContext;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 
@@ -51,7 +54,10 @@ import com.sun.enterprise.config.*;
 import com.sun.enterprise.security.auth.login.DistinguishedPrincipalCredential;
 //V3:Comment import com.sun.enterprise.server.ApplicationServer;
 import com.sun.enterprise.security.web.integration.PrincipalGroupFactory;
+import com.sun.enterprise.security.web.integration.WebPrincipal;
 import com.sun.logging.*;
+import java.security.AccessController;
+import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PostConstruct;
 
 /**
@@ -70,6 +76,7 @@ import org.jvnet.hk2.component.PostConstruct;
  * @author Harish Prabandham
  * @author Harpreet Singh
  */
+@Service
 public class SecurityContext extends AbstractSecurityContext implements PostConstruct {
    
     private static Logger _logger=null;
@@ -190,7 +197,10 @@ public class SecurityContext extends AbstractSecurityContext implements PostCons
     
     /* private constructor for constructing default security context
      */
-    private SecurityContext() {
+    public SecurityContext() {
+        if (_logger.isLoggable(Level.FINE)) {
+            _logger.log(Level.FINE, "Default CTOR of SecurityContext called");
+        }
  	this.subject = new Subject();
 	// delay assignment of caller principal until it is requested
  	this.initiator = null;
@@ -382,5 +392,67 @@ public class SecurityContext extends AbstractSecurityContext implements PostCons
 
     public void postConstruct() {
         initDefaultCallerPrincipal();
+    }
+
+    public AppServSecurityContext newInstance(String userName, Subject subject, String realm) {
+        if (_logger.isLoggable(Level.FINE)) {
+            _logger.log(Level.FINE, "SecurityContext: newInstance method called");
+        }
+        return new SecurityContext(userName, subject, realm);
+    }
+
+    public AppServSecurityContext newInstance(String userName, Subject subject) {
+        if (_logger.isLoggable(Level.FINE)) {
+            _logger.log(Level.FINE, "SecurityContext: newInstance method called");
+        }
+        return new SecurityContext(userName, subject);
+    }
+
+    public void setCurrentSecurityContext(AppServSecurityContext context) {
+        if (_logger.isLoggable(Level.FINE)) {
+            _logger.log(Level.FINE, "SecurityContext: setCurrentSecurityContext method called");
+        }
+        if (context instanceof SecurityContext) {
+            setCurrent((SecurityContext)context);
+            return;
+        }
+        throw new IllegalArgumentException("Expected SecurityContext, found " + context);
+    }
+
+    public AppServSecurityContext getCurrentSecurityContext() {
+        if (_logger.isLoggable(Level.FINE)) {
+            _logger.log(Level.FINE, "SecurityContext: getCurrent() method called");
+        }
+        return getCurrent();
+    }
+
+    public void setUnauthenticatedSecurityContext() {
+        if (_logger.isLoggable(Level.FINE)) {
+            _logger.log(Level.FINE, "SecurityContext: setUnauthenticatedSecurityContext method called");
+        }
+        setUnauthenticatedContext();
+    }
+
+    public void setSecurityContextWithPrincipal(Principal principal) {
+        SecurityContext ctx = getSecurityContextForPrincipal(principal);
+        setCurrent(ctx);
+    }
+    
+    //Moved from J2EEInstanceListener.java
+    private SecurityContext getSecurityContextForPrincipal(final Principal p) {
+        if (p == null) {
+            return null;
+        } else if (p instanceof WebPrincipal) {
+            return ((WebPrincipal) p).getSecurityContext();
+        } else {
+            return (SecurityContext) AccessController.doPrivileged(new PrivilegedAction() {
+
+                public Object run() {
+                    Subject s = new Subject();
+                    s.getPrincipals().add(p);
+                    return new SecurityContext(p.getName(), s);
+                }
+            });
+        }
     }
 }

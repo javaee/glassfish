@@ -85,7 +85,7 @@ import javax.security.auth.message.module.ServerAuthModule;
 import com.sun.enterprise.deployment.runtime.common.MessageSecurityBindingDescriptor;
 import com.sun.enterprise.deployment.runtime.web.SunWebApp;
 
-import com.sun.enterprise.security.AppservAccessController;
+import com.sun.enterprise.security.common.AppservAccessController;
 /*TODO:V3 Commented, Pre-JSR-196 API's, get them into source form and uncomment later
 import com.sun.enterprise.security.jauth.AuthParam;
 import com.sun.enterprise.security.jauth.AuthPolicy;

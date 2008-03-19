@@ -36,6 +36,7 @@
 
 package com.sun.enterprise.security;
 
+import com.sun.enterprise.security.common.ClientSecurityContext;
 import java.util.logging.*;
 import com.sun.logging.*;
 

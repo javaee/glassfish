@@ -38,7 +38,7 @@ package com.sun.enterprise.security.auth.login;
 
 import java.util.logging.Level;
 
-import com.sun.enterprise.security.LoginException;
+import com.sun.enterprise.security.auth.login.common.LoginException;
 import com.sun.enterprise.security.auth.login.PasswordLoginModule;
 import com.sun.enterprise.security.auth.realm.jdbc.JDBCRealm;
 

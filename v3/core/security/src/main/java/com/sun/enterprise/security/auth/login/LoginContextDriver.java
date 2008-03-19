@@ -33,8 +33,9 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.enterprise.security.auth;
+package com.sun.enterprise.security.auth.login;
 
+import com.sun.enterprise.security.auth.login.common.*;
 import java.util.Set;
 import java.util.Iterator;
 import java.util.logging.*;
@@ -46,19 +47,22 @@ import sun.security.x509.X500Name;
 import com.sun.logging.*;
 import com.sun.enterprise.iiop.security.GSSUPName;
 import com.sun.enterprise.iiop.security.AnonCredential;
-import com.sun.enterprise.security.AppservAccessController;
-import com.sun.enterprise.security.SecurityContext;
-import com.sun.enterprise.security.auth.login.PasswordCredential;
-import com.sun.enterprise.security.auth.login.X509CertificateCredential;
-import com.sun.enterprise.security.auth.login.ServerLoginCallbackHandler;
-import com.sun.enterprise.security.LoginException;
+import com.sun.enterprise.security.common.AppservAccessController;
+//import com.sun.enterprise.security.SecurityContext;
+import com.sun.enterprise.security.auth.login.common.PasswordCredential;
+import com.sun.enterprise.security.auth.login.common.X509CertificateCredential;
+import com.sun.enterprise.security.auth.login.common.ServerLoginCallbackHandler;
+import com.sun.enterprise.security.auth.login.common.LoginException;
 import com.sun.enterprise.security.auth.realm.Realm;
 import com.sun.enterprise.security.auth.realm.certificate.CertificateRealm;
 import com.sun.enterprise.security.audit.AuditManager;
 
 // FIXME: ACC methods need to be moved to ACC-specific class.
-import com.sun.enterprise.security.ClientSecurityContext;
+import com.sun.enterprise.security.integration.AppServSecurityContext;
+import com.sun.enterprise.security.common.ClientSecurityContext;
 //import com.sun.enterprise.appclient.AppContainer;
+import com.sun.enterprise.v3.server.Globals;
+import org.jvnet.hk2.component.Habitat;
 
 
 /** 
@@ -86,6 +90,8 @@ public class LoginContextDriver  {
     public static final String CERT_REALMNAME = "certificate";
   
     public  static AuditManager AUDIT_MANAGER;
+    //TODO:V3 FIXME
+    private static Habitat habitat = Globals.getDefaultHabitat();
     /** This class cannot be instantiated
      *
      */
@@ -427,7 +433,7 @@ public class LoginContextDriver  {
 
             Realm realm = Realm.getInstance(CertificateRealm.AUTH_TYPE);
             CertificateRealm certRealm = (CertificateRealm)realm;
-            certRealm.authenticate(fs, x500Name);
+            certRealm.authenticate(fs, x500Name, habitat);
         } catch(Exception ex) {
             if (_logger.isLoggable(Level.INFO)) {
                 _logger.log(Level.INFO, "java_security.audit_auth_refused",
@@ -500,7 +506,9 @@ public class LoginContextDriver  {
         throws LoginException
     {
         // instance of anononymous credential login with guest
-       SecurityContext.setUnauthenticatedContext();
+        AppServSecurityContext context = habitat.getByContract(AppServSecurityContext.class);
+        context.setUnauthenticatedSecurityContext();
+        //SecurityContext.setUnauthenticatedContext();
        if(_logger.isLoggable(Level.FINE)){
             _logger.log(Level.FINE,"Set anonymous security context.");
         }  
@@ -573,7 +581,7 @@ public class LoginContextDriver  {
             if (realm instanceof CertificateRealm) { // should always be true
     
                 CertificateRealm certRealm = (CertificateRealm)realm;
-                certRealm.authenticate(s, x500name);
+                certRealm.authenticate(s, x500name, habitat);
                 realm_name = CertificateRealm.AUTH_TYPE;
                 if(AUDIT_MANAGER.isAuditOn()){
                     AUDIT_MANAGER.authentication(user, realm_name, true);
@@ -711,9 +719,11 @@ public class LoginContextDriver  {
     private  static void setSecurityContext(String userName,
                                             Subject subject, String realm){ 
 
-        SecurityContext securityContext =
-            new SecurityContext(userName, subject, realm);
-        SecurityContext.setCurrent(securityContext);
+        AppServSecurityContext secContext = habitat.getByContract(AppServSecurityContext.class);
+        AppServSecurityContext securityContext = secContext.newInstance(userName, subject, realm);
+            //new SecurityContext(userName, subject, realm);
+        //SecurityContext.setCurrent(securityContext);
+        securityContext.setCurrentSecurityContext(securityContext);
     }
 
     
@@ -722,7 +732,9 @@ public class LoginContextDriver  {
      *
      */
     private  static void unsetSecurityContext() {
-        SecurityContext.setCurrent((SecurityContext)null);
+        //SecurityContext.setCurrent((SecurityContext)null);
+        AppServSecurityContext secContext = habitat.getByContract(AppServSecurityContext.class);
+        secContext.setCurrentSecurityContext(null);
     }
 
     /**

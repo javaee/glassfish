@@ -56,7 +56,7 @@ import com.sun.enterprise.deployment.PrincipalImpl;
 import com.sun.enterprise.deployment.interfaces.SecurityRoleMapper;
 import com.sun.enterprise.config.serverbeans.SecurityService;
 //import com.sun.enterprise.config.ConfigContext;
-import com.sun.enterprise.security.AppservAccessController;
+import com.sun.enterprise.security.common.AppservAccessController;
 //import com.sun.enterprise.server.ApplicationServer;
 import com.sun.enterprise.server.ServerContext;
 //import com.sun.enterprise.Switch;

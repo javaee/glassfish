@@ -35,10 +35,12 @@
  */
 package com.sun.enterprise.security;
 
+import com.sun.enterprise.security.auth.login.common.LoginException;
+import com.sun.enterprise.security.common.AppservAccessController;
 import java.security.PrivilegedAction;
 
 import com.sun.enterprise.security.auth.login.ClientPasswordLoginModule;
-import com.sun.enterprise.security.auth.LoginContextDriver;
+import com.sun.enterprise.security.auth.login.LoginContextDriver;
 import java.util.logging.*;
 import com.sun.logging.*;
 

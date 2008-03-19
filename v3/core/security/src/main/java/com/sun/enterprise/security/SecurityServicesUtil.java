@@ -4,7 +4,6 @@
  */
 package com.sun.enterprise.security;
 
-import com.sun.enterprise.server.pluggable.SecuritySupport;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.v3.server.ServerEnvironment;
 import com.sun.enterprise.v3.server.Globals;
@@ -35,18 +34,6 @@ public class SecurityServicesUtil {
 
     static {
         secureRandom.setSeed(System.currentTimeMillis());
-    }
-
-    public SecuritySupport getSecuritySupport() {
-        //TODO:V3 Add logic to differentiate between PE and EE cases ?
-        //if EE Impl class is in a different module then we can remove
-        // the named injection above.
-        //TODO:V3 somehow the injection isn't working
-        SecuritySupport peSecSupport = habitat.getComponent(SecuritySupport.class, "PE");
-        if (peSecSupport == null) {
-            peSecSupport = new SecuritySupportImpl();
-        }
-        return peSecSupport;
     }
 
     /**

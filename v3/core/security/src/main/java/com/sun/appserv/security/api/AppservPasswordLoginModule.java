@@ -49,7 +49,7 @@ import com.sun.enterprise.deployment.PrincipalImpl;
 import com.sun.enterprise.deployment.Group;
 import com.sun.enterprise.security.auth.login.LoginCallbackHandler;
 import com.sun.enterprise.security.auth.realm.Realm;
-import com.sun.enterprise.security.auth.login.PasswordCredential;
+import com.sun.enterprise.security.auth.login.common.PasswordCredential;
 import com.sun.enterprise.security.web.integration.PrincipalGroupFactory;
 
 

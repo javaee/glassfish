@@ -42,7 +42,6 @@
 
 package com.sun.enterprise.security.jmac.callback;
 
-import com.sun.enterprise.security.SecurityUtil;
 import java.io.IOException;
 
 import javax.security.auth.callback.Callback;
@@ -60,7 +59,7 @@ import javax.security.auth.message.callback.SecretKeyCallback;
 import javax.security.auth.message.callback.TrustStoreCallback;
 
 import com.sun.enterprise.security.UsernamePasswordStore;
-import org.jvnet.hk2.annotations.Service;
+import com.sun.enterprise.security.ssl.SSLUtils;
 
 /**
  * Appclient side Callback Handler for WSS.
@@ -107,7 +106,7 @@ final class ClientContainerCallbackHandler
                         UsernamePasswordStore.set(loginName, password);
                     }
                     //TODO: V3 CallbackHandler callbackHandler = AppContainer.getCallbackHandler();
-                    CallbackHandler callbackHandler = SecurityUtil.getAppContainerCallbackHandler();
+                    CallbackHandler callbackHandler = SSLUtils.getSecuritySupport().getAppContainerCallbackHandler();
                     if(loginName != null && password != null){
                         // username/password set already
                         for(int j = 0; j < callbacks.length; j++){

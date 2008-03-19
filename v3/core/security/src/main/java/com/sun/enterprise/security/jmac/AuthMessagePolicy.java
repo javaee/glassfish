@@ -55,7 +55,7 @@ import com.sun.enterprise.deployment.runtime.common.MessageSecurityBindingDescri
 import com.sun.enterprise.deployment.runtime.common.MessageSecurityDescriptor;
 import com.sun.enterprise.deployment.runtime.common.ProtectionDescriptor;
 import com.sun.enterprise.deployment.runtime.web.SunWebApp;
-import com.sun.enterprise.security.AppservAccessController;
+import com.sun.enterprise.security.common.AppservAccessController;
 import com.sun.enterprise.security.jmac.config.HttpServletConstants;
 import static com.sun.enterprise.security.jmac.config.GFServerConfigProvider.SOAP;
 //V3:Commented webservices support

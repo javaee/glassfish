@@ -36,6 +36,7 @@
 package com.sun.enterprise.security;
 
 
+import com.sun.enterprise.security.ssl.SSLUtils;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;

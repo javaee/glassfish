@@ -54,7 +54,7 @@ import com.sun.enterprise.security.auth.Privilege;
 import com.sun.enterprise.security.auth.PrivilegeImpl;
 
 import com.sun.enterprise.security.auth.realm.Realm;
-import com.sun.enterprise.security.auth.login.PasswordCredential;
+import com.sun.enterprise.security.auth.login.common.PasswordCredential;
 import javax.security.auth.login.LoginException;
 
 /**
