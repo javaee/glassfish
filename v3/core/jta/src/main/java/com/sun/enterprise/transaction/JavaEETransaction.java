@@ -43,6 +43,7 @@ import javax.transaction.xa.*;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityManager;
 
+import com.sun.enterprise.util.Utility;
 import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.enterprise.container.common.spi.JavaEETransactionManager;
 import com.sun.appserv.connectors.spi.ResourceHandle;
@@ -681,7 +682,7 @@ public final class JavaEETransaction extends TimerTask implements
     
         JavaEEXid(long txId) {
             gtrId = new byte[8];
-            /** XXX Utility. ** XXX **/ longToBytes(txId, gtrId, 0);
+            Utility.longToBytes(txId, gtrId, 0);
         }
     
         public int getFormatId() {
@@ -761,18 +762,6 @@ public final class JavaEETransaction extends TimerTask implements
             // compute how much time left before transaction times out
             return timeout - (int)((System.currentTimeMillis() - startTime) / 1000L);
         }
-    }
-
-    private void longToBytes(long value, byte[] array, int offset)
-    {
-        array[offset++] = (byte)((value >>> 56) & 0xFF);
-        array[offset++] = (byte)((value >>> 48) & 0xFF);
-        array[offset++] = (byte)((value >>> 40) & 0xFF);
-        array[offset++] = (byte)((value >>> 32) & 0xFF);
-        array[offset++] = (byte)((value >>> 24) & 0xFF);
-        array[offset++] = (byte)((value >>> 16) & 0xFF);
-        array[offset++] = (byte)((value >>> 8) & 0xFF);
-        array[offset++] = (byte)((value >>> 0) & 0xFF);
     }
 
 }
