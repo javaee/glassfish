@@ -135,7 +135,7 @@
                             <mainClass>com.sun.enterprise.admin.cli.AsadminMain</mainClass> 
                         </manifest>
                         <manifestEntries>
-                            <Class-Path>cli-framework-10.0-SNAPSHOT.jar glassfish-10.0-SNAPSHOT.jar server-mgmt-10.0-SNAPSHOT.jar common-util-10.0-SNAPSHOT.jar admin-util-10.0-SNAPSHOT.jar launcher-10.0-SNAPSHOT.jar universal-10.0-SNAPSHOT.jar realms-10.0-SNAPSHOT.jar dol-10.0-SNAPSHOT.jar</Class-Path>
+                            <Class-Path>cli-framework-10.0-SNAPSHOT.jar glassfish-10.0-SNAPSHOT.jar server-mgmt-10.0-SNAPSHOT.jar common-util-10.0-SNAPSHOT.jar admin-util-10.0-SNAPSHOT.jar launcher-10.0-SNAPSHOT.jar universal-10.0-SNAPSHOT.jar realms-10.0-SNAPSHOT.jar dol-10.0-SNAPSHOT.jar kernel-10.0-SNAPSHOT.jar</Class-Path>
                         </manifestEntries>
 
                     </archive>
@@ -158,18 +158,8 @@
             <version>${project.parent.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.glassfish.common</groupId>
-            <artifactId>common-util</artifactId>
-            <version>${project.parent.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.glassfish.core</groupId>
             <artifactId>glassfish</artifactId>
-            <version>${project.parent.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.admin</groupId>
-            <artifactId>launcher</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
         <dependency>
@@ -177,10 +167,40 @@
             <artifactId>server-mgmt</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.glassfish.common</groupId>
+            <artifactId>common-util</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.admin</groupId>
+            <artifactId>admin-util</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.admin</groupId>
+            <artifactId>launcher</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
         <dependency>    
             <groupId>org.glassfish.common</groupId>
             <artifactId>universal</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
+        <dependency>    
+            <groupId>org.glassfish.security</groupId>
+            <artifactId>realms</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+        <dependency>    
+            <groupId>org.glassfish.common</groupId>
+            <artifactId>dol</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+        <!-- dependency>
+            <groupId>org.glassfish.core</groupId>
+            <artifactId>kernel</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency-->
     </dependencies>
 </project>
