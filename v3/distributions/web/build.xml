@@ -140,10 +140,11 @@
 
     <target name="create.bundle" depends="web.prepare, web.moduleDef">
         <resolveAll todir="target/stage/glassfish/modules">
-            <excludeArtifactsTransitively>
+            <fullGraph />
+            <removeSpecificArtifacts>
                 <scope level="compile,runtime"/>
                 <artifact artifactId="webtier-all"/>
-            </excludeArtifactsTransitively>
+            </removeSpecificArtifacts>
         </resolveAll>
 
         <delete dir="target/stage/glassfish/modules" includes="*.zip, javadb*.*"/>

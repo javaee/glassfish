@@ -31,11 +31,12 @@
 
     <target name="create.bundle" depends="web.prepare, ejb.moduleDef, web.moduleDef">
         <resolveAll todir="target/stage/glassfish/modules">
-            <excludeArtifactsTransitively>
+            <fullGraph />
+            <removeSpecificArtifacts>
                 <scope level="compile,runtime"/>
-                <artifact artifactId="webtier" />
+                <artifact artifactId="webtier-all"/>
                 <artifact artifactId="ejb-all" />
-            </excludeArtifactsTransitively>
+            </removeSpecificArtifacts>
         </resolveAll>
 
         <delete dir="target/stage/glassfish/modules" includes="*.zip" />
