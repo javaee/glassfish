@@ -55,7 +55,7 @@
             <organization>Sun Microsystems, Inc.</organization>
             <roles>
                 <role>developer</role>
-				<role>lead</role>
+                <role>lead</role>
             </roles>
         </developer>
     </developers>    
@@ -74,6 +74,12 @@
             <groupId>org.glassfish.common</groupId>
             <artifactId>glassfish-api</artifactId>
             <version>${project.version}</version>
+        </dependency>        
+        <dependency>
+            <groupId>org.glassfish.ejb</groupId>
+            <artifactId>ejb-timer-databases</artifactId>
+            <version>${project.version}</version>
+            <type>distribution-fragment</type>
         </dependency>        
     </dependencies>
 </project>

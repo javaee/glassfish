@@ -49,6 +49,7 @@
     <packaging>pom</packaging>
     <name>GlassFish EJB container related modules</name>  
     <modules>
+        <module>ejb-timer-databases</module>
         <module>ejb-connector</module>
         <module>ejb-container</module>
     </modules>

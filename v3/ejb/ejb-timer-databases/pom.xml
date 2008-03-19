@@ -10,6 +10,7 @@
     </parent>
 
 	<artifactId>ejb-timer-databases</artifactId>
+  <name>GlassFish EJB timer app database init scripts</name>
 	<!--
 	  This packaging specifies that it's a package that contains files to be added to
 	  the distribution.
