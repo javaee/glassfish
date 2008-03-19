@@ -52,5 +52,6 @@
     <modules>
         <module>realm</module>
         <module>webintegration</module>
+        <module>common</module>
    </modules>
 </project>
