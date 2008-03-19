@@ -7,19 +7,9 @@
    </parent>
 
    <artifactId>ejb-timer-service-app</artifactId>
-   <packaging>ejb</packaging>
+   <packaging>hk2-jar</packaging>
+   <!-- packaging>ejb</packaging -->
    <name>EJB Timer Service Application</name>
-
-   <build>
-      <plugins>
-         <plugin>
-            <artifactId>maven-ejb-plugin</artifactId>
-            <configuration>
-               <ejbVersion>3.0</ejbVersion>
-            </configuration>
-         </plugin>
-      </plugins>
-   </build>
     <dependencies>
         <dependency>
             <groupId>org.glassfish.ejb</groupId>
