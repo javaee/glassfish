@@ -41,12 +41,12 @@
             </patternset>
         </unzip>
 
-        <resolveArtifact  artifactId="jdbc-ra" groupId="org.glassfish.connectors" property="jdbc-ra.zip"/>
-
-                <!-- System applications like resource-adapters are stored in lib/install/applications -->
-                <mkdir dir="target/stage/glassfish/lib/install/applications"/>
-                <!-- install jdbc system resource adapters -->
-                <unzip src="${jdbc-ra.zip}" dest="target/stage/glassfish/lib/install/applications"/>
+        <!-- TODO: Talk to JDBC RA guys to use distribution-fragment packaging. - Kohsuke -->
+        <resolveArtifact artifactId="jdbc-ra" groupId="org.glassfish.connectors" property="jdbc-ra.zip"/>
+        <!-- System applications like resource-adapters are stored in lib/install/applications -->
+        <mkdir dir="target/stage/glassfish/lib/install/applications"/>
+        <!-- install jdbc system resource adapters -->
+        <unzip src="${jdbc-ra.zip}" dest="target/stage/glassfish/lib/install/applications"/>
 
         <resolveArtifact artifactId="nucleus-base" property="nucleus-base.zip"/>
     </target>
@@ -143,7 +143,7 @@
             <excludeArtifactsTransitively>
                 <scope level="compile,runtime"/>
                 <artifact artifactId="webtier-all"/>
-            </excludeArtifactsTransitively>
+u               </excludeArtifactsTransitively>
         </resolveAll>
 
         <delete dir="target/stage/glassfish/modules" includes="*.zip, javadb*.*"/>
