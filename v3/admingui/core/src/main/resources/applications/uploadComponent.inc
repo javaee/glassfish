@@ -39,8 +39,11 @@
     <sun:propertySheetSection id="section1" >
         <sun:property id="type" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.TypeLabel}"  rendered="#{chooseType}" > 
             <sun:dropDown id="appType" selected="#{appType}" 
-                labels={"$resource{i18n.deploy.war}", "$resource{i18n.deploy.ear}", "$resource{i18n.deploy.rar}", "$resource{i18n.deploy.ejb}", "$resource{i18n.deploy.appClient}"} 
-                values={"webApp", "application", "connector", "ejbModule", "appclient"} 
+                labels={"$resource{i18n.deploy.war}"} 
+                values={"webApp"}
+                #labels={"$resource{i18n.deploy.war}", "$resource{i18n.deploy.ear}", "$resource{i18n.deploy.rar}", "$resource{i18n.deploy.ejb}", "$resource{i18n.deploy.appClient}"} 
+                #values={"webApp", "application", "connector", "ejbModule", "appclient"}
+ 
                 onChange="javascript: setVisible(this.value)" >
                 <!afterCreate
                     if ( $pageSession{chooseType}){

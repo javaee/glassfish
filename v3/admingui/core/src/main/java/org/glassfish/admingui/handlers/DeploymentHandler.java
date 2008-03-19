@@ -78,6 +78,7 @@ import javax.management.ObjectName;
 import org.glassfish.admingui.util.GuiUtil;
 import org.glassfish.admingui.util.AMXRoot;
 import org.glassfish.admingui.util.TargetUtil;
+import org.glassfish.deployment.client.ServerConnectionIdentifier;
 
 /**
  *
@@ -148,26 +149,19 @@ public class DeploymentHandler {
         
      	archivePath = archivePath.replace('\\', '/' );
         URI source = new URI("file:"+archivePath);
-        DeploymentFacility df= DeploymentFacilityFactory.getDeploymentFacility();
+        DeploymentFacility df = GuiUtil.getDeploymentFacility();
         DFProgressObject progressObject = null;
         progressObject = df.deploy(df.createTargets(targets), source, null , props);  //null for deployment plan
-        DFDeploymentStatus status = null;
-        do {
-            status = progressObject.getCompletedStatus();
-            if(status == null) {
-                try {
-                    Thread.currentThread().sleep(1000);
-                } catch(InterruptedException ie) {
-                }
-            }
-        } while (status == null);
+        progressObject.waitFor();
+        DFDeploymentStatus status = progressObject.getCompletedStatus();
         boolean ret = checkDeployStatus(status, handlerCtx, true);
      	return ret;
      }
 
      private static boolean checkDeployStatus(DFDeploymentStatus status, HandlerContext handlerCtx, boolean stopProcessing) 
      {
-        // parse the deployment status and retrieve failure/warning msg
+         //TODO-V3 get more msg to user.
+        //parse the deployment status and retrieve failure/warning msg
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         PrintWriter pw = new PrintWriter(bos);
         DFDeploymentStatus.parseDeploymentStatus(status, pw);
@@ -184,7 +178,7 @@ public class DeploymentHandler {
          }
          if (status!=null && status.getStatus() == DFDeploymentStatus.Status.WARNING){
             //We may need to log this mesg.
-            GuiUtil.prepareAlert(handlerCtx, "warning", GuiUtil.getMessage("deploy.warning"), statusString);
+            GuiUtil.prepareAlert(handlerCtx, "warning", GuiUtil.getMessage("deploy.warning"),statusString);
             return false;
          }
          return true;

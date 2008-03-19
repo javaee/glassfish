@@ -81,7 +81,7 @@ import com.sun.appserv.management.config.RARModuleConfig;
 import com.sun.appserv.management.config.AppClientModuleConfig;
 import com.sun.appserv.management.config.LifecycleModuleConfig;
 import com.sun.appserv.management.config.CustomMBeanConfig;
-
+import com.sun.appserv.management.config.JavaConfig;
 //import com.sun.appserv.management.helper.LBConfigHelper;
 import com.sun.appserv.management.util.misc.GSetUtil; 
 
@@ -123,15 +123,25 @@ public class AMXRoot {
 	if (amxRoot == null){
     	    MBeanServer mMBeanServer = ManagementFactory.getPlatformMBeanServer();
             DomainRoot domainRoot = ProxyFactory.getInstance( mMBeanServer ).getDomainRoot();
-        System.out.println("=============== domainRoot = " + domainRoot);
-        System.out.println("============== domainRoot name = " + domainRoot.getAppserverDomainName());
+            System.out.println("=============== domainRoot = " + domainRoot);
+            System.out.println("============== domainRoot name = " + domainRoot.getAppserverDomainName());
             domainRoot.waitAMXReady();
 	    amxRoot = new AMXRoot(domainRoot);
-	System.out.println("========== amxRoot = " + amxRoot);
+            System.out.println("========== amxRoot = " + amxRoot);
+        
 	} 
 	return amxRoot;
     }
     public  DomainConfig getDomainConfig() {
+        /*
+        ConfigConfig config = getConfig("server-config");
+        System.out.println("=========== ConfigConfig = " + config);
+        JavaConfig javaConfig = config.getJavaConfig();
+        System.out.println("============ JavaConfig = " + javaConfig);
+        String[] options = javaConfig.getJVMOptions();
+        System.out.println("========= options = " + options);
+        */
+        
         return domainConfig;
     }
     
@@ -264,7 +274,10 @@ public class AMXRoot {
     }
     
     public  boolean isEE(){
+        //TODO-V3
         SystemInfo systemInfo = domainRoot.getSystemInfo();
+        if (systemInfo == null)
+            return false;
         return systemInfo.supportsFeature(SystemInfo.CLUSTERS_FEATURE);
     }
     

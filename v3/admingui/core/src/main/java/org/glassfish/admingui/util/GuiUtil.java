@@ -67,6 +67,9 @@ import java.net.URLEncoder;
 
 import java.io.UnsupportedEncodingException;
 import com.sun.appserv.management.util.misc.ExceptionUtil;
+import org.glassfish.deployment.client.DeploymentFacility;
+import org.glassfish.deployment.client.DeploymentFacilityFactory;
+import org.glassfish.deployment.client.ServerConnectionIdentifier;
 
 
 /**
@@ -111,6 +114,24 @@ public class GuiUtil {
         public static Object getSessionValue(String key){
             Map sessionMap = FacesContext.getCurrentInstance().getExternalContext().getSessionMap();
             return sessionMap.get(key);
+        }
+        
+        
+        public static DeploymentFacility getDeploymentFacility(){
+            DeploymentFacility df = (DeploymentFacility) getSessionValue("_DEPLOYMENT_FACILITY");
+            if (df == null){
+                df= DeploymentFacilityFactory.getDeploymentFacility();
+                ServerConnectionIdentifier sci = new ServerConnectionIdentifier(
+                        (String)getSessionValue("serverName"),
+                        ((Integer)getSessionValue("severPort")).intValue(),
+                        "",         //user name
+                        "",         //password
+                        false       //security enabled
+                        );
+                df.connect(sci);
+                setSessionValue("_DEPLOYMENT_FACILITY", df);
+            }
+            return df;
         }
         
 

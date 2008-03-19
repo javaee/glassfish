@@ -35,13 +35,6 @@
 -->
 <!-- applications/uploadButtons.inc -->
 
-        <sun:button text=" U Go!" immediate="#{true}">
-            <!command
-                println("HERE I AM");
-                redirect(page="../test.jsf");
-            />
-        </sun:button>
-
     <sun:button id="uploadButton" text="$resource{i18n.button.OK}" 
         onClick="javascript: 
             alert('in uploadButton');
