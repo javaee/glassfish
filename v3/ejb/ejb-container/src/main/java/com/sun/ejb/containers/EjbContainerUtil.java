@@ -10,6 +10,7 @@ import com.sun.enterprise.config.serverbeans.ApplicationHelper;
 import com.sun.enterprise.deployment.EjbDescriptor;
 import com.sun.enterprise.server.ServerContext;
 import com.sun.enterprise.v3.server.ServerEnvironment;
+import com.sun.enterprise.iiop.security.GSSUtils;
 import org.glassfish.api.invocation.ComponentInvocation;
 import org.glassfish.api.invocation.InvocationManager;
 import org.glassfish.api.naming.GlassfishNamingManager;
@@ -25,6 +26,7 @@ import java.util.Timer;
 import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
+import java.io.IOException;
 
 /**
  * @author Mahesh Kannan
@@ -75,6 +77,24 @@ public class EjbContainerUtil
     private ServerEnvironment env;
 
     private  static EjbContainerUtil _me;
+
+    private static byte[] mech;
+
+    static {
+        try {
+            mech = GSSUtils.getDER(GSSUtils.GSSUP_MECH_OID);
+        } catch(IOException io) {
+            mech = null;
+        }
+    }
+
+    /**
+     * Return the ASN.1 encoded representation of a GSS mechanism identifier.
+     * Currently only the GSSUP Mechanism is supported.
+     */
+    public static byte[] getMechanism() {
+        return mech;
+    }
 
     public void postConstruct() {
         _me = this;

@@ -46,8 +46,6 @@ import javax.rmi.CORBA.*;
 import java.util.logging.*;
 import com.sun.logging.*;
 
-import com.sun.enterprise.iiop.security.GSSUtils;
-
 /**
  *  Handy class full of static functions.
  */
@@ -57,25 +55,6 @@ public final class Utility {
 
     private static LocalStringManagerImpl localStrings = 
     new LocalStringManagerImpl(Utility.class);
-
-
-    private static byte[] mech;
-
-    static {
-        try {
-	    mech = GSSUtils.getDER(GSSUtils.GSSUP_MECH_OID);
-	} catch(IOException io) {
-	    mech = null;
-	}
-    }
-
-    /**
-     * Return the ASN.1 encoded representation of a GSS mechanism identifier.
-     * Currently only the GSSUP Mechanism is supported.
-     */
-    public static byte[] getMechanism() {
-        return mech;
-    }
 
     public static void checkJVMVersion()
     {
