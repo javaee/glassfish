@@ -23,15 +23,14 @@
 
 package org.glassfish.ejb.startup;
 
-
-import com.sun.enterprise.deployment.EjbBundleDescriptor;
+import com.sun.ejb.ContainerFactory;
+import com.sun.ejb.containers.ContainerFactoryImpl;
 import com.sun.enterprise.deployment.EjbDescriptor;
-import org.glassfish.api.container.Container;
 import org.glassfish.api.deployment.ApplicationContainer;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.jvnet.hk2.annotations.Service;
 
-import java.util.Set;
+import java.util.Collection;
 
 /**
  * Ejb container service
@@ -40,44 +39,54 @@ import java.util.Set;
  */
 @Service(name = "ejb")
 public class EjbApplication
-        implements ApplicationContainer<EjbBundleDescriptor> {
+        implements ApplicationContainer<Collection<EjbDescriptor>> {
 
-    Object ejbContainerFactory;
-    EjbBundleDescriptor bundleDesc;
+    String appName;
+    ContainerFactory ejbContainerFactory;
+    Collection<EjbDescriptor> ejbs;
     ClassLoader ejbAppClassLoader;
+    DeploymentContext dc;
 
     public EjbApplication(
-            EjbBundleDescriptor bundleDesc, DeploymentContext dc,
+            Collection<EjbDescriptor> bundleDesc, DeploymentContext dc,
             ClassLoader cl) {
-        this.ejbContainerFactory = ejbContainerFactory;                   
-        this.bundleDesc = bundleDesc;
+        this.ejbContainerFactory = new ContainerFactoryImpl();
+        this.ejbs = bundleDesc;
         this.ejbAppClassLoader = cl;
+        this.appName = ""; //TODO
+        this.dc = dc;
     }
 
-    public EjbBundleDescriptor getDescriptor() {
-        return bundleDesc;
+    public Collection<EjbDescriptor> getDescriptor() {
+        return ejbs;
     }
 
     public boolean start() {
-
+        /*
         Set<EjbDescriptor> descs = (Set<EjbDescriptor>) bundleDesc.getEjbs();
 
-        long appUniqueID = bundleDesc.getUniqueId();
+        long appUniqueID = ejbs.getUniqueId();
+        */
+        long appUniqueID = 0;
         if (appUniqueID == 0) {
             System.out.println("*** EjbApp::start() => ASSIGNING RANDOM uniqueID..");
             appUniqueID = (System.currentTimeMillis() & 0xFFFFFFFF) << 16;
         }
-        System.out.println("*** EjbApp::start() => " + bundleDesc.getApplication().getName()
+        System.out.println("*** EjbApp::start() => " + appName
                 + "; uID => " + appUniqueID);
 
         //System.out.println("**CL => " + bundleDesc.getClassLoader());
         int counter = 0;
-        for (EjbDescriptor desc : descs) {
+        for (EjbDescriptor desc : ejbs) {
             desc.setUniqueId(appUniqueID + (counter++));
             System.out.println("==>UniqueID: " + desc.getUniqueId() + " ==> "
                     + desc.getName() + "   isLocal: " + desc.toString());
-
-            //ejbContainerFactory.createContainer(desc, ejbAppClassLoader, (Object) null, (Object) null);
+            try {
+            ejbContainerFactory.createContainer(desc, ejbAppClassLoader,
+                    null, dc);
+            } catch (Throwable th) {
+                throw new RuntimeException("Error", th);
+            }
         }
 
         return true;

@@ -57,9 +57,6 @@ public class EJBTimerTask extends TimerTask {
     private TimerPrimaryKey timerId_;
     private EJBTimerService timerService_;
 
-    private static final Logger _logger =
-        LogDomains.getLogger(LogDomains.EJB_LOGGER);
-
     EJBTimerTask(Date timeout, TimerPrimaryKey timerId, 
                  EJBTimerService timerService)
     { 

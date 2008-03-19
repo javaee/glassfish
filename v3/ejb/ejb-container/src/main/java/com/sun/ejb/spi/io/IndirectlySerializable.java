@@ -36,7 +36,7 @@
 
 package com.sun.ejb.spi.io;
 
-import com.sun.enterprise.spi.io.BaseIndirectlySerializable;
+import org.jvnet.hk2.annotations.Contract;
 
 /**
  * An interface that allows Non-Serializable objects

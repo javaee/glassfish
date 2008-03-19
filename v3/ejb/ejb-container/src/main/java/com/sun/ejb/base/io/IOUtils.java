@@ -48,11 +48,12 @@ import java.util.logging.*;
 import com.sun.logging.*;
 
 import com.sun.ejb.spi.io.J2EEObjectStreamFactory;
+import com.sun.ejb.containers.EjbContainerUtil;
 
 public class IOUtils {
 
     private static final Logger _ejbLogger =
-       LogDomains.getLogger(LogDomains.EJB_LOGGER);
+            EjbContainerUtil.getInstance().getLogger();
 
     private static J2EEObjectStreamFactory _streamFactory;
 

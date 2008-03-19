@@ -36,31 +36,14 @@
 
 package com.sun.ejb.base.stats;
 
+import com.sun.ejb.containers.EjbContainerUtil;
+import com.sun.ejb.spi.stats.*;
+import com.sun.enterprise.admin.monitor.registry.*;
+
 import javax.management.j2ee.statistics.Stats;
-
-import com.sun.enterprise.admin.monitor.registry.MonitoringRegistry;
-import com.sun.enterprise.admin.monitor.registry.MonitoringLevelListener;
-import com.sun.enterprise.admin.monitor.registry.MonitoringLevel;
-import com.sun.enterprise.admin.monitor.registry.MonitoredObjectType;
-import com.sun.enterprise.admin.monitor.registry.MonitoringRegistrationException;
-
-import com.sun.enterprise.config.serverbeans.Config;
-
-import com.sun.ejb.spi.stats.EJBCacheStatsProvider;
-import com.sun.ejb.spi.stats.EJBPoolStatsProvider;
-import com.sun.ejb.spi.stats.EJBStatsProvider;
-import com.sun.ejb.spi.stats.StatelessSessionBeanStatsProvider;
-import com.sun.ejb.spi.stats.StatefulSessionBeanStatsProvider;
-import com.sun.ejb.spi.stats.EntityBeanStatsProvider;
-import com.sun.ejb.spi.stats.MessageDrivenBeanStatsProvider;
-import com.sun.ejb.spi.stats.EJBTimedObjectStatsProvider;
-import com.sun.ejb.spi.stats.EJBMethodStatsManager;
-import com.sun.ejb.spi.stats.MonitorableSFSBStoreManager;
-
 import java.lang.reflect.Method;
-
-import java.util.logging.*;
-import com.sun.logging.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * A class that acts as an Mediator between admin.registry.* objects
@@ -79,8 +62,7 @@ public class MonitoringRegistryMediator
     private static final int	    STATEFUL_CONTAINER_TYPE = 2;
     private static final int	    MESSAGE_CONTAINER_TYPE = 3;
 
-    private static final Logger _logger =
-        LogDomains.getLogger(LogDomains.EJB_LOGGER);
+    private static final Logger _logger = EjbContainerUtil.getInstance().getLogger();
 
     private final String			appName;
     private final String			modName;

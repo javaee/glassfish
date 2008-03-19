@@ -70,7 +70,7 @@ public abstract class AbstractPool
 {
 
     protected static final Logger _logger =
-        LogDomains.getLogger(LogDomains.EJB_LOGGER);
+            EjbContainerUtil.getInstance().getLogger();
 
     protected ArrayList	     list;
     protected ObjectFactory  factory = null;

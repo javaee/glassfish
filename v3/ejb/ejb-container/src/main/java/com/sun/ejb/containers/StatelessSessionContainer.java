@@ -90,12 +90,8 @@ public class StatelessSessionContainer
     extends BaseContainer 
     implements StatelessSessionBeanStatsProvider
 {
-    
-    private static final Logger _logger =
-        LogDomains.getLogger(LogDomains.EJB_LOGGER);
 
-    private static LocalStringManagerImpl localStrings =
-	new LocalStringManagerImpl(StatelessSessionContainer.class);
+    private static LocalStringManagerImpl localStrings;
 
     private static final byte[] statelessInstanceKey = {0, 0, 0, 1};
 
@@ -135,7 +131,6 @@ public class StatelessSessionContainer
     private BeanCacheDescriptor beanCacheDes = null;
     private BeanPoolDescriptor beanPoolDes   = null;
     private Server svr 						 = null;
-    private Config cfg 						 = null;
     private EjbContainer ejbContainer 		 = null;
 
     private PoolProperties poolProp 		 = null;
@@ -175,11 +170,11 @@ public class StatelessSessionContainer
             beanPoolDes = iased.getBeanPool();
         }
 
-        ejbContainer = cfg.getEjbContainer();
+        ejbContainer = ejbContainerUtil.getEjbContainer();
 
         super.setMonitorOn(false); //TODO super.setMonitorOn(ejbContainer.isMonitoringEnabled());
 
-        super.createCallFlowAgent(ComponentType.SLSB);
+        //super.createCallFlowAgent(ComponentType.SLSB);
     }
 
     public String getMonitorAttributeValues() {
@@ -304,14 +299,14 @@ public class StatelessSessionContainer
            poolProp.poolResizeQuantity, poolProp.maxPoolSize, 
            poolProp.poolIdleTimeoutInSeconds, loader);
 
-	registerMonitorableComponents();
+	    //TODO registerMonitorableComponents();
     }
 
     protected void registerMonitorableComponents() {
-	registryMediator.registerProvider(this);
-	registryMediator.registerProvider(pool);
+        registryMediator.registerProvider(this);
+        registryMediator.registerProvider(pool);
         super.registerMonitorableComponents();
-	super.populateMethodMonitorMap();
+        super.populateMethodMonitorMap();
         _logger.log(Level.FINE, "[SLSB Container] registered monitorable");
     }
 

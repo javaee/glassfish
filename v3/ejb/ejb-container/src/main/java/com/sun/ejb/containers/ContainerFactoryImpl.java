@@ -60,8 +60,8 @@ public final class ContainerFactoryImpl implements ContainerFactory {
         String archiveuri = ejbDescriptor.getEjbBundleDescriptor().
             getModuleDescriptor().getArchiveUri();
             
-        String modulename = 
-            com.sun.enterprise.util.io.FileUtils.makeFriendlyFilename(archiveuri);
+        String modulename = "";
+            //TODO com.sun.enterprise.util.io.FileUtils.makeFriendlyFilename(archiveuri);
         String ejbname = ejbDescriptor.getName();
 
         IASEjbExtraDescriptors iased = null;

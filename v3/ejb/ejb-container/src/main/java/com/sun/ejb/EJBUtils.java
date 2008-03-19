@@ -61,7 +61,7 @@ import java.util.logging.Logger;
  */
 public class EJBUtils {
     private static final Logger _logger =
-        LogDomains.getLogger(LogDomains.EJB_LOGGER);
+            EjbContainerUtil.getInstance().getLogger();
 
     // Internal property to force generated ejb container classes to
     // be created during deployment time instead of dynamically.  Note that

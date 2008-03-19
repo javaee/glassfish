@@ -67,7 +67,7 @@ public abstract class EJBHomeImpl
 {
 
     private static final Logger _logger =
-        LogDomains.getLogger(LogDomains.EJB_LOGGER);
+            EjbContainerUtil.getInstance().getLogger();
     
     private BaseContainer container;
 

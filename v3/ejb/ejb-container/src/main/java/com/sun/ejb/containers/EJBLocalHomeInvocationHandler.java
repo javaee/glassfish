@@ -63,11 +63,8 @@ final class EJBLocalHomeInvocationHandler
     extends EJBLocalHomeImpl //TODO extends ReadOnlyEJBLocalHomeImpl
         implements InvocationHandler {
 
-    private static final Logger logger = 
-        LogDomains.getLogger(LogDomains.EJB_LOGGER);
-
-    private static LocalStringManagerImpl localStrings =
-        new LocalStringManagerImpl(EJBLocalHomeInvocationHandler.class);
+    private static final Logger logger =
+            EjbContainerUtil.getInstance().getLogger();
 
     private boolean isStatelessSession_;
     private boolean isEntity_;
@@ -179,10 +176,10 @@ final class EJBLocalHomeInvocationHandler
                 Object [] params = new Object[] 
                     { invInfo.ejbName, "LocalHome", 
                       invInfo.method.toString() };
-                String errorMsg = localStrings.getLocalString
-                    ("ejb.bean_class_method_not_found", "", params);
-                logger.log(Level.SEVERE, "ejb.bean_class_method_not_found",
-                           params);                                   
+                /*TODO String errorMsg = localStrings.getLocalString
+                    ("ejb.bean_class_method_not_found;, "", params);
+                */
+                String errorMsg = "ejb.bean_class_method_not_found";                                  
                 throw new EJBException(errorMsg);
             }
 

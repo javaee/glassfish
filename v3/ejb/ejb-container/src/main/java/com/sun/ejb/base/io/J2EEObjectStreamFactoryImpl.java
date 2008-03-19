@@ -46,6 +46,7 @@ import java.util.logging.*;
 import com.sun.logging.*;
 
 import com.sun.ejb.spi.io.J2EEObjectStreamFactory;
+import com.sun.ejb.containers.EjbContainerUtil;
 
 /**
  * A Factory class for creating EJBObject input/output Stream
@@ -55,9 +56,6 @@ import com.sun.ejb.spi.io.J2EEObjectStreamFactory;
 public class J2EEObjectStreamFactoryImpl
     implements J2EEObjectStreamFactory
 {
-
-    private static final Logger _ejbLogger =
-       LogDomains.getLogger(LogDomains.EJB_LOGGER);
 
     public J2EEObjectStreamFactoryImpl() {
     }

@@ -61,7 +61,7 @@ class EJBObjectOutputStream
 {
 
     protected static final Logger _ejbLogger =
-       LogDomains.getLogger(LogDomains.EJB_LOGGER);
+            EjbContainerUtil.getInstance().getLogger();
 
 
     static final int EJBID_OFFSET = 0;

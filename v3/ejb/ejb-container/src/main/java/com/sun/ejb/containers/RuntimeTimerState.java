@@ -59,7 +59,7 @@ import com.sun.enterprise.deployment.Application;
 class RuntimeTimerState {
 
     private static final Logger logger =
-        LogDomains.getLogger(LogDomains.EJB_LOGGER);
+            EjbContainerUtil.getInstance().getLogger();
 
     //
     // Fine-grained timer states

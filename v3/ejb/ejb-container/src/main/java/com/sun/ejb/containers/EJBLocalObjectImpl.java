@@ -67,10 +67,8 @@ public abstract class EJBLocalObjectImpl
     implements EJBLocalObject, IndirectlySerializable
 {
     private static final Logger _logger =
-        LogDomains.getLogger(LogDomains.EJB_LOGGER);
+            EjbContainerUtil.getInstance().getLogger();
 
-    private static LocalStringManagerImpl localStrings =
-        new LocalStringManagerImpl(EJBLocalObjectImpl.class);
     private static Class[] NO_PARAMS = new Class[] {};    
     private static Method REMOVE_METHOD = null;
 
@@ -183,9 +181,12 @@ public abstract class EJBLocalObjectImpl
             "Invalid operation for Session EJBs."));
         }*/
 
-        throw new EJBException(localStrings.getLocalString(
+        throw new EJBException(
+            "Invalid operation for Session EJBs.");
+        /*TODO throw new EJBException(localStrings.getLocalString(
             "containers.invalid_operation",
             "Invalid operation for Session EJBs."));
+        */
     }
     
     public boolean isIdentical(EJBLocalObject other)

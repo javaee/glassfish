@@ -95,7 +95,7 @@ public abstract class BaseContainer
     };
 
     protected static final Logger _logger =
-        LogDomains.getLogger(LogDomains.EJB_LOGGER);
+            EjbContainerUtil.getInstance().getLogger();
     
     protected static final Class[] NO_PARAMS = new Class[] {};
     
@@ -329,8 +329,7 @@ public abstract class BaseContainer
     
     protected boolean debugMonitorFlag = false;
     
-    private static LocalStringManagerImpl localStrings =
-    new LocalStringManagerImpl(BaseContainer.class);
+    private static LocalStringManagerImpl localStrings = null;
     
     private ThreadLocal threadLocalContext = new ThreadLocal();
 
@@ -380,7 +379,7 @@ public abstract class BaseContainer
 
     protected ProtocolManager protocolMgr;
 
-    protected EjbContainerUtil ejbContainerUtil;
+    protected EjbContainerUtil ejbContainerUtil = EjbContainerUtil.getInstance();
 
     /**
      * This constructor is called from ContainerFactoryImpl when an
@@ -402,6 +401,8 @@ public abstract class BaseContainer
             injectionManager = ejbContainerUtil.getInjectionManager();
             namingManager = ejbContainerUtil.getGlassfishNamingManager();
 
+            System.out.println("Loader: " + loader);
+            
             // get Class objects for creating new EJBs
             ejbClass = loader.loadClass(ejbDescriptor.getEjbImplClassName());
             
@@ -1068,6 +1069,8 @@ public abstract class BaseContainer
                 ejbLocalBusinessObjectProxyCtor = proxyClass.
                     getConstructor(new Class[] { InvocationHandler.class });
             }
+
+
         }
         
         // create EJBMetaData
@@ -1078,7 +1081,7 @@ public abstract class BaseContainer
         }
         metadata = new EJBMetaDataImpl(ejbHomeStub, homeIntf, remoteIntf,
             primaryKeyClass, isSession, isStatelessSession);
-
+        System.out.println("Created and Initialized container: " + this);
     }
     
     /**
@@ -2630,6 +2633,8 @@ public abstract class BaseContainer
                                               proxyInvocationInfoMap);
 
         EJBLocalHomeImpl homeImpl = invHandler;
+
+        System.out.println("Creating proxy using loader: " + loader);
         
         EJBLocalHome proxy = (EJBLocalHome) Proxy.newProxyInstance
             (loader, new Class[] { IndirectlySerializable.class,

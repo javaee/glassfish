@@ -66,10 +66,8 @@ import com.sun.ejb.spi.io.IndirectlySerializable;
 public final class EJBLocalObjectInvocationHandler 
     extends EJBLocalObjectImpl implements InvocationHandler {
 
-    private static final Logger logger = LogDomains.getLogger(LogDomains.EJB_LOGGER);
-
-    private static LocalStringManagerImpl localStrings =
-        new LocalStringManagerImpl(EJBLocalObjectInvocationHandler.class);
+    private static final Logger logger =
+            EjbContainerUtil.getInstance().getLogger();
     
     // Our associated proxy object.  Used when a caller needs EJBLocalObject
     // but only has InvocationHandler.
@@ -160,8 +158,9 @@ public final class EJBLocalObjectInvocationHandler
         } else if( invInfo.targetMethod1 == null ) {
             Object [] params = new Object[] 
                 { invInfo.ejbName, "Local", invInfo.method.toString() };
-            String errorMsg = localStrings.getLocalString
-                ("ejb.bean_class_method_not_found", "", params);              
+            String errorMsg = "ejb.bean_class_method_not_found";
+            /*TODO String errorMsg = localStrings.getLocalString
+                ("ejb.bean_class_method_not_found", "", params);*/
             logger.log(Level.SEVERE, "ejb.bean_class_method_not_found",
                        params);                                   
             throw new EJBException(errorMsg);
