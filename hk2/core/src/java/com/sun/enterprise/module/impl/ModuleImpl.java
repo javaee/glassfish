@@ -52,6 +52,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Collection;
+import java.util.Set;
+import java.util.HashSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -72,8 +75,8 @@ import java.util.logging.Logger;
  */
 public final class ModuleImpl implements Module {
     
-    private ModuleDefinition moduleDef;
-    private WeakReference<ClassLoader> publicCL;
+    private final ModuleDefinition moduleDef;
+    private WeakReference<ClassLoaderFacade> publicCL;
     private volatile ModuleClassLoader privateCL;
 
     /**
@@ -88,7 +91,7 @@ public final class ModuleImpl implements Module {
      */
     private final ModulesRegistryImpl registry;
     private ModuleState state;
-    private final List<Module> dependencies = new ArrayList<Module>();
+    private final List<ModuleImpl> dependencies = new ArrayList<ModuleImpl>();
     private final ArrayList<ModuleChangeListener> listeners = new ArrayList<ModuleChangeListener>();
     private final HashMap<String,Long> lastModifieds = new HashMap<String,Long>();
     private boolean shared=true;
@@ -113,11 +116,12 @@ public final class ModuleImpl implements Module {
     /**
      * Return the <code>ClassLoader</code>  instance associated with this module.
      * Only designated public interfaces will be loaded and returned by 
-     * this classloader
+     * this classloader.
+     *
      * @return the public <code>ClassLoader</code>
      */
-    public ClassLoader getClassLoader() {
-        ClassLoader r=null;
+    public ClassLoaderFacade getClassLoader() {
+        ClassLoaderFacade r=null;
         if (publicCL!=null)
             r = publicCL.get();
         if (r!=null)
@@ -129,7 +133,7 @@ public final class ModuleImpl implements Module {
             }
         });
         facade.setPublicPkgs(moduleDef.getPublicInterfaces());
-        publicCL = new WeakReference<ClassLoader>(facade);
+        publicCL = new WeakReference<ClassLoaderFacade>(facade);
         return facade;
     }
     
@@ -320,20 +324,43 @@ public final class ModuleImpl implements Module {
             }
         }
         for (ModuleDependency dependency : moduleDef.getDependencies()) {
-            
-            ModuleImpl depModule = ModuleImpl.class.cast(registry.makeModuleFor(dependency.getName(), null));
+            ModuleImpl depModule = (ModuleImpl)registry.makeModuleFor(dependency.getName(), null);
             if (depModule==null) {
                 state = ModuleState.ERROR;                
                 throw new ResolveError(dependency + " referenced from " 
                         + moduleDef.getName() + " is not resolved");
             }
-            addImport(depModule);
+
+            //if (Utils.isLoggable(Level.INFO)) {
+            //    Utils.getDefaultLogger().info("For module" + getName() + " adding new dependent " + module.getName());
+            //}
+            dependencies.add(depModule);
         }
+
+        // mark this as resolved first to avoid recursion from buildTransitiveDependencies
         state = ModuleState.RESOLVED;
-        
+
+        // once we have proper import/export filtering for modules, we can
+        // build a look-up table to improve performance
+        Set<ModuleImpl> transitiveDependencies = new HashSet<ModuleImpl>();
+        buildTransitiveDependencies(transitiveDependencies);
+        for (ModuleImpl dep : transitiveDependencies)
+            getPrivateClassLoader().addDelegate(dep.getClassLoader());
+
         //Logger.global.info("Module " + getName() + " resolved");
     }
-    
+
+    /**
+     * List up all {@link ModuleImpl}s that this module transitively depend on into the given collection.
+     */
+    private void buildTransitiveDependencies(Collection<? super ModuleImpl> result) {
+        resolve();
+        for(ModuleImpl m : dependencies) {
+            if(result.add(m))
+                m.buildTransitiveDependencies(result);
+        }
+    }
+
     /**
      * Forces module startup. In most cases, the runtime will take care 
      * of starting modules when they are first used. There could be cases where
@@ -409,8 +436,8 @@ public final class ModuleImpl implements Module {
         detach();
         
         // we do NOT stop our sub modules which are shared...
-        for (Module subModule : dependencies) {
-            if (!ModuleImpl.class.cast(subModule).isShared()) {
+        for (ModuleImpl subModule : dependencies) {
+            if (!subModule.isShared()) {
                 subModule.stop();
             }
         }
@@ -433,26 +460,26 @@ public final class ModuleImpl implements Module {
      * @return the list of imported modules
      */
     public List<Module> getImports() {
-        return dependencies;
+        resolve();
+        return Collections.<Module>unmodifiableList(dependencies);
     }
     
     /**
-     * Create and add a new module to this module's list of 
+     * Create and add a new module to this module's list of
      * imports.
      * @param dependency new module's definition
      */
     public Module addImport(ModuleDependency dependency) {
-
         ModuleImpl newModule;
         if (dependency.isShared()) {
-            newModule = ModuleImpl.class.cast(registry.makeModuleFor(dependency.getName(), dependency.getVersion()));
+            newModule = (ModuleImpl)registry.makeModuleFor(dependency.getName(), dependency.getVersion());
         } else {
             newModule = registry.newPrivateModuleFor(dependency.getName(), dependency.getVersion());
         }
         addImport(newModule);
         return newModule;
     }
-        
+
     /**
      * Returns the module's state
      * @return the module's state 
@@ -460,18 +487,24 @@ public final class ModuleImpl implements Module {
     public ModuleState getState() {
         return state;
     }
-    
+
     public void addImport(Module module) {
         //if (Utils.isLoggable(Level.INFO)) {
         //    Utils.getDefaultLogger().info("For module" + getName() + " adding new dependent " + module.getName());
         //}
+        // TODO: this doesn't expose newly added module to
+        // other modules that depend on this module.
+        // but the notion of adding dependencies at runtime is broken anyway.
         if (!dependencies.contains(module)) {
-            dependencies.add(module);
+            dependencies.add((ModuleImpl)module);
             getPrivateClassLoader().addDelegate(module.getClassLoader());
         }
     }
-    
+
     public void removeImport(ModuleImpl module) {
+        // TODO: this doesn't hide removed module from
+        // other modules that depend on this module.
+        // but the notion of adding dependencies at runtime is broken anyway.
         if (dependencies.contains(module)) {
             dependencies.remove(module);
             getPrivateClassLoader().removeDelegate(module.getClassLoader());

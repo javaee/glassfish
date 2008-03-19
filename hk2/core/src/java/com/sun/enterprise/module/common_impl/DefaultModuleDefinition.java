@@ -149,7 +149,13 @@ public class DefaultModuleDefinition implements ModuleDefinition {
             // look for /META-INF/services for classloader punch-in
             File file = new File(result);
             if (file.exists()) {
-                Jar.create(file).loadMetadata(metadata);
+                Jar jar = Jar.create(file);
+                if(jar.getManifest().getMainAttributes().getValue("HK2-Bundle-Name")==null)
+                    // if Class-Path refers to other HK2 modules, ignore loading metadata
+                    // When someone makes HK2 module bootable from Java (that is, to have the main method),
+                    // it often needs to refer to other jars. The parent-first classloader delegation
+                    // helps us avoid loading dupliates, but metadata needs to be ignored here.
+                    jar.loadMetadata(metadata);
                 classPath.add(result);
             } else {
                 // even if the pointed resource doesn't exist, don't complain by default,

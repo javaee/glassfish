@@ -130,7 +130,7 @@ public class ModulesRegistryImpl extends AbstractModulesRegistryImpl {
     }
 
     /**
-     * Returns a ClassLoader capable of loading classes from a set of modules indentified
+     * Returns a ClassLoader capable of loading classes from a set of modules identified
      * by their module definition
      *
      * @param parent the parent class loader for the returned class loader instance
