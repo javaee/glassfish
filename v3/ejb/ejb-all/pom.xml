@@ -38,21 +38,37 @@
 --> 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-    <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.glassfish</groupId>
-        <artifactId>glassfish-parent</artifactId>
+        <groupId>org.glassfish.ejb</groupId>
+        <artifactId>ejb</artifactId>
         <version>10.0-SNAPSHOT</version>
     </parent>
-    <groupId>org.glassfish.ejb</groupId>
-    <artifactId>ejb</artifactId>
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>ejb-all</artifactId>
     <packaging>pom</packaging>
-    <name>GlassFish EJB container related modules</name>  
-    <modules>
-        <module>ejb-all</module>
-        <module>ejb-connector</module>
-        <module>ejb-container</module>
-        <module>ejb-timer-databases</module>
-        <module>ejb-timer-service-app</module>
-    </modules>
+    <name>EJB tier for GlassFish</name>
+    <description>
+      This module bundles all the EJB related Maven modules together.
+      Distributions that need EJB capability should depend on this module,
+      instead of pulling in individual EJB modules separately.
+    </description>
+
+    <dependencies>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>gf-ejb-connector</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>ejb-timer-databases</artifactId>
+            <version>${project.version}</version>
+            <type>distribution-fragment</type>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>ejb-container</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
 </project>

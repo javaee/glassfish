@@ -45,7 +45,7 @@
 	    
 	    The following section shows how you can do this.
 	  -->
-	  <!--plugins>
+	  <plugins>
 	    <plugin>
         <groupId>org.jvnet.maven-antrun-extended-plugin</groupId>
         <artifactId>maven-antrun-extended-plugin</artifactId>
@@ -54,7 +54,8 @@
             <phase>generate-sources</phase>
             <configuration>
               <tasks>
-                <echo file="target/classes/generated.txt">use Ant for processing resources</echo>
+                <!-- place the ejb timer app jar into the location -->
+                <resolveArtifact artifactId="ejb-timer-service-app" todir="target/classes/glassfish/lib/install/applications" />
              </tasks>
             </configuration>
             <goals>
@@ -63,6 +64,14 @@
           </execution>
         </executions>
       </plugin>
-    </plugins-->
+    </plugins>
   </build>
+  
+  <dependencies>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>ejb-timer-service-app</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+  </dependencies>
 </project>
