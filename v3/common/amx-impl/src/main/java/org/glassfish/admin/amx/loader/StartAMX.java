@@ -150,6 +150,16 @@ final class StartAMX
             // now starting asynchronously...
         }
     }
+
+    public static synchronized void stopAMX() {
+        if (INSTANCE!=null) {
+            try {
+                INSTANCE.mJMXMP.stop();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
     
         private synchronized JMXConnectorServer
     startJMXMPConnectorServer( int port)

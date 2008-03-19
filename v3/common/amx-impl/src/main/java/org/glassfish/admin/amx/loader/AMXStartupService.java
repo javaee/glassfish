@@ -66,6 +66,7 @@ import org.glassfish.admin.amx.util.SingletonEnforcer;
 public final class AMXStartupService
     implements  Startup,
                 org.jvnet.hk2.component.PostConstruct,
+                org.jvnet.hk2.component.PreDestroy,
                 AMXStartupServiceMBean
 {
     private static void debug( final String s ) { System.out.println(s); }
@@ -105,8 +106,12 @@ public final class AMXStartupService
         
         //debug( "Initialized (async) AMX Startup service in " + delta.elapsedMillis() + " ms " );
     }
-    
-        public synchronized ObjectName
+
+    public void preDestroy() {
+        StartAMX.stopAMX();
+    }
+
+    public synchronized ObjectName
     getDomainRootObjectName()
     {
         try
