@@ -71,6 +71,16 @@
     </build>
     <dependencies>
         <dependency>
+            <groupId>com.sun.enterprise</groupId>
+            <artifactId>hk2</artifactId>
+            <version>${hk2.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.security</groupId>
+            <artifactId>securitycommon</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.glassfish.admin</groupId>
             <artifactId>config-api</artifactId>
             <version>${project.version}</version>
