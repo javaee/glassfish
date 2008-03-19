@@ -26,6 +26,7 @@ package com.sun.enterprise.module.impl;
 import java.net.URLClassLoader;
 import java.net.URL;
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.io.IOException;
 
 /**
@@ -35,8 +36,8 @@ import java.io.IOException;
  */
 public class ClassLoaderProxy extends URLClassLoader {
 
-    private final List<ClassLoader> surrogates = Collections.synchronizedList(new ArrayList<ClassLoader>());
-    private final List<ClassLoaderFacade> facadeSurrogates = Collections.synchronizedList(new ArrayList<ClassLoaderFacade>());
+    private final List<ClassLoader> surrogates = new CopyOnWriteArrayList<ClassLoader>();
+    private final List<ClassLoaderFacade> facadeSurrogates = new CopyOnWriteArrayList<ClassLoaderFacade>();
 
     /** Creates a new instance of ClassLoader */
     public ClassLoaderProxy(URL[] shared, ClassLoader parent) {
@@ -48,71 +49,64 @@ public class ClassLoaderProxy extends URLClassLoader {
         stop();
     }
 
-    protected synchronized Class<?> loadClass(String name, boolean resolve, boolean followImports)
-	throws ClassNotFoundException
-    {
-	// First, check if the class has already been loaded
-	Class c =  findLoadedClass(name);
-	if (c == null) {
-        try {
-            if (getParent()!=null) {
-                c = getParent().loadClass(name);
+    protected Class<?> loadClass(String name, boolean resolve, boolean followImports)
+            throws ClassNotFoundException {
+        // First, check if the class has already been loaded
+        Class c = findLoadedClass(name);
+        if (c == null) {
+            try {
+                if (getParent() != null) {
+                    c = getParent().loadClass(name);
+                }
+            } catch (ClassNotFoundException e) {
+
             }
-        } catch(ClassNotFoundException e) {
-            
+            if (c == null) {
+                c = findClass(name, followImports);
+            }
+            if (resolve) {
+                resolveClass(c);
+            }
+        } else {
+            if (c.getClassLoader() == this) {
+                return c;
+            } else throw new ClassNotFoundException(name);
         }
-        if (c==null) {
-            c = findClass(name, followImports);
-        }
-        if (resolve) {
-	        resolveClass(c);
-	    }
-    } else {
-        if (c.getClassLoader()==this) {
-            return c;
-        } else  throw new ClassNotFoundException(name);
+
+        return c;
     }
 
-    return c;
-    }
     protected Class<?> findClass(String name) throws ClassNotFoundException {
         return findClass(name, true);
     }
 
     protected Class<?> findClass(String name, boolean followImports) throws ClassNotFoundException {
-
-        try {
-            return findClassDirect(name);
-        } catch(ClassNotFoundException cfne) {
-            if (followImports) {
-                Class c=null;
-                synchronized(facadeSurrogates) {
-                    for (ClassLoaderFacade classLoader : facadeSurrogates) {
-                        try {
-                            c = classLoader.getClass(name);
-                        } catch(ClassNotFoundException e) {
-                            // ignored.
-                        }
-                        if (c!=null) {
-                            return c;
-                        }
-                    }
+        // parent first, to avoid unnecessary classloader problems like failing cast that should work, etc.
+        if (followImports) {
+            Class c=null;
+            for (ClassLoaderFacade classLoader : facadeSurrogates) {
+                try {
+                    c = classLoader.getClass(name);
+                } catch(ClassNotFoundException e) {
+                    // ignored.
                 }
-                synchronized(surrogates) {
-                    for (ClassLoader classLoader : surrogates) {
-                        try {
-                            c = classLoader.loadClass(name);
-                        } catch(ClassNotFoundException e) {
-                            // ignored.
-                        }
-                        if (c!=null) {
-                            return c;
-                        }
-                    }
+                if (c!=null) {
+                    return c;
                 }
             }
-            throw cfne;
+            for (ClassLoader classLoader : surrogates) {
+                try {
+                    c = classLoader.loadClass(name);
+                } catch(ClassNotFoundException e) {
+                    // ignored.
+                }
+                if (c!=null) {
+                    return c;
+                }
+            }
         }
+
+        return findClassDirect(name);
     }
 
     /**
@@ -129,38 +123,29 @@ public class ClassLoaderProxy extends URLClassLoader {
     }
 
     public URL findResource(String name) {
-        URL url = super.findResource(name);
-        if (url==null) {
-            synchronized(facadeSurrogates) {
-                for (ClassLoaderFacade classLoader : facadeSurrogates) {
-
-                    url = classLoader.findResource(name);
-                    if (url!=null) {
-                        return url;
-                    }
-                }
-            }
-            synchronized(surrogates) {
-                for (ClassLoader classLoader : surrogates) {
-
-                    url = classLoader.getResource(name);
-                    if (url!=null) {
-                        return url;
-                    }
-                }
+        for (ClassLoaderFacade classLoader : facadeSurrogates) {
+            URL url = classLoader.findResource(name);
+            if (url!=null) {
+                return url;
             }
         }
-        return url;
+        for (ClassLoader classLoader : surrogates) {
+            URL url = classLoader.getResource(name);
+            if (url!=null) {
+                return url;
+            }
+        }
+
+        return super.findResource(name);
     }
 
     public Enumeration<URL> findResources(String name) throws IOException {
-
+        // TODO: this is broken. We need to enumerate all of them, not just the first one discovered.
         Enumeration<URL> enumerat = super.findResources(name);
         if (enumerat!=null && enumerat.hasMoreElements()) {
              return enumerat;
         }
         for (ClassLoaderFacade classLoader : facadeSurrogates) {
-
             enumerat = classLoader.getResources(name);
             if (enumerat!=null && enumerat.hasMoreElements()) {
                 return enumerat;
@@ -202,7 +187,6 @@ public class ClassLoaderProxy extends URLClassLoader {
      * this is a good time to see if this module should be unloaded.
      */
     public void stop() {
-
        surrogates.clear();
        facadeSurrogates.clear();
     }

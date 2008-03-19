@@ -150,8 +150,20 @@ public interface Module {
     ClassLoader getClassLoader();
 
     /**
-     * Returns the list of imported modules
-     * @return the list of imported modules
+     * Returns the list of imported modules.
+     *
+     * <p>
+     * This is the module version of {@link ModuleDefinition#getDependencies()},
+     * but after fully resolved.
+     *
+     * <p>
+     * To enforce the stable class visibility, once {@link Module} is
+     * created, dependencies cannot be changed &mdash; that is, we
+     * don't want "a.b.C" to suddenly mean something different once
+     * the code starts running.
+     *
+     * @return
+     *      Can be empty but never null. Read-only.
      */
     List<Module> getImports();
 

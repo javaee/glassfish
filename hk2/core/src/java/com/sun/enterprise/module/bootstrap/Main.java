@@ -242,7 +242,6 @@ public class Main {
                 // ignore
             }
         }
-        repo.initialize();
         mr.addRepository(repo, iWeight);
     }
 

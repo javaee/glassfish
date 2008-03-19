@@ -59,6 +59,7 @@ public abstract class AbstractRepositoryImpl implements Repository {
     }
 
     public void initialize() throws IOException {
+        assert moduleDefs==null;    // TODO: is it allowed to call the initialize method multiple times?
         moduleDefs = new HashMap<String, ModuleDefinition>();
         libraries = new ArrayList<URI>();
         loadModuleDefs(moduleDefs, libraries);
