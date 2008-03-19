@@ -159,7 +159,12 @@
            <groupId>org.glassfish.security</groupId>
            <artifactId>realms</artifactId>
            <version>${pe.version}</version>
-        </dependency>               
+        </dependency>  
+        <dependency>
+            <groupId>org.glassfish.security</groupId>
+            <artifactId>securitycommon</artifactId>
+            <version>${pe.version}</version>
+        </dependency>
         <dependency>
            <groupId>org.glassfish.core</groupId>
            <artifactId>shared-components</artifactId>
