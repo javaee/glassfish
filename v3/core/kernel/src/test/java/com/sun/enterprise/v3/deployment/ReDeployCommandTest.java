@@ -11,6 +11,7 @@ import com.sun.enterprise.config.serverbeans.Application;
 import com.sun.enterprise.config.serverbeans.Module;
 import com.sun.enterprise.config.serverbeans.Engine;
 import com.sun.enterprise.config.serverbeans.Property;
+import com.sun.enterprise.config.serverbeans.WebServiceEndpoint;
 import java.beans.PropertyVetoException;
 import java.util.List;
 
@@ -79,6 +80,7 @@ public class ReDeployCommandTest {
         public List<Engine> getEngine(){ return null; }
         
         public List<Property> getProperty(){ return null;}
+        public List<WebServiceEndpoint> getWebServiceEndpoint() {return null;}
         public void setEngines(List<Engine> engines) {}
 
         //hk2's Injectable class

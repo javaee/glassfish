@@ -59,7 +59,7 @@ import java.util.List;
     "engine",
     "property"
 }) */
-@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.J2EEApplicationConfig")
+@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.ApplicationConfig")
 @Configured
 public interface Application extends ConfigBeanProxy, Injectable, Module {
 
@@ -238,6 +238,29 @@ public interface Application extends ConfigBeanProxy, Injectable, Module {
      */
     @Element(required = true)
     public List<Engine> getEngine();
+
+    /**
+     * Gets the value of the webServiceEndpoint property.
+     * <p/>
+     * <p/>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the webServiceEndpoint property.
+     * <p/>
+     * <p/>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getWebServiceEndpoint().add(newItem);
+     * </pre>
+     * <p/>
+     * <p/>
+     * <p/>
+     * Objects of the following type(s) are allowed in the list
+     * {@link WebServiceEndpoint }
+     */
+    @Element
+    public List<WebServiceEndpoint> getWebServiceEndpoint();
 
     /**
      * Gets the value of the property property.
