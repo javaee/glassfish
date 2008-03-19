@@ -33,19 +33,15 @@ import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.UnknownHostException;
 import java.net.URL;
-import java.net.URLClassLoader;
 import java.text.MessageFormat;
 import java.util.Enumeration;
 import java.util.Properties;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.HashMap;
-import java.util.StringTokenizer;
-//HERCULES:add
 import java.util.ArrayList;
 //end HERCULES:add
 import java.util.List;
-import java.util.ListIterator;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 import java.util.ResourceBundle;
@@ -55,7 +51,6 @@ import org.apache.catalina.Connector;
 import org.apache.catalina.Context;
 import org.apache.catalina.Deployer;
 import org.apache.catalina.Engine;
-import org.apache.catalina.Host;
 import org.apache.catalina.Loader;
 import org.apache.catalina.Container;
 import org.apache.catalina.LifecycleException;
@@ -172,7 +167,7 @@ import java.lang.reflect.Method;
 import org.apache.jasper.runtime.JspFactoryImpl;
 import org.apache.catalina.Realm;
 
-import com.sun.enterprise.security.integration.RealmAdapterProxy;
+import com.sun.enterprise.security.integration.RealmInitializer;
 
 /**
  * Web container service
@@ -2988,14 +2983,14 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                      * the virtual server on which they are being deployed,
                      * unless they specify their own
                      */
-                    if (realm != null && realm instanceof RealmAdapterProxy) {
-                        ((RealmAdapterProxy)realm).initializeRealm(
+                    if (realm != null && realm instanceof RealmInitializer) {
+                        ((RealmInitializer)realm).initializeRealm(
                                 wbd, isSystem, vs.getAuthRealmName());
                         ctx.setRealm(realm);
                     }
                 } else {
-                    if (realm != null && realm instanceof RealmAdapterProxy) {
-                        ((RealmAdapterProxy)realm).initializeRealm(
+                    if (realm != null && realm instanceof RealmInitializer) {
+                        ((RealmInitializer)realm).initializeRealm(
                                 wbd, isSystem, null);
                         ctx.setRealm(realm);
                     }
