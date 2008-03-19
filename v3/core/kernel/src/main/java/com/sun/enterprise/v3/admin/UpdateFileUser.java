@@ -205,10 +205,13 @@ public class UpdateFileUser implements AdminCommand {
             //String[] groups1 = (String[]) groups.toArray();
             fr.updateUser(userName, password, groups1);
             fr.writeKeyFile(keyFile);
+            report.getTopMessagePart().setMessage(localStrings.getLocalString(
+                "update.file.user.success", 
+                "update-file-user successful"));            
         } catch (Exception e) {
             report.setMessage(
-                localStrings.getLocalString("update.file.user.useraddfailed",
-                "Adding User to this Filerealm failed"));
+                localStrings.getLocalString("update.file.user.userupdatefailed",
+                "Updating user in this Filerealm failed"));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
         }        

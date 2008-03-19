@@ -72,41 +72,27 @@ import com.sun.enterprise.config.serverbeans.SecurityService;
 import java.beans.PropertyVetoException;
 
 /**
- * Create File User Command
- * Usage: create-file-user [--terse=false] [--echo=false] [--interactive=true] 
- *        [--host localhost] [--port 4848|4849] [--secure | -s] 
- *        [--user admin_user] [--passwordfile file_name] 
- *        [--groups user_groups[:user_groups]*] [--authrealmname authrealm_name]
- *        [--target target(Default server)] username *
- *
+ * List File Users Command
+ * Usage: list-file-users [--terse=false] [--echo=false] [--interactive=true] 
+ * [--host localhost] [--port 4848|4849] [--secure | -s] [--user admin_user] 
+ * [--passwordfile file_name] [--authrealmname authrealm_name] 
+ * [target(Default server)]
  * @author Nandini Ektare
  */
 
-@Service(name="create-file-user")
+@Service(name="list-file-users")
 @Scoped(PerLookup.class)
-@I18n("create.file.user")
-public class CreateFileUser implements AdminCommand {
+@I18n("list.file.user")
+public class ListFileUser implements AdminCommand {
     
     final private static LocalStringManagerImpl localStrings = 
-        new LocalStringManagerImpl(CreateFileUser.class);    
-
-    //@Param(name="groups", optional=true)
-    //List<String> groups;
-
-    @Param(name="userpasswordfile")
-    String passwordFile;
-
-    @Param(name="groups", optional=true)
-    String groups;
+        new LocalStringManagerImpl(ListFileUser.class);    
 
     @Param(name="authrealmname", optional=true)
     String authRealmName;
     
     @Param(optional=true)
     String target;
-
-    @Param(name="username", primary=true)
-    String userName;
 
     @Inject
     Configs configs;
@@ -127,13 +113,13 @@ public class CreateFileUser implements AdminCommand {
 
         // ensure we have the file authrealm
         AuthRealm fileAuthRealm = null;        
-        for (AuthRealm authRealm : securityService.getAuthRealm()) {            
+        for (AuthRealm authRealm : securityService.getAuthRealm()) {
             if (authRealm.getName().equals(authRealmName))                 
                 fileAuthRealm = authRealm;            
         }        
         if (fileAuthRealm == null) {
             report.setMessage(localStrings.getLocalString(
-                "create.file.user.filerealmnotfound",
+                "list.file.user.filerealmnotfound",
                 "There is no File realm to perform this operation"));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             return;                                            
@@ -148,7 +134,7 @@ public class CreateFileUser implements AdminCommand {
                 "com.sun.enterprise.security.auth.realm.file.FileRealm")) {
             report.setMessage(
                 localStrings.getLocalString(
-                    "create.file.user.realmnotsupported",
+                    "list.file.user.realmnotsupported",
                     "Configured FileRealm is not supported."));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             return;                
@@ -162,84 +148,50 @@ public class CreateFileUser implements AdminCommand {
         }
         if (keyFile == null) {
             report.setMessage(
-                localStrings.getLocalString("create.file.user.keyfilenotfound",
+                localStrings.getLocalString("list.file.user.keyfilenotfound",
                 "There is no physical file associated with this Filerealm"));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             return;                                            
         }
         
-        // Now get all inputs ready. userid and groups are straightforward but
-        // password is tricky. It is stored in the file passwordfile passed 
-        // through the CLI options. It is stored under the name 
-        // AS_ADMIN_USERPASSWORD. Fetch it from there.
-        String password = fetchPassword();
-        if (password == null) {
-            report.setMessage(localStrings.getLocalString(
-                "create.file.user.keyfilenotreadable", "User password cannot " +
-                "be read from the file associated with this Filerealm"));
-            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            return;
-        }
-                    
-        // We have the right impl so let's get to checking existing user and 
-        // adding one if one does not exist
+        // We have the right impl so let's try to remove one 
         FileRealm fr = null;
         try {
             fr = new FileRealm(keyFile);            
         } catch(BadRealmException e) {
             report.setMessage(
                 localStrings.getLocalString(
-                    "create.file.user.realmcorrupted",
+                    "list.file.user.realmcorrupted",
                     "Configured FileRealm is corrupted."));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
         } catch(NoSuchRealmException e) {
             report.setMessage(
                 localStrings.getLocalString(
-                    "create.file.user.realmnotsupported",
+                    "list.file.user.realmnotsupported",
                     "Configured FileRealm is not supported."));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
         }
+
         try {
-            String[] groups1 = {groups};            
-            //String[] groups1 = (String[]) groups.toArray();
-            fr.addUser(userName, password, groups1);
-            fr.writeKeyFile(keyFile);
+            Enumeration users = fr.getUserNames();
+            
             report.getTopMessagePart().setMessage(localStrings.getLocalString(
-                "create.file.user.success", 
-                "create-file-user successful"));                        
-        } catch (Exception e) {
+                "list.file.user.success", 
+                "list-file-users successful"));
+            report.getTopMessagePart().setChildrenType("file-user");
+            while (users.hasMoreElements()) {
+                final ActionReport.MessagePart part = report.getTopMessagePart().addChild();
+                part.setMessage((String) users.nextElement());
+            }
+        } catch (BadRealmException e) {
             report.setMessage(
-                localStrings.getLocalString("create.file.user.useraddfailed",
-                "Adding User to this Filerealm failed"));
+                localStrings.getLocalString(
+                    "list.file.user.realmcorrupted",
+                    "Configured FileRealm is corrupted."));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
-        }        
-    }
-        
-    private String fetchPassword() {
-        String password = null;
-        File passwdFile = new File(passwordFile);
-        InputStream is = null;
-        try {
-            is = new BufferedInputStream(new FileInputStream(passwdFile));
-            Properties prop = new Properties();
-            prop.load(is);            
-            for (Enumeration en=prop.propertyNames(); en.hasMoreElements();) {
-                String entry = (String)en.nextElement();
-                if (entry.equals("AS_ADMIN_USERPASSWORD")) {                    
-                    password = prop.getProperty(entry);
-                    break;
-                }
-            }
-            return password;
-        } catch(Exception e) {
-            return null;
-        } finally {
-            try {
-                if (is != null) is.close();
-            } catch(final Exception ignore){}
         }        
     }
 }

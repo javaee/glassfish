@@ -184,6 +184,9 @@ public class DeleteFileUser implements AdminCommand {
         try {
             fr.removeUser(userName);
             fr.writeKeyFile(keyFile);
+            report.getTopMessagePart().setMessage(localStrings.getLocalString(
+                "delete.file.user.success", 
+                "delete-file-user successful"));                        
         } catch (NoSuchUserException e) {
             report.setMessage(
                 localStrings.getLocalString("delete.file.user.usernotfound",
