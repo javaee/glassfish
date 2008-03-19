@@ -9,6 +9,19 @@
     <param-name>com.sun.jsftemplating.CLASSLOADER</param-name>
     <param-value>org.glassfish.admingui.plugin.ConsoleClassLoader</param-value>
   </context-param>
+  
+  <filter>
+      <filter-name>UploadFilter</filter-name>
+        <filter-class>com.sun.webui.jsf.util.UploadFilter</filter-class>
+        <init-param>
+                <param-name>maxSize</param-name>
+                <param-value>100000000</param-value>
+        </init-param>
+   </filter>
+    <filter-mapping>
+        <filter-name>UploadFilter</filter-name>        
+        <servlet-name>FacesServlet</servlet-name>
+   </filter-mapping>
   <listener>
       <listener-class>com.sun.faces.config.ConfigureListener</listener-class>
   </listener>
