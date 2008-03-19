@@ -48,8 +48,10 @@ import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.TransactionFailure;
 import com.sun.enterprise.config.serverbeans.Property;
+import com.sun.enterprise.config.serverbeans.Resource;
 import com.sun.enterprise.config.serverbeans.Resources;
 import com.sun.enterprise.config.serverbeans.Server;
+import com.sun.enterprise.config.serverbeans.JdbcConnectionPool;
 import com.sun.enterprise.config.serverbeans.JdbcResource;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import org.jvnet.hk2.config.ConfiguredBy;
@@ -90,7 +92,7 @@ public class JDBCResourceManager implements ResourceManager {
             return status;
         }
         // ensure we don't already have one of this name
-        for (com.sun.enterprise.config.serverbeans.Resource resource : resources.getResources()) {
+        for (Resource resource : resources.getResources()) {
             if (resource instanceof JdbcResource) {
                 if (((JdbcResource) resource).getJndiName().equals(jndiName)) {
                     String msg = localStrings.getLocalString("create.jdbc.resource",
@@ -99,6 +101,13 @@ public class JDBCResourceManager implements ResourceManager {
                     return status;
                 }
             }
+        }
+        
+        if (!isConnPoolExists(resources, poolName)) {
+            String msg = localStrings.getLocalString("create.jdbc.resource.connPoolNotFound",
+                "Attribute value (pool-name = {0}) is not found in list of jdbc connection pools.", poolName);
+            ResourceStatus status = new ResourceStatus(ResourceStatus.FAILURE, msg);
+            return status;
         }
 
         try {
@@ -203,9 +212,20 @@ public class JDBCResourceManager implements ResourceManager {
     
     private boolean isResourceExists(Resources resources, String jndiName) {
         
-        for (com.sun.enterprise.config.serverbeans.Resource resource : resources.getResources()) {
+        for (Resource resource : resources.getResources()) {
             if (resource instanceof JdbcResource) {
                 if (((JdbcResource) resource).getJndiName().equals(jndiName)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    
+    private boolean isConnPoolExists(Resources resources, String poolName) {
+        for (Resource resource : resources.getResources()) {
+            if (resource instanceof JdbcConnectionPool) {
+                if (((JdbcConnectionPool)resource).getName().equals(poolName)) {
                     return true;
                 }
             }
