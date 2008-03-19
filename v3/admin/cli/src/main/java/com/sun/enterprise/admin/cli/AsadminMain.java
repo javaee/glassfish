@@ -99,7 +99,7 @@ public class AsadminMain {
         // dol
         "com.sun.enterprise.deployment.PrincipalImpl",
         // kernel
-        "com.sun.appserv.server.util.Version",
+        //"com.sun.appserv.server.util.Version",
     };
     static {
         // check RIGHT NOW to make sure all the classes we need are
