@@ -64,11 +64,6 @@
     </build>
 
     <dependencies>
-        <dependency>
-            <groupId>org.glassfish.ejb</groupId>
-            <artifactId>gf-ejb-connector</artifactId>
-            <version>${project.version}</version>
-        </dependency>
         <!-- base distribution image -->
         <dependency>
             <groupId>org.glassfish.distributions</groupId>
@@ -83,6 +78,15 @@
             <version>${pe.version}</version>
             <classifier>build</classifier>
             <type>xml</type>
+        </dependency>
+        
+        <!-- features in the glassfish bundle -->
+        
+        <dependency>
+            <groupId>org.glassfish.ejb</groupId>
+            <artifactId>ejb-all</artifactId>
+            <version>${pe.version}</version>
+            <type>pom</type>
         </dependency>
     </dependencies>
 </project>

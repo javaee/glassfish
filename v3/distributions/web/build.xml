@@ -143,7 +143,6 @@
             <excludeArtifactsTransitively>
                 <scope level="compile,runtime"/>
                 <artifact artifactId="webtier-all"/>
-                <artifact artifactId="gf-ejb-connector"/>
             </excludeArtifactsTransitively>
         </resolveAll>
 

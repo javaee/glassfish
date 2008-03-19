@@ -26,7 +26,7 @@
     <import file="${base.build.xml}" />
 
     <target name="ejb.moduleDef">
-        <moduleDef name="ejb" artifactId="gf-ejb-connector" />
+        <moduleDef name="ejb" artifactId="ejb-all" />
     </target>
 
     <target name="create.bundle" depends="web.prepare, ejb.moduleDef, web.moduleDef">
@@ -34,7 +34,7 @@
             <excludeArtifactsTransitively>
                 <scope level="compile,runtime"/>
                 <artifact artifactId="webtier" />
-                <artifact artifactId="gf-ejb-connector" />
+                <artifact artifactId="ejb-all" />
             </excludeArtifactsTransitively>
         </resolveAll>
 

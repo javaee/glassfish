@@ -90,11 +90,6 @@
             <version>10.2.2.1-20070823</version>
         </dependency>
         <dependency>
-            <groupId>org.glassfish.ejb</groupId>
-            <artifactId>gf-ejb-connector</artifactId>
-            <version>${pe.version}</version>
-        </dependency>        
-        <dependency>
             <groupId>org.glassfish.web</groupId>
             <artifactId>webtier-all</artifactId>
             <version>${pe.version}</version>
