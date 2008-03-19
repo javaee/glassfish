@@ -60,7 +60,6 @@ import org.glassfish.api.Async;
     incompatibilities.
  */
 @Service
-@Async
 public final class AppserverMBeanServerFactory implements Startup
 {
     // we'd ideally like to name things, but @Extract is not working

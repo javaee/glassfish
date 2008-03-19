@@ -179,11 +179,6 @@ public abstract class JavaEEDeployer<T extends Container, U extends ApplicationC
     public boolean prepare(DeploymentContext dc) {
         try {
             prepareScratchDirs(dc);
-            if (parseModuleMetaData(dc)==null) {
-                // hopefully the DOL gave a good message of the failure...
-                dc.getLogger().severe("Failed to load deployment descriptor, aborting");
-                return false;
-            }
             String objectType = getObjectType(dc);
             if (objectType != null) {
                 dc.getProps().setProperty(ServerTags.OBJECT_TYPE,

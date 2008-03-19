@@ -56,7 +56,6 @@ import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.PreDestroy;
-import org.jvnet.hk2.component.Singleton;
 
 import java.io.File;
 import java.io.IOException;
@@ -72,7 +71,6 @@ import java.util.logging.Logger;
  * @author Jerome Dochez
  */
 @Service
-@Scoped(Singleton.class)
 @Async
 public class ApplicationLoaderService extends ApplicationLifecycle
         implements Startup, PreDestroy, PostConstruct {

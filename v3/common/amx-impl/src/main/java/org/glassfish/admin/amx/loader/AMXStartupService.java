@@ -70,7 +70,7 @@ public final class AMXStartupService
 {
     private static void debug( final String s ) { System.out.println(s); }
     
-    @Inject
+    @Inject(name=AppserverMBeanServerFactory.OFFICIAL_MBEANSERVER)
     private MBeanServer mMBeanServer;
     
     @Inject

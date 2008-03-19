@@ -45,10 +45,7 @@ import org.glassfish.api.ActionReport;
 import org.glassfish.api.container.Adapter;
 import org.glassfish.api.container.Sniffer;
 import org.glassfish.api.container.Container;
-import org.glassfish.api.deployment.ApplicationContainer;
-import org.glassfish.api.deployment.Deployer;
-import org.glassfish.api.deployment.DeploymentContext;
-import org.glassfish.api.deployment.MetaData;
+import org.glassfish.api.deployment.*;
 import org.glassfish.api.deployment.archive.ArchiveHandler;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.jvnet.hk2.annotations.Inject;
@@ -74,6 +71,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.beans.PropertyVetoException;
+import java.lang.instrument.ClassFileTransformer;
 
 /**
  * Application Loader is providing utitily methods to load applications
@@ -389,13 +387,19 @@ abstract public class ApplicationLifecycle {
             // start all the containers associated with sniffers.
             ContainerInfo containerInfo = containerRegistry.getContainer(sniffer.getContainersNames()[0]);
             if (containerInfo == null) {
-                Collection<ContainerInfo> containersInfo = setupContainer(sniffer, snifferModule, logger, report);
-                if (containersInfo==null || containersInfo.size()==0) {
-                    String msg = "Cannot start container(s) associated to application of type : " + sniffer.getModuleType();
-                    failure(logger, msg, null, report);
-                    throw new Exception(msg);
+                // need to synchronize on the registry to not end up starting the same container from
+                // different threads.
+                synchronized(containerRegistry) {
+                    if (containerRegistry.getContainer(sniffer.getContainersNames()[0])==null) {
+                        Collection<ContainerInfo> containersInfo = setupContainer(sniffer, snifferModule, logger, report);
+                        if (containersInfo==null || containersInfo.size()==0) {
+                            String msg = "Cannot start container(s) associated to application of type : " + sniffer.getModuleType();
+                            failure(logger, msg, null, report);
+                            throw new Exception(msg);
+                        }
+                        tracker.addAll(ContainerInfo.class, containersInfo);
+                    }
                 }
-                tracker.addAll(ContainerInfo.class, containersInfo);
             }
 
         }
@@ -549,6 +553,17 @@ abstract public class ApplicationLifecycle {
                             // bits in case we ran all the prepare() methods of the invalidating
                             // deployers.
                             context.setClassLoader(handler.getClassLoader(parentCL, context.getSource()));
+                            // add the class file transformers to the new class loader
+                            try {
+                                InstrumentableClassLoader icl = InstrumentableClassLoader.class.cast(context.getClassLoader());
+                                for (ClassFileTransformer transformer : context.getTransformers()) {
+                                    icl.addTransformer(transformer);
+                                }
+                            } catch (Exception e) {
+                                failure(logger, "Class loader used for loading application cannot handle bytecode enhancer",e, report);
+                                throw e;
+
+                            }
                             invalidated = false;
                         }
                     }
