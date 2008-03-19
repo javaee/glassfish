@@ -21,7 +21,7 @@
             <configuration>
 	      <archive>
 		  <manifestEntries>
-		      <HK2-Import-Bundles>com.sun.enterprise:hk2, org.glassfish.admingui:console-plugin-service, org.glassfish.common:amx-api</HK2-Import-Bundles>
+		      <HK2-Import-Bundles>com.sun.enterprise:hk2, org.glassfish.admingui:console-plugin-service, org.glassfish.common:amx-api, org.glassfish.core:deployment-client</HK2-Import-Bundles>
 		  </manifestEntries>
 	      </archive>
             </configuration>
