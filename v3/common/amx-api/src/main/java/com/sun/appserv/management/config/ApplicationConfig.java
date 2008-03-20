@@ -97,4 +97,6 @@ public interface ApplicationConfig
 	public void		setAvailabilityEnabled( boolean enabled );
 	
     public Map<String,WebServiceEndpointConfig> getWebServiceEndpointConfigMap();
+    
+    public Map<String,EngineConfig> getEngineConfigMap();
 }
