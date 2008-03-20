@@ -251,18 +251,7 @@ public final class AppserverMBeanServer implements MBeanServer
         return getTargetMBeanServer().getMBeanCount( );
     }
 
-        public final Set
-    queryMBeans( final ObjectName objectName, final QueryExp expr )
-    {
-        final String domain = objectName.getDomain();
-        if ( ! AMX_STARTED && (domain.equals(AMX_DOMAIN) || domain.equals("*")) )
-        {
-            ensureAMXLoaded();
-        }
-        
-        debug( "AppserverMBeanServer.queryMBeans: ", objectName, expr );
-        return getTargetMBeanServer().queryMBeans( objectName, expr );
-    }
+   
 
     public final MBeanInfo getMBeanInfo( final ObjectName objectName) throws
         InstanceNotFoundException, IntrospectionException, ReflectionException
@@ -440,17 +429,38 @@ public final class AppserverMBeanServer implements MBeanServer
         return getTargetMBeanServer().isInstanceOf(objectName, str);
     }
 
+        private static boolean
+    mightBeAMX( final ObjectName objectName )
+    {
+        // see JMX Javadoc: null means "*"
+        if ( objectName == null ) return true;
+        
+        final String domain = objectName.getDomain();
+        return domain.equals( AMX_DOMAIN ) || domain.equals( "*" );
+    }
+    
         public final Set
     queryNames( final ObjectName objectName, final QueryExp queryExp)
     {
-        final String domain = objectName.getDomain();
-        if ( ! AMX_STARTED && (domain.equals(AMX_DOMAIN) || domain.equals("*")) )
+        if ( (! AMX_STARTED) && mightBeAMX(objectName) )
         {
             ensureAMXLoaded();
         }
         
         debug( "AppserverMBeanServer.queryNames: ", objectName, queryExp );
         return getTargetMBeanServer().queryNames( objectName, queryExp);
+    }
+    
+         public final Set
+    queryMBeans( final ObjectName objectName, final QueryExp expr )
+    {
+        if ( (! AMX_STARTED) && mightBeAMX(objectName) )
+        {
+            ensureAMXLoaded();
+        }
+        
+        debug( "AppserverMBeanServer.queryMBeans: ", objectName, expr );
+        return getTargetMBeanServer().queryMBeans( objectName, expr );
     }
 
         public final void
