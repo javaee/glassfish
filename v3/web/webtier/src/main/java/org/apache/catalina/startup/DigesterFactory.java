@@ -306,14 +306,16 @@ public class DigesterFactory{
             String resourceURL,
             String resourcePublicId) {
 
-        URL url = DigesterFactory.class.getResource(resourceURL);
-        if (url==null) {
+        URL url = null;
+        if (resourceURL != null && resourceURL.startsWith("file:")) {
             try {
                 url = new URL(resourceURL);
             } catch (MalformedURLException e) {
                 return;
             }
 
+        } else {
+            url = DigesterFactory.class.getResource(resourceURL);
         }
         schemaResolver.register(resourcePublicId , url.toString() );
 

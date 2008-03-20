@@ -41,6 +41,7 @@
 package org.apache.jasper.xmlparser;
 
 import java.io.*;
+import java.net.URI;
 import java.util.HashMap;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -89,18 +90,20 @@ public class ParserUtils {
     /**
      * An error handler for use when parsing XML documents.
      */
-    static ErrorHandler errorHandler = new MyErrorHandler();
+    private static ErrorHandler errorHandler = new MyErrorHandler();
 
     /**
      * An entity resolver for use when parsing XML documents.
      */
-    static EntityResolver entityResolver = new MyEntityResolver();
+    private static EntityResolver entityResolver = new MyEntityResolver();
 
     /* SJSAS 6384538
     public static boolean validating = false;
     */
 
     static String schemaResourcePrefix;
+
+    static String dtdResourcePrefix;
 
     private static final String SCHEMA_LOCATION_ATTR = "schemaLocation";
 
@@ -121,19 +124,25 @@ public class ParserUtils {
     };
 
     // START PWC 6386258
-    static final String[] CACHED_DTD_RESOURCE_PATHS = {
+    private static final String[] DEFAULT_DTD_RESOURCE_PATHS = {
         Constants.TAGLIB_DTD_RESOURCE_PATH_11,
         Constants.TAGLIB_DTD_RESOURCE_PATH_12,
         Constants.WEBAPP_DTD_RESOURCE_PATH_22,
         Constants.WEBAPP_DTD_RESOURCE_PATH_23,
     };
 
-    static final String[] CACHED_SCHEMA_RESOURCE_PATHS = {
+    static final String[] CACHED_DTD_RESOURCE_PATHS =
+            (String[])DEFAULT_DTD_RESOURCE_PATHS;
+
+    private static final String[] DEFAULT_SCHEMA_RESOURCE_PATHS = {
         Constants.TAGLIB_SCHEMA_RESOURCE_PATH_20,
         Constants.TAGLIB_SCHEMA_RESOURCE_PATH_21,
         Constants.WEBAPP_SCHEMA_RESOURCE_PATH_24,
         Constants.WEBAPP_SCHEMA_RESOURCE_PATH_25,
     };
+
+    static final String[] CACHED_SCHEMA_RESOURCE_PATHS =
+            (String[])DEFAULT_SCHEMA_RESOURCE_PATHS; 
     // END PWC 6386258
 
 
@@ -142,14 +151,14 @@ public class ParserUtils {
 
     // START PWC 6386258
     /**
-     * Sets the path prefix for .xsd resources
+     * Sets the path prefix URL for .xsd resources
      */
     public static void setSchemaResourcePrefix(String prefix) {
 
         schemaResourcePrefix = prefix;
 
         for (int i=0; i<CACHED_SCHEMA_RESOURCE_PATHS.length; i++) {
-            String path = CACHED_SCHEMA_RESOURCE_PATHS[i];
+            String path = DEFAULT_SCHEMA_RESOURCE_PATHS[i];
             int index = path.lastIndexOf('/');
             if (index != -1) {
                 CACHED_SCHEMA_RESOURCE_PATHS[i] =
@@ -159,11 +168,14 @@ public class ParserUtils {
     }
 
     /**
-     * Sets the path prefix for .dtd resources
+     * Sets the path prefix URL for .dtd resources
      */
     public static void setDtdResourcePrefix(String prefix) {
+
+        dtdResourcePrefix = prefix;
+
         for (int i=0; i<CACHED_DTD_RESOURCE_PATHS.length; i++) {
-            String path = CACHED_DTD_RESOURCE_PATHS[i];
+            String path = DEFAULT_DTD_RESOURCE_PATHS[i];
             int index = path.lastIndexOf('/');
             if (index != -1) {
                 CACHED_DTD_RESOURCE_PATHS[i] =
@@ -413,9 +425,39 @@ public class ParserUtils {
                     schemaFactory.setResourceResolver(
                         new MyLSResourceResolver());
                     schemaFactory.setErrorHandler(new MyErrorHandler());
-                    schema = schemaFactory.newSchema(new StreamSource(
-                    ParserUtils.class.getResourceAsStream(
-                        schemaResourcePrefix + schemaPublicId)));
+
+                    String path = schemaPublicId;
+                    if (schemaResourcePrefix != null) {
+                        int index = schemaPublicId.lastIndexOf('/');
+                        if (index != -1) {
+                            path = schemaPublicId.substring(index+1);
+                        }
+                        path = schemaResourcePrefix + path;
+                    }
+
+                    InputStream input = null;
+                    if (schemaResourcePrefix != null &&
+                            schemaResourcePrefix.startsWith("file:")) {
+                        try {
+                            File f = new File(new URI(path));
+                            if (f.exists()) { 
+                                input = new FileInputStream(f);
+                            }
+                        } catch(Exception e) {
+                                 
+                        }
+                    } else {
+                        input = ParserUtils.class.getResourceAsStream(path);
+                    }
+
+                    if (input == null) {
+		        throw new SAXException(
+                            Localizer.getMessage(
+                                "jsp.error.internal.filenotfound",
+                                schemaPublicId));
+                    }
+
+                    schema = schemaFactory.newSchema(new StreamSource(input));
                     schemaCache.put(schemaPublicId, schema);
                 }
             }
@@ -443,22 +485,21 @@ class MyEntityResolver implements EntityResolver {
                 // START PWC 6386258
                 String resourcePath = ParserUtils.CACHED_DTD_RESOURCE_PATHS[i];
                 // END PWC 6386258
-		InputStream input =
-		    this.getClass().getResourceAsStream(resourcePath);
-        if (input==null) {
-            File f = new File(resourcePath);
-            File path = new File(System.getProperty("com.sun.aas.installRoot"), "lib");
-            path = new File(path, "dtds");
-            path = new File(path, f.getName());
-            if (path.exists()) {
-                try {
-                    input = new FileInputStream(path);
-                } catch(IOException e) {
+		InputStream input = null;
+                if (ParserUtils.dtdResourcePrefix != null &&
+                        ParserUtils.dtdResourcePrefix.startsWith("file:")) {
+                    try {
+                        File path = new File(new URI(resourcePath));
+                        if (path.exists()) {
+                            input = new FileInputStream(path);
+                        }
+                    } catch(Exception e) {
                     
+                    }
+                } else {
+		    input = this.getClass().getResourceAsStream(resourcePath);
                 }
-            }
-        }
-        if (input == null) {
+                if (input == null) {
 		    throw new SAXException(
                         Localizer.getMessage("jsp.error.internal.filenotfound",
 					     resourcePath));
@@ -514,8 +555,23 @@ class MyLSResourceResolver implements LSResourceResolver {
         if (index != -1) {
             resourceName = systemId.substring(index+1);
         }
-        String resourcePath = ParserUtils.schemaResourcePrefix + resourceName;
-        is = this.getClass().getResourceAsStream(resourcePath);
+        String resourcePath = (ParserUtils.schemaResourcePrefix != null) ?
+            (ParserUtils.schemaResourcePrefix + resourceName) :
+            resourceName;
+
+        if (ParserUtils.schemaResourcePrefix != null &&
+                ParserUtils.schemaResourcePrefix.startsWith("file:")) {
+            try {
+                File f = new File(new URI(resourcePath));
+                if (f.exists()) { 
+                    is = new FileInputStream(f);
+                }
+            } catch(Exception e) {
+                    
+            }
+        } else {
+            is = this.getClass().getResourceAsStream(resourceName);
+        }
 
         MyLSInput ls = new MyLSInput();
         ls.setByteStream(is);
