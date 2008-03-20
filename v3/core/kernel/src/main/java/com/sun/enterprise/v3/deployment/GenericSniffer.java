@@ -143,4 +143,12 @@ public abstract class GenericSniffer implements Sniffer {
     public Class<? extends Annotation>[] getAnnotationTypes() {
         return new Class[0];
     }
+
+    /**
+     * @return whether this sniffer should be visible to user
+     *
+     */
+    public boolean isUserVisible() {
+        return false;
+    }
 }

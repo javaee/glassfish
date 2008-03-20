@@ -114,4 +114,9 @@ public interface Sniffer {
      */
     public String[] getContainersNames();
 
+    /** 
+     * @return whether this sniffer should be visible to user
+     * 
+     */
+    public boolean isUserVisible();
 }

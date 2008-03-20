@@ -89,4 +89,11 @@ System.out.println("<< EjbSniffer result: " + result);
         return result;
     }
 
+    /**
+     * @return whether this sniffer should be visible to user
+     *
+     */
+    public boolean isUserVisible() {
+        return true;
+    }
 }

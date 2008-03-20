@@ -95,4 +95,12 @@ public class ConnectorSniffer extends GenericSniffer implements Sniffer {
     public String getModuleType() {
         return "connectors";
     }
+
+    /**
+     * @return whether this sniffer should be visible to user
+     *
+     */
+    public boolean isUserVisible() {
+        return true;
+    }
 }
