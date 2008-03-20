@@ -50,11 +50,11 @@ import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Collection;
 import java.util.Set;
-import java.util.HashSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -337,28 +337,32 @@ public final class ModuleImpl implements Module {
             dependencies.add(depModule);
         }
 
-        // mark this as resolved first to avoid recursion from buildTransitiveDependencies
-        state = ModuleState.RESOLVED;
-
         // once we have proper import/export filtering for modules, we can
         // build a look-up table to improve performance
-        Set<ModuleImpl> transitiveDependencies = new HashSet<ModuleImpl>();
-        buildTransitiveDependencies(transitiveDependencies);
-        for (ModuleImpl dep : transitiveDependencies)
-            getPrivateClassLoader().addDelegate(dep.getClassLoader());
+
+        // build up the complete list of transitive dependency modules, without any duplication,
+        // in a breadth-first fashion. The reason we do this in breadth-first is to reduce
+        // the search time based on the assumption that classes tend to be discovered in close dependencies. 
+        List<ModuleImpl> transitiveDependencies = new ArrayList<ModuleImpl>();
+        Set<ModuleImpl> transitiveDependenciesSet = new HashSet<ModuleImpl>();
+        LinkedList<ModuleImpl> q = new LinkedList<ModuleImpl>();
+        q.addAll(dependencies);
+        while(!q.isEmpty()) {
+            ModuleImpl m = q.removeFirst();
+            if(transitiveDependenciesSet.add(m)) {
+                // first time visited
+                transitiveDependencies.add(m);
+                m.resolve();
+                q.addAll(m.dependencies);
+            }
+        }
+
+        for (ModuleImpl m : transitiveDependencies) {
+            getPrivateClassLoader().addDelegate(m.getClassLoader());
+        }
 
         //Logger.global.info("Module " + getName() + " resolved");
-    }
-
-    /**
-     * List up all {@link ModuleImpl}s that this module transitively depend on into the given collection.
-     */
-    private void buildTransitiveDependencies(Collection<? super ModuleImpl> result) {
-        resolve();
-        for(ModuleImpl m : dependencies) {
-            if(result.add(m))
-                m.buildTransitiveDependencies(result);
-        }
+        state = ModuleState.RESOLVED;
     }
 
     /**
@@ -607,7 +611,7 @@ public final class ModuleImpl implements Module {
             writer.println("Depends on " + imported.getName());
         }
         if (publicCL!=null) {
-            ClassLoaderFacade cloader = (ClassLoaderFacade) publicCL.get();
+            ClassLoaderFacade cloader = publicCL.get();
             cloader.dumpState(writer);
         }
     }

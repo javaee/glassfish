@@ -49,7 +49,7 @@ public class ClassLoaderProxy extends URLClassLoader {
         stop();
     }
 
-    protected Class<?> loadClass(String name, boolean resolve, boolean followImports)
+    protected synchronized Class<?> loadClass(String name, boolean resolve, boolean followImports)
             throws ClassNotFoundException {
         // First, check if the class has already been loaded
         Class c = findLoadedClass(name);
@@ -81,38 +81,47 @@ public class ClassLoaderProxy extends URLClassLoader {
     }
 
     protected Class<?> findClass(String name, boolean followImports) throws ClassNotFoundException {
-        // parent first, to avoid unnecessary classloader problems like failing cast that should work, etc.
-        if (followImports) {
-            Class c=null;
-            for (ClassLoaderFacade classLoader : facadeSurrogates) {
-                try {
-                    c = classLoader.getClass(name);
-                } catch(ClassNotFoundException e) {
-                    // ignored.
-                }
-                if (c!=null) {
-                    return c;
-                }
-            }
-            for (ClassLoader classLoader : surrogates) {
-                try {
-                    c = classLoader.loadClass(name);
-                } catch(ClassNotFoundException e) {
-                    // ignored.
-                }
-                if (c!=null) {
-                    return c;
-                }
-            }
-        }
+        try {
+            // try to find it within this module first.
+            // this potentially causes a problem when two modules have the same jar in the classpath,
+            // but because the classes are most often found locally, this has a tremendous performance boost.
+            // so we knowingly make this decision to do child-first loading.
 
-        return findClassDirect(name);
+            // the pain of duplicate jars are somewhat mitigated by the fact that dependencies tend to be
+            // defined between HK2 modules, and those will not show up in the classpath of this module.
+            return findClassDirect(name);
+        } catch(ClassNotFoundException cfne) {
+            if (followImports) {
+                Class c=null;
+                for (ClassLoaderFacade classLoader : facadeSurrogates) {
+                    try {
+                        c = classLoader.getClass(name);
+                    } catch(ClassNotFoundException e) {
+                        // ignored.
+                    }
+                    if (c!=null) {
+                        return c;
+                    }
+                }
+                for (ClassLoader classLoader : surrogates) {
+                    try {
+                        c = classLoader.loadClass(name);
+                    } catch(ClassNotFoundException e) {
+                        // ignored.
+                    }
+                    if (c!=null) {
+                        return c;
+                    }
+                }
+            }
+            throw cfne;
+        }
     }
 
     /**
      * {@link #findClass(String)} except the classloader punch-in hack.
      */
-    private Class findClassDirect(String name) throws ClassNotFoundException {
+    /*package*/ Class findClassDirect(String name) throws ClassNotFoundException {
         Class c = findLoadedClass(name);
         if(c!=null) return c;
         try {
@@ -123,19 +132,29 @@ public class ClassLoaderProxy extends URLClassLoader {
     }
 
     public URL findResource(String name) {
+        URL url = super.findResource(name);
+        if (url!=null)  return url;
+
         for (ClassLoaderFacade classLoader : facadeSurrogates) {
-            URL url = classLoader.findResource(name);
+            url = classLoader.findResourceDirect(name);
             if (url!=null) {
                 return url;
             }
         }
         for (ClassLoader classLoader : surrogates) {
-            URL url = classLoader.getResource(name);
+            url = classLoader.getResource(name);
             if (url!=null) {
                 return url;
             }
         }
+        return null;
+    }
 
+    /**
+     * Works like {@link #findResource(String)} but only looks at
+     * this module, without delegating to ancestors.
+     */
+    public URL findResourceDirect(String name) {
         return super.findResource(name);
     }
 

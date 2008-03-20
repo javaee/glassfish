@@ -144,17 +144,30 @@ final class ClassLoaderFacade extends URLClassLoader {
         } 
         throw new ClassNotFoundException(name);        
     }
-*/    
+*/
+
+    /**
+     * Tries to find a class from the {@link ModuleClassLoader} that this facade is wrapping,
+     * without doing further delegation to ancestors.
+     */
     Class getClass(String name) throws ClassNotFoundException {
         if (matchExportedPackage(name)) {
-            Class c = privateLoader.loadClass(name, false, false);
+            Class c = privateLoader.findClassDirect(name);
             classesLoaded++;
             return c;
         }
         return null;
         
     }
-            
+
+    /**
+     * Works like {@link #findResource(String)} but only looks at
+     * this module, without delegating to ancestors.
+     */
+    URL findResourceDirect(String name) {
+        return privateLoader.findResourceDirect(name);
+    }
+
     public void dumpState(PrintStream writer) {
         privateLoader.dumpState(writer);
         writer.println("Nb of classes loaded " + classesLoaded);
@@ -162,5 +175,6 @@ final class ClassLoaderFacade extends URLClassLoader {
     
     public String toString() {
         return super.toString() + " Facade for " + privateLoader.toString();
-    }            
+    }
+
 }
