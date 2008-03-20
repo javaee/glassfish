@@ -351,7 +351,8 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
             //then undeploy the application first.
             Properties undeployParam = new Properties();
             undeployParam.put(NAME, name);
-            commandRunner.doCommand("undeploy", undeployParam, report);
+            ActionReport subReport = report.addSubActionsReport();
+            commandRunner.doCommand("undeploy", undeployParam, subReport);
         }
     }
 }

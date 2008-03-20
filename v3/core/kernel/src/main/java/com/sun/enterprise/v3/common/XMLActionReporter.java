@@ -36,6 +36,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
 /**
  * Represents the action report as XML like this:
@@ -53,7 +54,10 @@ import org.w3c.dom.Element;
  * <br>&nbsp;&nbsp;&nbsp;&nbsp;&lt;message-part message="xxx" type="xxx">
  * <br>&nbsp;&nbsp;&nbsp;&nbsp;...
  * <br>&nbsp;&nbsp;&nbsp;&nbsp;&lt;/message-part>
- * <br>&nbsp;&nbsp;&lt>/message-part>
+ * <br>&nbsp;&nbsp;&lt/message-part>
+ * <br>&nbsp;&nbsp;&lt;action-report ...> [for subactions]
+ * <br>&nbsp;&nbsp;...
+ * <br>&nbsp;&nbsp;&lt;/action-report>
  * <br>&lt;/action-report>
  * </code>
  * 
@@ -69,19 +73,35 @@ public class XMLActionReporter extends ActionReporter {
 
             Document d = db.newDocument();
 
-            Element actionReport = d.createElement("action-report");
-            actionReport.setAttribute("description", actionDescription);
-            actionReport.setAttribute("exit-code", exitCode.name());
-            if (exception != null) {
-                actionReport.setAttribute("failure-cause", exception.getLocalizedMessage());
-            }
-            
-            writePart(actionReport, topMessage, null);
+            d.appendChild(writeActionReport(d, this));
             writeXML(d, os);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
         
+    }
+    
+    /**
+     * Creates a new Element representing the XML content describing an
+     * action report.  Invokes itself recursively to capture information
+     * about any subactions.
+     * @param owningDocument Document which will own all generated XML content
+     * @param report the ActionReporter to convert to XML content
+     * @return Element for the specified ActionReporter (and any sub-reports)
+     */
+    private Element writeActionReport(Document owningDocument, ActionReporter report) {
+        Element result = owningDocument.createElement("action-report");
+        result.setAttribute("description", report.actionDescription);
+        result.setAttribute("exit-code", report.getActionExitCode().name());
+        if (exception != null) {
+            result.setAttribute("failure-cause", exception.getLocalizedMessage());
+        }
+
+        writePart(result, report.getTopMessagePart(), null);
+        for (ActionReporter subReport : report.subActions) {
+            result.appendChild(writeActionReport(owningDocument, subReport));
+        }
+        return result;
     }
 
     @Override
@@ -101,7 +121,7 @@ public class XMLActionReporter extends ActionReporter {
         
         for (Map.Entry prop : part.getProps().entrySet()) {
             Element p = d.createElement("property");
-            messagePart.appendChild(d);
+            messagePart.appendChild(p);
             p.setAttribute("name", prop.getKey().toString());
             p.setAttribute("value", prop.getValue().toString());
         }
