@@ -47,6 +47,7 @@ import javax.management.loading.ClassLoaderRepository;
 
 
 /**
+    Wraps the MBeanServe so as to allow lazy-loading of AMX MBeans
  */
 public final class AppserverMBeanServer implements MBeanServer
 {
