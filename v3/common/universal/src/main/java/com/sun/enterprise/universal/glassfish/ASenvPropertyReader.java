@@ -68,7 +68,7 @@ public class ASenvPropertyReader {
      * unit test classes that are not running from an official installation.
      * @param installDir The Glassfish installation directory
      */
-    ASenvPropertyReader(File installDir)
+    public ASenvPropertyReader(File installDir)
     {
         try {
             this.installDir = installDir;
