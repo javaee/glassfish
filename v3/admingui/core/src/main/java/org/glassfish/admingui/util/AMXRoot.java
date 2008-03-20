@@ -123,6 +123,7 @@ public class AMXRoot {
             DomainRoot domainRoot = ProxyFactory.getInstance( mMBeanServer ).getDomainRoot();
             domainRoot.waitAMXReady();
 	    amxRoot = new AMXRoot(domainRoot);
+            HtmlAdaptor.registerHTMLAdaptor(mMBeanServer);
 	} 
 	return amxRoot;
     }
