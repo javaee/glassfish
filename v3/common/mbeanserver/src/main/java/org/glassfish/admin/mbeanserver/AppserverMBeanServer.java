@@ -152,7 +152,7 @@ public final class AppserverMBeanServer implements MBeanServer
         private void
     ensureAMXLoaded( final ObjectName objectName )
     {
-        if ( ! AMX_STARTED && objectName.getDomain().equals(AMX_DOMAIN) )
+        if ( ! AMX_STARTED && objectName != null && objectName.getDomain().equals(AMX_DOMAIN) )
         {
             ensureAMXLoaded();
         }
