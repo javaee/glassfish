@@ -37,7 +37,6 @@
 
     <sun:button id="uploadButton" text="$resource{i18n.button.OK}" 
         onClick="javascript: 
-            alert('in uploadButton');
             if (checkType(this, '#{typeId}', '#{extensionId}', '$resource{i18n.msg.JS.deploy.confirmType}')){
                 var result;
                 if(getSelectedValue('uploadRdBtn')=='client') {
@@ -96,12 +95,8 @@
 </sun:button>
 
 
-<sun:button id="cancelButton" text="AC$resource{i18n.button.Cancel}" primary="#{false}"  immediate="#{true}">
+<sun:button id="cancelButton" text="$resource{i18n.button.Cancel}" primary="#{false}"  immediate="#{true}">
     <!command
-println("appType = $pageSession{appType}");
-println("::::::cancelPage = #{cancelPage}");
-println("------------- redirect to ../$pageSession{cancelPage}?name=$pageSession{target}");
-            #redirect(page="../$pageSession{cancelPage}?name=$pageSession{target}");
-        redirect(page="../applications/webApplications.jsf");
+        redirect(page="../$pageSession{cancelPage}?name=$pageSession{target}");
     />
 </sun:button>

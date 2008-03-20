@@ -55,11 +55,7 @@
             <sun:button id="button1" text="$resource{i18n.button.Undeploy}" disabled="#{true}" primary="#{false}"
                     onClick="javascript: return submitAndDisable(this, '$resource{i18n.button.Processing}');">
                 <!command 
-println("-------- clientId=$pageSession{tableRowGroupId}");
-
                     getUIComponent(clientId="$pageSession{tableRowGroupId}", component=>$attribute{tableRowGroup}); 
-println("--------- tableRowGroup = ${tableRowGroup}");
-     
                     getSelectedSingleMapRows(TableRowGroup="$attribute{tableRowGroup}" selectedRows=>$attribute{selectedRows});
                     undeploy(selectedRows="${selectedRows}" appType="#{appType}");
                     navigate(page="#{listPageLink}");
