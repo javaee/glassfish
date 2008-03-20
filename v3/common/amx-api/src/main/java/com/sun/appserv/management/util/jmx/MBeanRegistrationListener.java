@@ -77,7 +77,7 @@ public abstract class MBeanRegistrationListener extends NotificationListenerBase
         final String name,
 	    final MBeanServerConnection conn,
 	    final ObjectName    constrain )
-		throws InstanceNotFoundException, IOException
+		throws IOException
 	{
 	    super( name, conn, JMXUtil.getMBeanServerDelegateObjectName() );
 	    mRegUnregFilter = constrain;
@@ -93,7 +93,7 @@ public abstract class MBeanRegistrationListener extends NotificationListenerBase
 	MBeanRegistrationListener(
         final String name,
         final MBeanServerConnection conn)
-		throws InstanceNotFoundException, IOException
+		throws IOException
 	{
 	    this( name, conn, (ObjectName)null );
 	}

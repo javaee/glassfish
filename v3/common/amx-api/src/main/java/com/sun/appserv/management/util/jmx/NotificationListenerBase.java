@@ -92,7 +92,7 @@ public abstract class NotificationListenerBase
         final String                name,
 	    final MBeanServerConnection conn,
 	    final ObjectName            pattern )
-		throws InstanceNotFoundException, IOException
+		throws IOException
 	{
 	    this( name, conn, pattern, null );
 	}
@@ -112,7 +112,7 @@ public abstract class NotificationListenerBase
 	    final MBeanServerConnection conn,
 	    final ObjectName            pattern,
 	    final NotificationFilter    filter )
-		throws InstanceNotFoundException, IOException
+		throws IOException
 	{
         mName           = name;
 	    mConn           = conn;
