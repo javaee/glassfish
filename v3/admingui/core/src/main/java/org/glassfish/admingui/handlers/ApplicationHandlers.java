@@ -1929,7 +1929,10 @@ public class ApplicationHandlers {
             module = amxRoot.getDomainConfig().getEJBModuleConfigMap().get(appName);
         }else
         if ("webApp".equals(appType)){
-            module = amxRoot.getDomainConfig().getWebModuleConfigMap().get(appName);
+            //V3: TP2 was using J2EEApplicaitonConfigMap() to be the web App
+            //module = amxRoot.getDomainConfig().getWebModuleConfigMap().get(appName);
+            
+            module = amxRoot.getDomainConfig().getJ2EEApplicationConfigMap().get(appName);
         }else
         if ("connector".equals(appType)){
             module = amxRoot.getDomainConfig().getRARModuleConfigMap().get(appName);
