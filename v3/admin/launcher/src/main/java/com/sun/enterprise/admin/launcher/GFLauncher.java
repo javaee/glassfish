@@ -78,6 +78,24 @@ public abstract class GFLauncher {
     ///////////////////////////////////////////////////////////////////////////
     abstract void internalLaunch() throws GFLauncherException;
 
+    // unit tests will want 'fake' so that the process is not really started.
+    enum LaunchType
+    {
+        normal, debug, trace, fake
+    }; 
+    
+    void setMode(LaunchType mode) {
+        this.mode = mode;
+    }
+    
+    LaunchType getMode() {
+        return mode;
+    }
+    
+    boolean isFakeLaunch() {
+        return mode == LaunchType.fake;
+    }
+    
     abstract List<File> getMainClasspath() throws GFLauncherException;
 
     abstract String getMainClass() throws GFLauncherException;
@@ -97,7 +115,15 @@ public abstract class GFLauncher {
         return startTime;
     }
     private void setup() throws GFLauncherException, MiniXmlParserException {
-        ASenvPropertyReader pr = new ASenvPropertyReader();
+        
+        ASenvPropertyReader pr;
+        if(isFakeLaunch()) {
+            pr = new ASenvPropertyReader(info.getInstallDir());
+        }
+        else {
+            pr = new ASenvPropertyReader();
+        }
+        
         asenvProps = pr.getProps();
         info.setup();
         MiniXmlParser parser = new MiniXmlParser(getInfo().getConfigFile(), getInfo().getInstanceName());
@@ -266,8 +292,6 @@ public abstract class GFLauncher {
         return list;
     }
 
-    
-
     private GFLauncherInfo info;
     private Map<String, String> asenvProps;
     private JavaConfig javaConfig;
@@ -279,6 +303,7 @@ public abstract class GFLauncher {
     private List<String> debugOptions;
     private List<String> commandLine;
     private long startTime;
+    private LaunchType mode = LaunchType.normal;
     private final static String JAVA_NATIVE_SYSPROP_NAME = "java.library.path";
 }
 

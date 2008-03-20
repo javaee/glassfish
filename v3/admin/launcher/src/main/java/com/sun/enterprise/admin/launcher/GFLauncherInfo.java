@@ -211,6 +211,19 @@ public class GFLauncherInfo {
         finalSetup();
     }
 
+    /**
+     * IMPORTANT:  These 2 methods are designed for use only by Unit Tests so we are
+     * not dependent on an installation.  Normally we figure out installDir from
+     * wher we are running from. 
+     */
+    void setInstallDir(File f) {
+        installDir = f;
+    }
+
+    File getInstallDir() {
+        return installDir;
+    }
+            
     private void setupFromArgs() {
         argsMap = ArgumentManager.argsToMap(argsRaw);
 
@@ -263,7 +276,8 @@ public class GFLauncherInfo {
     }
 
     private void finalSetup() throws GFLauncherException {
-        installDir = GFLauncherUtils.getInstallDir();
+        if(installDir == null)
+            installDir = GFLauncherUtils.getInstallDir();
 
         if (!GFLauncherUtils.safeIsDirectory(installDir)) {
             throw new GFLauncherException("noInstallDir", installDir);

@@ -69,6 +69,9 @@ class GFDomainLauncher extends GFLauncher {
     }
 
     private void launchExternal() throws GFLauncherException, MiniXmlParserException {
+        if(isFakeLaunch())
+            return;
+        
         List<String> cmds = getCommandLine();
         ProcessBuilder pb = new ProcessBuilder(cmds);
 
@@ -116,7 +119,7 @@ class GFDomainLauncher extends GFLauncher {
         File f = new File(getEnvProps().get(INSTALL_ROOT_PROPERTY));
         f = new File(f, BOOTSTRAP_JAR_RELATIVE_PATH);
 
-        if (!f.exists())
+        if (!f.exists() && !isFakeLaunch())
             throw new GFLauncherException("nobootjar", f.getPath());
 
         list.add(GFLauncherUtils.absolutize(f));
