@@ -680,6 +680,8 @@ public interface DomainConfig
 	public void             removeMailResourceConfig( String jndiName );
 	
 	/**
+        Glassfish V3 prefers {@link #getApplicationConfigMap}.
+        
 		@return Map, keyed by name of {@link J2EEApplicationConfig}
 		@see #getEJBModuleConfigMap
 		@see #getWebModuleConfigMap
@@ -688,8 +690,24 @@ public interface DomainConfig
 		@see #getLifecycleModuleConfigMap
 		@see #getConnectorModuleConfigMap
 		@see #getExtensionModuleConfigMap
+        @deprecated
 	 */
 	public Map<String,J2EEApplicationConfig>			getJ2EEApplicationConfigMap();
+    
+    
+	/**
+		@return Map, keyed by name of {@link J2EEApplicationConfig}
+		@see #getEJBModuleConfigMap
+		@see #getWebModuleConfigMap
+		@see #getAppClientModuleConfigMap
+		@see #getRARModuleConfigMap
+		@see #getLifecycleModuleConfigMap
+		@see #getConnectorModuleConfigMap
+		@see #getExtensionModuleConfigMap
+		@see #getJ2EEApplicationConfigMap
+        @since Appserver V3
+	 */
+	public Map<String,ApplicationConfig>    getApplicationConfigMap();
 	
 	
 	/**

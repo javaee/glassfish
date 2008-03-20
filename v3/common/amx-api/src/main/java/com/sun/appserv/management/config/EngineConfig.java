@@ -45,6 +45,7 @@ import com.sun.appserv.management.base.Container;
 
 /**
  * Config AMX MBean for Engine's config
+ * @since Glassfish V3
  * 
  */
 public interface EngineConfig extends Description, PropertiesAccess

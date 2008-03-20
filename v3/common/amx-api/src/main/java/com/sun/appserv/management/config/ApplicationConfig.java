@@ -43,6 +43,7 @@ import com.sun.appserv.management.base.Container;
 
 /**
 	 Configuration for the &lt;web-module&gt; element.
+     @since Glassfish V3
 */
 
 public interface ApplicationConfig

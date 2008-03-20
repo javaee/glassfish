@@ -425,15 +425,15 @@ public final class XTypes
 	 */
 	public final static String	SESSION_CONFIG		=  P + "SessionConfig";
 	
-        /**
-                ID for {@link com.sun.appserv.management.config.ApplicationConfig}
-         */
-        public final static String      APPLICATION_CONFIG                       =  P + "ApplicationConfig";
+    /**
+            ID for {@link com.sun.appserv.management.config.ApplicationConfig}
+     */
+    public final static String      APPLICATION_CONFIG                       =  P + "ApplicationConfig";
 
-        /**
-                ID for {@link com.sun.appserv.management.config.EngineConfig}
-         */
-        public final static String      ENGINE_CONFIG                       =  P + "EngineConfig";
+    /**
+            ID for {@link com.sun.appserv.management.config.EngineConfig}
+     */
+    public final static String      ENGINE_CONFIG                       =  P + "EngineConfig";
 
 	
 	/**
