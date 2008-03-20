@@ -81,8 +81,6 @@ import com.sun.appserv.management.config.RARModuleConfig;
 import com.sun.appserv.management.config.AppClientModuleConfig;
 import com.sun.appserv.management.config.LifecycleModuleConfig;
 import com.sun.appserv.management.config.CustomMBeanConfig;
-import com.sun.appserv.management.config.JavaConfig;
-//import com.sun.appserv.management.helper.LBConfigHelper;
 import com.sun.appserv.management.util.misc.GSetUtil; 
 
 import com.sun.appserv.management.client.ProxyFactory;
@@ -91,6 +89,7 @@ import javax.management.MBeanServer;
 
 
 import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;  
+import javax.management.MBeanServerConnection;
 
 
 public class AMXRoot {
@@ -110,7 +109,6 @@ public class AMXRoot {
         System.out.println("=========== In AMX Root constructor, DomainRoot  = " + dd);
         domainRoot = dd;
         domainConfig = domainRoot.getDomainConfig();
-        System.out.println("========= getDomainConfig() returns " + domainConfig);
         j2eeDomain = domainRoot.getJ2EEDomain();
         monitoringRoot = domainRoot.getMonitoringRoot();
         queryMgr = domainRoot.getQueryMgr();
@@ -123,15 +121,25 @@ public class AMXRoot {
 	if (amxRoot == null){
     	    MBeanServer mMBeanServer = ManagementFactory.getPlatformMBeanServer();
             DomainRoot domainRoot = ProxyFactory.getInstance( mMBeanServer ).getDomainRoot();
-            System.out.println("=============== domainRoot = " + domainRoot);
-            System.out.println("============== domainRoot name = " + domainRoot.getAppserverDomainName());
             domainRoot.waitAMXReady();
 	    amxRoot = new AMXRoot(domainRoot);
-            System.out.println("========== amxRoot = " + amxRoot);
-        
 	} 
 	return amxRoot;
     }
+    /**
+     * Returns the ${link MBeanServerConnection} for remote use. In the local
+     * case it just returns the MBeanServer which is the super interface of 
+     * MBeanServerConnection. Using the returned object, the calling code can
+     * call general MBeanServerConnection methods.
+     * @return an instance of javax.management.MBeanServerConnection
+     */
+    public final static MBeanServerConnection getMBeanServerConnection() {
+        return (ManagementFactory.getPlatformMBeanServer()); 
+        //for now, ideally, this should be got from AppserverConnectionSource
+    }
+    
+    
+    
     public  DomainConfig getDomainConfig() {
         /*
         ConfigConfig config = getConfig("server-config");
