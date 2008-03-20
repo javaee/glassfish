@@ -1,8 +1,8 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
- * 
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
- * 
+ *
+ * Copyright 2008 Sun Microsystems, Inc. All rights reserved.
+ *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
@@ -10,7 +10,7 @@
  * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
  * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
- * 
+ *
  * When distributing the software, include this License Header Notice in each
  * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
  * Sun designates this particular file as subject to the "Classpath" exception
@@ -19,9 +19,9 @@
  * Header, with the fields enclosed by brackets [] replaced by your own
  * identifying information: "Portions Copyrighted [year]
  * [name of copyright owner]"
- * 
+ *
  * Contributor(s):
- * 
+ *
  * If you wish your version of this file to be governed by only the CDDL or
  * only the GPL Version 2, indicate your decision by adding "[Contributor]
  * elects to include this software in this distribution under the [CDDL or GPL
@@ -35,7 +35,7 @@
  */
 
 /*
- *  $Id: PropertiesTokenizer.java,v 1.3 2005/12/25 03:46:55 tcfujii Exp $
+ *  ParamTokenizer.java
  */
 
 package com.sun.enterprise.v3.admin;
@@ -44,7 +44,7 @@ import com.sun.enterprise.util.LocalStringManagerImpl;
 import java.util.ListIterator;
 
 /**
- * This Properties Tokenizer class allows CLI command to break strings into tokens.
+ * This Parameter Tokenizer class allows CLI command to break strings into tokens.
  * The tokenizer checks for the escape characters and the quotes to determine 
  * the tokens.
  * Consider the following examples:
@@ -85,9 +85,9 @@ import java.util.ListIterator;
  * </li> 
  * @author  Jane Young
  */
-public class PropertiesTokenizer 
+public class ParamTokenizer 
 {
-    public final static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(PropertiesTokenizer.class);
+    public final static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(ParamTokenizer.class);
     private final static char    ESCAPE_CHAR  = '\\';
     private final static String  QUOTE_STRING = "\"";
     private int size = 0;
@@ -100,7 +100,7 @@ public class PropertiesTokenizer
      *  @param stringToken - the string to tokenize.
      *  @param delimiter - the delimiter to tokenize.
      */
-    public PropertiesTokenizer(String stringToken, String delimiter)
+    public ParamTokenizer(String stringToken, String delimiter)
     {
         if (!checkForMatchingQuotes(stringToken))
             throw new IllegalArgumentException(localStrings.getLocalString("UnclosedString", "Unclosed string"));
@@ -108,7 +108,7 @@ public class PropertiesTokenizer
         if (stringToken != null && delimiter != null)
             tokenIterator = populateList(stringToken, delimiter);
         else
-            throw new NullPointerException(localStrings.getLocalString("CouldNotCreatePropertiesTokenizer", "Couldn't create PropertiesTokenizer"));
+            throw new NullPointerException(localStrings.getLocalString("CouldNotCreateParamTokenizer", "Couldn't create ParamTokenizer"));
     }
 
     /**
@@ -343,10 +343,10 @@ public class PropertiesTokenizer
     public static void main(String[] args) 
     {
         try {
-            final PropertiesTokenizer ct = new PropertiesTokenizer(args[0], ":");
+            final ParamTokenizer ct = new ParamTokenizer(args[0], ":");
             while (ct.hasMoreTokens()) {
                 final String nameAndvalue = ct.nextToken();
-                final PropertiesTokenizer ct2 = new PropertiesTokenizer(nameAndvalue, "=");
+                final ParamTokenizer ct2 = new ParamTokenizer(nameAndvalue, "=");
                 System.out.println("+++++ ct2 tokens = " + ct2.countTokens() + " +++++");
                 if (ct2.countTokens() == 1)
                 {

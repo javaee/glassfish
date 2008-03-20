@@ -209,12 +209,7 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
 
             // clean up any left over repository files
             FileUtils.whack(new File(env.getApplicationRepositoryPath(), name));
-
-            // this part needs to be cleaned up when we have a way 
-            // to set default value for optional params automatically
-            if (parameters.getProperty(ENABLED) == null) {
-                parameters.put(ENABLED, enabled);
-            }
+            parameters.put(ENABLED, enabled);
 
             File source = new File(archive.getURI().getSchemeSpecificPart());
             boolean isDirectoryDeployed = true;

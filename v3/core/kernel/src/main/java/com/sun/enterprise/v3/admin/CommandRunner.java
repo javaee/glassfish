@@ -1,24 +1,37 @@
 /*
- * The contents of this file are subject to the terms 
- * of the Common Development and Distribution License 
- * (the License).  You may not use this file except in
- * compliance with the License.
- * 
- * You can obtain a copy of the license at 
- * https://glassfish.dev.java.net/public/CDDLv1.0.html or
- * glassfish/bootstrap/legal/CDDLv1.0.txt.
- * See the License for the specific language governing 
- * permissions and limitations under the License.
- * 
- * When distributing Covered Code, include this CDDL 
- * Header Notice in each file and include the License file 
- * at glassfish/bootstrap/legal/CDDLv1.0.txt.  
- * If applicable, add the following below the CDDL Header, 
- * with the fields enclosed by brackets [] replaced by
- * you own identifying information: 
- * "Portions Copyrighted [year] [name of copyright owner]"
- * 
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+ *
  * Copyright 2008 Sun Microsystems, Inc. All rights reserved.
+ *
+ * The contents of this file are subject to the terms of either the GNU
+ * General Public License Version 2 only ("GPL") or the Common Development
+ * and Distribution License("CDDL") (collectively, the "License").  You
+ * may not use this file except in compliance with the License. You can obtain
+ * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
+ * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
+ * language governing permissions and limitations under the License.
+ *
+ * When distributing the software, include this License Header Notice in each
+ * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
+ * Sun designates this particular file as subject to the "Classpath" exception
+ * as provided by Sun in the GPL Version 2 section of the License file that
+ * accompanied this code.  If applicable, add the following below the License
+ * Header, with the fields enclosed by brackets [] replaced by your own
+ * identifying information: "Portions Copyrighted [year]
+ * [name of copyright owner]"
+ *
+ * Contributor(s):
+ *
+ * If you wish your version of this file to be governed by only the CDDL or
+ * only the GPL Version 2, indicate your decision by adding "[Contributor]
+ * elects to include this software in this distribution under the [CDDL or GPL
+ * Version 2] license."  If you don't indicate a single choice of license, a
+ * recipient has the option to distribute your version of this file under
+ * either the CDDL, the GPL Version 2 or to extend the choice of license to
+ * its licensees as provided above.  However, if you add GPL Version 2 code
+ * and therefore, elected the GPL Version 2 license, then the option applies
+ * only if the new code is made subject to such option by the copyright
+ * holder.
  */
 package com.sun.enterprise.v3.admin;
 
@@ -29,6 +42,7 @@ import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Properties;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.glassfish.api.ActionReport;
@@ -122,17 +136,14 @@ public class CommandRunner {
                         return value;
                     }
                 }
-                String paramValueStr = getPropertiesValue(parameters, getParamName(param, target), true);
-                Object paramVal = null;
-                try {
-                    paramVal = getParamValue(type, paramValueStr);
-                } catch (Exception e) {
-                    logger.severe(e.getMessage());
-                    report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-                    report.setMessage(e.getMessage());
-                    report.setFailureCause(e);
+                String paramValueStr = getParamValueString(parameters, param,
+                                                           target);
+
+                if (paramValueStr != null) {
+                    return convertStringToObject(type, paramValueStr);
                 }
-                return paramVal;
+                //return default value
+                return getParamField(component, target);
             }
         };
 
@@ -216,7 +227,15 @@ public class CommandRunner {
         return paramDesc;        
     }
 
-    protected String getParamName(Param param, AnnotatedElement annotated) {
+        /**
+         * get the Param name.  First it checks if the annotated Param
+         * includes a the name, if not then get the name from the field.
+         *
+         * @param - Param class annotation
+         * @annotated - annotated element
+         * @returns the name of the param
+         */
+    String getParamName(Param param, AnnotatedElement annotated) {
         if (param.name().equals("")) {
             if (annotated instanceof Field) {
                 return ((Field) annotated).getName();
@@ -229,14 +248,96 @@ public class CommandRunner {
         }
         return "";
     }
-    
-    Object getParamValue(Class type, String paramValStr)  {
+
+
+        /**
+         * get the param value.  checks if the param (option) value
+         * is defined on the command line (URL passed by the client)
+         * by calling getPropertiesValue method.  If not, then check
+         * for the shortName.  If param value is not given by the
+         * shortName (short option) then if the default valu is
+         * defined.
+         * 
+         * @param parameters - parameters from the command line.
+         * @param param - from the annotated Param
+         * @param target - annotated element
+         *
+         * @returns param value
+         */
+    String getParamValueString(final Properties parameters,
+                               final Param param,
+                               final AnnotatedElement target) {
+        String paramValueStr = getPropertiesValue(parameters,
+                                                  getParamName(param, target),
+                                                  true);
+        if (paramValueStr == null) {
+                //check for shortName
+            paramValueStr = parameters.getProperty(param.shortName());
+        }
+            //if paramValueStr is still null, then check to
+            //see if the defaultValue is defined
+        if (paramValueStr == null) {
+            final String defaultValue = param.defaultValue();
+            paramValueStr = (defaultValue.equals(""))?null:defaultValue;
+        }
+        return paramValueStr;
+    }
+
+
+        /**
+         * get the value of the field.  This value is defined in the
+         * annotated Param declaration.  For example:
+         * <code>
+         * @Param(optional=true)
+         * String name="server"
+         * </code>
+         * The Field, name's value, "server" is returned.
+         *
+         * @param component - command class object
+         * @param annotated - annotated element
+         *
+         * @returns the annotated Field value
+         */
+    Object getParamField(final Object component,
+                         final AnnotatedElement annotated) {
+        try {
+            if (annotated instanceof Field) {
+                Field field = (Field)annotated;
+                field.setAccessible(true);
+                return ((Field) annotated).get(component);
+            }
+        }
+        catch (Exception e) {
+                //unable to get the field value, may not be defined
+                //return null instead.
+            return null;
+        }
+        return null;
+    }
+
+        /**
+         * convert the String parameter to the specified type.
+         * For example if type is Properties and the String
+         * value is: name1=value1:name2=value2:...
+         * then this api will convert the String to a Properties
+         * class with the values {name1=name2, name2=value2, ...}
+         *
+         * @param type - the type of class to convert
+         * @param paramValStr - the String value to convert
+         *
+         * @return Object
+         */
+    Object convertStringToObject(Class type, String paramValStr)  {
         Object paramValue = paramValStr;
         if (type.isAssignableFrom(String.class)) {
            paramValue = paramValStr;
-       } else if (type.isAssignableFrom(Properties.class)) {
-           paramValue = parseProperties(paramValStr);
-       }
+        } else if (type.isAssignableFrom(Properties.class)) {
+           paramValue = convertStringToProperties(paramValStr);
+        } else if (type.isAssignableFrom(List.class)) {
+           paramValue = convertStringToList(paramValStr);
+        } else if (type.isAssignableFrom((new String[]{}).getClass())) {
+           paramValue = convertStringToStringArray(paramValStr);
+        }
        return paramValue;
     }
 
@@ -331,16 +432,25 @@ public class CommandRunner {
     private boolean ok(String s) {
         return s != null && s.length() > 0;
     }
-    
-    Properties parseProperties(String propsString) {
+
+        /**
+         * convert a String with the following format to Properties:
+         * name1=value1:name2=value2:name3=value3:...
+         * The Properties object contains elements:
+         * {name1=value1, name2=value2, name3=value3, ...}
+         *
+         * @param listString - the String to convert
+         * @return Properties containing the elements in String
+         */
+    Properties convertStringToProperties(String propsString) {
         final Properties properties = new Properties();
         if (propsString != null) {
-            PropertiesTokenizer stoken = new PropertiesTokenizer(propsString, ":");
+            ParamTokenizer stoken = new ParamTokenizer(propsString, ":");
             while (stoken.hasMoreTokens()) {
                 String token = stoken.nextToken();
                 if (token.indexOf("=")==-1)
                     continue;
-                final PropertiesTokenizer nameTok = new PropertiesTokenizer(token, "=");
+                final ParamTokenizer nameTok = new ParamTokenizer(token, "=");
                 if (nameTok.countTokens() == 2) {
                     properties.setProperty(nameTok.nextTokenWithoutEscapeAndQuoteChars(),
                                        nameTok.nextTokenWithoutEscapeAndQuoteChars());
@@ -352,5 +462,44 @@ public class CommandRunner {
         return properties;
     }
 
+        /**
+         * convert a String with the following format to List<String>:
+         * string1:string2:string3:...
+         * The List object contains elements: string1, string2, string3, ...
+         *
+         * @param listString - the String to convert
+         * @return List containing the elements in String
+         */
+    List<String> convertStringToList(String listString) {
+        List<String> list = new java.util.ArrayList();
+        if (listString != null) {
+            final ParamTokenizer ptoken = new ParamTokenizer(listString, ":");
+            while (ptoken.hasMoreTokens()) {
+                String token = ptoken.nextTokenWithoutEscapeAndQuoteChars();
+                list.add(token);
+            }
+        }
+        return list;
+    }
+
+        /**
+         * convert a String with the following format to String Array:
+         * string1,string2,string3,...
+         * The String Array contains: string1, string2, string3, ...
+         *
+         * @param arrayString - the String to convert
+         * @returns String[] containing the elements in String
+         */
+    String[] convertStringToStringArray(String arrayString) {
+        final ParamTokenizer paramTok = new ParamTokenizer(arrayString,",");
+        String[] strArray = new String[paramTok.countTokens()];
+        int ii=0;
+        while (paramTok.hasMoreTokens()) 
+        {
+            strArray[ii++] = paramTok.nextTokenWithoutEscapeAndQuoteChars();
+        }
+        return strArray;
+    }
+    
 }
 

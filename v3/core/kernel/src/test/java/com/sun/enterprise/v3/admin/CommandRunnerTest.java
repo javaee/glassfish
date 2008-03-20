@@ -5,6 +5,9 @@ import org.junit.Test;
 import org.junit.Before;
 import com.sun.enterprise.v3.admin.CommandRunner;
 import java.util.Properties;
+import java.util.List;
+import org.glassfish.api.Param;
+import java.lang.reflect.AnnotatedElement;
 
 
 /**
@@ -43,13 +46,13 @@ public class CommandRunnerTest {
     }
 
     @Test
-    public void parsePropertiesTest() {
+    public void convertStringToPropertiesTest() {
         String propsStr = "prop1=valA:prop2=valB:prop3=valC";
         Properties propsExpected = new Properties();
         propsExpected.put("prop1", "valA");
         propsExpected.put("prop2", "valB");
         propsExpected.put("prop3", "valC");
-        Properties propsActual = cr.parseProperties(propsStr);
+        Properties propsActual = cr.convertStringToProperties(propsStr);
         assertEquals(propsExpected, propsActual);
     }
     
@@ -59,27 +62,122 @@ public class CommandRunnerTest {
         Properties propsExpected = new Properties();
         propsExpected.put("connectionAttributes", ";create\\=true");
         Properties propsActual = null;
-        propsActual = cr.parseProperties(propsStr);
+        propsActual = cr.convertStringToProperties(propsStr);
         assertEquals(propsExpected, propsActual);
     }
     
     @Test
-    public void getParamValueTest() throws Exception {
+    public void convertStringToObjectTest() throws Exception {
         String paramValueStr = "prop1=valA:prop2=valB:prop3=valC";
-        Object paramValActual = cr.getParamValue(String.class, paramValueStr);
+        Object paramValActual = cr.convertStringToObject(String.class, paramValueStr);
         Object paramValExpected =  "prop1=valA:prop2=valB:prop3=valC";
         assertEquals("String type", paramValExpected, paramValActual);
   
-        paramValActual = cr.getParamValue(Properties.class, paramValueStr);
+        paramValActual = cr.convertStringToObject(Properties.class, paramValueStr);
         paramValExpected = new Properties();        
         ((Properties)paramValExpected).put("prop1", "valA");
         ((Properties)paramValExpected).put("prop2", "valB");
         ((Properties)paramValExpected).put("prop3", "valC");
         assertEquals("Properties type", paramValExpected, paramValActual);
+
+        paramValueStr = "server1:server2:server3";
+        paramValActual = cr.convertStringToObject(List.class, paramValueStr);
+        List<String> paramValueList = new java.util.ArrayList();
+        paramValueList.add("server1");
+        paramValueList.add("server2");
+        paramValueList.add("server3");
+        assertEquals("List type", paramValueList, paramValActual);
+
+        paramValueStr = "server1,server2,server3";
+        paramValActual = cr.convertStringToObject((new String[]{}).getClass(),
+                                                  paramValueStr);
+        String[] strArray = new String[3];
+        strArray[0] = "server1";
+        strArray[1] = "server2";
+        strArray[2] = "server3";
+        assertEquals("String Array type", strArray, (String[])paramValActual);
+    }
+
+    @Test
+    public void getParamValueStringTest() {
+        try {
+            DummyCommand dc = new DummyCommand();
+            Class<?> cl = dc.getClass();
+            AnnotatedElement ae = (AnnotatedElement)cl.getDeclaredField("foo");
+            Param param = ae.getAnnotation(Param.class);
+            Properties props = new Properties();
+            props.put("foo", "true");
+            String val = cr.getParamValueString(props, param, ae);
+            assertEquals("val should be true", "true", val);
+
+            ae = (AnnotatedElement)cl.getDeclaredField("bar");
+            param = ae.getAnnotation(Param.class);
+            val = cr.getParamValueString(props, param, ae);
+            assertEquals("val should be false", "false", val);
+
+            ae = (AnnotatedElement)cl.getDeclaredField("hello");
+            param = ae.getAnnotation(Param.class);
+            val = cr.getParamValueString(props, param, ae);
+            assertEquals("val should be null", null, val);
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+    
+    @Test
+    public void getParamFieldTest() {
+        try {
+            DummyCommand dc = new DummyCommand();
+            Class<?> cl = dc.getClass();
+            AnnotatedElement ae = (AnnotatedElement)cl.getDeclaredField("hello");
+            Object obj = cr.getParamField(dc, ae);
+            assertEquals("obj should be world", "world", (String)obj);
+            ae = (AnnotatedElement)cl.getDeclaredField("prop");
+            obj = cr.getParamField(dc, ae);
+            assertEquals("obj should be null", null, obj);            
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    @Test
+    public void convertStringToListTest() {
+        String listStr = "server1\\:server2:\\\\server3:server4";
+        List<String> listExpected = new java.util.ArrayList();
+        listExpected.add("server1:server2");
+        listExpected.add("\\server3");
+        listExpected.add("server4");
+        List<String> listActual = cr.convertStringToList(listStr);
+        assertEquals(listExpected, listActual);
+    }
+
+    @Test
+    public void convertStingToStringArrayTest() {
+        String strArray = "server1\\,server2,\\\\server3,server4";
+        String[] strArrayExpected = new String[3];
+        strArrayExpected[0]="server1,server2";
+        strArrayExpected[1]="\\server3";
+        strArrayExpected[2]="server4";
+        String[] strArrayActual = cr.convertStringToStringArray(strArray);
+        assertEquals(strArrayExpected, strArrayActual);
     }
     
     @Before
     public void setup() {
         cr = new CommandRunner();
+    }
+
+        //mock-up DummyCommand object
+    public class DummyCommand {
+        @Param(name="foo")
+        String foo;
+        @Param(name="bar", defaultValue="false")
+        String bar;
+        @Param
+        String hello="world";
+        @Param
+        Properties prop;
     }
 }
