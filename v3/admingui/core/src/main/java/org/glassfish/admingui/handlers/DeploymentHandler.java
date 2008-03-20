@@ -96,6 +96,7 @@ public class DeploymentHandler {
      protected static void deploy(String[] targets, Properties deploymentProps, String location,  HandlerContext handlerCtx) throws Exception {
             
      	deploymentProps.setProperty(DFDeploymentProperties.FORCE, "false");
+        deploymentProps.setProperty(DFDeploymentProperties.DEFAULT_UPLOAD, "false");
         String appType = deploymentProps.getProperty("appType");
         
         deploymentProps.remove("appType");
@@ -197,11 +198,13 @@ public class DeploymentHandler {
              String origPath = (String) handlerCtx.getInputValue("origPath");
              String appName = (String) handlerCtx.getInputValue("appName");
              Properties deploymentProps = new Properties();
-             //If we are redeploying a web app, we want to preserve context root. 
-             WebModuleConfig module = AMXRoot.getInstance().getDomainConfig().getWebModuleConfigMap().get(appName);
-	     if (module != null){
-                deploymentProps.setProperty(DFDeploymentProperties.CONTEXT_ROOT, ((WebModuleConfig) module).getContextRoot());
-             }
+             //If we are redeploying a web app, we want to preserve context root.
+             //TODO TP3:  need to preserve context root.
+//             WebModuleConfig module = AMXRoot.getInstance().getDomainConfig().getWebModuleConfigMap().get(appName);
+//	     if (module != null){
+//                deploymentProps.setProperty(DFDeploymentProperties.CONTEXT_ROOT, ((WebModuleConfig) module).getContextRoot());
+//             }
+             deploymentProps.setProperty(DFDeploymentProperties.DEFAULT_UPLOAD, "false");
              deploymentProps.setProperty(DFDeploymentProperties.ARCHIVE_NAME, origPath);
              deploymentProps.setProperty(DFDeploymentProperties.FORCE, "true");
              deploymentProps.setProperty(DFDeploymentProperties.NAME, appName);
