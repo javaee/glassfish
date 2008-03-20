@@ -48,6 +48,12 @@
             <version>2.0-SNAPSHOT</version>
 	    <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>org.glassfish.common</groupId>
+            <artifactId>glassfish-mbeanserver</artifactId>
+            <version>1.0</version>
+	    <scope>provided</scope>
+        </dependency>
         
         <dependency>
             <groupId>org.glassfish.core</groupId>
