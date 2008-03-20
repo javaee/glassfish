@@ -74,6 +74,7 @@ final class StartAMX
     private volatile ObjectName mAMXLoaderObjectName;
     private final AMXConfigRegistrar mConfigRegistrar;
     private final MBeanServer   mMBeanServer;
+    private final J2EELoader  mJ2EELoader;
     
    // private volatile Registry mRmiRegistry= null;
    
@@ -93,6 +94,8 @@ final class StartAMX
     {
         mMBeanServer = mbs;
         mConfigRegistrar= registrar;
+        
+        mJ2EELoader = new J2EELoader(mbs);
     }
     
         public static synchronized StartAMX
@@ -120,6 +123,9 @@ final class StartAMX
     {
         // loads the high-level AMX MBeans, like DomainRoot, QueryMgr, etc
         mAMXLoaderObjectName = LoadAMX.loadAMX( mMBeanServer );
+        
+        // do this before loading any ConfigBeans so that it will auto-sync
+        mJ2EELoader.start();
         
         // load config MBeans
         mConfigRegistrar.getAMXConfigLoader().start( mMBeanServer );

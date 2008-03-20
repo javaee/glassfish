@@ -62,6 +62,17 @@ public final class AMXConfigLoader
         mPendingConfigBeans.add( cb );
     }
 
+        private static AMXConfigInfo
+    getAMXConfigInfo( final ConfigBean cb )
+    {
+        final Class<? extends ConfigBeanProxy> theClass = cb.getProxyType();
+        final AMXConfigInfo amxConfigInfo = theClass.getAnnotation( AMXConfigInfo.class );
+        if ( amxConfigInfo == null )
+        {
+            throw new IllegalArgumentException( "ConfigBean has no @AMXConfigInfo: " + theClass.getName() );
+        }
+        return amxConfigInfo;
+    }
 
      /**
         Internal nodes that don't get registered as MBeans throw a small monkey wrench
@@ -82,18 +93,13 @@ public final class AMXConfigLoader
             final ObjectName parentObjectName    = parent.getObjectName();
             if ( parentObjectName == null )
             {
-                // if parent is an internal node only, try its parent
-                final Class<? extends ConfigBeanProxy> parentClass = parent.getProxyType();
-                final AMXConfigInfo amxConfigInfo = parentClass.getAnnotation( AMXConfigInfo.class );
-                if ( amxConfigInfo == null )
-                {
-                    throw new IllegalArgumentException( "ConfigBean has no @AMXConfigInfo: " + parentClass.getName() );
-                }
+                final AMXConfigInfo amxConfigInfo = getAMXConfigInfo( parent );
                 
                 //debug( "amxInterface() for " + parent.getProxyType().getName() + " = " + amxConfigInfo.amxInterface().getName() );
                 final AMXConfigInfoResolver resolver = new AMXConfigInfoResolver(amxConfigInfo);
                 if ( resolver.amxInterface() == AMXConfigVoid.class )
                 {
+                    // parent is an internal node only, try its parent
                     parent = getActualParent( parent );
                 }
             }
@@ -256,16 +262,6 @@ public final class AMXConfigLoader
         return objectName;
     }
     
-        private AMXConfigInfo
-    getAMXConfigInfo( final ConfigBean cb )
-    {
-        final Class<? extends ConfigBeanProxy> cbClass = cb.getProxyType();
-        
-        final AMXConfigInfo amxConfigInfo = cbClass.getAnnotation( AMXConfigInfo.class );
-        
-        return amxConfigInfo;
-    }
-    
          private AMXMBeanMetadata
     getAMXMBeanMetadata( final ConfigBean cb )
     {
@@ -304,10 +300,6 @@ public final class AMXConfigLoader
         }
         
         final AMXConfigInfo amxConfigInfo = getAMXConfigInfo( cb );
-        if ( amxConfigInfo == null )
-        {
-            throw new IllegalArgumentException( "ConfigBean has no @AMXConfigInfo: " + cbClass.getName() );
-        }
         
         // don't process internal nodes like <configs>, <resources>, etc; these contain
         // nothing but child nodes.  Such nodes use AMXConfigVoid.
@@ -492,14 +484,14 @@ public final class AMXConfigLoader
         if ( parent != null )
         {
             final ObjectName parentObjectName = parent.getObjectName();
-            
             if ( parentObjectName != null )
             {
                 domain = parentObjectName.getDomain();
                 
                 // a child's ObjectName is parentJ2EEType=parentName,<all other parent properties>
                 final String ancestorProps = Util.getAdditionalProps( parentObjectName );
-                final String parentProp     = info.omitAsAncestorInChildObjectName() ? "" : Util.getSelfProp( parentObjectName );
+                final AMXConfigInfo parentAMXConfigInfo = getAMXConfigInfo(parent);
+                final String parentProp = parentAMXConfigInfo.omitAsAncestorInChildObjectName() ? "" : Util.getSelfProp( parentObjectName );
                 
                 parentProps = Util.concatenateProps( parentProp, ancestorProps );
             }
@@ -509,6 +501,7 @@ public final class AMXConfigLoader
         final String allProps = Util.concatenateProps( requiredProps, parentProps );
         
         final ObjectName objectName = Util.newObjectName( domain, allProps );
+
         return objectName;
     }
 }
