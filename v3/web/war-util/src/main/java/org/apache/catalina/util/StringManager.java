@@ -60,14 +60,8 @@ import java.util.ResourceBundle;
 
 public class StringManager {
 
-    /**
-     * The ResourceBundle for this StringManager.
-     */
-
-    private ResourceBundle bundle;
-
     // START SJSAS 6412710
-    private HashMap<Locale, ResourceBundle> bundles =
+    private final HashMap<Locale, ResourceBundle> bundles =
         new HashMap<Locale, ResourceBundle>(5);
     private String bundleName = null;
     // END SJSAS 6412710
@@ -89,24 +83,6 @@ public class StringManager {
         // START SJSAS 6412710
         this.bundleName = packageName + ".LocalStrings";
         // END SJSAS 6412710
-        try {
-            bundle = ResourceBundle.getBundle(bundleName);
-            // START SJSAS 6412710
-            bundles.put(Locale.getDefault(), bundle);
-            // END SJSAS 6412710
-            return;
-        } catch( MissingResourceException ex ) {
-            // Try from the current loader ( that's the case for trusted apps )
-            ClassLoader cl=Thread.currentThread().getContextClassLoader();
-            if( cl != null ) {
-                try {
-                    bundle=ResourceBundle.getBundle(bundleName, Locale.getDefault(), cl);
-                    return;
-                } catch(MissingResourceException ex2) {
-                }
-            }
-        }
-
     }
 
 
@@ -145,11 +121,6 @@ public class StringManager {
             throw new NullPointerException(msg);
         }
 
-        String str = null;
-
-        if( bundle==null )
-            return key;
-
         // START SJSAS 6412710
         ResourceBundle bundle = bundles.get(locale);
         if (bundle == null) {
@@ -169,13 +140,15 @@ public class StringManager {
         }
         // END SJSAS 6412710
 
-        try {
-            str = bundle.getString(key);
-        } catch (MissingResourceException mre) {
-            str = "Cannot find message associated with key '" + key + "'";
-        }
+        if( bundle==null )
+            return key;
 
-        return str;
+
+        try {
+            return bundle.getString(key);
+        } catch (MissingResourceException mre) {
+            return "Cannot find message associated with key '" + key + "'";
+        }
     }
 
     /**
@@ -193,7 +166,7 @@ public class StringManager {
 
     public String getString(String key, Object[] args, Locale locale) {
         // END SJSAS 6412710
-        String iString = null;
+        String iString;
         /* 6412710
         String value = getStringInternal(key);
         */
@@ -210,7 +183,7 @@ public class StringManager {
             Object nonNullArgs[] = args;
             for (int i=0; i<args.length; i++) {
                 if (args[i] == null) {
-                    if (nonNullArgs==args) nonNullArgs=(Object[])args.clone();
+                    if (nonNullArgs==args) nonNullArgs= args.clone();
                     nonNullArgs[i] = "null";
                 }
             }
@@ -220,7 +193,7 @@ public class StringManager {
             StringBuffer buf = new StringBuffer();
             buf.append(value);
             for (int i = 0; i < args.length; i++) {
-                buf.append(" arg[" + i + "]=" + args[i]);
+                buf.append(" arg[").append(i).append("]=").append(args[i]);
             }
             iString = buf.toString();
         }
@@ -366,7 +339,7 @@ public class StringManager {
     // STATIC SUPPORT METHODS
     // --------------------------------------------------------------
 
-    private static Hashtable managers = new Hashtable();
+    private static Hashtable<String,StringManager> managers = new Hashtable<String,StringManager>();
 
     /**
      * Get the StringManager for a particular package. If a manager for
@@ -377,7 +350,7 @@ public class StringManager {
      */
 
     public synchronized static StringManager getManager(String packageName) {
-        StringManager mgr = (StringManager)managers.get(packageName);
+        StringManager mgr = managers.get(packageName);
 
         if (mgr == null) {
             mgr = new StringManager(packageName);

@@ -76,7 +76,11 @@ public class StringManager {
      * The ResourceBundle for this StringManager.
      */
 
-    private ResourceBundle bundle;
+    private volatile ResourceBundle bundle;
+
+    private String packageName;
+    private Locale locale;
+    private ClassLoader classLoader;
 
     /**
      * Creates a new StringManager for a given package. This is a
@@ -92,12 +96,21 @@ public class StringManager {
     }
 
     private StringManager(String packageName,Locale loc) {
+        this.packageName = packageName;
+        this.locale = loc;
+        this.classLoader = Thread.currentThread().getContextClassLoader();
+    }
+
+    private ResourceBundle getResourceBundle() {
+        if(bundle!=null)    return bundle;
+
         String bundleName = packageName + ".LocalStrings";
         try {
-            bundle = ResourceBundle.getBundle(bundleName,loc, Thread.currentThread().getContextClassLoader());
+            bundle = ResourceBundle.getBundle(bundleName,locale,classLoader);
         } catch( MissingResourceException ex ) {
-            bundle= ResourceBundle.getBundle( bundleName, Locale.US, Thread.currentThread().getContextClassLoader());
+            bundle= ResourceBundle.getBundle( bundleName,Locale.US,classLoader);
         }
+        return bundle;
     }
 
     private StringManager(ResourceBundle bundle )
@@ -125,7 +138,7 @@ public class StringManager {
         String str = null;
 
         try{
-	        str = bundle.getString(key);
+            str = getResourceBundle().getString(key);
         }catch(MissingResourceException mre){
             //bad: shouldn't mask an exception the following way:
             //   str = "[cannot find message associated with key '" + key + "' due to " + mre + "]";
@@ -277,8 +290,6 @@ public class StringManager {
      * Get the StringManager for a particular package. If a manager for
      * a package already exists, it will be reused, else a new
      * StringManager will be created and returned.
-     *
-     * @param packageName
      */
     public synchronized static StringManager getManager(ResourceBundle bundle) {
       return new StringManager( bundle );
