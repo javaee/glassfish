@@ -33,7 +33,9 @@ public class HtmlAdaptor {
             method.invoke(adaptor);
             _bHtmlAdaptorServerRegistered = true;
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("Warning !! cannot create HTML Adapter. Ensure that you have jmxtools.jar in <glassfish>/lib directory");
+            System.out.println(e.getMessage());
+            //e.printStackTrace();
         }
     }
 }
