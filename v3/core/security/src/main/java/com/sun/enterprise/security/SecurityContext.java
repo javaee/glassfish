@@ -412,6 +412,9 @@ public class SecurityContext extends AbstractSecurityContext implements PostCons
         if (_logger.isLoggable(Level.FINE)) {
             _logger.log(Level.FINE, "SecurityContext: setCurrentSecurityContext method called");
         }
+        if (context == null) {
+            setCurrent(null);
+        } 
         if (context instanceof SecurityContext) {
             setCurrent((SecurityContext)context);
             return;
