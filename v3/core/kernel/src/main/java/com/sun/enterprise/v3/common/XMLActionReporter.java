@@ -106,7 +106,7 @@ public class XMLActionReporter extends ActionReporter {
 
     @Override
     public String getContentType() {
-        return "text/xml";
+        return "text/xml"; 
     }
     
     

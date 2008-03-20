@@ -284,7 +284,7 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
             if (virtualservers != null) {
                 moduleProps.setProperty(ServerTags.VIRTUAL_SERVERS, 
                     virtualservers);
-            }
+            } 
 
             ApplicationInfo appInfo = deploy(appSniffers, deploymentContext, report);
             if (report.getActionExitCode().equals(

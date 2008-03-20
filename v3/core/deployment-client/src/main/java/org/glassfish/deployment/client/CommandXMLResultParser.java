@@ -94,7 +94,7 @@ public class CommandXMLResultParser {
                  * DFDeploymentStatus will be the top-level one as well as the
                  * current-level one.
                  */
-                if (topStatus == null) {
+                if (topStatus == null) { 
                     currentLevel = topStatus = new DFDeploymentStatus();
                 } else {
                     /*
