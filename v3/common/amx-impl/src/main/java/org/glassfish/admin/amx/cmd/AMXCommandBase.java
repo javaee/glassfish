@@ -45,7 +45,7 @@ import org.glassfish.admin.amx.loader.AMXStartupService;
 abstract class AMXCommandBase implements AdminCommand {
     private static final LocalStringManagerImpl localStrings = new LocalStringManagerImpl(AMXCommandBase.class);
     
-    @Inject
+    @Inject(name=AppserverMBeanServerFactory.OFFICIAL_MBEANSERVER)
     private MBeanServer mMBeanServer;
     protected final MBeanServer getMBeanServer() { return mMBeanServer; }
     
