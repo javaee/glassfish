@@ -81,7 +81,7 @@
                 </sun:panelGroup>
                 </facet>
     </sun:title>
-    <sun:propertySheet id="sheet1" >
+    <sun:propertySheet id="sheet2" >
         <sun:propertySheetSection id="section1" >
             <sun:property id="nameProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.Name}">
                 <sun:staticText id="name" text="#{appName}"/>

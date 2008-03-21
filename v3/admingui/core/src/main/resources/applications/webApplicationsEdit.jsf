@@ -49,8 +49,7 @@
     setPageSessionAttribute(key="hasVS" value="#{true}");
     setPageSessionAttribute(key="hasComponentTable" value="#{true}");
     setPageSessionAttribute(key="hasActionColumn" value="#{false}");
-    #setPageSessionAttribute(key="appType" value="webApp");
-    setPageSessionAttribute(key="appType" value="application");
+    setPageSessionAttribute(key="appType" value="webApp");
     setPageSessionAttribute(key="generalPage" value="webApplicationsEdit.jsf");
     setPageSessionAttribute(key="descriptorPage" value="webApplicationDesc.jsf");
     setPageSessionAttribute(key="targetPage" value="webApplicationTargets.jsf");

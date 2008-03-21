@@ -84,12 +84,12 @@
                 threadPool=>$attribute{threadPool}
                 );
             setPageSessionAttribute(key="showHa" value="$boolean{false}");
-            if ( $session{supportCluster} & $pageSession{hasHa} ){
-                setPageSessionAttribute(key="showHa" value="$boolean{true}");
-             }
-			if ( $session{supportCluster}){
+            # if ( $session{supportCluster} & $pageSession{hasHa} ){
+            #   setPageSessionAttribute(key="showHa" value="$boolean{true}");
+            # }
+            if ( $session{supportCluster}){
             	setPageSessionAttribute(key="pe" value="#{false}")                               
-			}
+            }
         />
         </event>
         <sun:property id="jndiProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.Name}">
