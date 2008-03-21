@@ -927,7 +927,7 @@ abstract public class ApplicationLifecycle {
                     }
                     if (moduleProps.getProperty(ServerTags.LIBRARIES) !=
                         null) {
-		            app.setContextRoot(moduleProps.getProperty(
+		            app.setLibraries(moduleProps.getProperty(
                                 ServerTags.LIBRARIES));
                     }
                     app.setDirectoryDeployed(moduleProps.getProperty(
@@ -1056,6 +1056,10 @@ abstract public class ApplicationLifecycle {
         if (app.getContextRoot() != null) {
             deploymentParams.setProperty(DeployCommand.CONTEXT_ROOT,
                 app.getContextRoot());
+        }
+        if (app.getLibraries() != null) {
+            deploymentParams.setProperty(DeployCommand.LIBRARIES,
+                app.getLibraries());
         }
         deploymentParams.setProperty(DeployCommand.DIRECTORY_DEPLOYED,
             app.getDirectoryDeployed());

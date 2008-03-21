@@ -274,6 +274,9 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
             if (contextRoot!=null) {
                 moduleProps.setProperty(ServerTags.CONTEXT_ROOT, contextRoot);
             }
+            if (libraries!=null) {
+                moduleProps.setProperty(ServerTags.LIBRARIES, libraries);
+            }
             moduleProps.setProperty(ServerTags.ENABLED, enabled);
             moduleProps.setProperty(ServerTags.DIRECTORY_DEPLOYED, String.valueOf(isDirectoryDeployed));
             if (virtualservers != null) {
