@@ -40,6 +40,7 @@ import com.sun.enterprise.cli.framework.Command;
 import com.sun.enterprise.cli.framework.CommandException;
 import com.sun.enterprise.cli.framework.CommandValidationException;
 import com.sun.enterprise.universal.glassfish.GFLauncherUtils;
+import com.sun.enterprise.universal.glassfish.SystemPropertyConstants;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import com.sun.enterprise.universal.xml.MiniXmlParser;
 import com.sun.enterprise.universal.xml.MiniXmlParserException;
@@ -120,7 +121,7 @@ public class StopDomainCommand extends Command {
 
     private void getDomainRootDir() throws CommandValidationException {
         if (domainsDir == null) {
-            domainsDir = new File(getSystemProperty("com.sun.aas.domainsRoot"));
+            domainsDir = new File(getSystemProperty(SystemPropertyConstants.DOMAINS_ROOT_PROPERTY));
         }
 
         if (!domainsDir.isDirectory()) {
