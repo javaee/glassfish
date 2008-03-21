@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<project>
+  <parent>
+    <artifactId>connectors</artifactId>
+    <groupId>org.glassfish.connectors</groupId>
+    <version>10.0-SNAPSHOT</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.glassfish.connectors.jdbc-ra</groupId>
+  <artifactId>jdbc-ra</artifactId>
+  <name>jdbc-ra</name>
+  <packaging>pom</packaging>
+
+  <modules>
+    <module>jdbc-core</module>
+    <!--<module>jdbc30</module>
+    <module>jdbc40</module>-->
+    <module>jdbcra-bundler</module>
+  </modules>
+
+</project>
