@@ -41,25 +41,13 @@ import com.sun.enterprise.cli.framework.*;
 import com.sun.enterprise.admin.servermgmt.RepositoryConfig;
 import com.sun.enterprise.admin.servermgmt.RepositoryManager;
 import com.sun.enterprise.admin.servermgmt.RepositoryException;
-import com.sun.enterprise.util.SystemPropertyConstants;
-import com.sun.enterprise.util.ASenvPropertyReader;
+import com.sun.enterprise.universal.glassfish.SystemPropertyConstants;
 
-/* Comment out for now 
-import com.sun.appserv.management.client.prefs.LoginInfo;
-import com.sun.appserv.management.client.prefs.LoginInfoStore;
-import com.sun.appserv.management.client.prefs.LoginInfoStoreFactory;
-*/
-
-import java.util.Vector;
-import java.util.HashMap;
 import java.util.Map;
-import java.net.MalformedURLException;
 import java.io.IOException;
-import java.util.StringTokenizer;
 import java.util.Properties;
 import java.util.Enumeration;
 import java.io.File;
-import java.util.List;
 import java.util.Iterator;
 import java.io.FileInputStream;
 import java.io.BufferedInputStream;
@@ -115,10 +103,6 @@ public abstract class S1ASCommand extends Command
 
     public S1ASCommand()
     {
-        // temporary hack
-        final ASenvPropertyReader reader = new ASenvPropertyReader(
-            System.getenv("AS_INSTALL") + "/config");
-        reader.setSystemProperties();
     }
     
 

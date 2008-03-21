@@ -54,7 +54,6 @@ import com.sun.enterprise.admin.servermgmt.DomainsManager;
 import com.sun.enterprise.admin.servermgmt.DomainConfig;
 
 import com.sun.enterprise.admin.servermgmt.pe.PEDomainsManager;
-import com.sun.enterprise.universal.glassfish.ASenvPropertyReader;
 
 /**
  *Abstract base class for the Lifecycle commands
@@ -119,8 +118,7 @@ abstract public class BaseLifeCycleCommand extends S1ASCommand {
     protected String getDomainsRoot() throws CommandException {
         String domainDir = getOption(DOMAINDIR);
         if (domainDir == null) {
-            final ASenvPropertyReader envProps = new ASenvPropertyReader();
-            domainDir = envProps.getProps().get(SystemPropertyConstants.DOMAINS_ROOT_PROPERTY);
+            domainDir = getSystemProperty(SystemPropertyConstants.DOMAINS_ROOT_PROPERTY);
         }
         if (domainDir == null) {
             throw new CommandException(getLocalizedString("InvalidDomainPath",

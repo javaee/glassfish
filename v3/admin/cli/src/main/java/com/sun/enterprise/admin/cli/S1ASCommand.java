@@ -101,12 +101,6 @@ public abstract class S1ASCommand extends Command {
     private boolean warningDisplayed = false;
 
     public S1ASCommand() {
-    /*
-    //Use asenv.conf/bat to set up necessary system properties
-    final ASenvPropertyReader reader = new ASenvPropertyReader(
-    System.getProperty(SystemPropertyConstants.CONFIG_ROOT_PROPERTY));
-    reader.setSystemProperties();
-     */
     }
 
     /**

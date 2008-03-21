@@ -44,6 +44,8 @@
         <Option name="masterpassword" type="string" value-required="true"/>
         <Option name="savemasterpassword" type="boolean" value-required="false" default="false"/>
         <Option name="savelogin" type="boolean" value-required="false" default="false"/>           
+        <Option name="filename" type="string" value-required="true"/>
+        <Option name="description" type="string" value-required="true"/>
     </Options>
     <Commands>
 	<Command name="dummy" classname="com.sun.enterprise.admin.cli.DummyCommand" numberofoperands="?" usage-text="dummy">
@@ -99,6 +101,24 @@
             <ValidOption name="terse"/>
             <ValidOption name="echo"/>
         </Command>
+        <Command name="backup-domain" classname="com.sun.enterprise.admin.cli.BackupCommands" numberofoperands="?" usage-text="backup-domain [--domaindir domain_directory] [--description description] [--echo=false] [--terse=false] [--verbose=false] [domain_name]">
+                <ValidOption name="domaindir"/>
+                <ValidOption name="description"/>
+                <ValidOption name="terse"/>
+                <ValidOption name="verbose"/>
+                <ValidOption name="echo"/>
+        </Command>
+        <Command name="restore-domain" classname="com.sun.enterprise.admin.cli.BackupCommands" numberofoperands="?" usage-text="restore-domain [--domaindir domain_directory] [--filename backup_filename]  [--description description] [--terse=false] [--echo=false] [--verbose=false] [domain_name]">
+                <ValidOption name="domaindir"/>
+                <ValidOption name="filename"/>
+                <ValidOption name="description"/>
+                <ValidOption name="terse"/>
+                <ValidOption name="echo"/>
+                <ValidOption name="verbose"/>
+        </Command>
+    
+    
+    
     </Commands>
 </CommandsAndOptions>
 

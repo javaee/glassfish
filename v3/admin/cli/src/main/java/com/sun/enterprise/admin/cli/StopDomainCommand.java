@@ -39,7 +39,6 @@ import com.sun.enterprise.cli.framework.CLILogger;
 import com.sun.enterprise.cli.framework.Command;
 import com.sun.enterprise.cli.framework.CommandException;
 import com.sun.enterprise.cli.framework.CommandValidationException;
-import com.sun.enterprise.universal.glassfish.ASenvPropertyReader;
 import com.sun.enterprise.universal.glassfish.GFLauncherUtils;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import com.sun.enterprise.universal.xml.MiniXmlParser;
@@ -120,10 +119,8 @@ public class StopDomainCommand extends Command {
     }
 
     private void getDomainRootDir() throws CommandValidationException {
-        Map<String, String> props = new ASenvPropertyReader().getProps();
-
         if (domainsDir == null) {
-            domainsDir = new File(props.get("com.sun.aas.domainsRoot"));
+            domainsDir = new File(getSystemProperty("com.sun.aas.domainsRoot"));
         }
 
         if (!domainsDir.isDirectory()) {
