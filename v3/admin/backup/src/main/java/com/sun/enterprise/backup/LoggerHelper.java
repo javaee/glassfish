@@ -54,7 +54,7 @@
  *
  */
 
-package com.sun.enterprise.config.backup;
+package com.sun.enterprise.backup;
 
 import java.util.logging.*;
 

@@ -41,9 +41,9 @@
  * Created on March 30, 2004, 9:01 PM
  */
 
-package com.sun.enterprise.config.backup;
+package com.sun.enterprise.backup;
 
-import com.sun.enterprise.config.backup.util.FileUtils;
+import com.sun.enterprise.backup.util.FileUtils;
 import java.io.*;
 
 /**

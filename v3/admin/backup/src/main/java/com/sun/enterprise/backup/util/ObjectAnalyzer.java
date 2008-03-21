@@ -39,7 +39,7 @@
  * for any class
  */
 
-package com.sun.enterprise.config.backup.util;
+package com.sun.enterprise.backup.util;
 
 import java.lang.reflect.*;
 import java.util.Vector;

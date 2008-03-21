@@ -34,7 +34,7 @@
  * holder.
  */
 
-package com.sun.enterprise.config.backup;
+package com.sun.enterprise.backup;
 
 import java.util.ResourceBundle;
 import java.text.MessageFormat;

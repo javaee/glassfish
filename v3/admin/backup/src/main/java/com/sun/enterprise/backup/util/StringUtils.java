@@ -34,7 +34,7 @@
  * holder.
  */
 
-package com.sun.enterprise.config.backup.util;
+package com.sun.enterprise.backup.util;
 
 /* WBN Valentine's Day, 2000 -- place for handy String utils.
  */

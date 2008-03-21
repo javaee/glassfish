@@ -35,99 +35,44 @@
  */
 
 /*
- * OS.java
+ * BackupWarningException.java
  *
- * Created on December 8, 2001, 5:48 PM
+ * Created on April 1, 2004, 6:23 PM
  */
 
-package com.sun.enterprise.config.backup.util;
+package com.sun.enterprise.backup;
 
-import java.io.*;
+import com.sun.enterprise.backup.util.StringUtils;
 
 /**
  *
  * @author  bnevins
- * @version 
+ * Problem -- some "errors" should not be handled by CLI as "errors", but as warnings.
+ * However, the Exception throwing mechanism is the non-kludgiest way to get the
+ * message back to the command handler in CLI.
+ * Thus this class.
  */
-public class OS 
+public class BackupWarningException extends BackupException
 {
-	private OS() 
+	/**
+	 * Constructs a BackupWarningException with a possibly i18n'd detail message.
+	 * @param s the detail message which is first checked for as a key for an i18n string.  
+	 * If not found it will be used as the message itself.
+	 */	
+	public BackupWarningException(String s)
 	{
+		super(s);
 	}
-	
-	///////////////////////////////////////////////////////////////////////////
-	
-	public static boolean isWindows()
-	{
-		return File.separatorChar == '\\';
-	}
-	
-	///////////////////////////////////////////////////////////////////////////
-	
-	public static boolean isUNIX()
-	{
-		return File.separatorChar == '/';
-	}
-	
-	///////////////////////////////////////////////////////////////////////////
-	
-	public static boolean isUnix()
-	{
-		// convenience method...
-		return isUNIX();
-	}
-	
-	///////////////////////////////////////////////////////////////////////////
-	
-	public static boolean isSun()
-	{
-		return is("sun");
-	}
-	
-	///////////////////////////////////////////////////////////////////////////
-	
-	public static boolean isLinux()
-	{
-		return is("linux");
-	}
-	
-	///////////////////////////////////////////////////////////////////////////
-	
-	public static boolean isWindowsForSure()
-	{
-		return is("windows") && isWindows();
-	}
-
-	///////////////////////////////////////////////////////////////////////////
-	
-	private static boolean is(String name)
-	{
-		String osname = System.getProperty("os.name");
-		
-		if(osname == null || osname.length() <= 0)
-			return false;
-		
-		// case insensitive compare...
-		osname	= osname.toLowerCase();
-		name	= name.toLowerCase();
-		
-		if(osname.indexOf(name) >= 0)
-			return true;
-		
-		return false;
-	}
-
-	///////////////////////////////////////////////////////////////////////////
 	
 	/**
-	* @param args the command line arguments
-	*/
-	public static void main (String args[]) 
+	 * @param s the detail message which is first checked for as a key for an i18n string.  
+	 * If not found it will be used as the message itself.
+	 * @param o the parameter for the recovered i18n string. I.e. "{0}" will be
+	 * replaced with o.toString().  If there is no i18n string located
+	 * o will be ignored.
+	 */	
+	public BackupWarningException(String s, Object o)
 	{
-		System.out.println("isUNIX() returned: "			+ isUNIX());
-		System.out.println("isWindows() returned: "			+ isWindows());
-		System.out.println("isWindowsForSure() returned: "	+ isWindowsForSure());
-		System.out.println("isSun() returned: "				+ isSun());
-		System.out.println("isLinux() returned: "			+ isLinux());
+		super(s, o);
 	}
 }

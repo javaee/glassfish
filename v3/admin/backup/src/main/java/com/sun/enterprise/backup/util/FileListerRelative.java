@@ -35,28 +35,29 @@
  */
 
 /*
- * ZipFilenameFilter.java
+ * foo.java
  *
- * Created on March 30, 2004, 9:40 PM
+ * Created on November 11, 2001, 12:09 AM
  */
 
-package com.sun.enterprise.config.backup;
-
+package com.sun.enterprise.backup.util;
 import java.io.*;
+import java.util.*;
 
 /**
  *
  * @author  bnevins
- * Tiny class.  It is here because it is used in 2 places --
- * RestoreManager and ListManager and it avoids code duplication.
+ * @version 
  */
-
-class ZipFilenameFilter implements FilenameFilter
+public class FileListerRelative extends FileLister
 {
-	public boolean accept(File dir, String name)
+	public FileListerRelative(File f)
 	{
-		return 
-			name.toLowerCase().endsWith(".zip") && 
-			name.startsWith(Constants.BACKUP_FILENAME_ROOT);
+		super(f);
+	}
+	
+	protected boolean relativePath()
+	{
+		return true;
 	}
 }

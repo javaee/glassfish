@@ -34,22 +34,61 @@
  * holder.
  */
 
-package com.sun.enterprise.config.backup.util;
+package com.sun.enterprise.backup;
 
-public class ZipFileException extends Exception
+import com.sun.enterprise.backup.util.*;
+import java.io.*;
+import java.util.*;
+
+/**
+ * Baseclass for BackupManager and RestoreManager.  Common code between the two goes
+ * in here.
+ * @author  Byron Nevins
+ */
+
+abstract class BackupRestoreManager
 {
-    // the constructors are all package scope...
-    ZipFileException(Throwable t)
-    {
-        super(t.toString());
-    }
+	public BackupRestoreManager(BackupRequest req) throws BackupException
+	{
+		if(req == null)
+			throw new BackupException("backup-res.InternalError", getClass().getName() + ".ctor: null BackupRequest object");
+		
+		this.request = req;
+		init();
+		LoggerHelper.finest("Request DUMP **********\n" + req);
+	}
+	
+	///////////////////////////////////////////////////////////////////////////////
 
-    ZipFileException(String s)
-    {
-        super(s);
-    }
+	void init() throws BackupException
+	{
+		// only do once!
+		if(wasInitialized)
+			return;
+		
+		if(request == null)
+			throw new BackupException("backup-res.InternalError", "null BackupRequest reference");
+		
+		// add a timestamp
+		request.timestamp = System.currentTimeMillis();
+		
+		if(request.description == null || request.description.length() <= 0)
+			request.description = "" + request.timestamp;
+		// validate domains dir
+		if(request.domainsDir == null || !FileUtils.safeIsDirectory(request.domainsDir))
+			throw new BackupException("backup-res.NoDomainsDir", request.domainsDir);
+		
+		// validate the domain-name
+		if(!StringUtils.ok(request.domainName))
+			throw new BackupException("backup-res.InternalError", "No domain-name was specified");
 
-    ZipFileException()
-    {
-    }
+		request.domainDir = new File(request.domainsDir, request.domainName);
+		
+		LoggerHelper.setLevel(request);
+	}
+
+	///////////////////////////////////////////////////////////////////////////
+	
+	BackupRequest		request;
+	private boolean		wasInitialized = false;
 }

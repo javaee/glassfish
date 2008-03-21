@@ -34,7 +34,7 @@
  * holder.
  */
 
-package com.sun.enterprise.config.backup.util;
+package com.sun.enterprise.backup.util;
 
 import java.io.*;
 import java.util.*;

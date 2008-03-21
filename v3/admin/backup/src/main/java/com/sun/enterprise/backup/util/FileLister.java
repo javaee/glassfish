@@ -40,7 +40,7 @@
  * Created on November 11, 2001, 12:09 AM
  */
 
-package com.sun.enterprise.config.backup.util;
+package com.sun.enterprise.backup.util;
 import java.io.*;
 import java.util.*;
 

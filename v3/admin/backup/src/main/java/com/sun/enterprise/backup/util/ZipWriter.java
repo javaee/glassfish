@@ -38,7 +38,7 @@
  * ZipFile -- A utility class for exploding jar files that contain EJB(s).  Used *only* in this package by the EJBImporter class
  */
 
-package com.sun.enterprise.config.backup.util;
+package com.sun.enterprise.backup.util;
 
 import java.io.*;
 import java.util.*;

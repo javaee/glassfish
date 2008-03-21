@@ -34,76 +34,22 @@
  * holder.
  */
 
-/*
- * ZipStorage.java
- *
- * Created on January 30, 2004, 7:15 PM
- */
+package com.sun.enterprise.backup.util;
 
-package com.sun.enterprise.config.backup;
-
-import com.sun.enterprise.config.backup.util.FileListerRelative;
-import com.sun.enterprise.config.backup.util.FileUtils;
-import com.sun.enterprise.config.backup.util.ZipFileException;
-import com.sun.enterprise.config.backup.util.ZipWriter;
-import java.io.*;
-
-/** 
- * This class implements storing backups as zip files.  
- * @author Byron Nevins
- */
-class ZipStorage
+public class ZipFileException extends Exception
 {
-	/**
-	 * @param req
-	 * @throws BackupException
-	 */	
-	ZipStorage(BackupRequest req) throws BackupException
-	{
-		if(req == null)
-			throw new BackupException("backup-res.NoBackupRequest", getClass().getName() + ".ctor");
-		
-		request = req;
-	}
-	
-	/** 
-	 * Backups the files to a zip file.  
-	 * @throws BackupException if there were any errors writing the file.
-	 */	
-	void store() throws BackupException
-	{
-		String zipName			= FileUtils.safeGetCanonicalPath(request.backupFile);
-		String domainDirName	= FileUtils.safeGetCanonicalPath(request.domainDir);
-		
-		FileListerRelative lister = new FileListerRelative(request.domainDir);
-		lister.keepEmptyDirectories();	// we want to restore any empty directories too!
-		String[] files = lister.getFiles();
-		
-		LoggerHelper.fine("Writing " + zipName);
-		
-		try
-		{
-			ZipWriter writer = new ZipWriter(zipName, domainDirName, files);
+    // the constructors are all package scope...
+    ZipFileException(Throwable t)
+    {
+        super(t.toString());
+    }
 
-			if(request.excludeDirs != null && request.excludeDirs.length > 0)
-				writer.excludeDirs(request.excludeDirs);
-			
-			writer.safeWrite();
-		}
-		catch(ZipFileException zfe)
-		{
-			throw new BackupException("backup-res.ZipBackupError", zfe, zipName);
-		}
-	}
+    ZipFileException(String s)
+    {
+        super(s);
+    }
 
-	///////////////////////////////////////////////////////////////////////////
-
-	void write() throws BackupException
-	{
-		
-	}
-
-	///////////////////////////////////////////////////////////////////////////
-	
-	private	BackupRequest request;
+    ZipFileException()
+    {
+    }
 }

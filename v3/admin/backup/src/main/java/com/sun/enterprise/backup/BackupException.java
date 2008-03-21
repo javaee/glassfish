@@ -41,9 +41,8 @@
  */
 
 
-package com.sun.enterprise.config.backup;
+package com.sun.enterprise.backup;
 
-import com.sun.enterprise.config.backup.util.StringUtils;
 
 /** 
  * Backup-Restore <strong>guarantees</strong> that this will be the one and only one kind of

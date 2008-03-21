@@ -35,44 +35,28 @@
  */
 
 /*
- * BackupWarningException.java
+ * ZipFilenameFilter.java
  *
- * Created on April 1, 2004, 6:23 PM
+ * Created on March 30, 2004, 9:40 PM
  */
 
-package com.sun.enterprise.config.backup;
+package com.sun.enterprise.backup;
 
-import com.sun.enterprise.config.backup.util.StringUtils;
+import java.io.*;
 
 /**
  *
  * @author  bnevins
- * Problem -- some "errors" should not be handled by CLI as "errors", but as warnings.
- * However, the Exception throwing mechanism is the non-kludgiest way to get the
- * message back to the command handler in CLI.
- * Thus this class.
+ * Tiny class.  It is here because it is used in 2 places --
+ * RestoreManager and ListManager and it avoids code duplication.
  */
-public class BackupWarningException extends BackupException
+
+class ZipFilenameFilter implements FilenameFilter
 {
-	/**
-	 * Constructs a BackupWarningException with a possibly i18n'd detail message.
-	 * @param s the detail message which is first checked for as a key for an i18n string.  
-	 * If not found it will be used as the message itself.
-	 */	
-	public BackupWarningException(String s)
+	public boolean accept(File dir, String name)
 	{
-		super(s);
-	}
-	
-	/**
-	 * @param s the detail message which is first checked for as a key for an i18n string.  
-	 * If not found it will be used as the message itself.
-	 * @param o the parameter for the recovered i18n string. I.e. "{0}" will be
-	 * replaced with o.toString().  If there is no i18n string located
-	 * o will be ignored.
-	 */	
-	public BackupWarningException(String s, Object o)
-	{
-		super(s, o);
+		return 
+			name.toLowerCase().endsWith(".zip") && 
+			name.startsWith(Constants.BACKUP_FILENAME_ROOT);
 	}
 }

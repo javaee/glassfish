@@ -38,7 +38,7 @@
  * ZipFile -- A utility class for exploding archive (zip) files.
  */
 
-package com.sun.enterprise.config.backup.util;
+package com.sun.enterprise.backup.util;
 
 import java.io.*;
 import java.util.*;

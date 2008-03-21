@@ -40,7 +40,7 @@
  * Created on January 21, 2004, 11:31 PM
  */
 
-package com.sun.enterprise.config.backup;
+package com.sun.enterprise.backup;
 
 /**
  *
@@ -48,10 +48,10 @@ package com.sun.enterprise.config.backup;
  */
 public interface Constants
 {
-	final static String			loggingResourceBundle		= "com.sun.enterprise.config.backup.LocalStrings";
-	final static String			exceptionResourceBundle		= "/com/sun/enterprise/config/backup/LocalStrings.properties";
+	final static String			loggingResourceBundle		= "com.sun.enterprise.backup.LocalStrings";
+	final static String			exceptionResourceBundle		= "/com/sun/enterprise/backup/LocalStrings.properties";
 	final static String			BACKUP_DIR					= "backups";
-	final static String			BACKUP_FILENAME_ROOT		= "sjsas_backup_v";
+	final static String			BACKUP_FILENAME_ROOT		= "GlassFish_backup_v";
 	final static String			PROPS_USER_NAME				= "user.name";
 	final static String			PROPS_TIMESTAMP_MSEC		= "timestamp.msec";
 	final static String			PROPS_TIMESTAMP_HUMAN		= "timestamp.human";

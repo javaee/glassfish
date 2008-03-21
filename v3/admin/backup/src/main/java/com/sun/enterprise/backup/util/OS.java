@@ -34,88 +34,100 @@
  * holder.
  */
 
-/* 
- * ZipItem.java
+/*
+ * OS.java
  *
- * Created on February 2, 2002, 12:53 PM
- * 
+ * Created on December 8, 2001, 5:48 PM
+ */
+
+package com.sun.enterprise.backup.util;
+
+import java.io.*;
+
+/**
+ *
  * @author  bnevins
- * @version $Revision: 1.3 $
- * <BR> <I>$Source: /cvs/glassfish/admin/backup/src/java/com/sun/enterprise/config/backup/util/ZipItem.java,v $
- *
- * Copyright 2000-2001 by iPlanet/Sun Microsystems, Inc., 
- * 901 San Antonio Road, Palo Alto, California, 94303, U.S.A. 
- * All rights reserved. 
- * 
- * This software is the confidential and proprietary information 
- * of iPlanet/Sun Microsystems, Inc. ("Confidential Information"). 
- * You shall not disclose such Confidential Information and shall 
- * use it only in accordance with the terms of the license 
- * agreement you entered into with iPlanet/Sun Microsystems. 
- *
+ * @version 
  */
-
-package com.sun.enterprise.config.backup.util;
-
-import java.io.File;
-
-/** 
- * This class encapsulates the two pieces of information required to make a
- * ZipEntry -- the "real" path, and the path you want to appear in the zip file
- */
-public class ZipItem 
+public class OS 
 {
-	/** 
-     * Construct a ZipItem
-     *
-	 * @param file The actual file
-	 * @param name The zip entry name - i.e. the relative path in the zip file
-	 * @throws ZipFileException
-	 */	
-	public ZipItem(File file, String name) throws ZipFileException
+	private OS() 
 	{
-		//if(!file.exists())
-		//	throw new ZipFileException("File doesn't exist: " + file);
-		if(name == null || name.length() <= 0)
-			throw new ZipFileException("null or empty name for ZipItem");
-		
-		this.file = file;
-		this.name = name;
 	}
-
-	/** 
-     * Returns a String represenation of the real filename and the zip entry
-     * name.
-     *
-	 * @return String with the path and the zip entry name
-	 */	
-	public String toString()
-	{
-		return "File: " + file.getPath() + ", name: " + name;
-	}
-
-    /**
-     * Returns the zip entry name 
-     * 
-     * @return   the zip entry name
-     */
-    public String getName() 
-    {
-        return this.name;
-    }
-
-    /**
-     * Returns the actual file
-     *
-     * @return  the actual file
-     */
-    public File getFile() 
-    {
-        return this.file;
-    }
 	
 	///////////////////////////////////////////////////////////////////////////
+	
+	public static boolean isWindows()
+	{
+		return File.separatorChar == '\\';
+	}
+	
+	///////////////////////////////////////////////////////////////////////////
+	
+	public static boolean isUNIX()
+	{
+		return File.separatorChar == '/';
+	}
+	
+	///////////////////////////////////////////////////////////////////////////
+	
+	public static boolean isUnix()
+	{
+		// convenience method...
+		return isUNIX();
+	}
+	
+	///////////////////////////////////////////////////////////////////////////
+	
+	public static boolean isSun()
+	{
+		return is("sun");
+	}
+	
+	///////////////////////////////////////////////////////////////////////////
+	
+	public static boolean isLinux()
+	{
+		return is("linux");
+	}
+	
+	///////////////////////////////////////////////////////////////////////////
+	
+	public static boolean isWindowsForSure()
+	{
+		return is("windows") && isWindows();
+	}
 
-	File	file;
-	String	name;
+	///////////////////////////////////////////////////////////////////////////
+	
+	private static boolean is(String name)
+	{
+		String osname = System.getProperty("os.name");
+		
+		if(osname == null || osname.length() <= 0)
+			return false;
+		
+		// case insensitive compare...
+		osname	= osname.toLowerCase();
+		name	= name.toLowerCase();
+		
+		if(osname.indexOf(name) >= 0)
+			return true;
+		
+		return false;
+	}
+
+	///////////////////////////////////////////////////////////////////////////
+	
+	/**
+	* @param args the command line arguments
+	*/
+	public static void main (String args[]) 
+	{
+		System.out.println("isUNIX() returned: "			+ isUNIX());
+		System.out.println("isWindows() returned: "			+ isWindows());
+		System.out.println("isWindowsForSure() returned: "	+ isWindowsForSure());
+		System.out.println("isSun() returned: "				+ isSun());
+		System.out.println("isLinux() returned: "			+ isLinux());
+	}
 }

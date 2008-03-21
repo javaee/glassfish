@@ -34,87 +34,76 @@
  * holder.
  */
 
-package com.sun.enterprise.config.backup;
-
-import com.sun.enterprise.config.backup.util.*;
-import java.io.*;
-import java.util.*;
-
-
-/**
+/*
+ * ZipStorage.java
  *
- * @author  Byron Nevins
+ * Created on January 30, 2004, 7:15 PM
  */
 
+package com.sun.enterprise.backup;
 
-public class BackupManager extends BackupRestoreManager
+import com.sun.enterprise.backup.util.FileListerRelative;
+import com.sun.enterprise.backup.util.FileUtils;
+import com.sun.enterprise.backup.util.ZipFileException;
+import com.sun.enterprise.backup.util.ZipWriter;
+import java.io.*;
+
+/** 
+ * This class implements storing backups as zip files.  
+ * @author Byron Nevins
+ */
+class ZipStorage
 {
-	public BackupManager(BackupRequest req) throws BackupException
+	/**
+	 * @param req
+	 * @throws BackupException
+	 */	
+	ZipStorage(BackupRequest req) throws BackupException
 	{
-		super(req);
+		if(req == null)
+			throw new BackupException("backup-res.NoBackupRequest", getClass().getName() + ".ctor");
+		
+		request = req;
 	}
 	
-	///////////////////////////////////////////////////////////////////////////////
-
-	public final String backup() throws BackupException
+	/** 
+	 * Backups the files to a zip file.  
+	 * @throws BackupException if there were any errors writing the file.
+	 */	
+	void store() throws BackupException
 	{
-		String mesg = StringHelper.get("backup-res.SuccessfulBackup");
-		String statusString = writeStatus();
+		String zipName			= FileUtils.safeGetCanonicalPath(request.backupFile);
+		String domainDirName	= FileUtils.safeGetCanonicalPath(request.domainDir);
 		
-		if(request.terse == false)
-		{
-			mesg += "\n\n" + statusString;
-		}
+		FileListerRelative lister = new FileListerRelative(request.domainDir);
+		lister.keepEmptyDirectories();	// we want to restore any empty directories too!
+		String[] files = lister.getFiles();
+		
+		LoggerHelper.fine("Writing " + zipName);
 		
 		try
 		{
-			ZipStorage zs = new ZipStorage(request);
-			zs.store();
-			return mesg;
+			ZipWriter writer = new ZipWriter(zipName, domainDirName, files);
+
+			if(request.excludeDirs != null && request.excludeDirs.length > 0)
+				writer.excludeDirs(request.excludeDirs);
+			
+			writer.safeWrite();
 		}
-		finally
+		catch(ZipFileException zfe)
 		{
-			status.delete();
-			FileUtils.protect(request.backupFile);
+			throw new BackupException("backup-res.ZipBackupError", zfe, zipName);
 		}
 	}
-	
-	///////////////////////////////////////////////////////////////////////////////
 
-	void init() throws BackupException
+	///////////////////////////////////////////////////////////////////////////
+
+	void write() throws BackupException
 	{
-		super.init();
 		
-		if(request.backupFile != null)
-			throw new BackupException("backup-res.InternalError", "No backupFilename may be specified for a backup -- it is reserved for restore operations only.");
-		
-		if(!FileUtils.safeIsDirectory(request.domainDir))
-			throw new BackupException("backup-res.NoDomainDir", request.domainDir);
-
-		File backupDir = new File(request.domainDir, Constants.BACKUP_DIR);
-
-		// not an error for this directory to not exist yet
-		backupDir.mkdirs();
-
-		// NOW it's an error to not exist...
-		if(!FileUtils.safeIsDirectory(backupDir))
-			throw new BackupException("backup-res.NoBackupDirCantCreate", backupDir);
-
-		String ts = "" + request.timestamp + ".zip";
-		BackupFilenameManager bfmgr = new BackupFilenameManager(backupDir);
-		request.backupFile = bfmgr.next();
-		//request.backupFile = new File(backupDir, ts);
 	}
-	
-	///////////////////////////////////////////////////////////////////////////////
-	
-	private String writeStatus()
-	{
-		status = new Status();
-		return status.write(request);
-	}
-	
-	///////////////////////////////////////////////////////////////////////////////
 
-	Status status;
+	///////////////////////////////////////////////////////////////////////////
+	
+	private	BackupRequest request;
 }

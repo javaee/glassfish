@@ -40,13 +40,13 @@
  * Created on February 22, 2004, 1:40 AM
  */
 
-package com.sun.enterprise.config.backup;
+package com.sun.enterprise.backup;
 
 import java.io.*;
 import java.util.*;
 
-import com.sun.enterprise.config.backup.util.ObjectAnalyzer;
-import com.sun.enterprise.config.backup.util.FileUtils;
+import com.sun.enterprise.backup.util.ObjectAnalyzer;
+import com.sun.enterprise.backup.util.FileUtils;
 
 /**
  * This class holds all of the values that the caller needs.  

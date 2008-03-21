@@ -34,61 +34,87 @@
  * holder.
  */
 
-package com.sun.enterprise.config.backup;
+package com.sun.enterprise.backup;
 
-import com.sun.enterprise.config.backup.util.*;
+import com.sun.enterprise.backup.util.*;
 import java.io.*;
 import java.util.*;
 
+
 /**
- * Baseclass for BackupManager and RestoreManager.  Common code between the two goes
- * in here.
+ *
  * @author  Byron Nevins
  */
 
-abstract class BackupRestoreManager
+
+public class BackupManager extends BackupRestoreManager
 {
-	public BackupRestoreManager(BackupRequest req) throws BackupException
+	public BackupManager(BackupRequest req) throws BackupException
 	{
-		if(req == null)
-			throw new BackupException("backup-res.InternalError", getClass().getName() + ".ctor: null BackupRequest object");
+		super(req);
+	}
+	
+	///////////////////////////////////////////////////////////////////////////////
+
+	public final String backup() throws BackupException
+	{
+		String mesg = StringHelper.get("backup-res.SuccessfulBackup");
+		String statusString = writeStatus();
 		
-		this.request = req;
-		init();
-		LoggerHelper.finest("Request DUMP **********\n" + req);
+		if(request.terse == false)
+		{
+			mesg += "\n\n" + statusString;
+		}
+		
+		try
+		{
+			ZipStorage zs = new ZipStorage(request);
+			zs.store();
+			return mesg;
+		}
+		finally
+		{
+			status.delete();
+			FileUtils.protect(request.backupFile);
+		}
 	}
 	
 	///////////////////////////////////////////////////////////////////////////////
 
 	void init() throws BackupException
 	{
-		// only do once!
-		if(wasInitialized)
-			return;
+		super.init();
 		
-		if(request == null)
-			throw new BackupException("backup-res.InternalError", "null BackupRequest reference");
+		if(request.backupFile != null)
+			throw new BackupException("backup-res.InternalError", "No backupFilename may be specified for a backup -- it is reserved for restore operations only.");
 		
-		// add a timestamp
-		request.timestamp = System.currentTimeMillis();
-		
-		if(request.description == null || request.description.length() <= 0)
-			request.description = "" + request.timestamp;
-		// validate domains dir
-		if(request.domainsDir == null || !FileUtils.safeIsDirectory(request.domainsDir))
-			throw new BackupException("backup-res.NoDomainsDir", request.domainsDir);
-		
-		// validate the domain-name
-		if(!StringUtils.ok(request.domainName))
-			throw new BackupException("backup-res.InternalError", "No domain-name was specified");
+		if(!FileUtils.safeIsDirectory(request.domainDir))
+			throw new BackupException("backup-res.NoDomainDir", request.domainDir);
 
-		request.domainDir = new File(request.domainsDir, request.domainName);
-		
-		LoggerHelper.setLevel(request);
+		File backupDir = new File(request.domainDir, Constants.BACKUP_DIR);
+
+		// not an error for this directory to not exist yet
+		backupDir.mkdirs();
+
+		// NOW it's an error to not exist...
+		if(!FileUtils.safeIsDirectory(backupDir))
+			throw new BackupException("backup-res.NoBackupDirCantCreate", backupDir);
+
+		String ts = "" + request.timestamp + ".zip";
+		BackupFilenameManager bfmgr = new BackupFilenameManager(backupDir);
+		request.backupFile = bfmgr.next();
+		//request.backupFile = new File(backupDir, ts);
 	}
-
-	///////////////////////////////////////////////////////////////////////////
 	
-	BackupRequest		request;
-	private boolean		wasInitialized = false;
+	///////////////////////////////////////////////////////////////////////////////
+	
+	private String writeStatus()
+	{
+		status = new Status();
+		return status.write(request);
+	}
+	
+	///////////////////////////////////////////////////////////////////////////////
+
+	Status status;
 }
