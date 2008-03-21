@@ -26,20 +26,6 @@
     -->
     <target name="web.prepare">
         <mkdir dir="target/stage"/>
-        <resolveArtifact artifactId="javadb" property="javadb.jar"/>
-        <unjar src="${javadb.jar}" dest="target"/>
-        <!-- Note: the current version of the javadb jar file contains a single zip file.
-             As a result, we currently hard code the <unzip/> task to handle this file. -->
-        <unzip dest="target/stage/glassfish">
-            <fileset dir="target">
-                <include name="*javadb*.zip"/>
-            </fileset>
-            <patternset>
-                <exclude name="javadb/demo/**"/>
-                <exclude name="javadb/bin/**"/>
-                <exclude name="javadb/3RDPARTY.zip"/>
-            </patternset>
-        </unzip>
 
         <!-- TODO: Talk to JDBC RA guys to use distribution-fragment packaging. - Kohsuke -->
         <resolveArtifact artifactId="jdbc-ra" groupId="org.glassfish.connectors" property="jdbc-ra.zip"/>
@@ -140,14 +126,16 @@
 
     <target name="create.bundle" depends="web.prepare, web.moduleDef">
         <resolveAll todir="target/stage/glassfish/modules">
-            <fullGraph />
+            <!-- first filter out all the distribution fragments and their transitive dependencies -->
+            <packaging not="distribution-fragment" />
+            <!-- then get rid of all the dependencies that are in the webtier -->
             <removeSpecificArtifacts>
                 <scope level="compile,runtime"/>
                 <artifact artifactId="webtier-all"/>
             </removeSpecificArtifacts>
         </resolveAll>
 
-        <delete dir="target/stage/glassfish/modules" includes="*.zip, javadb*.*"/>
+        <delete dir="target/stage/glassfish/modules" includes="*.zip"/>
 
         <graphDef id="generate-picture">
             <visualize file="modules.png">

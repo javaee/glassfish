@@ -85,9 +85,10 @@
           (and us) to build custom distributions.
         -->
         <dependency>
-            <groupId>javadb</groupId>
+            <groupId>org.glassfish.external</groupId>
             <artifactId>javadb</artifactId>
-            <version>10.2.2.1-20070823</version>
+            <version>10.2.2.1-1-SNAPSHOT</version>
+            <type>distribution-fragment</type>
         </dependency>
         <dependency>
             <groupId>org.glassfish.web</groupId>
