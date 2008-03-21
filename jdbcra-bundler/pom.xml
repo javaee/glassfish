@@ -28,17 +28,19 @@
               <artifactItems>
                 <artifactItem>
                   <groupId>org.glassfish.connectors.jdbc-ra.jdbc-core</groupId>
-		  <artifactId>jdbc-core</artifactId>		  
+                  <artifactId>jdbc-core</artifactId>
                   <version>${project.parent.version}</version>
                 </artifactItem>
                 <artifactItem>
                   <groupId>org.glassfish.connectors.jdbc-ra.jdbc40</groupId>
-		  <artifactId>jdbc40</artifactId>		  
+                  <artifactId>jdbc40</artifactId>
                   <version>${project.parent.version}</version>
-	        </artifactItem>
+                </artifactItem>
               </artifactItems>
-	      <includes>**/*.class,**/*.properties</includes>
-	      <excludes>**/XAManagedConnectionFactory.class,**/CPManagedConnectionFactory.class,**/DMManagedConnectionFactory.class</excludes>
+              <includes>**/*.class,**/*.properties</includes>
+              <excludes>
+                **/XAManagedConnectionFactory.class,**/CPManagedConnectionFactory.class,**/DMManagedConnectionFactory.class
+              </excludes>
               <outputDirectory>target/__ds_archive</outputDirectory>
             </configuration>
           </execution>
@@ -52,94 +54,96 @@
               <artifactItems>
                 <artifactItem>
                   <groupId>org.glassfish.connectors.jdbc-ra.jdbc-core</groupId>
-		  <artifactId>jdbc-core</artifactId>		  
+                  <artifactId>jdbc-core</artifactId>
                   <version>${project.parent.version}</version>
                 </artifactItem>
                 <artifactItem>
                   <groupId>org.glassfish.connectors.jdbc-ra.jdbc40</groupId>
-		  <artifactId>jdbc40</artifactId>		  
+                  <artifactId>jdbc40</artifactId>
                   <version>${project.parent.version}</version>
-	        </artifactItem>
+                </artifactItem>
               </artifactItems>
-	      <includes>**/*.class,**/*.properties</includes>
-	      <excludes>**/XAManagedConnectionFactory.class,**/DSManagedConnectionFactory.class,**/DMManagedConnectionFactory.class</excludes>
+              <includes>**/*.class,**/*.properties</includes>
+              <excludes>
+                **/XAManagedConnectionFactory.class,**/DSManagedConnectionFactory.class,**/DMManagedConnectionFactory.class
+              </excludes>
               <outputDirectory>target/__cp_archive</outputDirectory>
             </configuration>
           </execution>
         </executions>
-      </plugin>	
-
-      <plugin>
-	<groupId>org.apache.maven.plugins</groupId>
-	<artifactId>maven-jar-plugin</artifactId>
-	<executions>
-          <execution>
-            <id>ds_build-jar</id>
-	    <phase>package</phase>
-	    <goals>
-              <goal>jar</goal>
-	    </goals>
-	    <configuration>
-	      <classesDirectory>target/__ds_archive</classesDirectory>
-	      <finalName>ds</finalName>
-	      <outputDirectory>target/__ds_jar</outputDirectory>
-              <includes>
-                <include>**/*.class</include>
-                <include>**/LocalStrings.properties</include>
-              </includes>
-	    </configuration>
-	  </execution>
-	  <execution>
-            <id>cp_build-jar</id>
-	    <phase>package</phase>
-	    <goals>
-              <goal>jar</goal>
-	    </goals>
-	    <configuration>
-	      <classesDirectory>target/__cp_archive</classesDirectory>
-	      <finalName>cp</finalName>
-	      <outputDirectory>target/__cp_jar</outputDirectory>
-              <includes>
-                <include>**/*.class</include>
-                <include>**/LocalStrings.properties</include>
-              </includes>
-	    </configuration>
-          </execution>
-	</executions>
       </plugin>
 
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>	    
-	<artifactId>maven-rar-plugin</artifactId>
-	<executions>
-	  <execution>
-	    <id>ds_build-rar</id>
-	    <phase>package</phase>
-	    <goals>
-	      <goal>rar</goal>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>ds_build-jar</id>
+            <phase>package</phase>
+            <goals>
+              <goal>jar</goal>
             </goals>
-	    <configuration>
-	      <finalName>jdbc-ra_ds</finalName>
-	      <manifestFile>xml/META-INF/MANIFEST.MF</manifestFile>
-	      <raXmlFile>xml/ds/ra.xml</raXmlFile>
-	      <rarSourceDirectory>target/__ds_jar</rarSourceDirectory>
-	      <includeJar>false</includeJar>
-	      <workDirectory>target/__ds_tmp</workDirectory>
+            <configuration>
+              <classesDirectory>target/__ds_archive</classesDirectory>
+              <finalName>ds</finalName>
+              <outputDirectory>target/__ds_jar</outputDirectory>
+              <includes>
+                <include>**/*.class</include>
+                <include>**/LocalStrings.properties</include>
+              </includes>
             </configuration>
-	  </execution>
-	  <execution>
-            <id>cp_build-rar</id>
-	    <phase>package</phase>
-	    <goals>
-	      <goal>rar</goal>
+          </execution>
+          <execution>
+            <id>cp_build-jar</id>
+            <phase>package</phase>
+            <goals>
+              <goal>jar</goal>
             </goals>
-	    <configuration>
-              <finalName>jdbc-ra_cp</finalName>
-	      <manifestFile>xml/META-INF/MANIFEST.MF</manifestFile>
-	      <raXmlFile>xml/cp/ra.xml</raXmlFile>
-	      <rarSourceDirectory>target/__cp_jar</rarSourceDirectory>
+            <configuration>
+              <classesDirectory>target/__cp_archive</classesDirectory>
+              <finalName>cp</finalName>
+              <outputDirectory>target/__cp_jar</outputDirectory>
+              <includes>
+                <include>**/*.class</include>
+                <include>**/LocalStrings.properties</include>
+              </includes>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-rar-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>ds_build-rar</id>
+            <phase>package</phase>
+            <goals>
+              <goal>rar</goal>
+            </goals>
+            <configuration>
+              <finalName>jdbc-ra_ds</finalName>
+              <manifestFile>xml/META-INF/MANIFEST.MF</manifestFile>
+              <raXmlFile>xml/ds/ra.xml</raXmlFile>
+              <rarSourceDirectory>target/__ds_jar</rarSourceDirectory>
               <includeJar>false</includeJar>
-	      <workDirectory>target/__cp_tmp</workDirectory>
+              <workDirectory>target/__ds_tmp</workDirectory>
+            </configuration>
+          </execution>
+          <execution>
+            <id>cp_build-rar</id>
+            <phase>package</phase>
+            <goals>
+              <goal>rar</goal>
+            </goals>
+            <configuration>
+              <finalName>jdbc-ra_cp</finalName>
+              <manifestFile>xml/META-INF/MANIFEST.MF</manifestFile>
+              <raXmlFile>xml/cp/ra.xml</raXmlFile>
+              <rarSourceDirectory>target/__cp_jar</rarSourceDirectory>
+              <includeJar>false</includeJar>
+              <workDirectory>target/__cp_tmp</workDirectory>
             </configuration>
           </execution>
         </executions>
@@ -150,32 +154,32 @@
         <artifactId>maven-antrun-plugin</artifactId>
         <executions>
           <execution>
-            <id>remove</id>		  
-	    <phase>package</phase>
-	    <goals>
+            <id>remove</id>
+            <phase>package</phase>
+            <goals>
               <goal>run</goal>
-            </goals>	    
-	    <configuration>
+            </goals>
+            <configuration>
               <tasks>
-                <delete dir="target/__ds_archive"/> 
-		<delete dir="target/__ds_jar"/>
-		<delete dir="target/__cp_archive"/>
-		<delete dir="target/__cp_jar"/>
-	      </tasks>
+                <delete dir="target/__ds_archive"/>
+                <delete dir="target/__ds_jar"/>
+                <delete dir="target/__cp_archive"/>
+                <delete dir="target/__cp_jar"/>
+              </tasks>
             </configuration>
-	  </execution>
+          </execution>
         </executions>
       </plugin>
     </plugins>
 
     <resources>
-	    <resource>
-		    <directory>target</directory>
-		    <includes>
-			    <include>*.rar</include>
-	    </includes>
-    </resource>
-    </resources>     
+      <resource>
+        <directory>target</directory>
+        <includes>
+          <include>*.rar</include>
+        </includes>
+      </resource>
+    </resources>
   </build>
 
   <!--<dependencies>
@@ -192,11 +196,11 @@
       <version>${project.parent.version}</version>
     </dependency>-->
 
-    <!--<dependency>
-      <groupId>org.glassfish.connectors.jdbc-ra.jdbc30</groupId>
-      <artifactId>jdbc30</artifactId>
-      <version>${project.parent.version}</version>
-    </dependency>-->
+  <!--<dependency>
+    <groupId>org.glassfish.connectors.jdbc-ra.jdbc30</groupId>
+    <artifactId>jdbc30</artifactId>
+    <version>${project.parent.version}</version>
+  </dependency>-->
 
-    <!--</dependencies>-->
+  <!--</dependencies>-->
 </project>
