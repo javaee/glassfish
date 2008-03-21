@@ -115,6 +115,7 @@ public final class DelegateToConfigBeanDelegate extends DelegateBase
     getXMLName( final String amxName )
     {
        //debug( "getXMLName " + amxName );
+       debug( "Leaf element names: " + CollectionUtil.toString(mConfigBean.getLeafElementNames()) );
        
         String xmlName = NameMapping.getXMLName( amxName );
         if ( xmlName == null )

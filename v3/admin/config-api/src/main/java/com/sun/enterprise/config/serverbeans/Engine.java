@@ -58,7 +58,7 @@ import java.util.List;
     "description",
     "property"
 }) */
-//@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.EngineConfig")
+@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.EngineConfig", nameHint="sniffer")
 @Configured
 public interface Engine extends ConfigBeanProxy, Injectable, Module {
 
