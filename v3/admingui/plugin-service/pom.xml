@@ -46,7 +46,7 @@
     </parent>
     <groupId>org.glassfish.admingui</groupId>
     <artifactId>console-plugin-service</artifactId>
-    <version>10.0-SNAPSHOT</version>
+    <version>1.0-SNAPSHOT</version>
     <packaging>hk2-jar</packaging>
     <name>Admin GUI Integration</name>
     <description>Glassfish V3 Admin Console Integration</description>
