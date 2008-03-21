@@ -99,13 +99,6 @@ public class BackupCommands extends BaseLifeCycleCommand
 	 */
 	public void runCommand() throws CommandException, CommandValidationException
 	{
-        Map<String,String> props = getSystemProperties();
-        Set<String> set = props.keySet();
-        
-        for(String name : set) {
-            System.out.println(name + " = " + props.get(name));
-        }
-            
 		validateOptions();
 		
 		try
