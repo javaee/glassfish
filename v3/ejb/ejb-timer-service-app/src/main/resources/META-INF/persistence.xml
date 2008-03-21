@@ -3,5 +3,9 @@
           <jta-data-source>jdbc/__TimerPool</jta-data-source>
           <mapping-file>__ejb_timer_mappings.xml</mapping-file>
           <class>com.sun.ejb.containers.TimerState</class>
+          <exclude-unlisted-classes/>
+          <properties>
+            <property name="eclipselink.weaving" value="false"/>
+        </properties>
     </persistence-unit>
 </persistence>
