@@ -42,12 +42,12 @@ import java.beans.PropertyVetoException;
 import java.beans.PropertyChangeEvent;
 import java.lang.reflect.Proxy;
 import java.lang.reflect.Method;
-import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.logging.Logger;
 import java.util.logging.Level;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Map;
+import java.util.*;
+import org.jvnet.tiger_types.Types;
 
 /**
   * <p>
@@ -334,7 +334,7 @@ public class ConfigSupport {
                 if (prop==null) {
                     throw new TransactionFailure("Unknown property name " + xmlName + " on " + source.getProxyType(), null);
                 }
-                writeable.setter(writeable.getProperty(xmlName), change.getValue(), String.class);
+                writeable.setter(prop, change.getValue(), String.class);
             }
         }
         try {
@@ -349,5 +349,133 @@ public class ConfigSupport {
             t.rollback();
             throw e;
         }
+    }
+
+    /**
+     * Returns the list of sub-elements supported by a ConfigBean
+     * @param bean config bean
+     * @return array of classes reprensenting the sub elements of a particular
+     * @throws ClassNotFoundException for severe errors with the model associated
+     * with the passed config bean.
+     */
+    public static Class<?>[] getSubElementsTypes(ConfigBean bean)
+        throws ClassNotFoundException {
+
+        List<Class<?>> subTypes = new ArrayList<Class<?>>();
+        for (ConfigModel.Property element : bean.model.elements.values()) {
+            ConfigModel elementModel =  ((ConfigModel.Node) element).model;
+            Class<?> subType = elementModel.classLoaderHolder.get().loadClass(elementModel.targetTypeName);
+            subTypes.add(subType);
+        }
+        return subTypes.toArray(new Class[subTypes.size()]);
+    }
+
+
+    /**
+     * Creates a new child of the passed child and add it to the parent's live
+     * list of elements. The child is also initialized with the attributes passed
+     * where each key represent the xml property name for the attribute and the value
+     * represent the attribute's value.
+     *
+     * This code will be executed within a Transaction and can therefore throw
+     * a TransactionFailure when the creation or settings of attributes failed.
+     *
+     * Example creating a new http-listener element under http-service
+     *      ConfigBean httpService = ... // got it from somwhere.
+     *      Map<String, String> attributes = new HashMap<String, String>();
+     *      attributes.put("id", "jerome-listener");
+     *      attributes.put("enabled", "true");
+     *      ConfigSupport.createAndSet(httpService, HttpListener.class, attributes);
+     *
+     * @param parent parent config bean to which the child will be added.
+     * @param childType child type
+     * @param attributes map of key value pair to set on the newly created child
+     * @throws TransactionFailure if the creation or attribute settings failed
+     */
+    public static void createAndSet(
+                final ConfigBean parent,
+                final Class<? extends ConfigBeanProxy> childType,
+                final Map<String, String> attributes)
+        throws TransactionFailure {
+
+
+        ConfigBeanProxy readableView = parent.getProxy(parent.getProxyType());
+        ConfigSupport.apply(new SingleConfigCode<ConfigBeanProxy>() {
+            /**
+             * Runs the following command passing the configration object. The code will be run
+             * within a transaction, returning true will commit the transaction, false will abort
+             * it.
+             *
+             * @param param is the configuration object protected by the transaction
+             * @return any object that should be returned from within the transaction code
+             * @throws java.beans.PropertyVetoException
+             *          if the changes cannot be applied
+             *          to the configuration
+             */
+            public Object run(ConfigBeanProxy param) throws PropertyVetoException, TransactionFailure {
+
+                // create the child
+                ConfigBeanProxy child = ConfigSupport.createChildOf(param, childType);
+
+                // add the child to the parent.
+                WriteableView writeableParent = (WriteableView) Proxy.getInvocationHandler(param);
+                Class parentProxyType = parent.getProxyType();
+
+                // first we need to find the element associated with this type
+                ConfigModel.Property element = null;
+                for (ConfigModel.Property e : parent.model.elements.values()) {
+                    ConfigModel elementModel =  ((ConfigModel.Node) e).model;
+                    if (elementModel.targetTypeName.equals(childType.getName())) {
+                        element = e;
+                        break;
+                    }
+                }
+                // now depending whether this is a collection or a single leaf,
+                // we need to process this setting differently
+                if (element != null) {
+                    if (element.isCollection()) {
+                        // this is kind of nasty, I have to find the method that returns the collection
+                        // object because trying to do a element.get without having the parametized List
+                        // type will not work.
+                        for (Method m : parentProxyType.getMethods()) {
+                            final Class returnType = m.getReturnType();
+                            if (Collection.class.isAssignableFrom(returnType)) {
+                                // this could be it...
+                                if (!(m.getGenericReturnType() instanceof ParameterizedType))
+                                    throw new IllegalArgumentException("List needs to be parameterized");
+                                final Class itemType = Types.erasure(Types.getTypeArgument(m.getGenericReturnType(), 0));
+                                if (itemType.getName().equals(childType.getName())) {
+                                    List list = (List) element.get(parent, m.getGenericReturnType());
+                                    if (list != null) {
+                                        list.add(child);
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    } else {
+                        // much simpler, I can use the setter directly.
+                        writeableParent.setter(element, child, childType);
+                    }
+                } else {
+                    throw new TransactionFailure("Parent " + parent.getProxyType() + " does not have a child of type " + childType);
+                }
+
+                if (attributes==null) {
+                    return child;
+                }
+                
+                WriteableView writeableChild = (WriteableView) Proxy.getInvocationHandler(child);
+                for (Map.Entry<String, String> change : attributes.entrySet()) {
+
+                    ConfigModel.Property prop = writeableChild.getProperty(change.getKey());
+                    if (prop==null) {
+                        throw new TransactionFailure("Unknown property name " + change.getKey() + " on " + childType);
+                    }
+                    writeableChild.setter(prop, change.getValue(), String.class);
+                }
+                return child;
+            }
+        }, readableView);
     }
  }
