@@ -49,7 +49,7 @@ public class ClassLoaderProxy extends URLClassLoader {
         stop();
     }
 
-    protected synchronized Class<?> loadClass(String name, boolean resolve, boolean followImports)
+    protected Class<?> loadClass(String name, boolean resolve, boolean followImports)
             throws ClassNotFoundException {
         // First, check if the class has already been loaded
         Class c = findLoadedClass(name);
@@ -121,7 +121,7 @@ public class ClassLoaderProxy extends URLClassLoader {
     /**
      * {@link #findClass(String)} except the classloader punch-in hack.
      */
-    /*package*/ Class findClassDirect(String name) throws ClassNotFoundException {
+    /*package*/ synchronized Class findClassDirect(String name) throws ClassNotFoundException {
         Class c = findLoadedClass(name);
         if(c!=null) return c;
         try {
