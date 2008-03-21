@@ -112,6 +112,7 @@ public class ASenvPropertyReader {
         setEnvToPropMap();
         //props.putAll(System.getProperties());
         props.put(SystemPropertyConstants.INSTALL_ROOT_PROPERTY, installDir.getPath());
+        props.put(SystemPropertyConstants.CONFIG_ROOT_PROPERTY, configDir.getPath());
         setProperties();
         postProcess();
         
