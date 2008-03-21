@@ -242,6 +242,16 @@ public class MiniXmlParserTest {
         }
         
     }
+     /*
+     * Verify the right logfile name is returned.
+     */
+    @Test
+    public void test11() throws MiniXmlParserException {
+            MiniXmlParser instance = new MiniXmlParser(adminport, "server");
+            assertEquals(instance.getLogFilename(), "${com.sun.aas.instanceRoot}/logs/server.log");
+    }
+    
+    
     
     private static File hasProfiler;
     private static File wrongOrder;

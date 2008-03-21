@@ -110,6 +110,9 @@ public class MiniXmlParser {
         return adminPorts;
     }
  
+    public String getLogFilename() {
+        return logFilename;
+    }
     ///////////////////////////////////////////////////////////////////////////
     ////////   Everything below here is private    ////////////////////////////
     ///////////////////////////////////////////////////////////////////////////
@@ -211,6 +214,9 @@ public class MiniXmlParser {
         // I.e. <system-property> AND <java-config> are both children of <config>
         // Note that if the system-property already exists -- we do NOT override it.
         // the <server> system-property takes precedence
+        
+        // bnevins - 3/20/08 added support for log-service
+        
         while (true) {
             int event = next();
             // return when we get to the </config>
@@ -230,6 +236,9 @@ public class MiniXmlParser {
                 }
                 else if (name.equals("http-service")) {
                     parseHttpService();
+                }
+                else if (name.equals("log-service")) {
+                    parseLogService();
                 }
                 else {
                     skipTree(name);
@@ -508,6 +517,15 @@ public class MiniXmlParser {
     }
 
     
+    private void parseLogService() {
+        // cursor --> <log-service> in <config>
+        // currently I just need the 'file' attribute.
+        
+        Map<String,String> map = parseAttributes();
+        logFilename = map.get("file");
+    }
+
+    
     private void parseHttpService() throws XMLStreamException, EndDocumentException {
         // cursor --> <http-service> in <config>
         // we are looking for the virtual server: "__asadmin".
@@ -622,6 +640,7 @@ public class MiniXmlParser {
     private boolean valid = false;
     private Set<Integer> adminPorts = new HashSet<Integer>();
     private String domainName;
+    private String logFilename;
     private static LocalStringsImpl strings = new LocalStringsImpl(MiniXmlParser.class);
     // this is so we can return from arbitrarily nested calls
     private static class EndDocumentException extends Exception {
