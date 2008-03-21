@@ -44,7 +44,8 @@ import java.util.Iterator;
 import java.util.Enumeration;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
-
+import com.sun.enterprise.universal.glassfish.ASenvPropertyReader;
+import java.util.Collections;
 /**
  *  <code>Command<code> object is the super Base class for all the commands.
  *  This is a generic Command Class which would fit 
@@ -565,4 +566,29 @@ abstract public class Command implements ICommand
     {
         return searchStr.indexOf(delimeter, fromIndex);
     }
+    
+    /**
+     * Get the Properties of our environment.
+     * In V2 these were set in System.
+     * 
+     * @return an unmodifiable Map of the properties
+     */
+    public final Map<String,String> getSystemProperties()
+    {
+        return systemProps;
+    }
+    
+    /**
+     * Get a Property of our environment.
+     * In V2 these were set in System.
+     * @param name the name of the property
+     * @return the value of the property or null if it doesn't exist.
+     */
+    public final String getSystemProperty(String name)
+    {
+        return systemProps.get(name);
+    }
+    
+    private final static Map<String,String> systemProps = 
+            Collections.unmodifiableMap(new ASenvPropertyReader().getProps());
 }
