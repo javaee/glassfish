@@ -36,36 +36,37 @@
 
 package com.sun.enterprise.configapi.tests;
 
-import org.junit.Before;
-import org.junit.Test;
-import static org.junit.Assert.assertTrue;
-import org.jvnet.hk2.config.*;
 import org.jvnet.hk2.component.Habitat;
-import org.glassfish.config.support.ConfigurationPersistence;
+import org.jvnet.hk2.config.*;
 import org.glassfish.config.support.GlassFishDocument;
+import org.glassfish.config.support.ConfigurationPersistence;
 import com.sun.enterprise.config.serverbeans.HttpService;
-import com.sun.enterprise.config.serverbeans.Config;
+import com.sun.enterprise.config.serverbeans.AccessLog;
 
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLOutputFactory;
-import javax.xml.stream.XMLStreamWriter;
-import java.io.IOException;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.beans.PropertyChangeEvent;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
-import java.util.logging.Level;
+
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamWriter;
+
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.assertTrue;
 
 /**
  * User: Jerome Dochez
- * Date: Mar 12, 2008
- * Time: 8:50:42 PM
+ * Date: Mar 20, 2008
+ * Time: 4:48:14 PM
  */
-public class DirectAccessTest extends ConfigApiTest {
+public class DirectCreationTest extends ConfigApiTest {
 
     Habitat habitat;
-    
+
     /**
      * Returns the file name without the .xml extension to load the test configuration
      * from. By default, it's the name of the TestClass.
@@ -115,18 +116,25 @@ public class DirectAccessTest extends ConfigApiTest {
         };
         try {
             Transactions.get().addTransactionsListener(testListener);
-            ConfigBean config = (ConfigBean) ConfigBean.unwrap(service.getHttpFileCache());
-            ConfigBean config2 = (ConfigBean) ConfigBean.unwrap(service.getHttpProtocol());
-            Map<ConfigBean, Map<String, String>> changes = new HashMap<ConfigBean, Map<String, String>>();
-            Map<String, String> configChanges = new HashMap<String, String>();
-            configChanges.put("max-age-in-seconds", "12543");
-            configChanges.put("medium-file-size-limit-in-bytes", "1200");
-            Map<String, String> config2Changes = new HashMap<String, String>();
-            config2Changes.put("version", "12351");
-            changes.put(config, configChanges);
-            changes.put(config2, config2Changes);
 
-            ConfigSupport.apply(changes);
+            ConfigBean serviceBean = (ConfigBean) ConfigBean.unwrap(service);
+            Class<?>[] subTypes = null;
+            try {
+                subTypes = ConfigSupport.getSubElementsTypes(serviceBean);
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                throw new RuntimeException(e);
+            }
+
+            for (Class<?> subType : subTypes) {
+                if (subType.getName().endsWith("HttpListener")) {
+                    Map<String, String> configChanges = new HashMap<String, String>();
+                    configChanges.put("id", "funky-listener");
+                    ConfigSupport.createAndSet(serviceBean, (Class<? extends ConfigBeanProxy>)subType, configChanges);
+                }
+            }
+
+            ConfigSupport.createAndSet(serviceBean, AccessLog.class, null);
 
         } finally {
             Transactions.get().waitForDrain();
@@ -137,9 +145,7 @@ public class DirectAccessTest extends ConfigApiTest {
 
         final String resultingXml = baos.toString();
         logger.fine(resultingXml);
-        assertTrue(resultingXml.indexOf("max-age-in-seconds=\"12543\"")!=-1);
-        assertTrue(resultingXml.indexOf("version=\"12351\"")!=-1);
+        assertTrue(resultingXml.indexOf("id=\"funky-listener\"")!=-1);
     }
 
-    
 }
