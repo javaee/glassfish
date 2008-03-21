@@ -177,6 +177,7 @@ public class RemoteCommand {
                     final HttpURLConnection urlConnection = (HttpURLConnection)url.openConnection(uriConnection);
                     urlConnection.setRequestProperty("User-Agent",
                                                      responseFormatType);
+                    urlConnection.setRequestProperty(HttpConnectorAddress.AUTHORIZATION_KEY, url.getBasicAuthString());
                     urlConnection.connect();
 
                     InputStream in = urlConnection.getInputStream();

@@ -46,7 +46,7 @@ public final class HttpConnectorAddress
 {
     static final String HTTP_CONNECTOR = "http";
     static final String HTTPS_CONNECTOR = "https";
-    private static final String  AUTHORIZATION_KEY     = "Authorization";
+    public static final String  AUTHORIZATION_KEY     = "Authorization";
     private static final String AUTHORIZATION_TYPE = "Basic ";
 
     private String host;
@@ -220,7 +220,7 @@ public final class HttpConnectorAddress
         return uc;
     }
 
-    private final String getBasicAuthString(){
+    public final String getBasicAuthString(){
     /* taking care of the descripancies in the Base64Encoder, for very
        large lengths of passwords and/or usernames.
        Abhijit did the analysis and as per his suggestion, replacing

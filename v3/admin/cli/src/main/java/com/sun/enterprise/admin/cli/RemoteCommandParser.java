@@ -35,12 +35,9 @@
  */
 package com.sun.enterprise.admin.cli;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
-import java.util.Properties;
-import java.util.Enumeration;
 import java.util.ListIterator;
 import java.util.Arrays;
 import java.util.NoSuchElementException;
