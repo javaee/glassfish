@@ -392,7 +392,7 @@ public class ConfigSupport {
      * @param attributes map of key value pair to set on the newly created child
      * @throws TransactionFailure if the creation or attribute settings failed
      */
-    public static void createAndSet(
+    public static ConfigBean createAndSet(
                 final ConfigBean parent,
                 final Class<? extends ConfigBeanProxy> childType,
                 final Map<String, String> attributes)
@@ -400,7 +400,8 @@ public class ConfigSupport {
 
 
         ConfigBeanProxy readableView = parent.getProxy(parent.getProxyType());
-        ConfigSupport.apply(new SingleConfigCode<ConfigBeanProxy>() {
+        ConfigBeanProxy readableChild = (ConfigBeanProxy)
+                ConfigSupport.apply(new SingleConfigCode<ConfigBeanProxy>() {
             /**
              * Runs the following command passing the configration object. The code will be run
              * within a transaction, returning true will commit the transaction, false will abort
@@ -477,5 +478,6 @@ public class ConfigSupport {
                 return child;
             }
         }, readableView);
+        return (ConfigBean) Dom.unwrap(readableChild);
     }
  }
