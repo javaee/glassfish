@@ -578,6 +578,7 @@ public class ProgressObjectImpl implements DFProgressObject {
     private DFDeploymentStatus preSetupForAbnormalExit(String errorMsg) {
         String i18nmsg = localStrings.getLocalString(
                 "enterprise.deployment.client.action_failed", 
+                "Action failed {0}",
                 errorMsg);
         DFDeploymentStatus result = new DFDeploymentStatus();
         result.setStageStatus(DFDeploymentStatus.Status.FAILURE);

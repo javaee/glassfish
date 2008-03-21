@@ -45,7 +45,7 @@
     </parent>    
     <artifactId>deployment-client</artifactId>
     <version>${pe.version}</version>
-    <packaging>hk2-jar</packaging>
+    <packaging>jar</packaging>
     <name>Deployment Client Classes and Interfaces</name>
 
     <developers>
@@ -69,7 +69,19 @@
         </developer>
     </developers>
     <build>
-	<resources>
+        <plugins>
+            <plugin>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+        </plugins>
+        <resources>
             <resource>
                 <directory>src/main/java</directory>
                 <includes>

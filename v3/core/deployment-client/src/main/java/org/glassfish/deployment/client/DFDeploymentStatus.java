@@ -233,7 +233,7 @@ public class DFDeploymentStatus implements java.io.Serializable {
 	 * @param throwable
 	 */
 	public void setStageException(Throwable throwable) {
-            stageException = new Throwable(throwable.getMessage());
+            stageException = new Throwable(throwable.toString());
             stageException.setStackTrace(throwable.getStackTrace());
 	}
 
@@ -488,11 +488,11 @@ public class DFDeploymentStatus implements java.io.Serializable {
                 // the status message 
                 if (t != null && t.getMessage() != null && 
                     !t.getMessage().equals(msg)) {
-                    pw.println(t.getLocalizedMessage());
+                    pw.println(t.toString());
                 }
             } else {
                 if (t != null) {
-                    pw.println(t.getLocalizedMessage());
+                    pw.println(t.toString());
                 }
             }
         }
