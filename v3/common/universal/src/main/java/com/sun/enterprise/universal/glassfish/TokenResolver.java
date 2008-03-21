@@ -97,7 +97,7 @@ public class TokenResolver {
      * @param s String to be token-replaced
      * @return the replaced String
      */
-    private String resolve(String s)
+    public String resolve(String s)
     {
         if (hasWindowsToken(s)) {
             s = windowsToUnixTokens(s);
