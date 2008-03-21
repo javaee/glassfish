@@ -94,6 +94,12 @@
             <artifactId>webtier-all</artifactId>
             <version>${pe.version}</version>
         </dependency>
+        <dependency>
+            <!-- admin GUI extension points should be in modules/ not modules/web -->
+            <groupId>org.glassfish.admingui</groupId>
+            <artifactId>console-plugin-service</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
          <dependency>
             <groupId>org.glassfish.web</groupId>
             <artifactId>web-cli</artifactId>
