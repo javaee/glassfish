@@ -884,6 +884,13 @@ public class AMXImplBase extends MBeanImplBase
                 try
                 {
                     result	= delegateGetAttribute( name );
+                    
+                    // special case handling: String to String[]
+                    if ( result.getClass() == String.class &&
+                            getAttributeType(name).equals( String[].class.getName() ) )
+                    {
+                        result = ((String)result).split( ":" );
+                    }
                 }
                 catch( Exception e )
                 {
@@ -1293,7 +1300,7 @@ public class AMXImplBase extends MBeanImplBase
 	{
 		final AttributeList	successList	= new AttributeList();
         
-		trace( "AMXImplBase.setAttributes = " + SmartStringifier.toString( attrs ) );
+		System.out.println( "AMXImplBase.setAttributes = " + SmartStringifier.toString( attrs ) );
 		
         final AttributeList delegatedAttrs = new AttributeList();
         final AttributeList otherAttrs = new AttributeList();

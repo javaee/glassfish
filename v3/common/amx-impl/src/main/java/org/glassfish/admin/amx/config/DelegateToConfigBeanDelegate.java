@@ -71,6 +71,7 @@ import com.sun.appserv.management.config.PropertyConfig;
 
 import com.sun.appserv.management.util.misc.CollectionUtil;
 import com.sun.appserv.management.util.misc.ExceptionUtil;
+import com.sun.appserv.management.util.misc.StringUtil;
 import com.sun.appserv.management.util.jmx.JMXUtil;
 
 import org.glassfish.api.amx.AMXConfigInfo;
@@ -201,7 +202,27 @@ public final class DelegateToConfigBeanDelegate extends DelegateBase
         oldValues.clear();
         
         // note that attributeListToStringMap() auto-converts types to 'String' which is desired here
-        final Map<String, String> amxAttrs = JMXUtil.attributeListToStringMap( attrsIn );
+        final Map<String, Object> amxAttrs = JMXUtil.attributeListToValueMap( attrsIn );
+        
+        // auto convert certain special types such as String[] to String
+        for( final String key : amxAttrs.keySet() )
+        {
+            final Object value = amxAttrs.get(key);
+            
+            String valueString = "" + value;
+            if ( value.getClass() != String.class )
+            {
+                if ( value.getClass() == String[].class )
+                {
+                    valueString = StringUtil.toString( ":", (String[])value );
+                }
+            }
+            else
+            {
+                valueString = "" + value;
+            }
+            amxAttrs.put( key, valueString );
+        }
         
         // now map the AMX attribute names to xml attribute names
         final Map<String,String> xmlAttrs = new HashMap<String,String>();
@@ -210,7 +231,8 @@ public final class DelegateToConfigBeanDelegate extends DelegateBase
             final String xmlName = getXMLName(amxAttrName);
             if ( xmlName != null )
             {
-                xmlAttrs.put( xmlName, amxAttrs.get(amxAttrName));
+                final String value = (String)amxAttrs.get(amxAttrName);
+                xmlAttrs.put( xmlName, value);
             }
         }
         
