@@ -249,6 +249,16 @@ public class Dom extends LazyInhabitant implements InvocationHandler, Observable
     public Set<String> getAttributeNames() {
         return model.getAttributeNames();
     }
+    
+    public Set<String> getLeafElementNames() {
+        final List<Child> children = this.children; // fix the snapshot that we'll work with
+
+        final Set<String> names = new HashSet<String>();
+        for (final Child child : children) {
+            names.add( child.name );
+        }
+        return names;
+    }
 
     /**
      * Obtains the plural attribute value. Values are separate by ',' and surrounding whitespaces are ignored.
@@ -465,6 +475,7 @@ public class Dom extends LazyInhabitant implements InvocationHandler, Observable
         }
         return r;
     }
+
 
     /**
      * Picks up all leaf-element values of the given name, without variable expansion.
