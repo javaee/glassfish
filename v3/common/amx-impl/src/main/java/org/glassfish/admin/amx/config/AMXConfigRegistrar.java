@@ -50,7 +50,7 @@ public final class AMXConfigRegistrar implements CageBuilder
         final ConfigBean cb = asConfigBean(inhabitant);
         if ( cb != null )
         {
-         //   final ConfigBean parent = asConfigBean(cb.parent());
+            final ConfigBean parent = asConfigBean(cb.parent());
         //debug( "AMXConfigRegistrar.onEntered: " + cb.getProxyType().getName() + " with parent " + (parent == null ? "null" : parent.getProxyType().getName()) );
         
             mConfigLoader.handleConfigBean( cb );
