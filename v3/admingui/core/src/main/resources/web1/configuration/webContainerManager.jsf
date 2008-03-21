@@ -36,8 +36,8 @@
 <!-- configuration/webContainerManager.jsf -->
 <sun:page>
  <!beforeCreate
-    setResourceBundle(key="i18n" bundle="com.sun.enterprise.tools.admingui.resources.Strings");
-	setResourceBundle(key="help" bundle="com.sun.enterprise.tools.admingui.resources.Helplinks")
+    setResourceBundle(key="i18n" bundle="core.Strings");
+    #setResourceBundle(key="help" bundle="core.Helplinks")
     setPageSessionAttribute(key="configName" value="$requestParameter{configName}");
     getWebManagerProps(ConfigName="#{configName}", ReapInterval=>$attribute{reapInterval}, MaxSessions=>$attribute{maxSessions}, 
     SessFileName=>$attribute{sessFileName}, SessionIdGen=>$attribute{sessionIdGen},
@@ -51,7 +51,7 @@
         <sun:body id="body3" onLoad="javascript: synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
             <sun:form id="propertyForm">
 #include treeBreadcrumbs.inc
-#include "configuration/webContainerTabs.inc"            
+#include "web1/configuration/webContainerTabs.inc"            
 #include "alertMsg.inc"            
                 <!-- Page Title -->
                  <sun:title id="propertyContentPage" title="$resource{i18n.webContainer.managerProp}" > 
@@ -100,11 +100,11 @@
                             </sun:property>
                          </sun:propertySheetSection>
                      </sun:propertySheet>    
-#include "propertyTable.inc"                      
+#include "shared/propertyTable.inc"                      
                  
 	<sun:hidden id="helpKey" value="$resource{help.webContainerManager}" />
             </sun:form>
         </sun:body>
-#include "changeButtonsJS.inc"         
+#include "shared/changeButtonsJS.inc"         
     </sun:html>
 </sun:page>

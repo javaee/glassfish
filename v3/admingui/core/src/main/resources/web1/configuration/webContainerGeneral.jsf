@@ -55,7 +55,7 @@
 #include "web1/configuration/webContainerTabs.inc"
 #include "alertMsg.inc"  
                 <!-- Page Title -->
-                <sun:title id="propertyContentPage" title="ABC$resource{i18n.headings.webGeneral}" > 
+                <sun:title id="propertyContentPage" title="$resource{i18n.headings.webGeneral}" > 
                     <!-- Buttons  -->                    
                     <!facet pageButtonsTop>
                     <sun:panelGroup id="topButtons">
@@ -77,7 +77,7 @@
                     </sun:panelGroup>
                     </facet> 
                 </sun:title>
- #include "propertyTable.inc"                       
+#include "shared/propertyTable.inc"                       
 	<sun:hidden id="helpKey" value="$resource{help.webContainerGeneral}" />
             </sun:form>
         </sun:body>

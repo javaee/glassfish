@@ -36,8 +36,8 @@
 <!-- configuration/webContainerSession.jsf -->
 <sun:page>
  <!beforeCreate
-    setResourceBundle(key="i18n" bundle="com.sun.enterprise.tools.admingui.resources.Strings");
-    setResourceBundle(key="help" bundle="com.sun.enterprise.tools.admingui.resources.Helplinks");
+    setResourceBundle(key="i18n" bundle="core.Strings");
+    #setResourceBundle(key="help" bundle="core.Helplinks");
     setPageSessionAttribute(key="configName" value="$requestParameter{configName}");
     getWebSessionProps(ConfigName="#{configName}", SessionTimeout=>$attribute{sessionTimeout}
         Properties=>$page{props});
@@ -46,12 +46,13 @@
 #include "shared/restart.inc" 
  <sun:html id="html2">
         <sun:head id="propertyhead" title="$resource{i18n.webContainer.sessionProp}" >
-            <sun:script url="../js/restart.js" />
+             <sun:script url="/resource/js/restart.js" />
+             <sun:script url="/resource/js/adminjsf.js" />
         </sun:head>
         <sun:body id="body3" onLoad="javascript: synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
             <sun:form id="propertyForm">
 #include treeBreadcrumbs.inc
-#include "configuration/webContainerTabs.inc"  
+#include "web1/configuration/webContainerTabs.inc"  
 #include "alertMsg.inc"
                 <!-- Page Title -->
                  <sun:title id="propertyContentPage" title="$resource{i18n.webContainer.sessionProp}" > 
@@ -88,11 +89,11 @@
                             </sun:property>
                          </sun:propertySheetSection>
                      </sun:propertySheet>    
-#include "propertyTable.inc"                     
+#include "shared/propertyTable.inc"                     
                  
 	<sun:hidden id="helpKey" value="$resource{help.webContainerSession}" />
             </sun:form>
         </sun:body>
-#include "changeButtonsJS.inc"         
+#include "shared/changeButtonsJS.inc"         
     </sun:html>
 </sun:page>
