@@ -61,41 +61,7 @@
     </developers>
     
     <build>
-        <plugins>
-            <plugin>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <phase>process-sources</phase>
-                        <configuration>
-                            <tasks>
-                                <delete file="src/main/java/com/sun/appserv/server/util/Version.java"/>
-                                <copy file="src/main/java/com/sun/appserv/server/util/VersionTemplate"
-                                      tofile="src/main/java/com/sun/appserv/server/util/Version.java">
-                                    <filterset>
-                                        <filter token="BRAND_NAME" value="${brand_name}"/>
-                                        <filter token="PRODUCT_NAME" value="${product.name}"/>
-                                        <filter token="ABBREV_PRODUCT_NAME" value="${abbrev_product_name}"/>
-                                        <filter token="FULL_VERSION" value="${pe.version}"/>
-                                        <filter token="MAJOR_VERSION" value="${major_version}"/>
-                                        <filter token="MINOR_VERSION" value="${minor_version}"/>
-                                        <filter token="BUILD_ID" value="${build.id}"/>
-                                    </filterset>
-                                </copy>
-                            </tasks>
-                        </configuration>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
         <resources>
-            <resource>
-                <targetPath>META-INF/services</targetPath>
-                <directory>target/generated</directory>
-            </resource>
             <resource>
                 <directory>src/main/java</directory>
                 <includes>

@@ -386,6 +386,27 @@ public abstract class Archivist<T extends RootDeploymentDescriptor> {
     }
 
     /**
+     * Returns the scanner for this archivist, usually it is the scanner regitered
+     * with the same module type as this archivist, but subclasses can return a
+     * different version
+     *
+     */
+    public Scanner getScanner() {
+        
+        Scanner scanner = null;
+        try {
+            scanner = habitat.getComponent(Scanner.class, getModuleType().toString());
+            if (scanner==null) {
+                logger.log(Level.SEVERE, "Cannot find scanner for " + this.getManifest());
+            }
+        } catch (ComponentException e) {
+            // XXX To do
+            logger.log(Level.SEVERE, "Cannot find scanner for " + this.getModuleType(), e);
+        }
+        return scanner;
+    }
+    
+    /**
      * Process annotations in a bundle descriptor, the annoation processing
      * is dependent on the type of descriptor being passed.
      */
@@ -401,17 +422,7 @@ public abstract class Archivist<T extends RootDeploymentDescriptor> {
             return null;
         }
 
-        Scanner<T> scanner = null;
-        try {
-            scanner = habitat.getComponent(Scanner.class, getModuleType().toString());
-            if (scanner==null) {
-                logger.log(Level.SEVERE, "Cannot find scanner for " + this.getManifest());
-            }
-        } catch (ComponentException e) {
-            // XXX To do
-            logger.log(Level.SEVERE, "Cannot find scanner for " + this.getModuleType(), e);
-        }
-
+        Scanner scanner = getScanner();
         scanner.process(new File(archive.getURI()), bundleDesc, classLoader);
 
         if (!scanner.getElements().isEmpty()) {

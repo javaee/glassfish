@@ -106,7 +106,7 @@ public class AutoDeployService implements Startup, PostConstruct, PreDestroy {
              * Also create the timer and the timer task, reusing them as needed as
              * we need to stop and restart the task.
              */
-            autoDeployerTimer = new Timer("AutoDeployer");
+            autoDeployerTimer = new Timer("AutoDeployer", true);
 
             autoDeployerTimerTask = new TimerTask() {
                     @Override

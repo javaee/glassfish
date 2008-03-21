@@ -71,7 +71,6 @@ import java.util.logging.Logger;
  * @author Jerome Dochez
  */
 @Service
-@Async
 public class ApplicationLoaderService extends ApplicationLifecycle
         implements Startup, PreDestroy, PostConstruct {
 

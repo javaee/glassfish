@@ -392,6 +392,7 @@ public class CommandRunner {
                 msg = adminStrings.getLocalString("adapter.command.notfound", "Command {0} not found", commandName);
             
             report.setMessage(msg);
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             Utils.getDefaultLogger().info(msg);
         }
         return command;

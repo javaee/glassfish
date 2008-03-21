@@ -39,6 +39,7 @@ import org.glassfish.api.ActionReport;
 import org.glassfish.api.container.Adapter;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.PostConstruct;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -48,6 +49,9 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.Properties;
 import java.util.StringTokenizer;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -56,7 +60,7 @@ import java.util.logging.Logger;
  * @author dochez
  */
 @Service
-public class AdminAdapter implements Adapter {
+public class AdminAdapter implements Adapter, PostConstruct {
     
     public final static String PREFIX_URI="/__asadmin";
     public final static Logger logger = LogDomains.getLogger(LogDomains.ADMIN_LOGGER);
@@ -71,7 +75,17 @@ public class AdminAdapter implements Adapter {
     @Inject
     CommandRunner commandRunner;
 
-        
+    ReentrantLock lock=new ReentrantLock();
+
+    public void postConstruct() {
+        lock.lock();
+    }
+
+    public void ready() {
+        lock.unlock();
+        logger.fine("Ready to receive administrative commands");
+    }
+
     /**
      * Call the service method, and notify all listeners
      *
@@ -89,7 +103,9 @@ public class AdminAdapter implements Adapter {
      */
     public void service(Request req, Response res)
         throws Exception {
-        
+
+
+
         Utils.getDefaultLogger().finer("Admin adapter !");
         Utils.getDefaultLogger().finer("Received something on " + req.requestURI());        
         Utils.getDefaultLogger().finer("QueryString = " + req.queryString());
@@ -105,9 +121,19 @@ public class AdminAdapter implements Adapter {
         } else {
             report = new HTMLActionReporter();
         }
-        
-        doCommand(req, report);
-        
+
+        if (lock.isLocked()) {
+            if (lock.tryLock(20L, TimeUnit.SECONDS)) {
+                lock.unlock();
+                doCommand(req,report);
+            } else {
+                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                report.setMessage("V3 cannot process this command at this time, please wait");
+            }
+        } else {
+            doCommand(req, report);        
+        }
+
         InternalOutputBuffer outputBuffer = (InternalOutputBuffer) res.getOutputBuffer();
         res.setStatus(200);
         res.setContentType(report.getContentType());
