@@ -5,6 +5,7 @@
 
 package com.sun.enterprise.admin.launcher;
 
+import com.sun.enterprise.universal.xml.MiniXmlParserException;
 import java.io.*;
 import java.util.*;
 import org.junit.*;
@@ -74,6 +75,52 @@ public class GFLauncherTest {
             System.out.println(s);
         }
          */
+    }
+    /**
+     * Let's fake-launch domain2
+     */
+    @Test
+    public void test3() throws GFLauncherException {
+        info.setDomainName("domain2");
+        launcher.launch();
+        List<String> cmdline = launcher.getCommandLine();
+
+        /*
+        System.out.println("COMMANDLINE:");
+        for(String s : cmdline) {
+            System.out.println(s);
+        }
+         */
+    }
+    /**
+     * Let's fake-launch a domain that doesn't exist
+     * it has an XML error in it.
+     */
+    @Test(expected=GFLauncherException.class)
+    public void test4() throws GFLauncherException {
+        info.setDomainName("NoSuchDomain");
+        launcher.launch();
+        List<String> cmdline = launcher.getCommandLine();
+
+        System.out.println("COMMANDLINE:");
+        for(String s : cmdline) {
+            System.out.println(s);
+        }
+    }
+    /**
+     * Let's fake-launch baddomain
+     * it has an XML error in it.
+     */
+    @Test(expected=GFLauncherException.class)
+    public void test5() throws GFLauncherException {
+        info.setDomainName("baddomain");
+        launcher.launch();
+        List<String> cmdline = launcher.getCommandLine();
+
+        System.out.println("COMMANDLINE:");
+        for(String s : cmdline) {
+            System.out.println(s);
+        }
     }
 
     private static File domain1, domain2, domain3, domain4, domain5;

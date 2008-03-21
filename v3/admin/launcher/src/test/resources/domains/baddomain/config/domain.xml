@@ -54,13 +54,20 @@
     <resource-ref enabled="true" ref="jdbc/__TimerPool"/>
     <resource-ref enabled="true" ref="jdbc/__CallFlowPool"/>
     <resource-ref enabled="true" ref="jdbc/__default"/>
-    <system-property name="foo" value="fooFromServer"/>
+    <!--
+    BAD XML BAD XML BAD XML BAD XML BAD XML BAD XML BAD XML BAD XML BAD XML 
+    BAD XML BAD XML BAD XML BAD XML BAD XML BAD XML BAD XML BAD XML BAD XML 
+    BAD XML BAD XML BAD XML BAD XML BAD XML BAD XML BAD XML BAD XML BAD XML 
+    BAD XML BAD XML BAD XML BAD XML BAD XML BAD XML BAD XML BAD XML BAD XML 
+    BAD XML BAD XML BAD XML BAD XML BAD XML BAD XML BAD XML BAD XML BAD XML 
+    BAD XML BAD XML BAD XML BAD XML BAD XML BAD XML BAD XML BAD XML BAD XML 
+    -->
+    <system-property name="bad" value="xml">
   </server>
  </servers> 
  <configs>
   <config name="server-config" dynamic-reconfiguration-enabled="true">
-        <system-property name="foo" value="fooFromConfig"/>
-      <http-service> 
+    <http-service> 
     <access-log format="%client.name% %auth-user-name% %datetime% %request% %status% %response.length%" rotation-enabled="true" rotation-interval-in-minutes="15" rotation-policy="time" rotation-suffix="yyyy-MM-dd"/>
     <http-listener id="http-listener-1" address="0.0.0.0" port="8080" acceptor-threads="1" security-enabled="false" default-virtual-server="server" server-name="" xpowered-by="true" enabled="true" family="inet" blocking-enabled="false">
 <property name="proxiedProtocols" value="ws/tcp"/>
@@ -195,7 +202,6 @@
    <jvm-options>-Djdbc.drivers=org.apache.derby.jdbc.ClientDriver</jvm-options>
     <jvm-options>-Dcom.sun.enterprise.config.config_environment_factory_class=com.sun.enterprise.config.serverbeans.AppserverConfigEnvironmentFactory</jvm-options>
     <jvm-options>-XX:NewRatio=2</jvm-options>
-    <jvm-options>-DFoo=${foo}</jvm-options>
    </java-config>
    <thread-pools>
         <thread-pool thread-pool-id="thread-pool-1" min-thread-pool-size="0" max-thread-pool-size="200" idle-thread-timeout-in-seconds="120" num-work-queues="1"/>

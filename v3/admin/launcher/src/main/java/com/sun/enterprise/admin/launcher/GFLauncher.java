@@ -157,6 +157,7 @@ public abstract class GFLauncher {
         commandLine.add(classpath);
         commandLine.addAll(debugOptions);
         commandLine.addAll(jvmOptions.toStringArray());
+        commandLine.addAll(propsToJvmOptions(sysPropsFromXml));
         commandLine.addAll(getNativePathCommandLine());
         commandLine.add(getMainClass());
         commandLine.addAll(getInfo().getArgsAsList());
@@ -176,8 +177,8 @@ public abstract class GFLauncher {
         Map<String, String> sysProps =
                 CollectionUtils.propertiesToStringMap(System.getProperties());
         all.putAll(envProps);
-        all.putAll(sysProps);
         all.putAll(asenvProps);
+        all.putAll(sysProps);
         all.putAll(sysPropsFromXml);
         all.putAll(jvmOptions.getCombinedMap());
         all.putAll(profiler.getConfig());
@@ -189,6 +190,7 @@ public abstract class GFLauncher {
         resolver.resolve(javaConfig.getMap());
         resolver.resolve(profiler.getConfig());
         resolver.resolve(debugOptions);
+        resolver.resolve(sysPropsFromXml);
         logFilename = resolver.resolve(logFilename);
     // TODO ?? Resolve sysPropsFromXml ???
     }
@@ -310,7 +312,23 @@ public abstract class GFLauncher {
             GFLauncherLogger.info("commandline", sb.toString());
         }
     }
-
+    private List<String> propsToJvmOptions(Map<String,String> map) {
+        List<String> ss = new ArrayList<String>();
+        Set<String> set = map.keySet();
+        
+        for(String name : set) {
+            String value = map.get(name);
+            String jvm = "-D" + name; 
+            
+            if(value != null) {
+                jvm += "=" + value;
+            }
+            
+            ss.add(jvm);
+        }
+        
+        return ss;
+    }
 
     private GFLauncherInfo info;
     private Map<String, String> asenvProps;
