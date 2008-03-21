@@ -18,6 +18,7 @@ div.j1holtab-selected div a{white-space: nowrap; color:#FFF;}
 div.j1holtab-selected div a:visited{color:#FFF;}
 div.j1holpanel{padding: 15px;}
 div.j1holcontents{margin-left: 40px;}
+div.j1holcontents img{margin-top:9px; margin-bottom:15px;}
 div#j1holframe table.gwt-TabPanel{width: 100%;}
 .hidden{display: none !important}
 .j1holduration{text-align: center;font-weight: bold;padding-top: 9px;}
@@ -38,6 +39,69 @@ ol.j1hollist ol > li{list-style-type: lower-alpha; list-style-image: none;}
 ol.j1hollist ol ol > li{list-style-type: lower-roman; list-style-image: none;}
 div.j1holcontents > h2 {padding-bottom: 10px;}
 /* Codebox settings */
+div.codebox pre {
+        border: solid 1px rgb(150, 150, 150);
+        padding: 6px;
+        font-family: monospace;
+        background-color: #fafafa;
+}
+div.console pre {
+        border: solid 2px rgb(150, 150, 150);
+        padding: 5px;
+        font-family: monospace;
+        font-weight: bold;
+        background-color: black;
+        color: lightgray;
+}
+div.collapseboxclosed, div.collapseboxopen {
+        height: 1px;
+        margin: 0;
+        padding: 0;
+        background-color: rgb(206, 123, 0);
+        position: relative;
+}
+div.collapseboxopen div, div.collapseboxclosed div {
+        position: absolute;
+        top: -6px;
+        left: -11px;
+        height: 11px;
+        width: 11px;
+        z-index: 10;
+}
+div.collapseboxopen div:hover {
+        background-image: url("collapsewidget_open_hover.png");
+}
+div.collapseboxclosed div:hover {
+        background-image: url("collapsewidget_closed_hover.png");
+}
+div.collapseboxopen div {
+        background-image: url("collapsewidget_open.png");
+}
+div.collapseboxclosed div {
+        background-image: url("collapsewidget_closed.png");
+}
+span.collapsed, span.xcollapsed {
+        display: none;
+        color: inherit;
+        background-color: inherit;
+        font-weight: inherit;
+        font-style: inherit;
+        font-variant: inherit;
+}
+span.uncollapsed, span.xcollapsed {
+        display: normal;
+        color: inherit;
+        background-color: inherit;
+        font-weight: inherit;
+        font-style: inherit;
+        font-variant: inherit;
+}
+span.command {
+        font-weight: bold;
+        font-style: italic;
+        color: red;
+}
+div.group {border-top: solid 2px;}
 div.codebox pre a.LineNumber, div.codebox pre a.LineNumber:visited {color: darkgray; font-weight: normal; text-decoration: none}
 div.codebox pre span.Comment, div.codebox pre span.Comment span, div.codebox pre span.Comment a {color: rgb(150, 150, 150); font-weight: normal;}
 div.codebox pre span.DocComment {color: rgb(150, 150, 150); font-weight: normal;}
