@@ -1,7 +1,0 @@
-<project>
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>javaee</groupId>
-  <artifactId>sdk-addon-api</artifactId>
-  <version>@VERSION@</version>
-  <name>Java EE Application Platform SDK Add-On Infrastrucre API</name>
-</project>

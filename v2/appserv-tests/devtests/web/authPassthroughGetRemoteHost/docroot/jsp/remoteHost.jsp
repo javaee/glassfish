@@ -1,1 +1,0 @@
-RemoteHost=${pageContext.request.remoteHost}

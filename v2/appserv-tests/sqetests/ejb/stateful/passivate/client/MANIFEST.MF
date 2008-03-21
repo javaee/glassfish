@@ -1,4 +1,0 @@
-Manifest-Version: 1.0
-Main-Class: sqetests.ejb.stateful.passivate.client.SessionTestClient
-
-

@@ -1,5 +1,0 @@
-<!DOCTYPE REFENTRY PUBLIC "-//Sun Microsystems//DTD DocBook V3.0-Based SolBook Subset V2.0//EN" [
-<!-- SHADOW_PAGE -->
-<!ENTITY %%entity%% SYSTEM "%%target%%">
-]>
-&%%entity%%;

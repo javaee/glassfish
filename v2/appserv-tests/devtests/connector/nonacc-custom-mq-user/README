@@ -1,2 +1,0 @@
-devtest to test P1 issue 6336412 
-tests if a non-default user name password can be used by an appclient to connect to JMS

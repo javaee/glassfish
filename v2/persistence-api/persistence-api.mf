@@ -1,8 +1,0 @@
-Extension-Name: javax.persistence
-Specification-Title: Java(TM) Persistence API Specification
-Specification-Version: @SPECVERSION@
-Specification-Vendor: Sun Microsystems, Inc., Oracle Corp.
-Implementation-Version: @VERSION@
-Implementation-Vendor: Sun Microsystems, Inc., Oracle Corp.
-Implementation-Vendor-Id: javax.persistence
-Implementation-Title: javax.persistence

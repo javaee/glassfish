@@ -1,4 +1,0 @@
-<sun:treeNode	id="jdbcTest"
-		text="My New TreeNode"
-		url="jdbc/jdbcLists.jsf"
-		imageURL="resource/images/instance.gif" />

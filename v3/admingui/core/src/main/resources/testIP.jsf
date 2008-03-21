@@ -1,5 +1,0 @@
-<h:outputText value="Tree IntegrationPoints: #{cps}">
-    <!beforeCreate
-	getIntegrationPoints(type="tree" points=>$attribute{cps});
-    />
-<h:outputText>

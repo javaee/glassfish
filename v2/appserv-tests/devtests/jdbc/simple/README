@@ -1,4 +1,0 @@
-This is a simple unit test for getting a connection. Used container
-authorization.
-test1: get 10 connections in a shot and then close them all
-test2: get a single connection and close it

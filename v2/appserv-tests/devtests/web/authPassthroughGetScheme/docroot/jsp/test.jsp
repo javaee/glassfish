@@ -1,1 +1,0 @@
-Scheme=${pageContext.request.scheme}
