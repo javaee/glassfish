@@ -1,6 +1,6 @@
 
 
-package org.glassfish.admin.amx.loader;
+package org.glassfish.admin.amx.config;
 
 
 import org.jvnet.hk2.component.CageBuilder;

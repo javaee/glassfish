@@ -85,6 +85,8 @@ public class DASJ2EEServerImpl
 	DASJ2EEServerImpl( final ObjectName parentObjectName )
 	{
 		super( "J2EEDomain", parentObjectName, DummyDelegate.INSTANCE );
+        
+        Issues.getAMXIssues().notDone( "DASJ2EEServer needs to account for DAS/non-DAS" );
 	}
 
 /*
@@ -344,8 +346,9 @@ public class DASJ2EEServerImpl
         }
     }
 
+// *********** might be redundant, even problem-causing: this info should all be in the interface already
+/*
     private MBeanInfo  mMBeanInfo = null;
-    
 		public synchronized MBeanInfo
 	getMBeanInfo()
 	{
@@ -434,7 +437,7 @@ public class DASJ2EEServerImpl
                                                 MBeanOperationInfo.ACTION);
 		return dOperations;
 	}
-
+*/
 
 		private void 
 	startRemoteServer() 

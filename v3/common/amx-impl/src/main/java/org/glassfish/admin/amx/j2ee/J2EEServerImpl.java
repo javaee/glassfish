@@ -53,6 +53,7 @@ import org.glassfish.admin.amx.mbean.Delegate;
 
 import org.glassfish.admin.amx.util.Issues;
 
+
 /**
 	JSR 77 extension representing an Appserver standalone server (non-clustered).
     
@@ -182,13 +183,6 @@ public  class J2EEServerImpl
 		}
 		
 		return( result );
-	}
-	
-	    public boolean
-	getRestartRequired()
-	{
-        final Object result  = delegateGetAttributeNoThrow( "RestartRequired" );
-        return Boolean.valueOf( "" + result );
 	}
 }
 

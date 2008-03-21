@@ -67,7 +67,7 @@ import com.sun.appserv.management.util.jmx.JMXUtil;
 /**
 	Encapsulates support code needed for AMX MBeans implementing {@link Container}.
 */
-final class ContainerSupport
+public final class ContainerSupport
 {
     protected static void debug( final String s ) { System.out.println(s); }
     

@@ -33,21 +33,64 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.admin.amx.mbean;
+package org.glassfish.admin.amx.config;
 
-
-import javax.management.ObjectName;
-import javax.management.AttributeList;
-import javax.management.Attribute;
+import java.util.Set;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
-	The interface for "old" Config MBeans having properties.
-*/
-
-public interface V3PropertiesAccess
+    Maintains a cache from AMX Attribute names to XML attribute names.
+    Does <em>not</em> allow for different mapping from the same AMX Attribute name to many
+    different Xml names.
+ */
+final class NameMapping
 {
-	public AttributeList	getProperties();
-	public String			getPropertyValue(String propertyName );
-	public void				setProperty( Attribute attr );
-
+    private static final NameMapping INSTANCE = new NameMapping();
+    
+    private NameMapping() {}
+    
+    private final ConcurrentMap<String,String>  mAMXToXML = new ConcurrentHashMap<String,String>();
+    
+        public static String
+    getXMLName( final String amxName )
+    {
+        return INSTANCE.mAMXToXML.get( amxName );
+    }
+    
+    /** 
+        Match the AMX attribute name to an XML attribute name, adding it to the cache
+        as a side-effect.
+     */
+        public static String
+    matchAMXName( final String amxName, final Set<String> xmlCandidates )
+    {
+        final String amxCanonical = amxName.toLowerCase();
+        String xmlName = null;
+        
+        for (final String xmlCandidate : xmlCandidates )
+        {
+            final String temp = xmlCandidate.replace( "-", "");
+            if ( temp.equals( amxCanonical ) )
+            {
+                xmlName = xmlCandidate;
+                break;
+            }
+        }
+        
+        if ( xmlName != null )
+        {
+            INSTANCE.mAMXToXML.put( amxName, xmlName );
+        }
+        
+        return xmlName;
+    }
 }
+
+
+
+
+
+
+
+

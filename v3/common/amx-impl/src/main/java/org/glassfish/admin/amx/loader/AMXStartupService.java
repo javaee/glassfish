@@ -52,6 +52,9 @@ import org.glassfish.admin.mbeanserver.AppserverMBeanServerFactory;
 
 import org.glassfish.admin.amx.util.SingletonEnforcer;
 
+import org.glassfish.admin.amx.config.AMXConfigRegistrar;
+
+
 /**
     Startup service that waits for AMX to be pinged to load.  At startup, it registers
     itself as an MBean after first loading a JMXXConnector so that the outside world can

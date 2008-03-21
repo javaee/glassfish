@@ -33,64 +33,39 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.admin.amx.mbean;
+package org.glassfish.admin.amx.j2ee;
 
+import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.ConcurrentHashMap;
+
+import javax.management.ObjectName;
+
+import com.sun.appserv.management.j2ee.J2EETypes;
+import com.sun.appserv.management.j2ee.J2EEDomain;
+import com.sun.appserv.management.j2ee.J2EEServer;
+import com.sun.appserv.management.j2ee.J2EECluster;
+import com.sun.appserv.management.base.XTypes;
+
+
+import com.sun.appserv.management.base.Util;
+import com.sun.appserv.management.util.misc.CollectionUtil;
+import com.sun.appserv.management.util.misc.GSetUtil;
+
+import org.glassfish.admin.amx.util.Issues;
+import org.glassfish.admin.amx.mbean.Delegate;
+
+
+import org.glassfish.admin.amx.util.Issues;
 
 /**
-    Maintains a cache from AMX Attribute names to XML attribute names.
-    Does <em>not</em> allow for different mapping from the same AMX Attribute name to many
-    different Xml names.
  */
-final class NameMapping
+public final class DASJ2EEDomainImpl extends J2EEDomainImpl
 {
-    private static final NameMapping INSTANCE = new NameMapping();
-    
-    private NameMapping() {}
-    
-    private final ConcurrentMap<String,String>  mAMXToXML = new ConcurrentHashMap<String,String>();
-    
-        public static String
-    getXMLName( final String amxName )
-    {
-        return INSTANCE.mAMXToXML.get( amxName );
-    }
-    
-    /** 
-        Match the AMX attribute name to an XML attribute name, adding it to the cache
-        as a side-effect.
-     */
-        public static String
-    matchAMXName( final String amxName, final Set<String> xmlCandidates )
-    {
-        final String amxCanonical = amxName.toLowerCase();
-        String xmlName = null;
-        
-        for (final String xmlCandidate : xmlCandidates )
-        {
-            final String temp = xmlCandidate.replace( "-", "");
-            if ( temp.equals( amxCanonical ) )
-            {
-                xmlName = xmlCandidate;
-                break;
-            }
-        }
-        
-        if ( xmlName != null )
-        {
-            INSTANCE.mAMXToXML.put( amxName, xmlName );
-        }
-        
-        return xmlName;
-    }
+		public
+	DASJ2EEDomainImpl( final ObjectName parentObjectName )
+	{
+        super( parentObjectName );
+	}
 }
-
-
-
-
-
-
 
 

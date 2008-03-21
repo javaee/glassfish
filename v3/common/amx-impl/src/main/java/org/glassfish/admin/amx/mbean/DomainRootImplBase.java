@@ -50,6 +50,7 @@ import com.sun.appserv.management.base.NotificationEmitterService;
 
 import com.sun.appserv.management.j2ee.J2EEDomain;
 
+import org.glassfish.admin.amx.j2ee.DASJ2EEDomainImpl;
 import org.glassfish.admin.amx.j2ee.J2EEDomainImpl;
 
 
@@ -170,7 +171,7 @@ public class DomainRootImplBase extends AMXNonConfigImplBase
         final String j2eeDomainName = getObjectName().getDomain();
         childObjectName	= objectNames.buildContaineeObjectName( self, getFullType(),
                 J2EEDomain.J2EE_TYPE, j2eeDomainName, false );
-		mbean	= new J2EEDomainImpl( self );
+		mbean	= new DASJ2EEDomainImpl( self );
         registerChild( mbean, childObjectName );
 
 	}

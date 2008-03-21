@@ -1,5 +1,5 @@
 
-package org.glassfish.admin.amx.loader;
+package org.glassfish.admin.amx.config;
 
 import java.util.Collections;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -26,11 +26,9 @@ import com.sun.appserv.management.util.misc.RunnableBase;
 import com.sun.appserv.management.util.misc.ClassUtil;
 
 import org.glassfish.admin.amx.mbean.Delegate;
-import org.glassfish.admin.amx.mbean.DelegateToConfigBeanDelegate;
-import org.glassfish.admin.amx.mbean.AMXConfigImplBase;
-
 import org.glassfish.admin.amx.util.ObjectNames;
 import org.glassfish.admin.amx.util.AMXConfigInfoResolver;
+import org.glassfish.admin.amx.loader.AMXConfigVoid;
 
 import org.glassfish.admin.amx.util.FeatureAvailability;
 

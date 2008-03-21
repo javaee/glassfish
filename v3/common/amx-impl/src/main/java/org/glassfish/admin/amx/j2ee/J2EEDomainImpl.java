@@ -54,20 +54,20 @@ import com.sun.appserv.management.util.misc.GSetUtil;
 import org.glassfish.admin.amx.util.Issues;
 import org.glassfish.admin.amx.mbean.Delegate;
 
+
+import org.glassfish.admin.amx.util.Issues;
+
 /**
+    Base implementation for the J2EEDomain for DAS and non-DAS server instances.
  */
-public final class J2EEDomainImpl extends J2EEManagedObjectImplBase
+public class J2EEDomainImpl extends J2EEManagedObjectImplBase
 {
 		public
 	J2EEDomainImpl( final ObjectName parentObjectName )
 	{
         super( J2EEDomain.J2EE_TYPE, J2EEDomain.J2EE_TYPE, parentObjectName, J2EEDomain.class, null);
-	}
-
-		public boolean
-	isConfigProvider()
-	{
-		return( true );
+        
+        Issues.getAMXIssues().notDone( "J2EEDomainImpl needs to account for DAS/non-DAS" );
 	}
 	
 	private static final Set<String> NOT_SUPERFLUOUS =

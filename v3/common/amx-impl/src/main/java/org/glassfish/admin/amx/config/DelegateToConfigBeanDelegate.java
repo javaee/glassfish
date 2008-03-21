@@ -33,7 +33,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.admin.amx.mbean;
+package org.glassfish.admin.amx.config;
 
 import java.util.Set;
 import java.util.Map;
@@ -75,6 +75,9 @@ import com.sun.appserv.management.util.jmx.JMXUtil;
 
 import org.glassfish.api.amx.AMXConfigInfo;
 
+import org.glassfish.admin.amx.mbean.Delegate;
+import org.glassfish.admin.amx.mbean.DelegateBase;
+
 
 /**
 	Delegate which delegates to another MBean.
@@ -94,6 +97,7 @@ public final class DelegateToConfigBeanDelegate extends DelegateBase
 		mConfigBean	= configBean;
 	}
 	
+    public ConfigBean getConfigBean() { return mConfigBean; }
      
 		public boolean
 	supportsAttribute( final String attrName )
@@ -137,7 +141,7 @@ public final class DelegateToConfigBeanDelegate extends DelegateBase
         
        final Object result = mConfigBean.rawAttribute( xmlName );
        
-       debug( "Attribute " + attrName + " has class " + result.getClass() );
+       //debug( "Attribute " + attrName + " has class " + result.getClass() );
        return result;
 	}
     

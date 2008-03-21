@@ -54,7 +54,7 @@ import javax.management.remote.JMXConnector;
 
 import javax.management.remote.jmxmp.JMXMPConnectorServer;
 
-import org.glassfish.admin.amx.loader.AMXConfigRegistrar;
+import org.glassfish.admin.amx.config.AMXConfigRegistrar;
 
 
 /**

@@ -33,12 +33,14 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.admin.amx.mbean;
+package org.glassfish.admin.amx.config;
 
 import java.util.Set;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.List;
+import java.util.ArrayList;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Constructor;
@@ -61,6 +63,7 @@ import com.sun.appserv.management.util.misc.GSetUtil;
 import com.sun.appserv.management.util.misc.ThrowableMapper;
 import com.sun.appserv.management.util.misc.StringUtil;
 import com.sun.appserv.management.util.misc.ExceptionUtil;
+import com.sun.appserv.management.util.misc.TypeCast;
 import com.sun.appserv.management.util.jmx.JMXUtil;
 
 import com.sun.appserv.management.config.PropertiesAccess;
@@ -70,6 +73,7 @@ import com.sun.appserv.management.config.RefConfigReferent;
 import com.sun.appserv.management.config.AnyPropertyConfig;
 import com.sun.appserv.management.config.PropertyConfig;
 import com.sun.appserv.management.config.SystemPropertyConfig;
+import com.sun.appserv.management.config.AMXCreateInfo;
 
 import com.sun.appserv.management.config.SystemPropertiesAccess;
 
@@ -81,10 +85,18 @@ import com.sun.appserv.management.base.Util;
 
 import com.sun.appserv.management.helper.RefHelper;
 
+import org.jvnet.hk2.config.ConfigBeanProxy;
 
+import org.glassfish.admin.amx.mbean.AMXImplBase;
+import org.glassfish.admin.amx.mbean.Delegate;
+import org.glassfish.admin.amx.mbean.ContainerSupport;
 import org.glassfish.admin.amx.util.Issues;
+import org.glassfish.admin.amx.mbean.MBeanInfoCache;
 
 import org.jvnet.hk2.config.ConfigBean;
+
+import org.glassfish.api.amx.AMXConfigInfo;
+
 
 /**
 	Base class from which all AMX Config MBeans should derive (but not "must").
@@ -266,6 +278,13 @@ public class AMXConfigImplBase extends AMXImplBase
     getConfigDelegate()
     {
         return DelegateToConfigBeanDelegate.class.cast( getDelegate() );
+    }
+    
+    
+        private final ConfigBean
+    getConfigBean()
+    {
+        return getConfigDelegate().getConfigBean();
     }
 
 
@@ -494,59 +513,7 @@ public class AMXConfigImplBase extends AMXImplBase
     }
   
     
-    /**
-          // CONFIG_FACTORY
-          
-        Remove the config by finding its ConfigFactory.
-        The caller must have already called preRemove().
-        @return true for success.
-        protected final boolean
-    removeConfigWithFactory( final ObjectName objectName )
-    {
-        ConfigFactory factory    = null;
-        
-        boolean     attempted   = false;
-        try
-        {
-            final AMXConfig amxConfig   = getProxy( objectName, AMXConfig.class );
-            final String interfaceName   = getSimpleInterfaceName( amxConfig );
-            debug( "removeConfigWithFactory: " + objectName );
-            
-            factory  = createConfigFactory( interfaceName );
-        }
-        catch( Exception e )
-        {
-            debug( ExceptionUtil.toString( e ) );
-        }
-        
-        if ( factory != null )
-        {
-            attempted   = true;
-                
-            // some factories have remove(), because they remove a singleton
-            // instance, and some have remove( ObjectName )
-            try
-            {
-                final Method m  = factory.getClass().getMethod( "remove", (Class[])null );
-                if ( m != null )
-                {
-                    m.invoke( factory, (Object[])null );
-                }
-            }
-            catch( NoSuchMethodException e )
-            {
-                factory.remove( objectName );
-            }
-            catch( Exception e )
-            {
-                throw new RuntimeException( e );
-            }
-        }
-        
-        return attempted;
-    }
-     */
-    
+     
     
     static private final String CREATE = "create";
     static private final String CREATE_PREFIX  = CREATE;
@@ -555,45 +522,6 @@ public class AMXConfigImplBase extends AMXImplBase
     static private final String FACTORY_SUFFIX  = "Factory";
     
     static private final Class[]   STRING_SIG  = new Class[] { String.class };
-    
-    /**
-        Remove the config, if possible, by finding a method of the
-        appropriate name.  Usually, removeConfigWithFactory()
-        should have been used instead.
-        <p>
-        The caller must have already called preRemove().
-        <p>
-        A RuntimeException is thrown if an appropriate method cannot
-        be found.
-        protected final void
-    removeConfigWithMethod( final ObjectName objectName )
-    {
-        final AMXConfig amxConfig   = getProxy( objectName, AMXConfig.class );
-        final String interfaceName   = getSimpleInterfaceName( amxConfig );
-        if ( ! interfaceName.endsWith( CONFIG_SUFFIX ) )
-        {
-            throw new IllegalArgumentException(
-                "Interface doesn't end in " + CONFIG_SUFFIX + ": " + interfaceName );
-        }
-            
-        // do it generically by constructing the expected method name,
-        // and then calling it.
-        final String operationName = REMOVE_PREFIX + interfaceName;
-        debug( "removing config generically by calling ", operationName, "()" );
-        try
-        {
-			final Method m	=
-			    this.getClass().getDeclaredMethod( operationName, STRING_SIG);
-			
-			m.invoke( this, amxConfig.getName() );
-        }
-        catch( Exception e )
-        {
-            throw new RuntimeException( e );
-        }
-     }
-     */
-    
     
     /**
         Generic removal of any config contained by this config.
@@ -660,16 +588,6 @@ public class AMXConfigImplBase extends AMXImplBase
 	        operationName.endsWith( CONFIG_SUFFIX );
     }
 
-        private boolean
-    isConfigFactoryGetter(
-		String 		operationName,
-		Object[]	args,
-		String[]	types )
-    {
-        final int   numArgs = args == null ? 0 : args.length;
-        
-        return numArgs == 0  && isConfigFactoryGetter( operationName );
-    }
     
         private boolean
     isConfigFactoryGetter( final String operationName )
@@ -677,53 +595,214 @@ public class AMXConfigImplBase extends AMXImplBase
         return operationName.startsWith( GET_PREFIX ) &&
 	            operationName.endsWith( FACTORY_SUFFIX ) &&
                 (! operationName.equals( "getProxyFactory" ) );
+    }    
+
+
+        private Class<? extends ConfigBeanProxy>
+    j2eeTypeToConfigBeanProxy( final String j2eeType )
+    {
+        Class<? extends ConfigBeanProxy> result = null;
+        
+         //final List<? extends ConfigBeanProxy> candidates = getConfigBean().getSubElementsTypes();
+         final List<Class<? extends ConfigBeanProxy>> candidates = new java.util.ArrayList<Class<? extends ConfigBeanProxy>>();
+         for ( final Class<? extends ConfigBeanProxy> candidate : candidates )
+         {
+            final AMXConfigInfo amxConfigInfo = candidate.getAnnotation(AMXConfigInfo.class);
+            if ( amxConfigInfo != null )
+            {
+                if ( j2eeType.equals( amxConfigInfo.j2eeType() ) )
+                {
+                    result = candidate;
+                    break;
+                }
+            }
+         }
+        
+        return result;
     }
     
-/* CONFIG_FACTORY
+        private Method
+    getCreateMethod(
+        final String    operationName,
+        final Class[]   signature )
+    {
+        final Class<? extends AMXConfig> myInterface = getInterface();
+        final Method m = ClassUtil.findMethod( myInterface, operationName, signature );
+        return m;
+    }
+    
+        private String
+    getJ2EEType( final Class<? extends AMXConfig>  amxConfigClass )
+    {
+        final String fieldName = "J2EE_TYPE";
+        
+        try {
+            final java.lang.reflect.Field field = amxConfigClass.getField( fieldName );
+            return String.class.cast( field.get(null) );
+        }
+        catch( NoSuchFieldException e )
+        {
+            throw new RuntimeException( "Missing J2EE_TYPE field in interface " + amxConfigClass.getName(), e );
+        }
+        catch( IllegalAccessException e )
+        {
+            throw new RuntimeException( "Can't access J2EE_TYPE field in " + amxConfigClass.getName(), e );
+        }
+    }
+    
+    /**
+        Check arguments thoroughly for validity.
+     */
+        private void
+    rejectBadArgs( 
+        final Object[] args,
+        final int      numRequiredArgs,
+        final String[] paramNames,
+        final Map<String,Object> optionalAttrs )
+    {
+        // verify that there aren't more arguments than parameter names
+        if ( numRequiredArgs != 0 )
+        {
+            if ( args.length > paramNames.length )
+            {
+                throw new IllegalArgumentException( "More arguments than parameter names" );
+            }
+        }
+        
+        // verify that only legal types exist in the optionalAttrs array
+        if ( optionalAttrs != null )
+        {
+            // verify that optional attributes are not redundant with required ones
+            if ( paramNames != null )
+            {
+                final Set<String> temp = GSetUtil.newUnmodifiableStringSet( paramNames );
+                temp.retainAll( optionalAttrs.keySet() );
+                // there should be nothing in the set
+                if ( temp.size() != 0 )
+                {
+                    throw new IllegalArgumentException(
+                    "Optional attributes may not override required ones.  Duplicated attributes: {" + CollectionUtil.toString(temp) + "}" );
+                }
+                }
+            
+            for( final String key : optionalAttrs.keySet() )
+            {
+                final Object value = optionalAttrs.get(key);
+                // is null legal?
+                if ( value != null )
+                {
+                    final Class<?> theClass = value.getClass();
+                    if ( theClass != String.class && theClass != Boolean.class &&
+                        theClass != Integer.class && theClass != Long.class )
+                    {
+                        throw new IllegalArgumentException( "Illegal attribute class: " + theClass.getName() );
+                    }
+                }
+            }
+        }
+        
+    }
+        
         protected ObjectName
    createConfig(
-        final String simpleInterfaceName,
+        final String operationName,
         final Object[] args,
         String[]	   types)
         throws NoSuchMethodException, IllegalAccessException,
         InvocationTargetException, ClassNotFoundException, InstantiationException
    {
-        ObjectName  result  = null;
-    
-        final Class[]   sig = ClassUtil.signatureFromClassnames( types );
-            
-        final ConfigFactory factory = createConfigFactory( simpleInterfaceName );
-        if ( factory == null )
+        if ( ! isCreateConfig( operationName ) )
         {
-            // look for the appropriate method
-            final String createMethodName   = CREATE + simpleInterfaceName;
-            final Method m   = this.getClass().getMethod( createMethodName, sig);
-            if ( m == null )
-            {
-                throw new RuntimeException( "Can't find ConfigFactory for " + simpleInterfaceName );
-            }
-        }
-        else
-        {
-			final Method createMethod	=
-			    factory.getClass().getDeclaredMethod( CREATE, sig);
-			if ( createMethod != null )
-			{
-			    result  = (ObjectName)createMethod.invoke( factory, args );
-			}
-			else
-			{
-			    final String msg    = "Can't find method " + CREATE +
-			        " in factory " + factory.getClass().getName();
-			    
-			    throw new NoSuchMethodException( msg );
-			}
+            throw new IllegalArgumentException( "Illegal method name for create: " + operationName );
         }
         
-        return result;
+        ObjectName  result  = null;
+        
+        /*
+          Determine if this create has an optional Map as the last argument; could be of the form:
+                createFooConfig(p1, p2, ..., Map optional)
+                createFooConfig(p1, p2, ..., pN)
+                createFooConfig(optional)
+                createFooConfig()
+         */
+        Map<String,Object> optionalAttrs = null;
+        int numRequiredArgs = args.length;
+        if ( args.length >= 1 )
+        {
+            Object lastArg = args[args.length-1];
+            if ( lastArg instanceof Map )
+            {
+                optionalAttrs   = TypeCast.checkMap( TypeCast.asMap(lastArg), String.class, Object.class);
+                numRequiredArgs = args.length - 1;
+            }
+        }
+        
+        final Class[] signature = ClassUtil.signatureFromClassnames(types);
+        final Method m = getCreateMethod( operationName, signature );
+        if ( m == null )
+        {
+            throw new IllegalArgumentException( "Can't find method " + operationName );
+        }
+        if ( ! AMXConfig.class.isAssignableFrom(  m.getReturnType() ) )
+        {
+            throw new IllegalArgumentException( "Class " + m.getReturnType().getName() + " is not a subclass of AMXConfig" );
+        }
+        
+        final Class<? extends AMXConfig> returnType = (Class<? extends AMXConfig>)m.getReturnType();
+        
+        final String j2eeType = getJ2EEType( returnType );
+        
+        // Verify that the j2eeType matches the type expected from the operation name
+        final String altJ2EEType = XTypes.PREFIX + operationName.substring( CREATE_PREFIX.length(), operationName.length() );
+        if ( ! j2eeType.equals(altJ2EEType) )
+        {
+            throw new RuntimeException( "j2eeType " + j2eeType + " != " + altJ2EEType );
+        }
+                
+        AMXCreateInfo amxCreateInfo = m.getAnnotation( AMXCreateInfo.class );
+        if ( amxCreateInfo == null )
+        {
+            // if the Method has no AMXCreateInfo, accept the defaults from the Class
+            amxCreateInfo = returnType.getAnnotation( AMXCreateInfo.class );
+        }
+        if ( amxCreateInfo == null )
+        {
+            // this is OK if there are no ordered parameters eg no parameters or an optional map only
+            if ( numRequiredArgs != 0 )
+            {
+                throw new IllegalArgumentException(
+                    "Method " + operationName + " must be annotated with " + AMXCreateInfo.class.getName() );
+            }
+        }
+        
+        final String[] paramNames = amxCreateInfo.paramNames();
+        rejectBadArgs( args, numRequiredArgs, paramNames, optionalAttrs );
+            
+        final Class<? extends ConfigBeanProxy>  newItemClass = j2eeTypeToConfigBeanProxy( j2eeType );
+
+                
+        //final ConfigBeanProxy newConfigBean = getConfigDelegate().allocate( newItemClass );
+        final ConfigBean newConfigBean = null;
+        
+        // set the required attributes: the last one might or might not be a Map of optional ones
+        for ( int i = 0; i < numRequiredArgs; ++i ) {
+            final String value = "" + args[i];  // force value into a String
+            newConfigBean.attribute( paramNames[i], value );
+        }
+        
+        // set the optional attributes, if any
+        if ( optionalAttrs != null )
+        {
+            for ( final String attrName : optionalAttrs.keySet() )
+            {
+                final String value = "" + optionalAttrs.get(attrName);  // force it into a String
+                newConfigBean.attribute( attrName, value );
+            }
+        }
+
+        ObjectName objectName = null;
+        return objectName;
    }
-*/
-   
     
     private static final Set<String> CR_PREFIXES =
         GSetUtil.newUnmodifiableStringSet(
@@ -771,7 +850,8 @@ public class AMXConfigImplBase extends AMXImplBase
    removeConfig( final String operationName)
    {
         final String        j2eeType    = operationNameToJ2EEType( operationName );
-        final ObjectName    objectName  = getContainerSupport().getContaineeObjectName( j2eeType );
+        final ContainerSupport containerSupport = getContainerSupport();
+        final ObjectName    objectName  = containerSupport.getContaineeObjectName( j2eeType );
         if ( objectName == null )
         {
             throw new RuntimeException( new InstanceNotFoundException( j2eeType ) );
@@ -834,46 +914,7 @@ public class AMXConfigImplBase extends AMXImplBase
         return this.getClass().getPackage().getName();
    }
    
-   /**
-        Create a ConfigFactory or return null if couldn't be created.
-    *
-        protected ConfigFactory
-   createConfigFactory( final String simpleClassname )
-   {
-        ConfigFactory factory   = null;
-        
-        try
-        {
-            final String    classname   = getFactoryPackage() + "." +
-                                            simpleClassname + FACTORY_SUFFIX;
-            
-            final Class factoryClass    = ClassUtil.getClassFromName( classname );
-    		final Constructor constructor	= factoryClass.getConstructor( FACTORY_CONSTRUCTOR_SIG );
-    		
-    		if ( constructor != null )
-    		{
-                factory   = (ConfigFactory)constructor.newInstance( new Object[] { this } );
-            }
-            else
-            {
-                throw new RuntimeException( "No ConfigFactory found for " + classname );
-            }
-        }
-        catch( Exception e )
-        {
-            debug( ExceptionUtil.toString( e ) );
-            throw new RuntimeException( e );
-        }
-        return factory;
-   }
-   
-	private static final Class[]    FACTORY_CONSTRUCTOR_SIG    = new Class[]
-	{
-	    ConfigFactoryCallback.class,
-	};
     
-   */
-   
 	
     /**
         Automatically figure out get<abc>Factory(), 
@@ -890,23 +931,11 @@ public class AMXConfigImplBase extends AMXImplBase
 	    final int   numArgs = args == null ? 0 : args.length;
 	    
 	    Object  result  = null;
-	    
 	    debugMethod( operationName, args );
 
-/*
-	    if ( isConfigFactoryGetter( operationName, args, types ) &&
-	         ConfigFactoryCallback.class.isAssignableFrom( this.getClass() ) )
+	    if ( isRemoveConfig( operationName, args, types ) )
 	    {
-	        debug( "looking for factory denoted by " + operationName );
-	        result  = createConfigFactory( operationName );
-			if ( result == null )
-			{
-	            debug( "FAILED TO FIND factory denoted by " + operationName );
-	            result  = super.invokeManually( operationName, args, types );
-			}
-	    }
-	    else if ( isRemoveConfig( operationName, args, types ) )
-	    {
+            /*
 	        try
 	        {
 	            if ( numArgs == 0 )
@@ -923,19 +952,13 @@ public class AMXConfigImplBase extends AMXImplBase
 	        {
 	            throw new MBeanException( e );
 	        }
+            */
 	    }
 	    else if ( isCreateConfig( operationName ) )
 	    {
-            final String msg = "AMXConfigImplBase(): support for creating config";
-            Issues.getAMXIssues().notDone( msg );
-            throw new RuntimeException( msg );
-	        // name will be of the form create<XXX>Config
-	        final String simpleInterfaceName  =
-	            operationName.substring( CREATE_PREFIX.length(), operationName.length() );
-	            
 	        try
 	        {
-	            result  = createConfig( simpleInterfaceName, args, types);
+	            result  = createConfig( operationName, args, types);
 	        }
 	        catch( Exception e )
 	        {
@@ -943,7 +966,6 @@ public class AMXConfigImplBase extends AMXImplBase
 	        }
 	    }
 	    else
-*/
 	    {
 	        result  = super.invokeManually( operationName, args, types );
 	    }

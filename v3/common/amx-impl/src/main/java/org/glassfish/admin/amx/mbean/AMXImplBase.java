@@ -110,7 +110,8 @@ import com.sun.appserv.management.config.PropertiesAccess;
 
 import com.sun.appserv.management.j2ee.J2EETypes;
 
-import com.sun.logging.LogDomains;
+import org.glassfish.admin.amx.util.Issues;
+
 
 /**
 	Base class from which all AMX MBeans should derive (but not "must").
@@ -2356,7 +2357,11 @@ public class AMXImplBase extends MBeanImplBase
 	}
     
     // FIX
-    public boolean isDAS() { return true; }
+    public boolean isDAS()
+    {
+        Issues.getAMXIssues().notDone( "AMXImplBase: how to determine if this is the DAS?" );
+        return true;
+    }
     
     
 	//---------------------------------- Container support ---------------------------------------------
