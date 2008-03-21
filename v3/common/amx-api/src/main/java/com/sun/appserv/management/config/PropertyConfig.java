@@ -40,6 +40,7 @@ import com.sun.appserv.management.base.XTypes;
 /**
 	 Configuration for the &lt;property> element.
 */
+@AMXCreateInfo(paramNames={"name", "value"})
 public interface PropertyConfig extends AnyPropertyConfig 
 {
 /** The j2eeType as returned by {@link com.sun.appserv.management.base.AMX#getJ2EEType}. */

@@ -33,72 +33,42 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
- 
-/*
- * $Header: /cvs/glassfish/appserv-api/src/java/com/sun/appserv/management/config/VirtualServerConfig.java,v 1.2 2007/05/05 05:30:36 tcfujii Exp $
- * $Revision: 1.2 $
- * $Date: 2007/05/05 05:30:36 $
- */
-
 package com.sun.appserv.management.config;
 
-import java.util.Map;
+import java.util.List;
 
-
-import com.sun.appserv.management.base.XTypes;
-import com.sun.appserv.management.base.Container;
-
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
-	 Configuration for the &lt;virtual-server&gt; element.
+  Annotation for methods that create AMXConfig elements. It may be applied to the class
+  to be created in which case it denotes the default way that the class must be instantiated
+  (eg generic instantiation).
+  It may also be applied to a method which creates that class in which case the method may define
+  its own parameter ordering (for the case of overloaded methods).  The former (class annotation)
+  is preferred unless there are overloaded methods to be handled; this allows generic creation
+  without any method declaration.
+  <p>
+  See {@link PropertyConfig} for an example of class annotation; see 
+  {@link DomainConfig#createJDBCConnectionPoolConfig} for an example of method annotation.
+  
+  @see org.glassfish.api.amx.AMXConfigInfo
 */
-@AMXCreateInfo(paramNames={"name", "hosts"})
-public interface VirtualServerConfig
-	extends NamedConfigElement, PropertiesAccess, Container
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.METHOD, ElementType.TYPE})
+public @interface AMXCreateInfo   
 {
-/** The j2eeType as returned by {@link com.sun.appserv.management.base.AMX#getJ2EEType}. */
-	public static final String	J2EE_TYPE			= XTypes.VIRTUAL_SERVER_CONFIG;
-
-
-	public String	getDefaultWebModule();
-	public void	setDefaultWebModule( String value );
-
-	public String	getHosts();
-	public void	setHosts( String value );
-
-	public String	getHTTPListeners();
-	public void	setHTTPListeners( String value );
-
-    //** default: "${com.sun.aas.instanceRoot}/logs/server.log" */
-	public String	getLogFile();
-	public void	setLogFile( String value );
-
-	public String	getState();
-	public void	setState( String value );
-	
-	public String	getDocRoot();
-	public void	setDocRoot( String value );
-
-	/**
-		Removes http-access-log element.
-	 */
-	void removeHTTPAccessLogConfig();
-
-	/**
-		Get the HTTPAccessLogConfig MBean.
-	 */
-	public HTTPAccessLogConfig	getHTTPAccessLogConfig();
-
-	/**
-		Creates new http-access-log element.
-	 
-		@param	ipOnly
-		@param	logDirectory
-		@param	reserved
-		@return A proxy to the HTTPAccessLogConfig MBean.
-	 */
-	public HTTPAccessLogConfig createHTTPAccessLogConfig(
-		final boolean	ipOnly,
-		final String	logDirectory,
-		final Map<String,String>		reserved );
+    /**
+        An ordered list of names in a create method.  A create method in any {@link AMXConfig}
+        should be of the form:
+        <pre>MyConfig createMyConfig( String p1, String p2, ..., Map<String,String> optional);</pre>
+        paramNames[0] corresponds to p1, paramNames[1] corresponds to p2, etc.  The last paramater,
+        the optional Map, need not be included, but may be for completeness.
+        <p>
+        Parameter names should preferentially be the name of the xml attribute to which the
+        parameter maps.
+     */
+    public String[] paramNames() default {};
 }

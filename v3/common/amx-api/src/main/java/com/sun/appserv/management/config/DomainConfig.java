@@ -463,7 +463,26 @@ public interface DomainConfig
 		@param	reservedForFutureUse		reserved for future use
 		@return a JDBCConnectionPoolConfig
 	 */
-	public JDBCConnectionPoolConfig	createJDBCConnectionPoolConfig( String name,
+    @AMXCreateInfo(paramNames={
+        "name", 
+        "connectionValidationMethod",
+        "datasource-clasname",
+        "failAllConnections",
+        "idleTimeoutSeconds",
+        "connectionValidationRequired",
+        "isolationLevelGuaranteed",
+        "transactionIsolationLevel",
+        "maxPoolSize",
+        "maxWaitTimeMillis",
+        "poolResizeQuantity",
+        "resType",
+        "steadyPoolSize",
+        "databaseName",
+        "databaseUserName",
+        "databasePassword",
+        "reserved"})
+	public JDBCConnectionPoolConfig	createJDBCConnectionPoolConfig(
+                            String name,
 							String connectionValidationMethod,
 							String datasourceClassname,
 							boolean	failAllConnections,
@@ -479,7 +498,7 @@ public interface DomainConfig
 							String	databaseName,
 							String	databaseUserName,
 							String	databasePassword,
-							Map<String,String> reservedForFutureUse );
+							Map<String,String> reserved );
 	    
 	/**
 		Create a new &lt;jdbc-connection-pool>.  Legal optional attributes include:
@@ -507,6 +526,7 @@ public interface DomainConfig
 		@param optional				optional parameters
 		@return a JDBCConnectionPoolConfig
 	*/
+    @AMXCreateInfo(paramNames={"name","datasource-clasname", "optional"})
 	public JDBCConnectionPoolConfig       createJDBCConnectionPoolConfig(  String name, 
 	                            String datasourceClassname, Map<String,String> optional);
 
