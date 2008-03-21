@@ -66,6 +66,7 @@ public class AsadminMain {
     }
     public static final boolean TRACE = Boolean.getBoolean("trace");
 
+    /** Turned off for now -- it takes ~200 msec on a laptop!
     private final static boolean foundClass(String s) {
         try {
             Class.forName(s);
@@ -76,6 +77,7 @@ public class AsadminMain {
             return false;
         }
     }
+    
     private final static String[] requiredClassnames =
             {
         // one from launcher jar        
@@ -125,6 +127,7 @@ public class AsadminMain {
         long stop = System.currentTimeMillis();
         System.out.println("Time to pre-load classes = " + (stop-start) + " msec");
     }
+     */
 }
 
 
