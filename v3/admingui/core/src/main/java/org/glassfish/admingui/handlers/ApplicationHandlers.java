@@ -60,7 +60,6 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Collection;
-import java.util.Properties;
 
 import com.sun.webui.jsf.component.TableRowGroup;
 
@@ -77,6 +76,7 @@ import org.glassfish.admingui.util.TargetUtil;
 
 import com.sun.appserv.management.base.AMX;
 import com.sun.appserv.management.config.AppClientModuleConfig;
+import com.sun.appserv.management.config.ApplicationConfig;
 import com.sun.appserv.management.config.ClusterConfig;
 import com.sun.appserv.management.config.ClusteredServerConfig;
 import com.sun.appserv.management.config.CustomMBeanConfig;
@@ -86,7 +86,6 @@ import com.sun.appserv.management.config.ModuleConfig;
 import com.sun.appserv.management.config.EJBModuleConfig;
 import com.sun.appserv.management.config.Enabled;
 import com.sun.appserv.management.config.J2EEApplicationConfig;
-import com.sun.appserv.management.config.Libraries;
 import com.sun.appserv.management.config.LifecycleModuleConfig;
 import com.sun.appserv.management.config.ObjectType;
 import com.sun.appserv.management.config.ObjectTypeValues;
@@ -97,7 +96,6 @@ import com.sun.appserv.management.config.WebModuleConfig;
 import com.sun.appserv.management.j2ee.StateManageable;
 import com.sun.appserv.management.j2ee.J2EEServer;
 
-import java.util.StringTokenizer;
 import javax.management.Attribute;
 import javax.management.AttributeList;
 
@@ -137,7 +135,10 @@ public class ApplicationHandlers {
         String appType = (String) handlerCtx.getInputValue("appType");
 	ModuleConfig module = null;
         AMXRoot amxRoot = AMXRoot.getInstance();
-
+        
+        /*
+         * TODO-V3  need to revisit when more than web app is supported.
+         * 
 	if ("application".equals(appType)){
 	    module = amxRoot.getDomainConfig().getJ2EEApplicationConfigMap().get(name);
             if (module != null){
@@ -182,20 +183,31 @@ public class ApplicationHandlers {
 	    //TODO: log error
 	    return;
 	}
+        */
+        
+        //No need to test the type for TP2
+        ApplicationConfig appConfig = amxRoot.getDomainConfig().getApplicationConfigMap().get(name);
+        handlerCtx.setOutputValue("contextRoot", appConfig.getContextRoot());
+	//handlerCtx.setOutputValue("availEnabled", appConfig.getAvailabilityEnabled());
+        if(!amxRoot.supportCluster()) {
+            //We need this only for PE, so hard code it "server"
+            handlerCtx.setOutputValue("vs", TargetUtil.getAssociatedVS(name, "server"));
+        }
 
-	handlerCtx.setOutputValue("location", module.getLocation());
+        //TODo-V3 revisit.  was using module instead of appConfig in v2
+	handlerCtx.setOutputValue("location", appConfig.getLocation());
 	handlerCtx.setOutputValue("description", "AMX EXCEPTION") ;  //module.getDescription());
 	handlerCtx.setOutputValue("objectType", "AMX EXCEPTION");  //module.getObjectType());
 	
         if(amxRoot.isEE())
-            handlerCtx.setOutputValue("enabledString", TargetUtil.getEnabledStatus(module, true));
+            handlerCtx.setOutputValue("enabledString", TargetUtil.getEnabledStatus(appConfig, true));
         else
-            handlerCtx.setOutputValue("enabled", TargetUtil.isApplicationEnabled(module, "server" ));
+            handlerCtx.setOutputValue("enabled", TargetUtil.isApplicationEnabled(appConfig, "server" ));
         
         if (!"connector".equals(appType)){
-            //String[] libArray = (String[]) ((Libraries)module).getLibraries();
+            //String[] libArray = (String[]) ((Libraries)appConfig).getLibraries();
             String[] libArray = new String[1];
-            libArray[0]="AMX EXCEPTION";
+            libArray[0]="AMX-EXCEPTION";
             
             if (libArray != null){
                 StringBuffer libs = new StringBuffer();
@@ -210,12 +222,14 @@ public class ApplicationHandlers {
         }
     }
     
+    
+    
     /**
      *	<p> This handler save  the values for all the attributes of the Application
      *  <p> Input  value: "name" -- Type: <code> java.lang.String</code></p>
      *	@param	context	The HandlerContext.
      */
-    @Handler(id="saveApplicationInfo",
+    @Handler(id="saveApplicationInfoV2",
         input={
             @HandlerInput(name="name", type=String.class, required=true),
             @HandlerInput(name="appType", type=String.class, required=true),
@@ -227,7 +241,7 @@ public class ApplicationHandlers {
             @HandlerInput(name="enabled", type=Boolean.class),
             @HandlerInput(name="availEnabled", type=Boolean.class)
         })
-    public static void saveApplicationInfo(HandlerContext handlerCtx) {
+    public static void saveApplicationInfoV2(HandlerContext handlerCtx) {
 
         String target = "server";   //TODO: Fix for EE
         String name = (String) handlerCtx.getInputValue("name");
@@ -300,6 +314,61 @@ public class ApplicationHandlers {
         if(! amxRoot.isEE()){
             Boolean enabled = (Boolean) handlerCtx.getInputValue("enabled");
             TargetUtil.setApplicationEnabled(module, "server", enabled); 
+        }
+        }catch(Exception ex){
+            ex.printStackTrace();
+            GuiUtil.handleException(handlerCtx, ex);
+        }
+    }
+
+    /**
+     *	<p> This handler save  the values for all the attributes of the Application
+     *  <p> Input  value: "name" -- Type: <code> java.lang.String</code></p>
+     *	@param	context	The HandlerContext.
+     */
+    @Handler(id="saveApplicationInfo",
+        input={
+            @HandlerInput(name="name", type=String.class, required=true),
+            @HandlerInput(name="appType", type=String.class, required=true),
+            @HandlerInput(name="description", type=String.class),
+            @HandlerInput(name="contextRoot", type=String.class),
+            @HandlerInput(name="vs", type=String.class),
+            @HandlerInput(name="javaWebStart", type=Boolean.class),
+            @HandlerInput(name="threadPool", type=String.class),
+            @HandlerInput(name="enabled", type=Boolean.class),
+            @HandlerInput(name="availEnabled", type=Boolean.class)
+        })
+    public static void saveApplicationInfo(HandlerContext handlerCtx) {
+
+        String target = "server";   //TODO: Fix for EE
+        String name = (String) handlerCtx.getInputValue("name");
+        String appType = (String) handlerCtx.getInputValue("appType");
+        AMXRoot amxRoot = AMXRoot.getInstance();
+        
+        try{
+	
+	    ApplicationConfig appConfig = amxRoot.getDomainConfig().getApplicationConfigMap().get(name);
+	    if (appConfig != null){
+		appConfig.setContextRoot((String)handlerCtx.getInputValue("contextRoot"));
+                if (amxRoot.isEE()){
+                    Boolean ae = (Boolean)handlerCtx.getInputValue("availEnabled");
+                    if (ae != null)
+                        appConfig.setAvailabilityEnabled(ae);
+                }
+		else {
+                    String vs = (String)handlerCtx.getInputValue("vs");
+                    //only for PE, so hard-code to 'server'
+                    
+                    //TODO-V3TP2  VirtualServer gives exception
+                    //TargetUtil.setVirtualServers(name, "server", vs);
+		}
+	    }
+        
+        //TODO-V3
+        //appConfig.setDescription((String)handlerCtx.getInputValue("description"));
+        if(! amxRoot.isEE()){
+            Boolean enabled = (Boolean) handlerCtx.getInputValue("enabled");
+            TargetUtil.setApplicationEnabled(appConfig, "server", enabled); 
         }
         }catch(Exception ex){
             ex.printStackTrace();
@@ -700,17 +769,17 @@ public class ApplicationHandlers {
     public static void getDeployedWebInfo(HandlerContext handlerCtx){
         
         String serverName = (String) handlerCtx.getInputValue("serverName");
-        Iterator<J2EEApplicationConfig> iter = AMXRoot.getInstance().getDomainConfig().getJ2EEApplicationConfigMap().values().iterator();
+        Iterator<ApplicationConfig> iter = AMXRoot.getInstance().getDomainConfig().getApplicationConfigMap().values().iterator();
         List result = new ArrayList();
         while(iter.hasNext()){
-            J2EEApplicationConfig appConfig = iter.next();
+            ApplicationConfig appConfig = iter.next();
             if (ObjectTypeValues.USER.equals(appConfig.getObjectType())){
                 HashMap oneRow = new HashMap();
                 String protocol = "http" ;
                 String enable =  TargetUtil.getEnabledStatus(appConfig, true);
                 oneRow.put("name", appConfig.getName());
                 oneRow.put("enabled", enable);
-                String contextRoot = "AMX EXCEPTION";  //TODO-V3 appConfig.getContextRoot();
+                String contextRoot = appConfig.getContextRoot();
                 oneRow.put("contextRoot", contextRoot);
                 String port = getPortForApplication(appConfig.getName());
                 if (port.startsWith("-") ){
@@ -730,7 +799,7 @@ public class ApplicationHandlers {
                     oneRow.put("launchLink", protocol+"://"+serverName+":"+ port + ctxRoot);
                 }
                 oneRow.put("selected", false);
-                List<String> targets = TargetUtil.getDeployedTargets(appConfig, true);
+                //List<String> targets = TargetUtil.getDeployedTargets(appConfig, true);
                 
                 result.add(oneRow);
             }
