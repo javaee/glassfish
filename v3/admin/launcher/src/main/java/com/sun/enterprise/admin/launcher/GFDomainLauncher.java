@@ -74,27 +74,17 @@ class GFDomainLauncher extends GFLauncher {
         
         List<String> cmds = getCommandLine();
         ProcessBuilder pb = new ProcessBuilder(cmds);
-
-        // Temporary
-        System.out.println("****************************************************");
-        System.out.println("************ TP2 Launcher  *******************");
-        System.out.println("** The commandline below is temporarily here for your info.  When logging is setup " +
-                "it will go to the log file.");
-        System.out.println("**   jvm command line  **");
-        System.out.println("---------------------------------------------------");
-        for (String s : cmds) {
-            System.out.println(s);
-        }
-        System.out.println("****************************************************");
         
         //run the process and attach Stream Drainers
         Process p;
         try {
             p = pb.start();
-            if (getInfo().isVerbose())
+            if (getInfo().isVerbose()) {
                 ProcessStreamDrainer.redirect(getInfo().getDomainName(), p);
-            else
+            }
+            else {
                 ProcessStreamDrainer.drain(getInfo().getDomainName(), p);
+            }
         }
         catch (IOException e) {
             throw new GFLauncherException("jvmfailure", e, e);

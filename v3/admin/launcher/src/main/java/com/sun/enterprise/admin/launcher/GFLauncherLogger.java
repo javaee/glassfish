@@ -23,10 +23,11 @@
 package com.sun.enterprise.admin.launcher;
 
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
+import java.io.*;
 import java.util.logging.*;
 
 /**
- *
+ * A POL (plain old logger).  
  * @author bnevins
  */
 public class GFLauncherLogger {
@@ -44,9 +45,63 @@ public class GFLauncherLogger {
         logger.fine(strings.get(msg, objs));
     }
 
+    /////////////////////////  non-public below  //////////////////////////////
+    
+    static synchronized void setLevel(Level level) {
+        logger.setLevel(level);
+    }
+    /**
+     * IMPORTANT!  
+     * The server's logfile is added to the *local* logger.  But it is never
+     * removed.  The files are kept open by the logger.  One really bad result
+     * is that Windows will not be able to delete that server after stopping it.
+     * Solution: remove the file handler when done.
+     * @param logFile The logfile
+     */
+    static synchronized void addLogFileHandler(String logFile)
+    {
+        try
+        {
+            if (logFile == null) {
+                return;
+            }
+
+            // if the file doesn't exist -- make sure the parent dir exists
+            // this is common in unit tests AND the first time the instance is
+            // started....
+            File f = new File(logFile);
+            
+            if(!f.exists()) {
+                File parent = f.getParentFile();
+                if(!parent.isDirectory()) {
+                    boolean wasCreated = parent.mkdirs();
+                    if(!wasCreated) {
+                        return;
+                    }
+                }
+            }
+            logfileHandler = new FileHandler(logFile, true);
+            logfileHandler.setFormatter(new SimpleFormatter());
+            logfileHandler.setLevel(Level.ALL);
+            logger.addHandler(logfileHandler);
+        }
+        catch(IOException e)
+        {
+            // should be seen in verbose mode for debugging
+            e.printStackTrace();
+        }
+    }
+    static synchronized void removeLogFileHandler()  {
+        if(logfileHandler != null) {
+            logger.removeHandler(logfileHandler);
+            logfileHandler.close();
+            logfileHandler = null;
+        }          
+    }
     
     private GFLauncherLogger() {
     }
     private final static Logger logger = Logger.getAnonymousLogger();
     private final static LocalStringsImpl strings = new LocalStringsImpl(GFLauncherLogger.class);
+    private static FileHandler logfileHandler;
 }

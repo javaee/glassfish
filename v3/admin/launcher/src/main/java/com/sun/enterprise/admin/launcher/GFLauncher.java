@@ -30,6 +30,7 @@ import java.io.*;
 import java.util.*;
 import com.sun.enterprise.universal.glassfish.ASenvPropertyReader;
 import com.sun.enterprise.universal.xml.MiniXmlParser;
+import java.util.logging.Level;
 import static com.sun.enterprise.universal.glassfish.SystemPropertyConstants.*;
 
 /**
@@ -68,6 +69,9 @@ public abstract class GFLauncher {
         catch (Throwable t) {
             // hk2 might throw a java.lang.Error
             throw new GFLauncherException("unknownError", t);
+        }
+        finally {
+            GFLauncherLogger.removeLogFileHandler();
         }
     }
 
@@ -127,7 +131,6 @@ public abstract class GFLauncher {
         asenvProps = pr.getProps();
         info.setup();
         MiniXmlParser parser = new MiniXmlParser(getInfo().getConfigFile(), getInfo().getInstanceName());
-        
         String domainName = parser.getDomainName();
         if(GFLauncherUtils.ok(domainName)) {
             info.setDomainName(parser.getDomainName());
@@ -137,10 +140,13 @@ public abstract class GFLauncher {
         sysPropsFromXml = parser.getSystemProperties();
         asenvProps.put(INSTANCE_ROOT_PROPERTY, getInfo().getInstanceRootDir().getPath());
         debugOptions = getDebug();
+        logFilename = parser.getLogFilename();
         resolveAllTokens();
+        GFLauncherLogger.addLogFileHandler(logFilename);
         setJavaExecutable();
         setClasspath();
         setCommandLine();
+        logCommandLine();
     }
     
     private void setCommandLine() throws GFLauncherException {
@@ -183,6 +189,7 @@ public abstract class GFLauncher {
         resolver.resolve(javaConfig.getMap());
         resolver.resolve(profiler.getConfig());
         resolver.resolve(debugOptions);
+        logFilename = resolver.resolve(logFilename);
     // TODO ?? Resolve sysPropsFromXml ???
     }
 
@@ -292,6 +299,19 @@ public abstract class GFLauncher {
         return list;
     }
 
+    private void logCommandLine() {
+        StringBuilder sb = new StringBuilder();
+        for(String s : commandLine) {
+            // newline before the first line...
+            sb.append(NEWLINE);
+            sb.append(s);
+        }
+        if(!isFakeLaunch()) {
+            GFLauncherLogger.info("commandline", sb.toString());
+        }
+    }
+
+
     private GFLauncherInfo info;
     private Map<String, String> asenvProps;
     private JavaConfig javaConfig;
@@ -303,8 +323,11 @@ public abstract class GFLauncher {
     private List<String> debugOptions;
     private List<String> commandLine;
     private long startTime;
+    private String logFilename;
     private LaunchType mode = LaunchType.normal;
     private final static String JAVA_NATIVE_SYSPROP_NAME = "java.library.path";
+    private static final String NEWLINE = System.getProperty("line.separator");
+
 }
 
 
