@@ -48,7 +48,7 @@ import com.sun.appserv.management.base.Container;
  * @since Glassfish V3
  * 
  */
-public interface EngineConfig extends Description, PropertiesAccess
+public interface EngineConfig extends AMXConfig, Description, PropertiesAccess
 {
     public static final String	J2EE_TYPE =  XTypes.ENGINE_CONFIG;
 

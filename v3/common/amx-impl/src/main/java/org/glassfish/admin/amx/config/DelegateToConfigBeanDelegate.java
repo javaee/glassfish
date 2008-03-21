@@ -115,7 +115,7 @@ public final class DelegateToConfigBeanDelegate extends DelegateBase
     getXMLName( final String amxName )
     {
        //debug( "getXMLName " + amxName );
-       debug( "Leaf element names: " + CollectionUtil.toString(mConfigBean.getLeafElementNames()) );
+       //debug( "Leaf element names: " + CollectionUtil.toString(mConfigBean.getLeafElementNames()) );
        
         String xmlName = NameMapping.getXMLName( amxName );
         if ( xmlName == null )
@@ -140,10 +140,10 @@ public final class DelegateToConfigBeanDelegate extends DelegateBase
         //debug( "DelegateToConfigBeanDelegate.getAttribute: " + attrName );
         final String xmlName = getXMLName(attrName);
         
-       final Object result = mConfigBean.rawAttribute( xmlName );
+        final Object result = mConfigBean.rawAttribute( xmlName );
        
-       //debug( "Attribute " + attrName + " has class " + result.getClass() );
-       return result;
+       // debug( "Attribute " + attrName + " has class " + ((result == null) ? "null" : result.getClass()) );
+        return result;
 	}
     
     private static final String[]   SINGLE_STRING_SIG   = new String[] { String.class.getName() };
