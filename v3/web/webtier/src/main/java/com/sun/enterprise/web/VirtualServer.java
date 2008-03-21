@@ -68,7 +68,6 @@ import org.apache.catalina.valves.RemoteHostValve;
 
 import com.sun.enterprise.config.serverbeans.Applications;
 import com.sun.enterprise.config.serverbeans.Domain;
-import com.sun.enterprise.config.serverbeans.J2EeApplication;
 import com.sun.enterprise.config.serverbeans.HttpProtocol;
 import com.sun.enterprise.config.serverbeans.HttpService;
 import com.sun.enterprise.config.serverbeans.SecurityService;

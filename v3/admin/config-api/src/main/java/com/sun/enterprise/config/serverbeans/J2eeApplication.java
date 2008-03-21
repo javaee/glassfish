@@ -61,7 +61,7 @@ import java.util.List;
 }) */
 @org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.J2EEApplicationConfig")
 @Configured
-public interface J2EeApplication extends ConfigBeanProxy, Injectable, Module {
+public interface J2eeApplication extends ConfigBeanProxy, Injectable, Module {
 
     /**
      * Gets the value of the name property.

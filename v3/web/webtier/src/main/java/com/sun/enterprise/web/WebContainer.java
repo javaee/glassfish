@@ -74,7 +74,7 @@ import com.sun.grizzly.util.http.mapper.Mapper;
 //import com.sun.enterprise.config.ConfigContext;
 //import com.sun.enterprise.config.ConfigException;
 import com.sun.enterprise.config.serverbeans.Applications;
-import com.sun.enterprise.config.serverbeans.J2EeApplication;
+import com.sun.enterprise.config.serverbeans.J2eeApplication;
 import com.sun.enterprise.config.serverbeans.ApplicationRef;
 import com.sun.enterprise.config.serverbeans.LogService;
 import com.sun.enterprise.config.serverbeans.Config;
@@ -2504,8 +2504,8 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         Applications appsBean = domain.getApplications();
 
         if (appsBean != null) {
-            List<J2EeApplication> modules = ConfigBeansUtilities.getModules(J2EeApplication.class, appsBean);
-            for (J2EeApplication module : modules) {
+            List<J2eeApplication> modules = ConfigBeansUtilities.getModules(J2eeApplication.class, appsBean);
+            for (J2eeApplication module : modules) {
                 if (isReferenced(module.getName())) {
                     loadJ2EEApplicationWebModules(module);
                 }
@@ -2518,7 +2518,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
      * Loads all the web modules that are configured for the specified
      * j2ee-application.
      */
-    public void loadJ2EEApplicationWebModules(J2EeApplication j2eeAppBean) {
+    public void loadJ2EEApplicationWebModules(J2eeApplication j2eeAppBean) {
        /* if ((j2eeAppBean != null) &&
             isEnabled(j2eeAppBean.getConfigContext(), j2eeAppBean.getName())) {
             String id = j2eeAppBean.getName();
@@ -3790,8 +3790,8 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
      */
     private void enableAllWSEndpoints() {
 
-        List<J2EeApplication> j2eeAppBeans =  ConfigBeansUtilities.getModules(J2EeApplication.class, domain.getApplications());
-        for (J2EeApplication appBean : j2eeAppBeans) {
+        List<J2eeApplication> j2eeAppBeans =  ConfigBeansUtilities.getModules(J2eeApplication.class, domain.getApplications());
+        for (J2eeApplication appBean : j2eeAppBeans) {
             //Begin EE: 4927099 - load only associated applications
             if ( isReferenced(appBean.getName()) ) {
                 enableWSMonitoring(appBean.getName());
