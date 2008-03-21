@@ -87,7 +87,7 @@ public final class GlassFishConfigBean extends ConfigBean {
     @Override
     public void initializationCompleted() {
         super.initializationCompleted();
-System.out.println( "GlassFishConfigBean.initializationCompleted() for " + getProxyType().getName() );
+        //System.out.println( "GlassFishConfigBean.initializationCompleted() for " + getProxyType().getName() );
         CageBuilder cageBuilder = habitat.getComponent(CageBuilder.class, "AMXConfigRegistrar");
         if (cageBuilder!=null) {
             cageBuilder.onEntered( this );
