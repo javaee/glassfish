@@ -44,8 +44,7 @@ import org.jvnet.hk2.config.ConfigListener;
 import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.Changed;
 import org.jvnet.hk2.config.ConfigBeanProxy;
-import org.glassfish.api.Async;
-import org.glassfish.api.Startup;
+import org.glassfish.internal.api.Init;
 
 import java.beans.PropertyChangeEvent;
 import java.util.logging.Logger;
@@ -57,12 +56,11 @@ import com.sun.appserv.connectors.spi.ConnectorRuntime;
 
 
 @Service
-@Async
 /**
  * Resource manager to bind various allResources during startup, create/update/delete of resource/pool
  * @author Jagadish Ramu
  */
-public class ResourceManager implements Startup, PostConstruct, PreDestroy, ConfigListener {
+public class ResourceManager implements Init, PostConstruct, PreDestroy, ConfigListener {
 
     @Inject
     private JdbcResource[] jdbcResources;
@@ -89,15 +87,6 @@ public class ResourceManager implements Startup, PostConstruct, PreDestroy, Conf
         resourcesBinder.deployAllJdbcResourcesAndPools(jdbcResources, jdbcPools);
         //TODO V3 handle connector system resources, pools later
         //resourcesBinder.deployAllConnectorResourcesAndPools(connectorResources, connectorPools);
-    }
-
-    /**
-     * Returns the life expectency of the service
-     *
-     * @return the life expectency.
-     */
-    public Lifecycle getLifecycle() {
-        return Lifecycle.SERVER;
     }
 
     /**
