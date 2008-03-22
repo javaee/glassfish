@@ -79,7 +79,7 @@
     </sun:tab>
 
 
-    <sun:tab id="logging" immediate="$boolean{true}" text="$resource{i18n.log.Logging}">
+    <!--<sun:tab id="logging" immediate="$boolean{true}" text="$resource{i18n.log.Logging}">
          <!command
                 setSessionAttribute(key="serverInstTabs" value="loggingGeneral");
 		redirect(page="../appServer/serverInstLogging.jsf?configName=server-config");
@@ -154,7 +154,7 @@
                 setSessionAttribute(key="serverInstTabs" value="adminPassword");
 		redirect(page="../appServer/serverInstAdminPassword.jsf?configName=server-config");
 	    />      
-    </sun:tab>
+    </sun:tab>-->
 
     <sun:tab id="advanced" immediate="$boolean{true}" text="$resource{i18n.headings.Advanced}">
         <!command
