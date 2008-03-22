@@ -106,12 +106,14 @@ public class CreateProfiler implements AdminCommand {
                     newProfiler.setClasspath(classpath);
                     newProfiler.setEnabled(enabled);
                     newProfiler.setNativeLibraryPath(nativeLibraryPath);
-                    for ( java.util.Map.Entry e : properties.entrySet()) {
-                        Property prop = ConfigSupport.createChildOf(newProfiler, 
+                    if (properties != null) {
+                        for ( java.util.Map.Entry e : properties.entrySet()) {
+                            Property prop = ConfigSupport.createChildOf(newProfiler, 
                                 Property.class);
-                        prop.setName((String)e.getKey());
-                        prop.setValue((String)e.getValue());
-                        newProfiler.getProperty().add(prop);
+                            prop.setName((String)e.getKey());
+                            prop.setValue((String)e.getValue());
+                            newProfiler.getProperty().add(prop);
+                        }
                     }
                     param.setProfiler(newProfiler);                    
                     return newProfiler;

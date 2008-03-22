@@ -161,12 +161,13 @@ public class CreateAuthRealm implements AdminCommand {
     throws PropertyVetoException, TransactionFailure {
         newAuthRealm.setName(authRealmName);
         newAuthRealm.setClassname(className);
-        List<Property> props = newAuthRealm.getProperty();
-        for (Object propname: properties.keySet()) {
-            Property newprop = ConfigSupport.createChildOf(newAuthRealm, Property.class);
-            newprop.setName((String) propname);
-            newprop.setValue(properties.getProperty((String) propname));            
-            newAuthRealm.getProperty().add(newprop);    
+        if (properties != null) {
+            for (Object propname: properties.keySet()) {
+                Property newprop = ConfigSupport.createChildOf(newAuthRealm, Property.class);
+                newprop.setName((String) propname);
+                newprop.setValue(properties.getProperty((String) propname));            
+                newAuthRealm.getProperty().add(newprop);    
+            }
         }
     }    
 }

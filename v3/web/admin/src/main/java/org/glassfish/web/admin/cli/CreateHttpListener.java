@@ -161,12 +161,14 @@ public class CreateHttpListener implements AdminCommand {
                     newListener.setBlockingEnabled(blockingEnabled);
 
                     //add properties
-                    for ( java.util.Map.Entry entry : properties.entrySet()) {
-                        Property property = 
-                            ConfigSupport.createChildOf(newListener, Property.class);
-                        property.setName((String)entry.getKey());
-                        property.setValue((String)entry.getValue());
-                        newListener.getProperty().add(property);
+                    if (properties != null) {
+                        for ( java.util.Map.Entry entry : properties.entrySet()) {
+                            Property property = 
+                                ConfigSupport.createChildOf(newListener, Property.class);
+                            property.setName((String)entry.getKey());
+                            property.setValue((String)entry.getValue());
+                            newListener.getProperty().add(property);
+                        }
                     }
 
                     param.getHttpListener().add(newListener);

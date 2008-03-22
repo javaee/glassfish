@@ -122,12 +122,14 @@ public class JDBCResourceManager implements ResourceManager {
                     }
                     newResource.setPoolName(poolName);
                     newResource.setEnabled(enabled);
-                    for ( java.util.Map.Entry e : props.entrySet()) {
-                        Property prop = ConfigSupport.createChildOf(newResource, 
+                    if (props != null) {
+                        for ( java.util.Map.Entry e : props.entrySet()) {
+                            Property prop = ConfigSupport.createChildOf(newResource, 
                                 Property.class);
-                        prop.setName((String)e.getKey());
-                        prop.setValue((String)e.getValue());
-                        newResource.getProperty().add(prop);
+                            prop.setName((String)e.getKey());
+                            prop.setValue((String)e.getValue());
+                            newResource.getProperty().add(prop);
+                        }
                     }
                     param.getResources().add(newResource);                    
                     return newResource;

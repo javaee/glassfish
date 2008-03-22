@@ -132,12 +132,14 @@ public class CreateVirtualServer implements AdminCommand {
                     newVirtualServer.setLogFile(logFile);
 
                     //add properties
-                    for (java.util.Map.Entry entry : properties.entrySet()) {
-                        Property property =
-                            ConfigSupport.createChildOf(newVirtualServer, Property.class);
-                        property.setName((String)entry.getKey());
-                        property.setValue((String)entry.getValue());
-                        newVirtualServer.getProperty().add(property);
+                    if (properties != null) {
+                        for (java.util.Map.Entry entry : properties.entrySet()) {
+                            Property property =
+                                ConfigSupport.createChildOf(newVirtualServer, Property.class);
+                            property.setName((String)entry.getKey());
+                            property.setValue((String)entry.getValue());
+                            newVirtualServer.getProperty().add(property);
+                        }
                     }
 
                     param.getVirtualServer().add(newVirtualServer);
