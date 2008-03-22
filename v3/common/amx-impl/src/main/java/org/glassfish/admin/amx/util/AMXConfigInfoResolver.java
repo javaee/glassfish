@@ -41,6 +41,7 @@ import java.util.Collections;
 
 import org.glassfish.api.amx.AMXConfigInfo;
 import com.sun.appserv.management.config.AMXConfig;
+import com.sun.appserv.management.base.Util;
 
 
 /**
@@ -83,7 +84,12 @@ public final class AMXConfigInfoResolver
         return theInterface;
     }
     
-    public String j2eeType() { return mAMXConfigInfo.j2eeType(); }
+    
+    public String j2eeType()
+    {
+        return Util.getJ2EEType( amxInterface() );
+    }
+    
     public String nameHint() { return mAMXConfigInfo.nameHint(); }
     public boolean singleton() { return mAMXConfigInfo.singleton(); }
     public boolean omitAsAncestorInChildObjectName() { return mAMXConfigInfo.omitAsAncestorInChildObjectName(); }

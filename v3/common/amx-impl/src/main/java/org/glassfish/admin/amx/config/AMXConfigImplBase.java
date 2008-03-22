@@ -59,6 +59,7 @@ import javax.management.InstanceNotFoundException;
 
 import com.sun.appserv.management.util.misc.ClassUtil;
 import com.sun.appserv.management.util.misc.CollectionUtil;
+import com.sun.appserv.management.util.misc.MapUtil;
 import com.sun.appserv.management.util.misc.GSetUtil;
 import com.sun.appserv.management.util.misc.ThrowableMapper;
 import com.sun.appserv.management.util.misc.StringUtil;
@@ -91,9 +92,14 @@ import org.glassfish.admin.amx.mbean.AMXImplBase;
 import org.glassfish.admin.amx.mbean.Delegate;
 import org.glassfish.admin.amx.mbean.ContainerSupport;
 import org.glassfish.admin.amx.util.Issues;
+import org.glassfish.admin.amx.util.SingletonEnforcer;
+
 import org.glassfish.admin.amx.mbean.MBeanInfoCache;
+import org.glassfish.admin.amx.util.AMXConfigInfoResolver;
+import org.glassfish.admin.amx.loader.AMXConfigVoid;
 
 import org.jvnet.hk2.config.ConfigBean;
+import org.jvnet.hk2.config.ConfigSupport;
 
 import org.glassfish.api.amx.AMXConfigInfo;
 
@@ -336,23 +342,17 @@ public class AMXConfigImplBase extends AMXImplBase
 		public final void
 	removeProperty( final String propertyName )
 	{
-		validatePropertyName( propertyName );
-		
-        throw new UnsupportedOperationException( "Can't (yet) remove properties" );
+        // reinvoke with non-deprecated auto-generic impl
+        getSelf( PropertiesAccess.class ).removePropertyConfig( propertyName );
 	}
 	
 		public final void
 	createProperty( final String propertyName, final String propertyValue )
 	{
-		validateNameValue( propertyName, propertyValue );
-        
-        final ConfigBean child = getConfigDelegate().createChild( XTypes.PROPERTY_CONFIG, propertyName, propertyValue );
-        
-        System.out.println( "ConfigBean has ObjectName: " + child.getObjectName() );
-        
-        throw new UnsupportedOperationException( "Can't (yet) create new properties" );
+        // reinvoke with non-deprecated auto-generic impl
+        getSelf( PropertiesAccess.class ).createPropertyConfig( propertyName, propertyValue );
 	}
-	
+
 		public final String
 	getGroup()
 	{
@@ -407,16 +407,15 @@ public class AMXConfigImplBase extends AMXImplBase
 		public final void
 	removeSystemProperty( String propertyName )
 	{
-		validatePropertyName( propertyName );
-		
-        throw new UnsupportedOperationException( "Can't (yet) remove system properties" );
+        // reinvoke with non-deprecated auto-generic impl
+        getSelf( SystemPropertiesAccess.class ).removeSystemPropertyConfig( propertyName );
 	}
 	
 		public final void
 	createSystemProperty( String propertyName, String propertyValue )
 	{
-		validateNameValue( propertyName, propertyValue );
-        throw new UnsupportedOperationException( "Can't (yet) create new system properties" );
+        // reinvoke with non-deprecated auto-generic impl
+        getSelf( SystemPropertiesAccess.class ).createSystemPropertyConfig( propertyName, propertyValue );
 	}
 	
 //========================================================================================
@@ -541,7 +540,7 @@ public class AMXConfigImplBase extends AMXImplBase
         
         if ( ! removeConfigWithFactory( objectName ) )
         {
-            debug( "removeConfigWithFactory failed, using removeConfigWithMethod" );
+            cdebug( "removeConfigWithFactory failed, using removeConfigWithMethod" );
             removeConfigWithMethod( objectName );
         }
         */
@@ -597,25 +596,55 @@ public class AMXConfigImplBase extends AMXImplBase
                 (! operationName.equals( "getProxyFactory" ) );
     }    
 
+        private static Class<? extends ConfigBeanProxy>[]
+    getSubTypes( final ConfigBean cb )
+    {
+        try
+        {
+            return (Class<? extends ConfigBeanProxy>[])
+                ConfigSupport.getSubElementsTypes( cb );
+        }
+        catch( ClassNotFoundException e )
+        {
+            // OK
+        }
+        return new Class[0];
+    }
 
         private Class<? extends ConfigBeanProxy>
     j2eeTypeToConfigBeanProxy( final String j2eeType )
     {
+        final ConfigBean cb = getConfigBean();
+        
+//cdebug( "j2eeTypeToConfigBeanProxy: looking for interface for j2eeType " + j2eeType );
         Class<? extends ConfigBeanProxy> result = null;
         
-         //final List<? extends ConfigBeanProxy> candidates = getConfigBean().getSubElementsTypes();
-         final List<Class<? extends ConfigBeanProxy>> candidates = new java.util.ArrayList<Class<? extends ConfigBeanProxy>>();
+        final String amxVoid = AMXConfigVoid.class.getName();
+         final Class<? extends ConfigBeanProxy>[] candidates = getSubTypes( cb );
          for ( final Class<? extends ConfigBeanProxy> candidate : candidates )
          {
             final AMXConfigInfo amxConfigInfo = candidate.getAnnotation(AMXConfigInfo.class);
-            if ( amxConfigInfo != null )
+            if ( amxConfigInfo != null && ! amxVoid.equals(amxConfigInfo.amxInterfaceName()) )
             {
-                if ( j2eeType.equals( amxConfigInfo.j2eeType() ) )
+                final AMXConfigInfoResolver resolver = new AMXConfigInfoResolver( amxConfigInfo );
+//cdebug( "j2eeTypeToConfigBeanProxy: class " + candidate.getName() + " has AMXConfigInfo  " + amxConfigInfo );
+                if ( j2eeType.equals( resolver.j2eeType() ) )
                 {
+//cdebug( "j2eeTypeToConfigBeanProxy: FOUND " + candidate.getName() );
                     result = candidate;
                     break;
                 }
             }
+            else
+            {
+                //cdebug( "j2eeTypeToConfigBeanProxy: no AMXConfigInfo for " + candidate.getName()  );
+            }
+         }
+         
+         if ( result == null )
+         {
+            final Set<String> names = cb.getLeafElementNames();
+//cdebug( "j2eeTypeToConfigBeanProxy: getLeafElementNames = " + CollectionUtil.toString(names) );
          }
         
         return result;
@@ -631,24 +660,6 @@ public class AMXConfigImplBase extends AMXImplBase
         return m;
     }
     
-        private String
-    getJ2EEType( final Class<? extends AMXConfig>  amxConfigClass )
-    {
-        final String fieldName = "J2EE_TYPE";
-        
-        try {
-            final java.lang.reflect.Field field = amxConfigClass.getField( fieldName );
-            return String.class.cast( field.get(null) );
-        }
-        catch( NoSuchFieldException e )
-        {
-            throw new RuntimeException( "Missing J2EE_TYPE field in interface " + amxConfigClass.getName(), e );
-        }
-        catch( IllegalAccessException e )
-        {
-            throw new RuntimeException( "Can't access J2EE_TYPE field in " + amxConfigClass.getName(), e );
-        }
-    }
     
     /**
         Check arguments thoroughly for validity.
@@ -703,14 +714,16 @@ public class AMXConfigImplBase extends AMXImplBase
         
     }
         
+    private static void cdebug( final String s ) { System.out.println(s); }
+
         protected ObjectName
    createConfig(
         final String operationName,
         final Object[] args,
         String[]	   types)
-        throws NoSuchMethodException, IllegalAccessException,
-        InvocationTargetException, ClassNotFoundException, InstantiationException
+        throws ClassNotFoundException, org.jvnet.hk2.config.TransactionFailure
    {
+    setAMXDebug(true);
         if ( ! isCreateConfig( operationName ) )
         {
             throw new IllegalArgumentException( "Illegal method name for create: " + operationName );
@@ -736,6 +749,7 @@ public class AMXConfigImplBase extends AMXImplBase
                 numRequiredArgs = args.length - 1;
             }
         }
+cdebug( "createConfig: " + operationName + ", args = " + StringUtil.toString(args) + ", types = " + StringUtil.toString(types) + " ===> numRequiredArgs = " + numRequiredArgs + ", optionalAttrs = " + MapUtil.toString(optionalAttrs) );
         
         final Class[] signature = ClassUtil.signatureFromClassnames(types);
         final Method m = getCreateMethod( operationName, signature );
@@ -750,7 +764,8 @@ public class AMXConfigImplBase extends AMXImplBase
         
         final Class<? extends AMXConfig> returnType = (Class<? extends AMXConfig>)m.getReturnType();
         
-        final String j2eeType = getJ2EEType( returnType );
+        final String j2eeType = Util.getJ2EEType( returnType );
+cdebug( "createConfig: j2eeType = " + j2eeType + ", return type = " + returnType.getName() );
         
         // Verify that the j2eeType matches the type expected from the operation name
         final String altJ2EEType = XTypes.PREFIX + operationName.substring( CREATE_PREFIX.length(), operationName.length() );
@@ -776,34 +791,65 @@ public class AMXConfigImplBase extends AMXImplBase
         }
         
         final String[] paramNames = amxCreateInfo.paramNames();
+        cdebug( "createConfig:  paramNames = {" + StringUtil.toString(paramNames) + "}" );
         rejectBadArgs( args, numRequiredArgs, paramNames, optionalAttrs );
             
         final Class<? extends ConfigBeanProxy>  newItemClass = j2eeTypeToConfigBeanProxy( j2eeType );
-
-                
-        //final ConfigBeanProxy newConfigBean = getConfigDelegate().allocate( newItemClass );
-        final ConfigBean newConfigBean = null;
-        
-        // set the required attributes: the last one might or might not be a Map of optional ones
-        for ( int i = 0; i < numRequiredArgs; ++i ) {
-            final String value = "" + args[i];  // force value into a String
-            newConfigBean.attribute( paramNames[i], value );
+        if ( newItemClass == null )
+        {
+            throw new IllegalArgumentException( "Can't find class for j2eeType " + j2eeType );
         }
         
-        // set the optional attributes, if any
+        final Map<String, String> allAttrs = new HashMap<String, String>();
+        
+        // set the optional attributes, if any, first so that required ones overwrite
+        // (we are checking in rejectBadArgs(), but this order makes it more robust)
         if ( optionalAttrs != null )
         {
             for ( final String attrName : optionalAttrs.keySet() )
             {
                 final String value = "" + optionalAttrs.get(attrName);  // force it into a String
-                newConfigBean.attribute( attrName, value );
+                allAttrs.put( attrName, value );
             }
         }
+        // set the required attributes: the last one might or might not be a Map of optional ones
+        for ( int i = 0; i < numRequiredArgs; ++i ) {
+            final String value = "" + args[i];  // force value into a String
+            allAttrs.put( paramNames[i], value );
+        }
+  
+cdebug( "createConfig:  creating new ConfigBean of class = " + newItemClass.getName());
+        final ConfigBean newConfigBean = ConfigSupport.createAndSet( getConfigBean(), newItemClass, allAttrs);
+cdebug( "createConfig:  CREATED new ConfigBean of class " + newItemClass.getName() + " = " + newConfigBean );
 
-        ObjectName objectName = null;
+        final AMXConfigLoader  amxLoader = SingletonEnforcer.get( AMXConfigLoader.class );
+        amxLoader.handleConfigBean( newConfigBean, true );
+            
+        final ObjectName objectName = newConfigBean.getObjectName();
+        
+cdebug( "createConfig:  ObjectName:  " + JMXUtil.toString(objectName) );
         return objectName;
    }
     
+		protected boolean
+	mySleep( final long millis )
+	{
+		boolean	interrupted	= false;
+		
+		try
+		{
+			Thread.sleep( millis );
+		}
+		catch( InterruptedException e )
+		{
+			Thread.interrupted();
+			interrupted	= true;
+		}
+		
+		return interrupted;
+	}
+
+
     private static final Set<String> CR_PREFIXES =
         GSetUtil.newUnmodifiableStringSet(
             "create", "remove"
@@ -885,7 +931,7 @@ public class AMXConfigImplBase extends AMXImplBase
         {
             if ( containee.getName().equals( name ) )
             {
-                debug( "removeConfig: found name match: " + Util.getObjectName( containee ) );
+                cdebug( "removeConfig: found name match: " + Util.getObjectName( containee ) );
                 if ( getSimpleInterfaceName( containee ).equals( simpleInterfaceName ) )
 	            {
 	                objectName  = Util.getObjectName( containee );
@@ -906,16 +952,7 @@ public class AMXConfigImplBase extends AMXImplBase
     		throw new IllegalArgumentException( "Not found: " + name );
         }
    }
-   
-        protected String
-   getFactoryPackage()
-   {
-        // same package as the MBean implementation
-        return this.getClass().getPackage().getName();
-   }
-   
-    
-	
+      
     /**
         Automatically figure out get<abc>Factory(), 
         create<Abc>Config(), remove<Abc>Config().

@@ -51,6 +51,7 @@ import com.sun.appserv.management.base.XTypes;
 	 Configuration for a &lt;thread-pool&gt; element.
 */
 
+@AMXCreateInfo(paramNames={"name", "optional"})
 public interface ThreadPoolConfig extends NamedConfigElement 
 {
 /** The j2eeType as returned by {@link com.sun.appserv.management.base.AMX#getJ2EEType}. */

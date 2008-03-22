@@ -265,6 +265,25 @@ public final class Util
 	{
 		return( objectName.getKeyProperty( AMX.J2EE_TYPE_KEY )  );
 	}
+    
+		public static String
+	getJ2EEType( final Class<? extends AMX> amxInterface )
+	{
+        final String fieldName = "J2EE_TYPE";
+        
+        try {
+            final java.lang.reflect.Field field = amxInterface.getField( fieldName );
+            return String.class.cast( field.get(null) );
+        }
+        catch( NoSuchFieldException e )
+        {
+            throw new RuntimeException( "Missing J2EE_TYPE field in interface " + amxInterface.getName() );
+        }
+        catch( IllegalAccessException e )
+        {
+            throw new RuntimeException( "Can't access J2EE_TYPE field in " + amxInterface.getName() );
+        }
+	}
 	
 	/**
 		Get the FullType as a String[], last element being the j2eeType.

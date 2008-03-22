@@ -3,6 +3,7 @@ package org.glassfish.admin.amx.config;
 
 import java.util.Collections;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.CountDownLatch;
 
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
@@ -42,7 +43,7 @@ public final class AMXConfigLoader
     
     private volatile MBeanServer mMBeanServer;
     
-    private final LinkedBlockingQueue<ConfigBean> mPendingConfigBeans = new LinkedBlockingQueue<ConfigBean>();
+    private final LinkedBlockingQueue<Job> mPendingConfigBeans = new LinkedBlockingQueue<Job>();
     
     private AMXConfigLoaderThread mLoaderThread = null;
     
@@ -51,13 +52,48 @@ public final class AMXConfigLoader
     {
     }
     
+    private static final class Job
+    {
+        final ConfigBean mConfigBean;
+        final CountDownLatch mLatch;
+        
+        public Job( final ConfigBean configBean, final CountDownLatch latch )
+        {
+            mConfigBean = configBean;
+            mLatch      = latch;
+        }
+        
+        public void releaseLatch()
+        {
+            if ( mLatch != null )
+            {
+                mLatch.countDown();
+            }
+        }
+    }
+    
     /**
         No items will be processd until {@link #start} is called.
      */
         protected void
-    handleConfigBean( final ConfigBean cb )
+    handleConfigBean( final ConfigBean cb, final boolean waitDone )
     {
-        mPendingConfigBeans.add( cb );
+        final CountDownLatch  latch = waitDone ? new CountDownLatch(1) : null;
+        final Job job = new Job( cb, latch);
+        
+        mPendingConfigBeans.add( job );
+        
+        if ( latch != null )
+        {
+            try
+            {
+                latch.await();
+            }
+            catch( InterruptedException e )
+            {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
         private static AMXConfigInfo
@@ -168,10 +204,10 @@ public final class AMXConfigLoader
     
     private final class AMXConfigLoaderThread extends RunnableBase
     {
-        private final LinkedBlockingQueue<ConfigBean> mQueue;
+        private final LinkedBlockingQueue<Job> mQueue;
         volatile boolean    mQuit = false;
         
-        AMXConfigLoaderThread( final LinkedBlockingQueue<ConfigBean> queue )
+        AMXConfigLoaderThread( final LinkedBlockingQueue<Job> queue )
         {
             super( "AMXConfigLoader.AMXConfigLoaderThread", null );
             mQueue = queue;
@@ -180,8 +216,10 @@ public final class AMXConfigLoader
         void quit() { mQuit = true; }
         
             private ObjectName
-        registerOne( final ConfigBean cb )
+        registerOne( final Job job )
         {
+            final ConfigBean cb = job.mConfigBean;
+            
             ObjectName objectName = cb.getObjectName();
             try 
             {
@@ -197,6 +235,10 @@ public final class AMXConfigLoader
             {
                 t.printStackTrace();
             }
+            finally
+            {
+                job.releaseLatch();
+            }
             
             return objectName;
         }
@@ -209,15 +251,15 @@ public final class AMXConfigLoader
                Note when we initially empty the queue; this signifies that
                AMX is "ready" for callers that just started it.
              */
-            ConfigBean cb = mQueue.take();  // block until first item is ready
-            while ( (! mQuit) && cb != null )
+            Job job = mQueue.take();  // block until first item is ready
+            while ( (! mQuit) && job != null )
             {
-                final ObjectName objectName = registerOne(cb);
+                final ObjectName objectName = registerOne(job);
                 //debug( "REGISTERED: " + objectName );
-                cb = mQueue.peek();  // don't block, loop exits when queue is first emptied
-                if ( cb != null )
+                job = mQueue.peek();  // don't block, loop exits when queue is first emptied
+                if ( job != null )
                 {
-                    cb = mQueue.take();
+                    job = mQueue.take();
                 }
             }
             
@@ -226,8 +268,8 @@ public final class AMXConfigLoader
             // ongoing processing once initial queue has been emptied: blocking behavior
             while ( ! mQuit )
             {
-                cb = mQueue.take();
-                registerOne(cb);
+                job = mQueue.take();
+                registerOne(job);
             }
         }
     }

@@ -5,6 +5,7 @@ package org.glassfish.admin.amx.config;
 
 import org.jvnet.hk2.component.CageBuilder;
 import org.jvnet.hk2.component.Inhabitant;
+import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.config.ConfigBean;
 
@@ -20,10 +21,10 @@ import org.glassfish.admin.amx.util.SingletonEnforcer;
  * @author llc
  */
 @Service(name="AMXConfigRegistrar")
-public final class AMXConfigRegistrar implements CageBuilder
+public final class AMXConfigRegistrar implements CageBuilder, PostConstruct
 {
     private static void debug( final String s ) { System.out.println(s); }
-    private AMXConfigLoader  mConfigLoader;
+    private final AMXConfigLoader  mConfigLoader;
     
     /**
         Singleton: there should be only one instance and hence a private constructor.
@@ -31,9 +32,13 @@ public final class AMXConfigRegistrar implements CageBuilder
      */
     public AMXConfigRegistrar()
     {
-        SingletonEnforcer.register( this.getClass(), this );
-        
         mConfigLoader = new AMXConfigLoader();
+        SingletonEnforcer.register( mConfigLoader.getClass(), mConfigLoader );
+    }
+    
+    public void postConstruct()
+    {
+        SingletonEnforcer.register( this.getClass(), mConfigLoader );
     }
     
     /**
@@ -44,16 +49,16 @@ public final class AMXConfigRegistrar implements CageBuilder
     {
         return (o instanceof ConfigBean) ? (ConfigBean)o : null;
     }
-
+    
     public void onEntered(Inhabitant<?> inhabitant)
     {
         final ConfigBean cb = asConfigBean(inhabitant);
         if ( cb != null )
         {
-            final ConfigBean parent = asConfigBean(cb.parent());
+            //final ConfigBean parent = asConfigBean(cb.parent());
         //debug( "AMXConfigRegistrar.onEntered: " + cb.getProxyType().getName() + " with parent " + (parent == null ? "null" : parent.getProxyType().getName()) );
         
-            mConfigLoader.handleConfigBean( cb );
+            mConfigLoader.handleConfigBean( cb, false );
         }
     }
     

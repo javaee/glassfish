@@ -67,12 +67,14 @@ public interface SystemPropertiesAccess
     
 	/**
 		Get the names of all system properties.
+        @deprecated use the SystemPropertyConfig MBeans from {@link #getSystemPropertyConfigMap}
 	 */
 	public String[]	getSystemPropertyNames( );
 	
 	
 	/**
 		@return Map containing all properties, keyed by name
+        @deprecated use the SystemPropertyConfig MBeans from {@link #getSystemPropertyConfigMap}
 	 */
 	public Map<String,String>		getSystemProperties();
 	
@@ -80,6 +82,7 @@ public interface SystemPropertiesAccess
 		Get the value of a property.  The property must exist, or an exception will be thrown.
 		
 		@param propertyName	the name of the property
+        @deprecated use the SystemPropertyConfig MBeans from {@link #getSystemPropertyConfigMap}
 	 */
 	public String	getSystemPropertyValue( String propertyName );
 					
@@ -89,6 +92,7 @@ public interface SystemPropertiesAccess
 		
 		@param propertyName	the name of the property
 		@param propertyValue	the value of the property
+        @deprecated use the SystemPropertyConfig MBeans from {@link #getSystemPropertyConfigMap}
 	 */	
 	public void		setSystemPropertyValue( String propertyName, String propertyValue );
 						
@@ -96,6 +100,7 @@ public interface SystemPropertiesAccess
 		Return true if any system properties exist with the specified name.
 		
 		@param propertyName	the name of the property
+        @deprecated use the SystemPropertyConfig MBeans from {@link #getSystemPropertyConfigMap}
 	 */
 	public boolean	existsSystemProperty( String propertyName );
 	
@@ -104,6 +109,7 @@ public interface SystemPropertiesAccess
 		
 		@param propertyName		the name of the property
 		@param propertyValue	the value of the property
+        @deprecated use {@linke #createSystemPropertyConfig}
 	 */
 	public void		createSystemProperty( String propertyName, String propertyValue);
 	
@@ -111,8 +117,21 @@ public interface SystemPropertiesAccess
 		Remove a system property with the specified name. 
 		
 		@param propertyName	the name of the property
+        @deprecated use {@linke #removeSystemPropertyConfig}
 	 */
 	public void		removeSystemProperty( String propertyName );
+    
+    
+    /**
+       @since Glassfish V3
+     */
+	public SystemPropertyConfig createSystemPropertyConfig( String propertyName, String propertyValue);
+    
+    /**
+       @since Glassfish V3
+     */
+	public void            removeSystemPropertyConfig( String propertyName );
+
     
 	/**
 		Return all SystemPropertyConfig MBeans, keyed by property name. 

@@ -52,6 +52,12 @@ public final class SingletonEnforcer
     {
     }
     
+        public static <T> T
+    get( final Class<T> theClass )
+    {
+        return (T)mItems.get( theClass );
+    }
+    
         public static void
     register( final Class<?> theClass, final Object theInstance )
     {

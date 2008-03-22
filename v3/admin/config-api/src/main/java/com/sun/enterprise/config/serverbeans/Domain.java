@@ -301,6 +301,7 @@ public interface Domain extends ConfigBeanProxy, Injectable  {
      * Objects of the following type(s) are allowed in the list
      * {@link Property }
      */
+    @Element("property")
     public List<Property> getProperty();
 
 

@@ -70,11 +70,13 @@ public interface PropertiesAccess extends Container
     
 	/**
 		Get the names of all properties.
+        @deprecated use the PropertyConfig MBeans from {@link #getPropertyConfigMap}
 	 */
 	public String[]	getPropertyNames( );
 	
 	/**
 		@return Map containing all properties, keyed by name
+        @deprecated use the PropertyConfig MBeans from {@link #getPropertyConfigMap}
 	 */
 	public Map<String,String>	getProperties();
 	
@@ -82,6 +84,7 @@ public interface PropertiesAccess extends Container
 		Get the value of a property.
 		
 		@param propertyName	the name of the property
+        @deprecated use the PropertyConfig MBeans from {@link #getPropertyConfigMap}
 	 */
 	public String	getPropertyValue( String propertyName );
 					
@@ -91,6 +94,7 @@ public interface PropertiesAccess extends Container
 		
 		@param propertyName	the name of the property
 		@param propertyValue	the value of the property
+        @deprecated use the PropertyConfig MBeans from {@link #getPropertyConfigMap}
 	 */	
 	public void		setPropertyValue( String propertyName, String propertyValue );
 						
@@ -98,6 +102,7 @@ public interface PropertiesAccess extends Container
 		Return true if any properties exist with the specified name.
 		
 		@param propertyName	the name of the property
+        @deprecated use the PropertyConfig MBeans from {@link #getPropertyConfigMap}
 	 */
 	public boolean	existsProperty( String propertyName );
 	
@@ -106,10 +111,24 @@ public interface PropertiesAccess extends Container
 		
 		@param propertyName		the name of the property
 		@param propertyValue	the value of the property
+        @deprecated use {@link #createPropertyConfig}
 	 */
 	public void		createProperty( String propertyName, String propertyValue);
 	
+	/**
+        @deprecated use {@link #removePropertyConfig}
+	 */
 	public void		removeProperty( String propertyName );
+    
+    /**
+       @since Glassfish V3
+     */
+	public PropertyConfig createPropertyConfig( String propertyName, String propertyValue);
+    
+    /**
+       @since Glassfish V3
+     */
+	public void            removePropertyConfig( String propertyName );
     
 	/**
 		Return all PropertyConfig MBeans, keyed by property name. 
