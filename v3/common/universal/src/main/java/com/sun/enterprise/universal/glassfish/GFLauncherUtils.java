@@ -78,7 +78,14 @@ public class GFLauncherUtils {
             try {
                 JarURLConnection c = (JarURLConnection) resource.openConnection();
                 URL jarFile = c.getJarFileURL();
-                File f = new File(jarFile.toURI());
+                
+                // important to absolutize it!
+                // unreported bug:
+                // JDK does this:
+                // the parent of "/foo/." is "/foo", not "/" !
+               
+                
+                File f = absolutize(new File(jarFile.toURI()));
 
                 f = f.getParentFile();  // <install>/modules
 
