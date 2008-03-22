@@ -43,9 +43,9 @@ public class SmartFileTest {
      */
     @Test
     public void sanitize() {
-        //for(String path : FILENAMES) {
-            //System.out.println(path + " --> " + SmartFile.sanitize(path));
-        //}
+        for(String path : FILENAMES) {
+            System.out.println(path + " --> " + SmartFile.sanitize(path));
+        }
     }
 
     private static final String[] FILENAMES = new String[]
@@ -59,6 +59,8 @@ public class SmartFileTest {
         "\\\\",
         "\\\\foo\\goo\\hoo",
         "x/y/../../../..",
+        "/x/y/../../../..",
+		"/./../.././../"
     };
 
 }
