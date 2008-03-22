@@ -62,7 +62,6 @@
 
   <modules>
     <module>jdbc-core</module>
-    <module>jdbcra-bundler</module>
   </modules>
 
   <profiles>
@@ -73,6 +72,7 @@
       </activation>
       <modules>
         <module>jdbc30</module>
+        <module>jdbcra-bundler</module>
       </modules>
     </profile>
     <profile>
@@ -82,6 +82,7 @@
       </activation>
       <modules>
         <module>jdbc40</module>
+        <module>jdbcra-bundler</module>
       </modules>
     </profile>
   </profiles>
