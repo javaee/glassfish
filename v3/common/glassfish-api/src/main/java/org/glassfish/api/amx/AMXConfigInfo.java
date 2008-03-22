@@ -77,6 +77,7 @@ public @interface AMXConfigInfo {
     
      
     /**
+not clear if this is needed; the interface should specify it
        <em>If a generic AMX interface is used in {@link #amxInterface},
        then the 'j2eeType' *must* be specified with j2eeType().<em>
        Defines the value of the "j2eeType" property used in an ObjectName.
@@ -112,8 +113,9 @@ public @interface AMXConfigInfo {
         The preceeding convention is enforced by the framework for config beans based on 
         information available from @Configured interfaces, relying upon the fact that registration
         of a parent ("Container") MBean must occur before registration of a child ("Containee").
-     */
+     
     String j2eeType() default "";
+    */
     
     /**
         Optional hint for generating the ObjectName; could be used to indicate
