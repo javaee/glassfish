@@ -42,10 +42,10 @@
                     redirect(page="#{generalPage}?name=#{jndiName}");
                 />       
         </sun:tab>
-        <sun:tab id="targetTab" immediate="$boolean{true}" text="$resource{i18n.common.TargetTab}">
+        <!--<sun:tab id="targetTab" immediate="$boolean{true}" text="$resource{i18n.common.TargetTab}">
             <!command
                 setSessionAttribute(key="resEditTabs" value="targetTab");
                 redirect(page="#{targetPage}?name=#{jndiName}");
             />
-        </sun:tab>
+        </sun:tab>-->
 </sun:tabSet>
