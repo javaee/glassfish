@@ -200,7 +200,7 @@ public class Main {
                 props.put(m.group(1), m.group(2));
             }
         }
-
+        
         String uri = props.getProperty("uri");
         if (uri==null) {
             uri = ".";
@@ -217,6 +217,23 @@ public class Main {
             }
             if (!location.exists())
                 throw new BootException("Non-existent directory: "+location);
+        
+            /* bnevins 3/21/08
+             * location might be something like "/gf/modules/."
+             * The "." can cause all sorts of trouble later, so sanitize
+             * the name now!
+             * here's an example of the trouble:            
+             * new File("/foo/.").getParentFile().getPath() --> "/foo", not "/"
+             * JDK treats the dot as a file in the foo directory!!
+             */
+            
+            try {
+                location = location.getCanonicalFile();
+            }
+            catch(Exception e) {
+                // I've never seen this happen!
+                location = location.getAbsoluteFile();
+            }
             
             try {
                 Repository repo = new DirectoryBasedRepository(repoId, location);
