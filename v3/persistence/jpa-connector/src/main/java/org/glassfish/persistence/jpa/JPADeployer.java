@@ -8,6 +8,7 @@ import com.sun.enterprise.deployment.RootDeploymentDescriptor;
 import com.sun.enterprise.module.ModuleDefinition;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.MetaData;
+import org.glassfish.api.deployment.InstrumentableClassLoader;
 import org.glassfish.deployment.common.DummyApplication;
 import org.glassfish.deployment.common.SimpleDeployer;
 import org.glassfish.deployment.common.DeploymentException;
@@ -20,6 +21,9 @@ import javax.persistence.spi.ClassTransformer;
 import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.Set;
+import java.lang.instrument.ClassFileTransformer;
+import java.lang.instrument.IllegalClassFormatException;
+import java.security.ProtectionDomain;
 
 
 @Service
@@ -101,19 +105,19 @@ public class JPADeployer extends SimpleDeployer<JPAContainer, DummyApplication> 
         }
 
         public ClassLoader getTempClassloader() {
-            // Note we return the same classloader as returned by getClassLoader.
-            // This classloader will get discarded once the app is prepared and a new classlaoder will be used to
-            // actually load the application
-            // TODO : Discuss with Jerome this might not work as EclipseLink loads Listners, NamedQuery etc with this classloader
-            // We also use this classloader to load the provider for example is PULImpl#load() to make sure that we see
-            // providers bundled as lib with the app. If the classloader changes, things might get ugly in unpredictable way.
-            return deploymentContext.getClassLoader();
+            return ( (InstrumentableClassLoader)deploymentContext.getClassLoader() ).copy();
         }
 
-        public void addTransformer(ClassTransformer transformer) {
-            // TODO: Resolve the differenct between java.lang.instrument.ClassFileTransformer that this method accepts
-            // and javax.persistence.spi.ClassTransformer that JPA expects
-            //deploymentContext.addClassFileTransformer(transformer);
+        public void addTransformer(final ClassTransformer transformer) {
+            // Bridge between java.lang.instrument.ClassFileTransformer that DeploymentContext accepts
+            // and javax.persistence.spi.ClassTransformer that JPA supplies.
+            deploymentContext.addTransformer(new ClassFileTransformer() {
+                public byte[] transform(ClassLoader loader, String className, Class<?> classBeingRedefined,
+                                        ProtectionDomain protectionDomain, byte[] classfileBuffer)
+                        throws IllegalClassFormatException {
+                    return transformer.transform(loader, className, classBeingRedefined, protectionDomain, classfileBuffer);
+                }
+            });
         }
 
         public String getApplicationLocation() {
