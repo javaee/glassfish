@@ -10,8 +10,7 @@
   <name>jdbc40</name>
 
   <build>
-    <outputDirectory>target/classes</outputDirectory>	  
-    <plugins>
+    <!--plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -22,13 +21,13 @@
           <compilerVersion>1.6</compilerVersion>
         </configuration>
       </plugin>
-    </plugins>      
+    </plugins-->
     <resources>
       <resource>
-	<directory>src/main/java</directory>
+        <directory>src/main/java</directory>
         <excludes>
           <exclude>**/*.java</exclude>
-        </excludes>	  
+        </excludes>
       </resource>
     </resources>
   </build>

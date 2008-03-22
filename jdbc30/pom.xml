@@ -10,19 +10,18 @@
   <name>jdbc30</name>
 
   <build>
-    <outputDirectory>target/classes</outputDirectory>	  
-    <plugins>
+    <!--plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-	<configuration>
+        <configuration>
           <verbose>true</verbose>
-	  <fork>true</fork>
-	  <executable>${JAVA_1_5_HOME}/bin/javac</executable>
+          <fork>true</fork>
+          <executable>${JAVA_1_5_HOME}/bin/javac</executable>
           <compilerVersion>1.5</compilerVersion>
         </configuration>
       </plugin>
-    </plugins>  
+    </plugins-->
     <resources>
       <resource>
         <directory>src/main/java</directory>

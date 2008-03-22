@@ -1,21 +1,88 @@
 <?xml version="1.0"?>
-<project>
-  <parent>
-    <artifactId>connectors</artifactId>
-    <groupId>org.glassfish.connectors</groupId>
-    <version>10.0-SNAPSHOT</version>
-  </parent>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <parent>
+        <groupId>org.glassfish</groupId>
+        <artifactId>pom</artifactId>
+        <version>1</version>
+    </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.glassfish.connectors.jdbc-ra</groupId>
   <artifactId>jdbc-ra</artifactId>
   <name>jdbc-ra</name>
   <packaging>pom</packaging>
+  <version>10.0-SNAPSHOT</version>
+
+  <build>
+    <plugins>
+      <plugin>
+          <groupId>org.glassfish.build</groupId>
+          <artifactId>maven-glassfish-plugin</artifactId>
+          <configuration>
+              <!-- configuration for the run mojo -->
+              <distribution>
+                  <groupId>org.glassfish.distributions</groupId>
+                  <artifactId>web</artifactId>
+                  <version>${pe.version}</version>
+              </distribution>
+          </configuration>
+      </plugin>
+    </plugins>
+    <extensions>
+      <extension>
+          <groupId>org.glassfish.build</groupId>
+          <artifactId>maven-glassfish-extension</artifactId>
+          <version>1.0-SNAPSHOT</version>
+      </extension>
+      <extension>
+        <groupId>org.jvnet.wagon-svn</groupId>
+        <artifactId>wagon-svn</artifactId>
+        <version>1.8</version>
+      </extension>
+    </extensions>
+  </build>
+
+  <repositories>
+    <repository>
+      <id>maven2-repository.dev.java.net</id>
+      <name>Java.net Repository for Maven</name>
+      <url>http://download.java.net/maven/2/</url>
+    </repository>
+  </repositories>
+
+  <distributionManagement>
+    <repository>
+      <uniqueVersion>false</uniqueVersion>
+      <id>java.net-maven2-repository</id>
+      <url>java-net:/maven2-repository/trunk/www/repository/</url>
+    </repository>
+  </distributionManagement>
+  
+  
+  <!-- TODO: list your names as developers -->
 
   <modules>
     <module>jdbc-core</module>
-    <!--<module>jdbc30</module>
-    <module>jdbc40</module>-->
     <module>jdbcra-bundler</module>
   </modules>
 
+  <profiles>
+    <profile>
+      <id>jdk15</id>
+      <activation>
+        <jdk>1.5</jdk>
+      </activation>
+      <modules>
+        <module>jdbc30</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>jdk16</id>
+      <activation>
+        <jdk>1.6</jdk>
+      </activation>
+      <modules>
+        <module>jdbc40</module>
+      </modules>
+    </profile>
+  </profiles>
 </project>
