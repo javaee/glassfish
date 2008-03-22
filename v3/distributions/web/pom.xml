@@ -117,21 +117,6 @@
             <version>${pe.version}</version>
         </dependency>
         <dependency>
-            <groupId>javax.javaee</groupId>
-            <artifactId>javaee</artifactId>
-            <version>${javaee-api.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.common</groupId>
-            <artifactId>glassfish-naming</artifactId>        
-            <version>${pe.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.common</groupId>
-            <artifactId>amx-impl</artifactId>
-            <version>${pe.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.glassfish.connectors</groupId>
             <artifactId>jdbc-ra</artifactId>
             <version>${jdbc-ra.version}</version>
@@ -146,26 +131,6 @@
            <groupId>org.glassfish.connectors</groupId>
            <artifactId>connectors-runtime</artifactId>
            <version>${pe.version}</version>
-        </dependency>
-        <dependency>
-           <groupId>org.glassfish.core</groupId>
-           <artifactId>security</artifactId>
-           <version>${pe.version}</version>
-        </dependency>  
-        <dependency>
-           <groupId>org.glassfish.security</groupId>
-           <artifactId>websecurity</artifactId>
-           <version>${pe.version}</version>
-        </dependency> 
-        <dependency>
-           <groupId>org.glassfish.security</groupId>
-           <artifactId>realms</artifactId>
-           <version>${pe.version}</version>
-        </dependency>  
-        <dependency>
-            <groupId>org.glassfish.security</groupId>
-            <artifactId>securitycommon</artifactId>
-            <version>${pe.version}</version>
         </dependency>
         <dependency>
            <groupId>org.glassfish.core</groupId>
@@ -187,6 +152,16 @@
            <artifactId>deployment-client</artifactId>
            <version>${pe.version}</version>
         </dependency>           
+        <dependency>
+            <groupId>org.glassfish.common</groupId>
+            <artifactId>amx-impl</artifactId>
+            <version>${pe.version}</version>
+        </dependency>
+        <dependency>
+           <groupId>org.glassfish.security</groupId>
+           <artifactId>websecurity</artifactId>
+           <version>${pe.version}</version>
+        </dependency>
     </dependencies>
 </project>
 
