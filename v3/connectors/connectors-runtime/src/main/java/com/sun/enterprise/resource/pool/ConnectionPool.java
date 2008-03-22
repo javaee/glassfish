@@ -120,7 +120,7 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
     protected PoolWaitQueue waitQueue;
     protected String poolWaitQueueClass;
 
-    protected String name;
+    protected String name; //poolName
 
     private PoolTxHandler poolTxHandler;
 
