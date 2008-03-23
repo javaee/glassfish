@@ -151,6 +151,26 @@
                 expanded="$boolean{false}"
                 >
             </sun:treeNode>
+
+	    
+             <sun:treeNode id="httpService" 
+                text="$resource{i18n.tree.httpService}"
+                url="/web/configuration/httpService.jsf?configName=#{configName}"
+                imageURL="resource/images/configurations.gif"
+                target="main"
+                expanded="$boolean{false}"
+                >
+            </sun:treeNode>
+
+
+             <sun:treeNode id="vs" 
+                text="$resource{i18n.tree.virtualServer}"
+                url="/web/configuration/virtualServers.jsf?configName=#{configName}"
+                imageURL="resource/images/configurations.gif"
+                target="main"
+                expanded="$boolean{false}"
+                >
+            </sun:treeNode>
 	</sun:tree>
 	<event>
 	    <!afterCreate
