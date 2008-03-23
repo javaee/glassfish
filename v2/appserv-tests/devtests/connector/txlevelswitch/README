@@ -1,7 +1,0 @@
-This test deploys an xa rar and then creates a connector-connection-pool to
-point to that rar with a default transaction-support level and does getConnection
-
-Then it changes the transaction-support to LocalTransaction and does another
-getConnection
-
-Then it changes the transaction-support to NoTransaction and does a getConnection

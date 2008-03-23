@@ -1,3 +1,0 @@
-All the sever DTDs are in the appserv-core right now.
-But they could be moved out to each module once we
-have more detailed modules

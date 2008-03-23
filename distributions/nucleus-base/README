@@ -1,0 +1,12 @@
+Instructions to unbundle and configure GlassFish
+
+GlasssFish installation requires JDK 5.
+
+   1. Download one of the bundles
+   2. Run:
+      java -Xmx256m -jar filename.jar
+
+   3. Run:
+      ant -f setup.xml
+
+Ant is included in the GlassFish bundle that was downloaded.

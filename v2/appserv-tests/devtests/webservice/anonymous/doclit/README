@@ -1,3 +1,0 @@
-
-1) file a bug wrt not handlinng array types (if there are more than one
-   anonymous types within an element)

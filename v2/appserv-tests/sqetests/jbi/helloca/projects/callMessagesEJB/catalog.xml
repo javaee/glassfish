@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog" prefer="system">
-    <system systemId="http://localhost:8080/MessageEJBService/MessageEJB?wsdl" uri="src/conf/xml-resources/web-service-references/MessageEJB/wsdl/localhost_8080/MessageEJBService/MessageEJB.wsdl"/>
-    <system systemId="http://localhost:8080/MessageEJBService/MessageEJB?xsd=1" uri="src/conf/xml-resources/web-service-references/MessageEJB/wsdl/localhost_8080/MessageEJBService/MessageEJB.xsd_1.xsd"/>
-    <system systemId="file:/export2/workspace/quicklook/glassfish/appserv-tests/sqetests/jbi/helloca/projects/wsdls/messagesEJB/MessageEJBService.wsdl" uri="src/conf/xml-resources/web-service-references/MessageEJBService/wsdl/MessageEJBService.wsdl"/>
-    <system systemId="file:/export2/workspace/quicklook/glassfish/appserv-tests/sqetests/jbi/helloca/projects/wsdls/messagesEJB/MessageEJBService_schema1.xsd" uri="src/conf/xml-resources/web-service-references/MessageEJBService/wsdl/MessageEJBService_schema1.xsd"/>
-</catalog>
