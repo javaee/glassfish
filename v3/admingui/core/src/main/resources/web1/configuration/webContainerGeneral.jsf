@@ -52,7 +52,7 @@
         <sun:body id="body3" onLoad="javascript: synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
             <sun:form id="propertyForm">
 #include treeBreadcrumbs.inc
-#include "web1/configuration/webContainerTabs.inc"
+#include "web/configuration/webContainerTabs.inc"
 #include "alertMsg.inc"  
                 <!-- Page Title -->
                 <sun:title id="propertyContentPage" title="$resource{i18n.headings.webGeneral}" > 
