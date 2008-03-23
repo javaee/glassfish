@@ -77,7 +77,6 @@ import com.sun.appserv.management.util.misc.GSetUtil;
 
 import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
 
-import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -109,9 +108,10 @@ public class AMXRoot {
     private  final QueryMgr queryMgr;
     private  final UploadDownloadMgr uploadDownloadMgr;
     private  final WebServiceMgr webServiceMgr;
+    private  final MBeanServerConnection mbaenServerConnection;
     //private  final LBConfigHelper lbConfigHelper;
 
-    private AMXRoot(DomainRoot dd) {
+    private AMXRoot(DomainRoot dd,  MBeanServerConnection msc) {
         System.out.println("=========== In AMX Root constructor, DomainRoot  = " + dd);
         domainRoot = dd;
         domainConfig = domainRoot.getDomainConfig();
@@ -120,6 +120,7 @@ public class AMXRoot {
         queryMgr = domainRoot.getQueryMgr();
         uploadDownloadMgr = domainRoot.getUploadDownloadMgr();
         webServiceMgr = domainRoot.getWebServiceMgr();
+        mbaenServerConnection = msc;
         //lbConfigHelper = new LBConfigHelper(domainRoot);
     }
 
@@ -144,7 +145,19 @@ public class AMXRoot {
 
 	    DomainRoot domainRoot = ProxyFactory.getInstance(mbs).getDomainRoot();
 	    domainRoot.waitAMXReady();
-	    amxRoot = new AMXRoot(domainRoot);
+	    amxRoot = new AMXRoot(domainRoot, mbs);
+            
+            /*
+            MBeanServerConnection msc = mbs;
+            Object[] params = null;
+            String[] sig = null;
+            try{
+                Object apps = msc.invoke(new ObjectName("com.sun.appserv:type=Manager,path=/docroot,host=server"), "listSessionIds", null, null);
+                System.out.println(apps);
+            }catch(Exception ex){
+                ex.printStackTrace();
+            }
+             */
             HtmlAdaptor.registerHTMLAdaptor(mbs);
 	}
         return amxRoot;
@@ -157,23 +170,14 @@ public class AMXRoot {
      * call general MBeanServerConnection methods.
      * @return an instance of javax.management.MBeanServerConnection
      */
-    public final static MBeanServerConnection getMBeanServerConnection() {
-        return (ManagementFactory.getPlatformMBeanServer());
+    public MBeanServerConnection getMBeanServerConnection() {
+        return mbaenServerConnection;
         //for now, ideally, this should be got from AppserverConnectionSource
     }
 
 
 
     public  DomainConfig getDomainConfig() {
-        /*
-        ConfigConfig config = getConfig("server-config");
-        System.out.println("=========== ConfigConfig = " + config);
-        JavaConfig javaConfig = config.getJavaConfig();
-        System.out.println("============ JavaConfig = " + javaConfig);
-        String[] options = javaConfig.getJVMOptions();
-        System.out.println("========= options = " + options);
-        */
-
         return domainConfig;
     }
 
