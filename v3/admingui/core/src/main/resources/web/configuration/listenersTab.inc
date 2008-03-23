@@ -42,6 +42,7 @@
             setSessionAttribute(key="listenersTab" value="listenersEdit");
             # setAttribute(key="configName" value="#{configName}");
             # setAttribute(key="name" value="#{tabName}");
+	   urlencode(value="#{tabName}" value=>$page{tabName});
             redirect(page="#{editPage}?configName=#{configName}&name=#{tabName}");
         /> 
     </sun:tab>
@@ -54,6 +55,8 @@
            # setAttribute(key="pageTitle" value="#{pageTitle}");
            # setAttribute(key="editPage" value="#{editPage}");
 	   urlencode(value="#{pageTitle}" value=>$page{pageTitle});
+	   urlencode(value="#{tabName}" value=>$page{tabName});
+	   urlencode(value="#{configName}" value=>$page{configName});
             redirect(page="listenersSslTab.jsf?configName=#{configName}&name=#{tabName}&type=#{type}&pageTitle=#{pageTitle}&editPage=#{editPage}&ssl2=#{ssl2}");
         /> 
     </sun:tab>
