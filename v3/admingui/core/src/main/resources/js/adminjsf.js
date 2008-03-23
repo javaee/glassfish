@@ -886,10 +886,14 @@ function guiValidate(reqMsg,reqInt, reqPort){
     var inputFields = document.getElementsByTagName("input");
     for ( i=0; i< inputFields.length; i++) {
         component = inputFields[i];
+        //styleClass is now with the parent span
         styleClass = component.className;
-        if (styleClass == null || styleClass=='') {
-            continue;
-        }
+            //alert('A : ' + styleClass);
+            styleClass = component.parentNode.className;  
+            //alert('P : ' + styleClass);
+            if (styleClass == null || styleClass =='') {
+                continue;
+            }
         if (styleClass.match("require")) {
             if (component.value=='') {
                 component.focus();
@@ -948,8 +952,12 @@ function guiValidateWithDropDown(reqMsg,reqInt, reqPort, reqMsgSelect){
     var inputFields = document.getElementsByTagName("input");
     for ( i=0; i< inputFields.length; i++) {
         component = inputFields[i];
+        //styleClass is now with the parent span
         styleClass = component.className;
-        if (styleClass == null || styleClass=='') {
+        //alert('A : ' + styleClass);
+        styleClass = component.parentNode.className;  
+        //alert('P : ' + styleClass);
+        if (styleClass == null || styleClass =='') {
             continue;
         }
         if (styleClass.match("require")) {
@@ -1009,7 +1017,6 @@ function guiValidateWithDropDown(reqMsg,reqInt, reqPort, reqMsgSelect){
             }
         }
     }
-    alert('in guivalidate(), return true');
     return true;
 }
 
