@@ -47,7 +47,7 @@
  <sun:html id="html2">
         <sun:head id="propertyhead" title="$resource{i18n.webContainer.sessionProp}" >
              <sun:script url="/resource/js/restart.js" />
-             <sun:script url="../../js/adminjsf.js" />
+             <sun:script url="/resource/js/adminjsf.js" />
         </sun:head>
         <sun:body id="body3" onLoad="javascript: synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
             <sun:form id="propertyForm">
@@ -60,7 +60,7 @@
                      <!facet pageButtonsTop>
                      <sun:panelGroup id="topButtons">
                          <sun:button id="saveButton" text="$resource{i18n.button.Save}" 
-                             onClick="return guiValidate1('#{reqMsg}','#{reqInt}','#{reqPort}'); " > 
+                             onClick="return guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'); " > 
                          <!command
                          getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
                          getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
