@@ -53,12 +53,13 @@
             NetwkAddr="#{netwkAddr}" 
             ListenerPort="#{listenerPort}"
             DefaultVirtServer="#{defaultVirtServer}"
-            ServerName="#{serverName}"
+            ServerName="#{requestScope.serverName}"
             Listener="#{listener}"
             security="#{security}"
             RedirectPort="#{redirectPort}"
             Acceptor="#{acceptor}"
             PoweredBy="#{poweredBy}"
+            Blocking="#{blocking}"
             AddProps="#{addProps}"
             RemoveProps="#{removeProps}"
             );
@@ -78,12 +79,13 @@
             NetwkAddr="#{netwkAddr}" 
             ListenerPort="#{listenerPort}"
             DefaultVirtServer="#{defaultVirtServer}"
-            ServerName="#{serverName}"
+            ServerName="#{requestScope.serverName}"
             Listener="#{listener}"
             security="#{security}"
             RedirectPort="#{redirectPort}"
             Acceptor="#{acceptor}"
             PoweredBy="#{poweredBy}"
+            Blocking="#{blocking}"
             AddProps="#{addProps}"
             RemoveProps="#{removeProps}"
             );           
@@ -118,7 +120,7 @@
             NetwkAddr=>$attribute{netwkAddr}, ListenerPort=>$attribute{listenerPort}, 
             DefaultVirtServer=>$attribute{defaultVirtServer}, ServerName=>$attribute{serverName}
             RedirectPort=>$attribute{redirectPort}, Acceptor=>$attribute{acceptor}, 
-            PoweredBy=>$attribute{poweredBy}, Properties=>$page{props});
+            PoweredBy=>$attribute{poweredBy}, Blocking=>$attribute{blocking}, Properties=>$page{props});
             getTableList(Properties="#{props}", TableList=>$attribute{tableList});
             />
         </event>
@@ -162,6 +164,9 @@
             </sun:property> 
             <sun:property id="PoweredByProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.httpListeners.poweredByLabel}" helpText="$resource{i18n.httpListeners.poweredByHelp}" >
                 <sun:checkbox label="$resource{i18n.desc.Enabled}" selected="#{requestScope.poweredBy}" />   
+            </sun:property>
+            <sun:property id="BlockingProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.httpListeners.blockingLabel}" helpText="$resource{i18n.httpListeners.blockingHelp}" >
+                <sun:checkbox label="$resource{i18n.desc.Enabled}" selected="#{requestScope.blocking}" />   
             </sun:property>
         </sun:propertySheetSection>                            
 </sun:propertySheet>    
