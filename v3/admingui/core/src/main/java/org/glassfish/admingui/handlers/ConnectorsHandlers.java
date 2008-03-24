@@ -131,7 +131,8 @@ public class ConnectorsHandlers {
         }
 
         handlerCtx.setOutputValue("poolName", resource.getPoolName());
-        handlerCtx.setOutputValue("description", resource.getDescription());
+        //TODO-V3 TP2
+        handlerCtx.setOutputValue("description", "AMX Exception" );  //resource.getDescription());
         if (AMXRoot.getInstance().isEE()) {
             handlerCtx.setOutputValue("enabledString", TargetUtil.getEnabledStatus(resource, false));
         } else {
@@ -1534,7 +1535,9 @@ public class ConnectorsHandlers {
                 //oneRow.put("enabled", TargetUtil.getEnabledStatus(resConfig, false));
                 oneRow.put("enabled", "false");
                 oneRow.put("selected", (hasOrig) ? isSelected(name, selectedList) : false);
-                oneRow.put("description", checkEmpty(resConfig.getDescription()));
+                //TODO-V3 TP2
+                //oneRow.put("description", checkEmpty(resConfig.getDescription()));
+                oneRow.put("description", checkEmpty("AMX Exception"));
                 if (isJdbc) {
                     oneRow.put("pool", ((JDBCResourceConfig) resConfig).getPoolName());
                 } else if (isConnector) {
