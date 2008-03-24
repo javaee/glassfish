@@ -112,13 +112,13 @@ public class JdbcHandlers {
 	    GuiUtil.handleError(handlerCtx, GuiUtil.getMessage("msg.NoSuchJDBCResource"));
 	}else{
 	    handlerCtx.setOutputValue("poolName", jdbc.getPoolName());
-	    handlerCtx.setOutputValue("description", jdbc.getDescription());
-            // TODO-V3
-            //if(AMXRoot.getInstance().isEE()) {
-                //handlerCtx.setOutputValue("enabledString", TargetUtil.getEnabledStatus(jdbc, false));
-            //}else{
+            //TODO-V3 TP2
+	    handlerCtx.setOutputValue("description", "AMX Exception" ); //jdbc.getDescription());
+            if(AMXRoot.getInstance().isEE()) {
+                handlerCtx.setOutputValue("enabledString", TargetUtil.getEnabledStatus(jdbc, false));
+            }else{
                 handlerCtx.setOutputValue("enabled", TargetUtil.isResourceEnabled(jdbc, "server" ));
-            //}
+            }
 	}
 
     }
