@@ -332,7 +332,7 @@ public class RemoteCommand {
         Attributes attr = m.getMainAttributes();
         String keys = attr.getValue("keys");
         if (keys != null) {
-            StringTokenizer token = new StringTokenizer(keys, ",");
+            StringTokenizer token = new StringTokenizer(keys, ";");
             if (token.hasMoreTokens()) {
                 while (token.hasMoreTokens()) {
                     String property = token.nextToken();
@@ -366,7 +366,7 @@ public class RemoteCommand {
 
         String keys = attr.getValue("keys");
         if (keys != null) {
-            StringTokenizer token = new StringTokenizer(keys, ",");
+            StringTokenizer token = new StringTokenizer(keys, ";");
             if (token.hasMoreTokens()) {
                 System.out.print(prefix + "properties=(");
                 while (token.hasMoreTokens()) {
@@ -388,11 +388,15 @@ public class RemoteCommand {
         }
 
         String childrenType = attr.getValue("children-type");
-        StringTokenizer token = new StringTokenizer(children, ",");
+        StringTokenizer token = new StringTokenizer(children, ";");
         while (token.hasMoreTokens()) {
             String container = token.nextToken();
             int index = key == null ? 0 : key.length() + 1;
-            System.out.println(prefix + childrenType + " : " + container.substring(index));
+            if (childrenType.equals("null") || childrenType.equals("")) {
+                System.out.println(container.substring(index));
+            } else {
+                System.out.println(prefix + childrenType + " : " + container.substring(index));
+            }
             // get container attributes
             Attributes childAttr = m.getAttributes(container);
             processOneLevel(prefix + "\t", container, m, childAttr);
