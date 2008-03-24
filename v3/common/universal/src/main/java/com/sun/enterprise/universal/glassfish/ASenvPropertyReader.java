@@ -35,6 +35,7 @@
  */
 package com.sun.enterprise.universal.glassfish;
 
+import com.sun.enterprise.universal.io.SmartFile;
 import java.util.HashMap;
 
 import java.io.*;
@@ -151,10 +152,10 @@ public class ASenvPropertyReader {
 
                 File f;
                 if (value.startsWith(".")) {
-                    f = GFLauncherUtils.absolutize(new File(configDir, value));
+                    f = SmartFile.sanitize(new File(configDir, value));
                 }
                 else {
-                    f = GFLauncherUtils.absolutize(new File(value));
+                    f = SmartFile.sanitize(new File(value));
                 }
 
                 props.put(key, f.getPath());
@@ -177,7 +178,7 @@ public class ASenvPropertyReader {
 
         if(isValidJavaRoot(javaRootName))
         {
-            javaRootName = GFLauncherUtils.absolutize(new File(javaRootName)).getPath();
+            javaRootName = SmartFile.sanitize(new File(javaRootName)).getPath();
             props.put(SystemPropertyConstants.JAVA_ROOT_PROPERTY, javaRootName);
             return;
         }
@@ -187,7 +188,7 @@ public class ASenvPropertyReader {
 
         if(isValidJavaRoot(javaRootName))
         {
-            javaRootName = GFLauncherUtils.absolutize(new File(javaRootName)).getPath();
+            javaRootName = SmartFile.sanitize(new File(javaRootName)).getPath();
             props.put(SystemPropertyConstants.JAVA_ROOT_PROPERTY, javaRootName);
             return;
         }
@@ -197,7 +198,7 @@ public class ASenvPropertyReader {
 
         if(isValidJavaRoot(javaRootName))
         {
-            javaRootName = GFLauncherUtils.absolutize(new File(javaRootName)).getPath();
+            javaRootName = SmartFile.sanitize(new File(javaRootName)).getPath();
             props.put(SystemPropertyConstants.JAVA_ROOT_PROPERTY, javaRootName);
             return;
         }

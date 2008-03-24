@@ -24,6 +24,7 @@ package com.sun.enterprise.admin.launcher;
 
 import com.sun.enterprise.module.bootstrap.BootException;
 import com.sun.enterprise.universal.glassfish.GFLauncherUtils;
+import com.sun.enterprise.universal.io.SmartFile;
 import com.sun.enterprise.universal.process.ProcessStreamDrainer;
 import com.sun.enterprise.universal.xml.MiniXmlParserException;
 import java.io.File;
@@ -111,7 +112,7 @@ class GFDomainLauncher extends GFLauncher {
         if (!f.exists() && !isFakeLaunch())
             throw new GFLauncherException("nobootjar", f.getPath());
 
-        list.add(GFLauncherUtils.absolutize(f));
+        list.add(SmartFile.sanitize(f));
         return list;
     }
 

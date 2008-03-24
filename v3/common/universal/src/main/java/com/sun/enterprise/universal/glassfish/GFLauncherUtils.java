@@ -22,6 +22,7 @@
  */
 package com.sun.enterprise.universal.glassfish;
 
+import com.sun.enterprise.universal.io.SmartFile;
 import java.io.*;
 import java.net.*;
 import java.util.*;
@@ -48,6 +49,7 @@ public class GFLauncherUtils {
         return f != null && f.isDirectory();
     }
 
+    /*
     public static File absolutize(File f) {
         if (f == null) {
             return null;
@@ -60,7 +62,7 @@ public class GFLauncherUtils {
             return f.getAbsoluteFile();
         }
     }
-
+*/
     public static synchronized File getInstallDir() {
         if(installDir == null)
         {
@@ -79,13 +81,13 @@ public class GFLauncherUtils {
                 JarURLConnection c = (JarURLConnection) resource.openConnection();
                 URL jarFile = c.getJarFileURL();
                 
-                // important to absolutize it!
+                // important to sanitize it!
                 // unreported bug:
                 // JDK does this:
                 // the parent of "/foo/." is "/foo", not "/" !
                
                 
-                File f = absolutize(new File(jarFile.toURI()));
+                File f = SmartFile.sanitize(new File(jarFile.toURI()));
 
                 f = f.getParentFile();  // <install>/modules
 
@@ -95,7 +97,11 @@ public class GFLauncherUtils {
 
                 f = f.getParentFile(); // <install>/
 
-                installDir = absolutize(f);
+                if (f == null) {
+                    return null;
+                }
+
+                installDir = SmartFile.sanitize(f);
             }
             catch (Exception e) {
                 installDir = null;
@@ -206,7 +212,7 @@ public class GFLauncherUtils {
             String[] ss = cp.split(File.pathSeparator);
 
             for(String s : ss) {
-                list.add(absolutize(new File(s)));
+                list.add(SmartFile.sanitize(new File(s)));
             }
         }
         

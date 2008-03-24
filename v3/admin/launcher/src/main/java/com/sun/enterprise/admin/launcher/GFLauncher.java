@@ -25,6 +25,7 @@ package com.sun.enterprise.admin.launcher;
 import com.sun.enterprise.universal.collections.CollectionUtils;
 import com.sun.enterprise.universal.glassfish.GFLauncherUtils;
 import com.sun.enterprise.universal.glassfish.TokenResolver;
+import com.sun.enterprise.universal.io.SmartFile;
 import com.sun.enterprise.universal.xml.MiniXmlParserException;
 import java.io.*;
 import java.util.*;
@@ -141,6 +142,11 @@ public abstract class GFLauncher {
         asenvProps.put(INSTANCE_ROOT_PROPERTY, getInfo().getInstanceRootDir().getPath());
         debugOptions = getDebug();
         logFilename = parser.getLogFilename();
+        
+        // TODO temporary until we define a domain.xml attribute for setting this
+        jvmOptions.addJvmLogging();
+        
+        
         resolveAllTokens();
         GFLauncherLogger.addLogFileHandler(logFilename);
         setJavaExecutable();
@@ -244,7 +250,7 @@ public abstract class GFLauncher {
         }
 
         if (f.exists()) {
-            javaExe = GFLauncherUtils.absolutize(f).getPath();
+            javaExe = SmartFile.sanitize(f).getPath();
             return true;
         }
         return false;

@@ -42,6 +42,7 @@ import com.sun.enterprise.cli.framework.CommandValidationException;
 import com.sun.enterprise.universal.glassfish.GFLauncherUtils;
 import com.sun.enterprise.universal.glassfish.SystemPropertyConstants;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
+import com.sun.enterprise.universal.io.SmartFile;
 import com.sun.enterprise.universal.xml.MiniXmlParser;
 import com.sun.enterprise.universal.xml.MiniXmlParserException;
 import java.io.*;
@@ -61,7 +62,7 @@ public class StopDomainCommand extends Command {
         validateOptions();
         getDomainRootDir();
         getDomainXml();
-        domainRootDir = GFLauncherUtils.absolutize(domainRootDir);
+        domainRootDir = SmartFile.sanitize(domainRootDir);
         Integer[] ports = null;
 
         try {
