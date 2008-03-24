@@ -33,7 +33,6 @@ public class GFLauncherFactory {
      */
     public enum ServerType
     {
-
         domain, nodeAgent, instance
     }; 
     /**

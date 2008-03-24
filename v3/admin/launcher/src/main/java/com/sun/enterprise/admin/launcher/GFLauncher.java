@@ -25,7 +25,9 @@ package com.sun.enterprise.admin.launcher;
 import com.sun.enterprise.universal.collections.CollectionUtils;
 import com.sun.enterprise.universal.glassfish.GFLauncherUtils;
 import com.sun.enterprise.universal.glassfish.TokenResolver;
+import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import com.sun.enterprise.universal.io.SmartFile;
+import com.sun.enterprise.universal.process.ProcessStreamDrainer;
 import com.sun.enterprise.universal.xml.MiniXmlParserException;
 import java.io.*;
 import java.util.*;
@@ -116,11 +118,73 @@ public abstract class GFLauncher {
     final List<String> getCommandLine() {
         return commandLine;
     }
+    
     final long getStartTime() {
         return startTime;
     }
-    private void setup() throws GFLauncherException, MiniXmlParserException {
+    
+    void launchInstance() throws GFLauncherException, MiniXmlParserException {
+        if(isFakeLaunch())
+            return;
         
+        List<String> cmds = getCommandLine();
+        ProcessBuilder pb = new ProcessBuilder(cmds);
+        
+        //run the process and attach Stream Drainers
+        Process process;
+        try {
+            process = pb.start();
+            if (getInfo().isVerbose()) {
+                ProcessStreamDrainer.redirect(getInfo().getDomainName(), process);
+            }
+            else {
+                ProcessStreamDrainer.drain(getInfo().getDomainName(), process);
+            }
+        }
+        catch (IOException e) {
+            throw new GFLauncherException("jvmfailure", e, e);
+        }
+
+        long endTime = System.currentTimeMillis();
+        GFLauncherLogger.info("launchTime", (endTime - getStartTime()));
+        
+        //if verbose, hang round until the domain stops
+        if (getInfo().isVerbose())
+            wait(process);
+    }
+
+    private void wait(final Process p) throws GFLauncherException {
+        try {
+            setShutdownHook(p);
+            p.waitFor();
+        }
+        catch (InterruptedException ex) {
+            throw new GFLauncherException("verboseInterruption", ex, ex);
+        }
+    }
+
+    private void setShutdownHook(final Process p) {
+        // ON UNIX a ^C on the console will also kill DAS
+        // On Windows a ^C on the console will not kill DAS
+        // We want UNIX behavior on Windows
+        // note that the hook thread will run in both cases:
+        // 1. the server died on its own, e.g. with a stop-domain
+        // 2. a ^C (or equivalent signal) was received by the console
+        
+        final String msg = strings.get("serverStopped", info.getType());
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+            public void run() {
+                // logger won't work anymore...
+                System.out.println(msg);
+                p.destroy();
+            }});
+    }
+        
+    ////////////////////////////////////////////////////////////////////////////
+    ///////              EVERYTHING BELOW IS PRIVATE                  //////////
+    ////////////////////////////////////////////////////////////////////////////
+
+    private void setup() throws GFLauncherException, MiniXmlParserException {
         ASenvPropertyReader pr;
         if(isFakeLaunch()) {
             pr = new ASenvPropertyReader(info.getInstallDir());
@@ -351,6 +415,7 @@ public abstract class GFLauncher {
     private LaunchType mode = LaunchType.normal;
     private final static String JAVA_NATIVE_SYSPROP_NAME = "java.library.path";
     private static final String NEWLINE = System.getProperty("line.separator");
+    private final static LocalStringsImpl strings = new LocalStringsImpl(GFLauncher.class);
 
 }
 

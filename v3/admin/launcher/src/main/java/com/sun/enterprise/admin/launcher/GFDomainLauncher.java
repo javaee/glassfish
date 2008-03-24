@@ -51,7 +51,7 @@ class GFDomainLauncher extends GFLauncher {
                 launchEmbedded();
             }
             else {
-                launchExternal();
+                launchInstance();
             }
         }
         catch (GFLauncherException ex) {
@@ -67,42 +67,6 @@ class GFDomainLauncher extends GFLauncher {
         main.start(getInfo().getArgsAsStringArray());
         GFLauncherLogger.info("finishedEmbedded", getInfo().getDomainName());
     }
-
-    private void launchExternal() throws GFLauncherException, MiniXmlParserException {
-        if(isFakeLaunch())
-            return;
-        
-        List<String> cmds = getCommandLine();
-        ProcessBuilder pb = new ProcessBuilder(cmds);
-        
-        //run the process and attach Stream Drainers
-        Process p;
-        try {
-            p = pb.start();
-            if (getInfo().isVerbose()) {
-                ProcessStreamDrainer.redirect(getInfo().getDomainName(), p);
-            }
-            else {
-                ProcessStreamDrainer.drain(getInfo().getDomainName(), p);
-            }
-        }
-        catch (IOException e) {
-            throw new GFLauncherException("jvmfailure", e, e);
-        }
-
-        long endTime = System.currentTimeMillis();
-        GFLauncherLogger.info("launchTime", (endTime - getStartTime()));
-        
-        //if verbose, hang round until the domain stops
-        try {
-            if (getInfo().isVerbose())
-                p.waitFor();
-        }
-        catch (InterruptedException ex) {
-            throw new GFLauncherException("verboseInterruption", ex, ex);
-        }
-    }
-
 
     List<File> getMainClasspath() throws GFLauncherException {
         List<File> list = new ArrayList<File>();
