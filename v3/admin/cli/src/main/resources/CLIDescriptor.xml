@@ -43,9 +43,12 @@
         <Option name="checkports" type="boolean" value-required="true" default="true"/>
         <Option name="masterpassword" type="string" value-required="true"/>
         <Option name="savemasterpassword" type="boolean" value-required="false" default="false"/>
-        <Option name="savelogin" type="boolean" value-required="false" default="false"/>           
+        <Option name="savelogin" type="boolean" value-required="false" default="false"/>
         <Option name="filename" type="string" value-required="true"/>
         <Option name="description" type="string" value-required="true"/>
+        <Option name="dbhost" type="string" value-required="true" default="0.0.0.0"/>
+        <Option name="dbport" type="string" value-required="true" default="1527"/>
+        <Option name="dbhome" type="string" value-required="true" />
     </Options>
     <Commands>
 	<Command name="dummy" classname="com.sun.enterprise.admin.cli.DummyCommand" numberofoperands="?" usage-text="dummy">
@@ -116,10 +119,18 @@
                 <ValidOption name="echo"/>
                 <ValidOption name="verbose"/>
         </Command>
-    
-    
-    
+        <Command name="start-database" classname="com.sun.enterprise.admin.cli.StartDatabaseCommand" numberofoperands="0" usage-text="start-database [--dbhost 0.0.0.0] [--dbport 1527] [--dbhome db_directory] [--echo=false] [--terse=false]">
+	    <ValidOption name="dbhost"/>
+            <ValidOption name="dbport"/>
+            <ValidOption name="dbhome"/>
+            <ValidOption name="echo"/>
+            <ValidOption name="terse"/>
+	</Command>
+        <Command name="stop-database" classname="com.sun.enterprise.admin.cli.StopDatabaseCommand" numberofoperands="0" usage-text="stop-database [--dbhost 0.0.0.0] [--dbport 1527]">
+	    <ValidOption name="dbhost"/>
+            <ValidOption name="dbport"/>
+            <ValidOption name="terse"/>
+            <ValidOption name="echo"/>
+	</Command>
     </Commands>
 </CommandsAndOptions>
-
-
