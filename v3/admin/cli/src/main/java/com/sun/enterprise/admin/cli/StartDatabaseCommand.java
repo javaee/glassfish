@@ -205,11 +205,11 @@ public final class StartDatabaseCommand extends DatabaseCommand
                 dbLog = dbHome + File.separator + DerbyControl.DB_LOG_FILENAME;
 
             CLILogger.getInstance().printDebugMessage("Ping Database");
-            cpe.execute(pingDatabaseCmd(true), true);
+            cpe.execute("pingDatabaseCmd", pingDatabaseCmd(true), true);
             //if ping is unsuccesfull then database is not up and running
             if (cpe.exitValue() > 0) {
 	            CLILogger.getInstance().printDebugMessage("Start Database");
-                cpe.execute(startDatabaseCmd(), false);
+                cpe.execute("startDatabaseCmd", startDatabaseCmd(), false);
                 if (cpe.exitValue() != 0) {
                     throw new CommandException(getLocalizedString("UnableToStartDatabase",
                                                      new Object[]{dbLog}));
@@ -243,7 +243,7 @@ public final class StartDatabaseCommand extends DatabaseCommand
                                             new Object[]{dbHost, dbPort}));
                     //try getting sysinfo
 	                CLILogger.getInstance().printDebugMessage("Database SysInfo");
-		            new CLIProcessExecutor().execute(sysinfoCmd(), true);
+		            new CLIProcessExecutor().execute("sysinfoCmd", sysinfoCmd(), true);
                 }
                 catch (Exception e) {
                     throw new CommandException(getLocalizedString("CommandUnSuccessful",

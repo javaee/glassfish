@@ -109,7 +109,7 @@ public final class StopDatabaseCommand extends DatabaseCommand
         try {
             prepareProcessExecutor();
             CLIProcessExecutor cpe = new CLIProcessExecutor();
-            cpe.execute(pingDatabaseCmd(false), true);
+            cpe.execute("pingDatabaseCmd", pingDatabaseCmd(false), true);
             if (cpe.exitValue() > 0) {
                     //if ping is unsuccesfull then database is not up and running
                 throw new CommandException(getLocalizedString("StopDatabaseStatus", new Object[]{dbHost, dbPort}));
@@ -121,7 +121,7 @@ public final class StopDatabaseCommand extends DatabaseCommand
             }
             else {
                     //database is running so go ahead and stop the database
-                cpe.execute(stopDatabaseCmd(), true);
+                cpe.execute("stopDatabaseCmd", stopDatabaseCmd(), true);
                 if (cpe.exitValue() > 0) {
                     throw new CommandException(getLocalizedString("CommandUnSuccessful",
                                                               new Object[] {name} ));
