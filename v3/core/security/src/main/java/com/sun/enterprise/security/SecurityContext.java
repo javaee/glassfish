@@ -414,6 +414,7 @@ public class SecurityContext extends AbstractSecurityContext implements PostCons
         }
         if (context == null) {
             setCurrent(null);
+            return;
         } 
         if (context instanceof SecurityContext) {
             setCurrent((SecurityContext)context);
