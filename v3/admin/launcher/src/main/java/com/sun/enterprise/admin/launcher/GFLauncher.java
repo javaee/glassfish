@@ -33,7 +33,6 @@ import java.io.*;
 import java.util.*;
 import com.sun.enterprise.universal.glassfish.ASenvPropertyReader;
 import com.sun.enterprise.universal.xml.MiniXmlParser;
-import java.util.logging.Level;
 import static com.sun.enterprise.universal.glassfish.SystemPropertyConstants.*;
 
 /**
