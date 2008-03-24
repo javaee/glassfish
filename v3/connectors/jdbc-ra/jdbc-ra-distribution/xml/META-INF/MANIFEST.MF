@@ -1,6 +1,0 @@
-Specification-Title: JDBC Specification
-Specification-Vendor: Sun Microsystems, Inc.,
-Specification-Version: 3.0, 4.0
-Implementation-Vendor: Sun Microsystems, Inc.,
-Implementation-Version: 9.1
-Implementation-Title: Sun Java System Application Server
