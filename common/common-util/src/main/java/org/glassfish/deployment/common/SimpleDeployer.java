@@ -110,9 +110,9 @@ public abstract class SimpleDeployer <T extends Container,
     public MetaData getMetaData() {
         List<ModuleDefinition> apis = new ArrayList<ModuleDefinition>();
         final String JavaEEModuleName =
-                System.getProperty("javax.javaee.module-name", "javax.javaee:javaee");
+                System.getProperty("javax.javaee.module-name", "org.glassfish:javax.javaee");
         final String JavaEEModuleVersion =
-                System.getProperty("javax.javaee.module-version", "5.0");
+                System.getProperty("javax.javaee.module-version", "10.0-SNAPSHOT");
 
         Module module = modulesRegistry.makeModuleFor(JavaEEModuleName, JavaEEModuleVersion);
         if (module!=null) {
