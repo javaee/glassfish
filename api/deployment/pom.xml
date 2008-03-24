@@ -48,7 +48,7 @@
     <groupId>javax.enterprise.deploy</groupId>
     <artifactId>deployment-api</artifactId>
     <packaging>jar</packaging>
-    <version>1.2-1-SNAPSHOT</version>
+    <version>1.2.1-SNAPSHOT</version>
     <name>Java EE Deployment API</name>
     <description>Project Glassfish Java EE Deployment API</description>
 

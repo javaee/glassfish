@@ -93,9 +93,9 @@
         <activation-api.version>1.1</activation-api.version> 
         <transaction-api.version>1.1</transaction-api.version>
         <mail-api.version>1.4</mail-api.version>        
-        <mail.version>1.4.1ea-SNAPSHOT</mail.version>
+        <mail.version>1.4.2-SNAPSHOT</mail.version>
         <ejb-api.version>3.0</ejb-api.version>
-        <persistence-api.version>1.0b</persistence-api.version>
+        <persistence-api.version>1.0.3-SNAPSHOT</persistence-api.version>
         <connector-api.version>1.5</connector-api.version>
         <management-api.version>1.1</management-api.version>
         
@@ -142,6 +142,7 @@
     </properties>
     <modules>
       	<module>build</module>
+        <module>javaee-api</module>
       	<module>common</module>
       	<module>admin</module>
       	<module>core</module>

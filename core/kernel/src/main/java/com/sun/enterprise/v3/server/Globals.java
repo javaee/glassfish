@@ -36,6 +36,11 @@ import org.glassfish.internal.api.Init;
  */
 @Service(name="globals")
 public class Globals implements Init {
+    // TODO(Sahoo): These two are temporarily kept here
+    public static final String JavaEEModuleName =
+            System.getProperty("javax.javaee.module-name", "javax.javaee:javaee");
+    public static final String JavaEEModuleVersion =
+            System.getProperty("javax.javaee.module-version", "5.0");
 
     @Inject
     static Habitat defaultHabitat;

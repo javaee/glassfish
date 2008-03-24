@@ -114,10 +114,17 @@
             <artifactId>gf-phobos-connector</artifactId>
             <version>${pe.version}</version>
         </dependency>
+        <!-- This should be removed once we switch everything to use org.glassfish.javax.javaee 
         <dependency>
             <groupId>javax.javaee</groupId>
             <artifactId>javaee</artifactId>
             <version>${javaee-api.version}</version>
+        </dependency>
+        -->
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.javaee</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.common</groupId>

@@ -106,6 +106,7 @@
                     <archive>
                         <manifestEntries>
                             <HK2-Module-Import-Policy>com.sun.enterprise.web.WebImportPolicy</HK2-Module-Import-Policy>
+                            <Bundle-Activator>org.glassfish.web.DirContextURLStreamHandlerService</Bundle-Activator>
                         </manifestEntries>
                      </archive>
                 </configuration>
@@ -123,9 +124,14 @@
     </build>
     <dependencies>
         <dependency>
-            <groupId>javax.javaee</groupId>
-            <artifactId>javaee</artifactId>
-            <version>${javaee-api.version}</version>
+            <groupId>com.sun.enterprise</groupId>
+            <artifactId>hk2</artifactId>
+            <version>${hk2.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.javaee</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.web</groupId>
@@ -213,6 +219,13 @@
             <groupId>org.glassfish.admin</groupId>
             <artifactId>config-api</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <!-- Needed to register URLStreamHandler -->
+          <groupId>org.osgi</groupId>
+          <artifactId>osgi_R4_core</artifactId>
+          <version>1.0</version>
+          <scope>provided</scope>
         </dependency>
     </dependencies>
 </project>

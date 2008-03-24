@@ -44,9 +44,9 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>grizzly-jruby-module</artifactId>
-    <packaging>hk2-jar</packaging>
+    <packaging>bundle</packaging>
     <version>${glassfish-jruby.version}</version>
-    <name>Module packaging for JRuby grizzly adapter for V3</name>
+    <name>grizzly-jruby adapter repackaged as OSGi and HK2 module</name>
     <description>JRUBY grizzly adapter for GlassFish v3</description>
 
     <developers>
@@ -79,6 +79,40 @@
             </roles>
         </developer>
     </developers>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <!-- embed all first level dependencies with
+                        groupId=com.sun.grizzly and artifactid=grizzly-jruby
+                        -->
+                        <Embed-Dependency>
+                            *;groupId=com.sun.grizzly;artifactId=grizzly-jruby;inline=true
+                        </Embed-Dependency>
+                        <!-- grizzly-jruby contains a class called com.sun.grizzly.standalone.JRuby.
+                        So, bundle plugin adds an export package header for com.sun.grizzly.standalone.
+                        We don't want that to be exported, because grizzly-module is already
+                        exporting that package. -->
+                        <Export-Package>com.sun.grizzly.jruby.*,!com.sun.grizzly.standalone</Export-Package>
+                        <Import-Package>*</Import-Package>
+                        <!-- Package everything from the embedded jar in the final bundle -->
+                        <_exportcontents>*</_exportcontents>
+                        <!-- !* matches with nothing, so no other class will be included in this bundle,
+                         other than what is specified above -->
+                        <Private-Package>!*</Private-Package>
+                        <!-- Make it an HK2 module, as GlassFish needs it to be HK2 module.
+                         This is needed because we don't want to change the packaging type to
+                         hk2-jar. -->
+                        <HK2-Bundle-Name>${groupId}:${artifactId}</HK2-Bundle-Name>
+                    </instructions>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
     <dependencies>
         <dependency>
             <groupId>com.sun.grizzly</groupId>

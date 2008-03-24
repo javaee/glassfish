@@ -31,6 +31,7 @@ import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.archive.WritableArchive;
 import org.glassfish.api.container.Container;
 import com.sun.enterprise.v3.server.ServerEnvironment;
+import com.sun.enterprise.v3.server.Globals;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.util.zip.ZipItem;
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
@@ -111,7 +112,7 @@ public abstract class JavaEEDeployer<T extends Container, U extends ApplicationC
      */
     public MetaData getMetaData() {
         List<ModuleDefinition> apis = new ArrayList<ModuleDefinition>();
-        Module module = modulesRegistry.makeModuleFor("javax.javaee:javaee", "5.0");
+        Module module = modulesRegistry.makeModuleFor(Globals.JavaEEModuleName, Globals.JavaEEModuleVersion);
         if (module!=null) {
             apis.add(module.getModuleDefinition());
         }

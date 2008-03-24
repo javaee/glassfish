@@ -38,28 +38,38 @@ package org.glassfish.faces.integration;
 
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.net.URI;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Collections;
 import java.util.regex.Pattern;
 
 import org.glassfish.api.web.TldProvider;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.Singleton;
 
 import com.sun.enterprise.util.web.JarURLPattern;
+import com.sun.enterprise.module.Module;
+import com.sun.enterprise.module.ModulesRegistry;
 
 
 /**
  * Implementation of TldProvider for JSF.
  * @author Shing Wai Chan
+ * @author Sahoo
  */
 
 @Service(name="jsfTld")
 @Scoped(Singleton.class)
 public class GlassFishTldProvider implements TldProvider, PostConstruct {
-    private List<URL> tldList = null;
+    @Inject
+    ModulesRegistry registry;
+
+    private List<URL> tldList = Collections.emptyList();
  
     /**
      * Get a list of URL that corresponding to Tld entries
@@ -69,9 +79,31 @@ public class GlassFishTldProvider implements TldProvider, PostConstruct {
     }
 
     public void postConstruct() {
-        ClassLoader classLoader = getClass().getClassLoader();
-        if (classLoader instanceof URLClassLoader) {
-            URL[] urls = ((URLClassLoader)classLoader).getURLs();
+        URL[] urls = null;
+        Module m = registry.find(getClass());
+        if (m!=null) {
+            URI[] uris = m.getModuleDefinition().getLocations();
+            List<URL> urlList = new ArrayList<URL>(uris.length);
+            for (int i = 0; i< uris.length; ++i) {
+                try {
+                    urlList.add(uris[i].toURL());
+                } catch (MalformedURLException e) {
+                    // TODO(Sahoo): Use logger
+                    System.out.println("Ignoring " + uris[i] + " because of " + e);
+                }
+            }
+            urls = urlList.toArray(new URL[urlList.size()]);
+        } else {
+            ClassLoader classLoader = getClass().getClassLoader();
+            if (classLoader instanceof URLClassLoader) {
+                urls = ((URLClassLoader)classLoader).getURLs();
+            } else {
+                // TODO(Sahoo): Use logger
+                System.out.println("ClassLoader [" + classLoader +
+                        "] is not of type URLClassLoader");
+            }
+        }
+        if (urls!=null) {
             Pattern pattern = Pattern.compile("META-INF/.*\\.tld");
             tldList =  JarURLPattern.getJarEntryURLs(urls, pattern);
         }

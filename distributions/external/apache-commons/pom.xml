@@ -46,8 +46,8 @@
         <version>10.0-SNAPSHOT</version>
     </parent>
     <artifactId>apache-commons</artifactId>
-    <packaging>hk2-jar</packaging>
-    <name>Apache commons library</name>
+    <packaging>bundle</packaging> <!-- This is an OSGi bundle -->
+    <name>com.sun Apache commons library repackaged as OSGi and HK2 bundle</name>
     <description>Module repackaging of the Apache commons library</description>
 
     <developers>
@@ -62,6 +62,41 @@
             </roles>
         </developer>
     </developers>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <!-- embed all compile and runtime scope dependencies -->
+                        <Embed-Dependency>*;groupId=com.sun.commons;inline=true</Embed-Dependency>
+                        <Export-Package>com.sun.org.apache.commons.*</Export-Package>
+                        <Import-Package>*</Import-Package>
+                        <!-- Package everything from the embedded jar in the final bundle -->
+                        <_exportcontents>*</_exportcontents>
+                        <!-- !* matches with nothing, so no other class will be included in this bundle,
+                         other than what is specified above -->
+                        <Private-Package>!*</Private-Package>
+                        <!-- Make it an HK2 module, as GlassFish needs it to be HK2 module.
+                         This is needed because we don't want to change the packaging type to
+                         hk2-jar. -->
+                        <HK2-Bundle-Name>${groupId}:${artifactId}</HK2-Bundle-Name>
+                    </instructions>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>bundle-bundle</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>bundle</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
     <dependencies>
         <dependency>
             <groupId>com.sun.commons</groupId>

@@ -38,6 +38,7 @@ import com.sun.enterprise.module.ModuleDefinition;
 import com.sun.enterprise.security.util.IASSecurityException;
 import com.sun.enterprise.server.ServerContext;
 import com.sun.enterprise.v3.deployment.DeployCommand;
+import com.sun.enterprise.v3.server.Globals;
 import com.sun.logging.LogDomains;
 
 
@@ -141,7 +142,7 @@ public class SecurityDeployer extends SimpleDeployer<SecurityContainer, DummyApp
     //TODO: check if this is correct returning the Security Module def in getMetaData
     public MetaData getMetaData() {
         List<ModuleDefinition> apis = new ArrayList<ModuleDefinition>();
-        Module module = modulesRegistry.makeModuleFor("javax.javaee:javaee", "5.0");
+        Module module = modulesRegistry.makeModuleFor(Globals.JavaEEModuleName, Globals.JavaEEModuleVersion);
         if (module != null) {
             apis.add(module.getModuleDefinition());
         }

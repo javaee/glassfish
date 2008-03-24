@@ -90,7 +90,9 @@ public class Main extends com.sun.enterprise.module.bootstrap.Main {
         }
 
         // now install the java-ee APIs. this has to be at a very high level in the hierarchy
-        Module parentModule = mr.makeModuleFor("javax.javaee:javaee", null);
+        final String javaeeModuleName =
+                System.getProperty("javax.javaee.module-name", "javax.javaee:javaee"); // TODO(Sahoo): Remove this
+        Module parentModule = mr.makeModuleFor(javaeeModuleName, null);
         if(parentModule!=null) {
             cl = parentModule.getClassLoader();
         }

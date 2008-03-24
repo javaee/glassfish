@@ -49,7 +49,7 @@
     <groupId>javax.ejb</groupId>
     <artifactId>ejb-api</artifactId>
     <packaging>jar</packaging>
-    <version>3.0-1-SNAPSHOT</version>
+    <version>3.0.1-SNAPSHOT</version>
     <name>Enterprise JavaBeans(TM) Specification</name>
     <description>Project GlassFish Enterprise JavaBean API</description>
     

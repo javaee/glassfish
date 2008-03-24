@@ -46,7 +46,7 @@
     </parent>    
     <groupId>org.glassfish.security</groupId>
     <artifactId>realms</artifactId>
-    <packaging>jar</packaging>
+    <packaging>hk2-jar</packaging>
     <name>Security Realms</name>
     <developers>
         <developer>
@@ -70,6 +70,11 @@
         </resources>
     </build>
     <dependencies>
+        <dependency>
+            <groupId>com.sun.enterprise</groupId>
+            <artifactId>hk2</artifactId>
+            <version>${hk2.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.glassfish.admin</groupId>
             <artifactId>config-api</artifactId>

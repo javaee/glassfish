@@ -44,8 +44,8 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>glassfish-jaxb</artifactId>
-    <packaging>hk2-jar</packaging>
-    <name>Module packaging for JAXB</name>
+    <packaging>bundle</packaging>
+    <name>JAXB Repackaged as OSGi and HK2 module</name>
     <description>JAXB Module for GlassFish v3</description>
 
     <developers>
@@ -77,4 +77,38 @@
             <version>1.0-2</version>
         </dependency>
     </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <extensions>true</extensions>
+                <configuration>
+                    <!-- TODO(Sahoo):
+                    Not complete yet, as JAXB impl depends on staximpl etc.
+                    -->
+                    <instructions>
+                        <!-- embed only jaxb-impl -->
+                        <Embed-Dependency>
+                            *;artifactId=jaxb-impl;inline=true
+                        </Embed-Dependency>
+                        <!-- Export-Package is not needed, as we are using _exportcontents
+                        -->
+                        <!-- Package everything from the embedded jar in the final bundle
+                        and export them as well.
+                        -->
+                        <_exportcontents>*</_exportcontents>
+                        <Import-Package>*</Import-Package>
+                        <!-- !* matches with nothing, so no other class will be included in this bundle,
+                         other than what is specified above -->
+                        <Private-Package>!*</Private-Package>
+                        <!-- Make it an HK2 module, as GlassFish needs it to be HK2 module.
+                         This is needed because we don't want to change the packaging type to
+                         hk2-jar. -->
+                        <HK2-Bundle-Name>${groupId}:${artifactId}</HK2-Bundle-Name>
+                    </instructions>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>

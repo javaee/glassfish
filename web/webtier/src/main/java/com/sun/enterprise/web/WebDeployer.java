@@ -33,6 +33,7 @@ import com.sun.enterprise.server.ServerContext;
 import com.sun.enterprise.util.StringUtils;
 import com.sun.enterprise.v3.deployment.DeployCommand;
 import com.sun.enterprise.v3.server.ServerEnvironment;
+import com.sun.enterprise.v3.server.Globals;
 import com.sun.enterprise.v3.services.impl.GrizzlyService;
 import com.sun.enterprise.v3.common.Result;
 import com.sun.enterprise.module.ModuleDefinition;
@@ -49,7 +50,6 @@ import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.javaee.core.deployment.JavaEEDeployer;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.config.*;
 import org.glassfish.web.JSPCompiler;
 import org.glassfish.deployment.common.DeploymentException;
 
@@ -58,8 +58,6 @@ import java.util.logging.Level;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.beans.PropertyVetoException;
-import java.net.URL;
 
 /**
  * Web module deployer.
@@ -107,7 +105,7 @@ public class WebDeployer extends JavaEEDeployer<WebContainer, WebApplication>{
      */
     public MetaData getMetaData() {
         List<ModuleDefinition> apis = new ArrayList<ModuleDefinition>();
-        Module module = modulesRegistry.makeModuleFor("javax.javaee:javaee", "5.0");
+        Module module = modulesRegistry.makeModuleFor(Globals.JavaEEModuleName, Globals.JavaEEModuleVersion);
         if (module!=null) {
             apis.add(module.getModuleDefinition());
         }

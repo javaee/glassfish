@@ -46,8 +46,9 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.glassfish.api</groupId>
     <artifactId>mail</artifactId>
-    <version>1.4.1ea-SNAPSHOT</version>
+    <version>1.4.2-SNAPSHOT</version>
     <name>Java EE Mail API</name>
+    <packaging>jar</packaging>
     <description>Project GlassFish Java EE Mail API</description>
 
     <developers>

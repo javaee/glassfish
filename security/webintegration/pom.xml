@@ -115,7 +115,6 @@
             <groupId>org.glassfish.web</groupId>
             <artifactId>webtier</artifactId>
             <version>${project.version}</version>
-            <scope>provided</scope>            
         </dependency>
         <dependency>
             <groupId>org.glassfish.core</groupId>
@@ -123,9 +122,9 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>javax.javaee</groupId>
-            <artifactId>javaee</artifactId>
-            <version>${javaee-api.version}</version>       
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.javaee</artifactId>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 </project>
