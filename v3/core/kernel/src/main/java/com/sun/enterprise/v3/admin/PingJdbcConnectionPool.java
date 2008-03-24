@@ -40,14 +40,19 @@ import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.ActionReport;
+import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.component.PerLookup;
 import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.appserv.connectors.spi.ConnectorRuntime;
 
 /**
  * Ping JDBC Connection Pool Command
  * 
  */
 @Service(name="ping-connection-pool")
+@Scoped(PerLookup.class)
 @I18n("ping.connection.pool")
 public class PingJdbcConnectionPool implements AdminCommand {
     
@@ -56,6 +61,9 @@ public class PingJdbcConnectionPool implements AdminCommand {
 
     @Param(name="pool_name", primary=true)
     String poolName;
+
+    @Inject
+    private ConnectorRuntime connRuntime;
     
     /**
      * Executes the command with the command parameters passed as Properties
@@ -65,10 +73,21 @@ public class PingJdbcConnectionPool implements AdminCommand {
      */
     public void execute(AdminCommandContext context) {
         final ActionReport report = context.getActionReport();
+        boolean status = false;
 
         try {
-            // replace the following with equivalent code once it is ready
-            // ConnectorRuntime.getRuntime().testConnectionPool(poolName);
+            status = connRuntime.pingConnectionPool(poolName);
+            if (status) {
+                report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
+                report.setMessage(
+                    localStrings.getLocalString( "ping.connection.pool.success", 
+                    "Ping JDBC Connection Pool for {0} is Successful", poolName));
+            } else {
+                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                report.setMessage(
+                    localStrings.getLocalString( "ping.connection.pool.fail", 
+                    "Ping JDBC Connection Pool for {0} Failed", poolName));
+            }
         } catch(Exception e) {
             report.setMessage(
                 localStrings.getLocalString(
@@ -77,18 +96,5 @@ public class PingJdbcConnectionPool implements AdminCommand {
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
         }
-        /*
-        report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
-        report.setMessage(
-            localStrings.getLocalString( "ping.connection.pool.success", 
-            "Ping JDBC Connection Pool for {0} is Successful", poolName));
-        */
-
-        // Work In Progress
-        report.setMessage(
-                localStrings.getLocalString(
-                    "ping.connection.pool.wip", 
-                    "Ping Jdbc Connection pool implementaion is in progress ..."));
-        report.setActionExitCode(ActionReport.ExitCode.FAILURE);
     }
 }
