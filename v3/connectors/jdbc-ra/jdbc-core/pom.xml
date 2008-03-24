@@ -8,7 +8,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.glassfish.connectors.jdbc-ra.jdbc-core</groupId>
   <artifactId>jdbc-core</artifactId>
-  <name>jdbc-core</name>
+  <name>Core JDBC Resource Adapter classes</name>
 
   <build>
     <resources>

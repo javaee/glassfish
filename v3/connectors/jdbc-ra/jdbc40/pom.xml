@@ -7,21 +7,9 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.glassfish.connectors.jdbc-ra.jdbc40</groupId>
   <artifactId>jdbc40</artifactId>
-  <name>jdbc40</name>
+  <name>JDBC 40 related classes for JDBC Resource Adapter</name>
 
   <build>
-    <!--plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <configuration>
-          <verbose>true</verbose>
-          <fork>true</fork>
-          <executable>${JAVA_1_6_HOME}/bin/javac</executable>
-          <compilerVersion>1.6</compilerVersion>
-        </configuration>
-      </plugin>
-    </plugins-->
     <resources>
       <resource>
         <directory>src/main/java</directory>

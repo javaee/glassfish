@@ -8,7 +8,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.glassfish.connectors.jdbc-ra</groupId>
   <artifactId>jdbc-ra</artifactId>
-  <name>jdbc-ra</name>
+  <name>JDBC Resource Adapter</name>
   <packaging>pom</packaging>
   <version>10.0-SNAPSHOT</version>
 
@@ -65,6 +65,28 @@
   
   <!-- TODO: list your names as developers -->
 
+  <developers>
+    <developer>
+      <id>sm157516</id>
+      <name>Shalini Muthukrishnan</name>
+      <url>http://blogs.sun.com/technical</url>
+      <organization>Sun Microsystems, Inc.</organization>
+      <roles>
+        <role>developer</role>
+      </roles>
+    </developer>
+    <developer>
+      <id>jr158900</id>
+      <name>Jagadish Ramu</name>
+      <url>http://blogs.sun.com/JagadishPrasath</url>
+      <organization>Sun Microsystems, Inc.</organization>
+      <roles>
+        <role>lead</role>      
+	<role>developer</role>
+      </roles>
+    </developer>
+  </developers>
+
   <modules>
     <module>jdbc-core</module>
   </modules>
@@ -77,7 +99,7 @@
       </activation>
       <modules>
         <module>jdbc30</module>
-        <module>jdbcra-bundler</module>
+        <module>jdbc-ra-distribution</module>
       </modules>
     </profile>
     <profile>
@@ -87,7 +109,7 @@
       </activation>
       <modules>
         <module>jdbc40</module>
-        <module>jdbcra-bundler</module>
+        <module>jdbc-ra-distribution</module>
       </modules>
     </profile>
   </profiles>
