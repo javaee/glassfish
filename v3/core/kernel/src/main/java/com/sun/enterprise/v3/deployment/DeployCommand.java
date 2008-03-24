@@ -86,7 +86,6 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
     @Inject
     CommandRunner commandRunner;
 
-    String path;
 
     @Param(name = NAME, optional=true)
     String name = null;
@@ -149,9 +148,8 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
     Applications applications;
 
     @Param(primary=true, shortName = "p")
-    public void setPath(String path) {
-        this.path = path;
-    }
+    String path;
+
     /**
      * Entry point from the framework into the command execution
      * @param context context for the command.

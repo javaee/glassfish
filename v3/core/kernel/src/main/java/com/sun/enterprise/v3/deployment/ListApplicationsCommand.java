@@ -1,25 +1,34 @@
-
 /*
- * The contents of this file are subject to the terms
- * of the Common Development and Distribution License
- * (the License).  You may not use this file except in
- * compliance with the License.
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * You can obtain a copy of the license at
- * https://glassfish.dev.java.net/public/CDDLv1.0.html or
- * glassfish/bootstrap/legal/CDDLv1.0.txt.
- * See the License for the specific language governing
- * permissions and limitations under the License.
+ * Copyright 2008 Sun Microsystems, Inc. All rights reserved.
  *
- * When distributing Covered Code, include this CDDL
- * Header Notice in each file and include the License file
- * at glassfish/bootstrap/legal/CDDLv1.0.txt.
- * If applicable, add the following below the CDDL Header,
- * with the fields enclosed by brackets [] replaced by
- * you own identifying information:
+ * The contents of this file are subject to the terms of either the GNU
+ * General Public License Version 2 only ("GPL") or the Common Development
+ * and Distribution License("CDDL") (collectively, the "License").  You
+ * may not use this file except in compliance with the License. You can obtain
+ * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
+ * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
+ * language governing permissions and limitations under the License.
+ *
+ * When distributing the software, include this License Header Notice in each
+ * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
+ * If applicable, add the following below the License Header, with the fields
+ * enclosed by brackets [] replaced by your own identifying information:
  * "Portions Copyrighted [year] [name of copyright owner]"
  *
- * Copyright 2006 Sun Microsystems, Inc. All rights reserved.
+ * Contributor(s):
+ *
+ * If you wish your version of this file to be governed by only the CDDL or
+ * only the GPL Version 2, indicate your decision by adding "[Contributor]
+ * elects to include this software in this distribution under the [CDDL or GPL
+ * Version 2] license."  If you don't indicate a single choice of license, a
+ * recipient has the option to distribute your version of this file under
+ * either the CDDL, the GPL Version 2 or to extend the choice of license to
+ * its licensees as provided above.  However, if you add GPL Version 2 code
+ * and therefore, elected the GPL Version 2 license, then the option applies
+ * only if the new code is made subject to such option by the copyright
+ * holder.
  */
 
 package com.sun.enterprise.v3.deployment;
@@ -27,13 +36,10 @@ package com.sun.enterprise.v3.deployment;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
-import com.sun.enterprise.v3.data.ContainerRegistry;
-import com.sun.enterprise.v3.data.ContainerInfo;
-import com.sun.enterprise.v3.data.ApplicationInfo;
-import com.sun.enterprise.module.Module;
-import com.sun.enterprise.module.impl.ModuleImpl;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
+import com.sun.enterprise.v3.admin.CommandRunner;
+import com.sun.enterprise.util.LocalStringManagerImpl;
 
 /**
  *
@@ -43,31 +49,19 @@ import org.jvnet.hk2.annotations.Inject;
 public class ListApplicationsCommand implements AdminCommand {
 
     @Inject
-    ContainerRegistry containerRegistry;
+    CommandRunner commandRunner;
+
+    final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(DeployDirCommand.class);
 
     public void execute(AdminCommandContext context) {
- 
-        ActionReport report = context.getActionReport();
-        report.setActionDescription("List of Deployed Applications");
-        report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
-        StringBuffer buffer = new StringBuffer();
-        ActionReport.MessagePart part = report.getTopMessagePart();
-        part.setMessage("List of deployed applications per container");
-        part.setChildrenType("ContractProvider");
-        for (ContainerInfo containerInfo : containerRegistry.getContainers()) {
-            ActionReport.MessagePart containerChild = part.addChild();
-            containerChild.setMessage(containerInfo.getSniffer().getModuleType() + " ContractProvider");
-            Module connectorModule = containerInfo.getMainModule();          
-            containerChild.addProperty("Connector module", connectorModule.getModuleDefinition().getName());
-            containerChild.addProperty("Sniffer module", containerInfo.getSniffer().getClass().toString());
-            containerChild.setChildrenType("Application");
-            Iterable<ApplicationInfo> apps  = containerInfo.getApplications();
-            for (ApplicationInfo info : apps) {
-                ActionReport.MessagePart appPart = containerChild.addChild();
-                appPart.setMessage(info.getName());
-                appPart.getProps().put("Source", info.getSource().getURI());
-            }
-        }
+        final ActionReport report = context.getActionReport();
+        
+            //reference to list-commponents command
+        commandRunner.doCommand("list-components",
+                                context.getCommandParameters(), report);
+
+        final ActionReport.MessagePart part = report.getTopMessagePart();
+        ActionReport.MessagePart childPart = part.addChild();
+        childPart.setMessage(localStrings.getLocalString("list.applications.warning", "This command will be removed.  Please use list-components command."));
     }
-    
 }
