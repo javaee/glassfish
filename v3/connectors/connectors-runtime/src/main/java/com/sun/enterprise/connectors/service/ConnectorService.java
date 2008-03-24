@@ -48,6 +48,7 @@ import com.sun.enterprise.deployment.ConnectorDescriptor;
 import com.sun.enterprise.resource.pool.PoolManager;
 import com.sun.enterprise.server.ResourceDeployer;
 import com.sun.enterprise.server.ResourceDeployerFactory;
+import com.sun.enterprise.config.serverbeans.JdbcConnectionPool;
 import com.sun.logging.LogDomains;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 
@@ -339,4 +340,18 @@ public class ConnectorService implements ConnectorConstants {
         destroyConnectionPools(pools);
     }
 
+    public boolean checkAndLoadJdbcPool(String poolName) {
+        boolean status = false;
+        try {
+            ResourcesUtil resutil = ResourcesUtil.createInstance();
+            JdbcConnectionPool pool = _runtime.getJdbcConnectionPoolConfig(poolName);
+            DeferredResourceConfig defResConfig =
+                    resutil.getDeferredResourceConfig(null, pool, ConnectorConstants.RES_TYPE_JDBC, null);
+
+            status = loadResourcesAndItsRar(defResConfig);
+        } catch (ConnectorRuntimeException cre) {
+            _logger.log(Level.WARNING, "unable to load Jdbc Connection Pool [ " + poolName + " ]", cre);
+        }
+        return status;
+    }
 }

@@ -39,7 +39,10 @@ package com.sun.appserv.connectors.spi;
 import org.jvnet.hk2.annotations.Contract;
 
 import javax.naming.NamingException;
+import javax.resource.ResourceException;
 import java.util.Collection;
+
+import com.sun.enterprise.config.serverbeans.JdbcConnectionPool;
 
 
 /**
@@ -158,5 +161,9 @@ public interface ConnectorRuntime {
      * @throws javax.naming.NamingException when not able to get the datasource.
      */
     public Object lookupPMResource(String jndiName, boolean force) throws NamingException;
+
+    public JdbcConnectionPool getJdbcConnectionPoolConfig(String poolName);
+
+    public boolean pingConnectionPool(String poolName) throws ResourceException;
 
 }

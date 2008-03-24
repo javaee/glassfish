@@ -40,6 +40,7 @@ import com.sun.appserv.connectors.spi.ConnectorConstants;
 import com.sun.appserv.connectors.spi.ConnectorRuntimeException;
 import com.sun.enterprise.config.serverbeans.Property;
 import com.sun.enterprise.config.serverbeans.SecurityMap;
+import com.sun.enterprise.config.serverbeans.JdbcConnectionPool;
 import com.sun.enterprise.connectors.service.*;
 import com.sun.enterprise.connectors.util.RAWriterAdapter;
 import com.sun.enterprise.connectors.authentication.AuthenticationService;
@@ -55,6 +56,7 @@ import com.sun.enterprise.module.Module;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.naming.GlassfishNamingManager;
 import org.glassfish.api.invocation.InvocationManager;
+import org.glassfish.javaee.services.ResourceManager;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -65,6 +67,7 @@ import org.jvnet.hk2.component.PreDestroy;
 import javax.naming.NamingException;
 import javax.resource.spi.ConnectionManager;
 import javax.resource.spi.ManagedConnectionFactory;
+import javax.resource.ResourceException;
 import javax.transaction.SystemException;
 import javax.transaction.Transaction;
 import java.io.PrintWriter;
@@ -120,7 +123,10 @@ public class ConnectorRuntime implements ConnectorConstants, com.sun.appserv.con
     private JavaEETransactionManager transactionManager;
 
     @Inject
-    ModulesRegistry registry;
+    private ModulesRegistry registry;
+
+    @Inject
+    private ResourceManager rm;
 
     private final Object getTimerLock = new Object();
     private Timer timer;
@@ -600,5 +606,13 @@ public class ConnectorRuntime implements ConnectorConstants, com.sun.appserv.con
      */
     private ConnectorNamingEventNotifier getResourceRebindEventNotifier() {
         return connectorResourceAdmService.getResourceRebindEventNotifier();
+    }
+
+    public JdbcConnectionPool getJdbcConnectionPoolConfig(String poolName){
+        return rm.getJdbcConnectionPoolConfig(poolName);
+    }
+
+    public boolean pingConnectionPool(String poolName) throws ResourceException {
+        return ccPoolAdmService.testConnectionPool(poolName);
     }
 }

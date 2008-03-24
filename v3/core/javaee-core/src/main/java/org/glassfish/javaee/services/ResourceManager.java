@@ -367,7 +367,7 @@ public class ResourceManager implements Init, PostConstruct, PreDestroy, ConfigL
                 }
             }
         }
-        return null;
+        return null;  //TODO V3 cannot happen ?
     }
 
     /**
@@ -384,6 +384,19 @@ public class ResourceManager implements Init, PostConstruct, PreDestroy, ConfigL
                 }
             }
         }
-        return null;
+        return null;  //TODO V3 cannot happen ?
+    }
+
+    public JdbcConnectionPool getJdbcConnectionPoolConfig(String poolName){
+        //TODO V3 need to find a generic way (instead of separate methods for jdbc/connector)
+        for(Resource configuredResource : allResources.getResources()){
+            if(configuredResource instanceof JdbcConnectionPool){
+                JdbcConnectionPool pool = (JdbcConnectionPool)configuredResource;
+                if(pool.getName().equalsIgnoreCase(poolName)){
+                    return pool;
+                }
+            }
+        }
+        return null; //TODO V3 cannot happen ?
     }
 }
