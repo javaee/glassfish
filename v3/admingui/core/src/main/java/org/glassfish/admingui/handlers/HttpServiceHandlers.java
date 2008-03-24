@@ -60,6 +60,7 @@ import org.glassfish.admingui.util.GuiUtil;
 import com.sun.appserv.management.config.ConfigConfig; 
 import com.sun.appserv.management.config.VirtualServerConfig;
 import com.sun.appserv.management.config.AccessLogConfig;
+import com.sun.appserv.management.config.ConfigElement;
 import com.sun.appserv.management.config.RequestProcessingConfig;
 import com.sun.appserv.management.config.RequestProcessingConfigKeys;
 import com.sun.appserv.management.config.KeepAliveConfig;
@@ -72,6 +73,7 @@ import com.sun.appserv.management.config.HTTPServiceConfig;
 import com.sun.appserv.management.config.HTTPListenerConfig;
 import com.sun.appserv.management.config.ConnectionPoolConfig;
 import com.sun.appserv.management.config.ConnectionPoolConfigKeys;
+import java.util.Iterator;
 
 /**
  *
@@ -896,7 +898,101 @@ public class HttpServiceHandlers {
             GuiUtil.handleException(handlerCtx, ex);
         }
         
-    }         
+    }   
+    
+    
+    /*
+     *  HTTP Listener Handler
+     * /
+    
+             
+    /**
+     *	<p> This handler returns the list of specified Listener elements for populating 
+     *  <p> the table inHTTP Listeners page
+     *  <p> Input  value: "ConfigName"   -- Type: <code> java.lang.String</code></p>
+     *  <p> Input  value: "selectedRows" -- Type: <code> java.util.List</code></p>
+     *  <p> Output  value: "Result"      -- Type: <code> java.util.List</code></p>
+     *	@param	context	The HandlerContext.
+     */
+    @Handler(id="getHttpListenersList",
+        input={
+            @HandlerInput(name="ConfigName", type=String.class, required=true),
+            @HandlerInput(name="selectedRows", type=List.class)},
+        output={
+            @HandlerOutput(name="Result", type=java.util.List.class)}
+     )
+    public static void getHttpListenersList(HandlerContext handlerCtx){
+        ConfigConfig config = AMXRoot.getInstance().getConfig(((String)handlerCtx.getInputValue("ConfigName")));
+        List result = new ArrayList();
+        Iterator iter = null;
+        try{
+            iter = config.getHTTPServiceConfig().getHTTPListenerConfigMap().values().iterator();
+
+            List<Map> selectedList = (List)handlerCtx.getInputValue("selectedRows");
+            boolean hasOrig = (selectedList == null || selectedList.size()==0) ? false: true;
+       
+            if (iter != null){
+                while(iter.hasNext()){
+                    ConfigElement configE = (ConfigElement) iter.next();
+                    HashMap oneRow = new HashMap();
+                    String name=configE.getName();                
+                    oneRow.put("name", name);
+                    oneRow.put("selected", (hasOrig)? ConnectorsHandlers.isSelected(name, selectedList): false);
+                    HTTPListenerConfig httpConfig = (HTTPListenerConfig)configE; 
+                    boolean enabled = httpConfig.getEnabled();
+                    String ntwkAddress = httpConfig.getAddress();
+                    String listPort = httpConfig.getPort();
+                    String virtualServer = httpConfig.getDefaultVirtualServer();
+                    oneRow.put("enabled", enabled);
+                    oneRow.put("ntwkAddress", (ntwkAddress == null) ? " ": ntwkAddress);
+                    oneRow.put("listPort", (listPort == null) ? " ": listPort);
+                    oneRow.put("defVirtualServer", (virtualServer == null) ? " ": virtualServer);
+                    result.add(oneRow);
+                }
+            }
+        } catch (Exception ex){
+            GuiUtil.handleException(handlerCtx, ex);
+        }
+        handlerCtx.setOutputValue("Result", result);
+    }
+    
+    /**
+     *	<p> This handler takes in selected rows, and removes selected Listeners
+     *  <p> Input  value: "selectedRows"  -- Type: <code> java.util.List</code></p>
+     *  <p> Input  value: "ConfigName"    -- Type: <code> java.lang.String</code></p>
+     *  <p> Input  value: "Type"          -- Type: <code> java.lang.String</code></p>
+     *	@param	context	The HandlerContext.
+     */
+    @Handler(id="deleteHttpListeners",
+    input={
+        @HandlerInput(name="selectedRows", type=List.class, required=true),
+        @HandlerInput(name="ConfigName",   type=String.class, required=true)
+        }
+    )
+    public static void deleteHttpListeners(HandlerContext handlerCtx) {
+        String configName = (String)handlerCtx.getInputValue("ConfigName");
+        ConfigConfig config = AMXRoot.getInstance().getConfig(configName);
+        List obj = (List) handlerCtx.getInputValue("selectedRows");
+        List<Map> selectedRows = (List) obj;
+        try{
+            for(Map oneRow : selectedRows){
+                String name = (String)oneRow.get("name");
+                
+                //Need to use JMX because we also need to remove the references in Virtual server.
+                //This is specifed as the http-listeners attribute of the virtual server.
+                
+                //TODO-V3 TP2  change to use AMX
+//                String[] types = new String[]{ "java.lang.String", "java.lang.String"};
+//                Object[] params = new Object[]{name,configName};
+//                JMXUtil.invoke( "com.sun.appserv:type=configs,category=config", 
+//                    "deleteHttpListener", params, types);
+            }
+        }catch(Exception ex){
+           GuiUtil.handleException(handlerCtx, ex);
+        }
+    }
+
+
     
     /**
      *	<p> This handler returns the values for all the attributes in 
@@ -944,12 +1040,15 @@ public class HttpServiceHandlers {
                 if((fromStep2 == null) || (! fromStep2)){
                     handlerCtx.getFacesContext().getExternalContext().getSessionMap().put("httpProps", new HashMap());
                     handlerCtx.getFacesContext().getExternalContext().getSessionMap().put("sslProps", null);
+                    //TODO-V3 TP2 cannot get default value
+                    /*
                     Map<String, String> httpAttrMap = AMXRoot.getInstance().getDomainConfig().getDefaultAttributeValues(HTTPListenerConfig.J2EE_TYPE);
                     handlerCtx.setOutputValue("Listener", httpAttrMap.get("enabled"));
                     handlerCtx.setOutputValue("security", httpAttrMap.get("security-enabled"));
                     handlerCtx.setOutputValue("Acceptor", httpAttrMap.get("acceptor-threads"));
                     handlerCtx.setOutputValue("PoweredBy", httpAttrMap.get("xpowered-by"));
                     handlerCtx.setOutputValue("Blocking", httpAttrMap.get("blocking-enabled"));
+                    */
                 }else{
                     Map props = (Map) handlerCtx.getFacesContext().getExternalContext().getSessionMap().get("httpProps");
                     handlerCtx.setOutputValue("Listener", props.get("enabled"));
@@ -976,7 +1075,7 @@ public class HttpServiceHandlers {
             handlerCtx.setOutputValue("ListenerPort", httpListConfig.getPort());
             handlerCtx.setOutputValue("DefaultVirtServer", httpListConfig.getDefaultVirtualServer());
             handlerCtx.setOutputValue("ServerName", httpListConfig.getServerName());
-            handlerCtx.setOutputValue("RedirectPort", httpListConfig.getRedirectPort());
+            handlerCtx.setOutputValue("RedirectPort", "AMX Exception");  //httpListConfig.getRedirectPort());
             handlerCtx.setOutputValue("Acceptor", httpListConfig.getAcceptorThreads());
             handlerCtx.setOutputValue("PoweredBy", httpListConfig.getXpoweredBy());
             handlerCtx.setOutputValue("Blocking", httpListConfig.getBlockingEnabled());
@@ -1095,7 +1194,7 @@ public class HttpServiceHandlers {
                 String tmp = "";
                 for(int i=0; i<hlArray.length; i++){
                     if (! hlArray[i].equals(httpListenerName))
-                        tmp= (tmp == "")? hlArray[i] : tmp+","+hlArray[i];
+                        tmp= (tmp.equals("") )? hlArray[i] : tmp+","+hlArray[i];
                 }
                 previousVS.setHTTPListeners(tmp);
                 
@@ -1115,7 +1214,33 @@ public class HttpServiceHandlers {
         }
     }
     
+    /**
+     *	<p> This handler returns the values for list of thread pools in 
+     *      ORB Page </p>
+     *  <p> Input  value: "ConfigName               -- Type: <code>java.lang.String</code></p>
+     *	<p> Output value: "DefaultVirtualServers"   -- Type: <code>SelectItem[].class 
+     *      SelectItem[] (castable to Option[])</code></p>
+     *	@param	context	The HandlerContext.
+     */
+    @Handler(id="getDefaultVirtualServers",
+    input={
+        @HandlerInput(name="ConfigName", type=String.class, required=true)},
+    output={
+        @HandlerOutput(name="DefaultVirtualServers",  type=java.util.List.class)})
+        
+        public static void getDefaultVirtualServers(HandlerContext handlerCtx) {
+            String configName = (String) handlerCtx.getInputValue("ConfigName");
+            ConfigConfig config = AMXRoot.getInstance().getConfig(configName);
+            Iterator<String> iter = config.getHTTPServiceConfig().getVirtualServerConfigMap().keySet().iterator();
+            List options = new ArrayList();
+            while(iter.hasNext()){
+                    options.add( iter.next());
+                }
 
+            handlerCtx.setOutputValue("DefaultVirtualServers", options);
+        }
+
+    
     //mbean Attribute Name
     private static List httpServiceSkipPropsList = new ArrayList();
     
