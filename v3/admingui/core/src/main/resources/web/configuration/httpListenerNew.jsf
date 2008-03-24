@@ -39,8 +39,8 @@ setAttribute(key="edit" value="#{false}" )
 />
 <sun:page id="page1">
     <!beforeCreate
-        setResourceBundle(key="i18n" bundle="com.sun.enterprise.tools.admingui.resources.Strings")
-        setResourceBundle(key="help" bundle="com.sun.enterprise.tools.admingui.resources.Helplinks")
+        setResourceBundle(key="i18n" bundle="core.Strings")
+        setResourceBundle(key="help" bundle="core.Helplinks")
         setPageSessionAttribute(key="pageTitle" value="$resource{i18n.httpListeners.step1PageTitle}");
         setPageSessionAttribute(key="pageTitleHelp" value="$resource{i18n.httpListeners.NewPageHelp}");
         setPageSessionAttribute(key="step2PageTitle" value="$resource{i18n.httpListeners.step2PageTitle}");
@@ -51,15 +51,14 @@ setAttribute(key="edit" value="#{false}" )
 #include "shared/restart.inc"    
     <sun:html id="html2">
         <sun:head id="propertyhead" title="#{pageTitle}">
-            <sun:script url="../js/restart.js" />
+            <sun:script url="../../js/restart.js" />
         </sun:head>
-#include "alertMsg.inc"
         <sun:body id="body3" onLoad="javascript: synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
             <sun:form id="propertyForm">
 #include treeBreadcrumbs.inc
 #include "alertMsg.inc"
-#include "configuration/httpListener.inc" 
-#include "propertyTable.inc" 
+#include "web/configuration/httpListener.inc" 
+#include "shared/propertyTable.inc" 
                 <sun:hidden id="helpKey" value="$resource{help.httpListenerNew}" />
             </sun:form>
             "<br/><br/>

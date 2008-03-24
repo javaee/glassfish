@@ -37,13 +37,13 @@
 
 <sun:page id="page1">
     <!beforeCreate
-    setResourceBundle(key="i18n" bundle="com.sun.enterprise.tools.admingui.resources.Strings");
+    setResourceBundle(key="i18n" bundle="core.Strings");
     getRequestValue(key="configName" value=>$page{configName});
-    getListenersList(ConfigName="$pageSession{configName}", Type="httpListener" Result=>$attribute{listOfRows} );
+    getHttpListenersList(ConfigName="$pageSession{configName}", Result=>$attribute{listOfRows} );
     setPageSessionAttribute(key="tableTitle" value="$resource{i18n.httpListeners.TableTitle}");
     setPageSessionAttribute(key="listPageLink" value="httpListeners.jsf");
     setPageSessionAttribute(key="createLink" value="httpListenerNew.jsf");
-    setPageSessionAttribute(key="editLink" value="/configuration/httpListenerEdit.jsf");
+    setPageSessionAttribute(key="editLink" value="/web/configuration/httpListenerEdit.jsf");
     setPageSessionAttribute(key="hasDefVirtServer" value="#{true}");
     setPageSessionAttribute(key="type" value="httpListener");
     setPageSessionAttribute(key="confirmDeleteMsg" value="$resource{i18n.msg.JS.confirmDeleteHttpListener}");
@@ -51,7 +51,7 @@
 #include "shared/restart.inc"    
     <sun:html id="html2">
         <sun:head id="propertyhead" title="$resource{i18n.httpListeners.ListPageTitle}" >
-            <sun:script url="../js/restart.js" />
+            <sun:script url="../../js/restart.js" />
 #include "alertMsg.inc"        
         </sun:head>
         <sun:body id="body3" onLoad="admingui.nav.refreshTree($attribute{refreshId}); synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
@@ -68,7 +68,7 @@
                  <sun:title id="propertyContentPage" title="$resource{i18n.httpListeners.ListPageTitle}"
                  helpText="$resource{i18n.httpListeners.ListPageHelp}"/>
 		 "<br /> <br />
-#include "configuration/listenersTable.inc"                 
+#include "web/configuration/listenersTable.inc"                 
             </sun:form>
         </sun:body>
     </sun:html>

@@ -39,18 +39,13 @@
 <!-- configuration/listenersSslTab.jsf -->
 <sun:page id="page1">
   <!beforeCreate
-    setResourceBundle(key="i18n" bundle="com.sun.enterprise.tools.admingui.resources.Strings");
-    setResourceBundle(key="help" bundle="com.sun.enterprise.tools.admingui.resources.Helplinks")
+    setResourceBundle(key="i18n" bundle="core.Strings");
+    setResourceBundle(key="help" bundle="core.Helplinks")
     getRequestValue(key="configName" value=>$page{configName});
     getRequestValue(key="name", value=>$page{tabName});            
     getRequestValue(key="ssl2", value=>$page{ssl2});        
     getRequestValue(key="type", value=>$page{type});     
-    if($pageSession{type}="iiop"){
-        setPageSessionAttribute(key="helpid" value="$resource{help.httpSSL}");
-    }
-    if($pageSession{type}="http"){
-        setPageSessionAttribute(key="helpid" value="$resource{help.iiopSSL}");
-    }
+    setPageSessionAttribute(key="helpid" value="$resource{help.httpSSL}");
         
     getRequestValue(key="editPage" value=>$page{editPage});        
     getRequestValue(key="pageTitle" value=>$page{pageTitle});   
@@ -65,17 +60,17 @@
         <sun:body id="body3" onLoad="javascript: synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
             <sun:form id="propertyForm">
 #include "treeBreadcrumbs.inc"                
-#include "configuration/listenersTab.inc"       
+#include "web/configuration/listenersTab.inc"       
 #include "alertMsg.inc"
-#include "configuration/sslProperties.inc"
+#include "shared/sslProperties.inc"
                 <sun:title id="title2">
                     <!facet pageButtonsBottom>
-#include "configuration/sslPropertiesButtons.inc"
+#include "shared/sslPropertiesButtons.inc"
                     </facet>                     
                 </sun:title>
             <sun:hidden id="helpKey" value="$pageSession{helpid}" />
             </sun:form>
         </sun:body>
-#include "configuration/sslValidationsJS.inc"  
+#include "shared/sslValidationsJS.inc"  
     </sun:html>
 </sun:page>

@@ -40,8 +40,8 @@
 />
 <sun:page id="page1">
     <!beforeCreate
-    setResourceBundle(key="i18n" bundle="com.sun.enterprise.tools.admingui.resources.Strings")
-    setResourceBundle(key="help" bundle="com.sun.enterprise.tools.admingui.resources.Helplinks")
+    setResourceBundle(key="i18n" bundle="core.Strings")
+    setResourceBundle(key="help" bundle="core.Helplinks")
     setSessionAttribute(key="listenersTab" value="listenersEdit");    
     setSessionAttribute(key="ssl2" value="#{true}");
     getRequestValue(key="configName" value=>$page{configName});
@@ -54,20 +54,20 @@
 #include "shared/restart.inc"    
     <sun:html id="html2">
         <sun:head id="propertyhead" title="#{pageTitle}">
-            <sun:script url="../js/restart.js" />
+            <sun:script url="resource/js/restart.js" />
         </sun:head>
         <sun:body id="body3" onLoad="javascript: synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
             <sun:form id="propertyForm">
 #include treeBreadcrumbs.inc
-#include "configuration/listenersTab.inc"   
+#include "web/configuration/listenersTab.inc"   
 #include "alertMsg.inc"              
-#include "configuration/httpListener.inc"  
-#include "propertyTable.inc" 
+#include "web/configuration/httpListener.inc"  
+#include "shared/propertyTable.inc" 
                 <sun:hidden id="helpKey" value="$resource{help.httpListenerEdit}" />
             </sun:form>
              "<br/><br/>
         </sun:body>
-#include "changeButtonsJS.inc"         
+#include "shared/changeButtonsJS.inc"         
     </sun:html>
 </sun:page>
 

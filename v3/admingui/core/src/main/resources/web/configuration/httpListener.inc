@@ -96,7 +96,7 @@
             setAttribute(key="prevPage", value="configuration/httpListenerNew.jsf");
             setAttribute(key="finalPage", value="httpListeners.jsf");
             setAttribute(key="ssl2", value="#{true}");
-            navigate(page="configuration/listenersSslNew.jsf");
+            navigate(page="web/configuration/listenersSslNew.jsf");
             />
         </sun:button>
         <sun:button id="cancelButton" rendered="#{!edit}" immediate="#{true}" text="$resource{i18n.button.Cancel}" primary="#{false}">
@@ -148,7 +148,7 @@
                 <sun:textField id="ListenerPort" styleClass="require port" columns="$int{20}" text="#{requestScope.listenerPort}" required="#{true}" />      
             </sun:property> 
             <sun:property id="DefaultVirtServersProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.httpListeners.defVirtualServerLabel}" helpText="$resource{i18n.httpListeners.defVirtualServerHelp}">
-                <sun:dropDown id="DefaultVirtServers" styleClass="require" selected="#{requestScope.defaultVirtServer}" items="$attribute{defaultVirtServers}" required="#{true}"/>
+                <sun:dropDown id="DefaultVirtServers" styleClass="require" selected="#{requestScope.defaultVirtServer}" values="$attribute{defaultVirtServers}"  labels="$attribute{defaultVirtServers}"  required="#{true}"/>
             </sun:property>                          
             <sun:property id="ServerNameProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.httpListeners.serverNameLabel}" helpText="$resource{i18n.httpListeners.serverNameHelp}" >
                 <sun:textField id="ServerName" columns="$int{20}" text="#{requestScope.serverName}" />      

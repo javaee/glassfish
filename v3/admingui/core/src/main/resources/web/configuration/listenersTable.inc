@@ -49,7 +49,7 @@
             <!command 
                 getUIComponent(clientId="$pageSession{listenersTableRowGroupId}", component=>$attribute{tableRowGroup});      
                 getSelectedSingleMapRows(TableRowGroup="${tableRowGroup}" selectedRows=>$attribute{selectedRows});
-                deleteListeners(ConfigName="#{configName}", Type="#{type}", selectedRows="${selectedRows}");
+                deleteHttpListeners(ConfigName="#{configName}", selectedRows="${selectedRows}");
                 setAttribute(key="selectedRows" value="${selectedRows}");
                 redirect(page="#{listPageLink}?configName=#{configName}");
             />            
