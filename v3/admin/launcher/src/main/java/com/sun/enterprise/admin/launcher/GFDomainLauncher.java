@@ -29,8 +29,7 @@ import com.sun.enterprise.universal.xml.MiniXmlParserException;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
-import com.sun.enterprise.glassfish.bootstrap.Main;
-import com.sun.enterprise.universal.glassfish.SystemPropertyConstants;
+import com.sun.enterprise.glassfish.bootstrap.GlassFish;
 import static com.sun.enterprise.universal.glassfish.SystemPropertyConstants.*;
 
 /**
@@ -63,7 +62,7 @@ class GFDomainLauncher extends GFLauncher {
     }
 
     private void launchEmbedded() throws GFLauncherException, BootException {
-        Main main = new Main();
+        GlassFish main = new GlassFish();
         main.start(getInfo().getArgsAsStringArray());
         GFLauncherLogger.info("finishedEmbedded", getInfo().getDomainName());
     }
@@ -120,7 +119,7 @@ class GFDomainLauncher extends GFLauncher {
         return MAIN_CLASS;
     }
     
-    private static final String MAIN_CLASS = "com.sun.enterprise.glassfish.bootstrap.Main";
+    private static final String MAIN_CLASS = "com.sun.enterprise.glassfish.bootstrap.GlassFish";
     private static final String BOOTSTRAP_JAR_RELATIVE_PATH = "modules/glassfish-10.0-SNAPSHOT.jar";
 }
 

@@ -87,7 +87,7 @@ public class AsadminMain {
         // one from cli-framework jar
         "com.sun.enterprise.cli.framework.CLIMain",
         // one from glassfish bootstrap jar
-        "com.sun.enterprise.glassfish.bootstrap.Main",
+        "com.sun.enterprise.glassfish.bootstrap.GlassFish",
         // one from stax-api
         "javax.xml.stream.XMLInputFactory",
         // one from server-mgmt

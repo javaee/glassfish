@@ -48,7 +48,7 @@ import java.io.*;
 /**
  * Tag Main to get the manifest file 
  */
-public class Main extends com.sun.enterprise.module.bootstrap.Main {
+public class GlassFish extends com.sun.enterprise.module.bootstrap.Main {
 
     final static Logger logger = Logger.getAnonymousLogger();
     private final static String DEFAULT_DOMAINS_DIR_PROPNAME = "AS_DEF_DOMAINS_PATH";
@@ -56,7 +56,7 @@ public class Main extends com.sun.enterprise.module.bootstrap.Main {
     
     
     public static void main(final String args[]) {
-        (new Main()).run(args);   
+        (new GlassFish()).run(args);   
     }
 
     protected void setParentClassLoader(StartupContext context, ModulesRegistry mr) throws BootException {

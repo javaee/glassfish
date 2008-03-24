@@ -157,7 +157,7 @@ public abstract class GFLauncher {
         commandLine.add(classpath);
         commandLine.addAll(debugOptions);
         commandLine.addAll(jvmOptions.toStringArray());
-        commandLine.addAll(propsToJvmOptions(sysPropsFromXml));
+        //commandLine.addAll(propsToJvmOptions(sysPropsFromXml));
         commandLine.addAll(getNativePathCommandLine());
         commandLine.add(getMainClass());
         commandLine.addAll(getInfo().getArgsAsList());
@@ -190,7 +190,7 @@ public abstract class GFLauncher {
         resolver.resolve(javaConfig.getMap());
         resolver.resolve(profiler.getConfig());
         resolver.resolve(debugOptions);
-        resolver.resolve(sysPropsFromXml);
+        //resolver.resolve(sysPropsFromXml);
         logFilename = resolver.resolve(logFilename);
     // TODO ?? Resolve sysPropsFromXml ???
     }

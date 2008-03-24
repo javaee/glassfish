@@ -78,7 +78,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-							<mainClass>com.sun.enterprise.glassfish.bootstrap.Main</mainClass>
+							<mainClass>com.sun.enterprise.glassfish.bootstrap.GlassFish</mainClass>
                         </manifest>
                         <!-- this specifies the bootstrap module -->
                         <manifestEntries>

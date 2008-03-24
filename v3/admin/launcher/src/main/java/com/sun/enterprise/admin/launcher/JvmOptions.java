@@ -54,6 +54,7 @@ class JvmOptions {
             else
                 ss.add("-XX" + name);
         }
+        
         keys = xProps.keySet();
         for(String name : keys)
         {
@@ -81,6 +82,7 @@ class JvmOptions {
             else
                 ss.add("-D" + name);
         }
+        postProcessOrdering(ss);
         return ss;
     }
     Map<String,String> getCombinedMap() {
@@ -120,6 +122,32 @@ class JvmOptions {
     Map<String,String> xxProps = new HashMap<String,String>();
     Map<String,String> xProps = new HashMap<String,String>();
     Map<String,String> plainProps = new HashMap<String,String>();
+
+    private void postProcessOrdering(List<String> ss)
+    {
+        /*
+         * (1)
+         * JVM has one known order dependency.
+         * If these 3 are here, then unlock MUST appear first in the list
+         * -XX:+UnlockDiagnosticVMOptions
+         * -XX:+LogVMOutput
+         * -XX:LogFile=D:/as/domains/domain1/logs/jvm.log 
+         * 
+         * (2)
+         *  TODO Get the name of the instance early.  We no longer send in the
+         *  instanceRoot as an arg so -- ????
+         */
+
+        String arg = "-XX:+UnlockDiagnosticVMOptions";
+        int index = ss.indexOf(arg);
+        
+        // if < 0, it isn't here.  if == 0 then it's already in the right position
+        if(index > 0) {
+            ss.remove(index);
+            ss.add(0, arg);
+        }
+    }
+        
 
     private static class NameValue {
         NameValue(String s) {

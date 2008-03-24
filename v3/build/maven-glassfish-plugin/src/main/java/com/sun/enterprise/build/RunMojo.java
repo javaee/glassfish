@@ -213,7 +213,7 @@ public class RunMojo extends DistributionAssemblyMojo {
             Module mainModule = mr.makeModuleFor("org.glassfish.core:glassfish", null);
             if (mainModule!=null) {
                 try {
-                    Class mainClass = mainModule.getClassLoader().loadClass("com.sun.enterprise.glassfish.bootstrap.Main");
+                    Class mainClass = mainModule.getClassLoader().loadClass("com.sun.enterprise.glassfish.bootstrap.GlassFish");
                     Object instance = mainClass.newInstance();
                     Main mainInstance = Main.class.cast(instance);
                     mainInstance.launch(mr, context);
