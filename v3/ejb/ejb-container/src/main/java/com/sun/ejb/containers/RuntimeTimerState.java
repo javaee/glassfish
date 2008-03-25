@@ -38,8 +38,6 @@ package com.sun.ejb.containers;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 
-import com.sun.logging.LogDomains;
-import java.io.Serializable;
 import java.util.Date;
 
 import com.sun.enterprise.deployment.EjbDescriptor;
@@ -59,7 +57,7 @@ import com.sun.enterprise.deployment.Application;
 class RuntimeTimerState {
 
     private static final Logger logger =
-            EjbContainerUtil.getInstance().getLogger();
+            EjbContainerUtilImpl.getInstance().getLogger();
 
     //
     // Fine-grained timer states

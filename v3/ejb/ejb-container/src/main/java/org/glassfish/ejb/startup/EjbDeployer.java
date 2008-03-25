@@ -97,7 +97,7 @@ public class EjbDeployer
         }
 
         return new MetaData(false, apis.toArray(new ModuleDefinition[apis.size()]),
-                null, null );
+                new Class[] {Application.class}, null);
     }
 
     

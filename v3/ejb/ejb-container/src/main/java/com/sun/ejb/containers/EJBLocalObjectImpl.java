@@ -39,7 +39,6 @@ package com.sun.ejb.containers;
 import com.sun.ejb.containers.EJBLocalRemoteObject;
 import com.sun.ejb.spi.io.IndirectlySerializable;
 import com.sun.ejb.spi.io.SerializableObjectFactory;
-import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.logging.LogDomains;
 
 import javax.ejb.EJBException;
@@ -67,7 +66,7 @@ public abstract class EJBLocalObjectImpl
     implements EJBLocalObject, IndirectlySerializable
 {
     private static final Logger _logger =
-            EjbContainerUtil.getInstance().getLogger();
+            EjbContainerUtilImpl.getInstance().getLogger();
 
     private static Class[] NO_PARAMS = new Class[] {};    
     private static Method REMOVE_METHOD = null;
@@ -245,7 +244,7 @@ public abstract class EJBLocalObjectImpl
         public Object createObject()
             throws IOException
         {
-            BaseContainer container = EjbContainerUtil.getInstance().getContainer(containerId);
+            BaseContainer container = EjbContainerUtilImpl.getInstance().getContainer(containerId);
                 
             if( localHomeView ) {
                 EJBLocalObjectImpl ejbLocalObjectImpl = 

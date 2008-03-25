@@ -38,18 +38,15 @@ package com.sun.ejb;
 
 import com.sun.ejb.base.io.IOUtils;
 import com.sun.ejb.containers.BaseContainer;
-import com.sun.ejb.containers.EjbContainerUtil;
+import com.sun.ejb.containers.EjbContainerUtilImpl;
 import com.sun.ejb.containers.GenericEJBLocalHome;
 import com.sun.enterprise.deployment.EjbDescriptor;
 import com.sun.enterprise.deployment.EjbReferenceDescriptor;
-import com.sun.logging.LogDomains;
 
 import javax.naming.NamingException;
-import javax.rmi.PortableRemoteObject;
 import java.io.*;
 import java.lang.reflect.*;
 import java.util.Collection;
-import java.util.Properties;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.logging.Level;
@@ -61,7 +58,7 @@ import java.util.logging.Logger;
  */
 public class EJBUtils {
     private static final Logger _logger =
-            EjbContainerUtil.getInstance().getLogger();
+            EjbContainerUtilImpl.getInstance().getLogger();
 
     // Internal property to force generated ejb container classes to
     // be created during deployment time instead of dynamically.  Note that
@@ -269,7 +266,7 @@ public class EJBUtils {
         if( refDesc.isLocal() ) {
 
             EjbDescriptor target = refDesc.getEjbDescriptor();
-            BaseContainer container = EjbContainerUtil.getInstance().getContainer(target.getUniqueId());
+            BaseContainer container = EjbContainerUtilImpl.getInstance().getContainer(target.getUniqueId());
 
             if( refDesc.isEJB30ClientView() ) {
                 GenericEJBLocalHome genericLocalHome = 

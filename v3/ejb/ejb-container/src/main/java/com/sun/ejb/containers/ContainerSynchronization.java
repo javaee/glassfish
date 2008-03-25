@@ -38,7 +38,6 @@ package com.sun.ejb.containers;
 
 import java.util.*;
 
-import javax.ejb.*;
 import javax.transaction.*;
 
 import java.util.logging.*;
@@ -70,16 +69,16 @@ final class ContainerSynchronization implements Synchronization
     private Hashtable timerSyncs = new Hashtable();
 
     private Transaction tx; // the tx with which this Sync was registered
-    private EjbContainerUtil ejbContainerUtil;
+    private EjbContainerUtil ejbContainerUtilImpl;
 
     //TODO private SFSBTxCheckpointCoordinator sfsbTxCoordinator;
 
     // Note: this must be called only after a Tx is begun.
     ContainerSynchronization(Transaction tx, 
-			     EjbContainerUtil ejbContainerUtil)
+			     EjbContainerUtil ejbContainerUtilImpl)
     {
         this.tx = tx;
-        this.ejbContainerUtil = ejbContainerUtil;
+        this.ejbContainerUtilImpl = ejbContainerUtilImpl;
     }
     
     Vector  getBeanList(){
@@ -222,7 +221,7 @@ final class ContainerSynchronization implements Synchronization
         }
 
         // tell ContainerFactory to remove this tx/sync from its table
-        ejbContainerUtil.removeContainerSync(tx);
+        ejbContainerUtilImpl.removeContainerSync(tx);
     }
 
     /*TODO

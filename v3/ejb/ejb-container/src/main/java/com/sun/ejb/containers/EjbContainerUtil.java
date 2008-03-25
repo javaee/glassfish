@@ -16,6 +16,7 @@ import org.glassfish.api.invocation.InvocationManager;
 import org.glassfish.api.naming.GlassfishNamingManager;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.Contract;
 import org.jvnet.hk2.component.PostConstruct;
 
 import javax.transaction.RollbackException;
@@ -32,194 +33,58 @@ import java.io.IOException;
  * @author Mahesh Kannan
  *         Date: Feb 10, 2008
  */
-@Service
-public class EjbContainerUtil
-    implements PostConstruct {
+@Contract
+public interface EjbContainerUtil {
 
-    @Inject
-    private Logger _logger;
+    public  Logger getLogger();
 
-    @Inject
-    private ServerContext serverContext;
+    public  void setEJBTimerService(EJBTimerService es);
 
-    @Inject
-    private  EJBTimerService _ejbTimerService;
+    public  EJBTimerService getEJBTimerService();
 
-    private  Map<Long, BaseContainer> id2Container
-            = new ConcurrentHashMap<Long, BaseContainer>();
+    public  void registerContainer(BaseContainer container);
 
-    private  Timer _timer = new Timer(true);
+    public  void unregisterContainer(BaseContainer container);
 
-    private  boolean _insideContainer = true;
+    public  BaseContainer getContainer(long id);
 
-    @Inject
-    private  InvocationManager _invManager;
+    public  EjbDescriptor getDescriptor(long id);
 
-    @Inject
-    private  InjectionManager _injectionManager;
+    public  ClassLoader getClassLoader(long id);
 
-    @Inject
-    private  GlassfishNamingManager _gfNamingManager;
+    public  Timer getTimer();
 
-    @Inject
-    private  ComponentEnvManager _compEnvManager;
+    public  void setInsideContainer(boolean bool);
 
-    @Inject
-    private JavaEETransactionManager txMgr;
+    public  boolean isInsideContainer();
 
-    @Inject
-    private EjbContainer ejbContainer;
+    public  InvocationManager getInvocationManager();
 
-    @Inject
-    private ApplicationHelper applicationHelper;
+    public  InjectionManager getInjectionManager();
 
-    @Inject
-    private ServerEnvironment env;
+    public  GlassfishNamingManager getGlassfishNamingManager();
 
-    private  static EjbContainerUtil _me;
+    public  ComponentEnvManager getComponentEnvManager();
 
-    public void postConstruct() {
-        _me = this;
-    }
+    public  ComponentInvocation getCurrentInvocation();
 
-    public static EjbContainerUtil getInstance() {
-        return _me;
-    }
+    public JavaEETransactionManager getTransactionManager();
 
-    public  Logger getLogger() {
-        return _logger;
-    }
-
-    public  void setEJBTimerService(EJBTimerService es) {
-        _ejbTimerService = es;
-    }
-
-    public  EJBTimerService getEJBTimerService() {
-        return _ejbTimerService;
-    }
-
-    public  void registerContainer(BaseContainer container) {
-        id2Container.put(container.getContainerId(), container);
-    }
-
-    public  void unregisterContainer(BaseContainer container) {
-        id2Container.remove(container.getContainerId());
-    }
-
-    public  BaseContainer getContainer(long id) {
-        return id2Container.get(id);
-    }
-
-    public  EjbDescriptor getDescriptor(long id) {
-        BaseContainer container = id2Container.get(id);
-        return (container != null) ? container.getEjbDescriptor() : null;
-    }
-
-    public  ClassLoader getClassLoader(long id) {
-        BaseContainer container = id2Container.get(id);
-        return (container != null) ? container.getClassLoader() : null;
-    }
-
-    public  Timer getTimer() {
-        return _timer;
-    }
-
-    public  void setInsideContainer(boolean bool) {
-        _insideContainer = bool;
-    }
-
-    public  boolean isInsideContainer() {
-        return _insideContainer;
-    }
-
-    public  InvocationManager getInvocationManager() {
-        return _invManager;
-    }
-
-    public  InjectionManager getInjectionManager() {
-        return _injectionManager;
-    }
-
-    public  GlassfishNamingManager getGlassfishNamingManager() {
-        return _gfNamingManager;
-    }
-
-    public  ComponentEnvManager getComponentEnvManager() {
-        return _compEnvManager;
-    }
-
-    public  ComponentInvocation getCurrentInvocation() {
-        return _invManager.getCurrentInvocation();
-    }
-
-    public JavaEETransactionManager getTransactionManager() {
-        return txMgr;
-    }
-
-    public ServerContext getServerContext() {
-        return serverContext;
-    }
+    public ServerContext getServerContext();
 
     public  ContainerSynchronization getContainerSync(Transaction jtx)
-        throws RollbackException, SystemException
-    {
-        JavaEETransaction tx = (JavaEETransaction) jtx;
-        TxData txData = tx.getContainerData();
+        throws RollbackException, SystemException;
 
-        if ( txData == null ) {
-            txData = new TxData();
-            tx.setContainerData(txData);
-        }
+    public void removeContainerSync(Transaction tx);
 
-        if( txData.sync == null ) {
-            txData.sync = new ContainerSynchronization(tx, this);
-            tx.registerSynchronization(txData.sync);
-        }
+    public EjbContainer getEjbContainer();
 
-        return txData.sync;
-    }
+    public Application findApplicationByName(String appName);
 
-    public void removeContainerSync(Transaction tx) {
-        //No op
-    }
+    public ServerEnvironment getServerEnvironment();
 
-    public EjbContainer getEjbContainer() {
-        return ejbContainer;
-    }
+    public Vector getBeans(Transaction jtx);
 
-    public Application findApplicationByName(String appName) {
-        return applicationHelper.findApplicationByName(appName);
-    }
-
-    public ServerEnvironment getServerEnvironment() {
-        return env;
-    }
-
-    public  Vector getBeans(Transaction jtx) {
-        JavaEETransaction tx = (JavaEETransaction) jtx;
-        TxData txData = tx.getContainerData();
-
-        if ( txData == null ) {
-            txData = new TxData();
-            tx.setContainerData(txData);
-        }
-
-        if( txData.beans == null ) {
-            txData.beans = new Vector();
-        }
-
-        return txData.beans;
-
-    }
-
-    public void addWork(Runnable task) {
-        task.run();
-    }
-        // Various pieces of data associated with a tx.  Store directly
-    // in J2EETransaction to avoid repeated Map<tx, data> lookups.
-    private  class TxData {
-        ContainerSynchronization sync;
-        Vector beans;
-    }
+    public void addWork(Runnable task);
     
 }

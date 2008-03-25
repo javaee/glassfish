@@ -57,10 +57,8 @@ import com.sun.enterprise.container.common.spi.util.InjectionManager;
 import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.deployment.runtime.IASEjbExtraDescriptors;
 import com.sun.enterprise.deployment.util.TypeUtil;
-import com.sun.enterprise.security.SecurityUtil;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.Utility;
-import com.sun.logging.LogDomains;
 import org.glassfish.api.invocation.ComponentInvocation;
 import org.glassfish.api.invocation.InvocationManager;
 import org.glassfish.api.naming.GlassfishNamingManager;
@@ -95,7 +93,7 @@ public abstract class BaseContainer
     };
 
     protected static final Logger _logger =
-            EjbContainerUtil.getInstance().getLogger();
+            EjbContainerUtilImpl.getInstance().getLogger();
     
     protected static final Class[] NO_PARAMS = new Class[] {};
     
@@ -379,7 +377,7 @@ public abstract class BaseContainer
 
     protected ProtocolManager protocolMgr;
 
-    protected EjbContainerUtil ejbContainerUtil = EjbContainerUtil.getInstance();
+    protected EjbContainerUtil ejbContainerUtilImpl = EjbContainerUtilImpl.getInstance();
 
     /**
      * This constructor is called from ContainerFactoryImpl when an
@@ -397,9 +395,9 @@ public abstract class BaseContainer
 
             logParams = new Object[1];
             logParams[0] =  ejbDesc.getName();
-            invocationManager = ejbContainerUtil.getInvocationManager();
-            injectionManager = ejbContainerUtil.getInjectionManager();
-            namingManager = ejbContainerUtil.getGlassfishNamingManager();
+            invocationManager = ejbContainerUtilImpl.getInvocationManager();
+            injectionManager = ejbContainerUtilImpl.getInjectionManager();
+            namingManager = ejbContainerUtilImpl.getGlassfishNamingManager();
 
             System.out.println("Loader: " + loader);
             
@@ -625,7 +623,7 @@ public abstract class BaseContainer
             if( isTimedObject_ ) {
                 if( !isStatefulSession ) {
                     EJBTimerService timerService = 
-                        ejbContainerUtil.getEJBTimerService();
+                        ejbContainerUtilImpl.getEJBTimerService();
                     if( timerService != null ) {
                         timerService.timedObjectCount();
                     }
@@ -1611,7 +1609,7 @@ public abstract class BaseContainer
     }
     
     private void destroyTimers() {
-        EJBTimerService ejbTimerService = ejbContainerUtil.getEJBTimerService();
+        EJBTimerService ejbTimerService = ejbContainerUtilImpl.getEJBTimerService();
         if( isTimedObject() && (ejbTimerService != null) ) {
             ejbTimerService.destroyTimers(getContainerId());
         }
@@ -2769,7 +2767,7 @@ public abstract class BaseContainer
         // call the NamingManager to setup the java:comp/env namespace
         // for this EJB.
 
-        ComponentEnvManager envManager = ejbContainerUtil.getComponentEnvManager();
+        ComponentEnvManager envManager = ejbContainerUtilImpl.getComponentEnvManager();
         componentId = envManager.bindToComponentNamespace(ejbDescriptor);
         invFactory = new EjbInvocationFactory(componentId, this);
         // create envProps object to be returned from EJBContext.getEnvironment
@@ -3085,7 +3083,7 @@ public abstract class BaseContainer
             }
 
 	    try {
-		    ejbContainerUtil.getComponentEnvManager().unbindFromComponentNamespace(ejbDescriptor);
+		    ejbContainerUtilImpl.getComponentEnvManager().unbindFromComponentNamespace(ejbDescriptor);
 	    } catch (javax.naming.NamingException namEx) {
 		_logger.log(Level.FINE, "ejb.undeploy_exception", 
                         logParams);
@@ -3376,7 +3374,7 @@ public abstract class BaseContainer
         Method method = inv.method;
         if ( !inv.invocationInfo.isHomeFinder ) {
             // Register for Synchronization notification
-            ejbContainerUtil.getContainerSync(tx).addBean(context);
+            ejbContainerUtilImpl.getContainerSync(tx).addBean(context);
         }
         
         // Call afterBegin/ejbLoad. If ejbLoad throws exceptions,
@@ -3464,7 +3462,7 @@ public abstract class BaseContainer
                     // Register sync for methods other than finders/home methods
                     Method method = inv.method;
                     if ( !inv.invocationInfo.isHomeFinder ) {
-                        ejbContainerUtil.getContainerSync(clientTx).addBean(
+                        ejbContainerUtilImpl.getContainerSync(clientTx).addBean(
                         context);
                     }
                     
@@ -3847,7 +3845,7 @@ public abstract class BaseContainer
             
             // Register Synchronization with TM so that we can
             // dissociate the context from tx in afterCompletion
-            ejbContainerUtil.getContainerSync(tx).addBean(sc);
+            ejbContainerUtilImpl.getContainerSync(tx).addBean(sc);
             
             enlistExtendedEntityManagers(sc);
             // Dont call container.afterBegin() because
@@ -4231,7 +4229,7 @@ final class CallFlowInfoImpl
     
     public java.lang.reflect.Method getMethod() {
         EjbInvocation inv = (EjbInvocation)
-            EjbContainerUtil.getInstance().getCurrentInvocation();
+            EjbContainerUtilImpl.getInstance().getCurrentInvocation();
         
         return inv.method;
     }
@@ -4240,7 +4238,7 @@ final class CallFlowInfoImpl
         JavaEETransaction tx = null;
         try {
             tx =
-                (JavaEETransaction) EjbContainerUtil.getInstance().
+                (JavaEETransaction) EjbContainerUtilImpl.getInstance().
                         getTransactionManager().getTransaction();
         } catch (Exception ex) {
             //TODO: Log exception
@@ -4257,7 +4255,7 @@ final class CallFlowInfoImpl
     }
     
     public Throwable getException() {
-        return ((EjbInvocation) EjbContainerUtil.getInstance().getCurrentInvocation()).exception;
+        return ((EjbInvocation) EjbContainerUtilImpl.getInstance().getCurrentInvocation()).exception;
     }
 }
 

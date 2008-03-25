@@ -167,7 +167,7 @@ public final class SessionContextImpl
             throw new IllegalStateException("Operation not allowed");
         }
 
-        EJBTimerService timerService = EjbContainerUtil.getInstance().getEJBTimerService();
+        EJBTimerService timerService = EjbContainerUtilImpl.getInstance().getEJBTimerService();
         if( timerService == null ) {
             throw new EJBException("EJB Timer service not available");
         }
@@ -190,7 +190,7 @@ public final class SessionContextImpl
     
     public MessageContext getMessageContext() {
         if( isStateless ) {
-            InvocationManager invManager = EjbContainerUtil.getInstance().getInvocationManager();
+            InvocationManager invManager = EjbContainerUtilImpl.getInstance().getInvocationManager();
             try {
                 ComponentInvocation inv = invManager.getCurrentInvocation();
                     
@@ -276,7 +276,7 @@ public final class SessionContextImpl
         Class businessInterface = null;
 
         try {
-            ComponentInvocation inv = EjbContainerUtil.getInstance().getCurrentInvocation();
+            ComponentInvocation inv = EjbContainerUtilImpl.getInstance().getCurrentInvocation();
             
             if( (inv != null) && (inv instanceof EjbInvocation) ) {
                 EjbInvocation invocation = (EjbInvocation) inv;

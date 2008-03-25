@@ -37,12 +37,10 @@ package com.sun.ejb.containers;
 
 
 import java.util.logging.*;
-import java.util.Vector;
-import java.util.Iterator;
 
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.EjbDescriptor;
-import com.sun.ejb.containers.EjbContainerUtil;
+import com.sun.ejb.containers.EjbContainerUtilImpl;
 import com.sun.logging.LogDomains;
 
 public class TimerBeanContainer
@@ -50,7 +48,7 @@ public class TimerBeanContainer
     
     private EJBTimerService ejbTimerService;
 
-    private static EjbContainerUtil ejbContainerUtil = EjbContainerUtil.getInstance();
+    private static EjbContainerUtil ejbContainerUtilImpl = EjbContainerUtilImpl.getInstance();
 
     private static final Logger _logger = LogDomains.getLogger(LogDomains.EJB_LOGGER);
         
@@ -149,7 +147,7 @@ public class TimerBeanContainer
                 ejbTimerService = 
                     new EJBTimerService(appID, timerLocal);
 
-                ejbContainerUtil.setEJBTimerService(ejbTimerService);
+                ejbContainerUtilImpl.setEJBTimerService(ejbTimerService);
 
                 _logger.log(Level.INFO, "ejb.timer_service_started",
                             new Object[] { null /** XXX cmpResourceJndiName **/ } );

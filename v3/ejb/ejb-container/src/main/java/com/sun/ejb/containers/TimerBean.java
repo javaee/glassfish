@@ -37,9 +37,6 @@
 package com.sun.ejb.containers;
 
 import java.io.Serializable;
-import java.io.ByteArrayOutputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ObjectInputStream;
 import java.io.IOException;
 
 import java.util.Date;
@@ -49,14 +46,11 @@ import java.util.Set;
 import java.util.HashSet;
 
 import javax.ejb.EJBContext;
-import javax.ejb.EJBException;
-import javax.ejb.EJBLocalObject;
 import javax.ejb.EntityContext;
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
-import javax.ejb.Timer;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -72,7 +66,7 @@ import java.util.logging.Level;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.invocation.ComponentInvocation;
 
-import com.sun.ejb.containers.EjbContainerUtil;
+import com.sun.ejb.containers.EjbContainerUtilImpl;
 import com.sun.enterprise.deployment.EjbDescriptor;
 
 import javax.naming.InitialContext;
@@ -398,10 +392,10 @@ public class TimerBean implements TimerLocal {
     private ContainerSynchronization getContainerSynch(TimerState timer) throws Exception {
 
         Transaction transaction = context_.getTransaction();
-        EjbContainerUtil ejbContainerUtil = EjbContainerUtil.getInstance();
+        EjbContainerUtil ejbContainerUtilImpl = EjbContainerUtilImpl.getInstance();
 
         if( transaction == null ) {
-            ComponentInvocation i = ejbContainerUtil.getCurrentInvocation();
+            ComponentInvocation i = ejbContainerUtilImpl.getCurrentInvocation();
             transaction = i.getTransaction();
             if (transaction != null) {
                 // Need to know when it happens
@@ -414,11 +408,11 @@ public class TimerBean implements TimerLocal {
                                 "for timerId = " + timer.getTimerId());
         }
 
-        return ejbContainerUtil.getContainerSync(transaction);
+        return ejbContainerUtilImpl.getContainerSync(transaction);
     }
 
     private static EJBTimerService getEJBTimerService() {
-        return EjbContainerUtil.getInstance().getEJBTimerService();
+        return EjbContainerUtilImpl.getInstance().getEJBTimerService();
     }
 
     public void setSessionContext(SessionContext context) {
@@ -874,7 +868,7 @@ public class TimerBean implements TimerLocal {
 
     // XXX Called by TimerState via a static call
     public static BaseContainer getContainer(long containerId) {
-        return EjbContainerUtil.getInstance().getContainer(containerId);
+        return EjbContainerUtilImpl.getInstance().getContainer(containerId);
     }
 
 }

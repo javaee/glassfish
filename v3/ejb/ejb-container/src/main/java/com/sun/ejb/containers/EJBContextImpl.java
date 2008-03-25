@@ -42,7 +42,6 @@ import com.sun.ejb.EjbInvocation;
 import com.sun.enterprise.deployment.EjbDescriptor;
 import com.sun.enterprise.deployment.RoleReference;
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.logging.LogDomains;
 import org.glassfish.api.invocation.ComponentInvocation;
 
 import javax.ejb.*;
@@ -52,7 +51,6 @@ import javax.transaction.Status;
 import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
 import javax.transaction.UserTransaction;
-import java.lang.ref.SoftReference;
 import java.lang.reflect.Method;
 import java.security.Identity;
 import java.security.Principal;
@@ -71,7 +69,7 @@ public abstract class EJBContextImpl
     implements EJBContext, ComponentContext, java.io.Serializable
 {
     private static final Logger _logger =
-            EjbContainerUtil.getInstance().getLogger();
+            EjbContainerUtilImpl.getInstance().getLogger();
 
     public enum BeanState {CREATED, POOLED, READY, INVOKING, INCOMPLETE_TX,
         IN_PASSIVATE, PASSIVATED, IN_ACTIVATE, ACTIVATED, IN_REMOVE, DESTROYED}
@@ -452,7 +450,7 @@ public abstract class EJBContextImpl
             throw new IllegalStateException(
                 "Illegal operation for bean-managed transactions");
         
-        TransactionManager tm = EjbContainerUtil.getInstance().getTransactionManager();
+        TransactionManager tm = EjbContainerUtilImpl.getInstance().getTransactionManager();
         
         try {
             if ( tm.getStatus() == Status.STATUS_NO_TRANSACTION ) {
@@ -491,7 +489,7 @@ public abstract class EJBContextImpl
             throw new IllegalStateException(
                 "Illegal operation for bean-managed transactions");
         
-        TransactionManager tm = EjbContainerUtil.getInstance().getTransactionManager();
+        TransactionManager tm = EjbContainerUtilImpl.getInstance().getTransactionManager();
         
         try {
             int status = tm.getStatus();
@@ -553,7 +551,7 @@ public abstract class EJBContextImpl
     }
     
     protected boolean inActivatePassivate() {
-        return inActivatePassivate(EjbContainerUtil.getInstance().getCurrentInvocation());
+        return inActivatePassivate(EjbContainerUtilImpl.getInstance().getCurrentInvocation());
     }
 
     protected boolean inActivatePassivate(ComponentInvocation inv) {

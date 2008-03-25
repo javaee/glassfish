@@ -44,7 +44,7 @@
 package com.sun.ejb.containers.util.pool;
 
 import com.sun.ejb.containers.EJBContextImpl;
-import com.sun.ejb.containers.EjbContainerUtil;
+import com.sun.ejb.containers.EjbContainerUtilImpl;
 import com.sun.enterprise.util.Utility;
 
 import java.util.ArrayList;
@@ -117,7 +117,7 @@ public class NonBlockingPool
         if ((this.idleTimeoutInSeconds > 0) && (this.resizeQuantity > 0)) {
             try {
                 this.poolTimerTask =  new PoolResizeTimerTask();
-                EjbContainerUtil.getInstance().getTimer().scheduleAtFixedRate
+                EjbContainerUtilImpl.getInstance().getTimer().scheduleAtFixedRate
                     (poolTimerTask, idleTimeoutInSeconds*1000, 
                      idleTimeoutInSeconds*1000);
                 if(_logger.isLoggable(Level.FINE)) {
@@ -203,7 +203,7 @@ public class NonBlockingPool
     private void addResizeTaskForImmediateExecution() {
         try {
             ReSizeWork work = new ReSizeWork();
-            EjbContainerUtil.getInstance().addWork(work);
+            EjbContainerUtilImpl.getInstance().addWork(work);
             if(_logger.isLoggable(Level.FINE)) {
                 _logger.log(Level.FINE,
                      "[Pool-" + poolName + "]: Added PoolResizeTimerTask...");
@@ -623,7 +623,7 @@ public class NonBlockingPool
                     return;
                 }
                 IdleBeanWork work = new IdleBeanWork();
-                EjbContainerUtil.getInstance().addWork(work);
+                EjbContainerUtilImpl.getInstance().addWork(work);
                 addedIdleBeanWork = true;
             } catch (Exception ex) {
                 _logger.log(Level.WARNING, 

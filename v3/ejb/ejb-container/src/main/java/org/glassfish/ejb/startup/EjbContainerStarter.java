@@ -32,6 +32,8 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.PreDestroy;
 
+import java.util.logging.Logger;
+
 /**
  * Ejb container service
  *
@@ -47,7 +49,11 @@ public class EjbContainerStarter
     ServerContext _serverContext;
 
     @Inject
-    EjbContainerUtil ejbCotainerUtil;
+    EjbContainerUtil ejbContainerUtilImpl;
+
+    @Inject
+    Logger logger;
+
 
     /**
      * The logger to use for logging ALL web container related messages.
@@ -60,6 +66,7 @@ public class EjbContainerStarter
         instanceName = _serverContext.getInstanceName();
 
         System.out.println(">>Started EJB Container Service....: " + instanceName);
+        System.out.println(">>EjbContianerUtil: " + ejbContainerUtilImpl);
     }    
     
     public void preDestroy() {

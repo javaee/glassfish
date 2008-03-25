@@ -37,23 +37,16 @@ package com.sun.ejb.containers;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Proxy;
 import java.lang.reflect.Method;
 
-import java.util.Iterator;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 
-import javax.ejb.EJBContext;
 import javax.ejb.EJBException;
 import javax.ejb.EJBLocalObject;
 import com.sun.ejb.EjbInvocation;
 import com.sun.ejb.InvocationInfo;
 import com.sun.ejb.containers.util.MethodMap;
-import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.logging.LogDomains;
 import com.sun.ejb.spi.io.IndirectlySerializable;
 
 /** 
@@ -67,7 +60,7 @@ public final class EJBLocalObjectInvocationHandler
     extends EJBLocalObjectImpl implements InvocationHandler {
 
     private static final Logger logger =
-            EjbContainerUtil.getInstance().getLogger();
+            EjbContainerUtilImpl.getInstance().getLogger();
     
     // Our associated proxy object.  Used when a caller needs EJBLocalObject
     // but only has InvocationHandler.

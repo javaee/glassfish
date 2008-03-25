@@ -41,8 +41,6 @@ import com.sun.ejb.containers.util.pool.AbstractPool;
 import com.sun.ejb.containers.util.pool.NonBlockingPool;
 import com.sun.ejb.containers.util.pool.ObjectFactory;
 import com.sun.ejb.spi.stats.StatelessSessionBeanStatsProvider;
-import com.sun.enterprise.admin.monitor.callflow.ComponentType;
-import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.EjbContainer;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.deployment.EjbDescriptor;
@@ -52,7 +50,6 @@ import com.sun.enterprise.deployment.runtime.BeanCacheDescriptor;
 import com.sun.enterprise.deployment.runtime.BeanPoolDescriptor;
 import com.sun.enterprise.deployment.runtime.IASEjbExtraDescriptors;
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.logging.LogDomains;
 import org.glassfish.api.invocation.ComponentInvocation;
 
 import javax.ejb.*;
@@ -63,7 +60,6 @@ import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /** This class provides container functionality specific to stateless 
  *  SessionBeans.
@@ -170,7 +166,7 @@ public class StatelessSessionContainer
             beanPoolDes = iased.getBeanPool();
         }
 
-        ejbContainer = ejbContainerUtil.getEjbContainer();
+        ejbContainer = ejbContainerUtilImpl.getEjbContainer();
 
         super.setMonitorOn(false); //TODO super.setMonitorOn(ejbContainer.isMonitoringEnabled());
 

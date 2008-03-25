@@ -45,15 +45,14 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 import java.util.logging.*;
-import com.sun.logging.*;
 
 import com.sun.ejb.spi.io.J2EEObjectStreamFactory;
-import com.sun.ejb.containers.EjbContainerUtil;
+import com.sun.ejb.containers.EjbContainerUtilImpl;
 
 public class IOUtils {
 
     private static final Logger _ejbLogger =
-            EjbContainerUtil.getInstance().getLogger();
+            EjbContainerUtilImpl.getInstance().getLogger();
 
     private static J2EEObjectStreamFactory _streamFactory;
 

@@ -37,21 +37,15 @@ package com.sun.ejb.containers;
 
 import com.sun.ejb.*;
 import com.sun.ejb.portable.*;
-import com.sun.enterprise.*;
-import com.sun.enterprise.deployment.*;
+
 import java.lang.reflect.Method;
 
 import javax.ejb.*;
 
-import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.NoSuchObjectException;
 
-import java.util.Hashtable;
-import java.util.Properties;
-
 import java.util.logging.*;
-import com.sun.logging.*;
 
 /**
  * This class implements the EJBHome interface.
@@ -67,7 +61,7 @@ public abstract class EJBHomeImpl
 {
 
     private static final Logger _logger =
-            EjbContainerUtil.getInstance().getLogger();
+            EjbContainerUtilImpl.getInstance().getLogger();
     
     private BaseContainer container;
 

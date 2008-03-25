@@ -36,7 +36,7 @@
 
 package com.sun.ejb.base.stats;
 
-import com.sun.ejb.containers.EjbContainerUtil;
+import com.sun.ejb.containers.EjbContainerUtilImpl;
 import com.sun.ejb.spi.stats.*;
 import com.sun.enterprise.admin.monitor.registry.*;
 
@@ -62,7 +62,7 @@ public class MonitoringRegistryMediator
     private static final int	    STATEFUL_CONTAINER_TYPE = 2;
     private static final int	    MESSAGE_CONTAINER_TYPE = 3;
 
-    private static final Logger _logger = EjbContainerUtil.getInstance().getLogger();
+    private static final Logger _logger = EjbContainerUtilImpl.getInstance().getLogger();
 
     private final String			appName;
     private final String			modName;

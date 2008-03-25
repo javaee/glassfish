@@ -36,14 +36,12 @@
 
 package com.sun.ejb.containers;
 
-import java.io.Serializable;
 import java.lang.reflect.Method;
 
 
 import javax.ejb.*;
 
 import java.util.logging.*;
-import com.sun.logging.*;
 
 import java.io.IOException;
 
@@ -65,7 +63,7 @@ public abstract class EJBLocalHomeImpl
     protected BaseContainer container;
 
     private static final Logger _logger =
-            EjbContainerUtil.getInstance().getLogger();
+            EjbContainerUtilImpl.getInstance().getLogger();
     
     /**
      * Called from BaseContainer only.
@@ -168,7 +166,7 @@ public abstract class EJBLocalHomeImpl
             // LocalHome rather than a LocalBusinessHome since the 
             // LocalBusinessHome is never visible to the application and
             // would never be stored in SFSB state.
-            BaseContainer container = EjbContainerUtil.getInstance().getContainer(ejbId);
+            BaseContainer container = EjbContainerUtilImpl.getInstance().getContainer(ejbId);
             return container.getEJBLocalHome();
         }
     }

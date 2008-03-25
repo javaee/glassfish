@@ -43,9 +43,8 @@
 
 package com.sun.ejb.containers.util.pool;
 
-import com.sun.ejb.containers.EjbContainerUtil;
+import com.sun.ejb.containers.EjbContainerUtilImpl;
 import com.sun.enterprise.util.Utility;
-import com.sun.logging.LogDomains;
 
 import java.util.ArrayList;
 import java.util.logging.Level;
@@ -70,7 +69,7 @@ public abstract class AbstractPool
 {
 
     protected static final Logger _logger =
-            EjbContainerUtil.getInstance().getLogger();
+            EjbContainerUtilImpl.getInstance().getLogger();
 
     protected ArrayList	     list;
     protected ObjectFactory  factory = null;
@@ -131,7 +130,7 @@ public abstract class AbstractPool
         if (this.idleTimeoutInSeconds > 0) {
             try {
                 this.poolTimerTask =  new AbstractPoolTimerTask();
-                EjbContainerUtil.getInstance().getTimer().scheduleAtFixedRate
+                EjbContainerUtilImpl.getInstance().getTimer().scheduleAtFixedRate
                     (poolTimerTask, idleTimeoutInSeconds*1000, 
                      idleTimeoutInSeconds*1000);
             } catch (Throwable th) {

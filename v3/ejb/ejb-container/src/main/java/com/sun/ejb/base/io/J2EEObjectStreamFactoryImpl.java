@@ -38,15 +38,8 @@ package com.sun.ejb.base.io;
 
 import java.io.*;
 import java.security.*;
-import java.rmi.*;
-import javax.ejb.*;
-import javax.naming.*;
-
-import java.util.logging.*;
-import com.sun.logging.*;
 
 import com.sun.ejb.spi.io.J2EEObjectStreamFactory;
-import com.sun.ejb.containers.EjbContainerUtil;
 
 /**
  * A Factory class for creating EJBObject input/output Stream

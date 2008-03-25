@@ -142,7 +142,7 @@ public class EJBLocalObjectInvocationHandlerDelegate
         public Object createObject()
             throws IOException
         {
-            BaseContainer container = EjbContainerUtil.getInstance().getContainer(containerId);
+            BaseContainer container = EjbContainerUtilImpl.getInstance().getContainer(containerId);
             EJBLocalObjectImpl ejbLocalBusinessObjectImpl = 
                 container.getEJBLocalBusinessObjectImpl(primaryKey);
             ejbLocalBusinessObjectImpl.setSfsbClientVersion(version);

@@ -42,15 +42,12 @@ import com.sun.ejb.containers.util.MethodMap;
 import com.sun.ejb.spi.io.IndirectlySerializable;
 import com.sun.enterprise.deployment.EjbDescriptor;
 import com.sun.enterprise.deployment.EjbSessionDescriptor;
-import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.logging.LogDomains;
 
 import javax.ejb.EJBException;
 import javax.ejb.EJBLocalHome;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /** 
@@ -64,7 +61,7 @@ final class EJBLocalHomeInvocationHandler
         implements InvocationHandler {
 
     private static final Logger logger =
-            EjbContainerUtil.getInstance().getLogger();
+            EjbContainerUtilImpl.getInstance().getLogger();
 
     private boolean isStatelessSession_;
     private boolean isEntity_;

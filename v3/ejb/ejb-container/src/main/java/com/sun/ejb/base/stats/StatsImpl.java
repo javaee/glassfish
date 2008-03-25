@@ -38,8 +38,7 @@ package com.sun.ejb.base.stats;
 
 import com.sun.enterprise.admin.monitor.registry.MonitoringLevel;
 import com.sun.enterprise.admin.monitor.stats.GenericStatsImpl;
-import com.sun.logging.LogDomains;
-import com.sun.ejb.containers.EjbContainerUtil;
+import com.sun.ejb.containers.EjbContainerUtilImpl;
 
 import javax.management.j2ee.statistics.BoundedRangeStatistic;
 import javax.management.j2ee.statistics.CountStatistic;
@@ -59,7 +58,7 @@ public abstract class StatsImpl
     implements Stats
 {
     protected static final Logger _logger =
-            EjbContainerUtil.getInstance().getLogger();
+            EjbContainerUtilImpl.getInstance().getLogger();
 
     private GenericStatsImpl	    genericStatsDelegate;
     protected boolean		    monitorOn = false;

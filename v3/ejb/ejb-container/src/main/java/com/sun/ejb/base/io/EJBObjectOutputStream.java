@@ -37,7 +37,7 @@
 package com.sun.ejb.base.io;
 
 import com.sun.ejb.containers.BaseContainer;
-import com.sun.ejb.containers.EjbContainerUtil;
+import com.sun.ejb.containers.EjbContainerUtilImpl;
 import com.sun.ejb.spi.io.IndirectlySerializable;
 import com.sun.ejb.spi.io.SerializableObjectFactory;
 import com.sun.logging.LogDomains;
@@ -61,7 +61,7 @@ class EJBObjectOutputStream
 {
 
     protected static final Logger _ejbLogger =
-            EjbContainerUtil.getInstance().getLogger();
+            EjbContainerUtilImpl.getInstance().getLogger();
 
 
     static final int EJBID_OFFSET = 0;
@@ -215,7 +215,7 @@ final class SerializableJNDIContext
             if ((name == null) || (name.length() == 0)) {
                 return new InitialContext();
             } else {
-                return EjbContainerUtil.getInstance().getGlassfishNamingManager().restoreJavaCompEnvContext(name);
+                return EjbContainerUtilImpl.getInstance().getGlassfishNamingManager().restoreJavaCompEnvContext(name);
             }
         } catch (NamingException namEx) {
             IOException ioe = new IOException();
@@ -238,7 +238,7 @@ abstract class AbstractSerializableS1ASEJBReference
 
     AbstractSerializableS1ASEJBReference(long containerId) {
 	this.containerId = containerId;
-	BaseContainer container = EjbContainerUtil.getInstance().getContainer(containerId);
+	BaseContainer container = EjbContainerUtilImpl.getInstance().getContainer(containerId);
     
 	//container can be null if the app has been undeployed
 	//  after this was serialized
@@ -298,7 +298,7 @@ final class SerializableS1ASEJBHomeReference
         throws IOException
     {
 	Object result = null;
-	BaseContainer container = EjbContainerUtil.getInstance().getContainer(containerId);
+	BaseContainer container = EjbContainerUtilImpl.getInstance().getContainer(containerId);
 	//container can be null if the app has been undeployed
 	//  after this was serialized
 	if (container == null) {
@@ -332,7 +332,7 @@ final class SerializableS1ASEJBObjectReference
     SerializableS1ASEJBObjectReference(long containerId, byte[] objKey,
             int keySize, String remoteBusinessInterfaceName) {
         super(containerId);
-        BaseContainer container = EjbContainerUtil.getInstance().getContainer(containerId);
+        BaseContainer container = EjbContainerUtilImpl.getInstance().getContainer(containerId);
         if (container != null) {
             this.haEnabled = container.isHAEnabled();
         }
@@ -355,7 +355,7 @@ final class SerializableS1ASEJBObjectReference
         throws IOException
     {
 	Object result = null;
-	BaseContainer container = EjbContainerUtil.getInstance().getContainer(containerId);
+	BaseContainer container = EjbContainerUtilImpl.getInstance().getContainer(containerId);
 	//container can be null if the app has been undeployed
 	//  after this was serialized
 	if (container == null) {
