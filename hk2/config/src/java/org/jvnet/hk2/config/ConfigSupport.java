@@ -40,10 +40,7 @@ import org.jvnet.hk2.annotations.Service;
 
 import java.beans.PropertyVetoException;
 import java.beans.PropertyChangeEvent;
-import java.lang.reflect.Proxy;
-import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
+import java.lang.reflect.*;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 import java.util.*;
@@ -446,7 +443,14 @@ public class ConfigSupport {
                                     throw new IllegalArgumentException("List needs to be parameterized");
                                 final Class itemType = Types.erasure(Types.getTypeArgument(m.getGenericReturnType(), 0));
                                 if (itemType.getName().equals(childType.getName())) {
-                                    List list = (List) element.get(parent, m.getGenericReturnType());
+                                    List list = null;
+                                    try {
+                                        list = (List) m.invoke(param, null);
+                                    } catch (IllegalAccessException e) {
+                                        throw new TransactionFailure("Exception while adding to the parent", e);
+                                    } catch (InvocationTargetException e) {
+                                        throw new TransactionFailure("Exception while adding to the parent", e);
+                                    }
                                     if (list != null) {
                                         list.add(child);
                                         break;
