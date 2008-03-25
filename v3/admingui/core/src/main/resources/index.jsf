@@ -70,6 +70,11 @@
                     if(! $session{supportCluster}){
                         setSessionAttribute(key="notSupportCluster" value="$boolean{true}");
                     }
+                    
+                    showRegistration(value=>$session{showRegistration});
+                    if ($session{showRegistration}){
+                        setRegistrationNodeText();
+                    }
    		/>
 		<!if !#{supportCluster}>
 		<sun:frame name="index" title="$resource{i18n.display.Navigation}" scrolling="yes" url="/peTree.jsf" marginHeight="$int{0}" marginWidth="$int{0}" longdesc="" />

@@ -37,51 +37,54 @@
 
 <!initPage
     setResourceBundle(key="i18n" bundle="core.Strings");
-    #setResourceBundle(key="help" bundle="core.Helplinks");
+    setResourceBundle(key="help" bundle="core.Helplinks");
+#include "sysnet/regInit.inc"
 />
 <sun:page>
     <sun:html>
 	<sun:head id="propertyhead" title="$resource{i18n.commonTasks.title}">
 	    <sun:script url="/resource/js/adminjsf.js" />
+            <sun:script>
+		<f:verbatim>
+		    function showWindow() {
+			var popup = document.getElementById("#{popupId}");
+			if (popup) {
+			    popup.style.visibility='visible';
+			}
+		    }
+		</f:verbatim>
+	    </sun:script>
 	</sun:head>
-	<sun:body style="background:#B6C6D6" onLoad="admingui.nav.clearTreeSelection('form:tree');">
-	     <sun:form id="form">
-		<sun:commonTasksSection helpText="$resource{i18n.commonTasks.help}" title="$resource{i18n.commonTasks.title}" columns="$int{2}">
-		    <sun:commonTasksGroup title="$resource{i18n.commonTasks.group.Deployment}">
-			<sun:commonTask
-			    text="$resource{i18n.commonTasks.task.deployEAR}"
-			    toolTip="$resource{i18n.commonTasks.task.deployEAR.toolTip}"
-			    infoLinkUrl="/com_sun_webui_jsf/help/helpwindow.jsf?&windowTitle=Help+Window&helpFile=upload.html" onClick="admingui.nav.selectTreeNodeById('form:tree:applications:enterpriseApplications'); parent.location='#{facesContext.externalContext.requestContextPath}/applications/upload.jsf?appType=application&cancelPage=homePage.jsf'; return false;">
+	<sun:body style="background:#B6C6D6" onLoad="admingui.nav.clearTreeSelection('form:tree'); admingui.nav.refreshTree('form:tree:registration');">
+	     <sun:form id="form"> 
+<!-- #include treeBreadcrumbs.inc -->
+		<sun:commonTasksSection helpText="$resource{i18n.commonTasks.help}" title="$resource{i18n.commonTasks.title}" columns="$int{2}" style="visibility: #{commonTaskVisibility}">
+		    <sun:commonTasksGroup  title="$resource{i18n.commonTasks.task.regAndSupport}">
+			<sun:commonTask rendered="$session{showRegistration}"
+			    text="#{registrationNodeText}"
+			    toolTip="#{registrationNodeText}"
+                            infoLinkUrl="/com_sun_webui_jsf/help/helpwindow.jsf?&windowTitle=Help+Window&helpFile=#{registrationNodePage}.html" 
+                            onClick="admingui.nav.selectTreeNodeById('form:tree:#{registrationNodePage}'); 
+                                    parent.location='#{facesContext.externalContext.requestContextPath}/sysnet/#{registrationNodePage}.jsf'; return false;">
+                            >
 			</sun:commonTask>
+                        <sun:commonTask
+                            text="$resource{i18n.commonTasks.task.subscriptions}"
+                            toolTip="$resource{i18n.commonTasks.task.subscriptions.toolTip}"
+                            onClick="javascript:var win=window.open('http://www.sun.com/service/applicationserversubscriptions/','_blank');win.focus(); return false;">                             
+                        </sun:commonTask>
+		    </sun:commonTasksGroup>
+                    
+
+                    <sun:commonTasksGroup title="$resource{i18n.commonTasks.group.Deployment}">
 			<sun:commonTask
 			    text="$resource{i18n.commonTasks.task.deployWAR}"
 			    toolTip="$resource{i18n.commonTasks.task.deployWAR.toolTip}"
 			    infoLinkUrl="/com_sun_webui_jsf/help/helpwindow.jsf?&windowTitle=Help+Window&helpFile=upload.html" onClick="admingui.nav.selectTreeNodeById('form:tree:applications:webApplications'); parent.location='#{facesContext.externalContext.requestContextPath}/applications/upload.jsf?appType=webApp&cancelPage=homePage.jsf'; return false;">
 			</sun:commonTask>
-                        <sun:commonTask
-			    text="$resource{i18n.commonTasks.task.deployCustomMBean}"
-			    toolTip="$resource{i18n.commonTasks.task.deployCustomMBean.toolTip}"
-			    infoLinkUrl="/com_sun_webui_jsf/help/helpwindow.jsf?&windowTitle=Help+Window&helpFile=custommbeansdeploy1.html" onClick="admingui.nav.selectTreeNodeById('form:tree:customMBeans'); parent.location='#{facesContext.externalContext.requestContextPath}/customMBeans/customMBeansDeploy1.jsf?cancelPage=../homePage.jsf'; return false;">
-			</sun:commonTask>
 		    </sun:commonTasksGroup>
-		    <sun:commonTasksGroup title="$resource{i18n.commonTasks.group.Monitoring}">
-			<sun:commonTask
-			    text="$resource{i18n.commonTasks.task.monitor}"
-			    toolTip="$resource{i18n.commonTasks.task.monitor.toolTip}"
-			    infoLinkUrl="/com_sun_webui_jsf/help/helpwindow.jsf?&windowTitle=Help+Window&helpFile=monitorruntime.html" onClick="admingui.nav.selectTreeNodeById('form:tree:applicationServer');" target="main">
-                            <!command 
-                                setSessionAttribute(key="serverInstTabs" value="runtime");
-                                redirect(page="appServer/monitorRuntime.jsf?instanceName=server&configName=server-config");
-                            />
-			</sun:commonTask>                           
-		    </sun:commonTasksGroup>     
+                    
 		    <sun:commonTasksGroup title="$resource{i18n.commonTasks.group.Other}">                    
-			<sun:commonTask
-			    text="$resource{i18n.commonTasks.task.searchLog}"
-			    toolTip="$resource{i18n.commonTasks.task.searchLog.toolTip}"
-			    infoLinkUrl="/com_sun_webui_jsf/help/helpwindow.jsf?&windowTitle=Help+Window&helpFile=logviewer.html"
-                            onClick="javascript:var win=window.open('logViewer/logViewer.jsf?instanceName=server&loglevel=INFO&logFile=server.log&viewResults=true','LogViewerWindow','width='+(screen.width-300)+',height='+(screen.height-75)+',top=0,left=0,toolbar=no,status=no,menubar=no,scrollbars=yes,resizable=yes,directories=no,location=no');win.focus(); return false;">
-			</sun:commonTask>    
 			<sun:commonTask
 			    text="$resource{i18n.commonTasks.task.connPool}"
 			    toolTip="$resource{i18n.commonTasks.task.connPool.toolTip}"
@@ -90,18 +93,12 @@
                                 redirect(page="resourceNode/jdbcConnectionPoolNew1.jsf?cancelPage=homePage.jsf");
                             />                         
 			</sun:commonTask>
-			<sun:commonTask
-			    text="$resource{i18n.commonTask.task.viewWebServices}"
-			    toolTip="$resource{i18n.commonTask.task.viewWebServices.toolTip}"
-			    infoLinkUrl="/com_sun_webui_jsf/help/helpwindow.jsf?&windowTitle=Help+Window&helpFile=webservicesgeneral.html" target="main">
-                           <!command 
-                                redirect(page="webService/webServicesGeneral.jsf");
-                            />                                  
-			</sun:commonTask>                              
-		    </sun:commonTasksGroup>   
+                    </sun:commonTasksGroup> 
+                        
 #include "commonTaskDoc.inc"                    
 		</sun:commonTasksSection>
-                <sun:hidden id="helpKey" value="$resource{help.commonTask}" />
+#include "sysnet/regReminder.inc"
+            <sun:hidden id="helpKey" value="$resource{help.commonTask}" />
 	     </sun:form>           
 	 </sun:body> 
      </sun:html>  

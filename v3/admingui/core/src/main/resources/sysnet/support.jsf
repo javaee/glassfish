@@ -1,0 +1,456 @@
+<!--
+ DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+ 
+ Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ 
+ The contents of this file are subject to the terms of either the GNU
+ General Public License Version 2 only ("GPL") or the Common Development
+ and Distribution License("CDDL") (collectively, the "License").  You
+ may not use this file except in compliance with the License. You can obtain
+ a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
+ or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
+ language governing permissions and limitations under the License.
+ 
+ When distributing the software, include this License Header Notice in each
+ file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
+ Sun designates this particular file as subject to the "Classpath" exception
+ as provided by Sun in the GPL Version 2 section of the License file that
+ accompanied this code.  If applicable, add the following below the License
+ Header, with the fields enclosed by brackets [] replaced by your own
+ identifying information: "Portions Copyrighted [year]
+ [name of copyright owner]"
+ 
+ Contributor(s):
+ 
+ If you wish your version of this file to be governed by only the CDDL or
+ only the GPL Version 2, indicate your decision by adding "[Contributor]
+ elects to include this software in this distribution under the [CDDL or GPL
+ Version 2] license."  If you don't indicate a single choice of license, a
+ recipient has the option to distribute your version of this file under
+ either the CDDL, the GPL Version 2 or to extend the choice of license to
+ its licensees as provided above.  However, if you add GPL Version 2 code
+ and therefore, elected the GPL Version 2 license, then the option applies
+ only if the new code is made subject to such option by the copyright
+ holder.
+-->
+
+<!initPage
+    if ($session{registrationNodePage} = registration){
+        redirect("registration.jsf");
+    }
+/>
+<sun:page id="page1">
+<!beforeCreate
+    setResourceBundle(key="i18n" bundle="core.Strings");
+    setResourceBundle(key="help" bundle="core.Helplinks");
+    getSupportImages(count="5", imageList=>$page{imageList});
+    getIssueQueryString(query=>$page{IssueQuery});
+/>
+
+<sun:html id="html2">
+<sun:head id="propertyhead" title="$resource{i18n.support.PageTitle}">
+    <sun:script url="/resource/js/restart.js" />
+    <sun:script url="/resource/js/adminjsf.js" />
+    <sun:script>
+	// Should move this to JS to our adminjsf.js file
+	<f:verbatim>
+	    function resizeColumns() {
+		// Get the document window width
+		var docWidth = document.documentElement.offsetWidth;
+		// 20px for left, right, and middle -- divide by 2 columns
+		var colWidth = Math.floor((docWidth-60) / 2);
+		// Fix the left column
+		var col = document.getElementById("leftcolumn");
+		col.style.left = "20px";
+		col.style.width = (colWidth + "px");
+		// Fix the right column
+		col = document.getElementById("rightcolumn");
+		col.style.left = ((40 + colWidth) + "px");
+		col.style.width = (colWidth + "px");
+		// Fix the top box
+		col = document.getElementById("newsBlogs");
+		col.style.left = "20px";
+		col.style.width = ((20 + colWidth * 2) + "px");
+		// Set the window resize event
+		window.onresize = resizeColumns;
+	    }
+	</f:verbatim>
+    </sun:script>
+</sun:head>
+
+<sun:body id="body3" onLoad="resizeColumns(); admingui.nav.refreshTree('form:tree:registration'); synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
+<sun:form id="propertyForm">
+
+<!-- Bread Crumbs -->
+<sun:markup tag="div" id="breadcrumbs" style="border: 1px solid #E5E9ED; background-color: #E5E9ED;">
+<sun:breadcrumbs id="boom" style="background-color: #E5E9ED;">
+    <sun:hyperlink text="#{registrationNodeText}">
+	<!command
+	    redirect("#{request.contextPath}/sysnet/support.jsf");
+	/>
+    </sun:hyperlink>
+</sun:breadcrumbs>
+</sun:markup>
+
+    <!-- Page Title -->
+    <sun:title id="propertyContentPage" title="$resource{i18n.support.PageTitle}" helpText="$resource{i18n.support.PageTitleHelp}">
+    </sun:title>
+            <sun:hidden id="helpKey" value="$resource{help.support}" />
+</sun:form>
+<f:verbatim>   
+    <style type="text/css">
+        body{font:13px arial,helvetica,clean,sans-serif;*font-size:small;*font:x-small;}
+        table{font-size:inherit;font:100%;}
+        body *{line-height:1.22em;}
+        .md1 table{
+        margin-bottom:-5px;
+        }
+        .md1 hr{
+	border-top:1px solid #cccccc;
+	color:#fff;
+	width: 90%;
+	display:block;
+	margin:4px 0 3px;
+	*margin:-3px 0;
+        }
+        .md, .md1{
+        background:#fff;
+        border:1px solid #8b8f90;
+        border-top:1px solid #5f6466;
+        -moz-border-radius:6px;
+        margin: 0px 0px;
+        }
+        .hd, div.hd a, .hd, li.on a{
+        background-image:url(../images/regbkgrnd.png);
+        background-repeat:repeat-x;
+        background-color:#41667f;
+        }
+        .hd h2{
+        position:relative;
+        font:bold 100% arial;
+        padding:3px 10px;
+        color:#fff;
+        }
+        h3{
+        position:relative;
+        font:bold 100% arial;
+        padding:3px 10px;
+        color:#000000;
+        }        
+        
+        .hd{
+        color:#18397c;
+        background-color:#fff;
+        background-position:bottom left;
+        }
+        .h3{
+        margin: 5px;
+        color:#000000;
+        background-color:#fff;
+        }
+        h2,h3,p,form,img{margin:0;padding:0;}
+        img{border:0;}
+        a, a:visited{color:#16387c;}
+        a:link,a:visited{text-decoration:none;}
+        a:hover{text-decoration:underline;}
+        .on a:hover{text-decoration:none;}
+        
+        .jmakiStackItem {background-color: #fff; font-weight: bold; border: 0px}
+        .jmakiStackContent {background-color: #fff; font-weight: bold;}
+        #right li {border: 0px solid #fff; padding: 0px}
+        #javaee li {border: 0px solid #00EE33; padding: 0px}
+        
+        .previous {
+	    color: #16387c;
+	    font-size: 1.4em;
+	    padding: 10px;
+	}
+        .previous:hover {text-decoration:underline;}
+        .next {
+	    color: #16387c;
+	    font-size: 1.4em;
+	    padding: 10px;
+	}
+        .next:hover {text-decoration:underline;}
+        
+        .md1{background-color:#eeeeee;}
+        .leftTable {background-image:url(/images/gradlogsides.jpg);}
+        
+        .bd {
+        padding:3px 3px 0px 2px;
+        background:#eeeeee;
+        }
+        
+        .bd .jmakiStackItem {
+        background-color: #ffffff;
+        padding:3px 3px 2px 2px;
+        }
+        
+        .outline{
+        background:#fff;
+        border:1px solid #8b8f90;
+        border-top:1px solid #5f6466;
+        }        
+        
+        #maincontainer{
+        width: 100%; /*Width of main container*/
+        }
+        
+        #contentwrapper{
+        width: 100%;
+        }
+        
+        #rightcolumn{
+	position: absolute;
+        background: #ffffff;
+	left: 500px;
+        }
+        
+        #leftcolumn{
+	position: absolute;
+	left: 20px;
+        width: 440px; /*Width of left column*/
+        background: #ffffff;
+        }
+        .littlearrows{background:url("../images/ar_dbl_blue.png") no-repeat top left;padding-left:10px}
+        .innertube{
+        margin: 0px; /*Margins for inner DIV inside each column (to provide padding)*/
+        margin-top: 0;
+        }    
+        .innerbox{
+        margin: 5px; /*Margins for inner DIV inside each box (to provide padding)*/
+        margin-top: 0;
+        width: 100%;
+        height: 100%;
+        bottom: 0;
+        }   
+        .imagepadding {padding: 8px;}
+        p {padding: 8px;}
+        .listnobullet li{
+        list-style: none;
+        }
+        .listnobullet ul{
+        list-style: none;
+	padding-left: 0px;
+        }
+        .learnItemDesc {
+	    padding-top: 8px;
+	    padding-bottom: 10px;
+	}
+
+    </style>    
+    <br>
+    <div id="maincontainer">
+    <div id="newsBlogs" class="md1" style="margin-left: 20px; width: 90%;">
+    <div class="hd"> 
+        <h2>$resource{i18n.support.newsBlogs}</h2>
+    </div>
+    <div id="boxbd" class="bd">
+    <div class="innerbox"> 
+</f:verbatim>
+<jmaki:ajax name="jmaki.blockList" id="test" args="{filter: 'admin.blockList.RSSFilter',count:1}" service="/xhp?id=aquarium" template="/resources/jmaki/blockList/aquarium.htm" />
+<f:verbatim>
+<br clear="all"><a href="http://blogs.sun.com/theaquarium/" target="_blank">$resource{i18n.support.moreAquarium}</a>                                                            
+    </div>
+    </div>
+    </div>   
+    <p>
+    <div id="leftcolumn">
+    <div id="box" class="md1">
+    <div class="hd"> 
+        <h2>$resource{i18n.support.events}</h2>
+    </div>
+    <div id="boxbd" class="bd">
+    <div class="innerbox"> 
+    <img src="../images/squares/#{imageList[0]}" alt="" border=0 align="right"  style="float:right; margin:5px 20px 0px 20px;">
+    
+    <font face=arial size=-1> $resource{i18n.support.techDays}<br>$resource{i18n.support.techDaysDesc}</font>
+</f:verbatim>
+<jmaki:ajax name="jmaki.blockList" service="/xhp?id=events" args="{count:2}" template="/resources/jmaki/blockList/events.htm" />
+<f:verbatim> 
+    <br clear="all"><center><hr></center>
+</f:verbatim>
+<jmaki:ajax name="jmaki.blockList" service="/xhp?id=sdnevents" args="{count:2}" template="/resources/jmaki/blockList/sdn.htm" /> 
+<f:verbatim>
+    <br clear="all"><a href="http://developers.sun.com/events/" target="_blank">$resource{i18n.support.moreDevEvents}</a> 
+    </div>
+    </div>
+    </div>   
+    <p>
+        
+        
+        
+    <div id="box" class="md1">
+        <div class="hd"> 
+            <h2>$resource{i18n.support.techTips}</h2>
+        </div>
+        <div id="boxbd" class="bd">
+            <div class="innerbox"> 
+                <img src="../images/squares/#{imageList[1]}" alt="" border=0 align="right" style="float:right; margin:2px 20px 0px 20px;">
+                <h3>$resource{i18n.support.coreTechTips}</h3>
+            </f:verbatim>
+            <jmaki:ajax name="jmaki.blockList" service="/xhp?id=coretechtips&count=20" args="{count:4}" template="/resources/jmaki/blockList/coretechtips.htm" />                                                               
+            <f:verbatim> 
+                <br clear="all"><center><hr></center><p>
+                <h3>$resource{i18n.support.entTechTips}</h3>
+            </f:verbatim>
+            <jmaki:ajax name="jmaki.blockList" service="/xhp?id=techtips&count=20" args="{count:4}" template="/resources/jmaki/blockList/techtips.htm" />
+            <f:verbatim>
+            <br clear="all"><a href="http://java.sun.com/developer/TechTips/" target="_blank">$resource{i18n.support.moreTechTips}</a>                                                            
+            </div>
+        </div>
+    </div>  
+<p>
+    
+    
+    
+<div id="box" class="md1">
+    <div class="hd"> 
+        <h2>$resource{i18n.support.javeEENewsAndArticles}</h2>
+    </div>
+    <div id="boxbd" class="bd">
+        <div class="innerbox"> 
+            <img src="../images/squares/#{imageList[2]}" alt=""  border=0 align="right" style="float:right; margin:2px 20px 0px 20px;">
+            </f:verbatim>
+            <jmaki:ajax name="jmaki.blockList" service="/xhp?id=javaee" args="{count:2}" template="/resources/jmaki/blockList/javaee.htm" />
+            <f:verbatim>
+    <br clear="all"><a href="http://java.sun.com/javaee" target="_blank">$resource{i18n.support.moreEnterpriseArticles}</a> 
+        </div>
+    </div>
+</div> 
+<p>
+
+    
+ <div id="box" class="md1">
+        <div class="hd"> 
+            <h2>$resource{i18n.support.sunDevNews}</h2>
+        </div>
+        <div id="boxbd" class="bd">
+            <div class="innerbox"> 
+                <img src="../images/squares/#{imageList[3]}" alt="" border=0 align="right" style="float:right; margin:2px 20px 0px 20px;">
+                <!--
+                <h3>Enterprise Java</h3>
+            </f:verbatim>
+            <jmaki:ajax name="jmaki.blockList" service="/xhp?id=sdnEENews" args="{count:2}" template="/resources/jmaki/blockList/sdndevnews.htm" />                                                               
+            <f:verbatim> 
+                <br><br><center><hr></center><p>
+                <h3> All SDN News</h3>
+                -->
+            </f:verbatim>
+            <jmaki:ajax name="jmaki.blockList" id="sdndevnews" service="/xhp?id=sdndevnews" args="{count:2}" template="/resources/jmaki/blockList/sdndevnews.htm" />
+            <f:verbatim>
+            <br clear="all"><a href="http://blogs.sun.com/SDNProgramNews/" target="_blank">$resource{i18n.support.sunDevNews}</a>                                                            
+        </div>
+    </div>
+</div>
+<p>
+
+<div id="box" class="md1">
+                <div class="hd"> 
+                    <h2>$resource{i18n.support.gfIssues}</h2>
+                    
+                </div>
+                <div id="boxbd" class="bd">
+                    
+                    <div class="innerbox">
+                <font face=arial size=-1>$resource{i18n.support.bugList}</font>
+                </f:verbatim>
+<jmaki:ajax name="jmaki.blockList" id="issues" args="{count:5}" service="/xhp?id=issues&count=20" template="/resources/jmaki/blockList/issues.htm" />
+<f:verbatim>
+    <br clear="all"><a href="#{IssueQuery}" target="_blank">$resource{i18n.support.moreIssues}</a>
+                    </div>
+                </div>
+                
+            </div> 
+            <p>
+
+                      
+
+</div>             
+<div id="rightcolumn">  
+        <div id="box" class="md1">
+            <div class="hd"> 
+                <h2>$resource{i18n.support.service}</h2>
+            </div>
+            <div id="boxbd" class="bd">
+                <div class="innerbox">
+                    <font face=arial size=-1>
+                    <img src="../images/squares/#{imageList[4]}" alt="" border=0 align="left" style="float:left; margin:5px 10px 5px 10px;" />
+                         <a href="http://www.sun.com/service/applicationserversubscriptions/" target="_blank"> $resource{i18n.support.supportAndService}</a><br>
+                    $resource{i18n.support.s1} 
+                    <p><br>
+                    <a href="http://java.sun.com/javaee/support/training/" target="_blank">$resource{i18n.support.training}</a><br>
+                    $resource{i18n.support.t1}
+                    <p>
+                    <a href="http://java.sun.com/javaee/support/" target="_blank">$resource{i18n.support.devSupportService}</a><br>
+                    $resource{i18n.support.d1}
+                    <p>
+                    <a href="http://forums.java.net/jive/forum.jspa?forumID=56&start=0" target="_blank">$resource{i18n.support.forum}</a><br>
+                    $resource{i18n.support.forum1}
+                    <p>
+                    <a href="https://glassfish.dev.java.net/issues/query.cgi" target="_blank">$resource{i18n.support.issueTracker}</a><br>
+                    $resource{i18n.support.issueTracker1}</font>
+                </div>
+            </div>               
+        </div>
+        <p>
+	<!-- sysnet / learningBox -->
+	<div id="box" class="md1">
+	    <div class="hd"> 
+		<h2>$resource{i18n.support.adoption}</h2>
+	    </div>
+	    <div id="boxbd" class="bd">
+		<div class="innerbox"> 
+</f:verbatim>
+<jmaki:ajax name="jmaki.blockList" id="blogs" service="/xhp?id=blogs" args="{count:1}" template="/resources/jmaki/blockList/blogs.htm" />
+<f:verbatim>
+<br clear="all"><a href="http://blogs.sun.com/stories/" target="_blank">$resource{i18n.support.moreStories}</a>
+		</div>
+            </div>   
+	</div> 
+        
+            <p>
+                
+                <div id="box" class="md1">
+	    <div class="hd"> 
+		<h2>$resource{i18n.support.learning}</h2>
+	    </div>
+	    <div id="boxbd" class="bd">
+		<div class="innerbox"> 
+
+</f:verbatim>
+<jmaki:ajax name="jmaki.blockList" id="learning" args="{count:5}" service="/sysnet/learning.json" template="/resources/jmaki/blockList/learning.htm" />
+<f:verbatim>
+		</div>
+            </div>   
+	</div>   
+        <p>
+            
+            <div id="box" class="md1">
+                <div class="hd"> 
+                    <h2>$resource{i18n.support.podcast}</h2>
+                </div>
+                <div id="boxbd" class="bd">
+                    
+                    <div class="innerbox"> 
+			</f:verbatim>
+<jmaki:ajax name="jmaki.blockList" id="podcast" args="{count:1}" service="/xhp?id=podcast" template="/resources/jmaki/blockList/podcast.htm" />
+			<f:verbatim>
+                        <br clear="all"><a href="http://blogs.sun.com/glassfishpodcast/" target="_blank">$resource{i18n.support.morePodCast}</a>
+                    </div>
+                </div>
+                
+            </div>
+            
+        
+        
+        
+    </div>
+</div>
+
+</div> 
+<p>
+</f:verbatim>
+</sun:body>
+</sun:html>
+</sun:page>

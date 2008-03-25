@@ -76,7 +76,15 @@
               <!afterCreate
                   getClientId(component="$this{component}" clientId=>$page{treeId});
               />
-                        
+      <!--  ===================================== Registration  ======================  -->
+            <sun:treeNode id="registration"
+                rendered="$session{showRegistration}"
+                text="#{registrationNodeText}"
+                url="/sysnet/#{registrationNodePage}.jsf"
+                imageURL="resource/images/#{registrationNodePage}.png"
+                target="main">
+            </sun:treeNode>
+                           
               
 	    <!--  ===================================== Application Server  ======================  -->
 	    <sun:treeNode id="applicationServer" 
