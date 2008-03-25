@@ -1,6 +1,7 @@
 package com.sun.enterprise.container.common.impl;
 
 import com.sun.enterprise.container.common.spi.JavaEEContainer;
+import com.sun.enterprise.container.common.spi.JavaEETransactionManager;
 import com.sun.enterprise.container.common.spi.util.ComponentEnvManager;
 import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.naming.spi.NamingObjectFactory;
@@ -9,10 +10,13 @@ import org.glassfish.api.invocation.ComponentInvocation;
 import org.glassfish.api.invocation.InvocationManager;
 import org.glassfish.api.naming.GlassfishNamingManager;
 import org.glassfish.api.naming.JNDIBinding;
+import org.glassfish.api.naming.NamingObjectProxy;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.Habitat;
 
 import javax.naming.NamingException;
+import javax.naming.Context;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -31,6 +35,9 @@ public class ComponentEnvManagerImpl
     private static final String EIS_STRING = "/eis/";
 
     @Inject
+    private Habitat habitat;
+
+    @Inject
     private Logger _logger;
 
     @Inject
@@ -41,6 +48,9 @@ public class ComponentEnvManagerImpl
 
     @Inject
     private InvocationManager invMgr;
+
+    @Inject
+    private JavaEETransactionManager txMgr;
 
     private Map<String, JndiNameEnvironment> compId2Env =
             new ConcurrentHashMap<String, JndiNameEnvironment>();
@@ -174,15 +184,15 @@ public class ComponentEnvManagerImpl
             jndiBindings.add(binding);
         }
 
-
+*/
 
          for (EntityManagerReferenceDescriptor next :
              env.getEntityManagerReferenceDescriptors()) {
-            EntityManagerJNDIBinding binding =
-                new EntityManagerJNDIBinding(next);
-            jndiBindings.add(binding);
+             String name = JAVA_COMP_STRING + next.getName();
+             FactoryForEntityManagerWrapper value =
+                new FactoryForEntityManagerWrapper(next, habitat);
+            jndiBindings.add(new CompEnvBinding(name, value));
          }
-*/
 
         return jndiBindings;
     }
@@ -302,6 +312,30 @@ public class ComponentEnvManagerImpl
 
     private static boolean isConnector(String logicalJndiName){
         return (logicalJndiName.indexOf(EIS_STRING) != -1);
+    }
+
+    private class FactoryForEntityManagerWrapper
+        implements NamingObjectProxy {
+
+        private EntityManagerReferenceDescriptor refDesc;
+
+        private Habitat habitat;
+        
+        FactoryForEntityManagerWrapper(EntityManagerReferenceDescriptor refDesc,
+            Habitat habitat) {
+            this.refDesc = refDesc;
+            this.habitat = habitat;
+        }
+
+        public Object create(Context ctx) {
+            EntityManagerWrapper emWrapper =
+                    habitat.getComponent(EntityManagerWrapper.class);
+            emWrapper.initializeEMWrapper(refDesc.getUnitName(),
+                    refDesc.getPersistenceContextType(),
+                    refDesc.getProperties());
+
+            return emWrapper;
+        }
     }
 
     private static class CompEnvBinding
