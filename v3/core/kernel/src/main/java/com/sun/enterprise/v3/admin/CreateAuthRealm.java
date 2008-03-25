@@ -125,7 +125,7 @@ public class CreateAuthRealm implements AdminCommand {
             if (authrealm.getName().equals(authRealmName)) {
                 report.setMessage(localStrings.getLocalString(
                     "create.auth.realm.duplicatefound", 
-                    "AuthRealm named {0} exists. Cannot add duplicate AuthRealm.", 
+                    "Authrealm named {0} exists. Cannot add duplicate AuthRealm.", 
                     authRealmName));
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                 return;
@@ -148,16 +148,16 @@ public class CreateAuthRealm implements AdminCommand {
 
         } catch(TransactionFailure e) {
             report.setMessage(localStrings.getLocalString("create.auth.realm.fail", 
-                    "Creation of AuthRealm {0} failed", authRealmName));
+                    "Creation of Authrealm {0} failed", authRealmName));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);        
         }
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
         report.setMessage(localStrings.getLocalString("create.auth.realm.success",
-            "Creation of AuthRealm {0} completed successfully", authRealmName));        
+            "Creation of Authrealm {0} completed successfully", authRealmName));        
     }       
     
-    private void populateAuthRealmElement(AuthRealm newAuthRealm) 
+    private void populateAuthRealmElement(Authrealm newAuthRealm) 
     throws PropertyVetoException, TransactionFailure {
         newAuthRealm.setName(authRealmName);
         newAuthRealm.setClassname(className);

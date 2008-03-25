@@ -100,7 +100,7 @@ public class DeleteAuthRealm implements AdminCommand {
             if (authRealm == null) {
                 report.setMessage(localStrings.getLocalString(
                     "delete.auth.realm.notfound", 
-                    "AuthRealm named {0} not found", authRealmName));
+                    "Authrealm named {0} not found", authRealmName));
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                 return;
             }
@@ -115,14 +115,14 @@ public class DeleteAuthRealm implements AdminCommand {
             }, securityService);
         } catch(TransactionFailure e) {
             report.setMessage(localStrings.getLocalString(
-                "delete.auth.realm.fail", "Deletion of AuthRealm {0} failed", 
+                "delete.auth.realm.fail", "Deletion of Authrealm {0} failed", 
                 authRealmName));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
         }
 
         report.setMessage(localStrings.getLocalString("delete.auth.realm.success", 
-            "Deletion of AuthRealm {0} completed successfully", authRealmName));
+            "Deletion of Authrealm {0} completed successfully", authRealmName));
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
     }
 }
