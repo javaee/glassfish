@@ -51,7 +51,7 @@ import com.sun.appserv.management.base.Container;
 /**
 	 Configuration for an <http-listener&gt; element.
 */
-@AMXCreateInfo(paramNames={"id", "address", "port", "defaultVirtualServer", "serverName", "optional"})
+@AMXCreateInfo(paramNames={"id", "address", "port", "default-virtual-server", "server-name", "optional"})
 public interface HTTPListenerConfig
 	extends PropertiesAccess, NamedConfigElement, SSLConfigContainer, Enabled
 {
