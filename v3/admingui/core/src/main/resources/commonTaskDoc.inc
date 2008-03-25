@@ -39,26 +39,28 @@
     <sun:commonTask
         text="$resource{i18n.commonTasks.task.qstart}"
         toolTip="$resource{i18n.commonTasks.task.qstart.toolTip}"
-        onClick="javascript:var win=window.open('http://docs.sun.com/doc/819-3193','_blank');win.focus(); return false;">                             
+        onClick="javascript:var win=window.open('http://docs.sun.com/doc/820-4836','_blank');win.focus(); return false;">                             
     </sun:commonTask>
     <sun:commonTask
         text="$resource{i18n.commonTasks.task.adminGuide}"
         toolTip="$resource{i18n.commonTasks.task.adminGuide.toolTip}"
-        onClick="javascript:var win=window.open('http://docs.sun.com/doc/819-3671','_blank');win.focus(); return false;">    
+        onClick="javascript:var win=window.open('http://docs.sun.com/doc/820-4495','_blank');win.focus(); return false;">    
     </sun:commonTask>
     <sun:commonTask
         text="$resource{i18n.commonTasks.task.devGuide}"
         toolTip="$resource{i18n.commonTasks.task.devGuide.toolTip}"
-        onClick="javascript:var win=window.open('http://docs.sun.com/doc/819-3672','_blank');win.focus(); return false;">
+        onClick="javascript:var win=window.open('http://docs.sun.com/doc/820-4496','_blank');win.focus(); return false;">
     </sun:commonTask>
     <sun:commonTask
         text="$resource{i18n.commonTasks.task.deployGuide}"
         toolTip="$resource{i18n.commonTasks.task.deployGuide.toolTip}"
-        onClick="javascript:var win=window.open('http://docs.sun.com/doc/819-3673','_blank');win.focus(); return false;">
+        onClick="javascript:var win=window.open('http://docs.sun.com/doc/820-4502','_blank');win.focus(); return false;">
     </sun:commonTask>
+<!--
     <sun:commonTask
         text="$resource{i18n.commonTasks.task.deployPlanningGuide}"
         toolTip="$resource{i18n.commonTasks.task.deployPlanningGuide.toolTip}"
         onClick="javascript:var win=window.open('http://docs.sun.com/doc/819-3680','_blank');win.focus(); return false;">
-    </sun:commonTask>                        
+    </sun:commonTask> 
+-->                       
 </sun:commonTasksGroup>
