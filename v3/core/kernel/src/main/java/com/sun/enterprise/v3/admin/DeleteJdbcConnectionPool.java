@@ -59,7 +59,7 @@ public class DeleteJdbcConnectionPool implements AdminCommand {
     
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(DeleteJdbcConnectionPool.class);    
 
-    @Param(defaultValue="Boolean.FALSE.toString()", optional=true)
+    @Param(defaultValue="false", optional=true)
     String cascade;
     
     @Param(name="jdbc_connection_pool_id", primary=true)
