@@ -41,30 +41,66 @@ import com.sun.enterprise.cli.framework.*;
  * my v3 main, basically some throw away code
  */
 public class AsadminMain {
-
     public static void main(String[] args) {
+        AsadminMain main = new AsadminMain();
+        int exitCode = ERROR;
+        
         try {
-            new com.sun.enterprise.cli.framework.CLIMain().invokeCommand(args);
+            exitCode = main.local(args);
         }
-        catch (InvalidCommandException ice) {
-            if (TRACE) {
-                System.out.println("REMOTE COMMAND!!!");
-            }
-            RemoteCommand rc = RemoteCommand.getInstance();
-            rc.handleRemoteCommand(args);
+        catch(InvalidCommandException e) {
+            CLILogger.getInstance().printDebugMessage(e.getMessage());
+            exitCode = main.remote(args);
+        }
+        System.exit(exitCode);
+    }
+
+    private int local(String[] args) throws InvalidCommandException{
+        try {
+            CLIMain cli = new com.sun.enterprise.cli.framework.CLIMain();
+            cli.invokeCommand(args);
+            return SUCCESS;
+        }
+        catch(CommandException ce) {
+            CLILogger.getInstance().printMessage(ce.getMessage());
+            return ERROR;
+        }
+        catch(CommandValidationException cve) {
+            CLILogger.getInstance().printMessage(cve.getMessage());
+            return ERROR;
         }
         catch(NoClassDefFoundError ncdfe)
         {
             CLILogger.getInstance().printError(ncdfe.toString());
-            System.exit(1);
+            return ERROR;
+        }
+        catch(InvalidCommandException ice) {
+            throw ice;
         }
         catch (Throwable ex) {
             CLILogger.getInstance().printExceptionStackTrace(ex);
-            CLILogger.getInstance().printError(ex.getLocalizedMessage());
-            System.exit(1);
+            CLILogger.getInstance().printError(ex.toString());
+            return ERROR;
         }
     }
-    public static final boolean TRACE = Boolean.getBoolean("trace");
+    private int remote(String[] args) {
+        try {
+            RemoteCommand rc = RemoteCommand.getInstance();
+            rc.handleRemoteCommand(args);
+            return SUCCESS;
+        }
+        catch (Throwable ex) {
+            CLILogger.getInstance().printExceptionStackTrace(ex);
+            CLILogger.getInstance().printMessage(ex.getMessage());
+            return ERROR;
+        }
+    }
+    public static final boolean TRACE = Boolean.getBoolean("trace") || System.getenv("AS_TRACE") != null;
+    private final static int ERROR = 1;
+    private final static int SUCCESS = 0;
+}
+
+
 
     /** Turned off for now -- it takes ~200 msec on a laptop!
     private final static boolean foundClass(String s) {
@@ -128,6 +164,5 @@ public class AsadminMain {
         System.out.println("Time to pre-load classes = " + (stop-start) + " msec");
     }
      */
-}
 
 

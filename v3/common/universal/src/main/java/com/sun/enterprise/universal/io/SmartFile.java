@@ -17,7 +17,8 @@ import java.util.*;
  * This method will give you the benefits of Canonical -- but will always point
  * at the link file itself. 
  * <p>
- * I.e. It is just like getAbsoluteXXX -- but it removes all relative path elements from the path.
+ * I.e. It is just like getAbsoluteXXX -- but it removes all relative path 
+ * elements from the path.
  * @author bnevins
  */
 

@@ -35,6 +35,7 @@
  */
 package com.sun.enterprise.admin.cli;
 
+import com.sun.enterprise.cli.framework.CLILogger;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -53,6 +54,7 @@ import com.sun.enterprise.admin.cli.deployment.FileUploadUtil;
 import com.sun.enterprise.admin.cli.util.CLIUtil;
 import com.sun.enterprise.admin.cli.util.HttpConnectorAddress;
 import com.sun.enterprise.admin.cli.util.AuthenticationInfo;
+import com.sun.enterprise.cli.framework.CommandException;
 
 /**
  * RemoteCommand class 
@@ -68,7 +70,7 @@ public class RemoteCommand {
         return INSTANCE;
     }
 
-    public void handleRemoteCommand(final String[] args) {
+    public void handleRemoteCommand(final String[] args) throws CommandException {
         handleRemoteCommand(args, "hk2-cli", null);
     }
 
@@ -78,13 +80,14 @@ public class RemoteCommand {
      * @param args the arguments to use in building the command
      * @param responseFormatType direction to the server as to how to format the response; usually hk2-cli or xml-cli
      * @param userOut the {@link OutputStream} to which to write the command's response text
+     * @throws com.sun.enterprise.cli.framework.CommandException 
      */
     public void handleRemoteCommand(final String[] args,
                                      String responseFormatType,
-                                     OutputStream userOut) {
+                                     OutputStream userOut) 
+                                     throws CommandException{
         if (args.length == 0) {
-            System.err.println("usage : asadmin <command> [parameters]");
-            return;
+            throw new CommandException("usage : asadmin <command> [parameters]");
         }
         try {
             //testing RemoteCommandParser.java
@@ -136,7 +139,7 @@ public class RemoteCommand {
                     uriConnection = uriConnection + "?" + paramName + "=" + URLEncoder.encode(paramValue,
                                                                                                 "UTF-8");
                 } catch (UnsupportedEncodingException e) {
-                    System.err.println("Error encoding " + paramName + ", parameter value will be ignored");
+                    CLILogger.getInstance().printError("Error encoding " + paramName + ", parameter value will be ignored");
                 }
             }
 
@@ -155,9 +158,7 @@ public class RemoteCommand {
                                                                                   "UTF-8");
             }
 
-            if (TRACE) {
-                System.out.println("Connecting to " + uriConnection);
-            }
+            CLILogger.getInstance().printDebugMessage("Connecting to " + uriConnection);
             try {
                 HttpConnectorAddress url = new HttpConnectorAddress(hostName, Integer.parseInt(hostPort), isSecure);
                 url.setAuthenticationInfo(new AuthenticationInfo(user, password));
@@ -170,7 +171,7 @@ public class RemoteCommand {
                         handleResponse(params, in,
                                        urlConnection.getResponseCode());
                     } else {
-                        throw new Exception("File " + fileName.getName() + " does not exist.");
+                        throw new CommandException("File " + fileName.getName() + " does not exist.");
                     }
                 }
                 else {
@@ -185,10 +186,13 @@ public class RemoteCommand {
                                    userOut);
                 }
             } catch (IOException e) {
-                System.err.println("Cannot connect to host, is server up ?");
+                throw new CommandException("Cannot connect to host, is server up ?");
             }
+        } catch (CommandException e) {
+            throw e;
         } catch (Exception e) {
-            e.printStackTrace();
+            CLILogger.getInstance().printExceptionStackTrace(e);
+            throw new CommandException(e);
         }
     }
 
@@ -265,7 +269,7 @@ public class RemoteCommand {
     }
 
     private void handleResponse(Map<String, String> params,
-                                 InputStream in, int code, OutputStream userOut) throws IOException {
+                                 InputStream in, int code, OutputStream userOut) throws IOException, CommandException {
         if (userOut == null) {
             handleResponse(params, in, code);
         } else {
@@ -274,7 +278,7 @@ public class RemoteCommand {
     }
 
     private void handleResponse(Map<String, String> params,
-                                 InputStream in, int code) throws IOException {
+                                 InputStream in, int code) throws IOException, CommandException {
         if (TRACE) {
             // dump the content
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -297,11 +301,11 @@ public class RemoteCommand {
                 processMessage(m);
             }
         } else {
-            System.out.println("Failed : error code " + code);
+            throw new CommandException("Failed : error code " + code);
         }
     }
 
-    private Manifest getManifest(InputStream is) {
+    private Manifest getManifest(InputStream is) throws CommandException {
         try {
             Manifest m = new Manifest();
             m.read(is);
@@ -311,7 +315,7 @@ public class RemoteCommand {
             }
             return m;
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new CommandException("Remote Command Error: " + e.getMessage());
         } finally {
             if (is != null) {
                 try {
@@ -321,7 +325,6 @@ public class RemoteCommand {
                 }
             }
         }
-        return null;
     }
 
     private void processHelp(Manifest m) {
@@ -338,23 +341,22 @@ public class RemoteCommand {
                     String property = token.nextToken();
                     String name = attr.getValue(property + "_name");
                     String value = attr.getValue(property + "_value");
-                    System.out.println("\t" + name + " : " + value);
+                    CLILogger.getInstance().printMessage("\t" + name + " : " + value);
                 }
             }
         }
     }
 
-    private void processMessage(Manifest m) {
+    private void processMessage(Manifest m) throws CommandException {
         String exitCode = m.getMainAttributes().getValue("exit-code");
         String message = m.getMainAttributes().getValue("message");
 
         if (exitCode != null) {
-            System.out.println(exitCode + " : " + message);
             if (!exitCode.equalsIgnoreCase("Success")) {
-                return;
+                throw new CommandException(exitCode + " : " + message);
             }
         } else {
-            System.out.println(message);
+            CLILogger.getInstance().printMessage(message);
         }
 
         processOneLevel("", null, m, m.getMainAttributes());
@@ -364,6 +366,9 @@ public class RemoteCommand {
     private void processOneLevel(String prefix, String key, Manifest m,
                                   Attributes attr) {
 
+        if(attr == null) {
+            return;
+        }
         String keys = attr.getValue("keys");
         if (keys != null) {
             StringTokenizer token = new StringTokenizer(keys, ";");
@@ -411,7 +416,7 @@ public class RemoteCommand {
         }
         out.close();
     }
-    public static final boolean TRACE = Boolean.getBoolean("trace");
+    public static final boolean TRACE = Boolean.getBoolean("trace") || System.getenv("AS_TRACE") != null;
 }
 
 
