@@ -208,6 +208,12 @@ public interface DomainRoot extends Container
       @since Glassfish V3
      */
     public String getApplicationServerFullVersion();
+    
+    /**
+        @return the configuration directory
+      @since Glassfish V3
+     */
+    public String getConfigDir();
 }
 
 

@@ -257,8 +257,11 @@ public class DomainRootImplBase extends AMXNonConfigImplBase
         return "Glassfish V3 full version TBD";
     }
 
-    
-    
+    public String getConfigDir()
+    {
+        Issues.getAMXIssues().notDone( "DomainRootImpl.getConfigDir" );
+        return "/not/a/real/value/yet";
+    }
 }
 
 
