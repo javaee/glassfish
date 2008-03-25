@@ -38,12 +38,15 @@ package com.sun.enterprise.security.integration;
 import java.security.Principal;
 import javax.security.auth.Subject;
 import org.jvnet.hk2.annotations.Contract;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.component.PerLookup;
 
 /**
  * The SecurityContext Interface, also provide factory methods
  * 
  */
 @Contract
+@Scoped(PerLookup.class)
 public interface AppServSecurityContext {
 
     /**
