@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!--
+ Copyright 2006 Sun Microsystems, Inc. All rights reserved.
+ Use is subject to license terms.
+-->
+
+<target name="package" 
+        depends="
+		 package-SUNWglassfishv3-nucleus,
+		 package-SUNWglassfishv3-web,
+		 package-SUNWglassfishv3-common,
+		 clean-tmp" >
+</target>
+
+<target name="clean-tmp" depends="publish-init"> 
+    <echo message="deleting install_tmp directory"/>
+    <exec dir="." executable="rm">
+    	<arg line="-rf ${install.tmp.dir}"/>
+    </exec>
+    <echo message="deleting asman_tmp directory"/>
+    <exec dir="." executable="rm">
+    	<arg line="-rf ${asman.tmp.dir}"/>
+    </exec>
+    <exec dir="." executable="rm">
+    	<arg line="-rf ${asdem.tmp.dir}"/>
+    </exec>
+</target>
+
+<target name="package-SUNWglassfishv3-nucleus" 
+        depends="publish-init,package-install-init"
+        description="Package SUNWglassfishv3-nucleus">
+    <echo message="Creating package SUNWglassfishv3-nucleus..."/>
+
+    <mkdir dir="${basedir}/build" />
+    <unzip src="${basedir}/../distributions/nucleus/target/nucleus.zip"
+           dest="${basedir}/build"/>
+
+    <antcall target="build-solaris-package">	
+        <param name="component.package" value="SUNWglassfishv3-nucleus"/>
+        <param name="package.home" value="${package.home}"/>
+        <param name="component.publish.home" 
+               value="${install.tmp.dir}"/>
+    </antcall>
+
+    <antcall target="package-common">
+        <param name="component.package" value="SUNWglassfishv3-nucleus"/>
+        <param name="package.home" value="${package.home}"/>
+        <param name="publish.package.home" value="${tools.package.home}"/>
+        <param name="component.publish.home" value="${install.dir}/.."/>
+    </antcall>
+
+    <delete dir="${basedir}/build"/>
+</target>
+
+<target name="package-SUNWglassfishv3-web" 
+        depends="publish-init,package-install-init"
+        description="Package SUNWglassfishv3-web">
+    <echo message="Creating package SUNWglassfishv3-web..."/>
+
+    <mkdir dir="${basedir}/build" />
+    <unzip src="${basedir}/../distributions/web/target/web.zip"
+           dest="${basedir}/build"/>
+
+    <antcall target="build-solaris-package">	
+        <param name="component.package" value="SUNWglassfishv3-web"/>
+        <param name="package.home" value="${package.home}"/>
+        <param name="component.publish.home" 
+               value="${install.tmp.dir}"/>
+    </antcall>
+
+    <antcall target="package-common">
+        <param name="component.package" value="SUNWglassfishv3-web"/>
+        <param name="package.home" value="${package.home}"/>
+        <param name="publish.package.home" value="${tools.package.home}"/>
+        <param name="component.publish.home" value="${install.dir}/.."/>
+    </antcall>
+
+</target>
+
+<target name="package-SUNWglassfishv3-common" 
+        depends="publish-init,package-install-init"
+        description="Package SUNWglassfishv3-common">
+    <echo message="Creating package SUNWglassfishv3-common..."/>
+
+    <antcall target="build-solaris-package">	
+        <param name="component.package" value="SUNWglassfishv3-common"/>
+        <param name="package.home" value="${package.home}"/>
+        <param name="component.publish.home" 
+               value="${install.tmp.dir}"/>
+    </antcall>
+
+    <antcall target="package-common">
+        <param name="component.package" value="SUNWglassfishv3-common"/>
+        <param name="package.home" value="${package.home}"/>
+        <param name="publish.package.home" value="${tools.package.home}"/>
+        <param name="component.publish.home" value="${install.dir}/.."/>
+    </antcall>
+
+</target>

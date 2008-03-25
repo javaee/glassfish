@@ -1,0 +1,49 @@
+#!/bin/sh
+
+# Copyright 2004 Sun Microsystems, Inc. All rights reserved.
+# SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+
+#
+#ident	"$Id: i.asenv,v 1.1.1.1 2008/02/28 23:20:16 dpatil Exp $"
+#
+
+PATH=/usr/bin:/usr/sbin:/bin
+
+while read src dest
+do
+      if [ -f "$dest" ]
+      then
+              echo $dest preserved
+      else
+	sed \
+                -e "s,\%CONFIG_HOME\%,$ASCONFIG_HOME," \
+                -e "s,\%PERL_HOME\%,$ASPERL_HOME," \
+                -e "s,\%ANT_HOME\%,$ASANT_HOME," \
+                -e "s,\%ANT_LIB\%,$ASANT_LIB," \
+                -e "s,\%WEBSERVICES_LIB\%,$ASWEBSERVICES_LIB," \
+                -e "s,\%IMQ_BIN\%,$ASIMQ_BIN," \
+                -e "s,\%IMQ_LIB\%,$ASIMQ_LIB," \
+                -e "s,\%INSTALL_HOME\%,$ASINSTALL_HOME," \
+                -e "s,\%JAVA_HOME\%,$ASJAVADIR," \
+                -e "s,\%JHELP_HOME\%,$ASJHELP_HOME," \
+                -e "s,\%WEBCONSOLE_LIB\%,$ASWEBCONSOLE_LIB," \
+                -e "s,\%JATO_LIB\%,$ASJATO_LIB," \
+                -e "s,\%ACC_CONFIG\%,$ASACC_CONFIG," \
+                -e "s,\%DEF_DOMAINS_PATH\%,$ASDEF_DOMAINS_PATH," \
+                -e "s,\%NSS_HOME\%,$ASNSS_HOME," \
+                -e "s,\%NSS_BIN_HOME\%,$ASNSS_BIN_HOME," \
+                -e "s,\%ICU_LIB\%,$ASICU_LIB," \
+                -e "s,\%JDMK_HOME\%,$ASJDMK_HOME," \
+                -e "s,\%MFWK_HOME\%,$ASMFWK_HOME," \
+                -e "s,\%SECURE\%,true," \
+                -e "s,\%USE_NATIVE_LAUNCHER\%,true," \
+                -e "s,\%LAUNCHER_LIB\%,$ASLAUNCHER_LIB," \
+                -e "s,\%HADB_HOME\%,$ASHADB_HOME," \
+                -e "s,\%DERBY_HOME\%,$ASDERBY_HOME," \
+                -e "s,\$BASEDIR,$CLIENT_BASEDIR," \
+                -e "s,\$ARCH,$ARCH," \
+		-e "s,//,/,g" \
+		< $src > $dest
+      fi
+done
+exit 0

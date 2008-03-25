@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!--
+ Copyright 2006 Sun Microsystems, Inc. All rights reserved.
+ Use is subject to license terms.
+-->
+
+
+<target name="create-pkgs" >
+    <exec dir="../common_files" executable="cp">
+        <arg line="${DATAFILES} ../${component}" />
+    </exec>
+    <exec dir="" executable="sh" failonerror="true">
+        <arg line="../makepkg ${component} ${host.obj.dir} ${full_version} ${component.publish.home} ${build.native.root}" />
+    </exec>    
+ 
+</target>
+
+
+<target name="clobberclean">
+    <exec dir="." executable="rm">
+        <arg line="-rf ${clobberfiles} ${cleanfiles}" />
+    </exec>
+</target>

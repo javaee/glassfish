@@ -1,0 +1,21 @@
+#!/bin/sh
+
+# Copyright 2004 Sun Microsystems, Inc. All rights reserved.
+# SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+
+#
+#ident	"$Id: i.appserv,v 1.1.1.1 2008/02/28 23:20:16 dpatil Exp $"
+#
+
+PATH=/usr/bin:/usr/sbin
+
+while read src dest
+do
+      if [ -f "$dest" ]
+      then
+              echo $dest preserved
+      else
+	     cp $src $dest 
+      fi
+done
+exit 0

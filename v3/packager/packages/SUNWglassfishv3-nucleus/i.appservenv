@@ -1,0 +1,20 @@
+#!/bin/sh
+
+# Copyright 2004 Sun Microsystems, Inc. All rights reserved.
+# SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+
+#
+#ident	"$Id: i.appservenv,v 1.1.1.1 2008/02/28 23:20:16 dpatil Exp $"
+#
+
+PATH=/usr/bin:/usr/sbin:/bin
+
+while read src dest
+do
+	sed \
+		-e "s,\%CONFIG_HOME\%,$CLIENT_BASEDIR/appserver/config," \
+                -e "s,\$BASEDIR,$CLIENT_BASEDIR," \
+		-e "s,//,/,g" \
+		< $src > $dest
+done
+exit 0

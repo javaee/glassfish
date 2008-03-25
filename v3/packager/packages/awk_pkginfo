@@ -1,0 +1,60 @@
+/^VERSION=[^=]*$/ {
+      sub(/\=[^=]*$/,"=\"2008.03.24.16.51\"")
+      print
+      next
+   }
+/^VERSION=[^=]*=.*$/ {
+      sub(/\=[^=]*$/,"=2008.03.24.16.51\"")
+      sub(/IASVERS/,"91.01")
+      print
+      next
+   }
+/^SUNW_PRODVERS=/ { 
+      printf "SUNW_PRODVERS=\"%s\"\n", "91.01" 
+      next
+   }
+/ARCH=\"ISA\"/ {
+      printf "ARCH=\"%s\"\n", "i386"
+      next
+   }
+/ASCONFDIR=OPTCONFDIR/ {
+      printf "ASCONFDIR=\"%s\"\n", "/etc/opt/SUNWappserver91.01"
+      next
+   }
+/ASINSTDIR=OPTINSTDIR/ {
+      printf "ASINSTDIR=\"%s\"\n", "/opt/SUNWappserver91.01"
+      next
+   }
+/ASJAVADIR=JAVAINSTDIR/ {
+      printf "ASJAVADIR=\"%s\"\n", "/usr/j2se"
+      next
+   }
+/ASLOCALE=LOCALE/ {
+      printf "ASLOCALE=\"%s\"\n", "en_US"
+      next
+   }
+/ASCONFDIR=USRCONFDIR/ {
+      printf "ASCONFDIR=\"%s\"\n", "/etc/appserver"
+      next
+   }
+/ASINSTDIR=USRINSTDIR/ {
+      printf "ASINSTDIR=\"%s\"\n", "/usr/appserver"
+      next
+   }
+/ASDOMAINSDIR=OPTDOMAINSDIR/ {
+      printf "ASDOMAINSDIR=\"%s\"\n", "/var/opt/SUNWappserver91.01/domains"
+      next
+   }
+/ASDOMAINSDIR=VARDOMAINSDIR/ {
+      printf "ASDOMAINSDIR=\"%s\"\n", "/var/appserver/domains"
+      next
+   }
+/ASHADBDIR=OPTHADBDIR/ {
+      printf "ASHADBDIR=\"%s\"\n", "/opt/SUNWhadb/4.4-0.8"
+      next
+   }
+/^STICKY_VERSION=.*$/ {
+      printf "STICKY_VERSION=\"%s\"\n", sticky_version
+      next
+   }
+{ print }

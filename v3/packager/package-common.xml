@@ -1,0 +1,84 @@
+<!--
+ Copyright 2006 Sun Microsystems, Inc. All rights reserved.
+ Use is subject to license terms.
+-->
+
+<property name="packager.jar" 
+          value="${publish.home}/packager/lib/packager.jar"/>
+
+
+<!-- init-common. Common initialization involves creating publishing 
+   - directories and OS specific targets. 
+--> 
+<target name="init-common"
+    description="Module initialization">
+    <tstamp>
+        <format property="start.time" pattern="MM/dd/yyyy hh:mm aa"/>
+    </tstamp>    
+    <condition property="windows">
+      <os family="windows" />
+    </condition>
+    <condition property="unix">
+      <os family="unix" />
+    </condition>
+    <condition property="solaris">
+        <equals arg1="${os.name}" arg2="SunOS"/>
+    </condition>
+    <condition property="linux">
+        <equals arg1="${os.name}" arg2="Linux"/>
+    </condition>
+    <condition property="mac">
+        <os name="Mac OS X"/>
+    </condition>
+    <condition property="aix">
+        <os name="AIX"/>
+    </condition>
+    <condition property="macoraix">
+	<or>
+        <os name="Mac OS X"/>
+        <os name="AIX"/>
+	</or>
+    </condition>
+    <echo message="Building component ${component.name}"/>
+    <mkdir dir="${publish.package.home}"/>
+</target>
+
+
+
+
+<target name="package-common" 
+    depends="init-common, create-zip-filelist, package-solaris-common"/>
+
+<target name="package-solaris-common" if="solaris" 
+        description="create solaris specific packaging">
+   <echo message=" dir: ${component.publish.home}, file ${package.home}/${component.package}/prototype_com.zip.solaris"/>
+   <zip zipfile="${publish.package.home}/${component.package}.zip" 
+        basedir="${component.publish.home}" 
+        includesfile="${package.home}/${component.package}/prototype_com.zip.solaris"
+        whenempty="fail">            
+   </zip>
+
+</target>
+
+<target name="build-solaris-package" if="solarissvr4build" 
+        description="create solaris package">
+
+<ant antfile="build.xml" dir="${package.home}/${component.package}" target="create-pkgs"
+             inheritAll="true">
+</ant>
+</target>
+
+<target name="create-zip-filelist"
+    description="Create zip file listing">
+    <echo message="create zip file using ${packager.jar}"/>
+    <java classname="com.sun.appserv.internal.build.util.SVR4PackageDefToFileList"
+          dir="${package.home}/${component.package}"
+          fork="true"
+          failonerror="true">
+        <classpath>
+            <pathelement location="${packager.jar}"/>
+        </classpath>
+        <arg value="SVR4PackageDefToFileList.xml"/>
+    </java>
+</target>
+

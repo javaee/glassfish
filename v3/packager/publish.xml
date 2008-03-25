@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!--
+ Copyright 2006 Sun Microsystems, Inc. All rights reserved.
+ Use is subject to license terms.
+-->
+<target name="publish-init">
+    <tstamp>
+      <format property="start.time" pattern="MM/dd/yyyy hh:mm aa"/>
+    </tstamp>
+    <condition property="windows">
+        <os family="windows" />
+    </condition>
+    <condition property="unix">
+        <os family="unix" />
+    </condition>
+    <condition property="solaris">
+        <equals arg1="${os.name}" arg2="SunOS"/>
+    </condition>
+    <condition property="solarisx86">
+        <os name="SunOS" arch="x86"/>
+    </condition>
+    <condition property="darwin">
+        <os name="Mac OS X"/>
+    </condition>
+    <condition property="aix">
+        <os name="AIX"/>
+    </condition>
+    <condition property="macoraix">
+	<or>
+        <os name="AIX"/>
+        <os name="Mac OS X"/>
+	</or>
+    </condition>
+    <condition property="linux">
+        <equals arg1="${os.name}" arg2="Linux"/>
+    </condition>
+    <!--<condition property="checksvr4build">
+        <equals arg1="${svr4.build}" arg2="true"/>
+    </condition> -->
+    <condition property="solarissvr4build">
+	<and>
+        <equals arg1="${native.build}" arg2="true"/>
+        <equals arg1="${os.name}" arg2="SunOS"/>
+        </and>
+    </condition>
+    <condition property="linuxrpmbuild">
+	<and>
+        <equals arg1="${native.build}" arg2="true"/>
+        <equals arg1="${os.name}" arg2="Linux"/>
+        </and>
+    </condition>
+    <condition property="native.package.home" value="${rpms.home}">
+	<equals arg1="${os.name}" arg2="Linux"/>
+    </condition>
+    <property name="native.package.home" value="${pkgs.home}"/>
+
+    <condition property="host.obj.dir" value="SunOSx86">
+        <os name="SunOS" arch="x86"/>
+    </condition>
+    <available file="${javadoc.publish.home}" type="dir"
+               property="javadoc.present"/>
+</target>
+
+<target name="post-bootstrap-unix" depends="publish-init,post-bootstrap-solaris" if="unix">
+    <!-- imq packages -->
+    <antcall target="do.unzip">
+        <param name="name" value="${glassfish.imq.package.name}"/>
+        <param name="version" value="${glassfish.imq.package.version}"/>
+        <param name="directory" value="${native.package.home}" />
+    </antcall>
+</target>
+
+<target name="post-bootstrap-solaris" depends="publish-init" if="solaris" >
+</target>
+
+
+<target name="package-install-init" if="unix">     
+    <exec  executable="rm" failonerror="false">
+    <arg line="-rf ${install.tmp.dir}"/>
+    </exec>
+    <mkdir dir="${install.tmp.dir}"/>
+    <echo message="the install tmp dir:${install.tmp.dir}" />
+    <exec dir="${install.tmp.dir}" executable="ln">
+    <arg line="-s ${install.dir} ./glassfish"/>
+    </exec>
+</target>
