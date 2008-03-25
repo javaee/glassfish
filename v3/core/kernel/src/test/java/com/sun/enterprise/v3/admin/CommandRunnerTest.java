@@ -170,7 +170,7 @@ public class CommandRunnerTest {
 
     @Test
     public void getUsageTextTest() {
-        String expectedUsageText = "Usage: dummy-admin foo=foo [bar=false] hello=there world ";
+        String expectedUsageText = "Usage: dummy-admin --foo=foo [--bar=false] --hello=there world ";
         DummyAdminCommand dac = new DummyAdminCommand();
         String actualUsageText = cr.getUsageText(dac);
         assertEquals(expectedUsageText, actualUsageText);

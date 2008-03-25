@@ -470,7 +470,7 @@ public class CommandRunner {
                 }
                 final String paramName = getParamName(param, f);
                 if (optional) { usageText.append("["); }
-                usageText.append(paramName);
+                usageText.append("--").append(paramName);
                 if (param.defaultValue().equals("")) {
                     if (f.getType().isAssignableFrom(String.class)) {
                         try {
