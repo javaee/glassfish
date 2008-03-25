@@ -112,6 +112,8 @@ public final class ResourceConstants {
     public static final String MAX_CONNECTION_USAGE_COUNT = "max-connection-usage-count";
 
     public static final String WRAP_JDBC_OBJECTS = "wrap-jdbc-objects";
+    
+    public static final String CASCADE = "cascade";
 
     //Mail resource
     public static final String MAIL_HOST = "host";

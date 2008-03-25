@@ -14,13 +14,15 @@ import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.TransactionFailure;
 import static com.sun.enterprise.v3.admin.ResourceConstants.*;
+import com.sun.enterprise.config.serverbeans.JdbcConnectionPool;
+import com.sun.enterprise.config.serverbeans.JdbcResource;
+import com.sun.enterprise.config.serverbeans.Property;
+import com.sun.enterprise.config.serverbeans.Resource;
 import com.sun.enterprise.config.serverbeans.Resources;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.config.serverbeans.ServerTags;
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.enterprise.config.serverbeans.Property;
-import com.sun.enterprise.config.serverbeans.Resources;
-import com.sun.enterprise.config.serverbeans.JdbcConnectionPool;
+
 
 /**
  *
@@ -209,7 +211,7 @@ class JDBCConnectionPoolManager implements ResourceManager{
         jdbcconnectionpoolid = (String) attrList.get(CONNECTION_POOL_NAME);
     }
     
-    public ResourceStatus delete (Resources resources, final JdbcConnectionPool[] connPools, final String jdbcconnectionpoolid) 
+    public ResourceStatus delete (Resources resources, final JdbcConnectionPool[] connPools, final String cascade, final String jdbcconnectionpoolid) 
             throws Exception {
         
         if (jdbcconnectionpoolid == null) {
@@ -228,6 +230,20 @@ class JDBCConnectionPoolManager implements ResourceManager{
         }
 
         try {
+            
+            // if cascade=true delete all the resources associated with this pool 
+            // if cascade=false don't delete this connection pool if a resource is referencing it
+            Object obj = deleteAssociatedResources(resources, 
+                    Boolean.parseBoolean(cascade), jdbcconnectionpoolid);
+            if (obj == Integer.valueOf(ResourceStatus.FAILURE)) {
+                String msg = localStrings.getLocalString(
+                    "delete.jdbc.connection.pool.pool_in_use", 
+                    "JDBC Connection pool {0} delete failed ", jdbcconnectionpoolid);
+                ResourceStatus status = new ResourceStatus(ResourceStatus.FAILURE, msg);
+                return status;
+            }
+            
+            // delete jdbc connection pool
             if (ConfigSupport.apply(new SingleConfigCode<Resources>() {
                 public Object run(Resources param) throws PropertyVetoException, TransactionFailure {
                     for (JdbcConnectionPool cp : connPools) {
@@ -278,6 +294,28 @@ class JDBCConnectionPoolManager implements ResourceManager{
         }
 
         return false;
+    }
+    
+    private Object deleteAssociatedResources(Resources resources, 
+            final boolean cascade, final String connPoolId) throws TransactionFailure {
+        
+        return ConfigSupport.apply(new SingleConfigCode<Resources>() {
+            public Object run(Resources param) throws PropertyVetoException, TransactionFailure {
+                for (Resource resource : param.getResources()) {
+                    if (resource instanceof JdbcResource) {
+                        if (((JdbcResource)resource).getPoolName().equals(connPoolId)) {
+                            if (cascade) {
+                                param.getResources().remove(resource);
+                            } else {
+                                return Integer.valueOf(ResourceStatus.FAILURE);
+                            }
+                        }
+                    }
+                 }
+                 return null;
+            }
+        }, resources);
+        
     }
         
 }
