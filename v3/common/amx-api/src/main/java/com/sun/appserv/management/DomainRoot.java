@@ -203,6 +203,11 @@ public interface DomainRoot extends Container
       @since Glassfish V3
      */
     public String getDebugPort();
+    
+    /**
+      @since Glassfish V3
+     */
+    public String getApplicationServerFullVersion();
 }
 
 

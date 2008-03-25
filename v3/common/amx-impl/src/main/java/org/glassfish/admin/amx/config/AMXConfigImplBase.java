@@ -694,7 +694,7 @@ public class AMXConfigImplBase extends AMXImplBase
                     throw new IllegalArgumentException(
                     "Optional attributes may not override required ones.  Duplicated attributes: {" + CollectionUtil.toString(temp) + "}" );
                 }
-                }
+            }
             
             for( final String key : optionalAttrs.keySet() )
             {
@@ -713,7 +713,9 @@ public class AMXConfigImplBase extends AMXImplBase
         }
         
     }
-        
+
+private static final String OPTIONAL_PARAM = "optional";
+
     private static void cdebug( final String s ) { System.out.println(s); }
 
         protected ObjectName
@@ -743,7 +745,7 @@ public class AMXConfigImplBase extends AMXImplBase
         if ( args.length >= 1 )
         {
             Object lastArg = args[args.length-1];
-            if ( lastArg instanceof Map )
+            if ( lastArg instanceof Map || types[types.length-1].equals( Map.class.getName()) )
             {
                 optionalAttrs   = TypeCast.checkMap( TypeCast.asMap(lastArg), String.class, Object.class);
                 numRequiredArgs = args.length - 1;

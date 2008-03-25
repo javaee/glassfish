@@ -62,6 +62,7 @@ import org.glassfish.admin.amx.util.ObjectNames;
 
 import org.glassfish.admin.amx.util.FeatureAvailability;
 
+import org.glassfish.admin.amx.util.Issues;
 
 /**
  */
@@ -242,6 +243,22 @@ public class DomainRootImplBase extends AMXNonConfigImplBase
 		}
 	}
     */
+    
+    public String getDebugPort()
+    {
+        Issues.getAMXIssues().notDone( "DomainRootImpl.getDebugPort" );
+        return "" + 9999;
+    }
+    
+    
+    public String getApplicationServerFullVersion()
+    {
+        Issues.getAMXIssues().notDone( "DomainRootImpl.getApplicationServerFullVersion" );
+        return "Glassfish V3 full version TBD";
+    }
+
+    
+    
 }
 
 
