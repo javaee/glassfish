@@ -90,14 +90,11 @@ public class UpdateFileUser implements AdminCommand {
     final private static LocalStringManagerImpl localStrings = 
         new LocalStringManagerImpl(UpdateFileUser.class);    
 
-    //@Param(name="groups", optional=true)
-    //List<String> groups;
+    @Param(name="groups", optional=true)
+    List<String> groups;
 
     @Param(name="userpasswordfile")
     String passwordFile;
-
-    @Param(name="groups", optional=true)
-    String groups;
 
     @Param(name="authrealmname", optional=true)
     String authRealmName;
@@ -200,9 +197,12 @@ public class UpdateFileUser implements AdminCommand {
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
         }
+
+        //now updating user
         try {
-            String[] groups1 = {groups};            
-            //String[] groups1 = (String[]) groups.toArray();
+            String[] groups1 = new String[groups.size()];            
+            for (int i = 0; i < groups.size(); i++) 
+                groups1[i] = (String) groups.get(i);                
             fr.updateUser(userName, password, groups1);
             fr.writeKeyFile(keyFile);
             report.getTopMessagePart().setMessage(localStrings.getLocalString(

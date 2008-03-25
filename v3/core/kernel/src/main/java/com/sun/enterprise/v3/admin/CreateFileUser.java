@@ -90,14 +90,11 @@ public class CreateFileUser implements AdminCommand {
     final private static LocalStringManagerImpl localStrings = 
         new LocalStringManagerImpl(CreateFileUser.class);    
 
-    //@Param(name="groups", optional=true)
-    //List<String> groups;
+    @Param(name="groups", optional=true)
+    List<String> groups;
 
     @Param(name="userpasswordfile")
     String passwordFile;
-
-    @Param(name="groups", optional=true)
-    String groups;
 
     @Param(name="authrealmname", optional=true)
     String authRealmName;
@@ -120,7 +117,6 @@ public class CreateFileUser implements AdminCommand {
     public void execute(AdminCommandContext context) {
         
         final ActionReport report = context.getActionReport();
-
         List <Config> configList = configs.getConfig();
         Config config = configList.get(0);
         SecurityService securityService = config.getSecurityService();
@@ -141,7 +137,7 @@ public class CreateFileUser implements AdminCommand {
         
         // Get FileRealm class name, match it with what is expected.
         String fileRealmClassName = fileAuthRealm.getClassname();
-        
+
         // Report error if provided impl is not the one expected
         if (fileRealmClassName != null && 
             !fileRealmClassName.equals(
@@ -153,7 +149,6 @@ public class CreateFileUser implements AdminCommand {
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             return;                
         }
-
         // ensure we have the file associated with the authrealm
         String keyFile = null;
         for (Property fileProp : fileAuthRealm.getProperty()) {
@@ -167,7 +162,6 @@ public class CreateFileUser implements AdminCommand {
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             return;                                            
         }
-        
         // Now get all inputs ready. userid and groups are straightforward but
         // password is tricky. It is stored in the file passwordfile passed 
         // through the CLI options. It is stored under the name 
@@ -180,9 +174,10 @@ public class CreateFileUser implements AdminCommand {
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             return;
         }
-                    
+        
         // We have the right impl so let's get to checking existing user and 
         // adding one if one does not exist
+
         FileRealm fr = null;
         try {
             fr = new FileRealm(keyFile);            
@@ -201,9 +196,12 @@ public class CreateFileUser implements AdminCommand {
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
         }
+        
+        // now adding user
         try {
-            String[] groups1 = {groups};            
-            //String[] groups1 = (String[]) groups.toArray();
+            String[] groups1 = new String[groups.size()];            
+            for (int i = 0; i < groups.size(); i++) 
+                groups1[i] = (String) groups.get(i);                
             fr.addUser(userName, password, groups1);
             fr.writeKeyFile(keyFile);
             report.getTopMessagePart().setMessage(localStrings.getLocalString(
