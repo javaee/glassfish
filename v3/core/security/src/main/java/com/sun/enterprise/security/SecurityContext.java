@@ -57,7 +57,9 @@ import com.sun.enterprise.security.web.integration.PrincipalGroupFactory;
 import com.sun.enterprise.security.web.integration.WebPrincipal;
 import com.sun.logging.*;
 import java.security.AccessController;
+import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.PerLookup;
 import org.jvnet.hk2.component.PostConstruct;
 
 /**
@@ -77,6 +79,7 @@ import org.jvnet.hk2.component.PostConstruct;
  * @author Harpreet Singh
  */
 @Service
+@Scoped(PerLookup.class)
 public class SecurityContext extends AbstractSecurityContext implements PostConstruct {
    
     private static Logger _logger=null;
