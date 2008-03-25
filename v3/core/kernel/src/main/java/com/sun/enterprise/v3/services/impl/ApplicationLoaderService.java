@@ -120,7 +120,8 @@ public class ApplicationLoaderService extends ApplicationLifecycle
                             Boolean.TRUE))) {
                             // only process the application when the enable
                             // attribute is true
-                            processApplication((Application)module, logger);
+                            processApplication((Application)module, appRef, 
+                                logger);
                         }
                         break;
                     }
@@ -184,7 +185,8 @@ public class ApplicationLoaderService extends ApplicationLifecycle
     }
 
 
-    private void processApplication(Application app, final Logger logger) {
+    private void processApplication(Application app, ApplicationRef appRef, 
+        final Logger logger) {
 
         long operationStartTime = Calendar.getInstance().getTimeInMillis();
 
@@ -214,7 +216,7 @@ public class ApplicationLoaderService extends ApplicationLifecycle
 
                     archive = archiveFactory.openArchive(sourceFile);
                     Properties deploymentParams =
-                        populateDeployParamsFromDomainXML(app);
+                        populateDeployParamsFromDomainXML(app, appRef);
 
                     DeploymentContextImpl depContext = new DeploymentContextImpl(
                             logger,

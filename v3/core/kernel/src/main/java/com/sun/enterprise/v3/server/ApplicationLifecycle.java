@@ -1048,7 +1048,10 @@ abstract public class ApplicationLifecycle {
 
     // set the neccessary information in DeploymentContext params from
     // domain.xml
-    protected Properties populateDeployParamsFromDomainXML(Application app) {
+    protected Properties populateDeployParamsFromDomainXML(Application app, ApplicationRef appRef) {
+        if (app == null || appRef == null) {
+            return new Properties();
+        }
         Properties deploymentParams = new Properties();
         deploymentParams.setProperty(DeployCommand.NAME, app.getName());
         deploymentParams.setProperty(DeployCommand.LOCATION, app.getLocation());
@@ -1063,12 +1066,21 @@ abstract public class ApplicationLifecycle {
         }
         deploymentParams.setProperty(DeployCommand.DIRECTORY_DEPLOYED,
             app.getDirectoryDeployed());
+
+        if (appRef.getVirtualServers() != null) {
+            deploymentParams.setProperty(DeployCommand.VIRTUAL_SERVERS,
+                appRef.getVirtualServers());
+        }
+
         return deploymentParams;
     }
 
     // set the neccessary information in DeploymentContext props from
     // domain.xml
     protected Properties populateDeployPropsFromDomainXML(Application app) {
+        if (app == null) {
+            return new Properties();
+        }
         Properties deploymentProps = new Properties();
         for (Property prop : app.getProperty()) {
             deploymentProps.put(prop.getName(), prop.getValue());

@@ -171,6 +171,22 @@ public class InputJarArchive extends JarArchive implements ReadableArchive {
     }
     
     /**
+     * Returns the existence of the given entry name
+     * The file name must be relative to the root of the module.
+     *
+     * @param name the file name relative to the root of the module.          * @return the existence the given entry name.
+     */
+    public boolean exists(String name) throws IOException {
+        if (jarFile!=null) {
+            ZipEntry ze = jarFile.getEntry(name);
+            if (ze!=null) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * @return a @see java.io.InputStream for an existing entry in
      * the current abstract archive
      * @param entryName entry name

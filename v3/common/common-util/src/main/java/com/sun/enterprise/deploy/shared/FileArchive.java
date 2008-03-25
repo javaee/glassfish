@@ -239,6 +239,19 @@ public class FileArchive implements ReadableArchive, WritableArchive {
     }
     
     /**
+     * Returns the existence of the given entry name
+     * The file name must be relative to the root of the module.
+     *
+     * @param name the file name relative to the root of the module.     
+     * @return the existence the given entry name.
+     */
+    public boolean exists(String name) throws IOException {
+        name = name.replace('/', File.separatorChar);
+        File input = new File(archive, name);
+        return input.exists();
+    }
+
+    /**
      * @return a @see java.io.InputStream for an existing entry in
      * the current abstract archive
      * @param name the entry name

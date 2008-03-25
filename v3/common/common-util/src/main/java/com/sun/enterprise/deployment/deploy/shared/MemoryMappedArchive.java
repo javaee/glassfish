@@ -180,6 +180,16 @@ public class MemoryMappedArchive extends JarArchive implements ReadableArchive {
         }
         return null;
     }
+
+    /**
+     * Returns the existence of the given entry name
+     * The file name must be relative to the root of the module.
+     *
+     * @param name the file name relative to the root of the module.          * @return the existence the given entry name.
+     */
+    public boolean exists(String name) throws IOException {
+        return (getEntry(name) != null);
+    }
     
     /**
      * @return a @see java.io.InputStream for an existing entry in

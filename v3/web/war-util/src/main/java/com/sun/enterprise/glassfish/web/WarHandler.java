@@ -22,21 +22,34 @@ import com.sun.enterprise.deploy.shared.AbstractArchiveHandler;
 @Service
 public class WarHandler extends AbstractArchiveHandler implements ArchiveHandler {
 
+    private static final String WEB_XML = "WEB-INF/web.xml";
+    private static final String WEB_INF_CLASSES = "WEB-INF/classes";
+    private static final String WEB_INF_LIB = "WEB-INF/lib";
+
     public String getArchiveType() {
         return "war";               
     }
 
     public boolean handles(ReadableArchive archive) {
         try {
-            InputStream is = archive.getEntry("WEB-INF/web.xml");
-            if (is!=null) {
-                is.close();
+            // first look for WEB-INF/web.xml
+            if (archive.exists(WEB_XML)) {
                 return true;
             }
-            return false;
-        } catch(IOException e) {
-            return false;
+
+            // then look for WEB-INF/classes and WEB-INF/lib
+            if (archive.exists(WEB_INF_CLASSES)) {
+                return true;
+            }
+
+            if (archive.exists(WEB_INF_LIB)) {
+                return true;
+            }
+        } catch (IOException e) {
+            // ignore
         }
+
+        return false;
     }
 
     public ClassLoader getClassLoader(ClassLoader parent, ReadableArchive archive) {

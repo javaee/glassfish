@@ -217,6 +217,16 @@ public class DeploymentPlanArchive extends JarArchive implements ReadableArchive
     }
     
     /**
+     * Returns the existence of the given entry name
+     * The file name must be relative to the root of the module.
+     *
+     * @param name the file name relative to the root of the module.          * @return the existence the given entry name.
+     */
+    public boolean exists(String name) throws IOException {
+        return (getEntry(name) != null);
+    }
+
+    /**
      * @return an input stream giving its entry name
      */
     public InputStream getEntry(String name) throws IOException {

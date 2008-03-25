@@ -66,11 +66,8 @@ public abstract class GenericSniffer implements Sniffer {
      */
     public boolean handles(ReadableArchive location, ClassLoader loader) {
         if (appStigma != null) {
-            InputStream is;
             try {
-                is = location.getEntry(appStigma);
-                if (is != null) {
-                    is.close();
+                if (location.exists(appStigma)) {
                     return true;
                 }
             } catch (IOException e) {

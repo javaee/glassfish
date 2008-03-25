@@ -47,6 +47,15 @@ public interface ReadableArchive extends Archive {
     public InputStream getEntry(String name) throws IOException;
 
     /**
+     * Returns the existence of the given entry name
+     * The file name must be relative to the root of the module.
+     *
+     * @param name the file name relative to the root of the module.
+     * @return the existence the given entry name.
+     */
+    public boolean exists(String name) throws IOException;
+
+    /**
      * Returns the entry size for a given entry name or 0 if not known
      *
      * @param name the entry name

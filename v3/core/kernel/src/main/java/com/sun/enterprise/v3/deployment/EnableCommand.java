@@ -34,6 +34,8 @@ import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.config.serverbeans.Applications;
 import com.sun.enterprise.config.serverbeans.Application;
 import com.sun.enterprise.config.serverbeans.Module;
+import com.sun.enterprise.config.serverbeans.ApplicationRef;
+import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.container.Sniffer;
@@ -68,6 +70,9 @@ public class EnableCommand extends ApplicationLifecycle implements AdminCommand 
 
     @Inject
     Applications applications;
+
+    @Inject
+    Server server;
 
     @Inject
     ArchiveFactory archiveFactory;
@@ -108,14 +113,23 @@ public class EnableCommand extends ApplicationLifecycle implements AdminCommand 
         Properties contextProps = new Properties();
         try {
             String path = null;
+            Application app = null; 
+            ApplicationRef appRef = null;
             for (Module module : applications.getModules()) {
                 if (module.getName().equals(component)) {  
-                    Application app = (Application)module;
-                    commandParams = populateDeployParamsFromDomainXML(app);
-                    contextProps = populateDeployPropsFromDomainXML(app);
+                    app = (Application)module;
                     break;
                 }
             }
+
+            for (ApplicationRef ref : server.getApplicationRef()) {
+                if (ref.getRef().equals(component)) {
+                    appRef = ref;
+                    break;
+                }
+            }
+            commandParams = populateDeployParamsFromDomainXML(app, appRef);
+            contextProps = populateDeployPropsFromDomainXML(app);
  
             parameters.putAll(commandParams);
             URI uri = new URI(parameters.getProperty(
