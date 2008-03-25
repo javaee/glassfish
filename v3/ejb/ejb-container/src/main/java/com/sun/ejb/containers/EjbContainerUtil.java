@@ -78,24 +78,6 @@ public class EjbContainerUtil
 
     private  static EjbContainerUtil _me;
 
-    private static byte[] mech;
-
-    static {
-        try {
-            mech = GSSUtils.getDER(GSSUtils.GSSUP_MECH_OID);
-        } catch(IOException io) {
-            mech = null;
-        }
-    }
-
-    /**
-     * Return the ASN.1 encoded representation of a GSS mechanism identifier.
-     * Currently only the GSSUP Mechanism is supported.
-     */
-    public static byte[] getMechanism() {
-        return mech;
-    }
-
     public void postConstruct() {
         _me = this;
     }
