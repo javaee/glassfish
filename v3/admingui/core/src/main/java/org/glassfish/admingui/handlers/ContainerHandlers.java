@@ -511,7 +511,7 @@ public class ContainerHandlers {
         if(sessionConfig != null){
             SessionPropertiesConfig ssPropConfig = sessionConfig.getSessionPropertiesConfig();
             if(ssPropConfig != null){
-                String sessTimeout = "AMX Exception" ; //ssPropConfig.getTimeoutInSeconds();
+                String sessTimeout =ssPropConfig.getTimeoutInSeconds();
                 handlerCtx.setOutputValue("SessionTimeout", sessTimeout);
                 props = ssPropConfig.getProperties();
             }
@@ -621,10 +621,10 @@ public class ContainerHandlers {
             if(sessMgrConfig != null){
                 ManagerPropertiesConfig mgrPropConfig = sessMgrConfig.getManagerPropertiesConfig();
                 if(mgrPropConfig != null){
-                    String reapInterval = "AMX Expection" ; //mgrPropConfig.getReapIntervalInSeconds();
-                    String maxSessions = "AMX Exception";   //mgrPropConfig.getMaxSessions();
-                    String sessFileName = "AMX Exception";  //mgrPropConfig.getSessionFileName();
-                    String sessionIdGen = "AMX Exception";  //mgrPropConfig.getSessionIdGeneratorClassname();
+                    String reapInterval = mgrPropConfig.getReapIntervalInSeconds();
+                    String maxSessions = mgrPropConfig.getMaxSessions();
+                    String sessFileName = mgrPropConfig.getSessionFileName();
+                    String sessionIdGen = mgrPropConfig.getSessionIdGeneratorClassname();
                     props = mgrPropConfig.getProperties();
                     
                     handlerCtx.setOutputValue("ReapInterval", reapInterval);
@@ -741,8 +741,8 @@ public class ContainerHandlers {
             if(sessMgrConfig != null){
                 StorePropertiesConfig storePropConfig = sessMgrConfig.getStorePropertiesConfig();
                 if(storePropConfig != null){
-                    String reapInterval = "AMX Exception";  //storePropConfig.getReapIntervalInSeconds();
-                    String directory = "AMX Exception";   //storePropConfig.getDirectory();
+                    String reapInterval = storePropConfig.getReapIntervalInSeconds();
+                    String directory = storePropConfig.getDirectory();
                     props = storePropConfig.getProperties();
                     
                     handlerCtx.setOutputValue("ReapInterval", reapInterval);

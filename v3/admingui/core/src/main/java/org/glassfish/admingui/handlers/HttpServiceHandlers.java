@@ -621,8 +621,8 @@ public class HttpServiceHandlers {
         String version = hp.getVersion();
         boolean dns = hp.getDNSLookupEnabled();
         boolean ssl = hp.getSSLEnabled();
-        String forced = "AMX Exception";  //hp.getForcedType();
-        String defaultResponse = "AMX Exception";  //hp.getDefaultType();
+        String forced = hp.getForcedType();
+        String defaultResponse = hp.getDefaultType();
         handlerCtx.setOutputValue("Version", version);
         handlerCtx.setOutputValue("DNS", dns);
         handlerCtx.setOutputValue("SSL", ssl);   
@@ -1075,7 +1075,7 @@ public class HttpServiceHandlers {
             handlerCtx.setOutputValue("ListenerPort", httpListConfig.getPort());
             handlerCtx.setOutputValue("DefaultVirtServer", httpListConfig.getDefaultVirtualServer());
             handlerCtx.setOutputValue("ServerName", httpListConfig.getServerName());
-            handlerCtx.setOutputValue("RedirectPort", "AMX Exception");  //httpListConfig.getRedirectPort());
+            handlerCtx.setOutputValue("RedirectPort", httpListConfig.getRedirectPort());
             handlerCtx.setOutputValue("Acceptor", httpListConfig.getAcceptorThreads());
             handlerCtx.setOutputValue("PoweredBy", httpListConfig.getXpoweredBy());
             handlerCtx.setOutputValue("Blocking", httpListConfig.getBlockingEnabled());

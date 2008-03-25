@@ -166,7 +166,7 @@ public class VirtualServerHandlers {
             handlerCtx.setOutputValue("Hosts", vs.getHosts());
             handlerCtx.setOutputValue("StateOption", vs.getState());
             handlerCtx.setOutputValue("Http", vs.getHTTPListeners());
-            handlerCtx.setOutputValue("Web", "AMX Exception"); //vs.getDefaultWebModule());
+            handlerCtx.setOutputValue("Web", vs.getDefaultWebModule());
             handlerCtx.setOutputValue("LogFile", vs.getLogFile());
             
             Map aMap = AMXRoot.getInstance().getNonSkipPropertiesMap(vs, vsSkipPropsList);
@@ -175,7 +175,7 @@ public class VirtualServerHandlers {
             handlerCtx.setOutputValue("accessLogBufferSize", origProps.get("accessLogBufferSize"));
             handlerCtx.setOutputValue("accessLogWriteInterval", origProps.get("accessLogWriteInterval"));
             handlerCtx.setOutputValue("accesslog", origProps.get("accesslog"));
-            handlerCtx.setOutputValue("docroot", "AMX Exception"); // origProps.get("docroot"));
+            handlerCtx.setOutputValue("docroot", origProps.get("docroot"));
             String sso = (String) origProps.get("sso-enabled");
             Boolean ssoFlag = false;
             if ( GuiUtil.isEmpty(sso))

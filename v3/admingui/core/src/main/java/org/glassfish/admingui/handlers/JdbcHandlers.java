@@ -113,7 +113,7 @@ public class JdbcHandlers {
 	}else{
 	    handlerCtx.setOutputValue("poolName", jdbc.getPoolName());
             //TODO-V3 TP2
-	    handlerCtx.setOutputValue("description", "AMX Exception" ); //jdbc.getDescription());
+	    handlerCtx.setOutputValue("description", jdbc.getDescription());
             if(AMXRoot.getInstance().isEE()) {
                 handlerCtx.setOutputValue("enabledString", TargetUtil.getEnabledStatus(jdbc, false));
             }else{

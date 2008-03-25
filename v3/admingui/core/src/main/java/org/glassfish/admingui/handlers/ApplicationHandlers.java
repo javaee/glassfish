@@ -149,7 +149,7 @@ public class ApplicationHandlers {
 			//We need this only for PE, so hard code it "server"
 			handlerCtx.setOutputValue("vs", TargetUtil.getAssociatedVS(name, "server"));
 		}
-                handlerCtx.setOutputValue("contextRoot", "AMX EXCEPTION" );  //j2eeApp.getContextRoot());
+                handlerCtx.setOutputValue("contextRoot", j2eeApp.getContextRoot());
 	    }
 	}else
 	if ("ejbModule".equals(appType)){
@@ -196,8 +196,8 @@ public class ApplicationHandlers {
 
         //TODo-V3 revisit.  was using module instead of appConfig in v2
 	handlerCtx.setOutputValue("location", appConfig.getLocation());
-	handlerCtx.setOutputValue("description", "AMX EXCEPTION") ;  //module.getDescription());
-	handlerCtx.setOutputValue("objectType", "AMX EXCEPTION");  //module.getObjectType());
+	handlerCtx.setOutputValue("description", module.getDescription());
+	handlerCtx.setOutputValue("objectType", module.getObjectType());
 	
         if(amxRoot.isEE())
             handlerCtx.setOutputValue("enabledString", TargetUtil.getEnabledStatus(appConfig, true));
