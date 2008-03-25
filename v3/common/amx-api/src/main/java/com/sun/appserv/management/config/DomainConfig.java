@@ -53,7 +53,7 @@ import com.sun.appserv.management.DomainRoot;
 
 public interface DomainConfig
 	extends PropertiesAccess, SystemPropertiesAccess,
-	ConfigElement, Container, ConfigRemover
+	ConfigElement, Container, ConfigRemover, DefaultValues
 {
 /** The j2eeType as returned by {@link com.sun.appserv.management.base.AMX#getJ2EEType}. */
 	public static final String	J2EE_TYPE	= XTypes.DOMAIN_CONFIG;
@@ -78,7 +78,6 @@ public interface DomainConfig
      */
     public StandaloneServerConfig createStandaloneServerConfig(String name, String nodeAgentName,
             String configName, Map<String,String> optional);
-
 
 	
 

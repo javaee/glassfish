@@ -54,7 +54,7 @@ import com.sun.appserv.management.base.Container;
 */
 @AMXCreateInfo(paramNames={"id", "hosts", "optional"})
 public interface VirtualServerConfig
-	extends NamedConfigElement, PropertiesAccess, Container
+	extends NamedConfigElement, PropertiesAccess, Container, DefaultValues
 {
 /** The j2eeType as returned by {@link com.sun.appserv.management.base.AMX#getJ2EEType}. */
 	public static final String	J2EE_TYPE			= XTypes.VIRTUAL_SERVER_CONFIG;

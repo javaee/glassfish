@@ -75,6 +75,7 @@ import com.sun.appserv.management.config.AnyPropertyConfig;
 import com.sun.appserv.management.config.PropertyConfig;
 import com.sun.appserv.management.config.SystemPropertyConfig;
 import com.sun.appserv.management.config.AMXCreateInfo;
+import com.sun.appserv.management.config.DefaultValues;
 
 import com.sun.appserv.management.config.SystemPropertiesAccess;
 
@@ -109,7 +110,7 @@ import org.glassfish.api.amx.AMXConfigInfo;
 	<p>
  */
 public class AMXConfigImplBase extends AMXImplBase
-	implements AMXConfig
+	implements AMXConfig, DefaultValues  // and others more conveniently implemented generically
 {
     private final Class<?> mSupplementaryInterface;
     
@@ -127,6 +128,7 @@ public class AMXConfigImplBase extends AMXImplBase
         mSupplementaryInterface = supplementaryInterface;
 	}
 	
+    /*
     @Override
         protected MBeanInfo
 	modifyMBeanInfo( final MBeanInfo defaultInfo )
@@ -142,7 +144,7 @@ public class AMXConfigImplBase extends AMXImplBase
         
 		return( info );
 	}
-    
+    */
     
         public Set<String>
     getContaineeJ2EETypes()
@@ -217,8 +219,7 @@ public class AMXConfigImplBase extends AMXImplBase
 	    {
 	        final String    name    = m.getName();
 	        
-	        if (    isConfigFactoryGetter( name ) ||  // CONFIG_FACTORY
-	                isRemoveConfig( name ) ||
+	        if (   isRemoveConfig( name ) ||
 	                isCreateConfig( name ) )
 	        {
 	            if ( m.getParameterTypes().length <= 1 )
@@ -586,15 +587,6 @@ public class AMXConfigImplBase extends AMXImplBase
         return operationName.startsWith( CREATE_PREFIX ) &&
 	        operationName.endsWith( CONFIG_SUFFIX );
     }
-
-    
-        private boolean
-    isConfigFactoryGetter( final String operationName )
-    {
-        return operationName.startsWith( GET_PREFIX ) &&
-	            operationName.endsWith( FACTORY_SUFFIX ) &&
-                (! operationName.equals( "getProxyFactory" ) );
-    }    
 
         private static Class<? extends ConfigBeanProxy>[]
     getSubTypes( final ConfigBean cb )
@@ -1050,6 +1042,17 @@ cdebug( "createConfig:  ObjectName:  " + JMXUtil.toString(objectName) );
         {
             throw new RuntimeException( t );
         }
+    }
+    
+        public final Map<String,String>
+    getDefaultValues( final String j2eeTypeIn )
+    {
+        final String j2eeType = (j2eeTypeIn == null) ? getJ2EEType() : j2eeTypeIn;
+        
+        final Map<String,String> result = new HashMap<String,String>();
+        
+        Issues.getAMXIssues().notDone( "AMXConfigImplBase.getDefaultValues: " + j2eeType );
+        return result;
     }
 }
 

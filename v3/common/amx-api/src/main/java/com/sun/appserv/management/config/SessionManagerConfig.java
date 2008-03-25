@@ -54,7 +54,7 @@ import com.sun.appserv.management.base.Container;
 	 Configuration for the &lt;session-manager&gt; element.
  */
 public interface SessionManagerConfig
-	extends ConfigElement, Container
+	extends ConfigElement, Container, DefaultValues
 {
 /** The j2eeType as returned by {@link com.sun.appserv.management.base.AMX#getJ2EEType}. */
 	public static final String	J2EE_TYPE	= XTypes.SESSION_MANAGER_CONFIG;

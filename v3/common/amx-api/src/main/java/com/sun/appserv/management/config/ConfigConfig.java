@@ -53,7 +53,7 @@ import com.sun.appserv.management.base.Container;
  */
 public interface ConfigConfig
 	extends PropertiesAccess, SystemPropertiesAccess,
-	NamedConfigElement, Container
+	NamedConfigElement, Container, DefaultValues
 {
 	/**
 		Configuration of the config element itself.

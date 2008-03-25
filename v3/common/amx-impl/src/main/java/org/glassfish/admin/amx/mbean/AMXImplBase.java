@@ -942,12 +942,12 @@ public class AMXImplBase extends MBeanImplBase
 			{
 				trace( "%%% calling getAttribute: " + names[ i ] + " on " + getObjectName() );
 				final Object value	= getAttribute( names[ i ] );
-            System.out.println ( "getAttributes: " + names[i] + " = " + value  );
+           // System.out.println ( "getAttributes: " + names[i] + " = " + value  );
 				attrs.add( new Attribute( names[ i ], value ) );
 			}
 			catch( Exception e )
 			{
-				System.out.println( "### AttributeNotFoundException: " + names[ i ] );
+				System.out.println( "### AttributeNotFoundException: " + names[ i ] + " for " + JMXUtil.toString(getObjectName()) );
 				// ignore, as per spec
 			}
 		}

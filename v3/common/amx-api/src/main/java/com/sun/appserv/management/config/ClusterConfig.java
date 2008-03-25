@@ -57,7 +57,7 @@ import com.sun.appserv.management.base.Container;
 public interface ClusterConfig
 	extends PropertiesAccess, SystemPropertiesAccess,
 	NamedConfigElement, Container,
-		ResourceRefConfigCR, ServerRefConfigCR, DeployedItemRefConfigCR
+		ResourceRefConfigCR, ServerRefConfigCR, DeployedItemRefConfigCR, DefaultValues
 {
 /** The j2eeType as returned by {@link com.sun.appserv.management.base.AMX#getJ2EEType}. */
 	public static final String	J2EE_TYPE	= XTypes.CLUSTER_CONFIG;

@@ -33,83 +33,18 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
-
 package com.sun.appserv.management.config;
 
 import java.util.Map;
 
-
-import javax.management.AttributeList;
-
-
-import com.sun.appserv.management.base.XTypes;
-import com.sun.appserv.management.base.Container;
-
-
-
 /**
-	 Configuration for an <http-listener&gt; element.
-*/
-@AMXCreateInfo(paramNames={"id", "address", "port", "default-virtual-server", "server-name", "optional"})
-public interface HTTPListenerConfig
-	extends PropertiesAccess, NamedConfigElement, SSLConfigContainer, Enabled, DefaultValues
+    Mixin interface indicating a provider of default values.
+ */
+public interface DefaultValues
 {
-/** The j2eeType as returned by {@link com.sun.appserv.management.base.AMX#getJ2EEType}. */
-	public static final String	J2EE_TYPE	= XTypes.HTTP_LISTENER_CONFIG;
-
-    
-	public String	getAcceptorThreads();
-	public void		setAcceptorThreads( String value );
-
-	public String	getAddress();
-	public void		setAddress( String value );
-
-	public String	getDefaultVirtualServer();
-	public void		setDefaultVirtualServer( String value );
-
-	public boolean	getEnabled();
-	public void		setEnabled( boolean value );
-
 	/**
-
-
-		The port can be either a number or a system property ${...}, thus its
-		type is String.
+        Return a Map of default values for the specified child type (Containee) j2eeType.
+        @since Glassfish V3 
 	 */
-	public String	getPort();
-	public void		setPort( String value );
-
-	/**
-
-
-		The port can be either a number or a system property ${...}, thus its
-		type is String.
-	 */
-	public String	getRedirectPort();
-	public void		setRedirectPort( String value );
-
-	public boolean	getSecurityEnabled();
-	public void		setSecurityEnabled( boolean value );
-
-	public String	getServerName();
-	public void		setServerName( String value );
-
-	public boolean	getXpoweredBy();
-	public void		setXpoweredBy( boolean value );
-
-	/**
-		See {@link HTTPListenerConfigFamilyValues}.
-	*/
-	public String	getFamily();
-	/**
-		@param value Valid values are as defined in {@link HTTPListenerConfigFamilyValues}.
-	*/
-	public void	setFamily( final String value );
-
-	public String	getExternalPort();
-	public void	setExternalPort( final String value );
-
-	public boolean	getBlockingEnabled();
-	public void	setBlockingEnabled( final boolean value );
+	public Map<String,String> getDefaultValues( final String jeeType );
 }

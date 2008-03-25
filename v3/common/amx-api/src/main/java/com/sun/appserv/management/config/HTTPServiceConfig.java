@@ -52,7 +52,7 @@ import com.sun.appserv.management.base.Container;
 	 Configuration for the &lt;http-service&gt; element.
  */
 public interface HTTPServiceConfig
-	extends ConfigElement, PropertiesAccess, Container
+	extends ConfigElement, PropertiesAccess, Container, DefaultValues
 {
 /** The j2eeType as returned by {@link com.sun.appserv.management.base.AMX#getJ2EEType}. */
 	public static final String	J2EE_TYPE	= XTypes.HTTP_SERVICE_CONFIG;
