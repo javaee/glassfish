@@ -7,8 +7,12 @@ import com.sun.enterprise.v3.admin.CommandRunner;
 import java.util.Properties;
 import java.util.List;
 import org.glassfish.api.Param;
+import org.glassfish.api.I18n;
 import java.lang.reflect.AnnotatedElement;
-
+import org.glassfish.api.admin.AdminCommand;
+import org.glassfish.api.admin.AdminCommandContext;
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.ComponentException;
 
 /**
  * junit test to test CommandRunner class
@@ -163,6 +167,38 @@ public class CommandRunnerTest {
         String[] strArrayActual = cr.convertStringToStringArray(strArray);
         assertEquals(strArrayExpected, strArrayActual);
     }
+
+    @Test
+    public void getUsageTextTest() {
+        String expectedUsageText = "Usage: dummy-admin foo=foo [bar=false] hello=there world ";
+        DummyAdminCommand dac = new DummyAdminCommand();
+        String actualUsageText = cr.getUsageText(dac);
+        assertEquals(expectedUsageText, actualUsageText);
+    }
+
+    @Test
+    public void validateParametersTest() {
+        Properties props = new Properties();
+        props.put("foo", "bar");
+        props.put("hello", "world");
+        props.put("one", "two");
+        DummyAdminCommand dac = new DummyAdminCommand();
+        try {
+            cr.validateParameters(dac, props);
+        }
+        catch (ComponentException ce) {
+            String expectedMessage = " Invalid option: one";
+            assertEquals(expectedMessage, ce.getMessage());
+        }
+    }
+
+    @Test
+    public void skipValidationTest() {
+        DummyAdminCommand dac = new DummyAdminCommand();
+        assertFalse(cr.skipValidation(dac));
+        SkipValidationCommand svc = new SkipValidationCommand();
+        assertTrue(cr.skipValidation(svc));        
+    }
     
     @Before
     public void setup() {
@@ -179,5 +215,33 @@ public class CommandRunnerTest {
         String hello="world";
         @Param
         Properties prop;
+        
+        public void execute(AdminCommandContext context) {}
     }
+
+        //mock-up DummyAdminCommand object
+    @Service(name="dummy-admin")
+    public class DummyAdminCommand implements AdminCommand {
+        @Param(optional=false)
+        String foo;
+
+        @Param(name="bar", defaultValue="false", optional=true)
+        String bar;
+
+        @Param(optional=false)
+        String hello="there";
+
+        @Param(optional=false, primary=true)
+        String world;
+            
+        public void execute(AdminCommandContext context) {}
+    }
+
+        //mock-up SkipValidationCommand
+    public class SkipValidationCommand implements AdminCommand {
+        boolean skipParamValidation=true;
+        public void execute(AdminCommandContext context) {}        
+    }
+    
+
 }

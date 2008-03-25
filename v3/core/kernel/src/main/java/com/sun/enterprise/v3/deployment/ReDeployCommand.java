@@ -64,6 +64,10 @@ public class ReDeployCommand implements AdminCommand {
 
     @Param(primary=true, optional=true)
     String path = null;
+
+        //define this variable to skip parameter valadation.
+        //Param validation will be done when referening deploy command.
+    boolean skipParamValidation = true;
     
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(ReDeployCommand.class);
     

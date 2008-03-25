@@ -107,7 +107,7 @@ public class CommandRunner {
             final ActionReport report) {
         
         if (parameters.size()==1 && parameters.get("help")!=null) {
-            usage(commandName, command, report);
+            getHelp(commandName, command, report);
             return;
         }
         report.setActionDescription(commandName + " AdminCommand");
@@ -159,29 +159,43 @@ public class CommandRunner {
         // inject
         try {
             injectionMgr.inject(command, Param.class);
+            if (!skipValidation(command)) {
+                validateParameters(command, parameters);
+            }
         } catch (UnsatisfiedDepedencyException e) {
             Param param = e.getUnsatisfiedElement().getAnnotation(Param.class);
             String paramName = getParamName(param, e.getUnsatisfiedElement());
             String paramDesc = getParamDescription(localStrings, i18n_key, paramName, e.getUnsatisfiedElement());
-
+            final String usage = getUsageText(command);                                
             String errorMsg;
-            if (paramDesc!=null) {
+            if (param.primary()) {
+                errorMsg = adminStrings.getLocalString("commandrunner.operand.required",
+                                                       "Operand required.");
+            }            
+            else if (paramDesc!=null) {
                 errorMsg = adminStrings.getLocalString("admin.param.missing",
-                        "{0} command requires the {1} parameter : {2}", commandName, paramName, paramDesc);
-            } else {
+                                                       "{0} command requires the {1} parameter : {2}", commandName, paramName, paramDesc);
+                
+            }
+            else {
                 errorMsg = adminStrings.getLocalString("admin.param.missing.nodesc",
                         "{0} command requires the {1} parameter", commandName, paramName);
             }
-            logger.severe(errorMsg);
+            logger.severe(errorMsg);            
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setMessage(errorMsg);
             report.setFailureCause(e);
+            ActionReport.MessagePart childPart = report.getTopMessagePart().addChild();
+            childPart.setMessage(usage);
             return;
         } catch (ComponentException e) {
             logger.severe(e.getMessage());
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setMessage(e.getMessage());
             report.setFailureCause(e);
+            ActionReport.MessagePart childPart = report.getTopMessagePart().addChild();
+            childPart.setMessage(getUsageText(command));
+            return;
         }
 
         // the command may be an asynchronous command, so we need to check
@@ -233,7 +247,7 @@ public class CommandRunner {
          *
          * @param - Param class annotation
          * @annotated - annotated element
-         * @returns the name of the param
+         * @return the name of the param
          */
     String getParamName(Param param, AnnotatedElement annotated) {
         if (param.name().equals("")) {
@@ -249,7 +263,7 @@ public class CommandRunner {
         return "";
     }
 
-
+    
         /**
          * get the param value.  checks if the param (option) value
          * is defined on the command line (URL passed by the client)
@@ -262,7 +276,7 @@ public class CommandRunner {
          * @param param - from the annotated Param
          * @param target - annotated element
          *
-         * @returns param value
+         * @return param value
          */
     String getParamValueString(final Properties parameters,
                                final Param param,
@@ -296,7 +310,7 @@ public class CommandRunner {
          * @param component - command class object
          * @param annotated - annotated element
          *
-         * @returns the annotated Field value
+         * @return the annotated Field value
          */
     Object getParamField(final Object component,
                          final AnnotatedElement annotated) {
@@ -398,7 +412,105 @@ public class CommandRunner {
         return command;
     }
 
-    public void usage(String commandName, AdminCommand command, ActionReport report) {
+         /**
+          * get the usage-text of the command.
+          * check if <command-name>.usagetext is defined in LocalString.properties
+          * if defined, then use the usagetext from LocalString.properties else
+          * generate the usagetext from Param annotations in the command class.
+          *
+          * @param command class
+          *
+          * @return usagetext
+          */
+    String getUsageText(AdminCommand command) {
+        StringBuffer usageText = new StringBuffer();
+        I18n i18n = command.getClass().getAnnotation(I18n.class);
+        String i18nKey = null;
+        
+        final LocalStringManagerImpl lsm  = new LocalStringManagerImpl(command.getClass());
+        if (i18n!=null) {
+            i18nKey = i18n.value();
+        }
+        if (i18nKey != null) {
+            usageText.append(lsm.getLocalString(i18nKey+".usagetext",
+                                                generateUsageText(command)));
+        }
+        else {
+            return generateUsageText(command);
+        }
+        return usageText.toString();
+    }
+
+         /**
+          * generate the usage-text from the annotated Param in the command class
+          *
+          * @param command class
+          *
+          * @return generated usagetext
+          */
+    private String generateUsageText(AdminCommand command) {
+        StringBuffer usageText = new StringBuffer();
+        usageText.append("Usage: ");
+        usageText.append(command.getClass().getAnnotation(Service.class).name());
+        usageText.append(" ");
+        StringBuffer operand = new StringBuffer();
+        for (Field f : command.getClass().getDeclaredFields()) {
+            final Param param = f.getAnnotation(Param.class);
+            if (param!=null) {
+                final boolean optional = param.optional();
+                // this is a param.
+                if (param.primary()) {
+                    if (optional) {
+                        operand.append("[").append(getParamName(param, f)).append("] ");
+                    }
+                    else {
+                        operand.append(getParamName(param, f)).append(" ");
+                    }
+                    continue;
+                }
+                final String paramName = getParamName(param, f);
+                if (optional) { usageText.append("["); }
+                usageText.append(paramName);
+                if (param.defaultValue().equals("")) {
+                    if (f.getType().isAssignableFrom(String.class)) {
+                        try {
+                                //check if there is a default value assigned
+                            f.setAccessible(true);
+                            if (f.get(command)!=null && !f.get(command).equals("")) {
+                                usageText.append("=").append(f.get(command));
+                                if (optional) { usageText.append("] "); }
+                                else { usageText.append(" "); }
+                            } else {
+                                usageText.append("=").append(paramName);
+                                if (optional) { usageText.append("] "); }
+                                else { usageText.append(" "); }
+                            }
+                        }
+                        catch (IllegalAccessException iae) {
+                            usageText.append("=").append(paramName);
+                            if (optional) { usageText.append("] "); }
+                            else { usageText.append(" "); }
+                        }
+                    }
+                    else {
+                        usageText.append("=").append(paramName);
+                        if (optional) { usageText.append("] "); }
+                        else { usageText.append(" "); }
+                    }
+                }
+                else {
+                    usageText.append("=").append(param.defaultValue());
+                    if(optional) { usageText.append("] "); }
+                    else { usageText.append(" "); }
+                }
+            }
+        }//for
+        usageText.append(operand);
+        return usageText.toString();
+    }
+        
+
+    public void getHelp(String commandName, AdminCommand command, ActionReport report) {
         
         report.setActionDescription(commandName + " help");
         LocalStringManagerImpl localStrings = new LocalStringManagerImpl(command.getClass());
@@ -420,6 +532,7 @@ public class CommandRunner {
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
     }
 
+    
     private void addParamUsage(ActionReport report, LocalStringManagerImpl localStrings, String i18nKey, AnnotatedElement annotated) {
 
         Param param = annotated.getAnnotation(Param.class);
@@ -433,6 +546,41 @@ public class CommandRunner {
     private boolean ok(String s) {
         return s != null && s.length() > 0;
     }
+
+
+    /**
+     * validate the paramters with the Param annotation.  If parameter is not defined
+     * as a Param annotation then it's an invalid option.  If parameter's key is "DEFAULT"
+     * then it's a operand.
+     *
+     * @param command - command class
+     * @param parameter - parameters from URL
+     *
+     * @throws ComponentException if option is invalid
+     */
+    void validateParameters(final AdminCommand command, final Properties parameters)
+         throws ComponentException {
+        final java.util.Enumeration e = parameters.propertyNames();
+        //loop through parameters and make sure they are part of the Param declared field
+        while (e.hasMoreElements()) {
+            final String key = (String)e.nextElement();
+            //DEFAULT is the operand and it's a valid Parameter
+            if (key.equals("DEFAULT")) {
+                continue;
+            }
+            //check if key is a valid Param Field
+            try {
+                final Field f = command.getClass().getDeclaredField(key);
+                if (!f.isAnnotationPresent(Param.class)) {
+                    throw new ComponentException(" Invalid option: " + key);                    
+                }
+            }
+            catch (NoSuchFieldException nsfe) {
+                throw new ComponentException(" Invalid option: " + key);
+            }
+        }
+    }
+    
 
         /**
          * convert a String with the following format to Properties:
@@ -489,7 +637,7 @@ public class CommandRunner {
          * The String Array contains: string1, string2, string3, ...
          *
          * @param arrayString - the String to convert
-         * @returns String[] containing the elements in String
+         * @return String[] containing the elements in String
          */
     String[] convertStringToStringArray(String arrayString) {
         final ParamTokenizer paramTok = new ParamTokenizer(arrayString,",");
@@ -501,6 +649,34 @@ public class CommandRunner {
         }
         return strArray;
     }
+
+        /**
+         * check if the variable, "skipParamValidation" is defined in the command
+         * class.  If defined and set to true, then parameter validation will be
+         * skipped from that command.
+         * This is used mostly for command referencing.  For example list-applications
+         * command references list-components command and you don't want to define
+         * the same params from the class that implements list-components. 
+         *
+         * @param command - AdminCommand class
+         * @return true if to skip param validation, else return false.
+         */
+    boolean skipValidation(AdminCommand command) {
+        try {
+            final Field f = command.getClass().getDeclaredField("skipParamValidation");
+            f.setAccessible(true);
+            if (f.getType().isAssignableFrom(boolean.class)) {
+                return f.getBoolean(command);
+            }
+        }
+        catch (Exception e) {
+            return false;
+        }
+            //all else return false
+        return false;
+    }
     
 }
+
+
 
