@@ -593,8 +593,7 @@ public class AMXConfigImplBase extends AMXImplBase
     {
         try
         {
-            return (Class<? extends ConfigBeanProxy>[])
-                ConfigSupport.getSubElementsTypes( cb );
+            return (Class<? extends ConfigBeanProxy>[]) ConfigSupport.getSubElementsTypes( cb );
         }
         catch( ClassNotFoundException e )
         {
@@ -1052,6 +1051,38 @@ cdebug( "createConfig:  ObjectName:  " + JMXUtil.toString(objectName) );
         final Map<String,String> result = new HashMap<String,String>();
         
         Issues.getAMXIssues().notDone( "AMXConfigImplBase.getDefaultValues: " + j2eeType );
+        
+        final Class<? extends ConfigBeanProxy> intf = j2eeTypeToConfigBeanProxy( j2eeType );
+        if ( intf == null )
+        {
+            throw new IllegalArgumentException( "Illegal j2eeType: " + j2eeType );
+        }
+        
+       
+        
+        final Method[] methods = intf.getMethods();
+        for( final Method m : methods )
+        {
+            cdebug( "Method: " + m );
+            if ( JMXUtil.isIsOrGetter(m) )
+            {
+                final String attrName = JMXUtil.getAttributeName(m);
+                
+                final org.jvnet.hk2.config.Attribute attrAnn = m.getAnnotation( org.jvnet.hk2.config.Attribute.class );
+                if ( attrAnn != null )
+                {
+                    // does it make sense to supply default values for required attributes?
+                    result.put( attrName, "" + attrAnn.defaultValue() );
+                }
+                /*
+                else
+                {
+                    result.put( attrName, "N/A" );
+                }
+                */
+            }
+        }
+        
         return result;
     }
 }
