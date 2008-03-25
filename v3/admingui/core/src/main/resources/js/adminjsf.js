@@ -408,7 +408,7 @@ function doHelp(url) {
     if (hid != null && hid.value != "") {
         helpLink = helpLink.replace("CONTEXT_HELP.html", hid.value);
     }
-    openInHelpWindow(helpLink);
+    openInHelpWindow("/html/"+helpLink);
 }
 
 
