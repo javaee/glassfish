@@ -131,7 +131,8 @@ public class UpdateFileUser implements AdminCommand {
         if (fileAuthRealm == null) {
             report.setMessage(localStrings.getLocalString(
                 "update.file.user.filerealmnotfound",
-                "There is no File realm to perform this operation"));
+                "There is no File realm {0} to perform this operation", 
+                authRealmName));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             return;                                            
         }
@@ -146,7 +147,8 @@ public class UpdateFileUser implements AdminCommand {
             report.setMessage(
                 localStrings.getLocalString(
                     "update.file.user.realmnotsupported",
-                    "Configured FileRealm is not supported."));
+                    "Configured file realm {0} is not supported.",
+                    fileRealmClassName));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             return;                
         }
@@ -160,7 +162,8 @@ public class UpdateFileUser implements AdminCommand {
         if (keyFile == null) {
             report.setMessage(
                 localStrings.getLocalString("update.file.user.keyfilenotfound",
-                "There is no physical file associated with this Filerealm"));
+                "There is no physical file associated with file realm {0}", 
+                authRealmName));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             return;                                            
         }
@@ -172,8 +175,9 @@ public class UpdateFileUser implements AdminCommand {
         String password = fetchPassword();
         if (password == null) {
             report.setMessage(localStrings.getLocalString(
-                "update.file.user.keyfilenotreadable", "User password cannot " +
-                "be read from the file associated with this Filerealm"));
+                "update.file.user.keyfilenotreadable", "Password for user " +
+                "{0} cannot be read from the file associated with file realm {1}", 
+                userName, authRealmName));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             return;
         }
@@ -186,14 +190,14 @@ public class UpdateFileUser implements AdminCommand {
             report.setMessage(
                 localStrings.getLocalString(
                     "update.file.user.realmcorrupted",
-                    "Configured FileRealm is corrupted."));
+                    "Configured file realm {0} is corrupted.", authRealmName));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
         } catch(NoSuchRealmException e) {
             report.setMessage(
                 localStrings.getLocalString(
                     "update.file.user.realmnotsupported",
-                    "Configured FileRealm is not supported."));
+                    "Configured file realm {0} does not exist.", authRealmName));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
         }
@@ -211,7 +215,8 @@ public class UpdateFileUser implements AdminCommand {
         } catch (Exception e) {
             report.setMessage(
                 localStrings.getLocalString("update.file.user.userupdatefailed",
-                "Updating user in this Filerealm failed"));
+                "Updating user {0} in file realm {1} failed", 
+                userName, authRealmName));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
         }        
