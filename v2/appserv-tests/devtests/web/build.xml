@@ -272,7 +272,9 @@
         <ant dir="securityConstraintMapping" target="all"/>
         <ant dir="sslCookie" target="all"/>
         <ant dir="installationPathDisclosure" target="all"/>
+        <!-- v3 
         <ant dir="programmaticLogin" target="all"/>
+        -->
         <ant dir="traceEnabled" target="all"/>
         <ant dir="sslClientAuthUnprotectedResourceGetClientCert" target="all"/>
         <ant dir="securityConstraintWithoutAnyAuthConstraint" target="all"/>
