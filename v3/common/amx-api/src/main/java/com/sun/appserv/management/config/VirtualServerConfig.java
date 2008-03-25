@@ -52,7 +52,7 @@ import com.sun.appserv.management.base.Container;
 /**
 	 Configuration for the &lt;virtual-server&gt; element.
 */
-@AMXCreateInfo(paramNames={"name", "hosts"})
+@AMXCreateInfo(paramNames={"id", "hosts", "optional"})
 public interface VirtualServerConfig
 	extends NamedConfigElement, PropertiesAccess, Container
 {

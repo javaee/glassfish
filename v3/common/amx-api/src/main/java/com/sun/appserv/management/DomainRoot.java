@@ -198,6 +198,11 @@ public interface DomainRoot extends Container
        Contacts Update Center Server and get the updates status.
      */
     public UpdateStatus  getUpdateStatus();
+    
+    /**
+      @since Glassfish V3
+     */
+    public String getDebugPort();
 }
 
 
