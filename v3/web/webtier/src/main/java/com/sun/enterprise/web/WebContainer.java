@@ -187,9 +187,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
     @Inject
     ComponentEnvManager componentEnvManager;
-
-    @Inject(optional=true)
-    Realm realm;
     
     HashMap<String, Integer> portMap = new HashMap<String, Integer>();
     HashMap<Integer, Adapter> adapterMap = new HashMap<Integer, Adapter>();
@@ -2977,12 +2974,14 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                 boolean isSystem = (resourceType != null &&
                         resourceType.startsWith("system-"));
                 // TODO : v3 : dochez Need to remove dependency on security
+                Realm realm = this._serverContext.getDefaultHabitat().getByContract(Realm.class);
                 if ("null".equals(j2eeApplication)) {
                     /*
                      * Standalone webapps inherit the realm referenced by
                      * the virtual server on which they are being deployed,
                      * unless they specify their own
                      */
+                    
                     if (realm != null && realm instanceof RealmInitializer) {
                         ((RealmInitializer)realm).initializeRealm(
                                 wbd, isSystem, vs.getAuthRealmName());

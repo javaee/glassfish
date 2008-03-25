@@ -48,6 +48,8 @@ import java.security.cert.X509Certificate;
 
 import org.apache.catalina.deploy.SecurityConstraint;
 import org.jvnet.hk2.annotations.Contract;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.component.PerLookup;
 /**
  * A <b>Realm</b> is a read-only facade for an underlying security realm
  * used to authenticate individual users, and identify the security roles
@@ -60,6 +62,7 @@ import org.jvnet.hk2.annotations.Contract;
  */
 
 @Contract
+@Scoped(PerLookup.class)
 public interface Realm {
 
     // ------------------------------------------------------------- Constants
