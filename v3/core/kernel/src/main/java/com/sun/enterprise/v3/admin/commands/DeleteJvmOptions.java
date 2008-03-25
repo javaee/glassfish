@@ -58,7 +58,7 @@ public final class DeleteJvmOptions implements AdminCommand {
     //depends what target is being sent on command line -- this is a temporary measure
     @Inject JavaConfig jc;
     
-    @Param(name="options", primary=true)
+    @Param(primary=true)
     String optString;
     
     private static final StringManager lsm = StringManager.getManager(ListJvmOptions.class); 
