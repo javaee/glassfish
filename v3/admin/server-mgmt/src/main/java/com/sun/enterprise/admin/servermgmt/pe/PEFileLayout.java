@@ -440,19 +440,24 @@ public class PEFileLayout
 //$INSTALL_ROOT/lib/install/templates
     public static final String INSTALL_DIR         = "install";
     public static final String TEMPLATES_DIR       = "templates";
+    public static final String COMMON_DIR       = "common";
     public static final String PROFILE_PROPERTIES  = "profile.properties";
     private static final String TEMPLATE_CONFIG_XML = "default-config.xml";
     
     public File getTemplatesDir()
     {
         final File lib = new File(getInstallRootDir(), LIB_DIR);
-        final File install = new File(lib, INSTALL_DIR);
-        final File templates = new File(install, TEMPLATES_DIR);
+        //final File install = new File(lib, INSTALL_DIR);
+        final File templates = new File(lib, TEMPLATES_DIR);
         return templates;
     }
 
     public File getProfileFolder(final String profileName)
     {
+        /* Commented out for V3, till things can be more finalized. For
+         * now there is only one profile and the template is in the
+         * common template directory */
+        
         assert profileName != null : "Name of the profile can't be null";
         final File pf = new File(getTemplatesDir(), profileName);        
         return pf;
@@ -666,9 +671,11 @@ public class PEFileLayout
     }
 
     public static final String INDEX_FILE = "index.html";
+    public static final String DOC_ROOT = "docroot";
     public File getIndexFileTemplate()
     {
-        return new File(getTemplatesDir(), INDEX_FILE);
+        final File docRoot = new File(getTemplatesDir(), DOC_ROOT);
+        return new File(docRoot, INDEX_FILE);
     }
     
     private static final String LOCALES = "locales";
@@ -697,6 +704,17 @@ public class PEFileLayout
     public File getDefaultWebXml()
     {
         return new File(getConfigRoot(), DEFAULT_WEB_XML);
+    }
+
+    public static final String LOGGING_PROPERTIES = "logging.properties";
+    public File getLoggingPropertiesTemplate()
+    {
+        return new File(getTemplatesDir(), LOGGING_PROPERTIES);
+    }
+
+    public File getLoggingProperties()
+    {
+        return new File(getConfigRoot(), LOGGING_PROPERTIES);
     }
 
     public static final String LOGIN_CONF = "login.conf";

@@ -161,22 +161,23 @@ public class PEDomainsManager extends RepositoryManager
             layout.createRepositoryDirectories();
             createDomainXml(domainConfig);
             createDomainXmlEvents(domainConfig);
-            createScripts(domainConfig);
+            //createScripts(domainConfig);
             createServerPolicyFile(domainConfig);
             createAdminKeyFile(domainConfig, getDomainUser(domainConfig), 
                 getDomainPasswordClear(domainConfig));
             createKeyFile(domainConfig, getDomainUser(domainConfig),
                 getDomainPasswordClear(domainConfig));
-            createAppClientContainerXml(domainConfig);
+            //createAppClientContainerXml(domainConfig);
             createIndexFile(domainConfig);
             createDefaultWebXml(domainConfig);
             createLoginConf(domainConfig);
-            createWssServerConfig(domainConfig);
-            createWssServerConfigOld(domainConfig);
+            //createWssServerConfig(domainConfig);
+            //createWssServerConfigOld(domainConfig);
             createSSLCertificateDatabase(domainConfig, masterPassword);                                     
             changeMasterPasswordInMasterPasswordFile(domainConfig, masterPassword, 
                 saveMasterPassword(domainConfig));
-            createPasswordAliasKeystore(domainConfig, masterPassword);        
+            createPasswordAliasKeystore(domainConfig, masterPassword);
+            createLoggingProperties(domainConfig);
             //createTimerWal(domainConfig);
             //createTimerDbn(domainConfig);
             //createMQInstance(domainConfig);
@@ -331,8 +332,12 @@ public class PEDomainsManager extends RepositoryManager
             if((tn == null)||(tn.equals(""))) {
                 //use profiles in this case
                 dxt = layout.getDomainXmlTemplate();
+                
+                /* Comment out for V3, till decision is taken on profiles*/
+                /*
                 final String p = domainConfig.getProfile();
                 final File pf = layout.getProfileFolder(p);
+                System.out.println("pf = " + pf.getAbsolutePath() + " " + pf.getName() );
                 if (!pf.exists()) {
                     final String key = "profileNotFound";
                     final String path = pf.getAbsolutePath();
@@ -348,7 +353,8 @@ public class PEDomainsManager extends RepositoryManager
                     tr = invokeGenericXmlTemplateProcessing(dxt, domainConfig, 
                         PROFILEPROPERTY_DOMAINXML_STYLESHEETS, layout.getConfigRoot());
                     addTokenValuesIfAny(tokens, layout, p, this.PROFILEPROPERTY_DOMAINXML_TOKENVALUES);
-                }
+                }*/
+                tr = new File(layout.getTemplatesDir(), layout.DOMAIN_XML_FILE);
                 generateFromTemplate(tokens, tr, dx);
             }
             else {
@@ -444,6 +450,25 @@ public class PEDomainsManager extends RepositoryManager
                 strMgr.getString("indexFileNotCreated"), ioe);
         }
     }
+
+    protected void createLoggingProperties(DomainConfig domainConfig) 
+            throws DomainException
+    {
+        final PEFileLayout layout = getFileLayout(domainConfig);
+        final File src = layout.getLoggingPropertiesTemplate();
+        final File dest = layout.getLoggingProperties();
+        try
+        {
+            generateFromTemplate(new TokenValueSet(), src, dest);
+        }
+        catch (IOException ioe)
+        {
+            throw new DomainException(
+                strMgr.getString("loggingPropertiesNotCreated"), ioe);
+        }
+    }
+    
+    
     private void handleLocalizedIndexHtmls(PEFileLayout layout, TokenValueSet tokens) {
         Locale locale = Locale.getDefault();
         if (Locale.ENGLISH.getLanguage().equals(locale.getLanguage()))
