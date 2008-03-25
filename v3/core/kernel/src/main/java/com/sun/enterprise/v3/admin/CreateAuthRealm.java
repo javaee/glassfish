@@ -157,7 +157,7 @@ public class CreateAuthRealm implements AdminCommand {
             "Creation of Authrealm {0} completed successfully", authRealmName));        
     }       
     
-    private void populateAuthRealmElement(Authrealm newAuthRealm) 
+    private void populateAuthRealmElement(AuthRealm newAuthRealm) 
     throws PropertyVetoException, TransactionFailure {
         newAuthRealm.setName(authRealmName);
         newAuthRealm.setClassname(className);
