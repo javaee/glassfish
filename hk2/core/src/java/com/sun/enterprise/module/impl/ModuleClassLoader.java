@@ -67,6 +67,18 @@ final class ModuleClassLoader extends ClassLoaderProxy {
         return super.loadClass(name, resolve);
     }
 
+    protected Class<?> findClass(String name) throws ClassNotFoundException {
+        try {
+            return super.findClass(name);
+        } catch (ClassNotFoundException e) {
+            // punch in. find the provider class, no matter where we are.
+            ModuleImpl m = module.getRegistry().getProvidingModule(name);
+            if(m!=null)
+                return m.getPrivateClassLoader().loadClass(name);
+            throw e;
+        }
+    }
+
     public URL getResource(String name) {
         initialize(name);
         if(name.startsWith(META_INF_SERVICES)) {
