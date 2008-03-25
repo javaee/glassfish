@@ -95,7 +95,6 @@ public class AsadminMain {
             return ERROR;
         }
     }
-    public static final boolean TRACE = Boolean.getBoolean("trace") || System.getenv("AS_TRACE") != null;
     private final static int ERROR = 1;
     private final static int SUCCESS = 0;
 }

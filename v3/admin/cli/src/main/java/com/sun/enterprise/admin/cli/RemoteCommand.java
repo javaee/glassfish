@@ -92,9 +92,7 @@ public class RemoteCommand {
         try {
             //testing RemoteCommandParser.java
             final RemoteCommandParser rcp = new RemoteCommandParser(args);
-            if (TRACE) {
-                System.out.println("RemoteCommandParser: " + rcp);
-            }
+            logger.printDebugMessage("RemoteCommandParser: " + rcp);
             final Map<String, String> params = rcp.getOptions();
             final Vector operands = rcp.getOperands();
 
@@ -139,7 +137,7 @@ public class RemoteCommand {
                     uriConnection = uriConnection + "?" + paramName + "=" + URLEncoder.encode(paramValue,
                                                                                                 "UTF-8");
                 } catch (UnsupportedEncodingException e) {
-                    CLILogger.getInstance().printError("Error encoding " + paramName + ", parameter value will be ignored");
+                    logger.printError("Error encoding " + paramName + ", parameter value will be ignored");
                 }
             }
 
@@ -158,7 +156,7 @@ public class RemoteCommand {
                                                                                   "UTF-8");
             }
 
-            CLILogger.getInstance().printDebugMessage("Connecting to " + uriConnection);
+            logger.printDebugMessage("Connecting to " + uriConnection);
             try {
                 HttpConnectorAddress url = new HttpConnectorAddress(hostName, Integer.parseInt(hostPort), isSecure);
                 url.setAuthenticationInfo(new AuthenticationInfo(user, password));
@@ -191,7 +189,7 @@ public class RemoteCommand {
         } catch (CommandException e) {
             throw e;
         } catch (Exception e) {
-            CLILogger.getInstance().printExceptionStackTrace(e);
+            logger.printExceptionStackTrace(e);
             throw new CommandException(e);
         }
     }
@@ -279,13 +277,17 @@ public class RemoteCommand {
 
     private void handleResponse(Map<String, String> params,
                                  InputStream in, int code) throws IOException, CommandException {
-        if (TRACE) {
+        if (logger.isDebug()) {
             // dump the content
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             copyStream(in, baos);
+            logger.printDebugMessage("Response\n=====");
+            logger.printDebugMessage(baos.toString());
+            logger.printDebugMessage("=====");
+            
             System.out.println("Response\n=====");
             System.out.println(baos);
-            System.out.println("=====");
+            System.out.println();
             in = new ByteArrayInputStream(baos.toByteArray());
         }
 
@@ -341,7 +343,7 @@ public class RemoteCommand {
                     String property = token.nextToken();
                     String name = attr.getValue(property + "_name");
                     String value = attr.getValue(property + "_value");
-                    CLILogger.getInstance().printMessage("\t" + name + " : " + value);
+                    logger.printMessage("\t" + name + " : " + value);
                 }
             }
         }
@@ -356,7 +358,7 @@ public class RemoteCommand {
                 throw new CommandException(exitCode + " : " + message);
             }
         } else {
-            CLILogger.getInstance().printMessage(message);
+            logger.printMessage(message);
         }
 
         processOneLevel("", null, m, m.getMainAttributes());
@@ -416,7 +418,7 @@ public class RemoteCommand {
         }
         out.close();
     }
-    public static final boolean TRACE = Boolean.getBoolean("trace") || System.getenv("AS_TRACE") != null;
+    private static final CLILogger logger = CLILogger.getInstance();
 }
 
 
