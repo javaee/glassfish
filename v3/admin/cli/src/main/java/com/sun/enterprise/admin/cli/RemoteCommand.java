@@ -355,6 +355,14 @@ public class RemoteCommand {
 
         if (exitCode != null) {
             if (!exitCode.equalsIgnoreCase("Success")) {
+                //if there is any children message, then display it
+                final String childMsg = m.getMainAttributes().getValue("children");
+                if (childMsg != null && !childMsg.equals("")) {
+                    StringTokenizer childTok = new StringTokenizer(childMsg, ";");
+                    while (childTok.hasMoreTokens()) {
+                        System.out.println(childTok.nextToken());
+                    }
+                }
                 throw new CommandException(exitCode + " : " + message);
             }
         } else {
