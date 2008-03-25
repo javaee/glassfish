@@ -494,7 +494,8 @@ public class CreateDomainCommand extends BaseLifeCycleCommand
 
         domainConfig.put(DomainConfig.K_VALIDATE_PORTS,
                          Boolean.valueOf(getBooleanOption(CHECKPORTS_OPTION)));
-        setUsageProfile(domainConfig);
+        /* comment out for V3 until profiles decision is taken */
+        // setUsageProfile(domainConfig);
 
         DomainsManager manager = new PEDomainsManager();
         
