@@ -138,16 +138,15 @@ public final class DelegateToConfigBeanDelegate extends DelegateBase
 	getAttribute( final String attrName )
 		throws AttributeNotFoundException
 	{
-        //debug( "DelegateToConfigBeanDelegate.getAttribute: " + attrName );
+        debug( "DelegateToConfigBeanDelegate.getAttribute: " + attrName );
         final String xmlName = getXMLName(attrName);
         
         final Object result = mConfigBean.rawAttribute( xmlName );
        
-       // debug( "Attribute " + attrName + " has class " + ((result == null) ? "null" : result.getClass()) );
+        debug( "Attribute " + attrName + " has class " + ((result == null) ? "null" : result.getClass()) );
         return result;
 	}
     
-    private static final String[]   SINGLE_STRING_SIG   = new String[] { String.class.getName() };
     
     @Override
         protected final String
@@ -210,6 +209,7 @@ public final class DelegateToConfigBeanDelegate extends DelegateBase
             final Object value = amxAttrs.get(key);
             
             String valueString = "" + value;
+            /*
             if ( value.getClass() != String.class )
             {
                 if ( value.getClass() == String[].class )
@@ -221,6 +221,7 @@ public final class DelegateToConfigBeanDelegate extends DelegateBase
             {
                 valueString = "" + value;
             }
+            */
             amxAttrs.put( key, valueString );
         }
         

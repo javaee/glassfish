@@ -59,15 +59,15 @@ public interface Libraries
         
         @since AppServer 9.0   
 	 */
-	public String[] getLibraries();
+	public String getLibraries();
 	
 	/**
 	    Replaces the existing libraries Attribute. Certain
 	    system applications may not allow changing this Attribute
-	    (read only).
+	    (read only).  Delimiter is TBD
 	                                            
         @see #getLibraries
         @since AppServer 9.0   
 	 */
-	public void setLibraries( String[] libraries );
+	public void setLibraries( String libraries );
 }

@@ -884,13 +884,6 @@ public class AMXImplBase extends MBeanImplBase
                 try
                 {
                     result	= delegateGetAttribute( name );
-                    
-                    // special case handling: String to String[]
-                    if ( result.getClass() == String.class &&
-                            getAttributeType(name).equals( String[].class.getName() ) )
-                    {
-                        result = ((String)result).split( ":" );
-                    }
                 }
                 catch( Exception e )
                 {
@@ -949,11 +942,12 @@ public class AMXImplBase extends MBeanImplBase
 			{
 				trace( "%%% calling getAttribute: " + names[ i ] + " on " + getObjectName() );
 				final Object value	= getAttribute( names[ i ] );
+            System.out.println ( "getAttributes: " + names[i] + " = " + value  );
 				attrs.add( new Attribute( names[ i ], value ) );
 			}
 			catch( Exception e )
 			{
-				trace( "### AttributeNotFoundException: " + names[ i ] );
+				System.out.println( "### AttributeNotFoundException: " + names[ i ] );
 				// ignore, as per spec
 			}
 		}
