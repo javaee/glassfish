@@ -103,7 +103,9 @@ import com.sun.enterprise.webservice.monitoring.AuthenticationListener;
  */
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.PerLookup;
 
 /**
  * This is the realm adapter used to authenticate users and authorize
@@ -114,6 +116,7 @@ import org.jvnet.hk2.annotations.Service;
  * @author JeanFrancois Arcand
  */
 @Service
+@Scoped(PerLookup.class)
 public class RealmAdapter extends RealmBase implements RealmInitializer {
 
     private static final String UNCONSTRAINED = "unconstrained";
