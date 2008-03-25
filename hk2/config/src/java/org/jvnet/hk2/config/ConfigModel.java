@@ -354,8 +354,12 @@ public final class ConfigModel {
         }
 
         public void set(Dom dom, Object arg) {
-            // TODO
-            throw new UnsupportedOperationException();
+            if (arg instanceof List) {
+                String[] strings = new String[((List) arg).size()];
+                dom.setLeafElements(xmlName, (String[]) ((List)arg).toArray(strings));
+            } else {//TODO -- I hope this is OK for now (km@dev.java.net 25 Mar 2008)
+                throw new UnsupportedOperationException();
+            }
         }
     }
 
