@@ -45,6 +45,8 @@ import org.glassfish.api.deployment.ApplicationContainer;
  * @author Alexey Stashok
  */
 public class ContextRootMapper {
+    public final static int MIN_CONTEXT_ROOT_READ_BYTES = 5;
+
     private final static String ROOT = "/";
 
     
@@ -106,7 +108,7 @@ public class ContextRootMapper {
 
             logger.fine(dump(byteBuffer));
         }
-             
+                     
         String contextRoot = parseContextRoot(byteBuffer);
         ContextRootInfo contextRootInfo = lookupContextRootInfo(contextRoot);
         

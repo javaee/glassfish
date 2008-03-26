@@ -28,6 +28,7 @@ import com.sun.grizzly.ProtocolFilter;
 import com.sun.grizzly.http.HtmlHelper;
 import com.sun.grizzly.tcp.Adapter;
 import com.sun.grizzly.tcp.StaticResourcesAdapter;
+import com.sun.grizzly.util.ByteBufferInputStream;
 import com.sun.grizzly.util.OutputWriter;
 import com.sun.grizzly.util.WorkerThread;
 import java.io.IOException;
@@ -70,10 +71,16 @@ public class HttpProtocolFilter implements ProtocolFilter {
 
     
     public boolean execute(Context ctx) throws IOException {
-        ByteBuffer byteBuffer = 
-                ((WorkerThread)Thread.currentThread()).getByteBuffer();
+        WorkerThread thread = (WorkerThread)Thread.currentThread();
+        ByteBuffer byteBuffer = thread.getByteBuffer();
 
         try {
+            // Make sure we have enough bytes to parse context-root
+            if (byteBuffer.position() < ContextRootMapper.MIN_CONTEXT_ROOT_READ_BYTES) {
+                GrizzlyUtils.readToWorkerThreadBuffers(ctx.getSelectionKey(), 
+                        ByteBufferInputStream.getDefaultReadTimeout());
+            }
+
             boolean wasMap = grizzlyEmbeddedHttp.getContextRootMapper().map(
                     (GlassfishProtocolChain) ctx.getProtocolChain(),
                     byteBuffer, null,
@@ -88,7 +95,7 @@ public class HttpProtocolFilter implements ProtocolFilter {
                 } catch (IOException ex){
                     GrizzlyEmbeddedHttp.logger().log(Level.FINE, "Send Error failed", ex);
                 } finally {
-                    ((WorkerThread)Thread.currentThread()).getByteBuffer().clear();
+                    thread.getByteBuffer().clear();
                 }
                 return false;               
             }

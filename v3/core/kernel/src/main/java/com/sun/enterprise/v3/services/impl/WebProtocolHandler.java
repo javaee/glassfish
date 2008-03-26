@@ -32,6 +32,7 @@ import com.sun.grizzly.portunif.ProtocolHandler;
 import com.sun.grizzly.standalone.StaticStreamAlgorithm;
 import com.sun.grizzly.tcp.Adapter;
 import com.sun.grizzly.tcp.StaticResourcesAdapter;
+import com.sun.grizzly.util.ByteBufferInputStream;
 import com.sun.grizzly.util.OutputWriter;
 import com.sun.grizzly.util.WorkerThread;
 import java.io.IOException;
@@ -121,6 +122,13 @@ public class WebProtocolHandler implements ProtocolHandler {
         
         initDefaultHttpArtifactsIfRequired();
         
+        // Make sure we have enough bytes to parse context-root
+        if (protocolRequest.getByteBuffer().position() < 
+                ContextRootMapper.MIN_CONTEXT_ROOT_READ_BYTES) {
+            GrizzlyUtils.readToWorkerThreadBuffers(context.getSelectionKey(), 
+                    ByteBufferInputStream.getDefaultReadTimeout());
+        }
+
         boolean wasMap = grizzlyEmbeddedHttp.getContextRootMapper().map(
                 (GlassfishProtocolChain)context.getProtocolChain(),
                 protocolRequest.getByteBuffer(), defaultProtocolFilters, 
