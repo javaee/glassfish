@@ -326,7 +326,7 @@ public abstract class GFLauncher {
         return Collections.emptyList();
     }
 
-    private void setupProfilerAndJvmOptions(MiniXmlParser parser) throws MiniXmlParserException {
+    private void setupProfilerAndJvmOptions(MiniXmlParser parser) throws MiniXmlParserException, GFLauncherException {
         // add JVM options from Profiler *last* so they override config's
         // JVM options
         

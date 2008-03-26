@@ -4,6 +4,7 @@
  */
 package com.sun.enterprise.admin.launcher;
 
+import com.sun.enterprise.universal.StringUtils;
 import java.util.*;
 
 /**
@@ -12,11 +13,15 @@ import java.util.*;
  */
 class JvmOptions {
 
-    JvmOptions(List<String> options) {
+    JvmOptions(List<String> options) throws GFLauncherException {
         // We get them from domain.xml as a list of Strings
         // -Dx=y   -Dxx  -XXfoo -XXgoo=zzz -client  -server
-
+        // Issue 4434 -- we might get a jvm-option like this:
+        // <jvm-options>"-xxxxxx"</jvm-options> notice the literal double-quotes
+        
         for (String s : options) {
+            s = StringUtils.removeEnclosingQuotes(s);
+            
             if (s.startsWith("-D")) {
                 addSysProp(s);
             } else if (s.startsWith("-XX")) {
@@ -27,7 +32,7 @@ class JvmOptions {
                 addPlainProp(s);
             } else // TODO i18n
             {
-                throw new RuntimeException("Corrupt domain.xml");
+                throw new GFLauncherException("UnknownJvmOptionFormat", s);
             }
         }
     }
