@@ -87,7 +87,7 @@ import javax.transaction.TransactionManager;
 public class EJBTimerService 
         /**implements com.sun.ejb.spi.distributed.DistributedEJBTimerService **/ {
 
-    private static EjbContainerUtil ejbContainerUtilImpl = EjbContainerUtilImpl.getInstance();
+    private static EjbContainerUtil ejbContainerUtil = EjbContainerUtilImpl.getInstance();
 
     private long nextTimerIdMillis_ = 0;
     private long nextTimerIdCounter_ = 0;
@@ -164,7 +164,7 @@ public class EJBTimerService
         shutdown_       = false;
         this.appID = appID;
 
-        ServerEnvironment env = ejbContainerUtilImpl.getServerEnvironment();
+        ServerEnvironment env = ejbContainerUtil.getServerEnvironment();
         domainName_ = env.getDomainName();
         serverName_ = env.getInstanceName();
 
@@ -176,7 +176,7 @@ public class EJBTimerService
         try {
             
             // Check for property settings from domain.xml
-            EjbContainer ejbc = ejbContainerUtilImpl.getEjbContainer();
+            EjbContainer ejbc = ejbContainerUtil.getEjbContainer();
             EjbTimerService ejbt = ejbc.getEjbTimerService();
 
             if( ejbt != null ) {
@@ -216,7 +216,7 @@ public class EJBTimerService
 
             // Compose owner id for all timers created with this 
             // server instance.  
-            ownerIdOfThisServer_ = ejbContainerUtilImpl.getServerEnvironment().getInstanceName();
+            ownerIdOfThisServer_ = ejbContainerUtil.getServerEnvironment().getInstanceName();
 
         } catch(Exception e) {
             logger.log(Level.FINE, "Exception converting timer service " +
@@ -294,7 +294,7 @@ public class EJBTimerService
         logger.log(Level.INFO, "Beginning timer migration process from " +
                    "owner " + fromOwnerId + " to " + ownerIdOfThisServer);
 
-        TransactionManager tm = ejbContainerUtilImpl.getTransactionManager();
+        TransactionManager tm = ejbContainerUtil.getTransactionManager();
 
         Set toRestore = new HashSet();
 	int totalTimersMigrated = 0;
@@ -443,7 +443,7 @@ public class EJBTimerService
             return;
         }
 
-        TransactionManager tm = ejbContainerUtilImpl.getTransactionManager();
+        TransactionManager tm = ejbContainerUtil.getTransactionManager();
         try {
             // create a tx in which to do database access for all timers 
             // needing restoration.  This gives us better performance that 
@@ -459,7 +459,7 @@ public class EJBTimerService
         } catch(Exception e) {
 
             // Problem accessing timer service so disable it.
-            ejbContainerUtilImpl.setEJBTimerService(null);
+            ejbContainerUtil.setEJBTimerService(null);
 
             logger.log(Level.WARNING, "ejb.timer_service_init_error", e);
 
@@ -673,7 +673,7 @@ public class EJBTimerService
     void destroyTimers(long containerId) {
         Set<TimerState> timers = null;
 
-        TransactionManager tm = ejbContainerUtilImpl.getTransactionManager();
+        TransactionManager tm = ejbContainerUtil.getTransactionManager();
 
         try {
             
@@ -779,7 +779,7 @@ public class EJBTimerService
                     timerState.scheduled(timerTask);
                 }
 
-                java.util.Timer jdkTimer = ejbContainerUtilImpl.getTimer();
+                java.util.Timer jdkTimer = ejbContainerUtil.getTimer();
                 jdkTimer.schedule(timerTask, timerExpiration);            
             }
         } else {
@@ -1215,7 +1215,7 @@ public class EJBTimerService
     }
 
     private BaseContainer getContainer(long containerId) {
-        return ejbContainerUtilImpl.getContainer(containerId);
+        return ejbContainerUtil.getContainer(containerId);
     }
 
     /**
@@ -1590,7 +1590,7 @@ public class EJBTimerService
                     }
 
                     TaskExpiredWork work = new TaskExpiredWork(this, timerId);
-                    ejbContainerUtilImpl.addWork(work);
+                    ejbContainerUtil.addWork(work);
                 } else {
                     logger.log(Level.FINE, "Timer " + timerId + 
                                " is not in scheduled state.  Current state = "
@@ -1795,7 +1795,7 @@ public class EJBTimerService
         File timerServiceShutdownFile;
 
         String j2eeAppPath = 
-                ejbContainerUtilImpl.findApplicationByName(appID).getLocation();
+                ejbContainerUtil.findApplicationByName(appID).getLocation();
 
         timerServiceShutdownDirectory = new File(j2eeAppPath + File.separator);
         timerServiceShutdownDirectory.mkdirs();

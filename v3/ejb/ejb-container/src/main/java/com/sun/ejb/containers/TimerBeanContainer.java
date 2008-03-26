@@ -48,7 +48,7 @@ public class TimerBeanContainer
     
     private EJBTimerService ejbTimerService;
 
-    private static EjbContainerUtil ejbContainerUtilImpl = EjbContainerUtilImpl.getInstance();
+    private static EjbContainerUtil ejbContainerUtil = EjbContainerUtilImpl.getInstance();
 
     private static final Logger _logger = LogDomains.getLogger(LogDomains.EJB_LOGGER);
         
@@ -147,7 +147,7 @@ public class TimerBeanContainer
                 ejbTimerService = 
                     new EJBTimerService(appID, timerLocal);
 
-                ejbContainerUtilImpl.setEJBTimerService(ejbTimerService);
+                ejbContainerUtil.setEJBTimerService(ejbTimerService);
 
                 _logger.log(Level.INFO, "ejb.timer_service_started",
                             new Object[] { null /** XXX cmpResourceJndiName **/ } );

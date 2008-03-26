@@ -68,7 +68,7 @@ public class TimerWrapper
     private TimerPrimaryKey timerId_;
     private EJBTimerService timerService_;
 
-    private static EjbContainerUtil ejbContainerUtilImpl = EjbContainerUtilImpl.getInstance();
+    private static EjbContainerUtil ejbContainerUtil = EjbContainerUtilImpl.getInstance();
 
     TimerWrapper(TimerPrimaryKey timerId, EJBTimerService timerService) {
         timerId_      = timerId;
@@ -175,14 +175,14 @@ public class TimerWrapper
 
         boolean allowed = false;
 
-        EJBTimerService timerService = ejbContainerUtilImpl.getEJBTimerService();
+        EJBTimerService timerService = ejbContainerUtil.getEJBTimerService();
         if( timerService == null ) {
             throw new IllegalStateException 
                 ("EJBTimerService is not available");
         }
 
         try {
-            ComponentInvocation inv = ejbContainerUtilImpl.getCurrentInvocation();
+            ComponentInvocation inv = ejbContainerUtil.getCurrentInvocation();
             if (inv == null)
                 throw new IllegalStateException
                     ("Invocation cannot be null");
@@ -246,7 +246,7 @@ public class TimerWrapper
          * Check if the record is valid only when making calls on the object.
          */
         public Object createObject() throws EJBException {
-            EJBTimerService timerService = ejbContainerUtilImpl.getEJBTimerService();
+            EJBTimerService timerService = ejbContainerUtil.getEJBTimerService();
             TimerWrapper timer = new TimerWrapper(timerId_, timerService);
 
             return timer;
@@ -271,7 +271,7 @@ public class TimerWrapper
             TimerWrapper timer = null;
 
 // XXX ??? Is this correct? WAS: Switch theSwitch   = Switch.getSwitch();
-            if( ejbContainerUtilImpl != null ) {
+            if( ejbContainerUtil != null ) {
                 
                 // Make sure use of timer service methods are allowed
                 TimerWrapper.checkCallPermission();
@@ -290,7 +290,7 @@ public class TimerWrapper
             throws NoSuchObjectLocalException, EJBException {
 
             TimerWrapper timer = null;
-            EJBTimerService timerService = ejbContainerUtilImpl.getEJBTimerService();
+            EJBTimerService timerService = ejbContainerUtil.getEJBTimerService();
 
             if( timerService != null ) {
                 if( timerService.timerExists(timerId) ) {

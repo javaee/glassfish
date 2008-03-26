@@ -392,10 +392,10 @@ public class TimerBean implements TimerLocal {
     private ContainerSynchronization getContainerSynch(TimerState timer) throws Exception {
 
         Transaction transaction = context_.getTransaction();
-        EjbContainerUtil ejbContainerUtilImpl = EjbContainerUtilImpl.getInstance();
+        EjbContainerUtil ejbContainerUtil = EjbContainerUtilImpl.getInstance();
 
         if( transaction == null ) {
-            ComponentInvocation i = ejbContainerUtilImpl.getCurrentInvocation();
+            ComponentInvocation i = ejbContainerUtil.getCurrentInvocation();
             transaction = i.getTransaction();
             if (transaction != null) {
                 // Need to know when it happens
@@ -408,7 +408,7 @@ public class TimerBean implements TimerLocal {
                                 "for timerId = " + timer.getTimerId());
         }
 
-        return ejbContainerUtilImpl.getContainerSync(transaction);
+        return ejbContainerUtil.getContainerSync(transaction);
     }
 
     private static EJBTimerService getEJBTimerService() {
