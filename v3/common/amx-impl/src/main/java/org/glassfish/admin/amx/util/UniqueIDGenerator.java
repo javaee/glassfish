@@ -33,31 +33,31 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+package org.glassfish.admin.amx.util;
 
-/*
- * Copyright 2004-2005 Sun Microsystems, Inc.  All rights reserved.
- * Use is subject to license terms.
- */
- 
-/*
- * $Header: /cvs/glassfish/admin/mbeanapi-impl/src/java/com/sun/enterprise/management/support/LoaderRegHandler.java,v 1.3 2007/05/05 05:23:41 tcfujii Exp $
- * $Revision: 1.3 $
- * $Date: 2007/05/05 05:23:41 $
- */
-
-package org.glassfish.admin.amx.support;
-
-import javax.management.ObjectName;
 
 /**
-	Internal interface for loading/unloading of mbeans
+	Produces a series of unique identifiers which are unique
+	for this instance.
  */
-interface LoaderRegHandler
+public final class UniqueIDGenerator
 {
-	public void	handleMBeanRegistered( final ObjectName mbean ) throws Exception;
-	public void	handleMBeanUnregistered( final ObjectName mbean ) throws Exception;
+	private int				mID;
+	private final String	mPrefix;
+	
+		public
+	UniqueIDGenerator( String prefix )
+	{
+		mPrefix	= prefix == null ? "" : prefix;
+		
+		mID	= 0;
+	}
+	
+		public synchronized Object
+	createID()
+	{
+		++mID;
+		return( mPrefix + mID );
+	}
 }
-
-
-
 

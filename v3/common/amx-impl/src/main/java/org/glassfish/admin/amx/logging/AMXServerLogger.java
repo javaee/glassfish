@@ -33,31 +33,36 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.admin.amx.support;
 
+package org.glassfish.admin.amx.logging;
+
+
+import java.util.logging.Logger;
+
+import com.sun.appserv.management.base.AMXLoggerBase;
+import com.sun.appserv.management.base.LoggerSupport;
 
 /**
-	Produces a series of unique identifiers which are unique
-	for this instance.
+	Root Logger for all AMX
  */
-public final class UniqueIDGenerator
+public class AMXServerLogger extends AMXLoggerBase
 {
-	private int				mID;
-	private final String	mPrefix;
+	private static Logger	INSTANCE	= null;
 	
-		public
-	UniqueIDGenerator( String prefix )
+		private
+	AMXServerLogger()
 	{
-		mPrefix	= prefix == null ? "" : prefix;
-		
-		mID	= 0;
+		super( LoggerSupport.AMX_SERVER_LOGGER, null );
 	}
 	
-		public synchronized Object
-	createID()
+		public static synchronized Logger
+	getInstance()
 	{
-		++mID;
-		return( mPrefix + mID );
+		if ( INSTANCE == null )
+		{
+			INSTANCE	= Logger.getLogger( LoggerSupport.AMX_SERVER_LOGGER );
+		}
+		
+		return( INSTANCE );
 	}
 }
-

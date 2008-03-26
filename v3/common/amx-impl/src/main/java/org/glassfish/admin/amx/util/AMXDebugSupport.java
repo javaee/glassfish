@@ -45,7 +45,7 @@ import com.sun.appserv.management.base.AMXDebug;
 import com.sun.appserv.management.base.Util;
 import com.sun.appserv.management.util.misc.FileUtils;
 
-import org.glassfish.admin.amx.support.BootUtil;
+import org.glassfish.admin.amx.loader.BootUtil;
 
 
 /**

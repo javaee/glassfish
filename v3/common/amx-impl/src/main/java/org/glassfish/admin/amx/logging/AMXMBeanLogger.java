@@ -35,7 +35,7 @@
  */
  
 
-package org.glassfish.admin.amx.support;
+package org.glassfish.admin.amx.logging;
 
 import java.util.Map;
 import java.util.HashMap;

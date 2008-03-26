@@ -57,7 +57,7 @@ import org.glassfish.admin.amx.j2ee.J2EEDomainImpl;
 import com.sun.appserv.management.util.misc.GSetUtil;
 import com.sun.appserv.management.util.misc.GSetUtil;
 
-import org.glassfish.admin.amx.support.BootUtil;
+import org.glassfish.admin.amx.loader.BootUtil;
 import org.glassfish.admin.amx.util.ObjectNames;
 
 import org.glassfish.admin.amx.util.FeatureAvailability;

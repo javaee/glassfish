@@ -65,9 +65,10 @@ public abstract class AMXNonConfigImplBase extends AMXImplBase
 	}
     
     @Override
-		public void
-	postRegisterHook( Boolean registrationSucceeded )
+		protected void
+	postRegisterHook( final Boolean registrationSucceeded )
 	{
+        super.postRegisterHook( registrationSucceeded );
 	    if ( registrationSucceeded.booleanValue() )
 		{
             registerChildren();
@@ -75,8 +76,9 @@ public abstract class AMXNonConfigImplBase extends AMXImplBase
 	}
     
     @Override
-		protected void
+        protected void
 	preDeregisterHook()
+		throws Exception
 	{
         super.preDeregisterHook();
         
@@ -84,7 +86,7 @@ public abstract class AMXNonConfigImplBase extends AMXImplBase
 	}
 	
     @Override
-		protected void
+        protected void
 	postDeregisterHook()
 	{
 	}

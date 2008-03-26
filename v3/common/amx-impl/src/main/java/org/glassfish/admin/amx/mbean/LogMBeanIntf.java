@@ -34,7 +34,7 @@
  * holder.
  */
  
-package org.glassfish.admin.amx.logging;
+package org.glassfish.admin.amx.mbean;
 
 import java.util.List;
 import java.util.Map;

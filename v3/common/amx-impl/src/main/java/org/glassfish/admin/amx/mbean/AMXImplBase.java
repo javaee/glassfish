@@ -806,6 +806,7 @@ public class AMXImplBase extends MBeanImplBase
 		return( getMBeanLogger() );
 	}
 
+    
 	/**
 		Get an Attribute value, first by looking for a getter method
 		of the correct name and signature, then by looking for a delegate,
@@ -821,7 +822,7 @@ public class AMXImplBase extends MBeanImplBase
 	{
 		Object	result	= null;
 		
-		if ( ! (isLegalAttribute( name ) || name.equals(OBJECT_REF_ATTR_NAME) ) )
+		if ( ! (isLegalAttribute( name ) || name.equals( OBJECT_REF_ATTR_NAME) ) )
 		{
 			debug( "getAttribute: unknown Attribute " + name + ", legal Attributes are: " + toString( getAttributeInfos().keySet() ) );
 			throw new AttributeNotFoundException( name );
@@ -1775,16 +1776,7 @@ public class AMXImplBase extends MBeanImplBase
 	    return false;
 	}
 	
-
-		protected void
-	preDeregisterHook()
-	{
-	}
 	
-		protected void
-	postDeregisterHook()
-	{
-	}
 	
 		protected void
 	unregisterMisc()
@@ -1886,6 +1878,11 @@ public class AMXImplBase extends MBeanImplBase
 		//registerSpecialContainees();
 		
 		preRegisterDone();
+        
+        if ( mSelfObjectName == null )
+        {
+            throw new IllegalArgumentException( "null mSelfObjectName" );
+        }
 		return( mSelfObjectName );
 	}
     
@@ -2058,16 +2055,7 @@ public class AMXImplBase extends MBeanImplBase
 	    }
 	}
 	
-    /**
-        Hide this dirty business: non-serializable and private class.
-     */
-    private static final class ObjectRefWrapper
-    {
-        final AMXImplBase mPayload;
-        ObjectRefWrapper( final AMXImplBase payload ) { mPayload = payload; }
-    }
-    
-    /*
+      /*
         This *hack* allows us to get the actual object itself, preferable to exposing
         an operation to the "whole world".
      */
@@ -2077,14 +2065,32 @@ public class AMXImplBase extends MBeanImplBase
         AMXImplBase containerObject = null;
         
         final ObjectName containerObjectName = getContainerObjectName();
+        
+        if ( containerObjectName == null )
+        {
+    System.err.println( "ContainerObjectName is null for: " + getObjectName() );
+        }
+        
+        final ObjectName objectName = getObjectName();
+        if ( objectName == null )
+        {
+    System.err.println( "ObjectName is null, container = " + containerObjectName );
+        }
+        
+        final MBeanServer mbeanServer = getMBeanServer();
+        if ( mbeanServer == null )
+        {
+    System.err.println( "MBeanServer is null for: " + getObjectName() );
+        }
+
+        
         // shouldn't have to call isRegistered(), but special MBeans at startup
         // do not have a Container (eg SystemInfo).
-        if ( containerObjectName != null && getMBeanServer().isRegistered(containerObjectName) )
+        if ( containerObjectName != null && mbeanServer.isRegistered(containerObjectName) )
         {
             try
             {
-                final Object value =  getMBeanServer().getAttribute( containerObjectName, OBJECT_REF_ATTR_NAME );
-                containerObject = ObjectRefWrapper.class.cast( value ).mPayload;
+                containerObject = __getObjectRef__( getMBeanServer(), containerObjectName );
             }
             catch( Exception e )
             {
@@ -2100,10 +2106,11 @@ public class AMXImplBase extends MBeanImplBase
         impact on later use, but guarantees visibility of all non-final instance variables, both
         on this class and all subclasses, since they can only modify things via postRegisterHook().
     */
-		public final synchronized void
-	postRegister( Boolean registrationSucceeded )
+    @Override
+		protected synchronized void
+	postRegisterHook( Boolean registrationSucceeded )
 	{
-		super.postRegister( registrationSucceeded );
+		super.postRegisterHook( registrationSucceeded );
 		
         if ( registrationSucceeded.booleanValue() )
         {
@@ -2118,48 +2125,58 @@ public class AMXImplBase extends MBeanImplBase
             }
             //------------------------------------------------------
         }
-        
-		postRegisterHook( registrationSucceeded );
 	}
     
+//-----------------------------------------------------------------------------------------
     private static final String OBJECT_REF_ATTR_NAME = "__ObjectRef";
-        public ObjectRefWrapper
+    /**
+        The means to get the object itself, from an ObjectName. Used for internal
+        communication.
+        @see #get__ObjectRef
+     */
+        public static AMXImplBase
+    __getObjectRef__( final MBeanServer mbeanServer, final ObjectName objectName )
+    {
+        try
+        {
+            final Object value = mbeanServer.getAttribute( objectName, OBJECT_REF_ATTR_NAME );
+            return AMXImplBase.class.cast( value );
+        }
+        catch( Exception e )
+        {
+           throw new RuntimeException(e);
+        }
+    }
+    /**
+        @see #__getObjectRef__
+     */
+        public AMXImplBase
     get__ObjectRef()
     {
-        return new ObjectRefWrapper(this);
-    }
+        return this;
+    }    
+//-----------------------------------------------------------------------------------------
 	
-		public void
-	postRegisterHook( Boolean registrationSucceeded )
-	{
-	    if ( registrationSucceeded.booleanValue() )
-		{
-		}
-	}
-
-		public final void
-	preDeregister()
+    @Override
+		protected void
+	preDeregisterHook()
 		throws Exception
 	{
-	    super.preDeregister();
-	    
-	    preDeregisterHook();
+	    super.preDeregisterHook();
 	}
 	
-		public void
-	postDeregister()
+    @Override
+		protected void
+	postDeregisterHook()
 	{
-	    super.postDeregister();
-        
-        //------------------------------------------------------
         final AMXImplBase containerObject = getContainerObject();
         if ( containerObject != null )
         {
             containerObject.getContainerSupport().containeeUnregistered( getObjectName() );
         }
-        //------------------------------------------------------
-	    
-	    postDeregisterHook();
+        
+        // do this LAST, because it whacks some fields like mbeanserver, objectName
+	    super.postDeregisterHook();
 	}
 
 		public final ObjectName

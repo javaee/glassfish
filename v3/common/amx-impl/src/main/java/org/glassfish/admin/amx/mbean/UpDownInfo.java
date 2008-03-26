@@ -33,112 +33,64 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.admin.amx.support;
+package org.glassfish.admin.amx.mbean;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 
 
-public final class UploadInfo extends UpDownInfo
+public abstract class UpDownInfo
 {
-	private final String		mName;
-	private final long			mTotalSize;
-	private FileOutputStream	mOutputStream;
-	private long			mWrittenSoFar;
+	private final File			mFile;
+	private Object				mID;
+	private long				mLastAccessTime;
 	
 	
+	public abstract	void	cleanup() throws IOException;
+	public abstract	boolean	isDone();
+
 		public
-	UploadInfo(
+	UpDownInfo(
 		final Object	id,
-		final String	name,
-		final long		totalSize )
-		throws IOException
+		final File		theFile )
 	{
-		super( id, createTempFile( id, name, totalSize ) );
+		mID		= id;
+		mFile	= theFile;
 		
-		mName	= name;
-		
-		mTotalSize	= totalSize;
-		
-		getFile().createNewFile();
-		getFile().deleteOnExit();
-		mOutputStream	= new FileOutputStream( getFile() );
-		
-		mWrittenSoFar	= 0;
+		mLastAccessTime	= System.currentTimeMillis();
 	}
 	
-		private static File
-	createTempFile( final Object id, final String name, final long totalSize )
-		throws IOException
+		public final long
+	getLastUseTime()
 	{
-        final String tempName = (name != null) ? name : id + "_" + totalSize;
-        File  actual   = new File( tempName );
-        if ( actual.exists() )
-        {
-            actual  = File.createTempFile( tempName, null );
-        }
-        return( actual ); 
+		return( mLastAccessTime );
 	}
 	
-		public boolean
-	isDone()
+		public final long
+	getMillisSinceLastAccess()
 	{
-		return( mWrittenSoFar == mTotalSize );
+		return( System.currentTimeMillis() - mLastAccessTime );
+	}
+	
+		protected void
+	accessed()
+	{
+		mLastAccessTime	= System.currentTimeMillis();
 	}
 	
 	
-	/**
-		@return true if done, false otherwise
-	 */
-		public boolean
-	write( final byte[] bytes )
-		throws IOException
+		public final Object
+	getID()
 	{
-		if ( isDone() || mWrittenSoFar + bytes.length > mTotalSize )
-		{
-			throw new IllegalArgumentException( "too many bytes" );
-		}
-		getOutputStream().write( bytes );
-		
-		mWrittenSoFar	+= bytes.length;
-		
-		if ( isDone() )
-		{
-			mOutputStream.close();
-			mOutputStream	= null;
-		}
-		
-		accessed();
-		
-		return( isDone() );
+		return( mID );
 	}
 	
-	
-	
-		public long
-	getTotalSize()
+		public File
+	getFile()
 	{
-		return( mTotalSize );
-	}
-	
-		public void
-	cleanup()
-		throws IOException
-	{
-		if ( mOutputStream != null )
-		{
-			mOutputStream.close();
-		}
-		
-		getFile().delete();
-	}
-	
-		private FileOutputStream
-	getOutputStream()
-	{
-		return( mOutputStream );
+		return( mFile );
 	}
 }
+
 
 

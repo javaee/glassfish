@@ -33,7 +33,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.admin.amx.support;
+package org.glassfish.admin.amx.mbean;
 
 import java.util.Set;
 

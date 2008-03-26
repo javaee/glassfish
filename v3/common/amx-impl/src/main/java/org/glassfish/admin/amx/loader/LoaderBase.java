@@ -33,7 +33,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.admin.amx.support;
+package org.glassfish.admin.amx.loader;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -77,6 +77,7 @@ import com.sun.appserv.management.client.ProxyFactory;
 import org.glassfish.admin.amx.util.AMXDebugSupport;
 import org.glassfish.admin.amx.util.ObjectNames;
 import org.glassfish.admin.amx.mbean.SystemInfoImpl;
+import org.glassfish.admin.amx.mbean.SystemInfoFactory;
 
 /**
 	
@@ -161,16 +162,6 @@ abstract class LoaderBase extends org.glassfish.admin.amx.mbean.MBeanImplBase
 		return( objectName );
 	}
 		
-	    protected void
-	preRegisterHook()
-	{
-	}
-    
-    
-	    protected void
-	postRegisterHook()
-	{
-	}
 	
 		public final ObjectName
 	preRegister(
@@ -183,8 +174,6 @@ abstract class LoaderBase extends org.glassfish.admin.amx.mbean.MBeanImplBase
 		
 		final String    domain  = BootUtil.getInstance().getAMXSupportJMXDomain();
 		mSelfObjectName	= Util.newObjectName( domain, LOADER_NAME_PROPS );
-			
-		preRegisterHook();
 		
 		try
 		{
@@ -212,19 +201,17 @@ abstract class LoaderBase extends org.glassfish.admin.amx.mbean.MBeanImplBase
 		return( mSelfObjectName );
 	}
 	
-		public void
-	postRegister( Boolean registrationDone )
+    @Override
+		protected void
+	postRegisterHook( final Boolean registrationSucceeded )
 	{
-		super.postRegister( registrationDone );
+		super.postRegisterHook( registrationSucceeded );
 		
-		if ( registrationDone.booleanValue() )
+		if ( registrationSucceeded.booleanValue() )
 		{
 			initLOADER( getMBeanServer(), getObjectName() );
-            
+            start();
 		}
-		start();
-        
-        postRegisterHook();
 	}
 
 		protected boolean

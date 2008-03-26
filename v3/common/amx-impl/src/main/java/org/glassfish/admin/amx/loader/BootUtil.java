@@ -33,7 +33,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.admin.amx.support;
+package org.glassfish.admin.amx.loader;
 
 import javax.management.ObjectName;
 import javax.management.MBeanServer;
@@ -43,8 +43,8 @@ import com.sun.appserv.management.base.Util;
 
 import org.glassfish.admin.amx.util.Issues;
 
-import org.glassfish.admin.amx.support.AMXServerLogger;
-import org.glassfish.admin.amx.support.AMXMBeanRootLogger;
+import org.glassfish.admin.amx.logging.AMXServerLogger;
+import org.glassfish.admin.amx.logging.AMXMBeanRootLogger;
 
 /**
 	Utilities to help boot up AMX.

@@ -33,36 +33,57 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+package org.glassfish.admin.amx.mbean;
 
-package org.glassfish.admin.amx.support;
+import javax.management.MBeanServer;
 
-
-import java.util.logging.Logger;
-
-import com.sun.appserv.management.base.AMXLoggerBase;
-import com.sun.appserv.management.base.LoggerSupport;
+import org.glassfish.admin.amx.mbean.SystemInfoImpl;
 
 /**
-	Root Logger for all AMX MBeans
+    Factory to create the com.sun.appserv.management.base.SystemInfo implementation.
+    For now, only one implementation instance is allowed.
  */
-public class AMXMBeanRootLogger extends AMXLoggerBase
+public final class SystemInfoFactory
 {
-	private static Logger	INSTANCE	= null;
-	
-		private
-	AMXMBeanRootLogger()
-	{
-		super( LoggerSupport.AMX_MBEAN_ROOT_LOGGER, null );
-	}
-	
-		public static synchronized Logger
+    static SystemInfoImpl INSTANCE = null;
+    
+    /**
+        Return the actual implementation class, because some method(s) are needed internal to the
+        server, but not appropriate for the MBean clients.
+        
+        @return the SystemInfoImpl, *or null if not yet initialized*
+     */
+		public static synchronized SystemInfoImpl
 	getInstance()
 	{
-		if ( INSTANCE == null )
-		{
-			INSTANCE	= Logger.getLogger( LoggerSupport.AMX_MBEAN_ROOT_LOGGER );
-		}
-		
-		return( INSTANCE );
+        return INSTANCE;
+	}
+    
+    /**
+        Create the singleton instance.  Intended for exclusive use by the appropriate code
+        to initialize once at startup.
+     */ 
+    	public static synchronized SystemInfoImpl
+	createInstance( final MBeanServer server )
+	{
+        if ( INSTANCE == null )
+        {
+            INSTANCE = new SystemInfoImpl( server );
+            
+            new SystemInfoIniter( server, INSTANCE ).init();
+        }
+        else
+        {
+            throw new RuntimeException( "can only initialize once--bug" );
+        }
+        return INSTANCE;
 	}
 }
+
+
+
+
+
+
+
+

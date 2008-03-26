@@ -33,36 +33,59 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+ 
+/*
+ */
 
-package org.glassfish.admin.amx.support;
+package org.glassfish.admin.amx.loader;
 
+import javax.management.MBeanServer;
+import javax.management.ObjectName;
+import javax.management.JMException;
 
-import java.util.logging.Logger;
+import org.glassfish.admin.amx.util.Issues;
 
-import com.sun.appserv.management.base.AMXLoggerBase;
-import com.sun.appserv.management.base.LoggerSupport;
+import com.sun.appserv.management.util.jmx.JMXUtil;
+
+import com.sun.appserv.management.util.misc.TimingDelta;
 
 /**
-	Root Logger for all AMX
+	Used internally to work around problems with cascaded MBeans.
  */
-public class AMXServerLogger extends AMXLoggerBase
+public final class LoadAMX
 {
-	private static Logger	INSTANCE	= null;
-	
-		private
-	AMXServerLogger()
-	{
-		super( LoggerSupport.AMX_SERVER_LOGGER, null );
-	}
-	
-		public static synchronized Logger
-	getInstance()
-	{
-		if ( INSTANCE == null )
-		{
-			INSTANCE	= Logger.getLogger( LoggerSupport.AMX_SERVER_LOGGER );
-		}
-		
-		return( INSTANCE );
-	}
+    private LoadAMX() {}
+    private static ObjectName LOADER_OBJECTNAME = null;
+    
+    private static final String AMX_LOADER_DEFAULT_OBJECTNAME    =
+        "amx-support:name=mbean-loader";
+
+        public static synchronized ObjectName
+    loadAMX( final MBeanServer mbeanServer )
+    {
+        if ( LOADER_OBJECTNAME == null )
+        {
+            final boolean inDAS = true;
+            Issues.getAMXIssues().notDone( "LoadAMX.loadAMX(): determine if this is the DAS" );
+            
+            if ( inDAS )
+            {
+                final Loader loader = new Loader();
+                
+                final ObjectName tempObjectName  = JMXUtil.newObjectName( AMX_LOADER_DEFAULT_OBJECTNAME );
+                
+                try
+                {
+                    LOADER_OBJECTNAME  =
+                        mbeanServer.registerMBean( loader, tempObjectName ).getObjectName();
+                }
+                catch( JMException e )
+                {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+        return LOADER_OBJECTNAME;
+    }
 }
+

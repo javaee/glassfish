@@ -392,6 +392,7 @@ public final class NotificationServiceImpl extends AMXNonConfigImplBase
 		}
 	}
 	
+    @Override
 		protected void
 	preRegisterDone()
         throws Exception
@@ -406,6 +407,7 @@ public final class NotificationServiceImpl extends AMXNonConfigImplBase
 
 		public void
 	preDeregisterHook()
+        throws Exception
 	{
 		super.preDeregisterHook();
 		

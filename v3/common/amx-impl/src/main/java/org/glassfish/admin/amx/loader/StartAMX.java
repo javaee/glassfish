@@ -36,10 +36,6 @@ import com.sun.appserv.management.util.jmx.JMXUtil;
 import com.sun.appserv.management.util.misc.StringUtil;
 import com.sun.appserv.management.util.misc.TimingDelta;
 
-import org.glassfish.admin.amx.support.LoadAMX;
-//import org.glassfish.admin.amx.types.XTypesMapper;
-//import org.glassfish.admin.amx.types.J2EETypesMapper;
-//import org.glassfish.admin.amx.types.AllTypesMapper;
 
 import java.net.MalformedURLException;
 import java.io.IOException;

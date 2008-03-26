@@ -191,23 +191,27 @@ public class JMXMonitorBase extends AMXNonConfigImplBase
 		return( result );
 	}
 	
-		public void
+    @Override
+		protected void
 	preRegisterDone()
 		throws Exception
 	{
 		final ObjectName	x	= mMonitor.preRegister( getMBeanServer(), getObjectName() );
 	}
 	
-		public void
-	postRegisterHook( Boolean registrationDone )
+    @Override
+		protected void
+	postRegisterHook( final Boolean registrationSucceeded )
 	{
-		super.postRegisterHook( registrationDone );
+		super.postRegisterHook( registrationSucceeded );
 		
-		mMonitor.postRegister( registrationDone );
+		mMonitor.postRegister( registrationSucceeded );
 	}
 	
-		public void
+    @Override
+		protected void
 	preDeregisterHook()
+        throws Exception
 	{
 		super.preDeregisterHook( );
 		
@@ -221,7 +225,8 @@ public class JMXMonitorBase extends AMXNonConfigImplBase
 		}
 	}
 	
-		public void
+    @Override
+		protected void
 	postDeregisterHook()
 	{
 		super.postDeregisterHook( );

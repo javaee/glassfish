@@ -49,6 +49,7 @@ import java.lang.reflect.InvocationTargetException;
 import javax.management.ObjectName;
 import javax.management.MBeanInfo;
 import javax.management.MBeanNotificationInfo;
+import javax.management.MBeanAttributeInfo;
 import javax.management.Attribute;
 import javax.management.AttributeList;
 import javax.management.AttributeNotFoundException;
@@ -101,6 +102,7 @@ import org.glassfish.admin.amx.loader.AMXConfigVoid;
 
 import org.jvnet.hk2.config.ConfigBean;
 import org.jvnet.hk2.config.ConfigSupport;
+import org.jvnet.hk2.config.Dom;
 
 import org.glassfish.api.amx.AMXConfigInfo;
 
@@ -602,44 +604,83 @@ public class AMXConfigImplBase extends AMXImplBase
         return new Class[0];
     }
 
-        private Class<? extends ConfigBeanProxy>
-    j2eeTypeToConfigBeanProxy( final String j2eeType )
+    private final class SubInfo
     {
-        final ConfigBean cb = getConfigBean();
+        final ConfigBean                 mParent;
+        Class<? extends ConfigBeanProxy> mIntf;
+        ConfigBean                       mSubParent;
+        public SubInfo( final String j2eeType )
+        {
+            mParent    = getConfigBean();
+            mSubParent = null;
+            mIntf      = j2eeTypeToConfigBeanProxy(j2eeType);
+        }
         
-//cdebug( "j2eeTypeToConfigBeanProxy: looking for interface for j2eeType " + j2eeType );
-        Class<? extends ConfigBeanProxy> result = null;
+            public Class<? extends ConfigBeanProxy>
+        getConfigBeanProxyClass()
+        {
+            return mIntf;
+        }
         
-        final String amxVoid = AMXConfigVoid.class.getName();
-         final Class<? extends ConfigBeanProxy>[] candidates = getSubTypes( cb );
-         for ( final Class<? extends ConfigBeanProxy> candidate : candidates )
-         {
-            final AMXConfigInfo amxConfigInfo = candidate.getAnnotation(AMXConfigInfo.class);
-            if ( amxConfigInfo != null && ! amxVoid.equals(amxConfigInfo.amxInterfaceName()) )
-            {
-                final AMXConfigInfoResolver resolver = new AMXConfigInfoResolver( amxConfigInfo );
-//cdebug( "j2eeTypeToConfigBeanProxy: class " + candidate.getName() + " has AMXConfigInfo  " + amxConfigInfo );
-                if ( j2eeType.equals( resolver.j2eeType() ) )
+            public ConfigBean
+        getCreatorParent()
+        {
+            return mSubParent != null ? mSubParent : mParent;
+        }
+
+            private Class<? extends ConfigBeanProxy>
+        j2eeTypeToConfigBeanProxy( final String j2eeType )
+        {
+            final ConfigBean cb = mParent;
+            
+            //cdebug( "j2eeTypeToConfigBeanProxy: looking for interface for j2eeType " + j2eeType );
+            Class<? extends ConfigBeanProxy> result = null;
+            
+            final String amxVoid = AMXConfigVoid.class.getName();
+             final Class<? extends ConfigBeanProxy>[] candidates = getSubTypes( cb );
+             for ( final Class<? extends ConfigBeanProxy> candidate : candidates )
+             {
+                final AMXConfigInfo amxConfigInfo = candidate.getAnnotation(AMXConfigInfo.class);
+                if ( amxConfigInfo != null && ! amxVoid.equals(amxConfigInfo.amxInterfaceName()) )
                 {
-//cdebug( "j2eeTypeToConfigBeanProxy: FOUND " + candidate.getName() );
-                    result = candidate;
-                    break;
+                    final AMXConfigInfoResolver resolver = new AMXConfigInfoResolver( amxConfigInfo );
+    //cdebug( "j2eeTypeToConfigBeanProxy: class " + candidate.getName() + " has AMXConfigInfo  " + amxConfigInfo );
+                    if ( j2eeType.equals( resolver.j2eeType() ) )
+                    {
+    //cdebug( "j2eeTypeToConfigBeanProxy: FOUND " + candidate.getName() );
+                        result = candidate;
+                        break;
+                    }
                 }
-            }
-            else
-            {
-                //cdebug( "j2eeTypeToConfigBeanProxy: no AMXConfigInfo for " + candidate.getName()  );
-            }
-         }
-         
-         if ( result == null )
-         {
-            final Set<String> names = cb.getLeafElementNames();
-//cdebug( "j2eeTypeToConfigBeanProxy: getLeafElementNames = " + CollectionUtil.toString(names) );
-         }
-        
-        return result;
+                else
+                {
+                    //cdebug( "j2eeTypeToConfigBeanProxy: no AMXConfigInfo for " + candidate.getName()  );
+                }
+             }
+             
+             if ( result == null )
+             {
+                final Set<String> names = cb.getLeafElementNames();
+    cdebug( "j2eeTypeToConfigBeanProxy: getLeafElementNames = " + CollectionUtil.toString(names) );
+                for( final String name : names )
+                {
+                    cdebug( "getting nodeElements for: " + name );
+                    final List<Dom> domList = cb.nodeElements(name);
+                    final List<ConfigBean> configBeans = TypeCast.checkList( domList, ConfigBean.class );
+                    cdebug( configBeans.size() + " elements " );
+                    
+                    // scan the element to see if it has a List<type> whose type is 
+                    if ( configBeans.size() >= 1 )
+                    {
+                        // TBD
+                    }
+                }
+             }
+            
+            return result;
+        }
     }
+    
     
         private Method
     getCreateMethod(
@@ -786,8 +827,9 @@ cdebug( "createConfig: j2eeType = " + j2eeType + ", return type = " + returnType
         final String[] paramNames = amxCreateInfo.paramNames();
         cdebug( "createConfig:  paramNames = {" + StringUtil.toString(paramNames) + "}" );
         rejectBadArgs( args, numRequiredArgs, paramNames, optionalAttrs );
-            
-        final Class<? extends ConfigBeanProxy>  newItemClass = j2eeTypeToConfigBeanProxy( j2eeType );
+    
+        final SubInfo   subInfo = new SubInfo( j2eeType );
+        final Class<? extends ConfigBeanProxy>  newItemClass = subInfo.getConfigBeanProxyClass();
         if ( newItemClass == null )
         {
             throw new IllegalArgumentException( "Can't find class for j2eeType " + j2eeType );
@@ -812,7 +854,7 @@ cdebug( "createConfig: j2eeType = " + j2eeType + ", return type = " + returnType
         }
   
 cdebug( "createConfig:  creating new ConfigBean of class = " + newItemClass.getName());
-        final ConfigBean newConfigBean = ConfigSupport.createAndSet( getConfigBean(), newItemClass, allAttrs);
+        final ConfigBean newConfigBean = ConfigSupport.createAndSet( subInfo.getCreatorParent(), newItemClass, allAttrs);
 cdebug( "createConfig:  CREATED new ConfigBean of class " + newItemClass.getName() + " = " + newConfigBean );
 
         final AMXConfigLoader  amxLoader = SingletonEnforcer.get( AMXConfigLoader.class );
@@ -1052,13 +1094,12 @@ cdebug( "createConfig:  ObjectName:  " + JMXUtil.toString(objectName) );
         
         Issues.getAMXIssues().notDone( "AMXConfigImplBase.getDefaultValues: " + j2eeType );
         
-        final Class<? extends ConfigBeanProxy> intf = j2eeTypeToConfigBeanProxy( j2eeType );
+        final SubInfo   subInfo = new SubInfo( j2eeType );
+        final Class<? extends ConfigBeanProxy>  intf = subInfo.getConfigBeanProxyClass();
         if ( intf == null )
         {
             throw new IllegalArgumentException( "Illegal j2eeType: " + j2eeType );
         }
-        
-       
         
         final Method[] methods = intf.getMethods();
         for( final Method m : methods )
@@ -1085,6 +1126,77 @@ cdebug( "createConfig:  ObjectName:  " + JMXUtil.toString(objectName) );
         
         return result;
     }
+    
+    private volatile boolean _namesInited = false;
+    
+    /**
+        Make sure the AMX to XML and vice-versa mapping is in place
+     */
+        private synchronized void
+    initNames()
+    {
+        if ( ! _namesInited ) synchronized(this)
+        {
+            final DelegateToConfigBeanDelegate delegate = getConfigDelegate();
+            final String[] attrNames = getAttributeNames();
+            
+            for( final String attrName : attrNames )
+            {
+                // side effect: causes name mapping
+                delegate.supportsAttribute( attrName );
+            }
+            
+            _namesInited = true;
+        }
+    }
+    
+    @Override
+    protected synchronized void
+	postRegisterHook( Boolean registrationSucceeded )
+	{
+		super.postRegisterHook( registrationSucceeded );
+		
+        if ( registrationSucceeded.booleanValue() )
+        {
+            initNames();
+        }
+	}
+    
+    /**
+        Issue an AttributeChangeNotification.  The name is the xml name; this method should
+        be called only from "bubble up" code from the lower level ConfigBean stuff.
+        @see AMXConfigLoader
+     */
+        void
+    issueAttributeChangeForXmlAttrName(
+        final String     xmlAttrName,
+        final Object     oldValue,
+        final Object     newValue,
+        final long       whenChanged )
+    {
+        if ( ! _namesInited ) initNames();
+        
+        final DelegateToConfigBeanDelegate delegate = getConfigDelegate();
+        
+        String attrType = String.class.getName();
+        String amxAttrName = NameMapping.getAMXName( xmlAttrName );
+        if ( amxAttrName == null )
+        {
+            cdebug( "issueAttributeChangeForXmlAttrName: can't find AMX name for: " + xmlAttrName + ", using xmlName for now" );
+            amxAttrName = xmlAttrName;
+        }
+        else
+        {
+            attrType = getAttributeType(amxAttrName);
+        }
+        
+        if ( oldValue != newValue )
+        {
+			sendAttributeChangeNotification( "", amxAttrName, attrType, whenChanged, oldValue, newValue );
+        }
+    }
+
+
 }
 
 

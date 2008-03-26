@@ -54,13 +54,9 @@ import com.sun.appserv.management.base.Singleton;
 import com.sun.appserv.management.base.XTypes;
 import com.sun.appserv.management.base.UploadDownloadMgr;
 
-import org.glassfish.admin.amx.support.DownloadInfo;
-import org.glassfish.admin.amx.support.UploadInfo;
-import org.glassfish.admin.amx.support.UpDownInfo;
-
 import com.sun.appserv.management.util.misc.GSetUtil;
 
-import org.glassfish.admin.amx.support.UniqueIDGenerator;
+import org.glassfish.admin.amx.util.UniqueIDGenerator;
 
 public final class UploadDownloadMgrImpl extends AMXNonConfigImplBase
 	implements Utility, Singleton, UploadDownloadMgr

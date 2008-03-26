@@ -435,10 +435,18 @@ public abstract class MBeanImplBase
 		return( mSelfObjectName );
 	}
 	
-		public void
-	postRegister( Boolean registrationDone )
+		protected void
+	postRegisterHook( final Boolean registrationSucceeded )
+	{
+	    if ( registrationSucceeded.booleanValue() )
+		{
+		}
+	}
+    
+		public final void
+	postRegister( final Boolean registrationSucceeded )
 	{	
-		if ( registrationDone.booleanValue() )
+		if ( registrationSucceeded.booleanValue() )
 		{
 			getMBeanLogger().finest( "postRegister: " + getObjectName());
 		}
@@ -446,19 +454,36 @@ public abstract class MBeanImplBase
 		{
 			getMBeanLogger().finest( "postRegister: FAILURE: " + getObjectName());
 		}
+        
+        postRegisterHook( registrationSucceeded );
 	}
-	
-		public void
+    
+        protected void
+	preDeregisterHook()
+		throws Exception
+	{
+	}
+    
+		public final void
 	preDeregister()
 		throws Exception
 	{
 		getMBeanLogger().finest( "preDeregister: " + getObjectName() );
+	    
+	    preDeregisterHook();
 	}
 	
-		public void
+		protected void
+	postDeregisterHook()
+	{
+    }
+    
+		public final void
 	postDeregister()
 	{
 		getMBeanLogger().finest( "postDeregister: " + getObjectName() );
+        
+        postDeregisterHook();
 		
 		if ( mNotificationEmitter != null )
 		{

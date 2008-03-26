@@ -34,7 +34,7 @@
  * holder.
  */
 
-package org.glassfish.admin.amx.support;
+package org.glassfish.admin.amx.loader;
 
 import java.util.List;
 import java.util.Set;
@@ -119,14 +119,17 @@ public final class Loader extends LoaderBase
 		//mRegThread.start();
 	}
     
-    
+    @Override
         protected final void
-    postRegisterHook()
+    postRegisterHook( final Boolean registrationSucceeded )
     {
-        super.postRegisterHook();
+        super.postRegisterHook( registrationSucceeded );
         
-        FeatureAvailability.getInstance().registerFeature(
-            FeatureAvailability.AMX_LOADER_FEATURE, getObjectName() );
+        if ( registrationSucceeded.booleanValue() )
+        {
+            FeatureAvailability.getInstance().registerFeature(
+                FeatureAvailability.AMX_LOADER_FEATURE, getObjectName() );
+        }
     }
     
 		public void

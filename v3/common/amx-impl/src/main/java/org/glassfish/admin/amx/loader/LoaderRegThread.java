@@ -33,16 +33,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
-/*
- * Copyright 2004-2005 Sun Microsystems, Inc.  All rights reserved.
- * Use is subject to license terms.
- */
- 
-/*
- */
-
-package org.glassfish.admin.amx.support;
+package org.glassfish.admin.amx.loader;
 
 import java.util.List;
 import java.util.Set;

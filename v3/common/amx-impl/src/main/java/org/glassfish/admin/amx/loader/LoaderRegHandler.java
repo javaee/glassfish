@@ -33,56 +33,18 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.admin.amx.support;
+package org.glassfish.admin.amx.loader;
 
-import javax.management.MBeanServer;
-
-import org.glassfish.admin.amx.mbean.SystemInfoImpl;
+import javax.management.ObjectName;
 
 /**
-    Factory to create the com.sun.appserv.management.base.SystemInfo implementation.
-    For now, only one implementation instance is allowed.
+	Internal interface for loading/unloading of mbeans
  */
-public final class SystemInfoFactory
+interface LoaderRegHandler
 {
-    static SystemInfoImpl INSTANCE = null;
-    
-    /**
-        Return the actual implementation class, because some method(s) are needed internal to the
-        server, but not appropriate for the MBean clients.
-        
-        @return the SystemInfoImpl, *or null if not yet initialized*
-     */
-		public static synchronized SystemInfoImpl
-	getInstance()
-	{
-        return INSTANCE;
-	}
-    
-    /**
-        Create the singleton instance.  Intended for exclusive use by the appropriate code
-        to initialize once at startup.
-     */ 
-    	public static synchronized SystemInfoImpl
-	createInstance( final MBeanServer server )
-	{
-        if ( INSTANCE == null )
-        {
-            INSTANCE = new SystemInfoImpl( server );
-            
-            new SystemInfoIniter( server, INSTANCE ).init();
-        }
-        else
-        {
-            throw new RuntimeException( "can only initialize once--bug" );
-        }
-        return INSTANCE;
-	}
+	public void	handleMBeanRegistered( final ObjectName mbean ) throws Exception;
+	public void	handleMBeanUnregistered( final ObjectName mbean ) throws Exception;
 }
-
-
-
-
 
 
 

@@ -54,7 +54,7 @@ import com.sun.appserv.management.base.AMX;
 import com.sun.appserv.management.util.jmx.JMXUtil;
 import com.sun.appserv.management.base.Util;
 
-import org.glassfish.admin.amx.support.UniqueIDGenerator;
+import org.glassfish.admin.amx.util.UniqueIDGenerator;
 
 /**
  */

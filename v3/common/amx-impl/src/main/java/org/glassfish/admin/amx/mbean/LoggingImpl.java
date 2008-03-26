@@ -34,7 +34,7 @@
  * holder.
  */
  
-package org.glassfish.admin.amx.logging;
+package org.glassfish.admin.amx.mbean;
 
 import java.util.Map;
 import java.util.HashMap;
@@ -72,8 +72,6 @@ import javax.management.MBeanServerInvocationHandler;
 import com.sun.appserv.management.base.AMX;
 import com.sun.appserv.management.base.Util;
 import com.sun.appserv.management.base.XTypes;
-import org.glassfish.admin.amx.mbean.AMXNonConfigImplBase;
-import org.glassfish.admin.amx.support.BootUtil;
 
 import com.sun.appserv.management.ext.logging.Logging;
 import static com.sun.appserv.management.ext.logging.Logging.*;
@@ -92,6 +90,8 @@ import com.sun.appserv.management.util.jmx.JMXUtil;
 import com.sun.appserv.management.util.jmx.NotificationEmitterSupport;
 
 
+import org.glassfish.admin.amx.mbean.AMXNonConfigImplBase;
+import org.glassfish.admin.amx.loader.BootUtil;
 import org.glassfish.admin.amx.util.ObjectNames;
 
 //import com.sun.enterprise.server.logging.LoggingImplHook;

@@ -33,79 +33,36 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.admin.amx.config;
 
-import java.util.Set;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.ConcurrentHashMap;
+package org.glassfish.admin.amx.logging;
+
+
+import java.util.logging.Logger;
+
+import com.sun.appserv.management.base.AMXLoggerBase;
+import com.sun.appserv.management.base.LoggerSupport;
 
 /**
-    Maintains a cache from AMX Attribute names to XML attribute names.
-    Does <em>not</em> allow for different mapping from the same AMX Attribute name to many
-    different Xml names.
+	Root Logger for all AMX MBeans
  */
-final class NameMapping
+public class AMXMBeanRootLogger extends AMXLoggerBase
 {
-    private static final NameMapping INSTANCE = new NameMapping();
-    
-    private NameMapping() {}
-    
-    private final ConcurrentMap<String,String>  mAMXToXML = new ConcurrentHashMap<String,String>();
-    private final ConcurrentMap<String,String>  mXMLToAMX = new ConcurrentHashMap<String,String>();
-    
-    /**
-        Given an AMX name, get the XML name.
-     */
-        public static String
-    getXMLName( final String amxName )
-    {
-        return INSTANCE.mAMXToXML.get( amxName );
-    }
-    
-    /**
-        Given an XML name, get the AMX name.
-     */
-        public static String
-    getAMXName( final String xmlName )
-    {
-        return INSTANCE.mXMLToAMX.get( xmlName );
-    }
-
-    
-    /** 
-        Match the AMX attribute name to an XML attribute name, adding it to the cache
-        as a side-effect.
-     */
-        public static String
-    matchAMXName( final String amxName, final Set<String> xmlCandidates )
-    {
-        final String amxCanonical = amxName.toLowerCase();
-        String xmlName = null;
-        
-        for (final String xmlCandidate : xmlCandidates )
-        {
-            final String temp = xmlCandidate.replace( "-", "");
-            if ( temp.equals( amxCanonical ) )
-            {
-                xmlName = xmlCandidate;
-                break;
-            }
-        }
-        
-        if ( xmlName != null )
-        {
-            INSTANCE.mAMXToXML.put( amxName, xmlName );
-            INSTANCE.mXMLToAMX.put( xmlName, amxName );
-        }
-        
-        return xmlName;
-    }
+	private static Logger	INSTANCE	= null;
+	
+		private
+	AMXMBeanRootLogger()
+	{
+		super( LoggerSupport.AMX_MBEAN_ROOT_LOGGER, null );
+	}
+	
+		public static synchronized Logger
+	getInstance()
+	{
+		if ( INSTANCE == null )
+		{
+			INSTANCE	= Logger.getLogger( LoggerSupport.AMX_MBEAN_ROOT_LOGGER );
+		}
+		
+		return( INSTANCE );
+	}
 }
-
-
-
-
-
-
-
-
