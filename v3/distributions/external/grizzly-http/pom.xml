@@ -44,11 +44,53 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>grizzly-module</artifactId>
-    <packaging>hk2-jar</packaging>
+    <!-- Don't change packaging to bundle as there are issues
+         using both hk2 and bundle plugin -->
+    <packaging>jar</packaging>
     <version>${grizzly.version}</version>
-    <name>Module packaging for Grizzly</name>
+    <name>grizzly-http repackaged as HK2 and OSGi bundle</name>
     <description>Grizzly HTTP/Comet Module for GlassFish v3</description>
-
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <configuration>
+                    <instructions>
+                        <!-- embed all first level dependencies with groupId=com.sun.grizzly.
+                        -->
+                        <Embed-Dependency>
+                            *;groupId=com.sun.grizzly;inline=true
+                        </Embed-Dependency>
+                        <Export-Package>com.sun.grizzly.*;-split-package:=merge-first</Export-Package>
+                        <Import-Package>*</Import-Package>
+                        <!-- Package everything from the embedded jar in the final bundle -->
+                        <_exportcontents>*</_exportcontents>
+                        <!-- !* matches with nothing, so no other class will be included in this bundle,
+                         other than what is specified above -->
+                        <Private-Package>!*</Private-Package>
+                        <!-- Make it an HK2 module, as GlassFish needs it to be HK2 module.
+                         This is needed because we don't want to change the packaging type to
+                         hk2-jar. -->
+                        <HK2-Bundle-Name>${groupId}:${artifactId}</HK2-Bundle-Name>
+                    </instructions>
+                </configuration>
+                <!-- We don't use extensions as this interfers with
+                     hk2-maven-plugin and that results in hk2 artifacts
+                     being copied as .hk2-jar. Instead, we configure the
+                     plugin to run as part of package phase -->
+                <executions>
+                    <execution>
+                        <id>osgi-bundle</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>bundle</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
     <developers>
         <developer>
             <id>jfarcand/</id>
@@ -80,6 +122,11 @@
             <groupId>com.sun.grizzly</groupId>
 	        <artifactId>grizzly-comet</artifactId>
              <version>${grizzly.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish</groupId>
+	        <artifactId>javax.javaee</artifactId>
+            <version>${parent.version}</version>
         </dependency>
     </dependencies>
 </project>

@@ -128,9 +128,9 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>javax.javaee</groupId>
-            <artifactId>javaee</artifactId>
-            <version>${javaee-api.version}</version>       
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.javaee</artifactId>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 </project>

@@ -58,7 +58,7 @@ import java.util.ResourceBundle;
  * @author James Todd [gonzo@eng.sun.com]
  */
 
-public class StringManager {
+public class StringManagerTemp {
 
     // START SJSAS 6412710
     private final HashMap<Locale, ResourceBundle> bundles =
@@ -76,7 +76,7 @@ public class StringManager {
      * @param packageName Name of package to create StringManager for.
      */
 
-    private StringManager(String packageName) {
+    private StringManagerTemp(String packageName) {
         /* 6412710
         String bundleName = packageName + ".LocalStrings";
         */
@@ -339,7 +339,7 @@ public class StringManager {
     // STATIC SUPPORT METHODS
     // --------------------------------------------------------------
 
-    private static Hashtable<String,StringManager> managers = new Hashtable<String,StringManager>();
+    private static Hashtable<String,StringManagerTemp> managers = new Hashtable<String,StringManagerTemp>();
 
     /**
      * Get the StringManager for a particular package. If a manager for
@@ -349,11 +349,11 @@ public class StringManager {
      * @param packageName
      */
 
-    public synchronized static StringManager getManager(String packageName) {
-        StringManager mgr = managers.get(packageName);
+    public synchronized static StringManagerTemp getManager(String packageName) {
+        StringManagerTemp mgr = managers.get(packageName);
 
         if (mgr == null) {
-            mgr = new StringManager(packageName);
+            mgr = new StringManagerTemp(packageName);
             managers.put(packageName, mgr);
         }
         return mgr;

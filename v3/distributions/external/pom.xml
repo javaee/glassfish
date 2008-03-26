@@ -56,7 +56,6 @@
 
     <modules>
         <module>ant</module>
-        <module>javadb</module>
 	    <module>jaxb</module>
 	    <module>grizzly-http</module>
 	    <module>grizzly-jruby</module>        

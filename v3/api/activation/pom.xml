@@ -48,7 +48,7 @@
     <groupId>javax.activation</groupId>
     <artifactId>activation</artifactId>
     <packaging>jar</packaging>
-    <version>${activation-spec.version}-1-SNAPSHOT</version>
+    <version>1.1.2-SNAPSHOT</version>
     <name>JavaBeans(TM) Activation Framework</name>
     <description>JavaBeans(TM) Activation Framework Specification</description>
     <developers>

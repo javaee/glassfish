@@ -91,7 +91,7 @@ public class ASMain extends com.sun.enterprise.module.bootstrap.Main {
         }
 
         // now install the java-ee APIs. this has to be at a very high level in the hierarchy
-        Module parentModule = mr.makeModuleFor("javax.javaee:javaee", null);
+        Module parentModule = mr.makeModuleFor("org.glassfish:javax.javaee", null);
         if(parentModule!=null) {
             cl = parentModule.getClassLoader();
         }

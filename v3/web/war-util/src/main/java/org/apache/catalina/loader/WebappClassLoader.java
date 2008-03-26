@@ -68,7 +68,7 @@ import javax.naming.directory.DirContext;
 import org.apache.catalina.Lifecycle;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.LifecycleListener;
-import org.apache.catalina.util.StringManager;
+import org.apache.catalina.util.StringManagerTemp;
 import org.apache.naming.JndiPermission;
 import org.apache.naming.resources.Resource;
 import org.apache.naming.resources.ResourceAttributes;
@@ -190,8 +190,8 @@ public class WebappClassLoader
     /**
      * The string manager for this package.
      */
-    protected static final StringManager sm =
-        StringManager.getManager(Constants.Package);
+    protected static final StringManagerTemp sm =
+        StringManagerTemp.getManager(Constants.Package);
 
 
     // ----------------------------------------------------------- Constructors

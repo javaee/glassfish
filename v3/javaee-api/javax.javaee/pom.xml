@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+/* 
+* DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER. 
+* 
+* Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved. 
+* 
+* The contents of this file are subject to the terms of either the GNU 
+* General Public License Version 2 only ("GPL") or the Common Development 
+* and Distribution License("CDDL") (collectively, the "License").  You 
+* may not use this file except in compliance with the License. You can obtain 
+* a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html 
+* or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific 
+* language governing permissions and limitations under the License. 
+* 
+* When distributing the software, include this License Header Notice in each 
+* file and include the License file at glassfish/bootstrap/legal/LICENSE.txt. 
+* Sun designates this particular file as subject to the "Classpath" exception 
+* as provided by Sun in the GPL Version 2 section of the License file that 
+* accompanied this code.  If applicable, add the following below the License 
+* Header, with the fields enclosed by brackets [] replaced by your own 
+* identifying information: "Portions Copyrighted [year] 
+* [name of copyright owner]" 
+* 
+* Contributor(s): 
+* 
+* If you wish your version of this file to be governed by only the CDDL or 
+* only the GPL Version 2, indicate your decision by adding "[Contributor] 
+* elects to include this software in this distribution under the [CDDL or GPL 
+* Version 2] license."  If you don't indicate a single choice of license, a 
+* recipient has the option to distribute your version of this file under 
+* either the CDDL, the GPL Version 2 or to extend the choice of license to 
+* its licensees as provided above.  However, if you add GPL Version 2 code 
+* and therefore, elected the GPL Version 2 license, then the option applies 
+* only if the new code is made subject to such option by the copyright 
+* holder. 
+*/ 
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <parent>
+        <groupId>org.glassfish</groupId>
+        <artifactId>javaee-api</artifactId>
+        <version>10.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.glassfish</groupId>
+    <artifactId>javax.javaee</artifactId>
+    <packaging>jar</packaging>
+    <name>Java(TM) EE Specification APIs Repackaged as HK2 module and OSGi bundle</name>
+
+    <properties>
+        <bundle-version>10.0.0.SNAPSHOT</bundle-version>
+        <require-bundle-property>bundle-version="[${bundle-version},${bundle-version}]"; resolution:="mandatory"; visibility:="reexport"
+        </require-bundle-property>
+    </properties>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addDefaultSpecificationEntries>false</addDefaultSpecificationEntries>
+                            <addDefaultImplementationEntries>false</addDefaultImplementationEntries>
+                            <!-- We don't need ClassPath to be generated as the classes are inlined
+                                 until we figure out how to automatically export all exported classes
+                                 of a required bundle.
+                                 -->
+                            <addClasspath>false</addClasspath>
+                        </manifest>
+                        <manifestEntries>
+                            <!-- Standard Extension Entries -->
+                            <Specification-Title>Java(TM) EE Specification API</Specification-Title>
+                            <Specification-Version>5.0</Specification-Version>
+                            <!-- Make it an HK2 module as well -->
+                            <HK2-Export-Package>javax.</HK2-Export-Package>
+                            <HK2-Bundle-Name>${project.groupId}:${project.artifactId}</HK2-Bundle-Name>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <configuration>
+                    <instructions>
+                        <!-- embed all compile and runtime scope dependencies -->
+                        <Embed-Dependency>*;scope=compile;inline=true</Embed-Dependency>
+                        <Export-Package>javax.*</Export-Package>
+                    </instructions>
+                    <!-- Maven uses the output directory (target/classes) 
+                    rather than the final bundle, when compiling against 
+                    projects in the same reactor (ie. the same build).
+                    Since this jar is assembled out of multiple jars and 
+                    we mark those dependencies as "optional," 
+                    we need to unpack the classes.
+                    -->
+                    <unpackBundle>true</unpackBundle>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+    <dependencies>
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.enterprise.deploy</artifactId>
+            <version>${project.version}</version>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.ejb</artifactId>
+            <version>${project.version}</version>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.persistence</artifactId>
+            <version>${project.version}</version>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.servlet</artifactId>
+            <version>${project.version}</version>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.jms</artifactId>
+            <version>${project.version}</version>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.security</artifactId>
+            <version>${project.version}</version>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.resource</artifactId>
+            <version>${project.version}</version>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.annotation</artifactId>
+            <version>${project.version}</version>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.jws</artifactId>
+            <version>${project.version}</version>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.xml.soap</artifactId>
+            <version>${project.version}</version>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.xml.ws</artifactId>
+            <version>${project.version}</version>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.xml.rpc</artifactId>
+            <version>${project.version}</version>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.xml.bind</artifactId>
+            <version>${project.version}</version>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.mail</artifactId>
+            <version>${project.version}</version>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.transaction</artifactId>
+            <version>${project.version}</version>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.servlet.jsp</artifactId>
+            <version>${project.version}</version>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.faces</artifactId>
+            <version>${project.version}</version>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.servlet.jsp.jstl</artifactId>
+            <version>${project.version}</version>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.management.j2ee</artifactId>
+            <version>${project.version}</version>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.activation</artifactId>
+            <version>${project.version}</version>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.xml.stream</artifactId>
+            <version>${project.version}</version>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.security.auth.message</artifactId>
+            <version>${project.version}</version>
+            <optional>true</optional>
+        </dependency>
+    </dependencies>
+</project>
