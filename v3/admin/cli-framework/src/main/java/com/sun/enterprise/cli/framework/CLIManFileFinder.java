@@ -136,6 +136,7 @@ public class CLIManFileFinder
 			  j = 0;
 			}
 		  }
+          CLILogger.getInstance().printDebugMessage("Trying to get this manpage: " + result);
 		  return result;
 		}
 		public void remove() {
@@ -167,6 +168,6 @@ public class CLIManFileFinder
   private static final String[] sections = {
       "1", "1m", "2", "2m", "3", "3m", "4", "4m", "5", "5m", "6", "6m", "7", "7m", "8", "8m", "9", "9m", "5asc"};
 
-  private static final String HELPDIR = "help";
+  private static final String HELPDIR = "com/sun/enterprise/admin/cli";
   
 }
