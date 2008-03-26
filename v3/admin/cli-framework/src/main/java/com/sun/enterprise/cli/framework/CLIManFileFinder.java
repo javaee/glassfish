@@ -109,6 +109,11 @@ public class CLIManFileFinder
 
 
 	InputStream s = null;
+    
+    // special case "help" --> "asadmin"
+    if(commandName.equals("help"))
+        commandName = "asadmin";
+    
 	Iterator it = getPossibleLocations(commandName, locale);
 	while (s == null && it.hasNext()){
 	  s = classLoader.getResourceAsStream((String) it.next());
