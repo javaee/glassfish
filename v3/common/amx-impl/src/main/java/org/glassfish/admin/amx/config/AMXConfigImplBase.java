@@ -41,6 +41,7 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Collections;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Constructor;
@@ -702,7 +703,7 @@ public class AMXConfigImplBase extends AMXImplBase
         final int      numRequiredArgs,
         final String[] paramNames,
         final Map<String,Object> optionalAttrs )
-    {
+    {        
         // verify that there aren't more arguments than parameter names
         if ( numRequiredArgs != 0 )
         {
@@ -718,7 +719,7 @@ public class AMXConfigImplBase extends AMXImplBase
             // verify that optional attributes are not redundant with required ones
             if ( paramNames != null )
             {
-                final Set<String> temp = GSetUtil.newUnmodifiableStringSet( paramNames );
+                final Set<String> temp = GSetUtil.newStringSet( paramNames );
                 temp.retainAll( optionalAttrs.keySet() );
                 // there should be nothing in the set
                 if ( temp.size() != 0 )
@@ -746,10 +747,8 @@ public class AMXConfigImplBase extends AMXImplBase
         
     }
 
-private static final String OPTIONAL_PARAM = "optional";
-
     private static void cdebug( final String s ) { System.out.println(s); }
-
+    
         protected ObjectName
    createConfig(
         final String operationName,
@@ -762,6 +761,10 @@ private static final String OPTIONAL_PARAM = "optional";
         {
             throw new IllegalArgumentException( "Illegal method name for create: " + operationName );
         }
+        
+cdebug( "last ARG = " + args[args.length -1] );
+        final Map<String,Object> empty =Collections.emptyMap();
+        args[args.length-1] = empty;
         
         ObjectName  result  = null;
         
@@ -853,16 +856,12 @@ cdebug( "createConfig: j2eeType = " + j2eeType + ", return type = " + returnType
             allAttrs.put( paramNames[i], value );
         }
   
-cdebug( "createConfig:  creating new ConfigBean of class = " + newItemClass.getName());
         final ConfigBean newConfigBean = ConfigSupport.createAndSet( subInfo.getCreatorParent(), newItemClass, allAttrs);
-cdebug( "createConfig:  CREATED new ConfigBean of class " + newItemClass.getName() + " = " + newConfigBean );
 
         final AMXConfigLoader  amxLoader = SingletonEnforcer.get( AMXConfigLoader.class );
         amxLoader.handleConfigBean( newConfigBean, true );
             
         final ObjectName objectName = newConfigBean.getObjectName();
-        
-cdebug( "createConfig:  ObjectName:  " + JMXUtil.toString(objectName) );
         return objectName;
    }
     
