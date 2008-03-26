@@ -54,7 +54,8 @@ public class IOUtils {
     private static final Logger _ejbLogger =
             EjbContainerUtilImpl.getInstance().getLogger();
 
-    private static J2EEObjectStreamFactory _streamFactory;
+    private static J2EEObjectStreamFactory _streamFactory =
+            new J2EEObjectStreamFactoryImpl();
 
     public static final void setJ2EEObjectStreamFactory(
             J2EEObjectStreamFactory  factory)
