@@ -144,16 +144,17 @@
             <include name="__cp_jdbc_ra.jar"/>
         </jar>
 
+	<delete dir="${component.classes.dir}"/>
 
         <!-- TODO V3 handle XA later
         <unjar src="${component.lib.home}/__xa_jdbc_ra.rar" dest="${component.target.rar}/__xa_jdbc_ra"/>-->
-	<unjar src="${component.lib.home}/__ds_jdbc_ra.rar" dest="${component.target.rar}/__ds_jdbc_ra"/>
-        <unjar src="${component.lib.home}/__cp_jdbc_ra.rar" dest="${component.target.rar}/__cp_jdbc_ra"/>
+	<unjar src="${component.lib.home}/__ds_jdbc_ra.rar" dest="${component.classes.dir}/glassfish/lib/install/applications/__ds_jdbc_ra"/>
+	<unjar src="${component.lib.home}/__cp_jdbc_ra.rar" dest="${component.classes.dir}/glassfish/lib/install/applications/__cp_jdbc_ra"/>
 
-        <zip basedir="${component.target.rar}" file="${component.target.dir}/jdbc-ra.zip"/>
+        <zip basedir="${component.classes.dir}" file="${component.target.dir}/jdbc-ra.zip"/>
 
 	<delete dir="${component.lib.home}"/>
-	<delete dir="${component.target.rar}"/>
+	<!--delete dir="${component.target.rar}"/-->
     </target>
 
 </project>
