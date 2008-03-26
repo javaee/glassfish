@@ -33,8 +33,8 @@ public class StartDomainCommand extends Command {
             launcher.launch();
         }
         catch (Throwable t) {
-            throw new CommandException(getLocalizedString("CommandUnSuccessful",
-                    new Object[]{name, t}), t);
+            throw new CommandException(getLocalizedString("CommandUnSuccessfulWithArg",
+                    new Object[]{name, t.getMessage()}), t);
         }
     }
 }
