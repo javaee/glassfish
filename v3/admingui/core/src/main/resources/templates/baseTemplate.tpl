@@ -15,8 +15,7 @@
     <sun:body>
 
     <sun:form id="form"> 
-// Remove for now
-// #include treeBreadcrumbs.inc
+#include "/treeBreadcrumbs.inc"
 	<!insert name="pageTitle">
             <sun:title title="Default Page Title" />
 	</insert>

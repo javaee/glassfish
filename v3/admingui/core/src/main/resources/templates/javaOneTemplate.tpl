@@ -1,4 +1,4 @@
-<!composition template="templates/propertySheet.tpl">
+<!composition template="/templates/propertySheet.tpl">
 <!define name="pageTitle">
     <sun:title id="j1PageTitle"
 	title="Customizing Glassfish Administration Console Lab Exercise" />
