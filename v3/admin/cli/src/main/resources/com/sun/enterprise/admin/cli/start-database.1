@@ -1,0 +1,107 @@
+
+Administration Commands                         start-database(1)
+
+NAME
+     start-database - starts the Java DB
+
+SYNOPSIS
+     start-database  [--dbhost 0.0.0.0] [--dbport 1527]
+     [--dbhome DERBY_INSTALL] [--echo=false]
+     [--terse=false]
+
+DESCRIPTION
+     The start-database command starts the Java DB server that is
+     available  with  the  Sun  Java  System  Application  Server
+     software for use with the Application Server. Use this  com-
+     mand  only  for  working  with  applications deployed to the
+     Application Server. Java DB is based upon Apache Derby.
+
+     When the Java DB database server is started using this  com-
+     mand, the database server is started in Network Server mode.
+     Clients connecting to it must use the Java DB  ClientDriver.
+     For  details  on  connecting  to  the  database, such as the
+     Driver Class Name and Connection URL, see the  Apache  Derby
+     documentation.
+
+     When the database server starts, or a client connects to  it
+     successfully, two types of files are created:
+
+         o    The  derby.log  file  that  contains  the  database
+              server  process  log along with its standard output
+              and standard error information.
+
+         o    The database files that contain  your  schema  (for
+              example, database tables).
+
+     Both types of files are created at the location specified by
+     the  --dbhome  option.  When  --dbhome is not specified, the
+     default is the value of  DERBY_INSTALL,  which  defaults  to
+     install-dir/javadb.  It  is  important  to  use the --dbhome
+     option when you want to create the database files at a  par-
+     ticular  location.  The  start-database  command  starts the
+     database process, even if it cannot write to the log file.
+
+     This command is supported in local mode only.
+
+OPTIONS
+     --dbhost
+
+         The host name or IP address of the Java DB  server  pro-
+         cess.  The  default  is  the  IP  address 0.0.0.0, which
+         denotes all network interfaces on the host where you run
+
+Java EE 5           Last change: 30 Jan 2007                    1
+
+Administration Commands                         start-database(1)
+
+         the start-database command.
+
+     --dbport
+
+         The port number where the Java  DB  server  listens  for
+         client  connections. This port must be available for the
+         listen socket, otherwise the database  server  will  not
+         start. The default is 1527.
+
+     --dbhome
+         The absolute path to the directory where Java DB and the
+         derby.log    files   are   created.   The   default   is
+         DERBY_INSTALL.
+
+     -e --echo
+
+         Setting to true will echo the command line statement  on
+         the standard output. Default is false.
+
+     -t --terse
+         Setting to false displays detailed database information.
+         Default is false.
+
+EXAMPLES
+     Example 1 Using the start-database command
+
+     The following command starts Java DB on the host  host1  and
+     port 5001:
+
+       asadmin> start-database --dbhost host1 --dbport 5001 --terse=true
+       Starting database in the background.  Log redirected to
+       /opt/SUNWappserver/javdb/derby.log.
+
+EXIT STATUS
+     The exit status applies to errors in executing  the  asadmin
+     command.   For  information  on  database  errors,  see  the
+     derby.log file.
+
+     0                           command executed successfully
+
+     1                           error in executing the command
+
+Java EE 5           Last change: 30 Jan 2007                    2
+
+Administration Commands                         start-database(1)
+
+SEE ALSO
+     stop-database(1)
+
+Java EE 5           Last change: 30 Jan 2007                    3
+

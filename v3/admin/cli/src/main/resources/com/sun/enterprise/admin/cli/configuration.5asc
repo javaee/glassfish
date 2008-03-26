@@ -1,0 +1,18 @@
+
+Application Server Concepts                   configuration(5ASC)
+
+NAME
+     configuration  -  Application  server  instances,   deployed
+     applications,  resources, domains each have their own confi-
+     gurations
+
+DESCRIPTION
+     You can change the configurations for  JMS  resources,  HTTP
+     connectors,  clusters,  load  balancers. Use the the asadmin
+     commands to configure these elements.
+
+SEE ALSO
+     configure-lb-weight(1)
+
+Java EE 5           Last change: 22 Dec 2004                    1
+

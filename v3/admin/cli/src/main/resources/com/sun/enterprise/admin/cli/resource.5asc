@@ -1,0 +1,15 @@
+
+Application Server Concepts                        resource(5ASC)
+
+NAME
+     resources - Provide connectivity to various types of EIS .
+
+DESCRIPTION
+     Application Server provides  support  JDBC,  JMS,  and  JNDI
+     resources.
+
+SEE ALSO
+     asadmin(1)
+
+Java EE 5           Last change: 22 Dec 2004                    1
+
