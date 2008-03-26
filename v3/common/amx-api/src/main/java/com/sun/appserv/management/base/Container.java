@@ -48,8 +48,14 @@ public interface Container extends AMX
 {
 	/**
 		Attribute returned by getContaineeJ2EETypes().
+        @see #getContaineeJ2EETypes
 	 */
 	public static final String	ATTR_CONTAINEE_J2EE_TYPES	= "ContaineeJ2EETypes";
+    
+	/**
+		Attribute returned by getContaineeSet().
+	 */
+	public static final String	ATTR_CONTAINEE_OBJECT_NAME_SET	= "ContaineeObjectNameSet";
 	
 	/**
 		@return Set of String of all <i>possible</i> j2eeTypes contained within this item

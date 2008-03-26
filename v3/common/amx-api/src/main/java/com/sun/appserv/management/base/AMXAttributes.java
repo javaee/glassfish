@@ -35,6 +35,9 @@
  */
 package com.sun.appserv.management.base;
 
+import java.util.Set;
+
+import com.sun.appserv.management.util.misc.GSetUtil;
 
 /**
 	Attributes available within the MBean every AMX references.
@@ -64,6 +67,12 @@ public final class AMXAttributes
 	public static final String	ATTR_CONTAINER_OBJECT_NAME		= "ContainerObjectName";
 	
 	/**
+		Attribute of type ObjectName.
+		@see Extra#getInterfaceName
+	 */
+	public static final String	DOMAIN_ROOT_OBJECT_NAME		= "DomainRootObjectName";
+	
+	/**
 		Attribute of type boolean.
 		@see Extra#getMBeanInfoIsInvariant
 	 */
@@ -86,10 +95,36 @@ public final class AMXAttributes
 		@see AMX#getName
 	 */
 	public static final String	ATTR_NAME	= "Name";
-	
+    
+	/**
+	 */
+	public static final String	ATTR_J2EE_TYPE		= "J2EEType";
+
 	/**
 		Attribute of type String[]
 		@see Extra#getAttributeNames
 	 */
 	public static final String	ATTR_ATTRIBUTE_NAMES		= "AttributeNames";
+    
+    
+    /**
+       @since Glassfish V3
+       These must all be JMX attribute names exposed by AMX MBeans.
+     */
+    public static final Set<String> AMX_ATTR_NAMES = GSetUtil.newUnmodifiableStringSet(
+        ATTR_OBJECT_NAME,
+        ATTR_INTERFACE_NAME, 
+        ATTR_CONTAINER_OBJECT_NAME,
+        ATTR_MBEAN_INFO_IS_INVARIANT,
+        ATTR_FULL_TYPE,
+        ATTR_GROUP,
+        ATTR_NAME,
+        ATTR_ATTRIBUTE_NAMES,
+        ATTR_J2EE_TYPE,
+        DOMAIN_ROOT_OBJECT_NAME,
+        Container.ATTR_CONTAINEE_J2EE_TYPES,
+        Container.ATTR_CONTAINEE_OBJECT_NAME_SET );
 }
+
+
+
