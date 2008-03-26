@@ -1178,7 +1178,7 @@ cdebug( "createConfig: j2eeType = " + j2eeType + ", return type = " + returnType
         final DelegateToConfigBeanDelegate delegate = getConfigDelegate();
         
         String attrType = String.class.getName();
-        String amxAttrName = NameMapping.getAMXName( xmlAttrName );
+        String amxAttrName = NameMapping.getInstance(getJ2EEType()).getAMXName( xmlAttrName );
         if ( amxAttrName == null )
         {
             cdebug( "issueAttributeChangeForXmlAttrName: can't find AMX name for: " + xmlAttrName + ", using xmlName for now" );

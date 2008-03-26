@@ -77,7 +77,8 @@ public abstract class DelegateBase implements Delegate
 	}
 	
 		public
-	DelegateBase( final String id )
+	DelegateBase(
+        final String id )
 	{
 	    mID = id;
 		//mAttributeNames	= null;

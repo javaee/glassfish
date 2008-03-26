@@ -39,46 +39,87 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.sun.appserv.management.base.AMXAttributes;
+
 /**
     Maintains a cache from AMX Attribute names to XML attribute names.
-    Does <em>not</em> allow for different mapping from the same AMX Attribute name to many
-    different Xml names.
+    Because Attributes of the same AMX name could map to different XML names
+    (eg Name => name or Name => id), a distinct mapping must be maintained for every j2eeType.
  */
 final class NameMapping
 {
-    private static final NameMapping INSTANCE = new NameMapping();
+    /**
+        One Map for every j2eeType.
+     */
+    private static final ConcurrentMap<String,NameMapping>  INSTANCES = new ConcurrentHashMap<String,NameMapping>();
     
-    private NameMapping() {}
-    
+    private final String mJ2EEType;
     private final ConcurrentMap<String,String>  mAMXToXML = new ConcurrentHashMap<String,String>();
     private final ConcurrentMap<String,String>  mXMLToAMX = new ConcurrentHashMap<String,String>();
+    
+    private NameMapping( final String j2eeType )
+    {
+        mJ2EEType = j2eeType;
+    }
+    
+    private static void debug( final String s ) { System.out.println(s); }
+    
+        public static NameMapping
+    getInstance( final String j2eeType )
+    {
+        NameMapping inst = INSTANCES.get(j2eeType);
+        if ( inst == null )
+        {
+            final NameMapping newInst = new NameMapping(j2eeType) ;
+            final NameMapping existing = INSTANCES.putIfAbsent( j2eeType, newInst);
+            inst = existing != null ? existing : newInst;
+        }
+        
+        return inst;
+    }
+    
     
     /**
         Given an AMX name, get the XML name.
      */
-        public static String
+        public String
     getXMLName( final String amxName )
     {
-        return INSTANCE.mAMXToXML.get( amxName );
+        return mAMXToXML.get( amxName );
     }
     
     /**
         Given an XML name, get the AMX name.
      */
-        public static String
+        public String
     getAMXName( final String xmlName )
     {
-        return INSTANCE.mXMLToAMX.get( xmlName );
+        return mXMLToAMX.get( xmlName );
     }
 
+        public void
+    pairNames( final String amxName, final String xmlName )
+    {
+        mAMXToXML.put( amxName, xmlName );
+        mXMLToAMX.put( xmlName, amxName );
+    }
     
     /** 
         Match the AMX attribute name to an XML attribute name, adding it to the cache
         as a side-effect.
      */
-        public static String
+        public String
     matchAMXName( final String amxName, final Set<String> xmlCandidates )
     {
+        // the only AMX Attribute that we pass through is ATTR_NAME, which maps to
+        // a real attribute in config. So don't waste time on any AMX attributes
+        // which don't exist in config.
+        if ( AMXAttributes.AMX_ATTR_NAMES.contains(amxName) &&
+            ! AMXAttributes.ATTR_NAME.equalsIgnoreCase(amxName) )
+        {
+            return null;
+        }
+        
         final String amxCanonical = amxName.toLowerCase();
         String xmlName = null;
         
@@ -94,8 +135,7 @@ final class NameMapping
         
         if ( xmlName != null )
         {
-            INSTANCE.mAMXToXML.put( amxName, xmlName );
-            INSTANCE.mXMLToAMX.put( xmlName, amxName );
+            pairNames( amxName, xmlName );
         }
         
         return xmlName;

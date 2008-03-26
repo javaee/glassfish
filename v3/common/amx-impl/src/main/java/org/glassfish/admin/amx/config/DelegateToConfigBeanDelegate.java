@@ -66,6 +66,7 @@ import org.jvnet.hk2.config.TransactionFailure;
 import org.jvnet.hk2.config.Dom;
 
 
+import com.sun.appserv.management.base.AMXAttributes;
 import com.sun.appserv.management.config.AMXConfig;
 import com.sun.appserv.management.config.PropertyConfig;
 
@@ -79,6 +80,7 @@ import org.glassfish.api.amx.AMXConfigInfo;
 import org.glassfish.admin.amx.mbean.Delegate;
 import org.glassfish.admin.amx.mbean.DelegateBase;
 
+import org.glassfish.admin.amx.util.AMXConfigInfoResolver;
 
 /**
 	Delegate which delegates to another MBean.
@@ -86,9 +88,28 @@ import org.glassfish.admin.amx.mbean.DelegateBase;
 public final class DelegateToConfigBeanDelegate extends DelegateBase
 {
 	private final ConfigBean mConfigBean;
+    private final NameMapping mNameMapping;
     
     private static void debug( final String s ) { System.out.println(s); }
 	
+        private static AMXConfigInfoResolver
+    getAMXConfigInfoResolver( final ConfigBean cb )
+    {
+        final Class<? extends ConfigBeanProxy> proxyClass = cb.getProxyType();
+        final AMXConfigInfo amxConfigInfo = proxyClass.getAnnotation( AMXConfigInfo.class );
+        if ( amxConfigInfo == null )
+        {
+            throw new IllegalArgumentException();
+        }
+        return new AMXConfigInfoResolver( amxConfigInfo );
+    }
+    
+        private static String
+    getJ2EEType( final ConfigBean cb )
+    {
+        return getAMXConfigInfoResolver(cb).j2eeType();
+    }
+    
 		public
 	DelegateToConfigBeanDelegate(
         final ConfigBean configBean )
@@ -96,6 +117,7 @@ public final class DelegateToConfigBeanDelegate extends DelegateBase
 		super( "DelegateToConfigBeanDelegate." + configBean.toString() );
 		
 		mConfigBean	= configBean;
+        mNameMapping    = NameMapping.getInstance( getJ2EEType(configBean) );
 	}
 	
     public ConfigBean getConfigBean() { return mConfigBean; }
@@ -110,22 +132,48 @@ public final class DelegateToConfigBeanDelegate extends DelegateBase
 	}
     
     /**
+        Utilize AMXConfigInfo for arbitrary name mappings, at least nameHint()
+     */
+        private String
+    smartNameFind( final String amxName )
+    {
+        String xmlName = null;
+        // look for nameHint() in annotation
+       if ( amxName.equals( AMXAttributes.ATTR_NAME ) )
+       {
+            final AMXConfigInfoResolver info = getAMXConfigInfoResolver( mConfigBean );
+            final String hint = info.nameHint();
+            if ( hint != null && hint.length() != 0 )
+            {
+                //debug( "smartNameFind: mapped " + amxName + " to " + hint + " for " + info.amxInterface().getName() ); 
+                xmlName = hint;
+            }
+   }
+       return xmlName;
+    }
+    
+    /**
         Get the XML attribute name corresponding to the AMX attribute name.
      */
         private final String
     getXMLName( final String amxName )
     {
-       //debug( "getXMLName " + amxName );
-       //debug( "Leaf element names: " + CollectionUtil.toString(mConfigBean.getLeafElementNames()) );
-       
-        String xmlName = NameMapping.getXMLName( amxName );
+        String xmlName = mNameMapping.getXMLName( amxName );
         if ( xmlName == null )
         {
-            final Set<String> xmlNames = mConfigBean.getAttributeNames();
-            //debug( "Attribute names: " + CollectionUtil.toString( xmlNames ) );
-            
-            xmlName = NameMapping.matchAMXName( amxName, xmlNames );
-            //debug( "Matched: " + amxName + " => " + xmlName );
+            xmlName = smartNameFind( amxName );
+            if ( xmlName == null )
+            {
+                final Set<String> xmlNames = mConfigBean.getAttributeNames();
+                //debug( "Attribute names: " + CollectionUtil.toString( xmlNames ) );
+                
+                xmlName = mNameMapping.matchAMXName( amxName, xmlNames );
+                //debug( "Matched: " + amxName + " => " + xmlName );
+            }
+            else
+            {
+                mNameMapping.pairNames( amxName, xmlName );
+            }
         }
         
         //debug( "getXMLName " + amxName + " => " + xmlName );
@@ -292,12 +340,6 @@ public final class DelegateToConfigBeanDelegate extends DelegateBase
         }
     
 		return successfulAttrs;
-	}
-	
-		public MBeanInfo
-	getMBeanInfo()
-	{
-		return( null );
 	}
     
 		private void
