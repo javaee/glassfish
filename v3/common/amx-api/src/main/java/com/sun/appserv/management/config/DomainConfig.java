@@ -935,16 +935,6 @@ public interface DomainConfig
 		@return Map, keyed by name of {@link CustomMBeanConfig}.
 	 */
 	public Map<String,CustomMBeanConfig>    getCustomMBeanConfigMap();
-	
-	/**
-        @param j2eeType the j2eeType of any {@link AMXConfig} (all items having a group of
-        {@link AMX#GROUP_CONFIG}. See {@link XTypes}.
-        
-		@return a Map whose keys are the <b>domain.xml</b> names,
-          and whose values are the default value for that attribute.  Not all Attributes
-          have default values available.
-	 */
-	public Map<String,String>	getDefaultAttributeValues( final String j2eeType );
 }
 
 
