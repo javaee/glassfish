@@ -70,6 +70,8 @@ public class OSGiPackager {
      * 1. No version range support in Require-Bundle
      * 2. Does not yet calculate Export-Package
      */
+     
+    private static final Logger logger = Logger.getAnonymousLogger();
 
     /**
      * Reads information from the POM and the artifact archive to configure
@@ -135,10 +137,6 @@ public class OSGiPackager {
         if (entries.get(REQUIRE_BUNDLE) == null) {
             String requiredBundles = generateRequireBundleHeader(discoverRequiredBundles(pom));
             if (requiredBundles.length()>0) {
-                // TODO
-                // Commented for the moment so that I can generate glassfish osgi bundles using
-                // bnd plugin. Otherwise it was failing to load
-                // com.sun.enterprise.v3.server.StAXParserFactoryclass.getClassLoader
                 entries.put(REQUIRE_BUNDLE, requiredBundles);
             }
         }
@@ -281,7 +279,7 @@ public class OSGiPackager {
                         }
                         final String packagePath = dir.getPath().substring(classesDirectory.getPath().length()+1);
                         String packageName = packagePath.replace(File.separatorChar, '.');
-                        Logger.global.fine("packageName = " + packageName);
+                        logger.fine("packageName = " + packageName);
                         final ExportedPackage ep = new ExportedPackage(packageName);
                         if (!packages.contains(ep)) {
                             packages.add(ep);

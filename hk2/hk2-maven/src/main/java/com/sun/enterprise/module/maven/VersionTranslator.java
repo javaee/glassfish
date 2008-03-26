@@ -69,7 +69,7 @@ class VersionTranslator {
      * Since they differ, we need to translate.
      */
 
-    private static Logger logger = Logger.global;
+    private static Logger logger = Logger.getAnonymousLogger();
 
     /**
      * Translates Maven Version String to OSGi Version String
