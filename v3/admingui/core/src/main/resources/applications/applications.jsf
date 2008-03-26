@@ -39,14 +39,14 @@
      <!beforeCreate 
      setResourceBundle(key="i18n" bundle="core.Strings")
      />
-#include "shared/restart.inc"
+#include "/shared/restart.inc"
      <sun:html>
          <sun:head id="appsHead" title="$resource{i18n.appsPageTitle}">
              <sun:script url="/resource/js/restart.js" />
          </sun:head>
          <sun:body onLoad="javascript: synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
              <sun:form id="appsForm"> 
-  #include treeBreadcrumbs.inc
+#include "/treeBreadcrumbs.inc"
                  <sun:title 
                  id="appsPageTitle" 
                  title="$resource{i18n.appsPageTitle}" 
