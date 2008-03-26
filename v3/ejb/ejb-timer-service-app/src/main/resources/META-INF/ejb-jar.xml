@@ -46,7 +46,6 @@
   <enterprise-beans>
     <session>
       <ejb-name>TimerBean</ejb-name>
-      <remote>com.sun.ejb.containers.TimerRemote</remote>
       <local>com.sun.ejb.containers.TimerLocal</local>
       <ejb-class>com.sun.ejb.containers.TimerBean</ejb-class>
       <session-type>Stateless</session-type>
