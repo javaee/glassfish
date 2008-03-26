@@ -117,7 +117,7 @@
             <version>${pe.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.glassfish.connectors</groupId>
+            <groupId>org.glassfish.connectors.jdbc-ra.jdbc-ra-distribution</groupId>
             <artifactId>jdbc-ra</artifactId>
             <version>${jdbc-ra.version}</version>
             <type>zip</type>
