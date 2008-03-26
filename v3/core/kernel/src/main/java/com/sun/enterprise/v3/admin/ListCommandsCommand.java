@@ -23,6 +23,9 @@
 
 package com.sun.enterprise.v3.admin;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
@@ -55,9 +58,19 @@ public class ListCommandsCommand implements AdminCommand {
         ActionReport report = context.getActionReport();
         report.setMessage("List of Commands");
         report.getTopMessagePart().setChildrenType("Command");
-        for (AdminCommand command : habitat.getAllByContract(AdminCommand.class)) {
+        for (String name : sortedAdminCommands()) {
             ActionReport.MessagePart part = report.getTopMessagePart().addChild();
-            part.setMessage(command.getClass().getAnnotation(Service.class).name());
+            part.setMessage(name);
         }
+    }
+    
+    private List<String> sortedAdminCommands() {
+        List<String> names = new ArrayList<String>();
+        for (AdminCommand command : habitat.getAllByContract(AdminCommand.class)) {
+            String name = command.getClass().getAnnotation(Service.class).name();
+            names.add(name);
+        }
+        Collections.sort(names);
+        return (names);
     }
 }
