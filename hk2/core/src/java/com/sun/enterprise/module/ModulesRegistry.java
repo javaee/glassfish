@@ -45,8 +45,6 @@ import java.util.List;
 import java.util.logging.Logger;
 import java.io.PrintStream;
 
-import com.sun.enterprise.module.impl.ClassLoaderProxy;
-
 /**
  * @author Sanjeeb.Sahoo@Sun.COM
  */

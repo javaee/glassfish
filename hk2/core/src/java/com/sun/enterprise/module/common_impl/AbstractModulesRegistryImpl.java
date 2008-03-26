@@ -219,7 +219,7 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry {
      */
     public Module makeModuleFor(String name, String version) throws ResolveError {
         Module module;
-
+        Logger.getAnonymousLogger().info("this.makeModuleFor("+name+ ", " + version + ") called.");
         if(parent!=null) {
             module = parent.makeModuleFor(name,version);
             if(module!=null)        return module;
@@ -235,6 +235,7 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry {
         if (module!=null) {
             module.resolve();
         }
+        Logger.getAnonymousLogger().info("this.makeModuleFor("+name+ ", " + version + ") returned " + module);
         return module;
     }
 
@@ -338,8 +339,13 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry {
             Repository repo = repositories.get(key);
             for (ModuleDefinition moduleDef : repo.findAll()) {
                 if (modules.get(moduleDef.getName())==null) {
-                    add(newModule(moduleDef));
-                    // don't resolve such modules, we just want to know about them
+                    Module newModule = newModule(moduleDef);
+                    if (newModule!=null) {
+                        // When some module can't get installed,
+                        // don't halt proceeding, instead continue
+                        add(newModule);
+                        // don't resolve such modules, we just want to know about them
+                    }
                 }
             }
         }

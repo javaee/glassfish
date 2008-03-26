@@ -59,7 +59,7 @@ import java.net.URI;
 /**
  * @author Sanjeeb.Sahoo@Sun.COM
  */
-public class OSGiModuleImpl implements Module {
+public final class OSGiModuleImpl implements Module {
     private Bundle bundle;
 
     private ModuleDefinition md;
@@ -238,20 +238,21 @@ public class OSGiModuleImpl implements Module {
                 return new ClassLoader() {
                     @Override public synchronized Class<?> loadClass(
                             String name) throws ClassNotFoundException {
-                        logger.logp(Level.INFO, "ModuleImpl", "loadClass", "Loading {0}", name);
-                        final Class aClass = bundle.loadClass(name);
-                        logger.logp(Level.INFO, "ModuleImpl", "loadClass",
-                                name+".class.getClassLoader() = {0}",
-                                aClass.getClassLoader());
+                        logger.logp(Level.INFO, "OSGiModuleImpl", "loadClass", "Loading {0} from bundle: {1}",
+                                new Object[]{name, bundle});
                         if ((bundle.getState() & BundleEvent.STARTED) == 0) {
                             try {
                                 bundle.start();
-                                logger.logp(Level.INFO, "ModuleImpl",
+                                logger.logp(Level.INFO, "OSGiModuleImpl",
                                         "loadClass", "Started bundle {0}", bundle);
                             } catch (BundleException e) {
                                 throw new RuntimeException(e);
                             }
                         }
+                        final Class aClass = bundle.loadClass(name);
+                        logger.logp(Level.INFO, "OSGiModuleImpl", "loadClass",
+                                name+".class.getClassLoader() = {0}",
+                                aClass.getClassLoader());
                         return aClass;
                     }
                 };
@@ -263,12 +264,18 @@ public class OSGiModuleImpl implements Module {
     }
 
     public ClassLoader getClassLoader() {
-        return new ClassLoader() {
-
-            @Override
-            public Class<?> loadClass(String name) throws ClassNotFoundException {
-                return bundle.loadClass(name);
-            }
+        /*
+         * This is a delegating class loader.
+         * It always delegates to OSGi's bundle's class loader.
+         * ClassLoader.defineClass() is never called in the context of this class.
+         * There will never be a class for which getClassLoader()
+         * would return this class loader.
+         * It overrides loadClass(), getResource() and getResources() as opposed to
+         * their findXYZ() equivalents so that the OSGi export control mechanism
+         * is enforced even for classes and resources available in the system/boot
+         * class loader.
+         */
+        return new ClassLoader(Bundle.class.getClassLoader()) {
 
             @Override
             protected synchronized Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
@@ -282,17 +289,22 @@ public class OSGiModuleImpl implements Module {
 
             @Override
             public Enumeration<URL> getResources(String name) throws IOException {
-                return bundle.getResources(name);
-            }
+                Enumeration<URL> resources = bundle.getResources(name);
+                if (resources==null) {
+                    // This check is needed, because ClassLoader.getResources()
+                    // expects us to return an empty enumeration.
+                    resources = new Enumeration<URL>(){
 
-            @Override
-            public InputStream getResourceAsStream(String name) {
-                URL url = getResource(name);
-                try {
-                    return url != null ? url.openStream() : null;
-                } catch (IOException e) {
-                    return null;
+                        public boolean hasMoreElements() {
+                            return false;
+                        }
+
+                        public URL nextElement() {
+                            throw new NoSuchElementException();
+                        }
+                    };
                 }
+                return resources;
             }
 
             @Override

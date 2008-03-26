@@ -15,6 +15,15 @@
     <build>
         <plugins>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
+                    </archive>
+                </configuration>
+            </plugin>
+            <plugin>
                 <groupId>com.sun.enterprise</groupId>
                 <artifactId>hk2-maven-plugin</artifactId>
                 <version>${project.version}</version>
@@ -24,6 +33,27 @@
                         <manifest>
                             <mainClass>com.sun.enterprise.module.bootstrap.Main</mainClass>
                         </manifest>
+                        <manifestEntries>
+                            <Require-Bundle>
+                                ${project.groupId}.auto-depends;visibility:=reexport;resolution:=mandatory,
+                                ${project.groupId}.config;visibility:=reexport;resolution:=mandatory,
+                                ${project.groupId}.hk2-core;visibility:=reexport;resolution:=mandatory
+                            </Require-Bundle>
+                            <Export-Package>
+                                <!-- This is needed for Knopflerfish.
+                                Both Felix and Equinox don't need this, as they
+                                automatically add the reexported packages to export list.
+                                -->
+                                org.jvnet.hk2.component;version=${hk2-osgi-version},
+                                org.jvnet.hk2.annotations;version=${hk2-osgi-version},
+                                com.sun.hk2.component;version=${hk2-osgi-version},
+                                org.jvnet.hk2.config;version=${hk2-osgi-version},
+                                com.sun.enterprise.module;version=${hk2-osgi-version},
+                                com.sun.enterprise.module.bootstrap;version=${hk2-osgi-version},
+                                com.sun.enterprise.module.common_impl;version=${hk2-osgi-version},
+                                com.sun.enterprise.module.impl;version=${hk2-osgi-version}
+                            </Export-Package>
+                        </manifestEntries>
                     </archive>
                 </configuration>
             </plugin>

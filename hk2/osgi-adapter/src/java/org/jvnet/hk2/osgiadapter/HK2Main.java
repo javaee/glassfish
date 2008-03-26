@@ -56,8 +56,11 @@ import org.osgi.util.tracker.ServiceTrackerCustomizer;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.FileFilter;
 import java.util.Collection;
 import java.util.Dictionary;
+import java.util.List;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -101,11 +104,13 @@ public class HK2Main implements
 
         OSGiFactoryImpl.initialize(ctx);
 
-        Repository rep = createRepository();
-
         mr = AbstractFactory.getInstance().createModulesRegistry();
 
-        mr.addRepository(rep);
+        Collection<? extends Repository> reps = createRepositories();
+
+        for (Repository rep : reps) {
+            mr.addRepository(rep);
+        }
 
         // Create and initialize the habitat
         habitat = mr.newHabitat();
@@ -141,12 +146,13 @@ public class HK2Main implements
         st.open(true);
     }
 
-    private Repository createRepository() {
-        Repository rep;
+    private Collection<? extends Repository> createRepositories() {
+        List<Repository> reps = new ArrayList<Repository>();
 
-        rep = new DirectoryBasedRepository(repName, contextRootDir);
+        Repository rep = new DirectoryBasedRepository(repName, contextRootDir);
         try {
             rep.initialize();
+            reps.add(rep);
         } catch (IOException e) {
             try {
                 rep.shutdown();
@@ -155,8 +161,29 @@ public class HK2Main implements
             }
             throw new RuntimeException(e);
         }
-        logger.exiting("HK2Main", "createRepository", rep);
-        return rep;
+        for (File file : contextRootDir.listFiles(
+                new FileFilter() {
+                    public boolean accept(File pathname) {
+                        return pathname.isDirectory();
+                    }
+                }))
+        {
+            rep = new DirectoryBasedRepository(file.getName(), file);
+            try {
+                rep.initialize();
+                reps.add(rep);
+            } catch(IOException e) {
+                try {
+                    rep.shutdown();
+                } catch (IOException e1) {
+                    // ignore as we are shutting down
+                }
+                logger.log(Level.SEVERE, "Cannot initialize repository at " + file.getAbsolutePath(), e);
+            }
+        }
+
+        logger.exiting("HK2Main", "createRepositories", reps);
+        return reps;
     }
 
     public void stop(BundleContext context) throws Exception {

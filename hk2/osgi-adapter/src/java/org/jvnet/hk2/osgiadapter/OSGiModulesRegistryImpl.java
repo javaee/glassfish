@@ -41,15 +41,15 @@ import org.osgi.framework.*;
 import org.osgi.service.packageadmin.PackageAdmin;
 import static org.jvnet.hk2.osgiadapter.Logger.logger;
 import com.sun.enterprise.module.*;
-import com.sun.enterprise.module.impl.ClassLoaderProxy;
 import com.sun.hk2.component.InhabitantsParser;
 
 import java.io.IOException;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Collections;
+import java.util.*;
 import java.util.logging.*;
+import java.net.URL;
+import java.net.URI;
+import java.net.MalformedURLException;
+import java.net.URLClassLoader;
 
 /**
  * @author Sanjeeb.Sahoo@Sun.COM
@@ -75,16 +75,19 @@ public class OSGiModulesRegistryImpl
     }
 
     protected Module newModule(ModuleDefinition moduleDef) {
+        final String location = moduleDef.getLocations()[0].toString();
         try {
-            final String location = moduleDef.getLocations()[0].toString();
-            logger.logp(Level.INFO, "AbstractModulesRegistryImpl", "add",
+            logger.logp(Level.INFO, "OSGiModulesRegistryImpl", "add",
                     "location = {0}", location);
             Bundle bundle = bctx.installBundle(location);
             // wrap Bundle by a Module object
             return new OSGiModuleImpl(this, bundle, moduleDef);
         } catch (BundleException e) {
-            throw new RuntimeException(e);
+            logger.logp(Level.WARNING, "OSGiModulesRegistryImpl", "add",
+                    "Exception {e} while adding location = {0}", new Object[]{e, location});
+//            throw new RuntimeException(e); // continue
         }
+        return null;
     }
 
     protected void parseInhabitants(
@@ -133,7 +136,7 @@ public class OSGiModulesRegistryImpl
      * @return the parent classloader
      */
     public ClassLoader getParentClassLoader() {
-        throw new UnsupportedOperationException("Not Yet Implemented"); // TODO(Sahoo)
+        return Bundle.class.getClassLoader();
     }
 
     /**
@@ -141,14 +144,113 @@ public class OSGiModulesRegistryImpl
      * by their module definition
      *
      * @param parent the parent class loader for the returned class loader instance
-     * @param defs module definitions for all modules this classloader should be capable of loading
+     * @param mds module definitions for all modules this classloader should be capable of loading
      * classes from
      * @return class loader instance
      * @throws com.sun.enterprise.module.ResolveError if one of the provided module definition cannot be resolved
      */
-    public ClassLoader getModulesClassLoader(ClassLoader parent, Collection<ModuleDefinition> defs)
+    public ClassLoader getModulesClassLoader(final ClassLoader parent, Collection<ModuleDefinition> mds)
         throws ResolveError {
-        throw new UnsupportedOperationException("Not Yet Implemented"); // TODO
+        final List<ClassLoader> delegateCLs = new ArrayList<ClassLoader>();
+        final List<Module> delegateModules = new ArrayList<Module>();
+        for (ModuleDefinition md : mds) {
+            Module m = makeModuleFor(md.getName(), md.getVersion());
+            delegateModules.add(m);
+            delegateCLs.add(m.getClassLoader());
+        }
+        return new URLClassLoader(new URL[0], parent) {
+            /*
+             * This is a delegating class loader.
+             * This extends URLClassLoader, because web layer (Jasper to be specific)
+             * expects it to be a URLClassLoader so that it can extract Classpath information
+             * used for javac.
+             * It always delegates to a chain of OSGi bundle's class loader.
+             * ClassLoader.defineClass() is never called in the context of this class.
+             * There will never be a class for which getClassLoader()
+             * would return this class loader.
+             */
+            @Override
+            public URL[] getURLs() {
+                List<URL> result = new ArrayList<URL>();
+                if (parent instanceof URLClassLoader) {
+                    URL[] parentURLs = URLClassLoader.class.cast(parent).getURLs();
+                    result.addAll(Arrays.asList(parentURLs));
+                }
+                for (Module m : delegateModules) {
+                    ModuleDefinition md = m.getModuleDefinition();
+                    URI[] uris = md.getLocations();
+                    URL[] urls = new URL[uris.length];
+                    for (int i = 0; i < uris.length; ++i) {
+                        try {
+                            urls[i] = uris[i].toURL();
+                        } catch (MalformedURLException e) {
+                            logger.warning("Exception " + e + " while converting " + uris[i] + " to URL");
+                        }
+                    }
+                    result.addAll(Arrays.asList(urls));
+                }
+                return result.toArray(new URL[0]);
+            }
+
+            @Override
+            protected Class<?> findClass(String name) throws ClassNotFoundException {
+                for (ClassLoader delegate : delegateCLs) {
+                    try {
+                        return delegate.loadClass(name);
+                    } catch(ClassNotFoundException e) {
+                        // This is expected, so ignore
+                    }
+                }
+                throw new ClassNotFoundException(name);
+            }
+
+            @Override
+            public URL findResource(String name) {
+                URL resource = null;
+                for (ClassLoader delegate : delegateCLs) {
+                    resource = delegate.getResource(name);
+                    if (resource != null) {
+                        return resource;
+                    }
+                }
+                return resource;
+            }
+
+            @Override
+            public Enumeration<URL> findResources(String name) throws IOException {
+                List<Enumeration<URL>> enumerators = new ArrayList<Enumeration<URL>>();
+                for (ClassLoader delegate : delegateCLs) {
+                    Enumeration<URL> enumerator = delegate.getResources(name);
+                    enumerators.add(enumerator);
+                }
+                return new CompositeEnumeration(enumerators);
+            }
+
+            // We need a compound enumeration so that we can aggregate the results from
+            // various delegates.
+            class CompositeEnumeration implements Enumeration<URL> {
+                List<Enumeration<URL>> enumerators;
+                int index = 0; // current position
+
+                public CompositeEnumeration(List<Enumeration<URL>> enumerators) {
+                    this.enumerators = enumerators;
+                }
+
+                public boolean hasMoreElements() {
+                    int size = enumerators.size();
+                    for (Enumeration<URL> e = enumerators.get(index);index < size;index++) {
+                        if (e.hasMoreElements()) {
+                            return true;
+                        }
+                    }
+                    return false;
+                }
+
+                public URL nextElement() {
+                    return enumerators.get(index).nextElement();
+                }
+            }
+        };
     }
 
     public Module find(Class clazz) {
@@ -223,4 +325,5 @@ public class OSGiModulesRegistryImpl
     /*package*/ Module getModule(Bundle bundle) {
         return modules.get(bundle.getHeaders().get(ManifestConstants.BUNDLE_NAME));
     }
+
 }
