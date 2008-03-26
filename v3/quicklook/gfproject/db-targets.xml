@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="db-targets" default="all" basedir=".">
+<target name="startDerby" depends="initprop">
+    <echo message="Starting Derby DB servers in the Network Mode"/>    
+    
+    <java classname="org.apache.derby.drda.NetworkServerControl"
+          classpathref="db.class.path" fork="true" spawn="true">
+        <sysproperty key="derby.system.home" value="${derby.system.home}"/>
+        <arg line="-h localhost -p ${db.port} start"/>
+    </java> 
+    <echo message="Finished starting datbase"/>
+</target>
+
+<target name="stopDerby" depends="initprop">
+    <echo message="Stoping Derby DB servers in the Network Mode"/>
+    
+    <java classname="org.apache.derby.drda.NetworkServerControl"
+          classpathref="db.class.path" fork="true">
+        <sysproperty key="derby.system.home" value="${derby.system.home}"/>
+        <arg line="shutdown -h localhost -p ${db.port}"/>
+    </java> 
+    <echo message="Finished stopping datbase"/>
+</target>
+
+<target name="setup.toplink" if="v3">
+    <!--<property name="download.dir" value="."/>
+    <property name="toplink.url" 
+    value="http://download.java.net/javaee5/v2_branch/promoted/shared/glassfish-persistence/glassfish-persistence-installer-v2-b58g.jar"/>
+    <get src="${toplink.url}"    
+         dest="${download.dir}/toplink.jar" 
+         verbose="true"
+         usetimestamp="true"/>-->
+         
+         <echo message="as a temporary measure,toplink is checked in at ${basedir}/lib"/>
+         <copy todir="${glassfish.home}/lib" verbose="true">
+            <fileset dir="${basedir}/lib/toplink">
+                <include name="**/toplink*.jar"/>
+            </fileset>
+        </copy> 
+    
+</target>
+
+<target name="create-db" depends="initprop,delete-db"
+        description="Create database tables and populate database." >
+    <echo>database=${db.type}</echo>
+    <echo>driver=${db.driver}</echo>
+    <echo>url=${db.url}</echo>
+    <echo>user=${db.user}</echo>
+    <echo>password=${db.password}</echo>
+    <echo>db.class.path=db.class.path</echo>
+    
+    <sql driver="${db.driver}"
+         encoding="utf-8"
+         url="${db.url}"
+         userid="${db.user}"
+         password="${db.password}"
+         classpathref="db.class.path"
+         delimiter="${db.delimiter}"
+         print="true"
+         autocommit="false"
+         onerror="abort" >
+        <transaction src="sql/create_${db.type}.sql"/>
+        <!--<transaction>
+		    select city from web_customer where cust_id=1;
+		    select * from web_customer where custname Like 'Alice_1';
+	    </transaction>-->
+	    
+    </sql>
+    
+</target>
+<target name="delete-db"  
+        description="Deletes the database tables." depends="initprop">
+    <echo>driver=${db.driver}</echo>
+    <echo>url=${db.url}</echo>
+    <echo>user=${db.user}</echo>
+    <echo>password=${db.password}</echo>       
+    <sql driver="${db.driver}"
+         encoding="utf-8"
+         url="${db.url}"
+         userid="${db.user}"
+         password="${db.password}"
+         classpathref="db.class.path"
+         delimiter="${db.delimiter}"
+         autocommit="true"
+         onerror="continue">       
+        <transaction src="sql/drop_${db.type}.sql"/>
+    </sql>
+</target>
+
+<target name="initprop" >
+	<property name="db.root" value="${glassfish.home}/javadb"/>
+    <echo message="JavaDB Database Location: ${db.root}" />
+    <path id="db.class.path">
+        <fileset dir="${glassfish.home}/javadb/lib">
+            <include name="*.jar"/>
+        </fileset>
+    </path> 
+</target>
+</project>

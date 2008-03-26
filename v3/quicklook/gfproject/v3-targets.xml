@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="v3-targets" default="all" basedir=".">
+    
+    <property name="db.root" value="${glassfish.home}/javadb"/>
+    <property name="db.classpath" value="${db.root}/lib"/>
+    <property name="war.file.ext" value="${war.file}.war"/>
+    <property name="deployed.app" value=""/>
+    <!--<property name="db.classpath" value="${db.root}/lib/derby.jar:${db.root}/lib/derbyclient.jar:${db.root}/lib/derbynet.jar"/>-->
+
+
+<target name="setOSConditions">
+  <condition property="isUnix">
+    <os family="unix"/>
+  </condition>
+  <condition property="isWindows">
+    <os family="windows" />
+  </condition>
+</target>
+
+<target name="start-server-common">
+    <echo>+-----------------------------+</echo>
+    <echo>|                             |</echo>
+    <echo>| S T A R T I N G   GLASSFISH |</echo>
+    <echo>|                             |</echo>
+    <echo>+-----------------------------+</echo>
+    <condition property="isWindows">
+        <os family="windows"/>
+    </condition>
+    
+    <condition property="isUNIX">
+        <os family="unix"/>
+    </condition>
+    
+    <antcall target="start-server-unix"/>
+    <antcall target="start-server-windows"/>
+</target>
+
+<target name="start-server-unix" if="isUNIX">
+    <exec executable="${glassfish.home}/bin/asadmin" spawn="true">        
+        <arg value="start-domain"/>
+    </exec>
+
+</target>
+
+<target name="start-server-windows" if="isWindows">
+    
+    <exec executable="cmd" spawn="true">	
+        <arg value="/c"/>
+        <arg value="${glassfish.home}/bin/asadmin"/>
+        <arg value="start-domain"/>
+    </exec>
+    
+</target>
+
+<target name="stop-server">
+    <echo message="stopping server"/>
+    
+     <exec executable="cmd" osfamily="windows">	
+         <arg value="/c"/>
+         <arg value="${glassfish.home}/bin/asadmin.bat"/>
+         <arg value="stop-domain"/>
+     </exec>
+         
+     <exec executable="${glassfish.home}/bin/asadmin" osfamily="unix">        
+        <arg value="stop-domain"/>
+    </exec>
+   
+</target>
+
+
+<target name="stop-server-unix" if="isUNIX">
+    <exec executable="${glassfish.home}/bin/asadmin">        
+        <arg value="stop-domain"/>
+    </exec>
+</target>
+
+<target name="stop-server-windows" if="isWindows">
+    <exec executable="cmd" >
+        <arg value="/c"/>
+        <arg value="${glassfish.home}/bin/asadmin"/>
+        <arg value="stop-domain"/>
+    </exec>
+</target>
+    
+      
+<target name="deploy-v3-impl" depends="setOSConditions">
+    <echo message="glassfish.home is ${glassfish.home}"/>
+    <echo message="deploying in v3 mode"/>
+    <echo message="./${war.file.ext}"/>
+    <echo message="OS is ${os.name}"/>    
+
+    <echo message="Please access URL http://${glassfish.http.host}:${glassfish.http.port}/${contextroot}"/>
+    <antcall target="deploy-v3-impl-unix"/>
+    <antcall target="deploy-v3-impl-windows"/>
+</target>
+
+<target name="deploy-v3-impl-windows" if="isWindows">
+   <exec executable="cmd">
+    <arg value="/c"/>
+    <arg value="${glassfish.home}/bin/asadmin.bat"/>
+    <arg value="deploy"/>
+    <arg value="--path"/>
+    <arg value="--upload=false"/>
+    <arg line="${deployed.app}"/>   
+   </exec>  
+</target>
+  
+<target name="deploy-v3-impl-unix" if="isUnix">
+  <exec executable="${glassfish.home}/bin/asadmin">
+    <arg value="deploy"/>
+    <arg value="--path"/>
+    <arg line="${deployed.app}"/>
+  </exec>
+</target>
+
+<target name="undeploy-v3-impl">
+    <echo message="undeploying in v3 mode"/>
+    <echo message="./${war.file.ext}"/>
+    
+    <antcall target="undeploy-v3-impl-unix"/>
+    <antcall target="undeploy-v3-impl-windows"/>
+</target>
+
+<target name="undeploy-v3-impl-windows" if="isWindows">
+    <exec executable="cmd">
+    <arg value="/c"/>
+    <arg value="${glassfish.home}/bin/asadmin.bat"/>
+    <arg value="undeploy"/>    
+    <arg value="${war.file}"/>
+  </exec>  
+</target>
+  
+<target name="undeploy-v3-impl-unix" if="isUnix">
+  <exec executable="${glassfish.home}/bin/asadmin">
+    <arg value="undeploy"/>
+    <arg value="${war.file}"/>
+  </exec>      
+</target>
+
+<target name="start-server">
+    <echo>+-----------------------------+</echo>
+    <echo>|                             |</echo>
+    <echo>| S T A R T I N G   GLASSFISH |</echo>
+    <echo>|                             |</echo>
+    <echo>+-----------------------------+</echo>
+    <echo message="glassfish.home is ${glassfish.home}"/>
+    
+    <echo message="OS is ${os.name}"/>    
+    <exec executable="cmd" osfamily="Windows">
+    <arg value="/c"/>
+    <arg value="${glassfish.home}/bin/asadmin.bat"/>
+    <arg value="start-domain"/>
+    <arg value="domain1"/>
+  </exec>  
+  
+  <exec executable="${glassfish.home}/bin/asadmin" osfamily="unix">
+    <arg value="start-domain"/>
+    <arg value="domain1"/>
+   </exec>
+</target>
+
+
+
+
+</project>
+

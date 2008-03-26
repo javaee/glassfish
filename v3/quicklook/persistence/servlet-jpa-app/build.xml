@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--Author Deepa Singh deepa.singh@gmail.com -->
+
+<project name="jpa-servlet" default="default" basedir=".">
+    <property file="build.properties"/>
+    <property file="${ws.root}/gfproject/${deploy.platform}-config.properties"/>
+    <property file="${ws.root}/gfproject/${db.type}.properties"/>
+    
+    <description>Builds, tests, and runs the project Hello JSP Application</description>
+    <import file="${ws.root}/gfproject/build-impl.xml"/>   
+    <import file="${ws.root}/gfproject/${deploy.platform}-targets.xml"/>
+    <import file="${ws.root}/gfproject/db-targets.xml"/>
+    
+    
+    <target name="all" depends="build,setup,deploy,runtest,undeploy"/>
+    
+       
+    <target name="build">
+         <property name="war.file.ext" value="${war.file}.war"/>
+        <antcall target="build-impl"/>
+    </target>  
+    
+    <target name="setup">
+        <antcall target="create-db"/>
+        <echo message="using default JavaDB connection pool"/>
+    </target>
+    
+    
+    <target name="deploy" depends="setup">
+        <antcall target="deploy-${deploy.platform}-impl">
+            <param name="deployed.app" value="${war.file}.war"/>
+        </antcall>
+    </target>
+    
+    <target  name="runtest"> 
+        <antcall target="runtest-impl">
+        <param name="testng.test.name" value="${testng.test.name}"/>
+        <param name="testng.testclient" value="PersistenceTestNG"/>
+        </antcall>
+        
+    </target>
+    
+    <target name="undeploy">
+        <antcall target="undeploy-${deploy.platform}-impl"/>
+    </target>
+    
+    
+</project>

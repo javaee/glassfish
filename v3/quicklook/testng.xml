@@ -1,0 +1,35 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+ 
+<suite name="FunctionalTests" verbose="2" >
+  <test name="web_jspservlet_war">
+  <!--<groups>
+      <run>
+	<include name="pulse"/>
+	</run>
+  </groups>-->
+    <classes>
+       <class name="test.web.jsp.hello.HelloJSPTestNG" />
+    </classes>
+  </test>
+  <!--test name="jpa_jspservlet_war">
+   <classes>
+       <class name="test.PersistenceTestNG" />
+    </classes>
+  </test -->
+  <test name="web_struts_basic">
+    <classes>
+       <class name="test.web.strutsbasic.StrutsWebTestNG" />
+    </classes>
+  </test>
+  <test name="jsf_hello_world">
+    <classes>
+       <class name="test.jsf.astrologer.JSFWebTestNG" />
+    </classes>
+  </test>
+   <!--<test name="ejb30_session_hello">
+    <classes>
+       <class name="ejb30.session.hello.test.TestClient" />
+    </classes>
+  </test>--> 
+</suite>
+
