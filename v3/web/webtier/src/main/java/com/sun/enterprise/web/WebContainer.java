@@ -241,7 +241,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         _modulesWorkRoot = instance.getWebModuleCompileJspPath();
         _appsWorkRoot = instance.getApplicationCompileJspPath();
         _modulesRoot = instance.getApplicationRepositoryPath();
-
+        
         setTldScan();
 
         // START S1AS 6178005
@@ -317,6 +317,9 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         }
         
         _embedded = new EmbeddedWebContainer(_logger, _serverContext, this, logServiceFile);
+        
+        _embedded.setCatalinaHome(instance.getDomainRoot());
+        _embedded.setCatalinaBase(instance.getDomainRoot());
         _embedded.setUseNaming(false);
         if (_debug > 1)
             _embedded.setDebug(_debug);
