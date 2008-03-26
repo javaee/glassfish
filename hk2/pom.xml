@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.sun.enterprise</groupId>
     <artifactId>hk2-parent</artifactId>
     <packaging>pom</packaging>
-    
+
     <version>0.2-SNAPSHOT</version>
     <properties>
-       <!-- Sice OSGi versioning scheme differs from Maven versioning scheme,
-            every time we change Maven version, we need to change the OSGi
-            version (below property) as well. -->
-       <hk2-osgi-version>0.2.0.SNAPSHOT</hk2-osgi-version>
+        <!-- Sice OSGi versioning scheme differs from Maven versioning scheme,
+   every time we change Maven version, we need to change the OSGi
+   version (below property) as well. -->
+        <hk2-osgi-version>0.2.0.SNAPSHOT</hk2-osgi-version>
     </properties>
     <name>Modules Subsystem</name>
     <description>Generic Modules subsystem</description>
@@ -103,13 +104,13 @@
             <url>http://download.java.net/maven/1/</url>
         </repository>
     </repositories>
-	<pluginRepositories>
-		<pluginRepository>
-			<id>glassfish-repository</id>
-			<name>Glassfish repository</name>
-	        <url>http://download.java.net/maven/glassfish/</url>
+    <pluginRepositories>
+        <pluginRepository>
+            <id>glassfish-repository</id>
+            <name>Glassfish repository</name>
+            <url>http://download.java.net/maven/glassfish/</url>
         </pluginRepository>
-	</pluginRepositories>
+    </pluginRepositories>
     <reporting>
         <plugins>
             <plugin>
@@ -131,6 +132,19 @@
                     <source>1.5</source>
                     <target>1.5</target>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
@@ -160,17 +174,17 @@
 
     <!-- no 'auto-depends-test' module during release.  -->
     <profiles>
-      <profile>
-        <id>debug</id>
-        <activation>
-          <activeByDefault>true</activeByDefault>
-        </activation>
-        <modules>
-          <module>auto-depends-tests</module>
-        </modules>
-      </profile>
-      <profile>
-        <id>release</id>
-      </profile>
+        <profile>
+            <id>debug</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <modules>
+                <module>auto-depends-tests</module>
+            </modules>
+        </profile>
+        <profile>
+            <id>release</id>
+        </profile>
     </profiles>
 </project>
