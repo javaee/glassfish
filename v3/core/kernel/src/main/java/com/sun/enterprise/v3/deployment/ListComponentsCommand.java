@@ -144,15 +144,17 @@ public class ListComponentsCommand extends ApplicationLifecycle implements Admin
     String getSnifferEngines(final Application app) {
         final List<Engine> engineList = app.getEngine();
         StringBuffer se = new StringBuffer();
-        se.append("<");
-        for (Engine engine : engineList) {
-            final String engType = engine.getSniffer();
-            if (displaySnifferEngine(engType)) {
-                se.append(engine.getSniffer() + ", ");
+        if (!engineList.isEmpty()) {
+            se.append("<");
+            for (Engine engine : engineList) {
+                final String engType = engine.getSniffer();
+                if (displaySnifferEngine(engType)) {
+                    se.append(engine.getSniffer() + ", ");
+                }
             }
-        }
             //eliminate the last "," and end the list with ">"
-        se.replace(se.length()-2, se.length(), ">");
+            se.replace(se.length()-2, se.length(), ">");
+        }
         return se.toString();
     }
 
