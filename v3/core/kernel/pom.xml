@@ -119,10 +119,10 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.glassfish.common</groupId>
-            <artifactId>glassfish-ee-api</artifactId>
+            <groupId>org.glassfish.tests</groupId>
+            <artifactId>utils</artifactId>
             <version>${project.version}</version>
+            <scope>test</scope>
         </dependency>
-        
     </dependencies>
 </project>

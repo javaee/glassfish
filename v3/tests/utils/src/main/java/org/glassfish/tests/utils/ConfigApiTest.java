@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2008 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -34,26 +34,22 @@
  * holder.
  */
 
-package com.sun.enterprise.configapi.tests;
 
-import org.junit.Before;
-import org.junit.Test;
-import static org.junit.Assert.assertTrue;
-import org.jvnet.hk2.config.*;
+package org.glassfish.tests.utils;
+
+import org.junit.Ignore;
 import org.jvnet.hk2.component.Habitat;
-import org.glassfish.tests.utils.Utils;
-import com.sun.enterprise.config.serverbeans.HttpService;
-import java.util.Map;
-import java.util.HashMap;
+import org.jvnet.hk2.config.DomDocument;
+
+import java.util.logging.Logger;
 
 /**
- * User: Jerome Dochez
- * Date: Mar 12, 2008
- * Time: 8:50:42 PM
+ * Super class for all config-api related tests, give access to a configured habitat
  */
-public class DirectAccessTest extends ConfigPersistence {
-    
-    Habitat habitat = Utils.getNewHabitat(this);
+@Ignore
+public abstract class ConfigApiTest {
+
+    public static Logger logger = Logger.getAnonymousLogger();
 
     /**
      * Returns the file name without the .xml extension to load the test configuration
@@ -61,34 +57,20 @@ public class DirectAccessTest extends ConfigPersistence {
      *
      * @return the configuration file name
      */
-    public String getFileName() {
-        return "DomainTest";
+    public String getFileName() {        
+        return getClass().getName().substring(getClass().getName().lastIndexOf('.')+1);
     }
 
-
-    @Override
+    /**
+     * Returns a configured Habitat with the configuration.
+     * 
+     * @return a configured Habitat
+     */
     public Habitat getHabitat() {
-        return habitat;
+        return Utils.instance.getHabitat(this);
     }
 
-    public void doTest() throws TransactionFailure {
-        HttpService service = habitat.getComponent(HttpService.class);
-        ConfigBean config = (ConfigBean) ConfigBean.unwrap(service.getHttpFileCache());
-        ConfigBean config2 = (ConfigBean) ConfigBean.unwrap(service.getHttpProtocol());
-        Map<ConfigBean, Map<String, String>> changes = new HashMap<ConfigBean, Map<String, String>>();
-        Map<String, String> configChanges = new HashMap<String, String>();
-        configChanges.put("max-age-in-seconds", "12543");
-        configChanges.put("medium-file-size-limit-in-bytes", "1200");
-        Map<String, String> config2Changes = new HashMap<String, String>();
-        config2Changes.put("version", "12351");
-        changes.put(config, configChanges);
-        changes.put(config2, config2Changes);
 
-        ConfigSupport.apply(changes);
-    }
-
-    public boolean assertResult(String s) {
-        return ((s.indexOf("max-age-in-seconds=\"12543\"")!=-1)
-            && (s.indexOf("version=\"12351\"")!=-1));
-    }
+    public abstract DomDocument getDocument(Habitat habitat);    
+    
 }

@@ -34,9 +34,8 @@
  * holder.
  */
 
-package com.sun.enterprise.configapi.tests;
+package org.glassfish.tests.utils;
 
-import org.glassfish.config.support.GlassFishDocument;
 import com.sun.enterprise.module.bootstrap.Populator;
 import com.sun.hk2.component.Holder;
 import com.sun.hk2.component.InhabitantsParser;
@@ -47,9 +46,10 @@ import org.jvnet.hk2.config.DomDocument;
 
 import java.net.URL;
 import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.logging.Logger;
+import java.io.IOException;
+import java.util.Map;
+import java.util.HashMap;
 
 /**
  * Utilities to create a configured Habitat and cache them
@@ -62,66 +62,78 @@ public class Utils {
     final static String inhabitantPath = "META-INF/inhabitants";
 
     Map<String, Habitat> habitats = new HashMap<String, Habitat>();
-    static Utils instance;
+    public static Utils instance;
 
     static {        
         instance = new Utils();
     }
 
-    public synchronized Habitat getHabitat(final String fileName) {
+    public synchronized Habitat getHabitat(ConfigApiTest test) {
 
+        final String fileName = test.getFileName();
         // we cache the habitat per xml file
+
         if (habitats.containsKey(fileName))  {
            return habitats.get(fileName);
         }
 
-        Habitat habitat = getNewHabitat(fileName);
+        Habitat habitat = getNewHabitat(test);
         habitats.put(fileName, habitat);
         return habitat;
     }
 
-    public static synchronized Habitat getNewHabitat(final String fileName) {
+    public static synchronized Habitat getNewHabitat(final ConfigApiTest test) {
 
+        final String fileName = test.getFileName();
+
+        Holder<ClassLoader> holder = new Holder<ClassLoader>() {
+            public ClassLoader get() {
+                return getClass().getClassLoader();
+            }
+        };
+
+        Enumeration<URL> resources = null;
         try {
-            Holder<ClassLoader> holder = new Holder<ClassLoader>() {
-                public ClassLoader get() {
-                    return getClass().getClassLoader();
-                }
-            };
-
-            Enumeration<URL> resources = Utils.class.getClassLoader().getResources(inhabitantPath + "/" + habitatName);
-            if (resources == null) {
-                System.out.println("Cannot find any inhabitant file in the classpath");
-                return null;
-            }
-
-            final Habitat habitat = new Habitat();
-
-            while (resources.hasMoreElements()) {
-                URL resource = resources.nextElement();
-                InhabitantsScanner scanner = new InhabitantsScanner(resource.openConnection().getInputStream(), habitatName);
-                InhabitantsParser inhabitantsParser = new InhabitantsParser(habitat);
-                inhabitantsParser.parse(scanner, holder);
-                ConfigParser configParser = new ConfigParser(habitat);
-
-                (new Populator() {
-
-                    public void run(ConfigParser parser) {
-                        long now = System.currentTimeMillis();
-                        URL url = getClass().getClassLoader().getResource(fileName + ".xml");
-                        if (url!=null) {
-                            DomDocument document = parser.parse(url, new GlassFishDocument(habitat));
-                            habitat.addComponent("document", document);
-                            Logger.getAnonymousLogger().fine("time to parse domain.xml : " + String.valueOf(System.currentTimeMillis() - now));
-                        }
-                    }
-                }).run(configParser);
-            }
-
-            return habitat;
-        } catch (Exception e) {
+            resources = Utils.class.getClassLoader().getResources(inhabitantPath + "/" + habitatName);
+        } catch (IOException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
-        return null;
+        if (resources == null) {
+            System.out.println("Cannot find any inhabitant file in the classpath");
+            return null;
+        }
+
+        final Habitat habitat = new Habitat();
+
+        while (resources.hasMoreElements()) {
+            URL resource = resources.nextElement();
+            InhabitantsScanner scanner = null;
+            try {
+                scanner = new InhabitantsScanner(resource.openConnection().getInputStream(), habitatName);
+            } catch (IOException e) {
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            }
+            InhabitantsParser inhabitantsParser = new InhabitantsParser(habitat);
+            try {
+                inhabitantsParser.parse(scanner, holder);
+            } catch (IOException e1) {
+                e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            }
+        }
+        ConfigParser configParser = new ConfigParser(habitat);
+
+        (new Populator() {
+
+            public void run(ConfigParser parser) {
+                long now = System.currentTimeMillis();
+                URL url = getClass().getClassLoader().getResource(fileName + ".xml");
+                if (url != null) {
+                    DomDocument document = parser.parse(url,  test.getDocument(habitat));
+                    habitat.addComponent("document", document);
+                    Logger.getAnonymousLogger().fine("time to parse domain.xml : " + String.valueOf(System.currentTimeMillis() - now));
+                }
+            }
+        }).run(configParser);
+        return habitat;
     }
 }

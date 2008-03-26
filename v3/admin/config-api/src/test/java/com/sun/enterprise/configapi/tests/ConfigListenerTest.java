@@ -11,11 +11,12 @@ import com.sun.hk2.component.ConstructorWomb;
 import java.beans.PropertyVetoException;
 
 import static org.junit.Assert.*;
+import org.glassfish.tests.utils.Utils;
 
 /**
  * Simple ConfigListener tests
  */
-public class ConfigListenerTest {
+public class ConfigListenerTest extends ConfigApiTest {
 
     Habitat habitat;
 
@@ -25,7 +26,7 @@ public class ConfigListenerTest {
 
     @Before
     public void setup() {
-        habitat = Utils.getNewHabitat(getFileName());    
+        habitat = Utils.getNewHabitat(this);    
     }
 
 

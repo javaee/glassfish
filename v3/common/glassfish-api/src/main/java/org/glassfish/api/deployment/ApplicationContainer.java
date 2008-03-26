@@ -30,7 +30,7 @@ package org.glassfish.api.deployment;
  * @author Jerome Dochez
  */
 
-public abstract interface ApplicationContainer<T> {
+public interface ApplicationContainer<T> {
 
     /**
      * Returns the deployment descriptor associated with this application

@@ -213,116 +213,15 @@ public class WebDeployer extends JavaEEDeployer<WebContainer, WebApplication>{
     public WebApplication load(WebContainer container, DeploymentContext dc) {
         
         WebModuleConfig wmInfo = loadWebModuleConfig(dc);    
-        WebBundleDescriptor wbd = wmInfo.getDescriptor();
-
-        String vsIDs = wmInfo.getVirtualServers();
-        List<String> vsList = StringUtils.parseStringList(vsIDs, " ,");
-
-        WebApplication application = new WebApplication(container, wbd, dc.getClassLoader());
         wmInfo.setAppClassLoader(dc.getClassLoader());
-        boolean loadToAll = (vsList == null) || (vsList.size() == 0);
 
-        // TODO : dochez : add action report here...
-        List<Result<com.sun.enterprise.web.WebModule>> results = container.loadWebModule(wmInfo, "null");
-
-        dc.getLogger().info("Loading application " + dc.getCommandParameters().getProperty(DeployCommand.NAME)
-                + " at " + wbd.getContextRoot());
-        for (Result<com.sun.enterprise.web.WebModule> result : results) {
-            if (result.isSuccess()) {
-                VirtualServer vs = (VirtualServer) result.result().getParent();
-                final Collection<String> c = new HashSet<String>();
-                c.add(vs.getID());
-                if (loadToAll || vsList.contains(vs.getName())
-                        || isAliasMatched(vsList,vs)) {
-                    for (int port : vs.getPorts()) {
-                        Adapter adapter = container.adapterMap.get(Integer.valueOf(port));
-                        grizzlyAdapter.registerEndpoint(wbd.getContextRoot(), c, adapter, application);
-                    }
-                }
-            } else {
-                dc.getLogger().log(Level.SEVERE, "Error while deploying", result.exception());
-            }
-        }
-        return application;
+        return new WebApplication(container, wmInfo, grizzlyAdapter);
     }
 
     
     public void unload(WebApplication webApplication, DeploymentContext dc) {
         
-        Properties params = dc.getCommandParameters();
-        String ctxtRoot = webApplication.getDescriptor().getContextRoot();
-        if (!ctxtRoot.equals("") && !ctxtRoot.startsWith("/") ) {
-            ctxtRoot = "/" + ctxtRoot;
-        } else if ("/".equals(ctxtRoot)) {
-            ctxtRoot = "";
-        }
-
-        List<String> targets = StringUtils.parseStringList(
-            params.getProperty(DeployCommand.VIRTUAL_SERVERS), " ,");
-        boolean unloadFromAll = (targets == null) || (targets.size() == 0);
-
-        Container[] hosts = webApplication.getContainer().engine.findChildren();
-        for (int i = 0; i < hosts.length; i++) {
-            StandardHost vs = (StandardHost) hosts[i];
-
-            if (unloadFromAll && ADMIN_VS.equals(vs.getName())){
-                // Do not unload from __asadmin
-                continue;
-            }
-
-            if (unloadFromAll
-                    || targets.contains(vs.getName())
-                    || isAliasMatched(targets, vs)){
-
-                StandardContext ctxt = (StandardContext)
-                    vs.findChild(ctxtRoot);
-                if (ctxt != null) {
-                    vs.removeChild(ctxt);
-                    try {
-                        ctxt.destroy();
-                    } catch (Exception ex) {
-                        dc.getLogger().log(Level.WARNING,
-                                           "Unable to destroy web module "
-                                           + ctxt, ex);
-                    }
-                    dc.getLogger().info("Undeployed web module " + ctxt
-                                        + " from virtual server "
-                                        + vs.getName());
-                    // ToDo : dochez : not good, we unregister from everywhere...
-                    grizzlyAdapter.unregisterEndpoint(ctxtRoot, webApplication);
-		}
-            }
-        }
     }               
-    
-    /*
-     * @return true if the list of target virtual server names matches an
-     * alias name of the given virtual server, and false otherwise
-     */ 
-    private boolean isAliasMatched(List targets, StandardHost vs){
-
-        String[] aliasNames = vs.getAliases();
-        for (int i=0; i<aliasNames.length; i++) {
-            if (targets.contains(aliasNames[i]) ){
-                return true;
-            }
-        }
-
-        return false;
-    }
-    
-    
-    /**
-     * Deploy on aliases as well as host.
-     */
-    private boolean verifyAlias(List vsList,VirtualServer vs){
-        for(int i=0; i < vs.getAliases().length; i++){
-            if (vsList.contains(vs.getAliases()[i]) ){
-                return true;
-            }
-        }
-        return false;
-    }
     
     
     /**

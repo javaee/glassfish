@@ -7,7 +7,6 @@ package com.sun.enterprise.configapi.tests.dvt;
 
 import com.sun.enterprise.config.serverbeans.AccessLog;
 import com.sun.enterprise.configapi.tests.ConfigApiTest;
-import java.beans.PropertyVetoException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

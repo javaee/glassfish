@@ -38,21 +38,13 @@ package com.sun.enterprise.configapi.tests;
 
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.config.*;
-import org.glassfish.config.support.GlassFishDocument;
-import org.glassfish.config.support.ConfigurationPersistence;
+import org.glassfish.tests.utils.Utils;
 import com.sun.enterprise.config.serverbeans.HttpService;
 import com.sun.enterprise.config.serverbeans.AccessLog;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.beans.PropertyChangeEvent;
-import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLOutputFactory;
-import javax.xml.stream.XMLStreamWriter;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -63,9 +55,9 @@ import static org.junit.Assert.assertTrue;
  * Date: Mar 20, 2008
  * Time: 4:48:14 PM
  */
-public class DirectCreationTest extends ConfigApiTest {
+public class DirectCreationTest extends ConfigPersistence {
 
-    Habitat habitat;
+    Habitat habitat = Utils.getNewHabitat(this);
 
     /**
      * Returns the file name without the .xml extension to load the test configuration
@@ -77,75 +69,36 @@ public class DirectCreationTest extends ConfigApiTest {
         return "DomainTest";
     }
 
-
-    @Before
-    public void setup() {
-        habitat = Utils.getNewHabitat(getFileName());
+    @Override
+    public Habitat getHabitat() {
+        return habitat;
     }
 
-
-    @Test
-    public void changedTest() throws TransactionFailure {
+    public void doTest() throws TransactionFailure {
 
         HttpService service = habitat.getComponent(HttpService.class);
-        final GlassFishDocument document = habitat.getByType(GlassFishDocument.class);
-        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        baos.reset();
 
-
-        assertTrue(service!=null);
-        final ConfigurationPersistence testPersistence =  new ConfigurationPersistence() {
-            public void save(DomDocument doc) throws IOException, XMLStreamException {
-                XMLOutputFactory factory = XMLOutputFactory.newInstance();
-                XMLStreamWriter writer = factory.createXMLStreamWriter(baos);
-                doc.writeTo(new IndentingXMLStreamWriter(writer));
-                writer.close();
-            }
-        };
-
-        TransactionListener testListener = new TransactionListener() {
-            public void transactionCommited(List<PropertyChangeEvent> changes) {
-                try {
-                    testPersistence.save(document);
-                } catch (IOException e) {
-                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                } catch (XMLStreamException e) {
-                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                }
-            }
-        };
+        ConfigBean serviceBean = (ConfigBean) ConfigBean.unwrap(service);
+        Class<?>[] subTypes = null;
         try {
-            Transactions.get().addTransactionsListener(testListener);
-
-            ConfigBean serviceBean = (ConfigBean) ConfigBean.unwrap(service);
-            Class<?>[] subTypes = null;
-            try {
-                subTypes = ConfigSupport.getSubElementsTypes(serviceBean);
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                throw new RuntimeException(e);
-            }
-
-            for (Class<?> subType : subTypes) {
-                if (subType.getName().endsWith("HttpListener")) {
-                    Map<String, String> configChanges = new HashMap<String, String>();
-                    configChanges.put("id", "funky-listener");
-                    ConfigSupport.createAndSet(serviceBean, (Class<? extends ConfigBeanProxy>)subType, configChanges);
-                }
-            }
-
-            ConfigSupport.createAndSet(serviceBean, AccessLog.class, null);
-
-        } finally {
-            Transactions.get().waitForDrain();
-            Transactions.get().removeTransactionsListener(testListener);
+            subTypes = ConfigSupport.getSubElementsTypes(serviceBean);
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            throw new RuntimeException(e);
         }
 
-        // now check if we persisted correctly...
+        for (Class<?> subType : subTypes) {
+            if (subType.getName().endsWith("HttpListener")) {
+                Map<String, String> configChanges = new HashMap<String, String>();
+                configChanges.put("id", "funky-listener");
+                ConfigSupport.createAndSet(serviceBean, (Class<? extends ConfigBeanProxy>)subType, configChanges);
+            }
+        }
 
-        final String resultingXml = baos.toString();
-        logger.fine(resultingXml);
-        assertTrue(resultingXml.indexOf("id=\"funky-listener\"")!=-1);
+        ConfigSupport.createAndSet(serviceBean, AccessLog.class, null);
     }
 
+    public boolean assertResult(String s) {
+        return s.indexOf("id=\"funky-listener\"")!=-1;
+    }
 }
