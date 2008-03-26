@@ -390,7 +390,9 @@ public class ConnectorsHandlers {
 @HandlerOutput(name = "transactionSupport", type = String.class)
 })
     public static void getConnectorConnectionPoolDefaultInfo(HandlerContext handlerCtx) {
-        Map defaultMap = AMXRoot.getInstance().getDomainConfig().getDefaultAttributeValues(ConnectorConnectionPoolConfig.J2EE_TYPE);
+        //Map defaultMap = AMXRoot.getInstance().getDomainConfig().getDefaultAttributeValues(ConnectorConnectionPoolConfig.J2EE_TYPE);
+        //TODO-V3 TP2
+        Map defaultMap = new HashMap();
         handlerCtx.setOutputValue("steadyPoolSize", defaultMap.get("steady-pool-size"));
         handlerCtx.setOutputValue("maxPoolSize", defaultMap.get("max-pool-size"));
         handlerCtx.setOutputValue("poolResizeQuantity", defaultMap.get("pool-resize-quantity"));
@@ -449,8 +451,9 @@ public class ConnectorsHandlers {
             return;
         }
         Map advance = new HashMap();
-        /* TODO-V3
-        Map defaultMap = AMXRoot.getInstance().getDefaultAttributeValues(ConnectorConnectionPoolConfig.J2EE_TYPE);
+        // TODO-V3
+        //Map defaultMap = AMXRoot.getInstance().getDefaultAttributeValues(ConnectorConnectionPoolConfig.J2EE_TYPE);
+        Map defaultMap = new HashMap();
         advance.put("validateAtMostOncePeriodInSeconds", defaultMap.get("validate-atmost-once-period-in-seconds"));
         advance.put("connectionLeakTimeoutInSeconds", defaultMap.get("connection-leak-timeout-in-seconds"));
         advance.put("connectionLeakReclaim", StringToBoolean( defaultMap.get("connection-leak-reclaim")));
@@ -461,7 +464,6 @@ public class ConnectorsHandlers {
         advance.put("associateWithThread",  StringToBoolean( defaultMap.get("associate-with-thread")));
         advance.put("matchConnections",  StringToBoolean( defaultMap.get("match-connections")));
         advance.put("maxConnectionUsageCount", defaultMap.get("max-connection-usage-count"));
-         */
         handlerCtx.setOutputValue("advance", advance);
     }
 

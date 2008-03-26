@@ -450,7 +450,9 @@ public class JdbcHandlers {
                 return;
             }
             Map advance = new HashMap();
-            Map defaultMap = AMXRoot.getInstance().getDomainConfig().getDefaultAttributeValues(JDBCConnectionPoolConfig.J2EE_TYPE);
+            //TODO-V3 TP2
+            //Map defaultMap = AMXRoot.getInstance().getDomainConfig().getDefaultAttributeValues(JDBCConnectionPoolConfig.J2EE_TYPE);
+            Map defaultMap = new HashMap();
             advance.put("wrapJDBCObjects", StringToBoolean( defaultMap.get("wrap-jdbc-objects")));
             advance.put("statementTimeoutInSeconds", defaultMap.get("statement-timeout-in-seconds"));
             advance.put("validateAtMostOncePeriodInSeconds", defaultMap.get("validate-atmost-once-period-in-seconds"));
@@ -566,7 +568,9 @@ public class JdbcHandlers {
             if ((fromStep2!= null) && fromStep2){
                 //wizardPool is already in session map
             }else{
-                Map defaultMap = AMXRoot.getInstance().getDomainConfig().getDefaultAttributeValues(JDBCConnectionPoolConfig.J2EE_TYPE);
+                //TODO-V3 TP2
+                //Map defaultMap = AMXRoot.getInstance().getDomainConfig().getDefaultAttributeValues(JDBCConnectionPoolConfig.J2EE_TYPE);
+                Map defaultMap = new HashMap();
                 Map attrMap = new HashMap();
                 attrMap.put("SteadyPoolSize", defaultMap.get("steady-pool-size"));
                 attrMap.put("MaxPoolSize", defaultMap.get("max-pool-size"));

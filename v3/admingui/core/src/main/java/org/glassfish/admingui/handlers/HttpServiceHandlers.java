@@ -43,6 +43,7 @@
 package org.glassfish.admingui.handlers;
 
 
+import com.sun.appserv.management.base.XTypes;
 import java.util.Map;
 import java.util.ArrayList;
 import java.util.List;
@@ -121,7 +122,7 @@ public class HttpServiceHandlers {
              suffix = al.getRotationSuffix();
              format = al.getFormat();
         }else{
-            Map defaultMap = AMXRoot.getInstance().getDomainConfig().getDefaultAttributeValues(AccessLogConfig.J2EE_TYPE);
+            Map defaultMap = config.getHTTPServiceConfig().getDefaultValues(XTypes.ACCESS_LOG_CONFIG);
             policy = (String) defaultMap.get("rotation-policy");
             interval = (String)defaultMap.get("rotation-interval-in-minutes");
             suffix = (String)defaultMap.get("rotation-suffix");
@@ -160,7 +161,8 @@ public class HttpServiceHandlers {
         
         public static void getAccessLogDefaultSettings(HandlerContext handlerCtx) {
         
-        Map defaultMap = AMXRoot.getInstance().getDomainConfig().getDefaultAttributeValues(AccessLogConfig.J2EE_TYPE);
+        ConfigConfig config = AMXRoot.getInstance().getConfig(((String)handlerCtx.getInputValue("ConfigName")));
+        Map defaultMap = config.getHTTPServiceConfig().getDefaultValues(XTypes.ACCESS_LOG_CONFIG);
         String policy = (String) defaultMap.get("rotation-policy");
         String interval = (String)defaultMap.get("rotation-interval-in-minutes");
         String suffix = (String)defaultMap.get("rotation-suffix");

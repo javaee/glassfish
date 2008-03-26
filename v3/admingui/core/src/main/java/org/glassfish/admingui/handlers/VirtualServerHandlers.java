@@ -37,6 +37,7 @@
 package org.glassfish.admingui.handlers;
 
 
+import com.sun.appserv.management.base.XTypes;
 import com.sun.appserv.management.config.ApplicationConfig;
 import java.util.Map;
 import java.util.Iterator;
@@ -156,8 +157,7 @@ public class VirtualServerHandlers {
         try{
             Boolean edit = (Boolean) handlerCtx.getInputValue("Edit");
             if(!edit){
-                //TODO-V3 TP2 cannot get default attributes
-                //getDefaultVirtualServerAttributes(handlerCtx);
+                getDefaultVirtualServerAttributes(handlerCtx, config);
                 return;
             }
             Map<String,VirtualServerConfig>vservers = config.getHTTPServiceConfig().getVirtualServerConfigMap();
@@ -201,17 +201,26 @@ public class VirtualServerHandlers {
         
     } 
     
-        private static void getDefaultVirtualServerAttributes(HandlerContext handlerCtx){ 
-        Map defaultMap = AMXRoot.getInstance().getDomainConfig().getDefaultAttributeValues(VirtualServerConfig.J2EE_TYPE);         
+        private static void getDefaultVirtualServerAttributes(HandlerContext handlerCtx, ConfigConfig config){
+        
+      
+        Map <String,String> defaultMap = config.getHTTPServiceConfig().getDefaultValues(XTypes.VIRTUAL_SERVER_CONFIG);
         handlerCtx.setOutputValue("Hosts", defaultMap.get("hosts"));
         handlerCtx.setOutputValue("StateOption", defaultMap.get("state"));
         handlerCtx.setOutputValue("Http", defaultMap.get("http-listeners"));
         handlerCtx.setOutputValue("Web", defaultMap.get("default-web-module"));
         handlerCtx.setOutputValue("LogFile", defaultMap.get("log-file"));
+        handlerCtx.setOutputValue("sso", Boolean.FALSE);
         //handlerCtx.setOutputValue("docroot", defaultMap.get("docroot"));
         handlerCtx.setOutputValue("docroot", "${com.sun.aas.instanceRoot}/docroot");
-        Map dMap = AMXRoot.getInstance().getDomainConfig().getDefaultAttributeValues(HTTPAccessLogConfig.J2EE_TYPE);  
-        handlerCtx.setOutputValue("accesslog", dMap.get("log-directory"));
+        
+        
+        Map<String, VirtualServerConfig> vsMap = config.getHTTPServiceConfig().getVirtualServerConfigMap();
+        Object[] vsc = vsMap.entrySet().toArray();
+        //TODO-V3   hardcode for now
+        //Map dMap = AMXRoot.getInstance().getDomainConfig().getDefaultAttributeValues(HTTPAccessLogConfig.J2EE_TYPE);  
+        //handlerCtx.setOutputValue("accesslog", dMap.get("log-directory"));
+        //handlerCtx.setOutputValue("accesslog", )
         handlerCtx.setOutputValue("sso", Boolean.FALSE);
         handlerCtx.setOutputValue("accessLoggingFlag", "off");
         handlerCtx.setOutputValue("Properties", new HashMap());
@@ -262,12 +271,12 @@ public class VirtualServerHandlers {
                 putOptionalValue((String) handlerCtx.getInputValue("accessLogWriteInterval"), convertedMap, "accessLogWriteInterval");
                 putOptionalValue(""+ handlerCtx.getInputValue("sso"), convertedMap, "sso-enabled");
                 String accessLoggingFlag = (String)handlerCtx.getInputValue("accessLoggingFlag");
-                if (!accessLoggingFlag.equals("off")){
+                if ( (accessLoggingFlag!= null) && (!accessLoggingFlag.equals("off"))){
                     putOptionalValue(accessLoggingFlag, convertedMap, "accessLoggingEnabled");
                 }
                 
                 VirtualServerConfig server = config.getHTTPServiceConfig().createVirtualServerConfig(
-                        (String)handlerCtx.getInputValue("Name"), ((String)handlerCtx.getInputValue("Hosts")), convertedMap);
+                        (String)handlerCtx.getInputValue("Name"), ((String)handlerCtx.getInputValue("Hosts")), null); // convertedMap);
                 
                 server.setHosts(((String)handlerCtx.getInputValue("Hosts")));
                 server.setHTTPListeners(((String)handlerCtx.getInputValue("Http")));
