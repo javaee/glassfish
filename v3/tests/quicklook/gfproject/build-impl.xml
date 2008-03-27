@@ -34,7 +34,7 @@
     
     <path id="class.path">
         <fileset dir="${glassfish.home}">
-            <include name="**/javaee*.jar"/>
+            <include name="**/*javaee*.jar"/>
         </fileset>
         <pathelement location="${class.output}"/>
         <pathelement path="${plugin_classpath}"/>
