@@ -836,7 +836,7 @@ public final class PEAccessLogValve
 
         HttpProtocol httpProtocol = httpService.getHttpProtocol();
         if (httpProtocol != null) {
-            setResolveHosts(Boolean.getBoolean(httpProtocol.getDnsLookupEnabled()));
+            setResolveHosts(Boolean.valueOf(httpProtocol.getDnsLookupEnabled()));
         } else {
             setResolveHosts(false);
         }
@@ -854,7 +854,7 @@ public final class PEAccessLogValve
                        
         // rotation-enabled
         if (accessLogConfig != null) {
-            setRotatable(Boolean.getBoolean(accessLogConfig.getRotationEnabled()));
+            setRotatable(Boolean.valueOf(accessLogConfig.getRotationEnabled()));
         } else {
 	    setRotatable(Boolean.valueOf(
                 ConfigBeansUtilities.getDefaultRotationEnabled()).booleanValue());

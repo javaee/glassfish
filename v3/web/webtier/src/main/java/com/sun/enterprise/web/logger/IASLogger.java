@@ -101,7 +101,7 @@ public final class IASLogger extends LoggerBase {
      * messages for the iPlanet Application Server.
      */
     protected void write(String msg, int verbosity) {
-
+        
         if (_logger == null)
             return;
 
