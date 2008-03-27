@@ -35,7 +35,7 @@
 -->
 <!-- configuration/virtualServerCommon.inc -->
 
-#include "shared/restart.inc"    
+#include "/shared/restart.inc"    
     <sun:html id="html2">
         <sun:head id="propertyhead" title="#{pageTitle}">
             <sun:script url="resource/js/restart.js" />
@@ -43,17 +43,17 @@
 
         <sun:body id="body3" onLoad="synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
             <sun:form id="form1">
-     #include "treeBreadcrumbs.inc"
-#include "alertMsg.inc"
-#include "web/configuration/virtualServerAttr.inc"               
-#include "shared/propertyTable.inc"
+#include "/treeBreadcrumbs.inc"
+#include "/alertMsg.inc"
+#include "virtualServerAttr.inc"               
+#include "/shared/propertyTable.inc"
 	<sun:hidden id="helpKey" value="${helpKey}" />
             </sun:title>
             </sun:form>
             <!-- sun:title id="propertyContentPage" helpText="$resource{i18n.vs.PropsHelp}"/ --> 
             "<br/><br/>
         </sun:body>
-#include "shared/changeButtonsJS.inc" 
+#include "/shared/changeButtonsJS.inc" 
 
 </sun:html>
 

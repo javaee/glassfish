@@ -51,23 +51,23 @@
     setPageSessionAttribute(key="pageTitle" value="$resource{i18n.headings.EditHttpListener}");
     setPageSessionAttribute(key="pageTitleHelp" value="$resource{i18n.httpListeners.EditHttpListenerInfo}");
     />
-#include "shared/restart.inc"    
+#include "/shared/restart.inc"    
     <sun:html id="html2">
         <sun:head id="propertyhead" title="#{pageTitle}">
             <sun:script url="resource/js/restart.js" />
         </sun:head>
         <sun:body id="body3" onLoad="javascript: synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
             <sun:form id="propertyForm">
-#include treeBreadcrumbs.inc
-#include "web/configuration/listenersTab.inc"   
-#include "alertMsg.inc"              
-#include "web/configuration/httpListener.inc"  
-#include "shared/propertyTable.inc" 
+#include "/treeBreadcrumbs.inc"
+#include "listenersTab.inc"   
+#include "/alertMsg.inc"              
+#include "httpListener.inc"  
+#include "/shared/propertyTable.inc" 
                 <sun:hidden id="helpKey" value="$resource{help.httpListenerEdit}" />
             </sun:form>
              "<br/><br/>
         </sun:body>
-#include "shared/changeButtonsJS.inc"         
+#include "/shared/changeButtonsJS.inc"         
     </sun:html>
 </sun:page>
 

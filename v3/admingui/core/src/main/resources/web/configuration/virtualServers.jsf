@@ -55,11 +55,11 @@
     setPageSessionAttribute(key="type" value="virtualServer");
     setPageSessionAttribute(key="confirmDeleteMsg" value="$resource{i18n.msg.JS.confirmDeleteVS}");
     />
-#include "shared/restart.inc"    
+#include "/shared/restart.inc"    
     <sun:html id="html2">
         <sun:head id="propertyhead"  title="$resource{i18n.vs.ListPageTitle}">
             <sun:script url="../js/restart.js" />
-#include "alertMsg.inc"        
+#include "/alertMsg.inc"        
         </sun:head>
         <sun:body id="body3" onLoad="admingui.nav.refreshTree($attribute{refreshId}); synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
 	    <!beforeCreate
@@ -71,11 +71,11 @@
 		}
 	    />
             <sun:form id="propertyForm">
-#include treeBreadcrumbs.inc
+#include "/treeBreadcrumbs.inc"
                  <sun:title id="propertyContentPage" title="$resource{i18n.vs.ListPageTitle}"
                  helpText="$resource{i18n.vs.ListPageHelp}" />
 		 "<br /> <br />
-#include "web/configuration/configsTable.inc"                 
+#include "configsTable.inc"                 
 	<sun:hidden id="helpKey" value="$resource{help.virtualServers}" />
             </sun:form>
         </sun:body>

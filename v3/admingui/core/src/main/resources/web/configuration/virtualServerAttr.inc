@@ -38,13 +38,13 @@
 <sun:title id="propertyContentPage" title="#{pageTitle}" helpText="#{pageTitleHelp}">
     <!facet pageButtonsTop>
     <sun:panelGroup id="topButtons">
-#include "web/configuration/virtualServerButtons.inc"
+#include "virtualServerButtons.inc"
     </sun:panelGroup>
 </facet>
 
 <!facet pageButtonsBottom>
     <sun:panelGroup id="bottomButtons">
-#include "web/configuration/virtualServerButtons.inc"
+#include "virtualServerButtons.inc"
     </sun:panelGroup>
 </facet>
         

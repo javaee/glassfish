@@ -49,6 +49,6 @@
     setPageSessionAttribute(key="pageTitleHelp" value="$resource{i18n.vs.PageHelp}");
     setPageSessionAttribute(key="edit" value="#{true}" );
     />
-#include "web/configuration/virtualServerCommon.inc"    
+#include "virtualServerCommon.inc"    
 </sun:page>
 

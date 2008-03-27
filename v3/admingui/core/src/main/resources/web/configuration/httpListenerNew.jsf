@@ -48,22 +48,22 @@ setAttribute(key="edit" value="#{false}" )
         getRequestValue(key="fromStep2" value=>$page{fromStep2});
         getTableList(Properties="#{props}", TableList=>$attribute{tableList});        
     />
-#include "shared/restart.inc"    
+#include "/shared/restart.inc"    
     <sun:html id="html2">
         <sun:head id="propertyhead" title="#{pageTitle}">
             <sun:script url="../../js/restart.js" />
         </sun:head>
         <sun:body id="body3" onLoad="javascript: synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
             <sun:form id="propertyForm">
-#include treeBreadcrumbs.inc
-#include "alertMsg.inc"
-#include "web/configuration/httpListener.inc" 
-#include "shared/propertyTable.inc" 
+#include "/treeBreadcrumbs.inc"
+#include "/alertMsg.inc"
+#include "httpListener.inc" 
+#include "/shared/propertyTable.inc" 
                 <sun:hidden id="helpKey" value="$resource{help.httpListenerNew}" />
             </sun:form>
             "<br/><br/>
         </sun:body>
-#include "changeButtonsJS.inc"         
+#include "/changeButtonsJS.inc"         
     </sun:html>
 
 </sun:page>

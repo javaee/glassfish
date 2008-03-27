@@ -44,16 +44,16 @@
     Properties=>$page{props});
     getTableList(Properties="#{props}", TableList=>$attribute{tableList});          
  />
-#include "shared/restart.inc" 
+#include "/shared/restart.inc" 
  <sun:html id="html2">
         <sun:head id="propertyhead" title="$resource{i18n.webContainer.managerProp}" >
             <sun:script url="/resource/js/restart.js" />
         </sun:head>
         <sun:body id="body3" onLoad="javascript: synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
             <sun:form id="propertyForm">
-#include treeBreadcrumbs.inc
-#include "web/configuration/webContainerTabs.inc"            
-#include "alertMsg.inc"            
+#include "/treeBreadcrumbs.inc"
+#include "webContainerTabs.inc"            
+#include "/alertMsg.inc"            
                 <!-- Page Title -->
                  <sun:title id="propertyContentPage" title="$resource{i18n.webContainer.managerProp}" > 
                      <!-- Buttons  -->                    
@@ -101,11 +101,11 @@
                             </sun:property>
                          </sun:propertySheetSection>
                      </sun:propertySheet>    
-#include "shared/propertyTable.inc"                      
+#include "/shared/propertyTable.inc"                      
                  
 	<sun:hidden id="helpKey" value="$resource{help.webContainerManager}" />
             </sun:form>
         </sun:body>
-#include "shared/changeButtonsJS.inc"         
+#include "/shared/changeButtonsJS.inc"         
     </sun:html>
 </sun:page>

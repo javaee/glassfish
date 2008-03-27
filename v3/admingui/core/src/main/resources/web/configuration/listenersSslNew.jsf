@@ -48,7 +48,7 @@
     getRequestValue(key="prevPage", value=>$page{prevPage});        
     getRequestValue(key="sslPageTitle", value=>$page{sslPageTitle});  
   />
-#include "shared/restart.inc"  
+#include "/shared/restart.inc"  
   <sun:html id="html2">
         <sun:head id="propertyhead"  title="$resource{i18n.edJmxConnector.sslSettingsLabel}" >
             <sun:script url="resource/js/selectElements.js" />
@@ -56,16 +56,16 @@
         </sun:head>    
         <sun:body id="body3" onLoad="javascript: synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
             <sun:form id="propertyForm">
-#include treeBreadcrumbs.inc
-#include "alertMsg.inc"
-#include "shared/sslProperties.inc"
+#include "/treeBreadcrumbs.inc"
+#include "/alertMsg.inc"
+#include "/shared/sslProperties.inc"
                 <sun:title id="title2">
                     <!facet pageButtonsBottom>
-#include "shared/sslPropertiesButtons.inc"
+#include "/shared/sslPropertiesButtons.inc"
                     </facet>                     
                 </sun:title>
             </sun:form>
         </sun:body>
-#include "web/configuration/sslValidationsJS.inc"        
+#include "sslValidationsJS.inc"        
     </sun:html>
 </sun:page>

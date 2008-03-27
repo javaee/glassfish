@@ -43,16 +43,16 @@
         getAccessLogSettings(ConfigName="#{configName}", Rotation=>$attribute{rotation}, Policy=>$attribute{policy}, Interval=>$attribute{interval}, Suffix=>$attribute{suffix}, Format=>$attribute{format});
      />
    
-#include "shared/restart.inc"
+#include "/shared/restart.inc"
     <sun:html id="html2">
         <sun:head id="propertyhead" title="$resource{i18n.access.AccessLog}" >
             <sun:script url="../js/restart.js" />
         </sun:head>
         <sun:body id="body3" onLoad="javascript: synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
             <sun:form id="propertyForm">
-#include treeBreadcrumbs.inc
-#include "web/configuration/httpServiceTabs.inc"
-#include "alertMsg.inc"
+#include "/treeBreadcrumbs.inc"
+#include "httpServiceTabs.inc"
+#include "/alertMsg.inc"
                 <!-- Page Title -->
                 <sun:title id="propertyContentPage" title="$resource{i18n.access.AccessLog}"
                     helpText="$resource{i18n.access.PageHelp}">

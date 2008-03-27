@@ -45,5 +45,5 @@
         getRequestValue(key="configName" value=>$page{configName});
         setPageSessionAttribute(key="edit" value="#{false}" );
     />
-#include "web/configuration/virtualServerCommon.inc"
+#include "virtualServerCommon.inc"
 </sun:page>

@@ -43,7 +43,7 @@
     getRequestValue(key="configName" value=>$page{configName});
     />
 
-#include "shared/restart.inc"    
+#include "/shared/restart.inc"    
     <sun:html id="html2">
         <sun:head id="propertyhead" title="$resource{i18n.http.HttpService}">
             <sun:script url="../js/restart.js" />
@@ -51,9 +51,9 @@
 
         <sun:body id="body3" onLoad="synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
             <sun:form id="form1">
-#include "treeBreadcrumbs.inc"
-#include "web/configuration/httpServiceTabs.inc"            
-#include "alertMsg.inc"
+#include "/treeBreadcrumbs.inc"
+#include "httpServiceTabs.inc"            
+#include "/alertMsg.inc"
 
 <sun:title id="propertyContentPage" title="$resource{i18n.http.HttpService}" helpText="$resource{i18n.http.PageHelp}">
     <!facet pageButtonsTop>
@@ -108,13 +108,13 @@
         </sun:propertySheetSection>
     </sun:propertySheet>    
 
-#include "shared/propertyTable.inc"
+#include "/shared/propertyTable.inc"
     	<sun:hidden id="helpKey" value="$resource{help.httpService}" />
             </sun:title>
             </sun:form>
             "<br/>
         </sun:body>
-#include "shared/changeButtonsJS.inc" 
+#include "/shared/changeButtonsJS.inc" 
 
     </sun:html>
     
