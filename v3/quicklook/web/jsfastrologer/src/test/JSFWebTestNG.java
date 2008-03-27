@@ -6,10 +6,10 @@ import org.testng.annotations.Test;
 import org.testng.annotations.*;
 import org.testng.Assert;
 
-import org.apache.commons.httpclient.*;
-import org.apache.commons.httpclient.methods.*;
-import org.apache.commons.httpclient.params.*;
-import org.apache.commons.httpclient.cookie.*;
+// import org.apache.commons.httpclient.*;
+// import org.apache.commons.httpclient.methods.*;
+// import org.apache.commons.httpclient.params.*;
+// import org.apache.commons.httpclient.cookie.*;
 
 import java.io.*;
 import java.net.*;
@@ -33,7 +33,7 @@ public class JSFWebTestNG {
     static String result = "";
     String m_host="";
     String m_port="";    
-    HttpClient httpclient = new HttpClient();
+    //HttpClient httpclient = new HttpClient();
     
     //@Parameters({"host","port"})
     @BeforeMethod
@@ -137,6 +137,7 @@ public class JSFWebTestNG {
     }
     
     
+/*
     @Test(groups={"pulse"})
     public void testRequestResponse() throws Exception{
         try{
@@ -180,5 +181,6 @@ public class JSFWebTestNG {
         }
         
     }
+*/
 
 }

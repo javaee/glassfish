@@ -52,22 +52,6 @@
     
 </target>
 
-<target name="stop-server">
-    <echo message="stopping server"/>
-    
-     <exec executable="cmd" osfamily="windows">	
-         <arg value="/c"/>
-         <arg value="${glassfish.home}/bin/asadmin.bat"/>
-         <arg value="stop-domain"/>
-     </exec>
-         
-     <exec executable="${glassfish.home}/bin/asadmin" osfamily="unix">        
-        <arg value="stop-domain"/>
-    </exec>
-   
-</target>
-
-
 <target name="stop-server-unix" if="isUNIX">
     <exec executable="${glassfish.home}/bin/asadmin">        
         <arg value="stop-domain"/>
@@ -86,7 +70,7 @@
 <target name="deploy-v3-impl" depends="setOSConditions">
     <echo message="glassfish.home is ${glassfish.home}"/>
     <echo message="deploying in v3 mode"/>
-    <echo message="./${war.file.ext}"/>
+    <echo message="./${war.file}"/>
     <echo message="OS is ${os.name}"/>    
 
     <echo message="Please access URL http://${glassfish.http.host}:${glassfish.http.port}/${contextroot}"/>
@@ -113,9 +97,9 @@
   </exec>
 </target>
 
-<target name="undeploy-v3-impl">
+<target name="undeploy-v3-impl" depends="setOSConditions">
     <echo message="undeploying in v3 mode"/>
-    <echo message="./${war.file.ext}"/>
+    <echo message="./${war.file}"/>
     
     <antcall target="undeploy-v3-impl-unix"/>
     <antcall target="undeploy-v3-impl-windows"/>
@@ -136,31 +120,6 @@
     <arg value="${war.file}"/>
   </exec>      
 </target>
-
-<target name="start-server">
-    <echo>+-----------------------------+</echo>
-    <echo>|                             |</echo>
-    <echo>| S T A R T I N G   GLASSFISH |</echo>
-    <echo>|                             |</echo>
-    <echo>+-----------------------------+</echo>
-    <echo message="glassfish.home is ${glassfish.home}"/>
-    
-    <echo message="OS is ${os.name}"/>    
-    <exec executable="cmd" osfamily="Windows">
-    <arg value="/c"/>
-    <arg value="${glassfish.home}/bin/asadmin.bat"/>
-    <arg value="start-domain"/>
-    <arg value="domain1"/>
-  </exec>  
-  
-  <exec executable="${glassfish.home}/bin/asadmin" osfamily="unix">
-    <arg value="start-domain"/>
-    <arg value="domain1"/>
-   </exec>
-</target>
-
-
-
 
 </project>
 

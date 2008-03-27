@@ -12,7 +12,9 @@
     <description>Builds, tests, and runs the project V3 Quicklook</description>
     <target name="all" depends="clean">
         <record name="allrun.output" action="start"/>
-        <antcall target="setup.toplink"/>
+	<!-- resolveArtifact artifactId="testng" property="testng.jar"/>
+        <echo message="testng jar value: ${testng.jar}"/ -->
+        <!-- antcall target="setup.toplink"/ -->
         <antcall target="start-server"/>
         <antcall target="startDerby"/>        
         <antcall target="build"/>
@@ -21,7 +23,7 @@
         <antcall target="undeploy"/>
         <antcall target="stop-server"/>
         <antcall target="stopDerby"/>
-        <antcall target="report"/>        
+        <!-- antcall target="report"/ -->        
         <record name="allrun.output" action="stop"/>
     </target>
         
@@ -52,8 +54,8 @@
         <echo message="ANT PROJECT ${ant.project.name}"/>
         <ant dir="web/helloworld" target="build"/>
         <ant dir="web/jsfastrologer" target="build"/>
-        <ant dir="web/strutsbasic" target="build"/>
-        <ant dir="persistence/servlet-jpa-app" target="build"/>           
+        <!-- ant dir="web/strutsbasic" target="build"/ -->
+        <!-- ant dir="persistence/servlet-jpa-app" target="build"/ -->
         <!--<ant dir="ejb30/hello" target="build"/>
         <ant dir="adminweb/basic" target="build"/>-->
         <record name="build.output" action="stop"/>
@@ -64,8 +66,8 @@
         <record name="compiletests.output" action="start"/>
         <ant dir="web/helloworld" target="compile-tests"/>
         <ant dir="web/jsfastrologer" target="compile-tests"/>
-        <ant dir="web/strutsbasic" target="compile-tests"/>
-        <ant dir="persistence/servlet-jpa-app" target="compile-tests"/>
+        <!-- ant dir="web/strutsbasic" target="compile-tests"/ -->
+        <!-- ant dir="persistence/servlet-jpa-app" target="compile-tests"/ -->
         <record name="compiletests.output" action="stop"/>
     </target>
     
@@ -73,8 +75,8 @@
         <record name="deploy.output" action="start"/>
         <ant dir="web/helloworld" target="deploy"/>
         <ant dir="web/jsfastrologer" target="deploy"/>
-        <ant dir="web/strutsbasic" target="deploy"/>
-        <ant dir="persistence/servlet-jpa-app" target="deploy"/>   
+        <!-- ant dir="web/strutsbasic" target="deploy"/ -->
+        <!-- ant dir="persistence/servlet-jpa-app" target="deploy"/ -->   
         <record name="deploy.output" action="stop"/>
     </target>
     
@@ -82,8 +84,8 @@
         <record name="undeploy.output" action="start"/>
         <ant dir="web/helloworld" target="undeploy"/>
         <ant dir="web/jsfastrologer" target="undeploy"/>
-        <ant dir="web/strutsbasic" target="undeploy"/>
-        <ant dir="persistence/servlet-jpa-app" target="undeploy"/>   
+        <!-- ant dir="web/strutsbasic" target="undeploy"/ -->
+        <!-- ant dir="persistence/servlet-jpa-app" target="undeploy"/ -->   
         <record name="undeploy.output" action="stop"/>
     </target>
 
@@ -132,9 +134,7 @@
     
     <taskdef name="testng" classname="org.testng.TestNGAntTask">
         <classpath>
-            <fileset dir="${basedir}/lib">
-                <include name="*.jar"/>
-            </fileset>
+	    <pathelement path="${plugin_classpath}"/>
         </classpath>
     </taskdef>
     
@@ -182,9 +182,10 @@
         <property name="test.report" value="${basedir}/test-output"/>
         <mkdir dir="${test.report}"/>
         <path id="run.testng.classpath">
-            <fileset dir="${basedir}/lib">
+            <!-- fileset dir="${basedir}/lib">
                 <include name="**/*.jar"/>
-            </fileset>
+            </fileset -->
+	    <pathelement path="${plugin_classpath}"/>
             <pathelement location="${build.class.dir}"/>
         </path>
     </target>

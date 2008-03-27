@@ -36,9 +36,6 @@
         <fileset dir="${glassfish.home}">
             <include name="**/javaee*.jar"/>
         </fileset>
-	<fileset dir="${ws.root}/lib">
-            <include name="**/*.jar"/>
-        </fileset>
         <pathelement location="${class.output}"/>
         <pathelement path="${plugin_classpath}"/>
     </path>
@@ -51,9 +48,7 @@
     
     <taskdef name="testng" classname="org.testng.TestNGAntTask">
         <classpath>
-            <fileset dir="${ws.root}/lib">
-                <include name="*.jar"/>
-            </fileset>
+	    <pathelement path="${plugin_classpath}"/>
         </classpath>
     </taskdef>
     
@@ -62,16 +57,7 @@
 	    description="compile the test ng example" depends="">
 	    <echo message="compiling test client to ${test.class.output}"/>
 
-        <echo message="ct: mvn plugin classpath:  ${plugin_classpath}"/>
-
         <mkdir dir="${test.class.output}"/>
-        <!-- javac   debug="true"
-                 fork="true"
-                 source="1.5"
-                 classpathref="class.path"
-                 srcdir="src/test"
-                 destdir="${test.class.output}"
-        / -->
         <javac   debug="true"
                  fork="true"
                  source="1.5"
