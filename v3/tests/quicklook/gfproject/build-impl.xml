@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="common-impl" default="all" basedir=".">
     
+    <property file="${ws.root}/build.properties"/>
     <property environment="env"/>
     <property name="config.dir" value="${ant.file}"/>
     <property name="is.war.module" value="true"/>
@@ -259,7 +260,7 @@
     <testng outputdir="${result.output}"
     suitename="${testsuite.name}"
     testname="${testng.test.name}"
-            classpathref="${plugin.classpath}">
+            classpathref="class.path">
         <classfileset dir="${test.class.output}" includes="**/${testng.testclient}.class"/>
         <jvmarg value="-Dhttp.host=${glassfish.http.host}" />
         <jvmarg value="-Dhttp.port=${glassfish.http.port}" />
