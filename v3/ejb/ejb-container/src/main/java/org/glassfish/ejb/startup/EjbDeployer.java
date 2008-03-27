@@ -70,7 +70,7 @@ public class EjbDeployer
     
 
     protected String getModuleType () {
-        return "ejb";
+        return "EJB";
     }
 
     protected RootDeploymentDescriptor getDefaultBundleDescriptor() {
@@ -81,7 +81,7 @@ public class EjbDeployer
     @Override
     public MetaData getMetaData() {
         List<ModuleDefinition> apis = new ArrayList<ModuleDefinition>();
-        Module module = modulesRegistry.makeModuleFor("javax.javaee:javaee", "5.0");
+        Module module = modulesRegistry.makeModuleFor("org.glassfish:javax.javaee", "10.0-SNAPSHOT");
         if (module!=null) {
             apis.add(module.getModuleDefinition());
         }
