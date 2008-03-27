@@ -34,7 +34,7 @@ import java.util.*;
  *
  * @author Jerome Dochez
  */
-public class ServerEnvironment {
+public final class ServerEnvironment {
 
     /** folder where all generated code like compiled jsps, stubs is stored */
     public static final String kGeneratedDirName = "generated";
@@ -52,6 +52,9 @@ public class ServerEnvironment {
     /** folder where the compiled JSP pages reside */
     public static final String kCompileJspDirName = "jsp";
 
+    public static final String DEFAULT_ADMIN_CONSOLE_CONTEXT_ROOT = "/admin";
+    public static final String DEFAULT_ADMIN_CONSOLE_APP_NAME     = "admingui"; //same as folder
+    
     // TODO: this should be File
     final private String root;
     final private StartupContext startupContext;
@@ -199,6 +202,19 @@ public class ServerEnvironment {
 
     private boolean ok(String s) {
         return s != null && s.length() > 0;
+    }
+    
+    /** Returns the folder where the admin console application's folder (in the
+     *  name of admin console application) should be found. Thus by default,
+     *  it should be: [install-dir]/lib/install/applications. No attempt is made
+     *  to check if this location is readable or writable.
+     *  @return java.io.File representing parent folder for admin console application
+     *   Never returns a null
+     */
+    public File getDefaultAdminConsoleFolderOnDisk() {
+        File install = new File(asenv.getProps().get(SystemPropertyConstants.INSTALL_ROOT_PROPERTY));
+        File agp = new File(new File(new File(install, "lib"), "install"), "applications");
+        return (agp);
     }
 }
 

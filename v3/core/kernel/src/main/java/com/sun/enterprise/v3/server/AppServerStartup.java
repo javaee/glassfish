@@ -27,6 +27,7 @@ import com.sun.enterprise.module.*;
 import com.sun.enterprise.module.bootstrap.ModuleStartup;
 import com.sun.enterprise.module.bootstrap.StartupContext;
 import com.sun.enterprise.v3.admin.AdminAdapter;
+import com.sun.enterprise.v3.admin.adapter.AdminConsoleAdapter;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.Startup;
 import org.glassfish.api.Async;
@@ -116,6 +117,8 @@ public class AppServerStartup implements ModuleStartup {
         // now that we are all done with loading, I can accept administrative commands.
         AdminAdapter admin = habitat.getComponent(AdminAdapter.class);
         admin.ready();
-        
+        //AdminConsoleAdapter ac = habitat.getComponent(AdminConsoleAdapter.class);
+        //ac.setLogger(logger);
+        //ac.ready();
     }
 }
