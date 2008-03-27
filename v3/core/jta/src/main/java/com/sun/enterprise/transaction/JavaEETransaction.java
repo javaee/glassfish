@@ -47,6 +47,7 @@ import com.sun.enterprise.util.Utility;
 import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.enterprise.container.common.spi.JavaEETransactionManager;
 import com.sun.appserv.connectors.spi.ResourceHandle;
+import com.sun.logging.LogDomains;
 
 import org.jvnet.hk2.annotations.Inject;
 
@@ -67,13 +68,11 @@ import org.jvnet.hk2.annotations.Inject;
 public final class JavaEETransaction extends TimerTask implements 
         com.sun.enterprise.container.common.spi.JavaEETransaction {
 
-    @Inject 
-    static Logger _logger;
+    static Logger _logger = LogDomains.getLogger(LogDomains.JTA_LOGGER);
 
     // Sting Manager for Localization
     private static StringManager sm = StringManager.getManager(JavaEETransaction.class);
 
-    @Inject 
     static JavaEETransactionManager /** XXX ??? Opt **/ javaEETM; 
 
     // Local Tx ids are just numbers: they dont need to be unique across

@@ -52,6 +52,7 @@ import com.sun.enterprise.container.common.spi.JavaEETransactionManager;
 import com.sun.appserv.connectors.spi.ResourceHandle;
 import com.sun.appserv.connectors.spi.TransactedPoolManager;
 import com.sun.appserv.connectors.spi.PoolingException;
+import com.sun.logging.LogDomains;
 
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
@@ -73,7 +74,7 @@ import org.glassfish.api.invocation.ResourceHandler;
 public class JavaEETransactionManagerSimplified 
         implements JavaEETransactionManager {
 
-    @Inject protected Logger _logger;
+    protected Logger _logger = LogDomains.getLogger(LogDomains.JTA_LOGGER);
 
     @Inject protected TransactedPoolManager poolmgr;
 
@@ -755,7 +756,6 @@ public class JavaEETransactionManagerSimplified
                 tx = new JavaEETransaction();
 
 // XXX NO INJECTION ???
-            tx._logger = _logger;
             tx.javaEETM = this;
 // XXX NO INJECTION ???
 

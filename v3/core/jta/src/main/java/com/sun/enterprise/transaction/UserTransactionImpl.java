@@ -45,6 +45,7 @@ import javax.transaction.*;
 import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.enterprise.container.common.spi.JavaEETransactionManager;
 import com.sun.enterprise.container.common.spi.OperationsManager;
+import com.sun.logging.LogDomains;
 
 import org.glassfish.api.invocation.InvocationManager;
 import org.glassfish.api.invocation.ComponentInvocation;
@@ -72,7 +73,8 @@ import org.jvnet.hk2.component.PerLookup;
 public class UserTransactionImpl implements UserTransaction, Serializable
 {
 
-    // static Logger _logger=LogDomains.getLogger(LogDomains.JTA_LOGGER);
+    static Logger _logger = LogDomains.getLogger(LogDomains.JTA_LOGGER);
+
     // Sting Manager for Localization
     private static StringManager sm = StringManager.getManager(UserTransactionImpl.class);
 
@@ -81,9 +83,6 @@ public class UserTransactionImpl implements UserTransaction, Serializable
 
     @Inject 
     private transient InvocationManager invocationManager;
-
-    @Inject 
-    private Logger _logger;
 
     private static final boolean debug = false;
     private transient boolean initialized;
@@ -279,9 +278,8 @@ public class UserTransactionImpl implements UserTransaction, Serializable
         transactionManager.setTransactionTimeout(seconds);
     }
 
-    protected void setForTesting(TransactionManager tm, InvocationManager im, Logger l) {
+    protected void setForTesting(TransactionManager tm, InvocationManager im) {
         transactionManager = (JavaEETransactionManager)tm;
         invocationManager = im;
-        _logger = l;
     }
 }

@@ -15,7 +15,6 @@ import org.glassfish.api.invocation.InvocationManager;
 public class AppTest extends TestCase {
 
     TransactionManager t; 
-    Logger l = Logger.getAnonymousLogger();
 
     /**
      * Create the test case
@@ -43,7 +42,6 @@ public class AppTest extends TestCase {
     public void setUp() {
         try {
             t = new JavaEETransactionManagerSimplified();
-            ((JavaEETransactionManagerSimplified)t)._logger = l;
         } catch (Exception ex) {
             ex.printStackTrace();
             assert (false);
@@ -215,7 +213,7 @@ public class AppTest extends TestCase {
         UserTransaction utx = new UserTransactionImpl();
         InvocationManager im = new org.glassfish.api.invocation.InvocationManagerImpl();
         ((JavaEETransactionManagerSimplified)t).invMgr = im;
-        ((UserTransactionImpl)utx).setForTesting(t, im, l);
+        ((UserTransactionImpl)utx).setForTesting(t, im);
         return utx;
     }
 

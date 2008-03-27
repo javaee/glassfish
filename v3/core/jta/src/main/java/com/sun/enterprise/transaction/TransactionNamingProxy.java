@@ -57,6 +57,7 @@ public class TransactionNamingProxy implements NamedNamingObjectProxy {
     private Habitat habitat;
 
     private static final String USER_TX = "java:comp/UserTransaction";
+    private static final String USER_TX_NO_JAVA_COMP = "UserTransaction";
 
     private static final String TRANSACTION_SYNC_REGISTRY 
             = "java:comp/TransactionSynchronizationRegistry";
@@ -69,7 +70,7 @@ public class TransactionNamingProxy implements NamedNamingObjectProxy {
 
     public Object handle(String name) throws NamingException {
 
-        if (USER_TX.equals(name)) {
+        if (USER_TX.equals(name) || USER_TX_NO_JAVA_COMP.equals(name)) {
 // XXX TODO: Check permissions to lookup UserTransaction
             return habitat.getComponent(UserTransactionImpl.class);
         } else if (TRANSACTION_SYNC_REGISTRY.equals(name)) {
