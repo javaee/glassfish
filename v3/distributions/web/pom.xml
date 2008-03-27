@@ -163,6 +163,11 @@
            <version>${pe.version}</version>
         </dependency>
         <dependency>
+           <groupId>org.glassfish.registration</groupId>
+           <artifactId>registration-impl</artifactId>
+           <version>${pe.version}</version>
+        </dependency>
+        <dependency>
            <groupId>com.sun.enterprise</groupId>
            <artifactId>osgi-adapter</artifactId>
            <version>${hk2.version}</version>
