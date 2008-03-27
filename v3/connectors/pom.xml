@@ -13,6 +13,6 @@
     <modules>
         <module>connectors-runtime</module>
         <module>connectors-connector</module>
-        <module>jdbc-ra</module>
+        <!-- module>jdbc-ra</module -->
   </modules>
 </project>
