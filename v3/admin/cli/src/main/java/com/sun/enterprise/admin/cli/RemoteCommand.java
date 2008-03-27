@@ -55,6 +55,8 @@ import com.sun.enterprise.admin.cli.util.CLIUtil;
 import com.sun.enterprise.admin.cli.util.HttpConnectorAddress;
 import com.sun.enterprise.admin.cli.util.AuthenticationInfo;
 import com.sun.enterprise.cli.framework.CommandException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * RemoteCommand class 
@@ -70,7 +72,7 @@ public class RemoteCommand {
         return INSTANCE;
     }
 
-    public void handleRemoteCommand(final String[] args) throws CommandException {
+    public void handleRemoteCommand(String... args) throws CommandException {
         handleRemoteCommand(args, "hk2-cli", null);
     }
 
@@ -194,6 +196,15 @@ public class RemoteCommand {
         }
     }
 
+    boolean pingDAS(int port) {
+        try {
+            handleRemoteCommand("version", Integer.toString(port));
+            return true;
+        }
+        catch (Exception ex) {
+            return false;
+        }
+    }
     /**
      * Returns either the name of the file/directory or the canonical form
      * of the file/directory.  If <code>uploadFile</code> is
@@ -353,20 +364,19 @@ public class RemoteCommand {
         String exitCode = m.getMainAttributes().getValue("exit-code");
         String message = m.getMainAttributes().getValue("message");
 
-        if (exitCode != null) {
-            if (!exitCode.equalsIgnoreCase("Success")) {
-                //if there is any children message, then display it
-                final String childMsg = m.getMainAttributes().getValue("children");
-                if (childMsg != null && !childMsg.equals("")) {
-                    StringTokenizer childTok = new StringTokenizer(childMsg, ";");
-                    while (childTok.hasMoreTokens()) {
-                        System.out.println(childTok.nextToken());
-                    }
-                }
-                throw new CommandException(exitCode + " : " + message);
-            }
-        } else {
+        if (exitCode == null || exitCode.equalsIgnoreCase("Success")) {
             logger.printMessage(message);
+        }
+        else {   
+            //if there is any children message, then display it
+            final String childMsg = m.getMainAttributes().getValue("children");
+            if (childMsg != null && !childMsg.equals("")) {
+                StringTokenizer childTok = new StringTokenizer(childMsg, ";");
+                while (childTok.hasMoreTokens()) {
+                    logger.printMessage(childTok.nextToken());
+                }
+            }
+            throw new CommandException(exitCode + " : " + message);
         }
 
         processOneLevel("", null, m, m.getMainAttributes());
