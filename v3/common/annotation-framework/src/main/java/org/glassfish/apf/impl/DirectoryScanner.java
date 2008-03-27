@@ -46,7 +46,7 @@ import java.util.HashSet;
 import java.net.URL;
 import java.net.URLClassLoader;
 
-import org.glassfish.apf.Scanner;
+import org.glassfish.api.deployment.archive.Scanner;
 
 /**
  * Implementation of the Scanner interface for a directory

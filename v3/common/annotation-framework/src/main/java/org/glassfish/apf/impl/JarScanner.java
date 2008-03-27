@@ -45,7 +45,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.jar.JarFile;
 import java.util.jar.JarEntry;
-import org.glassfish.apf.Scanner;
+import org.glassfish.api.deployment.archive.Scanner;
 
 /**
  * Implements the scanner interface on a jar file.

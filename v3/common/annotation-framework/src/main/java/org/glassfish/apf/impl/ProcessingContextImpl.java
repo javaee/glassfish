@@ -36,6 +36,7 @@
 
 package org.glassfish.apf.impl;
 
+import org.glassfish.api.deployment.archive.Scanner;
 import java.util.Stack;
 import org.glassfish.apf.*;
 import org.glassfish.apf.context.AnnotationContext;

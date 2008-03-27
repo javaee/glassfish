@@ -36,6 +36,7 @@
 
 package org.glassfish.apf;
 
+import org.glassfish.api.deployment.archive.Scanner;
 import java.util.Set;
 
 /**

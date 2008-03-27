@@ -35,7 +35,7 @@
  */
 package org.glassfish.apf.impl;
 
-import org.glassfish.apf.ComponentInfo;
+import org.glassfish.api.deployment.archive.ComponentInfo;
 import org.glassfish.apf.factory.Factory;
 
 import java.lang.reflect.Constructor;
