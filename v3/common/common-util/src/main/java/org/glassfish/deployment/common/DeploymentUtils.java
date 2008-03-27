@@ -37,14 +37,32 @@
 package org.glassfish.deployment.common;
 
 import com.sun.enterprise.util.io.FileUtils;
+import org.glassfish.api.deployment.archive.ReadableArchive;
 
 import java.io.File;
+import java.io.IOException;
 
 /** 
  * Utility methods for deployment. 
  */
 
 public class DeploymentUtils {
+
+    private static final String WEB_XML = "WEB-INF/web.xml";
+    private static final String WEB_INF_CLASSES = "WEB-INF/classes";
+    private static final String WEB_INF_LIB = "WEB-INF/lib";
+
+    // checking whether the archive is a web archive
+    public static boolean isWebArchive(ReadableArchive archive) {
+        try {
+            return (archive.exists(WEB_XML) || 
+                    archive.exists(WEB_INF_CLASSES) || 
+                    archive.exists(WEB_INF_LIB));
+        } catch (IOException ioe) {
+            // ignore
+        }
+        return false;
+    }
 
     /**
      * This method returns the relative file path of an embedded module to 

@@ -4,6 +4,7 @@ import org.jvnet.hk2.annotations.Service;
 
 import org.glassfish.api.deployment.archive.ArchiveHandler;
 import org.glassfish.api.deployment.archive.ReadableArchive;
+import org.glassfish.deployment.common.DeploymentUtils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -24,13 +25,8 @@ public class JarHandler extends AbstractArchiveHandler implements ArchiveHandler
 
     public boolean handles(ReadableArchive archive) {
         // I don't handle war files...
-        try {
-            InputStream is = archive.getEntry("WEB-INF/web.xml");
-            if (is!=null) {
-                is.close();
-                return false;
-            }
-        } catch(IOException e) {
+        if (DeploymentUtils.isWebArchive(archive)) {
+            return false;
         }
         // but I handle everything else
         return true;

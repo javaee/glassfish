@@ -2,6 +2,7 @@ package com.sun.enterprise.security;
 
 import org.glassfish.api.container.Sniffer;
 import org.glassfish.api.deployment.archive.ReadableArchive;
+import org.glassfish.deployment.common.DeploymentUtils;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.Habitat;
@@ -29,6 +30,18 @@ public class SecuritySniffer extends GenericSniffer {
 
     public SecuritySniffer() {
         super("security", "WEB-INF/web.xml", null);
+    }
+
+   /**
+     * Returns true if the passed file or directory is recognized by this
+     * instance.
+     *
+     * @param location the file or directory to explore
+     * @param loader class loader for this application
+     * @return true if this sniffer handles this application type
+     */
+    public boolean handles(ReadableArchive location, ClassLoader loader) {
+        return DeploymentUtils.isWebArchive(location);
     }
 
     /**

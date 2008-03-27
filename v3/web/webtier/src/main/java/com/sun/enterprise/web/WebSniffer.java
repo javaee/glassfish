@@ -26,14 +26,12 @@ package com.sun.enterprise.web;
 import com.sun.enterprise.v3.deployment.GenericSniffer;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.container.Sniffer;
+import org.glassfish.deployment.common.DeploymentUtils;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Singleton;
 
-import java.io.File;
-import java.io.InputStream;
 import java.io.IOException;
-
 
 /**
  * Implementation of the Sniffer for the web container.
@@ -43,10 +41,6 @@ import java.io.IOException;
 @Service(name="web")
 @Scoped(Singleton.class)
 public class WebSniffer  extends GenericSniffer implements Sniffer {
-
-    private static final String WEB_INF_CLASSES = "WEB-INF/classes";
-    private static final String WEB_INF_LIB = "WEB-INF/lib";
-    private static final String WAR_EXTENSION = ".war";
 
     public WebSniffer() {
         super("web", "WEB-INF/web.xml", null);
@@ -61,26 +55,7 @@ public class WebSniffer  extends GenericSniffer implements Sniffer {
      * @return true if this sniffer handles this application type
      */
     public boolean handles(ReadableArchive location, ClassLoader loader) {
-        // first look for WEB-INF/web.xml
-        if(super.handles(location, loader)) {
-            return true;
-        }
-
-        // then look for WEB-INF/classes and WEB-INF/lib
-        InputStream is;
-        try {
-            if (location.exists(WEB_INF_CLASSES)) {
-                return true;
-            }
-
-            if (location.exists(WEB_INF_LIB)) {
-                return true;
-            }
-        } catch (IOException e) {
-            // ignore
-        }
-
-        return false;
+        return DeploymentUtils.isWebArchive(location);
     }
 
     final String[] containers = { "com.sun.enterprise.web.WebContainer" };

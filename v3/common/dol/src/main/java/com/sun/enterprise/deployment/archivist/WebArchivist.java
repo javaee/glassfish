@@ -81,7 +81,11 @@ public class WebArchivist extends Archivist<WebBundleDescriptor>
     DeploymentDescriptorFile standardDD = new WebDeploymentDescriptorFile();
 
     private WebBundleDescriptor defaultBundleDescriptor = null;
-        
+
+    private static final String WEB_INF_CLASSES = "WEB-INF/classes";
+    private static final String WEB_INF_LIB = "WEB-INF/lib";
+
+
     /**
      * @return the  module type handled by this archivist
      * as defined in the application DTD
@@ -195,7 +199,8 @@ public class WebArchivist extends Archivist<WebBundleDescriptor>
     @Override
     protected boolean postHandles(ReadableArchive abstractArchive)
             throws IOException {
-        return false;
+        return (abstractArchive.exists(WEB_INF_CLASSES) || 
+                abstractArchive.exists(WEB_INF_LIB));
     }
 
     @Override

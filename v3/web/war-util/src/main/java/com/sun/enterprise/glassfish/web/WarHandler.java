@@ -2,6 +2,7 @@ package com.sun.enterprise.glassfish.web;
 
 import org.glassfish.api.deployment.archive.ArchiveHandler;
 import org.glassfish.api.deployment.archive.ReadableArchive;
+import org.glassfish.deployment.common.DeploymentUtils;
 import org.jvnet.hk2.annotations.Service;
 import org.apache.catalina.loader.WebappClassLoader;
 import org.apache.catalina.LifecycleException;
@@ -22,34 +23,12 @@ import com.sun.enterprise.deploy.shared.AbstractArchiveHandler;
 @Service
 public class WarHandler extends AbstractArchiveHandler implements ArchiveHandler {
 
-    private static final String WEB_XML = "WEB-INF/web.xml";
-    private static final String WEB_INF_CLASSES = "WEB-INF/classes";
-    private static final String WEB_INF_LIB = "WEB-INF/lib";
-
     public String getArchiveType() {
         return "war";               
     }
 
     public boolean handles(ReadableArchive archive) {
-        try {
-            // first look for WEB-INF/web.xml
-            if (archive.exists(WEB_XML)) {
-                return true;
-            }
-
-            // then look for WEB-INF/classes and WEB-INF/lib
-            if (archive.exists(WEB_INF_CLASSES)) {
-                return true;
-            }
-
-            if (archive.exists(WEB_INF_LIB)) {
-                return true;
-            }
-        } catch (IOException e) {
-            // ignore
-        }
-
-        return false;
+        return DeploymentUtils.isWebArchive(archive);
     }
 
     public ClassLoader getClassLoader(ClassLoader parent, ReadableArchive archive) {
