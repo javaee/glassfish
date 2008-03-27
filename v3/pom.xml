@@ -158,6 +158,7 @@
       	<module>extras</module>
       	<module>distributions</module>
         <module>security</module>
+        <module>registration</module>
         <module>tests</module>
     </modules> 
     <repositories>
