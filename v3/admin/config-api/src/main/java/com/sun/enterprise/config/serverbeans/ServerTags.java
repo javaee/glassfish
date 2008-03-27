@@ -758,4 +758,8 @@ public class ServerTags  {
     //static public final String DESCRIPTION = "description";
     //static public final String NODE_AGENT_REF = "node-agent-ref";
     //static public final String CONFIG_REF = "config-ref";
+    
+    public static final String ADMIN_CONSOLE_CONTEXT_ROOT      = "adminConsoleContextRoot";
+    public static final String ADMIN_CONSOLE_DOWNLOAD_LOCATION = "adminConsoleDownloadLocation";
+    public static final String ADMIN_CONSOLE_LOCATION_ON_DISK  = "adminConsoleFolder";
 }
