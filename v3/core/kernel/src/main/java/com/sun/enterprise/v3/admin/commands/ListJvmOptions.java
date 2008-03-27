@@ -21,11 +21,6 @@
  * Copyright 2006 Sun Microsystems, Inc. All rights reserved.
  */
 
-/**
- * Lists the JVM options configured in server's configuration.
- * @author &#2325;&#2375;&#2342;&#2366;&#2352 (km@dev.java.net)
- * @since GlassFish V3
- */
 package com.sun.enterprise.v3.admin.commands;
 
 import com.sun.enterprise.config.serverbeans.JavaConfig;
@@ -44,6 +39,11 @@ import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PerLookup;
 
+/**
+ * Lists the JVM options configured in server's configuration.
+ * @author &#2325;&#2375;&#2342;&#2366;&#2352 (km@dev.java.net)
+ * @since GlassFish V3
+ */
 @Service(name="list-jvm-options")   //implements the cli command by this "name"
 @Scoped(PerLookup.class)            //should be provided "per lookup of this class", not singleton
 public final class ListJvmOptions implements AdminCommand {

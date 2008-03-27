@@ -21,11 +21,6 @@
  * Copyright 2006 Sun Microsystems, Inc. All rights reserved.
  */
 
-/**
- * Creates given JVM options in server's configuration.
- * @author &#2325;&#2375;&#2342;&#2366;&#2352 (km@dev.java.net)
- * @since GlassFish V3
- */
 package com.sun.enterprise.v3.admin.commands;
 
 import com.sun.enterprise.config.serverbeans.JavaConfig;
@@ -46,6 +41,12 @@ import org.jvnet.hk2.component.PerLookup;
 import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.TransactionFailure;
+
+/**
+ * Creates given JVM options in server's configuration.
+ * @author &#2325;&#2375;&#2342;&#2366;&#2352 (km@dev.java.net)
+ * @since GlassFish V3
+ */
 
 @Service(name="create-jvm-options")   //implements the cli command by this "name"
 @Scoped(PerLookup.class)            //should be provided "per lookup of this class", not singleton
