@@ -59,7 +59,7 @@ println("appType = $pageSession{appType}");
             #getTargetsOptionsList(defaultTarget="$pageSession{target}"AvailableTargets=>$pageSession{availableTargets}, SelectedTargets=>$pageSession{selectedTargets});
         }
     />
-#include "shared/restart.inc"  
+#include "/shared/restart.inc"  
 <sun:html>
 	<sun:head id="propertyhead" title="$resource{i18n.deploy.pageTitle}">
                 <sun:script url="/resource/js/restart.js" />
@@ -79,26 +79,26 @@ println("appType = $pageSession{appType}");
                         }
                         ">
 	    	<sun:form id="form"> 
-#include treeBreadcrumbs.inc
-#include "alertMsg.inc"
+#include "/treeBreadcrumbs.inc"
+#include "/alertMsg.inc"
                 <sun:title id="title" title="$resource{i18n.deploy.pageTitle}" helpText="$resource{i18n.deploy.titleHelp}">
                  <!facet pageButtonsTop>
                         <sun:panelGroup id="topButtons">
-#include "applications/uploadButtons.inc"                            
+#include "uploadButtons.inc"                            
                     </sun:panelGroup>
                 </facet>
                 
                 <!facet pageButtonsBottom>
                         <sun:panelGroup id="bottomButtons">
-#include "applications/uploadButtons.inc"
+#include "uploadButtons.inc"
                     </sun:panelGroup>
                 </facet>
                 
-#include "applications/uploadComponent.inc"
+#include "uploadComponent.inc"
 <sun:propertySheet id="ps">		
-#include "applications/uploadFieldsCommon.inc"
+#include "uploadFieldsCommon.inc"
 "<br />
-#include "shared/targetSectionForCreate.inc"
+#include "/shared/targetSectionForCreate.inc"
 </sun:propertySheet>
 
 </sun:title>

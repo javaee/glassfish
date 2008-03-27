@@ -36,10 +36,11 @@
 
 <!-- applications/descriptor.inc -->
 <!-- used in enterpriseApplicationsDesc.jsf  ejbModulesDesc.jsf  webApplicationsDesc.jsf connectorModulesDesc.jsf  -->
-#include "applications/appGeneralTabs.inc"
+// FIXME: The following file does not seem to exist yet
+#include "appGeneralTabs.inc"
     <!-- Page Title -->
     <sun:title id="propertyContentPage" title="#{pageTitle}" helpText="#{pageTitleHelp}" >
     </sun:title>
-#include "applications/descriptorsTable.inc"
+#include "descriptorsTable.inc"
 	
 

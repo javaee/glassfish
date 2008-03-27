@@ -46,9 +46,9 @@
         setPageSessionAttribute(key="hasContextRoot" value="#{true}" );
         setPageSessionAttribute(key="appType" value="webApp");
         setPageSessionAttribute(key="viewKeyValue" value="webSummaryView");
-#include "shared/viewSummaryDetail.inc"
+#include "/shared/viewSummaryDetail.inc"
     />
-#include "shared/restart.inc"    
+#include "/shared/restart.inc"    
     <sun:html id="html2">
         <sun:head id="propertyhead" title="$resource{i18n.webAplications.title}" >
             <sun:script url="/resource/js/restart.js" />
@@ -63,15 +63,15 @@
         admingui.nav.selectTreeNodeById('form:tree:applications:webApplications');
     </script>
 </f:verbatim>
-  #include treeBreadcrumbs.inc
-#include "alertMsg.inc"
+#include "/treeBreadcrumbs.inc"
+#include "/alertMsg.inc"
                 <!-- Page Title -->
                  <sun:title id="propertyContentPage" title="$resource{i18n.webAplications.title}" helpText="$resource{i18n.webAplications.titleHelp}"/>
                  "<br />
-#include "applications/deployTable.inc"
+#include "deployTable.inc"
 	<sun:hidden id="helpKey" value="$resource{help.webApplications}" />
             </sun:form>
         </sun:body>
-#include "shared/changeButtonsJS.inc"
+#include "/shared/changeButtonsJS.inc"
     </sun:html>
 </sun:page>

@@ -47,16 +47,16 @@
     setPageSessionAttribute(key="targetPage" value="webApplicationTargets.jsf");
     getDescriptors(appName="$requestParameter{appName}"  descriptors=>$attribute{descriptors});
     />
-#include "shared/restart.inc"    
+#include "/shared/restart.inc"    
 <sun:html id="html2">
     <sun:head id="propertyhead" title="#{pageTitle}" >
         <sun:script url="/resource/js/restart.js" />
     </sun:head>
-#include "alertMsg.inc"
+#include "/alertMsg.inc"
     <sun:body id="body3" onLoad="javascript: synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
         <sun:form id="propertyForm">
-#include treeBreadcrumbs.inc
-#include "applications/descriptor.inc"
+#include "/treeBreadcrumbs.inc"
+#include "descriptor.inc"
 	<sun:hidden id="helpKey" value="$resource{help.webApplicationDesc}" />
         </sun:form>
     </sun:body>

@@ -44,7 +44,7 @@
         setAttribute(key="chooseType" value="$boolean{false}");
         getAppTypeForDisplay(appType="$pageSession{appType}" displayType=>$page{displayType});
     />
-#include "shared/restart.inc"    
+#include "/shared/restart.inc"    
 <sun:html>
 	<sun:head id="propertyhead" title="$resource{i18n.redeploy.pageTitle}">
                 <sun:script url="/resource/js/restart.js" />
@@ -52,8 +52,8 @@
 	</sun:head>
 		<sun:body onLoad="javascript: synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
 	    	<sun:form id="form"> 
-#include treeBreadcrumbs.inc
-#include "alertMsg.inc"
+#include "/treeBreadcrumbs.inc"
+#include "/alertMsg.inc"
                 <sun:title id="title" title="$resource{i18n.redeploy.pageTitle}" helpText="$resource{i18n.redeploy.pageTitleHelp}">
                     <!facet pageButtonsTop>
                     <sun:panelGroup id="topButtons">
@@ -93,7 +93,7 @@
             
         </sun:propertySheetSection>
     </sun:propertySheet>
-#include "applications/uploadComponent.inc"
+#include "uploadComponent.inc"
 	<sun:hidden id="helpKey" value="$resource{help.redeploy}" />
 		</sun:form>           
 	</sun:body> 

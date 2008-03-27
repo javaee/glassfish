@@ -44,7 +44,7 @@
     setPageSessionAttribute(key="pageTitleHelp" value="$resource{i18n.fileChooser.pageTitleHelp}");
     setPageSessionAttribute(key="selectButtonLabel" value="$resource{i18n.button.SELECT}");
     />
-#include "shared/restart.inc"    
+#include "/shared/restart.inc"    
 <sun:html id="html2">
     <sun:head id="propertyhead">
 		"<SCRIPT language="JavaScript" src="../js/adminjsf.js"></script>
