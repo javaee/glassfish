@@ -155,7 +155,8 @@ public class JDBCResourceManager implements ResourceManager {
         return status;
     }
     
-    public ResourceStatus delete (Resources resources, final JdbcResource[] jdbcResources,  final String jndiName) 
+    public ResourceStatus delete (Resources resources, final JdbcResource[] jdbcResources,  
+            final String jndiName, final Server targetServer) 
             throws Exception {
         
         if (jndiName == null) {
@@ -174,6 +175,7 @@ public class JDBCResourceManager implements ResourceManager {
         }
 
         try {
+            // delete jdbc-resource
             if (ConfigSupport.apply(new SingleConfigCode<Resources>() {
                 public Object run(Resources param) throws PropertyVetoException, TransactionFailure {
                     for (JdbcResource resource : jdbcResources) {
@@ -190,6 +192,10 @@ public class JDBCResourceManager implements ResourceManager {
                 ResourceStatus status = new ResourceStatus(ResourceStatus.FAILURE, msg);
                 return status;
             }
+            
+            // delete resource-ref
+            ResourceUtils.deleteResourceRef(targetServer, jndiName);
+            
         } catch(TransactionFailure tfe) {
             String msg = localStrings.getLocalString("jdbc.resource.deletionFailed", 
                             "JDBC resource {0} delete failed ", jndiName);

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2008 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -46,6 +46,8 @@ import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PerLookup;
 import com.sun.enterprise.config.serverbeans.JdbcResource;
 import com.sun.enterprise.config.serverbeans.Resources;
+import com.sun.enterprise.config.serverbeans.Server;
+import com.sun.enterprise.universal.glassfish.SystemPropertyConstants;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 
 
@@ -58,8 +60,11 @@ import com.sun.enterprise.util.LocalStringManagerImpl;
 @I18n("delete.jdbc.resource")
 public class DeleteJdbcResource implements AdminCommand {
     
-    final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(CreateJdbcResource.class);    
+    final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(DeleteJdbcResource.class);    
 
+    @Param(optional=true)
+    String target = SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME;
+    
     @Param(name="jdbc_resource_name", primary=true)
     String jndiName;
 
@@ -68,6 +73,9 @@ public class DeleteJdbcResource implements AdminCommand {
     
     @Inject
     JdbcResource[] jdbcResources;
+    
+    @Inject
+    Server[] servers;
 
     /**
      * Executes the command with the command parameters passed as Properties
@@ -78,9 +86,10 @@ public class DeleteJdbcResource implements AdminCommand {
     public void execute(AdminCommandContext context) {
 
         final ActionReport report = context.getActionReport();
+        Server targetServer = ResourceUtils.getTargetServer(servers, target);
         try {
             JDBCResourceManager jdbcResMgr = new JDBCResourceManager();
-            ResourceStatus rs = jdbcResMgr.delete(resources, jdbcResources, jndiName);
+            ResourceStatus rs = jdbcResMgr.delete(resources, jdbcResources, jndiName, targetServer);
             if (rs.getStatus() == ResourceStatus.SUCCESS) {
                 report.setMessage(rs.getMessage());
                 report.setActionExitCode(ActionReport.ExitCode.SUCCESS);       

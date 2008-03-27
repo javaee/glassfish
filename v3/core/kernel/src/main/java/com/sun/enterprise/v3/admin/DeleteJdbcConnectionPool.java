@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2008 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -45,6 +45,7 @@ import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PerLookup;
 import com.sun.enterprise.config.serverbeans.Resources;
+import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.config.serverbeans.JdbcConnectionPool;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 
@@ -69,6 +70,9 @@ public class DeleteJdbcConnectionPool implements AdminCommand {
     Resources resources;
     
     @Inject
+    Server[] servers;
+    
+    @Inject
     JdbcConnectionPool[] connPools;
 
     /**
@@ -82,7 +86,8 @@ public class DeleteJdbcConnectionPool implements AdminCommand {
         
         try {
             JDBCConnectionPoolManager jdbcConnMgr = new JDBCConnectionPoolManager();
-            ResourceStatus rs = jdbcConnMgr.delete(resources, connPools, cascade, jdbc_connection_pool_id);
+            ResourceStatus rs = jdbcConnMgr.delete(servers, resources, connPools, 
+                    cascade, jdbc_connection_pool_id);
             if (rs.getStatus() == ResourceStatus.SUCCESS) {
                 report.setMessage(rs.getMessage());
                 report.setActionExitCode(ActionReport.ExitCode.SUCCESS);       
@@ -91,7 +96,8 @@ public class DeleteJdbcConnectionPool implements AdminCommand {
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             }
         } catch(Exception e) {
-            report.setMessage(localStrings.getLocalString("delete.jdbc.connection.pool.fail", "{0} delete failed ", jdbc_connection_pool_id));
+            report.setMessage(localStrings.getLocalString("delete.jdbc.connection.pool.fail", 
+                    "{0} delete failed ", jdbc_connection_pool_id));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             
         }        

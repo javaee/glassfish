@@ -35,7 +35,6 @@
  */
 package com.sun.enterprise.v3.admin;
 
-import java.beans.PropertyVetoException;
 import com.sun.enterprise.config.serverbeans.ResourceRef;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.util.LocalStringManagerImpl;
@@ -48,8 +47,6 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PerLookup;
-import org.jvnet.hk2.config.ConfigSupport;
-import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.TransactionFailure;
 
 /**
@@ -101,19 +98,7 @@ public class DeleteResourceRef implements AdminCommand {
         try {
             for (final Server server : servers) {
                 if (server.getName().equals(target)) {
-                    if (ConfigSupport.apply(new SingleConfigCode<Server>() {
-
-                        public Object run(Server param) throws PropertyVetoException, TransactionFailure {
-
-                            for (ResourceRef resourceRef : server.getResourceRef()) {
-                                if (resourceRef.getRef().equals(refName)) {
-                                    return param.getResourceRef().remove(resourceRef);
-                                }
-                            }
-                            // not found
-                            return null;
-                        }
-                    }, server) == null);
+                    ResourceUtils.deleteResourceRef(server, refName);
                 }
             }
         } catch(TransactionFailure tfe) {

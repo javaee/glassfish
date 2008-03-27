@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2008 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -63,6 +63,23 @@ public class ResourceUtils {
                 return newResourceRef;
             }
         }, target);
+    }
+    
+    public static void deleteResourceRef(Server targetServer, final String refName) 
+        throws TransactionFailure {
+
+        ConfigSupport.apply(new SingleConfigCode<Server>() {
+
+            public Object run(Server param) throws PropertyVetoException, TransactionFailure {
+
+                for (ResourceRef resourceRef : param.getResourceRef()) {
+                    if (resourceRef.getRef().equals(refName)) {
+                       return param.getResourceRef().remove(resourceRef);
+                    }
+                }
+                return null;
+            }
+        }, targetServer);
     }
     
     public static Server getTargetServer(Server[] servers, String target) {

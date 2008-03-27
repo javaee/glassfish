@@ -211,8 +211,9 @@ class JDBCConnectionPoolManager implements ResourceManager{
         jdbcconnectionpoolid = (String) attrList.get(CONNECTION_POOL_NAME);
     }
     
-    public ResourceStatus delete (Resources resources, final JdbcConnectionPool[] connPools, final String cascade, final String jdbcconnectionpoolid) 
-            throws Exception {
+    public ResourceStatus delete (Server[] servers, Resources resources, 
+            final JdbcConnectionPool[] connPools, final String cascade, 
+            final String jdbcconnectionpoolid) throws Exception {
         
         if (jdbcconnectionpoolid == null) {
             String msg = localStrings.getLocalString("jdbcConnPool.resource.noJndiName",
@@ -233,7 +234,7 @@ class JDBCConnectionPoolManager implements ResourceManager{
             
             // if cascade=true delete all the resources associated with this pool 
             // if cascade=false don't delete this connection pool if a resource is referencing it
-            Object obj = deleteAssociatedResources(resources, 
+            Object obj = deleteAssociatedResources(servers, resources, 
                     Boolean.parseBoolean(cascade), jdbcconnectionpoolid);
             if (obj == Integer.valueOf(ResourceStatus.FAILURE)) {
                 String msg = localStrings.getLocalString(
@@ -260,6 +261,7 @@ class JDBCConnectionPoolManager implements ResourceManager{
                 ResourceStatus status = new ResourceStatus(ResourceStatus.FAILURE, msg);
                 return status;
             }
+            
         } catch(TransactionFailure tfe) {
             String msg = localStrings.getLocalString("jdbcConnPool.resource.deletionFailed", 
                             "JDBC Connection pool {0} delete failed ", jdbcconnectionpoolid);
@@ -296,7 +298,7 @@ class JDBCConnectionPoolManager implements ResourceManager{
         return false;
     }
     
-    private Object deleteAssociatedResources(Resources resources, 
+    private Object deleteAssociatedResources(final Server[] servers, Resources resources, 
             final boolean cascade, final String connPoolId) throws TransactionFailure {
         
         return ConfigSupport.apply(new SingleConfigCode<Resources>() {
@@ -305,7 +307,10 @@ class JDBCConnectionPoolManager implements ResourceManager{
                     if (resource instanceof JdbcResource) {
                         if (((JdbcResource)resource).getPoolName().equals(connPoolId)) {
                             if (cascade) {
+                                // delete jdbc-resource
                                 param.getResources().remove(resource);
+                                // delete resource-refs
+                                deleteResourceRefs(servers, ((JdbcResource)resource).getJndiName());
                             } else {
                                 return Integer.valueOf(ResourceStatus.FAILURE);
                             }
@@ -317,5 +322,13 @@ class JDBCConnectionPoolManager implements ResourceManager{
         }, resources);
         
     }
+    
+    private void deleteResourceRefs(Server[] servers, final String refName) 
+            throws TransactionFailure {
         
+        for (Server server : servers) {
+            ResourceUtils.deleteResourceRef(server, refName);
+        }
+        
+    }
 }
