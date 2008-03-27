@@ -38,6 +38,6 @@
 setResourceBundle(key="help" bundle="com.sun.enterprise.tools.admingui.resources.Helplinks")
 setAttribute(key="helpKey" value="$resource{help.serverInstJvmGeneral}" );
 />
-#include "shared/jvmGeneral_1.inc"
-#include "appServer/serverInstTabs.inc"
-#include "shared/jvmGeneral_2.inc"
+#include "/shared/jvmGeneral_1.inc"
+#include "serverInstTabs.inc"
+#include "/shared/jvmGeneral_2.inc"

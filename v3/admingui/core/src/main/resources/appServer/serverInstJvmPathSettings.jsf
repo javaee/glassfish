@@ -39,6 +39,6 @@ setResourceBundle(key="i18n" bundle="core.Strings");
 setResourceBundle(key="help" bundle="com.sun.enterprise.tools.admingui.resources.Helplinks")
 setAttribute(key="helpKey" value="$resource{help.serverInstJvmPathSettings}" );
 />
-#include "shared/jvmPath_1.inc"
-#include "appServer/serverInstTabs.inc"
-#include "shared/jvmPath_2.inc"
+#include "/shared/jvmPath_1.inc"
+#include "serverInstTabs.inc"
+#include "/shared/jvmPath_2.inc"

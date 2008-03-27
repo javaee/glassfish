@@ -45,17 +45,17 @@
         getServerDomainAttributes(AppRoot=>$attribute{appRoot}, LogRoot=>$attribute{logRoot}, Locale=>$attribute{locale});
         />   
     </event>
- #include "shared/restart.inc"
+#include "/shared/restart.inc"
     <sun:html id="html2">
         <sun:head id="propertyhead" title="$resource{i18n.server.DomainAttrs}">
             <sun:script url="../js/restart.js" />
         </sun:head>
         <sun:body id="body3" onLoad="javascript: synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
             <sun:form id="propertyForm">
-#include treeBreadcrumbs.inc
-#include "appServer/serverInstTabs.inc"
-#include "alertMsg.inc"
-#include "shared/domainAttributesCommon.inc"
+#include "/treeBreadcrumbs.inc"
+#include "serverInstTabs.inc"
+#include "/alertMsg.inc"
+#include "/shared/domainAttributesCommon.inc"
 	<sun:hidden id="helpKey" value="$resource{help.serverInstDomainAttrs}" />
             </sun:form>
         </sun:body>
