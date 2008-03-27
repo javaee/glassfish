@@ -82,7 +82,7 @@ public class PersistenceUnitInfoImpl implements PersistenceUnitInfo {
 
     private PersistenceUnitDescriptor persistenceUnitDescriptor;
 
-    private PersistenceUnitLoader.ApplicationInfo appInfo;
+    private ProviderContainerContractInfo providerContainerContractInfo;
 
     private File absolutePuRootFile;
 
@@ -95,15 +95,15 @@ public class PersistenceUnitInfoImpl implements PersistenceUnitInfo {
 
     public PersistenceUnitInfoImpl(
             PersistenceUnitDescriptor persistenceUnitDescriptor,
-            PersistenceUnitLoader.ApplicationInfo appInfo) {
+            ProviderContainerContractInfo providerContainerContractInfo) {
         this.persistenceUnitDescriptor = persistenceUnitDescriptor;
-        this.appInfo = appInfo;
+        this.providerContainerContractInfo = providerContainerContractInfo;
         jarFiles = _getJarFiles();
         String jtaDataSourceName = _calculateJtaDataSourceName();
         String nonJtaDataSourceName = _calculateNonJtaDataSourceName();
         try {
-            jtaDataSource = appInfo.lookupDataSource(jtaDataSourceName);
-            nonJtaDataSource = appInfo.lookupNonTxDataSource(nonJtaDataSourceName);
+            jtaDataSource = providerContainerContractInfo.lookupDataSource(jtaDataSourceName);
+            nonJtaDataSource = providerContainerContractInfo.lookupNonTxDataSource(nonJtaDataSourceName);
         } catch (NamingException e) {
 			throw new RuntimeException(e);
 		}
@@ -192,21 +192,21 @@ public class PersistenceUnitInfoImpl implements PersistenceUnitInfo {
      * {@inheritDoc}
      */
     public ClassLoader getClassLoader() {
-        return appInfo.getClassLoader();
+        return providerContainerContractInfo.getClassLoader();
     }
 
     /**
      * {@inheritDoc}
      */
     public void addTransformer(ClassTransformer transformer) {
-        appInfo.addTransformer(transformer);
+        providerContainerContractInfo.addTransformer(transformer);
     }
 
     /**
      * {@inheritDoc}
      */
     public ClassLoader getNewTempClassLoader() {
-        return appInfo.getTempClassloader();
+        return providerContainerContractInfo.getTempClassloader();
     }
 
     @Override public String toString() {
@@ -355,7 +355,7 @@ public class PersistenceUnitInfoImpl implements PersistenceUnitInfo {
 
     private File getAbsolutePuRootFile() {
         if (absolutePuRootFile == null) {
-            absolutePuRootFile = new File(appInfo.getApplicationLocation(),
+            absolutePuRootFile = new File(providerContainerContractInfo.getApplicationLocation(),
                     getAbsolutePuRoot().replace('/', File.separatorChar));
             if (!absolutePuRootFile.exists()) {
                 throw new RuntimeException(

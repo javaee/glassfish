@@ -1,33 +1,57 @@
+/*
+ * The contents of this file are subject to the terms
+ * of the Common Development and Distribution License
+ * (the License).  You may not use this file except in
+ * compliance with the License.
+ *
+ * You can obtain a copy of the license at
+ * https://glassfish.dev.java.net/public/CDDLv1.0.html or
+ * glassfish/bootstrap/legal/CDDLv1.0.txt.
+ * See the License for the specific language governing
+ * permissions and limitations under the License.
+ *
+ * When distributing Covered Code, include this CDDL
+ * Header Notice in each file and include the License file
+ * at glassfish/bootstrap/legal/CDDLv1.0.txt.
+ * If applicable, add the following below the CDDL Header,
+ * with the fields enclosed by brackets [] replaced by
+ * you own identifying information:
+ * "Portions Copyrighted [year] [name of copyright owner]"
+ *
+ * Copyright 2008 Sun Microsystems, Inc. All rights reserved.
+ */
 package org.glassfish.persistence.jpa;
 
 import com.sun.appserv.connectors.spi.ConnectorRuntime;
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.BundleDescriptor;
 import com.sun.enterprise.deployment.PersistenceUnitDescriptor;
-import com.sun.enterprise.deployment.RootDeploymentDescriptor;
 import com.sun.enterprise.module.ModuleDefinition;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.MetaData;
 import org.glassfish.api.deployment.InstrumentableClassLoader;
-import org.glassfish.deployment.common.DummyApplication;
 import org.glassfish.deployment.common.SimpleDeployer;
 import org.glassfish.deployment.common.DeploymentException;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 
 import javax.naming.NamingException;
-import javax.persistence.EntityManagerFactory;
 import javax.persistence.spi.ClassTransformer;
 import javax.sql.DataSource;
-import java.util.Collection;
 import java.util.Set;
+import java.util.List;
+import java.util.ArrayList;
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.IllegalClassFormatException;
 import java.security.ProtectionDomain;
 
 
+/**
+ * Deployer for JPA applications
+ * @author Mitesh Meswani
+ */
 @Service
-public class JPADeployer extends SimpleDeployer<JPAContainer, DummyApplication> {
+public class JPADeployer extends SimpleDeployer<JPAContainer, JPAApplication> {
 
     @Inject
     ConnectorRuntime connectorRuntime;
@@ -48,54 +72,37 @@ public class JPADeployer extends SimpleDeployer<JPAContainer, DummyApplication> 
         // Noting to cleanup yet!!
     }
 
-    protected RootDeploymentDescriptor getDefaultBundleDescriptor() {
-        return null;
-    }
-
-    protected String getModuleType() {
-        //TODO check with Jerome who consumes this
-        return "JPA-MODULE";
-    }
-
     /**
-     * Loads the meta date associated with the application.
-     *
-     * @parameters type type of metadata that this deployer has declared providing.
+     * @InheritDoc
      */
     public <V> V loadMetaData(Class<V> type, DeploymentContext context) {
         return null;
     }
 
-    @Override public boolean prepare(DeploymentContext dc) {
-        boolean prepared = super.prepare(dc);
-        if (prepared) {
-            Application application = dc.getModuleMetaData(Application.class);
-            Set<BundleDescriptor> bundles = application.getBundleDescriptors();
-            //TODO Need to modify this to be more generic
-            for (BundleDescriptor bundle : bundles) {
-                PersistenceUnitLoader.ApplicationInfo applicationInfo = new ApplicationInfoImpl(bundle, dc, connectorRuntime);
-                new PersistenceUnitLoaderImpl(applicationInfo).load();
-            }
+    /**
+     * @InheritDoc
+     */
+    @Override public JPAApplication load(JPAContainer container, DeploymentContext context) {
+        Application application = context.getModuleMetaData(Application.class);
+        Set<BundleDescriptor> bundles = application.getBundleDescriptors();
+
+        //TODO Need to modify this to be more generic.
+        // Iterate through all the bundles for the app and collect pu references in referencedPus
+        List<PersistenceUnitDescriptor> allReferencedPus = new ArrayList<PersistenceUnitDescriptor>();
+        for (BundleDescriptor bundle : bundles) {
+            allReferencedPus.addAll(bundle.findReferencedPUs());
         }
-        return true;
+
+        return new JPAApplication(allReferencedPus, new ProviderContainerContractInfoImpl(context, connectorRuntime));
     }
 
-    public DummyApplication load(JPAContainer container, DeploymentContext context) {
-        return new DummyApplication(); 
-    }
 
-    public void unload(DummyApplication appContainer, DeploymentContext context) {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    private static class ApplicationInfoImpl
-            implements PersistenceUnitLoader.ApplicationInfo {
-        private BundleDescriptor bd;
+    private static class ProviderContainerContractInfoImpl
+            implements ProviderContainerContractInfo {
         private DeploymentContext deploymentContext;
         private ConnectorRuntime connectorRuntime;
         
-        public ApplicationInfoImpl(BundleDescriptor bd, DeploymentContext deploymentContext, ConnectorRuntime connectorRuntime) {
-            this.bd = bd;
+        public ProviderContainerContractInfoImpl(DeploymentContext deploymentContext, ConnectorRuntime connectorRuntime) {
             this.deploymentContext = deploymentContext;
             this.connectorRuntime = connectorRuntime;
         }
@@ -125,24 +132,6 @@ public class JPADeployer extends SimpleDeployer<JPAContainer, DummyApplication> 
             return deploymentContext.getSourceDir().getAbsolutePath();
         }
 
-        /**
-         * @return the precise collection of PUs that are referenced by this war
-         */
-        public Collection<? extends PersistenceUnitDescriptor>
-                getReferencedPUs() {
-            return bd.findReferencedPUs();
-        }
-
-        /**
-         * @return the list of EMFs that have been loaded for this war.
-         */
-        public Collection<? extends EntityManagerFactory> getEntityManagerFactories() {
-//            // since we are only responsible for standalone web module,
-//            // there is no need to search for EMFs in Application object.
-//            assert(bd.getApplication().isVirtual());
-            return bd.getEntityManagerFactories();
-        }
-
         public DataSource lookupDataSource(String dataSourceName) throws NamingException {
             return DataSource.class.cast(connectorRuntime.lookupPMResource(dataSourceName, false) );
         }
@@ -151,6 +140,6 @@ public class JPADeployer extends SimpleDeployer<JPAContainer, DummyApplication> 
             return DataSource.class.cast(connectorRuntime.lookupNonTxResource(dataSourceName, false));
         }
 
-    } // class ApplicationInfoImpl
+    } // class ProviderContainerContractInfoImpl
 
 }

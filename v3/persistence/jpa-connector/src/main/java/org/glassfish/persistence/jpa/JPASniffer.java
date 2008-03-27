@@ -39,7 +39,7 @@ import java.lang.annotation.Annotation;
 /**
  * Implementation of the Sniffer for JPA.
  *
- * @author Jerome Dochez
+ * @author Mitesh Meswani
  */
 @Service(name="jpa")
 @Scoped(Singleton.class)
