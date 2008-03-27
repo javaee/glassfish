@@ -62,7 +62,8 @@ public class TimerBeanContainer
     {
         super(desc, loader);
 
-        _logger.log(Level.FINE,"[TimerBeanContainer] Created "
+        //_logger.log(Level.FINE,"[TimerBeanContainer] Created "
+        _logger.log(Level.INFO,"[TimerBeanContainer] Created "
                 + " TimerBeanContainer: " + logParams[0]);
 
     }

@@ -33,9 +33,14 @@
     </developers>
     <dependencies>
         <dependency>
-            <groupId>org.glassfish.common</groupId>
-            <artifactId>dol</artifactId>
-            <version>${pom.parent.version}</version>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.javaee</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.enterprise</groupId>
+            <artifactId>hk2</artifactId>
+            <version>${hk2.version}</version>
         </dependency>
         <dependency>
             <groupId>com.sun.corba</groupId>
@@ -58,9 +63,19 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.glassfish.admin</groupId>
+            <artifactId>config-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.glassfish.core</groupId>
             <artifactId>javaee-core</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.common</groupId>
+            <artifactId>dol</artifactId>
+            <version>${pom.parent.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.common</groupId>
@@ -73,8 +88,8 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.glassfish.admin</groupId>
-            <artifactId>config-api</artifactId>
+            <groupId>org.glassfish.common</groupId>
+            <artifactId>glassfish-api</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>
