@@ -442,7 +442,7 @@ public class ConfigSupport {
                                 if (!(m.getGenericReturnType() instanceof ParameterizedType))
                                     throw new IllegalArgumentException("List needs to be parameterized");
                                 final Class itemType = Types.erasure(Types.getTypeArgument(m.getGenericReturnType(), 0));
-                                if (itemType.getName().equals(childType.getName())) {
+                                if (itemType.isAssignableFrom(childType)) {
                                     List list = null;
                                     try {
                                         list = (List) m.invoke(param, null);
@@ -484,4 +484,93 @@ public class ConfigSupport {
         }, readableView);
         return (ConfigBean) Dom.unwrap(readableChild);
     }
+
+    public static void deleteChild(
+                final ConfigBean parent,
+                final ConfigBean child)
+        throws TransactionFailure {
+
+
+        ConfigBeanProxy readableView = parent.getProxy(parent.getProxyType());
+        final Class<? extends ConfigBeanProxy> childType = child.getProxyType();
+
+        ConfigSupport.apply(new SingleConfigCode<ConfigBeanProxy>() {
+
+            /**
+             * Runs the following command passing the configration object. The code will be run
+             * within a transaction, returning true will commit the transaction, false will abort
+             * it.
+             *
+             * @param param is the configuration object protected by the transaction
+             * @return any object that should be returned from within the transaction code
+             * @throws java.beans.PropertyVetoException
+             *          if the changes cannot be applied
+             *          to the configuration
+             */
+            public Object run(ConfigBeanProxy param) throws PropertyVetoException, TransactionFailure {
+
+                // get the child
+                ConfigBeanProxy childProxy = child.getProxy(childType);
+
+                // remove the child from the parent.
+                WriteableView writeableParent = (WriteableView) Proxy.getInvocationHandler(param);
+                Class parentProxyType = parent.getProxyType();
+
+                // first we need to find the element associated with this type
+                ConfigModel.Property element = null;
+                for (ConfigModel.Property e : parent.model.elements.values()) {
+                    ConfigModel elementModel = ((ConfigModel.Node) e).model;
+                    try {
+                        final Class<?> targetClass = parent.model.classLoaderHolder.get().loadClass(elementModel.targetTypeName);
+                        if (targetClass.isAssignableFrom(childType)) {
+                            element = e;
+                            break;
+                        }
+                    } catch(Exception ex) {
+                        // ok.
+                    }
+                }
+                // now depending whether this is a collection or a single leaf,
+                // we need to process this setting differently
+                if (element != null) {
+                    if (element.isCollection()) {
+                        // this is kind of nasty, I have to find the method that returns the collection
+                        // object because trying to do a element.get without having the parametized List
+                        // type will not work.
+                        for (Method m : parentProxyType.getMethods()) {
+                            final Class returnType = m.getReturnType();
+                            if (Collection.class.isAssignableFrom(returnType)) {
+                                // this could be it...
+                                if (!(m.getGenericReturnType() instanceof ParameterizedType))
+                                    throw new IllegalArgumentException("List needs to be parameterized");
+                                final Class itemType = Types.erasure(Types.getTypeArgument(m.getGenericReturnType(), 0));
+                                if (itemType.isAssignableFrom(childType)) {
+                                    List list = null;
+                                    try {
+                                        list = (List) m.invoke(param, null);
+                                    } catch (IllegalAccessException e) {
+                                        throw new TransactionFailure("Exception while adding to the parent", e);
+                                    } catch (InvocationTargetException e) {
+                                        throw new TransactionFailure("Exception while adding to the parent", e);
+                                    }
+                                    if (list != null) {
+                                        list.remove(childProxy);
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    } else {
+                        // much simpler, I can use the setter directly.
+                        writeableParent.setter(element, child, childType);
+                    }
+                } else {
+                    throw new TransactionFailure("Parent " + parent.getProxyType() + " does not have a child of type " + childType);
+                }
+
+                return child;
+            }
+        }, readableView);
+    }
+
  }
