@@ -48,14 +48,14 @@
             setPageSessionAttribute(key="showIt" value="$boolean{true}");
         }
     />
-#include "shared/restart.inc"    
+#include "/shared/restart.inc"    
     <sun:html>
         <sun:head id="configHead" title="$resource{i18n.configuration.pageTitle}">
             <sun:script url="/resource/js/restart.js" />
         </sun:head>
         <sun:body onLoad="javascript: synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
             <sun:form id="configForm"> 
-#include treeBreadcrumbs.inc
+#include "/treeBreadcrumbs.inc"
                 <sun:title 
                 id="configPageTitle" 
                 title="$resource{i18n.configuration.pageTitle}" 
