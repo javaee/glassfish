@@ -49,7 +49,7 @@
             <!afterCreate
                 getClientId(component="$this{component}" clientId=>$page{topActionGroup});
             />
-            <!--
+            
             <sun:button id="newButton" text="$resource{i18n.button.New}" >
                 <!command redirect(page="#{createLink}"); />
             </sun:button>
@@ -66,7 +66,7 @@
                 setAttribute(key="selectedRows" value="${selectedRows}");
                 navigate(page="#{listPageLink}");
             />
-            </sun:button>-->
+            </sun:button>
          </sun:panelGroup>
      </facet>
 
