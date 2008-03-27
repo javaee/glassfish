@@ -316,7 +316,7 @@ public class RepositoryManager extends MasterPasswordFileManager {
     }
 
     protected boolean isValidRepository(RepositoryConfig config) {
-        return getFileLayout(config).getStartServ().exists();
+        return getFileLayout(config).getDomainConfigFile().exists();
     }
       
     protected File getRepositoryDir(RepositoryConfig config)
