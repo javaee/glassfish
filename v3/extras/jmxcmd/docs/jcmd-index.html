@@ -1,0 +1,82 @@
+<html>
+<head>
+<title>JCmd Main Page</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body bgcolor="#FFFFFF" text="#000000">
+<h1 align="center">JCmd</h1>
+<h4 align="center">a Java-based command line interface shell</h4>
+<p><font size="-1">Author: lloyd.chambers@sun.com<br>
+  Last updated: 23 Feb 2004</font></p>
+<h2>1. Introduction</h2>
+<p>JCmd ('jcmd') is an all-Java command line interface shell. It supports the 
+  following:</p>
+<ul>
+  <li>a powerful framework for implementing commands</li>
+  <li>an extensible (pluggable) command set based on a developer-selectable mix 
+    of built-in and pluggable comands </li>
+  <li>a CLI compliant with SUSv3 and Sun Microsystems CLIP standards</li>
+  <li>invocation either from a command shell or in interactive mode.</li>
+</ul>
+<p><a href="./javadoc/index.html">Javadoc</a> is available. If you are interested 
+  in adding or removing commands from JCmd, see the optional facilities <a href="./jcmd-optional.html">documentation</a>.If 
+  you want to build your own command line, see the <a href="./build-your-own.html">documentation</a>.</p>
+<p>Click <a href="./binaries.html">here</a> to go to the dowload page.</p>
+<p>For detailed command help, see <a href="./jcmd-commands.html">Commands</a>.</p>
+<p><a href="./planned-improvements.html">Improvements</a> are planned.</p>
+<p>&nbsp;</p>
+<h2>2. Overview</h2>
+<p>The following sections discuss some key concepts used by jcmd which should 
+  be understood to use it effectively.</p>
+<h3>2.1 JCmd command shell<a name="jmxcmdShell"></a></h3>
+<p>JCmd may be invoked either conventionally via one's usual command shell, or 
+  in an interactive mode. Example:</p>
+<p><i>Single invocation</i>:</p>
+<p><font size="-1" face="Courier New, Courier, mono">bash-2.05$ jcmd help<br>
+  ...</font></p>
+<p><i>Interactive mode</i>:<a name="InteractiveMode"></a></p>
+<p><font size="-1" face="Courier New, Courier, mono">bash-2.05$ jcmd<br>
+  jmxcmd&gt; help<br>
+  ...</font></p>
+<p>State is saved by jcmd in the user's home directory. State includes the jcmd 
+  environment variables as well as the command history.</p>
+<p>Most commands have abbreviations available; refer to the help for each command. 
+  All commands have both long and short names for command options (if any).</p>
+<h3> 2.2 Startup performance<a name="StartupPerformance"></a></h3>
+<p>Many command-line users are concerned about the startup-time penalty of using 
+  a Java-based CLI. Compared to a C-based executable, Java is relatively slow. 
+  The startup of jcmd should be comparable to starting up a java &quot;hello world&quot; 
+  application. </p>
+<p>The JCmd framework further mitigates this problem in several ways.</p>
+<p>(1) Where possible, &quot;lazy&quot; initialization is performed. The assumption 
+  is that only a minor portion of the facilities may be used, so no advance initialization 
+  is used, nor is the base architecture dependent on large numbers of classes.</p>
+<p>(2) Complex, CPU-intensive initialization is avoided by avoiding the use of 
+  complex configuration (eg XML), which can consume substantial amounts of CPU 
+  time to parse.</p>
+<p>(3) When multiple commands are to be issued interactively, the user may start 
+  the CLI once, and issue multiple commands (<a href="#InteractiveMode">interactive 
+  mode</a>). In such a case, the startup overhead becomes irrelevant.</p>
+<p>(4) When multiple commands are to be issued programmatically, they may be grouped 
+  into a file, and the <a href="./jcmd-commands.html#source">source</a> command 
+  may be used to execute them. In this case, there is only one startup of jcmd 
+  for the entire lifecycle of the source command, which could execute an arbitrary 
+  number of commands.</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<h3>&nbsp;</h3>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p><br>
+</p>
+<p>&nbsp;</p>
+<h4>&nbsp;</h4>
+</body>
+</html>

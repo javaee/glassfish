@@ -1,0 +1,192 @@
+<html>
+<head>
+<title>JCmd Main Page</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body bgcolor="#FFFFFF" text="#000000">
+<h1 align="center">Building your own CLI based on JCmd/JmxCmd</h1>
+<h4 align="center">&nbsp;</h4>
+<p><font size="-1">Author: lloyd.chambers@sun.com<br>
+  Last updated: 23 Feb 2004</font></p>
+<h2>1. Introduction</h2>
+<p>This document describes how to build your own Java-based Command Line Interface 
+  (CLI) using the JCmd CLI framework. It assumes you are familiar with <a href="./jcmd-index.html">JCmd</a> 
+  and/or <a href="./jmxcmd-index.html">JMXCmd</a>. You may need to refer to the 
+  <a href="./javadoc/index.html">Javadoc</a> to understand this document fully.</p>
+<p>JmxCmd is built on the JCmd framework. No modifications to the JCmd framework 
+  source code were needed to implement JMXCmd. Your CLI should not need to modify 
+  the source code either; if you think you need to do so, please contact the author; 
+  the facility you think you need may already be available. Use of the binaries 
+  is strongly encouraged over use of the source code for this reason.</p>
+<p>In this document, when referring to JCmd, it should be understood that the 
+  discussion applies equally to JmxCmd, as it inherits all facilities.</p>
+<p>The JCmd framework anticipates the building of other CLIs which may or may 
+  not want to use some of the JCmd/JMXCmd comnmands. To facilitate the construction 
+  of other CLIs, the following customizations are possible:</p>
+<ul>
+  <li>The ability to start the framework with a specific <a href="./javadoc/com/sun/cli/jcmd/framework/CmdMgr.html">CmdMgr</a> 
+    class implementation;</li>
+  <li>The ability to set the name of the CLI (jcmd, jmxcmd, mycmd, doit etc);</li>
+  <li>The ability to set the prompt printed to the screen when prompting for commands 
+    (&quot;jcmd &gt;&quot;, &quot;jmxcmd &gt;&quot;, &quot;mycmd &gt;&quot;, etc);</li>
+  <li>Two special bootstrap commands &quot;boot&quot; and &quot;meta&quot; which 
+    can be used to customize the startup environment. Look at the demo CLI script 
+    to see how these are used.</li>
+  <li>Many protected methods both within the framework code and also within the 
+    command classes.</li>
+  <li>Careful use of interfaces throughout the framework.</li>
+  <li>Decoupling much of the code through use of information in a <a href="./javadoc/com/sun/cli/jcmd/framework/CmdEnv.html">CmdEnv</a>.</li>
+  <li>Hooks in various places to enable pre/post processing. One example is the 
+    <a href="./javadoc/com/sun/cli/jcmd/framework/CmdReader.LineHook.html">CmdReader.LineHook</a></li>
+</ul>
+<p>In addition, the following facilities are present to greatly reduce the effort 
+  required to create a SUS/CLIP compliant CLI:</p>
+<ul>
+  <li>A large number of utility routines (com.sun.cli.jcmd.util.*, com.sun.cli.jmxcmd.util.*)</li>
+  <li>All command line parsing is done by the framework</li>
+  <li>Formalization of command names, options and operands. See <a href="./javadoc/com/sun/cli/jcmd/util/cmd/CmdInfos.html">CmdInfos</a>, 
+    <a href="./javadoc/com/sun/cli/jcmd/util/cmd/CmdInfo.html">CmdInfo</a>, <a href="./javadoc/com/sun/cli/jcmd/util/cmd/OptionsInfo.html">OptionsInfo</a>, 
+    <a href="./javadoc/com/sun/cli/jcmd/util/cmd/OperandsInfo.html">OperandsInfo</a>, 
+    <a href="./javadoc/com/sun/cli/jcmd/framework/CmdHelp.html">CmdHelp</a>.</li>
+  <li>Formalization of relationships between options. See <a href="./javadoc/com/sun/cli/jcmd/util/cmd/OptionDependency.html">OptionDependency</a> 
+    and its subclasses.</li>
+</ul>
+<p>&nbsp;</p>
+<h2>2. Step-by-step</h2>
+<p>This section discusses how to create your own command line, step-by-step.</p>
+<h3>2.1 Bootstrapping your own command line</h3>
+<p>First you need to creat a start script that launches your CLI. The easiest 
+  way to do this is to simply copy the <code>jcmd</code> (or <font face="Courier New, Courier, mono" size="-1">jmxcmd</font>) 
+  script and modify it appropriately. You may wish to do the following things:</p>
+<ul>
+  <li>add items to the classpath used in launching the cli</li>
+  <li>change the name of the cli</li>
+  <li>choose whether to populate the CmdEnv with some default values (such as 
+    &quot;debug&quot;).</li>
+  <li>define your own <a href="./javadoc/com/sun/cli/jcmd/framework/CmdMgr.html">CmdMgr</a></li>
+  <li>enable debug mode</li>
+</ul>
+<p>This is the line that starts jmxcmd within its /bin/sh script:</p>
+<p><code>$_JAVA -ea -cp $_CLASSPATH</code> <code>${DEFINES} $_MAIN <b>boot</b> 
+  --debug=$_DEBUG --name=jmxcmd -c com.sun.cli.jmxcmd.JMXCmdCmdMgr &quot;${@}&quot;</code></p>
+<p>Notice the boot command. The boot command is an actual command that allows 
+  bootstrapping of the framework. The formal syntax expected by <a href="./javadoc/com/sun/cli/jcmd/JCmdMain.html">JCmdMain</a> 
+  is as follows (broken into multiple lines for readability):</p>
+<p><code><font color="#00CC00">[boot [--name|-n <i>name</i>] [--cmd-mgr-classname|-c 
+  <i>classname</i>] [--debug|-d] ]</font><br>
+  <font color="#0033FF">[meta] [--prefs-dir|-s <i>dir</i>] [--props-file|-f <i>file</i>] 
+  [--prop|-p <i>name</i>=<i>value</i>] ]</font><br>
+  <font color="#CC0000">[<i>subcommand</i>] [<i>options</i>] [<i>operands</i>]</font></code></p>
+<p>The following <b>boot</b> command options are available:</p>
+<table width="95%" border="1">
+  <tr> 
+    <td width="24%"><b>'boot'command Option</b></td>
+    <td width="76%"><b>Discussion</b></td>
+  </tr>
+  <tr> 
+    <td width="24%"><code>--name|-n <i>name</i></code></td>
+    <td width="76%">The CLI name is defined to be <i>name</i>. The CmdEnv file, 
+      the aliases file, the history file, etc all use this name as a prefix. It 
+      is also used in the user prompt.</td>
+  </tr>
+  <tr> 
+    <td width="24%"><code>--cmd-mgr-classname|-c <i>classname</i></code></td>
+    <td width="76%">After processing the <b>boot</b> and <b>meta</b> commands 
+      (if present), an instance of this class is created and its run() method 
+      is called. The specified class must implement <a href="./javadoc/com/sun/cli/jcmd/framework/CmdMgr.html">CmdMgr</a>. 
+      Typically, you'll want to subclass <a href="./javadoc/com/sun/cli/jcmd/framework/CmdMgrImpl.html">CmdMgrImpl</a>.</td>
+  </tr>
+  <tr> 
+    <td width="24%"><code>--debug|-d</code></td>
+    <td width="76%">This controls whether, beginning at boot time, whether debugging 
+      information is emitted. It also is put into the subsequent Map which is 
+      passed to the <a href="./javadoc/com/sun/cli/jcmd/framework/CmdMgr.html">CmdMgr</a>.<br>
+      The debug option is placed into a Map using the key <code>JCmdKeys.DEBUG_META_OPTION.getLongName()</code>. 
+      This map is passed to the <a href="./javadoc/com/sun/cli/jcmd/framework/CmdMgr.html">CmdMgr</a>.</td>
+  </tr>
+</table>
+<p>The meta command is encountered after the optional <b>boot</b> command. Note 
+  that unlike the boot command, it may be repeated an arbitrary number of times. 
+  The following <b>meta</b> command options are available:</p>
+<table width="95%" border="1">
+  <tr> 
+    <td width="24%"><b>'meta' command Option</b></td>
+    <td width="76%"><b>Discussion</b></td>
+  </tr>
+  <tr> 
+    <td width="24%"><code>--prefs-dir|-s <i>dir</i></code></td>
+    <td width="76%"> 
+      <p>This option controls the directory in which the preferences files are 
+        found (CmdEnv file, aliases file, history file). If not specified, this 
+        will be the user's home directory.</p>
+      <p>The directory is placed into the Map using the key <code><a href="./javadoc/com/sun/cli/jcmd/JCmdKeys.html">JCmdKeys</a>.PREFS_DIR_META_OPTION.getLongName()</code>. 
+        This map is passed to the <a href="./javadoc/com/sun/cli/jcmd/framework/CmdMgr.html">CmdMgr</a>.</p>
+    </td>
+  </tr>
+  <tr> 
+    <td width="24%"><code>--props-file|-f <i>file</i></code></td>
+    <td width="76%">All the properties found in the properties file are placed 
+      into a Properties object accessible in the Map passed to the <a href="./javadoc/com/sun/cli/jcmd/framework/CmdMgr.html">CmdMgr</a> 
+      using the key <a href="./javadoc/com/sun/cli/jcmd/JCmdKeys.html"><code>JCmdKeys</code></a><code>.PROPERTIES</code>.</td>
+  </tr>
+  <tr> 
+    <td width="24%"><code>--prop|-p <i>name</i>=<i>value</i></code></td>
+    <td width="76%">A property with the specified name and value is placed into 
+      the Properties object accessible in the Map passed to the <a href="./javadoc/com/sun/cli/jcmd/framework/CmdMgr.html">CmdMgr</a> 
+      using the key <a href="./javadoc/com/sun/cli/jcmd/JCmdKeys.html"><code>JCmdKeys</code></a><code>.PROPERTIES</code>.</td>
+  </tr>
+</table>
+<p>Following processing of the boot and meta options, the <a href="./javadoc/com/sun/cli/jcmd/framework/CmdMgr.html"><code>CmdMgr</code></a><code>.run( 
+  String[] args )</code> method is called. This will be your CmdMgr, if you passed 
+  the <code>--cmd-mgr-classname</code> boot option, or the default <a href="./javadoc/com/sun/cli/jcmd/framework/CmdMgrImpl.html">CmdMgrImpl</a> 
+  if not. The arguments passed to it will begin with the <i>subcommand</i> and 
+  include all subsequent arguments. Neither the subcommand nor subsequent arguments 
+  are examined in any way. </p>
+<p>Though there is no ability to intercept the processing of the <font face="Courier New, Courier, mono" size="-1">boot</font> 
+  or <font face="Courier New, Courier, mono" size="-1">meta</font> commands, you 
+  could choose, if desired, to implement your own meta command(s) using the same 
+  technique. Try to use the <code>--prop</code> or --props-file option(s) instead, 
+  if possible.</p>
+<h3>2.2 Writing your own CmdMgr</h3>
+<p>To fully customize the framework, you may need to write your own <a href="./javadoc/com/sun/cli/jcmd/framework/CmdMgr.html">CmdMgr</a>. 
+  However, unless you have an unusual circumstance, subclassing should be sufficient. 
+  For example, <a href="./javadoc/com/sun/cli/jmxcmd/JMXCmdCmdMgr.html"><code>JMXCmdCmdMgr</code></a> 
+  subclasses <a href="./javadoc/com/sun/cli/jcmd/framework/CmdMgrImpl.html"><code>CmdMgrImpl</code></a> 
+  in order to do the following things:</p>
+<ul>
+  <li>allow the default commands to be loaded, then loads all the jmxcmd commands</li>
+  <li>check for the presence of properties specific to jmxcmd (such as whether 
+    to debug connections)</li>
+  <li>sets a <a href="./javadoc/com/sun/cli/jcmd/framework/CmdFactory.UnknownCmdClassGetter.html">CmdFactory.UnknownCmdClassGetter</a> 
+    so that the invoke() command can be implemented with its unusual syntax.</li>
+  <li>sets the <code><a href="./javadoc/com/sun/cli/jcmd/framework/CmdEnv.html">CmdEnv</a></code> 
+    key <code><a href="./javadoc/com/sun/cli/jcmd/framework/CmdEnvKeys.html">CmdEnvKeys</a>.UNKNOWN_CMD_HELPER</code> 
+    to be that of a <code><a href="./javadoc/com/sun/cli/jmxcmd/cmd/UnknownCmdHelperImpl.html">UnknownCmdHelperImpl</a></code>.</li>
+</ul>
+<p>Your implementation of <a href="./javadoc/com/sun/cli/jcmd/framework/CmdMgr.html">CmdMgr</a> 
+  can choose to load none, some, or all the available JCmd and/or JMXCmd commands 
+  by overriding the <code><a href="./javadoc/com/sun/cli/jcmd/framework/CmdMgrImpl.html#initCmds()">CmdMgrImpl.initCmds()</a></code> 
+  method. In addition, commands may be dynamically added or removed at any time.</p>
+<h3>2.3 Adding commands</h3>
+<p>See the <a href="./jcmd-optional.html">documentation</a>.</p>
+<h3>2.4 Adding JMX protocol providers</h3>
+<p>See the <a href="./jmxcmd-optional.html">documentation</a>.</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<h3>&nbsp;</h3>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p><br>
+</p>
+<p>&nbsp;</p>
+<h4>&nbsp;</h4>
+</body>
+</html>

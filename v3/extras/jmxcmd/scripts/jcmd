@@ -1,0 +1,97 @@
+#!/bin/sh
+# set up references to paths, jars, we'll need
+
+# return the full path for any input directory name--partial, relative or full
+# resulting value is returned in the variable 'FULLPATH_RESULT'
+fullpath()
+{
+	if [ $# != 1 ]
+	then
+		echo "fullpath: exactly one argument required"
+		exit 1
+	fi
+	
+	DIR_IN=$1
+
+	CWD=`pwd`
+		if [ -d $DIR_IN ]
+		then
+			cd $DIR_IN
+		    FULLPATH_RESULT=`pwd`
+	    else
+	    	echo "Can't cd to " $DIR_IN
+	    	exit 1
+	    fi
+	
+	cd $CWD
+}
+
+#
+# NOTE: user can specify additional jars in JMXADMIN_CLASSPATH
+#
+CUSTOM_STUFF=
+
+
+#determine directory of this script
+fullpath `dirname $0`
+SCRIPT_DIR=$FULLPATH_RESULT
+
+echo SCRIPT_DIR=$SCRIPT_DIR
+
+# our jar file should be in the same directory as the script
+_MYJAR=$SCRIPT_DIR/jcmd.jar
+#if [ ! -f $_MYJAR ]
+#then
+#echo $_MYJAR " not found "
+#exit
+#fi
+
+# the classpath separator--if not set, choose a default
+if [ -z "$CLASSPATH_SEPARATOR" ]
+then
+	# not defined--look for telltale sign of Windows--the ":\" in our path
+	echo $SCRIPT_DIR | grep -e ":\\\\" -e ":/"
+	if [ $? = 0 ]
+	then
+		CPS=";"
+	else
+		CPS=":"
+	fi
+else
+	CPS=$CLASSPATH_SEPARATOR
+fi
+
+#echo "Classpath separator = " $CPS
+
+# classpath consists solely of our jar in a release version
+USUAL_CLASSPATH=$_MYJAR
+
+#
+# 'D' is simply an abbreviation to keep things compact.
+D=$SCRIPT_DIR
+JCMD_CLASSES=$D/jcmd.jar
+
+_CLASSPATH=${CUSTOM_STUFF}${CPS}${JCMD_CLASSES}
+
+#echo $_CLASSPATH
+
+# main routine to invoke
+_MAIN=com.sun.cli.jcmd.JCmdMain
+_CLASSLOADER=com.sun.cli.jcmd.framework.FrameworkClassLoader
+
+if [ -z "$JAVA_HOME" ]
+then
+	echo "JAVA_HOME has not been set, using plain 'ol 'java'"
+	_JAVA=java
+else
+	_JAVA=$JAVA_HOME/bin/java
+fi
+
+DEFINES="-Djava.system.class.loader=$_CLASSLOADER"
+
+#echo $_JAVA -ea -cp $_CLASSPATH ${DEFINES} $_MAIN "${@}"
+$_JAVA -ea -cp $_CLASSPATH ${DEFINES} $_MAIN "${@}"
+
+
+exit $?
+

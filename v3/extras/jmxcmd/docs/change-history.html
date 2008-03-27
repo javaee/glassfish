@@ -1,0 +1,413 @@
+<html>
+<head>
+<title>jcmd/jmxcmd Change History</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body bgcolor="#FFFFFF" text="#000000">
+<h1 align="center">JCmd/JmxCmd Change History</h1>
+<p>&nbsp;</p>
+<p>Table is in reverse-chronological order.</p>
+<p>1.0b4<a name="b4"></a> (<a href="./binaries/latest">head rev</a>)</p>
+<table width="95%" border="1">
+  <tr> 
+    <td width="17%"><b>Date</b></td>
+    <td width="83%"><b>Change</b></td>
+  </tr>
+  <tr>
+    <td width="17%" height="37">15 March 2004</td>
+    <td width="83%" height="37">added build-info document in preparation for doing 
+      ant-based build.</td>
+  </tr>
+  <tr> 
+    <td width="17%" height="37">12 March 2004</td>
+    <td width="83%" height="37"> 
+      <p>added register-services command to load relation and timer services</p>
+      <p>modified StringifierRegistry code to better factoring</p>
+    </td>
+  </tr>
+  <tr> 
+    <td width="17%" height="2">11 March 2004</td>
+    <td width="83%" height="2">First pass at support for JSR 77 types, and mapping 
+      them into OpenMBeans (mainly as research for MBean API).</td>
+  </tr>
+  <tr> 
+    <td width="17%" height="2">04 March 2004</td>
+    <td width="83%" height="2">Added SASL DIGEST-MD5 support to the connect, load-jmxmp-connector 
+      commands, and tested.</td>
+  </tr>
+  <tr> 
+    <td width="17%" height="2">01 Mar 2004</td>
+    <td width="83%" height="2">Created support classes for I18N support, modified 
+      CmdBase to use them, tested them. More I18N work to follow as time allows.</td>
+  </tr>
+  <tr> 
+    <td width="17%" height="2">26 Feb 2004</td>
+    <td width="83%" height="2">Modified generate-mbeans command to generate interfaces 
+      that have &quot;final&quot; in front of each parameter.</td>
+  </tr>
+  <tr> 
+    <td width="17%" height="2">26 Feb 2004</td>
+    <td width="83%" height="2">Updated s1as8 appserve code to support the change 
+      in ObjectNames</td>
+  </tr>
+  <tr> 
+    <td width="17%" height="2">24 Feb 2004</td>
+    <td width="83%" height="2">Added initial support for BSF (Bean Scripting Framework). 
+      js.jar and bsf.jar must be present for it to function and they are not built 
+      into the binaries yet. This feature may or may not stay, and so far should 
+      be considered exploratory only.</td>
+  </tr>
+  <tr> 
+    <td width="17%" height="2">23 Feb 2004</td>
+    <td width="83%" height="2">[back from vacation]. Updated documentation on 
+      how to build your own CLI, add commands, etc, based on feedback.</td>
+  </tr>
+  <tr> 
+    <td width="17%" height="2">10 Feb 2004</td>
+    <td width="83%" height="2">Added SecurityCmd; a work in progress to help understand 
+      needs for PE/SE/EE. Supplies add-connection-cert, dump-keystore, list-keystore-aliases 
+      commands. Not officially part of jmxcmd yet.</td>
+  </tr>
+  <tr> 
+    <td width="17%" height="2">05 Feb 2004</td>
+    <td width="83%" height="2"> 
+      <p>Modified help command to understand the overall name for a Cmd (in addition 
+        to each individual name).</p>
+    </td>
+  </tr>
+</table>
+<p>&nbsp;</p>
+<p><a href="./binaries/1.0b3">1.0b3</a><a name="b3"></a> released 05 Feb 2004</p>
+<table width="95%" border="1">
+  <tr> 
+    <td width="17%"><b>Date</b></td>
+    <td width="83%"><b>Change</b></td>
+  </tr>
+  <tr>
+    <td width="17%" height="2">05 Feb 2004</td>
+    <td width="83%" height="2"> 
+      <p>Added <a href="./planned-improvements.html">planned-improvements.html</a></p>
+      </td>
+  </tr>
+  <tr> 
+    <td width="17%" height="23">05 Feb 2004</td>
+    <td width="83%" height="23"> 
+      <p>Added material on the <a href="./jmxcmd-commands.html#Connect">connect</a> 
+        command and on implementing a Provider.</p>
+    </td>
+  </tr>
+  <tr> 
+    <td width="17%">30 Jan 2004</td>
+    <td width="83%">Fixed regression where output from 'get' command was not alphabetized. 
+      Now the output is alphabetized.</td>
+  </tr>
+  <tr> 
+    <td width="17%">30 Jan 2004</td>
+    <td width="83%">Finished implementing MBeanProxyHandler and wrote a unit test 
+      for it (more to come). Now takes a ConnectionSource.</td>
+  </tr>
+  <tr> 
+    <td width="17%">29 Jan 2004</td>
+    <td width="83%">Added MBeanProxyHandler and MBeanProxyFactory to support creating 
+      proxies to MBeans that have Attributes with names that are not legal Java 
+      identifiers.</td>
+  </tr>
+  <tr> 
+    <td width="17%">29 Jan 2004</td>
+    <td width="83%">Modified generate-mbeans to deal with Attributes that have 
+      names that are not legal Java identifiers. </td>
+  </tr>
+  <tr> 
+    <td width="17%">26 Jan 2004</td>
+    <td width="83%">Added 'generate-mbeans' command to generate MBean interface 
+      classes (java source) from MBeanInfo. Also modified inspect command to have 
+      a --java option to display the interface.</td>
+  </tr>
+  <tr> 
+    <td width="17%">15 Jan 2004</td>
+    <td width="83%">Upon startup a script is executed given by the environment 
+      variable STARTUP_SCRIPT (if present)</td>
+  </tr>
+  <tr> 
+    <td width="17%">15 Jan 2004</td>
+    <td width="83%">output of 'env' command is now sorted</td>
+  </tr>
+  <tr> 
+    <td width="17%">15 Jan 2004</td>
+    <td width="83%">'source' command now prints a blank line between each command</td>
+  </tr>
+  <tr> 
+    <td width="17%">15 Jan 2004</td>
+    <td width="83%">RMI Connector can now be loaded, but no support for TLS yet.</td>
+  </tr>
+  <tr> 
+    <td width="17%">13 Jan 2004</td>
+    <td width="83%">username/password now works for security. SSL/TLS yet to be 
+      tested</td>
+  </tr>
+  <tr> 
+    <td width="17%">12 Jan 2004</td>
+    <td width="83%">Added SASL/TLS code (not done yet)</td>
+  </tr>
+  <tr> 
+    <td width="17%">12 Jan 2004</td>
+    <td width="83%">Fixed bug in set command that would throw an ArrayIndexOutOfBoundsException 
+      if no operands were specified</td>
+  </tr>
+</table>
+<p>&nbsp;</p><p>1.0b2<a name="b2"></a></p>
+<table width="95%" border="1">
+  <tr> 
+    <td width="17%"><b>Date</b></td>
+    <td width="83%"><b>Change</b></td>
+  </tr>
+  <tr>
+    <td width="17%" height="44">09 Jan 2004</td>
+    <td width="83%" height="44">Listen command now warns if no objects are being 
+      listened to. Also, it displays the MBeans that are being listened to.</td>
+  </tr>
+  <tr> 
+    <td width="17%" height="44">09 Jan 2004</td>
+    <td width="83%" height="44">added support for &quot;verbose&quot; environment 
+      variable. If set to &quot;true&quot;, then it's the same as specifying --verbose</td>
+  </tr>
+  <tr> 
+    <td width="17%" height="44">09 Jan 2004</td>
+    <td width="83%" height="44">updated version to 1.0 beta 1+ (until I call it 
+      beta 2)</td>
+  </tr>
+  <tr> 
+    <td width="17%" height="44">09 Jan 2004</td>
+    <td width="83%" height="44"> 
+      <p>fixed history bug that wasn't unescaping characters when the history 
+        was read from a file. Also, when history is displayed tab, newline and 
+        return are show as \t, \n, \r </p>
+    </td>
+  </tr>
+  <tr> 
+    <td width="17%">09 Jan 2004</td>
+    <td width="83%">source command now echoes the lines if --verbose is specified</td>
+  </tr>
+  <tr> 
+    <td width="17%">09 Jan 2004</td>
+    <td width="83%">Fixed repeat command so that it didn't stack overflow with 
+      nested repeat commands of certain types, and also fixed it so that a repeated 
+      repeat command is relative to its original execution point. Also fixed repeat 
+      command to propogate the error code of the repeated command.</td>
+  </tr>
+  <tr> 
+    <td width="17%">08 Jan 2004</td>
+    <td width="83%">updated documentation. In particular, added discussion of 
+      how to eliminate the SSL/TLS overhead by using jxmcmd as a proxy server</td>
+  </tr>
+  <tr> 
+    <td width="17%">06 Jan 2004</td>
+    <td width="83%">changed source command to have --continue-on-error instead 
+      of --stop-on-error</td>
+  </tr>
+  <tr> 
+    <td width="17%">06 Jan 2004</td>
+    <td width="83%">modified load-jmxmp-connector, load-rmi-connector, load-html-adapter 
+      to make object name optional</td>
+  </tr>
+  <tr> 
+    <td width="17%">06 Jan 2004</td>
+    <td width="83%">modified run-tests command so that it throws a CmdException 
+      if a unit test fails</td>
+  </tr>
+  <tr> 
+    <td width="17%">06 Jan 2004</td>
+    <td width="83%">fixed bug in stop-mbean-server command (required exactly one 
+      operand) </td>
+  </tr>
+  <tr> 
+    <td width="17%">06 Jan 2004</td>
+    <td width="83%">fixed bug in ! command (repeat command for example &quot;!g&quot; 
+      ) </td>
+  </tr>
+  <tr> 
+    <td width="17%">06 Jan 2004</td>
+    <td width="83%">fixed outdated command names in start-test-mbs.jmxcmd, added 
+      test-all.jmxcmd </td>
+  </tr>
+  <tr> 
+    <td width="17%">06 Jan 2004</td>
+    <td width="83%">modified inspect command so that summary is not displayed 
+      by default when inspecting other things. Added a --summary option</td>
+  </tr>
+  <tr> 
+    <td width="17%">06 Jan 2004</td>
+    <td width="83%">fixed problems with help command</td>
+  </tr>
+  <tr> 
+    <td width="17%">19 Dec 2003</td>
+    <td width="83%">Modified help command so that when invoked with no arguments, 
+      the listing produced is friendlier in its format, with each subcmd listed 
+      under its overall grouping.</td>
+  </tr>
+  <tr> 
+    <td width="17%">19 Dec 2003</td>
+    <td width="83%">Fixed bug that resulted in help showing commands in improper 
+      order. </td>
+  </tr>
+  <tr> 
+    <td width="17%">19 Dec 2003</td>
+    <td width="83%">Updated documents.</td>
+  </tr>
+  <tr> 
+    <td width="17%">18 Dec 2003</td>
+    <td width="83%">Removed getName() routine from all CmdHelp implementations 
+      that didn't need it.</td>
+  </tr>
+  <tr> 
+    <td width="17%">18 Dec 2003</td>
+    <td width="83%">Removed user/password output from s1ashttp provider.</td>
+  </tr>
+  <tr> 
+    <td width="17%">18 Dec 2003</td>
+    <td width="83%">Added get-default-domain command. </td>
+  </tr>
+  <tr> 
+    <td width="17%">18 Dec 2003</td>
+    <td width="83%">Added code that checks for min, max operands.</td>
+  </tr>
+</table>
+<p><b>1.0b1<a name="b1"></a></b></p>
+<table width="95%" border="1">
+  <tr> 
+    <td width="17%"><b>Date</b></td>
+    <td width="83%"><b>Change</b></td>
+  </tr>
+  <tr>
+    <td width="17%">18 Dec 2003</td>
+    <td width="83%">Updated site to now offer specific versions as well as head 
+      rev. </td>
+  </tr>
+  <tr> 
+    <td width="17%">18 Dec 2003</td>
+    <td width="83%">Incorporated the latest code for S1AS8 connector.</td>
+  </tr>
+  <tr> 
+    <td width="17%">18 Dec 2003</td>
+    <td width="83%">Revised the help classes to take advantage of the new CmdInfos 
+      class. This significantly reduces the complexity of providing help.</td>
+  </tr>
+  <tr> 
+    <td width="17%">16 Dec 2003</td>
+    <td width="83%">Overhauled the way command information is setup and the way 
+      the help is generated so as to minimize the hard-coding and provider for 
+      better generic handling and easier command definition.</td>
+  </tr>
+  <tr> 
+    <td width="17%">15 Dec 2003</td>
+    <td width="83%">Monitor command now accepts any wildcard expression for attributes 
+      in addition to the previous *, *r, *w expressions.</td>
+  </tr>
+  <tr> 
+    <td width="17%">15 Dec 2003</td>
+    <td width="83%">Updated help and docs for listen, monitor commands</td>
+  </tr>
+  <tr> 
+    <td width="17%">15 Dec 2003</td>
+    <td width="83%">Made command aliases persistent</td>
+  </tr>
+  <tr> 
+    <td width="17%">15 Dec 2003</td>
+    <td width="83%">Updated jcmd-commands.html</td>
+  </tr>
+  <tr> 
+    <td width="17%">15 Dec 2003</td>
+    <td width="83%">Make the list-cmd-aliases command emit the aliases in sorted 
+      order. </td>
+  </tr>
+  <tr> 
+    <td width="17%">15 Dec 2003</td>
+    <td width="83%">Eliminated short command names (connect, c), etc and instead 
+      implemented a generic facility for command aliasing via the create-command-alias/delete-command-alias/list-command-aliases 
+      commands. These aliases are not yet persisted.</td>
+  </tr>
+  <tr> 
+    <td width="17%">15 Dec 2003</td>
+    <td width="83%">changed create/delete/show/resolve-aliase(s) to create-target-alias, 
+      etc. </td>
+  </tr>
+  <tr> 
+    <td width="17%">15 Dec 2003</td>
+    <td width="83%">Documented that list-aliases accepts prefixes</td>
+  </tr>
+  <tr> 
+    <td width="17%">15 Dec 2003</td>
+    <td width="83%">Fixed show/resolve/delete-alias to require an operand</td>
+  </tr>
+  <tr> 
+    <td width="17%">12 Dec 2003</td>
+    <td width="83%">Updated setenv, help, configure, echo, source commands to 
+      have less hard-coding of Strings for help.</td>
+  </tr>
+  <tr> 
+    <td width="17%">12 Dec 2003</td>
+    <td width="83%">Modified list-aliases command to display only those aliases 
+      that start with the operand(s), or all aliases (as before) if there are 
+      no operands.</td>
+  </tr>
+  <tr> 
+    <td width="17%">12 Dec 2003</td>
+    <td width="83%">Coalesced CreateAliasCmd, DeleteAliasCmd, ResolveAliasCmd, 
+      ListAliasesesCmd into AliasesCmd</td>
+  </tr>
+  <tr> 
+    <td width="17%">12 Dec 2003</td>
+    <td width="83%">Modified <font face="Courier New, Courier, mono" size="-1">source</font> 
+      command to take a <font size="-1" face="Courier New, Courier, mono">--stop-on-error</font> 
+      option</td>
+  </tr>
+  <tr> 
+    <td width="17%">12 Dec 2003</td>
+    <td width="83%">Modified env command so that any operands are used as prefixes. 
+      Any variables matching any prefix is display. As before, specifying no operands 
+      displays all usual variables. Also added the --all option to the syntax 
+      (was missing).</td>
+  </tr>
+  <tr> 
+    <td width="17%">12 Dec 2003</td>
+    <td width="83%">Modified <font face="Courier New, Courier, mono" size="-1">TokenizerImpl</font> 
+      to take a <font face="Courier New, Courier, mono" size="-1">TokenizerParams</font> 
+      instead of separate parameters. Added a parameter to specify that illegal 
+      escape sequences should be emitted literally, rather than throwing an exception.</td>
+  </tr>
+  <tr> 
+    <td width="17%">12 Dec 2003</td>
+    <td width="83%">Added <font size="-1" face="Courier New, Courier, mono">--warnings-off 
+      </font>option to <font face="Courier New, Courier, mono" size="-1">validate-mbeans</font></td>
+  </tr>
+  <tr> 
+    <td width="17%">12 Dec 2003</td>
+    <td width="83%">Fixed <font face="Courier New, Courier, mono" size="-1">validate-mbeans</font> 
+      so that it does not require any operands; default target will be used if 
+      none are specified. If there is no default target, then all MBeans (&quot;*&quot;) 
+      is assumed.</td>
+  </tr>
+  <tr> 
+    <td width="17%">12 Dec 2003</td>
+    <td width="83%">Fixed problem where if the history file or aliases file did 
+      not exist, an error message would be issued. This was confusing, especially 
+      with a new install. An error message is issue only if a file exists and 
+      there is a problem reading it.</td>
+  </tr>
+  <tr> 
+    <td width="17%">11 Dec 2003</td>
+    <td width="83%">Changed some failures into warnings in <font face="Courier New, Courier, mono" size="-1">validate-mbeans</font>; 
+      those that involve non-serializable object.</td>
+  </tr>
+  <tr> 
+    <td width="17%">11 Dec 2003</td>
+    <td width="83%">Remove <font size="-1" face="Courier New, Courier, mono">JMXIOException</font> 
+      because it required extra code to understand the original type of <font face="Courier New, Courier, mono" size="-1">IOException</font> 
+      ( <font face="Courier New, Courier, mono" size="-1">NotSerialiazableException</font> 
+      for example).</td>
+  </tr>
+</table>
+<p>&nbsp; </p>
+</body>
+</html>

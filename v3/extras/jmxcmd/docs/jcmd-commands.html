@@ -1,0 +1,288 @@
+<html>
+<head>
+<title>jcmd Commands</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body bgcolor="#FFFFFF" text="#000000">
+<h1 align="center">JCmdCommands</h1>
+<p><font size="-1">Author: lloyd.chambers@sun.com<br>
+  Last updated: 06 Jan 2004</font></p>
+<h2>1. Commands overview</h2>
+<p>This table gives a brief overview of the built-in command set for <a href="./jcmd-index.html">JCmd</a>. 
+  Click on each command name for details. </p>
+<table width="98%" border="1">
+  <tr> 
+    <td><b>Command</b></td>
+    <td><b>Capabilities/Functions</b></td>
+  </tr>
+  <tr> 
+    <td><a href="#configure">configure</a></td>
+    <td>configure the CLI framework</td>
+  </tr>
+  <tr>
+    <td height="34"> 
+      <p><a href="#cmd-aliases">create-cmd-alias<br>
+        delete-cmd-alias<br>
+        list-cmd-aliases</a></p>
+      </td>
+    <td height="34">Manage command aliases</td>
+  </tr>
+  <tr> 
+    <td><a href="#echo">echo</a></td>
+    <td>echo arguments to output</td>
+  </tr>
+  <tr> 
+    <td><a href="#help">help</a></td>
+    <td>displays help</td>
+  </tr>
+  <tr> 
+    <td><a href="#history">history<br>
+      repeat </a></td>
+    <td>show command history and repeat previous commands</td>
+  </tr>
+  <tr> 
+    <td><a href="#setenv">setenv</a></td>
+    <td>sets a <font size="-1" face="Courier New, Courier, mono">jcmd</font> variable</td>
+  </tr>
+  <tr> 
+    <td><a href="#source">source</a></td>
+    <td>read commands file a file</td>
+  </tr>
+  <tr> 
+    <td height="24"><a href="#version">version</a></td>
+    <td height="24">displays the version of the cli</td>
+  </tr>
+</table>
+<p>&nbsp;</p>
+<h2>2. Commands detail</h2>
+<h3>2.1 setenv--manage environment variables<a name="setenv"></a></h3>
+<p> <font size="-1" face="Courier New, Courier, mono">setenv <i>name</i>=<i>value</i><br>
+  env [<i>name</i>[ <i>name</i>]*]<br>
+  unsetenv <i>name</i></font></p>
+<p>You can set a variable, remove it, or display all currently set environment 
+  variables. Variables persist across invocations of <font size="-1" face="Courier New, Courier, mono">jcmd</font>. 
+  However, they are neither imported nor exported to/from your command-line-shell 
+  (csh, tcsh, bash, etc). Certain variables are maintained by built-in <font size="-1" face="Courier New, Courier, mono">jcmd</font> 
+  commands; these may be modified using the setenv command. Commands that are 
+  configured after-the-fact (plugged in) have access to all environment variables 
+  as part of their execution and they may also choose to maintain a variable as 
+  a result of their execution.</p>
+<h5>Examples</h5>
+<p>1. Set the variable &quot;NAME&quot; to &quot;Fred&quot;:</p>
+<p> <font size="-1" face="Courier New, Courier, mono">jcmd&gt; setenv NAME=Fred</font></p>
+<h5></h5>
+<p>2. Remove the variable &quot;NAME&quot;:</p>
+<p> <font size="-1" face="Courier New, Courier, mono">jcmd&gt; unsetenv NAME</font></p>
+<h5></h5>
+<p>2. Display all variables:</p>
+<p> <font size="-1" face="Courier New, Courier, mono">jcmd&gt; env</font></p>
+<h3>2.2 configure--configure this CLI<a name="configure"></a></h3>
+<p> <font face="Courier New, Courier, mono" size="-1">configure<br>
+  show-config<br>
+  add-cmd-source <i>classname</i></font><font face="Courier New, Courier, mono" size="-1"><br>
+  remove-cmd-source <i>classname</i><br>
+  add-classpath <i>path[;path]*</i><br>
+  remove-classpath <i>path[;path]*</i></font></p>
+<p>The configure command can be invoked with several names, each of which functions 
+  as its own command.<br>
+  The possible invocation names are:\n&quot; +<br>
+  configure: display this help\n&quot; +<br>
+  add-cmd-source -- add a new CmdSource with the specified classname\n&quot; +<br>
+  remove-cmd-source -- remove the CmdSource with the specified classname\n&quot; 
+  +</p>
+<table width="94%" border="1">
+  <tr> 
+    <td width="32%"><b>Name</b></td>
+    <td width="68%"><b>Explanation</b></td>
+  </tr>
+  <tr> 
+    <td width="32%"><font size="-1" face="Courier New, Courier, mono">configure</font></td>
+    <td width="68%">display help on the configure command and its psuedonyms</td>
+  </tr>
+  <tr> 
+    <td width="32%"><font size="-1" face="Courier New, Courier, mono">show-config</font></td>
+    <td width="68%">show the current configuration</td>
+  </tr>
+  <tr> 
+    <td width="32%"><font face="Courier New, Courier, mono" size="-1">add-cmd-source 
+      <i>classname</i></font><font face="Courier New, Courier, mono" size="-1"></font></td>
+    <td width="68%">add a new <a href="./javadoc/com/sun/cli/jmxcmd/framework/CmdSource.html">CmdSource</a> 
+      class and load the Cmd classes it supplies to the list of available commands</td>
+  </tr>
+  <tr> 
+    <td width="32%" height="41"><font face="Courier New, Courier, mono" size="-1">remove-cmd-source 
+      <i>classname</i></font></td>
+    <td width="68%" height="41">remove a <a href="./javadoc/com/sun/cli/jmxcmd/framework/CmdSource.html">CmdSource</a> 
+      class and all the Cmd classes it supplies from the list of available commands</td>
+  </tr>
+  <tr> 
+    <td width="32%"><font face="Courier New, Courier, mono" size="-1">add-classpath 
+      <i>path[;path]*</i></font></td>
+    <td width="68%">append folders or jars to the classpath. You can also replace 
+      the class path using the <a href="#setenv">setenv</a> command to set the 
+      variable ADDITIONAL_CLASSPATH</td>
+  </tr>
+  <tr>
+    <td width="32%"><font face="Courier New, Courier, mono" size="-1">remove-classpath 
+      <i>path[;path]*</i></font></td>
+    <td width="68%">remove folders or jars to the classpath. If you want to remove 
+      all paths, use the <a href="#setenv">setenv</a> command to unset the variable 
+      ADDITIONAL_CLASSPATH</td>
+  </tr>
+</table>
+<h5>Examples</h5>
+<p>1. Show the current configuration:</p>
+<p> <font size="-1" face="Courier New, Courier, mono">jcmd&gt; show-config</font></p>
+<h5></h5>
+<p>2. Add a CmdSource</p>
+<p> <font size="-1" face="Courier New, Courier, mono">jcmd&gt; add-cmd-source 
+  com.myco.mystuff.MyCmdSource </font></p>
+<h3>2.4 create-cmd-alias/delete-cmd-alias/list-cmd-aliases--manage command aliases<a name="cmd-aliases"></a></h3>
+<p> <font size="-1" face="Courier New, Courier, mono">create-cmd-alias <i>name</i>=<i>value<br>
+  </i>delete-cmd-alias <i>name</i><br>
+  list-cmd-aliases [<i>prefix</i>[ <i>prefix</i>]*]</font></p>
+<p>These commands allow you to manage command aliases. Command aliases are strict 
+  textual substitutions in which the first token is examined to see if is an alias. 
+  If so, it is replaced by its value, and the process is applied again, until 
+  the first token is no longer an alias.</p>
+<h5>Examples</h5>
+<p>1. Create a command alias &quot;sc&quot; for the command show-config:</p>
+<p> <font size="-1" face="Courier New, Courier, mono">jcmd&gt; create-cmd-alias 
+  sc=show-config </font></p>
+<p>2. Create a command alias &quot;sms&quot; which sources a particular file:<font size="-1"></font></p>
+<p> <font size="-1" face="Courier New, Courier, mono">jcmd&gt; create-cmd-alias 
+  sms=&quot;source /home/users/fred/mystuff.jcmd&quot;</font></p>
+<p>&nbsp;</p>
+<h3>2.4 source--read commands from a file<a name="source"></a></h3>
+<p> <font size="-1" face="Courier New, Courier, mono">source [--continue-on-errors|-c] 
+  <i>filename</i></font></p>
+<p>Commands are read from the specified file. A failure stops processing unless 
+  the --continue-on-errors option was used.</p>
+<table width="94%" border="1">
+  <tr> 
+    <td width="24%"><b>Option</b></td>
+    <td width="76%"><b>Explanation</b></td>
+  </tr>
+  <tr> 
+    <td width="24%"><font size="-1" face="Courier New, Courier, mono">--continue-on-errors 
+      | -c</font></td>
+    <td width="76%">continue even if commands fail during execution</td>
+  </tr>
+</table>
+<h5>Examples</h5>
+<p>1. Read commands from the file mytest</p>
+<p> <font size="-1" face="Courier New, Courier, mono">jcmd&gt; source mytest</font></p>
+<h3>2.5 help--display help<a name="help"></a></h3>
+<p> <font face="Courier New, Courier, mono" size="-1">help <i>cmd</i><br>
+  help <br>
+  -?<br>
+  --help<br>
+  </font></p>
+<p>There are several variants here, described in the following table:<br>
+</p>
+<table width="94%" border="1">
+  <tr> 
+    <td width="32%"><b>Name</b></td>
+    <td width="68%"><b>Explanation</b></td>
+  </tr>
+  <tr> 
+    <td width="32%"><font size="-1" face="Courier New, Courier, mono">help</font></td>
+    <td width="68%">Display all commands and a short synopsis for each.</td>
+  </tr>
+  <tr> 
+    <td width="32%"><font face="Courier New, Courier, mono" size="-1">help <i>cmd</i></font></td>
+    <td width="68%">Display help for a particular command.</td>
+  </tr>
+  <tr> 
+    <td width="32%"><font face="Courier New, Courier, mono" size="-1">-?</font></td>
+    <td width="68%">Same as &quot;help&quot;</td>
+  </tr>
+  <tr> 
+    <td width="32%"><font size="-1" face="Courier New, Courier, mono">--help<br>
+      </font></td>
+    <td width="68%">Same as &quot;--help&quot;</td>
+  </tr>
+</table>
+<p>Commands that have been plugged and offer help will be available within the 
+  help command.</p>
+<h5>Examples</h5>
+<p>1. Display help for all commands:</p>
+<p> <font size="-1" face="Courier New, Courier, mono">bash-2.05$ jcmd -?<br>
+  bash-2.05$ jcmd help<br>
+  bash-2.05$ jcmd --help<br>
+  jcmd&gt; help<br>
+  jcmd&gt; -?</font></p>
+<p>2. Display help for the 'inspect' command::</p>
+<p> <font size="-1" face="Courier New, Courier, mono">jcmd&gt; help inspect<br>
+  jcmd&gt; inspect -?<br>
+  jcmd&gt; inspect --help</font></p>
+<h3>2.6 echo--print to output<a name="echo"></a></h3>
+<p> <font face="Courier New, Courier, mono" size="-1">echo &lt;string&gt;[ &lt;string&gt;]*<br>
+  </font></p>
+<p>Echos all the operands to stdout.</p>
+<h5>Examples</h5>
+<p>1. Print the string &quot;hello world&quot; to stdou:</p>
+<p> <font size="-1" face="Courier New, Courier, mono">jcmd&gt; echo &quot;hello 
+  world&quot;<br>
+  hello world</font></p>
+<p>&nbsp;</p>
+<h3>2.7 history--show command history and repeat commands<a name="history"></a></h3>
+<p> <font face="Courier New, Courier, mono" size="-1">history [&lt;number-of-entries&gt;]<br>
+  repeat <br>
+  repeat &lt;id&gt;<br>
+  repeat </font><font face="Courier New, Courier, mono" size="-1">&lt;start-id&gt; 
+  &lt;end-id&gt;<br>
+  </font></p>
+<p>The history command displays the list of command previously entered. Each command 
+  displayed is assigned a number, which can be used by the repeat command. If 
+  the history command is followed by a number, that many commands are displayed 
+  eg &quot;history 10&quot; will display the last ten commands.</p>
+<p>The repeat command repeats previously entered commands. With no number, it 
+  repeats the last command. With one number, it repeats the command with that 
+  number. With two numbers it repeats the commands beginning with the first number 
+  and ending (inclusively) with the command with the last number.</p>
+<h5>Examples</h5>
+<p>1. Show the last 20 commands</p>
+<p> <font size="-1" face="Courier New, Courier, mono">jcmd&gt; history 20<br>
+  </font></p>
+<p>2. Repeat the last command</p>
+<p> <font size="-1" face="Courier New, Courier, mono">jcmd&gt; repeat<br>
+  jcmd&gt; !!<br>
+  </font></p>
+<p>3. Repeat command 20</p>
+<p> <font size="-1" face="Courier New, Courier, mono">jcmd&gt; repeat 20<br>
+  jcmd&gt; !20</font><font size="-1" face="Courier New, Courier, mono"><br>
+  </font></p>
+<p>4. Repeat commands 128 through 132:</p>
+<p> <font size="-1" face="Courier New, Courier, mono">jcmd&gt; repeat 128 
+  132 </font></p>
+<h3>2.8 version--show the version of the CLI<a name="version"></a></h3>
+<p> <font face="Courier New, Courier, mono" size="-1">version<br>
+  </font></p>
+<p>Displays the version of the CLI.</p>
+<h5>Examples</h5>
+<p>1. Show the last 20 commands</p>
+<p> <font size="-1" face="Courier New, Courier, mono">jcmd&gt; version<br>
+  </font></p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p><br>
+</p>
+<p>&nbsp;</p>
+<h4>&nbsp;</h4>
+</body>
+</html>
