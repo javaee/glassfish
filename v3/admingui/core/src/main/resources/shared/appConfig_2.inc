@@ -36,7 +36,7 @@
 
 <!-- shared/appConfig_2.inc -->
 
-#include "alertMsg.inc"
+#include "/alertMsg.inc"
     <!-- Page Title -->
     <sun:title id="propertyContentPage" title="$resource{i18n.server.AppsConfigPageTitle}" 
         helpText="$resource{i18n.server.AppsConfigPageHelp}">
@@ -49,7 +49,7 @@
         </sun:button>
         <!-- Buttons  -->                    
         <!facet pageButtonsTop>
-#include "shared/appConfig_2Buttons.inc"
+#include "/shared/appConfig_2Buttons.inc"
         </facet>       
         </sun:title>
         <!-- PropertySheet .... -->
@@ -92,15 +92,15 @@
             </sun:propertySheetSection>
 
         </sun:propertySheet>    
-#include "propertyTable.inc"                           
+#include "/shared/propertyTable.inc"                           
         <sun:title id="propertyContentPage2">
         <!facet pageButtonsBottom>
-#include "shared/appConfig_2Buttons.inc"
+#include "/shared/appConfig_2Buttons.inc"
         </facet>       
         </sun:title>
 		<sun:hidden id="helpKey" value="$attribute{helpKey}" />
             </sun:form>
         </sun:body>
-#include "changeButtonsJS.inc"
+#include "/changeButtonsJS.inc"
     </sun:html>
 </sun:page>

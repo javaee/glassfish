@@ -43,11 +43,11 @@
         setPageSessionAttribute(key="configName", value="$requestParameter{configName}");  
         getJvmOptions(ConfigName="#{configName}", JvmOptions=>$attribute{tableList});
     />
-#include "shared/restart.inc"
+#include "/shared/restart.inc"
     <sun:html id="html2">
         <sun:head id="propertyhead" title="$resource{i18n.jvmOptions.Title}" >
             <sun:script url="../js/restart.js" />
         </sun:head>
         <sun:body id="body3" onLoad="javascript: synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')" >
          <sun:form id="propertyForm">
-#include treeBreadcrumbs.inc
+#include "/treeBreadcrumbs.inc"

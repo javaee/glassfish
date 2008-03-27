@@ -36,7 +36,7 @@
 -->
 <!-- shared/jvmProfiler_2.inc -->
 
-#include "alertMsg.inc"
+#include "/alertMsg.inc"
                 <!-- Page Title -->
                 <sun:title id="propertyContentPage" title="$resource{i18n.jvm.ProfilerPageName}"
                     helpText="$resource{i18n.jvm.ProfilerPageHelp}">
@@ -81,11 +81,11 @@
                             "<br /><br />
                         </sun:propertySheetSection>
                     </sun:propertySheet>  
-#include "shared/jvmOptionsTable.inc"                
+#include "/shared/jvmOptionsTable.inc"                
                 
 	<sun:hidden id="helpKey" value="$attribute{helpKey}" />
             </sun:form>
         </sun:body>
-#include "changeButtonsJS.inc"
+#include "/changeButtonsJS.inc"
     </sun:html>
 </sun:page>

@@ -35,13 +35,13 @@
 -->
 <!-- shared/jvmPath_2.inc -->
 
-#include "alertMsg.inc"      
+#include "/alertMsg.inc"      
                 <!-- Page Title -->
                 <sun:title id="propertyContentPage" title="$resource{i18n.jvm.PathSettingsTitle}"
                     helpText="$resource{i18n.jvm.PathSettingsPageHelp}">
                     <!-- Buttons  -->                    
                     <!facet pageButtonsTop>
-#include "shared/jvmPathButtons.inc"
+#include "/shared/jvmPathButtons.inc"
                     </facet>    
                     </sun:title>
                    
@@ -76,7 +76,7 @@
                      <sun:title  id="title2" >
                     <!-- Buttons  -->                    
                     <!facet pageButtonsBottom>
-#include "shared/jvmPathButtons.inc"
+#include "/shared/jvmPathButtons.inc"
                     </facet>                            
                 </sun:title>
 	<sun:hidden id="helpKey" value="$attribute{helpKey}" />

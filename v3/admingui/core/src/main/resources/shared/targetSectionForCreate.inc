@@ -38,7 +38,7 @@
     <sun:propertySheetSection id="targetSectionId" visible="#{true}"
 	    label="$resource{i18n.common.TargetTableTitle}" rendered="#{supportCluster}" >
 	<sun:property id="addRemoveProp" noWrap="#{true}" overlapLabel="#{false}">
-#include "shared/commonAddRemove.inc"
+#include "/shared/commonAddRemove.inc"
 	</sun:property>
         <!afterCreate
             getClientId(component="$this{component}" clientId=>$page{targetSectionId});

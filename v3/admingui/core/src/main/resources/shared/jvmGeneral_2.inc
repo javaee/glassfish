@@ -35,7 +35,7 @@
 -->
 <!-- shared/jvmGeneral_2.jsf -->
 
-#include "alertMsg.inc"
+#include "/alertMsg.inc"
                 <!-- Page Title -->
                 <sun:title id="propertyContentPage" title="$resource{i18n.jvm.GeneralTitle}" 
                     helpText="$resource{i18n.jvm.GeneralPageHelp}">
