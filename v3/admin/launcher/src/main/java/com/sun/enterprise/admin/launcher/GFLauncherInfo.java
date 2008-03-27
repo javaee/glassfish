@@ -136,6 +136,9 @@ public class GFLauncherInfo {
         return instanceName;
     }
 
+    public Set<Integer> getAdminPorts() {
+        return adminPorts;
+    }
     public GFLauncherFactory.ServerType getType() {
         return type;
     }
@@ -205,6 +208,10 @@ public class GFLauncherInfo {
 
     GFLauncherInfo(GFLauncherFactory.ServerType type) {
         this.type = type;
+    }
+
+    void setAdminPorts(Set<Integer> adminPorts) {
+        this.adminPorts = adminPorts;
     }
     void setup() throws GFLauncherException {
         setupFromArgs();
@@ -416,6 +423,8 @@ public class GFLauncherInfo {
     private boolean valid = false;
     private Map<String, String> argsMap;
     private ArrayList<String> argsRaw = new ArrayList<String>();
+    private Set<Integer> adminPorts;
+
     // BUG TODO get the def. domains dir from asenv 3/14/2008
     private final static String DEFAULT_DOMAIN_PARENT_DIR = "domains";
     private final static String CONFIG_DIR = "config";

@@ -199,6 +199,7 @@ public abstract class GFLauncher {
         if(GFLauncherUtils.ok(domainName)) {
             info.setDomainName(parser.getDomainName());
         }
+        info.setAdminPorts(parser.getAdminPorts());
         javaConfig = new JavaConfig(parser.getJavaConfig());
         setupProfilerAndJvmOptions(parser);
         sysPropsFromXml = parser.getSystemProperties();
