@@ -38,7 +38,7 @@
 <!initPage
     setResourceBundle(key="i18n" bundle="core.Strings");
     setResourceBundle(key="help" bundle="core.Helplinks");
-#include "sysnet/regInit.inc"
+#include "/sysnet/regInit.inc"
 />
 <sun:page>
     <sun:html>
@@ -57,7 +57,7 @@
 	</sun:head>
 	<sun:body style="background:#B6C6D6" onLoad="admingui.nav.clearTreeSelection('form:tree'); admingui.nav.refreshTree('form:tree:registration');">
 	     <sun:form id="form"> 
-<!-- #include treeBreadcrumbs.inc -->
+<!-- #include "/treeBreadcrumbs.inc" -->
 		<sun:commonTasksSection helpText="$resource{i18n.commonTasks.help}" title="$resource{i18n.commonTasks.title}" columns="$int{2}" style="visibility: #{commonTaskVisibility}">
 		    <sun:commonTasksGroup  title="$resource{i18n.commonTasks.task.regAndSupport}">
 			<sun:commonTask rendered="$session{showRegistration}"
@@ -95,9 +95,9 @@
 			</sun:commonTask>
                     </sun:commonTasksGroup> 
                         
-#include "commonTaskDoc.inc"                    
+#include "/commonTaskDoc.inc"                    
 		</sun:commonTasksSection>
-#include "sysnet/regReminder.inc"
+#include "/sysnet/regReminder.inc"
             <sun:hidden id="helpKey" value="$resource{help.commonTask}" />
 	     </sun:form>           
 	 </sun:body> 
