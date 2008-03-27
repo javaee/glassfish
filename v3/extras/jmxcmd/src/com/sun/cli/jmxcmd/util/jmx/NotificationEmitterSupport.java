@@ -31,6 +31,9 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Collections;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 import javax.management.NotificationBroadcasterSupport;
 import javax.management.NotificationListener;
@@ -110,7 +113,14 @@ public class NotificationEmitterSupport
 	{
 		if ( mSenderThread != null )
 		{
-			mSenderThread.sendAll();
+            try
+            {
+                mSenderThread.sendAll( 20 );
+            }
+            catch( InterruptedException e )
+            {
+                throw new RuntimeException(e);
+            }
 		}
 	}
 	
@@ -342,7 +352,7 @@ public class NotificationEmitterSupport
             super( "NotificationEmitterSupport.SenderThread-" + name);
 			mQuit	= false;
             final boolean beFair = true;
-			mPendingNotifications = new ArrayBlockingQueue<Notification>( MAX_PENDING, beFair) );
+			mPendingNotifications = new ArrayBlockingQueue<Notification>( MAX_PENDING, beFair);
 		}
         
         	public
@@ -364,7 +374,14 @@ public class NotificationEmitterSupport
 			private void
 		enqueue( final Notification notif )
 		{
-			mPendingNotifications.put( notif );
+			try
+            {
+                mPendingNotifications.put( notif );
+            }
+            catch( InterruptedException e )
+            {
+                throw new RuntimeException(e);
+            }
 		}
 		
         /**
@@ -382,7 +399,7 @@ public class NotificationEmitterSupport
             
             long timeoutMillis = timeoutMillisIn;
 			int		 numSent	= 0;
-			while ( (notif = mPendingNotification.poll(timeoutMillis, TimeUnit.MILLISECONDS)) != null )
+			while ( (notif = mPendingNotifications.poll(timeoutMillis, TimeUnit.MILLISECONDS)) != null )
 			{
 				internalSendNotification( notif );
                 ++numSent;
@@ -418,7 +435,14 @@ public class NotificationEmitterSupport
 			}
             
             cleanup();
-            sendAll(0);  // in case Notifications were added just now while doing cleanup()
+            try
+            {
+                sendAll(0);  // in case Notifications were added just now while doing cleanup()
+            }
+            catch( InterruptedException e )
+            {
+                throw new RuntimeException(e);
+            }
 		}
 	}
 }
