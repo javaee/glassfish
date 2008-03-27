@@ -55,7 +55,7 @@
     setPageSessionAttribute(key="saveButtonLabel" value="$resource{i18n.button.Save}");
     setPageSessionAttribute(key="edit" value="#{true}");
     />
-#include "shared/restart.inc"    
+#include "/shared/restart.inc"    
     <sun:html id="html2">
         <sun:head id="propertyhead" title="#{pageTitle}" >
             <sun:script url="../js/restart.js" />
@@ -63,10 +63,10 @@
 
              <sun:body id="body3" onLoad="javascript: synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
                 <sun:form id="propertyForm">
-#include treeBreadcrumbs.inc
-#include "resourceNode/resourcesTabs.inc"
-#include "alertMsg.inc"
-#include "resourceNode/jdbcResource.inc"    
+#include "/treeBreadcrumbs.inc"
+#include "resourcesTabs.inc"
+#include "/alertMsg.inc"
+#include "jdbcResource.inc"    
 	<sun:hidden id="helpKey" value="$resource{help.jdbcResourceEdit}" />
                 </sun:form>
             </sun:body>

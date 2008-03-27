@@ -40,14 +40,14 @@
         setResourceBundle(key="i18n" bundle="core.Strings")
         setResourceBundle(key="help" bundle="core.Helplinks")
     />
-#include "shared/restart.inc"    
+#include "/shared/restart.inc"    
     <sun:html>
         <sun:head id="resourcesHead" title="$resource{i18n.jdbc.pageTitle}">
             <sun:script url="resource/js/restart.js" />
         </sun:head>
         <sun:body onLoad="javascript: synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
             <sun:form id="resourcesForm"> 
-#include treeBreadcrumbs.inc
+#include "/treeBreadcrumbs.inc"
                 <sun:title 
                 id="resourcesPageTitle" 
                 title="$resource{i18n.jdbc.pageTitle}" 
