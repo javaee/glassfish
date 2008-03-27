@@ -44,14 +44,14 @@
         <artifactId>glassfish-parent</artifactId>
         <version>10.0-SNAPSHOT</version>
     </parent>
-    <groupId>org.glassfish.admin</groupId>
+    <groupId>org.glassfish.registration</groupId>
     <artifactId>registration</artifactId>
     <packaging>pom</packaging>
     <name>Registration</name>  
     <description>Registration</description>
     <modules>
-        <module>api</module>
-        <module>impl</module>
+        <module>registration-api</module>
+        <module>registration-impl</module>
     </modules>
     
 </project>
