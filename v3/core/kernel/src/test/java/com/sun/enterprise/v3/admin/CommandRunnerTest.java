@@ -226,7 +226,7 @@ public class CommandRunnerTest {
         String foo;
 
         @Param(name="bar", defaultValue="false", optional=true)
-        String bar;
+        String foobar;
 
         @Param(optional=false)
         String hello="there";
