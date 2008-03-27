@@ -569,13 +569,20 @@ public class CommandRunner {
                 continue;
             }
             //check if key is a valid Param Field
-            try {
-                final Field f = command.getClass().getDeclaredField(key);
-                if (!f.isAnnotationPresent(Param.class)) {
-                    throw new ComponentException(" Invalid option: " + key);                    
+            boolean validOption = false;
+                //loop through the Param field in the command class
+                //if either field name or the param name is equal to
+                //key then it's a valid option
+            for (Field field : command.getClass().getDeclaredFields()) {
+                final Param param = field.getAnnotation(Param.class);
+                if (param == null)     continue;
+                if (field.getName().equals(key) ||
+                    param.name().equals(key) ) {
+                    validOption=true;
+                    break;
                 }
             }
-            catch (NoSuchFieldException nsfe) {
+            if (!validOption) {
                 throw new ComponentException(" Invalid option: " + key);
             }
         }

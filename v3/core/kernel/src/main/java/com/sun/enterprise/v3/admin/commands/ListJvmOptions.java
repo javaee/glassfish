@@ -64,7 +64,6 @@ public final class ListJvmOptions implements AdminCommand {
         final ActionReport report = context.getActionReport();
 
         report.getTopMessagePart().setMessage(lsm.getStringWithDefault("list.jvm.options.success", "Command: list-jvm-options successfully executed"));
-        report.getTopMessagePart().setChildrenType("jvm-options");
         try {
             for (String option : opts) {
                 ActionReport.MessagePart part = report.getTopMessagePart().addChild();
