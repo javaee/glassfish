@@ -68,7 +68,7 @@ import org.jvnet.hk2.component.PostConstruct;
  * @author &#2325;&#2375;&#2342;&#2366;&#2352 (km@dev.java.net)
  * @since GlassFish V3
  */
-@Service
+//@Service
 public final class AdminConsoleAdapter implements Adapter, PostConstruct {
 
     @Inject 
