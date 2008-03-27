@@ -5,7 +5,7 @@
     #setResourceBundle(key="help" bundle="core.Helplinks")
     />
 // commenting this out since there is not support for this yet in V3
-// #include "shared/restart.inc"
+// #include "/shared/restart.inc"
 
 <sun:html>
     <!insert name="head">
