@@ -50,5 +50,6 @@
     <name>GlassFish Tests related modules</name>  
     <modules>
         <module>utils</module>
+        <module>quicklook</module>
     </modules>
 </project>
