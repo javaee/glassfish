@@ -116,6 +116,7 @@ public class InstanceHandler {
             instanceName="server";
         }
         String configName = AMXRoot.getInstance().getConfigName(instanceName);
+        String version = AMXRoot.getInstance().getDomainRoot().getApplicationServerFullVersion();
         
         // get host Name (for PE only.  For EE, we just display the name of the server instance).
         //TODO: once we can test if we are running in PE or EE environment, we should do accordingly.
@@ -154,23 +155,12 @@ public class InstanceHandler {
         }
         iports.deleteCharAt(0);  //remove the first ','
         handlerCtx.setOutputValue("iiopPorts", iports.toString());
-        String configDir = "No AMX API";
-        String version = "No AMX API";
-        /* TODO-V3
-        //ConfigDir can't get through AMX
-        String configDir = (String)JMXUtil.invoke("com.sun.appserv:type=domain,category=config", "getConfigDir", null, null);
-        handlerCtx.setOutputValue("configDir", configDir);
         
-        //Version can't get through AMX
-        String version = (String)JMXUtil.getAttribute("com.sun.appserv:j2eeType=J2EEDomain,name=com.sun.appserv,category=runtime", "applicationServerFullVersion");
-        handlerCtx.setOutputValue("version", version);
-         */
-        Object debugPort = null;
-        /* TODO-V3
-        //debug port; can't get the runtim info of whether debug is on through AMX
-        Object debugPort = JMXUtil.getAttribute("com.sun.appserv:j2eeType=J2EEServer,name=server,category=runtime", "debugPort");
-         */
+        String configDir = AMXRoot.getInstance().getDomainRoot().getConfigDir();
+        Object debugPort = AMXRoot.getInstance().getDomainRoot().getDebugPort();
+        
         String msg = GuiUtil.getMessage("inst.notEnabled");
+        
         if (debugPort != null) {
             String port = debugPort.toString();
             if (port.equals("0") == false) {
