@@ -703,7 +703,7 @@ public class AMXConfigImplBase extends AMXImplBase
         if ( optionalAttrs != null )
         {
             // verify that optional attributes are not redundant with required ones
-            if ( paramNames != null )
+            if ( paramNames != null && optionalAttrs.size() != 0 )
             {
                 final Set<String> temp = GSetUtil.newStringSet( paramNames );
                 temp.retainAll( optionalAttrs.keySet() );
@@ -735,6 +735,33 @@ public class AMXConfigImplBase extends AMXImplBase
 
     private static void cdebug( final String s ) { System.out.println(s); }
     
+    /**
+        Extract properties from the optional attributes Map, removing them from the map
+        and returning them in a new Map.
+     */
+        private Map<String,String>
+    extractProperties( final Map<String,Object> optionalAttrs )
+    {
+        Map<String,String> props = null;
+        
+        if ( optionalAttrs != null )
+        {
+            props =  new HashMap<String,String>();
+            
+            for( final String key : optionalAttrs.keySet() )
+            {
+                if ( key.startsWith( PropertiesAccess.PROPERTY_PREFIX ) )
+                {
+                    String propertyName = key.substring( PropertiesAccess.PROPERTY_PREFIX.length(), key.length() );
+                    props.put( propertyName, "" + optionalAttrs.get(key) );
+                    optionalAttrs.remove( key );
+                }
+            }
+        }
+        
+        return props;
+    }
+    
         protected ObjectName
    createConfig(
         final String operationName,
@@ -749,9 +776,6 @@ public class AMXConfigImplBase extends AMXImplBase
         }
         
 cdebug( "last ARG = " + args[args.length -1] );
-        final Map<String,Object> empty =Collections.emptyMap();
-        args[args.length-1] = empty;
-        
         ObjectName  result  = null;
         
         /*
@@ -813,6 +837,8 @@ cdebug( "createConfig: j2eeType = " + j2eeType + ", return type = " + returnType
             }
         }
         
+        final Map<String,String> properties = extractProperties( optionalAttrs );
+        
         final String[] paramNames = amxCreateInfo.paramNames();
         cdebug( "createConfig:  paramNames = {" + StringUtil.toString(paramNames) + "}" );
         rejectBadArgs( args, numRequiredArgs, paramNames, optionalAttrs );
@@ -854,14 +880,34 @@ cdebug( "createConfig: j2eeType = " + j2eeType + ", return type = " + returnType
         }
         
 
-    cdebug( "getting AMXConfigLoader " );
         final AMXConfigLoader  amxLoader = SingletonEnforcer.get( AMXConfigLoader.class );
         amxLoader.handleConfigBean( newConfigBean, true );
             
         final ObjectName objectName = newConfigBean.getObjectName();
-        
        // sendConfigCreatedNotification( objectName );
-        
+       
+       /*
+            Set all the properties.
+        */
+        if ( properties != null && properties.size() != 0 )
+        {
+            final AMX newConfig = getProxyFactory().getProxy( objectName );
+            if ( newConfig instanceof PropertiesAccess )
+            {
+                if ( properties.keySet().size() == 0 )
+                {
+                    properties.put( "test1", "value1" );
+                }
+                
+                final PropertiesAccess pa = PropertiesAccess.class.cast( newConfig );
+                for( final String propName : properties.keySet() )
+                {
+                    final String propValue = properties.get(propName);
+                    pa.createPropertyConfig( propName, propValue );
+                }
+            }
+        }
+    
         return objectName;
    }
     
