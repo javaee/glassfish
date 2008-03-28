@@ -36,12 +36,14 @@
 
 package com.sun.enterprise.security.auth.realm.jdbc;
 
+import org.jvnet.hk2.annotations.Inject;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -49,21 +51,26 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Vector;
+import java.util.logging.Logger;
 import java.util.logging.Level;
 import javax.sql.DataSource;
+//import com.sun.enterprise.connectors.ConnectorRuntime;
+import com.sun.appserv.connectors.spi.ConnectorRuntime;
 
 import sun.misc.BASE64Encoder;
-
-//TODO:V3 commented import com.sun.enterprise.connectors.ConnectorRuntime;
-
+import javax.naming.InitialContext;
+import javax.security.auth.login.LoginException;
 import com.sun.enterprise.security.auth.realm.IASRealm;
 import com.sun.enterprise.security.auth.realm.BadRealmException;
 import com.sun.enterprise.security.auth.realm.NoSuchUserException;
 import com.sun.enterprise.security.auth.realm.NoSuchRealmException;
 import com.sun.enterprise.security.auth.realm.InvalidOperationException;
-import javax.naming.InitialContext;
-import javax.security.auth.login.LoginException;
-
+import com.sun.enterprise.security.auth.digest.api.DigestAlgorithmParameter;
+import com.sun.enterprise.security.auth.digest.api.Password;
+import com.sun.enterprise.security.auth.realm.DigestRealmBase;
+import com.sun.enterprise.security.common.Util;
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.Habitat;
 
 /**
  * Realm for supporting JDBC authentication.
@@ -87,10 +94,11 @@ import javax.security.auth.login.LoginException;
  * @see com.sun.enterprise.security.auth.login.SolarisLoginModule
  *
  */
-public final class JDBCRealm extends IASRealm {
+
+public final class JDBCRealm extends DigestRealmBase {
     // Descriptive string of the authentication type of this realm.
     public static final String AUTH_TYPE = "jdbc";
-
+    public static final String PRE_HASHED = "HASHED";
     public static final String PARAM_DATASOURCE_JNDI = "datasource-jndi";
     public static final String PARAM_DB_USER = "db-user";
     public static final String PARAM_DB_PASSWORD = "db-password";
@@ -119,6 +127,10 @@ public final class JDBCRealm extends IASRealm {
     private String passwordQuery = null;
     private String groupQuery = null;
     private MessageDigest md = null;
+
+    
+    private ConnectorRuntime cr ;
+    
     
     /**
      * Initialize a realm with some properties.  This can be used
@@ -147,6 +159,7 @@ public final class JDBCRealm extends IASRealm {
         String passwordColumn = props.getProperty(PARAM_PASSWORD_COLUMN);
         String groupTable = props.getProperty(PARAM_GROUP_TABLE);
         String groupNameColumn = props.getProperty(PARAM_GROUP_NAME_COLUMN);
+        cr = Util.getDefaultHabitat().getByContract(ConnectorRuntime.class);
         
         if (jaasCtx == null) {
             String msg = sm.getString(
@@ -304,6 +317,66 @@ public final class JDBCRealm extends IASRealm {
         return groups;
     }
 
+    public boolean validate(String username, DigestAlgorithmParameter[] params) {
+        final Password pass = getPassword(username);
+        if (pass == null) {
+            return false;
+        }
+        return validate(pass, params);
+    }
+    
+    private Password getPassword(String username) {
+
+        Connection connection = null;
+        PreparedStatement statement = null;
+        ResultSet rs = null;
+        boolean valid = false;
+
+        try {
+            connection = getConnection();
+            statement = connection.prepareStatement(passwordQuery);
+            statement.setString(1, username);
+            rs = statement.executeQuery();
+
+            if (rs.next()) {
+                final String pwd = rs.getString(1);
+                if (!PRE_HASHED.equalsIgnoreCase(getProperty(PARAM_ENCODING))) {
+                    return new Password() {
+
+                        public byte[] getValue() {
+                            return pwd.getBytes();
+                        }
+
+                        public int getType() {
+                            return Password.PLAIN_TEXT;
+                        }
+                    };
+                } else {
+                    return new Password() {
+
+                        public byte[] getValue() {
+                            return pwd.getBytes();
+                        }
+
+                        public int getType() {
+                            return Password.HASHED;
+                        }
+                    };
+                }
+            }
+        } catch (Exception ex) {
+            _logger.log(Level.SEVERE, "jdbcrealm.invaliduser", username);
+            if (_logger.isLoggable(Level.FINE)) {
+                _logger.log(Level.FINE, "Cannot validate user", ex);
+            }
+        } finally {
+            close(connection, statement, rs);
+        }
+        return null;
+
+    }
+
+
     /**
      * Test if a user is valid
      * @param user user's identifier
@@ -331,6 +404,12 @@ public final class JDBCRealm extends IASRealm {
                     valid = pwd.equals(hpwd);
                 }
             }
+        } catch(SQLException ex) {
+                _logger.log(Level.SEVERE, "jdbcrealm.invaliduserreason", 
+                        new String [] {user,ex.toString()});
+            if (_logger.isLoggable(Level.FINE)) {
+                _logger.log(Level.FINE, "Cannot validate user", ex);
+            } 
         } catch(Exception ex) {
             _logger.log(Level.SEVERE, "jdbcrealm.invaliduser", user);
             if (_logger.isLoggable(Level.FINE)) {
@@ -451,13 +530,15 @@ public final class JDBCRealm extends IASRealm {
         final String dbUser = this.getProperty(PARAM_DB_USER);
         final String dbPassword = this.getProperty(PARAM_DB_PASSWORD);
         try{
-            String nonTxJndiName = dsJndi +"__nontx";
-            InitialContext ic = new InitialContext();
-            final DataSource dataSource = 
+         String nonTxJndiName = dsJndi +"__nontx";
+            /*InitialContext ic = new InitialContext();
+             final DataSource dataSource = 
                 //TODO:V3 Commented (DataSource)ConnectorRuntime.getRuntime().lookupNonTxResource(dsJndi,false);
                 //replacement code suggested by jagadish
-               (DataSource)ic.lookup(nonTxJndiName);
-            
+               (DataSource)ic.lookup(nonTxJndiName);*/
+            final DataSource dataSource = 
+                (DataSource)cr.lookupNonTxResource(dsJndi,false);
+         //(DataSource)ConnectorRuntime.getRuntime().lookupNonTxResource(dsJndi,false);
             Connection connection = null;
             if (dbUser != null && dbPassword != null) {
                 connection = dataSource.getConnection(dbUser, dbPassword);

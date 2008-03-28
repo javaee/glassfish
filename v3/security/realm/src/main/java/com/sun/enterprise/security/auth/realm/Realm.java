@@ -164,7 +164,7 @@ public abstract class Realm implements Comparable {
     {
         return doInstantiate(name, className, props);
     }
-
+    
 
     /**
      * Instantiate a Realm with the given name, loading properties from
@@ -387,7 +387,8 @@ public abstract class Realm implements Comparable {
      
 	return retval;
     }
-
+    
+    
     /**
      * This is a private method for getting realm instance.
      * If realm does not exist, then it will not return null rather than 
@@ -413,6 +414,8 @@ public abstract class Realm implements Comparable {
         return retval;
     }
 
+
+    
 
     /**
      * Returns the names of accessible realms.

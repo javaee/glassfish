@@ -55,8 +55,8 @@ import com.sun.enterprise.security.util.*;
 import com.sun.enterprise.security.auth.realm.IASRealm;
 
 
+import com.sun.enterprise.security.common.Util;
 import com.sun.enterprise.security.integration.AppServSecurityContext;
-import org.jvnet.hk2.component.Habitat;
 import sun.security.x509.X500Name;
 
 
@@ -275,7 +275,7 @@ public final class CertificateRealm extends IASRealm
      * @param x500name The X500Name object from the user certificate.
      *
      */
-    public void authenticate(Subject subject, X500Name x500name, Habitat habitat)
+    public void authenticate(Subject subject, X500Name x500name)
     {
         // It is important to use x500name.getName() in order to be
         // consistent with web containers view of the name - see bug
@@ -301,7 +301,7 @@ public final class CertificateRealm extends IASRealm
 	    new SecurityContext(name, subject);
         
 	SecurityContext.setCurrent(securityContext);*/
-        AppServSecurityContext secContext = habitat.getByContract(AppServSecurityContext.class);
+        AppServSecurityContext secContext = Util.getDefaultHabitat().getByContract(AppServSecurityContext.class);
         AppServSecurityContext securityContext = secContext.newInstance(name, subject);
         securityContext.setCurrentSecurityContext(securityContext);
         
