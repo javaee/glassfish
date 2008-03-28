@@ -50,12 +50,12 @@
                 getClientId(component="$this{component}" clientId=>$page{topActionGroup});
             />
 
-            <!-- TODO-V3
+           
             <sun:button id="newButton" text="$resource{i18n.button.New}" >
                 <!command redirect(page="#{createLink}"); />
-            </sun:button> -->
+            </sun:button> 
               
-           <!-- TODO-V3
+          
             <sun:button id="button1" text="$resource{i18n.button.Delete}" disabled="#{true}" primary="#{false}"
                     onClick="if ( getConfirm(this, '$resource{i18n.msg.JS.confirmDeleteCallFlowData}') )
                     { return submitAndDisable(this, '$resource{i18n.button.Processing}');} 
@@ -69,7 +69,7 @@
                 navigate(page="#{listPageLink}");
             /> 
            
-            </sun:button> -->
+            </sun:button>
             
             <sun:button id="button2" text="$resource{i18n.button.Enable}" disabled="#{true}" primary="#{false}">
                 <!command 

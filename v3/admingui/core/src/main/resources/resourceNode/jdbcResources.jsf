@@ -68,10 +68,10 @@
 #include "/alertMsg.inc"
                  <sun:title id="propertyContentPage" title="$resource{i18n.jdbcResources.pageTitle}" helpText="$resource{i18n.jdbcResources.pageTitleHelp}"/>
 		 "<br /> <br />
-#include "resourcesTable.inc"
+#include "/resourceNode/resourcesTable.inc"
 	<sun:hidden id="helpKey" value="$resource{help.jdbcResources}" />
             </sun:form>
         </sun:body>
-#include "/changeButtonsJS.inc"        
+#include "/shared/changeButtonsJS.inc"        
     </sun:html>
 </sun:page>

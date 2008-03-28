@@ -34,26 +34,25 @@
  only if the new code is made subject to such option by the copyright
  holder.
 -->
-<!-- resourceNode/jdbcResourceEdit.jsf -->
+<!-- resourceNode/jdbcResourceNew.jsf -->
 
+<!initPage
+    setAttribute(key="edit" value="#{false}");
+/>
+    
 <sun:page id="page1">
     <!beforeCreate
-    setResourceBundle(key="i18n" bundle="core.Strings");
-    setSessionAttribute(key="resEditTabs" value="general");
-    setPageSessionAttribute(key="pageTitle" value="$resource{i18n.jdbcResource.editPageTitle}");
-    setPageSessionAttribute(key="pageTitleHelp" value="$resource{i18n.jdbcResource.editPageTitleHelp}");
-    setPageSessionAttribute(key="generalPage" value="jdbcResourceEdit.jsf");
-    setPageSessionAttribute(key="targetPage" value="jdbcResourceTargets.jsf");
-     if( $session{supportCluster} ){
-        setPageSessionAttribute(key="useString" value="$boolean{true}");
-        setPageSessionAttribute(key="useCheckBox" value="$boolean{false}");
-    }
-    if( !$session{supportCluster} ){
+        setResourceBundle(key="i18n" bundle="core.Strings");
+	setResourceBundle(key="help" bundle="com.sun.enterprise.tools.admingui.resources.Helplinks")
+        setPageSessionAttribute(key="pageTitle" value="$resource{i18n.jdbcResource.newPageTitle}");
+        setPageSessionAttribute(key="pageTitleHelp" value="$resource{i18n.jdbcResource.newPageTitleHelp}");
+        setPageSessionAttribute(key="saveButtonLabel" value="$resource{i18n.button.OK}");
         setPageSessionAttribute(key="useString" value="$boolean{false}");
         setPageSessionAttribute(key="useCheckBox" value="$boolean{true}");
-    }
-    setPageSessionAttribute(key="saveButtonLabel" value="$resource{i18n.button.Save}");
-    setPageSessionAttribute(key="edit" value="#{true}");
+        if( $session{supportCluster}) {
+            getTargetsOptionsList(AvailableTargets=>$pageSession{availableTargets}, SelectedTargets=>$pageSession{selectedTargets});
+        }
+        
     />
 #include "/shared/restart.inc"    
     <sun:html id="html2">
@@ -61,14 +60,14 @@
             <sun:script url="../js/restart.js" />
         </sun:head>
 
-             <sun:body id="body3" onLoad="javascript: synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
-                <sun:form id="propertyForm">
+         <sun:body id="body3" onLoad="javascript: synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
+            <sun:form id="propertyForm">
 #include "/treeBreadcrumbs.inc"
-#include "/resourceNode/resourcesTabs.inc"
 #include "/alertMsg.inc"
 #include "/resourceNode/jdbcResource.inc"    
-	<sun:hidden id="helpKey" value="$resource{help.jdbcResourceEdit}" />
-                </sun:form>
-            </sun:body>
+#include "/shared/targetSectionForCreate.inc"
+	<sun:hidden id="helpKey" value="$resource{help.jdbcResourceNew}" />
+            </sun:form>
+        </sun:body>
     </sun:html>
 </sun:page>
