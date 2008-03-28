@@ -61,19 +61,38 @@ public class JPASniffer  extends GenericSniffer implements Sniffer {
      * Curently only scans for persitsece.xml in WEB-INF/classes/META-INF
      * TODO : Enhance this to handle all the cases
      */
+    private final static String[] validPersistenceXmlLocations =
+            {
+               "WEB-INF/classes/META-INF/persistence.xml",
+               "META-INF/persistence.xml"
+            };
     @Override public boolean handles(ReadableArchive location, ClassLoader loader) {
         boolean isJPAArchive = false;
-        InputStream is;
+        // scan for persistence.xml in expected locations. If at least one is found, this is 
+        // a jpa archive
+        for (String validPersistenceXmlLocation : validPersistenceXmlLocations) {
+            isJPAArchive = isEntryPresent(location, validPersistenceXmlLocation);
+            if(isJPAArchive) {
+                //Found one. No need to scan further
+                break;
+            }
+        }
+        return isJPAArchive;
+    }
+
+    public boolean isEntryPresent(ReadableArchive location, String entry) {
+        boolean entryPresent = false;
         try {
-            is = location.getEntry("WEB-INF/classes/META-INF/persistence.xml");
+            InputStream is;
+            is = location.getEntry(entry);
             if (is != null) {
                 is.close();
-                isJPAArchive = true;
+                entryPresent = true;
             }
         } catch (IOException e) {
             // ignore
         }
-        return isJPAArchive;
+        return entryPresent;
     }
 
     @Override public Class<? extends Annotation>[] getAnnotationTypes() {
