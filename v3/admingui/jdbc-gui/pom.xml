@@ -46,29 +46,24 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>console-jdbc-plugin</artifactId>
-    <version>1.0-SNAPSHOT</version>
     <packaging>hk2-jar</packaging>
     <name>Admin GUI JDBC Plugin</name>
     <description>JDBC Plugin module for Glassfish V3 Admin Console</description>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>com.sun.enterprise</groupId>
-                <artifactId>hk2-maven-plugin</artifactId>
-                <configuration>
-                    <target>../war/target/admingui</target>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
-
 
     <developers>
         <developer>
             <id>anilam</id>
             <name>Anissa Lam</name>
             <url>http://blogs.sun.com/anilam</url>
+            <organization>Sun Microsystems, Inc.</organization>
+            <roles>
+                <role>developer</role>
+            </roles>
+        </developer>
+        <developer>
+            <id>kenpaulsen</id>
+            <name>Ken Paulsen</name>
+            <url>http://blogs.sun.com/paulsen</url>
             <organization>Sun Microsystems, Inc.</organization>
             <roles>
                 <role>developer</role>
@@ -83,12 +78,7 @@
             <version>10.0-SNAPSHOT</version>
 	    <scope>provided</scope>
         </dependency>
-        <dependency>
-            <groupId>org.glassfish.admingui</groupId>
-            <artifactId>console-plugin-service</artifactId>
-            <version>1.0-SNAPSHOT</version>
-	    <scope>provided</scope>
-        </dependency>
+    <!--
         <dependency>
             <groupId>org.glassfish.admingui</groupId>
             <artifactId>console-core</artifactId>
@@ -96,5 +86,6 @@
 	    <optional>true</optional>
 	    <scope>provided</scope>
         </dependency>
+	-->
     </dependencies>
 </project>
