@@ -231,12 +231,13 @@ public class CommandRunner {
         I18n i18n = annotated.getAnnotation(I18n.class);
         String paramDesc;
         if (i18n==null) {
-            paramDesc = localStrings.getLocalString(i18nKey+"."+paramName, null);
+            paramDesc = localStrings.getLocalString(i18nKey+"."+paramName, "");
         } else {
-            paramDesc = localStrings.getLocalString(i18n.value(), null);
+            paramDesc = localStrings.getLocalString(i18n.value(), "");
         }
         if (paramDesc==null) {
-            paramDesc = adminStrings.getLocalString("adapter.nodesc", "no description provided");
+            paramDesc = "";
+//            paramDesc = adminStrings.getLocalString("adapter.nodesc", "no description provided");
         }
         return paramDesc;        
     }
@@ -520,7 +521,7 @@ public class CommandRunner {
         if (i18n!=null) {
             i18nKey = i18n.value();
         }
-        report.setMessage(commandName + " - " + localStrings.getLocalString(i18nKey, null));
+        report.setMessage(commandName + " - " + localStrings.getLocalString(i18nKey, ""));
         report.getTopMessagePart().addProperty("SYNOPSYS", getUsageText(command));
         for (Field f : command.getClass().getDeclaredFields()) {
             addParamUsage(report, localStrings, i18nKey, f);
