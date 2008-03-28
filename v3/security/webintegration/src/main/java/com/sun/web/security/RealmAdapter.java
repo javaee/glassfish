@@ -35,6 +35,8 @@
  */
 package com.sun.web.security;
 
+import com.sun.enterprise.security.auth.digest.impl.HttpAlgorithmParameterImpl;
+import com.sun.enterprise.security.auth.digest.impl.HttpDigestParamGenerator;
 import com.sun.enterprise.security.web.integration.WebSecurityManager;
 import com.sun.enterprise.security.web.integration.WebSecurityManagerFactory;
 import com.sun.enterprise.security.web.integration.WebPrincipal;
@@ -105,6 +107,11 @@ import java.security.AccessController;
 import java.security.PrivilegedAction;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
+import com.sun.enterprise.security.auth.digest.api.DigestAlgorithmParameter;
+import com.sun.enterprise.security.auth.login.DigestCredentials;
+import com.sun.enterprise.security.auth.digest.api.Key;
+import com.sun.enterprise.security.auth.digest.api.DigestParameterGenerator;
+import static com.sun.enterprise.security.auth.digest.api.Constants.A1;
 import org.jvnet.hk2.component.PerLookup;
 
 /**
@@ -381,6 +388,33 @@ public class RealmAdapter extends RealmBase implements RealmInitializer {
 
     public void logout() {
         setSecurityContext(null);
+    }
+
+    public Principal authenticate(HttpServletRequest hreq) {
+        try {
+            DigestParameterGenerator generator = DigestParameterGenerator.getInstance(DigestParameterGenerator.HTTP_DIGEST);
+            DigestAlgorithmParameter[] params = generator.generateParameters(new HttpAlgorithmParameterImpl(hreq));
+            Key key = null;
+       
+            for(int i=0;i<params.length;i++){
+              DigestAlgorithmParameter dap = params[i];
+              if(A1.equals(dap.getName()) && (dap instanceof Key)){
+                key = (Key)dap;
+                break;
+              }
+            }
+
+           DigestCredentials creds = new DigestCredentials(_realmName,key.getUsername(), params);     
+           LoginContextDriver.login(creds);
+           SecurityContext secCtx = SecurityContext.getCurrent();
+           return new WebPrincipal(creds.getUserName(), null, secCtx);
+
+       } catch (Exception le) {
+           if (_logger.isLoggable(Level.WARNING)) {
+               _logger.warning("Web login failed: " + le.getMessage());
+            }
+       }
+        return null;
     }
 
     /**
