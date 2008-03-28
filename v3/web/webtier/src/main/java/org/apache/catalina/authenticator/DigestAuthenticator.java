@@ -205,7 +205,7 @@ public class DigestAuthenticator
             (HttpServletResponse) response.getResponse();
         String authorization = request.getAuthorization();
         if (authorization != null) {
-            principal = findPrincipal(hreq, authorization, context.getRealm());
+            principal = context.getRealm().authenticate(hreq);
             if (principal != null) {
                 String username = parseUsername(authorization);
                 register(request, response, principal,

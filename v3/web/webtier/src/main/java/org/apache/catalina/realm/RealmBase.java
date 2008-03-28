@@ -1729,4 +1729,8 @@ public abstract class RealmBase
         return null;
     }
     // END IASRI 4856062,4918627,4874504
+    public Principal authenticate(HttpServletRequest hreq) {
+        throw new UnsupportedOperationException();
+    }
+
 }

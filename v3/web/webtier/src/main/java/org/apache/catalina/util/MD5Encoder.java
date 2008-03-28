@@ -55,7 +55,6 @@ package org.apache.catalina.util;
 
 public final class MD5Encoder {
 
-
     // ----------------------------------------------------- Instance Variables
 
 
@@ -90,7 +89,4 @@ public final class MD5Encoder {
         return new String(buffer);
 
     }
-
-
 }
-

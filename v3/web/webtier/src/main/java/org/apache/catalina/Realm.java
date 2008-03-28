@@ -45,7 +45,7 @@ import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.security.Principal;
 import java.security.cert.X509Certificate;
-
+import javax.servlet.http.HttpServletRequest;
 import org.apache.catalina.deploy.SecurityConstraint;
 import org.jvnet.hk2.annotations.Contract;
 import org.jvnet.hk2.annotations.Scoped;
@@ -348,4 +348,12 @@ public interface Realm {
      */
     public String getRealmName();
     // END IASRI 4856062,4918627,4874504
+    /**
+     * Does digest authentication and returns the Principal associated with the username in the 
+     * HTTP header.
+     *
+     * @param hreq HTTP servlet request.
+     */
+    public Principal authenticate(HttpServletRequest hreq);
+
 }
