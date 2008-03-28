@@ -96,7 +96,8 @@ public class CreateSystemProperties implements AdminCommand {
         Server server = ResourceUtils.getTargetServer(servers, target);
         String sysPropName = "";
         try {            
-            for (final String propName : properties.stringPropertyNames()) {
+            for (final Object key : properties.keySet()) {
+                final String propName = (String) key;
                 sysPropName = propName;
                     
                 ConfigSupport.apply(new SingleConfigCode<Server>() {

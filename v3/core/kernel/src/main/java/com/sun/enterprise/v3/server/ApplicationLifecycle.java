@@ -80,11 +80,9 @@ import java.lang.instrument.ClassFileTransformer;
  */
 abstract public class ApplicationLifecycle {
 
-    @Inject
-    protected Sniffer[] sniffers;
-
-    @Inject
-    protected ArchiveHandler[] archiveHandlers;
+    // I am not injecting the sniffers because this can rapidly become an expensive
+    // operation especially when no application has been deployed.
+    private Collection<Sniffer> sniffers=null;
 
     @Inject
     protected Habitat habitat;
@@ -116,9 +114,22 @@ abstract public class ApplicationLifecycle {
         return containerInfo.getDeployer();
     }
 
+
+    /**
+     * Returns all the presently registered sniffers
+     * 
+     * @return Collection (possibly empty but never null) of Sniffer
+     */
+    protected Collection<Sniffer> getSniffers() {
+        if (sniffers==null) {
+            sniffers = habitat.getAllByContract(Sniffer.class);
+        }
+        return sniffers;
+    }
+    
     public Sniffer getSniffer(String appType) {
         assert appType!=null;
-        for (Sniffer sniffer : sniffers) {
+        for (Sniffer sniffer :  getSniffers()) {
             if (appType.equalsIgnoreCase(sniffer.getModuleType())) {
                 return sniffer;
             }
@@ -134,7 +145,7 @@ abstract public class ApplicationLifecycle {
      * @return the archive handler or null if not found.
      */
     public ArchiveHandler getArchiveHandler(ReadableArchive archive) {
-        for (ArchiveHandler handler : archiveHandlers) {
+        for (ArchiveHandler handler : habitat.getAllByContract(ArchiveHandler.class)) {
             if (handler.handles(archive)) {
                 return handler;
             }
@@ -239,7 +250,7 @@ abstract public class ApplicationLifecycle {
     public Collection<Sniffer> getSniffers(ReadableArchive archive, ClassLoader cloader) {
 
         List<Sniffer> appSniffers = new ArrayList<Sniffer>();
-        for (Sniffer sniffer : sniffers) {
+        for (Sniffer sniffer : getSniffers()) {
             if (sniffer.handles(archive, cloader )) {                   
                 appSniffers.add(sniffer);
             }
@@ -263,6 +274,11 @@ abstract public class ApplicationLifecycle {
         try {
             LinkedList<ContainerInfo> sortedContainerInfos =
                 setupContainerInfos(sniffers, context, report, tracker);
+            if (sortedContainerInfos==null || sortedContainerInfos.isEmpty()) {
+                failure(logger, "There is no installed container capable of handling this application", null, report);
+                tracker.actOn(logger);
+                return null;
+            }
             ApplicationInfo appInfo = prepare(sortedContainerInfos,
                 context, report, tracker);
 
@@ -273,6 +289,7 @@ abstract public class ApplicationLifecycle {
                 failure(logger, "Exception while loading the app", null,
                     report);
                 tracker.actOn(logger);
+                return null;
             }
 
             // if enable attribute is set to true

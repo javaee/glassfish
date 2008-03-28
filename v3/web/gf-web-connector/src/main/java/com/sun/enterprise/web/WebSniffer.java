@@ -24,14 +24,20 @@
 package com.sun.enterprise.web;
 
 import com.sun.enterprise.v3.deployment.GenericSniffer;
+import com.sun.enterprise.module.ModulesRegistry;
+import com.sun.enterprise.module.Module;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.container.Sniffer;
-import org.glassfish.deployment.common.DeploymentUtils;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.Singleton;
 
+import java.io.File;
+import java.io.InputStream;
 import java.io.IOException;
+import java.util.logging.Logger;
+
 
 /**
  * Implementation of the Sniffer for the web container.
@@ -41,6 +47,13 @@ import java.io.IOException;
 @Service(name="web")
 @Scoped(Singleton.class)
 public class WebSniffer  extends GenericSniffer implements Sniffer {
+
+    @Inject
+    ModulesRegistry registry;
+    
+    private static final String WEB_INF_CLASSES = "WEB-INF/classes";
+    private static final String WEB_INF_LIB = "WEB-INF/lib";
+    private static final String WAR_EXTENSION = ".war";
 
     public WebSniffer() {
         super("web", "WEB-INF/web.xml", null);
@@ -55,13 +68,56 @@ public class WebSniffer  extends GenericSniffer implements Sniffer {
      * @return true if this sniffer handles this application type
      */
     public boolean handles(ReadableArchive location, ClassLoader loader) {
-        return DeploymentUtils.isWebArchive(location);
+        // first look for WEB-INF/web.xml
+        if(super.handles(location, loader)) {
+            return true;
+        }
+
+        // then look for WEB-INF/classes and WEB-INF/lib
+        InputStream is;
+        try {
+            if (location.exists(WEB_INF_CLASSES)) {
+                return true;
+            }
+
+            if (location.exists(WEB_INF_LIB)) {
+                return true;
+            }
+        } catch (IOException e) {
+            // ignore
+        }
+
+        return false;
     }
 
     final String[] containers = { "com.sun.enterprise.web.WebContainer" };
     public String[] getContainersNames() {
         return containers;
-    }    
+    }
+
+   /**
+     * Sets up the container libraries so that any imported bundle from the
+     * connector jar file will now be known to the module subsystem
+     *
+     * This method returns a {@link com.sun.enterprise.module.ModuleDefinition} for the module containing
+     * the core implementation of the container. That means that this module
+     * will be locked as long as there is at least one module loaded in the
+     * associated container.
+     *
+     * @param containerHome is where the container implementation resides
+     * @param logger the logger to use
+     * @return the module definition of the core container implementation.
+     *
+     * @throws java.io.IOException exception if something goes sour
+     */
+    public Module[] setup(String containerHome, Logger logger) throws IOException {
+       Module[] modules = new Module[1];
+       modules[0] = modulesRegistry.makeModuleFor("org.glassfish.web:webtier", null);
+       if (modules[0]==null) {
+           throw new IOException("Webtier module not found, web container is not installed or found");
+       }
+       return modules;
+    }       
 
     /**
      * @return whether this sniffer should be visible to user

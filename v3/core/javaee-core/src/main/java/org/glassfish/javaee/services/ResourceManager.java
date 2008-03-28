@@ -45,6 +45,7 @@ import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.Changed;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.glassfish.internal.api.Init;
+import org.glassfish.api.naming.NamingObjectsProvider;
 
 import java.beans.PropertyChangeEvent;
 import java.util.logging.Logger;
@@ -60,7 +61,7 @@ import com.sun.appserv.connectors.spi.ConnectorRuntime;
  * Resource manager to bind various allResources during startup, create/update/delete of resource/pool
  * @author Jagadish Ramu
  */
-public class ResourceManager implements Init, PostConstruct, PreDestroy, ConfigListener {
+public class ResourceManager implements NamingObjectsProvider, PostConstruct, PreDestroy, ConfigListener {
 
     @Inject
     private JdbcResource[] jdbcResources;

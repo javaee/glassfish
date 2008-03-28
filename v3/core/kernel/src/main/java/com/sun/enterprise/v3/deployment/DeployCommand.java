@@ -168,7 +168,7 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
             return;
         }
 
-        if (sniffers==null) {
+        if (getSniffers().isEmpty()) {
             String msg = localStrings.getLocalString("nocontainer", "No container services registered, done...");
             logger.severe(msg);
             report.setMessage(msg);
@@ -243,7 +243,7 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
             }
 
             // create the parent class loader
-            ClassLoader parentCL = createSnifferParentCL(null, Arrays.asList(sniffers));
+            ClassLoader parentCL = createSnifferParentCL(null, getSniffers());
             // now the archive class loader, this will only be used for the sniffers.handles() method
             final ClassLoader cloader = archiveHandler.getClassLoader(parentCL, archive);
 

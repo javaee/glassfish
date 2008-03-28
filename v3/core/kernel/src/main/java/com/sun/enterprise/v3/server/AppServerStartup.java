@@ -91,16 +91,6 @@ public class AppServerStartup implements ModuleStartup {
         }
         logger.fine("Init done in " + (System.currentTimeMillis() - context.getCreationTime()) + " ms");
 
-        for (final Inhabitant i : habitat.getInhabitants(Startup.class)) {
-            if (i.type().getAnnotation(Async.class)==null) {
-                logger.fine("Startup service " + i.get());
-                logger.info(i.get() + " startup done in " + (System.currentTimeMillis() - context.getCreationTime()) + " ms");
-            }
-        }
-
-        logger.info("Glassfish v3 started in "
-                    + (Calendar.getInstance().getTimeInMillis() - context.getCreationTime()) + " ms");
-
         // run the startup services
         Thread t = new Thread(new Runnable() {
             public void run() {
@@ -112,8 +102,30 @@ public class AppServerStartup implements ModuleStartup {
                 }
             }
         }, "AppServerStartup");
-        t.start();
+        t.start();        
 
+        for (final Inhabitant i : habitat.getInhabitants(Startup.class)) {
+            if (i.type().getAnnotation(Async.class)==null) {
+                if (logger.isLoggable(Level.FINE)) {
+                    logger.fine("Startup service " + i.get());
+                }
+                //logger.info("startup service " + i.typeName() + "started at " + System.currentTimeMillis());
+                logger.info(i.get() + " startup done in " + (System.currentTimeMillis() - context.getCreationTime()) + " ms");
+                //logger.info("startup service " + i.typeName() + "done at " + System.currentTimeMillis());
+            }
+        }
+
+        logger.info("Glassfish v3 started in "
+                    + (Calendar.getInstance().getTimeInMillis() - context.getCreationTime()) + " ms");
+
+
+
+        // wait for async services
+        try {
+            t.join(1000);
+        } catch (InterruptedException e) {
+            // do nothing, we are probably shutting down
+        }
         // now that we are all done with loading, I can accept administrative commands.
         AdminAdapter admin = habitat.getComponent(AdminAdapter.class);
         admin.ready();

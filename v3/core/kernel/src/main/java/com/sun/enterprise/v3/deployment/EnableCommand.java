@@ -99,8 +99,8 @@ public class EnableCommand extends ApplicationLifecycle implements AdminCommand 
             return;
         }
 
-        if (sniffers==null) {
-            String msg = localStrings.getLocalString("nocontainer", "No container services registered, done...");            
+        if (getSniffers().isEmpty()) {
+            String msg = localStrings.getLocalString("nocontainer", "No container services registered, done...");
             logger.severe(msg);
             report.setMessage(msg);
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
@@ -162,7 +162,7 @@ public class EnableCommand extends ApplicationLifecycle implements AdminCommand 
 
             // create the parent class loader
             ClassLoader parentCL = createSnifferParentCL(null, 
-                Arrays.asList(sniffers));
+                getSniffers());
             // now the archive class loader, this will only be used for the sniffers.handles() method
             final ClassLoader cloader = archiveHandler.getClassLoader(parentCL, 
                 archive);

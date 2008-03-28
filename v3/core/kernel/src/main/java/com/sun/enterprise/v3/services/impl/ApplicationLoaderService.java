@@ -78,16 +78,13 @@ public class ApplicationLoaderService extends ApplicationLifecycle
     GrizzlyService adapter;
 
     @Inject
-    ModulesRegistry modulesRegistry;
-
-    @Inject
     ArchiveFactory archiveFactory;
 
     @Inject
     ServerEnvironment env;
 
     @Inject
-    Applications applications;
+    Application[] applications;
 
     @Inject
     Server server;
@@ -111,20 +108,18 @@ public class ApplicationLoaderService extends ApplicationLifecycle
     public void postConstruct() {
 
         assert env!=null;
-
-        for (Module module : applications.getModules()) {
-            if (module instanceof Application) {
-                for (ApplicationRef appRef : server.getApplicationRef()) {
-                    if (appRef.getRef().equals(module.getName())) {
-                        if (appRef.getEnabled().equals(String.valueOf(
-                            Boolean.TRUE))) {
-                            // only process the application when the enable
-                            // attribute is true
-                            processApplication((Application)module, appRef, 
-                                logger);
-                        }
-                        break;
+        logger.info("loader service postConstruct started at " + System.currentTimeMillis());
+        for (Application module : applications) {
+            for (ApplicationRef appRef : server.getApplicationRef()) {
+                if (appRef.getRef().equals(module.getName())) {
+                    if (appRef.getEnabled().equals(String.valueOf(
+                        Boolean.TRUE))) {
+                        // only process the application when the enable
+                        // attribute is true
+                        processApplication((Application)module, appRef, 
+                            logger);
                     }
+                    break;
                 }
             }
         }
