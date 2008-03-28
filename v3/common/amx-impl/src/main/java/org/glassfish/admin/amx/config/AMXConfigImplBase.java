@@ -897,18 +897,15 @@ cdebug( "createConfig: j2eeType = " + j2eeType + ", return type = " + returnType
         {
             cdebug( ExceptionUtil.toString(t) );
         }
-    cdebug( "created ConfigBean " );
 
         final AMXConfigLoader  amxLoader = SingletonEnforcer.get( AMXConfigLoader.class );
         amxLoader.handleConfigBean( newConfigBean, true );
-    cdebug( "called amxLoader.handleConfigBean " );
             
         final ObjectName objectName = newConfigBean.getObjectName();
        // sendConfigCreatedNotification( objectName );
     cdebug( "NEW OBJECTNAME:  " + objectName);
-    
-    cdebug( "resolver: " + resolver );
        
+       /*
         // TESTING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         if ( resolver.supportsProperties() && properties.keySet().size() == 0 )
         {
@@ -917,13 +914,11 @@ cdebug( "createConfig: j2eeType = " + j2eeType + ", return type = " + returnType
             properties.put( "test3", "value3" ); // TESTING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         }
         // TESTING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        */
         
-    cdebug( "GETTING NEW AMX PROXY FOR:  " + objectName);
-
         final AMXConfig newAMX = AMXConfig.class.cast( getProxyFactory().getProxy( objectName ) );
         setAllProperties( newAMX, properties, systemProperties );
     
-cdebug( "RETURNING OBJECTNAME: " + objectName );
         return objectName;
    }
 
