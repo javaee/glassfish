@@ -36,7 +36,7 @@
 
 package com.sun.enterprise.deployment.archivist;
 
-import org.glassfish.api.deployment.archive.Scanner;
+import org.glassfish.apf.Scanner;
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import com.sun.enterprise.deployment.BundleDescriptor;
 import com.sun.enterprise.deployment.Descriptor;

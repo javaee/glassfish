@@ -34,41 +34,51 @@
  * holder.
  */
 
-/*
- * ComponentInfo.java
+package org.glassfish.apf;
+
+import org.jvnet.hk2.annotations.Contract;
+
+import java.util.Set;
+import java.io.File;
+import java.io.IOException;
+
+/** 
+ * This interface is responsible for scanning the binary location 
+ * provided and provide each binary file through a pull interfaces
  *
- * Created on November 1, 2005, 5:23 PM
- *
- * To change this template, choose Tools | Template Manager
- * and open the template in the editor.
- */
-
-package org.glassfish.api.deployment.archive;
-
-import java.lang.reflect.Method;
-import java.lang.reflect.Field;
-import java.lang.reflect.Constructor;
-
-/**
- * This class encapsulates information about a component (usually a Java EE 
- * component). 
  * @author Jerome Dochez
  */
-public interface ComponentInfo {
-    
-    /*
-     * @return the list of constructors
+@Contract
+public interface Scanner<T> {
+
+    /**
+     *
      */
-    public Constructor[] getConstructors();
+    public void process(File archiveFile, T bundleDesc,
+            ClassLoader classLoader) throws IOException;
+
     
-    /*
-     * @return the list of public methods
+    /**
+     * Returns a ClassLoader capable of loading classes from the 
+     * underlying medium
+     * @return a class loader capable of loading the classes
      */
-    public Method[] getMethods();
+    public ClassLoader getClassLoader();
     
-    /*
-     * @return the list of public fields
+    /**
+     * Return a complete set of classes available from this location.
+     * @return the complete set of classes 
      */
-    public Field[] getFields();
+    public Set<Class> getElements();
+    
+    /**
+     * Sometimes, annotations processing requires more than a single class, 
+     * especially when such classes end up being a Java Component (Java Beans, 
+     * Java EE). The implementation returned from the getComponent will be 
+     * responsible for defining the complete view of this component starting 
+     * from it's implementation class.
+     * @param componentImpl class of the component.
+     */
+    public ComponentInfo getComponentInfo(Class componentImpl);
     
 }

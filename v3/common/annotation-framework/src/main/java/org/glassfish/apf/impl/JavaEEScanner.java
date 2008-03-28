@@ -45,7 +45,7 @@
 
 package org.glassfish.apf.impl;
 
-import org.glassfish.api.deployment.archive.ComponentInfo;
+import org.glassfish.apf.ComponentInfo;
 /**
  * Super class for all JavaEE scanners
  *

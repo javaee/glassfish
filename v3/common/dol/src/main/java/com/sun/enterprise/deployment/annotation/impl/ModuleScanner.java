@@ -37,7 +37,7 @@ package com.sun.enterprise.deployment.annotation.impl;
 
 import org.glassfish.apf.impl.AnnotationUtils;
 import org.glassfish.apf.impl.JavaEEScanner;
-import org.glassfish.api.deployment.archive.Scanner;
+import org.glassfish.apf.Scanner;
 import com.sun.enterprise.deployment.annotation.introspection.ClassFile;
 import com.sun.enterprise.deployment.annotation.introspection.ConstantPoolInfo;
 import com.sun.enterprise.deployment.annotation.introspection.DefaultAnnotationScanner;

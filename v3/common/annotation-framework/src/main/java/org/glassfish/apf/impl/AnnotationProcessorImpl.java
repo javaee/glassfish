@@ -57,11 +57,11 @@ import org.glassfish.apf.AnnotationInfo;
 import org.glassfish.apf.AnnotationProcessorException;
 import org.glassfish.apf.AnnotationHandler;
 import org.glassfish.apf.AnnotatedElementHandler;
-import org.glassfish.api.deployment.archive.ComponentInfo;
+import org.glassfish.apf.ComponentInfo;
 import org.glassfish.apf.ResultType;
 import org.glassfish.apf.HandlerProcessingResult;
 import org.glassfish.apf.ProcessingResult;
-import org.glassfish.api.deployment.archive.Scanner;
+import org.glassfish.apf.Scanner;
 import java.util.logging.Level;
 
 
