@@ -136,6 +136,8 @@ public class CommonHandlers {
         Object initialized = sessionMap.get("_SESSION_INITIALIZED");
         if (initialized != null) 
             return;
+        
+        /* TODO-V3  
         try{
             
             //Get number of new updates available
@@ -161,6 +163,7 @@ public class CommonHandlers {
             sessionMap.put(UPDATE_CENTER_NUM_UPDATES, "0");
             sessionMap.put(UPDATE_CENTER_NUM_SOFTWARES, "0");
         }
+        */
         
         try{
             sessionMap.put("domainName", domainRoot.getAppserverDomainName());

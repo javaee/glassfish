@@ -127,7 +127,7 @@ public class InstanceHandler {
         
         AMXRoot amxRoot = AMXRoot.getInstance();
          //http ports
-        HTTPServiceConfig service = amxRoot.getDomainConfig().getConfigConfigMap().get(configName).getHTTPServiceConfig();
+        HTTPServiceConfig service = amxRoot.getConfig(configName).getHTTPServiceConfig();
         Map<String,HTTPListenerConfig>listeners = service.getHTTPListenerConfigMap();
         StringBuffer ports = new StringBuffer();
         for(String key : listeners.keySet()){
@@ -142,7 +142,7 @@ public class InstanceHandler {
         
         
        //iiop ports
-        IIOPServiceConfig iiopService = amxRoot.getDomainConfig().getConfigConfigMap().get(configName).getIIOPServiceConfig();
+        IIOPServiceConfig iiopService = amxRoot.getConfig(configName).getIIOPServiceConfig();
         Map<String,IIOPListenerConfig> iiopListeners = iiopService.getIIOPListenerConfigMap();
         StringBuffer iports = new StringBuffer();
         for(String key : iiopListeners.keySet()){

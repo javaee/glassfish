@@ -74,6 +74,7 @@ import com.sun.appserv.management.j2ee.StateManageable;
 import com.sun.appserv.management.monitor.MonitoringRoot;
 import com.sun.appserv.management.monitor.ServerRootMonitor;
 import com.sun.appserv.management.util.misc.GSetUtil;
+import com.sun.appserv.management.config.ConfigsConfig;
 
 import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
 
@@ -103,6 +104,7 @@ public class AMXRoot {
 
     private  final DomainRoot domainRoot;
     private  final DomainConfig domainConfig;
+    private  final ConfigsConfig configsConfig;
     private  final J2EEDomain j2eeDomain;
     private  final MonitoringRoot monitoringRoot;
     private  final QueryMgr queryMgr;
@@ -114,7 +116,8 @@ public class AMXRoot {
     private AMXRoot(DomainRoot dd,  MBeanServerConnection msc) {
         System.out.println("=========== In AMX Root constructor, DomainRoot  = " + dd);
         domainRoot = dd;
-        domainConfig = domainRoot.getDomainConfig();
+        domainConfig = dd.getDomainConfig();
+        configsConfig = (ConfigsConfig) domainRoot.getQueryMgr().querySingletonJ2EEType("X-ConfigsConfig");
         j2eeDomain = domainRoot.getJ2EEDomain();
         monitoringRoot = domainRoot.getMonitoringRoot();
         queryMgr = domainRoot.getQueryMgr();
@@ -180,6 +183,10 @@ public class AMXRoot {
     public  DomainConfig getDomainConfig() {
         return domainConfig;
     }
+    
+    public  ConfigsConfig getConfigsConfig() {
+        return configsConfig;
+    }
 
     public  J2EEDomain getJ2EEDomain() {
         return j2eeDomain;
@@ -227,7 +234,7 @@ public class AMXRoot {
      */
     public ConfigConfig getConfig(String configName){
         if (GuiUtil.isEmpty(configName)) return null;
-        Map<String,ConfigConfig> cmap = (Map) domainConfig.getConfigConfigMap();
+        Map<String,ConfigConfig> cmap = (Map) configsConfig.getConfigConfigMap();
         ConfigConfig config = cmap.get(configName);
         return config;
     }

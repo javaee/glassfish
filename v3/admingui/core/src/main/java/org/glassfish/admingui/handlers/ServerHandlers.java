@@ -166,7 +166,7 @@ public class ServerHandlers {
         @HandlerOutput(name="Properties", type=Map.class)})     
         public static void getServerAppsConfigAttributes(HandlerContext handlerCtx) {
         
-        ConfigConfig config = AMXRoot.getInstance().getDomainConfig().getConfigConfigMap().get(((String)handlerCtx.getInputValue("ConfigName")));
+        ConfigConfig config = AMXRoot.getInstance().getConfig(((String)handlerCtx.getInputValue("ConfigName")));
         DASConfig dConfig = config.getAdminServiceConfig().getDASConfig();
         boolean reload = dConfig.getDynamicReloadEnabled();
         String reloadInterval = dConfig.getDynamicReloadPollIntervalInSeconds();
@@ -217,7 +217,7 @@ public class ServerHandlers {
         @HandlerOutput(name="AutoDeployDirectory", type=String.class)})     
         public static void getServerDefaultAppsConfigAttributes(HandlerContext handlerCtx) {
         
-        ConfigConfig config = AMXRoot.getInstance().getDomainConfig().getConfigConfigMap().get(((String)handlerCtx.getInputValue("ConfigName")));
+        ConfigConfig config = AMXRoot.getInstance().getConfig(((String)handlerCtx.getInputValue("ConfigName")));
         DASConfig dConfig = config.getAdminServiceConfig().getDASConfig();
         String reload = dConfig.getDefaultValue("DynamicReloadEnabled");
         String reloadInterval = dConfig.getDefaultValue("DynamicReloadPollIntervalInSeconds");
@@ -283,7 +283,7 @@ public class ServerHandlers {
         @HandlerInput(name="RemoveProps", type=ArrayList.class)})
         public static void saveServerAppsConfigAttributes(HandlerContext handlerCtx) {
         
-        ConfigConfig config = AMXRoot.getInstance().getDomainConfig().getConfigConfigMap().get(((String)handlerCtx.getInputValue("ConfigName")));
+        ConfigConfig config = AMXRoot.getInstance().getConfig(((String)handlerCtx.getInputValue("ConfigName")));
         DASConfig dConfig = config.getAdminServiceConfig().getDASConfig();
         ArrayList removeProps = (ArrayList)handlerCtx.getInputValue("RemoveProps");
         Map addProps = (Map)handlerCtx.getInputValue("AddProps");
@@ -335,7 +335,7 @@ public class ServerHandlers {
         @HandlerOutput(name="BytecodePreprocessor", type=String.class)})
         public static void getServerJvmAttributes(HandlerContext handlerCtx) {
         
-        ConfigConfig config = AMXRoot.getInstance().getDomainConfig().getConfigConfigMap().get(((String)handlerCtx.getInputValue("ConfigName")));
+        ConfigConfig config = AMXRoot.getInstance().getConfig(((String)handlerCtx.getInputValue("ConfigName")));
         JavaConfig javaConfig = config.getJavaConfig();
         String javaHome = javaConfig.getJavaHome();
         String javacOptions = javaConfig.getJavacOptions();
@@ -417,7 +417,7 @@ public class ServerHandlers {
         @HandlerOutput(name="Jaxws", type=String.class)})
         public static void getDefaultServerModuleLogLevels(HandlerContext handlerCtx) {
         
-        ConfigConfig config = AMXRoot.getInstance().getDomainConfig().getConfigConfigMap().get(((String)handlerCtx.getInputValue("ConfigName")));
+        ConfigConfig config = AMXRoot.getInstance().getConfig(((String)handlerCtx.getInputValue("ConfigName")));
          ModuleLogLevelsConfig mConfig = config.getLogServiceConfig().getModuleLogLevelsConfig();
         String admin = mConfig.getDefaultValue("Admin");
         String ejb = mConfig.getDefaultValue("EJBContainer");
@@ -542,7 +542,7 @@ public class ServerHandlers {
         
         public static void getServerModuleLogLevels(HandlerContext handlerCtx) {
         
-        ConfigConfig config = AMXRoot.getInstance().getDomainConfig().getConfigConfigMap().get(((String)handlerCtx.getInputValue("ConfigName")));
+        ConfigConfig config = AMXRoot.getInstance().getConfig(((String)handlerCtx.getInputValue("ConfigName")));
         ModuleLogLevelsConfig mConfig = config.getLogServiceConfig().getModuleLogLevelsConfig();
         String admin = mConfig.getAdmin();
         String ejb = mConfig.getEJBContainer();
@@ -703,7 +703,7 @@ public class ServerHandlers {
         @HandlerInput(name="newProps", type=Map.class)})
         public static void saveServerModuleLogLevels(HandlerContext handlerCtx) {
         
-        ConfigConfig config = AMXRoot.getInstance().getDomainConfig().getConfigConfigMap().get(((String)handlerCtx.getInputValue("ConfigName")));
+        ConfigConfig config = AMXRoot.getInstance().getConfig(((String)handlerCtx.getInputValue("ConfigName")));
         ModuleLogLevelsConfig mConfig = config.getLogServiceConfig().getModuleLogLevelsConfig();
         
         Map newProps = (Map)handlerCtx.getInputValue("newProps");
@@ -776,7 +776,7 @@ public class ServerHandlers {
         @HandlerOutput(name="BytecodePreprocessor", type=String.class)})
         public static void getServerDefaultJvmAttributes(HandlerContext handlerCtx) {
         
-        ConfigConfig config = AMXRoot.getInstance().getDomainConfig().getConfigConfigMap().get(((String)handlerCtx.getInputValue("ConfigName")));
+        ConfigConfig config = AMXRoot.getInstance().getConfig(((String)handlerCtx.getInputValue("ConfigName")));
         JavaConfig javaConfig = config.getJavaConfig();
         String javaHome = javaConfig.getDefaultValue("JavaHome");
         String javacOptions = javaConfig.getDefaultValue("JavacOptions");
@@ -822,7 +822,7 @@ public class ServerHandlers {
         @HandlerInput(name="BytecodePreprocessor", type=String.class)})
         public static void saveServerJvmAttributes(HandlerContext handlerCtx) {
         
-        ConfigConfig config = AMXRoot.getInstance().getDomainConfig().getConfigConfigMap().get(((String)handlerCtx.getInputValue("ConfigName")));
+        ConfigConfig config = AMXRoot.getInstance().getConfig(((String)handlerCtx.getInputValue("ConfigName")));
         JavaConfig javaConfig = config.getJavaConfig();
         
         javaConfig.setJavaHome((String)handlerCtx.getInputValue("JavaHome"));
@@ -860,7 +860,7 @@ public class ServerHandlers {
         @HandlerOutput(name="NativeLibPathSuffix", type=String.class)})
         public static void getServerJvmPathSettings(HandlerContext handlerCtx) {
         
-       ConfigConfig config = AMXRoot.getInstance().getDomainConfig().getConfigConfigMap().get(((String)handlerCtx.getInputValue("ConfigName")));
+        ConfigConfig config = AMXRoot.getInstance().getConfig(((String)handlerCtx.getInputValue("ConfigName")));
         JavaConfig javaConfig = config.getJavaConfig();
         String systemClasspath = javaConfig.getSystemClasspath();
         String serverClasspath = javaConfig.getServerClasspath();
@@ -905,7 +905,7 @@ public class ServerHandlers {
         @HandlerInput(name="NativeLibPathSuffix", type=String.class)})
         public static void saveServerJvmPathSettings(HandlerContext handlerCtx) {
         
-        ConfigConfig config = AMXRoot.getInstance().getDomainConfig().getConfigConfigMap().get(((String)handlerCtx.getInputValue("ConfigName")));
+        ConfigConfig config = AMXRoot.getInstance().getConfig(((String)handlerCtx.getInputValue("ConfigName")));
         JavaConfig javaConfig = config.getJavaConfig();
         String sysCP = (String)handlerCtx.getInputValue("SystemClasspath");
         String serverCP = (String)handlerCtx.getInputValue("ServerClasspath");
@@ -986,7 +986,7 @@ public class ServerHandlers {
         @HandlerOutput(name="RetainErrorStats", type=String.class)})
         public static void getLogGeneralSettings(HandlerContext handlerCtx) {
         
-        ConfigConfig config = AMXRoot.getInstance().getDomainConfig().getConfigConfigMap().get(((String)handlerCtx.getInputValue("ConfigName")));
+        ConfigConfig config = AMXRoot.getInstance().getConfig(((String)handlerCtx.getInputValue("ConfigName")));
         LogServiceConfig lc = config.getLogServiceConfig();
         String logFile = lc.getFile();
         boolean alarms = lc.getAlarms();
@@ -1037,7 +1037,8 @@ public class ServerHandlers {
         @HandlerInput(name="AddProps", type=Map.class),
         @HandlerInput(name="RemoveProps", type=ArrayList.class)})
         public static void saveServerLogGeneralSettings(HandlerContext handlerCtx) {
-            ConfigConfig config = AMXRoot.getInstance().getDomainConfig().getConfigConfigMap().get(((String)handlerCtx.getInputValue("ConfigName")));
+
+        ConfigConfig config = AMXRoot.getInstance().getConfig(((String)handlerCtx.getInputValue("ConfigName")));
             try{
                 LogServiceConfig lc = config.getLogServiceConfig();
                 ArrayList removeProps = (ArrayList)handlerCtx.getInputValue("RemoveProps");
@@ -1083,7 +1084,7 @@ public class ServerHandlers {
             GuiUtil.handleError(handlerCtx, "saveJvmOptions(): NameList passed in is NULL");
             return;
         }
-        ConfigConfig config = AMXRoot.getInstance().getDomainConfig().getConfigConfigMap().get(((String)handlerCtx.getInputValue("ConfigName")));
+        ConfigConfig config = AMXRoot.getInstance().getConfig(((String)handlerCtx.getInputValue("ConfigName")));
         try{
             JavaConfig javaConfig = config.getJavaConfig();
             String[] options = (String[])names.toArray(new String[names.size()]);
@@ -1105,7 +1106,7 @@ public class ServerHandlers {
             @HandlerInput(name="ConfigName", type=String.class, required=true)})
         public static void saveProfilerJvmOptions(HandlerContext handlerCtx) {
         ArrayList names = (ArrayList)handlerCtx.getInputValue("NameList");
-        ConfigConfig config = AMXRoot.getInstance().getDomainConfig().getConfigConfigMap().get(((String)handlerCtx.getInputValue("ConfigName")));
+        ConfigConfig config = AMXRoot.getInstance().getConfig(((String)handlerCtx.getInputValue("ConfigName")));
         try{
             JavaConfig javaConfig = config.getJavaConfig();
             ProfilerConfig profilerConfig = javaConfig.getProfilerConfig();
@@ -1138,7 +1139,7 @@ public class ServerHandlers {
         @HandlerOutput(name="NativeLibrary", type=String.class)})
         public static void getServerProfilerAttributes(HandlerContext handlerCtx) {
         
-        ConfigConfig config = AMXRoot.getInstance().getDomainConfig().getConfigConfigMap().get(((String)handlerCtx.getInputValue("ConfigName")));
+        ConfigConfig config = AMXRoot.getInstance().getConfig(((String)handlerCtx.getInputValue("ConfigName")));
         try{
             JavaConfig javaConfig = config.getJavaConfig();
             if(javaConfig.getProfilerConfig() != null) {
@@ -1179,7 +1180,7 @@ public class ServerHandlers {
         @HandlerInput(name="NativeLibrary", type=String.class)})
         public static void saveServerProfilerSettings(HandlerContext handlerCtx) {
         
-      ConfigConfig config = AMXRoot.getInstance().getDomainConfig().getConfigConfigMap().get(((String)handlerCtx.getInputValue("ConfigName")));
+        ConfigConfig config = AMXRoot.getInstance().getConfig(((String)handlerCtx.getInputValue("ConfigName")));
       JavaConfig javaConfig = config.getJavaConfig();
         boolean removeProfiler = true;
         if(javaConfig.getProfilerConfig() == null){
@@ -1285,7 +1286,7 @@ public class ServerHandlers {
         @HandlerOutput(name="PersistenceLogLevel", type=String.class)})
         public static void getPersistenceLogLevel(HandlerContext handlerCtx) {    
         String value = null;
-        ConfigConfig config = AMXRoot.getInstance().getDomainConfig().getConfigConfigMap().get(((String)handlerCtx.getInputValue("ConfigName")));
+        ConfigConfig config = AMXRoot.getInstance().getConfig(((String)handlerCtx.getInputValue("ConfigName")));
         ModuleLogLevelsConfig mConfig = config.getLogServiceConfig().getModuleLogLevelsConfig();
         try {
             value = mConfig.getPropertyValue(PERSISTENCE_MODULE_PROPERTY); 
@@ -1311,7 +1312,7 @@ public class ServerHandlers {
         @HandlerInput(name="Value",  type=String.class)})
         public static void setPersistenceLogLevel(HandlerContext handlerCtx) {
         
-        ConfigConfig config = AMXRoot.getInstance().getDomainConfig().getConfigConfigMap().get(((String)handlerCtx.getInputValue("ConfigName")));
+        ConfigConfig config = AMXRoot.getInstance().getConfig(((String)handlerCtx.getInputValue("ConfigName")));
         String value = (String)handlerCtx.getInputValue("Value");
         ModuleLogLevelsConfig mConfig = config.getLogServiceConfig().getModuleLogLevelsConfig();
         
@@ -1402,7 +1403,7 @@ public class ServerHandlers {
         
         //more null pointer checking put in due to issue#2247
         String configName = (String)handlerCtx.getInputValue("ConfigName");
-        ConfigConfig config = AMXRoot.getInstance().getDomainConfig().getConfigConfigMap().get(configName);
+        ConfigConfig config = AMXRoot.getInstance().getConfigsConfig().getConfigConfigMap().get(configName);
         List<List<Map<String, Object>>> list = new ArrayList<List<Map<String, Object>>>();
         JavaConfig javaConfig = null;
         try{
@@ -1437,7 +1438,7 @@ public class ServerHandlers {
         @HandlerOutput(name="JvmOptions", type=List.class)})
         public static void getJvmOptionsForProfiler(HandlerContext handlerCtx) {
         String configName = (String)handlerCtx.getInputValue("ConfigName");
-        ConfigConfig config = AMXRoot.getInstance().getDomainConfig().getConfigConfigMap().get(configName);
+        ConfigConfig config = AMXRoot.getInstance().getConfigsConfig().getConfigConfigMap().get(configName);
         List<List<Map<String, Object>>> list = new ArrayList<List<Map<String, Object>>>();
         //more null pointer checking put in due to issue#2247
         try{
@@ -1476,7 +1477,7 @@ public class ServerHandlers {
     output={
         @HandlerOutput(name="Properties", type=Map.class)})
         public static void getModuleLogLevelProperties(HandlerContext handlerCtx) {
-        ConfigConfig config = AMXRoot.getInstance().getDomainConfig().getConfigConfigMap().get(((String)handlerCtx.getInputValue("ConfigName")));
+        ConfigConfig config = AMXRoot.getInstance().getConfig(((String)handlerCtx.getInputValue("ConfigName")));
         ModuleLogLevelsConfig mConfig = config.getLogServiceConfig().getModuleLogLevelsConfig();
         /* TODO-V3
         Map newMap = AMXUtil.getNonSkipPropertiesMap(mConfig, skipLogModulePropsList);
@@ -1497,7 +1498,7 @@ public class ServerHandlers {
     output={
         @HandlerOutput(name="Properties", type=Map.class)})
         public static void getLoggingProperties(HandlerContext handlerCtx) {
-        ConfigConfig config = AMXRoot.getInstance().getDomainConfig().getConfigConfigMap().get(((String)handlerCtx.getInputValue("ConfigName")));
+        ConfigConfig config = AMXRoot.getInstance().getConfig(((String)handlerCtx.getInputValue("ConfigName")));
         LogServiceConfig lc = config.getLogServiceConfig();
         Map<String, String> props = config.getLogServiceConfig().getProperties();
         handlerCtx.setOutputValue("Properties", props);

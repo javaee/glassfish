@@ -250,7 +250,7 @@ public class EESupportHandlers {
         output={
         @HandlerOutput(name="configList", type=java.util.List.class)})
     public static void getConfigurationsList(HandlerContext handlerCtx) {
-        Set configSet = AMXRoot.getInstance().getDomainConfig().getConfigConfigMap().keySet();
+        Set configSet = AMXRoot.getInstance().getConfigsConfig().getConfigConfigMap().keySet();
         ArrayList sortedConfigList = new ArrayList( new TreeSet(configSet));
         handlerCtx.setOutputValue("configList", sortedConfigList);
     }
@@ -524,7 +524,7 @@ public class EESupportHandlers {
     public static void getConfigurationsTableList(HandlerContext handlerCtx) {
         List<Map> selectedList = (List)handlerCtx.getInputValue("selectedRows");
         boolean hasOrig = (selectedList == null || selectedList.size()==0) ? false: true;
-        Iterator iter = AMXRoot.getInstance().getDomainConfig().getConfigConfigMap().values().iterator();
+        Iterator iter = AMXRoot.getInstance().getConfigsConfig().getConfigConfigMap().values().iterator();
         List result = new ArrayList();
         if (iter != null){
             while(iter.hasNext()){
@@ -654,7 +654,7 @@ public class EESupportHandlers {
         @HandlerInput(name="RemoveProps",       type=ArrayList.class)})
     public static void saveSystemProperties(HandlerContext handlerCtx) {
         String configName = (String) handlerCtx.getInputValue("ConfigName");
-        ConfigConfig config = AMXRoot.getInstance().getDomainConfig().getConfigConfigMap().get(configName);
+        ConfigConfig config = AMXRoot.getInstance().getConfigsConfig().getConfigConfigMap().get(configName);
         config.setDynamicReconfigurationEnabled(((Boolean)handlerCtx.getInputValue("DynamicReconfig")).booleanValue());
         Map<String,String> addProps = (Map)handlerCtx.getInputValue("AddProps");
         ArrayList removeProps = (ArrayList)handlerCtx.getInputValue("RemoveProps");
@@ -691,7 +691,7 @@ public class EESupportHandlers {
         @HandlerOutput(name="InstancesList",        type=java.util.List.class) })
     public static void getInstancevalues(HandlerContext handlerCtx) {
         String configName = (String) handlerCtx.getInputValue("ConfigName");
-        ConfigConfig config = AMXRoot.getInstance().getDomainConfig().getConfigConfigMap().get(configName);
+        ConfigConfig config = AMXRoot.getInstance().getConfigsConfig().getConfigConfigMap().get(configName);
         String propName = (String) handlerCtx.getInputValue("PropertyName");
         Vector instances = getReferencedInstances(configName);
         List data = new ArrayList();

@@ -167,7 +167,7 @@ public class StandAloneInstanceHandlers{
             @HandlerOutput(name="Configs", type=SelectItem[].class)})
     public static void getConfigsForDropdown(HandlerContext handlerCtx) {
         Map<String,ConfigConfig> configMap = 
-            (Map)AMXRoot.getInstance().getDomainConfig().getConfigConfigMap();
+            (Map)AMXRoot.getInstance().getConfigsConfig().getConfigConfigMap();
 	String[] values = configMap == null ?  null : (String[])configMap.keySet().toArray(new String[configMap.size()]);
         ArrayList newConfigs = new ArrayList();
         for (int i = 0; i < values.length; i++) {
@@ -482,7 +482,7 @@ public class StandAloneInstanceHandlers{
        public static void getInstanceGeneralAttributes(HandlerContext handlerCtx, String instanceName,
                String config, String version, String node, String sts){ 
          //http ports
-        HTTPServiceConfig service = AMXRoot.getInstance().getDomainConfig().getConfigConfigMap().get(config).getHTTPServiceConfig();
+        HTTPServiceConfig service = AMXRoot.getInstance().getConfig(config).getHTTPServiceConfig();
         Map<String,HTTPListenerConfig>listeners = service.getHTTPListenerConfigMap();
         StringBuffer ports = new StringBuffer();
         for(String key : listeners.keySet()){
@@ -497,7 +497,7 @@ public class StandAloneInstanceHandlers{
         
         
         //iiop ports
-        IIOPServiceConfig iiopService = AMXRoot.getInstance().getDomainConfig().getConfigConfigMap().get(config).getIIOPServiceConfig();
+        IIOPServiceConfig iiopService = AMXRoot.getInstance().getConfig(config).getIIOPServiceConfig();
         Map<String,IIOPListenerConfig> iiopListeners = iiopService.getIIOPListenerConfigMap();
         StringBuffer iports = new StringBuffer();
         for(String key : iiopListeners.keySet()){
@@ -567,7 +567,7 @@ public class StandAloneInstanceHandlers{
                 }
             }
         }
-        ConfigConfig config = AMXRoot.getInstance().getDomainConfig().getConfigConfigMap().get(configName);
+        ConfigConfig config = AMXRoot.getInstance().getConfig(configName);
         return config.getSystemPropertyValue(pn);
     }
     
@@ -665,7 +665,7 @@ public class StandAloneInstanceHandlers{
         AMXRoot amxRoot = AMXRoot.getInstance();
         try {
             StandaloneServerConfig serverConfig = amxRoot.getDomainConfig().getStandaloneServerConfigMap().get(instanceName);
-            ConfigConfig defaultConfig = amxRoot.getDomainConfig().getConfigConfigMap().get("default-config");
+            ConfigConfig defaultConfig = amxRoot.getConfig("default-config");
             String[] propNames = serverConfig.getSystemPropertyNames();
             List result = new ArrayList();
              for(int i=0; i<propNames.length; i++){                
