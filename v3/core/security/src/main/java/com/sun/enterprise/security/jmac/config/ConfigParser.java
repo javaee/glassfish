@@ -40,7 +40,6 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
 
-//V3:Commented import com.sun.enterprise.config.ConfigContext;
 
 /**
  * AuthConfigImpl relies on a ConfigParser to read
@@ -52,15 +51,13 @@ import java.util.Set;
  * @version %I%, %G%
  */
 interface ConfigParser {
+
     /**
-     * Initialize the parser with given ConfigContext.
-     * Passing null as argument means the system will find a ConfigContext
-     * as possible.
-     * @param configContext
+     * Initialize the parser.
+     * Passing null as argument means the parser is to find 
+     * configuration object as necessary.
      */
-    /*TODO:V3 Commented, need to rewrite since there is no ConfigContext in V3
-    void initialize(ConfigContext configContext) throws IOException;
-    */
+    void initialize(Object config) throws IOException;
     
     /**
      * Get the module configuration information.
