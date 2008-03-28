@@ -77,8 +77,12 @@ public class HttpProtocolFilter implements ProtocolFilter {
         try {
             // Make sure we have enough bytes to parse context-root
             if (byteBuffer.position() < ContextRootMapper.MIN_CONTEXT_ROOT_READ_BYTES) {
-                GrizzlyUtils.readToWorkerThreadBuffers(ctx.getSelectionKey(), 
-                        ByteBufferInputStream.getDefaultReadTimeout());
+                if (GrizzlyUtils.readToWorkerThreadBuffers(ctx.getSelectionKey(), 
+                        ByteBufferInputStream.getDefaultReadTimeout()) == -1) {
+                    ctx.setKeyRegistrationState(
+                        Context.KeyRegistrationState.CANCEL);
+                    return false;
+                }
             }
 
             boolean wasMap = grizzlyEmbeddedHttp.getContextRootMapper().map(

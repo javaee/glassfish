@@ -125,8 +125,12 @@ public class WebProtocolHandler implements ProtocolHandler {
         // Make sure we have enough bytes to parse context-root
         if (protocolRequest.getByteBuffer().position() < 
                 ContextRootMapper.MIN_CONTEXT_ROOT_READ_BYTES) {
-            GrizzlyUtils.readToWorkerThreadBuffers(context.getSelectionKey(), 
-                    ByteBufferInputStream.getDefaultReadTimeout());
+            if (GrizzlyUtils.readToWorkerThreadBuffers(context.getSelectionKey(), 
+                    ByteBufferInputStream.getDefaultReadTimeout()) == -1) {
+                    context.setKeyRegistrationState(
+                        Context.KeyRegistrationState.CANCEL);
+                    return false;
+            }
         }
 
         boolean wasMap = grizzlyEmbeddedHttp.getContextRootMapper().map(
