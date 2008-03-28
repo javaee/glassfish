@@ -392,7 +392,8 @@ public class ConfigSupport {
     public static ConfigBean createAndSet(
                 final ConfigBean parent,
                 final Class<? extends ConfigBeanProxy> childType,
-                final Map<String, String> attributes)
+                final Map<String, String> attributes,
+                final TransactionCallBack<WriteableView> runnable)
         throws TransactionFailure {
 
 
@@ -483,24 +484,57 @@ public class ConfigSupport {
                     throw new TransactionFailure("Parent " + parent.getProxyType() + " does not have a child of type " + childType);
                 }
 
-                if (attributes==null) {
-                    return child;
+                WriteableView writeableChild = (WriteableView) Proxy.getInvocationHandler(child);
+                 if (attributes!=null) {              
+                    for (Map.Entry<String, String> change : attributes.entrySet()) {
+
+                        ConfigModel.Property prop = writeableChild.getProperty(change.getKey());
+                        if (prop==null) {
+                            throw new TransactionFailure("Unknown property name " + change.getKey() + " on " + childType);
+                        }
+                        writeableChild.setter(prop, change.getValue(), String.class);
+                    }
                 }
                 
-                WriteableView writeableChild = (WriteableView) Proxy.getInvocationHandler(child);
-                for (Map.Entry<String, String> change : attributes.entrySet()) {
-
-                    ConfigModel.Property prop = writeableChild.getProperty(change.getKey());
-                    if (prop==null) {
-                        throw new TransactionFailure("Unknown property name " + change.getKey() + " on " + childType);
-                    }
-                    writeableChild.setter(prop, change.getValue(), String.class);
+                if (runnable!=null) {
+                    runnable.performOn(writeableChild);
                 }
                 return child;
             }
         }, readableView);
         return (ConfigBean) Dom.unwrap(readableChild);
     }
+
+    /**
+     * Creates a new child of the passed child and add it to the parent's live
+     * list of elements. The child is also initialized with the attributes passed
+     * where each key represent the xml property name for the attribute and the value
+     * represent the attribute's value.
+     *
+     * This code will be executed within a Transaction and can therefore throw
+     * a TransactionFailure when the creation or settings of attributes failed.
+     *
+     * Example creating a new http-listener element under http-service
+     *      ConfigBean httpService = ... // got it from somwhere.
+     *      Map<String, String> attributes = new HashMap<String, String>();
+     *      attributes.put("id", "jerome-listener");
+     *      attributes.put("enabled", "true");
+     *      ConfigSupport.createAndSet(httpService, HttpListener.class, attributes);
+     *
+     * @param parent parent config bean to which the child will be added.
+     * @param childType child type
+     * @param attributes map of key value pair to set on the newly created child
+     * @throws TransactionFailure if the creation or attribute settings failed
+     */
+    public static ConfigBean createAndSet(
+                final ConfigBean parent,
+                final Class<? extends ConfigBeanProxy> childType,
+                final Map<String, String> attributes)
+            throws TransactionFailure {
+
+        return createAndSet(parent, childType, attributes, null);        
+    }
+
 
     public static void deleteChild(
                 final ConfigBean parent,
@@ -589,5 +623,8 @@ public class ConfigSupport {
             }
         }, readableView);
     }
-
+    
+    public interface TransactionCallBack<T> {
+        public void performOn(T param) throws TransactionFailure;
+    }
  }
