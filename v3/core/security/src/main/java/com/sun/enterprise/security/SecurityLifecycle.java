@@ -58,6 +58,7 @@ import com.sun.enterprise.security.audit.AuditManager;
 import com.sun.enterprise.security.auth.login.LoginContextDriver;
 import com.sun.enterprise.security.auth.realm.Realm;
 import com.sun.enterprise.security.authorize.PolicyContextHandlerImpl;
+import com.sun.enterprise.security.common.Util;
 import com.sun.enterprise.security.jmac.config.GFAuthConfigFactory;
 import com.sun.enterprise.server.ServerContext;
 import com.sun.enterprise.util.LocalStringManagerImpl;
@@ -93,6 +94,8 @@ public class SecurityLifecycle implements  PostConstruct, PreDestroy {
     
     @Inject
     private SecurityServicesUtil secServUtil;
+    
+    @Inject Util util;
     
     private static final LocalStringManagerImpl _localStrings =
 	new LocalStringManagerImpl(SecurityLifecycle.class);

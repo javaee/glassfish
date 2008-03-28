@@ -34,10 +34,12 @@
  * holder.
  */
 package com.sun.enterprise.security.auth.login;
-
+import com.sun.enterprise.deployment.Group;
 import com.sun.enterprise.security.auth.login.common.*;
 import java.util.Set;
 import java.util.Iterator;
+import java.util.Enumeration;
+import java.security.Principal;
 import java.util.logging.*;
 import java.security.PrivilegedAction;
 import javax.security.auth.Subject;
@@ -58,9 +60,14 @@ import com.sun.enterprise.security.auth.realm.certificate.CertificateRealm;
 import com.sun.enterprise.security.audit.AuditManager;
 
 // FIXME: ACC methods need to be moved to ACC-specific class.
+import com.sun.enterprise.security.auth.login.DigestCredentials;
+import com.sun.enterprise.security.auth.realm.InvalidOperationException;
+import com.sun.enterprise.security.auth.realm.NoSuchRealmException;
+import com.sun.enterprise.security.auth.realm.NoSuchUserException;
 import com.sun.enterprise.security.integration.AppServSecurityContext;
 import com.sun.enterprise.security.common.ClientSecurityContext;
 //import com.sun.enterprise.appclient.AppContainer;
+import com.sun.enterprise.security.common.Util;
 import com.sun.enterprise.v3.server.Globals;
 import org.jvnet.hk2.component.Habitat;
 
@@ -91,7 +98,7 @@ public class LoginContextDriver  {
   
     public  static AuditManager AUDIT_MANAGER;
     //TODO:V3 FIXME
-    private static Habitat habitat = Globals.getDefaultHabitat();
+    
     /** This class cannot be instantiated
      *
      */
@@ -222,6 +229,23 @@ public class LoginContextDriver  {
             }
         });
 
+       try {
+            Realm realm = Realm.getInstance(realmName);
+            Enumeration en = realm.getGroupNames(username);
+            Set<Principal> principalSet = s.getPrincipals();
+            while (en.hasMoreElements()) {
+                principalSet.add(new Group((String) en.nextElement()));
+            }
+
+        } catch (InvalidOperationException ex) {
+            _logger.warning("Realm " + realmName + ": " + ex.toString());
+        } catch (NoSuchUserException ex) {
+            _logger.warning("Realm " + realmName + ": " + ex.toString());
+        } catch (NoSuchRealmException ex) {
+            LoginException lex = new LoginException(ex.toString());
+            lex.initCause(ex);
+            throw lex;
+        }
         setSecurityContext(username, s, realmName);
     }
 
@@ -433,7 +457,7 @@ public class LoginContextDriver  {
 
             Realm realm = Realm.getInstance(CertificateRealm.AUTH_TYPE);
             CertificateRealm certRealm = (CertificateRealm)realm;
-            certRealm.authenticate(fs, x500Name, habitat);
+            certRealm.authenticate(fs, x500Name);
         } catch(Exception ex) {
             if (_logger.isLoggable(Level.INFO)) {
                 _logger.log(Level.INFO, "java_security.audit_auth_refused",
@@ -506,7 +530,7 @@ public class LoginContextDriver  {
         throws LoginException
     {
         // instance of anononymous credential login with guest
-        AppServSecurityContext context = habitat.getByContract(AppServSecurityContext.class);
+        AppServSecurityContext context = Util.getDefaultHabitat().getByContract(AppServSecurityContext.class);
         context.setUnauthenticatedSecurityContext();
         //SecurityContext.setUnauthenticatedContext();
        if(_logger.isLoggable(Level.FINE)){
@@ -581,7 +605,7 @@ public class LoginContextDriver  {
             if (realm instanceof CertificateRealm) { // should always be true
     
                 CertificateRealm certRealm = (CertificateRealm)realm;
-                certRealm.authenticate(s, x500name, habitat);
+                certRealm.authenticate(s, x500name);
                 realm_name = CertificateRealm.AUTH_TYPE;
                 if(AUDIT_MANAGER.isAuditOn()){
                     AUDIT_MANAGER.authentication(user, realm_name, true);
@@ -719,7 +743,7 @@ public class LoginContextDriver  {
     private  static void setSecurityContext(String userName,
                                             Subject subject, String realm){ 
 
-        AppServSecurityContext secContext = habitat.getByContract(AppServSecurityContext.class);
+        AppServSecurityContext secContext = Util.getDefaultHabitat().getByContract(AppServSecurityContext.class);
         AppServSecurityContext securityContext = secContext.newInstance(userName, subject, realm);
             //new SecurityContext(userName, subject, realm);
         //SecurityContext.setCurrent(securityContext);
@@ -733,7 +757,7 @@ public class LoginContextDriver  {
      */
     private  static void unsetSecurityContext() {
         //SecurityContext.setCurrent((SecurityContext)null);
-        AppServSecurityContext secContext = habitat.getByContract(AppServSecurityContext.class);
+        AppServSecurityContext secContext = Util.getDefaultHabitat().getByContract(AppServSecurityContext.class);
         secContext.setCurrentSecurityContext(null);
     }
 
@@ -848,7 +872,51 @@ public class LoginContextDriver  {
     public static void doClientLogout() throws LoginException {
         unsetClientSecurityContext();
     }
-    
+     /**
+     * Performs Digest authentication based on RFC 2617. It
+     *
+     * @param digestCred DigestCredentials
+     */
+    public static void login(DigestCredentials digestCred) throws javax.security.auth.login.LoginException {
+        Subject subject = new Subject();
+        subject.getPrivateCredentials().add(digestCred);
+        String jaasCtx = null;
+        try {
+            jaasCtx = Realm.getInstance(digestCred.getRealmName()).getJAASContext();
+        } catch (Exception ex) {
+            if (ex instanceof LoginException) {
+                throw (LoginException) ex;
+            } else {
+                throw (LoginException) new LoginException(ex.toString()).initCause(ex);
+            }
+        }
+
+        try {
+            // A dummyCallback is used to satisfy JAAS but it is never used.
+            // name/pwd info is already contained in Subject's Credential
+            LoginContext lg = new LoginContext(jaasCtx, subject, dummyCallback);
+            lg.login();
+        } catch (Exception e) {
+            if (_logger.isLoggable(Level.INFO)) {
+                _logger.log(Level.INFO, "java_security.audit_auth_refused", digestCred.getUserName());
+            }
+            if (_logger.isLoggable(Level.FINEST)) {
+                _logger.log(Level.FINEST, "doPasswordLogin fails", e);
+            }
+            if (AUDIT_MANAGER.isAuditOn()) {
+                AUDIT_MANAGER.authentication(digestCred.getUserName(), digestCred.getRealmName(), false);
+            }
+            if (e instanceof LoginException) {
+                throw (LoginException) e;
+            } else {
+                throw (LoginException) new LoginException("Login failed: " + e.toString()).initCause(e);
+            }
+        }
+
+        setSecurityContext(digestCred.getUserName(), subject, digestCred.getRealmName());
+    }
+
+ 
     /**
      * Extract the relevant username and realm information from the
      * subject and sets the correct state in the security context. The
@@ -934,7 +1002,5 @@ public class LoginContextDriver  {
     private  static void unsetClientSecurityContext() {
         ClientSecurityContext.setCurrent(null);
     }
-
-    
 
 }
