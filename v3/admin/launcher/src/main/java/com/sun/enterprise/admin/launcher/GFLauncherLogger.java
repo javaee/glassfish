@@ -24,12 +24,15 @@ package com.sun.enterprise.admin.launcher;
 
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import java.io.*;
+import java.util.*;
 import java.util.logging.*;
 
 /**
  * A POL (plain old logger).  
+ *
  * @author bnevins
  */
+
 public class GFLauncherLogger {
 
     public static void info(String msg, Object... objs)
@@ -47,8 +50,20 @@ public class GFLauncherLogger {
 
     /////////////////////////  non-public below  //////////////////////////////
     
-    static synchronized void setLevel(Level level) {
-        logger.setLevel(level);
+    static synchronized void setConsoleLevel(Level level) {
+        Logger parent = logger;
+        
+        while(parent != null) {
+            Handler[] handlers = parent.getHandlers();
+            
+            for(Handler h : handlers) {
+                if(ConsoleHandler.class.isAssignableFrom(h.getClass())) {
+                    h.setLevel(level);
+                }
+            }
+
+            parent = parent.getParent();
+        }
     }
     /**
      * IMPORTANT!  
@@ -82,7 +97,7 @@ public class GFLauncherLogger {
             }
             logfileHandler = new FileHandler(logFile, true);
             logfileHandler.setFormatter(new SimpleFormatter());
-            logfileHandler.setLevel(Level.ALL);
+            logfileHandler.setLevel(Level.INFO);
             logger.addHandler(logfileHandler);
         }
         catch(IOException e)
@@ -90,8 +105,9 @@ public class GFLauncherLogger {
             // should be seen in verbose mode for debugging
             e.printStackTrace();
         }
+
     }
-    static synchronized void removeLogFileHandler()  {
+    static  synchronized void removeLogFileHandler()  {
         if(logfileHandler != null) {
             logger.removeHandler(logfileHandler);
             logfileHandler.close();
@@ -101,7 +117,12 @@ public class GFLauncherLogger {
     
     private GFLauncherLogger() {
     }
-    private final static Logger logger = Logger.getAnonymousLogger();
+    private final static Logger logger;
     private final static LocalStringsImpl strings = new LocalStringsImpl(GFLauncherLogger.class);
     private static FileHandler logfileHandler;
+    
+    static  {
+        logger = Logger.getLogger(GFLauncherLogger.class.getName());
+        logger.setLevel(Level.INFO);
+    }
 }

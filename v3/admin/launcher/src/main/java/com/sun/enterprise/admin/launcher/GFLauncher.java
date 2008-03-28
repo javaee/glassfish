@@ -33,6 +33,7 @@ import java.io.*;
 import java.util.*;
 import com.sun.enterprise.universal.glassfish.ASenvPropertyReader;
 import com.sun.enterprise.universal.xml.MiniXmlParser;
+import java.util.logging.Level;
 import static com.sun.enterprise.universal.glassfish.SystemPropertyConstants.*;
 
 /**
@@ -123,8 +124,9 @@ public abstract class GFLauncher {
     }
     
     void launchInstance() throws GFLauncherException, MiniXmlParserException {
-        if(isFakeLaunch())
+        if(isFakeLaunch()) {
             return;
+        }
         
         List<String> cmds = getCommandLine();
         ProcessBuilder pb = new ProcessBuilder(cmds);
@@ -148,8 +150,9 @@ public abstract class GFLauncher {
         GFLauncherLogger.info("launchTime", (endTime - getStartTime()));
         
         //if verbose, hang round until the domain stops
-        if (getInfo().isVerbose())
+        if (getInfo().isVerbose()) {
             wait(process);
+        }
     }
 
     private void wait(final Process p) throws GFLauncherException {
@@ -194,10 +197,11 @@ public abstract class GFLauncher {
         
         asenvProps = pr.getProps();
         info.setup();
+        setupLogLevels();
         MiniXmlParser parser = new MiniXmlParser(getInfo().getConfigFile(), getInfo().getInstanceName());
         String domainName = parser.getDomainName();
         if(GFLauncherUtils.ok(domainName)) {
-            info.setDomainName(parser.getDomainName());
+            info.setDomainName(domainName);
         }
         info.setAdminPorts(parser.getAdminPorts());
         javaConfig = new JavaConfig(parser.getJavaConfig());
@@ -398,6 +402,12 @@ public abstract class GFLauncher {
         }
         
         return ss;
+    }
+    private void setupLogLevels() {
+        if(info.isVerbose())
+            GFLauncherLogger.setConsoleLevel(Level.INFO);
+        else
+            GFLauncherLogger.setConsoleLevel(Level.WARNING);
     }
 
     private GFLauncherInfo info;
