@@ -133,7 +133,7 @@ public class CommandRunner {
                     if (value!=null) {
                         // let's also copy this value to the command with a real name.
                         parameters.setProperty(getParamName(param, target), value);
-                        return value;
+                        return convertStringToObject(type, value);
                     }
                 }
                 String paramValueStr = getParamValueString(parameters, param,
