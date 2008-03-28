@@ -66,6 +66,8 @@ import com.sun.enterprise.registration.RegistrationService.RegistrationStatus;
 import com.sun.enterprise.registration.RegistrationService.RegistrationReminder;
 import com.sun.enterprise.registration.RegistrationServiceConfig;
 import com.sun.enterprise.registration.RegistrationServiceFactory;
+import com.sun.enterprise.registration.SOAccount;
+import com.sun.enterprise.registration.SysnetRegistrationService;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Random;
@@ -187,10 +189,13 @@ public class RegisterHandlers {
     private static RegistrationService getRegistrationService() {
         try {
             File registryFile = RegistrationUtil.getServiceTagRegistry();
+            /*
             Object params[] = new Object[] { registryFile }; 
             RegistrationServiceConfig config = new RegistrationServiceConfig("com.sun.enterprise.registration.SysnetRegistrationService", params);
-	    RegistrationService registrationService = RegistrationServiceFactory.getInstance().getRegistrationService(config);
+	    RegistrationService registrationService = RegistrationServiceFactory.getInstance().getRegistrationService(config);            //
             return registrationService;
+             */
+            return new SysnetRegistrationService(registryFile);
 	} catch (Exception ex) {
 	    // FIXME: Log trace instead
 	    ex.printStackTrace();
@@ -287,12 +292,14 @@ public class RegisterHandlers {
 
             Object[] accountParams = { map };
             try {
+                /* TODO-V3
                 RegistrationAccountConfig accountConfig =
                     new RegistrationAccountConfig("com.sun.enterprise.registration.SOAccount", accountParams);
-
                 RegistrationAccount account =
                     RegistrationAccountFactory.getInstance().getRegistrationAccount(accountConfig);
+                 */
 
+                RegistrationAccount account = new SOAccount(map);
                 String proxy = (String) handlerCtx.getInputValue("proxy");
                 String port = (String) handlerCtx.getInputValue("port");
                 RegistrationService regService = getRegServiceForRegister(proxy, port);
@@ -345,10 +352,14 @@ public class RegisterHandlers {
                     GuiUtil.handleError(handlerCtx, GuiUtil.getMessage("reg.error.noRegService"));
                     return;
                 }
+                /* TODO-V3
+                 * Siraj will have to fix the class loader issue
                 RegistrationAccountConfig accountConfig =
                     new RegistrationAccountConfig("com.sun.enterprise.registration.SOAccount", accountParams);
                 RegistrationAccount account =
                     RegistrationAccountFactory.getInstance().getRegistrationAccount(accountConfig);
+                */
+                RegistrationAccount account = new SOAccount(map);
                 regService.createRegistrationAccount(account);
                 regService.register(account);
                 setNodeText(handlerCtx, true);
