@@ -38,6 +38,7 @@
             <include name="**/*javaee*.jar"/>
         </fileset>
         <pathelement location="${class.output}"/>
+        <pathelement location="${test.class.output}"/>
         <pathelement path="${plugin_classpath}"/>
     </path>
     
