@@ -94,10 +94,10 @@ public class UpdateFileUser implements AdminCommand {
     @Param(name="groups", optional=true)
     List<String> groups;
 
-    @Param(name="userpasswordfile", optional=true)
-    String passwordFile;
+    // @Param(name="userpasswordfile", optional=true)
+    // String passwordFile;
 
-    @Param(name="userpassword", optional=true)
+    @Param(name="userpassword")
     String userpassword;
 
     @Param(name="authrealmname", optional=true)
@@ -176,7 +176,7 @@ public class UpdateFileUser implements AdminCommand {
         // password is tricky. It is stored in the file passwordfile passed 
         // through the CLI options. It is stored under the name 
         // AS_ADMIN_USERPASSWORD. Fetch it from there.
-        String password = fetchPassword(report);
+        String password = userpassword; // fetchPassword(report);
         if (password == null) {
             report.setMessage(localStrings.getLocalString(
                 "update.file.user.keyfilenotreadable", "Password for user {0} " 
@@ -230,7 +230,7 @@ public class UpdateFileUser implements AdminCommand {
         }        
     }
         
-    private String fetchPassword(ActionReport report) {
+    /* private String fetchPassword(ActionReport report) {
         String password = null;
         if (userpassword != null && passwordFile != null)
             return password;
@@ -260,5 +260,5 @@ public class UpdateFileUser implements AdminCommand {
             }        
         } 
         return password;
-    }
+    } */
 }
