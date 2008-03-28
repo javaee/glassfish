@@ -116,7 +116,7 @@ public interface VirtualServer extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute(required = true)
+    @Attribute(required = true, defaultValue="${com.sun.aas.hostName}")
     public String getHosts();
 
     /**
@@ -133,7 +133,7 @@ public interface VirtualServer extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute(defaultValue="on")
     public String getState();
 
     /**
@@ -150,7 +150,7 @@ public interface VirtualServer extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute(defaultValue="${com.sun.aas.instanceRoot}/docroot")
     public String getDocroot();
 
     /**
@@ -167,7 +167,7 @@ public interface VirtualServer extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute(defaultValue="${com.sun.aas.instanceRoot}/logs/server.log")
     public String getLogFile();
 
     /**
