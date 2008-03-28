@@ -206,10 +206,10 @@ public class VirtualServerHandlers {
       
         Map <String,String> defaultMap = config.getHTTPServiceConfig().getDefaultValues(XTypes.VIRTUAL_SERVER_CONFIG);
         handlerCtx.setOutputValue("Hosts", defaultMap.get("hosts"));
-        handlerCtx.setOutputValue("StateOption", defaultMap.get("state"));
+        handlerCtx.setOutputValue("StateOption", "on" ); //defaultMap.get("state"));
         handlerCtx.setOutputValue("Http", defaultMap.get("http-listeners"));
         handlerCtx.setOutputValue("Web", defaultMap.get("default-web-module"));
-        handlerCtx.setOutputValue("LogFile", defaultMap.get("log-file"));
+        handlerCtx.setOutputValue("LogFile", "${com.sun.aas.instanceRoot}/logs/server.log"); // defaultMap.get("log-file"));
         handlerCtx.setOutputValue("sso", Boolean.FALSE);
         //handlerCtx.setOutputValue("docroot", defaultMap.get("docroot"));
         handlerCtx.setOutputValue("docroot", "${com.sun.aas.instanceRoot}/docroot");
@@ -219,8 +219,7 @@ public class VirtualServerHandlers {
         Object[] vsc = vsMap.entrySet().toArray();
         //TODO-V3   hardcode for now
         //Map dMap = AMXRoot.getInstance().getDomainConfig().getDefaultAttributeValues(HTTPAccessLogConfig.J2EE_TYPE);  
-        //handlerCtx.setOutputValue("accesslog", dMap.get("log-directory"));
-        //handlerCtx.setOutputValue("accesslog", )
+        handlerCtx.setOutputValue("accesslog", "${com.sun.aas.instanceRoot}/logs/access" ); //dMap.get("log-directory"));
         handlerCtx.setOutputValue("sso", Boolean.FALSE);
         handlerCtx.setOutputValue("accessLoggingFlag", "off");
         handlerCtx.setOutputValue("Properties", new HashMap());
@@ -276,7 +275,8 @@ public class VirtualServerHandlers {
                 }
                 
                 VirtualServerConfig server = config.getHTTPServiceConfig().createVirtualServerConfig(
-                        (String)handlerCtx.getInputValue("Name"), ((String)handlerCtx.getInputValue("Hosts")), null); // convertedMap);
+                        (String)handlerCtx.getInputValue("Name"), ((String)handlerCtx.getInputValue("Hosts")),  convertedMap);
+                System.out.println("::::::::::::::::::: in GUI:  createVirtualServerConfig: with Map = " + convertedMap);
                 
                 server.setHosts(((String)handlerCtx.getInputValue("Hosts")));
                 server.setHTTPListeners(((String)handlerCtx.getInputValue("Http")));
