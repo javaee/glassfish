@@ -75,7 +75,7 @@ import java.beans.PropertyVetoException;
  * Delete File User Command
  * Usage: delete-file-user [--terse=false] [--echo=false] [--interactive=true] 
  * [--host localhost] [--port 4848|4849] [--secure | -s] [--user admin_user]
- * [--userpasswordfile file_name] [--authrealmname authrealm_name] 
+ * [--passwordfile file_name] [--authrealmname authrealm_name] 
  * [--target target(Default server)] username
  *
  * @author Nandini Ektare
@@ -88,9 +88,6 @@ public class DeleteFileUser implements AdminCommand {
     
     final private static LocalStringManagerImpl localStrings = 
         new LocalStringManagerImpl(DeleteFileUser.class);    
-
-    @Param(name="userpasswordfile", optional=true)
-    String passwordFile;
 
     @Param(name="authrealmname", optional=true)
     String authRealmName;

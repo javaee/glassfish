@@ -76,8 +76,9 @@ import java.beans.PropertyVetoException;
  *
  * Usage: update-file-user [--terse=false] [--echo=false] [--interactive=true] 
  *   [--host localhost] [--port 4848|4849] [--secure | -s] [--user admin_user]
- *   [--passwordfile file_name] [--groups user_groups[:user_groups]*] 
- *   [--authrealmname authrealm_name] [--target target(Default server)] username
+ *   [--passwordfile file_name] [--userpassword admin_passwd] 
+ *   [--groups user_groups[:user_groups]*] [--authrealmname authrealm_name] 
+ *   [--target target(Default server)] username
  *
  * @author Nandini Ektare
  */
@@ -93,8 +94,11 @@ public class UpdateFileUser implements AdminCommand {
     @Param(name="groups", optional=true)
     List<String> groups;
 
-    @Param(name="userpasswordfile")
+    @Param(name="userpasswordfile", optional=true)
     String passwordFile;
+
+    @Param(name="userpassword", optional=true)
+    String userpassword;
 
     @Param(name="authrealmname", optional=true)
     String authRealmName;
@@ -172,12 +176,13 @@ public class UpdateFileUser implements AdminCommand {
         // password is tricky. It is stored in the file passwordfile passed 
         // through the CLI options. It is stored under the name 
         // AS_ADMIN_USERPASSWORD. Fetch it from there.
-        String password = fetchPassword();
+        String password = fetchPassword(report);
         if (password == null) {
             report.setMessage(localStrings.getLocalString(
-                "update.file.user.keyfilenotreadable", "Password for user " +
-                "{0} cannot be read from the file associated with file realm {1}", 
-                userName, authRealmName));
+                "update.file.user.keyfilenotreadable", "Password for user {0} " 
+              + "has to be specified in --userpassword option or supplied " 
+              + "through AS_ADMIN_USERPASSWORD property in the file specified " 
+              + "in --passwordfile option", userName));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             return;
         }
@@ -204,9 +209,12 @@ public class UpdateFileUser implements AdminCommand {
 
         //now updating user
         try {
-            String[] groups1 = new String[groups.size()];            
-            for (int i = 0; i < groups.size(); i++) 
-                groups1[i] = (String) groups.get(i);                
+            String[] groups1 = null;
+            if (groups != null) {
+                groups1 = new String[groups.size()];            
+                for (int i = 0; i < groups.size(); i++) 
+                    groups1[i] = (String) groups.get(i);                
+            }
             fr.updateUser(userName, password, groups1);
             fr.writeKeyFile(keyFile);
             report.getTopMessagePart().setMessage(localStrings.getLocalString(
@@ -222,28 +230,35 @@ public class UpdateFileUser implements AdminCommand {
         }        
     }
         
-    private String fetchPassword() {
+    private String fetchPassword(ActionReport report) {
         String password = null;
-        File passwdFile = new File(passwordFile);
-        InputStream is = null;
-        try {
-            is = new BufferedInputStream(new FileInputStream(passwdFile));
-            Properties prop = new Properties();
-            prop.load(is);            
-            for (Enumeration en=prop.propertyNames(); en.hasMoreElements();) {
-                String entry = (String)en.nextElement();
-                if (entry.equals("AS_ADMIN_USERPASSWORD")) {                    
-                    password = prop.getProperty(entry);
-                    break;
-                }
-            }
+        if (userpassword != null && passwordFile != null)
             return password;
-        } catch(Exception e) {
-            return null;
-        } finally {
+        if (userpassword != null) 
+            password = userpassword;
+        if (passwordFile != null) {
+            File passwdFile = new File(passwordFile);
+            InputStream is = null;
             try {
-                if (is != null) is.close();
-            } catch(final Exception ignore){}
-        }        
+                is = new BufferedInputStream(new FileInputStream(passwdFile));
+                Properties prop = new Properties();
+                prop.load(is);            
+                for (Enumeration e=prop.propertyNames(); e.hasMoreElements();) {
+                    String entry = (String)e.nextElement();
+                    if (entry.equals("AS_ADMIN_USERPASSWORD")) {                    
+                        password = prop.getProperty(entry);
+                        break;
+                    }
+                }
+            } catch(Exception e) {
+                report.setFailureCause(e);
+            } finally {
+                try {
+                    if (is != null) 
+                        is.close();
+                } catch(final Exception ignore){}
+            }        
+        } 
+        return password;
     }
 }
