@@ -85,7 +85,7 @@ import java.beans.PropertyVetoException;
 public class ListAuthRealm implements AdminCommand {
     
     final private static LocalStringManagerImpl localStrings = 
-        new LocalStringManagerImpl(ListFileUser.class);    
+        new LocalStringManagerImpl(ListAuthRealm.class);    
 
     @Param(optional=true)
     String target;
