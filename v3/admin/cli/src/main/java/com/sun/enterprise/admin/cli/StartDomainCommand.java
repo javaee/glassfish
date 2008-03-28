@@ -71,7 +71,7 @@ public class StartDomainCommand extends Command {
                     getLocalizedString("CommandUnSuccessfulWithArg", new Object[]{name, msg}));
             }
         long startWait = System.currentTimeMillis();
-        CLILogger.getInstance().printMessage("Waiting for DAS to start.\n");
+        CLILogger.getInstance().printMessage(getLocalizedString("WaitDAS"));
 
         boolean alive = false;
         
