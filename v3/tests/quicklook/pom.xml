@@ -39,14 +39,15 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.glassfish.tests</groupId>
-        <artifactId>tests</artifactId>
-	<version>10.0-SNAPSHOT</version>
+        <groupId>org.glassfish</groupId>
+        <artifactId>pom</artifactId>
+        <version>1</version>
     </parent>
+    
     <groupId>org.glassfish.quicklook</groupId>
     <artifactId>quicklook</artifactId>
     <name>Glassfish Quicklook Bundle</name>
-    <packaging>jar</packaging>
+    <packaging>pom</packaging>
     <description>This pom describes how to run QuickLook tests on the Glassfish Bundle</description>
 
     <build>
@@ -75,7 +76,7 @@
                   </execution>
                 </executions>
 	        <dependencies>
-		     <!-- dependency>
+		     <dependency>
     			<groupId>commons-codec</groupId>
     			<artifactId>commons-codec</artifactId>
     			<version>1.3</version>
@@ -84,7 +85,7 @@
     			<groupId>commons-httpclient</groupId>
     			<artifactId>commons-httpclient</artifactId>
     			<version>3.0.1</version>
-		     </dependency -->
+		     </dependency>
 		     <dependency>
     			<groupId>org.testng</groupId>
     			<artifactId>testng</artifactId>
