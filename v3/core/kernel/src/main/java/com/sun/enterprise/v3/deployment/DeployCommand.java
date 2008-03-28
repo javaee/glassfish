@@ -30,11 +30,7 @@ import com.sun.enterprise.v3.admin.CommandRunner;
 import com.sun.enterprise.v3.data.ApplicationInfo;
 import com.sun.enterprise.v3.server.ApplicationLifecycle;
 import com.sun.enterprise.v3.server.ServerEnvironment;
-import com.sun.enterprise.module.Module;
-import com.sun.enterprise.module.ModuleDefinition;
-import com.sun.enterprise.module.impl.ClassLoaderProxy;
 import com.sun.enterprise.config.serverbeans.Domain;
-import com.sun.enterprise.config.serverbeans.Applications;
 import com.sun.enterprise.config.serverbeans.ServerTags;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
@@ -42,18 +38,19 @@ import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.container.Sniffer;
-import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.archive.ArchiveHandler;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.PerLookup;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.Properties;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collection;
 import java.util.logging.Level;
 
 
@@ -143,9 +140,6 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
 
     @Inject
     Domain domain;
-
-    @Inject
-    Applications applications;
 
     @Param(primary=true, shortName = "p")
     String path;

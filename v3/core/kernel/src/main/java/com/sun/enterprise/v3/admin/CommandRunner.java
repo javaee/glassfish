@@ -508,21 +508,20 @@ public class CommandRunner {
         usageText.append(operand);
         return usageText.toString();
     }
-        
+
 
     public void getHelp(String commandName, AdminCommand command, ActionReport report) {
-        
         report.setActionDescription(commandName + " help");
         LocalStringManagerImpl localStrings = new LocalStringManagerImpl(command.getClass());
-
         // Let's get the command i18n key
         I18n i18n = command.getClass().getAnnotation(I18n.class);
         String i18nKey = "";
+
         if (i18n!=null) {
             i18nKey = i18n.value();
         }
-        report.setMessage(localStrings.getLocalString(i18nKey, null));
-
+        report.setMessage(commandName + " - " + localStrings.getLocalString(i18nKey, null));
+        report.getTopMessagePart().addProperty("SYNOPSYS", getUsageText(command));
         for (Field f : command.getClass().getDeclaredFields()) {
             addParamUsage(report, localStrings, i18nKey, f);
         }
@@ -532,16 +531,21 @@ public class CommandRunner {
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
     }
 
-    
-    private void addParamUsage(ActionReport report, LocalStringManagerImpl localStrings, String i18nKey, AnnotatedElement annotated) {
 
+    private void addParamUsage(ActionReport report, LocalStringManagerImpl localStrings, String i18nKey, AnnotatedElement annotated) {
         Param param = annotated.getAnnotation(Param.class);
         if (param!=null) {
-            // this is a param.
+             // this is a param.
             String paramName = getParamName(param, annotated);
-            report.getTopMessagePart().addProperty(paramName, getParamDescription(localStrings, i18nKey, paramName, annotated));
+            if (param.primary()) {
+                //if primary then it's an operand
+                report.getTopMessagePart().addProperty(paramName+"_operand", getParamDescription(localStrings, i18nKey, paramName, annotated));
+            } else {
+                report.getTopMessagePart().addProperty(paramName, getParamDescription(localStrings, i18nKey, paramName, annotated));
+            }
         }
     }
+
     
     private boolean ok(String s) {
         return s != null && s.length() > 0;
