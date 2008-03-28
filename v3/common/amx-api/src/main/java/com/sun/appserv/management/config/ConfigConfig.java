@@ -76,6 +76,9 @@ public interface ConfigConfig
 		Return the AdminServiceConfig.
 	 */
 	public AdminServiceConfig	getAdminServiceConfig();
+    
+	/** @since Glassfish V3 */
+	public ThreadPoolsConfig         getThreadPoolsConfig();
 	
 	/**
         @deprecated used {@link ThreadPoolsConfig#getThreadPoolConfigMap}

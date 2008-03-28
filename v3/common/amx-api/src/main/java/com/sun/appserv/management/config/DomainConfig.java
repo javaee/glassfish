@@ -66,6 +66,30 @@ public interface DomainConfig
 	 */
     @AMXForwardTo( containeeJ2EEType=XTypes.NODE_AGENTS_CONFIG )
 	public Map<String,NodeAgentConfig>		getNodeAgentConfigMap();
+    
+	/** @since Glassfish V3 */
+	public ResourcesConfig          getResourcesConfig();
+    
+	/** @since Glassfish V3 */
+	public ConfigsConfig            getConfigsConfig();
+    
+	/** @since Glassfish V3 */
+	public ApplicationsConfig       getApplicationsConfig();
+    
+	/** @since Glassfish V3 */
+	public ServersConfig            getServersConfig();
+    
+	/** @since Glassfish V3 */
+	public ClustersConfig           getClustersConfig();
+    
+	/** @since Glassfish V3 */
+	public LoadBalancersConfig		getLoadBalancersConfig();
+    
+	/** @since Glassfish V3 */
+	public LBConfigsConfig          getLBConfigsConfig();
+    
+	/** @since Glassfish V3 */
+	public NodeAgentsConfig         getNodeAgentsConfig();
 	
 	/**
         @deprecated use {@link ConfigsConfig#getConfigConfigMap}
@@ -206,11 +230,6 @@ public interface DomainConfig
 	
 	//---------------------------------------------------------------------------------------
     
-	/**
-		@return ResourcesConfig
-	 */
-	 
-	public ResourcesConfig	getResourcesConfig();
 
 
 	/**
