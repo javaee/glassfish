@@ -41,6 +41,8 @@ import java.util.Collections;
 
 import org.glassfish.api.amx.AMXConfigInfo;
 import com.sun.appserv.management.config.AMXConfig;
+import com.sun.appserv.management.config.PropertiesAccess;
+import com.sun.appserv.management.config.SystemPropertiesAccess;
 import com.sun.appserv.management.base.Util;
 
 
@@ -80,9 +82,25 @@ public final class AMXConfigInfoResolver
             theInterface = theClass.asSubclass( AMXConfig.class );
         }
         
-        
         return theInterface;
     }
+    
+        public boolean
+    supportsProperties()
+    {
+        final Class<? extends AMXConfig> intf = amxInterface();
+        
+        return PropertiesAccess.class.isAssignableFrom( intf );
+    }
+    
+        public boolean
+    supportsSystemProperties()
+    {
+        final Class<? extends AMXConfig> intf = amxInterface();
+        
+        return SystemPropertiesAccess.class.isAssignableFrom( intf );
+    }
+
     
     
     public String j2eeType()

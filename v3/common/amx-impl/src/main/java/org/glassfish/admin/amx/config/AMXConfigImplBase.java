@@ -69,6 +69,7 @@ import com.sun.appserv.management.util.misc.TypeCast;
 import com.sun.appserv.management.util.jmx.JMXUtil;
 
 import com.sun.appserv.management.config.PropertiesAccess;
+import com.sun.appserv.management.config.SystemPropertiesAccess;
 import com.sun.appserv.management.config.AMXConfig;
 import com.sun.appserv.management.config.RefConfig;
 import com.sun.appserv.management.config.RefConfigReferent;
@@ -77,8 +78,6 @@ import com.sun.appserv.management.config.PropertyConfig;
 import com.sun.appserv.management.config.SystemPropertyConfig;
 import com.sun.appserv.management.config.AMXCreateInfo;
 import com.sun.appserv.management.config.DefaultValues;
-
-import com.sun.appserv.management.config.SystemPropertiesAccess;
 
 import com.sun.appserv.management.base.XTypes;
 import com.sun.appserv.management.base.AMX;
@@ -584,15 +583,16 @@ public class AMXConfigImplBase extends AMXImplBase
         return new Class[0];
     }
 
-    private final class SubInfo
+    private static final class SubInfo
     {
-        final ConfigBean                 mParent;
+        final ConfigBean                 mConfigBean;
         Class<? extends ConfigBeanProxy> mIntf;
-        ConfigBean                       mSubParent;
-        public SubInfo( final String j2eeType )
+        AMXConfigInfoResolver            mAMXConfigInfoResolver;
+        
+        public SubInfo( final String j2eeType, final ConfigBean configBean )
         {
-            mParent    = getConfigBean();
-            mSubParent = null;
+            mConfigBean    = configBean;
+            mAMXConfigInfoResolver = null;
             mIntf      = j2eeTypeToConfigBeanProxy(j2eeType);
         }
         
@@ -601,11 +601,10 @@ public class AMXConfigImplBase extends AMXImplBase
         {
             return mIntf;
         }
-        
-            public ConfigBean
-        getCreatorParent()
+            AMXConfigInfoResolver
+        getAMXConfigInfoResolver()
         {
-            return mSubParent != null ? mSubParent : mParent;
+            return mAMXConfigInfoResolver;
         }
 
             private Class<? extends ConfigBeanProxy>
@@ -621,9 +620,9 @@ public class AMXConfigImplBase extends AMXImplBase
                 final AMXConfigInfo amxConfigInfo = candidate.getAnnotation(AMXConfigInfo.class);
                 if ( amxConfigInfo != null && ! amxVoid.equals(amxConfigInfo.amxInterfaceName()) )
                 {
-                    final AMXConfigInfoResolver resolver = new AMXConfigInfoResolver( amxConfigInfo );
-                    cdebug( "matchCandidate: class " + candidate.getName() + " has AMXConfigInfo  " + amxConfigInfo );
-                    if ( j2eeType.equals( resolver.j2eeType() ) )
+                    cdebug( "matchCandidate: class " + candidate.getName() + " has AMXConfigInfo {" + amxConfigInfo + "}");
+                    mAMXConfigInfoResolver = new AMXConfigInfoResolver( amxConfigInfo );
+                    if ( j2eeType.equals( mAMXConfigInfoResolver.j2eeType() ) )
                     {
                         cdebug( "matchCandidate: FOUND " + candidate.getName() );
                         result = candidate;
@@ -634,10 +633,11 @@ public class AMXConfigImplBase extends AMXImplBase
             return result;
         }
         
+        
             private Class<? extends ConfigBeanProxy>
         j2eeTypeToConfigBeanProxy( final String j2eeType )
         {
-            final ConfigBean cb = mParent;
+            final ConfigBean cb = mConfigBean;
 
             cdebug( "j2eeTypeToConfigBeanProxy: looking for interface for j2eeType " + j2eeType );
             Class<? extends ConfigBeanProxy> result = null;
@@ -663,7 +663,7 @@ public class AMXConfigImplBase extends AMXImplBase
             {
                 cdebug( "j2eeTypeToConfigBeanProxy: no AMXConfigInfo for " + j2eeType );
             }
-
+            
             return result;
         }
     }
@@ -734,32 +734,35 @@ public class AMXConfigImplBase extends AMXImplBase
     }
 
     private static void cdebug( final String s ) { System.out.println(s); }
-    
+
     /**
-        Extract properties from the optional attributes Map, removing them from the map
-        and returning them in a new Map.
+        Extract properties beginning with the specified prefix.
+        @return properties or empty Map if none
      */
         private Map<String,String>
-    extractProperties( final Map<String,Object> optionalAttrs )
+    extractProperties(
+        final Map<String,Object> optionalAttrs,
+        final String  prefix )
     {
-        Map<String,String> props = null;
-        
+        Map<String,String> result = new HashMap<String,String>();
         if ( optionalAttrs != null )
         {
-            props =  new HashMap<String,String>();
-            
             for( final String key : optionalAttrs.keySet() )
             {
-                if ( key.startsWith( PropertiesAccess.PROPERTY_PREFIX ) )
+                if ( key.startsWith( prefix ) )
                 {
-                    String propertyName = key.substring( PropertiesAccess.PROPERTY_PREFIX.length(), key.length() );
-                    props.put( propertyName, "" + optionalAttrs.get(key) );
+                    final String propertyName = key.substring( prefix.length(), key.length() );
+                    if ( propertyName.length() == 0 )
+                    {
+                        throw new IllegalArgumentException("Property names must be non-zero length" );
+                    }
+                    
+                    result.put( propertyName, "" + optionalAttrs.get(key) );
                     optionalAttrs.remove( key );
                 }
             }
         }
-        
-        return props;
+        return result;
     }
     
         protected ObjectName
@@ -837,23 +840,39 @@ cdebug( "createConfig: j2eeType = " + j2eeType + ", return type = " + returnType
             }
         }
         
-        final Map<String,String> properties = extractProperties( optionalAttrs );
+        final Map<String,String> properties = extractProperties( optionalAttrs, PropertiesAccess.PROPERTY_PREFIX);
+        final Map<String,String> systemProperties = extractProperties( optionalAttrs, SystemPropertiesAccess.SYSTEM_PROPERTY_PREFIX);
         
         final String[] paramNames = amxCreateInfo.paramNames();
         cdebug( "createConfig:  paramNames = {" + StringUtil.toString(paramNames) + "}" );
         rejectBadArgs( args, numRequiredArgs, paramNames, optionalAttrs );
     
-        final SubInfo   subInfo = new SubInfo( j2eeType );
+        final SubInfo   subInfo = new SubInfo( j2eeType, getConfigBean() );
         final Class<? extends ConfigBeanProxy>  newItemClass = subInfo.getConfigBeanProxyClass();
         if ( newItemClass == null )
         {
             throw new IllegalArgumentException( "Can't find class for j2eeType " + j2eeType );
         }
+        final AMXConfigInfoResolver resolver = subInfo.getAMXConfigInfoResolver();
         
-        final Map<String, String> allAttrs = new HashMap<String, String>();
+        // check for illegal use of properties on configs that don't have them
+        if ( properties.keySet().size() != 0 && ! resolver.supportsProperties() )
+        {
+            throw new IllegalArgumentException(
+                "Properties specified, but not supported by " + resolver.amxInterface().getName() );
+        }
+        // check for illegal use of system properties on configs that don't have them
+        if ( systemProperties.keySet().size() != 0 && ! resolver.supportsSystemProperties()  )
+        {
+            throw new IllegalArgumentException(
+                "Properties specified, but not supported by " + resolver.amxInterface().getName() );
+        }
+
         
+        // collect all Attributes into a single map
         // set the optional attributes, if any, first so that required ones overwrite
         // (we are checking in rejectBadArgs(), but this order makes it more robust)
+        final Map<String, String> allAttrs = new HashMap<String, String>();
         if ( optionalAttrs != null )
         {
             for ( final String attrName : optionalAttrs.keySet() )
@@ -872,44 +891,71 @@ cdebug( "createConfig: j2eeType = " + j2eeType + ", return type = " + returnType
         ConfigBean newConfigBean = null;
         try
         {
-            newConfigBean = ConfigSupport.createAndSet( subInfo.getCreatorParent(), newItemClass, allAttrs);
+            newConfigBean = ConfigSupport.createAndSet( getConfigBean(), newItemClass, allAttrs);
         }
         catch( Throwable t )
         {
             cdebug( ExceptionUtil.toString(t) );
         }
-        
+    cdebug( "created ConfigBean " );
 
         final AMXConfigLoader  amxLoader = SingletonEnforcer.get( AMXConfigLoader.class );
         amxLoader.handleConfigBean( newConfigBean, true );
+    cdebug( "called amxLoader.handleConfigBean " );
             
         final ObjectName objectName = newConfigBean.getObjectName();
        // sendConfigCreatedNotification( objectName );
-       
-       /*
-            Set all the properties.
-        */
-        if ( properties != null && properties.size() != 0 )
-        {
-            final AMX newConfig = getProxyFactory().getProxy( objectName );
-            if ( newConfig instanceof PropertiesAccess )
-            {
-                if ( properties.keySet().size() == 0 )
-                {
-                    properties.put( "test1", "value1" );
-                }
-                
-                final PropertiesAccess pa = PropertiesAccess.class.cast( newConfig );
-                for( final String propName : properties.keySet() )
-                {
-                    final String propValue = properties.get(propName);
-                    pa.createPropertyConfig( propName, propValue );
-                }
-            }
-        }
+    cdebug( "NEW OBJECTNAME:  " + objectName);
     
+    cdebug( "resolver: " + resolver );
+       
+        // TESTING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        if ( resolver.supportsProperties() && properties.keySet().size() == 0 )
+        {
+            properties.put( "test1", "value1" ); // TESTING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            properties.put( "test2", "value2" ); // TESTING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            properties.put( "test3", "value3" ); // TESTING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        }
+        // TESTING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        
+    cdebug( "GETTING NEW AMX PROXY FOR:  " + objectName);
+
+        final AMXConfig newAMX = AMXConfig.class.cast( getProxyFactory().getProxy( objectName ) );
+        setAllProperties( newAMX, properties, systemProperties );
+    
+cdebug( "RETURNING OBJECTNAME: " + objectName );
         return objectName;
    }
+
+    /**
+        This should be done in one transaction...
+     */
+        private void
+    setAllProperties(
+        final AMXConfig amxConfig,
+        final Map<String,String> properties, 
+        final Map<String,String> systemProperties )
+    {
+        if ( properties.keySet().size() != 0 )
+        {
+            final PropertiesAccess pa = PropertiesAccess.class.cast( amxConfig );
+            for( final String propName : properties.keySet() )
+            {
+                final String propValue = properties.get(propName);
+                pa.createPropertyConfig( propName, propValue );
+            }
+        }
+        
+        if ( systemProperties.keySet().size() != 0 )
+        {
+            final SystemPropertiesAccess pa = SystemPropertiesAccess.class.cast( amxConfig );
+            for( final String propName : systemProperties.keySet() )
+            {
+                final String propValue = systemProperties.get(propName);
+                pa.createSystemPropertyConfig( propName, propValue );
+            }
+        }
+    }
     
 		protected boolean
 	mySleep( final long millis )
@@ -1157,7 +1203,7 @@ cdebug( "removeConfig: by  j2eeType + name" );
         
         Issues.getAMXIssues().notDone( "AMXConfigImplBase.getDefaultValues: " + j2eeType );
         
-        final SubInfo   subInfo = new SubInfo( j2eeType );
+        final SubInfo   subInfo = new SubInfo( j2eeType, getConfigBean() );
         final Class<? extends ConfigBeanProxy>  intf = subInfo.getConfigBeanProxyClass();
         if ( intf == null )
         {
