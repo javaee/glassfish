@@ -205,16 +205,16 @@ public class AutoDeploymentOperation extends AutoOperation {
         
         DeploymentProperties dProps = new DeploymentProperties();
         dProps.setPath(deployablefile.getAbsolutePath());
-        dProps.setUpload(false);
-        dProps.setEnable(enabled);
+//        dProps.setUpload(false);
+        dProps.setEnabled(enabled);
         if (virtualServer != null) {
             dProps.setVirtualServers(virtualServer);
         }
         dProps.setForce(forceDeploy);
         dProps.setVerify(verify);
         dProps.setPrecompileJSP(jspPreCompilation);
-        dProps.setResourceAction(DeploymentProperties.RES_DEPLOYMENT);
-        dProps.setResourceTargetList(target);
+//        dProps.setResourceAction(DeploymentProperties.RES_DEPLOYMENT);
+//        dProps.setResourceTargetList(target);
     
         return (Properties)dProps;
     }

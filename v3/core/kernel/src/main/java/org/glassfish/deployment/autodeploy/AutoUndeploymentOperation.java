@@ -103,8 +103,8 @@ public class AutoUndeploymentOperation extends AutoOperation {
     private static Properties prepareUndeployActionProperties(String name, String target) {
         DeploymentProperties dProps = new DeploymentProperties();
         dProps.setName(name);
-        dProps.setResourceAction(DeploymentProperties.RES_UNDEPLOYMENT);
-        dProps.setResourceTargetList(target);
+//        dProps.setResourceAction(DeploymentProperties.RES_UNDEPLOYMENT);
+//        dProps.setResourceTargetList(target);
         return (Properties)dProps;
     }
     
