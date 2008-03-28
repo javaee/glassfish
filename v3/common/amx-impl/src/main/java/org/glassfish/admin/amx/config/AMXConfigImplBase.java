@@ -1217,7 +1217,13 @@ cdebug( "removeConfig: by  j2eeType + name" );
                 if ( attrAnn != null )
                 {
                     // does it make sense to supply default values for required attributes?
-                    result.put( attrName, "" + attrAnn.defaultValue() );
+                    final String value = attrAnn.defaultValue();
+                    
+                    // don't put null values into defaults (see @Attribute annotation)
+                    if ( ! value.equals( "\u0000" ) )
+                    {
+                        result.put( attrName, "" + attrAnn.defaultValue() );
+                    }
                 }
                 /*
                 else
