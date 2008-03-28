@@ -52,7 +52,7 @@ import java.io.Serializable;
  */
 
 /* @XmlType(name = "") */
-@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.ThreadPoolConfig", singleton=true)
+@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.ThreadPoolConfig", nameHint="thread-pool-id")
 @Configured
 public interface ThreadPool extends ConfigBeanProxy, Injectable  {
 
@@ -62,7 +62,7 @@ public interface ThreadPool extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute(required = true)
+    @Attribute(required = true, key=true)
     public String getThreadPoolId();
 
     /**

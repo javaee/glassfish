@@ -33,14 +33,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
- 
-/*
- * $Header: /cvs/glassfish/appserv-api/src/java/com/sun/appserv/management/config/ConfigConfig.java,v 1.2 2007/05/05 05:30:32 tcfujii Exp $
- * $Revision: 1.2 $
- * $Date: 2007/05/05 05:30:32 $
- */
-
-
 package com.sun.appserv.management.config;
 
 import java.util.Map;
@@ -60,16 +52,6 @@ public interface ConfigConfig
 	 */
 /** The j2eeType as returned by {@link com.sun.appserv.management.base.AMX#getJ2EEType}. */
 	public static final String	J2EE_TYPE	= XTypes.CONFIG_CONFIG;
-	
-	
-	/**
-		Calls Container.getContaineeMap( XTypes.THREAD_POOL_CONFIG ).
-		@return Map of ThreadPoolConfig proxies, keyed by name.
-		@see com.sun.appserv.management.base.Container#getContaineeMap
-	 */
-	public Map<String,ThreadPoolConfig>	getThreadPoolConfigMap();
-	
-
 	/**
 		Return the IIOPServiceConfig.
 	 */
@@ -94,26 +76,32 @@ public interface ConfigConfig
 		Return the AdminServiceConfig.
 	 */
 	public AdminServiceConfig	getAdminServiceConfig();
-		
+	
 	/**
-		Create a new &lt;thread-pool>
-		
-		@param name			name of the &lt;thread-pool> (thread-pool-id)
-		@param optional		Map of optional attributes and properties whose keys
-		are defined here. (eg:- MIN_THREAD_POOL_SIZE_KEY)
-		@return A proxy to the ThreadPoolConfig MBean.
-		@see ThreadPoolConfigKeys
+        @deprecated used {@link ThreadPoolsConfig#getThreadPoolConfigMap}
 	 */
+    @AMXForwardTo( containeeJ2EEType=XTypes.THREAD_POOLS_CONFIG )
+	public Map<String,ThreadPoolConfig>	getThreadPoolConfigMap();
+    
+    
+	/**
+        @deprecated used {@link ThreadPoolsConfig#createThreadPoolConfig}
+	 */
+    @AMXForwardTo( containeeJ2EEType=XTypes.THREAD_POOLS_CONFIG )
 	public ThreadPoolConfig	createThreadPoolConfig( String name, Map<String,String> optional );
 
 	/**
-		Removes a thread-pool element.
-
-		@param name			name of the &lt;thread-pool> (thread-pool-id)
+        @deprecated used {@link ThreadPoolsConfig#removeThreadPoolConfig}
 	 */
+    @AMXForwardTo( containeeJ2EEType=XTypes.THREAD_POOLS_CONFIG )
 	public void			removeThreadPoolConfig( String name );
-	
-	
+
+	/**
+	    Return the DiagnosticServiceConfig.  May be null.
+	    @since AppServer 9.0
+        */
+	public DiagnosticServiceConfig getDiagnosticServiceConfig();
+    
 	/**
 		Return the WebContainerConfig.
 	 */
@@ -165,12 +153,6 @@ public interface ConfigConfig
 	public ConnectorServiceConfig	createConnectorServiceConfig();
 	public void     removeConnectorServiceConfig();
 
-
-	/**
-	    Return the DiagnosticServiceConfig.  May be null.
-	    @since AppServer 9.0
-        */
-	public DiagnosticServiceConfig getDiagnosticServiceConfig();
 	
 	/**
 	    Create the DiagnosticServiceConfig.

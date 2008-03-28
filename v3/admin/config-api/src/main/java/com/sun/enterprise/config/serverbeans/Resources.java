@@ -46,6 +46,8 @@ import org.jvnet.hk2.component.Injectable;
 import java.io.Serializable;
 import java.util.List;
 
+import org.glassfish.api.amx.AMXConfigInfo;
+import org.glassfish.api.amx.AMXCreatorInfo;
 
 /**
  *
@@ -54,7 +56,12 @@ import java.util.List;
 /* @XmlType(name = "", propOrder = {
     "customResourceOrExternalJndiResourceOrJdbcResourceOrMailResourceOrPersistenceManagerFactoryResourceOrAdminObjectResourceOrConnectorResourceOrResourceAdapterConfigOrJdbcConnectionPoolOrConnectorConnectionPool"
 }) */
-@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="org.glassfish.admin.amx.loader.AMXConfigVoid", omitAsAncestorInChildObjectName=true)
+@AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.ResourcesConfig", omitAsAncestorInChildObjectName=true, singleton=true)
+
+// general solution needed; this is intermediate solution
+@AMXCreatorInfo( creatables={CustomResource.class, ExternalJndiResource.class, JdbcResource.class,
+        MailResource.class, PersistenceManagerFactoryResource.class, AdminObjectResource.class,
+        ConnectorResource.class, ResourceAdapterConfig.class, JdbcConnectionPool.class, ConnectorConnectionPool.class })
 @Configured
 public interface Resources extends ConfigBeanProxy, Injectable  {
 
@@ -89,7 +96,8 @@ public interface Resources extends ConfigBeanProxy, Injectable  {
      */
     @Element("*")
     public List<Resource> getResources();
-
-
-
 }
+
+
+
+

@@ -53,6 +53,7 @@ import com.sun.appserv.management.base.XTypes;
 	Configuration for the &lt;resource-adapter-config&gt; element.
 	@see ResourceAdapterConfigKeys
  */
+@AMXCreateInfo(paramNames={"name", "optional"})
 public interface ResourceAdapterConfig extends NamedConfigElement, PropertiesAccess, ObjectType
 {
 /** The j2eeType as returned by {@link com.sun.appserv.management.base.AMX#getJ2EEType}. */

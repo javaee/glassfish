@@ -66,7 +66,7 @@ public interface ResourceAdapterConfig extends ConfigBeanProxy, Injectable, Reso
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute(required=true, key=true)
     public String getName();
 
     /**

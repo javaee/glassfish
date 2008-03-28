@@ -33,25 +33,14 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
- 
-/*
- * $Header: /cvs/glassfish/appserv-api/src/java/com/sun/appserv/management/config/MailResourceConfig.java,v 1.2 2007/05/05 05:30:34 tcfujii Exp $
- * $Revision: 1.2 $
- * $Date: 2007/05/05 05:30:34 $
- */
-
-
 package com.sun.appserv.management.config;
 
 import com.sun.appserv.management.base.XTypes;
 
-
-
-
-
 /**
 	 Configuration for the &lt;mail-resource&gt; element.
  */
+@AMXCreateInfo(paramNames={"jndi-name", "host", "user", "from", "optional" })
 public interface MailResourceConfig extends ResourceConfig
 {
 /** The j2eeType as returned by {@link com.sun.appserv.management.base.AMX#getJ2EEType}. */

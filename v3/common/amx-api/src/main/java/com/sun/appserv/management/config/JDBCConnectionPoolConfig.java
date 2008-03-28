@@ -61,6 +61,7 @@ import com.sun.appserv.management.base.XTypes;
     property.  Obviously no method that uses 'boolean' could get or set a String.
 */
 
+@AMXCreateInfo(paramNames={"name","datasource-classname", "optional"})
 public interface JDBCConnectionPoolConfig
     extends NamedConfigElement, Description, PropertiesAccess, ResourceRefConfigReferent
 {

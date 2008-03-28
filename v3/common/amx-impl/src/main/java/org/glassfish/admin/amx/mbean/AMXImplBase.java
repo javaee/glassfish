@@ -2154,6 +2154,13 @@ public class AMXImplBase extends MBeanImplBase
     get__ObjectRef()
     {
         return this;
+    }  
+        public AMXImplBase
+    get__ObjectRef( final ObjectName objectName )
+    {
+        if ( objectName.equals( getObjectName() )) return this;
+        
+        return __getObjectRef__( getMBeanServer(), objectName );
     }    
 //-----------------------------------------------------------------------------------------
 	

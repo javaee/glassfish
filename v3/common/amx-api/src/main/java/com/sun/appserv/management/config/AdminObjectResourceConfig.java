@@ -45,6 +45,7 @@ import com.sun.appserv.management.base.XTypes;
 	 Represents the &lt;admin-object-resource&gt; element.
 	 <p>
  */
+@AMXCreateInfo(paramNames={"jndi-name","res-type", "res-adapter", "optional"})
 public interface AdminObjectResourceConfig extends ResourceConfig
 {
 /** The j2eeType as returned by {@link com.sun.appserv.management.base.AMX#getJ2EEType}. */

@@ -41,7 +41,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
-    Annotation for {@link AMXConfig} MBeans.
+    Annotation for creating {@link AMXConfig} MBeans, to be used on ConfigBeanProxy
+    interfaces which ultimately result in AMXConfig MBeans.
     <p>
     The complete ObjectName with which an MBean is registered will be generated
     based in part upon this information; additional ObjectName properties can
@@ -140,4 +141,13 @@ not clear if this is needed; the interface should specify it
      */
     boolean omitAsAncestorInChildObjectName() default false;
 }
+
+
+
+
+
+
+
+
+
 

@@ -56,7 +56,7 @@ import org.glassfish.api.amx.AMXConfigInfo;
     "description",
     "property"
 }) */
-@AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.MailResourceConfig", nameHint="id")
+@AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.MailResourceConfig", nameHint="jndi-name")
 @Configured
 public interface MailResource extends ConfigBeanProxy, Injectable, Resource {
 
@@ -66,7 +66,7 @@ public interface MailResource extends ConfigBeanProxy, Injectable, Resource {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute(required = true)
+    @Attribute(required = true, key=true)
     public String getJndiName();
 
     /**

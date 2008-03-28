@@ -55,6 +55,7 @@ import java.lang.annotation.Target;
   {@link DomainConfig#createJDBCConnectionPoolConfig} for an example of method annotation.
   
   @see org.glassfish.api.amx.AMXConfigInfo
+  @see AMXForwardTo
 */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD, ElementType.TYPE})

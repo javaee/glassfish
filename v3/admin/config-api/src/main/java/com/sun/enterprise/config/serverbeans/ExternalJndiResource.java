@@ -58,7 +58,7 @@ import java.util.List;
     "description",
     "property"
 }) */
-//@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.ExternalJNDIResourceConfig", nameHint="jndi-name")
+@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.JNDIResourceConfig", nameHint="jndi-name")
 @Configured
 public interface ExternalJndiResource extends ConfigBeanProxy, Injectable, Resource {
 
@@ -68,7 +68,7 @@ public interface ExternalJndiResource extends ConfigBeanProxy, Injectable, Resou
      * @return possible object is
      *         {@link String }
      */
-    @Attribute(required = true)
+    @Attribute(required = true, key=true)
     public String getJndiName();
 
     /**

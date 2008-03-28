@@ -134,6 +134,11 @@ public final class XTypes
 	public final static String	SAMPLE					=  P + "Sample";
 	
 	/**
+		ID for {@link com.sun.appserv.management.config.ConfigsConfig}
+	 */
+	public final static String	CONFIGS_CONFIG				=  P + "ConfigsConfig";
+	
+	/**
 		ID for {@link com.sun.appserv.management.config.ConfigConfig}
 	 */
 	public final static String	CONFIG_CONFIG				=  P + "ConfigConfig";
@@ -149,9 +154,19 @@ public final class XTypes
 	public final static String	CLUSTER_REF_CONFIG	=   P + "ClusterRefConfig";
 
         /**
+		ID for {@link com.sun.appserv.management.config.ClustersConfig}
+	 */
+	public final static String	CLUSTERS_CONFIG				=  P + "ClustersConfig";
+
+        /**
 		ID for {@link com.sun.appserv.management.config.ClusterConfig}
 	 */
 	public final static String	CLUSTER_CONFIG				=  P + "ClusterConfig";
+
+	/**
+		ID for {@link com.sun.appserv.management.config.ServersConfig}
+	 */
+	public final static String	SERVERS_CONFIG	=  P + "ServersConfig";
 
 	/**
 		ID for {@link com.sun.appserv.management.config.StandaloneServerConfig}
@@ -162,6 +177,11 @@ public final class XTypes
 		ID for {@link com.sun.appserv.management.config.ClusteredServerConfig}
 	 */
 	public final static String	CLUSTERED_SERVER_CONFIG		=  P + "ClusteredServerConfig";
+	
+	/**
+		ID for {@link com.sun.appserv.management.config.NodeAgentsConfig}
+	 */
+	public final static String	NODE_AGENTS_CONFIG			=  P + "NodeAgentsConfig";
 	
 	/**
 		ID for {@link com.sun.appserv.management.config.NodeAgentConfig}
@@ -306,6 +326,11 @@ public final class XTypes
 	public final static String	JMS_AVAILABILITY_CONFIG				=  P + "JMSAvailabilityConfig";
 	
 	/**
+		ID for {@link com.sun.appserv.management.config.ThreadPoolsConfig}
+	 */
+	public final static String	THREAD_POOLS_CONFIG			=  P + "ThreadPoolsConfig";
+	
+	/**
 		ID for {@link com.sun.appserv.management.config.ThreadPoolConfig}
 	 */
 	public final static String	THREAD_POOL_CONFIG			=  P + "ThreadPoolConfig";
@@ -333,7 +358,11 @@ public final class XTypes
 	public final static String	DAS_CONFIG					=  P + "DASConfig";
 	
 	/* resources */
-	
+	/**
+		ID for {@link com.sun.appserv.management.config.ResourceConfig}
+	 */
+	public final static String	RESOURCES_CONFIG		=  P + "ResourcesConfig";
+
 	
 	/**
 		ID for {@link com.sun.appserv.management.config.MailResourceConfig}
@@ -426,9 +455,15 @@ public final class XTypes
 	public final static String	SESSION_CONFIG		=  P + "SessionConfig";
 	
     /**
+            ID for {@link com.sun.appserv.management.config.ApplicationsConfig}
+     */
+    public final static String      APPLICATIONS_CONFIG                       =  P + "ApplicationsConfig";
+	
+    /**
             ID for {@link com.sun.appserv.management.config.ApplicationConfig}
      */
     public final static String      APPLICATION_CONFIG                       =  P + "ApplicationConfig";
+
 
     /**
             ID for {@link com.sun.appserv.management.config.EngineConfig}
@@ -503,14 +538,24 @@ public final class XTypes
 	public final static String	AUDIT_MODULE_CONFIG			=  P + "AuditModuleConfig";
 
 	/*
+		ID for {@link com.sun.appserv.management.config.LBConfigsConfig}
+	 */
+	public final static String	LB_CONFIGS_CONFIG	=  P + "LBConfigs";
+
+	/*
 		ID for {@link com.sun.appserv.management.config.LBConfig}
 	 */
 	public final static String	LB_CONFIG	=  P + "LBConfig";
 
-        /**
-                ID for {@link com.sun.appserv.management.config.LoadBalancerConfig}
-        */
-        public final static String      LOAD_BALANCER_CONFIG        =  P + "LoadBalancerConfig";
+    /**
+            ID for {@link com.sun.appserv.management.config.LoadBalancersConfig}
+    */
+    public final static String      LOAD_BALANCERS_CONFIG        =  P + "LoadBalancersConfig";
+
+    /**
+            ID for {@link com.sun.appserv.management.config.LoadBalancerConfig}
+    */
+    public final static String      LOAD_BALANCER_CONFIG        =  P + "LoadBalancerConfig";
 
 	/**
 		ID for {@link com.sun.appserv.management.ext.lb.LoadBalancer}

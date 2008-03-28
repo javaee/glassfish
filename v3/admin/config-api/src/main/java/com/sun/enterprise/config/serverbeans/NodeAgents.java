@@ -43,10 +43,11 @@ import org.jvnet.hk2.config.Element;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.component.Injectable;
 
-import java.io.Serializable;
 import java.util.List;
 
 
+import org.glassfish.api.amx.AMXConfigInfo;
+import org.glassfish.api.amx.AMXCreatorInfo;
 /**
  *
  */
@@ -54,7 +55,9 @@ import java.util.List;
 /* @XmlType(name = "", propOrder = {
     "nodeAgent"
 }) */
-@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="org.glassfish.admin.amx.loader.AMXConfigVoid", omitAsAncestorInChildObjectName=true)
+@AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.NodeAgentsConfig", omitAsAncestorInChildObjectName=true, singleton=true)
+// general solution needed; this is intermediate solution
+@AMXCreatorInfo( creatables={NodeAgent.class})
 @Configured
 public interface NodeAgents extends ConfigBeanProxy, Injectable  {
 

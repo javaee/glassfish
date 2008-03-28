@@ -69,7 +69,7 @@ public interface J2eeApplication extends ConfigBeanProxy, Injectable, Module {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute(required = true)
+    @Attribute(required = true, key=true)
     public String getName();
 
     /**

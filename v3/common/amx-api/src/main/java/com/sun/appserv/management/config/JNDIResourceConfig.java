@@ -33,30 +33,19 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
- 
-/*
- * $Header: /cvs/glassfish/appserv-api/src/java/com/sun/appserv/management/config/JNDIResourceConfig.java,v 1.2 2007/05/05 05:30:33 tcfujii Exp $
- * $Revision: 1.2 $
- * $Date: 2007/05/05 05:30:33 $
- */
-
-
 package com.sun.appserv.management.config;
 
 import com.sun.appserv.management.base.XTypes;
 
 
-
-
-
 /**
 	 Configuration for the &lt;jndi-resource&gt; element.
  */
+@AMXCreateInfo(paramNames={"jndi-name", "jndi-lookup-name", "res-type", "factory-class", "optional" })
 public interface JNDIResourceConfig extends ResourceConfig
 {
 /** The j2eeType as returned by {@link com.sun.appserv.management.base.AMX#getJ2EEType}. */
 	public static final String	J2EE_TYPE	= XTypes.JNDI_RESOURCE_CONFIG;
-	
 
 	String	getJNDILookupName();
 

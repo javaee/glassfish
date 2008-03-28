@@ -66,7 +66,7 @@ public interface AdminObjectResource extends ConfigBeanProxy, Injectable, Resour
      * @return possible object is
      *         {@link String }
      */
-    @Attribute(required = true)
+    @Attribute(required = true, key=true)
     public String getJndiName();
 
     /**

@@ -48,6 +48,7 @@ import java.util.List;
 
 
 import org.glassfish.api.amx.AMXConfigInfo;
+import org.glassfish.api.amx.AMXCreatorInfo;
 /**
  *
  */
@@ -55,7 +56,9 @@ import org.glassfish.api.amx.AMXConfigInfo;
 /* @XmlType(name = "", propOrder = {
     "config"
 }) */
-@AMXConfigInfo( amxInterfaceName="org.glassfish.admin.amx.loader.AMXConfigVoid" )
+@AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.ConfigsConfig", omitAsAncestorInChildObjectName=true, singleton=true)
+// general solution needed; this is intermediate solution
+@AMXCreatorInfo( creatables={Config.class })
 @Configured
 public interface Configs extends ConfigBeanProxy, Injectable  {
 

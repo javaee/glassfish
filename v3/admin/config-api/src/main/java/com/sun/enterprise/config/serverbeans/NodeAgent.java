@@ -69,7 +69,7 @@ public interface NodeAgent extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute(required = true)
+    @Attribute(required = true, key=true)
     public String getName();
 
     /**

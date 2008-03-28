@@ -63,7 +63,6 @@ import com.sun.appserv.management.util.misc.ClassUtil;
 import com.sun.appserv.management.util.misc.CollectionUtil;
 import com.sun.appserv.management.util.misc.MapUtil;
 import com.sun.appserv.management.util.misc.GSetUtil;
-import com.sun.appserv.management.util.misc.ThrowableMapper;
 import com.sun.appserv.management.util.misc.StringUtil;
 import com.sun.appserv.management.util.misc.ExceptionUtil;
 import com.sun.appserv.management.util.misc.TypeCast;
@@ -106,7 +105,10 @@ import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.Dom;
 
 import org.glassfish.api.amx.AMXConfigInfo;
+import org.glassfish.api.amx.AMXCreatorInfo;
 
+
+import org.jvnet.hk2.config.TransactionFailure;
 
 /**
 	Base class from which all AMX Config MBeans should derive (but not "must").
@@ -446,6 +448,7 @@ public class AMXConfigImplBase extends AMXImplBase
 	    return allInfos;
 	}
 	
+    /*
 	    private String
 	getSimpleInterfaceName( final AMX amx )
     {
@@ -454,6 +457,7 @@ public class AMXConfigImplBase extends AMXImplBase
         
         return interfaceName;
     }
+    */
     
     
 	/**
@@ -525,31 +529,6 @@ public class AMXConfigImplBase extends AMXImplBase
     static private final String FACTORY_SUFFIX  = "Factory";
     
     static private final Class[]   STRING_SIG  = new Class[] { String.class };
-    
-    /**
-        Generic removal of any config contained by this config.
-     */
-        public final void
-    removeConfig( final String j2eeType, final String name )
-    {
-        Issues.getAMXIssues().notDone( "AMXConfigImplBase(): support for removing config" );
-        /*
-        if ( name == null )
-        {
-            throw new IllegalArgumentException();
-        }
-
-	    final Map<String,ObjectName>    items   = getContaineeObjectNameMap( j2eeType );
-	    final ObjectName objectName   = preRemove( items, name );
-        
-        if ( ! removeConfigWithFactory( objectName ) )
-        {
-            cdebug( "removeConfigWithFactory failed, using removeConfigWithMethod" );
-            removeConfigWithMethod( objectName );
-        }
-        */
-        throw new RuntimeException( "support for removing config not implemented" );
-    }
     
     /**
         Generic removal of RefConfig.
@@ -630,54 +609,61 @@ public class AMXConfigImplBase extends AMXImplBase
         }
 
             private Class<? extends ConfigBeanProxy>
-        j2eeTypeToConfigBeanProxy( final String j2eeType )
+        matchCandidate(
+            final String j2eeType,
+            final Class<? extends ConfigBeanProxy>[] candidates)
         {
-            final ConfigBean cb = mParent;
-            
-            //cdebug( "j2eeTypeToConfigBeanProxy: looking for interface for j2eeType " + j2eeType );
             Class<? extends ConfigBeanProxy> result = null;
             
             final String amxVoid = AMXConfigVoid.class.getName();
-             final Class<? extends ConfigBeanProxy>[] candidates = getSubTypes( cb );
-             for ( final Class<? extends ConfigBeanProxy> candidate : candidates )
-             {
+            for ( final Class<? extends ConfigBeanProxy> candidate : candidates )
+            {
                 final AMXConfigInfo amxConfigInfo = candidate.getAnnotation(AMXConfigInfo.class);
                 if ( amxConfigInfo != null && ! amxVoid.equals(amxConfigInfo.amxInterfaceName()) )
                 {
                     final AMXConfigInfoResolver resolver = new AMXConfigInfoResolver( amxConfigInfo );
-    //cdebug( "j2eeTypeToConfigBeanProxy: class " + candidate.getName() + " has AMXConfigInfo  " + amxConfigInfo );
+                    cdebug( "matchCandidate: class " + candidate.getName() + " has AMXConfigInfo  " + amxConfigInfo );
                     if ( j2eeType.equals( resolver.j2eeType() ) )
                     {
-    //cdebug( "j2eeTypeToConfigBeanProxy: FOUND " + candidate.getName() );
+                        cdebug( "matchCandidate: FOUND " + candidate.getName() );
                         result = candidate;
                         break;
                     }
                 }
-                else
-                {
-                    //cdebug( "j2eeTypeToConfigBeanProxy: no AMXConfigInfo for " + candidate.getName()  );
-                }
-             }
+            }
+            return result;
+        }
+        
+            private Class<? extends ConfigBeanProxy>
+        j2eeTypeToConfigBeanProxy( final String j2eeType )
+        {
+            final ConfigBean cb = mParent;
+
+            cdebug( "j2eeTypeToConfigBeanProxy: looking for interface for j2eeType " + j2eeType );
+            Class<? extends ConfigBeanProxy> result = null;
+
+            final String amxVoid = AMXConfigVoid.class.getName();
+            final Class<? extends ConfigBeanProxy>[] candidates = getSubTypes( cb );
              
-             if ( result == null )
-             {
-                final Set<String> names = cb.getLeafElementNames();
-    cdebug( "j2eeTypeToConfigBeanProxy: getLeafElementNames = " + CollectionUtil.toString(names) );
-                for( final String name : names )
+            cdebug( "j2eeTypeToConfigBeanProxy: matching against " + candidates.length + " candidates from getSubTypes()"  );
+            result = matchCandidate( j2eeType, candidates );
+            if ( result == null )
+            {
+                final Class<? extends ConfigBeanProxy> proxyClass = cb.getProxyType();
+                final AMXCreatorInfo creatorInfo = proxyClass.getAnnotation( AMXCreatorInfo.class );
+                if ( creatorInfo != null )
                 {
-                    cdebug( "getting nodeElements for: " + name );
-                    final List<Dom> domList = cb.nodeElements(name);
-                    final List<ConfigBean> configBeans = TypeCast.checkList( domList, ConfigBean.class );
-                    cdebug( configBeans.size() + " elements " );
-                    
-                    // scan the element to see if it has a List<type> whose type is 
-                    if ( configBeans.size() >= 1 )
-                    {
-                        // TBD
-                    }
+                    final Class<? extends ConfigBeanProxy>[] creatables = creatorInfo.creatables();
+            cdebug( "j2eeTypeToConfigBeanProxy: matching against " + candidates.length + " candidates from AMXCreatorInfo.creatables()"  );
+                    result = matchCandidate( j2eeType, creatables );
                 }
-             }
-            
+            }
+             
+            if ( result == null )
+            {
+                cdebug( "j2eeTypeToConfigBeanProxy: no AMXConfigInfo for " + j2eeType );
+            }
+
             return result;
         }
     }
@@ -754,7 +740,7 @@ public class AMXConfigImplBase extends AMXImplBase
         final String operationName,
         final Object[] args,
         String[]	   types)
-        throws ClassNotFoundException, org.jvnet.hk2.config.TransactionFailure
+        throws ClassNotFoundException, TransactionFailure
    {
     setAMXDebug(true);
         if ( ! isCreateConfig( operationName ) )
@@ -856,12 +842,26 @@ cdebug( "createConfig: j2eeType = " + j2eeType + ", return type = " + returnType
             allAttrs.put( paramNames[i], value );
         }
   
-        final ConfigBean newConfigBean = ConfigSupport.createAndSet( subInfo.getCreatorParent(), newItemClass, allAttrs);
+    cdebug( "calling ConfigSupport.createAndSet() " );
+        ConfigBean newConfigBean = null;
+        try
+        {
+            newConfigBean = ConfigSupport.createAndSet( subInfo.getCreatorParent(), newItemClass, allAttrs);
+        }
+        catch( Throwable t )
+        {
+            cdebug( ExceptionUtil.toString(t) );
+        }
+        
 
+    cdebug( "getting AMXConfigLoader " );
         final AMXConfigLoader  amxLoader = SingletonEnforcer.get( AMXConfigLoader.class );
         amxLoader.handleConfigBean( newConfigBean, true );
             
         final ObjectName objectName = newConfigBean.getObjectName();
+        
+       // sendConfigCreatedNotification( objectName );
+        
         return objectName;
    }
     
@@ -922,7 +922,45 @@ cdebug( "createConfig: j2eeType = " + j2eeType + ", return type = " + returnType
         return j2eeType;
     }
     
-    
+    /**
+        Generic removal of any config contained by this config.
+     */
+        public final void
+    removeConfig( final ObjectName containeeObjectName )
+    {
+        final ContainerSupport containerSupport = getContainerSupport();
+
+	    preRemove( containeeObjectName );
+        
+        final AMXConfigImplBase child = (AMXConfigImplBase)get__ObjectRef( containeeObjectName );
+        try
+        {
+            ConfigSupport.deleteChild( getConfigBean(), child.getConfigBean() );
+        }
+        catch( final TransactionFailure tf )
+        {
+            throw new RuntimeException( "Transaction failure deleting " + JMXUtil.toString(containeeObjectName), tf );
+        }
+        
+        //sendConfigRemovedNotification( containeeObjectName );
+    }
+
+    /**
+        Generic removal of any config contained by this config.
+     */
+        public final void
+    removeConfig( final String j2eeType, final String name )
+    {
+        final ContainerSupport containerSupport = getContainerSupport();
+        final ObjectName    containeeObjectName  = containerSupport.getContaineeObjectName( j2eeType, name);
+        if ( containeeObjectName == null )
+        {
+            throw new RuntimeException( new InstanceNotFoundException( "No MBean named " + name + " of j2eeType " + j2eeType + " found." ) );
+        }
+        removeConfig( containeeObjectName );
+    }
+
+
    /**
         Remove config for a singleton Containee.
     */
@@ -931,18 +969,12 @@ cdebug( "createConfig: j2eeType = " + j2eeType + ", return type = " + returnType
    {
         final String        j2eeType    = operationNameToJ2EEType( operationName );
         final ContainerSupport containerSupport = getContainerSupport();
-        final ObjectName    objectName  = containerSupport.getContaineeObjectName( j2eeType );
-        if ( objectName == null )
+        final ObjectName    containeeObjectName  = containerSupport.getContaineeObjectName( j2eeType );
+        if ( containeeObjectName == null )
         {
             throw new RuntimeException( new InstanceNotFoundException( j2eeType ) );
         }
-	    preRemove( objectName );
-        
-        final String simpleInterfaceName    =
-            operationName.substring( REMOVE_PREFIX.length(), operationName.length());
-            
-        //createConfigFactory( simpleInterfaceName ).remove( objectName );
-        throw new RuntimeException( "removeConfig() not supported" );
+        removeConfig( containeeObjectName );
    }
    
    /**
@@ -950,40 +982,36 @@ cdebug( "createConfig: j2eeType = " + j2eeType + ", return type = " + returnType
     */
       protected void
    removeConfig(
-        final String operationName,
+        final String   operationName,
         final Object[] args,
         String[]	   types)
         throws InvocationTargetException
    {
-        final String name    = (String)args[ 0 ];
-        final String simpleInterfaceName    =
-            operationName.substring( REMOVE_PREFIX.length(), operationName.length());
-            
-        final Set<? extends AMX>  containees  = getFactoryContainer().getContaineeSet();
-        ObjectName  objectName  = null;
-        for( final AMX containee : containees )
+        if ( args == null || args.length == 0 )
         {
-            if ( containee.getName().equals( name ) )
-            {
-                cdebug( "removeConfig: found name match: " + Util.getObjectName( containee ) );
-                if ( getSimpleInterfaceName( containee ).equals( simpleInterfaceName ) )
-	            {
-	                objectName  = Util.getObjectName( containee );
-	                break;
-	            }
-	            debug( getSimpleInterfaceName( containee ), " != ", simpleInterfaceName );
-            }
+cdebug( "removeConfig: by operation name only" );
+            // remove a singleton
+            removeConfig( operationName );
         }
-        
-        if ( objectName != null )
+        else if ( args.length == 1 )
         {
-            final AMX   amx = getProxy( objectName, AMX.class);
-                
-            removeConfig( amx.getJ2EEType(), amx.getName() );
+cdebug( "removeConfig: by operationName + name" );
+            // remove by name, type is implicit in method name
+            removeConfig( operationNameToJ2EEType(operationName), (String)args[0] );
+        }
+        else if ( args.length == 2 )
+        {
+cdebug( "removeConfig: by  j2eeType + name" );
+            // generic form
+            if ( ! operationName.equals( "removeConfig" ) )
+            {
+                throw new IllegalArgumentException();
+            }
+            removeConfig( (String)args[0], (String)args[1] );
         }
         else
         {
-    		throw new IllegalArgumentException( "Not found: " + name );
+            throw new IllegalArgumentException();
         }
    }
       
@@ -1006,24 +1034,14 @@ cdebug( "createConfig: j2eeType = " + j2eeType + ", return type = " + returnType
 
 	    if ( isRemoveConfig( operationName, args, types ) )
 	    {
-            /*
 	        try
 	        {
-	            if ( numArgs == 0 )
-	            {
-	                // a single, possibly unnamed containee
-	                removeConfig( operationName );
-	            }
-	            else
-	            {
-	                removeConfig( operationName, args, types );
-	            }
+                removeConfig( operationName, args, types );
 	        }
 	        catch( InvocationTargetException e )
 	        {
 	            throw new MBeanException( e );
 	        }
-            */
 	    }
 	    else if ( isCreateConfig( operationName ) )
 	    {

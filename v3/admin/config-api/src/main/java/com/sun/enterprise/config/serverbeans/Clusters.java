@@ -43,10 +43,11 @@ import org.jvnet.hk2.config.Element;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.component.Injectable;
 
-import java.io.Serializable;
 import java.util.List;
 
 
+import org.glassfish.api.amx.AMXConfigInfo;
+import org.glassfish.api.amx.AMXCreatorInfo;
 /**
  *
  */
@@ -54,7 +55,8 @@ import java.util.List;
 /* @XmlType(name = "", propOrder = {
     "cluster"
 }) */
-@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="org.glassfish.admin.amx.loader.AMXConfigVoid", omitAsAncestorInChildObjectName=true)
+@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.ClustersConfig", omitAsAncestorInChildObjectName=true, singleton=true)
+@AMXCreatorInfo( creatables={Cluster.class })
 @Configured
 public interface Clusters extends ConfigBeanProxy, Injectable {
 

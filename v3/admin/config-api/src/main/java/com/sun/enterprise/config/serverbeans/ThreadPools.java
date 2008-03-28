@@ -46,6 +46,8 @@ import org.jvnet.hk2.component.Injectable;
 import java.io.Serializable;
 import java.util.List;
 
+import org.glassfish.api.amx.AMXConfigInfo;
+import org.glassfish.api.amx.AMXCreatorInfo;
 
 /**
  *
@@ -54,7 +56,9 @@ import java.util.List;
 /* @XmlType(name = "", propOrder = {
     "threadPool"
 }) */
-@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="org.glassfish.admin.amx.loader.AMXConfigVoid")
+@AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.ThreadPoolsConfig", omitAsAncestorInChildObjectName=true, singleton=true)
+// general solution needed; this is intermediate solution
+@AMXCreatorInfo( creatables={ThreadPool.class })
 @Configured
 public interface ThreadPools extends ConfigBeanProxy, Injectable  {
 

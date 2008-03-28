@@ -71,6 +71,7 @@ import com.sun.appserv.management.base.Container;
     property.  Obviously no method that uses 'boolean' could get or set a String.
 */
 
+@AMXCreateInfo(paramNames={"name","resource-adapter-name", "connection-definition-name", "optional"})
 public interface ConnectorConnectionPoolConfig
     extends NamedConfigElement, Description, PropertiesAccess,
         Container, ResourceRefConfigReferent
