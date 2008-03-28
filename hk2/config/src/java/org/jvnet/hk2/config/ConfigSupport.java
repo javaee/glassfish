@@ -33,8 +33,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
- 
- package org.jvnet.hk2.config;
+package org.jvnet.hk2.config;
 
 import org.jvnet.hk2.annotations.Service;
 
@@ -259,6 +258,8 @@ public class ConfigSupport {
         return bean.getProxyType();
     }
 
+    protected static void debug( final String s ) { System.out.println(s); }
+    
     /**
      * sort events and dispatch the changes. There will be only one notification of event
      * per event type, per object, meaning that if an object has had 3 attributes changes, the
@@ -269,7 +270,6 @@ public class ConfigSupport {
      * @param logger to log any issues.
      */
     public static void sortAndDispatch(PropertyChangeEvent[] events, Changed target, Logger logger) {
-
 
         List<PropertyChangeEvent> unprocessed = new ArrayList<PropertyChangeEvent>();
         List<Dom> added = new ArrayList<Dom>();
@@ -419,15 +419,32 @@ public class ConfigSupport {
                 WriteableView writeableParent = (WriteableView) Proxy.getInvocationHandler(param);
                 Class parentProxyType = parent.getProxyType();
 
+                Class<?> targetClass = null;
                 // first we need to find the element associated with this type
                 ConfigModel.Property element = null;
                 for (ConfigModel.Property e : parent.model.elements.values()) {
                     ConfigModel elementModel =  ((ConfigModel.Node) e).model;
+            
+                    debug( "elementModel.targetTypeName = " + elementModel.targetTypeName +
+                            ", collection: " + e.isCollection() + ", childType.getName() = " + childType.getName() );
+                            
                     if (elementModel.targetTypeName.equals(childType.getName())) {
                         element = e;
                         break;
                     }
+                    else if ( e.isCollection() ) {
+                        try {
+                            final Class<?> tempClass = childType.getClassLoader().loadClass( elementModel.targetTypeName );
+                            if ( tempClass.isAssignableFrom( childType ) ) {
+                                element = e;
+                                targetClass = tempClass;
+                                break;
+                            }
+                        } catch (Exception ex ) { 
+                            debug( "EXCEPTION getting class for " + elementModel.targetTypeName ); }
+                    }
                 }
+                
                 // now depending whether this is a collection or a single leaf,
                 // we need to process this setting differently
                 if (element != null) {
