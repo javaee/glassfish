@@ -402,7 +402,7 @@ public class AMXRoot {
             String val = newProps.get(propName);
             if (config.existsProperty(propName)){
                 String oldValue = config.getPropertyValue(propName);
-                if ( ! oldValue.equals(val))
+                if ( ! val.equals(oldValue))
                     config.setPropertyValue(propName, val);
             }else
                 config.createProperty(propName, val);
