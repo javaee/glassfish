@@ -105,7 +105,7 @@ public class WebProtocolHandler implements ProtocolHandler {
     public WebProtocolHandler(Mode mode, GrizzlyEmbeddedHttp grizzlyEmbeddedHttp) {
         this.mode = mode;
         this.grizzlyEmbeddedHttp = grizzlyEmbeddedHttp;
-        logger = GrizzlyEmbeddedHttp.getLogger();
+        logger = GrizzlyEmbeddedHttp.logger();
     }
 
     

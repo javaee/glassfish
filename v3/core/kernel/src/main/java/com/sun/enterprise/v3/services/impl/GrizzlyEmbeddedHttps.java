@@ -130,9 +130,9 @@ public class GrizzlyEmbeddedHttps extends GrizzlyEmbeddedHttp implements SecureS
     protected ProcessorTask newProcessorTask(boolean initialize){                                                      
         SSLDefaultProcessorTask task = null;
         if (!asyncExecution) {
-            task = new SSLDefaultProcessorTask(initialize, isBufferResponse());
+            task = new SSLDefaultProcessorTask(initialize, getBufferResponse());
         } else {
-            task = new SSLAsyncProcessorTask(initialize, isBufferResponse());
+            task = new SSLAsyncProcessorTask(initialize, getBufferResponse());
         }      
         return configureProcessorTask(task);        
     }

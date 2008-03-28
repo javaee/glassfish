@@ -135,7 +135,7 @@ public class GrizzlyEmbeddedHttpConfigurator {
                     new Object[] {
                         acceptorThreads,
                         httpListener.getId(),
-                        Integer.toString(grizzlyEmbeddedHttp.getMaxProcessorWorkerThreads()) });
+                        Integer.toString(grizzlyEmbeddedHttp.getMaxThreads()) });
             }  
         }
 
@@ -394,12 +394,10 @@ public class GrizzlyEmbeddedHttpConfigurator {
         if (rp == null) return;
 
         try{
-            grizzlyEmbeddedHttp.setMaxProcessorWorkerThreads(
+            grizzlyEmbeddedHttp.setMaxThreads(
                     Integer.parseInt(rp.getThreadCount()));
             grizzlyEmbeddedHttp.setMinWorkerThreads(
                     Integer.parseInt(rp.getInitialThreadCount()));
-            grizzlyEmbeddedHttp.setThreadsTimeout(
-                    Integer.parseInt(rp.getRequestTimeoutInSeconds())); 
             grizzlyEmbeddedHttp.setThreadsIncrement(
                     Integer.parseInt(rp.getThreadIncrement()));
             grizzlyEmbeddedHttp.setMaxHttpHeaderSize(
@@ -440,10 +438,6 @@ public class GrizzlyEmbeddedHttpConfigurator {
         if ("bufferSize".equals(propName)) {
             grizzlyEmbeddedHttp.setBufferSize(Integer.parseInt(propValue)); 
             return true; 
-        } else if ("recycle-objects".equals(propName)) {
-            grizzlyEmbeddedHttp.setRecycleTasks(
-                    ConfigBeansUtilities.toBoolean(propValue));
-            return true;
         } else if ("use-nio-direct-bytebuffer".equals(propName)) {
             grizzlyEmbeddedHttp.setUseByteBufferView(
                     ConfigBeansUtilities.toBoolean(propValue));
@@ -528,9 +522,7 @@ public class GrizzlyEmbeddedHttpConfigurator {
                     continue;
                 }
                 
-                if ("connectionTimeout".equals(propName)) {
-                    grizzlyEmbeddedHttp.setSoTimeout(Integer.parseInt(propValue));
-                } else if ("tcpNoDelay".equals(propName)) {
+                if ("tcpNoDelay".equals(propName)) {
                     grizzlyEmbeddedHttp.setTcpNoDelay(
                             ConfigBeansUtilities.toBoolean(propValue));
                 } else if ("traceEnabled".equals(propName)) {

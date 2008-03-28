@@ -62,7 +62,7 @@ public class ContextRootMapper {
     
     public ContextRootMapper(GrizzlyEmbeddedHttp grizzlyEmbeddedHttp) {
         this.grizzlyEmbeddedHttp = grizzlyEmbeddedHttp;
-        logger = GrizzlyEmbeddedHttp.getLogger();
+        logger = GrizzlyEmbeddedHttp.logger();
     }
 
     
