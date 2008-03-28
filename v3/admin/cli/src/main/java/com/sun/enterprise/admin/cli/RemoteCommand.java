@@ -46,6 +46,8 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URLEncoder;
 import java.util.Map;
+import java.util.List;
+import java.util.ArrayList;
 import java.util.Vector;
 import java.util.StringTokenizer;
 import java.util.jar.Attributes;
@@ -341,24 +343,80 @@ public class RemoteCommand {
     }
 
     private void processHelp(Manifest m) {
+        System.out.println("NAME :");
+        displayInProperLen(m.getMainAttributes().getValue("message"));
         System.out.println("");
-        System.out.println(m.getMainAttributes().getValue("message"));
-        System.out.println("");
-        System.out.println("Parameters : ");
         Attributes attr = m.getMainAttributes();
+        System.out.println("SYNOPSYS :");
+        String usageText = attr.getValue("SYNOPSYS_value");
+        if (usageText.startsWith("Usage: ")) {
+            System.out.println("\t" + attr.getValue("SYNOPSYS_value").substring(7));            
+        } else {
+            System.out.println("\t" + attr.getValue("SYNOPSYS_value"));
+        }
+        System.out.println("");        
+        System.out.println("OPTIONS : ");
         String keys = attr.getValue("keys");
+        List<String> operands = new ArrayList();
         if (keys != null) {
             StringTokenizer token = new StringTokenizer(keys, ";");
             if (token.hasMoreTokens()) {
                 while (token.hasMoreTokens()) {
                     String property = token.nextToken();
+                    if (property.endsWith("operand")) {
+                            //collect operands and display later
+                        operands.add(property);
+                    }
+                    if (property.endsWith("SYNOPSYS")) {
+                            //do not want to display operand and synopsis
+                        continue;
+                    }
                     String name = attr.getValue(property + "_name");
                     String value = attr.getValue(property + "_value");
-                    logger.printMessage("\t" + name + " : " + value);
+                    logger.printMessage("\t--" + name);
+                    displayInProperLen(value);
+                    logger.printMessage("");
                 }
             }
         }
+        displayOperands(operands, attr);
     }
+
+    
+    private void displayOperands(final List<String> operands, Attributes attr) {
+        //display operands
+        if (!operands.isEmpty()) {
+            System.out.println("OPERANDS : ");
+            for (String operand : operands) {
+                final String value = attr.getValue(operand + "_value");
+                String displayStr = operand.substring(0, operand.length()-8)
+                                    + " - " + value;
+                displayInProperLen(displayStr);
+                logger.printMessage("");            
+            }
+        }
+    }
+    
+
+    private void displayInProperLen(String strToDisplay) {
+        int index = 0;
+        for (int ii=0; ii+70<strToDisplay.length();ii+=70) {
+            index=ii+70;
+            String subStr = strToDisplay.substring(ii, index+1);
+            if (subStr.endsWith(" ") || subStr.endsWith(",") ||
+                subStr.endsWith(".") || subStr.endsWith("-") ) {
+                logger.printMessage("\t" + subStr);
+                ii++;
+                index++;
+            } else {
+                logger.printMessage("\t" + strToDisplay.substring(ii, index) + "-");
+            }
+        }
+        if (index < strToDisplay.length()) {
+            logger.printMessage("\t" + strToDisplay.substring(index));
+        }
+    }
+    
 
     private void processMessage(Manifest m) throws CommandException {
         String exitCode = m.getMainAttributes().getValue("exit-code");
