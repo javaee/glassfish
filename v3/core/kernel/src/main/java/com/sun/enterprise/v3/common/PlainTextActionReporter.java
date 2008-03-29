@@ -32,8 +32,7 @@ import java.io.OutputStream;
  * @author bnevins
  */
 public class PlainTextActionReporter extends ActionReporter {
-    public static final String MAGIC = PlainTextActionReporter.class.getName();
-    public static final String END_HEADER_TOKEN = "%%%%%%";
+    public static final String MAGIC = "PlainTextActionReporter";
 
     public void writeReport(OutputStream os) throws IOException {
         // The caller will read MAGIC and the next characters for success/failure
@@ -42,7 +41,6 @@ public class PlainTextActionReporter extends ActionReporter {
         writer.print(MAGIC);
         if(isFailure()) {
             writer.print("FAILURE");
-            writer.print(END_HEADER_TOKEN);
             Throwable t = getFailureCause();
             
             if(t != null)
@@ -50,7 +48,6 @@ public class PlainTextActionReporter extends ActionReporter {
         }
         else {
             writer.print("SUCCESS");
-            writer.print(END_HEADER_TOKEN);
             writer.print(getMessage());
         }
         writer.flush();        
