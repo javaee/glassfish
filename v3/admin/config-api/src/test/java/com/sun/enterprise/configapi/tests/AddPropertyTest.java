@@ -56,7 +56,7 @@ public class AddPropertyTest extends ConfigApiTest {
             logger.fine("Number of events " + events.size());
             assertTrue(events.size()==3);
             for (PropertyChangeEvent event : events) {
-                logger.severe(event.toString());
+                logger.fine(event.toString());
             }
 
             Map<String, String> configChanges = new HashMap<String, String>();
@@ -72,7 +72,7 @@ public class AddPropertyTest extends ConfigApiTest {
             logger.fine("Number of events " + events.size());
             assertTrue(events.size()==3);
             for (PropertyChangeEvent event : events) {
-                logger.severe(event.toString());
+                logger.fine(event.toString());
             }
 
             ConfigSupport.sortAndDispatch(events.toArray(new PropertyChangeEvent[0]), new Changed() {
