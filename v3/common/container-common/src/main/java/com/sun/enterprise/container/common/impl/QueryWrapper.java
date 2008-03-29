@@ -39,6 +39,7 @@ package com.sun.enterprise.container.common.impl;
 import com.sun.enterprise.container.common.spi.util.CallFlowAgent;
 import com.sun.enterprise.container.common.spi.util.EntityManagerQueryMethod;
 import com.sun.enterprise.container.common.spi.util.ContainerUtil;
+import com.sun.enterprise.container.common.impl.util.DummyCallFlowAgentImpl;
 import org.jvnet.hk2.annotations.Inject;
 
 import javax.persistence.*;
@@ -80,8 +81,7 @@ import java.util.*;
  */
 public class QueryWrapper implements Query {
 
-    @Inject
-    private transient ContainerUtil containerUtil;
+    private transient CallFlowAgent callFlowAgent;
 
     // Holds current query/em delegates.  These are cleared out after
     // query execution to minimize potential entity manager resource leakage.
@@ -179,10 +179,11 @@ public class QueryWrapper implements Query {
         queryResultSetMapping = resultSetMapping;
 
         setterInvocations = new LinkedList<SetterData>();
+
+        callFlowAgent = new DummyCallFlowAgentImpl();    //TODO get it from ContainerUtil
     }
 
     public List getResultList() {
-        CallFlowAgent callFlowAgent = containerUtil.getCallFlowAgent();
         try {
             if(callFlowAgent.isEnabled()) {
                 callFlowAgent.entityManagerQueryStart(EntityManagerQueryMethod.GET_RESULT_LIST);
@@ -197,8 +198,7 @@ public class QueryWrapper implements Query {
         }
     }
 
-    public Object getSingleResult() {
-        CallFlowAgent callFlowAgent = containerUtil.getCallFlowAgent();
+    public Object getSingleResult() {;
         try {
             if(callFlowAgent.isEnabled()) {
                 callFlowAgent.entityManagerQueryStart(EntityManagerQueryMethod.GET_SINGLE_RESULT);
@@ -215,7 +215,6 @@ public class QueryWrapper implements Query {
     }
 
     public int executeUpdate() {
-        CallFlowAgent callFlowAgent = containerUtil.getCallFlowAgent();
         if(callFlowAgent.isEnabled()) {
             callFlowAgent.entityManagerQueryStart(EntityManagerQueryMethod.EXECUTE_UPDATE);
             callFlowAgent.entityManagerQueryEnd();
@@ -224,7 +223,6 @@ public class QueryWrapper implements Query {
     }
 
     public Query setMaxResults(int maxResults) {
-        CallFlowAgent callFlowAgent = containerUtil.getCallFlowAgent();
         
         try {
             if(callFlowAgent.isEnabled()) {
@@ -249,7 +247,6 @@ public class QueryWrapper implements Query {
     }
 
     public Query setFirstResult(int startPosition) {
-        CallFlowAgent callFlowAgent = containerUtil.getCallFlowAgent();
         
         try {
             if(callFlowAgent.isEnabled()) {
@@ -275,7 +272,6 @@ public class QueryWrapper implements Query {
     }
 
     public Query setHint(String hintName, Object value) {
-        CallFlowAgent callFlowAgent = containerUtil.getCallFlowAgent();
         
         try {
             if(callFlowAgent.isEnabled()) {
@@ -296,7 +292,6 @@ public class QueryWrapper implements Query {
     }
 
     public Query setParameter(String name, Object value) {
-        CallFlowAgent callFlowAgent = containerUtil.getCallFlowAgent();
         
         try {
             if(callFlowAgent.isEnabled()) {
@@ -318,7 +313,6 @@ public class QueryWrapper implements Query {
 
     public Query setParameter(String name, Date value, 
                               TemporalType temporalType) {
-        CallFlowAgent callFlowAgent = containerUtil.getCallFlowAgent();
         
         try {
             if(callFlowAgent.isEnabled()) {
@@ -340,7 +334,6 @@ public class QueryWrapper implements Query {
 
     public Query setParameter(String name, Calendar value, 
                               TemporalType temporalType) {
-        CallFlowAgent callFlowAgent = containerUtil.getCallFlowAgent();
         try {
             if(callFlowAgent.isEnabled()) {
                 callFlowAgent.entityManagerQueryStart(EntityManagerQueryMethod.SET_PARAMETER_STRING_CALENDAR_TEMPORAL_TYPE);
@@ -360,7 +353,6 @@ public class QueryWrapper implements Query {
     }
 
     public Query setParameter(int position, Object value) {
-        CallFlowAgent callFlowAgent = containerUtil.getCallFlowAgent();
         
         try {
             if(callFlowAgent.isEnabled()) {
@@ -382,7 +374,6 @@ public class QueryWrapper implements Query {
 
     public Query setParameter(int position, Date value, 
                               TemporalType temporalType) {
-        CallFlowAgent callFlowAgent = containerUtil.getCallFlowAgent();
         
         try {
             if(callFlowAgent.isEnabled()) {
@@ -405,7 +396,6 @@ public class QueryWrapper implements Query {
 
     public Query setParameter(int position, Calendar value, 
                               TemporalType temporalType) {
-        CallFlowAgent callFlowAgent = containerUtil.getCallFlowAgent();
         
         try {
             if(callFlowAgent.isEnabled()) {
@@ -427,7 +417,6 @@ public class QueryWrapper implements Query {
     }
 
     public Query setFlushMode(FlushModeType flushMode) {
-        CallFlowAgent callFlowAgent = containerUtil.getCallFlowAgent();
         
         try {
             if(callFlowAgent.isEnabled()) {
