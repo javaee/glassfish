@@ -72,6 +72,9 @@ public class UndeployCommand extends ApplicationLifecycle implements AdminComman
     @Param(primary = true, name=DeployCommand.NAME)
     String name=null;
 
+    @Param(optional=true)
+    String target = "server";
+
     @Inject
     Applications applications;
 
