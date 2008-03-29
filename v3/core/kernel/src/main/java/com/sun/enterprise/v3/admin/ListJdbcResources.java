@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2008 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -74,7 +74,6 @@ public class ListJdbcResources implements AdminCommand {
         final ActionReport report = context.getActionReport();
 
         report.getTopMessagePart().setMessage(localStrings.getLocalString("list.jdbc.resources.success", "list-jdbc-resources successful"));
-        report.getTopMessagePart().setChildrenType("jdbc-resource");
         try {
             JDBCResourceManager jdbcMgr = new JDBCResourceManager();
             ArrayList<String> list = jdbcMgr.list(resources);

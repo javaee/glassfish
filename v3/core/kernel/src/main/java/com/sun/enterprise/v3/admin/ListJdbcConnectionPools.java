@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2008 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -72,7 +72,6 @@ public class ListJdbcConnectionPools implements AdminCommand {
         final ActionReport report = context.getActionReport();
 
         report.getTopMessagePart().setMessage(localStrings.getLocalString("list.jdbc.connection.pools.success", "list-jdbc-connection-pools successful"));
-        report.getTopMessagePart().setChildrenType("jdbc-connection-pool");
          try {
             JDBCConnectionPoolManager connPoolMgr = new JDBCConnectionPoolManager();
             ArrayList<String> list = connPoolMgr.list(connPools);

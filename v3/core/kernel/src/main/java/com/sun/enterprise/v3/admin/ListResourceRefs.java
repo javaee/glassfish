@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2008 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -38,6 +38,7 @@ package com.sun.enterprise.v3.admin;
 import com.sun.enterprise.config.serverbeans.ResourceRef;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.enterprise.universal.glassfish.SystemPropertyConstants;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.I18n;
@@ -60,17 +61,8 @@ public class ListResourceRefs implements AdminCommand {
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(ListResourceRefs.class);
 
     @Param(optional=true, primary=true)
-    String target = "server";
-    
-    /* no target support
-    @Inject
-    ResourceRef[] resourceRefs;
-    
-    @Inject
-    Server server;
-     */
-    
-    /* target support */
+    String target = SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME;
+
     @Inject
     Server[] servers;
 
@@ -84,7 +76,6 @@ public class ListResourceRefs implements AdminCommand {
         final ActionReport report = context.getActionReport();
         
         report.getTopMessagePart().setMessage(localStrings.getLocalString("list.resource.refs.success", "list-resource-refs successful"));
-        report.getTopMessagePart().setChildrenType("resource-ref");
         try {
             for (Server server : servers) {
                 if (server.getName().equals(target)) {
