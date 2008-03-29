@@ -65,7 +65,6 @@ import org.w3c.dom.Node;
  */
 public class XMLActionReporter extends ActionReporter {
 
-    @Override
     public void writeReport(OutputStream os)  {
         try {
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();

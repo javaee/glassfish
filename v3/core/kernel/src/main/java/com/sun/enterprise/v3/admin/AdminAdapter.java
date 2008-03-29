@@ -113,7 +113,7 @@ public class AdminAdapter implements Adapter, PostConstruct {
         // so far, I only use HTMLActionReporter, but I should really look at
         // the request client.
         // XXX Really needs to be generalized
-        ActionReporter report;
+        ActionReport report;
         if (req.getHeader("User-Agent").startsWith("hk2")) {
             report = new PropsFileActionReporter();
         } else if (req.getHeader("User-Agent").startsWith("xml")) {
@@ -121,17 +121,20 @@ public class AdminAdapter implements Adapter, PostConstruct {
         } else {
             report = new HTMLActionReporter();
         }
-
+        
+        // bnevins 3/29/08 doCommand returns ActionReport
+        // this allows the command to change its reporter.
+        
         if (lock.isLocked()) {
             if (lock.tryLock(20L, TimeUnit.SECONDS)) {
                 lock.unlock();
-                doCommand(req,report);
+                report = doCommand(req,report);
             } else {
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                 report.setMessage("V3 cannot process this command at this time, please wait");
             }
         } else {
-            doCommand(req, report);        
+            report = doCommand(req, report);        
         }
 
         InternalOutputBuffer outputBuffer = (InternalOutputBuffer) res.getOutputBuffer();
@@ -146,7 +149,7 @@ public class AdminAdapter implements Adapter, PostConstruct {
         res.finish();
     }
 
-    private void doCommand(Request req, ActionReport report) {
+    private ActionReport doCommand(Request req, ActionReport report) {
 
         String requestURI = req.requestURI().toString();
         if (!requestURI.startsWith(PREFIX_URI)) {
@@ -154,7 +157,7 @@ public class AdminAdapter implements Adapter, PostConstruct {
                     "Wrong request landed in AdminAdapter {0}", requestURI);
             report.setMessage(msg);
             Utils.getDefaultLogger().info(msg);
-            return;
+            return report;
         }
         
          // wbn handle no command and no slash-suffix
@@ -167,7 +170,7 @@ public class AdminAdapter implements Adapter, PostConstruct {
         try {
             if (req.method().toString().equalsIgnoreCase(GET)) {
                 logger.fine("***** AdminAdapter GET  *****");
-                commandRunner.doCommand(command, parameters, report);            
+                report = commandRunner.doCommand(command, parameters, report);            
             }
             else if (req.method().toString().equalsIgnoreCase(POST)) {
                 logger.fine("***** AdminAdapter POST *****");
@@ -175,7 +178,7 @@ public class AdminAdapter implements Adapter, PostConstruct {
                     try {
                         final String uploadFile = doUploadFile(req, report, parameters.getProperty("path"));
                         parameters.setProperty("path", uploadFile);
-                        commandRunner.doCommand(command, parameters, report);
+                        report = commandRunner.doCommand(command, parameters, report);
                     }
                     catch (IOException ioe) {
                         logger.log(Level.WARNING, ioe.getMessage());
@@ -194,6 +197,7 @@ public class AdminAdapter implements Adapter, PostConstruct {
             report.setMessage(t.getLocalizedMessage());
             report.setActionDescription("Last-chance AdminAdapter exception handler");
         }
+        return report;
     }
 
 

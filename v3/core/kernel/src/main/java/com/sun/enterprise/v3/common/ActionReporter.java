@@ -24,6 +24,7 @@
 package com.sun.enterprise.v3.common;
 
 
+import java.io.*;
 import org.glassfish.api.ActionReport;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -42,11 +43,36 @@ public abstract class ActionReporter implements ActionReport {
     protected List<ActionReporter> subActions = new ArrayList<ActionReporter>();
     protected ExitCode exitCode = ExitCode.SUCCESS;
     protected MessagePart topMessage = new MessagePart();
-    
+    protected String contentType = "text/html";
+
     /** Creates a new instance of HTMLActionReporter */
     public ActionReporter() {
     }
 
+    public void setFailure() {
+        setActionExitCode(ExitCode.FAILURE);
+    }
+    
+    public boolean isFailure() {
+        return getActionExitCode() == ExitCode.FAILURE;
+    }
+    
+    public void setWarning() {
+        setActionExitCode(ExitCode.WARNING);
+    }
+
+    public boolean isWarning() {
+        return getActionExitCode() == ExitCode.WARNING;
+    }
+    
+    public boolean isSuccess() {
+        return getActionExitCode() == ExitCode.SUCCESS;
+    }
+    
+    public void setSuccess() {
+        setActionExitCode(ExitCode.SUCCESS);
+    }
+    
     public void setActionDescription(String message) {
         this.actionDescription = message;
     }
@@ -54,7 +80,10 @@ public abstract class ActionReporter implements ActionReport {
     public void setFailureCause(Throwable t) {
         this.exception = t;
     }
-
+    public Throwable getFailureCause() {
+        return exception;
+    }
+        
     public MessagePart getTopMessagePart() {
         return topMessage;
     }
@@ -88,7 +117,32 @@ public abstract class ActionReporter implements ActionReport {
         return topMessage.getMessage();
     }
         
-    public abstract void writeReport(OutputStream os) throws IOException;
+    
+    public void setMessage(InputStream in) {
+        try {
+            if(in == null)
+                throw new NullPointerException("Internal Error - null InputStream");
+
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            copyStream(in, baos);
+            setMessage(baos.toString());
+        }
+        catch (Exception ex) {
+            setActionExitCode(ExitCode.FAILURE);
+            setFailureCause(ex);
+        }
+    }
+
+    private void copyStream(InputStream in, OutputStream out) throws IOException {
+        byte[] buf = new byte[1024];
+        int len;
+        while ((len = in.read(buf)) >= 0) {
+            out.write(buf, 0, len);
+        }
+
+        out.close();
+        in.close();
+    }
     
     /**
      * Returns the content type to be used in sending the response back to 
@@ -99,6 +153,9 @@ public abstract class ActionReporter implements ActionReport {
      * @return content type to be used in formatting the command response to the client
      */
     public String getContentType() {
-        return "text/html";
+        return contentType;
+    }
+    public void setContentType(String s) {
+        contentType = s;
     }
 }

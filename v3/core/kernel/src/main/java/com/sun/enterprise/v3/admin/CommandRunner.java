@@ -37,7 +37,9 @@ package com.sun.enterprise.v3.admin;
 
 import com.sun.enterprise.module.impl.Utils;
 import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.enterprise.v3.common.PlainTextActionReporter;
 import com.sun.logging.LogDomains;
+import java.io.*;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -84,13 +86,13 @@ public class CommandRunner {
      * @param parameters name/value pairs to be passed to the command
      * @param report will hold the result of the command's execution
      */
-    public void doCommand(final String commandName, final Properties parameters, final ActionReport report) {
+    public ActionReport doCommand(final String commandName, final Properties parameters, final ActionReport report) {
 
         final AdminCommand handler = getCommand(commandName, report, logger);
         if (handler==null) {
-            return;
+            return report;
         }
-        doCommand(commandName, handler, parameters, report);
+        return doCommand(commandName, handler, parameters, report);
     }
 
     /**
@@ -100,15 +102,26 @@ public class CommandRunner {
      * @param parameters name/value pairs to be passed to the command
      * @param report will hold the result of the command's execution
      */
-    public void doCommand(
+    public ActionReport doCommand(
             final String commandName, 
             final AdminCommand command, 
             final Properties parameters, 
             final ActionReport report) {
         
         if (parameters.size()==1 && parameters.get("help")!=null) {
+            InputStream in = getManPage(commandName, command);
+            report.setMessage(in);
+
+            // if there was any error -- failure will be set
+            if(report.getActionExitCode() != ActionReport.ExitCode.FAILURE) {
+                // everything was Kosher.  We will use the man page
+                ActionReport report2 = new PlainTextActionReporter();
+                report2.setMessage(report.getMessage());
+                report2.setActionExitCode(ActionReport.ExitCode.SUCCESS);
+                return report2;
+            }
             getHelp(commandName, command, report);
-            return;
+            return report;
         }
         report.setActionDescription(commandName + " AdminCommand");
 
@@ -187,7 +200,7 @@ public class CommandRunner {
             report.setFailureCause(e);
             ActionReport.MessagePart childPart = report.getTopMessagePart().addChild();
             childPart.setMessage(usage);
-            return;
+            return report;
         } catch (ComponentException e) {
             logger.severe(e.getMessage());
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
@@ -195,7 +208,7 @@ public class CommandRunner {
             report.setFailureCause(e);
             ActionReport.MessagePart childPart = report.getTopMessagePart().addChild();
             childPart.setMessage(getUsageText(command));
-            return;
+            return report;
         }
 
         // the command may be an asynchronous command, so we need to check
@@ -224,6 +237,7 @@ public class CommandRunner {
             report.setMessage(
                     adminStrings.getLocalString("adapter.command.launch", "{0} launch successful", commandName));
         }
+        return report;
     }
 
     protected String getParamDescription(LocalStringManagerImpl localStrings, String i18nKey, String paramName, AnnotatedElement annotated) {
@@ -532,6 +546,17 @@ public class CommandRunner {
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
     }
 
+    public InputStream getManPage(String commandName, AdminCommand command) {
+        // bnevins -- too bad there is no AdminCommand baseclass.  We could make it
+        // do the work but, alas, there is no such thing.
+        Class clazz = command.getClass();
+        Package pkg = clazz.getPackage();
+        String manPage = pkg.getName().replace('.', '/');
+        manPage += "/" + commandName + ".1";
+        ClassLoader loader = clazz.getClassLoader();
+        InputStream in = loader.getResourceAsStream(manPage);
+        return in;
+    }
 
     private void addParamUsage(ActionReport report, LocalStringManagerImpl localStrings, String i18nKey, AnnotatedElement annotated) {
         Param param = annotated.getAnnotation(Param.class);
