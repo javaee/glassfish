@@ -258,8 +258,6 @@ public class ConfigSupport {
         return bean.getProxyType();
     }
 
-    protected static void debug( final String s ) { System.out.println(s); }
-    
     /**
      * sort events and dispatch the changes. There will be only one notification of event
      * per event type, per object, meaning that if an object has had 3 attributes changes, the
@@ -425,9 +423,11 @@ public class ConfigSupport {
                 ConfigModel.Property element = null;
                 for (ConfigModel.Property e : parent.model.elements.values()) {
                     ConfigModel elementModel =  ((ConfigModel.Node) e).model;
-            
-                    debug( "elementModel.targetTypeName = " + elementModel.targetTypeName +
+
+                    if (Logger.getAnonymousLogger().isLoggable(Level.FINE)) {
+                        Logger.getAnonymousLogger().fine( "elementModel.targetTypeName = " + elementModel.targetTypeName +
                             ", collection: " + e.isCollection() + ", childType.getName() = " + childType.getName() );
+                    }
                             
                     if (elementModel.targetTypeName.equals(childType.getName())) {
                         element = e;
@@ -435,14 +435,15 @@ public class ConfigSupport {
                     }
                     else if ( e.isCollection() ) {
                         try {
-                            final Class<?> tempClass = childType.getClassLoader().loadClass( elementModel.targetTypeName );
+                            final Class<?> tempClass = childType.getClassLoader().loadClass( elementModel.targetTypeName);
                             if ( tempClass.isAssignableFrom( childType ) ) {
                                 element = e;
                                 targetClass = tempClass;
                                 break;
                             }
                         } catch (Exception ex ) { 
-                            debug( "EXCEPTION getting class for " + elementModel.targetTypeName ); }
+                            throw new TransactionFailure("EXCEPTION getting class for " + elementModel.targetTypeName, ex);
+                        }
                     }
                 }
                 
