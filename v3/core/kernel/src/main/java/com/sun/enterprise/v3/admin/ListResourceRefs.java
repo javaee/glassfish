@@ -39,6 +39,7 @@ import com.sun.enterprise.config.serverbeans.ResourceRef;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.universal.glassfish.SystemPropertyConstants;
+import java.util.List;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.I18n;
@@ -79,9 +80,16 @@ public class ListResourceRefs implements AdminCommand {
         try {
             for (Server server : servers) {
                 if (server.getName().equals(target)) {
-                    for (ResourceRef ref : server.getResourceRef()) {
+                    List<ResourceRef> resourceRefs = server.getResourceRef();
+                    if (resourceRefs.isEmpty()) {
                         final ActionReport.MessagePart part = report.getTopMessagePart().addChild();
-                        part.setMessage(ref.getRef());
+                        part.setMessage(localStrings.getLocalString(
+                                "NothingToList", "Nothing to List."));
+                    } else {
+                        for (ResourceRef ref : resourceRefs) {
+                            final ActionReport.MessagePart part = report.getTopMessagePart().addChild();
+                            part.setMessage(ref.getRef());
+                        }
                     }
                 }
             }
