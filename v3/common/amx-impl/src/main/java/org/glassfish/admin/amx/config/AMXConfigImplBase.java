@@ -747,6 +747,8 @@ public class AMXConfigImplBase extends AMXImplBase
         Map<String,String> result = new HashMap<String,String>();
         if ( optionalAttrs != null )
         {
+            final Set<String> toRemove = new HashSet<String>();
+            
             for( final String key : optionalAttrs.keySet() )
             {
                 if ( key.startsWith( prefix ) )
@@ -756,11 +758,15 @@ public class AMXConfigImplBase extends AMXImplBase
                     {
                         throw new IllegalArgumentException("Property names must be non-zero length" );
                     }
-                    
+                    //cdebug( "put property: " + propertyName + " = " + optionalAttrs.get(key)  );
                     result.put( propertyName, "" + optionalAttrs.get(key) );
-                    optionalAttrs.remove( key );
+                    toRemove.add( key );
                 }
             }
+            
+            // remove all items we extracted
+            //cdebug( "removing properties: " + CollectionUtil.toString( toRemove ) );
+            optionalAttrs.keySet().removeAll( toRemove );
         }
         return result;
     }
@@ -772,13 +778,12 @@ public class AMXConfigImplBase extends AMXImplBase
         String[]	   types)
         throws ClassNotFoundException, TransactionFailure
    {
-    setAMXDebug(true);
         if ( ! isCreateConfig( operationName ) )
         {
             throw new IllegalArgumentException( "Illegal method name for create: " + operationName );
         }
         
-cdebug( "last ARG = " + args[args.length -1] );
+        //cdebug( "last ARG = " + args[args.length -1] );
         ObjectName  result  = null;
         
         /*
@@ -789,6 +794,7 @@ cdebug( "last ARG = " + args[args.length -1] );
                 createFooConfig()
          */
         Map<String,Object> optionalAttrs = null;
+
         int numRequiredArgs = args.length;
         if ( args.length >= 1 )
         {
@@ -799,7 +805,8 @@ cdebug( "last ARG = " + args[args.length -1] );
                 numRequiredArgs = args.length - 1;
             }
         }
-cdebug( "createConfig: " + operationName + ", args = " + StringUtil.toString(args) + ", types = " + StringUtil.toString(types) + " ===> numRequiredArgs = " + numRequiredArgs + ", optionalAttrs = " + MapUtil.toString(optionalAttrs) );
+    cdebug( "createConfig: " + operationName + ", args = " + StringUtil.toString(args) + ", types = " + StringUtil.toString(types) + " ===> numRequiredArgs = " + numRequiredArgs + ", optionalAttrs = " + MapUtil.toString(optionalAttrs) );
+
         
         final Class[] signature = ClassUtil.signatureFromClassnames(types);
         final Method m = getCreateMethod( operationName, signature );
@@ -821,7 +828,7 @@ cdebug( "createConfig: j2eeType = " + j2eeType + ", return type = " + returnType
         final String altJ2EEType = XTypes.PREFIX + operationName.substring( CREATE_PREFIX.length(), operationName.length() );
         if ( ! j2eeType.equals(altJ2EEType) )
         {
-            throw new RuntimeException( "j2eeType " + j2eeType + " != " + altJ2EEType );
+            throw new IllegalArgumentException( "j2eeType " + j2eeType + " != " + altJ2EEType );
         }
                 
         AMXCreateInfo amxCreateInfo = m.getAnnotation( AMXCreateInfo.class );
@@ -887,7 +894,7 @@ cdebug( "createConfig: j2eeType = " + j2eeType + ", return type = " + returnType
             allAttrs.put( paramNames[i], value );
         }
   
-    cdebug( "calling ConfigSupport.createAndSet() " );
+cdebug( "calling ConfigSupport.createAndSet() " );
         ConfigBean newConfigBean = null;
         try
         {
