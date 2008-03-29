@@ -126,7 +126,9 @@ public class RemoteCommand {
                 //do not want to add host/port/upload/secure/user/password to the uri
                 if (paramName.equals("host") || paramName.equals("port") ||
                     paramName.equals("upload") || paramName.equals("user") ||
-                    paramName.equals("passwordfile") || paramName.equals("secure") ) {
+                    paramName.equals("passwordfile") || paramName.equals("secure") ||
+                    paramName.equals("terse") || paramName.equals("echo") ||
+                    paramName.equals("interactive") ) {
                     continue;
                 }
                 try {
