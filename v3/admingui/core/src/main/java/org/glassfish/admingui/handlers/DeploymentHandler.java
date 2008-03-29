@@ -96,7 +96,7 @@ public class DeploymentHandler {
      protected static void deploy(String[] targets, Properties deploymentProps, String location,  HandlerContext handlerCtx) throws Exception {
             
      	deploymentProps.setProperty(DFDeploymentProperties.FORCE, "false");
-        deploymentProps.setProperty(DFDeploymentProperties.DEFAULT_UPLOAD, "false");
+        deploymentProps.setProperty(DFDeploymentProperties.UPLOAD, "false");
         String appType = deploymentProps.getProperty("appType");
         
         deploymentProps.remove("appType");
