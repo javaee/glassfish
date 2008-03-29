@@ -42,8 +42,7 @@ import org.jvnet.hk2.annotations.Extract;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 
-import org.glassfish.api.Startup;
-import org.glassfish.api.Async;
+import org.glassfish.internal.api.Init;
 
 
 /**
@@ -60,9 +59,7 @@ import org.glassfish.api.Async;
     incompatibilities.
  */
 @Service
-@Async
-public final class AppserverMBeanServerFactory implements Startup
-{
+public final class AppserverMBeanServerFactory implements Init {
     // we'd ideally like to name things, but @Extract is not working
     public static final String OFFICIAL_MBEANSERVER = "Official_MBeanServer";
     
@@ -74,11 +71,6 @@ public final class AppserverMBeanServerFactory implements Startup
         //officialMBeanServer = ManagementFactory.getPlatformMBeanServer();
         officialMBeanServer = AppserverMBeanServer.getInstance();
     }
-    
-    public Startup.Lifecycle getLifecycle() {
-        return Startup.Lifecycle.SERVER;
-    }
-    
 }
 
 
