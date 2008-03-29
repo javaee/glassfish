@@ -36,8 +36,11 @@ package com.sun.enterprise.v3.deployment;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.I18n;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.component.PerLookup;
 import com.sun.enterprise.v3.admin.CommandRunner;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 
@@ -46,6 +49,8 @@ import com.sun.enterprise.util.LocalStringManagerImpl;
  * @author Jerome Dochez
  */
 @Service(name="list-applications")
+@I18n("list.applications")
+@Scoped(PerLookup.class)
 public class ListApplicationsCommand implements AdminCommand {
 
     @Inject

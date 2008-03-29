@@ -55,7 +55,7 @@ import java.util.List;
  * list-components command
  */
 @Service(name="list-components")
-@I18n("list.compnents")
+@I18n("list.components")
 @Scoped(PerLookup.class)
 public class ListComponentsCommand extends ApplicationLifecycle implements AdminCommand {
 
