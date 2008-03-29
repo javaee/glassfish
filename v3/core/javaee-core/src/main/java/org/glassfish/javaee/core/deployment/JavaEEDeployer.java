@@ -92,10 +92,10 @@ public abstract class JavaEEDeployer<T extends Container, U extends ApplicationC
     protected ModulesRegistry modulesRegistry;
 
     @Inject(name="application_deploy", optional=true)
-    ApplicationVisitor deploymentVisitor=null;
+    protected ApplicationVisitor deploymentVisitor=null;
 
     @Inject(name="application_undeploy", optional=true)
-    ApplicationVisitor undeploymentVisitor=null;
+    protected ApplicationVisitor undeploymentVisitor=null;
 
     private static String CLIENT_JAR_MAKER_CHOICE = System.getProperty(
         DeploymentImplConstants.CLIENT_JAR_MAKER_CHOICE);

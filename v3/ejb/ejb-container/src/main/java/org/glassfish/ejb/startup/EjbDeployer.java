@@ -28,13 +28,17 @@ import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.EjbBundleDescriptor;
 import com.sun.enterprise.deployment.EjbDescriptor;
 import com.sun.enterprise.deployment.RootDeploymentDescriptor;
+import com.sun.enterprise.deployment.archivist.Archivist;
+import com.sun.enterprise.deployment.archivist.EjbInWarArchivist;
 import com.sun.enterprise.server.ServerContext;
 import com.sun.enterprise.v3.server.ServerEnvironment;
 import com.sun.enterprise.module.ModuleDefinition;
 import com.sun.enterprise.module.Module;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.MetaData;
+import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.javaee.core.deployment.JavaEEDeployer;
+import org.glassfish.deployment.common.DeploymentProperties;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 
@@ -49,15 +53,15 @@ public class EjbDeployer
     extends JavaEEDeployer<EjbContainerStarter, EjbApplication> {
 
     @Inject
-    ServerContext sc;
+    protected ServerContext sc;
 
     @Inject
-    Domain domain;
+    protected Domain domain;
 
     @Inject
-    ServerEnvironment env;                                             
+    protected ServerEnvironment env;
 
-    ThreadLocal<Application> tldApp = new ThreadLocal<Application>();
+    protected ThreadLocal<Application> tldApp = new ThreadLocal<Application>();
 
     /**
      * Constructor
@@ -70,7 +74,7 @@ public class EjbDeployer
     
 
     protected String getModuleType () {
-        return "EJB";
+        return "ejb";
     }
 
     protected RootDeploymentDescriptor getDefaultBundleDescriptor() {
@@ -81,7 +85,7 @@ public class EjbDeployer
     @Override
     public MetaData getMetaData() {
         List<ModuleDefinition> apis = new ArrayList<ModuleDefinition>();
-        Module module = modulesRegistry.makeModuleFor("org.glassfish:javax.javaee", "10.0-SNAPSHOT");
+        Module module = modulesRegistry.makeModuleFor("javax.javaee:javaee", "5.0");
         if (module!=null) {
             apis.add(module.getModuleDefinition());
         }
@@ -97,20 +101,49 @@ public class EjbDeployer
         }
 
         return new MetaData(false, apis.toArray(new ModuleDefinition[apis.size()]),
-                new Class[] {Application.class}, null);
+                null, new Class[] {Application.class});
     }
 
-    
+    /*
     @Override
-    protected Application parseModuleMetaData(DeploymentContext dc) throws Exception {
-        Application app = super.parseModuleMetaData(dc);
-        if (app.isVirtual()) {
-            System.out.println("JAR???");
-        }
-        tldApp.set(app);
-        return app;
-    }
+    protected Application parseModuleMetaData(DeploymentContext dc)
+        throws Exception {
 
+        ReadableArchive sourceArchive = dc.getSource();
+        boolean isWar = sourceArchive.exists("WEB-INF");
+        if (isWar) {
+            ClassLoader cl = dc.getClassLoader();
+            Properties props = dc.getCommandParameters();
+            String name = props.getProperty(DeploymentProperties.NAME);
+
+            Archivist archivist = new EjbInWarArchivist();
+            archivist.setClassLoader(cl);
+            archivist.setAnnotationProcessingRequested(true);
+            archivist.setXMLValidation(false);
+            archivist.setRuntimeXMLValidation(false);
+
+            archivist.setDefaultBundleDescriptor(
+                    new EjbBundleDescriptor());
+
+            Application application = applicationFactory.openArchive(
+                    name, archivist, sourceArchive, true);
+
+            if (application!=null) {
+                archivist.validate(cl);
+            }
+
+            // this may not be the best location for this but it will suffice.
+            if (deploymentVisitor!=null) {
+                deploymentVisitor.accept(application);
+            }
+
+
+            return application;
+        } else {
+            return super.parseModuleMetaData(dc);
+        }
+    }
+    */
 
     @Override
     public boolean prepare(DeploymentContext dc) {

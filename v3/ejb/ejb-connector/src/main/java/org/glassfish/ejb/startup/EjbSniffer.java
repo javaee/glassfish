@@ -24,6 +24,8 @@
 package org.glassfish.ejb.startup;
 
 import com.sun.enterprise.v3.deployment.GenericSniffer;
+import com.sun.enterprise.deployment.util.AnnotationDetector;
+import com.sun.enterprise.deployment.annotation.introspection.EjbComponentAnnotationScanner;
 
 import org.glassfish.api.deployment.archive.ReadableArchive;
 
@@ -35,6 +37,7 @@ import org.jvnet.hk2.component.Singleton;
 import java.io.InputStream;
 import java.io.IOException;
 import java.util.logging.Logger;
+import java.lang.annotation.Annotation;
 
 /**
  * Implementation of the Sniffer for the Ejb container.
@@ -45,15 +48,20 @@ import java.util.logging.Logger;
 @Scoped(Singleton.class)
 public class EjbSniffer  extends GenericSniffer implements Sniffer {
 
+    private static final Class[]  ejbAnnotations = new Class[] {
+            javax.ejb.Stateless.class, javax.ejb.Stateful.class};
+
     public EjbSniffer() {
-        this("ejb", "META-INF/ejb-jar.xml", null);
+        this("ejb", "META_INF/ejb-jar.xml", null);
     }
     
     public EjbSniffer(String containerName, String appStigma, String urlPattern) {
         super(containerName, appStigma, urlPattern);
     }    
 
-    final String[] containers = { "org.glassfish.ejb.startup.EjbContainerStarter" };
+    final String[] containers = {
+            "org.glassfish.ejb.startup.EjbContainerStarter",
+    };
         
     public String[] getContainersNames() {
         return containers;
@@ -68,25 +76,27 @@ public class EjbSniffer  extends GenericSniffer implements Sniffer {
      * @return true if this sniffer handles this application type
      */
     public boolean handles(ReadableArchive location, ClassLoader loader) {
-        boolean result = super.handles(location, loader);
+        boolean result = super.handles(location, loader);    //Check ejb-jar.xml
         /*
-System.out.println(">> EjbSniffer.handles.....");
         if (result == false) {
-            InputStream is;
             try {
-                is = location.getEntry("Ejb30.class");
-                if (is != null) {
-System.out.println("Got Ejb30.class");
-                    result = true;
-                    is.close();
+                result = location.exists("WEB-INF/ejb-jar.xml");
+                if (result == false) {//Else scan for annotations
+                    AnnotationDetector detector =
+                           new AnnotationDetector(new EjbComponentAnnotationScanner());
+                    result = detector.hasAnnotationInArchive(location);
                 }
-            } catch (IOException e) {
-                // ignore
+            } catch (IOException ioEx) {
+                //TODO
             }
         }
-System.out.println("<< EjbSniffer result: " + result);
         */
         return result;
+    }
+
+    @Override
+    public Class<? extends Annotation>[] getAnnotationTypes() {
+        return ejbAnnotations;
     }
 
     /**
