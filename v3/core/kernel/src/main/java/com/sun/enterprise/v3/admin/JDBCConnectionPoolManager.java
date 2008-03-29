@@ -82,7 +82,7 @@ class JDBCConnectionPoolManager implements ResourceManager{
         for (com.sun.enterprise.config.serverbeans.Resource resource : resources.getResources()) {
             if (resource instanceof JdbcConnectionPool) {
                 if (((JdbcConnectionPool) resource).getName().equals(jdbcconnectionpoolid)) {
-                    String msg = localStrings.getLocalString("add.resources.duplicate",
+                    String msg = localStrings.getLocalString("create.jdbc.connection.pool.duplicate",
                             "A JDBC connection pool named {0} already exists.", jdbcconnectionpoolid);
                     return new ResourceStatus(ResourceStatus.FAILURE, msg);
                 }
@@ -164,7 +164,7 @@ class JDBCConnectionPoolManager implements ResourceManager{
 
         } catch(TransactionFailure tfe) {
             String msg = localStrings.getLocalString(
-                    "add.resources.fail", "JDBC connection pool {0} create failed ", 
+                    "create.jdbc.connection.pool.fail", "JDBC connection pool {0} create failed ", 
                     jdbcconnectionpoolid);
             return new ResourceStatus(ResourceStatus.FAILURE, msg);
         } /*catch(PropertyVetoException pve) {
@@ -172,7 +172,7 @@ class JDBCConnectionPoolManager implements ResourceManager{
         }*/
 
         String msg = localStrings.getLocalString(
-                "add.resources.success", "JDBC connection pool {0} created successfully", 
+                "create.jdbc.connection.pool.success", "JDBC connection pool {0} created successfully", 
                 jdbcconnectionpoolid);
         return new ResourceStatus(ResourceStatus.SUCCESS, msg);
         
@@ -224,8 +224,8 @@ class JDBCConnectionPoolManager implements ResourceManager{
 
         // ensure we already have this resource
         if (!isResourceExists(resources, jdbcconnectionpoolid)) {
-            String msg = localStrings.getLocalString("jdbcConnPool.resource.resourceDoesNotExist",
-                    "A JDBC Connection pool named {0} does not exits.", jdbcconnectionpoolid);
+            String msg = localStrings.getLocalString("delete.jdbc.connection.pool.notfound",
+                    "A JDBC connection pool named {0} does not exist.", jdbcconnectionpoolid);
             ResourceStatus status = new ResourceStatus(ResourceStatus.FAILURE, msg);
             return status;
         }
@@ -256,8 +256,8 @@ class JDBCConnectionPoolManager implements ResourceManager{
                     return null;
                 }
             }, resources) == null) {
-                String msg = localStrings.getLocalString("jdbcConnPool.resource.deletionFailed", 
-                                "JDBC Connection pool {0} delete failed ", jdbcconnectionpoolid);
+                String msg = localStrings.getLocalString("delete.jdbc.connection.pool.notfound", 
+                                "A JDBC connection pool named {0} does not exist.", jdbcconnectionpoolid);
                 ResourceStatus status = new ResourceStatus(ResourceStatus.FAILURE, msg);
                 return status;
             }
