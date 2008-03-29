@@ -36,12 +36,20 @@
 package com.sun.enterprise.transaction;
 
 import org.glassfish.api.naming.NamedNamingObjectProxy;
+import org.glassfish.api.naming.NamingObjectProxy;
+import org.glassfish.api.naming.NamingObjectsProvider;
+import org.glassfish.api.naming.GlassfishNamingManager;
+import com.sun.logging.LogDomains;
+
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.component.PostConstruct;
 
 import javax.naming.Context;
 import javax.naming.NamingException;
+
+import java.util.logging.Logger;
 
 /**
  * Proxy for creating JTA instances that get registered in the naming manager.
@@ -51,10 +59,16 @@ import javax.naming.NamingException;
  * @author Marina Vatkina
  */
 @Service
-public class TransactionNamingProxy implements NamedNamingObjectProxy {
+public class TransactionNamingProxy 
+        implements NamedNamingObjectProxy, NamingObjectsProvider, PostConstruct {
 
     @Inject
     private Habitat habitat;
+
+    @Inject
+    private GlassfishNamingManager namingManager;
+
+    private static Logger logger = LogDomains.getLogger(LogDomains.JTA_LOGGER);
 
     private static final String USER_TX = "java:comp/UserTransaction";
     private static final String USER_TX_NO_JAVA_COMP = "UserTransaction";
@@ -68,9 +82,19 @@ public class TransactionNamingProxy implements NamedNamingObjectProxy {
     private static final String APPSERVER_TRANSACTION_MGR 
             = "java:appserver/TransactionManager";
 
+    public void postConstruct() {
+        try {
+           // TODO: true or false?
+           namingManager.publishObject(USER_TX_NO_JAVA_COMP, 
+                   new UserTransactionProxy(), true);
+        } catch (NamingException e) {
+           logger.warning("Can't bind \"UserTransaction\" in JNDI");
+        }
+    }
+
     public Object handle(String name) throws NamingException {
 
-        if (USER_TX.equals(name) || USER_TX_NO_JAVA_COMP.equals(name)) {
+        if (USER_TX.equals(name)) {
 // XXX TODO: Check permissions to lookup UserTransaction
             return habitat.getComponent(UserTransactionImpl.class);
         } else if (TRANSACTION_SYNC_REGISTRY.equals(name)) {
@@ -80,5 +104,13 @@ public class TransactionNamingProxy implements NamedNamingObjectProxy {
         }
 
         return null;
+    }
+
+    private class UserTransactionProxy implements NamingObjectProxy {
+
+        public Object create(Context ic) throws NamingException {
+// XXX TODO: Check permissions to lookup UserTransaction
+            return habitat.getComponent(UserTransactionImpl.class);
+        }
     }
 }
