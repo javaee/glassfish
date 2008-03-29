@@ -23,6 +23,7 @@
 
 package org.glassfish.api;
 
+import java.io.*;
 import java.util.*;
 
 /**
@@ -44,7 +45,13 @@ public interface ActionReport {
     
     public void setFailureCause(Throwable t);
 
+    public Throwable getFailureCause();
+
     public void setMessage(String message);
+    
+    public void writeReport(OutputStream os) throws IOException;
+
+    public void setMessage(InputStream in);
 
     public String getMessage();
     
@@ -55,7 +62,10 @@ public interface ActionReport {
     public void setActionExitCode(ExitCode exitCode);
 
     public ExitCode getActionExitCode();
+    
+    public String getContentType();
 
+    public void setContentType(String s);
 
     class MessagePart {
 
