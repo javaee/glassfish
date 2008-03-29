@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.glassfish.api.ActionReport;
+import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
@@ -50,6 +51,7 @@ import org.jvnet.hk2.config.TransactionFailure;
 
 @Service(name="create-jvm-options")   //implements the cli command by this "name"
 @Scoped(PerLookup.class)            //should be provided "per lookup of this class", not singleton
+@I18n("create.jvm.options")
 public final class CreateJvmOptions implements AdminCommand {
 
     @Param(name="target", optional=true)
@@ -59,7 +61,7 @@ public final class CreateJvmOptions implements AdminCommand {
     //depends what target is being sent on command line -- this is a temporary measure
     @Inject JavaConfig jc;
     
-    @Param(primary=true)
+    @Param(name="jvm_option_name", primary=true)
     String optString;
     
     private static final StringManager lsm = StringManager.getManager(ListJvmOptions.class); 
