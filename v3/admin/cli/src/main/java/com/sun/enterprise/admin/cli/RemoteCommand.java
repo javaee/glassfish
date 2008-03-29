@@ -354,8 +354,8 @@ public class RemoteCommand {
         } else {
             System.out.println("\t" + attr.getValue("SYNOPSYS_value"));
         }
-        System.out.println("");        
-        System.out.println("OPTIONS : ");
+        System.out.println("");
+        boolean displayOptionTitle = true;
         String keys = attr.getValue("keys");
         List<String> operands = new ArrayList();
         if (keys != null) {
@@ -372,6 +372,12 @@ public class RemoteCommand {
                             //do not want to display operand and synopsis
                         continue;
                     }
+                    if (displayOptionTitle) {
+                            //display only once
+                        System.out.println("OPTIONS : ");
+                        displayOptionTitle = false;
+                    }
+                    
                     String name = attr.getValue(property + "_name");
                     String value = attr.getValue(property + "_value");
                     logger.printMessage("\t--" + name);
