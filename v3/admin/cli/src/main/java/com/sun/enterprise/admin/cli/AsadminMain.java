@@ -36,6 +36,8 @@
 package com.sun.enterprise.admin.cli;
 
 import com.sun.enterprise.cli.framework.*;
+import com.sun.enterprise.universal.i18n.LocalStrings;
+import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 
 /**
  * my v3 main, basically some throw away code
@@ -51,6 +53,10 @@ public class AsadminMain {
         catch(InvalidCommandException e) {
             CLILogger.getInstance().printDebugMessage(e.getMessage());
             exitCode = main.remote(args);
+        }
+        
+        if(exitCode == SUCCESS) {
+            CLILogger.getInstance().printMessage(strings.get("CommandSuccessful", args[0]));
         }
         System.exit(exitCode);
     }
@@ -97,6 +103,7 @@ public class AsadminMain {
     }
     private final static int ERROR = 1;
     private final static int SUCCESS = 0;
+    private final static LocalStringsImpl strings = new LocalStringsImpl(AsadminMain.class);
 }
 
 

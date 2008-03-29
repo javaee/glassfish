@@ -36,6 +36,8 @@
 package com.sun.enterprise.admin.cli;
 
 import com.sun.enterprise.cli.framework.CLILogger;
+import com.sun.enterprise.universal.i18n.LocalStringsImpl;
+import com.sun.enterprise.v3.common.PlainTextActionReporter;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -292,37 +294,35 @@ public class RemoteCommand {
 
     private void handleResponse(Map<String, String> params,
                                  InputStream in, int code) throws IOException, CommandException {
-        if (logger.isDebug()) {
-            // dump the content
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            copyStream(in, baos);
-            logger.printDebugMessage("Response\n=====");
-            logger.printDebugMessage(baos.toString());
-            logger.printDebugMessage("=====");
-            
-            System.out.println("Response\n=====");
-            System.out.println(baos);
-            System.out.println();
-            in = new ByteArrayInputStream(baos.toByteArray());
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        copyStream(in, baos);
+        String responseString = baos.toString();
+        in = new ByteArrayInputStream(baos.toByteArray());
+        Manifest m = null;
+        
+        if (code != 200) {
+            throw new CommandException("Failed : error code " + code);
         }
 
-        if (code == 200) {
-            Manifest m = getManifest(in);
-            if (m == null) {
-                return;
-            }
-
-            if (params.size() == 1 && params.get("help") != null) {
-                processHelp(m);
-            } else {
-                processMessage(m);
-            }
+        // it might not be formatted properly -- e.g. output of "amx" and man pages
+        // in that case just print the message...
+        try {
+            m = getManifest(in);
+        }
+        catch(Exception e) {
+            // handled below...
+        }
+        if (m == null) {
+            processPlainText(responseString);
+        }
+        else if (params.size() == 1 && params.get("help") != null) {
+            processHelp(m);
         } else {
-            throw new CommandException("Failed : error code " + code);
+            processMessage(m);
         }
     }
 
-    private Manifest getManifest(InputStream is) throws CommandException {
+    private Manifest getManifest(InputStream is) throws IOException {
         try {
             Manifest m = new Manifest();
             m.read(is);
@@ -331,8 +331,6 @@ public class RemoteCommand {
                 m.write(System.out);
             }
             return m;
-        } catch (IOException e) {
-            throw new CommandException("Remote Command Error: " + e.getMessage());
         } finally {
             if (is != null) {
                 try {
@@ -344,13 +342,21 @@ public class RemoteCommand {
         }
     }
 
-    private void processHelp(Manifest m) {
-        System.out.println("NAME :");
-        displayInProperLen(m.getMainAttributes().getValue("message"));
-        System.out.println("");
+    private void processHelp(Manifest m) throws CommandException {
         Attributes attr = m.getMainAttributes();
-        System.out.println("SYNOPSYS :");
         String usageText = attr.getValue("SYNOPSYS_value");
+
+        if(usageText == null) {
+            // this is one way to figure out there was an error!
+            throw new CommandException(strings.get("remoteError", 
+                    m.getMainAttributes().getValue("message")));
+        }
+        
+        
+        System.out.println("NAME :");
+        displayInProperLen(attr.getValue("message"));
+        System.out.println("");
+        System.out.println("SYNOPSIS :");
         if (usageText.startsWith("Usage: ")) {
             System.out.println("\t" + attr.getValue("SYNOPSYS_value").substring(7));            
         } else {
@@ -503,7 +509,33 @@ public class RemoteCommand {
         }
         out.close();
     }
+
+    private void processPlainText(String response) throws CommandException {
+        // format:
+        // "PlainTextActionReporterSUCCESS..." or
+        // "PlainTextActionReporterFAILURE..." or
+        if(response.startsWith(MAGIC)) {
+            response = response.substring(MAGIC.length());
+            
+            if(response.startsWith(SUCCESS)) {
+                CLILogger.getInstance().printMessage(response.substring(SUCCESS.length()));
+            }
+            else if(response.startsWith(FAILURE)) {
+                throw new CommandException(
+                    strings.get("remoteError", response.substring(FAILURE.length())));
+            }
+            return;
+        }
+        // Unknown Format -- print it...
+        CLILogger.getInstance().printDetailMessage(strings.get("unknownFormat"));
+        CLILogger.getInstance().printMessage(response);
+    }
+
     private static final CLILogger logger = CLILogger.getInstance();
+    private static final String SUCCESS = "SUCCESS";
+    private static final String FAILURE = "FAILURE";
+    private static final String MAGIC = "PlainTextActionReporter";
+    private final static LocalStringsImpl strings = new LocalStringsImpl(RemoteCommand.class);
 }
 
 
