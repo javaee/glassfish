@@ -366,6 +366,7 @@ public class RemoteCommand {
                     if (property.endsWith("operand")) {
                             //collect operands and display later
                         operands.add(property);
+                        continue;
                     }
                     if (property.endsWith("SYNOPSYS")) {
                             //do not want to display operand and synopsis
