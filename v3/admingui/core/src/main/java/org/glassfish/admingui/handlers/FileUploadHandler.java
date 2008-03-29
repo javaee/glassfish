@@ -129,8 +129,8 @@ public class FileUploadHandler {
             return;
 	}            
 
-
-	deploymentProps.setProperty(ARCHIVE_NAME, origPath);
+        //in V3, doesn't seem to need archiveName.  it actually will give out error
+	//deploymentProps.setProperty(ARCHIVE_NAME, origPath);
 	deploymentProps.setProperty(NAME, appName != null ? appName : "");
 	deploymentProps.setProperty(CONTEXT_ROOT, ctxtRoot != null ? ctxtRoot : "");
 	deploymentProps.setProperty(ENABLE, enabled != null ? enabled : "false");
