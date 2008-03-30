@@ -19,22 +19,10 @@ fields enclosed by brackets "[]" replaced with your
 own identifying information: Portions Copyright [yyyy]
 [name of copyright owner]
 -->
-<project name="nucleus-base bundle creation" default="create.bundle" basedir=".">
+<project name="felix distribution fragment creation" default="create.bundle" basedir="target/stage">
    <target name="create.bundle">
-       <mkdir dir="target/stage"/>
-
-       <resolveArtifact artifactId="nucleus-base" property="nucleus-base.zip"/>
-       <resolveArtifact artifactId="felix" groupId="org.glassfish.osgi-platforms" property="felix.zip"/>
-
-       <resolveAll todir="target/stage/glassfish/modules">
-       </resolveAll>
-       <delete dir="target/stage/glassfish/modules" includes="*.zip" />
-
-       <zip file="target/nucleus.zip" basedir="target/stage">
-           <zipgroupfileset file="${nucleus-base.zip}"/>
-           <zipgroupfileset file="${felix.zip}"/>
-       </zip>
-       <attachArtifact file="target/nucleus.zip"/>
+       <zip destfile="target/felix.zip" basedir="target/classes/"/>
+       <attachArtifact file="target/felix.zip"/>
    </target>
 </project>
 

@@ -160,6 +160,7 @@
         <module>security</module>
         <module>registration</module>
         <module>tests</module>
+        <module>osgi-platforms</module>
     </modules> 
     <repositories>
         <repository>

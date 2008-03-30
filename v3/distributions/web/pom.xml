@@ -106,11 +106,16 @@
             <artifactId>web-cli</artifactId>
             <version>10.0-SNAPSHOT</version>
         </dependency>
+        <!-- Not everything that gf-jruby-connector depends on
+             are packaged in web distribution, which causes a failure 
+             while running on OSGi. So temporarily we have stopped
+             making this part of web distribution.
         <dependency>
             <groupId>org.glassfish.extras</groupId>
             <artifactId>gf-jruby-connector</artifactId>
             <version>${pe.version}</version>
         </dependency>
+        -->
         <dependency>
             <groupId>org.glassfish.extras</groupId>
             <artifactId>gf-phobos-connector</artifactId>

@@ -74,6 +74,12 @@
    <dependencies>
        <!-- dependency with 'runtime' scope will be packaged into the distribution -->
        <dependency>
+           <groupId>org.glassfish.osgi-platforms</groupId>
+           <artifactId>felix</artifactId>
+           <version>${glassfish.version}</version>
+           <type>distribution-fragment</type>
+       </dependency>
+       <dependency>
            <groupId>org.glassfish.core</groupId>
            <artifactId>glassfish</artifactId>
            <version>${glassfish.version}</version>

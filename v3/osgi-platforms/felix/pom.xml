@@ -1,0 +1,110 @@
+<!--
+  This module is meant to create a distribution fragement that contains
+  Apache Felix and associated configuration files and bundles.
+  The layout relative to glassfish root looks like this:
+  felix/
+       bin/
+          felix.jar
+       bundle/
+          org.apache.felix.shell.jar 
+          org.apache.felix.shell.tui.jar 
+       conf/
+          config.properties
+          system.properties
+
+   This is exactly how the layout would look if one downloads the Felix
+   distribution from Felix project and installs.
+-->
+<project>
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+      <groupId>org.glassfish.osgi-platforms</groupId>
+      <artifactId>osgi-platforms</artifactId>
+      <version>10.0-SNAPSHOT</version>
+      <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>felix</artifactId>
+    <name>Apache Felix and associated bundles and configuration files</name>
+    <!-- This is a distribution fragement.
+         It is distributed as part of nucleus-base. 
+    -->
+    <packaging>distribution-fragment</packaging>
+    <properties>
+        <felix.outdir>${project.build.OutputDirectory}/glassfish/felix/</felix.outdir>
+    </properties>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-felix</id>
+                        <phase>validate</phase>
+                        <goals>
+                           <goal>copy</goal>
+                        </goals>
+                        <configuration>
+                            <stripVersion>true</stripVersion>
+                            <artifactItems>
+                             <artifactItem>
+                               <groupId>org.apache.felix</groupId>
+                               <artifactId>org.apache.felix.main</artifactId>
+                               <version>1.0.3</version>
+                               <outputDirectory>${felix.outdir}/bin</outputDirectory>
+                               <destFileName>felix.jar</destFileName>
+                             </artifactItem>
+                             <!-- We bundle Felix Shell bundles so that
+                                  user can use them to utilize the full power
+                                  of Felix even while using GlassFish -->
+                             <artifactItem>
+                               <groupId>org.apache.felix</groupId>
+                               <artifactId>org.apache.felix.shell</artifactId>
+                               <version>1.0.0</version>
+                               <type>jar</type>
+                               <outputDirectory>${felix.outdir}/bundle</outputDirectory>
+                             </artifactItem>
+                             <artifactItem>
+                               <groupId>org.apache.felix</groupId>
+                               <artifactId>org.apache.felix.shell.tui</artifactId>
+                               <version>1.0.0</version>
+                               <type>jar</type>
+                               <outputDirectory>${felix.outdir}/bundle</outputDirectory>
+                             </artifactItem>
+                           </artifactItems>
+                         </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.jvnet.maven-antrun-extended-plugin</groupId>
+                <artifactId>maven-antrun-extended-plugin</artifactId>
+                <configuration>
+                    <tasks>
+                        <ant dir="." antfile="build.xml" target="create.bundle"/>
+                    </tasks>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>ant-run</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <!--
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <configuration>
+                   <resources>${project.resources}</resources>
+                   <outputDirectory>target/stage</outputDirectory>
+                </configuration>
+                <executions>
+            </plugin>
+            -->
+        </plugins>
+    </build>
+</project>
