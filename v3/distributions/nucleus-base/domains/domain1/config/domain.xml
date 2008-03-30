@@ -7,6 +7,7 @@
 <!-- Avoid manual edits of this file. Run "asadmin verify-domain-xml" otherwise.-->
 
 <domain application-root="${com.sun.aas.instanceRoot}/applications" log-root="${com.sun.aas.instanceRoot}/logs"> 
+<system-applications/>
  <applications>
   <web-module name="adminapp" context-root="/web1" location="${com.sun.aas.installRoot}/lib/install/applications/adminapp/adminapp_war" object-type="system-admin" enabled="true" directory-deployed="true" availability-enabled="false">
   <!-- System Web Module - DO NOT DELETE! -->
@@ -95,8 +96,9 @@
      <!-- The JSR 160 "system-jmx-connector" -->
      <das-config dynamic-reload-enabled="true" dynamic-reload-poll-interval-in-seconds="2" autodeploy-enabled="true" autodeploy-polling-interval-in-seconds="2" autodeploy-dir="${com.sun.aas.instanceRoot}/autodeploy" autodeploy-verifier-enabled="false" autodeploy-jsp-precompilation-enabled="false" deploy-xml-validation="full" admin-session-timeout-in-minutes="60"/>
        <property name="adminConsoleContextRoot" value="/admin"/>
-       <property name="anonymousAdminLoginAllowed" value="true"/>
-       <property name="adminConsoleDownloadLocation" value="http://download.dev.java.net"/>
+       <property name="adminConsoleDownloadLocation" value="http://localhost:18080/admingui.war"/>
+       <!-- change this to reflect the correct final download location -->
+       <property name="adminConsoleFolder" value="${com.sun.aas.installRoot}/lib/install/applications"/>
    </admin-service>
    <web-container>
        <session-config>

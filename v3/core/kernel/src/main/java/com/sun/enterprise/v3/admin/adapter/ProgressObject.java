@@ -23,28 +23,44 @@
 
 package com.sun.enterprise.v3.admin.adapter;
 
-/** A package-private class that holds the state of the admin adapter.
- *  It also acts as a lock that needs to be synchronized externally.
- *  Note that this class is not thread-safe on its own.
+/** A package-private class to store the progress of the installation operation.
+ *  The class needs external synchronization.
  * @author &#2325;&#2375;&#2342;&#2366;&#2352 (km@dev.java.net)
  * @since GlassFish V3
  */
-enum AdapterState {
+final class ProgressObject {
+
+    private String message            = "Started Installing ...";
+    private boolean done              = false;
+    private AdapterState state        = AdapterState.INSTALLING;
     
-    UNINITIAZED("State is uninitialized ..."),
-    INSTALLING("Installing the application in this server ..."),
-    APPLICATION_NOT_INSTALLED("Application is not yet installed ..."),
-    APPLICATION_INSTALLED_BUT_NOT_LOADED("Application is already installed, but not yet loaded. ..."),
-    APPLICATION_LOADED("Application is already loaded ...");
+    private boolean APPEND = true; //for debugging
     
-    private final String desc;
-    
-    private AdapterState(String desc) {
-        this.desc = desc;
+    String getMessage() {
+        return ( message );
     }
     
-    @Override
-    public String toString() {
-        return (desc);
+    void setMessage (String message) {
+        if (APPEND)
+            this.message = this.message + message;
+        else
+            this.message = message;
+    }
+    
+    boolean isDone() {
+        return ( done == true );
+    }
+    
+    void finish() {
+        this.message = "Done!";
+        this.done    = true;
+    }
+    
+    void setAdapterState(AdapterState state) {
+        this.state = state;
+    }
+    
+    AdapterState getAdapterState() {
+        return ( state );
     }
 }

@@ -67,6 +67,8 @@
                 <includes>
                     <include>com/sun/enterprise/deployment/backend/*.properties</include>
                     <include>com/sun/enterprise/v3/**/*.properties</include>
+                    <include>com/sun/enterprise/v3/**/downloadgui.html</include>
+                    <include>com/sun/enterprise/v3/**/status.html</include>
                 </includes>
             </resource>
             <resource>

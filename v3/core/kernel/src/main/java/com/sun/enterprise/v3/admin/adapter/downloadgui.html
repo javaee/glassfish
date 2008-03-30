@@ -1,0 +1,142 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>GlassFish Admin Console - Install</title>
+	<style type="text/css">
+
+
+		body {
+		font-family:Arial, Helvetica, sans-serif;
+		font-size:76%;
+		}
+		
+		h4 {font-style:normal; font-size:.9em;
+		}
+		
+		h1 {
+		margin-left:395px;
+		margin-top:2em;
+		color:#46626e;
+		font-size:21px;
+		}
+
+		#container {
+			padding-left: 0px;      
+			padding-right: 180px;     
+			background:#d4dbe1;
+			height:435px;
+		}
+		
+		#container .column {
+			position: relative;
+			float: left;
+		}
+		
+		#container #buttons {
+		margin-left:465px;
+		color:#666;
+		}
+		
+		#center {
+			padding-right:10px;       
+			width: 100%;
+			height:435px;
+		}
+		
+		#center p {
+		margin-left:395px;
+		}
+		
+		#footer {
+			clear: both;
+		}
+		* html #left {
+			left: 150px; 
+		}
+
+		#container {
+			overflow: hidden;
+		}
+
+		* html body {
+			overflow: hidden;
+		}
+		
+		* html #footer-wrapper {
+			float: left;
+			position: relative;
+			width: 100%;
+			padding-bottom: 10010px;
+			margin-bottom: -10000px;
+			background:#4a5c6a;         
+		}
+
+		body {
+			margin: 0;
+			padding: 0;
+			background:#4a5c6a;
+		}
+
+		#header, #footer {
+			font-size: small;
+			text-align: center;
+			padding: 0.3em 0;
+			background:#4a5c6a;
+			height:20px;
+			color:#FFFFFF;
+		}
+
+		// #center {background-image:url(login-backimage2.jpg);
+		background-repeat:no-repeat;
+		background-color:#FFFFFF;
+		}
+
+		#container .column {
+			text-align: left;
+		}
+
+	</style>
+</head>
+
+<body>
+
+	<div id="header"></div>
+
+	<div id="container">
+
+		<div id="center" class="column">
+        	<!-- <div id="page_content"> -->
+			<h1>Install the GlassFish Administration Console</h1>
+    		<p>The GlassFish Administration Console is not installed. To install the console, click the &quot;OK&quot; button below. </p>
+                <!-- don't change the names -->
+    		<form id="form1" name="form1" method="post" action="%%%MYURL%%%">
+      		<p><strong>Download and install the Glassfish Administration Console?</strong></p>
+      		<p><span class="sm"><strong >Proxy Host:</strong></span> 
+        	<input name="proxyHost" type="text" class="textInput" id="text" tabindex="1" onfocus="showFocus(this, 'on');" onblur="showFocus(this, 'off');" />
+        	</p>
+      		<p><span class="sm"><strong >Proxy Port:</strong></span>
+      		<input name="pxoryPort" type="text" class="textInput" id="text2" tabindex="2" onfocus="showFocus(this, 'on');" onblur="showFocus(this, 'off');" />
+        	</p>
+    
+				<div id="buttons">
+    			<h4>If your GlassFish Application Server requires a proxy to reach the Internet, you will need to supply your proxy host and port information.
+    			</h4>
+      			<label>
+      			<input type="submit" name="ok" id="ok" value="OK" tabindex="3" />
+      			</label>
+        		<input type="submit" name="cancel" id="Cancel" value="Cancel" tabindex="4" />
+      			</div> 
+                        <input type="hidden" name="visitor" id="visitor" value="%%%VISITOR%%%" tabindex="4" />
+           	</form>
+ 		</div>
+   </div>      
+	</div>
+
+	<div id="footer-wrapper">
+		<div id="footer">Thank you for using GlassFish Application Server!</div>
+</div>
+
+</body>
+
+</html>

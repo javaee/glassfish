@@ -132,13 +132,23 @@ public interface Domain extends ConfigBeanProxy, Injectable  {
     public Applications getApplications();
 
     /**
-     * Sets the value of the applications property.
+     * Sets the value of the system-applications property.
      *
      * @param value allowed object is
      *              {@link Applications }
      */
     public void setApplications(Applications value) throws PropertyVetoException;
 
+    @Element
+    public SystemApplications getSystemApplications();
+
+    /**
+     * Sets the value of the system-applications property.
+     *
+     * @param value allowed object is
+     *              {@link Applications }
+     */
+    public void setSystemApplications(SystemApplications value) throws PropertyVetoException;
     /**
      * Gets the value of the resources property.
      *
