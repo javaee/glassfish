@@ -54,6 +54,11 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.Enumeration;
+import com.sun.enterprise.security.auth.realm.file.FileRealm;
+import com.sun.enterprise.universal.glassfish.SystemPropertyConstants;
+import com.sun.enterprise.v3.server.ServerEnvironment;
+import sun.misc.BASE64Decoder;
 
 /**
  * Listen to admin commands...
@@ -61,21 +66,26 @@ import java.util.logging.Logger;
  */
 @Service
 public class AdminAdapter implements Adapter, PostConstruct {
-    
-    public final static String PREFIX_URI="/__asadmin";
+
+    public final static String PREFIX_URI = "/__asadmin";
     public final static Logger logger = LogDomains.getLogger(LogDomains.ADMIN_LOGGER);
     public final static LocalStringManagerImpl adminStrings = new LocalStringManagerImpl(AdminAdapter.class);
     public final static String GFV3 = "gfv3";
     private final static String GET = "GET";
-    private final static String POST = "POST";    
+    private final static String POST = "POST";
+    private static final BASE64Decoder decoder = new BASE64Decoder();
+    private static final String BASIC = "Basic ";
 
     @Inject
     ModulesRegistry modulesRegistry;
-    
+
     @Inject
     CommandRunner commandRunner;
 
-    ReentrantLock lock=new ReentrantLock();
+    @Inject
+    ServerEnvironment env;
+
+    ReentrantLock lock = new ReentrantLock();
 
     public void postConstruct() {
         lock.lock();
@@ -102,12 +112,12 @@ public class AdminAdapter implements Adapter, PostConstruct {
      *  runtime exceptions )
      */
     public void service(Request req, Response res)
-        throws Exception {
+            throws Exception {
 
 
 
         Utils.getDefaultLogger().finer("Admin adapter !");
-        Utils.getDefaultLogger().finer("Received something on " + req.requestURI());        
+        Utils.getDefaultLogger().finer("Received something on " + req.requestURI());
         Utils.getDefaultLogger().finer("QueryString = " + req.queryString());
 
         // so far, I only use HTMLActionReporter, but I should really look at
@@ -121,20 +131,30 @@ public class AdminAdapter implements Adapter, PostConstruct {
         } else {
             report = new HTMLActionReporter();
         }
-        
+
         // bnevins 3/29/08 doCommand returns ActionReport
         // this allows the command to change its reporter.
-        
+
         if (lock.isLocked()) {
             if (lock.tryLock(20L, TimeUnit.SECONDS)) {
                 lock.unlock();
-                report = doCommand(req,report);
+                /* Commented out because user name and password not
+                 * supplied yet from .asadminpass 
+                if (!authenticate(req, report, res))
+                    return;
+                 */
+                report = doCommand(req, report);
             } else {
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                 report.setMessage("V3 cannot process this command at this time, please wait");
             }
         } else {
-            report = doCommand(req, report);        
+                /* Commented out because user name and password not
+                 * supplied yet from .asadminpass 
+            if (!authenticate(req, report, res))
+                return;
+                 */
+            report = doCommand(req, report);
         }
 
         InternalOutputBuffer outputBuffer = (InternalOutputBuffer) res.getOutputBuffer();
@@ -149,6 +169,62 @@ public class AdminAdapter implements Adapter, PostConstruct {
         res.finish();
     }
 
+    private boolean authenticate(Request req, ActionReport report, Response res)
+            throws Exception {
+
+        String authHeader = req.getHeader("Authorization");
+        boolean authenticated = false;
+        FileRealm f =
+                new FileRealm(env.getProps().get(SystemPropertyConstants.INSTANCE_ROOT_PROPERTY) + "/config/admin-keyfile");
+        // auth header not found
+        if (authHeader == null || !authHeader.startsWith(BASIC)) {
+            authenticated = authenticateAnonymous(f);
+        } else {
+            String base64Coded = authHeader.substring(BASIC.length());
+            String decoded = new String(decoder.decodeBuffer(base64Coded));
+            String[] userNamePassword = decoded.split(":");
+            if (userNamePassword == null || userNamePassword.length == 0) {
+                // no username/password in header - try anonymous auth
+                authenticated = authenticateAnonymous(f);
+            } else {
+                String userName = userNamePassword[0];
+                String password = userNamePassword.length > 1 ? userNamePassword[1] : "";
+                authenticated = f.authenticate(userName, password) != null;
+            }
+        }
+        if (!authenticated) {
+            String msg = adminStrings.getLocalString("adapter.auth.userpassword",
+                    "Invalid user name or password");
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            report.setMessage(msg);
+            report.setActionDescription("Authentication error");
+            InternalOutputBuffer outputBuffer = (InternalOutputBuffer) res.getOutputBuffer();
+            res.setStatus(401);
+            res.setHeader("WWW-Authenticate", "BASIC");
+            res.setContentType(report.getContentType());
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            report.writeReport(bos);
+            res.setContentLength(bos.size());
+            outputBuffer.flush();
+            outputBuffer.realWriteBytes(bos.toByteArray(), 0, bos.size());
+            res.finish();
+        }
+        return authenticated;
+    }
+
+    private boolean authenticateAnonymous(FileRealm f) throws Exception {
+        Enumeration<String> users = f.getUserNames();
+        if (users.hasMoreElements()) {
+            String userNameInRealm = users.nextElement();
+            if (!users.hasMoreElements() &&
+                    userNameInRealm.equals(SystemPropertyConstants.DEFAULT_ADMIN_USER)) {
+                logger.finer("Allowed anonymous access");
+                return true;
+            }
+        }
+        return false;
+    }
+
     private ActionReport doCommand(Request req, ActionReport report) {
 
         String requestURI = req.requestURI().toString();
@@ -159,31 +235,31 @@ public class AdminAdapter implements Adapter, PostConstruct {
             Utils.getDefaultLogger().info(msg);
             return report;
         }
-        
-         // wbn handle no command and no slash-suffix
-        String command = "";
-        
-        if(requestURI.length() > PREFIX_URI.length() + 1)
-            command = requestURI.substring(PREFIX_URI.length()+1);
 
-        final Properties parameters =  extractParameters(req.queryString().toString());
+        // wbn handle no command and no slash-suffix
+        String command = "";
+
+        if (requestURI.length() > PREFIX_URI.length() + 1) 
+            command = requestURI.substring(PREFIX_URI.length() + 1);
+
+        final Properties parameters = extractParameters(req.queryString().toString());
         try {
             if (req.method().toString().equalsIgnoreCase(GET)) {
                 logger.fine("***** AdminAdapter GET  *****");
-                report = commandRunner.doCommand(command, parameters, report);            
-            }
+                report = commandRunner.doCommand(command, parameters, report);
+            } 
             else if (req.method().toString().equalsIgnoreCase(POST)) {
                 logger.fine("***** AdminAdapter POST *****");
-                if (parameters.get("path")!=null) {
+                if (parameters.get("path") != null) {
                     try {
                         final String uploadFile = doUploadFile(req, report, parameters.getProperty("path"));
                         parameters.setProperty("path", uploadFile);
                         report = commandRunner.doCommand(command, parameters, report);
-                    }
+                    } 
                     catch (IOException ioe) {
                         logger.log(Level.WARNING, ioe.getMessage());
-                            //log the exception message to server log
-                            //client recieves error message embedded in report object
+                    //log the exception message to server log
+                    //client recieves error message embedded in report object
                     }
                 }
             }
@@ -200,15 +276,13 @@ public class AdminAdapter implements Adapter, PostConstruct {
         return report;
     }
 
-
     /**
      * Finish the response and recycle the request/response tokens. Base on
      * the connection header, the underlying socket transport will be closed
-     */   
+     */
     public void afterService(Request req, Response res) throws Exception {
-        
-    }
 
+    }
 
     /**
      * Notify all container event listeners that a particular event has
@@ -240,10 +314,10 @@ public class AdminAdapter implements Adapter, PostConstruct {
      * @throws IOException if upload file cannot be created
      */
     private String doUploadFile(final Request req, final ActionReport report, final String fileName)
-        throws IOException
+            throws IOException 
     {
         final String localTmpDir = System.getProperty("java.io.tmpdir");
-        final File gfv3Folder = new File (localTmpDir, GFV3);
+        final File gfv3Folder = new File(localTmpDir, GFV3);
         File uploadFile = null;
         FileOutputStream fos = null;
         String uploadFilePath = null;
@@ -252,8 +326,8 @@ public class AdminAdapter implements Adapter, PostConstruct {
             if (!gfv3Folder.exists()) {
                 gfv3Folder.mkdirs();
             }
-            uploadFile = new File (gfv3Folder, fileName);
-                //check for pre-existing file
+            uploadFile = new File(gfv3Folder, fileName);
+            //check for pre-existing file
             if (uploadFile.exists()) {
                 if (!uploadFile.delete()) {
                     report.setActionExitCode(ActionReport.ExitCode.FAILURE);
@@ -261,46 +335,47 @@ public class AdminAdapter implements Adapter, PostConstruct {
                     throw new IOException("cannot delete existing file: " + uploadFile);
                 }
             }
-            
+
             uploadFilePath = uploadFile.getCanonicalPath();
             fos = new FileOutputStream(uploadFile);
-            ByteChunk bc = new ByteChunk(1024*64);
+            ByteChunk bc = new ByteChunk(1024 * 64);
             com.sun.grizzly.tcp.InputBuffer ib = req.getInputBuffer();
-            for (int ii=req.doRead(bc); ii>0; ii=req.doRead(bc)) {
+            for (int ii = req.doRead(bc); ii > 0; ii = req.doRead(bc)) {
                 fos.write(bc.getBytes(), bc.getOffset(), ii);
             }
             report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
             report.setMessage("upload file successful: " + uploadFilePath);
-        }
+        } 
         catch (Exception e) {
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setMessage("upload file failed: " + uploadFilePath);
             report.setFailureCause(e);
             throw new IOException("upload file failed: " + uploadFilePath);
-        }
+        } 
         finally {
-           if (fos != null) fos.close();
+            if (fos != null) 
+                fos.close();
         }
         return uploadFilePath;
     }
 
-        /**
-         *  extract parameters from URI and save it in Properties obj
-         *  
-         *  @params requestString string URI to extract
-         *
-         *  @returns Properties
-         */
+    /**
+     *  extract parameters from URI and save it in Properties obj
+     *  
+     *  @params requestString string URI to extract
+     *
+     *  @returns Properties
+     */
     Properties extractParameters(final String requestString) {
         // extract parameters...
         final Properties parameters = new Properties();
         StringTokenizer stoken = new StringTokenizer(requestString, "?");
         while (stoken.hasMoreTokens()) {
             String token = stoken.nextToken();
-            if (token.indexOf("=")==-1)
+            if (token.indexOf("=") == -1) 
                 continue;
             String paramName = token.substring(0, token.lastIndexOf("="));
-            String value = token.substring(token.lastIndexOf("=")+1);
+            String value = token.substring(token.lastIndexOf("=") + 1);
             try {
                 value = URLDecoder.decode(value, "UTF-8");
             } catch (UnsupportedEncodingException e) {
@@ -313,7 +388,7 @@ public class AdminAdapter implements Adapter, PostConstruct {
         // Dump parameters...
         if (logger.isLoggable(Level.FINER)) {
             for (Object key : parameters.keySet()) {
-              logger.finer("Key " + key + " = " + parameters.getProperty((String) key));
+                logger.finer("Key " + key + " = " + parameters.getProperty((String) key));
             }
         }
         return parameters;
