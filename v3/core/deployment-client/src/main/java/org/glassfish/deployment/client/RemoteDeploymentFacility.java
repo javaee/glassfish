@@ -23,7 +23,6 @@ import javax.enterprise.deploy.spi.status.DeploymentStatus;
 import org.glassfish.deployapi.ProgressObjectImpl;
 import org.glassfish.deployapi.TargetImpl;
 import org.glassfish.deployapi.TargetModuleIDImpl;
-import org.glassfish.deployment.common.DeploymentProperties;
 
 /**
  * Implements DeploymentFacility, currently using the RemoteCommand to work with the
@@ -122,7 +121,7 @@ public class RemoteDeploymentFacility implements DeploymentFacility, TargetOwner
                  * not specify one then the server will have chosen one.  We
                  * need whatever module ID the server used, however it chose it.
                  */
-                String moduleID = mainStatus.getProperty(DeploymentProperties.NAME);
+                String moduleID = mainStatus.getProperty(DFDeploymentProperties.NAME);
                 TargetModuleIDImpl[] targetModuleIDs = new TargetModuleIDImpl[targets.length];
                 int i = 0;
                 for (TargetImpl ti : po.toTargetImpl(targets)) {

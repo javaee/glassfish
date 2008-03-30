@@ -137,12 +137,12 @@ public class DFDeploymentProperties extends Properties {
 	        setProperty(VIRTUAL_SERVERS, virtualServers);
     }
     
-    public boolean getEnable() {
-        return Boolean.valueOf(getProperty(ENABLE,DEFAULT_ENABLE)).booleanValue();
+    public boolean getEnabled() {
+        return Boolean.valueOf(getProperty(ENABLED,DEFAULT_ENABLED)).booleanValue();
     }
     
-    public void setEnable(boolean enable) {
-        setProperty(ENABLE, Boolean.valueOf(enable).toString());
+    public void setEnabled(boolean enabled) {
+        setProperty(ENABLED, Boolean.valueOf(enabled).toString());
     }
     
     public String getContextRoot() {
@@ -272,8 +272,8 @@ public class DFDeploymentProperties extends Properties {
     public static final String DEFAULT_GENERATE_RMI_STUBS= "false";
     public static final String AVAILABILITY_ENABLED = "availabilityenabled";
     public static final String DEFAULT_AVAILABILITY_ENABLED = "false";
-    public static final String ENABLE = "enable";
-    public static final String DEFAULT_ENABLE = "true";
+    public static final String ENABLED = "enabled";
+    public static final String DEFAULT_ENABLED = "true";
     public static final String CONTEXT_ROOT = "contextRoot";
     public static final String ARCHIVE_NAME = "archiveName";
     public static final String NAME = "name";
