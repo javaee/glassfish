@@ -54,6 +54,7 @@
         <echo message="ANT PROJECT ${ant.project.name}"/>
         <ant dir="web/helloworld" target="build"/>
         <ant dir="web/jsfastrologer" target="build"/>
+        <ant dir="jdbc/jdbcusertx" target="build"/>
         <!-- ant dir="web/strutsbasic" target="build"/ -->
         <!-- ant dir="persistence/servlet-jpa-app" target="build"/ -->
         <!--<ant dir="ejb30/hello" target="build"/>
@@ -66,6 +67,7 @@
         <record name="compiletests.output" action="start"/>
         <ant dir="web/helloworld" target="compile-tests"/>
         <ant dir="web/jsfastrologer" target="compile-tests"/>
+        <ant dir="jdbc/jdbcusertx" target="compile-tests"/>
         <!-- ant dir="web/strutsbasic" target="compile-tests"/ -->
         <!-- ant dir="persistence/servlet-jpa-app" target="compile-tests"/ -->
         <record name="compiletests.output" action="stop"/>
@@ -75,6 +77,7 @@
         <record name="deploy.output" action="start"/>
         <ant dir="web/helloworld" target="deploy"/>
         <ant dir="web/jsfastrologer" target="deploy"/>
+        <ant dir="jdbc/jdbcusertx" target="deploy"/>
         <!-- ant dir="web/strutsbasic" target="deploy"/ -->
         <!-- ant dir="persistence/servlet-jpa-app" target="deploy"/ -->   
         <record name="deploy.output" action="stop"/>
@@ -84,6 +87,7 @@
         <record name="undeploy.output" action="start"/>
         <ant dir="web/helloworld" target="undeploy"/>
         <ant dir="web/jsfastrologer" target="undeploy"/>
+        <ant dir="jdbc/jdbcusertx" target="undeploy"/>
         <!-- ant dir="web/strutsbasic" target="undeploy"/ -->
         <!-- ant dir="persistence/servlet-jpa-app" target="undeploy"/ -->   
         <record name="undeploy.output" action="stop"/>
