@@ -36,6 +36,7 @@
 package com.sun.enterprise.admin.cli;
 
 import com.sun.enterprise.cli.framework.CLILogger;
+import com.sun.enterprise.universal.StringUtils;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import com.sun.enterprise.v3.common.PlainTextActionReporter;
 import java.io.ByteArrayInputStream;
@@ -59,6 +60,7 @@ import com.sun.enterprise.admin.cli.util.CLIUtil;
 import com.sun.enterprise.admin.cli.util.HttpConnectorAddress;
 import com.sun.enterprise.admin.cli.util.AuthenticationInfo;
 import com.sun.enterprise.cli.framework.CommandException;
+import com.sun.enterprise.universal.glassfish.GFLauncherUtils;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -299,6 +301,10 @@ public class RemoteCommand {
         String responseString = baos.toString();
         in = new ByteArrayInputStream(baos.toByteArray());
         Manifest m = null;
+
+        logger.printDebugMessage("--------  RESPONSE DUMP         --------------");
+        logger.printDebugMessage(responseString);
+        logger.printDebugMessage("----------------------------------------------");
         
         if (code != 200) {
             throw new CommandException("Failed : error code " + code);
@@ -439,20 +445,27 @@ public class RemoteCommand {
 
         if (exitCode == null || exitCode.equalsIgnoreCase("Success")) {
             logger.printMessage(message);
+            processOneLevel("", null, m, m.getMainAttributes());
+            return;
         }
-        else {   
-            //if there is any children message, then display it
-            final String childMsg = m.getMainAttributes().getValue("children");
-            if (childMsg != null && !childMsg.equals("")) {
-                StringTokenizer childTok = new StringTokenizer(childMsg, ";");
-                while (childTok.hasMoreTokens()) {
-                    logger.printMessage(childTok.nextToken());
-                }
+        // bnevins -- this block is pretty bizarre!
+        //if there is any children message, then display it
+        final String childMsg = m.getMainAttributes().getValue("children");
+        if (childMsg != null && !childMsg.equals("")) {
+            StringTokenizer childTok = new StringTokenizer(childMsg, ";");
+            while (childTok.hasMoreTokens()) {
+                logger.printMessage(childTok.nextToken());
             }
-            throw new CommandException(exitCode + " : " + message);
         }
 
-        processOneLevel("", null, m, m.getMainAttributes());
+        message = exitCode + " : " + message;
+        String cause = m.getMainAttributes().getValue("cause");
+
+        if(StringUtils.ok(cause))
+            message += StringUtils.NEWLINE + strings.get("cause", cause);
+        
+        throw new CommandException(message);
+
 
     }
 
