@@ -29,6 +29,7 @@ import org.jvnet.hk2.component.InjectionManager;
 import org.jvnet.hk2.component.UnsatisfiedDepedencyException;
 import org.glassfish.tests.utils.Utils;
 import org.glassfish.tests.utils.ConfigApiTest;
+import org.glassfish.tests.utils.TestDocument;
 import org.glassfish.config.support.GlassFishDocument;
 import org.jvnet.hk2.config.DomDocument;
 
@@ -39,11 +40,8 @@ import org.jvnet.hk2.config.DomDocument;
 public class CreateJdbcResourceTest extends ConfigApiTest {
 
     public DomDocument getDocument(Habitat habitat) {
-        DomDocument doc = habitat.getByType(GlassFishDocument.class);
-        if (doc==null) {
-            return new GlassFishDocument(habitat);
-        }
-        return doc;
+
+        return new TestDocument(habitat);
     }    
 
     /**
