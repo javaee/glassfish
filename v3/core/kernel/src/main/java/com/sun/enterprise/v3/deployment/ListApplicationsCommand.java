@@ -68,9 +68,12 @@ public class ListApplicationsCommand implements AdminCommand {
             //reference to list-commponents command
         commandRunner.doCommand("list-components",
                                 context.getCommandParameters(), report);
+            //change the message to display list-applications
+        ActionReport.MessagePart part = report.getTopMessagePart();        
+        part.setMessage(localStrings.getLocalString("list.applications.success", "list-applications successful"));
 
-        final ActionReport.MessagePart part = report.getTopMessagePart();
-        ActionReport.MessagePart childPart = part.addChild();
-        childPart.setMessage(localStrings.getLocalString("list.applications.warning", "This command will be removed.  Please use list-components command."));
+//        final ActionReport.MessagePart part = report.getTopMessagePart();
+//        ActionReport.MessagePart childPart = part.addChild();
+//        childPart.setMessage(localStrings.getLocalString("list.applications.warning", "This command will be removed.  Please use list-components command."));
     }
 }
