@@ -56,7 +56,7 @@
 									  descriptor=>$attribute{descriptor}
 									  appName=>$attribute{appName}
 									  pageName=>$attribute{pageName});	
-					navigate(page="applications/descriptorDisplay.jsf");
+					navigate(page="/applications/descriptorDisplay.jsf");
 				/>
 			</sun:hyperlink>
         </sun:tableColumn>

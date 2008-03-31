@@ -129,6 +129,7 @@
         <staticText id="typeContextRoot" value="#{td.value.contextRoot}" />
     </sun:tableColumn>
 
+    <!-- TODO-V3
         <sun:tableColumn rendered="$pageSession{showDetail}"
             headerText="$resource{i18n.common.TargetTab}"  
             rowHeader="$boolean{true}" id="colTarget">
@@ -143,6 +144,7 @@
                 "<br />
             </foreach>
         </sun:tableColumn> 
+        -->
    
 
     <sun:tableColumn headerText="$resource{i18n.ComponentTable.colAction}" embeddedActions="#{true}" rowHeader="$boolean{true}" id="col4">

@@ -48,11 +48,8 @@
         }
         setPageSessionAttribute(key="chooseType" value="#{true}");
         getRequestValue(key="listPageLink" value=>$page{listPageLink});
-println("listPageLin = $pageSession{listPageLink}");
         getRequestValue(key="cancelPage" default="$pageSession{listPageLink}" value=>$page{cancelPage});
-println("cancelPage = $pageSession{cancelPage}");
         getRequestValue(key="appType" value=>$page{appType});
-println("appType = $pageSession{appType}");
         getRequestValue(key="target" value=>$page{target});
         setPageSessionAttribute(key="enabled" value="#{true}");
         if( $session{supportCluster}) {

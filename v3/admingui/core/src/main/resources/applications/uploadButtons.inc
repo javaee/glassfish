@@ -89,8 +89,8 @@
                     nextPage=>$attribute{nextPage}
                     rarProps=>$session{rarProps}
             );
-           # navigate(page="$attribute{nextPage}");
-           redirect(page="../$attribute{nextPage}?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}&name=$pageSession{target}");
+           #redirect(page="../$attribute{nextPage}?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}&name=$pageSession{target}");
+           redirect(page="webApplications.jsf?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}&name=$pageSession{target}");
         />
 </sun:button>
 

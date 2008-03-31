@@ -44,7 +44,8 @@
     setPageSessionAttribute(key="hasJavaWebStart" value="#{false}");
     setPageSessionAttribute(key="hasHa" value="#{true}");
     setPageSessionAttribute(key="hasContextRoot" value="#{true}");
-    setPageSessionAttribute(key="hasLibraries" value="#{true}");
+    #TODO-V3 omit Libraries
+    setPageSessionAttribute(key="hasLibraries" value="#{false}");
     setPageSessionAttribute(key="hasThreadPool" value="#{false}");
     setPageSessionAttribute(key="hasVS" value="#{true}");
     setPageSessionAttribute(key="hasComponentTable" value="#{true}");
@@ -64,11 +65,13 @@
     </sun:head>
     <sun:body id="body3" onLoad="javascript: synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
         <sun:form id="propertyForm">
-#include "/treeBreadcrumbs.inc"
-#include "appGeneralTabs.inc"
+        
+        #include "/treeBreadcrumbs.inc"
+        # TODO-V3 no descriptor or target tab for TP2
+        # include "/applications/appGeneralTabs.inc"
 #include "/alertMsg.inc"
-#include "edit.inc"
-#include "subComponentTable.inc"
+#include "/applications/edit.inc"
+        #include "/applications/subComponentTable.inc"
 	<sun:hidden id="helpKey" value="$resource{help.webApplicationsEdit}" />
         </sun:form>
     </sun:body>

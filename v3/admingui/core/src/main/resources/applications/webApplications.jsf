@@ -42,11 +42,12 @@
         setPageSessionAttribute(key="tableTitle" value="$resource{i18n.deployTable.webApp}");
         setPageSessionAttribute(key="editLink" value="/applications/webApplicationsEdit.jsf");
         setPageSessionAttribute(key="targetLink" value="/applications/webApplicationTargets.jsf");
-        setPageSessionAttribute(key="listPageLink" value="applications/webApplications.jsf");
+        setPageSessionAttribute(key="listPageLink" value="/applications/webApplications.jsf");
         setPageSessionAttribute(key="hasContextRoot" value="#{true}" );
         setPageSessionAttribute(key="appType" value="webApp");
         setPageSessionAttribute(key="viewKeyValue" value="webSummaryView");
-#include "/shared/viewSummaryDetail.inc"
+        
+   #include "/shared/viewSummaryDetail.inc"
     />
 #include "/shared/restart.inc"    
     <sun:html id="html2">
