@@ -69,7 +69,7 @@
     <url-pattern>/theme/*</url-pattern>
   </servlet-mapping>
   <welcome-file-list>
-      <welcome-file>test.jsf</welcome-file>
+      <welcome-file>index.jsf</welcome-file>
   </welcome-file-list>
 <!-- commenting out for now, once we decide to turn on login just uncomment it
    <security-constraint>
