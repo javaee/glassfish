@@ -1,4 +1,4 @@
-package org.glassfish.tests.utils;
+package com.sun.enterprise.v3.admin;
 
 import org.jvnet.hk2.config.DomDocument;
 import org.jvnet.hk2.config.Dom;
