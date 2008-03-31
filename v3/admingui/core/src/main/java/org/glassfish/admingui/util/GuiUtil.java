@@ -422,7 +422,32 @@ public class GuiUtil {
 
 		return retStr.toString();
 	}
-        
+    
+    public static boolean isSelected(String name, List<Map> selectedList) {
+        if (selectedList == null || name == null) {
+            return false;
+        }
+        for (Map oneRow : selectedList) {
+            if (name.equals(oneRow.get("name"))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static String checkEmpty(String test) {
+        if (test == null) {
+            return "";
+        }
+        return test;
+    }
+    
+    public static Boolean getBooleanValue(Map pMap, String name){
+        if (pMap.get(name) == null)
+            return Boolean.FALSE;
+        return (Boolean)pMap.get(name);
+    }
+    
     public static final String I18N_RESOURCE_BUNDLE = "__i18n_resource_bundle";
     public static final String RESOURCE_NAME = "core.Strings";
 }

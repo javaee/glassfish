@@ -51,6 +51,7 @@ import com.sun.appserv.management.base.UploadDownloadMgr;
 import com.sun.appserv.management.client.ProxyFactory;
 import com.sun.appserv.management.config.AMXConfig;
 import com.sun.appserv.management.config.AppClientModuleConfig;
+import com.sun.appserv.management.config.ApplicationsConfig;
 import com.sun.appserv.management.config.ClusterConfig;
 import com.sun.appserv.management.config.ConfigConfig;
 import com.sun.appserv.management.config.CustomMBeanConfig;
@@ -76,6 +77,9 @@ import com.sun.appserv.management.monitor.ServerRootMonitor;
 import com.sun.appserv.management.util.misc.GSetUtil;
 import com.sun.appserv.management.config.ConfigsConfig;
 
+import com.sun.appserv.management.config.PropertyConfig;
+import com.sun.appserv.management.config.ResourcesConfig;
+import com.sun.appserv.management.config.ServersConfig;
 import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
 
 import java.util.ArrayList;
@@ -105,12 +109,15 @@ public class AMXRoot {
     private  final DomainRoot domainRoot;
     private  final DomainConfig domainConfig;
     private  final ConfigsConfig configsConfig;
+    private  final ApplicationsConfig applicationsConfig;
     private  final J2EEDomain j2eeDomain;
     private  final MonitoringRoot monitoringRoot;
     private  final QueryMgr queryMgr;
     private  final UploadDownloadMgr uploadDownloadMgr;
     private  final WebServiceMgr webServiceMgr;
     private  final MBeanServerConnection mbaenServerConnection;
+    private  final ResourcesConfig resourcesConfig;
+    private  final ServersConfig serversConfig;
     //private  final LBConfigHelper lbConfigHelper;
 
     private AMXRoot(DomainRoot dd,  MBeanServerConnection msc) {
@@ -124,6 +131,9 @@ public class AMXRoot {
         uploadDownloadMgr = domainRoot.getUploadDownloadMgr();
         webServiceMgr = domainRoot.getWebServiceMgr();
         mbaenServerConnection = msc;
+        resourcesConfig = domainConfig.getResourcesConfig();
+        applicationsConfig = domainConfig.getApplicationsConfig();
+        serversConfig = domainConfig.getServersConfig();
         //lbConfigHelper = new LBConfigHelper(domainRoot);
     }
 
@@ -186,6 +196,18 @@ public class AMXRoot {
     
     public  ConfigsConfig getConfigsConfig() {
         return configsConfig;
+    }
+    
+    public  ResourcesConfig getResourcesConfig() {
+        return resourcesConfig;
+    }
+
+    public  ApplicationsConfig getApplicationsConfig() {
+        return applicationsConfig;
+    }
+    
+    public  ServersConfig getServersConfig() {
+        return serversConfig;
     }
 
     public  J2EEDomain getJ2EEDomain() {
@@ -333,24 +355,6 @@ public class AMXRoot {
         //return systemInfo.supportsFeature(SystemInfo.CLUSTERS_FEATURE);
     }
 
-    /**
-     *	<p> Returns the value of the given property and MBean
-     *
-     *	@param	mbean MBean with properties
-     *   (extends <code>com.sun.appserv.management.config.PropertiesAccess</code>).
-     *  @param	propName property name.
-     *
-     *	@return	String property value.
-     */
-    public  String getPropertyValue(PropertiesAccess mbean, String propName) {
-        return mbean.getPropertyValue(propName);
-    }
-
-
-     public  WebServiceEndpointInfo getWebServiceEndpointInfo(Object webServiceKey) {
-        return webServiceMgr.getWebServiceEndpointInfo(webServiceKey);
-     }
-
      /**
      * Function to edit the properties on a server.
      * All MBeans that have Properties extend PropertiesAccess interface
@@ -360,107 +364,28 @@ public class AMXRoot {
      */
      public  void editProperties(HandlerContext handlerCtx, PropertiesAccess config){
          Map<String,String> addProps = (Map)handlerCtx.getInputValue("AddProps");
-         ArrayList removeProps = (ArrayList)handlerCtx.getInputValue("RemoveProps");
+         ArrayList<String> removeProps = (ArrayList)handlerCtx.getInputValue("RemoveProps");
          if(removeProps != null){
-             String[] remove = (String[])removeProps.toArray(new String[ removeProps.size()]);
-             for(int i=0; i<remove.length; i++){
-                 config.removeProperty(remove[i]);
+             for(int i=0; i<removeProps.size(); i++){
+                 config.removePropertyConfig(removeProps.get(i));
              }
          }
          if(addProps != null ){
+             Map<String, PropertyConfig> pMap = config.getPropertyConfigMap();
              for(String key: addProps.keySet()){
                  String value = addProps.get(key);
-                 if (config.existsProperty(key))
-                    config.setPropertyValue(key, value);
+                 if (pMap.containsKey(key))
+                     pMap.get(key).setValue(value);
                  else
-                     config.createProperty(key,value);
+                     config.createPropertyConfig(key, value);
              }
          }
      }
-
-     /*
-      * update the properties of a config.
-      */
-     public  void updateProperties(PropertiesAccess config, Map<String,String>newProps, List ignore){
-        java.util.Map<java.lang.String,java.lang.String>oldProps = config.getProperties();
-
-        if (ignore == null)
-            ignore = new ArrayList();
-        //Remove any property that is no longer in the new list
-        Iterator iter = oldProps.keySet().iterator();
-        while(iter.hasNext()){
-            Object key = iter.next();
-            if (ignore.contains(key))
-                continue;
-            if (! newProps.containsKey(key)) {
-                config.removeProperty( (String) key);
-            }
-        }
-
-         //update the value if the value is different or create a new property if it doesn't exist before
-        for(String propName : newProps.keySet()){
-            String val = newProps.get(propName);
-            if (config.existsProperty(propName)){
-                String oldValue = config.getPropertyValue(propName);
-                if ( ! val.equals(oldValue))
-                    config.setPropertyValue(propName, val);
-            }else
-                config.createProperty(propName, val);
-        }
+     
+     
+     public  WebServiceEndpointInfo getWebServiceEndpointInfo(Object webServiceKey) {
+        return webServiceMgr.getWebServiceEndpointInfo(webServiceKey);
      }
-
-     /*  converts a Property Map to a Map where the name is preceded by PropertiesAccess.PROPERTY_PREFIX.
-      *  This conversion is required when this Map is used as the optional parameter when creating a config.
-      *  refer to the java doc of PropertiesAccess in AMX javadoc
-      */
-     public  Map convertToPropertiesOptionMap(Map<String,String> props, Map<String,String> convertedMap){
-         if (convertedMap == null )
-            convertedMap = new HashMap();
-         if (props == null)
-             return convertedMap;
-         Set<String> keySet = props.keySet();
-         for(String key : keySet){
-             if (! GuiUtil.isEmpty((String)props.get(key)))
-                convertedMap.put(PropertiesAccess.PROPERTY_PREFIX + key, (String)props.get(key));
-         }
-         return convertedMap;
-     }
-
-
-     /**
-      * returns the Properties of a config, skipping those specified in the list thats passed in.
-      * This is mostly for edit where we want to treat particular properties differently, and don't
-      * show that in the Properties table.
-      * Normally, this is followed by updateProperites() with the ignore list the same as the skipList
-      * specified here when user does a Save.
-      */
-     public  Map getNonSkipPropertiesMap(PropertiesAccess config, List skipList) {
-        Map<String, String> props = config.getProperties();
-        Map newMap = new HashMap<String, String>();
-
-        for(String propsName : props.keySet()){
-            if (skipList.contains(propsName))
-                continue;
-            newMap.put(propsName, props.get(propsName));
-        }
-        return newMap;
-     }
-
-
-     //Chagen the Property Value of a config
-      public  void changeProperty(PropertiesAccess config, String propName, String propValue){
-          if (config.existsProperty(propName)){
-              if (GuiUtil.isEmpty(propValue))
-                  config.removeProperty(propName);
-              else
-              if (! propValue.equals(config.getPropertyValue(propName)))
-                  config.setPropertyValue(propName, propValue);
-              //don't change the value if it is equal.
-           }else{
-              if (!GuiUtil.isEmpty(propValue))
-                    config.createProperty(propName, propValue);
-          }
-      }
 
 
      public  String getAppType(String name){

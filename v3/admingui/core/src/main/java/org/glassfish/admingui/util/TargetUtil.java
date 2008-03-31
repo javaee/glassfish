@@ -132,10 +132,10 @@ public class TargetUtil {
 	 * Given the name of a resource and the target, return the resource-ref object
 	 */
 	static public ResourceRefConfig getResourceRef(String name, String target){
-	    StandaloneServerConfig server = AMXRoot.getInstance().getDomainConfig().getStandaloneServerConfigMap().get(target);
+	    StandaloneServerConfig server = AMXRoot.getInstance().getServersConfig().getStandaloneServerConfigMap().get(target);
 	    ResourceRefConfig ref = null;
             if (server == null){
-		ClusterConfig cluster = AMXRoot.getInstance().getDomainConfig().getClusterConfigMap().get(target);
+		ClusterConfig cluster = AMXRoot.getInstance().getDomainConfig().getClustersConfig().getClusterConfigMap().get(target);
 		ref = (cluster == null) ? null :  cluster.getResourceRefConfigMap().get(name);
 	    }else{
 		ref = server.getResourceRefConfigMap().get(name);
@@ -152,7 +152,7 @@ public class TargetUtil {
             List<Map<String, ResourceRefConfig>> allResourceRefs = new ArrayList();
             
             if (isCluster(target)){
-                ClusterConfig cluster = AMXRoot.getInstance().getDomainConfig().getClusterConfigMap().get(target);
+                ClusterConfig cluster = AMXRoot.getInstance().getDomainConfig().getClustersConfig().getClusterConfigMap().get(target);
                 allResourceRefs.add(cluster.getResourceRefConfigMap());
                 //For every server in this cluster, we have to change the source ref status also.
                 Map<String,ClusteredServerConfig> clusteredServerConfigMap = cluster.getClusteredServerConfigMap();
@@ -161,7 +161,7 @@ public class TargetUtil {
                     allResourceRefs.add(csConfig.getResourceRefConfigMap());
                 }
             }else{
-                StandaloneServerConfig server = AMXRoot.getInstance().getDomainConfig().getStandaloneServerConfigMap().get(target);
+                StandaloneServerConfig server = AMXRoot.getInstance().getServersConfig().getStandaloneServerConfigMap().get(target);
                 allResourceRefs.add(server.getResourceRefConfigMap());
             }
             return allResourceRefs;
@@ -213,9 +213,9 @@ public class TargetUtil {
         
         
         static public ResourceRefConfigCR getResoruceRefConfigCR(String targetName){
-            ResourceRefConfigCR target = AMXRoot.getInstance().getDomainConfig().getStandaloneServerConfigMap().get(targetName);
+            ResourceRefConfigCR target = AMXRoot.getInstance().getServersConfig().getStandaloneServerConfigMap().get(targetName);
             if (target == null){
-		target = AMXRoot.getInstance().getDomainConfig().getClusterConfigMap().get(targetName);
+		target = AMXRoot.getInstance().getDomainConfig().getClustersConfig().getClusterConfigMap().get(targetName);
                 if (target == null){
                     //TODO Log Error, cannot find such target
                     return null;
@@ -282,10 +282,10 @@ public class TargetUtil {
 	 * Given the name of an application and the target, return the application-ref object
 	 */
 	static public DeployedItemRefConfig getDeployedItemRefObject(String name, String target){
-	    StandaloneServerConfig server = AMXRoot.getInstance().getDomainConfig().getStandaloneServerConfigMap().get(target);
+	    StandaloneServerConfig server = AMXRoot.getInstance().getServersConfig().getStandaloneServerConfigMap().get(target);
 	    DeployedItemRefConfig ref = null;
             if (server == null){
-		ClusterConfig cluster = AMXRoot.getInstance().getDomainConfig().getClusterConfigMap().get(target);
+		ClusterConfig cluster = AMXRoot.getInstance().getDomainConfig().getClustersConfig().getClusterConfigMap().get(target);
 		ref = (cluster == null) ? null :  cluster.getDeployedItemRefConfigMap().get(name);
 	    }else{
 		ref = server.getDeployedItemRefConfigMap().get(name);
@@ -297,9 +297,9 @@ public class TargetUtil {
 	 * Given the name of an application  and the target, create the application-ref object
 	 */
 	static public void createDeployedItemRefObject(String name, String targetName){
-	    DeployedItemRefConfigCR target = AMXRoot.getInstance().getDomainConfig().getStandaloneServerConfigMap().get(targetName);
+	    DeployedItemRefConfigCR target = AMXRoot.getInstance().getServersConfig().getStandaloneServerConfigMap().get(targetName);
             if (target == null){
-		target = AMXRoot.getInstance().getDomainConfig().getClusterConfigMap().get(targetName);
+		target = AMXRoot.getInstance().getDomainConfig().getClustersConfig().getClusterConfigMap().get(targetName);
                 if (target == null){
                     //TODO log error
                     return;
@@ -311,9 +311,9 @@ public class TargetUtil {
 	 * Given the name of an application  and the target, deletes the application-ref object
 	 */
 	static public void removeDeployedItemRefObject(String name, String targetName){
-	    DeployedItemRefConfigCR target = AMXRoot.getInstance().getDomainConfig().getStandaloneServerConfigMap().get(targetName);
+	    DeployedItemRefConfigCR target = AMXRoot.getInstance().getDomainConfig().getServersConfig().getStandaloneServerConfigMap().get(targetName);
             if (target == null){
-		target = AMXRoot.getInstance().getDomainConfig().getClusterConfigMap().get(targetName);
+		target = AMXRoot.getInstance().getDomainConfig().getClustersConfig().getClusterConfigMap().get(targetName);
                 if (target == null){
                     //TODO log error
                     return;
@@ -390,7 +390,7 @@ public class TargetUtil {
     
      
     public static String getNumberLBInstancesByTarget(String cluster){
-        Map<String,ServerRefConfig> serverRefMap = AMXRoot.getInstance().getDomainConfig().getClusterConfigMap().get(cluster).getServerRefConfigMap();
+        Map<String,ServerRefConfig> serverRefMap = AMXRoot.getInstance().getDomainConfig().getClustersConfig().getClusterConfigMap().get(cluster).getServerRefConfigMap();
         Collection <ServerRefConfig> refs = serverRefMap.values();
         int totalCount = serverRefMap.size();
         if (totalCount == 0) return GuiUtil.getMessage("loadBalancer.noInstance");
@@ -409,7 +409,11 @@ public class TargetUtil {
     }
     
     public static boolean isCluster(String name){
-        return (AMXRoot.getInstance().getDomainConfig().getClusterConfigMap().get(name) == null) ? false: true;
+        
+        //TODO-V3
+        //just return false because in TP2, getClusterConfig() returns NULL
+        //return (AMXRoot.getInstance().getDomainConfig().getClustersConfig().getClusterConfigMap().get(name) == null) ? false: true;
+        return false;
     }
     
     public static final int APP_NO_TARGET = -2;
