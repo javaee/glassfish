@@ -56,6 +56,10 @@ public class PropsFileActionReporter extends ActionReporter {
         Attributes mainAttr = out.getMainAttributes();
         mainAttr.put(Attributes.Name.SIGNATURE_VERSION, "1.0");
         mainAttr.putValue("exit-code", exitCode.toString());
+        
+        if(exitCode == ExitCode.FAILURE)
+            writeCause(mainAttr);
+
         writeReport(null, topMessage, out, mainAttr);
         out.write(os);
     }
@@ -86,6 +90,16 @@ public class PropsFileActionReporter extends ActionReporter {
             }
             attr.putValue("children", keys);
         }
+    }
+
+    private void writeCause(Attributes mainAttr) {
+        Throwable t = getFailureCause();
+
+        if(t == null)
+            return;
+
+        String causeMessage = t.toString();
+        mainAttr.putValue("cause", causeMessage);
     }
 }
 
