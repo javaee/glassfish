@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--Author Deepa Singh -->
+
+<project name="jsfinjection" default="default" basedir=".">
+    <property file="build.properties"/>
+    <property file="${ws.root}/gfproject/${deploy.platform}-config.properties"/>
+   
+    
+    <description>Builds, tests, and runs the project Hello JSP Application</description>
+    <import file="${ws.root}/gfproject/build-impl.xml"/>   
+    <import file="${ws.root}/gfproject/${deploy.platform}-targets.xml"/>
+    
+    <target name="all"/>
+    
+   
+    <target name="build">
+         <property name="war.file.ext" value="${war.file}.war"/>
+        <antcall target="build-impl"/>
+    </target>
+    
+    <target name="deploy">
+        <antcall target="deploy-${deploy.platform}-impl">
+            <param name="deployed.app" value="${war.file}.war"/>
+        </antcall>
+    </target>
+    
+    <target  name="runtest"> 
+        <!--  ADD htmlunit CLASSPATH -->
+        <antcall target="runtest-impl">
+        <param name="contextroot" value="hellomy"/>
+        <param name="testng.test.name" value="${testng.test.name}"/>
+        <param name="testng.testclient" value="JSFInjectionTestNG"/>
+        </antcall>
+        
+    </target>
+    
+    <target name="undeploy">
+        <antcall target="undeploy-${deploy.platform}-impl"/>
+    </target>
+    
+    
+</project>
