@@ -37,16 +37,27 @@ public class ASMain extends com.sun.enterprise.module.bootstrap.Main {
      */
     final static Logger logger = Logger.getAnonymousLogger();
 
-    private static String PLATFORM_PROPERTY_KEY = "GlassFish.Platform";
+    private static String PLATFORM_PROPERTY_KEY = "GlassFish_Platform";
 
     private enum Platform {HK2, Felix, KnopflerFish, Equinox}
 
     public static void main(final String args[]) {
         Platform platform = Platform.HK2;
+
+        // first check the system props
         String temp = System.getProperty(PLATFORM_PROPERTY_KEY);
-        if (temp!=null && temp.trim().length() != 0) {
+        if (temp == null || temp.trim().length() <= 0) {
+            // not in sys props -- check environment
+            temp = System.getenv(PLATFORM_PROPERTY_KEY);
+        }
+
+        if (temp != null && temp.trim().length() != 0) {
             platform = Platform.valueOf(temp.trim());
         }
+
+        // Set the system property if downstream code wants to know about it
+        System.setProperty(PLATFORM_PROPERTY_KEY, platform.toString());
+
         switch (platform) {
             case Felix:
                 logger.info("Lanuching GlassFish on Apache Felix OSGi platform");

@@ -227,13 +227,6 @@ public abstract class GFLauncher {
         // todo handle stuff in javaConfig like debug...
         commandLine = new ArrayList<String>();
         commandLine.add(javaExe);
-        // This is needed for non-embedded mode. No issue if it is set during
-        // embedded mode.
-        final String platformPropertyName = "GlassFish.Platform";
-        String platformPropertyValue = System.getProperty(platformPropertyName);
-        String GlassFishPlatformProperty ="-D"+ platformPropertyName + "=" +
-                (platformPropertyValue==null ? "":platformPropertyValue);
-        commandLine.add(GlassFishPlatformProperty);
         commandLine.add("-cp");
         commandLine.add(classpath);
         commandLine.addAll(debugOptions);
