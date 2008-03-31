@@ -321,12 +321,89 @@ public class RemoteDeploymentFacility implements DeploymentFacility, TargetOwner
         }        
     }
 
+    private DFProgressObject changeState(
+            Target[] targets, 
+            String moduleID,
+            String commandName,
+            String successStatusKey,
+            String successStatusDefaultMessage,
+            String failureStatusKey,
+            String failureStatusDefaultMessage) {
+        
+        ensureConnected();
+        targets = prepareTargets(targets);
+        ProgressObjectImpl po = new ProgressObjectImpl(targets);
+        try {
+            String[] commandArgs = prepareRemoteCommandArguments(
+                    commandName, 
+                    null, 
+                    new String[] {moduleID}
+                    );
+            ByteArrayOutputStream baos = new ByteArrayOutputStream(1024);
+            remoteCommand.handleRemoteCommand(commandArgs, "xml-cli", baos);
+            DFDeploymentStatus ds = CommandXMLResultParser.parse(new ByteArrayInputStream(baos.toByteArray()));
+            DFDeploymentStatus mainStatus = ds.getMainStatus();
+            if (mainStatus.getStatus() != DFDeploymentStatus.Status.FAILURE) {
+                TargetModuleIDImpl[] targetModuleIDs = new TargetModuleIDImpl[targets.length];
+                int i = 0;
+                for (TargetImpl ti : po.toTargetImpl(targets)) {
+                    targetModuleIDs[i++] = new TargetModuleIDImpl(ti,moduleID);
+                }
+                
+                po.setupForNormalExit(
+                        localStrings.getLocalString(
+                        successStatusKey,
+                        successStatusDefaultMessage,
+                        moduleID),
+                    domain,
+                    mainStatus,
+                    targetModuleIDs);
+            } else {
+                po.setupForAbnormalExit(
+                        localStrings.getLocalString(
+                            failureStatusKey,
+                            failureStatusDefaultMessage,
+                            mainStatus.getStageStatusMessage()),
+                        domain,
+                        mainStatus);
+            }
+            return po;
+
+
+        } catch (Throwable ioex) {
+            po.setupForAbnormalExit(
+                    localStrings.getLocalString(
+                        failureStatusKey,
+                        failureStatusDefaultMessage,
+                    ioex.toString()), 
+                domain,
+                ioex);
+            return po;
+        }        
+        
+    }
     public DFProgressObject enable(Target[] targets, String moduleID) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return changeState(
+                targets, 
+                moduleID,
+                "enable",
+                "enterprise.deployment.client.enable_application",
+                "Application {0} enabled successfully",
+                "enterprise.deployment.client.enable_application_failed",
+                "Attempt to enable application {0} failed"
+                );
     }
 
     public DFProgressObject disable(Target[] targets, String moduleID) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return changeState(
+                targets,
+                moduleID,
+                "disable",
+                "enterprise.deployment.client.disable_application",
+                "Application {0} disabled successfully",
+                "enterprise.deployment.client.disable_application_failed",
+                "Attempt to disable application {0} failed"
+                );
     }
 
     public DFProgressObject createAppRef(Target[] targets, String moduleID,
