@@ -3,6 +3,7 @@ package com.sun.enterprise.glassfish.bootstrap;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.io.File;
 import java.util.logging.Logger;
 
@@ -32,6 +33,15 @@ public class ASMainFelix extends ASMainOSGi {
 
     protected void launchOSGiFW(String... args) {
         try {
+            /* Set a system property called com.sun.aas.installRootURI.
+             * This property is used in felix/conf/config.properties to
+             * to auto-start some modules. We can't use com.sun.aas.installRoot
+             * because that com.sun.aas.installRoot is a directory path, where as
+             * we need a URI.
+             */
+            String installRoot = System.getProperty("com.sun.aas.installRoot");
+            URI installRootURI = new File(installRoot).toURI();
+            System.setProperty("com.sun.aas.installRootURI", installRootURI.toString());
             String sysFileURL = new File(glassfishDir, "felix/conf/system.properties").toURI().toURL().toString();
             System.setProperty("felix.system.properties", sysFileURL);
             String confFileURL = new File(glassfishDir, "felix/conf/config.properties").toURI().toURL().toString();
