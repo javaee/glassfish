@@ -53,6 +53,7 @@
         <sun:head id="propertyhead"  title="$resource{i18n.edJmxConnector.sslSettingsLabel}" >
             <sun:script url="resource/js/selectElements.js" />
             <sun:script url="resource/js/restart.js" />
+            <sun:script url="/resource/js/adminjsf.js" />
         </sun:head>    
         <sun:body id="body3" onLoad="javascript: synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
             <sun:form id="propertyForm">
@@ -66,6 +67,6 @@
                 </sun:title>
             </sun:form>
         </sun:body>
-#include "sslValidationsJS.inc"        
+#include "/shared/sslValidationsJS.inc"        
     </sun:html>
 </sun:page>

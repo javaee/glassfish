@@ -63,14 +63,11 @@
                             <!command
                             getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
                             getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
-                            convertListToArrayList(TableList="#{newList}", NameList=>$attribute{nameList});
-                            getAddRemoveProps(NewList="#{newList}", OldList="#{props}", NameList="#{nameList}", AddProps=>$attribute{addProps}, RemoveProps=>$attribute{removeProps});
+                            convertRowsToProperties(NewList="#{newList}", AddProps=>$attribute{newProps});
                             prepareSuccessfulMsg();        
-                            setPageSessionAttribute(key="props", value="${addProps}");
                             saveWebContainerGeneralProps( 
-                            ConfigName="#{configName}"
-                            AddProps="${addProps}",
-                            RemoveProps="${removeProps}"
+                                ConfigName="#{configName}"
+                                newProps="${newProps}"
                             );
                             />
                         </sun:button>

@@ -47,20 +47,20 @@
         setPageSessionAttribute(key="listPageLink" value="/resourceNode/jdbcConnectionPools.jsf");
         setPageSessionAttribute(key="resourceType" value="jdbcConnectionPool");
         />
-#include "shared/restart.inc"        
+#include "/shared/restart.inc"        
     <sun:html id="html2">
         <sun:head id="propertyhead" title="$resource{i18n.jdbcConnectionPools.pageTitle}" >
-            <sun:script url="../js/restart.js" />
+            <sun:script url="/resource/js/restart.js" />
         </sun:head>
 
         <sun:body id="body3" onLoad="admingui.nav.refreshTree(null); synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
             <sun:form id="propertyForm">
-#include treeBreadcrumbs.inc
-#include "alertMsg.inc"
+#include "/treeBreadcrumbs.inc"
+#include "/alertMsg.inc"
                  <sun:title id="propertyContentPage" title="$resource{i18n.jdbcConnectionPools.pageTitle}"
                  helpText="$resource{i18n.jdbcConnectionPools.pageTitleHelp}"/>
 		 "<br /><br />
-#include "resourceNode/poolTable.inc"
+#include "poolTable.inc"
 	<sun:hidden id="helpKey" value="$resource{help.jdbcConnectionPools}" />
             </sun:form>
         </sun:body>

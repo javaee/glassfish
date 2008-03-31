@@ -65,7 +65,7 @@
 #include "shared/restart.inc"    
     <sun:html id="html2">
         <sun:head id="propertyhead" title="$resource{i18n.jdbcConnectionPool.Step2PageTitle}" >
-            <sun:script url="../js/restart.js" />
+            <sun:script url="/resource/js/restart.js" />
         </sun:head>
 
         <sun:body id="body3" onLoad="javascript: synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
@@ -177,7 +177,7 @@
 	<sun:hidden id="helpKey" value="$resource{help.jdbcConnectionPoolNew2}" />
             </sun:form>
         </sun:body>
-#include "changeButtonsJS.inc" 
+#include "/shared/changeButtonsJS.inc" 
 
 "<SCRIPT language = "Javascript" >
 "function disableTableField() {

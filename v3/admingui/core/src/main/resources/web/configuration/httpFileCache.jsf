@@ -57,7 +57,8 @@
 #include "/shared/restart.inc"    
     <sun:html id="html2">
         <sun:head id="propertyhead" title="$resource{i18n.httpFileCache.Title}">
-            <sun:script url="../js/restart.js" />
+            <sun:script url="/resource/js/restart.js" />
+            <sun:script url="/resource/js/adminjsf.js" />
         </sun:head>
         <sun:body id="body3" onLoad="javascript: synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
             <sun:form id="propertyForm">
@@ -106,7 +107,7 @@
                                 );
                                 setSessionAttribute(key="httpServiceTabs" value="fileCache");
                                 setSessionAttribute(key="configName" value="#{configName}");
-                                navigate(page="configuration/httpFileCache.jsf");
+                                navigate(page="/web/configuration/httpFileCache.jsf");
                            />
                         </sun:button>                      
                     </sun:panelGroup>
@@ -132,7 +133,7 @@
                                 );
                                 setSessionAttribute(key="httpServiceTabs" value="fileCache");
                                 setSessionAttribute(key="configName" value="#{configName}");
-                                navigate(page="configuration/httpFileCache.jsf");
+                                navigate(page="/web/configuration/httpFileCache.jsf");
                            />
                         </sun:button>                      
                     </sun:panelGroup>

@@ -55,7 +55,7 @@
   <sun:html id="html2">
         <sun:head id="propertyhead"  title="$resource{i18n.edJmxConnector.sslSettingsLabel}" >
             <sun:script url="../js/selectElements.js" />
-            <sun:script url="../js/restart.js" />
+            <sun:script url="/resource/js/restart.js" />
         </sun:head>    
         <sun:body id="body3" onLoad="javascript: synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
             <sun:form id="propertyForm">

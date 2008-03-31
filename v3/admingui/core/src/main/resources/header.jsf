@@ -71,7 +71,7 @@
                             onClick="if (!confirm('$resource{i18n.msg.JS.confirmLogout}')) return false;" onKeyPress="javascript: return true;" > 
                             <!command
 			    <!-- / is breaking, need to check jsft navigate -->
-				navigate("login.jsf");
+				navigate("/login.jsf");
                                 logout();
 			    />
 			</sun:hyperlink>

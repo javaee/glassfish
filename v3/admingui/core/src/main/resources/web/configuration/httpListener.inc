@@ -43,25 +43,23 @@
             <!command
             getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
             getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
-            convertListToArrayList(TableList="#{newList}", NameList=>$attribute{nameList});
-            getAddRemoveProps(NewList="#{newList}", OldList="#{props}", NameList="#{nameList}", AddProps=>$attribute{addProps}, RemoveProps=>$attribute{removeProps});
+            convertRowsToProperties(NewList="#{newList}", AddProps=>$attribute{newProps});
             prepareSuccessfulMsg();   
             saveHttpListenerValues(
-            ConfigName="#{configName}"
-            HttpName="#{tabName}"  
-            Edit="#{edit}"
-            NetwkAddr="#{netwkAddr}" 
-            ListenerPort="#{listenerPort}"
-            DefaultVirtServer="#{defaultVirtServer}"
-            ServerName="#{requestScope.serverName}"
-            Listener="#{listener}"
-            security="#{security}"
-            RedirectPort="#{redirectPort}"
-            Acceptor="#{acceptor}"
-            PoweredBy="#{poweredBy}"
-            Blocking="#{blocking}"
-            AddProps="#{addProps}"
-            RemoveProps="#{removeProps}"
+                ConfigName="#{configName}"
+                HttpName="#{tabName}"  
+                Edit="#{edit}"
+                NetwkAddr="#{netwkAddr}" 
+                ListenerPort="#{listenerPort}"
+                DefaultVirtServer="#{defaultVirtServer}"
+                ServerName="#{requestScope.serverName}"
+                Listener="#{listener}"
+                security="#{security}"
+                RedirectPort="#{redirectPort}"
+                Acceptor="#{acceptor}"
+                PoweredBy="#{poweredBy}"
+                Blocking="#{blocking}"
+                newProps="#{newProps}"
             );
            redirect(page="#{editPage}?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}&configName=#{configName}&name=#{tabName}");
             />
@@ -71,32 +69,31 @@
             <!command
             getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
             getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
-            convertRowsToProperties(NewList="#{newList}", AddProps=>$attribute{addProps});
+            convertRowsToProperties(NewList="#{newList}", AddProps=>$attribute{newProps});
             saveHttpListenerValues(
-            ConfigName="#{configName}"
-            HttpName="#{tabName}"  
-            Edit="#{edit}"
-            NetwkAddr="#{netwkAddr}" 
-            ListenerPort="#{listenerPort}"
-            DefaultVirtServer="#{defaultVirtServer}"
-            ServerName="#{requestScope.serverName}"
-            Listener="#{listener}"
-            security="#{security}"
-            RedirectPort="#{redirectPort}"
-            Acceptor="#{acceptor}"
-            PoweredBy="#{poweredBy}"
-            Blocking="#{blocking}"
-            AddProps="#{addProps}"
-            RemoveProps="#{removeProps}"
+                ConfigName="#{configName}"
+                HttpName="#{tabName}"  
+                Edit="#{edit}"
+                NetwkAddr="#{netwkAddr}" 
+                ListenerPort="#{listenerPort}"
+                DefaultVirtServer="#{defaultVirtServer}"
+                ServerName="#{requestScope.serverName}"
+                Listener="#{listener}"
+                security="#{security}"
+                RedirectPort="#{redirectPort}"
+                Acceptor="#{acceptor}"
+                PoweredBy="#{poweredBy}"
+                Blocking="#{blocking}"
+                newProps="#{newProps}"
             );           
             setAttribute(key="configName", value="#{configName}");
             setAttribute(key="tabName", value="#{tabName}");
             setAttribute(key="type", value="http");
             setAttribute(key="sslPageTitle", value="#{step2PageTitle}");
-            setAttribute(key="prevPage", value="configuration/httpListenerNew.jsf");
+            setAttribute(key="prevPage", value="/web/configuration/httpListenerNew.jsf");
             setAttribute(key="finalPage", value="httpListeners.jsf");
             setAttribute(key="ssl2", value="#{true}");
-            navigate(page="web/configuration/listenersSslNew.jsf");
+            navigate(page="/web/configuration/listenersSslNew.jsf");
             />
         </sun:button>
         <sun:button id="cancelButton" rendered="#{!edit}" immediate="#{true}" text="$resource{i18n.button.Cancel}" primary="#{false}">
@@ -148,7 +145,7 @@
                 <sun:textField id="ListenerPort" styleClass="require port" columns="$int{20}" text="#{requestScope.listenerPort}" required="#{true}" />      
             </sun:property> 
             <sun:property id="DefaultVirtServersProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.httpListeners.defVirtualServerLabel}" helpText="$resource{i18n.httpListeners.defVirtualServerHelp}">
-                <sun:dropDown id="DefaultVirtServers" styleClass="require" selected="#{requestScope.defaultVirtServer}" values="$attribute{defaultVirtServers}"  labels="$attribute{defaultVirtServers}"  required="#{true}"/>
+                <sun:dropDown id="DefaultVirtServers" selected="#{requestScope.defaultVirtServer}" values="$attribute{defaultVirtServers}"  labels="$attribute{defaultVirtServers}"  required="#{true}"/>
             </sun:property>                          
             <sun:property id="ServerNameProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.httpListeners.serverNameLabel}" helpText="$resource{i18n.httpListeners.serverNameHelp}" >
                 <sun:textField id="ServerName" columns="$int{20}" text="#{requestScope.serverName}" />      

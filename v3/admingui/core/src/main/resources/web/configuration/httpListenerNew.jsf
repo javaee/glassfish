@@ -51,7 +51,8 @@ setAttribute(key="edit" value="#{false}" )
 #include "/shared/restart.inc"    
     <sun:html id="html2">
         <sun:head id="propertyhead" title="#{pageTitle}">
-            <sun:script url="../../js/restart.js" />
+            <sun:script url="/resource/js/restart.js" />
+            <sun:script url="/resource/js/adminjsf.js" />
         </sun:head>
         <sun:body id="body3" onLoad="javascript: synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
             <sun:form id="propertyForm">
@@ -63,7 +64,7 @@ setAttribute(key="edit" value="#{false}" )
             </sun:form>
             "<br/><br/>
         </sun:body>
-#include "/changeButtonsJS.inc"         
+#include "/shared/changeButtonsJS.inc"         
     </sun:html>
 
 </sun:page>
