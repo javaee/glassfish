@@ -887,13 +887,10 @@ function guiValidate(reqMsg,reqInt, reqPort){
     for ( i=0; i< inputFields.length; i++) {
         component = inputFields[i];
         //styleClass is now with the parent span
-        styleClass = component.className;
-            //alert('A : ' + styleClass);
-            styleClass = component.parentNode.className;  
-            //alert('P : ' + styleClass);
-            if (styleClass == null || styleClass =='') {
-                continue;
-            }
+        styleClass = component.parentNode.className;  
+        if (styleClass == null || styleClass =='') {
+            continue;
+        }
         if (styleClass.match("require")) {
             if (component.value=='') {
                 component.focus();
@@ -953,10 +950,7 @@ function guiValidateWithDropDown(reqMsg,reqInt, reqPort, reqMsgSelect){
     for ( i=0; i< inputFields.length; i++) {
         component = inputFields[i];
         //styleClass is now with the parent span
-        styleClass = component.className;
-        //alert('A : ' + styleClass);
         styleClass = component.parentNode.className;  
-        //alert('P : ' + styleClass);
         if (styleClass == null || styleClass =='') {
             continue;
         }
