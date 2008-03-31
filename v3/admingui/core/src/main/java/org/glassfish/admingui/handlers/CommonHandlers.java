@@ -53,6 +53,7 @@ import java.util.List;
 import java.util.ArrayList;
 import org.glassfish.admingui.util.AMXRoot;
 import org.glassfish.admingui.util.GuiUtil;
+import org.glassfish.admingui.util.AMXUtil;
 import com.sun.enterprise.util.SystemPropertyConstants;
 
 import com.sun.jsftemplating.annotation.Handler;
@@ -61,7 +62,6 @@ import com.sun.jsftemplating.annotation.HandlerOutput;
 import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
 
 import com.sun.appserv.management.DomainRoot;
-import com.sun.appserv.management.j2ee.J2EEServer;
 import com.sun.appserv.management.config.PropertiesAccess;
 import javax.faces.context.ExternalContext;
 import javax.faces.component.UIComponent;
@@ -76,6 +76,7 @@ import com.sun.webui.jsf.component.Calendar;
 import com.sun.appserv.management.config.ConfigConfig;
 import com.sun.appserv.management.config.DASConfig;
 
+import com.sun.appserv.management.config.PropertyConfig;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.Cookie;
 
@@ -543,10 +544,10 @@ public class CommonHandlers {
             }
             return;
         }
-        Map<String, String>  mbeanProps = mbean.getProperties();
+        Map<String, PropertyConfig>  mbeanProps = mbean.getPropertyConfigMap();
         List propsValue = new ArrayList(propsName.size());
         for(String nm : propsName){
-           String value = mbeanProps.get(nm);
+           String value = mbeanProps.get(nm).getValue();
            propsValue.add( (value==null) ? "" : value);
         }
         handlerCtx.setOutputValue("propsValue", propsValue);
@@ -571,11 +572,10 @@ public class CommonHandlers {
             //TODO: log error
             return;
         }
-        Map<String, String>  mbeanProps = mbean.getProperties();
         for(int i=0; i<propsName.size(); i++){
            String newValue = propsValue.get(i);
            String nm = propsName.get(i);
-           AMXRoot.getInstance().changeProperty(mbean, nm, newValue);
+           AMXUtil.changeProperty(mbean, nm, newValue);
         }
     }
     

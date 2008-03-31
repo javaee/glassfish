@@ -66,10 +66,12 @@ import java.io.File;
 
 
 import org.glassfish.admingui.util.AMXRoot;
+import org.glassfish.admingui.util.AMXUtil;
 import org.glassfish.admingui.util.GuiUtil;
 import org.glassfish.admingui.util.TargetUtil;
 
 import com.sun.appserv.management.base.AMX;
+import com.sun.appserv.management.base.XTypes;
 import com.sun.appserv.management.config.AdminObjectResourceConfig;
 import com.sun.appserv.management.config.BackendPrincipalConfig;
 import com.sun.appserv.management.config.ConnectorConnectionPoolConfig;
@@ -84,6 +86,7 @@ import com.sun.appserv.management.config.ResourceRefConfig;
 import com.sun.appserv.management.config.StandaloneServerConfig;
 import com.sun.appserv.management.config.SecurityMapConfig;
 import com.sun.appserv.management.config.ClusterConfig;
+import com.sun.appserv.management.config.ResourcesConfig;
 import com.sun.appserv.management.util.misc.GSetUtil;
 import javax.management.Attribute;
 import javax.management.AttributeList;
@@ -91,6 +94,7 @@ import javax.management.AttributeList;
 import com.sun.webui.jsf.component.DropDown;
 import com.sun.webui.jsf.model.Option;
 
+import java.util.HashSet;
 import javax.management.ObjectName;
 
 public class ConnectorsHandlers {
@@ -124,7 +128,7 @@ public class ConnectorsHandlers {
             return;
         }
         String jndiName = (String) handlerCtx.getInputValue("jndiName");
-        ConnectorResourceConfig resource = AMXRoot.getInstance().getDomainConfig().getConnectorResourceConfigMap().get(jndiName);
+        ConnectorResourceConfig resource = AMXRoot.getInstance().getResourcesConfig().getConnectorResourceConfigMap().get(jndiName);
         if (resource == null) {
             GuiUtil.handleError(handlerCtx, GuiUtil.getMessage("msg.NoSuchConnectorResource"));
             return;
@@ -166,7 +170,7 @@ public class ConnectorsHandlers {
         ConnectorResourceConfig resource = null;
         try {
             if (!(Boolean) handlerCtx.getInputValue("edit")) {
-                resource = AMXRoot.getInstance().getDomainConfig().createConnectorResourceConfig(jndiName, poolName, null);
+                resource = AMXRoot.getInstance().getResourcesConfig().createConnectorResourceConfig(jndiName, poolName, null);
                 //Work around for bug#6519377.  It automatically creates a <resource-ref> for "server"
                 if (AMXRoot.getInstance().isEE()) {
                     if (TargetUtil.getResourceRef(jndiName, "server") != null) {
@@ -185,7 +189,7 @@ public class ConnectorsHandlers {
              */
             } else {
                 GuiUtil.prepareSuccessful(handlerCtx);
-                resource = AMXRoot.getInstance().getDomainConfig().getConnectorResourceConfigMap().get(jndiName);
+                resource = AMXRoot.getInstance().getResourcesConfig().getConnectorResourceConfigMap().get(jndiName);
                 if (resource == null) {
                     GuiUtil.handleError(handlerCtx, GuiUtil.getMessage("msg.NoConnectResource"));
                 }
@@ -210,7 +214,7 @@ public class ConnectorsHandlers {
 @HandlerOutput(name = "connectorConnectionPools", type = java.util.List.class)
 })
     public static void getConnectorConnectionPools(HandlerContext handlerCtx) {
-        Set keys = AMXRoot.getInstance().getDomainConfig().getConnectorConnectionPoolConfigMap().keySet();
+        Set keys = AMXRoot.getInstance().getResourcesConfig().getConnectorConnectionPoolConfigMap().keySet();
         handlerCtx.setOutputValue("connectorConnectionPools", new ArrayList(keys));
     }
 
@@ -229,16 +233,16 @@ public class ConnectorsHandlers {
         boolean hasOrig = (selectedList == null || selectedList.size() == 0) ? false : true;
         List result = new ArrayList();
         try {
-            Iterator iter = AMXRoot.getInstance().getDomainConfig().getConnectorConnectionPoolConfigMap().values().iterator();
+            Iterator iter = AMXRoot.getInstance().getResourcesConfig().getConnectorConnectionPoolConfigMap().values().iterator();
             if (iter != null) {
                 while (iter.hasNext()) {
                     ConnectorConnectionPoolConfig res = (ConnectorConnectionPoolConfig) iter.next();
                     HashMap oneRow = new HashMap();
                     oneRow.put("name", res.getName());
-                    oneRow.put("selected", (hasOrig) ? isSelected(res.getName(), selectedList) : false);
+                    oneRow.put("selected", (hasOrig) ? GuiUtil.isSelected(res.getName(), selectedList) : false);
                     oneRow.put("resInfo", res.getResourceAdapterName());
                     oneRow.put("extraInfo", res.getConnectionDefinitionName());
-                    oneRow.put("description", checkEmpty(res.getDescription()));
+                    oneRow.put("description", GuiUtil.checkEmpty(res.getDescription()));
                     result.add(oneRow);
                 }
             }
@@ -270,7 +274,7 @@ public class ConnectorsHandlers {
     public static void getConnectorConnectionPoolInfo(HandlerContext handlerCtx) {
 
         String jndiName = (String) handlerCtx.getInputValue("jndiName");
-        ConnectorConnectionPoolConfig pool = AMXRoot.getInstance().getDomainConfig().getConnectorConnectionPoolConfigMap().get(jndiName);
+        ConnectorConnectionPoolConfig pool = AMXRoot.getInstance().getResourcesConfig().getConnectorConnectionPoolConfigMap().get(jndiName);
         if (pool == null) {
             GuiUtil.handleError(handlerCtx, GuiUtil.getMessage("msg.NoSuchConnectorConnectionPool"));
             return;
@@ -299,7 +303,7 @@ public class ConnectorsHandlers {
     public static void getConnectorConnectionPoolProperty(HandlerContext handlerCtx) {
 
         String jndiName = (String) handlerCtx.getInputValue("jndiName");
-        ConnectorConnectionPoolConfig pool = AMXRoot.getInstance().getDomainConfig().getConnectorConnectionPoolConfigMap().get(jndiName);
+        ConnectorConnectionPoolConfig pool = AMXRoot.getInstance().getResourcesConfig().getConnectorConnectionPoolConfigMap().get(jndiName);
         if (pool == null) {
             GuiUtil.handleError(handlerCtx, GuiUtil.getMessage("msg.NoSuchConnectorConnectionPool"));
             return;
@@ -329,7 +333,7 @@ public class ConnectorsHandlers {
 
         try {
             String jndiName = (String) handlerCtx.getInputValue("jndiName");
-            ConnectorConnectionPoolConfig pool = AMXRoot.getInstance().getDomainConfig().getConnectorConnectionPoolConfigMap().get(jndiName);
+            ConnectorConnectionPoolConfig pool = AMXRoot.getInstance().getResourcesConfig().getConnectorConnectionPoolConfigMap().get(jndiName);
             if (pool == null) {
                 GuiUtil.handleError(handlerCtx, GuiUtil.getMessage("msg.NoSuchConnectorConnectionPool"));
                 return;
@@ -365,7 +369,7 @@ public class ConnectorsHandlers {
 
         try {
             String jndiName = (String) handlerCtx.getInputValue("jndiName");
-            ConnectorConnectionPoolConfig pool = AMXRoot.getInstance().getDomainConfig().getConnectorConnectionPoolConfigMap().get(jndiName);
+            ConnectorConnectionPoolConfig pool = AMXRoot.getInstance().getResourcesConfig().getConnectorConnectionPoolConfigMap().get(jndiName);
             if (pool == null) {
                 GuiUtil.handleError(handlerCtx, GuiUtil.getMessage("msg.NoSuchConnectorConnectionPool"));
                 return;
@@ -390,7 +394,7 @@ public class ConnectorsHandlers {
 @HandlerOutput(name = "transactionSupport", type = String.class)
 })
     public static void getConnectorConnectionPoolDefaultInfo(HandlerContext handlerCtx) {
-        //Map defaultMap = AMXRoot.getInstance().getDomainConfig().getDefaultAttributeValues(ConnectorConnectionPoolConfig.J2EE_TYPE);
+        //Map defaultMap = AMXRoot.getInstance().getResourcesConfig().getDefaultValues(XTypes.CONNECTOR_CONNECTION_POOL_CONFIG);
         //TODO-V3 TP2
         Map defaultMap = new HashMap();
         handlerCtx.setOutputValue("steadyPoolSize", defaultMap.get("steady-pool-size"));
@@ -414,7 +418,7 @@ public class ConnectorsHandlers {
     public static void getConnectorPoolAdvanceInfo(HandlerContext handlerCtx) {
 
         String jndiName = (String) handlerCtx.getInputValue("jndiName");
-        ConnectorConnectionPoolConfig pool = AMXRoot.getInstance().getDomainConfig().getConnectorConnectionPoolConfigMap().get(jndiName);
+        ConnectorConnectionPoolConfig pool = AMXRoot.getInstance().getResourcesConfig().getConnectorConnectionPoolConfigMap().get(jndiName);
         if (pool == null) {
             GuiUtil.handleError(handlerCtx, GuiUtil.getMessage("msg.noSuchConnectorConnectionPool"));
             return;
@@ -445,7 +449,7 @@ public class ConnectorsHandlers {
     public static void getConnectorPoolAdvanceDefaultInfo(HandlerContext handlerCtx) {
 
         String jndiName = (String) handlerCtx.getInputValue("jndiName");
-        ConnectorConnectionPoolConfig pool = AMXRoot.getInstance().getDomainConfig().getConnectorConnectionPoolConfigMap().get(jndiName);
+        ConnectorConnectionPoolConfig pool = AMXRoot.getInstance().getResourcesConfig().getConnectorConnectionPoolConfigMap().get(jndiName);
         if (pool == null) {
             GuiUtil.handleError(handlerCtx, GuiUtil.getMessage("msg.noSuchConnectorConnectionPool"));
             return;
@@ -620,9 +624,9 @@ public class ConnectorsHandlers {
             String connectionDef = (String) extra.get("connectionDefinition");
 
             Map allOptions = new HashMap(pool);
-            allOptions = AMXRoot.getInstance().convertToPropertiesOptionMap(propsMap, allOptions);
+            allOptions = AMXUtil.convertToPropertiesOptionMap(propsMap, allOptions);
 
-            ConnectorConnectionPoolConfig newPool = AMXRoot.getInstance().getDomainConfig().createConnectorConnectionPoolConfig(name, resAdapter, connectionDef, allOptions);
+            ConnectorConnectionPoolConfig newPool = AMXRoot.getInstance().getResourcesConfig().createConnectorConnectionPoolConfig(name, resAdapter, connectionDef, allOptions);
             newPool.setDescription((String) extra.get("Description"));
         } catch (Exception ex) {
             GuiUtil.handleException(handlerCtx, ex);
@@ -662,7 +666,7 @@ public class ConnectorsHandlers {
     public static void getConnectorSecurityMaps(HandlerContext handlerCtx) {
 
         String jndiName = (String) handlerCtx.getInputValue("jndiName");
-        ConnectorConnectionPoolConfig pool = AMXRoot.getInstance().getDomainConfig().getConnectorConnectionPoolConfigMap().get(jndiName);
+        ConnectorConnectionPoolConfig pool = AMXRoot.getInstance().getResourcesConfig().getConnectorConnectionPoolConfigMap().get(jndiName);
         if (pool == null) {
             GuiUtil.handleError(handlerCtx, GuiUtil.getMessage("msg.NoSuchConnectorConnectionPool"));
             return;
@@ -728,7 +732,7 @@ public class ConnectorsHandlers {
     public static void getConnectorSecurityMapInfo(HandlerContext handlerCtx) {
 
         String poolName = (String) handlerCtx.getInputValue("poolName");
-        ConnectorConnectionPoolConfig pool = AMXRoot.getInstance().getDomainConfig().getConnectorConnectionPoolConfigMap().get(poolName);
+        ConnectorConnectionPoolConfig pool = AMXRoot.getInstance().getResourcesConfig().getConnectorConnectionPoolConfigMap().get(poolName);
         if (pool == null) {
             GuiUtil.handleError(handlerCtx, GuiUtil.getMessage("msg.NoSuchConnectorConnectionPool"));
             return;
@@ -784,7 +788,7 @@ public class ConnectorsHandlers {
     public static void saveConnectorSecurityMap(HandlerContext handlerCtx) {
 
         String poolName = (String) handlerCtx.getInputValue("poolName");
-        ConnectorConnectionPoolConfig pool = AMXRoot.getInstance().getDomainConfig().getConnectorConnectionPoolConfigMap().get(poolName);
+        ConnectorConnectionPoolConfig pool = AMXRoot.getInstance().getResourcesConfig().getConnectorConnectionPoolConfigMap().get(poolName);
         if (pool == null) {
             GuiUtil.handleError(handlerCtx, GuiUtil.getMessage("msg.NoSuchConnectorConnectionPool"));
             return;
@@ -931,7 +935,7 @@ public class ConnectorsHandlers {
     public static void saveAdminObjectResource(HandlerContext handlerCtx) {
         try {
             String jndiName = (String) handlerCtx.getInputValue("jndiName");
-            AdminObjectResourceConfig resource = AMXRoot.getInstance().getDomainConfig().getAdminObjectResourceConfigMap().get(jndiName);
+            AdminObjectResourceConfig resource = AMXRoot.getInstance().getResourcesConfig().getAdminObjectResourceConfigMap().get(jndiName);
             if (resource == null) {
                 GuiUtil.handleError(handlerCtx, GuiUtil.getMessage("msg.NoSuchAdminObjectResource"));
                 return;
@@ -961,7 +965,9 @@ public class ConnectorsHandlers {
     public static void getResourceAdapter(HandlerContext handlerCtx) {
 
         //List of deployed connectors
-        Set keys = AMXRoot.getInstance().getDomainConfig().getRARModuleConfigMap().keySet();
+        //TODO-V3
+        //Set keys = AMXRoot.getInstance().getResourcesConfig().getRARModuleConfigMap().keySet();
+        Set keys = new HashSet();
         ArrayList total = new ArrayList(keys);
         total.add(0, "");
 
@@ -1151,11 +1157,11 @@ public class ConnectorsHandlers {
                 ObjectName one = factories[i];
                 String name = one.getKeyProperty("jndi-name");
                 oneRow.put("name", name);
-                ConnectorResourceConfig resource = AMXRoot.getInstance().getDomainConfig().getConnectorResourceConfigMap().get(name);
+                ConnectorResourceConfig resource = AMXRoot.getInstance().getResourcesConfig().getConnectorResourceConfigMap().get(name);
                 oneRow.put("enabled", TargetUtil.getEnabledStatus(resource, false));
-                oneRow.put("description", checkEmpty(resource.getDescription()));
+                oneRow.put("description", GuiUtil.checkEmpty(resource.getDescription()));
                 oneRow.put("pool", resource.getPoolName());
-                oneRow.put("selected", (hasOrig) ? isSelected(name, selectedList) : false);
+                oneRow.put("selected", (hasOrig) ? GuiUtil.isSelected(name, selectedList) : false);
                 result.add(oneRow);
             }
         }
@@ -1207,12 +1213,12 @@ public class ConnectorsHandlers {
     "createJmsResource", params, types);
     //work around a bug that is-connection-validation-required attribute was ignored during creation
     String jndiName = (String) handlerCtx.getInputValue("jndiName");
-    ConnectorConnectionPoolConfig pool = AMXRoot.getInstance().getDomainConfig().getConnectorConnectionPoolConfigMap().get(jndiName);
+    ConnectorConnectionPoolConfig pool = AMXRoot.getInstance().getResourcesConfig().getConnectorConnectionPoolConfigMap().get(jndiName);
     //for Window, sometimes we need to put in a little delay 
     int ix = 0;
     while( (pool == null) && ix < 10){
     Thread.sleep(1000);
-    pool = AMXRoot.getInstance().getDomainConfig().getConnectorConnectionPoolConfigMap().get(jndiName);
+    pool = AMXRoot.getInstance().getResourcesConfig().getConnectorConnectionPoolConfigMap().get(jndiName);
     ix++;
     }
     pool.setConnectionValidationRequired ((Boolean) handlerCtx.getInputValue("isConnectionValidationRequired"));
@@ -1448,18 +1454,19 @@ public class ConnectorsHandlers {
 
     static private Enabled getEnabledConfig(String resourceName, String resourceType) {
         Enabled config = null;
+        ResourcesConfig resourcesConfig = AMXRoot.getInstance().getResourcesConfig();
         if ("jdbcResource".equals(resourceType)) {
-            config = AMXRoot.getInstance().getDomainConfig().getJDBCResourceConfigMap().get(resourceName);
+            config = resourcesConfig.getJDBCResourceConfigMap().get(resourceName);
         } else if ("adminObjectResource".equals(resourceType)) {
-            config = AMXRoot.getInstance().getDomainConfig().getAdminObjectResourceConfigMap().get(resourceName);
+            config = resourcesConfig.getAdminObjectResourceConfigMap().get(resourceName);
         } else if ("connectorResource".equals(resourceType)) {
-            config = AMXRoot.getInstance().getDomainConfig().getConnectorResourceConfigMap().get(resourceName);
+            config = resourcesConfig.getConnectorResourceConfigMap().get(resourceName);
         } else if ("javaMailSession".equals(resourceType)) {
-            config = AMXRoot.getInstance().getDomainConfig().getMailResourceConfigMap().get(resourceName);
+            config = resourcesConfig.getMailResourceConfigMap().get(resourceName);
         } else if ("customResource".equals(resourceType)) {
-            config = AMXRoot.getInstance().getDomainConfig().getCustomResourceConfigMap().get(resourceName);
+            config = resourcesConfig.getCustomResourceConfigMap().get(resourceName);
         } else if ("externalResource".equals(resourceType)) {
-            config = AMXRoot.getInstance().getDomainConfig().getJNDIResourceConfigMap().get(resourceName);
+            config = resourcesConfig.getJNDIResourceConfigMap().get(resourceName);
         }
         return config;
     }
@@ -1485,24 +1492,25 @@ public class ConnectorsHandlers {
         boolean isAdminObject = false;
 
         Iterator iter = null;
+        ResourcesConfig resourcesConfig = AMXRoot.getInstance().getResourcesConfig();
         if ("jdbcResource".equals(type)) {
-                iter = AMXRoot.getInstance().getDomainConfig().getJDBCResourceConfigMap().values().iterator();
+                iter = resourcesConfig.getJDBCResourceConfigMap().values().iterator();
                 isJdbc = true;
 
         } else if ("connectorResource".equals(type)) {
-            iter = AMXRoot.getInstance().getDomainConfig().getConnectorResourceConfigMap().values().iterator();
+            iter = resourcesConfig.getConnectorResourceConfigMap().values().iterator();
             isConnector = true;
         } else if ("jndiCustomResource".equals(type)) {
-            iter = AMXRoot.getInstance().getDomainConfig().getCustomResourceConfigMap().values().iterator();
+            iter = resourcesConfig.getCustomResourceConfigMap().values().iterator();
             isCustomResource = true;
         } else if ("jndiExternalResource".equals(type)) {
-            iter = AMXRoot.getInstance().getDomainConfig().getJNDIResourceConfigMap().values().iterator();
+            iter = resourcesConfig.getJNDIResourceConfigMap().values().iterator();
             isExternal = true;
         } else if ("adminObjectResource".equals(type)) {
-            iter = AMXRoot.getInstance().getDomainConfig().getAdminObjectResourceConfigMap().values().iterator();
+            iter = resourcesConfig.getAdminObjectResourceConfigMap().values().iterator();
             isAdminObject = true;
         } else if ("jmsDestResource".equals(type)) {
-            iter = AMXRoot.getInstance().getDomainConfig().getAdminObjectResourceConfigMap().values().iterator();
+            iter = resourcesConfig.getAdminObjectResourceConfigMap().values().iterator();
             //jmsDestationResource is Admin Object Resource with 'jmsra' as res adapter.
             ArrayList jms = new ArrayList();
             while (iter.hasNext()) {
@@ -1514,7 +1522,7 @@ public class ConnectorsHandlers {
             iter = jms.iterator();
             isAdminObject = true;
         } else if ("javaMailSession".equals(type)) {
-            iter = AMXRoot.getInstance().getDomainConfig().getMailResourceConfigMap().values().iterator();
+            iter = resourcesConfig.getMailResourceConfigMap().values().iterator();
         }
         /** uncomment the following lines if we want the redisplayed list show the previously selected rows.
          * if uncommented, will need to make the javascript smarter to enable the table action buttons where
@@ -1536,8 +1544,8 @@ public class ConnectorsHandlers {
                 oneRow.put("name", name);
                 //oneRow.put("enabled", TargetUtil.getEnabledStatus(resConfig, false));
                 oneRow.put("enabled", "false");
-                oneRow.put("selected", (hasOrig) ? isSelected(name, selectedList) : false);
-                oneRow.put("description", checkEmpty(resConfig.getDescription()));
+                oneRow.put("selected", (hasOrig) ? GuiUtil.isSelected(name, selectedList) : false);
+                oneRow.put("description", GuiUtil.checkEmpty(resConfig.getDescription()));
                 if (isJdbc) {
                     oneRow.put("pool", ((JDBCResourceConfig) resConfig).getPoolName());
                 } else if (isConnector) {
@@ -1574,6 +1582,7 @@ public class ConnectorsHandlers {
     public static void deleteResource(HandlerContext handlerCtx) {
 
         String target = "server";
+        ResourcesConfig resourcesConfig = AMXRoot.getInstance().getResourcesConfig();
         List obj = (List) handlerCtx.getInputValue("selectedRows");
         String resourceType = (String) handlerCtx.getInputValue("resourceType");
         Boolean isJmsConnectionFactory = (Boolean) handlerCtx.getInputValue("isJmsConnectionFactory");
@@ -1584,17 +1593,17 @@ public class ConnectorsHandlers {
                 String resourceName = (String) oneRow.get("name");
 
                 if ("jdbcResource".equals(resourceType)) {
-                    AMXRoot.getInstance().getDomainConfig().removeJDBCResourceConfig(resourceName);
+                    resourcesConfig.removeJDBCResourceConfig(resourceName);
                 } else if ("adminObjectResource".equals(resourceType)) {
-                    AMXRoot.getInstance().getDomainConfig().removeAdminObjectResourceConfig(resourceName);
+                    resourcesConfig.removeAdminObjectResourceConfig(resourceName);
                 } else if ("connectorResource".equals(resourceType) && !isJms) {
-                    AMXRoot.getInstance().getDomainConfig().removeConnectorResourceConfig(resourceName);
+                    resourcesConfig.removeConnectorResourceConfig(resourceName);
                 } else if ("javaMailSession".equals(resourceType)) {
-                    AMXRoot.getInstance().getDomainConfig().removeMailResourceConfig(resourceName);
+                    resourcesConfig.removeMailResourceConfig(resourceName);
                 } else if ("customResource".equals(resourceType)) {
-                    AMXRoot.getInstance().getDomainConfig().removeCustomResourceConfig(resourceName);
+                    resourcesConfig.removeCustomResourceConfig(resourceName);
                 } else if ("externalResource".equals(resourceType)) {
-                    AMXRoot.getInstance().getDomainConfig().removeJNDIResourceConfig(resourceName);
+                    resourcesConfig.removeJNDIResourceConfig(resourceName);
                 } else if (isJms && "connectorResource".equals(resourceType)) {
                     //JMS Connection Factory.  Need to use JMX so both the connector connection pool
                     // and connector resource is deleted.
@@ -1765,24 +1774,7 @@ public class ConnectorsHandlers {
         return "";
     }
 
-    public static boolean isSelected(String name, List<Map> selectedList) {
-        if (selectedList == null || name == null) {
-            return false;
-        }
-        for (Map oneRow : selectedList) {
-            if (name.equals(oneRow.get("name"))) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public static String checkEmpty(String test) {
-        if (test == null) {
-            return "";
-        }
-        return test;
-    }
+    
     static final private Set<String> RESOURCE_TYPES = GSetUtil.newUnmodifiableStringSet(
             JDBCResourceConfig.J2EE_TYPE,
             MailResourceConfig.J2EE_TYPE,

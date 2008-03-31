@@ -51,13 +51,14 @@ import com.sun.appserv.management.config.StorePropertiesConfig;
 import com.sun.appserv.management.config.WebContainerConfig;
 import org.glassfish.admingui.util.AMXRoot;
 import org.glassfish.admingui.util.GuiUtil;
+import org.glassfish.admingui.util.AMXUtil;
 import com.sun.jsftemplating.annotation.Handler;  
 import com.sun.jsftemplating.annotation.HandlerInput; 
 import com.sun.jsftemplating.annotation.HandlerOutput;
 import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;  
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+
 
 /**
  *
@@ -122,21 +123,19 @@ public class ContainerHandlers {
      *	<p> This handler returns the values for the attributes in 
      *      Web Container - General Settings page </p>
      *	<p> Input value: "ConfigName"         -- Type: <code>java.lang.String</code></p>
-     *  <p> Input value: "AddProps"           -- Type: <code>java.util.Map</code></p>
-     *  <p> Input value: "RemoveProps"        -- Type: <code>java.util.ArrayList</code></p>
+     *  <p> Input value: "newProps"        -- Type: <code>java.util.ArrayList</code></p>
      *	@param	context	The HandlerContext.
      */
     @Handler(id="saveWebContainerGeneralProps",
     input={
         @HandlerInput(name="ConfigName", type=String.class, required=true),    
-        @HandlerInput(name="AddProps",          type=Map.class),
-        @HandlerInput(name="RemoveProps",       type=ArrayList.class)})
+        @HandlerInput(name="newProps",   type=Map.class)})
         
         public static void saveWebContainerGeneralProps(HandlerContext handlerCtx) {
-        String configName = (String) handlerCtx.getInputValue("ConfigName");
-        ConfigConfig config = AMXRoot.getInstance().getConfig(configName);
-        WebContainerConfig webConfig = config.getWebContainerConfig();
-        AMXRoot.getInstance().editProperties(handlerCtx, webConfig);
+            String configName = (String) handlerCtx.getInputValue("ConfigName");
+            ConfigConfig config = AMXRoot.getInstance().getConfig(configName);
+            WebContainerConfig webConfig = config.getWebContainerConfig();
+            AMXUtil.updateProperties( webConfig, (Map)handlerCtx.getInputValue("newProps"));
     }
     
     /**
@@ -144,46 +143,32 @@ public class ContainerHandlers {
      *      Web Container - Session Props </p>
      *	<p> Input value: "ConfigName"         -- Type: <code>java.lang.String</code></p>
      *	<p> Input value: "SessionTimeout"     -- Type: <code>java.lang.String</code></p>
-     *  <p> Input value: "AddProps"           -- Type: <code>java.util.Map</code></p>
-     *  <p> Input value: "RemoveProps"        -- Type: <code>java.util.ArrayList</code></p>
+     *  <p> Input value: "newProps"           -- Type: <code>java.util.Map</code></p>
      *	@param	context	The HandlerContext.
      */
     @Handler(id="saveWebSessionProps",
     input={
         @HandlerInput(name="ConfigName",        type=String.class, required=true),    
         @HandlerInput(name="SessionTimeout",    type=String.class),
-        @HandlerInput(name="AddProps",          type=Map.class),
-        @HandlerInput(name="RemoveProps",       type=ArrayList.class)})
+        @HandlerInput(name="newProps",          type=Map.class)})
         
         public static void saveWebSessionValues(HandlerContext handlerCtx) {
-        String configName = (String) handlerCtx.getInputValue("ConfigName");
-        ConfigConfig config = AMXRoot.getInstance().getConfig(configName);
+        ConfigConfig config = AMXRoot.getInstance().getConfig((String)handlerCtx.getInputValue("ConfigName"));
+        String sessTimeout = (String)handlerCtx.getInputValue("SessionTimeout");    
         SessionConfig sessionConfig = config.getWebContainerConfig().getSessionConfig();
+        SessionPropertiesConfig sPropConfig = null;
         try{
-            String sessTimeout = (String)handlerCtx.getInputValue("SessionTimeout");
             if((sessionConfig != null) && (sessionConfig.getSessionPropertiesConfig() != null)) {
-                sessionConfig.getSessionPropertiesConfig().setTimeoutInSeconds(sessTimeout);
+                sPropConfig = sessionConfig.getSessionPropertiesConfig();
             }else {
-                /** In V2
-                String objName = "com.sun.appserv:type=configs,category=config";
-                String opername = "createSessionProperties";
-                String[] signature = {"javax.management.AttributeList", "java.util.Properties", "java.lang.String"};
-
-                AttributeList attrList = new AttributeList();
-                attrList.add(new Attribute("timeout-in-seconds", sessTimeout));
-                Properties props = new Properties();
-                Object[] params = {attrList, props, configName};
-                JMXUtil.invoke(objName, opername, params, signature);
-                 */
-                sessionConfig = config.getWebContainerConfig().getSessionConfig();           
                 if(sessionConfig == null)
                     sessionConfig = config.getWebContainerConfig().createSessionConfig();
-                Map props = new HashMap();
-                props.put("TimeoutInSeconds", sessTimeout);
-                SessionPropertiesConfig propConfig = sessionConfig.createSessionPropertiesConfig(props);
-                propConfig.setTimeoutInSeconds(sessTimeout);
-            }    
-            AMXRoot.getInstance().editProperties(handlerCtx, sessionConfig.getSessionPropertiesConfig());
+                sPropConfig = sessionConfig.getSessionPropertiesConfig();
+                if (sPropConfig == null)
+                    sPropConfig = sessionConfig.createSessionPropertiesConfig(new HashMap());
+            }
+            sPropConfig.setTimeoutInSeconds(sessTimeout);
+            AMXUtil.updateProperties( sPropConfig, (Map)handlerCtx.getInputValue("newProps"));
         }catch(Exception ex){
             GuiUtil.handleException(handlerCtx, ex);
         }
@@ -244,8 +229,7 @@ public class ContainerHandlers {
      *	<p> Input value: "MaxSessions"        -- Type: <code>java.lang.String</code></p>
      *	<p> Input value: "SessFileName"       -- Type: <code>java.lang.String</code></p>
      *	<p> Input value: "SessionIdGen"       -- Type: <code>java.lang.String</code></p>
-     *  <p> Input value: "AddProps"           -- Type: <code>java.util.Map</code></p>
-     *  <p> Input value: "RemoveProps"        -- Type: <code>java.util.ArrayList</code></p>
+     *  <p> Input value: "newProps"           -- Type: <code>java.util.Map</code></p>
      *	@param	context	The HandlerContext.
      */
     @Handler(id="saveWebManagerProps",
@@ -255,8 +239,7 @@ public class ContainerHandlers {
         @HandlerInput(name="MaxSessions",        type=String.class),
         @HandlerInput(name="SessFileName",       type=String.class),
         @HandlerInput(name="SessionIdGen",       type=String.class),
-        @HandlerInput(name="AddProps",           type=Map.class),
-        @HandlerInput(name="RemoveProps",        type=ArrayList.class)})
+        @HandlerInput(name="newProps",           type=Map.class)})
 
         public static void saveWebManagerProps(HandlerContext handlerCtx) {
             String configName = (String) handlerCtx.getInputValue("ConfigName");
@@ -268,46 +251,25 @@ public class ContainerHandlers {
                 String maxSessions = (String)handlerCtx.getInputValue("MaxSessions");
                 String sessFileName = (String)handlerCtx.getInputValue("SessFileName");
                 String sessionIdgen = (String)handlerCtx.getInputValue("SessionIdGen");
+                ManagerPropertiesConfig mgrPropConfig = null;
                 if((sessionConfig != null) && (sessionConfig.getSessionManagerConfig() != null)
                     && (sessionConfig.getSessionManagerConfig().getManagerPropertiesConfig() != null)) {
-                    ManagerPropertiesConfig mgrPropConfig = sessionConfig.getSessionManagerConfig().getManagerPropertiesConfig();
-                    mgrPropConfig.setReapIntervalInSeconds(reapInterval);
-                    mgrPropConfig.setMaxSessions(maxSessions);
-                    mgrPropConfig.setSessionFileName(sessFileName);
-                    mgrPropConfig.setSessionIdGeneratorClassname(sessionIdgen);
-                    AMXRoot.getInstance().editProperties(handlerCtx, mgrPropConfig);
+                    mgrPropConfig = sessionConfig.getSessionManagerConfig().getManagerPropertiesConfig();
                 }else{
-                    
-                    /* in V2
-                    String objName = "com.sun.appserv:type=configs,category=config";
-                    String opername = "createManagerProperties";
-                    String[] signature = {"javax.management.AttributeList", "java.util.Properties", "java.lang.String"};
-
-                    AttributeList attrList = new AttributeList();
-                    attrList.add(new Attribute("reap-interval-in-seconds", reapInterval));
-                    attrList.add(new Attribute("max-sessions", maxSessions));
-                    attrList.add(new Attribute("session-file-name", sessFileName));
-                    attrList.add(new Attribute("session-id-generator-classname", sessionIdgen));
-
-                    Properties props = new Properties();
-                    Object[] params = {attrList, props, configName};
-                    JMXUtil.invoke(objName, opername, params, signature);
-
-                    sessionConfig = config.getWebContainerConfig().getSessionConfig();
-                    ManagerPropertiesConfig mgrPropConfig = sessionConfig.getSessionManagerConfig().getManagerPropertiesConfig();
-                    AMXRoot.getInstance().editProperties(handlerCtx, mgrPropConfig);
-                    */
                     if(sessionConfig == null)
                         sessionConfig = config.getWebContainerConfig().createSessionConfig();
                     SessionManagerConfig mgrConfig = sessionConfig.getSessionManagerConfig();
                     if(mgrConfig == null)
                         mgrConfig = sessionConfig.createSessionManagerConfig();
-                    ManagerPropertiesConfig mgrPropConfig = mgrConfig.createManagerPropertiesConfig(new HashMap());
-                    mgrPropConfig.setReapIntervalInSeconds(reapInterval);
-                    mgrPropConfig.setMaxSessions(maxSessions);
-                    mgrPropConfig.setSessionFileName(sessFileName);
-                    mgrPropConfig.setSessionIdGeneratorClassname(sessionIdgen);
+                    mgrPropConfig = mgrConfig.getManagerPropertiesConfig();
+                    if (mgrPropConfig == null)
+                        mgrPropConfig = mgrConfig.createManagerPropertiesConfig(new HashMap());
                 }
+                mgrPropConfig.setReapIntervalInSeconds(reapInterval);
+                mgrPropConfig.setMaxSessions(maxSessions);
+                mgrPropConfig.setSessionFileName(sessFileName);
+                mgrPropConfig.setSessionIdGeneratorClassname(sessionIdgen);
+                AMXUtil.updateProperties( mgrPropConfig, (Map)handlerCtx.getInputValue("newProps"));
             }catch(Exception ex){
                 GuiUtil.handleException(handlerCtx, ex);
             }
@@ -358,8 +320,7 @@ public class ContainerHandlers {
      *	<p> Input value: "ConfigName"       -- Type: <code>java.lang.String</code></p>
      *	<p> Input value: "ReapInterval"     -- Type: <code>java.lang.String</code></p>
      *	<p> Input value: "Directory"        -- Type: <code>java.lang.String</code></p>
-     *  <p> Input value: "AddProps"         -- Type: <code>java.util.Map</code></p>
-     *  <p> Input value: "RemoveProps"      -- Type: <code>java.util.ArrayList</code></p>
+     *  <p> Input value: "newProps"         -- Type: <code>java.util.Map</code></p>
      *	@param	context	The HandlerContext.
      */
     @Handler(id="saveWebStoreProps",
@@ -367,52 +328,31 @@ public class ContainerHandlers {
         @HandlerInput(name="ConfigName", type=String.class, required=true),
         @HandlerInput(name="ReapInterval",     type=String.class),
         @HandlerInput(name="Directory",        type=String.class),
-        @HandlerInput(name="AddProps",         type=Map.class),
-        @HandlerInput(name="RemoveProps",      type=ArrayList.class) })
+        @HandlerInput(name="newProps",         type=Map.class) })
 
         public static void saveWebStoreProps(HandlerContext handlerCtx) {
-            String configName = (String) handlerCtx.getInputValue("ConfigName");
-            ConfigConfig config = AMXRoot.getInstance().getConfig(configName);
+            ConfigConfig config = AMXRoot.getInstance().getConfig((String) handlerCtx.getInputValue("ConfigName"));
             SessionConfig sessionConfig = config.getWebContainerConfig().getSessionConfig();
+            StorePropertiesConfig storePropConfig = null;
+            String reapInterval = (String)handlerCtx.getInputValue("ReapInterval");
+            String directory = (String)handlerCtx.getInputValue("Directory");
             try{
-                String reapInterval = (String)handlerCtx.getInputValue("ReapInterval");
-                String directory = (String)handlerCtx.getInputValue("Directory");
                 if((sessionConfig != null) && (sessionConfig.getSessionManagerConfig() != null)
                     && (sessionConfig.getSessionManagerConfig().getStorePropertiesConfig() != null)) {
-                        StorePropertiesConfig storePropConfig = sessionConfig.getSessionManagerConfig().getStorePropertiesConfig();
-                        storePropConfig.setReapIntervalInSeconds(reapInterval);
-                        storePropConfig.setDirectory(directory);
-                        AMXRoot.getInstance().editProperties(handlerCtx, storePropConfig);
+                    storePropConfig = sessionConfig.getSessionManagerConfig().getStorePropertiesConfig();
                 }else{
-                    
-                    /*
-                    String objName = "com.sun.appserv:type=configs,category=config";
-                    String opername = "createStoreProperties";
-                    String[] signature = {"javax.management.AttributeList", "java.util.Properties", "java.lang.String"};
-
-                    AttributeList attrList = new AttributeList();
-                    attrList.add(new Attribute("reap-interval-in-seconds", reapInterval));
-                    attrList.add(new Attribute("directory", directory));
-
-                    Properties props = new Properties();
-                    Object[] params = {attrList, props, configName};
-                    JMXUtil.invoke(objName, opername, params, signature);
-                    sessionConfig = config.getWebContainerConfig().getSessionConfig();
-                    StorePropertiesConfig storePropConfig = sessionConfig.getSessionManagerConfig().getStorePropertiesConfig();
-                    AMXRoot.getInstance().editProperties(handlerCtx, storePropConfig);
-                    */
-                    
-                    
                     if(sessionConfig == null)
-                    sessionConfig = config.getWebContainerConfig().createSessionConfig();
+                        sessionConfig = config.getWebContainerConfig().createSessionConfig();
                     SessionManagerConfig mgrConfig = sessionConfig.getSessionManagerConfig();
                     if(mgrConfig == null)
                         mgrConfig = sessionConfig.createSessionManagerConfig();
-                    StorePropertiesConfig storePropConfig = mgrConfig.createStorePropertiesConfig(new HashMap());
-                    storePropConfig.setReapIntervalInSeconds(reapInterval);
-                    storePropConfig.setDirectory(directory);
-                    
+                    storePropConfig = mgrConfig.getStorePropertiesConfig();
+                    if (storePropConfig == null)
+                        storePropConfig = mgrConfig.createStorePropertiesConfig(new HashMap());
                 }
+                storePropConfig.setReapIntervalInSeconds(reapInterval);
+                storePropConfig.setDirectory(directory);
+                AMXUtil.updateProperties( storePropConfig, (Map)handlerCtx.getInputValue("newProps"));
             }catch(Exception ex){
                 GuiUtil.handleException(handlerCtx, ex);
             }

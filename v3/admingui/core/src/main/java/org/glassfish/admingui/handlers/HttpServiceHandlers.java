@@ -56,6 +56,7 @@ import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
 
 
 import org.glassfish.admingui.util.AMXRoot; 
+import org.glassfish.admingui.util.AMXUtil; 
 import org.glassfish.admingui.util.GuiUtil;
 
 import com.sun.appserv.management.config.ConfigConfig; 
@@ -74,6 +75,7 @@ import com.sun.appserv.management.config.HTTPServiceConfig;
 import com.sun.appserv.management.config.HTTPListenerConfig;
 import com.sun.appserv.management.config.ConnectionPoolConfig;
 import com.sun.appserv.management.config.ConnectionPoolConfigKeys;
+import com.sun.appserv.management.config.PropertyConfig;
 import java.util.Iterator;
 
 /**
@@ -438,11 +440,11 @@ public class HttpServiceHandlers {
         
         try{
             
-            handlerCtx.setOutputValue("Properties", AMXRoot.getInstance().getNonSkipPropertiesMap(hConfig, httpServiceSkipPropsList));
-            Map origProps = hConfig.getProperties();
-            handlerCtx.setOutputValue("accessLogBufferSize", origProps.get("accessLogBufferSize"));
-            handlerCtx.setOutputValue("accessLogWriteInterval", origProps.get("accessLogWriteInterval"));
-            String alog = (String) origProps.get("accessLoggingEnabled");
+            handlerCtx.setOutputValue("Properties", AMXUtil.getNonSkipPropertiesMap(hConfig, httpServiceSkipPropsList));
+            Map<String,PropertyConfig> origProps = hConfig.getPropertyConfigMap();
+            handlerCtx.setOutputValue("accessLogBufferSize", AMXUtil.getPropertyValue(hConfig,"accessLogBufferSize"));
+            handlerCtx.setOutputValue("accessLogWriteInterval", AMXUtil.getPropertyValue(hConfig,"accessLogWriteInterval"));
+            String alog = origProps.get("accessLoggingEnabled").getValue();
             Boolean accessLoggingEnabled = true;
             if ( GuiUtil.isEmpty(alog))
                 accessLoggingEnabled = true;
@@ -472,18 +474,17 @@ public class HttpServiceHandlers {
         @HandlerInput(name="accessLoggingEnabled",     type=Boolean.class)})
         
         public static void saveHttpService(HandlerContext handlerCtx) {
-        AMXRoot amxRoot = AMXRoot.getInstance();
         
         try{
-            ConfigConfig config = amxRoot.getConfig(((String)handlerCtx.getInputValue("ConfigName")));
+            ConfigConfig config = AMXRoot.getInstance().getConfig(((String)handlerCtx.getInputValue("ConfigName")));
             HTTPServiceConfig hConfig = config.getHTTPServiceConfig();
             Map newProps = (Map)handlerCtx.getInputValue("newProps");
         
-            amxRoot.updateProperties(hConfig, newProps, httpServiceSkipPropsList);
+            AMXUtil.updateProperties(hConfig, newProps, httpServiceSkipPropsList);
             
-            amxRoot.changeProperty(hConfig, "accessLogBufferSize", (String)handlerCtx.getInputValue("accessLogBufferSize"));
-            amxRoot.changeProperty(hConfig, "accessLogWriteInterval", (String)handlerCtx.getInputValue("accessLogWriteInterval"));
-            amxRoot.changeProperty(hConfig, "accessLoggingEnabled", ""+handlerCtx.getInputValue("accessLoggingEnabled"));
+            AMXUtil.changeProperty(hConfig, "accessLogBufferSize", (String)handlerCtx.getInputValue("accessLogBufferSize"));
+            AMXUtil.changeProperty(hConfig, "accessLogWriteInterval", (String)handlerCtx.getInputValue("accessLogWriteInterval"));
+            AMXUtil.changeProperty(hConfig, "accessLoggingEnabled", ""+handlerCtx.getInputValue("accessLoggingEnabled"));
             
         }catch (Exception ex){
             GuiUtil.handleException(handlerCtx, ex);
@@ -939,7 +940,7 @@ public class HttpServiceHandlers {
                     HashMap oneRow = new HashMap();
                     String name=configE.getName();                
                     oneRow.put("name", name);
-                    oneRow.put("selected", (hasOrig)? ConnectorsHandlers.isSelected(name, selectedList): false);
+                    oneRow.put("selected", (hasOrig)? GuiUtil.isSelected(name, selectedList): false);
                     HTTPListenerConfig httpConfig = (HTTPListenerConfig)configE; 
                     boolean enabled = httpConfig.getEnabled();
                     String ntwkAddress = httpConfig.getAddress();
@@ -980,14 +981,11 @@ public class HttpServiceHandlers {
             for(Map oneRow : selectedRows){
                 String name = (String)oneRow.get("name");
                 
-                //Need to use JMX because we also need to remove the references in Virtual server.
+                //TODO-V3  TP2
+                //need to remove the references in Virtual server.
                 //This is specifed as the http-listeners attribute of the virtual server.
                 
-                //TODO-V3 TP2  change to use AMX
-//                String[] types = new String[]{ "java.lang.String", "java.lang.String"};
-//                Object[] params = new Object[]{name,configName};
-//                JMXUtil.invoke( "com.sun.appserv:type=configs,category=config", 
-//                    "deleteHttpListener", params, types);
+                AMXRoot.getInstance().getConfig(configName).getHTTPServiceConfig().removeHTTPListenerConfig(name);
             }
         }catch(Exception ex){
            GuiUtil.handleException(handlerCtx, ex);
@@ -1042,15 +1040,13 @@ public class HttpServiceHandlers {
                 if((fromStep2 == null) || (! fromStep2)){
                     handlerCtx.getFacesContext().getExternalContext().getSessionMap().put("httpProps", new HashMap());
                     handlerCtx.getFacesContext().getExternalContext().getSessionMap().put("sslProps", null);
-                    //TODO-V3 TP2 cannot get default value
-                    /*
-                    Map<String, String> httpAttrMap = AMXRoot.getInstance().getDomainConfig().getDefaultAttributeValues(HTTPListenerConfig.J2EE_TYPE);
+                    //we can hard coded "server-config" here since we only want to get some default valus.
+                    Map<String, String> httpAttrMap = AMXRoot.getInstance().getConfig("server-config").getHTTPServiceConfig().getDefaultValues(XTypes.HTTP_LISTENER_CONFIG);
                     handlerCtx.setOutputValue("Listener", httpAttrMap.get("enabled"));
                     handlerCtx.setOutputValue("security", httpAttrMap.get("security-enabled"));
                     handlerCtx.setOutputValue("Acceptor", httpAttrMap.get("acceptor-threads"));
                     handlerCtx.setOutputValue("PoweredBy", httpAttrMap.get("xpowered-by"));
                     handlerCtx.setOutputValue("Blocking", httpAttrMap.get("blocking-enabled"));
-                    */
                 }else{
                     Map props = (Map) handlerCtx.getFacesContext().getExternalContext().getSessionMap().get("httpProps");
                     handlerCtx.setOutputValue("Listener", props.get("enabled"));
@@ -1109,8 +1105,7 @@ public class HttpServiceHandlers {
      *  <p> Input value: "Acceptor"          -- Type: <code>java.lang.String</code></p>
      *  <p> Input value: "PoweredBy"         -- Type: <code>java.lang.Boolean</code></p>
      *  <p> Input value: "Blocking"          -- Type: <code>java.lang.Boolean</code></p>
-     *  <p> Input value: "AddProps"          -- Type: <code>java.util.Map</code></p>
-     *  <p> Input value: "RemoveProps"       -- Type: <code>java.util.ArrayList</code></p>
+     *  <p> Input value: "newProps"          -- Type: <code>java.util.Map</code></p>
      *	@param	context	The HandlerContext.
      */
     @Handler(id="saveHttpListenerValues",
@@ -1128,8 +1123,7 @@ public class HttpServiceHandlers {
         @HandlerInput(name="Acceptor",          type=String.class),
         @HandlerInput(name="PoweredBy",         type=Boolean.class),
         @HandlerInput(name="Blocking",          type=Boolean.class),
-        @HandlerInput(name="AddProps",          type=Map.class),
-        @HandlerInput(name="RemoveProps",       type=ArrayList.class) })
+        @HandlerInput(name="newProps",          type=Map.class)})
         
         public static void saveHttpListenerValues(HandlerContext handlerCtx) {
         String configName = (String) handlerCtx.getInputValue("ConfigName");
@@ -1148,7 +1142,7 @@ public class HttpServiceHandlers {
                 httpPropsMap.put("port", listPort);
                 httpPropsMap.put("virtualServer", virtualServer);
                 httpPropsMap.put("serverName", serverName);
-                httpPropsMap.put("options", (Map)handlerCtx.getInputValue("AddProps"));
+                httpPropsMap.put("options", (Map)handlerCtx.getInputValue("newProps"));
                 httpPropsMap.put("enabled", (Boolean)handlerCtx.getInputValue("Listener"));
                 httpPropsMap.put("securityEnabled", (Boolean)handlerCtx.getInputValue("security"));
                 httpPropsMap.put("redirectPort", (String)handlerCtx.getInputValue("RedirectPort"));
@@ -1170,18 +1164,18 @@ public class HttpServiceHandlers {
                 httpListConfig.setAcceptorThreads((String)handlerCtx.getInputValue("Acceptor"));
                 httpListConfig.setXpoweredBy((Boolean)handlerCtx.getInputValue("PoweredBy"));
                 httpListConfig.setBlockingEnabled((Boolean)handlerCtx.getInputValue("Blocking"));
-                AMXRoot.getInstance().editProperties(handlerCtx, httpListConfig);
+                AMXUtil.updateProperties( httpListConfig, (Map)handlerCtx.getInputValue("newProps"));
                 
                 //refer to issue #2920
                 if (httpListenerName.equals(ADMIN_LISTENER)){
                     if (httpListConfig.getSecurityEnabled()){
-                        if (httpListConfig.existsProperty(PROXIED_PROTOCOLS))
-                            httpListConfig.setPropertyValue(PROXIED_PROTOCOLS, PROXIED_PROTOCOLS_VALUE);
+                        if (httpListConfig.getPropertyConfigMap().get(PROXIED_PROTOCOLS) != null)
+                            httpListConfig.getPropertyConfigMap().get(PROXIED_PROTOCOLS).setValue(PROXIED_PROTOCOLS_VALUE);
                          else
-                             httpListConfig.createProperty(PROXIED_PROTOCOLS, PROXIED_PROTOCOLS_VALUE);
+                             httpListConfig.createPropertyConfig(PROXIED_PROTOCOLS, PROXIED_PROTOCOLS_VALUE);
                     }else{
-                        if (httpListConfig.existsProperty(PROXIED_PROTOCOLS))
-                            httpListConfig.removeProperty(PROXIED_PROTOCOLS);
+                        if (httpListConfig.getPropertyConfigMap().get(PROXIED_PROTOCOLS) != null)
+                            httpListConfig.removePropertyConfig(PROXIED_PROTOCOLS);
                     }
                 }
                 

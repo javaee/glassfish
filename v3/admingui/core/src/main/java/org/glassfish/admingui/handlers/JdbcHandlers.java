@@ -51,6 +51,7 @@
 
 package org.glassfish.admingui.handlers;
 
+import com.sun.appserv.management.base.XTypes;
 import com.sun.jsftemplating.annotation.Handler;
 import com.sun.jsftemplating.annotation.HandlerInput;
 import com.sun.jsftemplating.annotation.HandlerOutput;
@@ -65,6 +66,7 @@ import java.util.Iterator;
 
 
 import org.glassfish.admingui.util.AMXRoot;
+import org.glassfish.admingui.util.AMXUtil;
 import org.glassfish.admingui.util.GuiUtil;
 import org.glassfish.admingui.util.TargetUtil;
 
@@ -107,7 +109,7 @@ public class JdbcHandlers {
             return;
         }
         
-	JDBCResourceConfig jdbc = AMXRoot.getInstance().getDomainConfig().getJDBCResourceConfigMap().get(jndiName);
+	JDBCResourceConfig jdbc = AMXRoot.getInstance().getResourcesConfig().getJDBCResourceConfigMap().get(jndiName);
 	if (jdbc == null){
 	    GuiUtil.handleError(handlerCtx, GuiUtil.getMessage("msg.NoSuchJDBCResource"));
 	}else{
@@ -151,7 +153,7 @@ public class JdbcHandlers {
         
         try{
             if (edit){
-                 jdbc = AMXRoot.getInstance().getDomainConfig().getJDBCResourceConfigMap().get(jndiName);
+                 jdbc = AMXRoot.getInstance().getResourcesConfig().getJDBCResourceConfigMap().get(jndiName);
                 if (jdbc == null){
 		    GuiUtil.handleError(handlerCtx, GuiUtil.getMessage("msg.NoSuchJDBCResource"));
                     return;
@@ -163,7 +165,7 @@ public class JdbcHandlers {
                 //}
                 GuiUtil.prepareSuccessful(handlerCtx);
             }else{
-                 jdbc = AMXRoot.getInstance().getDomainConfig().createJDBCResourceConfig(jndiName, poolName, null);
+                 jdbc = AMXRoot.getInstance().getResourcesConfig().createJDBCResourceConfig(jndiName, poolName, null);
                  /* TODO-V3
                  JavaMailHandlers.createNewTargets(handlerCtx,  jndiName);
                   */
@@ -185,7 +187,7 @@ public class JdbcHandlers {
             @HandlerOutput(name="jdbcConnectionPools", type=java.util.List.class)}
         )
     public static void getJdbcConnectionPools(HandlerContext handlerCtx) {
-	Set keys = AMXRoot.getInstance().getDomainConfig().getJDBCConnectionPoolConfigMap().keySet();
+	Set keys = AMXRoot.getInstance().getResourcesConfig().getJDBCConnectionPoolConfigMap().keySet();
 	handlerCtx.setOutputValue("jdbcConnectionPools", new ArrayList(keys));
     }
 
@@ -218,7 +220,7 @@ public class JdbcHandlers {
         public static void getJdbcConnectionPoolInfo(HandlerContext handlerCtx) {
         
             String jndiName = (String) handlerCtx.getInputValue("jndiName");
-            JDBCConnectionPoolConfig pool = AMXRoot.getInstance().getDomainConfig().getJDBCConnectionPoolConfigMap().get(jndiName);
+            JDBCConnectionPoolConfig pool = AMXRoot.getInstance().getResourcesConfig().getJDBCConnectionPoolConfigMap().get(jndiName);
             if (pool == null){
 		GuiUtil.handleError(handlerCtx, GuiUtil.getMessage("msg.noSuchJDBCConnectionPool"));
             }
@@ -253,7 +255,7 @@ public class JdbcHandlers {
         public static void getJdbcConnectionPoolProperty(HandlerContext handlerCtx) {
         
             String jndiName = (String) handlerCtx.getInputValue("jndiName");
-            JDBCConnectionPoolConfig pool = AMXRoot.getInstance().getDomainConfig().getJDBCConnectionPoolConfigMap().get(jndiName);
+            JDBCConnectionPoolConfig pool = AMXRoot.getInstance().getResourcesConfig().getJDBCConnectionPoolConfigMap().get(jndiName);
             if (pool == null){
 		GuiUtil.handleError(handlerCtx, GuiUtil.getMessage("msg.noSuchJDBCConnectionPool"));
             }
@@ -290,7 +292,7 @@ public class JdbcHandlers {
 
         try{
             String jndiName = (String) handlerCtx.getInputValue("jndiName");
-            JDBCConnectionPoolConfig pool = AMXRoot.getInstance().getDomainConfig().getJDBCConnectionPoolConfigMap().get(jndiName);
+            JDBCConnectionPoolConfig pool = AMXRoot.getInstance().getResourcesConfig().getJDBCConnectionPoolConfigMap().get(jndiName);
                 if (pool == null){
 		    GuiUtil.handleError(handlerCtx, GuiUtil.getMessage("msg.noSuchJDBCConnectionPool"));
                     return;
@@ -338,7 +340,7 @@ public class JdbcHandlers {
     public static void saveJdbcConnectionPoolProperty(HandlerContext handlerCtx) {
         try{
             String jndiName = (String) handlerCtx.getInputValue("jndiName");
-            JDBCConnectionPoolConfig pool = AMXRoot.getInstance().getDomainConfig().getJDBCConnectionPoolConfigMap().get(jndiName);
+            JDBCConnectionPoolConfig pool = AMXRoot.getInstance().getResourcesConfig().getJDBCConnectionPoolConfigMap().get(jndiName);
             if (pool == null){
                 GuiUtil.handleError(handlerCtx, GuiUtil.getMessage("msg.noSuchJDBCConnectionPool"));
                 return;
@@ -376,7 +378,7 @@ public class JdbcHandlers {
         public static void getJdbcConnectionPoolDefaultInfo(HandlerContext handlerCtx) {
         
             String jndiName = (String) handlerCtx.getInputValue("jndiName");
-            JDBCConnectionPoolConfig pool = AMXRoot.getInstance().getDomainConfig().getJDBCConnectionPoolConfigMap().get(jndiName);
+            JDBCConnectionPoolConfig pool = AMXRoot.getInstance().getResourcesConfig().getJDBCConnectionPoolConfigMap().get(jndiName);
             if (pool == null){
 		GuiUtil.handleError(handlerCtx, GuiUtil.getMessage("msg.noSuchJDBCConnectionPool"));
                 return;
@@ -411,7 +413,7 @@ public class JdbcHandlers {
         public static void getPoolAdvanceInfo(HandlerContext handlerCtx) {
         
             String jndiName = (String) handlerCtx.getInputValue("jndiName");
-            JDBCConnectionPoolConfig pool = AMXRoot.getInstance().getDomainConfig().getJDBCConnectionPoolConfigMap().get(jndiName);
+            JDBCConnectionPoolConfig pool = AMXRoot.getInstance().getResourcesConfig().getJDBCConnectionPoolConfigMap().get(jndiName);
             if (pool == null){
 		GuiUtil.handleError(handlerCtx, GuiUtil.getMessage("msg.noSuchJDBCConnectionPool"));
                 return;
@@ -444,15 +446,14 @@ public class JdbcHandlers {
         public static void getPoolAdvanceDefaultInfo(HandlerContext handlerCtx) {
         
             String jndiName = (String) handlerCtx.getInputValue("jndiName");
-            JDBCConnectionPoolConfig pool = AMXRoot.getInstance().getDomainConfig().getJDBCConnectionPoolConfigMap().get(jndiName);
+            JDBCConnectionPoolConfig pool = AMXRoot.getInstance().getResourcesConfig().getJDBCConnectionPoolConfigMap().get(jndiName);
             if (pool == null){
 		GuiUtil.handleError(handlerCtx, GuiUtil.getMessage("msg.noSuchJDBCConnectionPool"));
                 return;
             }
             Map advance = new HashMap();
-            //TODO-V3 TP2
-            //Map defaultMap = AMXRoot.getInstance().getDomainConfig().getDefaultAttributeValues(JDBCConnectionPoolConfig.J2EE_TYPE);
-            Map defaultMap = new HashMap();
+            //Map <String,String> defaultMap = AMXRoot.getInstance().getResourcesConfig().getDefaultValues(XTypes.JDBC_CONNECTION_POOL_CONFIG);
+            Map <String, String> defaultMap = new HashMap();
             advance.put("wrapJDBCObjects", StringToBoolean( defaultMap.get("wrap-jdbc-objects")));
             advance.put("statementTimeoutInSeconds", defaultMap.get("statement-timeout-in-seconds"));
             advance.put("validateAtMostOncePeriodInSeconds", defaultMap.get("validate-atmost-once-period-in-seconds"));
@@ -482,7 +483,7 @@ public class JdbcHandlers {
         try{
             String jndiName = (String) handlerCtx.getInputValue("jndiName");
             Map advance = (Map) handlerCtx.getInputValue("advance");
-            JDBCConnectionPoolConfig pool = AMXRoot.getInstance().getDomainConfig().getJDBCConnectionPoolConfigMap().get(jndiName);
+            JDBCConnectionPoolConfig pool = AMXRoot.getInstance().getResourcesConfig().getJDBCConnectionPoolConfigMap().get(jndiName);
                 if (pool == null){
 		    GuiUtil.handleError(handlerCtx, GuiUtil.getMessage("msg.noSuchJDBCConnectionPool"));
                     return;
@@ -569,7 +570,7 @@ public class JdbcHandlers {
                 //wizardPool is already in session map
             }else{
                 //TODO-V3 TP2
-                //Map defaultMap = AMXRoot.getInstance().getDomainConfig().getDefaultAttributeValues(JDBCConnectionPoolConfig.J2EE_TYPE);
+                //Map defaultMap = AMXRoot.getInstance().getResourcesConfig().getDefaultValues(XTypes.JDBC_CONNECTION_POOL_CONFIG);
                 Map defaultMap = new HashMap();
                 Map attrMap = new HashMap();
                 attrMap.put("SteadyPoolSize", defaultMap.get("steady-pool-size"));
@@ -662,9 +663,9 @@ public class JdbcHandlers {
             }
             
             Map allOptions = new HashMap(pool);
-            allOptions = AMXRoot.getInstance().convertToPropertiesOptionMap(properties, allOptions);
+            allOptions = AMXUtil.convertToPropertiesOptionMap(properties, allOptions);
             
-            JDBCConnectionPoolConfig newPool = AMXRoot.getInstance().getDomainConfig().createJDBCConnectionPoolConfig(name, datasourceClassname, allOptions);
+            JDBCConnectionPoolConfig newPool = AMXRoot.getInstance().getResourcesConfig().createJDBCConnectionPoolConfig(name, datasourceClassname, allOptions);
             newPool.setDescription((String) extra.get("Description"));
         }catch (Exception ex){
 	    GuiUtil.handleException(handlerCtx, ex);
@@ -686,16 +687,16 @@ public class JdbcHandlers {
         boolean hasOrig = (selectedList == null || selectedList.size()==0) ? false: true;
         List result = new ArrayList();
         try{
-	Iterator iter = AMXRoot.getInstance().getDomainConfig().getJDBCConnectionPoolConfigMap().values().iterator();
+	Iterator iter = AMXRoot.getInstance().getResourcesConfig().getJDBCConnectionPoolConfigMap().values().iterator();
         if(iter != null ){
             while(iter.hasNext()){
                 JDBCConnectionPoolConfig res = (JDBCConnectionPoolConfig)iter.next();
                 HashMap oneRow = new HashMap();
                 oneRow.put("name", res.getName());
-                oneRow.put("selected", (hasOrig)? ConnectorsHandlers.isSelected(res.getName(), selectedList): false);
-                oneRow.put("resInfo", ConnectorsHandlers.checkEmpty(res.getResType()));
+                oneRow.put("selected", (hasOrig)? GuiUtil.isSelected(res.getName(), selectedList): false);
+                oneRow.put("resInfo", GuiUtil.checkEmpty(res.getResType()));
                 oneRow.put("extraInfo", res.getDatasourceClassname());
-                oneRow.put("description", ConnectorsHandlers.checkEmpty(res.getDescription()));
+                oneRow.put("description", GuiUtil.checkEmpty(res.getDescription()));
                 result.add(oneRow);
             }
         }

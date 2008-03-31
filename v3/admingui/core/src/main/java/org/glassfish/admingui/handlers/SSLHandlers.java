@@ -67,8 +67,11 @@ import com.sun.appserv.management.config.VirtualServerConfig;
 import org.glassfish.admingui.util.AMXRoot;
 import org.glassfish.admingui.util.GuiUtil;
 import org.glassfish.admingui.util.MiscUtil;
+import org.glassfish.admingui.util.AMXUtil;
 
-import javax.net.ssl.SSLServerSocketFactory;
+import com.sun.enterprise.security.ssl.SSLUtils;
+import javax.net.ssl.HttpsURLConnection;
+//import javax.net.ssl.SSLServerSocketFactory;
 
 /**
  *
@@ -178,8 +181,7 @@ public class SSLHandlers {
                     handlerCtx.setOutputValue("CertNickname", sslProps.get("certNickname"));
                 }
             }
-            SSLServerSocketFactory factory = (SSLServerSocketFactory)SSLServerSocketFactory.getDefault();
-            String[] supportedCiphers = factory.getDefaultCipherSuites();
+            String[] supportedCiphers = getSupportedCipherSuites();
             Vector ciphers = getCiphersVector(supportedCiphers);
             
             SelectItem[] commonCiphers = MiscUtil.getOptions(getCommonCiphers(ciphers));
@@ -261,27 +263,30 @@ public class SSLHandlers {
                 SSLConfigContainer sslContainerConfig = null;
                 boolean isEdit = ((Boolean)handlerCtx.getInputValue("Edit")).booleanValue();
                 if(isEdit){
-                    if(type.equals("jmx")){
+                    if(type.equals("http")){
+                        HTTPListenerConfig httpConfig = config.getHTTPServiceConfig().getHTTPListenerConfigMap().get(oName);
+                        sslContainerConfig = (SSLConfigContainer)httpConfig;
+                    }
+                    /* else if(type.equals("jmx")){
                         JMXConnectorConfig jmxConfig = config.getAdminServiceConfig().getJMXConnectorConfigMap().get(oName);
                         sslContainerConfig = (SSLConfigContainer)jmxConfig;
                     }else if(type.equals("iiop")){
                         IIOPListenerConfig iiopConfig = config.getIIOPServiceConfig().getIIOPListenerConfigMap().get(oName);
                         sslContainerConfig = (SSLConfigContainer)iiopConfig;
-                    }else if(type.equals("http")){
-                        HTTPListenerConfig httpConfig = config.getHTTPServiceConfig().getHTTPListenerConfigMap().get(oName);
-                        sslContainerConfig = (SSLConfigContainer)httpConfig;
                     }else if(type.equals("nodeagent")){
                         NodeAgentConfig agentConfig = amxRoot.getDomainConfig().getNodeAgentConfigMap().get(oName);
                         JMXConnectorConfig jmxConfig = agentConfig.getJMXConnectorConfig();
                         sslContainerConfig = (SSLConfigContainer)jmxConfig;
                     }
+                     */
                     if((sslContainerConfig != null) && (sslContainerConfig.getSSLConfig() != null)){
                         sslContainerConfig.removeSSLConfig();
                     }
                 }else{
+                    /*
                     if(type.equals("iiop")){
                         Map props = (Map) handlerCtx.getFacesContext().getExternalContext().getSessionMap().get("iiopProps");
-                        Map options = amxRoot.convertToPropertiesOptionMap((Map)props.get("options"), null);
+                        Map options = AMXUtil.convertToPropertiesOptionMap((Map)props.get("options"), null);
                         IIOPListenerConfig iiopConfig = config.getIIOPServiceConfig().createIIOPListenerConfig(
                                 (String) props.get("iiopName"),
                                 (String) props.get("address"),
@@ -290,9 +295,10 @@ public class SSLHandlers {
                         iiopConfig.setEnabled((Boolean)props.get("listener"));
                         iiopConfig.setSecurityEnabled((Boolean)props.get("security"));
                         sslContainerConfig = (SSLConfigContainer)iiopConfig;
-                    }else if(type.equals("http")){
+                    }else */ 
+                    if(type.equals("http")){
                         Map props = (Map) handlerCtx.getFacesContext().getExternalContext().getSessionMap().get("httpProps");
-                        Map options = amxRoot.convertToPropertiesOptionMap((Map)props.get("options"), null);
+                        Map options = AMXUtil.convertToPropertiesOptionMap((Map)props.get("options"), null);
                         int port = Integer.parseInt((String)props.get("port"));
                         String vs = (String) props.get("virtualServer");
                         String httpName = (String) props.get("httpName");
@@ -308,12 +314,13 @@ public class SSLHandlers {
                                 vs,
                                 serverName,
                                 options);
-                        httpConfig.setEnabled((Boolean)props.get("enabled"));
-                        httpConfig.setSecurityEnabled((Boolean)props.get("securityEnabled"));
+                        httpConfig.setEnabled(GuiUtil.getBooleanValue(props, "enabled"));
+                        httpConfig.setSecurityEnabled(GuiUtil.getBooleanValue(props, "securityEnabled"));
                         httpConfig.setRedirectPort((String)props.get("redirectPort"));
                         httpConfig.setAcceptorThreads((String)props.get("acceptor-threads"));
-                        httpConfig.setXpoweredBy((Boolean)props.get("xpowered-by"));
-                        httpConfig.setBlockingEnabled((Boolean)props.get("blocking-enabled"));
+                        httpConfig.setXpoweredBy(GuiUtil.getBooleanValue(props, "xpowered-by"));
+                        httpConfig.setBlockingEnabled(GuiUtil.getBooleanValue(props, "blocking-enabled"));
+                        
                         VirtualServerConfig vsConfig= config.getHTTPServiceConfig().getVirtualServerConfigMap().get(vs);
                         String listeners = vsConfig.getHTTPListeners();
                         if (GuiUtil.isEmpty(listeners))
@@ -341,8 +348,7 @@ public class SSLHandlers {
                     boolean tlsProp = ((Boolean)handlerCtx.getInputValue("TLSProp")).booleanValue();
                     sslConfig.setTLSEnabled(tlsProp);
                     if(ssl3Prop || tlsProp){
-                        SSLServerSocketFactory factory = (SSLServerSocketFactory)SSLServerSocketFactory.getDefault();
-                        String[] supportedCiphers = factory.getDefaultCipherSuites();
+                        String[] supportedCiphers = getSupportedCipherSuites();
                         Vector ciphersVector = getCiphersVector(supportedCiphers);
                         String[] selectedCiphers = getSelectedCiphersList(sslConfig.getSSL3TLSCiphers());
                         String[] selectedCommon = (String[])handlerCtx.getInputValue("SelectedCommon");
@@ -522,6 +528,25 @@ public class SSLHandlers {
             }
             return cipherSubset;
         }
+        
+        
+        
+     private static String[] getSupportedCipherSuites() {
+        /* in V2
+            SSLServerSocketFactory factory = (SSLServerSocketFactory)SSLServerSocketFactory.getDefault();
+            String[] supportedCiphers = factory.getDefaultCipherSuites();
+         */
+         try{
+             SSLUtils. initStoresAtStartup();
+             //String[] supportedCiphers = HttpsURLConnection.getDefaultSSLSocketFactory().getDefaultCipherSuites();
+             return  HttpsURLConnection.getDefaultSSLSocketFactory().getSupportedCipherSuites();
+         }catch(Exception ex){
+             //TODO log exception
+             ex.printStackTrace();
+             return new String[0];
+         }
+         
      
-    
+     }
+     
 }

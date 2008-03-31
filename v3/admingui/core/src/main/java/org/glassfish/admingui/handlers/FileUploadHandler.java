@@ -133,10 +133,10 @@ public class FileUploadHandler {
 	//deploymentProps.setProperty(ARCHIVE_NAME, origPath);
 	deploymentProps.setProperty(NAME, appName != null ? appName : "");
 	deploymentProps.setProperty(CONTEXT_ROOT, ctxtRoot != null ? ctxtRoot : "");
-	deploymentProps.setProperty(ENABLE, enabled != null ? enabled : "false");
-	deploymentProps.setProperty(VERIFY, verifier != null ? verifier : "false");
+	deploymentProps.setProperty(ENABLED, enabled != null ? enabled : "false");
+	//deploymentProps.setProperty(VERIFY, verifier != null ? verifier : "false");
 	deploymentProps.setProperty(DEPLOY_OPTION_LIBRARIES, libraries != null ? libraries: "");
-	deploymentProps.setProperty(DESCRIPTION, desc != null ? desc : "");
+	//deploymentProps.setProperty(DESCRIPTION, desc != null ? desc : "");
 	deploymentProps.setProperty(PRECOMPILE_JSP, precompile != null ? precompile : "false");
 	//do not send VS if user didn't specify, refer to bug#6542276
         if (vs != null && vs.length > 0) {
@@ -145,10 +145,10 @@ public class FileUploadHandler {
 			deploymentProps.setProperty(VIRTUAL_SERVERS, vsTargets);
 		}
 	}
-	deploymentProps.setProperty(GENERATE_RMI_STUBS, rmis != null ? rmis : "false");
-	deploymentProps.setProperty(DEPLOY_OPTION_JAVA_WEB_START_ENABLED, jws != null ? jws : "false");
-        if(AMXRoot.getInstance().isEE())
-            deploymentProps.setProperty(AVAILABILITY_ENABLED, availability != null ? availability : "false");
+	//deploymentProps.setProperty(GENERATE_RMI_STUBS, rmis != null ? rmis : "false");
+	//deploymentProps.setProperty(DEPLOY_OPTION_JAVA_WEB_START_ENABLED, jws != null ? jws : "false");
+        //if(AMXRoot.getInstance().isEE())
+        //    deploymentProps.setProperty(AVAILABILITY_ENABLED, availability != null ? availability : "false");
 	deploymentProps.setProperty("appType", appType != null ? appType : "");
         try{
             DeploymentHandler.deploy(targets, deploymentProps, filePath, handlerCtx);

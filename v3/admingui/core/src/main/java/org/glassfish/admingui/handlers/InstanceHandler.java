@@ -55,12 +55,10 @@ import com.sun.jsftemplating.annotation.HandlerInput;
 import com.sun.jsftemplating.annotation.HandlerOutput;
 import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import org.glassfish.admingui.util.AMXRoot;
 import org.glassfish.admingui.util.GuiUtil;
-import org.glassfish.admingui.util.TargetUtil;
 
 import com.sun.appserv.management.config.HTTPServiceConfig;
 import com.sun.appserv.management.config.HTTPListenerConfig;
@@ -69,14 +67,11 @@ import com.sun.appserv.management.config.IIOPListenerConfig;
 import com.sun.appserv.management.config.ServerConfig;
 import com.sun.appserv.management.ext.logging.LogFileAccess;
 import com.sun.appserv.management.monitor.ServerRootMonitor;
-import com.sun.appserv.management.monitor.MonitoringRoot;
-import com.sun.appserv.management.j2ee.J2EEServer;
-import com.sun.jsftemplating.layout.descriptors.LayoutElement;
 
+import java.util.StringTokenizer;
 import javax.faces.context.ExternalContext;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.ServletResponse;
 
 
 public class InstanceHandler {
@@ -115,8 +110,9 @@ public class InstanceHandler {
             System.out.println("instanceName is not provided, set to \"server\"");
             instanceName="server";
         }
-        String configName = AMXRoot.getInstance().getConfigName(instanceName);
-        String version = AMXRoot.getInstance().getDomainRoot().getApplicationServerFullVersion();
+        
+        AMXRoot amxRoot = AMXRoot.getInstance();
+        String configName = amxRoot.getConfigName(instanceName);
         
         // get host Name (for PE only.  For EE, we just display the name of the server instance).
         //TODO: once we can test if we are running in PE or EE environment, we should do accordingly.
@@ -126,7 +122,7 @@ public class InstanceHandler {
         String hostName = request.getServerName();
         handlerCtx.setOutputValue("hostName", hostName);
         
-        AMXRoot amxRoot = AMXRoot.getInstance();
+
          //http ports
         HTTPServiceConfig service = amxRoot.getConfig(configName).getHTTPServiceConfig();
         Map<String,HTTPListenerConfig>listeners = service.getHTTPListenerConfigMap();
@@ -156,17 +152,31 @@ public class InstanceHandler {
         iports.deleteCharAt(0);  //remove the first ','
         handlerCtx.setOutputValue("iiopPorts", iports.toString());
         
-        String configDir = AMXRoot.getInstance().getDomainRoot().getConfigDir();
-        Object debugPort = AMXRoot.getInstance().getDomainRoot().getDebugPort();
         
-        String msg = GuiUtil.getMessage("inst.notEnabled");
-        
-        if (debugPort != null) {
-            String port = debugPort.toString();
-            if (port.equals("0") == false) {
-                msg = GuiUtil.getMessage("inst.debugEnabled") + debugPort.toString();
+        String configDir = amxRoot.getDomainRoot().getConfigDir();
+        String version = amxRoot.getDomainRoot().getApplicationServerFullVersion();
+        String debugPort = "";
+        String debugOption = amxRoot.getConfig(configName).getJavaConfig().getDebugOptions();
+        StringTokenizer tokens = new StringTokenizer(debugOption, ",");
+        String doption = "";
+        while (tokens.hasMoreTokens()) {
+            doption = tokens.nextToken().trim();
+            if (doption.startsWith("address") ){
+                int pos = doption.indexOf("=");
+                if (pos >=0){
+                    debugPort = doption.substring(pos+1).trim();
+                    break;
+                }
             }
         }
+        
+        String msg = GuiUtil.getMessage("inst.notEnabled");
+        if (debugPort != null) {
+            if (debugPort.equals("0") == false) {
+                msg = GuiUtil.getMessage("inst.debugEnabled") + debugPort;
+            }
+        }
+        
         handlerCtx.setOutputValue("debugPort", msg);
         handlerCtx.setOutputValue("configDir", configDir);
         handlerCtx.setOutputValue("version", version);

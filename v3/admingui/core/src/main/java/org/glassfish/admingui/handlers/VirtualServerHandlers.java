@@ -55,10 +55,10 @@ import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
 
 import org.glassfish.admingui.util.AMXRoot; 
 import org.glassfish.admingui.util.GuiUtil;
+import org.glassfish.admingui.util.AMXUtil;
 
 import com.sun.appserv.management.config.ConfigConfig; 
 import com.sun.appserv.management.config.VirtualServerConfig;
-import com.sun.appserv.management.config.HTTPAccessLogConfig;
 import com.sun.appserv.management.config.ConfigElement;
 import com.sun.appserv.management.config.PropertiesAccess;
 
@@ -105,7 +105,7 @@ public class VirtualServerHandlers {
                     HashMap oneRow = new HashMap();
                     String name=configE.getName();                
                     oneRow.put("name", name);
-                    oneRow.put("selected", (hasOrig)? ConnectorsHandlers.isSelected(name, selectedList): false);
+                    oneRow.put("selected", (hasOrig)? GuiUtil.isSelected(name, selectedList): false);
                     String state = ((VirtualServerConfig)configE).getState();
                     String host = ((VirtualServerConfig)configE).getHosts();
                     oneRow.put("state", (state == null) ? " ": state);
@@ -169,7 +169,7 @@ public class VirtualServerHandlers {
             handlerCtx.setOutputValue("Web", vs.getDefaultWebModule());
             handlerCtx.setOutputValue("LogFile", vs.getLogFile());
             
-            Map aMap = AMXRoot.getInstance().getNonSkipPropertiesMap(vs, vsSkipPropsList);
+            Map aMap = AMXUtil.getNonSkipPropertiesMap(vs, vsSkipPropsList);
             handlerCtx.setOutputValue("Properties", aMap);
             Map origProps = vs.getProperties();
             handlerCtx.setOutputValue("accessLogBufferSize", origProps.get("accessLogBufferSize"));
@@ -263,7 +263,7 @@ public class VirtualServerHandlers {
         try{
             Boolean edit = (Boolean) handlerCtx.getInputValue("Edit");
             if(!edit){
-                Map convertedMap = amxRoot.convertToPropertiesOptionMap(newProps, null);
+                Map convertedMap = AMXUtil.convertToPropertiesOptionMap(newProps, null);
                 putOptionalValue((String) handlerCtx.getInputValue("accesslog"), convertedMap, "accesslog");
                 putOptionalValue((String) handlerCtx.getInputValue("docroot"), convertedMap, "docroot");
                 putOptionalValue((String) handlerCtx.getInputValue("accessLogBufferSize"), convertedMap, "accessLogBufferSize");
@@ -274,9 +274,9 @@ public class VirtualServerHandlers {
                     putOptionalValue(accessLoggingFlag, convertedMap, "accessLoggingEnabled");
                 }
                 
+                System.out.println("::::::::::::::::::: in GUI:  createVirtualServerConfig: with Map = " + convertedMap);
                 VirtualServerConfig server = config.getHTTPServiceConfig().createVirtualServerConfig(
                         (String)handlerCtx.getInputValue("Name"), ((String)handlerCtx.getInputValue("Hosts")),  convertedMap);
-                System.out.println("::::::::::::::::::: in GUI:  createVirtualServerConfig: with Map = " + convertedMap);
                 
                 server.setHosts(((String)handlerCtx.getInputValue("Hosts")));
                 server.setHTTPListeners(((String)handlerCtx.getInputValue("Http")));
@@ -290,7 +290,7 @@ public class VirtualServerHandlers {
             }
             Map<String,VirtualServerConfig>vservers = config.getHTTPServiceConfig().getVirtualServerConfigMap();
             VirtualServerConfig vs = (VirtualServerConfig)vservers.get((String)handlerCtx.getInputValue("Name"));
-            AMXRoot.getInstance().updateProperties(vs, newProps, vsSkipPropsList);
+            AMXUtil.updateProperties(vs, newProps, vsSkipPropsList);
             
             vs.setHosts(((String)handlerCtx.getInputValue("Hosts")));
             vs.setState(((String)handlerCtx.getInputValue("StateOption")));
@@ -298,15 +298,15 @@ public class VirtualServerHandlers {
             vs.setDefaultWebModule(((String)handlerCtx.getInputValue("Web")));
             vs.setLogFile(((String)handlerCtx.getInputValue("LogFile")));
             
-            amxRoot.changeProperty(vs, "accesslog", (String)handlerCtx.getInputValue("accesslog"));
-            amxRoot.changeProperty(vs, "accessLogBufferSize", (String)handlerCtx.getInputValue("accessLogBufferSize"));
-            amxRoot.changeProperty(vs, "accessLogWriteInterval", (String)handlerCtx.getInputValue("accessLogWriteInterval"));
-            amxRoot.changeProperty(vs, "docroot", (String)handlerCtx.getInputValue("docroot"));
-            amxRoot.changeProperty(vs, "sso-enabled", ""+handlerCtx.getInputValue("sso"));
+            AMXUtil.changeProperty(vs, "accesslog", (String)handlerCtx.getInputValue("accesslog"));
+            AMXUtil.changeProperty(vs, "accessLogBufferSize", (String)handlerCtx.getInputValue("accessLogBufferSize"));
+            AMXUtil.changeProperty(vs, "accessLogWriteInterval", (String)handlerCtx.getInputValue("accessLogWriteInterval"));
+            AMXUtil.changeProperty(vs, "docroot", (String)handlerCtx.getInputValue("docroot"));
+            AMXUtil.changeProperty(vs, "sso-enabled", ""+handlerCtx.getInputValue("sso"));
             String accessLoggingFlag = (String)handlerCtx.getInputValue("accessLoggingFlag");
             if (accessLoggingFlag.equals("off"))
                 accessLoggingFlag=null;
-            amxRoot.changeProperty(vs, "accessLoggingEnabled", accessLoggingFlag);
+            AMXUtil.changeProperty(vs, "accessLoggingEnabled", accessLoggingFlag);
             
         }catch (Exception ex){
             GuiUtil.handleException(handlerCtx, ex);

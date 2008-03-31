@@ -532,7 +532,7 @@ public class EESupportHandlers {
                 HashMap oneRow = new HashMap();
                 String name = config.getName();
                 oneRow.put("name", name);
-                oneRow.put("selected", (hasOrig)? ConnectorsHandlers.isSelected(name, selectedList): false);
+                oneRow.put("selected", (hasOrig)? GuiUtil.isSelected(name, selectedList): false);
                 result.add(oneRow);
             }
         }

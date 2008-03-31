@@ -85,11 +85,11 @@ public class DeploymentHandler {
 
 	private static final HashMap<String, String> nextPageMap=new HashMap();
 	static {
-            nextPageMap.put(WebModuleConfig.J2EE_TYPE, "applications/webApplications.jsf");
-            nextPageMap.put(J2EEApplicationConfig.J2EE_TYPE, "applications/enterpriseApplications.jsf");
-            nextPageMap.put(EJBModuleConfig.J2EE_TYPE, "applications/ejbModules.jsf");
-            nextPageMap.put(AppClientModuleConfig.J2EE_TYPE, "applications/appclientModules.jsf");
-            nextPageMap.put(RARModuleConfig.J2EE_TYPE, "applications/connectorModulePropsTable.jsf");
+            nextPageMap.put(WebModuleConfig.J2EE_TYPE, "/applications/webApplications.jsf");
+            nextPageMap.put(J2EEApplicationConfig.J2EE_TYPE, "/applications/enterpriseApplications.jsf");
+            nextPageMap.put(EJBModuleConfig.J2EE_TYPE, "/applications/ejbModules.jsf");
+            nextPageMap.put(AppClientModuleConfig.J2EE_TYPE, "/applications/appclientModules.jsf");
+            nextPageMap.put(RARModuleConfig.J2EE_TYPE, "/applications/connectorModulePropsTable.jsf");
 	}
 
     // using DeploymentFacility API
@@ -105,8 +105,13 @@ public class DeploymentHandler {
             //String mesg = GuiUtil.getMessage("msg.deploySuccess", new Object[] {"", "deployed"});
             //GuiUtil.prepareAlert(handlerCtx, "success", mesg, null);
         }
-        String type = AMXRoot.getInstance().getAppType(deploymentProps.getProperty(DFDeploymentProperties.NAME));
         
+        /** TODO-V3
+         * Need to figure out what is the type of the just deployed application, and then redirect to its listing page.
+         * for TP2, just hardcode a web applications.
+         */
+        /*
+        String type = AMXRoot.getInstance().getAppType(deploymentProps.getProperty(DFDeploymentProperties.NAME));
         String nextPage=(String) handlerCtx.getInputValue("listPageLink");
         if ( RARModuleConfig.J2EE_TYPE.equals(type)){
                 nextPage = nextPageMap.get(type);
@@ -127,6 +132,9 @@ public class DeploymentHandler {
             }
         }
         handlerCtx.setOutputValue("nextPage", nextPage);
+         */
+        handlerCtx.setOutputValue("nextPage", "/applications/webApplications.jsf");
+        
     }
      
      static private void setProperty(Properties rarProps, String key, String value, String defValue)
@@ -204,9 +212,9 @@ public class DeploymentHandler {
 //	     if (module != null){
 //                deploymentProps.setProperty(DFDeploymentProperties.CONTEXT_ROOT, ((WebModuleConfig) module).getContextRoot());
 //             }
-             deploymentProps.setProperty(DFDeploymentProperties.DEFAULT_UPLOAD, "false");
-             deploymentProps.setProperty(DFDeploymentProperties.ARCHIVE_NAME, origPath);
+             //deploymentProps.setProperty(DFDeploymentProperties.ARCHIVE_NAME, origPath);
              deploymentProps.setProperty(DFDeploymentProperties.FORCE, "true");
+             deploymentProps.setProperty(DFDeploymentProperties.UPLOAD, "false");
              deploymentProps.setProperty(DFDeploymentProperties.NAME, appName);
              invokeDeploymentFacility(null, deploymentProps, filePath, handlerCtx);
         } catch (Exception ex) {
@@ -232,18 +240,18 @@ public class DeploymentHandler {
 
         //appType can be one of the following: application,webApp,ejbModule,connector,appClient
         String appType = (String)handlerCtx.getInputValue("appType");
-		Properties dProps = null;
+        Properties dProps = null;
 
-		if(appType.equals("connector")) {
-			dProps = new Properties();
-			//Default cascade is true. May be we can issue a warning,
-			//bcz undeploy will fail anyway if cascade is false.
-			dProps.put(DFDeploymentProperties.CASCADE, "true");
-		}
+        if(appType.equals("connector")) {
+                dProps = new Properties();
+                //Default cascade is true. May be we can issue a warning,
+                //bcz undeploy will fail anyway if cascade is false.
+                dProps.put(DFDeploymentProperties.CASCADE, "true");
+        }
         
         List selectedRows = (List) obj;
         DFProgressObject progressObject = null;
-         DeploymentFacility df= GuiUtil.getDeploymentFacility();
+        DeploymentFacility df= GuiUtil.getDeploymentFacility();
         //Hard coding to server, fix me for actual targets in EE.
         String[] targetNames = new String[] {"server"};
         
@@ -273,6 +281,55 @@ public class DeploymentHandler {
             }
         }
     }
+    
+    
+        
+    /**
+     *	<p> This handler takes in selected rows, and change the status of the app
+     *  <p> Input  value: "selectedRows" -- Type: <code>java.util.List</code></p>
+     *  <p> Input  value: "appType" -- Type: <code>String</code></p>
+     *  <p> Input  value: "enabled" -- Type: <code>Boolean</code></p>
+     *	@param	context	The HandlerContext.
+     */
+    @Handler(id="changeAppStatus",
+    input={
+        @HandlerInput(name="selectedRows", type=List.class, required=true),
+        @HandlerInput(name="appType", type=String.class, required=true),
+        @HandlerInput(name="enabled", type=Boolean.class, required=true)})
+        
+    public static void changeAppStatus(HandlerContext handlerCtx) {
+        
+        List obj = (List) handlerCtx.getInputValue("selectedRows");
+        boolean enabled = ((Boolean)handlerCtx.getInputValue("enabled")).booleanValue();
+       
+        DeploymentFacility df= GuiUtil.getDeploymentFacility();
+        //Hard coding to server, fix me for actual targets in EE.
+        String[] targetNames = new String[] {"server"};
+        List selectedRows = (List) obj;
+        try{
+            for(int i=0; i< selectedRows.size(); i++){
+                Map oneRow = (Map) selectedRows.get(i);
+                String appName = (String) oneRow.get("name");
+                
+                // In V3, use DF to do disable or enable
+                if (enabled)
+                    df.disable(df.createTargets(targetNames), appName);
+                else
+                    df.disable(df.createTargets(targetNames), appName); 
+                
+                if (AMXRoot.getInstance().isEE()){
+                    String msg = GuiUtil.getMessage((enabled)? "msg.enableSuccessful" : "msg.disableSuccessful");
+                    GuiUtil.prepareAlert(handlerCtx, "success", msg, null);
+                }else{
+                    String msg = GuiUtil.getMessage((enabled)? "msg.enableSuccessfulPE" : "msg.disableSuccessfulPE");
+                    GuiUtil.prepareAlert(handlerCtx, "success", msg, null);
+                }
+            }
+        }catch(Exception ex){
+            GuiUtil.handleException(handlerCtx, ex);
+        }
+    }
+ 
 
     /**
      *	<p> This method returns the resource-adapter properties </p>
@@ -452,7 +509,7 @@ public class DeploymentHandler {
             Properties dProps = new Properties();
 
             if (enableFlag != null)
-                dProps.setProperty(DFDeploymentProperties.ENABLE, enableFlag.toString());
+                dProps.setProperty(DFDeploymentProperties.ENABLED, enableFlag.toString());
             
             if (addFlag)
                 progressObject = df.createAppRef(df.createTargets(targetNames), appName, dProps);

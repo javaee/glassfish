@@ -196,8 +196,8 @@ public class ApplicationHandlers {
 
         //TODo-V3 revisit.  was using module instead of appConfig in v2
 	handlerCtx.setOutputValue("location", appConfig.getLocation());
-	handlerCtx.setOutputValue("description", module.getDescription());
-	handlerCtx.setOutputValue("objectType", module.getObjectType());
+	handlerCtx.setOutputValue("description", appConfig.getDescription());
+	handlerCtx.setOutputValue("objectType", appConfig.getObjectType());
 	
         if(amxRoot.isEE())
             handlerCtx.setOutputValue("enabledString", TargetUtil.getEnabledStatus(appConfig, true));
@@ -208,6 +208,7 @@ public class ApplicationHandlers {
             //String[] libArray = (String[]) ((Libraries)appConfig).getLibraries();
             String[] libArray = new String[1];
             libArray[0]="AMX-EXCEPTION";
+            
             
             if (libArray != null){
                 StringBuffer libs = new StringBuffer();
@@ -229,6 +230,7 @@ public class ApplicationHandlers {
      *  <p> Input  value: "name" -- Type: <code> java.lang.String</code></p>
      *	@param	context	The HandlerContext.
      */
+    /*
     @Handler(id="saveApplicationInfoV2",
         input={
             @HandlerInput(name="name", type=String.class, required=true),
@@ -320,6 +322,8 @@ public class ApplicationHandlers {
             GuiUtil.handleException(handlerCtx, ex);
         }
     }
+    
+    */
 
     /**
      *	<p> This handler save  the values for all the attributes of the Application
@@ -358,14 +362,11 @@ public class ApplicationHandlers {
 		else {
                     String vs = (String)handlerCtx.getInputValue("vs");
                     //only for PE, so hard-code to 'server'
-                    
-                    //TODO-V3TP2  VirtualServer gives exception
-                    //TargetUtil.setVirtualServers(name, "server", vs);
+                    TargetUtil.setVirtualServers(name, "server", vs);
 		}
 	    }
         
-        //TODO-V3
-        //appConfig.setDescription((String)handlerCtx.getInputValue("description"));
+        appConfig.setDescription((String)handlerCtx.getInputValue("description"));
         if(! amxRoot.isEE()){
             Boolean enabled = (Boolean) handlerCtx.getInputValue("enabled");
             TargetUtil.setApplicationEnabled(appConfig, "server", enabled); 
@@ -384,6 +385,7 @@ public class ApplicationHandlers {
      *  <p> Output value: "enbled" -- Type: <code>java.lang.Boolean</code></p>
      *	@param	context	The HandlerContext.
      */
+    /*
     @Handler(id="getAppClientInfo",
         input={
             @HandlerInput(name="name", type=String.class, required=true) },
@@ -404,12 +406,15 @@ public class ApplicationHandlers {
 	handlerCtx.setOutputValue("description", module.getDescription());
 	handlerCtx.setOutputValue("javaWebStart", module.getJavaWebStartEnabled());
     }
+     * 
+     */
     
     /**
      *	<p> This handler save  the values for all the attributes of the AppClient
      *  <p> Input  value: "name" -- Type: <code> java.lang.String</code></p>
      *	@param	context	The HandlerContext.
      */
+    /*
     @Handler(id="saveAppClientInfo",
         input={
             @HandlerInput(name="name", type=String.class, required=true),
@@ -426,6 +431,7 @@ public class ApplicationHandlers {
 	module.setJavaWebStartEnabled((Boolean)handlerCtx.getInputValue("javaWebStart"));
         module.setDescription((String)handlerCtx.getInputValue("description"));
     }
+     */
 
 
     /**
@@ -963,7 +969,6 @@ public class ApplicationHandlers {
                     oneRow.put("image", getClusterStatus(target));
                     oneRow.put("targetURL", "/cluster/clusterGeneral.jsf?clusterName="+target);
                 }
-                    
                 result.add(oneRow);
             }
             handlerCtx.setOutputValue("result", result);
@@ -992,56 +997,7 @@ public class ApplicationHandlers {
         }
         return amxRoot.getStatusImage(StateManageable.STATE_STOPPED);
     }
-    
-    /**
-     *	<p> This handler takes in selected rows, and change the status of the app
-     *  <p> Input  value: "selectedRows" -- Type: <code>java.util.List</code></p>
-     *  <p> Input  value: "appType" -- Type: <code>String</code></p>
-     *  <p> Input  value: "enabled" -- Type: <code>Boolean</code></p>
-     *	@param	context	The HandlerContext.
-     */
-    @Handler(id="changeAppStatus",
-    input={
-        @HandlerInput(name="selectedRows", type=List.class, required=true),
-        @HandlerInput(name="appType", type=String.class, required=true),
-        @HandlerInput(name="enabled", type=Boolean.class, required=true)})
-        
-    public static void changeAppStatus(HandlerContext handlerCtx) {
-        
-        List obj = (List) handlerCtx.getInputValue("selectedRows");
-        boolean enabled = ((Boolean)handlerCtx.getInputValue("enabled")).booleanValue();
-       
-        //appType can be one of the following: application,webApp,ejbModule,connector
-        String appType = (String)handlerCtx.getInputValue("appType");
-        
-        List selectedRows = (List) obj;
-        try{
-            for(int i=0; i< selectedRows.size(); i++){
-                Map oneRow = (Map) selectedRows.get(i);
-                String appName = (String) oneRow.get("name");
-                Enabled appConfig = getModuleConfig(appName, appType);
-                if (appConfig == null){
-                    //Can't find the deployed app, don't do anything, except maybe log it in server.log
-                }else{
-                    List<String> targetList = TargetUtil.getDeployedTargets((AMX)appConfig, true);
-                    for(String target: targetList){
-                        TargetUtil.setApplicationEnabled(appConfig, target, enabled);
-                    }
-                }
-                
-                if (AMXRoot.getInstance().isEE()){
-                    String msg = GuiUtil.getMessage((enabled)? "msg.enableSuccessful" : "msg.disableSuccessful");
-                    GuiUtil.prepareAlert(handlerCtx, "success", msg, null);
-                }else{
-                    String msg = GuiUtil.getMessage((enabled)? "msg.enableSuccessfulPE" : "msg.disableSuccessfulPE");
-                    GuiUtil.prepareAlert(handlerCtx, "success", msg, null);
-                }
-            }
-        }catch(Exception ex){
-            GuiUtil.handleException(handlerCtx, ex);
-        }
-    }
-    
+   
     /**
      *	<p> This handler returns the list of targets for populating the target table.
      *  <p> Input  value: "appName" -- Type: <code> java.lang.String</code></p>
@@ -2001,7 +1957,7 @@ public class ApplicationHandlers {
             //V3: TP2 was using J2EEApplicaitonConfigMap() to be the web App
             //module = amxRoot.getDomainConfig().getWebModuleConfigMap().get(appName);
             
-            module = amxRoot.getDomainConfig().getJ2EEApplicationConfigMap().get(appName);
+            module = amxRoot.getDomainConfig().getApplicationsConfig().getApplicationConfigMap().get(appName);
         }else
         if ("connector".equals(appType)){
             module = amxRoot.getDomainConfig().getRARModuleConfigMap().get(appName);
