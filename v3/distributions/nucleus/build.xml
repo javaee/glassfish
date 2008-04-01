@@ -27,6 +27,7 @@ own identifying information: Portions Copyright [yyyy]
        <resolveArtifact artifactId="felix" groupId="org.glassfish.osgi-platforms" property="felix.zip"/>
 
        <resolveAll todir="target/stage/glassfish/modules">
+         <scope level="compile,runtime" />
        </resolveAll>
        <delete dir="target/stage/glassfish/modules" includes="*.zip" />
 
