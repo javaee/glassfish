@@ -52,7 +52,7 @@ public class EjbSniffer  extends GenericSniffer implements Sniffer {
             javax.ejb.Stateless.class, javax.ejb.Stateful.class};
 
     public EjbSniffer() {
-        this("ejb", "META_INF/ejb-jar.xml", null);
+        this("ejb", "META-INF/ejb-jar.xml", null);
     }
     
     public EjbSniffer(String containerName, String appStigma, String urlPattern) {
