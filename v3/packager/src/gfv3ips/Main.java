@@ -19,17 +19,23 @@ import java.util.zip.ZipInputStream;
  */
 public class Main {
 
+    public static HashMap<String, String> zipWebEntries = new HashMap();
+    public static HashMap<String, String> zipNucleusEntries = new HashMap();
+
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        String CHANGEME = "/export/tinderbox/dinesh/wsImp"; //Where is V3 repository
-                
+        if (args.length < 2) {
+               System.out.println(
+                "Usage:java Main wsRoot[v3 parent] pkgName[common,nucleus,web]");
+	       return;
+        }
+
+        String CHANGEME = args[0]; //Where is V3 repository
         
         File web = new File(CHANGEME+"/v3/distributions/web/target/web.zip");
         File nucleus = new File(CHANGEME+"/v3/distributions/nucleus/target/nucleus.zip");
-        HashMap<String, String> zipWebEntries = new HashMap();
-        HashMap<String, String> zipNucleusEntries = new HashMap();
         try {
 
             unzip(web, zipWebEntries);
@@ -38,8 +44,28 @@ public class Main {
             ex.printStackTrace();
         }
 
-        System.out.println("\n\nNucleus content");
+        if (args[1].indexOf("nucleus")  != -1) {
+           printNucleus();
+        }
+            
+        if (args[1].indexOf("web")  != -1) {
+           printWeb();
+        }
 
+        if (args[1].indexOf("common")  != -1) {
+           printCommon();
+        }
+
+    }
+
+    public static void printInitial() {
+            System.out.println("i copyright");
+            System.out.println("i pkginfo");
+            System.out.println("i depend");
+    }
+
+    public static void printNucleus() {
+	printInitial();
         for (Iterator it = zipNucleusEntries.keySet().iterator(); it.hasNext();) {
             String object = (String) it.next();
             if (object.indexOf("domains/domain1") >= 0) {
@@ -47,23 +73,27 @@ public class Main {
             }
             System.out.println(object);
         }
+    }
 
-        System.out.println("\n\nWeb Content");
+    public static void printWeb() {
+	printInitial();
         for (Iterator it = zipWebEntries.keySet().iterator(); it.hasNext();) {
             String object = (String) it.next();
             if (object.indexOf("modules/web") >= 0) {
                 System.out.println(object);
             }
         }
+    }
 
-        System.out.println("\n\nDomain Content");
+    public static void printCommon() {
+	printInitial();
         for (Iterator it = zipWebEntries.keySet().iterator(); it.hasNext();) {
             String object = (String) it.next();
             if (object.indexOf("domains/domain1") >= 0) {
                 System.out.println(object);
             }
         }
-        System.out.println("\n\nGlassFish Common Content");
+
         for (Iterator it = zipWebEntries.keySet().iterator(); it.hasNext();) {
             String object = (String) it.next();
             if (object.indexOf("modules/web") >= 0) {
