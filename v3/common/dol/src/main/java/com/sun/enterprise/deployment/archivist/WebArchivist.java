@@ -253,7 +253,14 @@ public class WebArchivist extends Archivist<WebBundleDescriptor>
                     if (path.endsWith(JAR_EXT)) {
                         if(path.indexOf('/') == -1) { // to avoid WEB-INF/lib/foo/bar.jar
                             // this jarFile is directly inside WEB-INF/lib directory
-                            subArchives.put(LIB_DIR+"/"+path, libArchive.getSubArchive(path));
+                            try {
+                                subArchives.put(LIB_DIR+"/"+path, libArchive.getSubArchive(path));
+                            } catch (IOException ioe) {
+                                // if there is any problem in opening the 
+                                // library jar, log the exception and proceed 
+                                // to the next jar
+                                logger.log(Level.SEVERE, ioe.getMessage(), ioe);
+                            }
                         } else {
                             if(logger.isLoggable(Level.FINE)) {
                                 logger.logp(Level.FINE, "WebArchivist",
