@@ -41,10 +41,14 @@ public abstract class ASMainOSGi {
     // For the moment, we need to add the following jars to classpath as well:
     private String[] additionalJars = {
             "wstx-asl-3.2.3.jar", // needed by config module in HK2
+            /* Commented this since we put javaee jar in higher class loader.
             "stax-api-1.0-2.jar", // needed by config module in HK2
+             */
             "tiger-types-1.0.jar", // needed by config module in HK2
             "jmxremote_optional-1.0_01-ea.jar" // until we make this a module 
     };
+
+    private static final String javaeeJarPath = "modules/javax.javaee-10.0-SNAPSHOT.jar";
 
     public ASMainOSGi(Logger logger, String... args) {
         this.logger = logger;
@@ -82,19 +86,16 @@ public abstract class ASMainOSGi {
      * Our hierarchy looks like this:
      * bootstrap class loader (a.k.a. null)
      * extension class loader (for processing contents of -Djava.ext.dirs)
+     * common classloader (for loading javaee API and jdk tools.jar)
      * library class loader (for glassfish/lib and domain_dir/lib)
-     * main class loader (For loading OSGi framework classes and JDK tools.jar)
+     * framework class loader (For loading OSGi framework classes)
      */
     private void setupLauncherClassLoader() {
-        ClassLoader extCL = ClassLoader.getSystemClassLoader().getParent();
-        ClassLoader libCL = helper.setupSharedCL(extCL, getSharedRepos());
+        ClassLoader commonCL = createCommonClassLoader();
+        ClassLoader libCL = helper.setupSharedCL(commonCL, getSharedRepos());
         List<URL> urls = new ArrayList<URL>();
         Collections.addAll(urls, getFWJars());
         try {
-            File jdkToolsJar = helper.getJDKToolsJar();
-            if (jdkToolsJar.exists()) {
-                urls.add(jdkToolsJar.toURI().toURL());
-            }
             File moduleDir = context.getRootDirectory().getParentFile();
             for (String jar : additionalJars) {
                 URL url = new File(moduleDir, jar).toURI().toURL();
@@ -107,6 +108,26 @@ public abstract class ASMainOSGi {
         Thread.currentThread().setContextClassLoader(launcherCL);
     }
 
+    private ClassLoader createCommonClassLoader() {
+        try {
+            List<URL> urls = new ArrayList<URL>();
+            File javaeeJar = new File(glassfishDir, javaeeJarPath);
+            if (!javaeeJar.exists()) {
+                throw new RuntimeException(javaeeJar + " does not exist.");
+            }
+            urls.add(javaeeJar.toURI().toURL());
+            File jdkToolsJar = helper.getJDKToolsJar();
+            if (jdkToolsJar.exists()) {
+                urls.add(jdkToolsJar.toURI().toURL());
+            } else {
+                logger.warning("JDK tools.jar does not exist at " + jdkToolsJar);
+            }
+            ClassLoader extCL = ClassLoader.getSystemClassLoader().getParent();
+            return new URLClassLoader(urls.toArray(new URL[0]), extCL);
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        }
+    }
     private void findBootstrapFile() {
         String resourceName = getClass().getName().replace(".", "/") + ".class";
         URL resource = getClass().getClassLoader().getResource(resourceName);
