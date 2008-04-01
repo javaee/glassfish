@@ -62,10 +62,10 @@
 #include "/treeBreadcrumbs.inc"                
 #include "listenersTab.inc"       
 #include "/alertMsg.inc"
-#include "/shared/sslProperties.inc"
+#include "/web/shared/sslProperties.inc"
                 <sun:title id="title2">
                     <!facet pageButtonsBottom>
-#include "/shared/sslPropertiesButtons.inc"
+#include "/web/shared/sslPropertiesButtons.inc"
                     </facet>                     
                 </sun:title>
             <sun:hidden id="helpKey" value="$pageSession{helpid}" />

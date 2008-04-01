@@ -2,7 +2,7 @@
 
 <console-config id="web">
         <integration-point 
-                id="webContainer" 
+                id="web" 
                 type="tree" 
                 priority="300" 
                 parentId="configuration" 

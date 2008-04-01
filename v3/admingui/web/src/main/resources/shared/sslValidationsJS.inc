@@ -33,40 +33,36 @@
  only if the new code is made subject to such option by the copyright
  holder.
 -->
-<!initPage 
-    setAttribute(key="edit" value="#{false}" )
-/>
-<!-- configuration/listenersSslNew.jsf -->
-<sun:page id="page1">
-  <!beforeCreate
-    setResourceBundle(key="i18n" bundle="core.Strings");
-    setResourceBundle(key="help" bundle="core.Helplinks")
-    getRequestValue(key="configName" value=>$page{configName});
-    getRequestValue(key="tabName", value=>$page{tabName});        
-    getRequestValue(key="type", value=>$page{type});        
-    getRequestValue(key="finalPage", value=>$page{finalPage});        
-    getRequestValue(key="prevPage", value=>$page{prevPage});        
-    getRequestValue(key="sslPageTitle", value=>$page{sslPageTitle});  
-  />
-#include "/shared/restart.inc"  
-  <sun:html id="html2">
-        <sun:head id="propertyhead"  title="$resource{i18n.edJmxConnector.sslSettingsLabel}" >
-            <sun:script url="resource/js/selectElements.js" />
-            <sun:script url="resource/js/restart.js" />
-            <sun:script url="/resource/js/adminjsf.js" />
-        </sun:head>    
-        <sun:body id="body3" onLoad="javascript: synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
-            <sun:form id="propertyForm">
-#include "/treeBreadcrumbs.inc"
-#include "/alertMsg.inc"
-#include "/web/shared/sslProperties.inc"
-                <sun:title id="title2">
-                    <!facet pageButtonsBottom>
-#include "/web/shared/sslPropertiesButtons.inc"
-                    </facet>                     
-                </sun:title>
-            </sun:form>
-        </sun:body>
-#include "/shared/sslValidationsJS.inc"        
-    </sun:html>
-</sun:page>
+
+" <script type="text/javascript">
+    " function checkSSLRequiredElements() { \
+        if (document.getElementById('#{sheetId}:ClientAuthProp:ClientAuth').checked) {   \
+            var result = checkForValue(getTextElement('#{sheetId}:CertNicknameProp:CertNickname'));  \
+            if(result != true){ \
+                return showAlert('$resource{i18n.msg.JS.ssl.errClientChecked}'); \
+            } \
+        } \
+        var comField = document.getElementById('#{cipherId}:CommonCiphersProp:commonAddRemove_list_value').value; \
+        var ephField = document.getElementById('#{cipherId}:EphemeralCiphersProp:ephemeralAddRemove_list_value').value; \
+        var bitField = document.getElementById('#{cipherId}:OtherCiphersProp:otherAddRemove_list_value').value; \
+        var eccField = document.getElementById('#{cipherId}:EccCiphersProp:eccAddRemove_list_value').value; \
+        var ssl3Prop = document.getElementById('#{sheetId}:SSL3Prop:SSL3').checked; \
+        if(document.getElementById('#{sheetId}:SSL2Prop:SSL2')) { \
+           var ssl2Prop = document.getElementById('#{sheetId}:SSL2Prop:SSL2').checked; \
+        } \
+        var tlsProp = document.getElementById('#{sheetId}:TLSProp:TLS').checked; \
+        if (ssl3Prop || tlsProp || ssl2Prop) {   \
+            var result = checkForValue(getTextElement('#{sheetId}:CertNicknameProp:CertNickname'));  \
+            if(result != true){ \
+                return showAlert('$resource{i18n.msg.JS.ssl.errSslTlsCert}'); \
+            } \
+        } \
+        if ((comField != '') || (ephField != '') || (bitField != '') || (eccField != '')){ \
+            if ((!ssl3Prop) && (!tlsProp)) {   \
+                return showAlert('$resource{i18n.msg.JS.ssl.errCiphersSelected}'); \
+            } \
+        } \
+    } 
+
+" </script>
+

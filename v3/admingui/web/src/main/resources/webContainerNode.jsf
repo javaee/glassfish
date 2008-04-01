@@ -42,8 +42,33 @@
 <sun:treeNode 
     id="webContainer" 
     text="$resource{i18n.tree.webContainer}"
-    url="web/configuration/webContainerGeneral.jsf?configName=server-config"
-    url="test.jsf"
-    imageURL="resource/images/instance.gif"
+    url="/web/configuration/webContainerGeneral.jsf?configName=server-config"
+    imageURL="/resource/web/images/container.gif"
     target="main"
 />
+<sun:treeNode 
+    id="httpService" 
+    text="$resource{i18n.tree.httpService}"
+    url="/web/configuration/httpService.jsf?configName=#{configName}"
+    imageURL="/resource/web/images/httpservice.gif"
+    target="main"
+    expanded="$boolean{false}"
+    >
+    <sun:treeNode id="httpListeners" 
+        text="$resource{i18n.tree.httpListeners}"
+        url="/web/configuration/httpListeners.jsf?configName=#{configName}"
+        imageURL="/resource/web/images/http.gif"
+        target="main"
+        expanded="$boolean{false}"
+        >
+    </sun:treeNode>
+
+     <sun:treeNode id="vs" 
+        text="$resource{i18n.tree.virtualServers}"
+        url="/web/configuration/virtualServers.jsf?configName=#{configName}"
+        imageURL="/resource/web/images/http.gif"
+        target="main"
+        expanded="$boolean{false}"
+        >
+    </sun:treeNode>
+</sun:treeNode>
