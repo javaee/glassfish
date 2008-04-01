@@ -257,12 +257,24 @@ public class CommonHandlers {
         @HandlerOutput(name="version", type=String.class)})
     public static void getAppServerVersion(HandlerContext handlerCtx) {
         
-        //TODO-V3-AMX
-        //J2EEServer server = AMXRoot.getInstance().getJ2EEDomain().getJ2EEServerMap().get("server");
-        //handlerCtx.setOutputValue("version", server.getserverVersion());
-        handlerCtx.setOutputValue("version", "Glassfish V3 TP2");
+        String version = AMXRoot.getInstance().getDomainRoot().getApplicationServerFullVersion();
+        handlerCtx.setOutputValue("version", version);
     }
 
+    /**
+     *	<p> This handler returns the full version of the app server, including the build number  </p>
+     *
+     *  <p> Output value: "fullVersion" -- Type: <code>String</code>/</p>
+     *	@param	context	The HandlerContext.
+     */
+    @Handler(id="getAppServerFullVersion",
+        output={
+        @HandlerOutput(name="fullVersion", type=String.class)})
+    public static void getAppServerFullVersion(HandlerContext handlerCtx) {
+        String version = AMXRoot.getInstance().getDomainRoot().getApplicationServerFullVersion();
+        handlerCtx.setOutputValue("fullVersion", version); 
+    }
+    
      /**
      *	<p> This handler returns String[] of the given java.util.List </p>
      *
@@ -289,21 +301,7 @@ public class CommonHandlers {
         handlerCtx.setOutputValue("selectedIndex", listItem);
     }
     
-    /**
-     *	<p> This handler returns the full version of the app server, including the build number  </p>
-     *
-     *  <p> Output value: "fullVersion" -- Type: <code>String</code>/</p>
-     *	@param	context	The HandlerContext.
-     */
-    @Handler(id="getAppServerFullVersion",
-        output={
-        @HandlerOutput(name="fullVersion", type=String.class)})
-    public static void getAppServerFullVersion(HandlerContext handlerCtx) {
-        //no AMX API to get the full version, use JMX util
-        //TODO-V3
-        //String fullVersion = (String)JMXUtil.getAttribute("com.sun.appserv:j2eeType=J2EEDomain,name=com.sun.appserv,category=runtime", "applicationServerFullVersion");
-        handlerCtx.setOutputValue("fullVersion", "Missing AMX API"); 
-    }
+    
     
     /**
      * <p> This handler returns the config name of the specified instance or cluster.
