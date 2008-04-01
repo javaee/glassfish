@@ -16,6 +16,7 @@
     <modules>
     	<module>plugin-service</module>
         <module>core</module>
+        <module>web</module>
         <module>jdbc-gui</module>
     	<!--<module>j1plugin</module> -->
         <module>war</module>
