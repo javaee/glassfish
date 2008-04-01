@@ -35,6 +35,12 @@
     <unzip src="${basedir}/../distributions/nucleus/target/nucleus.zip"
            dest="${basedir}/build"/>
 
+    <antcall target="create-prototype-com">
+        <param name="component.package" value="SUNWglassfishv3-nucleus"/>
+        <param name="package.home" value="${package.home}"/>
+        <param name="pkgname" value="nucleus"/>
+    </antcall>
+
     <antcall target="build-solaris-package">	
         <param name="component.package" value="SUNWglassfishv3-nucleus"/>
         <param name="package.home" value="${package.home}"/>
@@ -61,6 +67,12 @@
     <unzip src="${basedir}/../distributions/web/target/web.zip"
            dest="${basedir}/build"/>
 
+    <antcall target="create-prototype-com">
+        <param name="component.package" value="SUNWglassfishv3-web"/>
+        <param name="package.home" value="${package.home}"/>
+        <param name="pkgname" value="web"/>
+    </antcall>
+
     <antcall target="build-solaris-package">	
         <param name="component.package" value="SUNWglassfishv3-web"/>
         <param name="package.home" value="${package.home}"/>
@@ -81,6 +93,12 @@
         depends="publish-init,package-install-init"
         description="Package SUNWglassfishv3-common">
     <echo message="Creating package SUNWglassfishv3-common..."/>
+
+    <antcall target="create-prototype-com">
+        <param name="component.package" value="SUNWglassfishv3-common"/>
+        <param name="package.home" value="${package.home}"/>
+        <param name="pkgname" value="common"/>
+    </antcall>
 
     <antcall target="build-solaris-package">	
         <param name="component.package" value="SUNWglassfishv3-common"/>

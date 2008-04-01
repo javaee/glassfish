@@ -51,7 +51,6 @@
 
 <target name="package-solaris-common" if="solaris" 
         description="create solaris specific packaging">
-   <echo message=" dir: ${component.publish.home}, file ${package.home}/${component.package}/prototype_com.zip.solaris"/>
    <zip zipfile="${publish.package.home}/${component.package}.zip" 
         basedir="${component.publish.home}" 
         includesfile="${package.home}/${component.package}/prototype_com.zip.solaris"
@@ -82,3 +81,18 @@
     </java>
 </target>
 
+<target name="create-prototype-com"
+    description="Create Package file listing">
+    <echo message="Create Dynamic prototype_com file"/>
+    <java classname="gfv3ips.Main"
+          dir="${package.home}/${component.package}"
+          fork="true"
+          output="${package.home}/${component.package}/prototype_com"
+          failonerror="true">
+        <classpath>
+            <pathelement location="${component.classes.dir}"/>
+        </classpath>
+        <arg value="${basedir}/../.."/>
+        <arg value="${pkgname}"/>
+    </java>
+</target>
