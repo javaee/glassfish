@@ -37,6 +37,7 @@ public class DirectoryBasedRepository extends AbstractRepositoryImpl {
     private final File repository;
     private final int intervalInMs = Integer.getInteger("hk2.file.directory.changeIntervalTimer", 10);
     private Timer timer;
+    private boolean isTimerThreadDaemon = false;
 
     /** Creates a new instance of DirectoryBasedRepository */
     public DirectoryBasedRepository(String name, File repository) {
@@ -44,12 +45,18 @@ public class DirectoryBasedRepository extends AbstractRepositoryImpl {
         this.repository = repository;
     }
 
+
+    public DirectoryBasedRepository(String name, File repository, boolean isTimerThreadDaemon) {
+        this(name, repository);
+        this.isTimerThreadDaemon = isTimerThreadDaemon;
+    }
+
     @Override
     public synchronized boolean addListener(RepositoryChangeListener listener) {
 
         final boolean returnValue = super.addListener(listener);
         if (returnValue && timer==null) {
-            timer = new Timer("hk2-repo-listener");
+            timer = new Timer("hk2-repo-listener-"+ this.getName(), isTimerThreadDaemon);
             timer.schedule(new TimerTask() {
                 long lastModified = repository.lastModified();
                 public void run() {

@@ -39,6 +39,8 @@ package org.jvnet.hk2.osgiadapter;
 
 import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.module.Repository;
+import com.sun.enterprise.module.RepositoryChangeListener;
+import com.sun.enterprise.module.ModuleDefinition;
 import com.sun.enterprise.module.bootstrap.ModuleStartup;
 import com.sun.enterprise.module.bootstrap.StartupContext;
 import com.sun.enterprise.module.common_impl.AbstractFactory;
@@ -63,6 +65,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.net.URI;
 
 import static org.jvnet.hk2.osgiadapter.BundleEventType.*;
 import static org.jvnet.hk2.osgiadapter.Logger.logger;
@@ -181,7 +184,39 @@ public class HK2Main implements
                 logger.log(Level.SEVERE, "Cannot initialize repository at " + file.getAbsolutePath(), e);
             }
         }
+        // add a listener for each repository
+        // There is an interesting (and necessary) side effect of adding a
+        // RespositoryChangeListener when this is done in GlassFish environment.
+        // It is described below:
+        // These repositories are configured such that when we add a listener,
+        // there is a corresponding non-daemon timer thread spawned. These non-daemon timer
+        // threads are the only non-daemon threads in GlassFish. They are stopped
+        // when the repositories are shutdown, which happens either
+        // when this bundle is stopped or when the ModulesRegistry.shutdown is called.
+        // If we don't attach these listeners, GlassFish process would just exit
+        // as soon as the OSGi framework is started because of absence of any
+        // non-daemon threads. There should really be a non-daemon thread in GlassFish
+        // which is stopped when stop-domain is issued.
+        for (Repository repo : reps) {
+            repo.addListener(new RepositoryChangeListener() {
 
+                public void jarAdded(URI location) {
+                    //TODO: Not Yet Implemented
+                }
+
+                public void jarRemoved(URI location) {
+                    //TODO: Not Yet Implemented
+                }
+
+                public void moduleAdded(ModuleDefinition definition) {
+                    //TODO: Not Yet Implemented
+                }
+
+                public void moduleRemoved(ModuleDefinition definition) {
+                    //TODO: Not Yet Implemented
+                }
+            });
+        }
         logger.exiting("HK2Main", "createRepositories", reps);
         return reps;
     }

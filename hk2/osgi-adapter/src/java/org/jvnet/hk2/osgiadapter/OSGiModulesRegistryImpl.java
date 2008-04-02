@@ -114,6 +114,11 @@ public class OSGiModulesRegistryImpl
     }
 
     public synchronized void shutdown() {
+        for (Module m : modules.values()) {
+            OSGiModuleImpl.class.cast(m).uninstall();
+        }
+        modules.clear();
+
         for (Repository repo : repositories.values()) {
             try {
                 repo.shutdown();
@@ -122,12 +127,8 @@ public class OSGiModulesRegistryImpl
                 // swallows
             }
         }
-        try {
-            bctx.getBundle(0).stop();
-        } catch (BundleException e) {
-            //seems we are getting an exception, but the job is done.
-            java.util.logging.Logger.getAnonymousLogger().log(Level.FINE, "Error while shutdown OSGi runtime " +  e);
-        }
+        // don't try to stop the system bundle, as we may be embedded inside
+        // something like Eclipse.
     }
 
     /**
