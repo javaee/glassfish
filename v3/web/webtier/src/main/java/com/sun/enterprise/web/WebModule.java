@@ -130,6 +130,7 @@ public class WebModule extends PwcWebModule {
     private com.sun.enterprise.config.serverbeans.WebModule bean;
     private WebBundleDescriptor webBundleDescriptor;
 
+    private boolean hasStarted = false;
     private String compEnvId = null;
     private ServerContext serverContext = null;
 
@@ -337,10 +338,10 @@ public class WebModule extends PwcWebModule {
         // Start and register Tomcat mbeans
         super.start();
         configureCatalinaProperties();
-        started = true;
         // Register monitoring mbeans, which delegate to the Tomcat mbeans
         webContainer.enableMonitoring(this,
                                       ((VirtualServer) getParent()).getID());
+        hasStarted = true;
     }
 
 
@@ -351,10 +352,10 @@ public class WebModule extends PwcWebModule {
         // Unregister monitoring mbeans only if this web module was
         // successfully started, because if stop() is called during an
         // aborted start(), no monitoring mbeans will have been registered
-        if (started) {
+        if (hasStarted) {
             webContainer.disableMonitoring(
                 this, ((VirtualServer) getParent()).getID());
-            started = false;
+            hasStarted = false;
         }
 
         if (webBundleDescriptor != null && webBundleDescriptor.getServiceReferenceDescriptors() != null) {
