@@ -40,10 +40,11 @@
                     <sun:panelGroup id="topButtons">
                         <sun:button id="saveButton" text="$resource{i18n.button.Save}" >
                             <!command
+                            prepareSuccessfulMsg();
                             saveServerDomainAttributes(
-                            AppRoot="#{appRoot}"
-                            LogRoot="#{logRoot}"
-                            Locale="#{locale}"
+                                AppRoot="#{appRoot}"
+                                LogRoot="#{logRoot}"
+                                Locale="#{locale}"
                             );
                             />
                         </sun:button>
