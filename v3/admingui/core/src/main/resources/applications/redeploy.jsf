@@ -37,7 +37,7 @@
 <sun:page id="page1" >
     <!beforeCreate
         setResourceBundle(key="i18n" bundle="core.Strings");
-	#setResourceBundle(key="help" bundle="core.Helplinks");
+	setResourceBundle(key="help" bundle="core.Helplinks");
         getRequestValue(key="appType" value=>$page{appType});
         getRequestValue(key="appName" value=>$page{appName});
         getRequestValue(key="nextPage" value=>$page{nextPage});

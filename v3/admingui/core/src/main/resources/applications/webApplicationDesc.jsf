@@ -37,7 +37,7 @@
 <sun:page id="page1" >
     <!beforeCreate
     setResourceBundle(key="i18n" bundle="core.Strings");
-    #setResourceBundle(key="help" bundle="core.Helplinks")
+    setResourceBundle(key="help" bundle="core.Helplinks")
     setPageSessionAttribute(key="showSubComponentColumn" value="$boolean{false}");
     setPageSessionAttribute(key="name" value="$requestParameter{appName}");
     setPageSessionAttribute(key="pageTitle" value="$resource{i18n.webApp.descriptorPageTitle}");

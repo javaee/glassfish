@@ -39,7 +39,7 @@
 <sun:page id="page1">
     <!beforeCreate
     setResourceBundle(key="i18n" bundle="core.Strings");
-    #setResourceBundle(key="help" bundle="core.Helplinks");
+    setResourceBundle(key="help" bundle="core.Helplinks");
     setPageSessionAttribute(key="pageTitle" value="$resource{i18n.fileChooser.pageTitle}");
     setPageSessionAttribute(key="pageTitleHelp" value="$resource{i18n.fileChooser.pageTitleHelp}");
     setPageSessionAttribute(key="selectButtonLabel" value="$resource{i18n.button.SELECT}");
