@@ -507,11 +507,10 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                                              HttpService httpService){
         
         
-        if (!Boolean.getBoolean(httpListener.getEnabled())) {
+        if (!Boolean.valueOf(httpListener.getEnabled())) {
             _logger.warning(httpListener.getId()+" HTTP listener is disabled " +
-                    Boolean.getBoolean(httpListener.getEnabled()));
-            // TODO
-            //return;
+                    Boolean.valueOf(httpListener.getEnabled()));
+            return;
         }
                                  
         int port = 8080;
@@ -534,7 +533,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
          * 'security-enabled' attribute in <http-listener>
          * element is set to TRUE.
          */
-        boolean isSecure = Boolean.getBoolean(httpListener.getSecurityEnabled());
+        boolean isSecure = Boolean.valueOf(httpListener.getSecurityEnabled());
         if (isSecure && defaultRedirectPort == -1) {
             defaultRedirectPort = port;
         }
@@ -685,7 +684,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         connector.setDefaultHost(httpListener.getDefaultVirtualServer());
         
         // xpoweredBy
-        connector.setXpoweredBy(Boolean.getBoolean(httpListener.getXpoweredBy()));
+        connector.setXpoweredBy(Boolean.valueOf(httpListener.getXpoweredBy()));
         
         // Application root
         connector.setWebAppRootPath(getModulesRoot());
@@ -1175,13 +1174,12 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         ArrayList<Integer> portsList = new ArrayList();
        
         for (int i=0; i < httpListeners.length; i++){
-            //TODO enable not supported yet
-            //if (Boolean.getBoolean(httpListeners[i].getEnabled())){
+            if (Boolean.valueOf(httpListeners[i].getEnabled())){
                 Integer port = portMap.get(httpListeners[i].getId());
                 if (port != null) {
                     portsList.add(port);
                 }               
-            /*} else {
+            } else {
                 if ((vs.getName().equalsIgnoreCase(VirtualServer.ADMIN_VS))) {
                     String msg = _rb.getString(
                         "pewebcontainer.httpListener.mustNotDisable");
@@ -1189,9 +1187,9 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                         msg,
                         new Object[] { httpListeners[i].getId(),
                                        vs.getName() });
-                    //throw new IllegalArgumentException(msg);
+                    throw new IllegalArgumentException(msg);
                 }
-            }      */      
+            }   
              
         }
         
@@ -1379,18 +1377,18 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         }
 
         // client-auth
-        if (Boolean.getBoolean(sslConfig.getClientAuthEnabled())) {
+        if (Boolean.valueOf(sslConfig.getClientAuthEnabled())) {
             connector.setClientAuth(true);
         }
 
         // ssl protocol variants
         StringBuffer sslProtocolsBuf = new StringBuffer();
         boolean needComma = false;
-        if (Boolean.getBoolean(sslConfig.getSsl2Enabled())) {
+        if (Boolean.valueOf(sslConfig.getSsl2Enabled())) {
             sslProtocolsBuf.append("SSLv2");
             needComma = true;
         }
-        if (Boolean.getBoolean(sslConfig.getSsl3Enabled())) {
+        if (Boolean.valueOf(sslConfig.getSsl3Enabled())) {
             if (needComma) {
                 sslProtocolsBuf.append(", ");
             } else {
@@ -1398,13 +1396,13 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             }
             sslProtocolsBuf.append("SSLv3");
         }
-        if (Boolean.getBoolean(sslConfig.getTlsEnabled())) {
+        if (Boolean.valueOf(sslConfig.getTlsEnabled())) {
             if (needComma) {
                 sslProtocolsBuf.append(", ");
             }
             sslProtocolsBuf.append("TLSv1");
         }
-        if (Boolean.getBoolean(sslConfig.getSsl3Enabled()) || Boolean.getBoolean(sslConfig.getTlsEnabled())) {
+        if (Boolean.valueOf(sslConfig.getSsl3Enabled()) || Boolean.valueOf(sslConfig.getTlsEnabled())) {
             sslProtocolsBuf.append(", SSLv2Hello");
         }
 
@@ -2613,8 +2611,8 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             }
         }
 
-        return ((webModule != null && Boolean.getBoolean(webModule.getEnabled())) &&
-                (appRef != null && Boolean.getBoolean(appRef.getEnabled())));
+        return ((webModule != null && Boolean.valueOf(webModule.getEnabled())) &&
+                (appRef != null && Boolean.valueOf(appRef.getEnabled())));
          */
         return true;
     }

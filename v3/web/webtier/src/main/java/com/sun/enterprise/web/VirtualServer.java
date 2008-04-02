@@ -711,7 +711,7 @@ public class VirtualServer extends StandardHost {
 
         if (active) {
             // Check if the web module is enabled
-            active &= Boolean.getBoolean(wm.getEnabled());
+            active &= Boolean.valueOf(wm.getEnabled());
 
             //
             // Check if vsID is one of the virtual servers specified
@@ -797,7 +797,7 @@ public class VirtualServer extends StandardHost {
             
             J2EeApplication j2eeApp = ConfigBeansUtilities.getModule(J2EeApplication.class, appsBean, appID);
             
-            if ((j2eeApp != null) && Boolean.getBoolean(j2eeApp.getEnabled())) {
+            if ((j2eeApp != null) && Boolean.valueOf(j2eeApp.getEnabled())) {
                 String location = j2eeApp.getLocation();
                 String moduleDir = FileUtils.makeFriendlyFilename(moduleID);
                 
@@ -1492,7 +1492,7 @@ public class VirtualServer extends StandardHost {
         if ( stateValue.equalsIgnoreCase(DISABLED) ) {
             // state="disabled"
             setIsDisabled(true);
-        } else if ( !Boolean.getBoolean( stateValue ) ) {
+        } else if ( !Boolean.valueOf( stateValue ) ) {
             // state="off"
             setIsOff(true);
         } else {
@@ -1572,7 +1572,7 @@ public class VirtualServer extends StandardHost {
         if (allow != null && allow.getValue() != null) {
             _logger.fine("Allowing access to " + getID()+ " from " +
                          allow.getValue());
-            if (httpProtocol == null || !Boolean.getBoolean(httpProtocol.getDnsLookupEnabled())) {
+            if (httpProtocol == null || !Boolean.valueOf(httpProtocol.getDnsLookupEnabled())) {
                 _logger.log(Level.WARNING,
                             "webcontainer.allowRemoteHost.dnsLookupDisabled",
                             getID());
@@ -1583,7 +1583,7 @@ public class VirtualServer extends StandardHost {
         if (deny != null && deny.getValue() != null) {
             _logger.fine("Denying access to " + getID()+ " from " +
                          deny.getValue());
-            if (httpProtocol == null || !Boolean.getBoolean(httpProtocol.getDnsLookupEnabled())) {
+            if (httpProtocol == null || !Boolean.valueOf(httpProtocol.getDnsLookupEnabled())) {
                 _logger.log(Level.WARNING,
                             "webcontainer.denyRemoteHost.dnsLookupDisabled",
                             getID());
