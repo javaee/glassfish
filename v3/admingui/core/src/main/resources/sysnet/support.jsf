@@ -121,7 +121,7 @@
         margin: 0px 0px;
         }
         .hd, div.hd a, .hd, li.on a{
-        background-image:url(/resource/images/regbkgrnd.png);
+        background-image:url(#{request.contextPath}/resource/images/regbkgrnd.png);
         background-repeat:repeat-x;
         background-color:#41667f;
         }
@@ -174,7 +174,7 @@
         .next:hover {text-decoration:underline;}
         
         .md1{background-color:#eeeeee;}
-        .leftTable {background-image:url(/resource/images/gradlogsides.jpg);}
+        .leftTable {background-image:url(#{request.contextPath}/resource/images/gradlogsides.jpg);}
         
         .bd {
         padding:3px 3px 0px 2px;
@@ -212,7 +212,7 @@
         width: 440px; /*Width of left column*/
         background: #ffffff;
         }
-        .littlearrows{background:url("/resource/images/ar_dbl_blue.png") no-repeat top left;padding-left:10px}
+        .littlearrows{background:url("#{request.contextPath}/resource/images/ar_dbl_blue.png") no-repeat top left;padding-left:10px}
         .innertube{
         margin: 0px; /*Margins for inner DIV inside each column (to provide padding)*/
         margin-top: 0;
@@ -261,9 +261,8 @@
         <h2>$resource{i18n.support.events}</h2>
     </div>
     <div id="boxbd" class="bd">
-    <div class="innerbox"> 
-    <img src="/resource/images/squares/#{imageList[0]}" alt="" border=0 align="right"  style="float:right; margin:5px 20px 0px 20px;">
-    
+    <div class="innerbox">
+    <image src="#{request.contextPath}/resource/images/squares/#{imageList[0]}" alt="" border=0 align="right"  style="float:right; margin:5px 20px 0px 20px;" >
     <font face=arial size=-1> $resource{i18n.support.techDays}<br>$resource{i18n.support.techDaysDesc}</font>
 </f:verbatim>
 <jmaki:widget name="jmaki.blockList" service="/xhp?key=events" args="{count:2}" template="/resources/jmaki/blockList/events.htm" />
@@ -286,7 +285,7 @@
         </div>
         <div id="boxbd" class="bd">
             <div class="innerbox"> 
-                <img src="/resource/images/squares/#{imageList[1]}" alt="" border=0 align="right" style="float:right; margin:2px 20px 0px 20px;">
+                <img src="#{request.contextPath}/resource/images/squares/#{imageList[1]}" alt="" border=0 align="right" style="float:right; margin:2px 20px 0px 20px;">
                 <h3>$resource{i18n.support.coreTechTips}</h3>
             </f:verbatim>
             <jmaki:widget name="jmaki.blockList" service="/xhp?key=coretechtips&count=20" args="{count:4}" template="/resources/jmaki/blockList/coretechtips.htm" />                                                               
@@ -310,7 +309,7 @@
     </div>
     <div id="boxbd" class="bd">
         <div class="innerbox"> 
-            <img src="/resource/images/squares/#{imageList[2]}" alt=""  border=0 align="right" style="float:right; margin:2px 20px 0px 20px;">
+            <img src="#{request.contextPath}/resource/images/squares/#{imageList[2]}" alt=""  border=0 align="right" style="float:right; margin:2px 20px 0px 20px;">
             </f:verbatim>
             <jmaki:widget name="jmaki.blockList" service="/xhp?key=javaee" args="{count:2}" template="/resources/jmaki/blockList/javaee.htm" />
             <f:verbatim>
@@ -327,7 +326,7 @@
         </div>
         <div id="boxbd" class="bd">
             <div class="innerbox"> 
-                <img src="/resource/images/squares/#{imageList[3]}" alt="" border=0 align="right" style="float:right; margin:2px 20px 0px 20px;">
+                <img src="#{request.contextPath}/resource/images/squares/#{imageList[3]}" alt="" border=0 align="right" style="float:right; margin:2px 20px 0px 20px;">
                 <!--
                 <h3>Enterprise Java</h3>
             </f:verbatim>
@@ -375,7 +374,7 @@
             <div id="boxbd" class="bd">
                 <div class="innerbox">
                     <font face=arial size=-1>
-                    <img src="/resource/images/squares/#{imageList[4]}" alt="" border=0 align="left" style="float:left; margin:5px 10px 5px 10px;" />
+                    <img src="#{request.contextPath}/resource/images/squares/#{imageList[4]}" alt="" border=0 align="left" style="float:left; margin:5px 10px 5px 10px;" />
                          <a href="http://www.sun.com/service/applicationserversubscriptions/" target="_blank"> $resource{i18n.support.supportAndService}</a><br>
                     $resource{i18n.support.s1} 
                     <p><br>

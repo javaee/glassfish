@@ -51,7 +51,7 @@
 	    .bulletList a {font-weight: normal;}
 	    .bulletList a:link, .bulletList a:visited {color: #b9d2e9;}
 	    .bulletList ul {padding-left: 0px; padding-bottom: 15px; margin-left: 90px;}
-	    .bulletList li {font-style: normal; font-size: .9em; letter-spacing: -1px; list-style: url('images/regReminderBullets.png'); padding-bottom: 8px;}
+	    .bulletList li {font-style: normal; font-size: .9em; letter-spacing: -1px; list-style: url('#{request.contextPath}/resource/images/regReminderBullets.png'); padding-bottom: 8px;}
 	    .please {color: #FFFFFF; font-size: 1.6em; font-weight: bold; padding-bottom: 10px;}
 	    .why {color: #b9d2e9; font-size: 1.3em; font-weight: bold; font-style: italic; padding-bottom: 8px;}
 	    .why a:link, .why a:visited {color: #b9d2e9;}
