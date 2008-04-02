@@ -36,6 +36,11 @@ public class ASMainHK2 extends com.sun.enterprise.module.bootstrap.Main {
         helper = new ASMainHelper(logger);
     }
 
+    // Constructor used by RunMojo (gf:run)
+    public ASMainHK2() {
+        this(Logger.getAnonymousLogger());
+    }
+
     protected void setParentClassLoader(StartupContext context, ModulesRegistry mr) throws BootException {
 
         ClassLoader cl = this.getClass().getClassLoader();
