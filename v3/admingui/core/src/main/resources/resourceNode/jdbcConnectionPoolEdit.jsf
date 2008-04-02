@@ -46,7 +46,7 @@
                                 
     <!beforeCreate
         setResourceBundle(key="i18n" bundle="core.Strings")
-	setResourceBundle(key="help" bundle="com.sun.enterprise.tools.admingui.resources.Helplinks")
+	setResourceBundle(key="help" bundle="core.Helplinks")
         setSessionAttribute(key="jdbcPoolTabs" value="general");
         getRequestValue(key="name" value=>$page{jndiName});
         getJdbcConnectionPoolInfo(

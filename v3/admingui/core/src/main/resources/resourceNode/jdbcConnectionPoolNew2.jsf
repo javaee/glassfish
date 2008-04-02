@@ -56,7 +56,7 @@
     </event>
     <!beforeCreate
     setResourceBundle(key="i18n" bundle="core.Strings")
-    setResourceBundle(key="help" bundle="com.sun.enterprise.tools.admingui.resources.Helplinks")
+    setResourceBundle(key="help" bundle="core.Helplinks")
     getRequestValue(key="cancelPage" default="resourceNode/jdbcConnectionPools.jsf" value=>$page{cancelPage});
     setSessionAttribute(key="noValidation" value="#{null}")
     getTableList(Properties="#{wizardPoolProperties}", TableList=>$attribute{tableList})

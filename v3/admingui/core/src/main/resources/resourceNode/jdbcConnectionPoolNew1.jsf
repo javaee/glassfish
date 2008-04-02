@@ -38,7 +38,7 @@
 <sun:page id="page1">
     <!beforeCreate
     setResourceBundle(key="i18n" bundle="core.Strings")
-    setResourceBundle(key="help" bundle="com.sun.enterprise.tools.admingui.resources.Helplinks")
+    setResourceBundle(key="help" bundle="core.Helplinks")
     getRequestValue(key="cancelPage" default="resourceNode/jdbcConnectionPools.jsf" value=>$page{cancelPage});
     getJDBCPoolWizard(fromStep2="$attribute{fromStep2}"
                 ResTypeList=>$attribute{ResTypeList}

@@ -38,7 +38,7 @@
 
 <!initPage
     setResourceBundle(key="i18n" bundle="core.Strings");
-    #setResourceBundle(key="help" bundle="com.sun.enterprise.tools.admingui.resources.Helplinks")
+    setResourceBundle(key="help" bundle="core.Helplinks")
 />
 
 <sun:page id="page1">
