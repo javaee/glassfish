@@ -40,7 +40,7 @@
         <sun:title id="subtitle" rendered="#{!edit}" title="$resource{i18n.edJmxConnector.sslSettingsLabel}" />
         <!-- Buttons  -->                    
         <!facet pageButtonsTop>
-#include "/shared/sslPropertiesButtons.inc"
+#include "/web/shared/sslPropertiesButtons.inc"
         </facet>                     
      </sun:title>
      <!-- PropertySheet .... -->
