@@ -94,17 +94,17 @@
         <dependency>
            <groupId>javax.xml</groupId>
             <artifactId>webservices-api</artifactId>
-            <version>1.1.2-SNAPSHOT</version>
+            <version>1.2-SNAPSHOT</version>
         </dependency>
         <dependency>
            <groupId>com.sun.xml.ws</groupId>
             <artifactId>webservices-rt</artifactId>
-            <version>1.1.2-SNAPSHOT</version>
+            <version>1.2-SNAPSHOT</version>
         </dependency>
         <dependency>
            <groupId>com.sun.tools.ws</groupId>
             <artifactId>webservices-tools</artifactId>
-            <version>1.1.2-SNAPSHOT</version>
+            <version>1.2-SNAPSHOT</version>
         </dependency>
         
     </dependencies>
