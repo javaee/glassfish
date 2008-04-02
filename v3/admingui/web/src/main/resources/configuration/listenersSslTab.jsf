@@ -71,6 +71,6 @@
             <sun:hidden id="helpKey" value="$pageSession{helpid}" />
             </sun:form>
         </sun:body>
-#include "/shared/sslValidationsJS.inc"  
+#include "/web/shared/sslValidationsJS.inc"  
     </sun:html>
 </sun:page>
