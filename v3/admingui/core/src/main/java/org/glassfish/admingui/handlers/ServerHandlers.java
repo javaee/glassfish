@@ -45,8 +45,7 @@
 
 package org.glassfish.admingui.handlers;
 
-import com.sun.appserv.management.j2ee.J2EEServer;
-import com.sun.appserv.management.j2ee.StateManageable;
+import com.sun.appserv.management.base.XTypes;
 import com.sun.jsftemplating.annotation.Handler;
 import com.sun.jsftemplating.annotation.HandlerInput;
 import com.sun.jsftemplating.annotation.HandlerOutput;
@@ -58,18 +57,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
 import java.util.Iterator;
-import java.util.Set;
-import java.util.TreeSet;
 import java.util.Vector;
 
 import javax.faces.model.SelectItem;
 
-import java.lang.reflect.Array;
-import java.lang.reflect.Constructor;
 
 import org.glassfish.admingui.util.AMXRoot;
 import org.glassfish.admingui.util.GuiUtil;
-import org.glassfish.admingui.util.TargetUtil;
 
 import com.sun.appserv.management.config.ConfigConfig;
 import com.sun.appserv.management.config.JavaConfig;
@@ -78,8 +72,6 @@ import com.sun.appserv.management.config.ProfilerConfig;
 import com.sun.appserv.management.config.DomainConfig;
 import com.sun.appserv.management.config.ModuleLogLevelsConfig;
 import com.sun.appserv.management.config.DASConfig;
-import com.sun.appserv.management.config.AdminServiceConfig;
-import javax.faces.context.FacesContext;
 
 
 /**
@@ -777,16 +769,17 @@ public class ServerHandlers {
         public static void getServerDefaultJvmAttributes(HandlerContext handlerCtx) {
         
         ConfigConfig config = AMXRoot.getInstance().getConfig(((String)handlerCtx.getInputValue("ConfigName")));
-        JavaConfig javaConfig = config.getJavaConfig();
-        String javaHome = javaConfig.getDefaultValue("JavaHome");
-        String javacOptions = javaConfig.getDefaultValue("JavacOptions");
-        String debugEnabled = javaConfig.getDefaultValue("DebugEnabled");
-        String debugOptions = javaConfig.getDefaultValue("DebugOptions");
-        String rmicOptions = javaConfig.getDefaultValue("RMICOptions");
-        String bytecodePreprocessors = javaConfig.getDefaultValue("BytecodePreprocessors");
+        Map defaultMap = config.getDefaultValues(XTypes.JAVA_CONFIG);
+        String javaHome = (String) defaultMap.get("java-home");
+        String javacOptions  = (String)defaultMap.get("javac-options");
+        String rmicOptions  = (String)defaultMap.get("rmic-options");
+        String debugOptions  = (String)defaultMap.get("debug-options");
+        String bytecodePreprocessors  = (String)defaultMap.get("bytecode-preprocessors");
+        String debugEnabled  = (String)defaultMap.get("debug-enabled");
+        
         handlerCtx.setOutputValue("JavaHome", javaHome);
         handlerCtx.setOutputValue("Options", javacOptions);
-        if(debugEnabled.equals("true")) {
+        if("true".equals(debugEnabled)) {
             handlerCtx.setOutputValue("DebugEnabled", true);    
         } else {
             handlerCtx.setOutputValue("DebugEnabled", false);
