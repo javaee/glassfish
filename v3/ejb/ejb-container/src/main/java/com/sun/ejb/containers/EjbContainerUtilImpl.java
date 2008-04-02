@@ -9,6 +9,7 @@ import com.sun.enterprise.config.serverbeans.Application;
 import com.sun.enterprise.config.serverbeans.ApplicationHelper;
 import com.sun.enterprise.deployment.EjbDescriptor;
 import com.sun.enterprise.server.ServerContext;
+import com.sun.enterprise.v3.server.Globals;
 import com.sun.enterprise.v3.server.ServerEnvironment;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.invocation.ComponentInvocation;
@@ -25,6 +26,7 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.io.IOException;
 
@@ -82,6 +84,17 @@ public class EjbContainerUtilImpl
     }
 
     public static EjbContainerUtil getInstance() {
+        if (_me == null) {
+            // This situation shouldn't happen. Print the error message 
+            // and the stack trace to know how did we get here.
+
+            // Create the instance first to access the logger.
+            _me = Globals.getDefaultHabitat().getComponent(
+                    EjbContainerUtilImpl.class);
+            _me.getLogger().log(Level.SEVERE, 
+                    "Internal error: EJBContainerUtilImpl was null",
+                    new Throwable());
+        }
         return _me;
     }
 

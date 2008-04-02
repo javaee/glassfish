@@ -6,6 +6,7 @@
           <exclude-unlisted-classes/>
           <properties>
             <property name="eclipselink.weaving" value="false"/>
+            <property name="eclipselink.ddl-generation" value="create-tables"/>
         </properties>
     </persistence-unit>
 </persistence>
