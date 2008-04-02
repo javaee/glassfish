@@ -238,21 +238,21 @@ public final class OSGiModuleImpl implements Module {
                 return new ClassLoader() {
                     @Override public synchronized Class<?> loadClass(
                             String name) throws ClassNotFoundException {
-                        logger.logp(Level.INFO, "OSGiModuleImpl", "loadClass", "Loading {0} from bundle: {1}",
+                        if (logger.isLoggable(Level.FINE)) {
+                            logger.logp(Level.FINE, "OSGiModuleImpl", "loadClass", "Loading {0} from bundle: {1}",
                                 new Object[]{name, bundle});
-                        if ((bundle.getState() & BundleEvent.STARTED) == 0) {
-                            try {
-                                bundle.start();
-                                logger.logp(Level.INFO, "OSGiModuleImpl",
-                                        "loadClass", "Started bundle {0}", bundle);
-                            } catch (BundleException e) {
-                                throw new RuntimeException(e);
-                            }
+                        }
+                        if ((bundle.getState() & BundleEvent.RESOLVED) == 0) {
+                            start();
+                            logger.logp(Level.INFO, "OSGiModuleImpl",
+                                    "loadClass", "Started bundle {0}", bundle);
                         }
                         final Class aClass = bundle.loadClass(name);
-                        logger.logp(Level.INFO, "OSGiModuleImpl", "loadClass",
+                        if (logger.isLoggable(Level.FINE)) {
+                            logger.logp(Level.FINE, "OSGiModuleImpl", "loadClass",
                                 name+".class.getClassLoader() = {0}",
                                 aClass.getClassLoader());
+                        }
                         return aClass;
                     }
                 };
@@ -334,15 +334,18 @@ public final class OSGiModuleImpl implements Module {
         List<Module> result = new ArrayList<Module>();
         RequiredBundle[] requiredBundles =
                 registry.getPackageAdmin().getRequiredBundles(bundle.getSymbolicName());
-        for(RequiredBundle rb : requiredBundles) {
-            Module m = registry.getModule(rb.getBundle());
-            if (m!=null) {
-                // module is known to the module system
-                result.add(m);
-            } else {
-                // module is not known to us - may be the OSgi bundle depends on a native
-                // OSGi bundle
+        if (requiredBundles!=null) {
+            for(RequiredBundle rb : requiredBundles) {
+                Module m = registry.getModule(rb.getBundle());
+                if (m!=null) {
+                    // module is known to the module system
+                    result.add(m);
+                } else {
+                    // module is not known to us - may be the OSgi bundle depends on a native
+                    // OSGi bundle
+                }
             }
+
         }
         return result;
     }

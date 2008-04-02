@@ -44,6 +44,7 @@ import com.sun.enterprise.module.*;
 import com.sun.hk2.component.InhabitantsParser;
 
 import java.io.IOException;
+import java.io.File;
 import java.util.*;
 import java.util.logging.*;
 import java.net.URL;
@@ -75,16 +76,22 @@ public class OSGiModulesRegistryImpl
     }
 
     protected Module newModule(ModuleDefinition moduleDef) {
-        final String location = moduleDef.getLocations()[0].toString();
+        String location = moduleDef.getLocations()[0].toString();
         try {
-            logger.logp(Level.INFO, "OSGiModulesRegistryImpl", "add",
+            if (logger.isLoggable(Level.FINE)) {
+                logger.logp(Level.FINE, "OSGiModulesRegistryImpl", "add",
                     "location = {0}", location);
+            }
+            File l = new File(moduleDef.getLocations()[0]);
+            if (l.isDirectory()) {
+                location = "reference:" + location;
+            }
             Bundle bundle = bctx.installBundle(location);
             // wrap Bundle by a Module object
             return new OSGiModuleImpl(this, bundle, moduleDef);
         } catch (BundleException e) {
             logger.logp(Level.WARNING, "OSGiModulesRegistryImpl", "add",
-                    "Exception {e} while adding location = {0}", new Object[]{e, location});
+                    "Exception {0} while adding location = {1}", new Object[]{e, location});
 //            throw new RuntimeException(e); // continue
         }
         return null;
@@ -107,10 +114,6 @@ public class OSGiModulesRegistryImpl
     }
 
     public synchronized void shutdown() {
-        for (Module m : modules.values()) {
-            OSGiModuleImpl.class.cast(m).uninstall();
-        }
-        modules.clear();
         for (Repository repo : repositories.values()) {
             try {
                 repo.shutdown();
@@ -118,6 +121,12 @@ public class OSGiModulesRegistryImpl
                 java.util.logging.Logger.getAnonymousLogger().log(Level.SEVERE, "Error while closing repository " + repo, e);
                 // swallows
             }
+        }
+        try {
+            bctx.getBundle(0).stop();
+        } catch (BundleException e) {
+            //seems we are getting an exception, but the job is done.
+            java.util.logging.Logger.getAnonymousLogger().log(Level.FINE, "Error while shutdown OSGi runtime " +  e);
         }
     }
 

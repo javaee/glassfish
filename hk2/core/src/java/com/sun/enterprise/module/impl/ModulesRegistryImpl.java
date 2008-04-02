@@ -51,6 +51,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.net.URL;
 
 /**
+ * @author Jerome Dochez
  * @author Sanjeeb.Sahoo@Sun.COM
  */
 public class ModulesRegistryImpl extends AbstractModulesRegistryImpl {
