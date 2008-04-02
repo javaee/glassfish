@@ -40,7 +40,7 @@
 <sun:page>
     <!beforeCreate 
         setResourceBundle(key="i18n" bundle="core.Strings")
-        #setResourceBundle(key="help" bundle="core.Helplinks")
+        setResourceBundle(key="help" bundle="core.Helplinks")
         getRequestValue(key="configName" value=>$page{configName});
         compare(obj1="$pageSession{configName}" obj2="server-config" objEqual=>$attribute{isServerConfig});
         setPageSessionAttribute(key="showIt" value="$boolean{false}");
