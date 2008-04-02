@@ -22,7 +22,7 @@
 
     <artifactId>console-core</artifactId>
     <packaging>hk2-jar</packaging>
-    <name>Admin Console Core</name>
+    <name>Admin GUI Core</name>
 
     <dependencies>
         <dependency>
