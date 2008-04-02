@@ -37,7 +37,7 @@
 <sun:page>
  <!beforeCreate
     setResourceBundle(key="i18n" bundle="core.Strings");
-    #setResourceBundle(key="help" bundle="core.Helplinks")
+    setResourceBundle(key="help" bundle="core.Helplinks")
     setPageSessionAttribute(key="configName" value="$requestParameter{configName}");
     getWebManagerProps(ConfigName="#{configName}", ReapInterval=>$attribute{reapInterval}, MaxSessions=>$attribute{maxSessions}, 
     SessFileName=>$attribute{sessFileName}, SessionIdGen=>$attribute{sessionIdGen},
