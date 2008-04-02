@@ -35,7 +35,7 @@
 -->
 <!-- appServer/serverInstJvmGeneral.jsf -->
 <!initPage
-setResourceBundle(key="help" bundle="com.sun.enterprise.tools.admingui.resources.Helplinks")
+setResourceBundle(key="help" bundle="core.Helplinks")
 setAttribute(key="helpKey" value="$resource{help.serverInstJvmGeneral}" );
 />
 #include "/shared/jvmGeneral_1.inc"

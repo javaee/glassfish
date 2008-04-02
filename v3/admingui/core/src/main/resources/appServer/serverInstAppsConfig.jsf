@@ -38,14 +38,14 @@
 
 
 <!initPage
-setResourceBundle(key="help" bundle="com.sun.enterprise.tools.admingui.resources.Helplinks")
+setResourceBundle(key="help" bundle="core.Helplinks")
 setAttribute(key="helpKey" value="$resource{help.serverInstAppsConfig}" );
 />
 
 <sun:page id="page1">
     <!beforeCreate
     setResourceBundle(key="i18n" bundle="core.Strings")
-	setResourceBundle(key="help" bundle="com.sun.enterprise.tools.admingui.resources.Helplinks")
+	setResourceBundle(key="help" bundle="core.Helplinks")
         setPageSessionAttribute(key="configName", value="$requestParameter{configName}");  
         setPageSessionAttribute(key="instanceName" value="server");       # we can hard code it here because this page is only for DAS                                   
         getServerAppsConfigAttributes(ConfigName="#{configName}", Reload=>$attribute{reload}, ReloadInterval=>$attribute{reloadInterval}, 

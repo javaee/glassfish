@@ -39,7 +39,7 @@
 <!-- appServer/serverInstProfiler.jsf -->
 <!initPage
 setResourceBundle(key="i18n" bundle="core.Strings");
-setResourceBundle(key="help" bundle="com.sun.enterprise.tools.admingui.resources.Helplinks")
+setResourceBundle(key="help" bundle="core.Helplinks")
 setAttribute(key="helpKey" value="$resource{help.serverInstProfiler}" );
 />
 
