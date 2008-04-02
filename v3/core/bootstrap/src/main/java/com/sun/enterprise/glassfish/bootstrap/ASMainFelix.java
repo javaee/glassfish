@@ -1,6 +1,7 @@
 package com.sun.enterprise.glassfish.bootstrap;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -31,7 +32,7 @@ public class ASMainFelix extends ASMainOSGi {
         }
     }
 
-    protected void launchOSGiFW(String... args) {
+    protected void launchOSGiFW(final String... args) {
         try {
             /* Set a system property called com.sun.aas.installRootURI.
              * This property is used in felix/conf/config.properties to
@@ -59,8 +60,33 @@ public class ASMainFelix extends ASMainOSGi {
             cacheProfileDir.deleteOnExit();
             System.setProperty("felix.cache.profiledir", cacheProfileDir.getCanonicalPath());
             Class mc = launcherCL.loadClass(getFWMainClassName());
-            Method m = mc.getMethod("main", new Class[]{args.getClass()});
-            m.invoke(null, new Object[]{args});
+            final Method m = mc.getMethod("main", new Class[]{args.getClass()});
+            // Call Felix on a daemon Thread so that the thread created by
+            // Felix EventDispatcher also inherits the daemon status.
+            Thread launcherThread = new Thread(new Runnable(){
+                public void run() {
+                    try {
+                        m.invoke(null, new Object[]{args});
+                    } catch (IllegalAccessException e) {
+                        throw new RuntimeException(e); // TODO: Proper Exception Handling
+                    } catch (InvocationTargetException e) {
+                        throw new RuntimeException(e); // TODO: Proper Exception Handling
+                    }
+                }
+            },"OSGi Framework Launcher");
+
+            // The EventDispatcher thread in Felix inherits the daemon status of the thread
+            // that starts Felix. So, it is very important to start Felix on a daemon thread.
+            // Otherwise, the server process would not exit even when all the server specific
+            // non-daemon threads are stopped.
+            launcherThread.setDaemon(true);
+            launcherThread.start();
+
+            // Wait for framework to be started, otherwise the VM would exit since there is no
+            // non-daemon thread started yet. The first non-daemon thread is started
+            // when our hk2 osgi-adapter is started.
+            launcherThread.join();
+            logger.info("Framework successfully started");
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

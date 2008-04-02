@@ -156,7 +156,11 @@ public abstract class ASMainOSGi {
         File libDir = new File(glassfishDir, "lib");
         logger.fine("Path to library directory is " + libDir);
         if (libDir.exists()) {
-            Repository libRepo = new DirectoryBasedRepository("lib", libDir);
+            // Note: we pass true as the last argument, which indicates that the
+            // timer thread for this repo will be daemon thread. This is necessary
+            // because we don't get any notification about server shutdown. Hence,
+            // if we start a non-daemon thread, the server process won't exit atall.
+            Repository libRepo = new DirectoryBasedRepository("lib", libDir, true);
             try {
                 libRepo.initialize();
             } catch (IOException e) {
@@ -170,7 +174,11 @@ public abstract class ASMainOSGi {
         File domainlib = new File(domainDir, "lib");
         logger.fine("Path to domain library directory is " + domainlib);
         if (domainlib.exists()) {
-            Repository domainLib = new DirectoryBasedRepository("domnainlib", domainlib);
+            // Note: we pass true as the last argument, which indicates that the
+            // timer thread for this repo will be daemon thread. This is necessary
+            // because we don't get any notification about server shutdown. Hence,
+            // if we start a non-daemon thread, the server process won't exit atall.
+            Repository domainLib = new DirectoryBasedRepository("domnainlib", domainlib, true);
             try {
                 domainLib.initialize();
                 libs.add(domainLib);
