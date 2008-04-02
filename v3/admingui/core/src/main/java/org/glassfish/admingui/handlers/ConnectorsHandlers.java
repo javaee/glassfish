@@ -1540,10 +1540,9 @@ public class ConnectorsHandlers {
                 ResourceConfig resConfig = (ResourceConfig) iter.next();
                 HashMap oneRow = new HashMap();
                 String name = resConfig.getJNDIName();
-                System.out.println("jndi name "+name);
+                //System.out.println("jndi name "+name);
                 oneRow.put("name", name);
-                //oneRow.put("enabled", TargetUtil.getEnabledStatus(resConfig, false));
-                oneRow.put("enabled", "false");
+                oneRow.put("enabled", TargetUtil.getEnabledStatus(resConfig, false));
                 oneRow.put("selected", (hasOrig) ? GuiUtil.isSelected(name, selectedList) : false);
                 oneRow.put("description", GuiUtil.checkEmpty(resConfig.getDescription()));
                 if (isJdbc) {
