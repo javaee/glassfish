@@ -26,13 +26,14 @@ package org.glassfish.webservices;
 
 import org.glassfish.api.container.Container;
 import org.jvnet.hk2.annotations.Service;
+import com.sun.enterprise.web.WebContainer;
 
 /**
  * Webservices container service
  *
  */
 @Service(name="org.glassfish.webservices.WebServicesContainer")
-public class WebServicesContainer implements Container {
+public class WebServicesContainer extends WebContainer {
 
     public String getName() {
         return "webservices";

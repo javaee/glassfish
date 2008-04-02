@@ -27,14 +27,22 @@ package org.glassfish.webservices;
 import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.deployment.util.ModuleDescriptor;
 import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.enterprise.web.WebDeployer;
+import com.sun.enterprise.web.WebApplication;
+import com.sun.enterprise.module.ModuleDefinition;
+import com.sun.enterprise.module.Module;
 import com.sun.logging.LogDomains;
 import com.sun.tools.ws.spi.WSToolsObjectFactory;
 import com.sun.tools.ws.util.xml.XmlUtil;
 import com.sun.xml.bind.api.JAXBRIContext;
 import org.glassfish.api.deployment.DeploymentContext;
+import org.glassfish.api.deployment.ApplicationContainer;
+import org.glassfish.api.deployment.MetaData;
+import org.glassfish.api.container.Container;
 import org.glassfish.deployment.common.DeploymentException;
 import org.glassfish.deployment.common.DeploymentUtils;
 import org.glassfish.deployment.common.SimpleDeployer;
+import org.glassfish.javaee.core.deployment.JavaEEDeployer;
 import org.jvnet.hk2.annotations.Service;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
@@ -48,8 +56,11 @@ import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.servlet.ServletException;
 import java.io.*;
 import java.net.URL;
+import java.net.MalformedURLException;
+import java.net.URLClassLoader;
 import java.util.*;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
@@ -64,7 +75,7 @@ import java.util.logging.Logger;
  * 
  */
 @Service
-public class WebServicesDeployer extends SimpleDeployer {
+public class WebServicesDeployer extends WebDeployer {
 
     protected Logger logger = Logger.getLogger(WebServicesDeployer.class.getName());
 
@@ -111,7 +122,12 @@ public class WebServicesDeployer extends SimpleDeployer {
                         "Failed to load deployment descriptor, aborting"));
                 return false;
             }
-            generateArtifacts(dc);
+            WebBundleDescriptor wbd = (WebBundleDescriptor) app.getStandaloneBundleDescriptor();
+            if (!wbd.getSpecVersion().equals("2.5") ){
+                super.generateArtifacts(dc);
+            } else {
+                generateArtifacts(dc);
+            }
             return true;
         } catch (Exception ex) {
             // re-throw all the exceptions as runtime exceptions
@@ -122,9 +138,8 @@ public class WebServicesDeployer extends SimpleDeployer {
     }
 
 
-
-
     protected void generateArtifacts(DeploymentContext dc) throws DeploymentException {
+        
         Application app = dc.getModuleMetaData(Application.class);
         Set<BundleDescriptor> bundles = app.getBundleDescriptors();
         for(BundleDescriptor bundle : bundles) {
@@ -144,6 +159,7 @@ public class WebServicesDeployer extends SimpleDeployer {
                 //For modules this is domains/<domain-name>/generated/xml
                 //Check with Hong about j2ee-modules
                 File stubsDir = dc.getScratchDir("ejb");
+                stubsDir.mkdir();
                 
                 /** TODO BM implement later
                 if(!dc.getProps.getProperty("type").equals("web")) {
@@ -226,7 +242,7 @@ public class WebServicesDeployer extends SimpleDeployer {
                     // check this is NOT a provider interface
                     Class implClass;
                     try {
-                        implClass = app.getClassLoader().loadClass(implClassName);
+                        implClass = dc.getClassLoader().loadClass(implClassName);
                     } catch(Exception e) {
                             throw new DeploymentException(localStrings.getLocalString("impl.notfound",
                                     "WebService {0} implementation {1} not found in archive {2}" , ws.getName()
@@ -259,16 +275,17 @@ public class WebServicesDeployer extends SimpleDeployer {
                             // This is a JAXWS endpoint with @WebService; Invoke wsgen
                             jaxwsEndPtFound = true;
 
-                             String wsgenClassPath = getWsgenClassPath(classesDir, webinfLibDir,
+                            String wsgenClassPath = getWsgenClassPath(classesDir, webinfLibDir,
                                 dc.getSourceDir().getAbsolutePath()+File.separator+app.getLibraryDirectory(),
-                                moduleDir.getAbsolutePath(),app);
+                                moduleDir.getAbsolutePath(),app,dc);
                             QName servicename = endpoint.getServiceName();
                             File newstubsdir = new File(stubsDir,servicename.getLocalPart());
                             boolean stubsdircreated = newstubsdir.mkdir();
                            // stubsdircreated?newstubsdir.getCanonicalPath():stubsDir;
+                            Thread.currentThread().setContextClassLoader(dc.getClassLoader())  ;
                             boolean wsgenDone =
                                 runWsGen(implClassName, wsdlFile.exists(), wsgenClassPath,
-                                    newstubsdir, wsdlDir, endpoint.getServiceName(), endpoint.getWsdlPort());
+                                    stubsDir, wsdlDir, endpoint.getServiceName(), endpoint.getWsdlPort(),dc);
                             if(!wsgenDone) {
                                 // wsgen failed; if WSDL file were present, just throw a warning
                                 // assuming that the user would have packaged everything
@@ -308,6 +325,43 @@ public class WebServicesDeployer extends SimpleDeployer {
         }
     }
 
+    
+
+    /**
+     * Returns the meta data assocated with this Deployer
+     *
+     * @return the meta data for this Deployer
+     */
+    @Override
+    public MetaData getMetaData() {
+
+        List<ModuleDefinition> apis = new ArrayList<ModuleDefinition>();       
+        Module module = modulesRegistry.makeModuleFor("org.glassfish:javax.javaee", "10.0-SNAPSHOT");
+        if (module!=null) {
+            apis.add(module.getModuleDefinition());
+        }
+
+        String[] otherExportedPackages = new String[] {
+                 "org.glassfish.webservices:jsr109-impl",
+                 "org.glassfish.web:webtier" ,
+                 "com.sun.xml.ws:webservices-rt",
+                 "com.sun.tools.ws:webservices-tools",
+                 "javax.xml:webservices-api"
+
+                 };
+
+        for (String otherExportedPackage : otherExportedPackages) {
+            module = modulesRegistry.makeModuleFor(otherExportedPackage, null);
+            if (module != null) {
+                apis.add(module.getModuleDefinition());
+            } else {
+                //module is null
+                logger.log(Level.WARNING,localStrings.getLocalString("module.load.error","Error loading the module {0}",otherExportedPackage));
+            }
+        }
+
+        return new MetaData(false, apis.toArray(new ModuleDefinition[apis.size()]), new Class[] { Application.class }, null );
+    }
     private void downloadWsdlsAndSchemas(WebService ws, URL httpUrl, File wsdlDir) throws Exception {
         // First make required directories and download this wsdl file
         wsdlDir.mkdirs();
@@ -550,7 +604,7 @@ public class WebServicesDeployer extends SimpleDeployer {
     }
 
     private String getWsgenClassPath(File classesDir, String webinfLibDir,
-                                     String appLibDirPath, String moduleDir, Application app) throws DeploymentException {
+                                     String appLibDirPath, String moduleDir, Application app,DeploymentContext dc) throws DeploymentException {
         // First thing in the classpath is modules' classes directory
         String classpath = classesDir.getAbsolutePath();
 
@@ -607,6 +661,10 @@ public class WebServicesDeployer extends SimpleDeployer {
                     }
                 }
             }
+            ClassLoader classloader = dc.getClassLoader()   ;
+            if (classloader instanceof URLClassLoader) {
+               URL[] urls =((URLClassLoader)classloader).getURLs();
+            }
         } catch (Exception e) {
             throw new DeploymentException(localStrings.getLocalString("exception.manifest",
                     "Exception : {0} when trying to process MANIFEST file under {1}",e.getMessage() , moduleDir));
@@ -658,9 +716,10 @@ public class WebServicesDeployer extends SimpleDeployer {
     }
 
     private boolean runWsGen(String implClass, boolean skipGenWsdl, String classPath, File stubsDir,
-                             File wsdlDir, QName sQname, QName port) {
+                             File wsdlDir, QName sQname, QName port,DeploymentContext dc) {
 
 
+        Thread.currentThread().setContextClassLoader(dc.getClassLoader())      ;
         ArrayList argsList = new ArrayList();
         argsList.add("-cp");
         argsList.add(classPath);
@@ -692,5 +751,5 @@ public class WebServicesDeployer extends SimpleDeployer {
         }
     }
 
-
+   
 }
