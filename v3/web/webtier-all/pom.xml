@@ -67,6 +67,11 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.glassfish.security</groupId>
+            <artifactId>websecurity</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.glassfish.web</groupId>
             <artifactId>jstl-impl</artifactId>
             <version>${project.version}</version>
@@ -76,5 +81,10 @@
             <artifactId>jsf-connector</artifactId>
             <version>${project.version}</version>
         </dependency>
+         <dependency>
+            <groupId>org.glassfish.web</groupId>
+            <artifactId>web-cli</artifactId>
+            <version>10.0-SNAPSHOT</version>
+        </dependency>        
     </dependencies>
 </project>

@@ -33,66 +33,45 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+package com.sun.common.util.logging;
 
-package com.sun.enterprise.admin.servermgmt.pe;
-
-
-import com.sun.enterprise.admin.util.TokenValue;
-import com.sun.enterprise.admin.util.TokenValueSet;
-import com.sun.enterprise.admin.servermgmt.DomainConfig;
-import com.sun.appserv.server.util.Version;
+import java.util.logging.Logger;
 
 /**
- * This class defines the tokens required by the startserv & stopserv scripts.
+ * Class LogDomains
  */
-final class IndexHtmlTokens
+public class LogDomains
 {
-    public static final String VERSION_TOKEN_NAME      = "VERSION";
-    public static final String DOMAIN_NAME_TOKEN_NAME  = "DOMAIN_NAME";
-    public static final String INSTALL_ROOT_TOKEN_NAME = "INSTALL_ROOT";
 
-    public static final String INSTALL_ROOT_DEFAULT_VALUE = "INSTALL_ROOT";
-    
-    
-
-    private IndexHtmlTokens() {
-        //disallow;
-    }
     /**
-     * @return Returns the TokenValueSet that has the (token, value) pairs for
-     * index.html file.     
-     * @param domainConfig
+     * DOMAIN_ROOT the prefix for the logger name. This is public only
+     * so it can be accessed w/in the ias package space.
      */
-    final static TokenValueSet getTokenValueSet(final DomainConfig dc)
-    {
-        final PEFileLayout lo = new PEFileLayout(dc);
+    public static final String DOMAIN_ROOT = "javax.";
 
-        final TokenValueSet tokens = new TokenValueSet();
+    /**
+     * RESOURCE_BUNDLE the name of the logging resource bundles.
+     */
+    public static final String RESOURCE_BUNDLE = "LogStrings";
 
-        tokens.add(getInstallRoot(lo));
-        tokens.add(getVersion());
-        tokens.add(getDomainName(dc));
-        return ( tokens );
-    }
-    
-    private static TokenValue getInstallRoot(final PEFileLayout lo) {
-        String ir;
-        try {
-            ir = lo.getInstallRootDir().getAbsolutePath();
-        } catch(final Exception e) {
-            ir = INSTALL_ROOT_DEFAULT_VALUE;
-        }
-        final TokenValue tv = new TokenValue(INSTALL_ROOT_TOKEN_NAME, ir);
-        return ( tv );
-    }
-    private static TokenValue getVersion() {
-        final String version = Version.getFullVersion();
-        final TokenValue tv = new TokenValue(VERSION_TOKEN_NAME, version);
-        return ( tv );
-    }
-    private static TokenValue getDomainName(final DomainConfig dc) {
-        final String dn     = dc.getDomainName();
-        final TokenValue tv = new TokenValue(DOMAIN_NAME_TOKEN_NAME, dn);
-        return ( tv );
+    /**
+     * Package where the resource bundle is located
+     */
+    public static final String PACKAGE = "com.sun.common.util.logging.";
+    /**
+     * Field
+     */
+    public static final String CMN_LOGGER = DOMAIN_ROOT + "enterprise.system.util.common";
+
+    /**
+     * Method getLogger
+     *
+     *
+     * @param name
+     *
+     * @return
+     */
+    public static Logger getLogger(String name) {
+        return com.sun.logging.LogDomains.getLogger(name); 
     }
 }

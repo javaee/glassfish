@@ -75,7 +75,7 @@
             <plugin>
                 <groupId>org.jvnet.maven-antrun-extended-plugin</groupId>
                 <artifactId>maven-antrun-extended-plugin</artifactId>
-                <version>1.23</version>
+                <version>1.24-SNAPSHOT</version>
             </plugin>
             <plugin>
                 <groupId>org.jvnet.poormans-installer</groupId>
@@ -109,7 +109,7 @@
                             <generatorName>com.sun.enterprise.build.ContributorsWikiGenerator</generatorName>
                             <finalName>contrib-${project.build.finalName}.txt</finalName>
                         </configuration>
-                    </execution>
+                    </execution>           
                 </executions>
             </plugin>
             <!--plugin>

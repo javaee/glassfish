@@ -170,8 +170,14 @@ public class DistributionDashboardMojo extends AbstractGlassfishMojo {
             // size
             generator.addSize(module.getFile().length());
 
-            try {                        
-                MavenProject moduleProject = loadPom(module);
+            try {
+
+                MavenProject moduleProject = null;
+                try {
+                    moduleProject = loadPom(module);
+                } catch(Exception e) {
+                    getLog().error("Cannot load pom for " + module.getId());
+                }
                 if (moduleProject != null) {
 
                     // get transitive list of repos, project first.
@@ -248,7 +254,7 @@ public class DistributionDashboardMojo extends AbstractGlassfishMojo {
                     generator.addLicenses((List<License>) moduleProject.getLicenses());
                 }
 
-            } catch (ProjectBuildingException e) {
+            } catch (Exception e) {
                 e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
             }
 
@@ -260,13 +266,17 @@ public class DistributionDashboardMojo extends AbstractGlassfishMojo {
     private List<Dependency> filterImports(List<Dependency> dependencies) {
         List<Dependency> result = new ArrayList<Dependency>();
         for (Dependency artifact : dependencies) {
-            if (artifact.getScope().equals("test")) {
-                continue;
+            if (artifact.getScope()==null) {
+                result.add(artifact);
+            } else {
+                if (artifact.getScope().equals("test")) {
+                    continue;
+                }
+                if (artifact.getScope().equals("compile") && artifact.isOptional()) {
+                    continue;
+                }
+                result.add(artifact);
             }
-            if (artifact.getScope().equals("compile") && artifact.isOptional()) {
-                continue;
-            }
-            result.add(artifact);
         }
         return result;
     }
@@ -279,9 +289,14 @@ public class DistributionDashboardMojo extends AbstractGlassfishMojo {
 
         for (Artifact module : modules) {
 
+            System.out.println("Importing module " + module.getId());
             MavenProject moduleProject = null;
             try {
                 moduleProject = loadPom(module);
+            } catch(Exception e) {
+                getLog().error("cannot load " + module.getId());
+            }
+            if (moduleProject!=null) {
                 List<Dependency> moduleDeps = moduleProject.getModel().getDependencies();
                 if (moduleDeps != null) {
                     for (Dependency moduleDep : moduleDeps) {
@@ -294,9 +309,6 @@ public class DistributionDashboardMojo extends AbstractGlassfishMojo {
                         importing.add(module);
                     }
                 }
-            } catch (ProjectBuildingException e) {
-                getLog().error("Cannot initialize dependents list, imported column will be null");
-                dependentsXRef=null;
             }
         }
     }

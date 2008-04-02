@@ -133,8 +133,6 @@ import com.sun.enterprise.admin.monitor.registry.MonitoringLevel;
 import com.sun.enterprise.admin.monitor.registry.MonitoringLevelListener;
 import com.sun.enterprise.config.serverbeans.MonitoringService;
 import com.sun.enterprise.config.serverbeans.ModuleMonitoringLevels;
-import com.sun.enterprise.config.serverbeans.Property;
-import com.sun.enterprise.config.serverbeans.SecurityService;
 import com.sun.enterprise.web.stats.PWCVirtualServerStatsImpl;
 import com.sun.enterprise.web.stats.PWCRequestStatsImpl;
 

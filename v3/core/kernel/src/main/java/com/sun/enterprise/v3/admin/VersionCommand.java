@@ -23,13 +23,13 @@
 
 package com.sun.enterprise.v3.admin;
 
-import com.sun.appserv.server.util.Version;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.glassfish.api.ActionReport.ExitCode;
 import org.jvnet.hk2.annotations.Service;
+import com.sun.appserv.server.util.Version;
 
 /**
  * Return the version and build number

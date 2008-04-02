@@ -92,7 +92,8 @@
             <groupId>org.glassfish.common</groupId>
             <artifactId>glassfish-api</artifactId>
             <version>${project.parent.version}</version>
-        </dependency>        <dependency>
+        </dependency>
+        <dependency>
             <groupId>com.sun.xml.stream</groupId>
             <artifactId>sjsxp</artifactId>
             <version>1.0</version>

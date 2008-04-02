@@ -117,6 +117,37 @@
             <groupId>com.sun.grizzly</groupId>
              <artifactId>grizzly-cometd</artifactId>
              <version>1.7-20080331.183613-27</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.grizzly</groupId>
+             <artifactId>grizzly-http</artifactId>
+             <version>${grizzly.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.grizzly</groupId>
+             <artifactId>grizzly-portunif</artifactId>
+             <version>${grizzly.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.grizzly</groupId>
+             <artifactId>grizzly-rcm</artifactId>
+             <version>${grizzly.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.grizzly</groupId>
+             <artifactId>grizzly-http-utils</artifactId>
+             <version>${grizzly.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.grizzly</groupId>
+             <artifactId>grizzly-framework</artifactId>
+             <version>${grizzly.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.glassfish</groupId>
