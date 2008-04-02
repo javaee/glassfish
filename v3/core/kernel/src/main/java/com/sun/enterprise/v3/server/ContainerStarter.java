@@ -96,15 +96,16 @@ public class ContainerStarter {
 
 
         Module[] modules = null;
+        ClassLoader containerClassLoader;
         // I do the container setup first so the code has a chance to set up
         // repositories which would allow access to the connector module.
         try {
 
             modules = sniffer.setup(containerHome, logger);
             if (modules!=null) {
-                for (Module module : modules) {
-                    snifferModule.addImport(module);
-                }
+                containerClassLoader = setContainerClassLoader(modules);
+            } else {
+                containerClassLoader = snifferModule.getClassLoader();
             }
         } catch(FileNotFoundException fnf) {
             logger.log(Level.SEVERE, fnf.getMessage());
@@ -123,25 +124,26 @@ public class ContainerStarter {
             try {
                 Inhabitant<? extends Container> provider = habitat.getInhabitant(Container.class, name);
                 if (provider==null) {
+                    try {
+                        Class<? extends Container> containerClass = (Class<? extends Container>) containerClassLoader.loadClass(name);
+                        if (containerClass!=null) {
+                            provider = habitat.getInhabitant(containerClass, null);
+                        }
+                    } catch (ClassNotFoundException e) {
+                        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                    }
+
                     logger.severe("Cannot find Container named " + sniffer.getModuleType());
                     logger.severe("Cannot start " + sniffer.getModuleType() + " container");
                     return null;
                 }
-                Thread.currentThread().setContextClassLoader(snifferModule.getClassLoader());
+                Thread.currentThread().setContextClassLoader(containerClassLoader);
                 if (provider!=null) {
-                    ContainerInfo info = new ContainerInfo(provider, sniffer);
+                    ContainerInfo info = new ContainerInfo(provider, sniffer, containerClassLoader);
 
                     ContainerRegistry registry = habitat.getComponent(ContainerRegistry.class);
                     registry.addContainer(name, info);
                     containers.add(info);
-
-                        info.setMainModule(snifferModule);
-                        
-//                    if (mainModule==null) {
-//                        info.setMainModule(snifferModule);
-//                    } else {
-//                        info.setMainModule(mainModule);
-//                    }
                 }
             } catch (ComponentException e) {
                 logger.log(Level.SEVERE, "Cannot create or inject Container", e);
@@ -152,6 +154,30 @@ public class ContainerStarter {
 
         }                                       
         return containers;
+    }
+
+    /**
+     * Sets the class loader associated with a container, this class loader will be used to
+     * load any classes and resources the container provides. This will also be used to set the context
+     * class loader.
+     *
+     * @param modules array of modules that are forming the container
+     * @return a class loader capable of loading classes from these modules
+     */
+    ClassLoader setContainerClassLoader(Module[] modules) {
+        if (modules==null) {
+            throw new IllegalArgumentException("passed null module list to setContainerClassLoader");
+        }
+        if (modules.length==1) {
+            // this is quite simple, I am going to return that module's class loader
+            return modules[0].getClassLoader();
+        } else {
+            List<ModuleDefinition> defs = new ArrayList<ModuleDefinition>(modules.length);
+            for (Module module : modules) {
+                defs.add(module.getModuleDefinition());
+            }
+            return modulesRegistry.getModulesClassLoader(modules[0].getClassLoader(), defs);
+        }
     }
 
 

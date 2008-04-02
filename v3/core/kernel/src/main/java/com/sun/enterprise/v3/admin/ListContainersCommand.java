@@ -28,6 +28,7 @@ import com.sun.enterprise.v3.data.ApplicationInfo;
 import com.sun.enterprise.v3.data.ContainerInfo;
 import com.sun.enterprise.v3.data.ContainerRegistry;
 import com.sun.enterprise.module.Module;
+import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.module.impl.ModuleImpl;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
@@ -50,6 +51,9 @@ public class ListContainersCommand implements AdminCommand {
 
     @Inject
     ContainerRegistry containerRegistry;
+
+    @Inject
+    ModulesRegistry modulesRegistry;
 
     @Inject
     Habitat habitat;
@@ -80,7 +84,7 @@ public class ListContainersCommand implements AdminCommand {
                     container.addProperty(
                             localStrings.getLocalString("status", "Status"),
                             localStrings.getLocalString("started", "Started"));
-                    Module connectorModule = containerInfo.getMainModule();
+                    Module connectorModule = modulesRegistry.find(containerInfo.getSniffer().getClass());
                     container.addProperty(localStrings.getLocalString("connector", "Connector"),
                             connectorModule.getModuleDefinition().getName() +
                             ":" + connectorModule.getModuleDefinition().getVersion());

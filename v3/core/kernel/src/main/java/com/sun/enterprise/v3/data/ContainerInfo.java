@@ -30,6 +30,7 @@ import org.glassfish.api.deployment.ApplicationContainer;
 import org.jvnet.hk2.component.Inhabitant;
 import com.sun.enterprise.v3.data.ApplicationInfo;
 import com.sun.enterprise.module.Module;
+import com.sun.enterprise.module.ModulesRegistry;
 
 
 import java.util.*;
@@ -53,8 +54,7 @@ public class ContainerInfo<T extends Container, U extends ApplicationContainer> 
     Map<String, ApplicationInfo> deployedApps = new HashMap<String, ApplicationInfo>();
     Map<WeakReference<Thread>, Set<Integer>> addedThreadLocals = new HashMap();
     Deployer deployer;
-    Module topModule;
-    ClassLoader mainClassLoader; // use to prevent gc of the main module class loader;
+    final ClassLoader mainClassLoader;
 
     /**
      * Creates a new ContractProvider info with references to the container, the sniffer
@@ -63,9 +63,10 @@ public class ContainerInfo<T extends Container, U extends ApplicationContainer> 
      * @param container instance of the container
      * @param sniffer sniffer associated with that container
      */
-    public ContainerInfo(Inhabitant<T> container, Sniffer sniffer) {
+    public ContainerInfo(Inhabitant<T> container, Sniffer sniffer, ClassLoader cloader) {
         this.container = container;
         this.sniffer = sniffer;
+        this.mainClassLoader = cloader;
     }
 
     /**
@@ -158,13 +159,8 @@ public class ContainerInfo<T extends Container, U extends ApplicationContainer> 
 
     }
 
-    public void setMainModule(Module module) {
-        this.topModule = module;
-        this.mainClassLoader = module.getClassLoader();
-    }
-
-    public Module getMainModule() {
-        return topModule;
+    public ClassLoader getClassLoader() {
+        return mainClassLoader;
     }
 
     /**

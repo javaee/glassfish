@@ -60,7 +60,7 @@ public class ASMain extends com.sun.enterprise.module.bootstrap.Main {
 
         switch (platform) {
             case Felix:
-                logger.info("Lanuching GlassFish on Apache Felix OSGi platform");
+                logger.info("Launching GlassFish on Apache Felix OSGi platform");
                 new ASMainFelix(logger, args).run();
                 break;
             case HK2:

@@ -110,11 +110,6 @@
         </dependency>
         <dependency>
             <groupId>org.glassfish.web</groupId>
-            <artifactId>webtier</artifactId>
-            <version>${project.parent.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.web</groupId>
             <artifactId>war-util</artifactId>
             <version>${project.parent.version}</version>
         </dependency>

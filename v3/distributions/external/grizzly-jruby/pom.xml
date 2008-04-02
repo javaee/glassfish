@@ -45,7 +45,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>grizzly-jruby-module</artifactId>
     <!-- Don't change packaging to bundle -->
-    <packaging>jar</packaging>
+    <packaging>hk2-jar</packaging>
     <version>${glassfish-jruby.version}</version>
     <name>grizzly-jruby adapter repackaged as OSGi and HK2 module</name>
     <description>JRUBY grizzly adapter for GlassFish v3</description>
@@ -82,48 +82,42 @@
     </developers>
     <build>
         <plugins>
+      <plugin>
+         <groupId>org.apache.maven.plugins</groupId>
+         <artifactId>maven-dependency-plugin</artifactId>
+         <executions>
+           <execution>
+             <id>unpack</id>
+             <phase>process-resources</phase>
+             <goals>
+               <goal>unpack</goal>
+             </goals>
+             <configuration>
+               <artifactItems>
+                 <artifactItem>
+                   <groupId>com.sun.grizzly</groupId>
+                   <artifactId>grizzly-jruby</artifactId>
+                   <version>${glassfish-jruby.version}</version>
+                   <type>jar</type>
+                   <overWrite>false</overWrite>
+                   <outputDirectory>${project.build.directory}/classes</outputDirectory>
+                 </artifactItem>
+               </artifactItems>
+             </configuration>
+           </execution>
+         </executions>
+       </plugin>
             <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
+                <groupId>com.sun.enterprise</groupId>
+                <artifactId>hk2-maven-plugin</artifactId>
                 <configuration>
-                    <instructions>
-                        <!-- embed all first level dependencies with
-                        groupId=com.sun.grizzly and artifactid=grizzly-jruby
-                        -->
-                        <Embed-Dependency>
-                            *;groupId=com.sun.grizzly;artifactId=grizzly-jruby;inline=true
-                        </Embed-Dependency>
-                        <!-- grizzly-jruby contains a class called com.sun.grizzly.standalone.JRuby.
-                        So, bundle plugin adds an export package header for com.sun.grizzly.standalone.
-                        We don't want that to be exported, because grizzly-module is already
-                        exporting that package. -->
-                        <Export-Package>com.sun.grizzly.jruby.*,!com.sun.grizzly.standalone</Export-Package>
-                        <Import-Package>*</Import-Package>
-                        <!-- Package everything from the embedded jar in the final bundle -->
-                        <_exportcontents>*</_exportcontents>
-                        <!-- !* matches with nothing, so no other class will be included in this bundle,
-                         other than what is specified above -->
-                        <Private-Package>!*</Private-Package>
-                        <!-- Make it an HK2 module, as GlassFish needs it to be HK2 module.
-                         This is needed because we don't want to change the packaging type to
-                         hk2-jar. -->
-                        <HK2-Bundle-Name>${groupId}:${artifactId}</HK2-Bundle-Name>
-                    </instructions>
+                    <archive>
+                        <manifestEntries>
+                            <Import-Package>org.jruby,org.jruby.exceptions,org.jruby.runtime,org.jruby.runtime.load,org.jruby.javasupport.util,org.jruby.runtime.builtin,org.jruby.javasupport,org.jruby.runtime.callback,org.jruby.ast.executable,org.jruby.libraries</Import-Package>
+                        </manifestEntries>
+                     </archive>
                 </configuration>
-                <!-- We don't use extensions as this interfers with
-                     hk2-maven-plugin and that results in hk2 artifacts
-                     being copied as .hk2-jar. Instead, we configure the
-                     plugin to run as part of package phase -->
-                <executions>
-                    <execution>
-                        <id>osgi-bundle</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>bundle</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
+            </plugin>            
         </plugins>
     </build>
     <dependencies>
@@ -155,5 +149,42 @@
             <artifactId>grizzly-module</artifactId>
             <version>${grizzly.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.sun.enterprise</groupId>
+            <artifactId>hk2</artifactId>
+            <version>${hk2.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.common</groupId>
+            <artifactId>glassfish-api</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.jruby</groupId>
+          <artifactId>jruby-complete</artifactId>
+          <version>${jruby.version}</version>
+          <scope>provided</scope>
+          <!--optional>true</optional>
+            <exclusions>
+                 <exclusion>
+                     <groupId>backport-util-concurrent</groupId>
+                     <artifactId>backport-util-concurrent</artifactId>
+                 </exclusion>
+                 <exclusion>
+                     <groupId>asm</groupId>
+                     <artifactId>asm</artifactId>
+                 </exclusion>
+            </exclusions-->
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.common</groupId>
+            <artifactId>common-util</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.core</groupId>
+            <artifactId>kernel</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>        
     </dependencies>
 </project>

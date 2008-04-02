@@ -180,7 +180,7 @@ public class ApplicationLoaderService extends ApplicationLifecycle
     }
 
 
-    private void processApplication(Application app, ApplicationRef appRef, 
+    public void processApplication(Application app, ApplicationRef appRef, 
         final Logger logger) {
 
         long operationStartTime = Calendar.getInstance().getTimeInMillis();

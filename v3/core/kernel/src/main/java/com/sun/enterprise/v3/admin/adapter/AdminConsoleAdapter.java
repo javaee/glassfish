@@ -31,6 +31,7 @@ import com.sun.enterprise.config.serverbeans.ServerTags;
 import com.sun.enterprise.config.serverbeans.SystemApplications;
 import com.sun.enterprise.v3.data.ApplicationRegistry;
 import com.sun.enterprise.v3.server.ServerEnvironment;
+import com.sun.enterprise.v3.services.impl.ApplicationLoaderService;
 import com.sun.grizzly.tcp.http11.GrizzlyAdapter;
 import com.sun.grizzly.tcp.http11.GrizzlyOutputBuffer;
 import com.sun.grizzly.tcp.http11.GrizzlyRequest;
@@ -53,6 +54,7 @@ import org.glassfish.api.container.Adapter;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PostConstruct;
+import org.jvnet.hk2.component.Habitat;
 
 /**
  * An HK-2 Service that provides the functionality so that admin console access is handled properly.
@@ -108,7 +110,10 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
     
     @Inject
     SystemApplications sysapps;
-        
+
+    @Inject
+    Habitat habitat;
+    
     private String statusHtml;
     private String initHtml;
 
@@ -184,18 +189,24 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
         else
             state = AdapterState.APPLICATION_NOT_INSTALLED;
     }
+
+
     
     private boolean appExistsInConfig() {
+        return getConfig()!=null;
+    }
+
+    private Application getConfig() {
         //no application-ref logic here -- that's on purpose for now
         for(Module m : sysapps.getModules()) {
             if (m instanceof Application) {
                 String name = ServerEnvironment.DEFAULT_ADMIN_CONSOLE_APP_NAME;
                 if (name.equals(m.getName())) {
-                    return (true);
+                    return (Application) m;
                 }
             }
         }
-        return ( false );
+        return ( null );
     }
     private void logRequest(GrizzlyRequest req) {
         log.info("AdminConsoleAdapter's STATE IS: " +  this.state);
@@ -370,6 +381,11 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
     
     private synchronized void handleInstalledButNotLoadedState(GrizzlyRequest req, GrizzlyResponse res) {
         //hook for Jerome
+        Application config = getConfig();
+        if (config==null) {
+            throw new IllegalStateException("handleInstalledButNotLoadedState called with no system app entry");
+        }
+        habitat.getComponent(ApplicationLoaderService.class).processApplication(config ,null, logger);
     }
     
     private void handleLoadedState() {

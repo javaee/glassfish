@@ -444,7 +444,7 @@ abstract public class ApplicationLifecycle {
                 ContainerInfo containerInfo = containerRegistry.getContainer(containerName);
                 ClassLoader original = Thread.currentThread().getContextClassLoader();
                 try {
-                    Thread.currentThread().setContextClassLoader(containerInfo.getMainModule().getClassLoader());
+                    Thread.currentThread().setContextClassLoader(containerInfo.getClassLoader());
                     Deployer deployer = getDeployer(containerInfo);
                     containerInfosByDeployers.put(deployer, containerInfo);
                     final MetaData metadata = deployer.getMetaData();
@@ -751,12 +751,12 @@ abstract public class ApplicationLifecycle {
         for (ContainerInfo containerInfo : containersInfo) {
             ClassLoader original = Thread.currentThread().getContextClassLoader();
             try {
-                Thread.currentThread().setContextClassLoader(containerInfo.getMainModule().getClassLoader());
+                Thread.currentThread().setContextClassLoader(containerInfo.getClassLoader());
                 Container container;
                 try {
                     container = containerInfo.getContainer();
                 } catch(Exception e) {
-                    logger.log(Level.SEVERE, "Cannot start container from module " +  containerInfo.getMainModule(),e);
+                    logger.log(Level.SEVERE, "Cannot start container  " +  containerInfo.getSniffer().getModuleType(),e);
                     return false;
                 }
                 Class<? extends Deployer> deployerClass = container.getDeployer();

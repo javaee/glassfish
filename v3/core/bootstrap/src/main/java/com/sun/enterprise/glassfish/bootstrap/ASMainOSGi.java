@@ -154,7 +154,7 @@ public abstract class ASMainOSGi {
         List<Repository> libs = new ArrayList<Repository>();
         // by default we add lib directory repo
         File libDir = new File(glassfishDir, "lib");
-        logger.info("Path to library directory is " + libDir);
+        logger.fine("Path to library directory is " + libDir);
         if (libDir.exists()) {
             Repository libRepo = new DirectoryBasedRepository("lib", libDir);
             try {
@@ -168,7 +168,7 @@ public abstract class ASMainOSGi {
         }
         // do we have a domain lib ?
         File domainlib = new File(domainDir, "lib");
-        logger.info("Path to domain library directory is " + domainlib);
+        logger.fine("Path to domain library directory is " + domainlib);
         if (domainlib.exists()) {
             Repository domainLib = new DirectoryBasedRepository("domnainlib", domainlib);
             try {
