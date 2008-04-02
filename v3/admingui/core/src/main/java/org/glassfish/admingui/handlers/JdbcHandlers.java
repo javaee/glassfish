@@ -51,7 +51,6 @@
 
 package org.glassfish.admingui.handlers;
 
-import com.sun.appserv.management.base.XTypes;
 import com.sun.jsftemplating.annotation.Handler;
 import com.sun.jsftemplating.annotation.HandlerInput;
 import com.sun.jsftemplating.annotation.HandlerOutput;
@@ -159,16 +158,14 @@ public class JdbcHandlers {
                     return;
                 }
                 jdbc.setPoolName(poolName);
-                //if(!AMXRoot.getInstance().isEE()){
+                if(!AMXRoot.getInstance().isEE()){
                     Boolean enabled = (Boolean) handlerCtx.getInputValue("enabled");
                     TargetUtil.setResourceEnabled(jdbc, "server", enabled); 
-                //}
+                }
                 GuiUtil.prepareSuccessful(handlerCtx);
             }else{
                  jdbc = AMXRoot.getInstance().getResourcesConfig().createJDBCResourceConfig(jndiName, poolName, null);
-                 /* TODO-V3
-                 JavaMailHandlers.createNewTargets(handlerCtx,  jndiName);
-                  */
+                 TargetUtil.createNewTargets(handlerCtx,  jndiName);
             }
             jdbc.setDescription((String)handlerCtx.getInputValue("description"));
             
@@ -176,6 +173,7 @@ public class JdbcHandlers {
 	    GuiUtil.handleException(handlerCtx, ex);
         }
     }
+    
     
     
     /**

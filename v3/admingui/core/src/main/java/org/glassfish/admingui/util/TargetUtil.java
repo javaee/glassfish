@@ -56,6 +56,7 @@ import com.sun.appserv.management.config.Enabled;
 import com.sun.appserv.management.config.StandaloneServerConfig;
 import com.sun.appserv.management.config.ServerRefConfig;
 import com.sun.enterprise.util.SystemPropertyConstants; 
+import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
 
 
 public class TargetUtil {
@@ -321,7 +322,19 @@ public class TargetUtil {
             }
             target.removeDeployedItemRefConfig(name);
 	}
-     
+    
+        
+        public static void createNewTargets(HandlerContext handlerCtx, String name) {
+        Boolean enabled = (Boolean)handlerCtx.getInputValue("enabled");
+        String[] selTargets = new String[] {"server"};
+        if (AMXRoot.getInstance().isEE())
+            selTargets = (String[])handlerCtx.getInputValue("targets");
+        List<String> targets = Arrays.asList(selTargets);
+        for(String targetName: targets) {
+            TargetUtil.createResourceRef(name, targetName, enabled);
+        }
+    }
+        
      /*
       * return the enabled status suitable to display at the top level applications and resources list page.
       */
@@ -354,7 +367,7 @@ public class TargetUtil {
         String appName = app.getName();
         return getDeployedTargets(appName, isApp);
     }
-        
+    
     public static List<String> getDeployedTargets(String appName, boolean isApp){
         List<String> targetList = new ArrayList();
         String objectName = (isApp) ?  "com.sun.appserv:type=applications,category=config" : "com.sun.appserv:type=resources,category=config";
