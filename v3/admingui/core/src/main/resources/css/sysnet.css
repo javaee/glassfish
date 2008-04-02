@@ -41,7 +41,7 @@ border:0pt none;
 height:2px;
 padding:0pt;
 }
-.littlearrows{background:url("/sysnet/images/ar_dbl_blue.png") no-repeat top left;padding-left:10px
+.littlearrows{background:url("#{request.contextPath}/sysnet/images/ar_dbl_blue.png") no-repeat top left;padding-left:10px
 }
 .javaeeStackContent {
   padding-top : 2px;
