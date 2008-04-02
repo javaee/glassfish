@@ -313,7 +313,7 @@ public class DeploymentHandler {
                 
                 // In V3, use DF to do disable or enable
                 if (enabled)
-                    df.disable(df.createTargets(targetNames), appName);
+                    df.enable(df.createTargets(targetNames), appName);
                 else
                     df.disable(df.createTargets(targetNames), appName); 
                 
