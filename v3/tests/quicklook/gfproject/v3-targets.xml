@@ -52,26 +52,20 @@
   </condition>
 </target>
 
-<target name="start-server">
+<target name="start-server" depends="setOSConditions">
+
     <echo>+-----------------------------+</echo>
     <echo>|                             |</echo>
     <echo>| S T A R T I N G   GLASSFISH |</echo>
     <echo>|                             |</echo>
     <echo>+-----------------------------+</echo>
-    <condition property="isWindows">
-        <os family="windows"/>
-    </condition>
-    
-    <condition property="isUNIX">
-        <os family="unix"/>
-    </condition>
-    
+
     <antcall target="start-server-unix"/>
     <antcall target="start-server-windows"/>
 </target>
 
-<target name="start-server-unix" if="isUNIX">
-    <exec executable="${glassfish.home}/bin/asadmin" spawn="true">        
+<target name="start-server-unix" if="isUnix">
+    <exec executable="${glassfish.home}/bin/asadmin">        
         <arg value="start-domain"/>
     </exec>
 
@@ -79,7 +73,7 @@
 
 <target name="start-server-windows" if="isWindows">
     
-    <exec executable="cmd" spawn="true">	
+    <exec executable="cmd">	
         <arg value="/c"/>
         <arg value="${glassfish.home}/bin/asadmin"/>
         <arg value="start-domain"/>
@@ -88,18 +82,19 @@
 </target>
 
 <target name="stop-server" depends="setOSConditions">
-    <echo message="stopping server"/>
     <antcall target="stop-server-unix"/>
     <antcall target="stop-server-windows"/>
 </target>
 
-<target name="stop-server-unix" if="isUNIX">
+<target name="stop-server-unix" if="isUnix">
+    <echo message="stopping server on unix ..."/>
     <exec executable="${glassfish.home}/bin/asadmin">        
         <arg value="stop-domain"/>
     </exec>
 </target>
 
 <target name="stop-server-windows" if="isWindows">
+    <echo message="stopping server on windows ..."/>
     <exec executable="cmd" >
         <arg value="/c"/>
         <arg value="${glassfish.home}/bin/asadmin"/>
