@@ -52,7 +52,7 @@
   </condition>
 </target>
 
-<target name="start-server-common">
+<target name="start-server">
     <echo>+-----------------------------+</echo>
     <echo>|                             |</echo>
     <echo>| S T A R T I N G   GLASSFISH |</echo>
@@ -85,6 +85,12 @@
         <arg value="start-domain"/>
     </exec>
     
+</target>
+
+<target name="stop-server" depends="setOSConditions">
+    <echo message="stopping server"/>
+    <antcall target="stop-server-unix"/>
+    <antcall target="stop-server-windows"/>
 </target>
 
 <target name="stop-server-unix" if="isUNIX">
