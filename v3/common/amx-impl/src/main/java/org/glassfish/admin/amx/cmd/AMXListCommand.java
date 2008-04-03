@@ -44,14 +44,13 @@ import org.glassfish.api.ActionReport.ExitCode;
 import com.sun.appserv.management.util.jmx.JMXUtil;
 import com.sun.appserv.management.util.misc.StringUtil;
 
-
-@Service(name="amx-list")   // must match the value of amx_list.command in LocalStrings.properties
-@I18n("amx_list.command")
-@Scoped(PerLookup.class)
-
 /**
     List all the AMX MBeans currently registered in the MBeanServer
  */
+
+@Service(name="amx-list", metadata="mode=debug")   // must match the value of amx_list.command in LocalStrings.properties
+@I18n("amx_list.command")
+@Scoped(PerLookup.class)
 public class AMXListCommand extends AMXCommandBase implements AdminCommand
 {
     public AMXListCommand()

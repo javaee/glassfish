@@ -61,7 +61,7 @@ import org.glassfish.admin.amx.loader.AMXStartupService;
     Unlike most commands, this one is intentionally stateful (instantiated onlly once)
     
  */
-@Service(name="amx")   // must match the value of amx.command in LocalStrings.properties
+@Service(name="amx", metadata="mode=debug")   // must match the value of amx.command in LocalStrings.properties
 @I18n("amx.command")
 public final class AMXCommand extends AMXCommandBase implements AdminCommand
 {

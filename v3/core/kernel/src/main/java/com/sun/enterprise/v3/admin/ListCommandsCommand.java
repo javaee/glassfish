@@ -23,6 +23,7 @@
 
 package com.sun.enterprise.v3.admin;
 
+import com.sun.enterprise.module.common_impl.Tokenizer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -42,6 +43,7 @@ import org.jvnet.hk2.component.Habitat;
 @Service(name="list-commands")
 public class ListCommandsCommand implements AdminCommand {
 
+    private static final String DEBUG_PAIR = "mode=debug";
     @Inject
     Habitat habitat;
 
@@ -68,9 +70,42 @@ public class ListCommandsCommand implements AdminCommand {
         List<String> names = new ArrayList<String>();
         for (AdminCommand command : habitat.getAllByContract(AdminCommand.class)) {
             String name = command.getClass().getAnnotation(Service.class).name();
-            names.add(name);
+            if (debugCommand(command)) { //it's a debug command, add only if debug is set
+                if (debugSet())
+                    names.add(name);                
+            } else { //always add non-debug commands
+                names.add(name);
+            }
         }
         Collections.sort(names);
         return (names);
+    }
+    
+    private static boolean debugCommand(AdminCommand command) {
+        String metadata = command.getClass().getAnnotation(Service.class).metadata();
+        boolean dc = false;
+        if (metadata != null) {
+            if (metadataContains(metadata, DEBUG_PAIR)) {
+                dc = true;
+            }
+        }
+        return ( dc );
+    }
+    
+    private static boolean metadataContains(String md, String nev) {
+        boolean contains = false;
+        Tokenizer st = new Tokenizer(md, ","); //TODO
+        for (String pair : st) {
+            if (pair.trim().equals(nev)) {
+                contains = true;
+                break;
+            }
+        }
+        return ( contains );
+    }
+    
+    private static boolean debugSet() { //TODO take into a/c debug-enabled?
+        String s = System.getenv("AS_DEBUG");
+        return ( Boolean.valueOf(s) );
     }
 }

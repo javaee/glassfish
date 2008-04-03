@@ -20,7 +20,7 @@ import java.io.PrintStream;
  *
  * @author Kohsuke Kawaguchi
  */
-@Service(name="dump-hk2")
+@Service(name="dump-hk2", metadata="mode=debug")
 public class DumpHK2Command implements AdminCommand {
 
     @Inject
