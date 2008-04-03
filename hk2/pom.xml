@@ -155,6 +155,7 @@
         <module>core</module>
         <module>config</module>
         <module>config-generator</module>
+        <module>external</module>
         <!--module>toy-http-server</module-->
         <module>hk2</module>
         <module>hk2-maven</module>
