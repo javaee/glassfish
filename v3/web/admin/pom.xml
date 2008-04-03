@@ -67,7 +67,13 @@
                     <include>**/*.xsd</include>
                 </includes>
             </resource>
-        </resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>**/*.1</include>
+                </includes>
+            </resource>
+          </resources>
     </build>
     
     <dependencies>

@@ -1,0 +1,348 @@
+
+Administration Commands;                 create-virtual-server(1)
+
+NAME
+     create-virtual-server - creates the named virtual server
+
+SYNOPSIS
+     create-virtual-server
+     [--terse={true|false}][ --echo={true|false} ]
+     [ --interactive={true|false} ] [ --host  host]
+     [--port port] [--secure| -s ] [ --user  admin_user]
+     [--passwordfile filename] [--help]
+     [ --target  server]
+     --hosts hosts [--httplisteners http_listeners]
+     [--defaultwebmodule default_web_module]
+     [--state on] [--logfile log_file]
+     [--property (name=value)[:name=value]*]
+     virtual_server_id
+
+DESCRIPTION
+     The create-virtual-server command creates the named  virtual
+     server. Virtualization in the Application Server allows mul-
+     tiple URL domains to be served by a single HTTP server  pro-
+     cess  that  is  listening on multiple host addresses. If the
+     application is available at two virtual servers, they  still
+     share the same physical resource pools.
+
+     This command is supported in remote mode only.
+
+OPTIONS
+     -t --terse
+
+         Indicates that any output data  must  be  very  concise,
+         typically avoiding human-friendly sentences and favoring
+         well-formatted data for consumption by a script. Default
+         is false.
+
+     -e --echo
+         Setting to true will echo the command line statement  on
+         the standard output. Default is false.
+
+     -I --interactive
+
+         If set to true (default),  only  the  required  password
+         options are prompted.
+
+     -H --host
+         The machine name where the domain administration  server
+         is running. The default value is localhost.
+
+Java EE 5           Last change: 30 Jan 2007                    1
+
+Administration Commands;                 create-virtual-server(1)
+
+     -p --port
+
+         The HTTP/S port for administration. This is the port  to
+         which  you  should point your browser in order to manage
+         the domain. For example, http://localhost:4848.
+
+         The default port number is 4848.
+
+     -s --secure
+         If set to true, uses SSL/TLS  to  communicate  with  the
+         domain administration server.
+
+     -u --user
+
+         The authorized domain administration server  administra-
+         tive username.
+
+         If you have authenticated to a domain using the  asadmin
+         login  command,  then  you  need  not specify the --user
+         option  on  subsequent  operations  to  this  particular
+         domain.
+
+     --passwordfile
+         The --passwordfile option specifies the name,  including
+         the full path, of a file containing the password entries
+         in a specific format. The entry for  the  password  must
+         have  the AS_ADMIN_ prefix followed by the password name
+         in uppercase letters.
+
+         For example, to specify the domain administration server
+         password,  use  an  entry  with  the  following  format:
+         AS_ADMIN_PASSWORD=password, where password is the actual
+         administrator  password.  Other  passwords  that  can be
+         specified        include        AS_ADMIN_MAPPEDPASSWORD,
+         AS_ADMIN_USERPASSWORD, and AS_ADMIN_ALIASPASSWORD.
+
+         All remote commands must specify the admin  password  to
+         authenticate to the domain administration server, either
+         through --passwordfile or  asadmin  login,  or  interac-
+         tively  on the command prompt. The asadmin login command
+         can be used only to  specify  the  admin  password.  For
+         other  passwords, that must be specified for remote com-
+         mands, use the --passwordfile or enter them at the  com-
+         mand prompt.
+
+         If you have authenticated to a domain using the  asadmin
+         login command, then you need not specify the admin pass-
+         word through the  --passwordfile  option  on  subsequent
+         operations  to  this particular domain. However, this is
+
+Java EE 5           Last change: 30 Jan 2007                    2
+
+Administration Commands;                 create-virtual-server(1)
+
+         applicable only to AS_ADMIN_PASSWORD  option.  You  will
+         still  need to provide the other passwords, for example,
+         AS_ADMIN_USERPASSWORD, as and when required  by  indivi-
+         dual commands, such as update-file-user.
+
+         For security reasons, passwords specified as an environ-
+         ment variable will not be read by asadmin.
+
+         The  default  value   for   AS_ADMIN_MASTERPASSWORD   is
+         changeit.
+
+     --help
+
+         Displays the help text for the command.
+
+     --target
+         This option specifies  the  target  for  which  you  are
+         creating the virtual server. Valid values are:
+
+         server
+
+             Creates the virtual server for  the  default  server
+             instance. This is the default value.
+
+         configuration_name
+             Creates the virtual server for the named  configura-
+             tion
+
+         cluster_name
+
+             Creates the virtual server for every server instance
+             in the cluster
+
+         instance_name
+             Creates the virtual server for a  particular  server
+             instance
+
+             This option is valid only in domains that  are  con-
+             figured  to  support  clusters, such as domains that
+             are created with the cluster profile or  the  enter-
+             prise profile.
+
+     --hosts
+
+         A comma-separated (,) list of values allowed in the host
+         request  header  to  select  the current virtual server.
+
+Java EE 5           Last change: 30 Jan 2007                    3
+
+Administration Commands;                 create-virtual-server(1)
+
+         Each virtual server that is configured to the same  con-
+         nection group must have a unique host for that group.
+
+     --httplisteners
+
+         A  comma-separated  (,)  list  of  HTTP  listener   IDs.
+         Required  only  for  a  virtual  server  that is not the
+         default virtual server.
+
+     --defaultwebmodule
+         The standalone web module associated with  this  virtual
+         server by default.
+
+     --state
+
+         Determines whether a virtual server is  active  (on)  or
+         inactive (off or disabled). Default is active (on). When
+         inactive, the virtual server does not service requests.
+
+     --logfile
+         Name of the file where  log  entries  for  this  virtual
+         server are to be written. By default, this is the server
+         log.
+
+     --property
+
+         Optional attribute name/value pairs for configuring  the
+         virtual server. The following properties are available:
+
+         docroot
+             Absolute path to root document directory for server.
+
+         accesslog
+
+             Absolute path to server access logs.
+
+         sso-enabled
+             If false, single sign-on is disabled for  this  vir-
+             tual  server, and users must authenticate separately
+             to every application on the virtual  server.  Single
+             sign-on   across  applications  on  the  Application
+             Server is supported by servlets and JSP pages.  This
+             feature  allows  multiple  applications that require
+             the same user  sign-on  information  to  share  this
+             information,  rather  than  have  the  user  sign on
+
+Java EE 5           Last change: 30 Jan 2007                    4
+
+Administration Commands;                 create-virtual-server(1)
+
+             separately for each application. The  default  value
+             is true.
+
+         sso-max-inactive-seconds
+
+             Specifies the number of seconds after which a user's
+             single  sign-on  record becomes eligible for purging
+             if no client  activity  is  received.  Since  single
+             sign-on  applies  across several applications on the
+             same virtual server, access to any of  the  applica-
+             tions  keeps  the single sign-on record active.  The
+             default value is 300  seconds  (5  minutes).  Higher
+             values provide longer single sign-on persistence for
+             users, but at the expense of more memory use on  the
+             server.
+
+         sso-reap-interval-seconds
+             Specifies the number of seconds  between  purges  of
+             expired  single  sign-on records.  The default value
+             is 60.
+
+         default-web-xml
+
+             Indicates the location of the file  default-web.xml.
+             The           default           location          is
+             $[S1AS_HOME]/domains/domain1/config/default-web.xml.
+
+         allowLinking
+             If the value of this  property  is  true,  resources
+             that  are  symbolic links will be served for all web
+             applications deployed on this virtual server.  Indi-
+             vidual web applications may override this setting by
+             using the property allowLinking under the   sun-web-
+             app element in the sun-web.xml file:
+
+               <sun-web-app>
+               <property name="allowLinking" value="[true|false]"/>
+               </sun-web-app>
+
+             The default value is true.
+
+         accessLogWriteInterval
+
+             Indicates the number of seconds before the log  will
+             be  written  to  the disk. The access log is written
+             when  the  buffer  is  full  or  when  the  interval
+             expires.  If  the value is 0 (zero), then the buffer
+             is always written even if it is not full. This means
+
+Java EE 5           Last change: 30 Jan 2007                    5
+
+Administration Commands;                 create-virtual-server(1)
+
+             that  each time the server is accessed, the log mes-
+             sage is stored directly to the file.
+
+         accessLogBufferSize
+
+             Specifies the size, in bytes, of  the  buffer  where
+             access log calls are stored.
+
+         allowRemoteAddress
+             This is a comma-separated list of regular expression
+             patterns  to which the remote client's IP address is
+             compared. If this property is specified, the  remote
+             address  must match for this request to be accepted.
+             If this property is not specified, all requests will
+             be  accepted  unless  the  remote  address matches a
+             denyRemoteAddress pattern.  The  default  value  for
+             this property is null.
+
+         denyRemoteAddress
+
+             This is a comma-separated list of regular expression
+             patterns  to which the remote client's IP address is
+             compared. If this property is specified, the  remote
+             address  must  not  match  for  this  request  to be
+             accepted. If this property is not specified, request
+             acceptance  is governed solely by the allowRemoteAd-
+             dress property. The default value for this  property
+             is null.
+
+         allowRemoteHost
+             This is a comma-separated list of regular expression
+             patterns  to which the remote client's host name (as
+             returned                                          by
+             java.net.Socket.getInetAddress().getHostName())   is
+             compared. If this property is specified, the  remote
+             host   name  must  match  for  this  request  to  be
+             accepted. If this property  is  not  specified,  all
+             requests  will  be  accepted  unless the remote host
+             name matches a denyRemoteHost pattern.  The  default
+             value for this property is null.
+
+         denyRemoteHost
+
+             This is a comma-separated list of regular expression
+             patterns  to which the remote client's host name (as
+             returned                                          by
+             java.net.Socket.getInetAddress().getHostName())   is
+             compared. If this property is specified, the  remote
+
+Java EE 5           Last change: 30 Jan 2007                    6
+
+Administration Commands;                 create-virtual-server(1)
+
+             host  name  must  not  match  for this request to be
+             accepted. If this property is not specified, request
+             acceptance is governed solely by the allowRemoteHost
+             property. The default value  for  this  property  is
+             null.
+
+OPERANDS
+     virtual_server_id
+
+         Identifies the unique ID for the virtual  server  to  be
+         created. This ID cannot begin with a number.
+
+EXAMPLES
+     Example 1 Using the create-virtual-server command
+
+     The following command creates a virtual  server  named  sam-
+     pleServer:
+
+       asadmin> create-virtual-server --user admin1
+       --passwordfile passwords.txt --hosts pigeon,localhost sampleServer
+       Command create-virtual-server executed successfully.
+
+EXIT STATUS
+     0                           command executed successfully
+
+     1                           error in executing the command
+
+SEE ALSO
+     delete-virtual-server(1),  list-virtual-servers(1),  create-
+     http-listener(1)
+
+Java EE 5           Last change: 30 Jan 2007                    7
+

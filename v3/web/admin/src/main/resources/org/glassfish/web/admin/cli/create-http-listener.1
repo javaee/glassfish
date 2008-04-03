@@ -1,0 +1,251 @@
+
+Administration Commands                   create-http-listener(1)
+
+NAME
+     create-http-listener - adds a new HTTP listener socket
+
+SYNOPSIS
+     create-http-listener
+     [--terse={true|false}][ --echo={true|false} ]
+     [ --interactive={true|false} ] [ --host  host]
+     [--port port] [--secure| -s ] [ --user  admin_user]
+     [--passwordfile filename] [--help]
+      --listeneraddress  address --listenerport listener_port
+     --defaultvs virtual_server [--servername server_name]
+     [--acceptorthreads acceptor-threads] [--xpowered={true|false}]
+     [ --redirectport  redirect_port] [--securityenabled={true|false}]
+     [ --enabled ={true|false}] [ --target  server] listener_id
+
+DESCRIPTION
+     The create-http-listener command creates an  HTTP  listener.
+     This command is supported in remote mode only.
+
+     Note -
+
+       If  you  edit  the  special  HTTP  listener  named  admin-
+       listener,  you  must restart the server for the changes to
+       take effect. The Administration Console does not tell  you
+       that a restart is required in this case.
+
+OPTIONS
+     -t --terse
+
+         Indicates that any output data  must  be  very  concise,
+         typically avoiding human-friendly sentences and favoring
+         well-formatted data for consumption by a script. Default
+         is false.
+
+     -e --echo
+         Setting to true will echo the command line statement  on
+         the standard output. Default is false.
+
+     -I --interactive
+
+         If set to true (default),  only  the  required  password
+         options are prompted.
+
+     -H --host
+         The machine name where the domain administration  server
+         is running. The default value is localhost.
+
+Java EE 5           Last change: 15 May 2007                    1
+
+Administration Commands                   create-http-listener(1)
+
+     -p --port
+
+         The HTTP/S port for administration. This is the port  to
+         which  you  should point your browser in order to manage
+         the domain. For example, http://localhost:4848.
+
+         The default port number is 4848.
+
+     -s --secure
+         If set to true, uses SSL/TLS  to  communicate  with  the
+         domain administration server.
+
+     -u --user
+
+         The authorized domain administration server  administra-
+         tive username.
+
+         If you have authenticated to a domain using the  asadmin
+         login  command,  then  you  need  not specify the --user
+         option  on  subsequent  operations  to  this  particular
+         domain.
+
+     --passwordfile
+         The --passwordfile option specifies the name,  including
+         the full path, of a file containing the password entries
+         in a specific format. The entry for  the  password  must
+         have  the AS_ADMIN_ prefix followed by the password name
+         in uppercase letters.
+
+         For example, to specify the domain administration server
+         password,  use  an  entry  with  the  following  format:
+         AS_ADMIN_PASSWORD=password, where password is the actual
+         administrator  password.  Other  passwords  that  can be
+         specified        include        AS_ADMIN_MAPPEDPASSWORD,
+         AS_ADMIN_USERPASSWORD, and AS_ADMIN_ALIASPASSWORD.
+
+         All remote commands must specify the admin  password  to
+         authenticate to the domain administration server, either
+         through --passwordfile or  asadmin  login,  or  interac-
+         tively  on the command prompt. The asadmin login command
+         can be used only to  specify  the  admin  password.  For
+         other  passwords, that must be specified for remote com-
+         mands, use the --passwordfile or enter them at the  com-
+         mand prompt.
+
+         If you have authenticated to a domain using the  asadmin
+         login command, then you need not specify the admin pass-
+         word through the  --passwordfile  option  on  subsequent
+         operations  to  this particular domain. However, this is
+
+Java EE 5           Last change: 15 May 2007                    2
+
+Administration Commands                   create-http-listener(1)
+
+         applicable only to AS_ADMIN_PASSWORD  option.  You  will
+         still  need to provide the other passwords, for example,
+         AS_ADMIN_USERPASSWORD, as and when required  by  indivi-
+         dual commands, such as update-file-user.
+
+         For security reasons, passwords specified as an environ-
+         ment variable will not be read by asadmin.
+
+         The  default  value   for   AS_ADMIN_MASTERPASSWORD   is
+         changeit.
+
+     --help
+
+         Displays the help text for the command.
+
+     --listeneraddress
+         The IP address or the hostname (resolvable by DNS).
+
+     --listenerport
+
+         The port number to create the listen  socket  on.  Legal
+         values  are  1-65535.  On  UNIX,  creating  sockets that
+         listen on ports 1-1024  requires  superuser  privileges.
+         Configuring  an  SSL listen socket to listen on port 443
+         is recommended.
+
+     --defaultvs
+         The ID attribute of the default virtual server for  this
+         listener.
+
+     --servername
+
+         Tells the server what to put in the host name section of
+         any  URLs  it sends to the client. This affects URLs the
+         server automatically generates; it  doesn't  affect  the
+         URLs  for  directories  and  files stored in the server.
+         This name should be the alias name if your  server  uses
+         an alias.  If a colon and port number are appended, that
+         port will be used in URLs that the server sends  to  the
+         client.
+
+     --acceptorthreads
+         The number of acceptor threads for the listener  socket.
+         The recommended value is the number of processors in the
+         machine. The default value is 1.
+
+Java EE 5           Last change: 15 May 2007                    3
+
+Administration Commands                   create-http-listener(1)
+
+     --xpowered
+
+         If set to true, adds the X-Powered-By:  Servlet/2.4  and
+         X-Powered-By:   JSP/2.0   headers   to  the  appropriate
+         responses. The Servlet 2.4 specification defines the  X-
+         Powered-By: Servlet/2.4 header, which containers may add
+         to servlet-generated responses. Similarly, the  JSP  2.0
+         specification  defines the X-Powered-By: JSP/2.0 header,
+         which containers may add to responses that use JSP tech-
+         nology.   The goal of these headers is to aid in gather-
+         ing statistical data  about the use of Servlet  and  JSP
+         technology.
+
+     --redirectport
+         This option is valid only in domains that are configured
+         to  support  clusters,  such as domains that are created
+         with the cluster profile or the enterprise profile. Port
+         number for redirects. If the HTTP listener is supporting
+         non-SSL requests, and a request is received for which  a
+         matching security-constraint requires SSL transport, the
+         Application  Server  will  automatically  redirect   the
+         request to this port number.
+
+     --securityenabled
+
+         If set to true, the HTTP listener runs SSL. You can turn
+         SSL2 or SSL3 ON or OFF and set ciphers using an SSL ele-
+         ment. The security setting globally enables or  disables
+         SSL  by  making  certificates  available  to  the server
+         instance. The default value is false.
+
+     --enabled
+         If set to true, the listener is enabled at runtime.
+
+     --target
+
+         This option is valid only in domains that are configured
+         to  support  clusters,  such as domains that are created
+         with the cluster  profile  or  the  enterprise  profile.
+         Specifies the target for which you are creating the HTTP
+         listener. Valid values are
+
+         server
+             Creates the listener for the default server instance
+             server and is the default value.
+
+Java EE 5           Last change: 15 May 2007                    4
+
+Administration Commands                   create-http-listener(1)
+
+         configuration_name
+
+             Creates the listener for the named configuration.
+
+         cluster_name
+             Creates the listener for every  server  instance  in
+             the cluster.
+
+         stand-alone_instance_name
+
+             Creates the listener  for  a  particular  standalone
+             server instance.
+
+OPERANDS
+     listener_id                 The  listener  ID  of  the  HTTP
+                                 listener.
+
+EXAMPLES
+     Example 1 Using the create-http-listener command
+
+     The following command creates an HTTP  listener  named  sam-
+     pleListener  that  uses  a  nondefault  number  of  acceptor
+     threads and is not enabled at runtime:
+
+       asadmin> create-http-listener --user admin1
+       --passwordfile passwords.txt --host host1 --port 4848
+       --listeneraddress 0.0.0.0 --listenerport 7272
+       --defaultvs server --servername host1.sun.com
+       --acceptorthreads 100 --securityenabled=false
+       --enabled=false sampleListener
+       Command create-http-listener executed successfully.
+
+EXIT STATUS
+     0                           command executed successfully
+
+     1                           error in executing the command
+
+SEE ALSO
+     delete-http-listener(1),   list-http-listeners(1),   create-
+     virtual-server(1), create-ssl(1)
+
+Java EE 5           Last change: 15 May 2007                    5
+
