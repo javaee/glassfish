@@ -68,16 +68,17 @@
                 transactionIsolationLevel => $attribute{transactionIsolationLevel}
                 isIsolationLevelGuaranteed => $attribute{isIsolationLevelGuaranteed});
         />
-#include "shared/restart.inc"        
+#include "/shared/restart.inc"        
     <sun:html id="html2">
         <sun:head id="propertyhead" title="$resource{i18n.jdbcConnectionPool.editPageTitle}" >
             <sun:script url="/resource/js/restart.js" />
+            <sun:script url="/resource/js/adminjsf.js" />
         </sun:head>
         <sun:body id="body3" onLoad="javascript: synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
             <sun:form id="propertyForm">
-#include treeBreadcrumbs.inc
-<!--#include "resourceNode/jdbcConnectionPoolTabs.inc"-->
-#include "alertMsg.inc"
+#include /treeBreadcrumbs.inc
+#include "/resourceNode/jdbcConnectionPoolTabs.inc"
+#include "/alertMsg.inc"
                 <!-- Page Title -->
                 <sun:title id="propertyContentPage" title="$resource{i18n.jdbcConnectionPool.editPageTitle}" 
                     helpText="$resource{i18n.jdbcConnection.editPageHelp}">
@@ -111,7 +112,7 @@
                     </sun:button>
                     <!facet pageButtonsTop>
                     <sun:panelGroup id="topButtons">
-#include "resourceNode/jdbcConnectionPoolEditButtons.inc"
+#include "/resourceNode/jdbcConnectionPoolEditButtons.inc"
                     </sun:panelGroup>
                     </facet>                     
                 </sun:title>
@@ -137,7 +138,7 @@
 
 			<!-- -------------------- Pool Settings ------------ -->
                         <sun:propertySheetSection id="poolSettingsPropertySheet" label="$resource{i18n.jdbcPool.poolSettings}">
-#include "resourceNode/poolPropertySheet1.inc"
+#include "/resourceNode/poolPropertySheet1.inc"
                             "<br /><br />
                         </sun:propertySheetSection>
 
@@ -201,7 +202,7 @@
                 <sun:title id="title2" >
                 <!facet pageButtonsBottom >
                     <sun:panelGroup id="bottomButtons">
-#include "resourceNode/jdbcConnectionPoolEditButtons.inc"
+#include "/resourceNode/jdbcConnectionPoolEditButtons.inc"
                     </sun:panelGroup>
                     </facet>                     
                 </sun:title>
