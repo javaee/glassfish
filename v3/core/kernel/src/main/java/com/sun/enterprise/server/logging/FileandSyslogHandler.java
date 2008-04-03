@@ -207,6 +207,7 @@ public class FileandSyslogHandler extends StreamHandler implements PostConstruct
                     rotationLimitAttrValue.intValue());
         }
 
+        setLevel( Level.ALL );
         String formatterName = manager.getProperty(cname + ".formatter");
         if (formatterName==null || UniformLogFormatter.class.getName().equals(formatterName)) {
 
