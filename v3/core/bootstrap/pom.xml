@@ -96,7 +96,6 @@
     </build>
     <dependencies>
         <dependency>
-            <!-- can't depend on com.sun.enterprise:hk2 because that would remove hk2 jars from Class-Path, so our Main class will fail to load. -->
             <groupId>com.sun.enterprise</groupId>
             <artifactId>hk2</artifactId>
             <version>${hk2.version}</version>
