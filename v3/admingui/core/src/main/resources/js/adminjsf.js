@@ -974,7 +974,6 @@ function guiValidateWithDropDown(reqMsg,reqInt, reqPort, reqMsgSelect){
         component = selectFields[i];
 	// Find the styleClass for this input
 	styleClass = admingui.util.getWoodstockProp(selectFields[i], "className");
-	alert("sc = " + styleClass);
         if (styleClass == null || styleClass == '') {
             continue;
         }
