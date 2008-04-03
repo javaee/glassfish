@@ -26,6 +26,8 @@ package com.sun.enterprise.config.serverbeans;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.List;
 
 /**
@@ -33,6 +35,7 @@ import java.util.List;
  */
 public final class ConfigBeansUtilities {
 
+    
     // static methods only
     private ConfigBeansUtilities() {
     }
@@ -178,6 +181,100 @@ public final class ConfigBeansUtilities {
                 || v.equals("yes")
                 || v.equals("on")
                 || v.equals("1"));
+    }
+    
+    /** Returns the list of system-applications that are referenced from the given server.
+     *  A server references an application, if the server has an element named
+     *  &lt;application-ref> in it that points to given application. The given server
+     *  is a &lt;server> element inside domain.
+     *  
+     * @param sn the string denoting name of the server
+     * @return List of system-applications for that server, an empty list in case there is none
+     */
+    public static List<Application> getSystemApplicationsReferencedFrom(Domain d, String sn) {
+        if (d == null || sn == null)
+            throw new IllegalArgumentException("Null argument");
+        List<Application> allApps = getAllDefinedSystemApplications(d);
+        if (allApps.size() == 0)
+            return (allApps); //if there are no sys-apps, none can reference one :)
+        //allApps now contains ALL the system applications
+        Server s = getServerNamed(sn, d);
+        List<Application> referencedApps = new ArrayList<Application>();
+        List<ApplicationRef> appsReferenced = s.getApplicationRef();
+        for (ApplicationRef ref : appsReferenced) {
+            for (Application app : allApps) {
+                if (ref.getRef().equals(app.getName())) {
+                    referencedApps.add(app);
+                }
+            }
+        }
+        return ( referencedApps );
+    }
+    
+    public static Application getSystemApplicationReferencedFrom(Domain d, String sn, String appName) {
+        //returns null in case there is none
+        List<Application> allApps = getSystemApplicationsReferencedFrom(d, sn);
+        for (Application app : allApps) {
+            if (app.getName().equals(appName)) {
+                return ( app );
+            }
+        }
+        return ( null );
+    }
+    public static boolean isNamedSystemApplicationReferencedFrom(Domain d, String appName, String serverName) {
+        List <Application> referencedApps = getSystemApplicationsReferencedFrom(d, serverName);
+        for (Application app : referencedApps) {
+            if (app.getName().equals(appName))
+                return ( true );
+        }
+        return ( false );
+    }
+    
+    public static Server getServerNamed(String name, Domain d) {
+        if (d == null || d.getServers() == null || name == null)
+            throw new IllegalArgumentException ("Either domain is null or no <servers> element");
+        List<Server> servers = d.getServers().getServer();
+        for (Server s : servers) {
+            if (name.equals(s.getName().trim())) {
+                return ( s );
+            }
+        }
+        return ( null );
+    }
+    
+    public static List<Application> getAllDefinedSystemApplications(Domain d) {
+        List<Application> allSysApps = new ArrayList<Application>();
+        SystemApplications sa = d.getSystemApplications();
+        if (sa != null) {
+            for (Module m : sa.getModules()) {
+                if (m instanceof Application)
+                    allSysApps.add((Application)m);
+            }
+        }
+        return ( allSysApps );
+    }
+    
+    public static ApplicationRef getApplicationRefInServer(Domain d, String sn, String name) {
+        Servers ss = d.getServers();
+        List<Server> list = ss.getServer();
+        Server theServer = null;
+        for (Server s : list) {
+            if (s.getName().equals(sn)) {
+                theServer = s;
+                break;
+            }
+        }
+        ApplicationRef aref = null;
+        if (theServer != null) {
+            List <ApplicationRef> arefs = theServer.getApplicationRef();
+            for (ApplicationRef ar : arefs) {
+                if (ar.getRef().equals(name)) {
+                    aref = ar;
+                    break;
+                }
+            }
+        }
+        return ( aref );
     }
 }
 

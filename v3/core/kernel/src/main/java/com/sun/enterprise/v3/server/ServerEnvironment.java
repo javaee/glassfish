@@ -53,7 +53,7 @@ public final class ServerEnvironment {
     public static final String kCompileJspDirName = "jsp";
 
     public static final String DEFAULT_ADMIN_CONSOLE_CONTEXT_ROOT = "/admin";
-    public static final String DEFAULT_ADMIN_CONSOLE_APP_NAME     = "admingui"; //same as folder
+    public static final String DEFAULT_ADMIN_CONSOLE_APP_NAME     = "__admingui"; //same as folder
     
     // TODO: this should be File
     final private String root;

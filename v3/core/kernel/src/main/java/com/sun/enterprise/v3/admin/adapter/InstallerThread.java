@@ -24,9 +24,14 @@
 package com.sun.enterprise.v3.admin.adapter;
 
 import com.sun.enterprise.config.serverbeans.Application;
+import com.sun.enterprise.config.serverbeans.ApplicationRef;
+import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
+import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.Engine;
+import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.config.serverbeans.SystemApplications;
 import com.sun.enterprise.util.zip.ZipFile;
+import com.sun.enterprise.v3.server.ServerEnvironment;
 import java.beans.PropertyVetoException;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -40,8 +45,9 @@ import java.net.SocketAddress;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.List;
+import org.jvnet.hk2.config.ConfigBeanProxy;
+import org.jvnet.hk2.config.ConfigCode;
 import org.jvnet.hk2.config.ConfigSupport;
-import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.TransactionFailure;
 
 /**
@@ -55,18 +61,21 @@ final class InstallerThread extends Thread {
     private final String proxyHost;
     private final int proxyPort;
     private final ProgressObject progress;
-    private final SystemApplications sysapps;
+    private final Domain domain;
+    private final ServerEnvironment env;
     private final String contextRoot;
     
     InstallerThread(List<URL> urls, File toFile, String proxyHost, 
-            int proxyPort, ProgressObject progress, SystemApplications sysapps,
-            String contextRoot) {
+            int proxyPort, ProgressObject progress, Domain domain,
+            ServerEnvironment env, String contextRoot) {
         this.urls        = urls;
         this.toFile      = toFile;
+        this.toFile.getParentFile().mkdirs();
         this.proxyHost   = proxyHost;
         this.proxyPort   = proxyPort;
         this.progress    = progress;
-        this.sysapps     = sysapps;
+        this.domain      = domain;
+        this.env         = env;
         this.contextRoot = contextRoot;
     }
     
@@ -146,11 +155,14 @@ final class InstallerThread extends Thread {
     private void install() throws Exception {
         syncMessage("Installing the application ...");
         //create the application entry in domain.xml
-        SingleConfigCode<SystemApplications> code = new SingleConfigCode <SystemApplications> () {
-            public Object run(SystemApplications sa) throws PropertyVetoException, TransactionFailure {
+        ConfigCode code = new ConfigCode () {
+            public Object run(ConfigBeanProxy ... proxies) throws PropertyVetoException, TransactionFailure {
+                SystemApplications sa = (SystemApplications) proxies[0];
                 Application app = ConfigSupport.createChildOf(sa, Application.class);
                 sa.getModules().add(app);
                 app.setName(AdminConsoleAdapter.ADMIN_APP_NAME);
+                app.setEnabled(Boolean.TRUE.toString());
+                app.setObjectType("system-admin"); //TODO
                 app.setDirectoryDeployed("true");
                 app.setContextRoot(contextRoot);
                 File expFolder = new File(toFile.getParentFile(), AdminConsoleAdapter.ADMIN_APP_NAME);
@@ -163,10 +175,18 @@ final class InstallerThread extends Thread {
                 sece.setSniffer("security");
                 app.getEngine().add(webe);
                 app.getEngine().add(sece);
+                Server s = (Server)proxies[1];
+                List<ApplicationRef> arefs = s.getApplicationRef();
+                ApplicationRef aref = ConfigSupport.createChildOf(s, ApplicationRef.class);
+                aref.setRef(app.getName());
+                aref.setEnabled(Boolean.TRUE.toString());
+                aref.setVirtualServers("__asadmin"); //TODO
+                arefs.add(aref);
                 return ( true );
             }
         };
-        ConfigSupport.apply(code, sysapps);
+        Server server = ConfigBeansUtilities.getServerNamed(env.getInstanceName(), domain);
+        ConfigSupport.apply(code, domain.getSystemApplications(), server);
         syncMessage("Installed the application ...");
     }
 }

@@ -25,10 +25,11 @@ package com.sun.enterprise.v3.admin.adapter;
 
 import com.sun.enterprise.config.serverbeans.AdminService;
 import com.sun.enterprise.config.serverbeans.Application;
-import com.sun.enterprise.config.serverbeans.Module;
+import com.sun.enterprise.config.serverbeans.ApplicationRef;
+import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
+import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.Property;
 import com.sun.enterprise.config.serverbeans.ServerTags;
-import com.sun.enterprise.config.serverbeans.SystemApplications;
 import com.sun.enterprise.v3.data.ApplicationRegistry;
 import com.sun.enterprise.v3.server.ServerEnvironment;
 import com.sun.enterprise.v3.services.impl.ApplicationLoaderService;
@@ -109,7 +110,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
     ApplicationRegistry appRegistry;
     
     @Inject
-    SystemApplications sysapps;
+    Domain domain;
 
     @Inject
     Habitat habitat;
@@ -129,7 +130,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
     private static final String MYURL_TOKEN      = "%%%MYURL%%%";
     private static final String STATUS_TOKEN     = "%%%STATUS%%%";
     
-    static final String ADMIN_APP_NAME           = "admingui";
+    static final String ADMIN_APP_NAME           = ServerEnvironment.DEFAULT_ADMIN_CONSOLE_APP_NAME;
     static final String ADMIN_APP_WAR            = ADMIN_APP_NAME + ".war";
     public AdminConsoleAdapter() throws IOException {
         initHtml   = Utils.packageResource2String("downloadgui.html");
@@ -193,20 +194,15 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
 
     
     private boolean appExistsInConfig() {
-        return getConfig()!=null;
+        return ( getConfig() != null );
     }
 
     private Application getConfig() {
         //no application-ref logic here -- that's on purpose for now
-        for(Module m : sysapps.getModules()) {
-            if (m instanceof Application) {
-                String name = ServerEnvironment.DEFAULT_ADMIN_CONSOLE_APP_NAME;
-                if (name.equals(m.getName())) {
-                    return (Application) m;
-                }
-            }
-        }
-        return ( null );
+        Application app = ConfigBeansUtilities.getSystemApplicationReferencedFrom(domain,
+                env.getInstanceName(), ADMIN_APP_NAME);
+        
+        return ( app );
     }
     private void logRequest(GrizzlyRequest req) {
         log.info("AdminConsoleAdapter's STATE IS: " +  this.state);
@@ -297,7 +293,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
     private void startThread() {
         File toFile = new File (diskLocation, "admingui.war");
         new InstallerThread(urls, toFile, proxyHost, proxyPort, 
-                progress, sysapps, contextRoot).start();
+                progress, domain, env, contextRoot).start();
     }
     
     private synchronized InteractionResult getUserInteractionResult(GrizzlyRequest req) {
@@ -385,7 +381,9 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
         if (config==null) {
             throw new IllegalStateException("handleInstalledButNotLoadedState called with no system app entry");
         }
-        habitat.getComponent(ApplicationLoaderService.class).processApplication(config ,null, logger);
+        String sn = env.getInstanceName();
+        ApplicationRef ref = ConfigBeansUtilities.getApplicationRefInServer(domain, sn, ADMIN_APP_NAME);
+        habitat.getComponent(ApplicationLoaderService.class).processApplication(config ,ref, logger);
     }
     
     private void handleLoadedState() {
