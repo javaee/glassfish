@@ -464,6 +464,20 @@ var admingui = {};
  *  The following functions are utility functions.
  */
 admingui.util = {
+    /**
+     *	This function finds the Woodstock node which has the getProps
+     *	function and returns the requested property.  If it does not exist
+     *	on the given object, it will look at the parent.
+     */
+    getWoodstockProp: function(node, propName) {
+	if (node == null) {
+	    return;
+	}
+	if (node.getProps != null) {
+	    return node.getProps()[propName];
+	}
+	return admingui.util.getWoodstockProp(node.parentNode, propName);
+    },
 
     /**
      *	This function finds an Array[] of nodes matching the (checkFunc),
@@ -882,13 +896,18 @@ admingui.nav = {
   *   Validation functions
   */
 
-function guiValidate(reqMsg,reqInt, reqPort){
-    var inputFields = document.getElementsByTagName("input");
-    for ( i=0; i< inputFields.length; i++) {
-        component = inputFields[i];
-        //styleClass is now with the parent span
-        styleClass = component.parentNode.className;  
-        if (styleClass == null || styleClass =='') {
+function guiValidate(reqMsg,reqInt, reqPort) {
+    var inputs = document.getElementsByTagName("input");
+    var styleClass = null;
+    var component = null;
+    for ( i=0; i < inputs.length; i++) {
+        component = inputs[i];
+	if ((component.type == ("hidden")) || (component.type == "submit")) {
+	    continue;
+	}
+	// Find the styleClass for this input
+	styleClass = admingui.util.getWoodstockProp(inputs[i], "className");
+        if (styleClass == null || styleClass == '') {
             continue;
         }
         if (styleClass.match("require")) {
@@ -946,62 +965,17 @@ function guiValidate(reqMsg,reqInt, reqPort){
 
 function guiValidateWithDropDown(reqMsg,reqInt, reqPort, reqMsgSelect){
     var selectFields = document.getElementsByTagName("select");
-    var inputFields = document.getElementsByTagName("input");
-    for ( i=0; i< inputFields.length; i++) {
-        component = inputFields[i];
-        //styleClass is now with the parent span
-        styleClass = component.parentNode.className;  
-        if (styleClass == null || styleClass =='') {
-            continue;
-        }
-        if (styleClass.match("require")) {
-            if (component.value=='') {
-                component.focus();
-                return showAlert(reqMsg + ' ' + getLabel(component));
-            }
-        }
-
-        if (styleClass.match("intAllowMinusOne")) {
-            if (component.value =='' || component.value == '-1')
-                return true;
-            if (! checkForIntValue(component.value)) {
-                component.select();
-                component.focus();
-                return showAlert(reqInt + ' ' + getLabel( component ));
-            }
-        }
-
-        if (styleClass.match("intAllowMinus")) {
-            var num = 0;
-            if (component.value =='')  return true;
-            if ((num + component.value) <=0) return true;
-            if (! checkForIntValue(component.value)) {
-                component.select();
-                component.focus();
-                return showAlert(reqInt + ' ' + getLabel( component ));
-            }
-        }
-
-        if (styleClass.match("integer")) {
-            if (! checkForIntValueOrEmpty(component.value)) {
-                component.select();
-                component.focus();
-                return showAlert(reqInt + ' ' + getLabel( component ));
-            }
-        }
-
-        if (styleClass.match("port")) {
-            if (! checkForPortOrEmpty(component.value)) {
-                component.select();
-                component.focus();
-                return showAlert(reqPort + ' ' + getLabel( component ));
-            }
-        }
+    if (!guiValidate(reqMsg, reqInt, reqPort)) {
+	return false;
     }
-    for ( i=0; i< selectFields.length; i++) {
+    var component = null;
+    var styleClass = null;
+    for (i=0; i < selectFields.length; i++) {
         component = selectFields[i];
-        styleClass = component.className;
-        if (styleClass == null || styleClass=='') {
+	// Find the styleClass for this input
+	styleClass = admingui.util.getWoodstockProp(selectFields[i], "className");
+	alert("sc = " + styleClass);
+        if (styleClass == null || styleClass == '') {
             continue;
         }
         if (styleClass.match("require")) {
