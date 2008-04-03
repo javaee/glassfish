@@ -83,9 +83,13 @@
         <ant dir="welcomePageSecurityConstraintExactMatch" target="all"/>
         <ant dir="jspSelfReferencingErrorPage" target="all"/>
         <ant dir="jspSelfReferencingErrorPageWithRelativePath" target="all"/>
-        <ant dir="jspPrecompileConsiderDomainLibJarFilesAndClasses" target="all"/>
+        <!-- v3
+        <ant dir="jspPrecompileConsiderDomainLibJarFilesAndClasses" target="all"/>    
+        -->
         <ant dir="jspPrecompileIgnoreFragmentErrors" target="all"/>
-        <ant dir="jspRuntimeCompileConsiderDomainLibJarFilesAndClasses" target="all"/>
+        <!-- v3
+        <ant dir="jspRuntimeCompileConsiderDomainLibJarFilesAndClasses" target="all"/>  
+        -->
         <ant dir="jspCallingELFuctionFromTagfileWithinSameTaglibInfiniteRecursion" target="all"/>
         <ant dir="jspSessionInvalidated" target="all"/>
         <ant dir="jspWelcomePageWithoutAnyServletMappings" target="all"/>
@@ -244,8 +248,10 @@
         <ant dir="webappAlternateDocroot" target="all"/>
         <ant dir="webappAlternateDocrootTagFile" target="all"/>
         <ant dir="virtualServerDefaultWebModule" target="all"/>
+        <!-- v3
         <ant dir="virtualServerDefaultWebModuleRestart" target="all"/>
         <ant dir="virtualServerEarWrappedDefaultWebModuleRestart" target="all"/>
+        -->      
         <ant dir="virtualServerRedirectPropertyUrl" target="all"/>
         <ant dir="virtualServerDocrootDynamicReconfig" target="all"/>
         <ant dir="virtualServerAlternateDocroot" target="all"/>
