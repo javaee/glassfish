@@ -51,6 +51,7 @@
 
 package org.glassfish.admingui.handlers;
 
+import com.sun.appserv.management.base.XTypes;
 import com.sun.jsftemplating.annotation.Handler;
 import com.sun.jsftemplating.annotation.HandlerInput;
 import com.sun.jsftemplating.annotation.HandlerOutput;
@@ -332,8 +333,7 @@ public class JdbcHandlers {
     @Handler(id="saveJdbcConnectionPoolProperty",
         input={
 		@HandlerInput(name="jndiName", type=String.class, required=true),
-                @HandlerInput(name="AddProps",    type=Map.class),
-                @HandlerInput(name="RemoveProps", type=ArrayList.class)
+                @HandlerInput(name="newProps",    type=Map.class)
         })
     public static void saveJdbcConnectionPoolProperty(HandlerContext handlerCtx) {
         try{
@@ -343,8 +343,7 @@ public class JdbcHandlers {
                 GuiUtil.handleError(handlerCtx, GuiUtil.getMessage("msg.noSuchJDBCConnectionPool"));
                 return;
             }
-            AMXRoot.getInstance().editProperties(handlerCtx, pool);
-            GuiUtil.prepareSuccessful(handlerCtx);
+            AMXUtil.updateProperties( pool, (Map)handlerCtx.getInputValue("newProps"));
         }catch (Exception ex){
 	    GuiUtil.handleException(handlerCtx, ex);
         }
@@ -375,29 +374,24 @@ public class JdbcHandlers {
                 )
         public static void getJdbcConnectionPoolDefaultInfo(HandlerContext handlerCtx) {
         
-            String jndiName = (String) handlerCtx.getInputValue("jndiName");
-            JDBCConnectionPoolConfig pool = AMXRoot.getInstance().getResourcesConfig().getJDBCConnectionPoolConfigMap().get(jndiName);
-            if (pool == null){
-		GuiUtil.handleError(handlerCtx, GuiUtil.getMessage("msg.noSuchJDBCConnectionPool"));
-                return;
-            }
-            handlerCtx.setOutputValue("resType", pool.getDefaultValue("ResType"));
-            handlerCtx.setOutputValue("description", pool.getDefaultValue("Description"));
-            handlerCtx.setOutputValue("steadyPoolSize", pool.getDefaultValue("SteadyPoolSize"));
-            handlerCtx.setOutputValue("maxPoolSize", pool.getDefaultValue("MaxPoolSize"));
-            handlerCtx.setOutputValue("poolResizeQuantity", pool.getDefaultValue("PoolResizeQuantity"));
-            handlerCtx.setOutputValue("idleTimeoutInSeconds", pool.getDefaultValue("IdleTimeoutInSeconds"));
-            handlerCtx.setOutputValue("maxWaitTimeInMillis", pool.getDefaultValue("MaxWaitTimeInMillis"));
-            handlerCtx.setOutputValue("isConnectionValidationRequired", pool.getDefaultValue("IsConnectionValidationRequired"));
-            handlerCtx.setOutputValue("connectionValidationMethod", pool.getDefaultValue("ConnectionValidationMethod"));
-            handlerCtx.setOutputValue("validationTableName", pool.getDefaultValue("ValidationTableName"));
-            handlerCtx.setOutputValue("failAllConnections", pool.getDefaultValue("FailAllConnections"));
-            handlerCtx.setOutputValue("allowNonComponentCallers", pool.getDefaultValue("AllowNonComponentCallers"));
-            handlerCtx.setOutputValue("nonTransactionalConnections", pool.getDefaultValue("NonTransactionalConnections"));
-            handlerCtx.setOutputValue("transactionIsolationLevel", pool.getDefaultValue("TransactionIsolationLevel"));
-            handlerCtx.setOutputValue("isIsolationLevelGuaranteed", pool.getDefaultValue("IsIsolationLevelGuaranteed"));
+            //Map <String,String> defaultMap = AMXRoot.getInstance().getDomainConfig().getResourcesConfig().getDefaultValues(XTypes.JDBC_CONNECTION_POOL_CONFIG); 
+            Map <String, String> defaultMap = new HashMap();
+            handlerCtx.setOutputValue("resType", defaultMap.get("res-type"));
+            handlerCtx.setOutputValue("description", defaultMap.get("ABC"));
+            handlerCtx.setOutputValue("steadyPoolSize", defaultMap.get("steady-pool-size"));
+            handlerCtx.setOutputValue("maxPoolSize",defaultMap.get("max-pool-size"));
+            handlerCtx.setOutputValue("poolResizeQuantity", defaultMap.get("pool-resize-quantity"));
+            handlerCtx.setOutputValue("idleTimeoutInSeconds", defaultMap.get("idle-timeout-in-seconds"));
+            handlerCtx.setOutputValue("maxWaitTimeInMillis", defaultMap.get("max-wait-time-in-millis"));
+            handlerCtx.setOutputValue("isConnectionValidationRequired", StringToBoolean(defaultMap.get("is-connection-validation-required")));
+            handlerCtx.setOutputValue("connectionValidationMethod", defaultMap.get("connection-validation-method"));
+            handlerCtx.setOutputValue("validationTableName", defaultMap.get("validation-table-name"));
+            handlerCtx.setOutputValue("failAllConnections", StringToBoolean(defaultMap.get("fail-all-connections")));
+            handlerCtx.setOutputValue("allowNonComponentCallers", StringToBoolean(defaultMap.get("allow-non-component-callers")));
+            handlerCtx.setOutputValue("nonTransactionalConnections", StringToBoolean(defaultMap.get("non-transactional-connections")));
+            handlerCtx.setOutputValue("transactionIsolationLevel", defaultMap.get("transaction-isolation-level"));
+            handlerCtx.setOutputValue("isIsolationLevelGuaranteed", StringToBoolean(defaultMap.get("is-isolation-level-guaranteed")));
         }
-    
     
         /**
          *	<p> This handler returns the values for all the attributes of the Jdbc Connection Pool
