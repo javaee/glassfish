@@ -28,7 +28,7 @@ import java.util.logging.Logger;
 /**
  * Tag Main to get the manifest file 
  */
-public class ASMain extends com.sun.enterprise.module.bootstrap.Main {
+public class ASMain {
 
     /*
      * Most of the code in this file has been moved to ASMainHelper and

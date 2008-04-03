@@ -59,8 +59,7 @@ class GFDomainLauncher extends GFLauncher {
     }
 
     private void launchEmbedded() throws GFLauncherException, BootException {
-        ASMain main = new ASMain();
-        main.start(getInfo().getArgsAsStringArray());
+        ASMain.main(getInfo().getArgsAsStringArray());
         GFLauncherLogger.info("finishedEmbedded", getInfo().getDomainName());
     }
 
