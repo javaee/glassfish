@@ -35,8 +35,9 @@
 * only if the new code is made subject to such option by the copyright 
 * holder. 
 */ 
---> 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <parent>
         <groupId>org.glassfish.external</groupId>
         <artifactId>external</artifactId>
@@ -52,6 +53,79 @@
     <description>Grizzly HTTP/Comet Module for GlassFish v3</description>
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>unpack</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>com.sun.grizzly</groupId>
+                                    <artifactId>grizzly-cometd</artifactId>
+                                    <version>${grizzly.version}</version>
+                                    <type>jar</type>
+                                    <overWrite>false</overWrite>
+                                    <outputDirectory>${project.build.directory}/classes</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>com.sun.grizzly</groupId>
+                                    <artifactId>grizzly-http</artifactId>
+                                    <version>${grizzly.version}</version>
+                                    <type>jar</type>
+                                    <overWrite>false</overWrite>
+                                    <outputDirectory>${project.build.directory}/classes</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>com.sun.grizzly</groupId>
+                                    <artifactId>grizzly-portunif</artifactId>
+                                    <version>${grizzly.version}</version>
+                                    <type>jar</type>
+                                    <overWrite>false</overWrite>
+                                    <outputDirectory>${project.build.directory}/classes</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>com.sun.grizzly</groupId>
+                                    <artifactId>grizzly-rcm</artifactId>
+                                    <version>${grizzly.version}</version>
+                                    <type>jar</type>
+                                    <overWrite>false</overWrite>
+                                    <outputDirectory>${project.build.directory}/classes</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>com.sun.grizzly</groupId>
+                                    <artifactId>grizzly-http-utils</artifactId>
+                                    <version>${grizzly.version}</version>
+                                    <type>jar</type>
+                                    <overWrite>false</overWrite>
+                                    <outputDirectory>${project.build.directory}/classes</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>com.sun.grizzly</groupId>
+                                    <artifactId>grizzly-framework</artifactId>
+                                    <version>${grizzly.version}</version>
+                                    <type>jar</type>
+                                    <overWrite>false</overWrite>
+                                    <outputDirectory>${project.build.directory}/classes</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>com.sun.grizzly</groupId>
+                                    <artifactId>grizzly-comet</artifactId>
+                                    <version>${grizzly.version}</version>
+                                    <type>jar</type>
+                                    <overWrite>false</overWrite>
+                                    <outputDirectory>${project.build.directory}/classes</outputDirectory>
+                                </artifactItem>                                
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
@@ -115,43 +189,43 @@
     <dependencies>
         <dependency>
             <groupId>com.sun.grizzly</groupId>
-             <artifactId>grizzly-cometd</artifactId>
-             <version>1.7-20080331.183613-27</version>
+            <artifactId>grizzly-cometd</artifactId>
+            <version>${grizzly.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.sun.grizzly</groupId>
-             <artifactId>grizzly-http</artifactId>
-             <version>${grizzly.version}</version>
+            <artifactId>grizzly-http</artifactId>
+            <version>${grizzly.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.sun.grizzly</groupId>
-             <artifactId>grizzly-portunif</artifactId>
-             <version>${grizzly.version}</version>
+            <artifactId>grizzly-portunif</artifactId>
+            <version>${grizzly.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.sun.grizzly</groupId>
-             <artifactId>grizzly-rcm</artifactId>
-             <version>${grizzly.version}</version>
+            <artifactId>grizzly-rcm</artifactId>
+            <version>${grizzly.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.sun.grizzly</groupId>
-             <artifactId>grizzly-http-utils</artifactId>
-             <version>${grizzly.version}</version>
+            <artifactId>grizzly-http-utils</artifactId>
+            <version>${grizzly.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.sun.grizzly</groupId>
-             <artifactId>grizzly-framework</artifactId>
-             <version>${grizzly.version}</version>
+            <artifactId>grizzly-framework</artifactId>
+            <version>${grizzly.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.glassfish</groupId>
-	        <artifactId>javax.javaee</artifactId>
+            <artifactId>javax.javaee</artifactId>
             <version>${parent.version}</version>
         </dependency>
     </dependencies>
