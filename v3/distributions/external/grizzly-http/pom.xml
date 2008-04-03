@@ -120,7 +120,15 @@
                                     <type>jar</type>
                                     <overWrite>false</overWrite>
                                     <outputDirectory>${project.build.directory}/classes</outputDirectory>
-                                </artifactItem>                                
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>com.sun.grizzly</groupId>
+                                    <artifactId>grizzly-http-servlet</artifactId>
+                                    <version>${grizzly.version}</version>
+                                    <type>jar</type>
+                                    <overWrite>false</overWrite>
+                                    <outputDirectory>${project.build.directory}/classes</outputDirectory>
+                                </artifactItem>
                             </artifactItems>
                         </configuration>
                     </execution>
@@ -220,6 +228,12 @@
         <dependency>
             <groupId>com.sun.grizzly</groupId>
             <artifactId>grizzly-framework</artifactId>
+            <version>${grizzly.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.grizzly</groupId>
+            <artifactId>grizzly-http-servlet</artifactId>
             <version>${grizzly.version}</version>
             <scope>provided</scope>
         </dependency>
