@@ -62,8 +62,6 @@
     </repository>
   </distributionManagement>
   
-  
-  <!-- TODO: list your names as developers -->
 
   <developers>
     <developer>
@@ -89,9 +87,10 @@
 
   <modules>
     <module>jdbc-core</module>
+    <module>jdbc-ra-distribution</module>
   </modules>
 
-  <profiles>
+<!--  <profiles>
     <profile>
       <id>jdk15</id>
       <activation>
@@ -112,5 +111,5 @@
         <module>jdbc-ra-distribution</module>
       </modules>
     </profile>
-  </profiles>
+  </profiles>-->
 </project>
