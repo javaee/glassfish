@@ -180,7 +180,7 @@ final class InstallerThread extends Thread {
                 ApplicationRef aref = ConfigSupport.createChildOf(s, ApplicationRef.class);
                 aref.setRef(app.getName());
                 aref.setEnabled(Boolean.TRUE.toString());
-                aref.setVirtualServers("__asadmin"); //TODO
+                //aref.setVirtualServers("__asadmin"); //TODO
                 arefs.add(aref);
                 return ( true );
             }
