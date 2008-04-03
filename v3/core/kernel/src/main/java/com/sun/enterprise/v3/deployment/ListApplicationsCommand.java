@@ -43,6 +43,8 @@ import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.PerLookup;
 import com.sun.enterprise.v3.admin.CommandRunner;
 import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.enterprise.config.serverbeans.Module;
+import com.sun.enterprise.config.serverbeans.Application;
 
 /**
  *
@@ -51,29 +53,44 @@ import com.sun.enterprise.util.LocalStringManagerImpl;
 @Service(name="list-applications")
 @I18n("list.applications")
 @Scoped(PerLookup.class)
-public class ListApplicationsCommand implements AdminCommand {
-
-    @Inject
-    CommandRunner commandRunner;
-    
-        //define this variable to skip parameter valadation.
-        //Param validation will be done when referening deploy command.
-    boolean skipParamValidation = true;
+public class ListApplicationsCommand extends ListComponentsCommand {
 
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(DeployDirCommand.class);
 
     public void execute(AdminCommandContext context) {
         final ActionReport report = context.getActionReport();
-        
-            //reference to list-commponents command
-        commandRunner.doCommand("list-components",
-                                context.getCommandParameters(), report);
-            //change the message to display list-applications
+
+        if (!checkTypeValue(type, report)) {
+            return;
+        }
         ActionReport.MessagePart part = report.getTopMessagePart();        
         part.setMessage(localStrings.getLocalString("list.applications.success", "list-applications successful"));
-
-//        final ActionReport.MessagePart part = report.getTopMessagePart();
-//        ActionReport.MessagePart childPart = part.addChild();
-//        childPart.setMessage(localStrings.getLocalString("list.applications.warning", "This command will be removed.  Please use list-components command."));
+        int numOfApplications = 0;
+        for (Module module : applications.getModules()) {
+            if (module instanceof Application) {
+                final Application app = (Application)module;
+                if (app.getObjectType().equals("user")) {
+                    if (type==null || isApplicationOfThisType(app, type)) {
+                        ActionReport.MessagePart childPart = part.addChild();
+                        childPart.setMessage(app.getName() + " " +
+                                             getSnifferEngines(app, true));
+                            //this is a kludge so that NB Plugin can get these information
+                            //the "nb-" prefix indicates that it's a kludge for NB plugin
+                        childPart.addProperty("nb-name", app.getName());
+                        childPart.addProperty("nb-location", app.getLocation());
+                        childPart.addProperty("nb-engine", getSnifferEngines(app, false));
+                        childPart.addProperty("nb-enabled", app.getEnabled());
+                        childPart.addProperty("nb-directory-deployed", app.getDirectoryDeployed());
+                        childPart.addProperty("nb-context-root", app.getContextRoot());
+                        
+                        numOfApplications++;
+                    }
+                }
+            }
+        }
+        if (numOfApplications == 0) {
+            part.setMessage(localStrings.getLocalString("list.components.no.elements.to.list", "Nothing to List."));            
+        }
+        report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
     }
 }

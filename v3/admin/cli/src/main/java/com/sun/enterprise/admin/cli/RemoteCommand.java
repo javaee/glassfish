@@ -478,10 +478,16 @@ public class RemoteCommand {
         String keys = attr.getValue("keys");
         if (keys != null) {
             StringTokenizer token = new StringTokenizer(keys, ";");
-            if (token.hasMoreTokens()) {
-                System.out.print(prefix + "properties=(");
-                while (token.hasMoreTokens()) {
-                    String property = token.nextToken();
+            boolean displayProperties = false;
+            while (token.hasMoreTokens()) {
+                String property = token.nextToken();
+                //a kludge for NB plugin
+                if (!property.startsWith("nb-")) {
+                    if (!displayProperties) {
+                        System.out.print(prefix + "properties=(");
+                        displayProperties = true;
+                    }
+                        
                     String name = attr.getValue(property + "_name");
                     String value = attr.getValue(property + "_value");
                     System.out.print(name + "=" + value);
@@ -489,7 +495,9 @@ public class RemoteCommand {
                         System.out.print(",");
                     }
                 }
-                System.out.println(")");
+                if (displayProperties) {
+                    System.out.println(")");
+                }
             }
         }
         String children = attr.getValue("children");

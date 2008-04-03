@@ -55,7 +55,7 @@ public class ListComponentsCommandTest {
             
             ApplicationTest app = new ApplicationTest();            
             app.setEngines(engines);
-            String snifferEngines = lcc.getSnifferEngines(app);
+            String snifferEngines = lcc.getSnifferEngines(app, true);
             assertEquals("compare all sniffer engines", "<web, security>",
                         snifferEngines);
         }

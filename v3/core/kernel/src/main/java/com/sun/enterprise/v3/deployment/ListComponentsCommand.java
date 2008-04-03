@@ -87,7 +87,7 @@ public class ListComponentsCommand extends ApplicationLifecycle implements Admin
                     if (type==null || isApplicationOfThisType(app, type)) {
                         ActionReport.MessagePart childPart = part.addChild();
                         childPart.setMessage(app.getName() + " " +
-                                             getSnifferEngines(app));
+                                             getSnifferEngines(app, true));
                         numOfApplications++;
                     }
                 }
@@ -141,19 +141,25 @@ public class ListComponentsCommand extends ApplicationLifecycle implements Admin
          * @param app - Application
          * @return sniffer engines
          */
-    String getSnifferEngines(final Application app) {
+    String getSnifferEngines(final Application app, final boolean format) {
         final List<Engine> engineList = app.getEngine();
         StringBuffer se = new StringBuffer();
         if (!engineList.isEmpty()) {
-            se.append("<");
+            if (format) {
+                se.append("<");
+            }
             for (Engine engine : engineList) {
                 final String engType = engine.getSniffer();
                 if (displaySnifferEngine(engType)) {
                     se.append(engine.getSniffer() + ", ");
                 }
             }
-            //eliminate the last "," and end the list with ">"
-            se.replace(se.length()-2, se.length(), ">");
+            if (format) {
+                    //eliminate the last "," and end the list with ">"
+                se.replace(se.length()-2, se.length(), ">");
+            } else {
+                se.replace(se.length()-2, se.length(), "");
+            }
         }
         return se.toString();
     }
