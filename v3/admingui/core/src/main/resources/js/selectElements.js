@@ -47,20 +47,3 @@ function checkForSelectedValue(fieldId) {
     } 
     return true; 
 }
-
-function isWhitespace(s) { 
-    var i; 
-    var whitespace = " \t\n\r"; 
-    // Search through string's characters one by one 
-    // until we find a non-whitespace character. 
-    // When we do, return false; if we don't, return true. 
-    
-    for (i = 0; i < s.length; i++) { 
-        // Check that current character isn't whitespace. 
-        var c = s.charAt(i); 
-        if (whitespace.indexOf(c) == -1) return false; 
-    } 
-
-    // All characters are whitespace. 
-    return true; 
-}

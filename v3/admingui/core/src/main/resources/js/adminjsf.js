@@ -127,8 +127,18 @@ function isChecked (elementName)
 }
 
 function checkForValue(formField) { 
-    var result = (formField.value != '') && (isWhitespace(formField.value) == false); 
-    if (result == false) formField.select();
+    if (!formField) {
+	return false; // No field, so no value
+    }
+    var value = formField.value;
+    if (formField.getProps) {
+	// Use Woodstock's api to get correct value
+	value = formField.getProps().value;
+    }
+    var result = (value != '') && (isWhitespace(value) == false); 
+    if (!result) {
+	formField.select();
+    }
     return result; 
 }
 
@@ -1119,6 +1129,23 @@ function checkRequired(componentId, reqMsg){
         component.focus();
     }
     return result;
+}
+
+function isWhitespace(s) {
+    var i; 
+    var whitespace = " \t\n\r"; 
+    // Search through string's characters one by one 
+    // until we find a non-whitespace character. 
+    // When we do, return false; if we don't, return true. 
+    
+    for (i = 0; i < s.length; i++) { 
+        // Check that current character isn't whitespace. 
+        var c = s.charAt(i); 
+        if (whitespace.indexOf(c) == -1) return false; 
+    } 
+
+    // All characters are whitespace. 
+    return true; 
 }
 
 function compareDate(beginDate, endDate, pattern) {
