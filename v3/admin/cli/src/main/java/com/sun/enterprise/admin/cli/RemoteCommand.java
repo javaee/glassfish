@@ -35,45 +35,24 @@
  */
 package com.sun.enterprise.admin.cli;
 
-import com.sun.enterprise.cli.framework.CLILogger;
 import com.sun.enterprise.universal.StringUtils;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
-import com.sun.enterprise.v3.common.PlainTextActionReporter;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
-import java.net.URLEncoder;
-import java.util.Map;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Vector;
-import java.util.StringTokenizer;
-import java.util.jar.Attributes;
-import java.util.jar.Manifest;
 import com.sun.enterprise.admin.cli.deployment.FileUploadUtil;
-import com.sun.enterprise.admin.cli.util.CLIUtil;
-import com.sun.enterprise.admin.cli.util.HttpConnectorAddress;
-import com.sun.enterprise.admin.cli.util.AuthenticationInfo;
-import com.sun.enterprise.cli.framework.CommandException;
-import com.sun.enterprise.universal.glassfish.GFLauncherUtils;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.io.*;
+import java.net.*;
+import java.util.*;
+import com.sun.enterprise.admin.cli.util.*;
+import com.sun.enterprise.cli.framework.*;
+import java.util.jar.*;
 
 /**
  * RemoteCommand class 
  */
 public class RemoteCommand {
-
-    private static final RemoteCommand INSTANCE = new RemoteCommand();
-
+private static final RemoteCommand INSTANCE = new RemoteCommand();
     RemoteCommand() {
     }
-
+    
     public static RemoteCommand getInstance() {
         return INSTANCE;
     }
@@ -102,6 +81,7 @@ public class RemoteCommand {
             final RemoteCommandParser rcp = new RemoteCommandParser(args);
             logger.printDebugMessage("RemoteCommandParser: " + rcp);
             final Map<String, String> params = rcp.getOptions();
+            setBooleans(params);
             final Vector operands = rcp.getOperands();
 
             //upload option  for deploy command is default to true
@@ -166,9 +146,9 @@ public class RemoteCommand {
                                                                                   "UTF-8");
             }
 
-            logger.printDebugMessage("Connecting to " + uriConnection);
             try {
                 HttpConnectorAddress url = new HttpConnectorAddress(hostName, Integer.parseInt(hostPort), isSecure);
+                logger.printDebugMessage("URL: " + url.toURL(uriConnection).toString());
                 url.setAuthenticationInfo(new AuthenticationInfo(user, password));
 
                 if (fileName != null && uploadFile) {
@@ -461,12 +441,13 @@ public class RemoteCommand {
         message = exitCode + " : " + message;
         String cause = m.getMainAttributes().getValue("cause");
 
-        if(StringUtils.ok(cause))
-            message += StringUtils.NEWLINE + strings.get("cause", cause);
-        
+        // TODO We may need to  change this post-TP2
+        if( CLILogger.isDebug() || !terse) {
+            if(StringUtils.ok(cause)) {
+                message += StringUtils.NEWLINE + strings.get("cause", cause);
+            }
+        }        
         throw new CommandException(message);
-
-
     }
 
     private void processOneLevel(String prefix, String key, Manifest m,
@@ -552,10 +533,45 @@ public class RemoteCommand {
         CLILogger.getInstance().printMessage(response);
     }
 
+    private void setBooleans(Map<String, String> params) {
+        // need to differentiate a null value from a null key.
+        // contains --> key is in the map
+        
+        // only 3 -- I'm not making another array!
+        if(params.containsKey("verbose")) {
+            String value = params.get("verbose");
+            if(ok(value))
+                verbose = Boolean.parseBoolean(params.get("verbose"));
+            else
+                verbose = true;
+        }
+        if(params.containsKey("echo")) {
+            String value = params.get("echo");
+            if(ok(value))
+                echo = Boolean.parseBoolean(params.get("echo"));
+            else
+                echo = true;
+        }            
+        if(params.containsKey("terse")) {
+            String value = params.get("terse");
+            if(ok(value))
+                terse = Boolean.parseBoolean(params.get("terse"));
+            else
+                terse = true;
+        }
+    }
+
+    private boolean ok(String s) {
+        return s != null && s.length() > 0;
+    }
+            
     private static final CLILogger logger = CLILogger.getInstance();
     private static final String SUCCESS = "SUCCESS";
     private static final String FAILURE = "FAILURE";
     private static final String MAGIC = "PlainTextActionReporter";
+    private boolean verbose = false;
+    private boolean terse = true;
+    private boolean echo = false;
     private final static LocalStringsImpl strings = new LocalStringsImpl(RemoteCommand.class);
 }
 

@@ -35,8 +35,10 @@
  */
 package com.sun.enterprise.admin.cli;
 
+import java.util.*;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.*;
 import java.util.Vector;
 import java.util.ListIterator;
 import java.util.Arrays;
@@ -50,7 +52,16 @@ import com.sun.enterprise.cli.framework.CommandValidationException;
  */
 public class RemoteCommandParser 
 {
-    
+    private static final String[][] shortOptionsMap = new String[][] 
+    {
+        {"H", "host" },
+        {"p", "port" },
+        {"v", "verbose" },
+        {"t", "terse" },
+        {"u", "user" },
+        {"e", "echo" },
+    };
+
     // Name of Command
     private String commandName = null;
 
@@ -105,8 +116,23 @@ public class RemoteCommandParser
     public RemoteCommandParser(String[] args)
         throws CommandValidationException {
             parseCommandLine(args);
+            shortToLongOptions();
     }
-    
+
+    private void shortToLongOptions() {
+        // The remote commands will NOT work with short options.
+        // convert them here.
+        // Note that we can't know any about any special short options here
+        // because we are agile!!!  So just go with the standard ones.
+
+        for(int i = 0; i < shortOptionsMap.length; i++) {
+            String value = optionsMap.remove(shortOptionsMap[i][0]);
+            
+            if(value != null) {
+                optionsMap.put(shortOptionsMap[i][1], value);
+            }
+        }
+    }
     
     
     /** Parse the command line arguments accordingly to CLIP
@@ -137,6 +163,7 @@ public class RemoteCommandParser
             }
         }
     }
+
 
     
     /** Checks if the short option is valid.
@@ -282,7 +309,7 @@ public class RemoteCommandParser
      *  returns a Map with all the options in optionsMap
      *  @return options
      */
-    public Map getOptions() {
+    public Map<String,String> getOptions() {
         return optionsMap;
     }
 
