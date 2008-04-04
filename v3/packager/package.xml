@@ -115,3 +115,63 @@
     </antcall>
 
 </target>
+
+<target name="push-to-repository" 
+        depends="publish-init"
+        description="Publishing packages to IPS Repository ${REPO_URL}">
+    <antcall target="push-package">
+        <param name="pkgname" value="SUNWglassfishv3-common"/>
+        <param name="pkg.dir" value="${pkgs.home}"/>
+        <param name="REPO_URL" value="${REPO_URL}"/>
+    </antcall>
+    <antcall target="push-package">
+        <param name="pkgname" value="SUNWglassfishv3-web"/>
+        <param name="pkg.dir" value="${pkgs.home}"/>
+        <param name="REPO_URL" value="${REPO_URL}"/>
+    </antcall>
+    <antcall target="push-package">
+        <param name="pkgname" value="SUNWglassfishv3-nucleus"/>
+        <param name="pkg.dir" value="${pkgs.home}"/>
+        <param name="REPO_URL" value="${REPO_URL}"/>
+    </antcall>
+</target>
+
+<target name="create-installer-ips-image" 
+        depends="publish-init"
+        description="Creating IPS Image without Domains for Installer">
+    <antcall target="create-ips-image"/>
+    <zip destfile="${image.dir}/../V3IPSImage_Installer.zip">
+            <fileset dir="${image.dir}" includes="**/*" />
+    </zip>
+    <delete dir="${image.dir}"/>
+</target>
+
+<target name="create-glassfish-ips-image" 
+        depends="publish-init"
+        description="Creating IPS Image with Domains">
+    <antcall target="create-ips-image"/>
+    <copy todir="${image.dir}">
+            <fileset dir="${install.dir}/domains"/>
+    </copy>
+    <zip destfile="${image.dir}/../V3IPSImage_GF.zip">
+            <fileset dir="${image.dir}" includes="**/*" />
+    </zip>
+    <delete dir="${image.dir}"/>
+</target>
+
+<target name="create-ips-image" 
+        depends="publish-init"
+        description="Creating IPS Image">
+    <antcall target="create-local-image">
+        <param name="REPO_URL" value="${REPO_URL}"/>
+    </antcall>
+    <antcall target="install-package">
+        <param name="pkgname" value="SUNWglassfishv3-common"/>
+    </antcall>
+    <antcall target="install-package">
+        <param name="pkgname" value="SUNWglassfishv3-nucleus"/>
+    </antcall>
+    <antcall target="install-package">
+        <param name="pkgname" value="SUNWglassfishv3-web"/>
+    </antcall>
+</target>

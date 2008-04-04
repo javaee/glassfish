@@ -96,3 +96,31 @@
         <arg value="${pkgname}"/>
     </java>
 </target>
+
+<target name="push-package"
+    description="Push Package ${pkgname} to ${REPO_URL}">
+    <echo message="Push Package ${pkg.dir}/${pkgname} to ${REPO_URL}"/>
+    <exec dir="${pkg.dir}" executable="pkgsend" failonerror="true">
+        <arg line="-s ${REPO_URL} send ${pkgname}" />
+    </exec>
+</target>
+
+<target name="create-local-image"
+    description="Create local IPS image using ${REPO_URL}">
+    <echo message="Creating local IPS image for ${REPO_URL}"/>
+    <mkdir dir="${image.dir}"/>
+    <exec executable="pkg" failonerror="true">
+        <arg line="image-create -U -a sun.com=${REPO_URL} ${image.dir}" />
+    </exec>
+    <exec dir="${image.dir}" executable="pkg" failonerror="true">
+        <arg line="refresh" />
+    </exec>
+</target>
+
+<target name="install-package"
+    description="Install Package ${pkgname} from ${REPO_URL}">
+    <echo message="Install Package ${pkgname} from ${REPO_URL}"/>
+    <exec dir="${image.dir}" executable="pkg" failonerror="true">
+        <arg line="install ${pkgname}" />
+    </exec>
+</target>
