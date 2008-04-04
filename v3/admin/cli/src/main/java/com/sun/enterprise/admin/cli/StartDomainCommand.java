@@ -100,7 +100,7 @@ public class StartDomainCommand extends Command {
     private boolean pingDAS(int port) {
         try {
             RemoteCommand rc = RemoteCommand.getInstance();
-            rc.handleRemoteCommand("version", Integer.toString(port));
+            rc.handleRemoteCommand("version", "--port", Integer.toString(port));
             return true;
         }
         catch (Exception ex) {
