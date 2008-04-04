@@ -71,6 +71,9 @@ public class Main {
             if (object.indexOf("domains/domain1") >= 0) {
                 continue;
             }
+            if (object.indexOf("domains") >= 0) {
+                continue;
+            }
             System.out.println(object);
         }
     }
