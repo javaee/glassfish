@@ -141,10 +141,14 @@
     </antcall>
 </target>
 
+<target name="create-ips-image"  
+      depends="create-installer-ips-image, create-glassfish-ips-image">
+</target>
+
 <target name="create-installer-ips-image" 
         depends="publish-init"
         description="Creating IPS Image without Domains for Installer">
-    <antcall target="create-ips-image"/>
+    <antcall target="create-common-image"/>
     <zip destfile="${image.dir}/../V3IPSImage_Installer.zip">
             <fileset dir="${image.dir}" includes="**/*" />
     </zip>
@@ -154,7 +158,7 @@
 <target name="create-glassfish-ips-image" 
         depends="publish-init"
         description="Creating IPS Image with Domains">
-    <antcall target="create-ips-image"/>
+    <antcall target="create-common-image"/>
     <copy todir="${image.dir}">
             <fileset dir="${install.dir}/domains"/>
     </copy>
@@ -164,7 +168,7 @@
     <delete dir="${image.dir}"/>
 </target>
 
-<target name="create-ips-image" 
+<target name="create-common-image" 
         depends="publish-init"
         description="Creating IPS Image">
     <antcall target="create-local-image">

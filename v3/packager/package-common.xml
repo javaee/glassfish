@@ -127,5 +127,5 @@
 
 <target name="check-ips">
     <available file="pkg" property="ips.present"/>
-    <fail message="Install IPS/UC2.0 Client having pkg, pkgsend commands" unless="ips.present"/>
+    <!-- fail message="Install IPS/UC2.0 Client having pkg, pkgsend commands" unless="ips.present"/ -->
 </target>
