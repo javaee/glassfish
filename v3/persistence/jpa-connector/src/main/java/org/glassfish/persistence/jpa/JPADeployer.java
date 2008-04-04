@@ -27,6 +27,8 @@ import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.BundleDescriptor;
 import com.sun.enterprise.deployment.PersistenceUnitDescriptor;
 import com.sun.enterprise.module.ModuleDefinition;
+import com.sun.enterprise.module.ModulesRegistry;
+import com.sun.enterprise.module.Module;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.MetaData;
 import org.glassfish.api.deployment.InstrumentableClassLoader;
@@ -41,6 +43,7 @@ import javax.sql.DataSource;
 import java.util.Set;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.IllegalClassFormatException;
 import java.security.ProtectionDomain;
@@ -54,13 +57,29 @@ import java.security.ProtectionDomain;
 public class JPADeployer extends SimpleDeployer<JPAContainer, JPAApplication> {
 
     @Inject
-    ConnectorRuntime connectorRuntime;
+    private ConnectorRuntime connectorRuntime;
+
+    @Inject
+    private ModulesRegistry modulesRegistry;
+
 
     @Override public MetaData getMetaData() {
-        //Inherit PublicAPIs from JavaEEDeployer 
-        MetaData javaEEDeployerMetaData = super.getMetaData();
-        ModuleDefinition[] publicAPIsForJavaEE = javaEEDeployerMetaData.getPublicAPIs();
-        return new MetaData(true /*invalidateCL */ , publicAPIsForJavaEE, null /* provides */,
+        // List of modules imported for a JPA App.
+        List<ModuleDefinition> modulesImportedForJPAApp =   new ArrayList<ModuleDefinition>();
+
+        // Inherit PublicAPIs from super. This will contain javaee apis
+        modulesImportedForJPAApp.addAll(Arrays.asList(super.getMetaData().getPublicAPIs()));
+
+        // Add all modules providing service for javax.persistence.spi.PersistenceProvider.class also to list of imported modules
+        Iterable<Module> persistenceProviderModules = modulesRegistry.getModulesProvider(javax.persistence.spi.PersistenceProvider.class);
+        for (Module persistenceProviderModule : persistenceProviderModules) {
+            modulesImportedForJPAApp.add(persistenceProviderModule.getModuleDefinition());
+        }
+
+        return new MetaData(true /*invalidateCL */ ,
+                /* componentAPIs to be imported */
+                modulesImportedForJPAApp.toArray(new ModuleDefinition[modulesImportedForJPAApp.size()]),
+                null /* provides */,
                 new Class[] {Application.class} /* requires Application from dol */);
     }
 

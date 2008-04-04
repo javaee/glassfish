@@ -44,7 +44,7 @@ import java.util.logging.Logger;
 /**
  * Represents a JPA Application
  * @author Mitesh Meswani
- * Also contains code refactored from PersistenceUnitLoaderImpl of V2 authored by Sanjeeb Sahoo
+ * @author Sanjeeb.Sahoo@Sun.COM
  */
 public class JPAApplication implements ApplicationContainer {
 
