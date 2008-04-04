@@ -1,145 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
- DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
- Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+<project name="jruby-test" default="all" basedir=".">
 
- The contents of this file are subject to the terms of either the GNU
- General Public License Version 2 only ("GPL") or the Common Development
- and Distribution License("CDDL") (collectively, the "License").  You
- may not use this file except in compliance with the License. You can obtain
- a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
- or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
- language governing permissions and limitations under the License.
+<property file="build.properties"/>
+    
+<description>Builds, tests, and runs the JRuby Applications</description>
 
- When distributing the software, include this License Header Notice in each
- file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
- Sun designates this particular file as subject to the "Classpath" exception
- as provided by Sun in the GPL Version 2 section of the License file that
- accompanied this code.  If applicable, add the following below the License
- Header, with the fields enclosed by brackets [] replaced by your own
- identifying information: "Portions Copyrighted [year]
- [name of copyright owner]"
-
- Contributor(s):
-
- If you wish your version of this file to be governed by only the CDDL or
- only the GPL Version 2, indicate your decision by adding "[Contributor]
- elects to include this software in this distribution under the [CDDL or GPL
- Version 2] license."  If you don't indicate a single choice of license, a
- recipient has the option to distribute your version of this file under
- either the CDDL, the GPL Version 2 or to extend the choice of license to
- its licensees as provided above.  However, if you add GPL Version 2 code
- and therefore, elected the GPL Version 2 license, then the option applies
- only if the new code is made subject to such option by the copyright
- holder.
--->
-
-<project name="jruby-hello" default="all" basedir=".">    
-    <property file="build.properties"/>
-    <property name="download.dir" value="${ws.root}/downloads"/>
- <description>Builds, tests, and runs the project Hello JSP Application</description>
-    <import file="${ws.root}/gfproject/${deploy.platform}-targets.xml"/>
-
-<!-- target name="all" depends="checkjRubyExists,download-jruby,install-jruby,set-jrubyhome,create-app,deploy,run-test,undeploy"/ -->
-
-
-<target name="checkjRubyExists">
-    <available property="jrubyExist"
-               file="${JRUBY_HOME}/bin/jruby"/>
-    <echo message="${JRUBY_HOME}/bin/jruby exists: ${jrubyExist}"/>
-</target>
-
-<target name="set-jrubyhome">
-    <antcall target="set-jrubyhome-unix"/>
-    <antcall target="set-jrubyhome-win"/>
-    <antcall target="stop-server"/>
-    <antcall target="start-server"/>
-</target>
-
-<target name="set-jrubyhome-unix" if="isUnix">
-  <echo message="OS is ${os.name}"/>
-<concat destfile="${glassfish.home}/config/asenv.conf" append="true" >JRUBY_HOME=${JRUBY_HOME}
-</concat>
-</target>
-
-<target name="set-jrubyhome-win" if="isWindows">
-<echo message="${glassfish.home}/config/asenv.bat"/>
-<concat destfile="${glassfish.home}/config/asenv.bat" append="true" >set JRUBY_HOME=${JRUBY_HOME}
-</concat>
-</target>
-
-<target name="download-jruby" unless="jrubyExist">
-    <echo message="downloading jruby.."/>
-    <property name="jruby.version" value="1.0.3"/>
-    <property name="jruby-zip" 
-    value="http://dist.codehaus.org/jruby/jruby-bin-${jruby.version}.zip"/>
-    <mkdir dir="${download.dir}"/>    
-    <get src="${jruby-zip}"    
-         dest="${download.dir}/jruby.zip" 
-         verbose="true"
-         usetimestamp="true"/>
-</target>
-
-<target name="install-jruby" unless="jrubyExist">
-    <echo message="unzip "/>
-        <unzip src="${download.dir}/jruby.zip" dest="${download.dir}" overwrite="true"/> 
-        <move file="${download.dir}/jruby-${jruby.version}" tofile="${JRUBY_HOME}"/>
-        <chmod dir="${JRUBY_HOME}/bin" perm="ugo+x" includes="**/*"/>
-</target>
-
-<target name="install-rails" unless="jrubyExist">
-    <antcall target="install-rails-unix"/>
-    <antcall target="install-rails-windows"/>
-</target>
-
-<target name="install-rails-unix" if="isUnix">
-    <property environment="env"/>
-    <echo message="JRUBY_HOME: ${JRUBY_HOME}"/>
-    <echo message="${JRUBY_HOME}/bin/gem install rails --version=${rails.version} --no-rdoc --no-ri --include-dependencies"/>
-    <exec executable="${JRUBY_HOME}/bin/gem" failonerror="true" osfamily="unix">
-          <env key="PATH" path="${JRUBY_HOME}/bin:${env.PATH}"/>
-          <env key="JRUBY_HOME" value="${JRUBY_HOME}"/>
-          <arg line="install rails --version=${rails.version} --no-rdoc --no-ri --include-dependencies"/>
-    </exec>
-</target>
-
-<target name="install-rails-windows" if="isWindows">
-    <property environment="env"/>
-    <echo message="JRUBY_HOME: ${JRUBY_HOME}"/>
-    <echo message="${JRUBY_HOME}/bin/gem install rails --version=${rails.version} --no-rdoc --no-ri --include-dependencies"/>
-    <exec executable="${JRUBY_HOME}/bin/gem.bat" failonerror="true" osfamily="Windows">
-          <env key="PATH" path="${JRUBY_HOME}/bin:${env.PATH}"/>
-          <env key="JRUBY_HOME" value="${JRUBY_HOME}"/>
-          <arg line="install rails --version=${rails.version} --no-rdoc --no-ri --include-dependencies"/>
-    </exec>
-</target>
-
-<target name="compile-tests"
-            description="compile the test ng example" depends="">
-       <mkdir dir="${test.class.output}"/>
-       <javac   debug="true"
-              fork="true"
-              source="1.5"
-              classpathref="path2testng"
-              srcdir="helloapp/test"
-              destdir="${test.class.output}" />
-</target>
-
-<target  name="run">      
-    <echo message="=============Starting TestNG test at ${class.output}/test  ============"/>    
-    <mkdir dir="${result.output}"/>
-    <testng outputdir="${result.output}"
-    suitename="V3 JRuby TestSuite"
-    testname="web_jruby_hello"
-            classpathref="run.testng.classpath">
-        <!--<xmlfileset dir="../../" includes="testng.xml"/>-->
-        <classfileset dir="${test.class.output}" includes="**/JRubyTestNG.class"/>
-        <jvmarg value="-Dhost=${glassfish.http.host}" />
-        <jvmarg value="-Dport=${glassfish.http.port}" />
-        <jvmarg value="-Dcontextroot=helloapp" />
-    </testng>
-</target>
-
+    <target name="all-tests">
+        <antcall target="helloworld"/>
+        <antcall target="cookbook"/>
+        <antcall target="report"/>
+    </target>
+    <target name="helloworld">
+         <record name="helloworld.output" action="start" />
+          <ant dir="hello" target="all"/>
+         <record name="helloworld.output" action="stop" />
+    </target>
+    <target name="cookbook">
+         <record name="cookbook.output" action="start" />
+          <ant dir="cookbook" target="all"/>
+         <record name="cookbook.output" action="stop" />
+    </target>
     
 </project>
