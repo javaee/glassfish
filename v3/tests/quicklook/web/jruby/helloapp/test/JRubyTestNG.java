@@ -1,4 +1,4 @@
-package test.web.jruby.hello;
+package test.web.jruby.helloapp;
 import org.testng.annotations.Configuration;
 import org.testng.annotations.ExpectedExceptions;
 import org.testng.annotations.Test;
@@ -12,13 +12,11 @@ import java.util.*;
 public class JRubyTestNG {
 
     private static final String TEST_NAME =
-        "simple-jruby-webapp";
+        "jruby-say-hello";
 
     private static final String EXPECTED_RESPONSE =
-        "riding the Rails!";
+        "Welcome aboard";
     
-    private String strContextRoot="helloapp";
-
     static String result = "";
     /*
      *If two asserts are mentioned in one method, then last assert is taken in
@@ -81,7 +79,7 @@ public class JRubyTestNG {
             String contextRoot=System.getProperty("contextroot");
 
         String testurl = "http://" + host  + ":" + port + "/"+ contextRoot
-                +"/mycontroller/testview";
+                +"/say/hello";
         System.out.println("URL is: "+testurl);
         URL url = new URL(testurl);
         echo("Connecting to: " + url.toString());
@@ -99,7 +97,7 @@ public class JRubyTestNG {
         System.out.println("Reading HTML output..");
         while ((line = input.readLine()) != null) {
               //System.out.println(line);
-            if(line.indexOf("Mycontroller#testview")!=-1){
+            if(line.indexOf("Say#hello")!=-1){
                 result=true;
              testLine = line;
            System.out.println(testLine);
