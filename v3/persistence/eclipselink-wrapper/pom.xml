@@ -36,20 +36,50 @@
 * holder. 
 */ 
 --> 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.glassfish</groupId>
-        <artifactId>glassfish-parent</artifactId>
+	<groupId>org.glassfish.persistence</groupId>
+    	<artifactId>persistence</artifactId>
         <version>10.0-SNAPSHOT</version>
     </parent>
-    <groupId>org.glassfish.persistence</groupId>
-    <artifactId>persistence</artifactId>
-    <packaging>pom</packaging>
-    <name>GlassFish persistence related modules</name>  
-    <modules>
-        <module>jpa-connector</module>
-        <module>eclipselink-wrapper</module>
-    </modules>
+
+    <artifactId>eclipselink-wrapper</artifactId>
+    <packaging>hk2-jar</packaging>
+    <name>Repackaging of EclipseLink as a module</name>
+    
+    <developers>
+        <developer>
+            <id>mm110999</id>
+            <name>Mitesh Meswani</name>
+            <organization>Sun Microsystems, Inc.</organization>
+            <roles>
+                <role>developer</role>
+		        <role>lead</role>
+            </roles>
+        </developer>
+    </developers>
+    <dependencies>
+        <dependency>
+          <groupId>org.eclipse.persistence</groupId>
+          <artifactId>eclipselink.core</artifactId>
+          <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+          <groupId>org.eclipse.persistence</groupId>
+          <artifactId>eclipselink.jpa</artifactId>
+          <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+          <groupId>org.eclipse.persistence</groupId>
+          <artifactId>eclipselink.extension.oracle</artifactId>
+          <version>1.0-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
+  <repositories>
+    <repository>
+       <id>EclipseLink Repo</id>
+         <url>http://www.eclipse.org/downloads/download.php?r=1&amp;nf=1&amp;file=/technology/eclipselink/maven.repo</url>
+    </repository>
+  </repositories>
 </project>
