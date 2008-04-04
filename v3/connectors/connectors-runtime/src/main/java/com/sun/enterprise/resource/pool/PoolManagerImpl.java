@@ -421,12 +421,14 @@ public class PoolManagerImpl extends AbstractPoolManager {
     public ResourceReferenceDescriptor getResourceReference(String jndiName) {
         Set descriptors = ConnectorRuntime.getRuntime().getResourceReferenceDescriptor();
 
-        for (Object descriptor : descriptors) {
-            ResourceReferenceDescriptor ref =
-                    (ResourceReferenceDescriptor) descriptor;
-            String name = ref.getJndiName();
-            if (jndiName.equals(name)) {
-                return ref;
+        if(descriptors != null){
+            for (Object descriptor : descriptors) {
+                ResourceReferenceDescriptor ref =
+                        (ResourceReferenceDescriptor) descriptor;
+                String name = ref.getJndiName();
+                if (jndiName.equals(name)) {
+                    return ref;
+                }
             }
         }
         return null;

@@ -46,6 +46,7 @@ import com.sun.enterprise.connectors.util.RAWriterAdapter;
 import com.sun.enterprise.connectors.authentication.AuthenticationService;
 import com.sun.enterprise.connectors.naming.ConnectorNamingEventNotifier;
 import com.sun.enterprise.deployment.ConnectorDescriptor;
+import com.sun.enterprise.deployment.JndiNameEnvironment;
 import com.sun.enterprise.resource.pool.PoolManager;
 import com.sun.enterprise.util.ConnectorClassLoader;
 import com.sun.enterprise.container.common.spi.util.ComponentEnvManager;
@@ -542,7 +543,12 @@ public class ConnectorRuntime implements ConnectorConstants, com.sun.appserv.con
     }
 
     public Set getResourceReferenceDescriptor() {
-        return componentEnvManager.getCurrentJndiNameEnvironment().getResourceReferenceDescriptors();
+        JndiNameEnvironment jndiEnv = componentEnvManager.getCurrentJndiNameEnvironment();
+        if(jndiEnv != null){
+            return jndiEnv.getResourceReferenceDescriptors();
+        }else{
+            return null;
+        }
     }
 
     /**
