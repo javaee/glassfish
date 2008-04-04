@@ -64,15 +64,14 @@
 	    <ValidOption name="interactive"/>
 	    <ValidOption name="passwordfile"/>			
 	</Command>
-        <Command name="create-domain" classname="com.sun.enterprise.admin.cli.CreateDomainCommand" numberofoperands="1" usage-text="create-domain [--user admin] [--adminport port_number] [--terse=false] [--echo=false] [--interactive=true] [--domaindir domain_directory] [--profile profile_name] [--template domain_template]  [--passwordfile filename ] [--instanceport port_number] [--savemasterpassword=false] [--domainproperties (name=value)[:name=value]*] [--portbase portbase] [--savelogin=false] [--checkports=true] domain_name">
+        <Command name="create-domain" classname="com.sun.enterprise.admin.cli.CreateDomainCommand"  numberofoperands="1" 
+           usage-text="create-domain [--user admin] --adminport port_number | --portbase portbase [--terse=false] [--echo=false] [--interactive=true] [--domaindir domain_directory] [--passwordfile filename ] [--instanceport port_number] [--savemasterpassword=false] [--domainproperties (name=value)[:name=value]*] [--savelogin=false] [--checkports=true] domain_name">
                 <ValidOption name="adminport"/>
                 <ValidOption name="adminuser"/>
                 <ValidOption name="adminpassword"/>
                 <ValidOption name="user" deprecatedoption="adminuser"/>
                 <ValidOption name="password" />
                 <ValidOption name="interactive"/>
-                <ValidOption name="profile"/>
-                <ValidOption name="template"/>
                 <ValidOption name="terse"/>
                 <ValidOption name="echo"/>
                 <ValidOption name="instanceport"/>
