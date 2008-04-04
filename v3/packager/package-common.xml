@@ -97,7 +97,7 @@
     </java>
 </target>
 
-<target name="push-package"
+<target name="push-package" depends="check-ips"
     description="Push Package ${pkgname} to ${REPO_URL}">
     <echo message="Push Package ${pkg.dir}/${pkgname} to ${REPO_URL}"/>
     <exec dir="${pkg.dir}" executable="pkgsend" failonerror="true">
@@ -105,7 +105,7 @@
     </exec>
 </target>
 
-<target name="create-local-image"
+<target name="create-local-image" depends="check-ips"
     description="Create local IPS image using ${REPO_URL}">
     <echo message="Creating local IPS image for ${REPO_URL}"/>
     <mkdir dir="${image.dir}"/>
@@ -117,10 +117,15 @@
     </exec>
 </target>
 
-<target name="install-package"
+<target name="install-package" depends="check-ips"
     description="Install Package ${pkgname} from ${REPO_URL}">
     <echo message="Install Package ${pkgname} from ${REPO_URL}"/>
     <exec dir="${image.dir}" executable="pkg" failonerror="true">
         <arg line="install ${pkgname}" />
     </exec>
+</target>
+
+<target name="check-ips">
+    <available file="pkg" property="ips.present"/>
+    <fail message="Install IPS/UC2.0 Client having pkg, pkgsend commands" unless="ips.present"/>
 </target>

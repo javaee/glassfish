@@ -29,6 +29,11 @@
 <target name="package-SUNWglassfishv3-nucleus" 
         depends="publish-init,package-install-init"
         description="Package SUNWglassfishv3-nucleus">
+
+    <!-- resolveArtifact artifactId="nucleus" property="nucleus.zip"/>
+    <resolveArtifact artifactId="web" property="web.zip"/>
+    <echo message="web.zip: ${web.zip}, nucleus.zip: ${nucleus.zip}"/ -->
+
     <echo message="Creating package SUNWglassfishv3-nucleus..."/>
 
     <mkdir dir="${basedir}/build" />
