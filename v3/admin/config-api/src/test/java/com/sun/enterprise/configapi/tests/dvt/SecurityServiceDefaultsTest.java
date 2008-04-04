@@ -36,7 +36,7 @@
 
 package com.sun.enterprise.configapi.tests.dvt;
 
-import com.sun.enterprise.config.serverbeans.JdbcConnectionPool;
+import com.sun.enterprise.config.serverbeans.SecurityService;
 import com.sun.enterprise.configapi.tests.ConfigApiTest;
 import org.junit.After;
 import org.junit.Before;
@@ -48,26 +48,26 @@ import static org.junit.Assert.*;
  * @author Kedar Mhaswade (km@dev.java.net)
  */
 
-public class JdbcConnectionPoolDefaultsTest extends ConfigApiTest {
+public class SecurityServiceDefaultsTest extends ConfigApiTest {
 
-    JdbcConnectionPool onlyOnePool = null;
+    SecurityService ss = null;
     
-    public JdbcConnectionPoolDefaultsTest() {
+    public SecurityServiceDefaultsTest() {
     }
 
     @Override
     public String getFileName() {
-        return ("JdbcConnectionPoolDefaults"); //this is the xml to load
+        return ("SecurityServiceDefaults"); //this is the xml to load
     }
 
     @Before
     public void setUp() {
-        onlyOnePool = super.getHabitat().getComponent(JdbcConnectionPool.class);
+        ss = super.getHabitat().getComponent(SecurityService.class);
     }
 
     @After
     public void tearDown() {
-        onlyOnePool = null;
+        ss = null;
     }
 
     // TODO add test methods here.
@@ -75,9 +75,11 @@ public class JdbcConnectionPoolDefaultsTest extends ConfigApiTest {
     //
     @Test
     public void testFewDefaults() {
-    
-        assertEquals("8", onlyOnePool.getSteadyPoolSize());
-        assertEquals("32", onlyOnePool.getMaxPoolSize());
-        assertEquals("false", onlyOnePool.getMatchConnections());
+        assertEquals("file", ss.getDefaultRealm());
+        assertEquals("false", ss.getActivateDefaultPrincipalToRoleMapping());
+        assertEquals("AttributeDeprecated", ss.getAnonymousRole());
+        assertEquals("false", ss.getAuditEnabled());
+        assertEquals("default", ss.getAuditModules());
+        assertEquals("default", ss.getJacc());
     }
 }

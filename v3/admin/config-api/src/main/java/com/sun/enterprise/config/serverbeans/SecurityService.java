@@ -69,7 +69,7 @@ public interface SecurityService extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="file")
     public String getDefaultRealm();
 
     /**
@@ -120,7 +120,7 @@ public interface SecurityService extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="AttributeDeprecated")
     public String getAnonymousRole();
 
     /**
@@ -137,7 +137,7 @@ public interface SecurityService extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="false")
     public String getAuditEnabled();
 
     /**
@@ -154,7 +154,7 @@ public interface SecurityService extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="default")
     public String getJacc();
 
     /**
@@ -171,7 +171,7 @@ public interface SecurityService extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="default")
     public String getAuditModules();
 
     /**
@@ -188,7 +188,7 @@ public interface SecurityService extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="false")
     public String getActivateDefaultPrincipalToRoleMapping();
 
     /**
