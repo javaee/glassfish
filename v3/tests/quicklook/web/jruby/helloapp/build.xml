@@ -1,134 +1,50 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project name="jruby-hello" default="default" basedir=".">
-    <property file="build.properties"/>
-    
- <description>Builds, tests, and runs the project Hello JSP Application</description>
-<!-- <import file="nbproject/build-impl.xml"/>-->
+<project basedir="." default="all" name="JRubyOnGlassfish">
+<import file="../jruby-common.xml"/>
 
-<path id="sun.appserver.antjar">
-    <fileset dir="${glassfish.home}/lib">
-        <include name="**/*.jar"/>
-    </fileset>          
-</path>
+<property environment="env"/>
+<property file="./build.properties"/>
 
-<path id="class.path">
-    <fileset dir="${glassfish.home}/lib">
-        <include name="**/*.jar"/>
-    </fileset>      
-    <pathelement location="${class.output}/app"/>
-</path>
+<target name="all" depends="create-app,deploy,run-test,undeploy"/>
 
-<path id="run.testng.classpath">
-    <fileset dir="${glassfish.home}/modules">
-        <include name="**/*.jar"/>
-    </fileset>
-    <fileset dir="../../lib">
-        <include name="**/*.jar"/>
-    </fileset>
-    <pathelement location="${class.output}/app"/>
-    <pathelement location="${test.class.output}"/>
-</path>
-
-<!-- TestNG class fileset -->
-    <fileset id="run.classfileset"
-             dir="${build.dir}/"
-             includes="**/*.class">
-    </fileset>
-
-<target name="build">    
-    <echo message="======================================================="/>
-    <echo message="JRuby Application..do nothing"/>
-    <echo message="======================================================="/>
+<target name="create-app">
+    <antcall target="create-app-common"/>
 </target>
 
-<path id="path2testng">
-    <pathelement location="testng-5.0-jdk15.jar"/>
-</path>
+<taskdef name="testng" classname="org.testng.TestNGAntTask">
+    <classpath>
+        <pathelement path="${plugin_classpath}"/>
+    </classpath>
+</taskdef>
 
-<taskdef name="testng"
-         classpathref="path2testng"
-         classname="org.testng.TestNGAntTask"/>
-         
-
-<!-- Generate the TestNG report -->
-<target name="report">
-    <delete dir="${result.output}"/>
-    <mkdir dir="${test-report}"/>
-    <junitreport todir="${test-report}">
-        <fileset dir=".">
-           <include name="**/test-output/**/*.xml"/>
-           <exclude name="**/testng-failed.xml"/>
-        </fileset>
-        <report format="noframes" todir="test-report"/>
-    </junitreport>
-</target>
-<target name="compile-tests"
-            description="compile the test ng example" depends="">
-       
-       <mkdir dir="${test.class.output}"/>
-       <javac   debug="true"
-              fork="true"
-              source="1.5"
-              classpathref="path2testng"
-              srcdir="test"
-              destdir="${test.class.output}"
-       />
+<target name="build">
+    <antcall target="build-common"/>
 </target>
 
-<target  name="run">      
-    <echo message="=============Starting TestNG test at ${class.output}/test  ============"/>    
-    <mkdir dir="${result.output}"/>
-    <testng outputdir="${result.output}"
-    suitename="V3 JRuby TestSuite"
-    testname="web_jruby_hello"
-            classpathref="run.testng.classpath">
-        <!--<xmlfileset dir="../../" includes="testng.xml"/>-->
-        <classfileset dir="${test.class.output}" includes="**/WebTestNG.class"/>
-        <jvmarg value="-Dhost=localhost" />
-        <jvmarg value="-Dport=8080" />
-        <jvmarg value="-Dcontextroot=helloapp" />
-    </testng>
+<target name="deploy">
+    <antcall target="deploy-common">
+	<param name="deploy_action" value="deploy"/>
+    </antcall>
 </target>
 
-<target name="stop">
-    
+<target name="run-test">
+    <antcall target="run-test-common"/>
 </target>
 
-<target name="deploy">    
-    <antcall target="deploy-v3"/>
-</target>
-    
-
-<target name="deploy-v3" if="v3">
-    <echo message="deploying in v3 mode"/>
-    <echo message="OS is ${os.name}"/>    
-    <exec executable="cmd" osfamily="Windows">
-    <arg value="/c"/>
-    <arg value="${glassfish.home}/bin/asadmin.bat"/>
-    <arg value="deploy"/>
-    <arg value="${war.file.ext}"/>
-  </exec>  
-  
-  <exec executable="${glassfish.home}/bin/asadmin" osfamily="unix">
-    <arg value="deploy"/>
-    <arg value="${basedir}/${war.file.ext}"/>
-  </exec>  
-    
+<target name="undeploy">
+    <antcall target="deploy-common">
+	<param name="deploy_action" value="undeploy"/>
+    </antcall>
 </target>
 
-<target name="source">
+<target name="clean">
+    <delete dir="helloworld"/>
+</target>
 
-        <zip zipfile="${final.src.name}" basedir=".">
+<target name="clobber" depends="clean">
+    <delete dir="${JRUBY}"/>
+    <delete dir="${GOLDSPIKE_DIR}"/>
+</target>
 
-            <exclude name="${out.dir}/**"/>
-            <exclude name="**/*.log"/>
-            <exclude name="**/*.bak"/>
-            <exclude name="**/*.class"/>
-            <exclude name="${build.dir}/build.properties"/>
-
-        </zip>
-
-    </target>
-    
 </project>
