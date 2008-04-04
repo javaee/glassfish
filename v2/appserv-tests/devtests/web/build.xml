@@ -386,13 +386,13 @@
        </java>
 
        <!--  We need to execute ant using CMD line so the jars are picked -->
-        <java classname="org.apache.tools.ant.Main" fork="true" failonerror="false" maxmemory="128M">
-            <classpath>
+       <java classname="org.apache.tools.ant.Main" fork="true" failonerror="false" maxmemory="128M">
+            <!--classpath>
                 <fileset dir="${env.S1AS_HOME}/lib/ant/lib">
                     <include name="*.jar" />
                 </fileset>
             </classpath>
-            <sysproperty key="ant.home" value="${env.S1AS_HOME}/lib/ant" />
+            <sysproperty key="ant.home" value="${env.S1AS_HOME}/lib/ant" /-->
             <arg line="-f ./mail.xml "/>
         </java>
 
