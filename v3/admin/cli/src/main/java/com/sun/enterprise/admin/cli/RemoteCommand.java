@@ -134,7 +134,8 @@ private static final RemoteCommand INSTANCE = new RemoteCommand();
             //add operands
             for (int ii = 0; ii < operands.size(); ii++) {
                 final String operand = (String) operands.get(ii);
-                if (rcp.getCommandName().equals("deploy")) {
+                if (rcp.getCommandName().equals("deploy") ||
+                    rcp.getCommandName().equals("redeploy")) {
                     fileName = new File(operand);
                     final String fileParam = getFileParam(uploadFile, fileName);
                     //there should only be one operand for deploy command
@@ -252,7 +253,8 @@ private static final RemoteCommand INSTANCE = new RemoteCommand();
                           final String fileName) {
 
         boolean uploadFile = Boolean.parseBoolean(uploadOption);
-        if (fileName != null && commandName.equals("deploy")) {
+        if (fileName != null &&
+            (commandName.equals("deploy") || commandName.equals("redeploy"))) {
             if (new File(fileName).isDirectory()) {
                 //for directory deployment uploadFile is always false.
                 uploadFile = false;
