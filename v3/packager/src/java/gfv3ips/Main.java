@@ -87,12 +87,12 @@ public class Main {
 
     public static void printCommon() {
 	printInitial();
-        for (Iterator it = zipWebEntries.keySet().iterator(); it.hasNext();) {
+        /* for (Iterator it = zipWebEntries.keySet().iterator(); it.hasNext();) {
             String object = (String) it.next();
             if (object.indexOf("domains/domain1") >= 0) {
                 System.out.println(object);
             }
-        }
+        } */
 
         for (Iterator it = zipWebEntries.keySet().iterator(); it.hasNext();) {
             String object = (String) it.next();
