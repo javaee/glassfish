@@ -33,7 +33,6 @@
  only if the new code is made subject to such option by the copyright
  holder.
 -->
-
 <!initPage
     if ($session{registrationNodePage} = registration){
         redirect("registration.jsf");
@@ -418,7 +417,7 @@
 		<div class="innerbox"> 
 
 </f:verbatim>
-<jmaki:widget name="jmaki.blockList" id="learning" args="{count:5}" service="/sysnet/learning.json" template="/resources/jmaki/blockList/learning.htm" />
+<jmaki:widget name="jmaki.blockList" id="learning" args="{count:5}" service="/resource/sysnet/learning.json" template="/resources/jmaki/blockList/learning.htm" />
 <f:verbatim>
 		</div>
             </div>   
