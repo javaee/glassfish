@@ -58,8 +58,8 @@
 #include "/shared/restart.inc"    
     <sun:html id="html2">
         <sun:head id="propertyhead"  title="$resource{i18n.vs.ListPageTitle}">
-            <sun:script url="/resource/js/restart.js" />
-#include "/alertMsg.inc"        
+            <sun:script url="/resource/js/adminjsf.js" />
+#include "/shared/alertMsg.inc"        
         </sun:head>
         <sun:body id="body3" onLoad="admingui.nav.refreshTree($attribute{refreshId}); synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
 	    <!beforeCreate
@@ -71,7 +71,7 @@
 		}
 	    />
             <sun:form id="propertyForm">
-#include "/treeBreadcrumbs.inc"
+#include "/shared/treeBreadcrumbs.inc"
                  <sun:title id="propertyContentPage" title="$resource{i18n.vs.ListPageTitle}"
                  helpText="$resource{i18n.vs.ListPageHelp}" />
 		 "<br /> <br />

@@ -38,14 +38,14 @@
 #include "/shared/restart.inc"    
     <sun:html id="html2">
         <sun:head id="propertyhead" title="#{pageTitle}">
-            <sun:script url="resource/js/restart.js" />
+            <sun:script url="resource/js/adminjsf.js" />
         </sun:head>
 
         <sun:body id="body3" onLoad="synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
             <sun:form id="form1">
     # purposely to omit breadcrumb, including it causes syntax error, but only for this page
-    #include "/treeBreadcrumbs.inc"
-#include "/alertMsg.inc"
+    #include "/shared/treeBreadcrumbs.inc"
+#include "/shared/alertMsg.inc"
 #include "virtualServerAttr.inc"               
 #include "/shared/propertyTable.inc"
 	<sun:hidden id="helpKey" value="${helpKey}" />

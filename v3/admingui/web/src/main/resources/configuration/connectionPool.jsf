@@ -37,7 +37,7 @@
 
 <sun:page id="page1">
     <!beforeCreate
-    setResourceBundle(key="i18n" bundle="core.Strings")
+        setResourceBundle(key="i18n" bundle="core.Strings")
 	setResourceBundle(key="help" bundle="core.Helplinks")
         getRequestValue(key="configName" value=>$page{configName});
         getConnectionPoolSettings(ConfigName="#{configName}", 
@@ -51,14 +51,13 @@
 #include "/shared/restart.inc"
     <sun:html id="html2">
         <sun:head id="propertyhead" title="$resource{i18n.cp.Title}">
-            <sun:script url="/resource/js/restart.js" />
             <sun:script url="/resource/js/adminjsf.js" />
         </sun:head>
         <sun:body id="body3" onLoad="javascript: synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
             <sun:form id="propertyForm">
-#include "/treeBreadcrumbs.inc"
+#include "/shared/treeBreadcrumbs.inc"
 #include "httpServiceTabs.inc"
-#include "/alertMsg.inc"
+#include "/shared/alertMsg.inc"
                 <!-- Page Title -->
                 <sun:title id="propertyContentPage" title="$resource{i18n.cp.Title}"
                 helpTextt="$resource{i18n.cp.PageHelp}">
@@ -110,7 +109,7 @@
                           <sun:property id="sendSizeProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.cp.SendSize}" helpText="$resource{i18n.cp.SendSizeHelp}">
                                 <sun:textField id="SendSize" styleClass="integer" columns="$int{10}" text="#{send}" />
                                 <sun:staticText id="bytes" style="padding: 8pt" text="$resource{i18n.common.Bytes}"/>
-                            </sun:property>             
+                          </sun:property>             
                             "<br /><br />
                         </sun:propertySheetSection>
                     </sun:propertySheet>    

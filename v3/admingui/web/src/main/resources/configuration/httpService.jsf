@@ -46,15 +46,14 @@
 #include "/shared/restart.inc"    
     <sun:html id="html2">
         <sun:head id="propertyhead" title="$resource{i18n.http.HttpService}">
-            <sun:script url="/resource/js/restart.js" />
             <sun:script url="/resource/js/adminjsf.js" />
         </sun:head>
 
         <sun:body id="body3" onLoad="synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
             <sun:form id="form1">
-#include "/treeBreadcrumbs.inc"
+#include "/shared/treeBreadcrumbs.inc"
 #include "httpServiceTabs.inc"            
-#include "/alertMsg.inc"
+#include "/shared/alertMsg.inc"
 
 <sun:title id="propertyContentPage" title="$resource{i18n.http.HttpService}" helpText="$resource{i18n.http.PageHelp}">
     <!facet pageButtonsTop>
