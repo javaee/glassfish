@@ -84,7 +84,7 @@ public interface WebServiceEndpoint extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="OFF")
     public String getMonitoring();
 
     /**
@@ -101,7 +101,7 @@ public interface WebServiceEndpoint extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="25")
     public String getMaxHistorySize();
 
     /**
@@ -118,7 +118,7 @@ public interface WebServiceEndpoint extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="false")
     public String getJbiEnabled();
 
     /**

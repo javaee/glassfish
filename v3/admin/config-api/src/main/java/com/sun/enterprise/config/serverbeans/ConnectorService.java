@@ -62,7 +62,7 @@ public interface ConnectorService extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="30")
     public String getShutdownTimeoutInSeconds();
 
     /**

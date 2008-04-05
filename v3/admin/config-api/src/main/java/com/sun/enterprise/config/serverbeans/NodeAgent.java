@@ -103,7 +103,7 @@ public interface NodeAgent extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="true")
     public String getStartServersInStartup();
 
     /**

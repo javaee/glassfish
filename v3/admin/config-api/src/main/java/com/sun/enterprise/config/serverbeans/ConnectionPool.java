@@ -62,7 +62,7 @@ public interface ConnectionPool extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="4096")
     public String getQueueSizeInBytes();
 
     /**
@@ -79,7 +79,7 @@ public interface ConnectionPool extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="4096")
     public String getMaxPendingCount();
 
     /**
@@ -96,7 +96,7 @@ public interface ConnectionPool extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="4096")
     public String getReceiveBufferSizeInBytes();
 
     /**
@@ -113,7 +113,7 @@ public interface ConnectionPool extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="8192")
     public String getSendBufferSizeInBytes();
 
     /**

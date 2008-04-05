@@ -83,7 +83,7 @@ public interface ServerRef extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="30")
     public String getDisableTimeoutInMinutes();
 
     /**
@@ -100,7 +100,7 @@ public interface ServerRef extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="false")
     public String getLbEnabled();
 
     /**
@@ -117,7 +117,7 @@ public interface ServerRef extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="true")
     public String getEnabled();
 
     /**

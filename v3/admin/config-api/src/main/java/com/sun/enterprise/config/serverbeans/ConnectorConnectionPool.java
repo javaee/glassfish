@@ -90,7 +90,7 @@ public interface ConnectorConnectionPool extends ConfigBeanProxy, Injectable, Re
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="8")
     public String getSteadyPoolSize();
 
     /**
@@ -107,7 +107,7 @@ public interface ConnectorConnectionPool extends ConfigBeanProxy, Injectable, Re
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="32")
     public String getMaxPoolSize();
 
     /**
@@ -124,7 +124,7 @@ public interface ConnectorConnectionPool extends ConfigBeanProxy, Injectable, Re
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="60000")
     public String getMaxWaitTimeInMillis();
 
     /**
@@ -141,7 +141,7 @@ public interface ConnectorConnectionPool extends ConfigBeanProxy, Injectable, Re
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="2")
     public String getPoolResizeQuantity();
 
     /**
@@ -158,7 +158,7 @@ public interface ConnectorConnectionPool extends ConfigBeanProxy, Injectable, Re
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="300")
     public String getIdleTimeoutInSeconds();
 
     /**
@@ -175,7 +175,7 @@ public interface ConnectorConnectionPool extends ConfigBeanProxy, Injectable, Re
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="false")
     public String getFailAllConnections();
 
     /**
@@ -209,7 +209,7 @@ public interface ConnectorConnectionPool extends ConfigBeanProxy, Injectable, Re
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="false")
     public String getIsConnectionValidationRequired();
 
     /**
@@ -226,7 +226,7 @@ public interface ConnectorConnectionPool extends ConfigBeanProxy, Injectable, Re
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="0")
     public String getValidateAtmostOncePeriodInSeconds();
 
     /**
@@ -243,7 +243,7 @@ public interface ConnectorConnectionPool extends ConfigBeanProxy, Injectable, Re
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="0")
     public String getConnectionLeakTimeoutInSeconds();
 
     /**
@@ -260,7 +260,7 @@ public interface ConnectorConnectionPool extends ConfigBeanProxy, Injectable, Re
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="false")
     public String getConnectionLeakReclaim();
 
     /**
@@ -277,7 +277,7 @@ public interface ConnectorConnectionPool extends ConfigBeanProxy, Injectable, Re
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="0")
     public String getConnectionCreationRetryAttempts();
 
     /**
@@ -294,7 +294,7 @@ public interface ConnectorConnectionPool extends ConfigBeanProxy, Injectable, Re
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="10")
     public String getConnectionCreationRetryIntervalInSeconds();
 
     /**
@@ -311,7 +311,7 @@ public interface ConnectorConnectionPool extends ConfigBeanProxy, Injectable, Re
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="false")
     public String getLazyConnectionEnlistment();
 
     /**
@@ -328,7 +328,7 @@ public interface ConnectorConnectionPool extends ConfigBeanProxy, Injectable, Re
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="false")
     public String getLazyConnectionAssociation();
 
     /**
@@ -345,7 +345,7 @@ public interface ConnectorConnectionPool extends ConfigBeanProxy, Injectable, Re
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="false")
     public String getAssociateWithThread();
 
     /**
@@ -362,7 +362,7 @@ public interface ConnectorConnectionPool extends ConfigBeanProxy, Injectable, Re
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="true")
     public String getMatchConnections();
 
     /**
@@ -379,7 +379,7 @@ public interface ConnectorConnectionPool extends ConfigBeanProxy, Injectable, Re
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="0")
     public String getMaxConnectionUsageCount();
 
     /**

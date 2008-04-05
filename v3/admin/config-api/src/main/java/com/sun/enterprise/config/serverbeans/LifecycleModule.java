@@ -136,7 +136,7 @@ public interface LifecycleModule extends ConfigBeanProxy, Injectable, Module {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="false")
     public String getIsFailureFatal();
 
     /**
@@ -153,7 +153,7 @@ public interface LifecycleModule extends ConfigBeanProxy, Injectable, Module {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="user")
     public String getObjectType();
 
     /**
@@ -170,7 +170,7 @@ public interface LifecycleModule extends ConfigBeanProxy, Injectable, Module {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="true")
     public String getEnabled();
 
     /**

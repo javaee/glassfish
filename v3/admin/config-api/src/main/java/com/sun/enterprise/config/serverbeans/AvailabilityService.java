@@ -69,7 +69,7 @@ public interface AvailabilityService extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="true")
     public String getAvailabilityEnabled();
 
     /**
@@ -154,7 +154,7 @@ public interface AvailabilityService extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="false")
     public String getAutoManageHaStore();
 
     /**
@@ -188,7 +188,7 @@ public interface AvailabilityService extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="false")
     public String getHaStoreHealthcheckEnabled();
 
     /**
@@ -205,7 +205,7 @@ public interface AvailabilityService extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="5")
     public String getHaStoreHealthcheckIntervalInSeconds();
 
     /**

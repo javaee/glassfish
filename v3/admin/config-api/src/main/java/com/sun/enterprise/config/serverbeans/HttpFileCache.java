@@ -62,7 +62,7 @@ public interface HttpFileCache extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="true")
     public String getGloballyEnabled();
 
     /**
@@ -79,7 +79,7 @@ public interface HttpFileCache extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="true")
     public String getFileCachingEnabled();
 
     /**
@@ -96,7 +96,7 @@ public interface HttpFileCache extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="30")
     public String getMaxAgeInSeconds();
 
     /**
@@ -113,7 +113,7 @@ public interface HttpFileCache extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="537600")
     public String getMediumFileSizeLimitInBytes();
 
     /**
@@ -130,7 +130,7 @@ public interface HttpFileCache extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute  (defaultValue="10485760")
     public String getMediumFileSpaceInBytes();
 
     /**
@@ -147,7 +147,7 @@ public interface HttpFileCache extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="2048")
     public String getSmallFileSizeLimitInBytes();
 
     /**
@@ -164,7 +164,7 @@ public interface HttpFileCache extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="1048576")
     public String getSmallFileSpaceInBytes();
 
     /**
@@ -181,7 +181,7 @@ public interface HttpFileCache extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="false")
     public String getFileTransmissionEnabled();
 
     /**
@@ -198,7 +198,7 @@ public interface HttpFileCache extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="1024")
     public String getMaxFilesCount();
 
     /**
@@ -215,7 +215,7 @@ public interface HttpFileCache extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="0")
     public String getHashInitSize();
 
     /**

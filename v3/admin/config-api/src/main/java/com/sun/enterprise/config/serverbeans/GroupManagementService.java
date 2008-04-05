@@ -66,7 +66,7 @@ public interface GroupManagementService extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="3")
     public String getFdProtocolMaxTries();
 
     /**
@@ -83,7 +83,7 @@ public interface GroupManagementService extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="2000")
     public String getFdProtocolTimeoutInMillis();
 
     /**
@@ -100,7 +100,7 @@ public interface GroupManagementService extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="10000")
     public String getMergeProtocolMaxIntervalInMillis();
 
     /**
@@ -117,7 +117,7 @@ public interface GroupManagementService extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="5000")
     public String getMergeProtocolMinIntervalInMillis();
 
     /**
@@ -134,7 +134,7 @@ public interface GroupManagementService extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="2000")
     public String getPingProtocolTimeoutInMillis();
 
     /**
@@ -151,7 +151,7 @@ public interface GroupManagementService extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="1500")
     public String getVsProtocolTimeoutInMillis();
 
     /**

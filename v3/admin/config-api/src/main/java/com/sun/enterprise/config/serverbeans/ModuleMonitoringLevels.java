@@ -65,7 +65,7 @@ public interface ModuleMonitoringLevels extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="OFF")
     public String getThreadPool();
 
     /**
@@ -82,7 +82,7 @@ public interface ModuleMonitoringLevels extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="OFF")
     public String getOrb();
 
     /**
@@ -99,7 +99,7 @@ public interface ModuleMonitoringLevels extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="OFF")
     public String getEjbContainer();
 
     /**
@@ -116,7 +116,7 @@ public interface ModuleMonitoringLevels extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="OFF")
     public String getWebContainer();
 
     /**
@@ -133,7 +133,7 @@ public interface ModuleMonitoringLevels extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="OFF")
     public String getTransactionService();
 
     /**
@@ -150,7 +150,7 @@ public interface ModuleMonitoringLevels extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="OFF")
     public String getHttpService();
 
     /**
@@ -167,7 +167,7 @@ public interface ModuleMonitoringLevels extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="OFF")
     public String getJdbcConnectionPool();
 
     /**
@@ -184,7 +184,7 @@ public interface ModuleMonitoringLevels extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="OFF")
     public String getConnectorConnectionPool();
 
     /**
@@ -201,7 +201,7 @@ public interface ModuleMonitoringLevels extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="OFF")
     public String getConnectorService();
 
     /**
@@ -218,7 +218,7 @@ public interface ModuleMonitoringLevels extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="OFF")
     public String getJmsService();
 
     /**
@@ -235,7 +235,7 @@ public interface ModuleMonitoringLevels extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="OFF")
     public String getJvm();
 
     /**

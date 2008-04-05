@@ -100,7 +100,7 @@ public interface JmsHost extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="7676")
     public String getPort();
 
     /**
@@ -117,7 +117,7 @@ public interface JmsHost extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="admin")
     public String getAdminUserName();
 
     /**
@@ -134,7 +134,7 @@ public interface JmsHost extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="admin")
     public String getAdminPassword();
 
     /**

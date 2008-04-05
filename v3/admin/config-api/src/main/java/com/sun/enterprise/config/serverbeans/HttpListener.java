@@ -133,7 +133,7 @@ public interface HttpListener extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="inet")
     public String getFamily();
 
     /**
@@ -150,7 +150,7 @@ public interface HttpListener extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="false")
     public String getBlockingEnabled();
 
     /**
@@ -167,7 +167,7 @@ public interface HttpListener extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="1")
     public String getAcceptorThreads();
 
     /**
@@ -184,7 +184,7 @@ public interface HttpListener extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="false")
     public String getSecurityEnabled();
 
     /**
@@ -252,7 +252,7 @@ public interface HttpListener extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="true")
     public String getXpoweredBy();
 
     /**
@@ -269,7 +269,7 @@ public interface HttpListener extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="true")
     public String getEnabled();
 
     /**

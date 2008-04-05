@@ -84,7 +84,7 @@ public interface Event extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="true")
     public String getRecordEvent();
 
     /**
@@ -101,7 +101,7 @@ public interface Event extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="INFO")
     public String getLevel();
 
     /**

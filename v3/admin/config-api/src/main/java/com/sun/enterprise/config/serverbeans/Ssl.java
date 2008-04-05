@@ -79,7 +79,7 @@ public interface Ssl extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="false")
     public String getSsl2Enabled();
 
     /**
@@ -113,7 +113,7 @@ public interface Ssl extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="true")
     public String getSsl3Enabled();
 
     /**
@@ -147,7 +147,7 @@ public interface Ssl extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="true")
     public String getTlsEnabled();
 
     /**
@@ -164,7 +164,7 @@ public interface Ssl extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="true")
     public String getTlsRollbackEnabled();
 
     /**
@@ -181,7 +181,7 @@ public interface Ssl extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="false")
     public String getClientAuthEnabled();
 
     /**

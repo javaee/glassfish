@@ -68,7 +68,7 @@ public interface JavaConfig extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="${com.sun.aas.javaRoot}")
     public String getJavaHome();
 
     /**
@@ -85,7 +85,7 @@ public interface JavaConfig extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="false")
     public String getDebugEnabled();
 
     /**
@@ -102,7 +102,7 @@ public interface JavaConfig extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n")
     public String getDebugOptions();
 
     /**
@@ -119,7 +119,7 @@ public interface JavaConfig extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="-iiop -poa -alwaysgenerate -keepgenerated -g")
     public String getRmicOptions();
 
     /**
@@ -136,7 +136,7 @@ public interface JavaConfig extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="-g")
     public String getJavacOptions();
 
     /**
@@ -272,7 +272,7 @@ public interface JavaConfig extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="true")
     public String getEnvClasspathIgnored();
 
     /**

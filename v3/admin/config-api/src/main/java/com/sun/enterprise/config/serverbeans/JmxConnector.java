@@ -84,7 +84,7 @@ public interface JmxConnector extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="true")
     public String getEnabled();
 
     /**
@@ -101,7 +101,7 @@ public interface JmxConnector extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="rmi_jrmp")
     public String getProtocol();
 
     /**
@@ -152,7 +152,7 @@ public interface JmxConnector extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="false")
     public String getAcceptAll();
 
     /**
@@ -186,7 +186,7 @@ public interface JmxConnector extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="true")
     public String getSecurityEnabled();
 
     /**

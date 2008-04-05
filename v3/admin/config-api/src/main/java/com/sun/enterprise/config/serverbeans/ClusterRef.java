@@ -82,7 +82,7 @@ public interface ClusterRef extends ConfigBeanProxy, Injectable, Ref  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="round-robin")
     public String getLbPolicy();
 
     /**

@@ -119,7 +119,7 @@ public interface CustomResource extends ConfigBeanProxy, Injectable, Resource {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="user")
     public String getObjectType();
 
     /**
@@ -136,7 +136,7 @@ public interface CustomResource extends ConfigBeanProxy, Injectable, Resource {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="true")
     public String getEnabled();
 
     /**

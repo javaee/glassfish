@@ -81,7 +81,7 @@ public interface LogService extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="false")
     public String getUseSystemLogging();
 
     /**
@@ -132,7 +132,7 @@ public interface LogService extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="false")
     public String getLogToConsole();
 
     /**
@@ -149,7 +149,7 @@ public interface LogService extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="500000")
     public String getLogRotationLimitInBytes();
 
     /**
@@ -166,7 +166,7 @@ public interface LogService extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="0")
     public String getLogRotationTimelimitInMinutes();
 
     /**
@@ -183,7 +183,7 @@ public interface LogService extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="false")
     public String getAlarms();
 
     /**
@@ -200,7 +200,7 @@ public interface LogService extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="5")
     public String getRetainErrorStatisticsForHours();
 
     /**

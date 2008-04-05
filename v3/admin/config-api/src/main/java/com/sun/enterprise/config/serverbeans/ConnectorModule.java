@@ -101,7 +101,7 @@ public interface ConnectorModule extends ConfigBeanProxy, Injectable, Module {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="user")
     public String getObjectType();
 
     /**
@@ -118,7 +118,7 @@ public interface ConnectorModule extends ConfigBeanProxy, Injectable, Module {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="true")
     public String getEnabled();
 
     /**
@@ -135,7 +135,7 @@ public interface ConnectorModule extends ConfigBeanProxy, Injectable, Module {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="false")
     public String getDirectoryDeployed();
 
     /**

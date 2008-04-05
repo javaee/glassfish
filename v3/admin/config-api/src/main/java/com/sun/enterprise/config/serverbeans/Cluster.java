@@ -104,7 +104,7 @@ public interface Cluster extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="true")
     public String getHeartbeatEnabled();
 
     /**

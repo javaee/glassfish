@@ -100,7 +100,7 @@ public interface ResourceAdapterConfig extends ConfigBeanProxy, Injectable, Reso
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="user")
     public String getObjectType();
 
     /**

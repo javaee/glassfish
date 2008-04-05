@@ -82,7 +82,7 @@ public interface Orb extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="1024")
     public String getMessageFragmentSize();
 
     /**
@@ -99,7 +99,7 @@ public interface Orb extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="1024")
     public String getMaxConnections();
 
     /**

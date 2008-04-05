@@ -79,7 +79,7 @@ public interface HealthChecker extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="30")
     public String getIntervalInSeconds();
 
     /**
@@ -96,7 +96,7 @@ public interface HealthChecker extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="10")
     public String getTimeoutInSeconds();
 
     /**

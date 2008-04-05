@@ -83,7 +83,7 @@ public interface MailResource extends ConfigBeanProxy, Injectable, Resource {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="imap")
     public String getStoreProtocol();
 
     /**
@@ -100,7 +100,7 @@ public interface MailResource extends ConfigBeanProxy, Injectable, Resource {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="com.sun.mail.imap.IMAPStore")
     public String getStoreProtocolClass();
 
     /**
@@ -117,7 +117,7 @@ public interface MailResource extends ConfigBeanProxy, Injectable, Resource {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="smtp")
     public String getTransportProtocol();
 
     /**
@@ -134,7 +134,7 @@ public interface MailResource extends ConfigBeanProxy, Injectable, Resource {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="com.sun.mail.smtp.SMTPTransport")
     public String getTransportProtocolClass();
 
     /**
@@ -202,7 +202,7 @@ public interface MailResource extends ConfigBeanProxy, Injectable, Resource {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="false")
     public String getDebug();
 
     /**
@@ -219,7 +219,7 @@ public interface MailResource extends ConfigBeanProxy, Injectable, Resource {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="user")
     public String getObjectType();
 
     /**
@@ -236,7 +236,7 @@ public interface MailResource extends ConfigBeanProxy, Injectable, Resource {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="true")
     public String getEnabled();
 
     /**

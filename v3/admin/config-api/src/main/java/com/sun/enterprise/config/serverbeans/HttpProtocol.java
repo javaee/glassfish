@@ -62,7 +62,7 @@ public interface HttpProtocol extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="HTTP/1.1")
     public String getVersion();
 
     /**
@@ -79,7 +79,7 @@ public interface HttpProtocol extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute  (defaultValue="false")
     public String getDnsLookupEnabled();
 
     /**
@@ -96,7 +96,7 @@ public interface HttpProtocol extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="text/html; charset=iso-8859-1")
     public String getForcedType();
 
     /**
@@ -113,7 +113,7 @@ public interface HttpProtocol extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="text/html; charset=iso-8859-1")
     public String getDefaultType();
 
     /**
@@ -147,7 +147,7 @@ public interface HttpProtocol extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute  
     public String getDefaultResponseType();
 
     /**
@@ -164,7 +164,7 @@ public interface HttpProtocol extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="true")
     public String getSslEnabled();
 
     /**

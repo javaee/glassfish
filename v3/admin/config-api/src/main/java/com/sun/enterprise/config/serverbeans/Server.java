@@ -120,7 +120,7 @@ public interface Server extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="100")
     public String getLbWeight();
 
     /**

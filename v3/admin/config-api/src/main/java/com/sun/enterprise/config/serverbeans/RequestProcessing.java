@@ -62,7 +62,7 @@ public interface RequestProcessing extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="128")
     public String getThreadCount();
 
     /**
@@ -79,7 +79,7 @@ public interface RequestProcessing extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="48")
     public String getInitialThreadCount();
 
     /**
@@ -96,7 +96,7 @@ public interface RequestProcessing extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="10")
     public String getThreadIncrement();
 
     /**
@@ -113,7 +113,7 @@ public interface RequestProcessing extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="30")
     public String getRequestTimeoutInSeconds();
 
     /**
@@ -130,7 +130,7 @@ public interface RequestProcessing extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="4096")
     public String getHeaderBufferLengthInBytes();
 
     /**

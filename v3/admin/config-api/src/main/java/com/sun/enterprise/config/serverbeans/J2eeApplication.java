@@ -103,7 +103,7 @@ public interface J2eeApplication extends ConfigBeanProxy, Injectable, Module {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="user")
     public String getObjectType();
 
     /**
@@ -120,7 +120,7 @@ public interface J2eeApplication extends ConfigBeanProxy, Injectable, Module {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="true")
     public String getEnabled();
 
     /**
@@ -154,7 +154,7 @@ public interface J2eeApplication extends ConfigBeanProxy, Injectable, Module {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="false")
     public String getAvailabilityEnabled();
 
     /**
@@ -171,7 +171,7 @@ public interface J2eeApplication extends ConfigBeanProxy, Injectable, Module {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="false")
     public String getDirectoryDeployed();
 
     /**
@@ -188,7 +188,7 @@ public interface J2eeApplication extends ConfigBeanProxy, Injectable, Module {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="false")
     public String getJavaWebStartEnabled();
 
     /**

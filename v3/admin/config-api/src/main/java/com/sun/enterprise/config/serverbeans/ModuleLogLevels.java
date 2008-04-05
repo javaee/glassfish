@@ -65,7 +65,7 @@ public interface ModuleLogLevels extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="INFO")
     public String getRoot();
 
     /**
@@ -82,7 +82,7 @@ public interface ModuleLogLevels extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="INFO")
     public String getServer();
 
     /**
@@ -99,7 +99,7 @@ public interface ModuleLogLevels extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="INFO")
     public String getEjbContainer();
 
     /**
@@ -116,7 +116,7 @@ public interface ModuleLogLevels extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="INFO")
     public String getCmpContainer();
 
     /**
@@ -133,7 +133,7 @@ public interface ModuleLogLevels extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="INFO")
     public String getMdbContainer();
 
     /**
@@ -150,7 +150,7 @@ public interface ModuleLogLevels extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="INFO")
     public String getWebContainer();
 
     /**
@@ -167,7 +167,7 @@ public interface ModuleLogLevels extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="INFO")
     public String getClassloader();
 
     /**
@@ -184,7 +184,7 @@ public interface ModuleLogLevels extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="INFO")
     public String getConfiguration();
 
     /**
@@ -201,7 +201,7 @@ public interface ModuleLogLevels extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="INFO")
     public String getNaming();
 
     /**
@@ -218,7 +218,7 @@ public interface ModuleLogLevels extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="INFO")
     public String getSecurity();
 
     /**
@@ -235,7 +235,7 @@ public interface ModuleLogLevels extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="INFO")
     public String getJts();
 
     /**
@@ -252,7 +252,7 @@ public interface ModuleLogLevels extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="INFO")
     public String getJta();
 
     /**
@@ -269,7 +269,7 @@ public interface ModuleLogLevels extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="INFO")
     public String getAdmin();
 
     /**
@@ -286,7 +286,7 @@ public interface ModuleLogLevels extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="INFO")
     public String getDeployment();
 
     /**
@@ -303,7 +303,7 @@ public interface ModuleLogLevels extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="INFO")
     public String getVerifier();
 
     /**
@@ -320,7 +320,7 @@ public interface ModuleLogLevels extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="INFO")
     public String getJaxr();
 
     /**
@@ -337,7 +337,7 @@ public interface ModuleLogLevels extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="INFO")
     public String getJaxrpc();
 
     /**
@@ -354,7 +354,7 @@ public interface ModuleLogLevels extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="INFO")
     public String getSaaj();
 
     /**
@@ -371,7 +371,7 @@ public interface ModuleLogLevels extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="INFO")
     public String getCorba();
 
     /**
@@ -388,7 +388,7 @@ public interface ModuleLogLevels extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="INFO")
     public String getJavamail();
 
     /**
@@ -405,7 +405,7 @@ public interface ModuleLogLevels extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="INFO")
     public String getJms();
 
     /**
@@ -422,7 +422,7 @@ public interface ModuleLogLevels extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="INFO")
     public String getConnector();
 
     /**
@@ -439,7 +439,7 @@ public interface ModuleLogLevels extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="INFO")
     public String getJdo();
 
     /**
@@ -456,7 +456,7 @@ public interface ModuleLogLevels extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="INFO")
     public String getCmp();
 
     /**
@@ -473,7 +473,7 @@ public interface ModuleLogLevels extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="INFO")
     public String getUtil();
 
     /**
@@ -490,7 +490,7 @@ public interface ModuleLogLevels extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="INFO")
     public String getResourceAdapter();
 
     /**
@@ -507,7 +507,7 @@ public interface ModuleLogLevels extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="INFO")
     public String getSynchronization();
 
     /**
@@ -524,7 +524,7 @@ public interface ModuleLogLevels extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="INFO")
     public String getNodeAgent();
 
     /**
@@ -541,7 +541,7 @@ public interface ModuleLogLevels extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="INFO")
     public String getSelfManagement();
 
     /**
@@ -558,7 +558,7 @@ public interface ModuleLogLevels extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="INFO")
     public String getGroupManagementService();
 
     /**
@@ -575,7 +575,7 @@ public interface ModuleLogLevels extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="INFO")
     public String getManagementEvent();
 
     /**

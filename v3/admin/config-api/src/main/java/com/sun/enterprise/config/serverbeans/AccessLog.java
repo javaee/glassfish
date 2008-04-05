@@ -60,7 +60,7 @@ public interface AccessLog extends ConfigBeanProxy, Injectable {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="%client.name% %auth-user-name% %datetime% %request% %status% %response.length%")
     public String getFormat();
 
     /**

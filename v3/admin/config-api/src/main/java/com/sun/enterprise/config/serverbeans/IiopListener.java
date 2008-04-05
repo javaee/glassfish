@@ -101,7 +101,7 @@ public interface IiopListener extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="1072")
     public String getPort();
 
     /**
@@ -118,7 +118,7 @@ public interface IiopListener extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="false")
     public String getSecurityEnabled();
 
     /**
@@ -135,7 +135,7 @@ public interface IiopListener extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="true")
     public String getEnabled();
 
     /**

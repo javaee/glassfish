@@ -84,7 +84,7 @@ public interface PersistenceManagerFactoryResource extends ConfigBeanProxy, Inje
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="com.sun.jdo.spi.persistence.support.sqlstore.impl.PersistenceManagerFactoryImpl")
     public String getFactoryClass();
 
     /**
@@ -118,7 +118,7 @@ public interface PersistenceManagerFactoryResource extends ConfigBeanProxy, Inje
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="user")
     public String getObjectType();
 
     /**
@@ -135,7 +135,7 @@ public interface PersistenceManagerFactoryResource extends ConfigBeanProxy, Inje
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="true")
     public String getEnabled();
 
     /**

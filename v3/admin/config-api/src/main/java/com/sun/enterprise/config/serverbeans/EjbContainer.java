@@ -67,7 +67,7 @@ public interface EjbContainer extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="32")
     public String getSteadyPoolSize();
 
     /**
@@ -84,7 +84,7 @@ public interface EjbContainer extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="16")
     public String getPoolResizeQuantity();
 
     /**
@@ -101,7 +101,7 @@ public interface EjbContainer extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="64")
     public String getMaxPoolSize();
 
     /**
@@ -118,7 +118,7 @@ public interface EjbContainer extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="32")
     public String getCacheResizeQuantity();
 
     /**
@@ -135,7 +135,7 @@ public interface EjbContainer extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="512")
     public String getMaxCacheSize();
 
     /**
@@ -152,7 +152,7 @@ public interface EjbContainer extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="600")
     public String getPoolIdleTimeoutInSeconds();
 
     /**
@@ -169,7 +169,7 @@ public interface EjbContainer extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="600")
     public String getCacheIdleTimeoutInSeconds();
 
     /**
@@ -186,7 +186,7 @@ public interface EjbContainer extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="5400")
     public String getRemovalTimeoutInSeconds();
 
     /**
@@ -203,7 +203,7 @@ public interface EjbContainer extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="nru")
     public String getVictimSelectionPolicy();
 
     /**
@@ -220,7 +220,7 @@ public interface EjbContainer extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="B")
     public String getCommitOption();
 
     /**

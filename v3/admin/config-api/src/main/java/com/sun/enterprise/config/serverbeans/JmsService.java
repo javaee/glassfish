@@ -65,7 +65,7 @@ public interface JmsService extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="60")
     public String getInitTimeoutInSeconds();
 
     /**
@@ -133,7 +133,7 @@ public interface JmsService extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="5")
     public String getReconnectIntervalInSeconds();
 
     /**
@@ -150,7 +150,7 @@ public interface JmsService extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="3")
     public String getReconnectAttempts();
 
     /**
@@ -167,7 +167,7 @@ public interface JmsService extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="true")
     public String getReconnectEnabled();
 
     /**
@@ -184,7 +184,7 @@ public interface JmsService extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="random")
     public String getAddresslistBehavior();
 
     /**
@@ -201,7 +201,7 @@ public interface JmsService extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="3")
     public String getAddresslistIterations();
 
     /**

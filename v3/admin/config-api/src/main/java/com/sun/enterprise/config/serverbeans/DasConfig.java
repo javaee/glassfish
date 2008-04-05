@@ -66,7 +66,7 @@ public interface DasConfig extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="false")
     public String getDynamicReloadEnabled();
 
     /**
@@ -83,7 +83,7 @@ public interface DasConfig extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="2")
     public String getDynamicReloadPollIntervalInSeconds();
 
     /**
@@ -100,7 +100,7 @@ public interface DasConfig extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="false")
     public String getAutodeployEnabled();
 
     /**
@@ -117,7 +117,7 @@ public interface DasConfig extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="2")
     public String getAutodeployPollingIntervalInSeconds();
 
     /**
@@ -134,7 +134,7 @@ public interface DasConfig extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="autodeploy")
     public String getAutodeployDir();
 
     /**
@@ -151,7 +151,7 @@ public interface DasConfig extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="false")
     public String getAutodeployVerifierEnabled();
 
     /**
@@ -168,7 +168,7 @@ public interface DasConfig extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="false")
     public String getAutodeployJspPrecompilationEnabled();
 
     /**
@@ -180,16 +180,16 @@ public interface DasConfig extends ConfigBeanProxy, Injectable  {
     public void setAutodeployJspPrecompilationEnabled(String value) throws PropertyVetoException;
 
     /**
-     * Gets the value of the autodeployJspPrecompilationEnabled property.
+     * Gets the value of the autodeployRetryTimeout property.
      *
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="30")
     public String getAutodeployRetryTimeout();
 
     /**
-     * Sets the value of the autodeployJspPrecompilationEnabled property.
+     * Sets the value of the autodeployRetryTimeout property.
      *
      * @param value allowed object is
      *              {@link String }
@@ -202,7 +202,7 @@ public interface DasConfig extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="true")
     public String getDeployXmlValidation();
 
     /**
@@ -219,7 +219,7 @@ public interface DasConfig extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="60")
     public String getAdminSessionTimeoutInMinutes();
 
     /**

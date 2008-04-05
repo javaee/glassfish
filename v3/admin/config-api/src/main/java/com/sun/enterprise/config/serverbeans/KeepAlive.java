@@ -62,7 +62,7 @@ public interface KeepAlive extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="1")
     public String getThreadCount();
 
     /**
@@ -79,7 +79,7 @@ public interface KeepAlive extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="256")
     public String getMaxConnections();
 
     /**
@@ -96,7 +96,7 @@ public interface KeepAlive extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="30")
     public String getTimeoutInSeconds();
 
     /**

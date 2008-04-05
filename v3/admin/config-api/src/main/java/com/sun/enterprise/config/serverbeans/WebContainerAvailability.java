@@ -82,7 +82,7 @@ public interface WebContainerAvailability extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="memory")
     public String getPersistenceType();
 
     /**
@@ -133,7 +133,7 @@ public interface WebContainerAvailability extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="false")
     public String getPersistenceStoreHealthCheckEnabled();
 
     /**
@@ -150,7 +150,7 @@ public interface WebContainerAvailability extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="false")
     public String getSsoFailoverEnabled();
 
     /**

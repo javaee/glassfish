@@ -66,7 +66,7 @@ public interface TransactionService extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="false")
     public String getAutomaticRecovery();
 
     /**
@@ -83,7 +83,7 @@ public interface TransactionService extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="0")
     public String getTimeoutInSeconds();
 
     /**
@@ -117,7 +117,7 @@ public interface TransactionService extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="rollback")
     public String getHeuristicDecision();
 
     /**
@@ -134,7 +134,7 @@ public interface TransactionService extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="600")
     public String getRetryTimeoutInSeconds();
 
     /**
@@ -151,7 +151,7 @@ public interface TransactionService extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="2048")
     public String getKeypointInterval();
 
     /**

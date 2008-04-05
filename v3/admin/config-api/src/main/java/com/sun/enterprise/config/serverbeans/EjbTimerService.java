@@ -65,7 +65,7 @@ public interface EjbTimerService extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="7000")
     public String getMinimumDeliveryIntervalInMillis();
 
     /**
@@ -82,7 +82,7 @@ public interface EjbTimerService extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="1")
     public String getMaxRedeliveries();
 
     /**
@@ -116,7 +116,7 @@ public interface EjbTimerService extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="5000")
     public String getRedeliveryIntervalInternalInMillis();
 
     /**

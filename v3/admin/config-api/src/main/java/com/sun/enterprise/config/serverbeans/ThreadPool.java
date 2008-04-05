@@ -79,7 +79,7 @@ public interface ThreadPool extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="0")
     public String getMinThreadPoolSize();
 
     /**
@@ -96,7 +96,7 @@ public interface ThreadPool extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="200")
     public String getMaxThreadPoolSize();
 
     /**
@@ -113,7 +113,7 @@ public interface ThreadPool extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="120")
     public String getIdleThreadTimeoutInSeconds();
 
     /**
@@ -130,7 +130,7 @@ public interface ThreadPool extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="1")
     public String getNumWorkQueues();
 
     /**

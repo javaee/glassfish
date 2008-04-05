@@ -67,7 +67,7 @@ public interface DiagnosticService extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="true")
     public String getComputeChecksum();
 
     /**
@@ -84,7 +84,7 @@ public interface DiagnosticService extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="true")
     public String getVerifyConfig();
 
     /**
@@ -101,7 +101,7 @@ public interface DiagnosticService extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="true")
     public String getCaptureInstallLog();
 
     /**
@@ -118,7 +118,7 @@ public interface DiagnosticService extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="true")
     public String getCaptureSystemInfo();
 
     /**
@@ -135,7 +135,7 @@ public interface DiagnosticService extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="true")
     public String getCaptureHadbInfo();
 
     /**
@@ -152,7 +152,7 @@ public interface DiagnosticService extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="true")
     public String getCaptureAppDd();
 
     /**
@@ -169,7 +169,7 @@ public interface DiagnosticService extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="INFO")
     public String getMinLogLevel();
 
     /**
@@ -186,7 +186,7 @@ public interface DiagnosticService extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="500")
     public String getMaxLogEntries();
 
     /**

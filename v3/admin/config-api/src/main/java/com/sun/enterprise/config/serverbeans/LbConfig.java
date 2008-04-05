@@ -84,7 +84,7 @@ public interface LbConfig extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="60")
     public String getResponseTimeoutInSeconds();
 
     /**
@@ -101,7 +101,7 @@ public interface LbConfig extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="false")
     public String getHttpsRouting();
 
     /**
@@ -118,7 +118,7 @@ public interface LbConfig extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="60")
     public String getReloadPollIntervalInSeconds();
 
     /**
@@ -135,7 +135,7 @@ public interface LbConfig extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="false")
     public String getMonitoringEnabled();
 
     /**
@@ -152,7 +152,7 @@ public interface LbConfig extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="true")
     public String getRouteCookieEnabled();
 
     /**

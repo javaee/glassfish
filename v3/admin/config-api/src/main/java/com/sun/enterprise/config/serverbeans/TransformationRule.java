@@ -79,7 +79,7 @@ public interface TransformationRule extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="true")
     public String getEnabled();
 
     /**
@@ -96,7 +96,7 @@ public interface TransformationRule extends ConfigBeanProxy, Injectable  {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="request")
     public String getApplyTo();
 
     /**
