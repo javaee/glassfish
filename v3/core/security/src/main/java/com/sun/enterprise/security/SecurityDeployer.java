@@ -41,9 +41,7 @@ import com.sun.enterprise.v3.deployment.DeployCommand;
 import com.sun.logging.LogDomains;
 
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.jvnet.hk2.annotations.Inject;
@@ -94,21 +92,25 @@ public class SecurityDeployer extends SimpleDeployer<SecurityContainer, DummyApp
         try {
             policyLoader.loadPolicy();
             Application app = dc.getModuleMetaData(Application.class);
-            // standalone web module case
-            if (app.isVirtual()) {
-                WebBundleDescriptor wbd =
-                        (WebBundleDescriptor) app.getStandaloneBundleDescriptor();
 
-                WebSecurityManagerFactory wsmf =
-                        WebSecurityManagerFactory.getInstance();
-                // this should create all permissions
-                wsmf.newWebSecurityManager(wbd,serverContext);
-                // for an application the securityRoleMapper should already be 
-                // created. I am just creating the web permissions and handing 
-                // it to the security component.
-                String name = WebSecurityManager.getContextID(wbd);
-                SecurityUtil.generatePolicyFile(name);
+            WebBundleDescriptor wbd = null;
+
+            Set<WebBundleDescriptor> webDesc = app.getWebBundleDescriptors();
+            Iterator<WebBundleDescriptor> iter = webDesc.iterator();
+            if (iter.hasNext()) {
+                wbd =  iter.next();
             }
+
+            WebSecurityManagerFactory wsmf =
+                    WebSecurityManagerFactory.getInstance();
+            // this should create all permissions
+            wsmf.newWebSecurityManager(wbd,serverContext);
+            // for an application the securityRoleMapper should already be
+            // created. I am just creating the web permissions and handing
+            // it to the security component.
+            String name = WebSecurityManager.getContextID(wbd);
+            SecurityUtil.generatePolicyFile(name);
+
         } catch (IASSecurityException se) {
             String msg = "Error in generating security policy for " + appName;
             throw new DeploymentException(msg, se);

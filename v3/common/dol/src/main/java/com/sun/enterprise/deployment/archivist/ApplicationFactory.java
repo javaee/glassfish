@@ -162,7 +162,7 @@ public class ApplicationFactory implements ContractProvider {
         }
 
         // validate
-        archivist.validate(null);
+        //archivist.validate(null);
         return application;
 
     }

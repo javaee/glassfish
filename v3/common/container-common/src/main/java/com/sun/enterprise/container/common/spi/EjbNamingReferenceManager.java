@@ -34,65 +34,20 @@
  * holder.
  */
 
-package com.sun.enterprise.deployment.archivist;
+package com.sun.enterprise.container.common.spi;
 
-import com.sun.enterprise.deployment.io.EjbDeploymentDescriptorFile;
-import com.sun.enterprise.deployment.io.DeploymentDescriptorFile;
-import com.sun.enterprise.deployment.io.runtime.EjbRuntimeDDFile;
-import com.sun.enterprise.deployment.annotation.impl.EjbInWarScanner;
-import org.glassfish.apf.Scanner;
-import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.annotations.Scoped;
-import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.component.PerLookup;
-import org.jvnet.hk2.component.Habitat;
+import com.sun.enterprise.deployment.EjbReferenceDescriptor;
 
-/**
- * @author Mahesh Kannan
- */
-@Service
-@Scoped(PerLookup.class)
-public class EjbInWarArchivist
-        extends BaseEjbArchivist {
+import javax.naming.NamingException;
 
-    @Inject
-    Habitat habitat;
+import org.jvnet.hk2.annotations.Contract;
 
+@Contract
+public interface EjbNamingReferenceManager {
+
+    public Object resolveEjbReference(EjbReferenceDescriptor ejbRefDesc, Object jndiObject)
+        throws NamingException;
+
+    public boolean isEjbReferenceCacheable(EjbReferenceDescriptor ejbRefDesc);
     
-    /**
-     * @return the DeploymentDescriptorFile responsible for handling
-     *         standard deployment descriptor
-     */
-    @Override                                                  
-    public DeploymentDescriptorFile getStandardDDFile() {
-        return new EjbDeploymentDescriptorFile() {
-            public String getDeploymentDescriptorPath() {
-                return "WEB-INF/ejb-jar.xml";  //TODO Add this to DescriptorConstants.class
-            }
-        };
-    }
-
-    @Override
-    public DeploymentDescriptorFile getConfigurationDDFile() {
-        return new EjbRuntimeDDFile() {
-            public String getDeploymentDescriptorPath() {
-                return "WEB-INF/" + "sun-" + "ejb-jar.xml"; //TODO Add this to DescriptorConstants.class
-            }
-        };
-    }
-    @Override
-    protected String getArchiveExtension() {
-        return WEB_EXTENSION;
-    }
-
-    /**
-     * Returns the scanner for this archivist, usually it is the scanner regitered
-     * with the same module type as this archivist, but subclasses can return a
-     * different version
-     *
-     */
-    public Scanner getScanner() {
-        return habitat.getComponent(EjbInWarScanner.class);
-    }
-
 }

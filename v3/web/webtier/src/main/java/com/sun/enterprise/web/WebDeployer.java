@@ -126,7 +126,8 @@ public class WebDeployer extends JavaEEDeployer<WebContainer, WebApplication>{
             }
         }
 
-        return new MetaData(false, apis.toArray(new ModuleDefinition[apis.size()]), new Class[] { Application.class }, null );
+        return new MetaData(false, apis.toArray(new ModuleDefinition[apis.size()]),
+                new Class[] { Application.class }, null);
     }    
 
     protected WebBundleDescriptor getDefaultBundleDescriptor() {
@@ -136,40 +137,43 @@ public class WebDeployer extends JavaEEDeployer<WebContainer, WebApplication>{
     @Override
     protected Application parseModuleMetaData(DeploymentContext dc) throws Exception {
         Application app = super.parseModuleMetaData(dc);
-        if (app.isVirtual()) {
 
-            WebBundleDescriptor wbd = (WebBundleDescriptor) app.getStandaloneBundleDescriptor(); 
+        WebBundleDescriptor wbd = null;
 
-            // the context root should be set using the following precedence
-            // for standalone web module
-            // 1. User specified value through DeployCommand
-            // 2. Context root value specified through sun-web.xml
-            // 3. The default context root
-            String contextRoot; 
-            Properties params = dc.getCommandParameters();
-            if (params.getProperty(DeployCommand.CONTEXT_ROOT)!=null) {
-                contextRoot = params.getProperty(DeployCommand.CONTEXT_ROOT);
-            } else if (wbd.getContextRoot() != null && wbd.getContextRoot().length()>0) {
-                contextRoot = wbd.getContextRoot(); 
-            } else {
-                contextRoot = params.getProperty(DeployCommand.NAME);
-            }
-
-            if (!contextRoot.startsWith("/")) {
-                contextRoot = "/" + contextRoot;
-            }
-            wbd.setContextRoot(contextRoot);
-            wbd.setName(params.getProperty(DeployCommand.NAME));
-
-            // set the context root to deployment context props so this value
-            // will be persisted in domain.xml
-            dc.getProps().setProperty(ServerTags.CONTEXT_ROOT, contextRoot);
+        Set<WebBundleDescriptor> webDesc = app.getWebBundleDescriptors();
+        Iterator<WebBundleDescriptor> iter = webDesc.iterator();
+        if (iter.hasNext()) {
+            wbd =  iter.next();
         }
+
+        // the context root should be set using the following precedence
+        // for standalone web module
+        // 1. User specified value through DeployCommand
+        // 2. Context root value specified through sun-web.xml
+        // 3. The default context root
+        String contextRoot;
+        Properties params = dc.getCommandParameters();
+        if (params.getProperty(DeployCommand.CONTEXT_ROOT)!=null) {
+            contextRoot = params.getProperty(DeployCommand.CONTEXT_ROOT);
+        } else if (wbd.getContextRoot() != null && wbd.getContextRoot().length()>0) {
+            contextRoot = wbd.getContextRoot();
+        } else {
+            contextRoot = params.getProperty(DeployCommand.NAME);
+        }
+
+        if (!contextRoot.startsWith("/")) {
+            contextRoot = "/" + contextRoot;
+        }
+        wbd.setContextRoot(contextRoot);
+        wbd.setName(params.getProperty(DeployCommand.NAME));
+
+        // set the context root to deployment context props so this value
+        // will be persisted in domain.xml
+        dc.getProps().setProperty(ServerTags.CONTEXT_ROOT, contextRoot);
 
         return app;
     }
 
-    
     private WebModuleConfig loadWebModuleConfig(DeploymentContext dc) {
         
         WebModuleConfig wmInfo = null;
@@ -182,9 +186,15 @@ public class WebDeployer extends JavaEEDeployer<WebContainer, WebApplication>{
         
             wmInfo = new WebModuleConfig();
             
-            WebBundleDescriptor wbd = (WebBundleDescriptor)dc.getModuleMetaData(
-                Application.class).getStandaloneBundleDescriptor();
-            
+            WebBundleDescriptor wbd = null;
+
+            Application app = dc.getModuleMetaData(Application.class);
+            Set<WebBundleDescriptor> webDesc = app.getWebBundleDescriptors();
+            Iterator<WebBundleDescriptor> iter = webDesc.iterator();
+            if (iter.hasNext()) {
+                wbd = iter.next();
+            }
+
             wmInfo.setDescriptor(wbd);
             wmInfo.setVirtualServers(virtualServers);
             wmInfo.setLocation(dc.getSourceDir().getAbsolutePath());

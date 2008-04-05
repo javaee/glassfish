@@ -391,13 +391,15 @@ public abstract class BaseContainer
         try {
             this.loader = loader;
             this.ejbDescriptor = ejbDesc;
-	        createMonitoringRegistryMediator();
+            this.callFlowAgent = ejbContainerUtilImpl.getCallFlowAgent();
+            createMonitoringRegistryMediator();
 
             logParams = new Object[1];
             logParams[0] =  ejbDesc.getName();
             invocationManager = ejbContainerUtilImpl.getInvocationManager();
             injectionManager = ejbContainerUtilImpl.getInjectionManager();
             namingManager = ejbContainerUtilImpl.getGlassfishNamingManager();
+            transactionManager = ejbContainerUtilImpl.getTransactionManager();
 
             System.out.println("Loader: " + loader);
             
@@ -2770,6 +2772,7 @@ public abstract class BaseContainer
         ComponentEnvManager envManager = ejbContainerUtilImpl.getComponentEnvManager();
         componentId = envManager.bindToComponentNamespace(ejbDescriptor);
         invFactory = new EjbInvocationFactory(componentId, this);
+        ejbContainerUtilImpl.registerContainer(this);
         // create envProps object to be returned from EJBContext.getEnvironment
         Set env = ejbDescriptor.getEnvironmentProperties();
         SafeProperties safeProps = new SafeProperties();

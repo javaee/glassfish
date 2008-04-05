@@ -77,7 +77,7 @@ public class EjbSniffer  extends GenericSniffer implements Sniffer {
      */
     public boolean handles(ReadableArchive location, ClassLoader loader) {
         boolean result = super.handles(location, loader);    //Check ejb-jar.xml
-        /*
+
         if (result == false) {
             try {
                 result = location.exists("WEB-INF/ejb-jar.xml");
@@ -90,7 +90,7 @@ public class EjbSniffer  extends GenericSniffer implements Sniffer {
                 //TODO
             }
         }
-        */
+
         return result;
     }
 

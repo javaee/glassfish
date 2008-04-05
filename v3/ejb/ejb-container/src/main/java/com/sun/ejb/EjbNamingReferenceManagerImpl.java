@@ -34,65 +34,29 @@
  * holder.
  */
 
-package com.sun.enterprise.deployment.archivist;
+package com.sun.ejb;
 
-import com.sun.enterprise.deployment.io.EjbDeploymentDescriptorFile;
-import com.sun.enterprise.deployment.io.DeploymentDescriptorFile;
-import com.sun.enterprise.deployment.io.runtime.EjbRuntimeDDFile;
-import com.sun.enterprise.deployment.annotation.impl.EjbInWarScanner;
-import org.glassfish.apf.Scanner;
+import com.sun.enterprise.deployment.EjbReferenceDescriptor;
+import com.sun.enterprise.container.common.spi.EjbNamingReferenceManager;
+
+import javax.naming.NamingException;
+
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.annotations.Scoped;
-import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.component.PerLookup;
-import org.jvnet.hk2.component.Habitat;
 
 /**
  * @author Mahesh Kannan
  */
+
 @Service
-@Scoped(PerLookup.class)
-public class EjbInWarArchivist
-        extends BaseEjbArchivist {
+public class EjbNamingReferenceManagerImpl
+    implements EjbNamingReferenceManager {
 
-    @Inject
-    Habitat habitat;
-
-    
-    /**
-     * @return the DeploymentDescriptorFile responsible for handling
-     *         standard deployment descriptor
-     */
-    @Override                                                  
-    public DeploymentDescriptorFile getStandardDDFile() {
-        return new EjbDeploymentDescriptorFile() {
-            public String getDeploymentDescriptorPath() {
-                return "WEB-INF/ejb-jar.xml";  //TODO Add this to DescriptorConstants.class
-            }
-        };
+    public Object resolveEjbReference(EjbReferenceDescriptor ejbRefDesc, Object jndiObject)
+        throws NamingException {
+        return EJBUtils.resolveEjbRefObject(ejbRefDesc, jndiObject);
     }
 
-    @Override
-    public DeploymentDescriptorFile getConfigurationDDFile() {
-        return new EjbRuntimeDDFile() {
-            public String getDeploymentDescriptorPath() {
-                return "WEB-INF/" + "sun-" + "ejb-jar.xml"; //TODO Add this to DescriptorConstants.class
-            }
-        };
+    public boolean isEjbReferenceCacheable(EjbReferenceDescriptor ejbRefDesc) {
+        return EJBUtils.isEjbRefCacheable(ejbRefDesc);
     }
-    @Override
-    protected String getArchiveExtension() {
-        return WEB_EXTENSION;
-    }
-
-    /**
-     * Returns the scanner for this archivist, usually it is the scanner regitered
-     * with the same module type as this archivist, but subclasses can return a
-     * different version
-     *
-     */
-    public Scanner getScanner() {
-        return habitat.getComponent(EjbInWarScanner.class);
-    }
-
 }

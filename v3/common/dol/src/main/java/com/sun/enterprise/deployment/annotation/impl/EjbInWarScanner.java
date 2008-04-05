@@ -44,6 +44,9 @@ import java.util.logging.Level;
 import java.util.Iterator;
 
 import org.glassfish.apf.impl.AnnotationUtils;
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.component.PerLookup;
 
 /**
  * Created by IntelliJ IDEA.
@@ -52,6 +55,8 @@ import org.glassfish.apf.impl.AnnotationUtils;
  * Time: 11:12:42 PM
  * To change this template use File | Settings | File Templates.
  */
+@Service
+@Scoped(PerLookup.class)
 public class EjbInWarScanner
     extends EjbJarScanner {
 

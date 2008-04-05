@@ -4,6 +4,7 @@ import com.sun.enterprise.container.common.spi.JavaEETransaction;
 import com.sun.enterprise.container.common.spi.JavaEETransactionManager;
 import com.sun.enterprise.container.common.spi.util.ComponentEnvManager;
 import com.sun.enterprise.container.common.spi.util.InjectionManager;
+import com.sun.enterprise.container.common.spi.util.CallFlowAgent;
 import com.sun.enterprise.config.serverbeans.EjbContainer;
 import com.sun.enterprise.config.serverbeans.Application;
 import com.sun.enterprise.config.serverbeans.ApplicationHelper;
@@ -11,6 +12,7 @@ import com.sun.enterprise.deployment.EjbDescriptor;
 import com.sun.enterprise.server.ServerContext;
 import com.sun.enterprise.v3.server.Globals;
 import com.sun.enterprise.v3.server.ServerEnvironment;
+import com.sun.enterprise.admin.monitor.callflow.Agent;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.invocation.ComponentInvocation;
 import org.glassfish.api.invocation.InvocationManager;
@@ -29,6 +31,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.io.IOException;
+import java.lang.reflect.Proxy;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
 
 /**
  * @author Mahesh Kannan
@@ -77,9 +82,21 @@ public class EjbContainerUtilImpl
     @Inject
     private ServerEnvironment env;
 
+    @Inject(optional=true)
+    private Agent callFlowAgent;
+
     private  static EjbContainerUtil _me;
 
     public void postConstruct() {
+        if (callFlowAgent == null) {
+            callFlowAgent = (Agent) Proxy.newProxyInstance(EjbContainerUtilImpl.class.getClassLoader(),
+                    new Class[] {Agent.class},
+                    new InvocationHandler() {
+                        public Object invoke(Object proxy, Method m, Object[] args) {
+                            return null;
+                        }
+                    });
+        }
         _me = this;
     }
 
@@ -222,6 +239,10 @@ public class EjbContainerUtilImpl
 
         return txData.beans;
 
+    }
+
+    public Agent getCallFlowAgent() {
+        return callFlowAgent;
     }
 
     public void addWork(Runnable task) {

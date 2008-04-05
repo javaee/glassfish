@@ -150,6 +150,8 @@ public class Application extends RootDeploymentDescriptor
 
     private List<Resource> resourceList = null;
 
+    private boolean isPackagedAsSingleModule = false;
+
     /**
      * Creates a new application object with the diven display name and file.
      *
@@ -1323,6 +1325,19 @@ public class Application extends RootDeploymentDescriptor
     }
 
     /**
+     * Returns if the application is packaged in a single module.
+     *
+     * @return true if this application obj is packaged in a single module
+     */
+    public boolean isPackagedAsSingleModule() {
+        return isPackagedAsSingleModule;
+    }
+
+    public void setPackagedAsSingleModule(boolean status) {
+        this.isPackagedAsSingleModule = status;
+    }
+    
+    /**
      * Sets the unique id for this application.  It traverses through all
      * the  ejbs in the application and sets the unique id for each of them.
      * The traversal is done in ascending element order.
@@ -1710,6 +1725,17 @@ public class Application extends RootDeploymentDescriptor
             return false;
         }
     }
+
+    private boolean isValidated;
+    
+    public boolean isValidated() {
+        return isValidated;
+    }
+
+    public void setValidated(boolean newValidated) {
+        isValidated = newValidated;
+    }
+
 
     private static class DirectoryIntrospectionFilter implements FilenameFilter {
 

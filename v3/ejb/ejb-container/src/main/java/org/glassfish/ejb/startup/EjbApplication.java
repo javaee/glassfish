@@ -24,13 +24,16 @@
 package org.glassfish.ejb.startup;
 
 import com.sun.ejb.ContainerFactory;
+import com.sun.ejb.Container;
 import com.sun.ejb.containers.ContainerFactoryImpl;
+import com.sun.ejb.containers.BaseContainer;
 import com.sun.enterprise.deployment.EjbDescriptor;
 import org.glassfish.api.deployment.ApplicationContainer;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.jvnet.hk2.annotations.Service;
 
 import java.util.Collection;
+import java.util.ArrayList;
 
 /**
  * Ejb container service
@@ -44,6 +47,7 @@ public class EjbApplication
     String appName;
     ContainerFactory ejbContainerFactory;
     Collection<EjbDescriptor> ejbs;
+    Collection<Container> containers = new ArrayList();
     ClassLoader ejbAppClassLoader;
     DeploymentContext dc;
 
@@ -82,11 +86,16 @@ public class EjbApplication
             System.out.println("==>UniqueID: " + desc.getUniqueId() + " ==> "
                     + desc.getName() + "   isLocal: " + desc.toString());
             try {
-            ejbContainerFactory.createContainer(desc, ejbAppClassLoader,
+                Container container = ejbContainerFactory.createContainer(desc, ejbAppClassLoader,
                     null, dc);
+                containers.add(container);
             } catch (Throwable th) {
                 throw new RuntimeException("Error", th);
             }
+        }
+
+        for (Container container : containers) {
+            container.doAfterApplicationDeploy();
         }
 
         return true;

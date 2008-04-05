@@ -37,6 +37,7 @@ import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.RootDeploymentDescriptor;
 import com.sun.enterprise.deployment.util.ApplicationVisitor;
+import com.sun.enterprise.deployment.util.ApplicationValidator;
 import com.sun.enterprise.deployment.archivist.ApplicationFactory;
 import com.sun.enterprise.deployment.archivist.ArchivistFactory;
 import com.sun.enterprise.deployment.archivist.Archivist;
@@ -178,6 +179,8 @@ public abstract class JavaEEDeployer<T extends Container, U extends ApplicationC
      */
     public boolean prepare(DeploymentContext dc) {
         try {
+            validateApplication(dc);
+            
             prepareScratchDirs(dc);
             String objectType = getObjectType(dc);
             if (objectType != null) {
@@ -196,6 +199,15 @@ public abstract class JavaEEDeployer<T extends Container, U extends ApplicationC
             RuntimeException re = new RuntimeException(ex.getMessage());
             re.initCause(ex);
             throw re;
+        }
+    }
+
+    protected void validateApplication(DeploymentContext dc) {
+        Application app = dc.getModuleMetaData(Application.class);
+        // we only validate the application once
+        if (app != null && !app.isValidated()) {
+            app.setClassLoader(dc.getClassLoader());
+            app.visit((ApplicationVisitor) new ApplicationValidator());
         }
     }
 
@@ -218,10 +230,6 @@ public abstract class JavaEEDeployer<T extends Container, U extends ApplicationC
 
         Application application = applicationFactory.openArchive(
                 name, archivist, sourceArchive, true);
-
-        if (application!=null) {
-            archivist.validate(cl);
-        }
 
         // this may not be the best location for this but it will suffice.
         if (deploymentVisitor!=null) {

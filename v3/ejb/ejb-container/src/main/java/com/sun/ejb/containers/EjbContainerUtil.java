@@ -4,6 +4,7 @@ import com.sun.enterprise.container.common.spi.JavaEETransaction;
 import com.sun.enterprise.container.common.spi.JavaEETransactionManager;
 import com.sun.enterprise.container.common.spi.util.ComponentEnvManager;
 import com.sun.enterprise.container.common.spi.util.InjectionManager;
+import com.sun.enterprise.container.common.spi.util.CallFlowAgent;
 import com.sun.enterprise.config.serverbeans.EjbContainer;
 import com.sun.enterprise.config.serverbeans.Application;
 import com.sun.enterprise.config.serverbeans.ApplicationHelper;
@@ -11,6 +12,7 @@ import com.sun.enterprise.deployment.EjbDescriptor;
 import com.sun.enterprise.server.ServerContext;
 import com.sun.enterprise.v3.server.ServerEnvironment;
 import com.sun.enterprise.iiop.security.GSSUtils;
+import com.sun.enterprise.admin.monitor.callflow.Agent;
 import org.glassfish.api.invocation.ComponentInvocation;
 import org.glassfish.api.invocation.InvocationManager;
 import org.glassfish.api.naming.GlassfishNamingManager;
@@ -83,6 +85,8 @@ public interface EjbContainerUtil {
 
     public ServerEnvironment getServerEnvironment();
 
+    public Agent getCallFlowAgent();
+    
     public Vector getBeans(Transaction jtx);
 
     public void addWork(Runnable task);

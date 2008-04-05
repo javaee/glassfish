@@ -370,6 +370,8 @@ public class EjbBundleValidator  extends ComponentValidator implements EjbBundle
                         BundleDescriptor sourceModule =
                             ejbRef.getReferringBundleDescriptor();
 
+                        Application app = targetModule.getApplication();
+
                         //
                         // It's much cleaner to derive the ejb-link value
                         // and set that instead of the descriptor.  This way,
@@ -393,7 +395,7 @@ public class EjbBundleValidator  extends ComponentValidator implements EjbBundle
                         // logic will always check the current ejb-jar
                         // first so there won't be any ambiguity.  
                         String ejbLinkName = target.getName();
-                        if( sourceModule != targetModule ) {
+                        if ( (sourceModule != targetModule) && (! app.isPackagedAsSingleModule()) ) {
 
                             // Since there are at least two modules, we
                             // must be within an application.
@@ -707,7 +709,7 @@ public class EjbBundleValidator  extends ComponentValidator implements EjbBundle
 
         for(Iterator iter = ejbs.iterator(); iter.hasNext();) {
             EjbDescriptor next = (EjbDescriptor) iter.next();
-            
+
             if( next.isRemoteInterfacesSupported() ) {
                 addIntfInfo(intfInfoMap, next.getHomeClassName(), 
                             EjbIntfType.REMOTE_HOME, next);

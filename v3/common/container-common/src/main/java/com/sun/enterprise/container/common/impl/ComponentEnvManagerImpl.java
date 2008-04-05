@@ -2,6 +2,7 @@ package com.sun.enterprise.container.common.impl;
 
 import com.sun.enterprise.container.common.spi.JavaEEContainer;
 import com.sun.enterprise.container.common.spi.JavaEETransactionManager;
+import com.sun.enterprise.container.common.spi.EjbNamingReferenceManager;
 import com.sun.enterprise.container.common.spi.util.ComponentEnvManager;
 import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.naming.spi.NamingObjectFactory;
@@ -51,6 +52,9 @@ public class ComponentEnvManagerImpl
 
     @Inject
     private JavaEETransactionManager txMgr;
+
+    @Inject(optional=true)
+    private EjbNamingReferenceManager ejbRefMgr;
 
     private Map<String, JndiNameEnvironment> compId2Env =
             new ConcurrentHashMap<String, JndiNameEnvironment>();
@@ -121,16 +125,15 @@ public class ComponentEnvManagerImpl
             jndiBindings.add(getCompEnvBinding(next));
         }
 
-/*
-//TODO:
         for (Iterator itr = env.getEjbReferenceDescriptors().iterator();
              itr.hasNext();) {
             EjbReferenceDescriptor next = (EjbReferenceDescriptor) itr.next();
-            EjbReferenceJNDIBinding binding = new EjbReferenceJNDIBinding(next);
-            jndiBindings.add(binding);
+            String name = JAVA_COMP_STRING + next.getName();
+            EjbReferenceProxy proxy = new EjbReferenceProxy(ejbRefMgr, next);
+            jndiBindings.add(new CompEnvBinding(name, proxy));
         }
 
-*/
+
         for (Iterator itr = env.getMessageDestinationReferenceDescriptors().
                  iterator(); itr.hasNext();) {
             MessageDestinationReferenceDescriptor next =
@@ -335,6 +338,40 @@ public class ComponentEnvManagerImpl
                     refDesc.getProperties());
 
             return emWrapper;
+        }
+    }
+
+    private static class EjbReferenceProxy
+        implements NamingObjectProxy {
+        
+        private EjbNamingReferenceManager ejbRefMgr;
+        private EjbReferenceDescriptor ejbRef;
+        private boolean isCacheable;
+        private transient Object cachedValue;
+
+        EjbReferenceProxy(EjbNamingReferenceManager ejbRefMgr, EjbReferenceDescriptor ejbRef) {
+            this.ejbRefMgr = ejbRefMgr;
+            this.ejbRef = ejbRef;
+        }
+
+        public Object create(Context ctx)
+                throws NamingException {
+
+            Object result = null;
+
+            if (ejbRefMgr != null) {
+                if (ejbRefMgr.isEjbReferenceCacheable(ejbRef)) {
+                    if (cachedValue == null) {
+                        cachedValue = ejbRefMgr.resolveEjbReference(ejbRef, null);
+                    }
+
+                    result = cachedValue;
+                } else {
+                    result = ejbRefMgr.resolveEjbReference(ejbRef, null);
+                }
+            }
+
+            return result;
         }
     }
 

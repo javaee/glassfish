@@ -41,8 +41,10 @@ import org.glassfish.javaee.core.deployment.JavaEEDeployer;
 import org.glassfish.deployment.common.DeploymentProperties;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.Habitat;
 
 import java.util.*;
+import java.util.logging.Level;
 
 /**
  * Ejb module deployer.
@@ -60,6 +62,9 @@ public class EjbDeployer
 
     @Inject
     protected ServerEnvironment env;
+
+    @Inject
+    protected Habitat habitat;
 
     protected ThreadLocal<Application> tldApp = new ThreadLocal<Application>();
 
@@ -101,10 +106,43 @@ public class EjbDeployer
         }
 
         return new MetaData(false, apis.toArray(new ModuleDefinition[apis.size()]),
-                null, new Class[] {Application.class});
+                new Class[] {EjbBundleDescriptor.class}, new Class[] {Application.class});
     }
 
-    /*
+    /**
+     * Loads the meta date associated with the application.
+     *
+     * @param type type of metadata that this deployer has declared providing.
+     * @param dc deployment context
+     */
+    public <V> V loadMetaData(Class<V> type, DeploymentContext dc) {
+        try {
+            Application app = this.parseModuleMetaData(dc);
+            Set<EjbBundleDescriptor> ejbBD = app.getEjbBundleDescriptors();
+
+            EjbBundleDescriptor dummy = null;
+
+            Application dcApp = dc.getModuleMetaData(Application.class);
+            if (dcApp != null) {
+                dcApp.setVirtual(false);
+                for (EjbBundleDescriptor desc : ejbBD) {
+                    dummy = desc;
+                    dcApp.addBundleDescriptor(desc);
+                }
+            } else {
+                dc.addModuleMetaData(app);
+                dcApp = app;
+            }
+            
+            //FIXME: Need to revist for .ear
+            dcApp.setPackagedAsSingleModule(true);
+            return (V) dummy;
+        } catch (Exception e) {
+            dc.getLogger().log(Level.SEVERE, e.getMessage(), e);
+            throw new RuntimeException(e.getMessage(), e);
+        }
+    }
+
     @Override
     protected Application parseModuleMetaData(DeploymentContext dc)
         throws Exception {
@@ -116,7 +154,7 @@ public class EjbDeployer
             Properties props = dc.getCommandParameters();
             String name = props.getProperty(DeploymentProperties.NAME);
 
-            Archivist archivist = new EjbInWarArchivist();
+            Archivist archivist = habitat.getComponent(EjbInWarArchivist.class);
             archivist.setClassLoader(cl);
             archivist.setAnnotationProcessingRequested(true);
             archivist.setXMLValidation(false);
@@ -128,10 +166,6 @@ public class EjbDeployer
             Application application = applicationFactory.openArchive(
                     name, archivist, sourceArchive, true);
 
-            if (application!=null) {
-                archivist.validate(cl);
-            }
-
             // this may not be the best location for this but it will suffice.
             if (deploymentVisitor!=null) {
                 deploymentVisitor.accept(application);
@@ -142,17 +176,6 @@ public class EjbDeployer
         } else {
             return super.parseModuleMetaData(dc);
         }
-    }
-    */
-
-    @Override
-    public boolean prepare(DeploymentContext dc) {
-        boolean prepared = super.prepare(dc);
-        if (prepared) {
-            Application application = dc.getModuleMetaData(Application.class);
-            System.out.println("App: " + application);
-        }
-        return true;
     }
 
     public EjbApplication load(EjbContainerStarter containerStarter, DeploymentContext dc) {
