@@ -57,7 +57,7 @@
 	</sun:head>
 	<sun:body style="background:#B6C6D6" onLoad="admingui.nav.clearTreeSelection('form:tree'); admingui.nav.refreshTree('form:tree:registration');">
 	     <sun:form id="form"> 
-<!-- #include "/treeBreadcrumbs.inc" -->
+<!-- #include "/shared/treeBreadcrumbs.inc" -->
 		<sun:commonTasksSection helpText="$resource{i18n.commonTasks.help}" title="$resource{i18n.commonTasks.title}" columns="$int{2}" style="visibility: #{commonTaskVisibility}">
 		    <sun:commonTasksGroup  title="$resource{i18n.commonTasks.task.regAndSupport}">
 			<sun:commonTask rendered="$session{showRegistration}"

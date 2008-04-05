@@ -36,7 +36,7 @@
 -->
 <!-- shared/jvmOptions_2.jsf -->
 
-#include "/alertMsg.inc"
+#include "/shared/alertMsg.inc"
             <!-- Page Title -->
             <sun:title id="propertyContentPage" title="$resource{i18n.jvmOptions.Title}" 
                 helpText="$resource{i18n.jvmOptions.PageHelp}">

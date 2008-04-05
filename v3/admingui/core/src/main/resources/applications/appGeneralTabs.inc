@@ -1,4 +1,3 @@
-
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  
@@ -34,42 +33,27 @@
  only if the new code is made subject to such option by the copyright
  holder.
 -->
-<!-- resourceNode/jdbcResourceEdit.jsf -->
-
-<sun:page id="page1">
-    <!beforeCreate
-    setResourceBundle(key="i18n" bundle="core.Strings");
-    setResourceBundle(key="i18n" bundle="core.Helplinks");
-    setSessionAttribute(key="resEditTabs" value="general");
-    setPageSessionAttribute(key="pageTitle" value="$resource{i18n.jdbcResource.editPageTitle}");
-    setPageSessionAttribute(key="pageTitleHelp" value="$resource{i18n.jdbcResource.editPageTitleHelp}");
-    setPageSessionAttribute(key="generalPage" value="jdbcResourceEdit.jsf");
-    setPageSessionAttribute(key="targetPage" value="jdbcResourceTargets.jsf");
-     if( $session{supportCluster} ){
-        setPageSessionAttribute(key="useString" value="$boolean{true}");
-        setPageSessionAttribute(key="useCheckBox" value="$boolean{false}");
-    }
-    if( !$session{supportCluster} ){
-        setPageSessionAttribute(key="useString" value="$boolean{false}");
-        setPageSessionAttribute(key="useCheckBox" value="$boolean{true}");
-    }
-    setPageSessionAttribute(key="saveButtonLabel" value="$resource{i18n.button.Save}");
-    setPageSessionAttribute(key="edit" value="#{true}");
-    />
-#include "/shared/restart.inc"    
-    <sun:html id="html2">
-        <sun:head id="propertyhead" title="#{pageTitle}" >
-            <sun:script url="/resource/js/adminjsf.js" />
-        </sun:head>
-
-             <sun:body id="body3" onLoad="javascript: synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
-                <sun:form id="propertyForm">
-#include "/shared/treeBreadcrumbs.inc"
-#include "resourcesTabs.inc"
-#include "/shared/alertMsg.inc"
-#include "jdbcResource.inc"    
-	<sun:hidden id="helpKey" value="$resource{help.jdbcResourceEdit}" />
-                </sun:form>
-            </sun:body>
-    </sun:html>
-</sun:page>
+<!-- applications/appGeneralTabs.inc -->
+<sun:tabSet id="appGeneralTabs" immediate="$boolean{true}" selected="#{sessionScope.appGeneralTabs}">
+        <sun:tab id="general" immediate="$boolean{true}" text="$resource{i18n.common.General}" >
+                <!command
+                    setSessionAttribute(key="appGeneralTabs" value="general");
+        			urlencode(value="#{name}", value=>$pageSession{name});
+                    redirect(page="#{generalPage}?appName=#{name}");
+                />       
+        </sun:tab>
+        <sun:tab id="descriptorTab" immediate="$boolean{true}" text="$resource{i18n.common.DescriptorTab}">
+            <!command
+                setSessionAttribute(key="appGeneralTabs" value="descriptorTab");
+        		urlencode(value="#{name}", value=>$pageSession{name});
+                redirect(page="#{descriptorPage}?appName=#{name}");
+            />
+        </sun:tab>
+        <sun:tab id="targetTab" rendered="$session{supportCluster}" immediate="$boolean{true}" text="$resource{i18n.common.TargetTab}">
+            <!command
+                setSessionAttribute(key="appGeneralTabs" value="targetTab");
+        		urlencode(value="#{name}", value=>$pageSession{name});
+                redirect(page="#{targetPage}?appName=#{name}");
+            />
+        </sun:tab>
+</sun:tabSet>

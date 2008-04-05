@@ -36,7 +36,7 @@
 -->
 <!-- shared/jvmProfiler_2.inc -->
 
-#include "/alertMsg.inc"
+#include "/shared/alertMsg.inc"
                 <!-- Page Title -->
                 <sun:title id="propertyContentPage" title="$resource{i18n.jvm.ProfilerPageName}"
                     helpText="$resource{i18n.jvm.ProfilerPageHelp}">

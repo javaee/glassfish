@@ -36,7 +36,7 @@
 
 <!-- shared/appConfig_2.inc -->
 
-#include "/alertMsg.inc"
+#include "/shared/alertMsg.inc"
     <!-- Page Title -->
     <sun:title id="propertyContentPage" title="$resource{i18n.server.AppsConfigPageTitle}" 
         helpText="$resource{i18n.server.AppsConfigPageHelp}">

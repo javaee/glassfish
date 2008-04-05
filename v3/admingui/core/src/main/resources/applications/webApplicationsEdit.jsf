@@ -61,17 +61,17 @@
 #include "/shared/restart.inc"    
 <sun:html id="html2">
     <sun:head id="propertyhead" title="#{pageTitle}" >
-        <sun:script url="/resource/js/restart.js" />
+        <sun:script url="/resource/js/adminjsf.js" />
     </sun:head>
     <sun:body id="body3" onLoad="javascript: synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
         <sun:form id="propertyForm">
         
-        #include "/treeBreadcrumbs.inc"
+        #include "/shared/treeBreadcrumbs.inc"
         # TODO-V3 no descriptor or target tab for TP2
         # include "/applications/appGeneralTabs.inc"
-#include "/alertMsg.inc"
-#include "/applications/edit.inc"
-        #include "/applications/subComponentTable.inc"
+#include "/shared/alertMsg.inc"
+#include "edit.inc"
+        #include "subComponentTable.inc"
 	<sun:hidden id="helpKey" value="$resource{help.webApplicationsEdit}" />
         </sun:form>
     </sun:body>

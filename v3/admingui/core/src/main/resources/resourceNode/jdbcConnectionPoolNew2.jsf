@@ -62,22 +62,22 @@
     getTableList(Properties="#{wizardPoolProperties}", TableList=>$attribute{tableList})
     />
     
-#include "shared/restart.inc"    
+#include "/shared/restart.inc"    
     <sun:html id="html2">
         <sun:head id="propertyhead" title="$resource{i18n.jdbcConnectionPool.Step2PageTitle}" >
-            <sun:script url="/resource/js/restart.js" />
+            <sun:script url="/resource/js/adminjsf.js" />
         </sun:head>
 
         <sun:body id="body3" onLoad="javascript: synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
             <sun:form id="form2">
-#include treeBreadcrumbs.inc
-#include "alertMsg.inc"
+#include "/shared/treeBreadcrumbs.inc"
+#include "/shared/alertMsg.inc"
             <sun:hidden id="validate"  value="TRUE" />
                 <!-- Page Title -->
                 <sun:title id="propertyContentPage" title="$resource{i18n.jdbcConnectionPool.Step2PageTitle}"
                     helpText="$resource{i18n.jdbcConnection.step2PageHelp}">
                     <!facet pageButtonsTop>
-#include "resourceNode/jdbcConnectionPoolNew2Buttons.inc"
+#include "jdbcConnectionPoolNew2Buttons.inc"
                     </facet> 
                     </sun:title>
                     <!-- PropertySheet .... -->
@@ -107,7 +107,7 @@
 
 			<!-- -------------------- Pool Settings ------------ -->
                         <sun:propertySheetSection id="poolSettingsPropertySheet" label="$resource{i18n.jdbcPool.poolSettings}">
-#include "resourceNode/poolPropertyNew.inc"
+#include "poolPropertyNew.inc"
                             "<br /><br />
                         </sun:propertySheetSection>
 
@@ -168,10 +168,10 @@
                            "<br /><br />
                         </sun:propertySheetSection>
                     </sun:propertySheet>   
-#include "shared/propertyTable.inc" 
+#include "/shared/propertyTable.inc" 
                     <sun:title id="propertyContentPage2">
                     <!facet pageButtonsBottom>
-#include "resourceNode/jdbcConnectionPoolNew2Buttons.inc"
+#include "jdbcConnectionPoolNew2Buttons.inc"
                     </facet> 
                     </sun:title>
 	<sun:hidden id="helpKey" value="$resource{help.jdbcConnectionPoolNew2}" />
@@ -179,17 +179,19 @@
         </sun:body>
 #include "/shared/changeButtonsJS.inc" 
 
-"<SCRIPT language = "Javascript" >
-"function disableTableField() {
-"
-"    var methodType = document.getElementById("$pageSession{valMethod}");
-"    if(methodType.value == 'table') {
-"	webui.suntheme.field.setDisabled("$pageSession{tableTextField}", false);
-"    } else{
-"	webui.suntheme.field.setDisabled("$pageSession{tableTextField}", true);
-"    }
-"}
-"</SCRIPT>
+<f:verbatim>
+    <script type="text/javascript">
+    function disableTableField() {
+        var methodType = document.getElementById("$pageSession{valMethod}");
+        if(methodType.value == 'table') {
+            webui.suntheme.field.setDisabled("$pageSession{tableTextField}", false);
+        } else{
+            webui.suntheme.field.setDisabled("$pageSession{tableTextField}", true);
+        }
+    }
+    </script>
+</f:verbatim>
+
     </sun:html>
 </sun:page>
 

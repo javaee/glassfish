@@ -45,14 +45,14 @@
                 DBVendorList=>$attribute{DBVendorList});
     
     />
-#include "shared/restart.inc"    
+#include "/shared/restart.inc"    
     <sun:html id="html2">
         <sun:head id="propertyhead" title="$resource{i18n.jdbcConnectionPool.step1PageTitle}" >
-            <sun:script url="/resource/js/restart.js" />
+            <sun:script url="/resource/js/adminjsf.js" />
         </sun:head>
         <sun:body id="body3" onLoad="javascript: synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
             <sun:form id="propertyForm">
-#include treeBreadcrumbs.inc
+#include "/shared/treeBreadcrumbs.inc"
                 <!-- Page Title -->
                 <sun:title id="propertyContentPage" title="$resource{i18n.jdbcConnectionPool.step1PageTitle}"
                     helpText="$resource{i18n.jdbcConnection.step1PageHelp}">

@@ -48,7 +48,6 @@
 
 <sun:html id="html2">
 <sun:head id="propertyhead" title="$resource{i18n.support.PageTitle}">
-    <sun:script url="/resource/js/restart.js" />
     <sun:script url="/resource/js/adminjsf.js" />
     <sun:script>
 	// Should move this to JS to our adminjsf.js file

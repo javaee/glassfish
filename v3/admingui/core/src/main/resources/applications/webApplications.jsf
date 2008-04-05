@@ -52,7 +52,6 @@
 #include "/shared/restart.inc"    
     <sun:html id="html2">
         <sun:head id="propertyhead" title="$resource{i18n.webAplications.title}" >
-            <sun:script url="/resource/js/restart.js" />
             <sun:script url="/resource/js/adminjsf.js" />
         </sun:head>
 
@@ -64,8 +63,8 @@
         admingui.nav.selectTreeNodeById('form:tree:applications:webApplications');
     </script>
 </f:verbatim>
-#include "/treeBreadcrumbs.inc"
-#include "/alertMsg.inc"
+#include "/shared/treeBreadcrumbs.inc"
+#include "/shared/alertMsg.inc"
                 <!-- Page Title -->
                  <sun:title id="propertyContentPage" title="$resource{i18n.webAplications.title}" helpText="$resource{i18n.webAplications.titleHelp}"/>
                  "<br />

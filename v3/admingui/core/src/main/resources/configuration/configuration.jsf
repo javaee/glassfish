@@ -35,8 +35,6 @@
 -->
 <!-- configuration/configuration.jsf -->
 
-<!-- TODO: determine if its PE or EE.  set ConfigName accordingly -->
-
 <sun:page>
     <!beforeCreate 
         setResourceBundle(key="i18n" bundle="core.Strings")
@@ -51,11 +49,11 @@
 #include "/shared/restart.inc"    
     <sun:html>
         <sun:head id="configHead" title="$resource{i18n.configuration.pageTitle}">
-            <sun:script url="/resource/js/restart.js" />
+            <sun:script url="/resource/js/adminjsf.js" />
         </sun:head>
         <sun:body onLoad="javascript: synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
             <sun:form id="configForm"> 
-#include "/treeBreadcrumbs.inc"
+#include "/shared/treeBreadcrumbs.inc"
                 <sun:title 
                 id="configPageTitle" 
                 title="$resource{i18n.configuration.pageTitle}" 
@@ -139,15 +137,18 @@
                             </sun:hyperlink>
                            
                         </sun:property>
+                        -->
                         <sun:property>
                         <sun:hyperlink 
                                 toolTip="$resource{i18n.tree.httpService.tooltip}" 
-                                url="/configuration/httpService.jsf?configName=#{configName}" >
+                                url="/web/configuration/httpService.jsf?configName=#{configName}" >
                                 <sun:image url="/resource/images/http.gif" />
                                 <sun:staticText text="$resource{i18n.tree.httpService}" />
                             </sun:hyperlink>
                           
                         </sun:property>
+                        
+                        <!--
                         <sun:property>
                         
                         <sun:hyperlink 

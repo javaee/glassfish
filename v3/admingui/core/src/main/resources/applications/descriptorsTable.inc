@@ -35,8 +35,6 @@
 -->
 <!-- applications/descriptorsTable.jsf -->
 
-<!-- Descriptos Table .... -->
-               
 <sun:table id="basicTable" style="padding: 10pt" deselectMultipleButton="$boolean{false}" selectMultipleButton="$boolean{false}"
     title="$resource{i18n.deploy.descriptors}">
 

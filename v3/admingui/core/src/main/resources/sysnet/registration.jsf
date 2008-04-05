@@ -79,14 +79,12 @@
 #include "/shared/restart.inc"    
     <sun:html id="html2">
         <sun:head id="propertyhead" title="$resource{i18n.reg.PageTitle}" >
-            <sun:script url="/resource/js/restart.js" />
             <sun:script url="/resource/js/adminjsf.js" />
-            <sun:script url="/resource/js/selectElements.js" />
         </sun:head>
         <sun:body id="body3" onLoad="admingui.nav.refreshTree('form:tree:registration'); showAccountSection('#{accountGroup}')" >
             <sun:form id="form1" >
-#include "/treeBreadcrumbs.inc"
-#include "/alertMsg.inc"                
+#include "/shared/treeBreadcrumbs.inc"
+#include "/shared/alertMsg.inc"                
             <!-- Page Title -->
                 <sun:title id="title1" title="$resource{i18n.reg.PageTitle}" helpText="${PageTitleHelp}">
                    <!-- 

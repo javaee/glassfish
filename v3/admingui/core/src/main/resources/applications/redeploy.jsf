@@ -47,13 +47,12 @@
 #include "/shared/restart.inc"    
 <sun:html>
 	<sun:head id="propertyhead" title="$resource{i18n.redeploy.pageTitle}">
-                <sun:script url="/resource/js/restart.js" />
                 <sun:script url="/resource/js/adminjsf.js" />
 	</sun:head>
 		<sun:body onLoad="javascript: synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
 	    	<sun:form id="form"> 
-#include "/treeBreadcrumbs.inc"
-#include "/alertMsg.inc"
+#include "/shared/treeBreadcrumbs.inc"
+#include "/shared/alertMsg.inc"
                 <sun:title id="title" title="$resource{i18n.redeploy.pageTitle}" helpText="$resource{i18n.redeploy.pageTitleHelp}">
                     <!facet pageButtonsTop>
                     <sun:panelGroup id="topButtons">

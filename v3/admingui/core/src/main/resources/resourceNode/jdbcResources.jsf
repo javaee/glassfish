@@ -59,16 +59,16 @@
 #include "/shared/restart.inc"    
     <sun:html id="html2">
         <sun:head id="propertyhead" title="$resource{i18n.jdbcResources.pageTitle}" >
-            <sun:script url="/resource/js/restart.js" />
+            <sun:script url="/resource/js/adminjsf.js" />
         </sun:head>
 
         <sun:body id="body3" onLoad="admingui.nav.refreshTree(null); synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
             <sun:form id="propertyForm">
-#include "/treeBreadcrumbs.inc"
-#include "/alertMsg.inc"
+#include "/shared/treeBreadcrumbs.inc"
+#include "/shared/alertMsg.inc"
                  <sun:title id="propertyContentPage" title="$resource{i18n.jdbcResources.pageTitle}" helpText="$resource{i18n.jdbcResources.pageTitleHelp}"/>
 		 "<br /> <br />
-#include "/resourceNode/resourcesTable.inc"
+#include "resourcesTable.inc"
 	<sun:hidden id="helpKey" value="$resource{help.jdbcResources}" />
             </sun:form>
         </sun:body>

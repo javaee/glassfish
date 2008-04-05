@@ -1528,3 +1528,38 @@ function submitenter(e, id, msg) {
 	}
 }
 
+function getSelectedValue(field) {
+    var theForm = document.forms[0];
+    var selectedValue;
+    for(i = 0; i < theForm.elements.length; i++) {
+        var value = theForm.elements[i].name;
+	if(value == null) {
+            continue;
+	}
+	var extnsn = value.lastIndexOf(".");
+	var name = value.substr(extnsn+1);
+	var fieldName = theForm.elements[i];
+	if(name == field && fieldName.checked) {
+            selectedValue = fieldName.value;
+	    break;
+	}
+    }
+    return selectedValue;
+}
+
+function checkForSelectedValue(fieldId) { 
+    var field = document.getElementById(fieldId);  
+    if (field.value == '' || isWhitespace(field.value)) { 
+        return false; 
+    } 
+    return true; 
+}
+
+function synchronizeRestartRequired(currentRestartStatus, oldRestartStatus) {
+//    if (currentRestartStatus != oldRestartStatus) {
+//        parent.parent.frames["header"].location.reload();
+//        parent.parent.document.getElementById('outerFrameset').setAttribute('rows', '103,*', 0);
+//    }
+    return true;
+}
+
