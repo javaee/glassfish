@@ -1,0 +1,204 @@
+# DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER. 
+# 
+# Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved. 
+# 
+# The contents of this file are subject to the terms of either the GNU 
+# General Public License Version 2 only ("GPL") or the Common Development 
+# and Distribution License("CDDL") (collectively, the "License").  You 
+# may not use this file except in compliance with the License. You can obtain 
+# a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html 
+# or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific 
+# language governing permissions and limitations under the License. 
+# 
+# When distributing the software, include this License Header Notice in each 
+# file and include the License file at glassfish/bootstrap/legal/LICENSE.txt. 
+# Sun designates this particular file as subject to the "Classpath" exception 
+# as provided by Sun in the GPL Version 2 section of the License file that 
+# accompanied this code.  If applicable, add the following below the License 
+# Header, with the fields enclosed by brackets [] replaced by your own 
+# identifying information: "Portions Copyrighted [year] 
+# [name of copyright owner]" 
+# 
+# Contributor(s): 
+# 
+# If you wish your version of this file to be governed by only the CDDL or 
+# only the GPL Version 2, indicate your decision by adding "[Contributor] 
+# elects to include this software in this distribution under the [CDDL or GPL 
+# Version 2] license."  If you don't indicate a single choice of license, a 
+# recipient has the option to distribute your version of this file under 
+# either the CDDL, the GPL Version 2 or to extend the choice of license to 
+# its licensees as provided above.  However, if you add GPL Version 2 code 
+# and therefore, elected the GPL Version 2 license, then the option applies 
+# only if the new code is made subject to such option by the copyright 
+# holder. 
+# 
+#
+##########################################################################
+
+# Properties file for all the view pages
+# Fragments line ${varname} are replaced by FreeMarker templating mechanism from other properties
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ COMMON STUFF ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+PRODUCT_NAME=GlassFish V3 Technology Preview 2
+
+app_title=GlassFish V3 Technology Preview 2
+
+# Text for Buttons
+btnCancel_text=Cancel
+btnExit_text=Exit
+btnHelp_text=Help
+btnBack_text=Back
+btnNext_text=Next
+
+# stuff that's used by templates regardless of viewmode
+mainpanel_bgcolor=WHITE
+navigpanel_image=/templates/openInstaller_sidebar_Orange_180x480.gif
+logopanel_image=/templates/openInstaller_logo_banner_540x81.gif
+
+# L10n - Replace the right side with -*-*-*-*-*-*-*-*-*-*-*-*-*-*
+leftpanel_font=Arial Narrow-BOLD-11
+
+# Dynamic panel
+# L10n - Replace the right side with -*-*-*-*-*-*-*-*-*-*-*-*-*-*
+dynamic_content_font=Arial-PLAIN-13
+dynamic_component_background=WHITE
+dynamic_component_foreground=666666
+dynamic_component_border_color=BLACK
+
+# Font for titles
+# L10n - Replace the right side with -*-*-*-*-*-*-*-*-*-*-*-*-*-*
+title1_font=Arial Narrow-BOLD-14
+# L10n - Replace the right side with -*-*-*-*-*-*-*-*-*-*-*-*-*-*
+title2_font=Arial Narrow-BOLD-20
+
+# Text color for titles
+title1_color=3E647E
+title2_color=BLACK
+
+# Text for titles
+title1_text=Welcome to
+title2_text=GlassFish V3
+# Colors for content panel
+contentpanel_bordercolor=587993
+contentpanel_bgcolor=FFFFFF
+
+btnpanel_bgcolor=WHITE
+
+# Font for Buttons
+# L10n - Replace the right side with -*-*-*-*-*-*-*-*-*-*-*-*-*-*
+button_font=Arial Narrow-PLAIN-11
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~W E L C O M E   P A G E~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Welcome_WELCOME_TEXT=&lt;HTML&gt;&lt;BODY&gt;\
+            Welcome to the ${PRODUCT_NAME} installation.&lt;BR&gt;&lt;BR&gt;\
+            Before you begin, please refer to the &lt;BR&gt;&lt;i&gt;${PRODUCT_NAME} \
+            Release Notes and Installation Guide&lt;/i&gt;.&lt;BR&gt;&lt;BR&gt;\
+            Select &quot;Next&quot; to install the entire ${PRODUCT_NAME} &lt;BR&gt;&lt;BR&gt;\
+                        &lt;/BODY&gt;&lt;/HTML&gt;
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~L I C E N S E   P A G E~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+License_LICENSE_TEXT1=&lt;HTML&gt;&lt;BODY&gt;\
+              Before you install this product, you must read and accept \
+              the agreement under which this product is licensed for use.\
+              &lt;/BODY&gt;&lt;/HTML&gt;
+
+License_LICENSE_TEXT2=SOFTWARE LICENSE AGREEMENT placeholder \n\n\
+
+License_LICENSE_TEXT3=&lt;HTML&gt; &lt;BODY&gt;\
+             Have you read, and do you accept, all of the terms of the preceding&lt;BR&gt;\
+             Software License Agreement? If you click &lt;B&gt;Cancel&lt;/B&gt; the installer&lt;BR&gt;\
+             will exit without installing any product.&lt;BR&gt;&lt;/BODY&gt;&lt;/HTML&gt;
+
+LICENSE_CHECKBOX_TOOLTIP=Click to accept or reject the license
+
+LICENSE_CHECKBOX_TEXT=I Accept
+
+LICENSE_ACCEPT_TOOLTIP=Click this if you accept the agreement
+
+LICENSE_ACCEPT_TEXT=I accept the terms in the license agreement
+
+LICENSE_DECLINE_TOOLTIP=Click this if you do not accept the agreement
+
+LICENSE_DECLINE_TEXT=I do not accept the terms in the license agreement
+
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~I N S T A L L    H O M E   P A G E~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+DEFAULT_INSTALL_HOME=C:\Program Files\Sun
+INSTALL_HOME_LABEL=Installation Directory
+INSTALL_TOP_TEXT=&lt;HTML&gt;&lt;BODY&gt;\
+Specify the installation directory that will serve as the default install location \
+on the target system for the ${PRODUCT_NAME} product.&lt;BR&gt;\
+&lt;/BODY&gt;&lt;/HTML&gt;
+SPECIFY_HOME_MSG=Specify installation directory for installation.
+INSTALL_BOTTOM_TEXT=&lt;HTML&gt;&lt;BODY&gt;\
+If you specify a non-existent installation directory, this installation\
+program will automatically create it for you.\
+&lt;/BODY&gt;&lt;/HTML&gt;
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~C O N F I G   M O D E   P A G E~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  L10N SELECTION PAGE ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+L10N_HOME_TEXT=&lt;HTML&gt;&lt;BODY&gt;\
+Choose an option from the following.\
+&lt;/BODY&gt;&lt;/HTML&gt;
+L10N_CHOICE_TEXT=Install languages for the selected products.
+INSTALL_L10N_TOOLTIP=Select this to install languages for the selected products.
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~J D K  S E L E C T I O N  P A G E~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+JDK_HOME_TEXT=&lt;HTML&gt;&lt;BODY&gt;\
+Choose an option from the following.\
+&lt;/BODY&gt;&lt;/HTML&gt;
+
+
+JDK_HOME=JDK Home
+SELECTED_JDK_TEXT=&lt;HTML&gt;&lt;BODY&gt;\
+The selected JDK is \
+&lt;/BODY&gt;&lt;/HTML&gt;
+
+JDK_FROM_MEDIA_CHOICE_TEXT=Install and use the default version of the Java(TM) SDK.
+JDK_FROM_LIST_CHOICE_TEXT=Choose a Java(TM) SDK from the list below.
+JDK_TYPED_IN_CHOICE_TEXT=Type in a Java(TM) SDK location below.
+
+JDK_LIST_TOOLTIP=Choose a Java(TM) SDK from the drop-down list.
+JDK_TYPE_IN_TOOLTIP=You can type a Java(TM) SDK location here.
+
+AVAILABLE_JDK=Available Java(TM) SDKs
+ALTERNATE_JDK=Alternate Java(TM) SDK location
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~PRODUCT SELECTION PAGE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ADD_BUTTON_LABEL=Add >
+ADD_ALL_BUTTON_LABEL=Add all >>
+REMOVE_BUTTON_LABEL=< Remove
+REMOVE_ALL_BUTTON_LABEL=<< Remove All
+PSP_INTRO_TEXT=Please select the products to install
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~PAGE FLOW~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+CONFIGURE_SELECT_MSG=Configures the selected software components with default/cu
+stom values.
+EXPRESS=Express
+CUSTOM=Custom
+SELECT_DESIRED_MODE_TEXT=&lt;HTML&gt;&lt;BODY&gt;
+            Select the desired mode of configuration.
+            &lt;/BODY&gt;&lt;/HTML&gt;
+CUSTOM_CDATA_TXT=&lt;HTML&gt;&lt;BODY&gt;&lt;B&gt;Custom&lt;/B&gt; mode installs
+ the  software  and configures it with the values
+that you specify in the configuration pages that follow.&lt;BR&gt;
+          &lt;/BODY&gt;&lt;/HTML&gt;
+EXPRESS_CDATA_TXT=&lt;HTML&gt;&lt;BODY&gt;&lt;B&gt;Express&lt;/B&gt; mode instal
+ls the  software and configures it with the defaults.
+CONFIGURE_SELECTED_COMPONENTS_MSG=Configures the selected software components with default/custom values.
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~A D M I N   P A S S W O R D   P A G E~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~R E A D Y   T O   I N S T A L L   P A G E~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~UPGRADE PAGE~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+UPGRADE_SOFTWARE=&lt;HTML&gt;&lt;BODY&gt;&lt;h3&gt;${PRODUCT_NAME} : Upgrade Software&lt;/h3&gt;&lt;/BODY&gt;&lt;/HTML&gt;
+UPGRADE_ALLOW_TEXT=Upgrade
+UPGRADE_DECLINE_TEXT=Do not upgrade
+UPGRADE_ALLOW_TOOLTIP=Click this to upgrade software
+UPGRADE_DECLINE_TOOLTIP=Click this to not upgrade software
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~P R O G R E S S   P A G E~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# L10n: only translate the "Please wait" string.  leave the rest unchanged.
+PROGRESS_WAIT=&lt;HTML&gt;&lt;BODY&gt;\
+               Please wait\
+               &lt;/BODY&gt;&lt;/HTML&gt;
+
+## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~S U M M A R Y   P A G E~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
