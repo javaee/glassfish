@@ -75,7 +75,7 @@
         </sun:head>
         <sun:body id="body3" onLoad="javascript: synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
             <sun:form id="propertyForm">
-#include /treeBreadcrumbs.inc
+#include "/shared/treeBreadcrumbs.inc"
 #include "/resourceNode/jdbcConnectionPoolTabs.inc"
 #include "/shared/alertMsg.inc"
                 <!-- Page Title -->
