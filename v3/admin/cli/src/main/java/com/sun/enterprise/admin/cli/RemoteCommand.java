@@ -48,6 +48,7 @@ import java.util.jar.*;
 /**
  * RemoteCommand class 
  */
+
 public class RemoteCommand {
 private static final RemoteCommand INSTANCE = new RemoteCommand();
     RemoteCommand() {
