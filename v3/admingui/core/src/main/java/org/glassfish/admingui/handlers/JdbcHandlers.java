@@ -521,25 +521,19 @@ public class JdbcHandlers {
             input={
                 @HandlerInput(name="jndiName", type=String.class, required=true)})
         public static void pingJdbcConnectionPool(HandlerContext handlerCtx) {
-        
+            
             String jndiName = (String) handlerCtx.getInputValue("jndiName");
-            String[] params = {jndiName, null};
-            String[] signatures = {"java.lang.String", "java.lang.String" };
-            /* TODO-V3
-            try{
-                Object result = JMXUtil.invoke( "com.sun.appserv:type=resources,category=config",
-                            "pingConnectionPool",
-                            params,
-                            signatures);
+            JDBCConnectionPoolConfig pool = AMXRoot.getInstance().getResourcesConfig().getJDBCConnectionPoolConfigMap().get(jndiName);
+            try {
+                Boolean result = false; //pool.ping();
                 if ( (result != null) && (Boolean)result){
-                    GuiUtil.prepareAlert(handlerCtx,"success", GuiUtil.getMessage("msg.PingSucceed"), null);
+                        GuiUtil.prepareAlert(handlerCtx,"success", GuiUtil.getMessage("msg.PingSucceed"), null);
                 }else{
                     GuiUtil.prepareAlert(handlerCtx, "error", GuiUtil.getMessage("msg.Error"), "msg.PingError");
                 }
             }catch(Exception ex){
 		GuiUtil.handleException(handlerCtx, ex);
             }
-             */
         }
      
         
@@ -678,22 +672,22 @@ public class JdbcHandlers {
         List<Map> selectedList = (List)handlerCtx.getInputValue("selectedRows");
         boolean hasOrig = (selectedList == null || selectedList.size()==0) ? false: true;
         List result = new ArrayList();
-        try{
 	Iterator iter = AMXRoot.getInstance().getResourcesConfig().getJDBCConnectionPoolConfigMap().values().iterator();
         if(iter != null ){
             while(iter.hasNext()){
-                JDBCConnectionPoolConfig res = (JDBCConnectionPoolConfig)iter.next();
-                HashMap oneRow = new HashMap();
-                oneRow.put("name", res.getName());
-                oneRow.put("selected", (hasOrig)? GuiUtil.isSelected(res.getName(), selectedList): false);
-                oneRow.put("resInfo", GuiUtil.checkEmpty(res.getResType()));
-                oneRow.put("extraInfo", res.getDatasourceClassname());
-                oneRow.put("description", GuiUtil.checkEmpty(res.getDescription()));
-                result.add(oneRow);
+                try{
+                    JDBCConnectionPoolConfig res = (JDBCConnectionPoolConfig)iter.next();
+                    HashMap oneRow = new HashMap();
+                    oneRow.put("name", res.getName());
+                    oneRow.put("selected", (hasOrig)? GuiUtil.isSelected(res.getName(), selectedList): false);
+                    oneRow.put("resInfo", GuiUtil.checkEmpty(res.getResType()));
+                    oneRow.put("extraInfo", res.getDatasourceClassname());
+                    oneRow.put("description", GuiUtil.checkEmpty(res.getDescription()));
+                    result.add(oneRow);
+                }catch (Exception ex){
+                    ex.printStackTrace();
+                }
             }
-        }
-        }catch (Exception ex){
-            ex.printStackTrace();
         }
         handlerCtx.setOutputValue("result", result);
         

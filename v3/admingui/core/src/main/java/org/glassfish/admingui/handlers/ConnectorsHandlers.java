@@ -1534,35 +1534,34 @@ public class ConnectorsHandlers {
         boolean hasOrig = false;
 
         List result = new ArrayList();
-        try {
         if (iter != null) {
             while (iter.hasNext()) {
-                ResourceConfig resConfig = (ResourceConfig) iter.next();
-                HashMap oneRow = new HashMap();
-                String name = resConfig.getJNDIName();
-                //System.out.println("jndi name "+name);
-                oneRow.put("name", name);
-                oneRow.put("enabled", TargetUtil.getEnabledStatus(resConfig, false));
-                oneRow.put("selected", (hasOrig) ? GuiUtil.isSelected(name, selectedList) : false);
-                oneRow.put("description", GuiUtil.checkEmpty(resConfig.getDescription()));
-                if (isJdbc) {
-                    oneRow.put("pool", ((JDBCResourceConfig) resConfig).getPoolName());
-                } else if (isConnector) {
-                    oneRow.put("pool", ((ConnectorResourceConfig) resConfig).getPoolName());
-                } else if (isCustomResource) {
-                    oneRow.put("resType", ((CustomResourceConfig) resConfig).getResType());
-                } else if (isExternal) {
-                    oneRow.put("resType", ((JNDIResourceConfig) resConfig).getResType());
-                } else if (isAdminObject) {
-                    oneRow.put("resType", ((AdminObjectResourceConfig) resConfig).getResType());
+                try{
+                    ResourceConfig resConfig = (ResourceConfig) iter.next();
+                    HashMap oneRow = new HashMap();
+                    String name = resConfig.getJNDIName();
+                    oneRow.put("name", name);
+                    oneRow.put("enabled", TargetUtil.getEnabledStatus(resConfig, false));
+                    oneRow.put("selected", (hasOrig) ? GuiUtil.isSelected(name, selectedList) : false);
+                    oneRow.put("description", GuiUtil.checkEmpty(resConfig.getDescription()));
+                    if (isJdbc) {
+                        oneRow.put("pool", ((JDBCResourceConfig) resConfig).getPoolName());
+                    } else if (isConnector) {
+                        oneRow.put("pool", ((ConnectorResourceConfig) resConfig).getPoolName());
+                    } else if (isCustomResource) {
+                        oneRow.put("resType", ((CustomResourceConfig) resConfig).getResType());
+                    } else if (isExternal) {
+                        oneRow.put("resType", ((JNDIResourceConfig) resConfig).getResType());
+                    } else if (isAdminObject) {
+                        oneRow.put("resType", ((AdminObjectResourceConfig) resConfig).getResType());
+                    }
+                    result.add(oneRow);
+                 } catch (Exception ex) {
+                        System.out.println("!!!! Catch exception when trying to iterate through resource list.  Resource Name = name");
+                        ex.printStackTrace();
                 }
-                result.add(oneRow);
             }
         }
-        } catch (Exception ex) {
-                System.out.println("Catch exception when trying to iterate through resource list.");
-                GuiUtil.handleException(handlerCtx, ex);
-            }
         handlerCtx.setOutputValue("result", result);
     }
 
@@ -1574,11 +1573,12 @@ public class ConnectorsHandlers {
      *	@param	context	The HandlerContext.
      */
     @Handler(id = "deleteResource", input = {
-@HandlerInput(name = "selectedRows", type = List.class, required = true),
-@HandlerInput(name = "resourceType", type = String.class, required = true),
-@HandlerInput(name = "isJmsConnectionFactory", type = Boolean.class)
-})
+        @HandlerInput(name = "selectedRows", type = List.class, required = true),
+        @HandlerInput(name = "resourceType", type = String.class, required = true),
+        @HandlerInput(name = "isJmsConnectionFactory", type = Boolean.class)
+    })
     public static void deleteResource(HandlerContext handlerCtx) {
+
 
         String target = "server";
         ResourcesConfig resourcesConfig = AMXRoot.getInstance().getResourcesConfig();
@@ -1590,10 +1590,24 @@ public class ConnectorsHandlers {
         try {
             for (Map oneRow : selectedRows) {
                 String resourceName = (String) oneRow.get("name");
-
                 if ("jdbcResource".equals(resourceType)) {
                     resourcesConfig.removeJDBCResourceConfig(resourceName);
-                } else if ("adminObjectResource".equals(resourceType)) {
+                    
+                } else if("jdbcConnectionPool".equals(resourceType)){
+                    //When deleting JDBCConnection Pool,  we will also delete the JDBC resource that uses this pool.
+                    //This equivalent to casade=true in CLI. GUI has already warn user about this.
+                    Iterator iter = resourcesConfig.getJDBCResourceConfigMap().values().iterator();
+                    if (iter != null) {
+                        while (iter.hasNext()) {
+                            JDBCResourceConfig jdbc = (JDBCResourceConfig) iter.next();
+                            if (jdbc.getPoolName().equals(resourceName))
+                                resourcesConfig.removeJDBCResourceConfig(jdbc.getName());
+                        }
+                    }
+                    resourcesConfig.removeJDBCConnectionPoolConfig(resourceName);
+                }
+                /*
+                else if ("adminObjectResource".equals(resourceType)) {
                     resourcesConfig.removeAdminObjectResourceConfig(resourceName);
                 } else if ("connectorResource".equals(resourceType) && !isJms) {
                     resourcesConfig.removeConnectorResourceConfig(resourceName);
@@ -1616,39 +1630,23 @@ public class ConnectorsHandlers {
                         }
                         defaultTarget = "domain";
                     }
-                /* TODO-V3
-                Object[] params = {resourceName, defaultTarget};
-                String[] types = {"java.lang.String", "java.lang.String"};
-                JMXUtil.invoke( "com.sun.appserv:type=resources,category=config",
-                "deleteJmsDestinationResource", params, types ); 
-                 */
-
-
+                    Object[] params = {resourceName, defaultTarget};
+                    String[] types = {"java.lang.String", "java.lang.String"};
+                    JMXUtil.invoke( "com.sun.appserv:type=resources,category=config",
+                    "deleteJmsDestinationResource", params, types ); 
                 }
-            /* TODO-V3
-            else
-            if("jdbcConnectionPool".equals(resourceType)){
-            //Need to use JMX for cascade to true so as to delete any depending resource.
-            Object[] params = {resourceName, Boolean.TRUE, "server"};
-            String[] types = {"java.lang.String", "java.lang.Boolean", "java.lang.String"};
-            JMXUtil.invoke( "com.sun.appserv:type=resources,category=config",
-            "deleteJdbcConnectionPool", params, types );   
-            }else
-            if("connectorConnectionPool".equals(resourceType)){
-            //Need to use JMX for cascade to true so as to delete any depending resource.
-            Object[] params = {resourceName, Boolean.TRUE, "server"};
-            String[] types = {"java.lang.String", "java.lang.Boolean", "java.lang.String"};
-            JMXUtil.invoke( "com.sun.appserv:type=resources,category=config",
-            "deleteConnectorConnectionPool", params, types ); 
+                 */
             }
-             */
-            }
+            //a work around for now, delay 3000 for all systems
+            Thread.sleep(3000);
+            /*
             if (File.separatorChar == '\\') {
                 //For Window, there is a timing issue that we need to put in some delay.
                 //Otherwise, when we redisplay the resource table after deletion, there will be exception thrown
                 //since it doesn't recognize that the resource has already been deleted
                 Thread.sleep(3000);
             }
+             */
         } catch (Exception ex) {
             ex.printStackTrace();
             GuiUtil.prepareAlert(handlerCtx, "error", GuiUtil.getMessage("msg.Error"), ex.getMessage());
@@ -1662,12 +1660,12 @@ public class ConnectorsHandlers {
      *	@param	context	The HandlerContext.
      */
     @Handler(id = "getResourceRefListForTarget", input = {
-@HandlerInput(name = "target", type = String.class, required = true),
-@HandlerInput(name = "filterValue", type = String.class),
-@HandlerInput(name = "isServer", type = Boolean.class, required = true)
-}, output = {
-@HandlerOutput(name = "result", type = java.util.List.class)
-})
+        @HandlerInput(name = "target", type = String.class, required = true),
+        @HandlerInput(name = "filterValue", type = String.class),
+        @HandlerInput(name = "isServer", type = Boolean.class, required = true)
+        }, output = {
+        @HandlerOutput(name = "result", type = java.util.List.class)
+    })
     public static void getResourceRefListForTarget(HandlerContext handlerCtx) {
         String target = (String) handlerCtx.getInputValue("target");
         String filterValue = (String) handlerCtx.getInputValue("filterValue");
