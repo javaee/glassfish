@@ -240,7 +240,9 @@ public class CommonHandlers {
         // showLoadBalancer is a Sailfin specific attribute. Sailfin uses Converged LB instead
         // of HTTP LB. It is true for GF and false for Sailfin. In sailfin this is set in
         // com.sun.extensions.comms.SipUtilities.initProductInfoAttributes() called for Sailfin in login.jsf
-        sessionMap.put("showLoadBalancer", true);
+        
+        //TODO-V3 may need to set this back to true
+        //sessionMap.put("showLoadBalancer", true); 
         
         sessionMap.put("_INFO_SESSION_INITIALIZED","TRUE");
     }
