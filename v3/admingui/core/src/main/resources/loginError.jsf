@@ -41,7 +41,7 @@
 
 <sun:html id="html1">
 <sun:head title="$resource{i18n.loginPageTitle}">
-"<link rel="stylesheet" type="text/css" href="#{request.contextPath}/css/css_ns6up.css" />
+"<link rel="stylesheet" type="text/css" href="#{request.contextPath}/resource/css/css_ns6up.css" />
     <sun:script url="/js/adminjsf.js" />
 </sun:head>
 
@@ -61,12 +61,12 @@
 "    </tr>
 "    <tr>
 "      <td class="LogMidBnd" style="background-image: url(#{request.contextPath}/theme/com/sun/webui/jsf/suntheme/images/login/gradlogsides.jpg);background-repeat:repeat-x;background-position:left top;">&nbsp;</td>
-"      <td class="LogCntTd" style="background-image: url(#{request.contextPath}/images/login-backimage.jpg);background-repeat:no-repeat;background-position:left top;" height="435" align="center" valign="middle">
+"      <td class="LogCntTd" style="background-image: url(#{request.contextPath}/resource/images/login-backimage.jpg);background-repeat:no-repeat;background-position:left top;" height="435" align="center" valign="middle">
 "        <table border="0" background="#{request.contextPath}/theme/com/sun/webui/jsf/suntheme/images/other/dot.gif" cellpadding="0" cellspacing="0" width="100%" title="">
 "          <tr>
 "            <td width="260"><img src="#{request.contextPath}/theme/com/sun/webui/jsf/suntheme/images/other/dot.gif" width="260" height="245" alt="" /></td>
 "            <td width="415" bgcolor="#FFFFFF" valign="top" align="left">&nbsp;
-"                <img name="Login.welcomeImg" src="#{loginProductImageURL}" 
+"                <img name="Login.welcomeImg" src="#{request.contextPath}/resource/#{loginProductImageURL}" 
                      "alt="#{fullProductName}" border="0" height="#{loginProductImageHeight}" width="#{loginProductImageWidth}" />
 "              <table border="0" cellspacing="0" cellpadding="0">
 "                <tr>
