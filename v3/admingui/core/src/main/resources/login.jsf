@@ -36,6 +36,7 @@
 
 <!initPage
     setResourceBundle(key="i18n" bundle="core.Strings");
+    initProductInfoAttributes();
 />
 
 <!-- WE MAY HAVE TO LOCALIZE THE PRODUCT IMAGE. CHECKING IN FOR NOW UNTIL LOGIN COMPONENT IS READY -->
@@ -43,8 +44,8 @@
 
 <sun:html id="html1">
 <sun:head title="$resource{i18n.loginPageTitle}">
-"    <link rel="stylesheet" type="text/css" href="#{request.contextPath}/css/css_ns6up.css" />
-    <sun:script url="/js/adminjsf.js" />
+"    <link rel="stylesheet" type="text/css" href="#{request.contextPath}/resource/css/css_ns6up.css" />
+    <sun:script url="/resource/js/adminjsf.js" />
 </sun:head>
 
 <f:verbatim>
@@ -73,7 +74,7 @@
 	    <td></td>
 	</tr>
             <tr><td class="LogMidBnd"></td>
-	    <td class="LogCntTd" style="background-image: url(#{request.contextPath}/images/login-backimage.jpg);background-repeat:no-repeat;background-position:left top;" align="center" valign="middle">
+	    <td class="LogCntTd" style="background-image: url(#{request.contextPath}/resource/images/login-backimage.jpg);background-repeat:no-repeat;background-position:left top;" alt="THIS IS" align="center" valign="middle">
 		<table border="0" background="#{request.contextPath}/theme/com/sun/webui/jsf/suntheme/images/other/dot.gif" cellpadding="0" cellspacing="0" width="100%" title="">
 		    <tr><td width="260">
 </f:verbatim>
@@ -82,8 +83,10 @@
 			</td>
 			<td width="415" bgcolor="#FFFFFF" valign="top" align="left">&nbsp;
 </f:verbatim>
-			    <sun:image url="#{loginProductImageURL}" alt="#{fullProductName}" width="#{loginProductImageWidth}" 
-                    height="#{loginProductImageHeight}" />
+			    <sun:image url="#{request.contextPath}/resource/#{loginProductImageURL}" 
+                                 alt="#{fullProductName}" 
+                                 width="#{loginProductImageWidth}" 
+                                 height="#{loginProductImageHeight}" />
 
 <f:verbatim>
 			    <table border="0" cellspacing="0" cellpadding="0">
