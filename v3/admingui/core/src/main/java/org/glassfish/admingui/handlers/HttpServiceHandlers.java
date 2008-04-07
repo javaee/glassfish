@@ -962,11 +962,21 @@ public class HttpServiceHandlers {
         try{
             for(Map oneRow : selectedRows){
                 String name = (String)oneRow.get("name");
-                
-                //TODO-V3  TP2
                 //need to remove the references in Virtual server.
                 //This is specifed as the http-listeners attribute of the virtual server.
-                
+                Iterator <VirtualServerConfig> iter = config.getHTTPServiceConfig().getVirtualServerConfigMap().values().iterator();
+                if (iter != null) {
+                    while (iter.hasNext()) {
+                        VirtualServerConfig vs =  iter.next();
+                        String listeners = vs.getHTTPListeners();
+                        if (listeners != null) {
+                            String result = GuiUtil.removeToken(listeners, ",",  name);
+                            if (! listeners.equals(result)){
+                                vs.setHTTPListeners(result);
+                            }
+                        }
+                    }
+                }
                 AMXRoot.getInstance().getConfig(configName).getHTTPServiceConfig().removeHTTPListenerConfig(name);
             }
         }catch(Exception ex){
