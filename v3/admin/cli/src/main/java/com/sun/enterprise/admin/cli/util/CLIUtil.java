@@ -56,7 +56,10 @@ public class CLIUtil {
      *   @param passwordFileName - password file name
      *   @returns Map - map of the password name and value
      */
-    public static Map<String, String> readPasswordFileOptions(final String passwordFileName) throws CommandException {
+    public static Map<String, String> readPasswordFileOptions(
+        final String passwordFileName, boolean withPrefix) 
+    throws CommandException {
+        
         File file = new File(passwordFileName);
         
         Map passwordOptions = new HashMap<String, String>();
@@ -68,7 +71,8 @@ public class CLIUtil {
             for ( Object key : prop.keySet() ) {
                 final String entry = (String)key;
                 if (entry.startsWith(ENV_PREFIX)) {
-                    final String optionName = entry.substring(ENV_PREFIX.length()).toLowerCase();
+                    final String optionName = withPrefix ? 
+                      entry : entry.substring(ENV_PREFIX.length()).toLowerCase();
                     final String optionValue = prop.getProperty(entry);
                     passwordOptions.put(optionName, optionValue);
                 }
