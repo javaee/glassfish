@@ -59,7 +59,7 @@ public class CollectionUtils {
     
     /**
      * Convert a String[] into a space-delimited String
-     * @param map The map to turn into a printable String
+     * @param arr The String array to convert
      * @return The pretty String 
      */
     public static String toString(String[] arr) {
