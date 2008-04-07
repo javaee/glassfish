@@ -116,6 +116,9 @@ public class DeleteFileUser implements AdminCommand {
         SecurityService securityService = config.getSecurityService();
 
         // ensure we have the file authrealm
+        if (authRealmName == null) 
+            authRealmName = securityService.getDefaultRealm();        
+
         AuthRealm fileAuthRealm = null;        
         for (AuthRealm authRealm : securityService.getAuthRealm()) {
             if (authRealm.getName().equals(authRealmName))                 

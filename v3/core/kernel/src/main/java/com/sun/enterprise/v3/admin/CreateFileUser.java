@@ -98,7 +98,7 @@ public class CreateFileUser implements AdminCommand {
     // @Param(name="userpasswordfile", optional=true)
     // String passwordFile;
 
-    @Param(name="userpassword")
+    @Param(name="userpassword", password=true)
     String userpassword;
 
     @Param(name="authrealmname", optional=true)
@@ -127,11 +127,18 @@ public class CreateFileUser implements AdminCommand {
         SecurityService securityService = config.getSecurityService();
 
         // ensure we have the file authrealm
-        AuthRealm fileAuthRealm = null;        
+        AuthRealm fileAuthRealm = null;
+        
+        if (authRealmName == null) 
+            authRealmName = securityService.getDefaultRealm();        
+        
         for (AuthRealm authRealm : securityService.getAuthRealm()) {            
-            if (authRealm.getName().equals(authRealmName))                 
+            if (authRealm.getName().equals(authRealmName)) {
                 fileAuthRealm = authRealm;            
-        }        
+                break;
+            }
+        }       
+                
         if (fileAuthRealm == null) {
             report.setMessage(localStrings.getLocalString(
                 "create.file.user.filerealmnotfound",

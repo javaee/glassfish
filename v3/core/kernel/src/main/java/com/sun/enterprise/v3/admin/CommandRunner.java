@@ -59,7 +59,7 @@ import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.InjectionManager;
 import org.jvnet.hk2.component.UnsatisfiedDepedencyException;
-
+import sun.misc.BASE64Decoder;
 /**
  * Encapsulates the logic needed to execute a server-side command (for example,  
  * a descendant of AdminCommand) including injection of argument values into the 
@@ -272,6 +272,8 @@ public class CommandRunner {
             if (annotated instanceof Method) {
                 return ((Method) annotated).getName().substring(3).toLowerCase();
             }
+        } else if (param.password() == true) {
+            return "AS_ADMIN_" + param.name().toUpperCase();
         } else {
             return param.name();
         }
@@ -384,10 +386,19 @@ public class CommandRunner {
          */
     String getPropertiesValue(final Properties props, final String key,
                               final boolean ignoreCase) {
+        BASE64Decoder base64Decoder = new sun.misc.BASE64Decoder();
         if (ignoreCase) {
             for (Object propObj : props.keySet()) {
                 final String propName = (String)propObj;
                 if (propName.equalsIgnoreCase(key)) {
+                    try {
+                    if (propName.startsWith("AS_ADMIN_"))
+                        return new String(base64Decoder.decodeBuffer(
+                                props.getProperty(propName)));
+                    } catch (IOException e) {
+                        // ignore for now. Not much can be done anyway.
+                        // todo: improve this error condition reporting
+                    }
                     return props.getProperty(propName);
                 }
             }
@@ -589,15 +600,17 @@ public class CommandRunner {
      * @throws ComponentException if option is invalid
      */
     void validateParameters(final AdminCommand command, final Properties parameters)
-         throws ComponentException {
+        throws ComponentException {
+        
         final java.util.Enumeration e = parameters.propertyNames();
         //loop through parameters and make sure they are part of the Param declared field
         while (e.hasMoreElements()) {
-            final String key = (String)e.nextElement();
+            String key = (String)e.nextElement();
             //DEFAULT is the operand and it's a valid Parameter
             if (key.equals("DEFAULT")) {
                 continue;
             }
+            
             //check if key is a valid Param Field
             boolean validOption = false;
                 //loop through the Param field in the command class
@@ -606,6 +619,13 @@ public class CommandRunner {
             for (Field field : command.getClass().getDeclaredFields()) {
                 final Param param = field.getAnnotation(Param.class);
                 if (param == null)     continue;
+                
+                if (key.startsWith("AS_ADMIN_")) {
+                    validOption = true;
+                    continue;
+                }
+                    //key = key.substring("AS_ADMIN_".length()).toLowerCase();
+                                
                 if (field.getName().equals(key) ||
                     param.name().equals(key) ) {
                     validOption=true;

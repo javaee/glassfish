@@ -371,11 +371,18 @@ public class AdminAdapter implements Adapter, PostConstruct {
         final Properties parameters = new Properties();
         StringTokenizer stoken = new StringTokenizer(requestString, "?");
         while (stoken.hasMoreTokens()) {
-            String token = stoken.nextToken();
+            String token = stoken.nextToken();            
             if (token.indexOf("=") == -1) 
                 continue;
-            String paramName = token.substring(0, token.lastIndexOf("="));
-            String value = token.substring(token.lastIndexOf("=") + 1);
+            String paramName = null;
+            String value = null;
+            if (token.startsWith("AS_ADMIN_")) {
+                paramName = token.substring(0, token.indexOf("="));
+                value = token.substring(token.indexOf("=") + 1);
+            } else {
+                paramName = token.substring(0, token.lastIndexOf("="));
+                value = token.substring(token.lastIndexOf("=") + 1);
+            }
             try {
                 value = URLDecoder.decode(value, "UTF-8");
             } catch (UnsupportedEncodingException e) {

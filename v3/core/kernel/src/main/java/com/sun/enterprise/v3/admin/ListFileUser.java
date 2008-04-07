@@ -112,11 +112,15 @@ public class ListFileUser implements AdminCommand {
         SecurityService securityService = config.getSecurityService();
 
         // ensure we have the file authrealm
+        if (authRealmName == null) 
+            authRealmName = securityService.getDefaultRealm();        
+
         AuthRealm fileAuthRealm = null;        
         for (AuthRealm authRealm : securityService.getAuthRealm()) {
             if (authRealm.getName().equals(authRealmName))                 
                 fileAuthRealm = authRealm;            
         }        
+        
         if (fileAuthRealm == null) {
             report.setMessage(localStrings.getLocalString(
                 "list.file.user.filerealmnotfound",
