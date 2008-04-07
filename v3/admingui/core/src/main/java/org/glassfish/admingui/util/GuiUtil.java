@@ -373,6 +373,36 @@ public class GuiUtil {
 
         return tokens;
     }
+    
+    
+    public static String removeToken(String line, String sep, String remove)
+    {
+        if (line == null)
+            return null;
+
+        StringTokenizer st;
+        if (sep == null)
+            st = new StringTokenizer(line);
+        else{
+            sep = sep.trim();
+            st = new StringTokenizer(line, sep);
+        }
+        String token;
+        String result="";
+        boolean start = true;
+        while (st.hasMoreTokens()){
+            token = st.nextToken().trim();
+            if (token.length() > 0 && !(token.equals(remove))){
+                if (start){
+                    result=token;
+                    start = false;
+                }else{
+                    result=result + sep + token;
+                }
+            }
+        }
+        return result;
+    }
 
     /**
      *  This method converts a string into stringarray, uses the delimeter as the
