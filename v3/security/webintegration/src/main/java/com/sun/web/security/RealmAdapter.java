@@ -111,6 +111,8 @@ import com.sun.enterprise.security.auth.digest.api.DigestAlgorithmParameter;
 import com.sun.enterprise.security.auth.login.DigestCredentials;
 import com.sun.enterprise.security.auth.digest.api.Key;
 import com.sun.enterprise.security.auth.digest.api.DigestParameterGenerator;
+import com.sun.enterprise.server.ServerContext;
+import org.jvnet.hk2.annotations.Inject;
 import static com.sun.enterprise.security.auth.digest.api.Constants.A1;
 import org.jvnet.hk2.component.PerLookup;
 
@@ -196,6 +198,9 @@ public class RealmAdapter extends RealmBase implements RealmInitializer {
     private String jmacProviderRegisID = null;
     private HttpServletHelper helper = null;
 
+    @Inject
+    private ServerContext serverContext;
+    
     public RealmAdapter() {
     }
 
@@ -1493,7 +1498,7 @@ public class RealmAdapter extends RealmBase implements RealmInitializer {
     protected void configureSecurity(WebBundleDescriptor wbd,
             boolean isSystem) {
         try {
-            webSecurityManagerFactory.newWebSecurityManager(wbd);
+            webSecurityManagerFactory.newWebSecurityManager(wbd, serverContext);
             String context = WebSecurityManager.getContextID(wbd);
             SecurityUtil.generatePolicyFile(context);
         } catch (Exception ce) {
