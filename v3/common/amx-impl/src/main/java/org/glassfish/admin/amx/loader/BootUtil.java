@@ -35,6 +35,8 @@
  */
 package org.glassfish.admin.amx.loader;
 
+import java.io.File;
+
 import javax.management.ObjectName;
 import javax.management.MBeanServer;
 import javax.management.MBeanServerInvocationHandler;
@@ -52,6 +54,7 @@ import org.glassfish.admin.amx.logging.AMXMBeanRootLogger;
 public final class BootUtil
 {
 	private final String	mAppserverDomainName;
+	private final File      mInstanceRoot;
 
 	private final String	mAMX_JMXDomain;
 	
@@ -62,20 +65,35 @@ public final class BootUtil
 	private final boolean   mOfflineAMX;
 	 
 		private
-	BootUtil(
-	    final String    appserverDomainName,
-	    final boolean   offline )
+	BootUtil( final boolean   offline )
 	{
 		AMXServerLogger.getInstance();
 		AMXMBeanRootLogger.getInstance();
 		
-		mAppserverDomainName	= appserverDomainName;
-		mAMX_JMXDomain		    = appserverDomainName;
-		
+        mInstanceRoot        =  new File( System.getProperty( "com.sun.aas.instanceRoot" ) );
+        mAppserverDomainName = mInstanceRoot.getName();
+
+		mAMX_JMXDomain		    = "amx";
 		mAMXReady   = false;
 		
 		mOfflineAMX = offline;
 	}
+    
+		public File
+	getInstanceRoot()
+	{
+        return mInstanceRoot;
+    }
+    
+    /**
+       The name of the appserver domain eg "domain1".
+     */ 
+		public String
+	getAppserverDomainName()
+	{
+        return mAppserverDomainName;
+    }
+	
     
     /**
         Return the name of the server in which this code is running.
@@ -92,7 +110,7 @@ public final class BootUtil
 		public static synchronized void
 	init( final boolean offline )
 	{
-		INSTANCE	= new BootUtil( "amx", offline );
+		INSTANCE	= new BootUtil( offline );
 	}
 
         public boolean
@@ -141,12 +159,6 @@ public final class BootUtil
 	getAMXSupportJMXDomain()
 	{
 	    return getAMXJMXDomainName() + "-support";
-	}
-	
-		public String
-	getAppserverDomainName()
-	{
-		return( mAppserverDomainName );
 	}
 	
 		public String

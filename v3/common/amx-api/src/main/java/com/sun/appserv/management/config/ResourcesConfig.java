@@ -51,7 +51,7 @@ import com.sun.appserv.management.DomainRoot;
     can be used, they can be bypassed by most users.
 */
 public interface ResourcesConfig
-	extends ConfigElement, Container, ConfigCreator, ConfigRemover, ConfigCollectionElement
+	extends ConfigElement, Container, ConfigCreator, ConfigRemover, ConfigCollectionElement, DefaultValues
 {
 /** The j2eeType as returned by {@link com.sun.appserv.management.base.AMX#getJ2EEType}. */
 	public static final String	J2EE_TYPE	= XTypes.RESOURCES_CONFIG;

@@ -47,7 +47,8 @@ import com.sun.appserv.management.base.XTypes;
 /**
 	Base interface Configuration for an &lt;ssl&gt; element.
 */
-public interface SSLConfig extends ConfigElement 
+@AMXCreateInfo(paramNames={"name", "optional"})
+public interface SSLConfig extends ConfigElement
 {
 /** The j2eeType as returned by {@link com.sun.appserv.management.base.AMX#getJ2EEType}. */
 	public static final String	J2EE_TYPE	= XTypes.SSL_CONFIG;

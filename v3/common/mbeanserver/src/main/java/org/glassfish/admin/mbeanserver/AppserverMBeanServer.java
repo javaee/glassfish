@@ -117,7 +117,7 @@ public final class AppserverMBeanServer implements MBeanServer
        Ensure that AMX MBeans are loaded; a request has come in for one.
      */
         private void
-    ensureAMXLoaded()
+    ensureAMXLoaded( final String msg )
     {
         if ( (! AMX_STARTED) )
         {
@@ -128,7 +128,7 @@ public final class AppserverMBeanServer implements MBeanServer
                 // more than once since it should always work or there's a bug.
                 AMX_STARTED = true;
                 
-                System.out.println( "AppserverMBeanServer: loading AMX MBeans" );
+                System.out.println( "AppserverMBeanServer: loading AMX MBeans. Reason: " + msg);
                 try
                 {
                     invoke( AMX_STARTUP_OBJECT_NAME, "startAMX", null, null);
@@ -150,11 +150,11 @@ public final class AppserverMBeanServer implements MBeanServer
        in the relevant queryNames() and queryMBeans() methods.
      */
         private void
-    ensureAMXLoaded( final ObjectName objectName )
+    ensureAMXLoaded( final ObjectName objectName, final String where )
     {
         if ( (! AMX_STARTED) && objectName != null && objectName.getDomain().equals(AMX_DOMAIN) )
         {
-            ensureAMXLoaded();
+            ensureAMXLoaded( "request for " + objectName + " from " + where );
         }
     }
     
@@ -177,7 +177,7 @@ public final class AppserverMBeanServer implements MBeanServer
         final String[] signature) 
         throws ReflectionException, InstanceNotFoundException, MBeanException
     {
-        ensureAMXLoaded(objectName);
+        ensureAMXLoaded(objectName, "invoke of " + operationName );
         
         debug( "AppserverMBeanServer.invoke(): ", objectName, ".", operationName, "{", params, "}", "{", signature, "}" );
 
@@ -190,7 +190,7 @@ public final class AppserverMBeanServer implements MBeanServer
         throws InstanceNotFoundException, AttributeNotFoundException, 
                MBeanException, ReflectionException
     {
-        ensureAMXLoaded(objectName);
+        ensureAMXLoaded(objectName, "getAttribute");
         
         Object result = getTargetMBeanServer().getAttribute( objectName, attributeName );
         debug( "AppserverMBeanServer.getAttribute: ", objectName, attributeName, result );
@@ -202,7 +202,7 @@ public final class AppserverMBeanServer implements MBeanServer
             throws  InstanceNotFoundException, AttributeNotFoundException, 
                     MBeanException, ReflectionException, InvalidAttributeValueException
     {
-        ensureAMXLoaded(objectName);
+        ensureAMXLoaded(objectName, "setAttribute");
         debug( "AppserverMBeanServer.setAttribute: ", objectName, attribute );
 
         getTargetMBeanServer().setAttribute( objectName, attribute );
@@ -212,7 +212,7 @@ public final class AppserverMBeanServer implements MBeanServer
     getAttributes( final ObjectName objectName, final String[] attrNames) 
         throws InstanceNotFoundException, ReflectionException
     {
-        ensureAMXLoaded(objectName);
+        ensureAMXLoaded(objectName, "getAttributes");
         AttributeList result = getTargetMBeanServer().getAttributes( objectName, attrNames );
         debug( "AppserverMBeanServer.getAttributes: ", objectName, attrNames, result );
         return result;
@@ -222,7 +222,7 @@ public final class AppserverMBeanServer implements MBeanServer
     setAttributes (final ObjectName objectName, final AttributeList attributeList) 
         throws InstanceNotFoundException, ReflectionException
     {
-        ensureAMXLoaded(objectName);
+        ensureAMXLoaded(objectName, "setAttributes");
         debug( "AppserverMBeanServer.setAttributes: ", objectName, attributeList );
         
         AttributeList result = getTargetMBeanServer().setAttributes( objectName, attributeList );
@@ -256,7 +256,7 @@ public final class AppserverMBeanServer implements MBeanServer
     public final MBeanInfo getMBeanInfo( final ObjectName objectName) throws
         InstanceNotFoundException, IntrospectionException, ReflectionException
     {
-        ensureAMXLoaded(objectName);
+        ensureAMXLoaded(objectName, "getMBeanInfo");
         debug( "AppserverMBeanServer.getMBeanInfo: ", objectName );
         MBeanInfo result = getTargetMBeanServer().getMBeanInfo( objectName );
         return result;
@@ -264,7 +264,7 @@ public final class AppserverMBeanServer implements MBeanServer
 
     public final boolean isRegistered( final ObjectName objectName)
     {
-        ensureAMXLoaded(objectName);
+        ensureAMXLoaded(objectName, "isRegistered");
         boolean isRegistered    = getTargetMBeanServer().isRegistered( objectName );
         return isRegistered;
     }
@@ -444,7 +444,7 @@ public final class AppserverMBeanServer implements MBeanServer
     {
         if ( (! AMX_STARTED) && mightBeAMX(objectName) )
         {
-            ensureAMXLoaded();
+            ensureAMXLoaded( "queryNames: objectName = " + objectName + " queryExp = " + queryExp);
         }
         
         debug( "AppserverMBeanServer.queryNames: ", objectName, queryExp );
@@ -452,15 +452,15 @@ public final class AppserverMBeanServer implements MBeanServer
     }
     
          public final Set
-    queryMBeans( final ObjectName objectName, final QueryExp expr )
+    queryMBeans( final ObjectName objectName, final QueryExp queryExp )
     {
         if ( (! AMX_STARTED) && mightBeAMX(objectName) )
         {
-            ensureAMXLoaded();
+            ensureAMXLoaded( "queryMBeans: objectName = " + objectName + " queryExp = " + queryExp );
         }
         
-        debug( "AppserverMBeanServer.queryMBeans: ", objectName, expr );
-        return getTargetMBeanServer().queryMBeans( objectName, expr );
+        debug( "AppserverMBeanServer.queryMBeans: ", objectName, queryExp );
+        return getTargetMBeanServer().queryMBeans( objectName, queryExp );
     }
 
         public final void
@@ -511,7 +511,7 @@ public final class AppserverMBeanServer implements MBeanServer
     getClassLoader( final ObjectName objectName) 
         throws InstanceNotFoundException
     {
-        ensureAMXLoaded(objectName);
+        ensureAMXLoaded(objectName, "getClassLoader");
         debug( "AppserverMBeanServer.getClassLoader: ", objectName);
             
         ClassLoader result = getTargetMBeanServer().getClassLoader( objectName );
@@ -522,7 +522,7 @@ public final class AppserverMBeanServer implements MBeanServer
     getClassLoaderFor( final ObjectName objectName) 
         throws InstanceNotFoundException
     {
-        ensureAMXLoaded(objectName);
+        ensureAMXLoaded(objectName, "getClassLoaderFor");
         
         debug( "AppserverMBeanServer.getClassLoaderFor: ", objectName);
         ClassLoader result = getTargetMBeanServer().getClassLoaderFor( objectName );
@@ -539,7 +539,7 @@ public final class AppserverMBeanServer implements MBeanServer
         public final String[]
     getDomains()
     { 
-        ensureAMXLoaded();
+        ensureAMXLoaded("getDomains");
 
         debug( "AppserverMBeanServer.getDomains" );
         return getTargetMBeanServer().getDomains();

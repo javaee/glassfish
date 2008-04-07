@@ -37,9 +37,7 @@ public final class CollectionUtil
 	CollectionUtil( )
 	{
 		// disallow instantiation
-	}
-	
-	
+	}    
 	/**
 		@return a String
 	 */

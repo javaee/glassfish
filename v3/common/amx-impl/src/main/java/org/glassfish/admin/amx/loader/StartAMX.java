@@ -181,6 +181,7 @@ final class StartAMX
                 {
                     mJMXMPObjectName = mMBeanServer.registerMBean( mJMXMP, objectName).getObjectName();
                     mJMXMP.start();
+                    System.out.println( "JMXMP connector server URL = " + mJMXMPServiceURL );
                 }
                 catch( Exception e )
                 {

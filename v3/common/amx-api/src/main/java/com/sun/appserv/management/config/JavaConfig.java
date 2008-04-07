@@ -128,7 +128,7 @@ public interface JavaConfig
 	public ProfilerConfig	createProfilerConfig( String name, Map<String,String> optional );
 
 	/**
-		Removes profiler element.
+		Removes profiler element.  Even though only one can exist, the name must be specified.
 	 */
-	public void			removeProfilerConfig();
+	public void			removeProfilerConfig( final String name );
 }

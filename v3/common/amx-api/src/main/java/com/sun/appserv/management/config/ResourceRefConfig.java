@@ -51,6 +51,7 @@ import com.sun.appserv.management.base.XTypes;
 	 Configuration for the &lt;resource-ref&gt; element.
 */
 
+@AMXCreateInfo(paramNames={"name", "optional"})
 public interface ResourceRefConfig extends RefConfig
 {
 /** The j2eeType as returned by {@link com.sun.appserv.management.base.AMX#getJ2EEType}. */

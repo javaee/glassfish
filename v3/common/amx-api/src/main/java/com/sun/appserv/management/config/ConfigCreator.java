@@ -53,6 +53,11 @@ public interface ConfigCreator
         <p>
         Almost always, certain parameters are required (a name for non-singletons).  Use the
         {@link AMXAttributes#ATTR_NAME} key for the name.
+        <p>
+        Properties can be included in the 'params' Map using the {@link PropertiesAccess#PROPERTY_PREFIX}
+        prefix on the property name.  
+        System properties can be included in the 'params' Map using the
+        {@link SystemPropertiesAccess#SYSTEM_PROPERTY_PREFIX} prefix on the property name.
         
         @param j2eeType the AMX j2eeType
         @param optional optional parameters (some of which may be reu

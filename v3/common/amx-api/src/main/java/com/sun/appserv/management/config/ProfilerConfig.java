@@ -42,6 +42,7 @@ import com.sun.appserv.management.base.XTypes;
 	 Configuration for the &lt;profiler&gt; element.
 */
 
+@AMXCreateInfo( paramNames={"name", "optional"} )
 public interface ProfilerConfig extends NamedConfigElement, PropertiesAccess, Enabled
 {
 /** The j2eeType as returned by {@link com.sun.appserv.management.base.AMX#getJ2EEType}. */

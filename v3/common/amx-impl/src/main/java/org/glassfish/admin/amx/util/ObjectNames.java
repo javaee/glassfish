@@ -42,6 +42,7 @@ import java.util.Map;
 import java.util.Iterator;
 
 import java.lang.reflect.Field;
+import java.io.File;
 
 import javax.management.ObjectName;
 import javax.management.InstanceNotFoundException;
@@ -67,11 +68,7 @@ import com.sun.appserv.management.util.jmx.JMXUtil;
 import com.sun.appserv.management.util.misc.ClassUtil;
 import com.sun.appserv.management.util.misc.GSetUtil;
 import com.sun.appserv.management.util.stringifier.SmartStringifier;
-
-
-//import org.glassfish.admin.amx.types.TypeInfos;
-//import org.glassfish.admin.amx.types.TypeInfo;
-//import org.glassfish.admin.amx.types.AllTypesMapper;
+import org.glassfish.admin.amx.loader.BootUtil;
 
 
 /**
@@ -88,13 +85,15 @@ import com.sun.appserv.management.util.stringifier.SmartStringifier;
 public final class  ObjectNames
 {
 	private final String	mJMXDomain;
-	
+    
 		private
 	ObjectNames( final String jmxDomain )
 	{
-		mJMXDomain	= jmxDomain;
+		mJMXDomain           = jmxDomain;
 	}
 	
+	
+    
 	    private void
 	debug( final Object o )
 	{
@@ -120,7 +119,7 @@ public final class  ObjectNames
 	{
 		return( mJMXDomain );
 	}
-	
+    
 	private static final String[]	EMPTY_STRING_ARRAY	= new String[ 0 ];
 	
 	
@@ -209,7 +208,7 @@ public final class  ObjectNames
 		public ObjectName
 	getDomainRootObjectName()
 	{
-		return( newObjectName( Util.makeRequiredProps( XTypes.DOMAIN_ROOT, getJMXDomain() ) ) );
+		return( newObjectName( Util.makeRequiredProps( XTypes.DOMAIN_ROOT, BootUtil.getInstance().getAppserverDomainName() ) ) );
 	}
 	
 	/**

@@ -33,13 +33,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
- 
-/*
- * $Header: /cvs/glassfish/appserv-api/src/java/com/sun/appserv/management/config/ResourceRefConfigCR.java,v 1.2 2007/05/05 05:30:35 tcfujii Exp $
- * $Revision: 1.2 $
- * $Date: 2007/05/05 05:30:35 $
- */
-
 package com.sun.appserv.management.config;
 
 import java.util.Map;
@@ -55,14 +48,15 @@ public interface ResourceRefConfigCR extends ConfigRemover
 		@param optional Map of optional attributes.
 		@return A proxy to the ResourceRefConfig MBean.
 	 */
-	public ResourceRefConfig createResourceRefConfig(String referencedResourceName,
-	            Map<String,String> optional);
+    @AMXCreateInfo( paramNames={"ref", "optional"} )
+	public ResourceRefConfig createResourceRefConfig(String referencedResourceName, Map<String,String> optional);
 	    
 	/**
 		Creates a new resource-ref element for the given target
 		@param referencedResourceName resource name
 		@return A proxy to the ResourceRefConfig MBean.
 	 */
+    @AMXCreateInfo( paramNames={"ref"} )
 	public ResourceRefConfig createResourceRefConfig(String referencedResourceName);
 
 
@@ -72,8 +66,8 @@ public interface ResourceRefConfigCR extends ConfigRemover
 		@param enabled
 		@return A proxy to the ResourceRefConfig MBean.
 	 */
-	public ResourceRefConfig createResourceRefConfig(String referencedResourceName, 
-	        boolean enabled);
+    @AMXCreateInfo( paramNames={"ref", "enabled"} )
+	public ResourceRefConfig createResourceRefConfig(String referencedResourceName, boolean enabled);
 
 	/**
 	 */

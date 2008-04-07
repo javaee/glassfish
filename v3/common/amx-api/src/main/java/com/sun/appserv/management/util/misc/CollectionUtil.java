@@ -54,6 +54,17 @@ public final class CollectionUtil
 		// disallow instantiation
 	}
 	
+        
+        public static <T> void 
+    addAll( Collection<T> c, T[] items )
+    {
+        for( final T item : items )
+        {
+            c.add( item );
+        }
+    }
+
+
 	/**
 		@return a String
 	 */

@@ -55,6 +55,15 @@ import com.sun.appserv.management.j2ee.J2EEDomain;
 /**
 	The top-level interface for an appserver domain. Access to all other
 	{@link AMX} begins here.
+    <p>
+    The 'name' property in the ObjectName of DomainRoot is the name of the
+    appserver domain.  For example, appserver domains 'domain' and 'domain2' would
+    have ObjectNames for DomainRoot as follows:
+    <pre>
+    amx:j2eeType=X-DomainRoot:name=domain1
+    amx:j2eeType=X-DomainRoot:name=domain2
+    </pre>
+    Of course, these two MBeans would normally be found in different MBeanServers.
  */
 public interface DomainRoot extends Container
 {
@@ -74,6 +83,14 @@ public interface DomainRoot extends Container
       @return the name of the Appserver domain
      */
     public String	getAppserverDomainName();
+    
+    
+    /**
+       @since Glassfish V3
+     */
+    public String getInstanceRoot();
+
+
 
     /**
       @return the JSR 77 J2EEDomain.

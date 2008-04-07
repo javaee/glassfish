@@ -64,6 +64,10 @@ import org.glassfish.admin.amx.util.FeatureAvailability;
 
 import org.glassfish.admin.amx.util.Issues;
 
+
+import com.sun.appserv.server.util.Version;
+
+
 /**
  */
 public class DomainRootImplBase extends AMXNonConfigImplBase
@@ -93,7 +97,11 @@ public class DomainRootImplBase extends AMXNonConfigImplBase
 	    return selfObjectName;
 	}
 	
-	
+    public String getInstanceRoot()
+    {
+        return "" + System.getProperty("com.sun.aas.instanceRoot");
+    }
+    
 	    public void
 	preRegisterDone( )
 	    throws Exception
@@ -253,14 +261,15 @@ public class DomainRootImplBase extends AMXNonConfigImplBase
     
     public String getApplicationServerFullVersion()
     {
-        Issues.getAMXIssues().notDone( "DomainRootImpl.getApplicationServerFullVersion" );
-        return "Glassfish V3 full version TBD";
+        return Version.getFullVersion();
     }
 
     public String getConfigDir()
     {
         Issues.getAMXIssues().notDone( "DomainRootImpl.getConfigDir" );
-        return "/not/a/real/value/yet";
+        
+        final String pathSep = System.getProperty( "file.separator" );
+        return BootUtil.getInstance().getInstanceRoot() + pathSep + "config";
     }
 }
 
