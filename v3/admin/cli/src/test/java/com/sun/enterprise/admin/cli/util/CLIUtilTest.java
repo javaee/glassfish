@@ -37,7 +37,7 @@ public class CLIUtilTest {
             } catch(final Exception ignore){}
         }
         try {
-            Map<String, String> po = CLIUtil.readPasswordFileOptions(fileName);
+            Map<String, String> po = CLIUtil.readPasswordFileOptions(fileName, false);
             assertEquals("admin password", "adminadmin", po.get("password"));
             assertEquals("master password", "changeit", po.get("masterpassword"));
             assertEquals("null", null, po.get("foobar"));
