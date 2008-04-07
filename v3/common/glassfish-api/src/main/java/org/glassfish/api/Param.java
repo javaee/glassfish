@@ -105,4 +105,9 @@ public @interface Param {
      */
     public String defaultValue() default "";
     
+    /**
+     * Returns true if the parameter is a password
+     * @return true if the parameter is password
+     */
+    public boolean password() default false;
 }
