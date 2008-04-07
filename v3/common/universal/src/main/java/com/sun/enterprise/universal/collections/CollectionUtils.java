@@ -56,6 +56,20 @@ public class CollectionUtils {
         }
         return sb.toString();
     }
+    
+    /**
+     * Convert a String[] into a space-delimited String
+     * @param map The map to turn into a printable String
+     * @return The pretty String 
+     */
+    public static String toString(String[] arr) {
+        StringBuilder sb = new StringBuilder();
+        for(String s : arr) {
+            sb.append(s);
+            sb.append(' ');
+        }
+        return sb.toString();
+    }
 
     public static String[] toStringArray(Map<String,String> map) {
         Set<String> set = map.keySet();
