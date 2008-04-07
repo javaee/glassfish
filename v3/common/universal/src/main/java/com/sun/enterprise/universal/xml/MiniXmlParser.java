@@ -58,6 +58,22 @@ public class MiniXmlParser {
             String msg = strings.get("toplevel", e);
             throw new MiniXmlParserException(e);
         }
+        finally {
+            try {
+                if(parser != null)
+                    parser.close();
+            }
+            catch(Exception e) {
+                // ignore
+            }
+            try {
+                if(domainXmlstream != null)
+                    domainXmlstream.close();
+            }
+            catch(Exception e) {
+                // ignore
+            }
+        }
     }
 
     public Map<String, String> getJavaConfig() throws MiniXmlParserException {
@@ -135,9 +151,9 @@ public class MiniXmlParser {
     }
 
     private void createParser() throws FileNotFoundException, XMLStreamException {
-        FileInputStream stream = new FileInputStream(domainXml);
+        domainXmlstream = new FileInputStream(domainXml);
         XMLInputFactory xif = XMLInputFactory.newInstance();
-        parser = xif.createXMLStreamReader(domainXml.toURI().toString(), stream);
+        parser = xif.createXMLStreamReader(domainXml.toURI().toString(), domainXmlstream);
     }
 
     private void getConfigRefName() throws XMLStreamException, EndDocumentException {
@@ -629,6 +645,7 @@ public class MiniXmlParser {
     
     private File domainXml;
     private XMLStreamReader parser;
+    private FileInputStream domainXmlstream;
     private String serverName;
     private String configRef;
     private List<String> jvmOptions = new ArrayList<String>();
