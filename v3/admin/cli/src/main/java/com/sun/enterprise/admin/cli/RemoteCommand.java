@@ -85,6 +85,12 @@ private static final RemoteCommand INSTANCE = new RemoteCommand();
             setBooleans(params);
             final Vector operands = rcp.getOperands();
 
+            if(echo) {
+                logger.printMessage(toString(args[0], params, operands));
+            }
+            else if(logger.isDebug()){
+                logger.printDebugMessage(toString(args[0], params, operands));
+            }
             //upload option  for deploy command is default to true
             //operand takes precedence over --path option
             final boolean uploadFile = getUploadFile((String) params.get("upload"),
@@ -523,7 +529,7 @@ private static final RemoteCommand INSTANCE = new RemoteCommand();
             response = response.substring(MAGIC.length());
             
             if(response.startsWith(SUCCESS)) {
-                CLILogger.getInstance().printMessage(response.substring(SUCCESS.length()));
+                logger.printMessage(response.substring(SUCCESS.length()));
             }
             else if(response.startsWith(FAILURE)) {
                 throw new CommandException(
@@ -532,8 +538,8 @@ private static final RemoteCommand INSTANCE = new RemoteCommand();
             return;
         }
         // Unknown Format -- print it...
-        CLILogger.getInstance().printDetailMessage(strings.get("unknownFormat"));
-        CLILogger.getInstance().printMessage(response);
+        logger.printDetailMessage(strings.get("unknownFormat"));
+        logger.printMessage(response);
     }
 
     private void setBooleans(Map<String, String> params) {
@@ -566,6 +572,35 @@ private static final RemoteCommand INSTANCE = new RemoteCommand();
 
     private boolean ok(String s) {
         return s != null && s.length() > 0;
+    }
+
+    /* this is a TP2 Hack!  THis class should be derived from S1ASCommand
+     * and get automatic support for this stuff
+     */
+    private String toString(String commandName, Map<String,String> params, Vector operands) {
+        // always include terse and echo
+        StringBuilder sb = new StringBuilder();
+        sb.append(commandName).append(' ');
+        sb.append("--echo=").append(Boolean.toString(echo)).append(' ');
+        sb.append("--terse=").append(Boolean.toString(terse)).append(' ');
+        Set<String> paramKeys = params.keySet();
+        
+        for(String key : paramKeys) {
+            if(key.equals("terse") || key.equals("echo"))
+                continue; //already done
+            String value = params.get(key);
+            sb.append("--").append(key);
+            if(ok(value)) {
+                sb.append('=').append(value);
+            }
+            sb.append(' ');
+        }
+
+        for(Object o : operands) {
+            sb.append(o).append(' ');
+        }
+        
+        return sb.toString();
     }
             
     private static final CLILogger logger = CLILogger.getInstance();

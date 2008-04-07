@@ -280,7 +280,7 @@ public class CreateDomainCommand extends BaseLifeCycleCommand {
                     new Object[]{portNum}));
         }
         if (getBooleanOption(CHECKPORTS_OPTION) && !NetUtils.isPortFree(portToVerify)) {
-            throw new CommandException(getLocalizedString("PortInUse",
+            throw new CommandException(getLocalizedString("PortInUseMsg",
                     new Object[]{(String) operands.firstElement(),
                 portNum
             }));

@@ -29,13 +29,12 @@ import com.sun.enterprise.cli.framework.*;
 import java.util.*;
 import java.util.logging.*;
 
-public class StartDomainCommand extends Command {
-    public boolean validateOptions() throws CommandValidationException {
-        return true;
-    }
+public class StartDomainCommand extends S1ASCommand {
 
     public void runCommand() throws CommandException, CommandValidationException {
+    
         try {
+            validateOptions();
             GFLauncher launcher = GFLauncherFactory.getInstance(
                     GFLauncherFactory.ServerType.domain);
             info = launcher.getInfo();
