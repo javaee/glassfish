@@ -50,13 +50,12 @@ import sun.misc.BASE64Encoder;
  */
 
 public class RemoteCommand {
-private static final RemoteCommand INSTANCE = new RemoteCommand();
-    RemoteCommand() {
+    public RemoteCommand() {
+    }
+    public RemoteCommand(String... args) throws CommandException {
+        handleRemoteCommand(args);
     }
     
-    public static RemoteCommand getInstance() {
-        return INSTANCE;
-    }
 
     public void handleRemoteCommand(String... args) throws CommandException {
         handleRemoteCommand(args, "hk2-cli", null);
@@ -208,9 +207,9 @@ private static final RemoteCommand INSTANCE = new RemoteCommand();
         }
     }
 
-    boolean pingDAS(int port) {
+    static boolean pingDAS(int port) {
         try {
-            handleRemoteCommand("version", Integer.toString(port));
+            new RemoteCommand("version", "--port", Integer.toString(port));
             return true;
         }
         catch (Exception ex) {

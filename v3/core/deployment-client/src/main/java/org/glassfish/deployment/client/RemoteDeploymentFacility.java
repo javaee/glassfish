@@ -46,7 +46,7 @@ public class RemoteDeploymentFacility implements DeploymentFacility, TargetOwner
     
     public boolean connect(ServerConnectionIdentifier targetDAS) {
         this.targetDAS = targetDAS;
-        remoteCommand = RemoteCommand.getInstance();
+        remoteCommand = new RemoteCommand();
         passwordFile = preparePasswordFile();
         domain = new TargetImpl(this, "domain", localStrings.getLocalString(
                 "enterprise.deployment.client.administrative_domain",

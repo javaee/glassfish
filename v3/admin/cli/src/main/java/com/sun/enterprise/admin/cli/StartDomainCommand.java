@@ -98,8 +98,7 @@ public class StartDomainCommand extends S1ASCommand {
     
     private boolean pingDAS(int port) {
         try {
-            RemoteCommand rc = RemoteCommand.getInstance();
-            rc.handleRemoteCommand("version", "--port", Integer.toString(port));
+            RemoteCommand.pingDAS(port);
             return true;
         }
         catch (Exception ex) {

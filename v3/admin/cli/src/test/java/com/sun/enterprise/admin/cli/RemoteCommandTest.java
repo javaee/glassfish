@@ -51,6 +51,6 @@ public class RemoteCommandTest {
     
     @Before
     public void setup() {
-        rc = RemoteCommand.getInstance();
+        rc = new RemoteCommand();
     }
 }

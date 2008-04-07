@@ -91,8 +91,7 @@ public class AsadminMain {
     }
     private int remote(String[] args) {
         try {
-            RemoteCommand rc = RemoteCommand.getInstance();
-            rc.handleRemoteCommand(args);
+            new RemoteCommand(args);
             return SUCCESS;
         }
         catch (Throwable ex) {

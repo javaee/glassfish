@@ -77,12 +77,9 @@ public class StopDomainCommand extends Command {
 
         // TODO -- it would be nice to know if it worked!  
         // If so use other port numbers
-        RemoteCommand rc = RemoteCommand.getInstance();
-        String[] args = new String[] { "stop-domain", "--port", ports[0].toString() };
         
-        // TODO -- why is RemoteCommand not using String...
         try {
-            rc.handleRemoteCommand(args);
+            new RemoteCommand("stop-domain", "--port", ports[0].toString());
         }
         catch (Throwable ex) {
             CLILogger.getInstance().printExceptionStackTrace(ex);
