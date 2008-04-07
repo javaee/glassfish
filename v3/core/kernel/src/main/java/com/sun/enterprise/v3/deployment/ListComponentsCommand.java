@@ -62,11 +62,11 @@ public class ListComponentsCommand extends ApplicationLifecycle implements Admin
     @Inject
     Applications applications;
 
-        // [--type application|ejb|web|connector|webservice]
+        // [--type application|ejb|web|connector|webservice|jruby]
     @Param(optional=true)
     String type = null;
 
-    private final String VALID_TYPES = "application|ejb|web|connector|webservice";
+    private final String VALID_TYPES = "application|ejb|web|connector|webservice|jruby";
 
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(ListComponentsCommand.class);    
 
@@ -154,11 +154,11 @@ public class ListComponentsCommand extends ApplicationLifecycle implements Admin
                     se.append(engine.getSniffer() + ", ");
                 }
             }
-            if (format) {
-                    //eliminate the last "," and end the list with ">"
-                se.replace(se.length()-2, se.length(), ">");
-            } else {
-                se.replace(se.length()-2, se.length(), "");
+                //eliminate the last "," and end the list with ">"
+            if (se.length()>2) {
+                se.replace(se.length()-2, se.length(), (format)?">":"");
+            } else if (format) {
+                se.append(">");
             }
         }
         return se.toString();

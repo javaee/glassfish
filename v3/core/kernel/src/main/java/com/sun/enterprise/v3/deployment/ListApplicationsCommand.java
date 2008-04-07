@@ -36,6 +36,7 @@ package com.sun.enterprise.v3.deployment;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.Param;
 import org.glassfish.api.I18n;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
@@ -54,6 +55,9 @@ import com.sun.enterprise.config.serverbeans.Application;
 @I18n("list.applications")
 @Scoped(PerLookup.class)
 public class ListApplicationsCommand extends ListComponentsCommand {
+
+    @Param(optional=true)
+    String type = null;
 
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(DeployDirCommand.class);
 
@@ -81,7 +85,8 @@ public class ListApplicationsCommand extends ListComponentsCommand {
                         childPart.addProperty("nb-engine", getSnifferEngines(app, false));
                         childPart.addProperty("nb-enabled", app.getEnabled());
                         childPart.addProperty("nb-directory-deployed", app.getDirectoryDeployed());
-                        childPart.addProperty("nb-context-root", app.getContextRoot());
+                        childPart.addProperty("nb-context-root", (app.getContextRoot()==null)?"":
+                                                                  app.getContextRoot());
                         
                         numOfApplications++;
                     }

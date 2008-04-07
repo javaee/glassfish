@@ -171,4 +171,14 @@ public class RailsSniffer extends GenericSniffer implements Sniffer {
     public String[] getContainersNames() {
         return containers;
     }
+
+    
+    /**
+     * @return whether this sniffer should be visible to user
+     *
+     */
+    public boolean isUserVisible() {
+        return true;
+    }
+    
 }
