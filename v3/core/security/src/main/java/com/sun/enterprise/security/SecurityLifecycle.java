@@ -111,7 +111,11 @@ public class SecurityLifecycle implements  PostConstruct, PreDestroy {
             if (secMgr != null &&
                     !(J2EESecurityManager.class.equals(secMgr.getClass()))) {
                 J2EESecurityManager mgr = new J2EESecurityManager();
-                System.setSecurityManager(mgr);
+                try {
+                    System.setSecurityManager(mgr);
+                } catch (SecurityException ex) {
+                    _logger.log(Level.WARNING, "security.secmgr.could.not.override");
+                }
             }
             
             if (_logger.isLoggable(Level.INFO)) {
