@@ -44,7 +44,7 @@ import java.util.*;
 import com.sun.enterprise.admin.cli.util.*;
 import com.sun.enterprise.cli.framework.*;
 import java.util.jar.*;
-
+import sun.misc.BASE64Encoder;
 /**
  * RemoteCommand class 
  */
@@ -107,11 +107,16 @@ private static final RemoteCommand INSTANCE = new RemoteCommand();
             final String user = (params.get("user") == null ? "" : params.get("user"));            
                 //temporary make password as optional
             String password = "";
+            Map<String, String> passwordOptions = null;            
             if (params.get("passwordfile") != null) {
-                Map passwordOptions = CLIUtil.readPasswordFileOptions(params.get("passwordfile"));
-                password = (String)passwordOptions.get("password");
+                passwordOptions = 
+                    CLIUtil.readPasswordFileOptions(params.get("passwordfile"), true);
+                password = 
+                   (String)passwordOptions.get(CLIUtil.ENV_PREFIX + "PASSWORD");
             }
+            
             uriConnection = "/__asadmin/" + rcp.getCommandName();
+            
             for (Map.Entry<String, String> param : params.entrySet()) {
                 String paramName = param.getKey();
                 //do not want to add host/port/upload/secure/user/password to the uri
@@ -138,6 +143,17 @@ private static final RemoteCommand INSTANCE = new RemoteCommand();
                 }
             }
 
+            // add passwordfile parameters if any
+            BASE64Encoder base64encoder = new sun.misc.BASE64Encoder();
+            if (passwordOptions != null) {
+                for (String passwdName : passwordOptions.keySet()) {
+                    String encodedpasswd = base64encoder.encode(
+                            passwordOptions.get(passwdName).getBytes());
+                    uriConnection = uriConnection + "?" + passwdName + "=" 
+                            + encodedpasswd;
+                }
+            }
+       
             //add operands
             for (int ii = 0; ii < operands.size(); ii++) {
                 final String operand = (String) operands.get(ii);
