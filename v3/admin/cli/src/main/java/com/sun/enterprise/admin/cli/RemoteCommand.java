@@ -74,7 +74,10 @@ public class RemoteCommand {
                                      OutputStream userOut) 
                                      throws CommandException{
         if (args.length == 0) {
-            throw new CommandException("usage : asadmin <command> [parameters]");
+            String msg = "Usage: asadmin <command-name> [options]\n" +
+                         "Start the server using \"asadmin start-domain\" or \"startserv\" script\n" +
+                         "and run \"asadmin list-commands\" to get a complete list of commands";
+            throw new CommandException(msg);
         }
         try {
             //testing RemoteCommandParser.java
