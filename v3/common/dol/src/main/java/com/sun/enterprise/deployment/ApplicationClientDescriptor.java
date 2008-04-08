@@ -156,7 +156,7 @@ public class ApplicationClientDescriptor extends BundleDescriptor
     /**
     * Return the set of named reference pairs I reference.
     */
-    public Vector getNamedReferencePairs() {
+    public Vector<NamedReferencePair> getNamedReferencePairs() {
 	return super.getNamedReferencePairsFrom(this);
     }
     

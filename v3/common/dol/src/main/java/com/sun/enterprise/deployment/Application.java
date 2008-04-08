@@ -708,8 +708,7 @@ public class Application extends RootDeploymentDescriptor
      */
     public int getEjbComponentCount() {
         int count = 0;
-        for (Iterator itr = this.getEjbBundleDescriptors().iterator(); itr.hasNext();) {
-            EjbBundleDescriptor ejbd = (EjbBundleDescriptor) itr.next();
+        for (EjbBundleDescriptor ejbd : this.getEjbBundleDescriptors()) {
             count = count + ejbd.getEjbs().size();
         }
         return count;
@@ -730,8 +729,7 @@ public class Application extends RootDeploymentDescriptor
 
     public Vector<Object> getEjbReferenceDescriptors() {
         Vector<Object> ejbReferenceDescriptors = new Vector<Object>();
-        for (Iterator<Object> itr = this.getNamedDescriptors().iterator(); itr.hasNext();) {
-            Object next = itr.next();
+        for (Object next : this.getNamedDescriptors()) {
             if (next instanceof EjbReferenceDescriptor) {
                 ejbReferenceDescriptors.addElement(next);
             }
@@ -755,7 +753,7 @@ public class Application extends RootDeploymentDescriptor
         throw new IllegalArgumentException(localStrings.getLocalString(
                 "enterprise.deployment.exceptionapphasnoejbjarnamed",
                 "This application has no ejb jars of name {0}",
-                new Object[]{name}));
+                name));
     }
 
     /**
@@ -851,7 +849,7 @@ public class Application extends RootDeploymentDescriptor
         throw new IllegalArgumentException(localStrings.getLocalString(
                 "enterprise.deployment.exceptionapphasnoejbjarnamed",
                 "This application has no ejb jars of name {0}",
-                new Object[]{name}));
+                name));
     }
 
     /**
@@ -920,7 +918,7 @@ public class Application extends RootDeploymentDescriptor
         }
         throw new IllegalArgumentException(localStrings.getLocalString(
                 "enterprise.deployment.exceptionapphasnobeannamed",
-                "This application has no beans of name {0}", new Object[]{ejbName}));
+                "This application has no beans of name {0}", ejbName));
     }
 
     /**
@@ -952,7 +950,7 @@ public class Application extends RootDeploymentDescriptor
         }
         throw new IllegalArgumentException(localStrings.getLocalString(
                 "enterprise.deployment.exceptionapphasnoappclientname",
-                "This application has no application clients of name {0}", new Object[]{name}));
+                "This application has no application clients of name {0}", name));
     }
 
     /**
@@ -981,7 +979,7 @@ public class Application extends RootDeploymentDescriptor
         }
         throw new IllegalArgumentException(localStrings.getLocalString(
                 "enterprise.deployment.exceptionapphasnowebappname",
-                "This application has no web app of name {0}", new Object[]{name}));
+                "This application has no web app of name {0}", name));
     }
 
     /**
@@ -994,7 +992,7 @@ public class Application extends RootDeploymentDescriptor
         }
         throw new IllegalArgumentException(localStrings.getLocalString(
                 "enterprise.deployment.exceptionapphasnowebappname",
-                "This application has no web app of name {0}", new Object[]{name}));
+                "This application has no web app of name {0}", name));
     }
 
 
@@ -1017,8 +1015,8 @@ public class Application extends RootDeploymentDescriptor
      *
      * @return the Set of JndiNameEnvironment objects.
      */
-    public Set getJndiNameEnvironments() {
-        Set jndiNameEnvironments = new HashSet();
+    public Set<JndiNameEnvironment> getJndiNameEnvironments() {
+        Set<JndiNameEnvironment> jndiNameEnvironments = new HashSet<JndiNameEnvironment>();
         jndiNameEnvironments.addAll(getWebBundleDescriptors());
         jndiNameEnvironments.addAll(getApplicationClientDescriptors());
         jndiNameEnvironments.addAll(getEjbDescriptors());
@@ -1031,10 +1029,8 @@ public class Application extends RootDeploymentDescriptor
      */
     public Set<ResourceReferenceDescriptor> getServiceReferenceDescriptors() {
         Set<ResourceReferenceDescriptor> serviceRefs = new HashSet<ResourceReferenceDescriptor>();
-        Set jndiNameEnvironments = getJndiNameEnvironments();
-        for (Iterator iter = jndiNameEnvironments.iterator(); iter.hasNext();) {
-            JndiNameEnvironment next = (JndiNameEnvironment) iter.next();
-            serviceRefs.addAll(next.getServiceReferenceDescriptors());
+        for (JndiNameEnvironment jndiNameEnvironment : getJndiNameEnvironments()) {
+            serviceRefs.addAll(jndiNameEnvironment.getServiceReferenceDescriptors());
         }
         return serviceRefs;
     }
@@ -1043,8 +1039,8 @@ public class Application extends RootDeploymentDescriptor
      * Return a set of all com.sun.enterprise.deployment.WebService
      * descriptors in the application.
      */
-    public Set getWebServiceDescriptors() {
-        Set webServiceDescriptors = new HashSet();
+    public Set<WebService> getWebServiceDescriptors() {
+        Set<WebService> webServiceDescriptors = new HashSet<WebService>();
         Set<BundleDescriptor> bundles = new HashSet<BundleDescriptor>();
         bundles.addAll(getEjbBundleDescriptors());
         bundles.addAll(getWebBundleDescriptors());
@@ -1182,9 +1178,7 @@ public class Application extends RootDeploymentDescriptor
         if (cmpDescriptors == null) {
             cmpDescriptors = new Hashtable();
             for (EjbBundleDescriptor bundle : getBundleDescriptors(EjbBundleDescriptor.class)) {
-                Iterator ejbs = bundle.getEjbs().iterator();
-                while (ejbs.hasNext()) {
-                    EjbDescriptor ejb = (EjbDescriptor) ejbs.next();
+                for (EjbDescriptor ejb : bundle.getEjbs()) {
                     if (ejb instanceof EjbCMPEntityDescriptor)
                         cmpDescriptors.put(ejb.getEjbImplClassName(), ejb);
                 }
@@ -1204,16 +1198,13 @@ public class Application extends RootDeploymentDescriptor
      */
     public Vector<NamedReferencePair> getNamedReferencePairs() {
         Vector<NamedReferencePair> pairs = new Vector<NamedReferencePair>();
-        for (Iterator itr = this.getEjbBundleDescriptors().iterator(); itr.hasNext();) {
-            EjbBundleDescriptor ejbBundleDescriptor = (EjbBundleDescriptor) itr.next();
+        for (EjbBundleDescriptor ejbBundleDescriptor : this.getEjbBundleDescriptors()) {
             pairs.addAll(ejbBundleDescriptor.getNamedReferencePairs());
         }
-        for (Iterator<WebBundleDescriptor> itr = this.getWebBundleDescriptors().iterator(); itr.hasNext();) {
-            WebBundleDescriptor webBundleDescriptor = itr.next();
+        for (WebBundleDescriptor webBundleDescriptor : this.getWebBundleDescriptors()) {
             pairs.addAll(webBundleDescriptor.getNamedReferencePairs());
         }
-        for (Iterator itr = this.getApplicationClientDescriptors().iterator(); itr.hasNext();) {
-            ApplicationClientDescriptor applicationClientDescriptor = (ApplicationClientDescriptor) itr.next();
+        for (ApplicationClientDescriptor applicationClientDescriptor : this.getApplicationClientDescriptors()) {
             pairs.addAll(applicationClientDescriptor.getNamedReferencePairs());
         }
         return pairs;
