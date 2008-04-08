@@ -37,6 +37,7 @@
 
 <project name="hello-jsp" default="default" basedir=".">
     <property file="build.properties"/>
+    <property file="$ws.root}/build.properties"/>
     <property file="${ws.root}/gfproject/${deploy.platform}-config.properties"/>
    
     

@@ -54,7 +54,7 @@
         <property name="bInitialised" value=""/>
     </target>-->
        
-    <target name="deploy-v2-impl">
+    <target name="deploy-v2-impl" depends="setOSConditions">
         <echo message="${deployed.app}"/>
         <echo message="Please set property ${deployed.app} before calling this target"/>
         <echo message="glassfish.home is ${glassfish.home}"/>
@@ -62,42 +62,64 @@
         <echo message="./${war.file.ext}"/>
         <echo message="OS is ${os.name}"/> 
         <record name="deploy.output" action="start"/>
-        <exec executable="cmd" osfamily="Windows">
-            <arg value="/c"/>
-            <arg value="${glassfish.home}/bin/asadmin.bat"/>
-            <arg value="deploy"/>
-            <arg line="${as.props}"/>
-            <arg line="${deployed.app}"/>
-        </exec>
-        
-        <exec executable="${glassfish.home}/bin/asadmin" osfamily="unix">
-            <arg value="deploy"/>
-            <arg line="${as.props}"/>
-            <arg line="${deployed.app}"/>
-        </exec>
-        
-        <echo message="URL of deployed app : http://${glassfish.http.host}:${glassfish.http.port}/${contextroot}"/>
+
+   <echo message="URL of deployed app : http://${glassfish.http.host}:${glassfish.http.port}/${contextroot}"/>
         <record name="deploy.output" action="stop"/>
+        <antcall target="deploy-v2-impl-unix"/>
+        <antcall target="deploy-v2-impl-windows"/>
+
     </target>
-    
-    
-    <target name="undeploy-v2-impl">
-        <echo message="undeploying in v3 mode"/>
-        <echo message="./${war.file.ext}"/>
-        
-        <exec executable="cmd" osfamily="Windows">
+    <target name="setOSConditions">
+        <condition property="isUnix">
+        <os family="unix"/>
+        </condition>
+        <condition property="isWindows">
+        <os family="windows" />
+        </condition>
+    </target>
+
+    <target  name="deploy-v2-impl-windows" if="isWindows">
+         <exec executable="cmd">
             <arg value="/c"/>
             <arg value="${glassfish.home}/bin/asadmin.bat"/>
-            <arg line="undeploy"/>    
+            <arg value="deploy"/>
+            <arg line="${as.props}"/>
+            <arg line="${deployed.app}"/>
+        </exec>
+
+    </target>
+
+    <target  name="deploy-v2-impl-unix" if="isUnix">
+         <exec executable="${glassfish.home}/bin/asadmin">
+            <arg value="deploy"/>
+            <arg line="${as.props}"/>
+            <arg line="${deployed.app}"/>
+        </exec>
+    </target>
+
+    <target name="undeploy-v2-impl" depends="setOSConditions">
+        <echo message="undeploying in v2 mode"/>
+        <echo message="./${war.file.ext}"/>
+        <antcall target="undeploy-v2-impl-unix"/>
+        <antcall target="undeploy-v2-impl-windows"/>
+    </target>
+
+    <target  name="undeploy-v2-impl-windows" if="isWindows">
+        <exec executable="cmd" >
+            <arg value="/c"/>
+            <arg value="${glassfish.home}/bin/asadmin.bat"/>
+            <arg line="undeploy"/>
             <arg line="${war.file}"/>
-        </exec>  
-        
-        <exec executable="${glassfish.home}/bin/asadmin" osfamily="unix">
+        </exec>
+    </target>
+
+    <target  name="undeploy-v2-impl-unix" if="isUnix">
+	<exec executable="${glassfish.home}/bin/asadmin">
             <arg value="undeploy"/>
             <arg value="${war.file}"/>
-        </exec>      
+        </exec>
     </target>
-    
+ 
     <target name="start-server">
         <echo message="${as.props}"/>
         <exec executable="cmd" osfamily="Windows">

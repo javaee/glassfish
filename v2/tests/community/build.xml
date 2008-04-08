@@ -35,7 +35,7 @@
  holder.
 -->
 
-<project name="GlassFish-V3-CommunityTests" default="default" basedir=".">
+<project name="GlassFish-V2-CommunityTests" default="default" basedir=".">
     <property file="build.properties"/>
      <property file="${basedir}/gfproject/derby.properties"/>
      <import file="${basedir}/gfproject/db-targets.xml"/>
