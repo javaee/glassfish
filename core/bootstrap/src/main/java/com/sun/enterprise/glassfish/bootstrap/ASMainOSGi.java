@@ -63,7 +63,7 @@ public abstract class ASMainOSGi {
     }
 
     public ASMainOSGi(String... args) {
-        this(Logger.getAnonymousLogger());
+        this(Logger.getAnonymousLogger(),args);
     }
 
     /**
