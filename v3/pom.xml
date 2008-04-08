@@ -129,7 +129,7 @@
         <pe.version>10.0-SNAPSHOT</pe.version>
         <dist.version>10.0-SNAPSHOT</dist.version>
         <product.name>GlassFish</product.name>
-        <build.id>b001</build.id>
+        <build.id>${user.name}-private</build.id><!-- on Hudson and RE, this gets replaced by real build ID -->
         <abbrev_product_name>GlassFish</abbrev_product_name>
         <major_version>10</major_version>
         <minor_version>0</minor_version>
