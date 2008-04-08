@@ -1,6 +1,0 @@
-Manifest-Version: 1.0
-Created-By: 1.4.0 (Sun Microsystems Inc.)
-Implementation-Vendor-Id: com.sun
-Implementation-Vendor: Sun Microsystems, Inc.
-Class-Path: rmissl.jar jmxremote.jar jmxremote_optional.jar appserv-admin_ja.jar appserv-admin_zh.jar appserv-admin_fr.jar appserv-admin_de.jar appserv-admin_es.jar appserv-admin_it.jar appserv-admin_sw.jar appserv-admin_ko.jar appserv-admin_zh_TW.jar appserv-admin_zh_CN.jar appserv-admin_lang1.jar appserv-admin_lang2.jar appserv-admin_lang3.jar appserv-admin_lang4.jar appserv-admin_lang5.jar
-

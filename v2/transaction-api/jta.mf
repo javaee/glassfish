@@ -1,4 +1,0 @@
-Specification-Title: Java Transaction API Specification
-Specification-Version: @SPECVERSION@
-Specification-Vendor: Sun Microsystems, Inc.
-Extension-Name: javax.transaction
