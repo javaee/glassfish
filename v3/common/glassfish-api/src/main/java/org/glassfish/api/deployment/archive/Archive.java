@@ -79,7 +79,7 @@ public interface Archive {
      * Returns the size of the archive.
      * @return long indicating the size of the archive
      */
-    public long getArchiveSize() throws NullPointerException, SecurityException;
+    public long getArchiveSize() throws SecurityException;
     
     /**
      * Returns the name of the archive.
