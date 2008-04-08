@@ -33,13 +33,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
- 
-/*
- * $Header: /cvs/glassfish/appserv-api/src/java/com/sun/appserv/management/config/SSLConfig.java,v 1.2 2007/05/05 05:30:35 tcfujii Exp $
- * $Revision: 1.2 $
- * $Date: 2007/05/05 05:30:35 $
- */
-
 package com.sun.appserv.management.config;
 
 import com.sun.appserv.management.base.XTypes;
@@ -47,7 +40,7 @@ import com.sun.appserv.management.base.XTypes;
 /**
 	Base interface Configuration for an &lt;ssl&gt; element.
 */
-@AMXCreateInfo(paramNames={"name", "optional"})
+@AMXCreateInfo(paramNames={"cert-nickname", "optional"})
 public interface SSLConfig extends ConfigElement
 {
 /** The j2eeType as returned by {@link com.sun.appserv.management.base.AMX#getJ2EEType}. */
