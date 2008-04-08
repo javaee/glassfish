@@ -135,7 +135,7 @@ public class HK2Main implements
             case 0:
                 throw new RuntimeException("No module with ModuleStartup implementation found");
             case 1:
-                startup = (ModuleStartup)startups.iterator().next();
+                startup = startups.iterator().next();
                 break;
             default:
                 throw new RuntimeException("Multiple ModuleStartup classes found");
