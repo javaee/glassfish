@@ -209,16 +209,17 @@ public class ServerHandlers {
         @HandlerOutput(name="AutoDeployDirectory", type=String.class)})     
         public static void getServerDefaultAppsConfigAttributes(HandlerContext handlerCtx) {
         
-        ConfigConfig config = AMXRoot.getInstance().getConfig(((String)handlerCtx.getInputValue("ConfigName")));
-        DASConfig dConfig = config.getAdminServiceConfig().getDASConfig();
-        String reload = dConfig.getDefaultValue("DynamicReloadEnabled");
-        String reloadInterval = dConfig.getDefaultValue("DynamicReloadPollIntervalInSeconds");
-        String autoDeploy = dConfig.getDefaultValue("AutodeployEnabled");
-        String adminTimeout = dConfig.getDefaultValue("AdminSessionTimeoutInMinutes");
-        String autoDeployInterval = dConfig.getDefaultValue("AutodeployPollingIntervalInSeconds");
-        String autoDeployDirectory = dConfig.getDefaultValue("AutodeployDir") ;
-        String precompile = dConfig.getDefaultValue("AutodeployJSPPrecompilationEnabled");
-        String verifier = dConfig.getDefaultValue("AutodeployVerifierEnabled");
+        //tODO-V3 TP2
+        //Map defaultMap = config.getAdminServiceConfig().getDefaultValues(XTypes.DAS_CONFIG);
+        Map defaultMap = new HashMap();
+        String reload = (String) defaultMap.get("DynamicReloadEnabled");
+        String reloadInterval = (String) defaultMap.get("DynamicReloadPollIntervalInSeconds");
+        String autoDeploy = (String) defaultMap.get("AutodeployEnabled");
+        String adminTimeout = (String) defaultMap.get("AdminSessionTimeoutInMinutes");
+        String autoDeployInterval = (String) defaultMap.get("AutodeployPollingIntervalInSeconds");
+        String autoDeployDirectory = (String) defaultMap.get("AutodeployDir") ;
+        String precompile = (String) defaultMap.get("AutodeployJSPPrecompilationEnabled");
+        String verifier = (String) defaultMap.get("AutodeployVerifierEnabled");
 
         if(reload.equals("true")) {
             handlerCtx.setOutputValue("Reload", true);    
@@ -770,12 +771,12 @@ public class ServerHandlers {
         
         ConfigConfig config = AMXRoot.getInstance().getConfig(((String)handlerCtx.getInputValue("ConfigName")));
         Map defaultMap = config.getDefaultValues(XTypes.JAVA_CONFIG);
-        String javaHome = (String) defaultMap.get("java-home");
-        String javacOptions  = (String)defaultMap.get("javac-options");
-        String rmicOptions  = (String)defaultMap.get("rmic-options");
-        String debugOptions  = (String)defaultMap.get("debug-options");
-        String bytecodePreprocessors  = (String)defaultMap.get("bytecode-preprocessors");
-        String debugEnabled  = (String)defaultMap.get("debug-enabled");
+        String javaHome = (String) defaultMap.get("JavaHome");
+        String javacOptions  = (String)defaultMap.get("JavacOptions");
+        String rmicOptions  = (String)defaultMap.get("RmicOptions");
+        String debugOptions  = (String)defaultMap.get("DebugOptions");
+        String bytecodePreprocessors  = (String)defaultMap.get("BytecodePreprocessors");
+        String debugEnabled  = (String)defaultMap.get("DebugEnabled");
         
         handlerCtx.setOutputValue("JavaHome", javaHome);
         handlerCtx.setOutputValue("Options", javacOptions);

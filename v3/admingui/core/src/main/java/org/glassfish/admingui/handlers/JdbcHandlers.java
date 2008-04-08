@@ -114,7 +114,6 @@ public class JdbcHandlers {
 	    GuiUtil.handleError(handlerCtx, GuiUtil.getMessage("msg.NoSuchJDBCResource"));
 	}else{
 	    handlerCtx.setOutputValue("poolName", jdbc.getPoolName());
-            //TODO-V3 TP2
 	    handlerCtx.setOutputValue("description", jdbc.getDescription());
             if(AMXRoot.getInstance().isEE()) {
                 handlerCtx.setOutputValue("enabledString", TargetUtil.getEnabledStatus(jdbc, false));
@@ -374,23 +373,20 @@ public class JdbcHandlers {
                 )
         public static void getJdbcConnectionPoolDefaultInfo(HandlerContext handlerCtx) {
         
-            //Map <String,String> defaultMap = AMXRoot.getInstance().getDomainConfig().getResourcesConfig().getDefaultValues(XTypes.JDBC_CONNECTION_POOL_CONFIG); 
-            Map <String, String> defaultMap = new HashMap();
-            handlerCtx.setOutputValue("resType", defaultMap.get("res-type"));
-            handlerCtx.setOutputValue("description", defaultMap.get("ABC"));
-            handlerCtx.setOutputValue("steadyPoolSize", defaultMap.get("steady-pool-size"));
-            handlerCtx.setOutputValue("maxPoolSize",defaultMap.get("max-pool-size"));
-            handlerCtx.setOutputValue("poolResizeQuantity", defaultMap.get("pool-resize-quantity"));
-            handlerCtx.setOutputValue("idleTimeoutInSeconds", defaultMap.get("idle-timeout-in-seconds"));
-            handlerCtx.setOutputValue("maxWaitTimeInMillis", defaultMap.get("max-wait-time-in-millis"));
-            handlerCtx.setOutputValue("isConnectionValidationRequired", StringToBoolean(defaultMap.get("is-connection-validation-required")));
-            handlerCtx.setOutputValue("connectionValidationMethod", defaultMap.get("connection-validation-method"));
-            handlerCtx.setOutputValue("validationTableName", defaultMap.get("validation-table-name"));
-            handlerCtx.setOutputValue("failAllConnections", StringToBoolean(defaultMap.get("fail-all-connections")));
-            handlerCtx.setOutputValue("allowNonComponentCallers", StringToBoolean(defaultMap.get("allow-non-component-callers")));
-            handlerCtx.setOutputValue("nonTransactionalConnections", StringToBoolean(defaultMap.get("non-transactional-connections")));
-            handlerCtx.setOutputValue("transactionIsolationLevel", defaultMap.get("transaction-isolation-level"));
-            handlerCtx.setOutputValue("isIsolationLevelGuaranteed", StringToBoolean(defaultMap.get("is-isolation-level-guaranteed")));
+            Map <String,String> defaultMap = AMXRoot.getInstance().getDomainConfig().getResourcesConfig().getDefaultValues(XTypes.JDBC_CONNECTION_POOL_CONFIG); 
+            handlerCtx.setOutputValue("steadyPoolSize", defaultMap.get("SteadyPoolSize"));
+            handlerCtx.setOutputValue("maxPoolSize",defaultMap.get("MaxPoolSize"));
+            handlerCtx.setOutputValue("poolResizeQuantity", defaultMap.get("PoolResizeQuantity"));
+            handlerCtx.setOutputValue("idleTimeoutInSeconds", defaultMap.get("IdleTimeoutInSeconds"));
+            handlerCtx.setOutputValue("maxWaitTimeInMillis", defaultMap.get("MaxWaitTimeInMillis"));
+            handlerCtx.setOutputValue("isConnectionValidationRequired", StringToBoolean(defaultMap.get("IsConnectionValidationRequired")));
+            handlerCtx.setOutputValue("connectionValidationMethod", defaultMap.get("ConnectionValidationMethod"));
+            handlerCtx.setOutputValue("validationTableName", defaultMap.get("ValidationTableName"));
+            handlerCtx.setOutputValue("failAllConnections", StringToBoolean(defaultMap.get("FailAllConnections")));
+            handlerCtx.setOutputValue("allowNonComponentCallers", StringToBoolean(defaultMap.get("AllowNonComponentCallers")));
+            handlerCtx.setOutputValue("nonTransactionalConnections", StringToBoolean(defaultMap.get("NonTransactionalConnections")));
+            handlerCtx.setOutputValue("transactionIsolationLevel", defaultMap.get("TransactionIsolationLevel"));
+            handlerCtx.setOutputValue("isIsolationLevelGuaranteed", StringToBoolean(defaultMap.get("IsIsolationLevelGuaranteed")));
         }
     
         /**
@@ -444,20 +440,19 @@ public class JdbcHandlers {
                 return;
             }
             Map advance = new HashMap();
-            //Map <String,String> defaultMap = AMXRoot.getInstance().getResourcesConfig().getDefaultValues(XTypes.JDBC_CONNECTION_POOL_CONFIG);
-            Map <String, String> defaultMap = new HashMap();
-            advance.put("wrapJDBCObjects", StringToBoolean( defaultMap.get("wrap-jdbc-objects")));
-            advance.put("statementTimeoutInSeconds", defaultMap.get("statement-timeout-in-seconds"));
-            advance.put("validateAtMostOncePeriodInSeconds", defaultMap.get("validate-atmost-once-period-in-seconds"));
-            advance.put("connectionLeakTimeoutInSeconds", defaultMap.get("connection-leak-timeout-in-seconds"));
-            advance.put("connectionLeakReclaim",  StringToBoolean( defaultMap.get("connection-leak-timeout-in-seconds")));
-            advance.put("connectionCreationRetryAttempts",  defaultMap.get("connection-creation-retry-attempts"));
-            advance.put("connectionCreationRetryIntervalInSeconds", defaultMap.get("connection-creation-retry-interval-in-seconds"));
-            advance.put("lazyConnectionEnlistment",  StringToBoolean( defaultMap.get("lazy-connection-enlistment")));
-            advance.put("lazyConnectionAssociation",  StringToBoolean( defaultMap.get("lazy-connection-association")));
-            advance.put("associateWithThread",  StringToBoolean( defaultMap.get("associate-with-thread")));
-            advance.put("matchConnections",  StringToBoolean( defaultMap.get("match-connections")));
-            advance.put("maxConnectionUsageCount", defaultMap.get("max-connection-usage-count"));
+            Map <String,String> defaultMap = AMXRoot.getInstance().getResourcesConfig().getDefaultValues(XTypes.JDBC_CONNECTION_POOL_CONFIG);
+            advance.put("wrapJDBCObjects", StringToBoolean( defaultMap.get("WrapJdbcObjects")));
+            advance.put("statementTimeoutInSeconds", defaultMap.get("StatementTimeoutInSeconds"));
+            advance.put("validateAtMostOncePeriodInSeconds", defaultMap.get("ValidateAtmostOncePeriodInSeconds"));
+            advance.put("connectionLeakTimeoutInSeconds", defaultMap.get("ConnectionLeakTimeoutInSeconds"));
+            advance.put("connectionLeakReclaim",  StringToBoolean( defaultMap.get("ConnectionLeakReclaim")));
+            advance.put("connectionCreationRetryAttempts",  defaultMap.get("ConnectionCreationRetryAttempts"));
+            advance.put("connectionCreationRetryIntervalInSeconds", defaultMap.get("ConnectionCreationRetryIntervalInSeconds"));
+            advance.put("lazyConnectionEnlistment",  StringToBoolean( defaultMap.get("LazyConnectionEnlistment")));
+            advance.put("lazyConnectionAssociation",  StringToBoolean( defaultMap.get("LazyConnectionAssociation")));
+            advance.put("associateWithThread",  StringToBoolean( defaultMap.get("AssociateWithThread")));
+            advance.put("matchConnections",  StringToBoolean( defaultMap.get("MatchConnections")));
+            advance.put("maxConnectionUsageCount", defaultMap.get("MaxConnectionUsageCount"));
             handlerCtx.setOutputValue("advance", advance);
         }
     
@@ -525,6 +520,7 @@ public class JdbcHandlers {
             String jndiName = (String) handlerCtx.getInputValue("jndiName");
             JDBCConnectionPoolConfig pool = AMXRoot.getInstance().getResourcesConfig().getJDBCConnectionPoolConfigMap().get(jndiName);
             try {
+                //TODO-V3 TP2
                 Boolean result = false; //pool.ping();
                 if ( (result != null) && (Boolean)result){
                         GuiUtil.prepareAlert(handlerCtx,"success", GuiUtil.getMessage("msg.PingSucceed"), null);
@@ -555,21 +551,19 @@ public class JdbcHandlers {
             if ((fromStep2!= null) && fromStep2){
                 //wizardPool is already in session map
             }else{
-                //TODO-V3 TP2
-                //Map defaultMap = AMXRoot.getInstance().getResourcesConfig().getDefaultValues(XTypes.JDBC_CONNECTION_POOL_CONFIG);
-                Map defaultMap = new HashMap();
+                Map defaultMap = AMXRoot.getInstance().getResourcesConfig().getDefaultValues(XTypes.JDBC_CONNECTION_POOL_CONFIG); 
                 Map attrMap = new HashMap();
-                attrMap.put("SteadyPoolSize", defaultMap.get("steady-pool-size"));
-                attrMap.put("MaxPoolSize", defaultMap.get("max-pool-size"));
-                attrMap.put("MaxWaitTimeInMillis", defaultMap.get("max-wait-time-in-millis"));
-                attrMap.put("PoolResizeQuantity", defaultMap.get("pool-resize-quantity"));
-                attrMap.put("IdleTimeoutInSeconds", defaultMap.get("idle-timeout-in-seconds"));
-                attrMap.put("IsIsolationLevelGuaranteed", defaultMap.get("is-isolation-level-guaranteed"));
-                attrMap.put("IsConnectionValidationRequired", defaultMap.get("is-connection-validation-required"));
-                attrMap.put("ConnectionValidationMethod", defaultMap.get("connection-validation-method"));
-                attrMap.put("FailAllConnections", defaultMap.get("fail-all-connections"));
-                attrMap.put("NonTransactionalConnections", defaultMap.get("non-transactional-connections"));
-                attrMap.put("AllowNonComponentCallers", defaultMap.get("allow-non-component-callers"));
+                attrMap.put("SteadyPoolSize", defaultMap.get("SteadyPoolSize"));
+                attrMap.put("MaxPoolSize", defaultMap.get("MaxPoolSize"));
+                attrMap.put("MaxWaitTimeInMillis", defaultMap.get("MaxWaitTimeInMillis"));
+                attrMap.put("PoolResizeQuantity", defaultMap.get("PoolResizeQuantity"));
+                attrMap.put("IdleTimeoutInSeconds", defaultMap.get("IdleTimeoutInSeconds"));
+                attrMap.put("IsIsolationLevelGuaranteed", defaultMap.get("IsIsolationLevelGuaranteed"));
+                attrMap.put("IsConnectionValidationRequired", defaultMap.get("IsConnectionValidationRequired"));
+                attrMap.put("ConnectionValidationMethod", defaultMap.get("ConnectionValidationMethod"));
+                attrMap.put("FailAllConnections", defaultMap.get("FailAllConnections"));
+                attrMap.put("NonTransactionalConnections", defaultMap.get("NonTransactionalConnections"));
+                attrMap.put("AllowNonComponentCallers", defaultMap.get("AllowNonComponentCallers"));
                              
                 Map sessionMap = handlerCtx.getFacesContext().getExternalContext().getSessionMap();
                 sessionMap.put("wizardPool", attrMap);
@@ -651,6 +645,10 @@ public class JdbcHandlers {
             Map allOptions = new HashMap(pool);
             allOptions = AMXUtil.convertToPropertiesOptionMap(properties, allOptions);
             
+            System.out.println("!!!! calling getResourcesConfig().createJDBCConnectionPoolConfig  ");
+            System.out.println("name="+name);
+            System.out.println("datasoruceClassname="+datasourceClassname);
+            System.out.println("allOption="+ allOptions);
             JDBCConnectionPoolConfig newPool = AMXRoot.getInstance().getResourcesConfig().createJDBCConnectionPoolConfig(name, datasourceClassname, allOptions);
             newPool.setDescription((String) extra.get("Description"));
         }catch (Exception ex){
