@@ -57,17 +57,8 @@ public class ConnectorHandler extends AbstractArchiveHandler implements ArchiveH
         return "rar";
     }
 
-    public boolean handles(ReadableArchive archive) {
-        try {
-            InputStream is = archive.getEntry("META-INF/ra.xml");
-            if (is != null) {
-                is.close();
-                return true;
-            }
-            return false;
-        } catch (IOException e) {
-            return false;
-        }
+    public boolean handles(ReadableArchive archive) throws IOException {
+        return archive.exists("META-INF/ra.xml");
     }
 
     //TODO V3 should this be connector-class-loader ? Purpose of this method ? Who uses this classloader ?

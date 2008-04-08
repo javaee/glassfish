@@ -144,7 +144,7 @@ abstract public class ApplicationLifecycle {
      * @param archive the archive to find the handler for
      * @return the archive handler or null if not found.
      */
-    public ArchiveHandler getArchiveHandler(ReadableArchive archive) {
+    public ArchiveHandler getArchiveHandler(ReadableArchive archive) throws IOException {
         for (ArchiveHandler handler : habitat.getAllByContract(ArchiveHandler.class)) {
             if (handler.handles(archive)) {
                 return handler;

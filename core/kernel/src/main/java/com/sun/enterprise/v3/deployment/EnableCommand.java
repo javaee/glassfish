@@ -47,7 +47,6 @@ import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.PerLookup;
 
 import java.util.Properties;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.logging.Level;
 import java.io.File;

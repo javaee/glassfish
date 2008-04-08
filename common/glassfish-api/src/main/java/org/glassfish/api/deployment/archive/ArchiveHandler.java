@@ -53,8 +53,17 @@ public interface ArchiveHandler {
      * @return the default name for identifying the specified archive
      */
     public String getDefaultApplicationName(ReadableArchive archive);
-    
-    public boolean handles(ReadableArchive archive);
+
+    /**
+     * Returns true if thie handler understands the specified archive and
+     * can process it.
+     *
+     * @throws IOException
+     *      The implementation of this method is expected to interact with
+     *      the given archive, and if methods on {@link ReadableArchive}
+     *      throws an {@link IOException}, it can be simply tunneled to the caller.
+     */
+    public boolean handles(ReadableArchive archive) throws IOException;
 
     public ClassLoader getClassLoader(ClassLoader parent, ReadableArchive archive);
     
