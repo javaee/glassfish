@@ -61,8 +61,11 @@ public class Transaction {
      * @param t new participant to this transaction
 	 * 
 	 */
-    synchronized void addParticipant(Transactor t) {    	
-      	participants.addLast(t);
+    synchronized void addParticipant(Transactor t) {
+        // add participants first so the lastly created elements are processed before the parent
+        // is modified, this is expecially important when sub elements have key attributes the parent
+        // need (or the habitat).
+          participants.addFirst(t);
     }
 
 	/**

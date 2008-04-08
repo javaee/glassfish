@@ -104,6 +104,19 @@ public class WriteableView implements InvocationHandler, Transactor, ConfigView 
         }
     }
 
+    public Object gettter(ConfigModel.Property property, java.lang.reflect.Type t) {
+        Object value =  bean.getter(property, t);
+        if (value instanceof List) {
+            if (!changedCollections.containsKey(property.xmlName())) {
+                // wrap collections so we can record events on that collection mutation.
+                changedCollections.put(property.xmlName(),
+                        new ProtectedList((List) value, readView, property.xmlName()));
+            }
+            return changedCollections.get(property.xmlName());
+        }
+        return value;
+    }
+
     public void setter(ConfigModel.Property property, Object newValue, java.lang.reflect.Type t)  {
         // are we still in a transaction
         if (currentTx==null) {
@@ -204,6 +217,10 @@ public class WriteableView implements InvocationHandler, Transactor, ConfigView 
             }
             changedAttributes.clear();
             return appliedChanges;
+        } catch(TransactionFailure e) {
+            throw e;
+        } catch(Exception e) {
+            throw new TransactionFailure(e.getMessage(), e);
         } finally {
             bean.getLock().unlock();
         }
@@ -272,36 +289,82 @@ public class WriteableView implements InvocationHandler, Transactor, ConfigView 
  *
  * @author Jerome Dochez
  */
-private class ProtectedList<T extends ConfigBeanProxy> extends ArrayList<T> {
+private class ProtectedList extends AbstractList {
 
     final ConfigBeanProxy readView;
     final List readOnly;
     final String id;
     final List<PropertyChangeEvent> changeEvents = new ArrayList<PropertyChangeEvent>();
-
+    final List proxied;
 
     ProtectedList(List readOnly, ConfigBeanProxy parent, String id) {
-        super(readOnly);
+        proxied = Collections.synchronizedList(new ArrayList(readOnly));
         this.readView = parent;
         this.readOnly = readOnly;
         this.id = id;
     }
 
-    @Override
-    public boolean add(T object) {
-        Object param = object;
-        Object handler = Proxy.getInvocationHandler(object);
-        if (handler instanceof WriteableView) {
-            param = ((WriteableView) handler).readView;
-        }
-        changeEvents.add(new PropertyChangeEvent(readView, id, null, param));
-        return super.add(object);
+    /**
+     * Returns the number of elements in this collection.  If the collection
+     * contains more than <tt>Integer.MAX_VALUE</tt> elements, returns
+     * <tt>Integer.MAX_VALUE</tt>.
+     *
+     * @return the number of elements in this collection.
+     */
+    public int size() {
+        return proxied.size();
+    }
+
+    /**
+     * Returns the element at the specified position in this list.
+     *
+     * @param index index of element to return.
+     * @return the element at the specified position in this list.
+     * @throws IndexOutOfBoundsException if the given index is out of range
+     *                                   (<tt>index &lt; 0 || index &gt;= size()</tt>).
+     */
+    public Object get(int index) {
+        return proxied.get(index);
     }
 
     @Override
-    public boolean remove(Object object) {
+    public synchronized boolean add(Object object) {
+        Object param = object;
+        try {
+            Object handler = Proxy.getInvocationHandler(object);
+            if (handler instanceof WriteableView) {
+                param = ((WriteableView) handler).readView;
+            }
+        } catch(IllegalArgumentException e) {
+            // ignore, this is a leaf
+        }
+        changeEvents.add(new PropertyChangeEvent(readView, id, null, param));
+        return proxied.add(object);
+    }
+
+    @Override
+    public synchronized boolean remove(Object object) {
         changeEvents.add(new PropertyChangeEvent(readView, id, object, null));
-        return super.remove(object);
+
+        try {
+            ConfigView handler = ((ConfigView) Proxy.getInvocationHandler(object)).getMasterView();
+            for (int index = 0 ; index<proxied.size() ; index++) {
+                Object target = proxied.get(index);
+                try {
+                    ConfigView targetHandler = ((ConfigView) Proxy.getInvocationHandler(target)).getMasterView();
+                    if (targetHandler==handler) {
+                        return (proxied.remove(index)!=null);
+                    }
+                } catch(IllegalArgumentException ex) {
+                    // ignore
+                }
+            }
+        } catch(IllegalArgumentException e) {
+            // ignore, this is a leaf
+            return proxied.remove(object);
+
+        }
+        return false;
     }
 
 }

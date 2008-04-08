@@ -179,7 +179,6 @@ public class ConfigSupport {
                 t.rollback();
                 return null;
             } catch (TransactionFailure e) {
-                System.out.println("failure, not retryable...");
                 t.rollback();
                 throw e;
             }
@@ -215,8 +214,12 @@ public class ConfigSupport {
             @SuppressWarnings("unchecked")
             public <T extends ConfigBeanProxy> T transform(T s) {
                 ConfigView sourceBean = (ConfigView) Proxy.getInvocationHandler(s);
-                WriteableView writeableView = new WriteableView(source);
-                return (T) writeableView.getProxy(sourceBean.getProxyType());
+                WriteableView writeableView = getWriteableView(source, (ConfigBean) sourceBean.getMasterView());
+                if (writeableView!=null) {
+                    return (T) writeableView.getProxy(sourceBean.getProxyType());
+                } else {
+                    return null;
+                }
             }
         };
         return getView(writeableTransformer, source);
@@ -311,6 +314,11 @@ public class ConfigSupport {
         }
     }
 
+    // kind of insane, just to get the proper return type for my properties.
+    static private List<String> defaultPropertyValue() {
+        return null;    
+    }
+
     public static void apply(Map<ConfigBean, Map<String, String>> mapOfChanges) throws TransactionFailure {
 
         Transaction t = new Transaction();
@@ -329,7 +337,17 @@ public class ConfigSupport {
                 if (prop==null) {
                     throw new TransactionFailure("Unknown property name " + xmlName + " on " + source.getProxyType(), null);
                 }
-                writeable.setter(prop, change.getValue(), String.class);
+                if (prop.isCollection()) {
+                    try {
+                        List<String> values = (List<String>) writeable.gettter(prop,
+                                ConfigSupport.class.getDeclaredMethod("defaultPropertyValue", null).getGenericReturnType());
+                        values.add(change.getValue());                        
+                    } catch (NoSuchMethodException e) {
+                        throw new TransactionFailure("Unknown property name " + xmlName + " on " + source.getProxyType(), null);                        
+                    }
+                } else {
+                    writeable.setter(prop, change.getValue(), String.class);
+                }
             }
         }
         try {
@@ -348,7 +366,6 @@ public class ConfigSupport {
 
     /**
      * Returns the list of sub-elements supported by a ConfigBean
-     * @param bean config bean
      * @return array of classes reprensenting the sub elements of a particular
      * @throws ClassNotFoundException for severe errors with the model associated
      * with the passed config bean.
@@ -358,9 +375,15 @@ public class ConfigSupport {
 
         List<Class<?>> subTypes = new ArrayList<Class<?>>();
         for (ConfigModel.Property element : bean.model.elements.values()) {
-            ConfigModel elementModel =  ((ConfigModel.Node) element).model;
-            Class<?> subType = elementModel.classLoaderHolder.get().loadClass(elementModel.targetTypeName);
-            subTypes.add(subType);
+            if (!element.isLeaf()) {
+                ConfigModel elementModel =  ((ConfigModel.Node) element).model;
+                Class<?> subType = elementModel.classLoaderHolder.get().loadClass(elementModel.targetTypeName);
+                subTypes.add(subType);
+            } else {
+                if (element.isCollection()) {
+                    subTypes.add(List.class);
+                }
+            }
         }
         return subTypes.toArray(new Class[subTypes.size()]);
     }

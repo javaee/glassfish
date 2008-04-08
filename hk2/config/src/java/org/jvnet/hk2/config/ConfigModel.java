@@ -334,7 +334,7 @@ public final class ConfigModel {
             return true;
         }
 
-        public Object get(Dom dom, Type returnType) {
+        public Object get(final Dom dom, Type returnType) {
             // TODO: perhaps support more collection types?
             final List<String> v = dom.leafElements(xmlName);
             if(!(returnType instanceof ParameterizedType))
@@ -344,7 +344,23 @@ public final class ConfigModel {
             // return a live list
             return new AbstractList<Object>() {
                 public Object get(int index) {
-                    return convertLeafValue(itemType,v.get(index));
+                    return convertLeafValue(itemType, v.get(index));
+                }
+
+                public void add(int index, Object element) {
+                    // update the master children list, as well as this view 'v'
+                    dom.addLeafElement(xmlName, element.toString());
+                    v.add(index, element.toString());
+                }
+
+                public Object remove(int index) {
+                    dom.removeLeafElement(xmlName, v.get(index));
+                    return v.remove(index);
+                }
+
+                public Object set(int index, Object element) {
+                    dom.changeLeafElement(xmlName, v.get(index), element.toString());
+                    return v.set(index, element.toString());
                 }
 
                 public int size() {

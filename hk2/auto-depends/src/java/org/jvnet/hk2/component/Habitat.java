@@ -171,6 +171,25 @@ public class Habitat {
     }
 
     /**
+     * Removes a NamedInhabitant for a specific contract
+     *
+     * @param index contract name
+     * @param name instance name
+     * @return true if the removal was successful
+     */
+    public boolean removeIndex(String index, String name) {
+        if (byContract.containsKey(index)) {
+            List<NamedInhabitant> contracted = byContract.get(index);
+            for (NamedInhabitant i : contracted) {
+                if ((i.name==null && name==null) || i.name.equals(name)) {
+                   return contracted.remove(i);
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
      * Checks if the given type is a contract interface that has some implementations in this {@link Habitat}.
      *
      * <p>
