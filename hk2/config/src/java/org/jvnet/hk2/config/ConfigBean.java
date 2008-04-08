@@ -41,10 +41,7 @@ import javax.xml.stream.XMLStreamReader;
 import java.beans.*;
 import java.lang.reflect.Type;
 import java.lang.reflect.Proxy;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.List;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.TimeUnit;
@@ -150,9 +147,47 @@ public class ConfigBean extends Dom implements ConfigView {
     }
 
     protected Object getter(ConfigModel.Property target, Type t) {
-        Object value = super.getter(target, t);
+        final Object value = super.getter(target, t);
         for (ConfigBeanInterceptor interceptor : optionalFeatures.values()) {
             interceptor.readValue(this, target.xmlName(), value);
+        }
+        if (value instanceof List) {
+            final ConfigBean myself = this;
+            final List valueList = (List) value;
+
+            // we need to protect this list as it was obtained from a readable view...
+            return new AbstractList() {
+
+                public int size() {
+                    return valueList.size();
+                }
+
+                public Object get(int index) {
+                    return valueList.get(index);
+                }
+
+                public boolean add(Object o) {
+                    if (!myself.writeLock) {
+                        throw new IllegalStateException(new PropertyVetoException("Not part of a transaction !", null));
+                    }
+                    return valueList.add(o);
+
+                }
+                public Object set(int index, Object element) {
+                    if (!myself.writeLock) {
+                        throw new IllegalStateException(new PropertyVetoException("Not part of a transaction !", null));
+                    }
+                    return valueList.set(index, element);
+                }
+
+                public Object remove(int index) {
+                    if (!myself.writeLock) {
+                        throw new IllegalStateException(new PropertyVetoException("Not part of a transaction !", null));
+                    }
+                    return valueList.remove(index);
+                }
+            };
+
         }
         return value;
     }

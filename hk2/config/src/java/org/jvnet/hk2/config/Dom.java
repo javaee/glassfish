@@ -328,7 +328,8 @@ public class Dom extends LazyInhabitant implements InvocationHandler, Observable
                 NodeChild nc = (NodeChild) child;
                 if(nc.dom==reference) {
                     itr.add(newChild);
-                    habitat.add(newNode);
+                    habitat.addIndex(newNode, newNode.getProxyType().getName(), newNode.getKey());
+                    //habitat.add(newNode);
                     return;
                 }
             }
@@ -344,7 +345,7 @@ public class Dom extends LazyInhabitant implements InvocationHandler, Observable
     public synchronized void replaceChild(Dom reference, String name, Dom newNode) {
         ListIterator<Child> itr = children.listIterator();
         while(itr.hasNext()) {
-            Child child = itr.next();
+            Child child = itr.next();   
             if (child instanceof NodeChild) {
                 NodeChild nc = (NodeChild) child;
                 if(nc.dom==reference) {
@@ -368,7 +369,7 @@ public class Dom extends LazyInhabitant implements InvocationHandler, Observable
                 NodeChild nc = (NodeChild) child;
                 if(nc.dom==reference) {
                     itr.remove();
-                    habitat.remove(reference);
+                    habitat.removeIndex(reference.getProxyType().getName(), reference.getKey());
                     reference.release();
                     return;
                 }
@@ -376,6 +377,41 @@ public class Dom extends LazyInhabitant implements InvocationHandler, Observable
         }
         throw new IllegalArgumentException(reference+" is not a valid child of "+this+". Children="+children);
 
+    }
+
+    public synchronized boolean addLeafElement(String xmlName, String value) {
+        if (children.size()==0) {
+            children = new ArrayList<Child>();
+        }
+        return children.add(new LeafChild(xmlName, value));
+        
+    }
+
+    public synchronized boolean removeLeafElement(String xmlName, String element) {
+        List<Child> children = this.children; // fix the snapshot that we'll work with
+
+        int len = children.size();
+        for( int i=0; i<len; i++ ) {
+            Child child = children.get(i);
+            if(child.name.equals(xmlName) && ((LeafChild) child).value.equals(element)) {
+                return children.remove(child);
+            }
+        }
+        return false;
+
+    }
+
+    public synchronized boolean changeLeafElement(String xmlName, String oldValue, String newValue) {
+        List<Child> children = this.children; // fix the snapshot that we'll work with
+
+        int len = children.size();
+        for( int i=0; i<len; i++ ) {
+            Child child = children.get(i);
+            if(child.name.equals(xmlName) && ((LeafChild) child).value.equals(oldValue)) {
+                return (children.set(i, new LeafChild(xmlName, newValue))!=null);
+            }
+        }
+        return false;
     }
 
     /**
