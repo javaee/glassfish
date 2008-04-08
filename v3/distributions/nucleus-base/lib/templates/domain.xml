@@ -98,7 +98,7 @@
      <!-- The JSR 160 "system-jmx-connector" -->
      <das-config dynamic-reload-enabled="true" dynamic-reload-poll-interval-in-seconds="2" autodeploy-enabled="true" autodeploy-polling-interval-in-seconds="2" autodeploy-dir="${com.sun.aas.instanceRoot}/autodeploy" autodeploy-verifier-enabled="false" autodeploy-jsp-precompilation-enabled="false" deploy-xml-validation="full" admin-session-timeout-in-minutes="60"/>
        <property name="adminConsoleContextRoot" value="/admin"/>
-       <property name="adminConsoleDownloadLocation" value="http://localhost:18080/admingui.war"/>
+       <property name="adminConsoleDownloadLocation" value="http://download.java.net/maven/glassfish/org/glassfish/admingui/war/1.0-SNAPSHOT/war-1.0-SNAPSHOT.war"/>
        <!-- change this to reflect the correct final download location -->
        <property name="adminConsoleFolder" value="${com.sun.aas.installRoot}/lib/install/applications"/>
    </admin-service>
