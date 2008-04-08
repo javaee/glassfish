@@ -1527,7 +1527,8 @@ public abstract class BaseContainer
             return true;
         }
        
-        boolean authorized = securityManager.authorize(inv);
+        boolean authorized = (securityManager != null)
+		? securityManager.authorize(inv) : true;
         
         if( !authorized ) {
 
