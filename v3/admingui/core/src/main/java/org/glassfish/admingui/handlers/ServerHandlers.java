@@ -1179,7 +1179,9 @@ public class ServerHandlers {
         if(javaConfig.getProfilerConfig() == null){
             createProfiler(handlerCtx, javaConfig);
         } else {
-            javaConfig.removeProfilerConfig();
+            //TODO-V3
+            //uncomment the following line when removeProfilerConfig() is available.
+            //javaConfig.removeProfilerConfig();
             createProfiler(handlerCtx, javaConfig);
         }
     }
