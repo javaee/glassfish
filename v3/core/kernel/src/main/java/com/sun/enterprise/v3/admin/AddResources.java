@@ -52,6 +52,7 @@ import com.sun.enterprise.config.serverbeans.Resources;
 import com.sun.enterprise.config.serverbeans.Server;
 import org.jvnet.hk2.annotations.Inject;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -88,6 +89,15 @@ public class AddResources implements AdminCommand {
         final ActionReport report = context.getActionReport();
         
         Server targetServer = ResourceUtils.getTargetServer(servers, target);
+        
+        // Check if the path xmlFileName exists
+        File file = new File(xmlFileName);
+        if (!file.exists()) {
+            report.setMessage(localStrings.getLocalString("FileNotFound", 
+                "The system cannot find the path specified: {0}", xmlFileName));
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            return;
+        }
         
         try {
             final ResourcesManager resMgr = new ResourcesManager();
