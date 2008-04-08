@@ -90,7 +90,7 @@
 			    toolTip="$resource{i18n.commonTasks.task.connPool.toolTip}"
 			    infoLinkUrl="/com_sun_webui_jsf/help/helpwindow.jsf?&windowTitle=Help+Window&helpFile=jdbcconnectionpoolnew1.html" onClick="admingui.nav.selectTreeNodeById('form:tree:Resources:JDBC:connectionPoolResources');" target="main">
                             <!command 
-                                redirect(page="/resourceNode/jdbcConnectionPoolNew1.jsf?cancelPage=/homePage.jsf");
+                                redirect(page="/#{request.contextPath}/resourceNode/jdbcConnectionPoolNew1.jsf?cancelPage=/homePage.jsf");
                             />                         
 			</sun:commonTask>
                     </sun:commonTasksGroup> 
