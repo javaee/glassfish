@@ -69,15 +69,22 @@ public final class CreateJvmOptions implements AdminCommand {
     public void execute(AdminCommandContext context) {
         //validate the target first
         logfh("Injected JavaConfig: " + jc);
+        
         final ActionReport report = context.getActionReport();
-        List<Joe> joes             = Joe.toJoes(optString);
-        joes                       = Joe.pruneJoes(jc.getJvmOptions(), joes);
-        report.getTopMessagePart().setMessage(lsm.getStringWithDefault("create.jvm.options.success", "Command: create-jvm-options successfully executed"));
-        report.getTopMessagePart().setChildrenType("jvm-options");
         try {
+            List<Joe> joes             = Joe.toJoes(optString);
+            joes                       = Joe.pruneJoes(jc.getJvmOptions(), joes);
+            report.getTopMessagePart().setMessage(lsm.getStringWithDefault(
+                    "create.jvm.options.success", "Command: create-jvm-options successfully executed"));
+            report.getTopMessagePart().setChildrenType("jvm-options");
+        
             addX(jc, Joe.toStrings(joes));
             ActionReport.MessagePart part = report.getTopMessagePart().addChild();
             part.setMessage("created " + joes.size() + " option(s)");
+        } catch (IllegalArgumentException iae) {
+            report.setMessage(iae.getMessage());
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            return;
         } catch (Exception e) {
             String msg = lsm.getStringWithDefault("create.jvm.options.failed",
                     "Command: create-jvm-options failed", new String[]{e.getMessage()});
