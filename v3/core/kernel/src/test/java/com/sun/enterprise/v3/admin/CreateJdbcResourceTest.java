@@ -53,6 +53,7 @@ import org.glassfish.api.admin.AdminCommandContext;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.Ignore;
 import static org.junit.Assert.*;
 import org.jvnet.hk2.component.Habitat;
 import org.glassfish.api.ActionReport;
@@ -67,6 +68,7 @@ import org.jvnet.hk2.config.TransactionFailure;
  *
  * @author Jennifer
  */
+@Ignore
 public class CreateJdbcResourceTest extends ConfigApiTest {
     // Get Resources config bean
     Habitat habitat = Utils.instance.getHabitat(this);
