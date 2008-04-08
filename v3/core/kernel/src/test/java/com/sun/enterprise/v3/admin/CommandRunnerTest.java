@@ -72,12 +72,13 @@ public class CommandRunnerTest {
     
     @Test
     public void convertStringToObjectTest() throws Exception {
+        String name = "name";
         String paramValueStr = "prop1=valA:prop2=valB:prop3=valC";
-        Object paramValActual = cr.convertStringToObject(String.class, paramValueStr);
+        Object paramValActual = cr.convertStringToObject(name, String.class, paramValueStr);
         Object paramValExpected =  "prop1=valA:prop2=valB:prop3=valC";
         assertEquals("String type", paramValExpected, paramValActual);
   
-        paramValActual = cr.convertStringToObject(Properties.class, paramValueStr);
+        paramValActual = cr.convertStringToObject(name, Properties.class, paramValueStr);
         paramValExpected = new Properties();        
         ((Properties)paramValExpected).put("prop1", "valA");
         ((Properties)paramValExpected).put("prop2", "valB");
@@ -85,7 +86,7 @@ public class CommandRunnerTest {
         assertEquals("Properties type", paramValExpected, paramValActual);
 
         paramValueStr = "server1:server2:server3";
-        paramValActual = cr.convertStringToObject(List.class, paramValueStr);
+        paramValActual = cr.convertStringToObject(name, List.class, paramValueStr);
         List<String> paramValueList = new java.util.ArrayList();
         paramValueList.add("server1");
         paramValueList.add("server2");
@@ -93,7 +94,7 @@ public class CommandRunnerTest {
         assertEquals("List type", paramValueList, paramValActual);
 
         paramValueStr = "server1,server2,server3";
-        paramValActual = cr.convertStringToObject((new String[]{}).getClass(),
+        paramValActual = cr.convertStringToObject(name, (new String[]{}).getClass(),
                                                   paramValueStr);
         String[] strArray = new String[3];
         strArray[0] = "server1";

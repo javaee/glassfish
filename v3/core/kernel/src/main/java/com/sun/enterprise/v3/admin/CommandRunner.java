@@ -102,6 +102,7 @@ public class CommandRunner {
      * @param parameters name/value pairs to be passed to the command
      * @param report will hold the result of the command's execution
      */
+    
     public ActionReport doCommand(
             final String commandName, 
             final AdminCommand command, 
@@ -140,20 +141,40 @@ public class CommandRunner {
             protected Object getValue(Object component, AnnotatedElement target, Class type) throws ComponentException {
                 // look for the name in the list of parameters passed.
                 Param param = target.getAnnotation(Param.class);
+                String acceptable = param.acceptableValues();
+                String paramName = getParamName(param, target);
                 if (param.primary()) {
                     // this is the primary parameter for the command
                     String value = parameters.getProperty("DEFAULT");
                     if (value!=null) {
                         // let's also copy this value to the command with a real name.
-                        parameters.setProperty(getParamName(param, target), value);
-                        return convertStringToObject(type, value);
+                        parameters.setProperty(paramName, value);
+                        return convertStringToObject(paramName, type, value);
                     }
                 }
                 String paramValueStr = getParamValueString(parameters, param,
                                                            target);
 
+                if(ok(acceptable)&& ok(paramValueStr)) {
+                    String[] ss = acceptable.split(",");
+                    boolean ok = false;
+                    
+                    for(String s : ss) {
+                        if(paramValueStr.equals(s)) {
+                            ok = true;
+                            break;
+                        }
+                    }
+                    if(!ok)
+                        throw new UnacceptableValueException(
+                            adminStrings.getLocalString("adapter.command.unacceptableValue", 
+                            "Invalid parameter: {0}.  Its value is {1} but it isn''t one of these acceptable values: {2}",
+                            paramName,
+                            paramValueStr,
+                            acceptable));
+                }
                 if (paramValueStr != null) {
-                    return convertStringToObject(type, paramValueStr);
+                    return convertStringToObject(paramName, type, paramValueStr);
                 }
                 //return default value
                 return getParamField(component, target);
@@ -202,10 +223,19 @@ public class CommandRunner {
             childPart.setMessage(usage);
             return report;
         } catch (ComponentException e) {
-            logger.severe(e.getMessage());
+            // if the cause is UnacceptableValueException -- we want the message
+            // from it.  It is wrapped with a less useful Exception
+            
+            Exception exception = e;
+            Throwable cause = e.getCause();
+            if(cause != null && (cause instanceof UnacceptableValueException)) {
+                // throw away the wrapper.
+                exception = (Exception)cause;
+            }
+            logger.severe(exception.getMessage());
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            report.setMessage(e.getMessage());
-            report.setFailureCause(e);
+            report.setMessage(exception.getMessage());
+            report.setFailureCause(exception);
             ActionReport.MessagePart childPart = report.getTopMessagePart().addChild();
             childPart.setMessage(getUsageText(command));
             return report;
@@ -220,6 +250,9 @@ public class CommandRunner {
             } catch(Throwable e) {
                 logger.log(Level.SEVERE,
                         adminStrings.getLocalString("adapter.exception","Exception in command execution : ", e), e);
+                report.setMessage(e.toString());
+                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                report.setFailureCause(e);
             }
         } else {
             Thread t = new Thread() {
@@ -358,7 +391,7 @@ public class CommandRunner {
          *
          * @return Object
          */
-    Object convertStringToObject(Class type, String paramValStr)  {
+    Object convertStringToObject(String paramName, Class type, String paramValStr)  {
         Object paramValue = paramValStr;
         if (type.isAssignableFrom(String.class)) {
            paramValue = paramValStr;
@@ -366,10 +399,12 @@ public class CommandRunner {
            paramValue = convertStringToProperties(paramValStr);
         } else if (type.isAssignableFrom(List.class)) {
            paramValue = convertStringToList(paramValStr);
+        } else if (type.isAssignableFrom(Boolean.class)) {
+           paramValue = convertStringToBoolean(paramName, paramValStr);
         } else if (type.isAssignableFrom((new String[]{}).getClass())) {
            paramValue = convertStringToStringArray(paramValStr);
         }
-       return paramValue;
+        return paramValue;
     }
 
     
@@ -638,6 +673,35 @@ public class CommandRunner {
         }
     }
     
+         /**
+         * convert a String to a Boolean
+         * null --> true
+         * "" --> true
+         * case insensitive "true" --> true
+         * case insensitive "false" --> false
+         * anything else --> throw Exception
+         * @param paramName - the name of the param
+         * @param s - the String to convert
+         * @return Boolean
+         */
+    Boolean convertStringToBoolean(String paramName, String s) {
+        if(!ok(s))
+            return true;
+        
+        if(s.equalsIgnoreCase(Boolean.TRUE.toString()))
+            return true;
+
+        if(s.equalsIgnoreCase(Boolean.FALSE.toString()))
+            return false;
+        
+        String msg = adminStrings.getLocalString(
+                "adapter.command.unacceptableBooleanValue",
+                "Invalid parameter: {0}.  This boolean option must be set " +
+                    "(case insensitive) to true or false.  Its value was set to {1}",
+                paramName, s);
+                
+        throw new UnacceptableValueException(msg);
+    }
 
         /**
          * convert a String with the following format to Properties:
