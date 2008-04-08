@@ -142,26 +142,37 @@ public class VirtualHostMapper extends AbstractAdapter implements com.sun.grizzl
                                  com.sun.grizzly.tcp.Adapter endpointAdapter,
                                  ApplicationContainer container) {
         
+        StringBuilder buffer = null;
+
         if (!contextRoot.startsWith("/")) {
             contextRoot = "/" + contextRoot;
         }
-        StringBuffer buffer = new StringBuffer("Endpoint registered at ").append(contextRoot);
-        buffer.append(" on virtual server(s) : ");
+        if (logger.isLoggable(Level.FINE)) {
+            buffer = new StringBuilder("Endpoint registered at ").append(contextRoot);
+            buffer.append(" on virtual server(s) : ");
+        }
         if (vsServers==null) {
             for (VsAdapter adapter : vsAdapters.values()) {
                 adapter.registerEndpoint(contextRoot, endpointAdapter, container);
-                buffer.append(adapter.getVirtualServer().getId()).append(" ");
+                if (logger.isLoggable(Level.FINE)) {
+                    buffer.append(adapter.getVirtualServer().getId()).append(" ");
+                }
             }        
         } else {
             for (String vsId : vsServers) {
                 VsAdapter vsAdapter = vsAdapters.get(vsId);
                 if (vsAdapter!=null) {
                     vsAdapter.registerEndpoint(contextRoot, endpointAdapter, container);       
-                    buffer.append(vsAdapter.getVirtualServer().getId()).append(" ");
+                    if (logger.isLoggable(Level.FINE)) {
+                        buffer.append(vsAdapter.getVirtualServer().getId()).append(" ");
+                    }
                 }
             }
         }
-        logger.fine(buffer.toString());
+
+        if (logger.isLoggable(Level.FINE)) {
+            logger.fine(buffer.toString());
+        }
     }
 
     /**
