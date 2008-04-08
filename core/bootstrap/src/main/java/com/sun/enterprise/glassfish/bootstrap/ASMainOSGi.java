@@ -1,17 +1,17 @@
 package com.sun.enterprise.glassfish.bootstrap;
 
 import com.sun.enterprise.module.Repository;
-import com.sun.enterprise.module.common_impl.DirectoryBasedRepository;
 import com.sun.enterprise.module.bootstrap.StartupContext;
+import com.sun.enterprise.module.bootstrap.Which;
+import com.sun.enterprise.module.common_impl.DirectoryBasedRepository;
 
-import java.util.logging.Logger;
-import java.util.logging.Level;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.net.*;
 import java.io.File;
+import java.io.IOError;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * @author Sanjeeb.Sahoo@Sun.COM
@@ -67,11 +67,9 @@ public abstract class ASMainOSGi {
     }
 
     /**
-     * Returns the list of Jar files that comprise the OSGi platform
-     *
-     * @return
+     * Adds the jar files of the OSGi platform to the given {@link ClassPathBuilder}
      */
-    protected abstract URL[] getFWJars();
+    protected abstract void addFrameworkJars(ClassPathBuilder cpb) throws IOException;
 
     protected abstract void launchOSGiFW(String ... args);
 
@@ -91,62 +89,51 @@ public abstract class ASMainOSGi {
      * framework class loader (For loading OSGi framework classes)
      */
     private void setupLauncherClassLoader() {
-        ClassLoader commonCL = createCommonClassLoader();
+        ClassLoader commonCL = createCommonClassLoader(ClassLoader.getSystemClassLoader().getParent());
         ClassLoader libCL = helper.setupSharedCL(commonCL, getSharedRepos());
-        List<URL> urls = new ArrayList<URL>();
-        Collections.addAll(urls, getFWJars());
+
         try {
+            ClassPathBuilder cpb = new ClassPathBuilder(libCL);
+            addFrameworkJars(cpb);
+
             File moduleDir = context.getRootDirectory().getParentFile();
-            for (String jar : additionalJars) {
-                URL url = new File(moduleDir, jar).toURI().toURL();
-                urls.add(url);
-            }
-        } catch (MalformedURLException e) {
-            throw new RuntimeException(e);
+            for (String jar : additionalJars)
+                cpb.addJar(new File(moduleDir, jar));
+
+            this.launcherCL = cpb.create();
+        } catch (IOException e) {
+            throw new IOError(e);
         }
-        this.launcherCL = new URLClassLoader(urls.toArray(new URL[0]), libCL);
         Thread.currentThread().setContextClassLoader(launcherCL);
     }
 
-    private ClassLoader createCommonClassLoader() {
+    /**
+     * Creates a class loader from JavaEE API and tools.jar.
+     */
+    protected ClassLoader createCommonClassLoader(ClassLoader parent) {
         try {
-            List<URL> urls = new ArrayList<URL>();
-            File javaeeJar = new File(glassfishDir, javaeeJarPath);
-            if (!javaeeJar.exists()) {
-                throw new RuntimeException(javaeeJar + " does not exist.");
-            }
-            urls.add(javaeeJar.toURI().toURL());
+            ClassPathBuilder cpb = new ClassPathBuilder(parent);
+
+            cpb.addJar(new File(glassfishDir, javaeeJarPath));
             File jdkToolsJar = helper.getJDKToolsJar();
             if (jdkToolsJar.exists()) {
-                urls.add(jdkToolsJar.toURI().toURL());
+                cpb.addJar(jdkToolsJar);
             } else {
                 logger.warning("JDK tools.jar does not exist at " + jdkToolsJar);
             }
-            ClassLoader extCL = ClassLoader.getSystemClassLoader().getParent();
-            return new URLClassLoader(urls.toArray(new URL[0]), extCL);
-        } catch (MalformedURLException e) {
-            throw new RuntimeException(e);
+            
+            return cpb.create();
+        } catch (IOException e) {
+            throw new IOError(e);
         }
     }
+
     private void findBootstrapFile() {
-        String resourceName = getClass().getName().replace(".", "/") + ".class";
-        URL resource = getClass().getClassLoader().getResource(resourceName);
-        if (resource == null) {
+        try {
+            bootstrapFile = Which.jarFile(getClass());
+        } catch (IOException e) {
             throw new RuntimeException("Cannot get bootstrap path from "
-                    + resourceName + " class location, aborting");
-        }
-        if (resource.getProtocol().equals("jar")) {
-            try {
-                JarURLConnection c = (JarURLConnection) resource.openConnection();
-                URL jarFile = c.getJarFileURL();
-                bootstrapFile = new File(jarFile.toURI());
-            } catch (IOException e) {
-                throw new RuntimeException("Cannot open bootstrap jar file", e);
-            } catch (URISyntaxException e) {
-                throw new RuntimeException("Incorrect bootstrap class URI", e);
-            }
-        } else {
-            throw new RuntimeException("Don't support packaging " + resource + " , please contribute !");
+                    + getClass() + " class location, aborting");
         }
     }
 

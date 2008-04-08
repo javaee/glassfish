@@ -6,6 +6,7 @@ import java.net.URL;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.io.File;
+import java.io.IOException;
 import java.util.logging.Logger;
 
 /**
@@ -21,15 +22,8 @@ public class ASMainFelix extends ASMainOSGi {
         return "org.apache.felix.main.Main";
     }
 
-    protected URL[] getFWJars() {
-        // Calculate path to glassfish/felix/bin/felix.jar
-        File felixJar = new File(glassfishDir, "felix/bin/felix.jar");
-        try {
-            URL felixJarURL = felixJar.toURI().toURL();
-            return new URL[]{felixJarURL};
-        } catch (MalformedURLException e) {
-            throw new RuntimeException(e);
-        }
+    protected void addFrameworkJars(ClassPathBuilder cpb) throws IOException {
+        cpb.addJar(new File(glassfishDir, "felix/bin/felix.jar"));
     }
 
     protected void launchOSGiFW(final String... args) {
