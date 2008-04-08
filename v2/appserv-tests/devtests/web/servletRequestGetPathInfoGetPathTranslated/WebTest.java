@@ -31,7 +31,7 @@ public class WebTest {
         appserverHome = args[3];
 
         expectedResponse = appserverHome
-                + "/domains/domain1/applications/j2ee-modules"
+                + "/domains/domain1/applications"
                 + contextRoot + "-web"
                 + EXPECTED_RESPONSE;
     }
