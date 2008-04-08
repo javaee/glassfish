@@ -23,8 +23,8 @@
 
 package com.sun.enterprise.v3.services.impl;
 
-import com.sun.grizzly.util.SSLSelectionKeyAttachment;
 import com.sun.grizzly.util.SSLUtils;
+import com.sun.grizzly.util.ThreadAttachment;
 import com.sun.grizzly.util.Utils;
 import com.sun.grizzly.util.WorkerThread;
 import java.io.IOException;
@@ -49,8 +49,8 @@ public class GrizzlyUtils {
     public static int readToWorkerThreadBuffers(SelectionKey key, int timeout) throws IOException {
         Object attachment = key.attachment();
         SSLEngine sslEngine = null;
-        if (attachment instanceof SSLSelectionKeyAttachment) {
-            sslEngine = ((SSLSelectionKeyAttachment) attachment).getSslEngine();
+        if (attachment instanceof ThreadAttachment) {
+            sslEngine = ((ThreadAttachment) attachment).getSSLEngine();
         }
         
         WorkerThread thread = (WorkerThread) Thread.currentThread();

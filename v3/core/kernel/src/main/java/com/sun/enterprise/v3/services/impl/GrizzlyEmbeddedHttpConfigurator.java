@@ -158,39 +158,33 @@ public class GrizzlyEmbeddedHttpConfigurator {
                               HttpService httpService, HttpListener httpListener) {
         Ssl sslConfig = httpListener.getSsl();
 
-        if (sslConfig == null) {
-            if (logger.isLoggable(Level.WARNING)) {
-                logger.log(Level.WARNING,
-                        "HTTP listener on port: " + httpListener.getPort() + 
-                        " is secured, but SSL configuration is not found!");
-            }
-            
-            return false;
-        }
-
         GrizzlyEmbeddedHttps grizzlyEmbeddedHttps = (GrizzlyEmbeddedHttps) grizzlyEmbeddedHttp;
         
-        // client-auth
-        if (Boolean.getBoolean(sslConfig.getClientAuthEnabled())) {
-            grizzlyEmbeddedHttps.setNeedClientAuth(true);
-        }
-
         List<String> tmpSSLArtifactsList = new LinkedList<String>();
-        // ssl protocol variants
-        if (Boolean.getBoolean(sslConfig.getSsl2Enabled())) {
-            tmpSSLArtifactsList.add("SSLv2");
+
+        if (sslConfig != null) {
+            // client-auth
+            if (Boolean.getBoolean(sslConfig.getClientAuthEnabled())) {
+                grizzlyEmbeddedHttps.setNeedClientAuth(true);
+            }
+
+            // ssl protocol variants
+            if (Boolean.getBoolean(sslConfig.getSsl2Enabled())) {
+                tmpSSLArtifactsList.add("SSLv2");
+            }
+
+            if (Boolean.getBoolean(sslConfig.getSsl3Enabled())) {
+                tmpSSLArtifactsList.add("SSLv3");
+            }
+            if (Boolean.getBoolean(sslConfig.getTlsEnabled())) {
+                tmpSSLArtifactsList.add("TLSv1");
+            }
+            if (Boolean.getBoolean(sslConfig.getSsl3Enabled()) || 
+                    Boolean.getBoolean(sslConfig.getTlsEnabled())) {
+                tmpSSLArtifactsList.add("SSLv2Hello");
+            }
         }
         
-        if (Boolean.getBoolean(sslConfig.getSsl3Enabled())) {
-            tmpSSLArtifactsList.add("SSLv3");
-        }
-        if (Boolean.getBoolean(sslConfig.getTlsEnabled())) {
-            tmpSSLArtifactsList.add("TLSv1");
-        }
-        if (Boolean.getBoolean(sslConfig.getSsl3Enabled()) || Boolean.getBoolean(sslConfig.getTlsEnabled())) {
-            tmpSSLArtifactsList.add("SSLv2Hello");
-        }
-
         if (tmpSSLArtifactsList.isEmpty()) {
             logger.log(Level.WARNING,
                         "pewebcontainer.all_ssl_protocols_disabled",
@@ -201,34 +195,36 @@ public class GrizzlyEmbeddedHttpConfigurator {
             grizzlyEmbeddedHttps.setEnabledProtocols(enabledProtocols);
         }
 
-        // cert-nickname
-        String certNickname = sslConfig.getCertNickname();
-        if (certNickname != null && certNickname.length() > 0) {
-            grizzlyEmbeddedHttps.setCertNickname(certNickname);
-        }
-
         tmpSSLArtifactsList.clear();
 
-        // ssl3-tls-ciphers
-        String ssl3Ciphers = sslConfig.getSsl3TlsCiphers();
-        
-        if (ssl3Ciphers != null && ssl3Ciphers.length() > 0) {
-            String[] ssl3CiphersArray = ssl3Ciphers.split(",");
-            for(String cipher : ssl3CiphersArray) {
-                tmpSSLArtifactsList.add(cipher.trim());
+        if (sslConfig != null) {
+            // cert-nickname
+            String certNickname = sslConfig.getCertNickname();
+            if (certNickname != null && certNickname.length() > 0) {
+                grizzlyEmbeddedHttps.setCertNickname(certNickname);
+            }
+
+            // ssl3-tls-ciphers
+            String ssl3Ciphers = sslConfig.getSsl3TlsCiphers();
+
+            if (ssl3Ciphers != null && ssl3Ciphers.length() > 0) {
+                String[] ssl3CiphersArray = ssl3Ciphers.split(",");
+                for (String cipher : ssl3CiphersArray) {
+                    tmpSSLArtifactsList.add(cipher.trim());
+                }
+            }
+
+            // ssl2-tls-ciphers
+            String ssl2Ciphers = sslConfig.getSsl2Ciphers();
+
+            if (ssl2Ciphers != null && ssl2Ciphers.length() > 0) {
+                String[] ssl2CiphersArray = ssl2Ciphers.split(",");
+                for (String cipher : ssl2CiphersArray) {
+                    tmpSSLArtifactsList.add(cipher.trim());
+                }
             }
         }
         
-        // ssl2-tls-ciphers
-        String ssl2Ciphers = sslConfig.getSsl2Ciphers();
-
-        if (ssl2Ciphers != null && ssl2Ciphers.length() > 0) {
-            String[] ssl2CiphersArray = ssl2Ciphers.split(",");
-            for(String cipher : ssl2CiphersArray) {
-                tmpSSLArtifactsList.add(cipher.trim());
-            }
-        }
-
         if (tmpSSLArtifactsList.isEmpty()) {
             logger.log(Level.WARNING,
                         "pewebcontainer.all_ssl_ciphers_disabled",
