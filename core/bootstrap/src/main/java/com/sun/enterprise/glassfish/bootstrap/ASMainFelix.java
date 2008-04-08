@@ -13,7 +13,7 @@ import java.util.logging.Logger;
  */
 public class ASMainFelix extends ASMainOSGi {
 
-    public ASMainFelix(Logger logger, String[] args) {
+    public ASMainFelix(Logger logger, String... args) {
         super(logger, args);
     }
 
