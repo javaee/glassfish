@@ -90,49 +90,39 @@ import com.sun.appserv.management.util.jmx.JMXUtil;
         
         try
         {
-cdebug( "waitForUnregister: 1" );
             // could have already been unregistered
             if ( mMBeanServer.isRegistered(mObjectName) )
             {
-cdebug( "waitForUnregister: is currently registered: " + mObjectName);
                 try
                 {
                     // CAUTION: we must register first to avoid a race condition
                     JMXUtil.listenToMBeanServerDelegate( mMBeanServer, this, null, mObjectName );
-cdebug( "waitForUnregister: listening ");
 
                     // block
                     mLatch.await( timeoutMillis, TimeUnit.MILLISECONDS );
                     
-cdebug( "waitForUnregister: unregisteredOK ");
                     unregisteredOK = true;
                 }
                 catch ( final java.lang.InterruptedException e)
                 {
-cdebug( "waitForUnregister: InterruptedException ");
                     throw new RuntimeException(e);
                 }
                 catch( final InstanceNotFoundException e )
                 {
-cdebug( "waitForUnregister: InstanceNotFoundException ");
                     // fine, we're expecting it to be unregistered anyway
                 }
                 finally
                 {
-cdebug( "waitForUnregister: unregistering listener ");
                     mMBeanServer.removeNotificationListener( JMXUtil.getMBeanServerDelegateObjectName(), this );
-cdebug( "waitForUnregister: unregistering listener done");
                 }
             }
             else
             {
-cdebug( "waitForUnregister: NOT currently registered: " + mObjectName);
                 unregisteredOK = true;
             }
         }
         catch( final Exception e )
         {
-cdebug( "waitForUnregister: exception: " + e);
             throw new RuntimeException(e);
         }
         return unregisteredOK;
