@@ -1,4 +1,0 @@
-Directory: appserv-tests/devtests/ee/admin/monitoring
-Purpose: Tests for monitoring mbeans. This should test the monitoring dotted names as well.
-
-Contact Muralidhar Vempaty/ Kedar Mhaswade/ Rob Ruyak for details/enhancements etc.

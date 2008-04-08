@@ -1,0 +1,322 @@
+/*
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+ * 
+ * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * 
+ * The contents of this file are subject to the terms of either the GNU
+ * General Public License Version 2 only ("GPL") or the Common Development
+ * and Distribution License("CDDL") (collectively, the "License").  You
+ * may not use this file except in compliance with the License. You can obtain
+ * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
+ * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
+ * language governing permissions and limitations under the License.
+ * 
+ * When distributing the software, include this License Header Notice in each
+ * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
+ * Sun designates this particular file as subject to the "Classpath" exception
+ * as provided by Sun in the GPL Version 2 section of the License file that
+ * accompanied this code.  If applicable, add the following below the License
+ * Header, with the fields enclosed by brackets [] replaced by your own
+ * identifying information: "Portions Copyrighted [year]
+ * [name of copyright owner]"
+ * 
+ * Contributor(s):
+ * 
+ * If you wish your version of this file to be governed by only the CDDL or
+ * only the GPL Version 2, indicate your decision by adding "[Contributor]
+ * elects to include this software in this distribution under the [CDDL or GPL
+ * Version 2] license."  If you don't indicate a single choice of license, a
+ * recipient has the option to distribute your version of this file under
+ * either the CDDL, the GPL Version 2 or to extend the choice of license to
+ * its licensees as provided above.  However, if you add GPL Version 2 code
+ * and therefore, elected the GPL Version 2 license, then the option applies
+ * only if the new code is made subject to such option by the copyright
+ * holder.
+ */
+
+package com.sun.enterprise.deployment.node;
+
+import java.util.Map;
+import java.util.HashMap;
+import java.util.logging.Level;
+
+import com.sun.enterprise.deployment.Descriptor;
+import com.sun.enterprise.deployment.xml.TagNames;
+import com.sun.enterprise.deployment.xml.EjbTagNames;
+import com.sun.enterprise.deployment.xml.ConnectorTagNames;
+import com.sun.enterprise.deployment.xml.WebTagNames;
+import com.sun.enterprise.deployment.xml.ApplicationClientTagNames;
+import com.sun.enterprise.deployment.xml.ApplicationTagNames;
+import com.sun.enterprise.deployment.xml.RuntimeTagNames;
+import com.sun.enterprise.deployment.xml.PersistenceTagNames;
+
+
+
+// all registered descriptors
+import com.sun.enterprise.deployment.Application;
+import com.sun.enterprise.deployment.EjbBundleDescriptor;
+import com.sun.enterprise.deployment.MethodPermissionDescriptor;
+import com.sun.enterprise.deployment.EjbSessionDescriptor;
+import com.sun.enterprise.deployment.EjbEntityDescriptor;
+import com.sun.enterprise.deployment.EntityManagerReferenceDescriptor;
+import com.sun.enterprise.deployment.EntityManagerFactoryReferenceDescriptor;
+import com.sun.enterprise.deployment.LifecycleCallbackDescriptor;
+import com.sun.enterprise.deployment.SecurityRoleDescriptor;
+import com.sun.enterprise.deployment.ResourceReferenceDescriptor;
+import com.sun.enterprise.deployment.FieldDescriptor;
+import com.sun.enterprise.deployment.EjbReferenceDescriptor;
+import com.sun.enterprise.deployment.MethodDescriptor;
+import com.sun.enterprise.deployment.RunAsIdentityDescriptor;
+import com.sun.enterprise.deployment.EnvironmentProperty;
+import com.sun.enterprise.deployment.RoleReference;
+import com.sun.enterprise.deployment.QueryDescriptor;
+import com.sun.enterprise.deployment.EjbMessageBeanDescriptor;
+import com.sun.enterprise.deployment.MessageDestinationDescriptor;
+import com.sun.enterprise.deployment.JmsDestinationReferenceDescriptor;
+import com.sun.enterprise.deployment.RelationshipDescriptor;
+import com.sun.enterprise.deployment.RelationRoleDescriptor;
+import com.sun.enterprise.deployment.SecurityPermission;
+import com.sun.enterprise.deployment.LicenseDescriptor;
+import com.sun.enterprise.deployment.WebBundleDescriptor;
+import com.sun.enterprise.deployment.WebComponentDescriptor;
+import com.sun.enterprise.deployment.MimeMappingDescriptor;
+import com.sun.enterprise.deployment.ConnectorDescriptor;
+import com.sun.enterprise.deployment.ConnectionDefDescriptor;
+import com.sun.enterprise.deployment.AuthMechanism;
+import com.sun.enterprise.deployment.EnvironmentProperty;
+import com.sun.enterprise.deployment.MessageListener;
+import com.sun.enterprise.deployment.OutboundResourceAdapter;
+import com.sun.enterprise.deployment.InboundResourceAdapter;
+import com.sun.enterprise.deployment.AdminObject;
+import com.sun.enterprise.deployment.ApplicationClientDescriptor;
+import com.sun.enterprise.deployment.SecurityConstraintImpl;
+import com.sun.enterprise.deployment.UserDataConstraintImpl;
+import com.sun.enterprise.deployment.AuthorizationConstraintImpl;
+import com.sun.enterprise.deployment.WebResourceCollectionImpl;
+import com.sun.enterprise.deployment.ServletFilterDescriptor;
+import com.sun.enterprise.deployment.AppListenerDescriptorImpl;
+import com.sun.enterprise.deployment.ServletFilterMappingDescriptor;
+import com.sun.enterprise.deployment.ErrorPageDescriptor;
+import com.sun.enterprise.deployment.TagLibConfigurationDescriptor;
+import com.sun.enterprise.deployment.LoginConfigurationImpl;
+import com.sun.enterprise.deployment.MessageDestinationReferenceDescriptor;
+import com.sun.enterprise.deployment.ActivationConfigDescriptor;
+import com.sun.enterprise.deployment.LocaleEncodingMappingListDescriptor;
+import com.sun.enterprise.deployment.LocaleEncodingMappingDescriptor;
+import com.sun.enterprise.deployment.JspConfigDescriptor;
+import com.sun.enterprise.deployment.JspGroupDescriptor;
+import com.sun.enterprise.deployment.util.ModuleDescriptor;
+import com.sun.enterprise.deployment.EjbInterceptor;
+import com.sun.enterprise.deployment.EjbRemovalInfo;
+import com.sun.enterprise.deployment.EjbApplicationExceptionInfo;
+import com.sun.enterprise.deployment.EjbInitInfo;
+import com.sun.enterprise.deployment.InjectionTarget;
+import com.sun.enterprise.deployment.InterceptorBindingDescriptor;
+
+// Web services related classes
+import com.sun.enterprise.deployment.WebService;
+import com.sun.enterprise.deployment.WebServiceEndpoint;
+import com.sun.enterprise.deployment.ServiceReferenceDescriptor;
+import com.sun.enterprise.deployment.WebServiceHandler;
+import com.sun.enterprise.deployment.xml.WebServicesTagNames;
+import com.sun.enterprise.deployment.DeploymentExtensionDescriptor;
+
+// JSR 220 Persistence related descriptor
+import com.sun.enterprise.deployment.PersistenceUnitDescriptor;
+
+
+import com.sun.enterprise.deployment.NameValuePairDescriptor;
+import com.sun.enterprise.deployment.util.DOLUtils;
+
+/**
+ * This class is responsible for instanciating  Descriptor classes
+ *
+ * @author  Jerome Dochez
+ * @version 
+ */
+public class DescriptorFactory {
+
+    static Map descriptorClasses;
+    
+    /** This is a factory object no need for DescriptorFactory instance */
+    protected DescriptorFactory() {
+    }
+
+    private static void initMapping() {
+        descriptorClasses = new HashMap();
+	
+        // common
+        register(new XMLElement(TagNames.DEPLOYMENT_EXTENSION), DeploymentExtensionDescriptor.class);
+        register(new XMLElement(TagNames.MESSAGE_DESTINATION), MessageDestinationDescriptor.class);
+        register(new XMLElement(TagNames.INJECTION_TARGET), InjectionTarget.class);
+        
+        // Application
+        register(new XMLElement(ApplicationTagNames.APPLICATION), Application.class);
+        register(new XMLElement(ApplicationTagNames.MODULE), ModuleDescriptor.class);
+        
+	//EJB
+        register(new XMLElement(EjbTagNames.EJB_BUNDLE_TAG), EjbBundleDescriptor.class);
+        register(new XMLElement(WebTagNames.WEB_BUNDLE), WebBundleDescriptor.class);
+        register(new XMLElement(EjbTagNames.SESSION), EjbSessionDescriptor.class);       
+        register(new XMLElement(EjbTagNames.ENTITY), EjbEntityDescriptor.class);     
+        register(new XMLElement(EjbTagNames.MESSAGE_DRIVEN), EjbMessageBeanDescriptor.class);        
+        register(new XMLElement(EjbTagNames.ACTIVATION_CONFIG), 
+                 ActivationConfigDescriptor.class);        
+        register(new XMLElement(TagNames.EJB_REFERENCE), EjbReferenceDescriptor.class);       
+        register(new XMLElement(TagNames.EJB_LOCAL_REFERENCE), EjbReferenceDescriptor.class);                
+        register(new XMLElement(TagNames.ROLE), SecurityRoleDescriptor.class);
+        register(new XMLElement(EjbTagNames.EXCLUDE_LIST), MethodPermissionDescriptor.class);        
+        register(new XMLElement(EjbTagNames.RESOURCE_REFERENCE), ResourceReferenceDescriptor.class);
+        register(new XMLElement(EjbTagNames.CMP_FIELD), FieldDescriptor.class);
+        register(new XMLElement(EjbTagNames.METHOD), MethodDescriptor.class);          
+        register(new XMLElement(EjbTagNames.METHOD_PERMISSION), MethodPermissionDescriptor.class);
+        register(new XMLElement(EjbTagNames.RUNAS_SPECIFIED_IDENTITY), RunAsIdentityDescriptor.class);
+        register(new XMLElement(TagNames.ENVIRONMENT_PROPERTY), EnvironmentProperty.class);
+        register(new XMLElement(EjbTagNames.ROLE_REFERENCE), RoleReference.class);
+        register(new XMLElement(EjbTagNames.QUERY), QueryDescriptor.class);
+        register(new XMLElement(EjbTagNames.QUERY_METHOD), MethodDescriptor.class);    
+        register(new XMLElement(RuntimeTagNames.JAVA_METHOD), MethodDescriptor.class);
+        register(new XMLElement(TagNames.RESOURCE_ENV_REFERENCE), JmsDestinationReferenceDescriptor.class);
+        register(new XMLElement(TagNames.MESSAGE_DESTINATION_REFERENCE), MessageDestinationReferenceDescriptor.class);
+        register(new XMLElement(EjbTagNames.EJB_RELATION), RelationshipDescriptor.class);
+        register(new XMLElement(EjbTagNames.EJB_RELATIONSHIP_ROLE), RelationRoleDescriptor.class);
+        register(new XMLElement(EjbTagNames.AROUND_INVOKE_METHOD), LifecycleCallbackDescriptor.class);
+       register(new XMLElement(TagNames.POST_CONSTRUCT), LifecycleCallbackDescriptor.class);
+       register(new XMLElement(TagNames.PRE_DESTROY), LifecycleCallbackDescriptor.class);
+       register(new XMLElement(EjbTagNames.POST_ACTIVATE_METHOD), LifecycleCallbackDescriptor.class);
+       register(new XMLElement(EjbTagNames.PRE_PASSIVATE_METHOD), LifecycleCallbackDescriptor.class);
+       register(new XMLElement(EjbTagNames.TIMEOUT_METHOD), MethodDescriptor.class);
+       register(new XMLElement(EjbTagNames.INIT_BEAN_METHOD), MethodDescriptor.class);
+       register(new XMLElement(EjbTagNames.INIT_CREATE_METHOD), MethodDescriptor.class);
+       register(new XMLElement(EjbTagNames.INIT_METHOD), EjbInitInfo.class);
+       register(new XMLElement(EjbTagNames.REMOVE_METHOD), EjbRemovalInfo.class);
+       register(new XMLElement(EjbTagNames.INTERCEPTOR), EjbInterceptor.class);
+       register(new XMLElement(EjbTagNames.INTERCEPTOR_BINDING), 
+                InterceptorBindingDescriptor.class);
+       register(new XMLElement(EjbTagNames.APPLICATION_EXCEPTION), 
+                EjbApplicationExceptionInfo.class);
+
+	//connector
+	register(new XMLElement(ConnectorTagNames.CONNECTOR), ConnectorDescriptor.class);
+	register(new XMLElement(ConnectorTagNames.OUTBOUND_RESOURCE_ADAPTER), OutboundResourceAdapter.class);  
+	register(new XMLElement(ConnectorTagNames.INBOUND_RESOURCE_ADAPTER), InboundResourceAdapter.class);
+	register(new XMLElement(ConnectorTagNames.RESOURCE_ADAPTER), OutboundResourceAdapter.class);
+	register(new XMLElement(ConnectorTagNames.AUTH_MECHANISM), AuthMechanism.class);
+	register(new XMLElement(ConnectorTagNames.SECURITY_PERMISSION), SecurityPermission.class);
+	register(new XMLElement(ConnectorTagNames.LICENSE), LicenseDescriptor.class);
+	register(new XMLElement(ConnectorTagNames.CONFIG_PROPERTY), EnvironmentProperty.class);
+	register(new XMLElement(ConnectorTagNames.REQUIRED_CONFIG_PROP), EnvironmentProperty.class);
+	register(new XMLElement(ConnectorTagNames.MSG_LISTENER), MessageListener.class);
+	register(new XMLElement(ConnectorTagNames.ACTIVATION_SPEC),MessageListener.class);
+	register(new XMLElement(ConnectorTagNames.ADMIN_OBJECT), AdminObject.class);
+	register(new XMLElement(ConnectorTagNames.CONNECTION_DEFINITION), ConnectionDefDescriptor.class);
+
+	//appclient
+	register(new XMLElement(ApplicationClientTagNames.APPLICATION_CLIENT_TAG), ApplicationClientDescriptor.class);
+
+	//web stuff
+        register(new XMLElement(WebTagNames.WEB_BUNDLE), WebBundleDescriptor.class);
+        register(new XMLElement(WebTagNames.SERVLET), WebComponentDescriptor.class);
+        register(new XMLElement(WebTagNames.INIT_PARAM), EnvironmentProperty.class);        
+        register(new XMLElement(WebTagNames.MIME_MAPPING), MimeMappingDescriptor.class);
+        register(new XMLElement(WebTagNames.CONTEXT_PARAM), EnvironmentProperty.class);                
+        register(new XMLElement(WebTagNames.SECURITY_CONSTRAINT), SecurityConstraintImpl.class);
+        register(new XMLElement(WebTagNames.USERDATA_CONSTRAINT), UserDataConstraintImpl.class);     
+        register(new XMLElement(WebTagNames.AUTH_CONSTRAINT), AuthorizationConstraintImpl.class);
+        register(new XMLElement(WebTagNames.WEB_RESOURCE_COLLECTION), WebResourceCollectionImpl.class);
+        register(new XMLElement(WebTagNames.LISTENER), AppListenerDescriptorImpl.class);    
+        register(new XMLElement(WebTagNames.FILTER), ServletFilterDescriptor.class);            
+        register(new XMLElement(WebTagNames.FILTER_MAPPING), ServletFilterMappingDescriptor.class);    
+        register(new XMLElement(WebTagNames.ERROR_PAGE), ErrorPageDescriptor.class);            
+        register(new XMLElement(WebTagNames.LOGIN_CONFIG), LoginConfigurationImpl.class);
+        register(new XMLElement(WebTagNames.TAGLIB), TagLibConfigurationDescriptor.class);            
+        register(new XMLElement(WebTagNames.JSPCONFIG), JspConfigDescriptor.class);            
+        register(new XMLElement(WebTagNames.JSP_GROUP), JspGroupDescriptor.class);            
+        register(new XMLElement(WebTagNames.LOCALE_ENCODING_MAPPING_LIST), LocaleEncodingMappingListDescriptor.class);            
+        register(new XMLElement(WebTagNames.LOCALE_ENCODING_MAPPING), LocaleEncodingMappingDescriptor.class);                         
+
+        // JSR 109 integration
+        register(new XMLElement(WebServicesTagNames.SERVICE_REF), ServiceReferenceDescriptor.class);
+        register(new XMLElement(WebServicesTagNames.WEB_SERVICE), WebService.class);
+        register(new XMLElement(WebServicesTagNames.PORT_COMPONENT), com.sun.enterprise.deployment.WebServiceEndpoint.class);
+        register(new XMLElement(WebServicesTagNames.HANDLER), 
+                 com.sun.enterprise.deployment.WebServiceHandler.class);
+        register(new XMLElement(WebServicesTagNames.HANDLER_CHAIN), 
+                 com.sun.enterprise.deployment.WebServiceHandlerChain.class);
+        register(new XMLElement(WebServicesTagNames.PORT_INFO),
+               com.sun.enterprise.deployment.ServiceRefPortInfo.class);
+        register(new XMLElement(WebServicesTagNames.STUB_PROPERTY),
+                 NameValuePairDescriptor.class);
+        register(new XMLElement(WebServicesTagNames.CALL_PROPERTY),
+                 NameValuePairDescriptor.class);
+		 
+        // persistence.xsd related entries (JSR 220)
+        // Note we do not register PersistenceUnitsDescriptor, because that
+        // is created by PersistenceDeploymentDescriptorFile.getRootXMLNode().
+        register(new XMLElement(PersistenceTagNames.PERSISTENCE_UNIT),
+                 PersistenceUnitDescriptor.class);
+        register(new XMLElement(TagNames.PERSISTENCE_CONTEXT_REF),
+                 EntityManagerReferenceDescriptor.class);
+        register(new XMLElement(TagNames.PERSISTENCE_UNIT_REF),
+                 EntityManagerFactoryReferenceDescriptor.class);
+    }
+    
+    /**
+     * register a new descriptor class handling a particular XPATH in the DTD. 
+     *
+     * @param xmlPath absolute or relative XPath
+     * @param clazz the descriptor class to use
+     */
+    public static void register(XMLElement  xmlPath, Class clazz) {
+        if (DOLUtils.getDefaultLogger().isLoggable(Level.FINE)) {        
+            DOLUtils.getDefaultLogger().fine("Register " + clazz + " to handle " + xmlPath.getQName());
+        }
+	descriptorClasses.put(xmlPath.getQName(), clazz);
+    }
+    
+    /**
+     * @return the descriptor tag for a particular XPath
+     */
+    public static Class getDescriptorClass(String xmlPath) {
+        String s = xmlPath;        
+        do {
+            if (DOLUtils.getDefaultLogger().isLoggable(Level.FINER)) {            
+                DOLUtils.getDefaultLogger().finer("looking for " + xmlPath);
+            }
+            if (descriptorClasses.containsKey(xmlPath)) {
+                return (Class) descriptorClasses.get(xmlPath);            
+            }
+            if (xmlPath.indexOf('/')!=-1) {
+                xmlPath = xmlPath.substring(xmlPath.indexOf('/')+1);
+            } else {
+                xmlPath=null;
+            }            
+        } while (xmlPath!=null);
+	if(DOLUtils.getDefaultLogger().isLoggable(Level.SEVERE)) {
+            DOLUtils.getDefaultLogger().log(Level.SEVERE, "enterprise.deployment.backend.invalidDescriptorMappingFailure",
+                new Object[] {"No descriptor registered for " + s});
+	}
+        return null;
+    }
+    
+    /**
+     * @return a new instance of a registered descriptor class for the 
+     * supplied XPath
+     */
+    public static Object  getDescriptor(String xmlPath) {        
+        
+        try {
+            Class c = getDescriptorClass(xmlPath);
+	    if (c!=null) {
+                return c.newInstance();
+            }
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
+        return null;
+    }
+            
+    static {
+        initMapping();
+    }
+}

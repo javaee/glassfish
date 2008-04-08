@@ -1,0 +1,6 @@
+Developer Notes:
+
+2007/11/01
+Currently, this module is just a 'sandbox' for creating the nucleus bundle zip file.
+The files contained therein are 'hard-wired' for inclusion in the zip file.
+Over time, these files will be resolved from the proper location in the glassfish workspace.

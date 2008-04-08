@@ -1,4 +1,0 @@
-Manifest-Version: 1.0
-Created-By: Sun Microsystems
-Main-Class: com.sun.s1peqe.ejb.cmp.roster.client.RosterClient
-
