@@ -93,6 +93,7 @@ import org.glassfish.admin.amx.mbean.AMXImplBase;
 import org.glassfish.admin.amx.mbean.Delegate;
 import org.glassfish.admin.amx.mbean.ContainerSupport;
 import org.glassfish.admin.amx.util.Issues;
+import org.glassfish.admin.amx.util.UnregistrationListener;
 import org.glassfish.admin.amx.util.SingletonEnforcer;
 
 import org.glassfish.admin.amx.mbean.MBeanInfoCache;
@@ -475,12 +476,12 @@ public class AMXConfigImplBase extends AMXImplBase
     
     /**
         Generic removal of RefConfig.
-     */
         protected void
     removeRefConfig( final String j2eeType, final String name )
     {
         removeConfig( j2eeType, name );
     }
+     */
     
     
         private boolean
@@ -912,7 +913,7 @@ This is no good--it introduces dependencies on specific types
         }
         return j2eeType;
     }
-    
+            
     /**
         Generic removal of any config contained by this config.
      */
@@ -926,14 +927,26 @@ This is no good--it introduces dependencies on specific types
         final AMXConfigImplBase child = (AMXConfigImplBase)get__ObjectRef( containeeObjectName );
         try
         {
+cdebug( "REMOVING config of class " + child.getConfigBean().getProxyType().getName() + " from  parent of type " + 
+    getConfigBean().getProxyType().getName() + ", ObjectName = " + JMXUtil.toString(containeeObjectName) );
             ConfigSupport.deleteChild( getConfigBean(), child.getConfigBean() );
         }
         catch( final TransactionFailure tf )
         {
             throw new RuntimeException( "Transaction failure deleting " + JMXUtil.toString(containeeObjectName), tf );
         }
+
+        // NOTE: MBeans unregistered asynchronously by AMXConfigLoader
+        // enforce synchronous semantics to clients by waiting until this happens
+        final UnregistrationListener myListener = new UnregistrationListener( getMBeanServer(), containeeObjectName);
+        final long TIMEOUT_MILLIS = 10 * 1000;
+
+        final boolean unregisteredOK = myListener.waitForUnregister( TIMEOUT_MILLIS );
+        if ( ! unregisteredOK )
+        {
+            throw new RuntimeException( "Something went wrong unregistering MBean " + JMXUtil.toString(containeeObjectName) );
+        }
         
-        // NOTE: AMXConfigLoader takes care of unregistering MBeans when it's notified of the removal
         
         //sendConfigRemovedNotification( containeeObjectName );
     }

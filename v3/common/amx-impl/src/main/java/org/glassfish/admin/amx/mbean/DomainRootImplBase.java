@@ -145,6 +145,11 @@ public class DomainRootImplBase extends AMXNonConfigImplBase
         AMX mbean = null;
         
 		childObjectName	= objectNames.buildContaineeObjectName( self, getFullType(),
+                XTypes.SYSTEM_STATUS, AMX.NO_NAME, false );
+		mbean	= new SystemStatusImpl(self);
+        registerChild( mbean, childObjectName );
+        
+		childObjectName	= objectNames.buildContaineeObjectName( self, getFullType(),
                 XTypes.NOTIFICATION_EMITTER_SERVICE, NotificationEmitterServiceKeys.DOMAIN_KEY, false );
 		mbean	= new NotificationEmitterServiceImpl(self);
         registerChild( mbean, childObjectName );

@@ -117,6 +117,11 @@ public interface DomainRoot extends Container
         @return the singleton SystemInfo
      */
     public SystemInfo		getSystemInfo();
+
+    /**
+        @return the singleton SystemInfo
+     */
+    public SystemStatus		getSystemStatus();
 	
     /**
        @return the singleton WebServiceMgr for this domain.

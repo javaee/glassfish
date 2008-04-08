@@ -74,6 +74,11 @@ public final class XTypes
 	public final static String	SYSTEM_INFO				=  P + "SystemInfo";
 	
 	/**
+		ID for {@link com.sun.appserv.management.base.SystemInfo}
+	 */
+	public final static String	SYSTEM_STATUS				=  P + "SystemStatus";
+	
+	/**
 		ID for {@link com.sun.appserv.management.ext.update.UpdateStatus}
 	 */
 	public final static String	UPDATE_STATUS				=  P + "UpdateStatus";
