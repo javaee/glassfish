@@ -36,6 +36,8 @@
 
 package com.sun.enterprise.admin.cli;
 
+import com.sun.enterprise.cli.framework.CLILogger;
+import com.sun.enterprise.cli.framework.CommandException;
 import com.sun.enterprise.cli.framework.CommandValidationException;
 import static com.sun.enterprise.universal.glassfish.SystemPropertyConstants.*;
 import com.sun.enterprise.util.OS;
@@ -81,6 +83,7 @@ public abstract class DatabaseCommand extends S1ASCommand
         sJavaHome = getSystemProperty(JAVA_ROOT_PROPERTY);
         installModules = sInstallRoot+File.separator+"modules";
         dbLocation = getSystemProperty(DERBY_ROOT_PROPERTY);
+        checkIfDbInstalled(dbLocation);
         
 	sClasspath = installModules+File.separator+GLASSFISH_V3_JAR
                 +File.pathSeparator+installModules+File.separator+ADMIN_CLI_V3_JAR
@@ -110,11 +113,33 @@ public abstract class DatabaseCommand extends S1ASCommand
             Integer.parseInt(port);
         } 
         catch(Exception e)
-        {
+       {
             throw new CommandValidationException(getLocalizedString("InvalidPortNumber", new Object[] {port}));
         }
     }
     
+  /** check if database is installed.
+   */
+    private void checkIfDbInstalled(final String dblocation) throws CommandException
+    {
+        
+        File file = new File(dblocation);
+        if (!file.exists()) {
+            CLILogger.getInstance().printMessage(getLocalizedString(
+                                                     "DatabaseNotInstalled",
+                                                     new Object[]{dblocation}));
+            throw new CommandException("dblocation not found: " + dblocation);
+        } else {
+            File derbyJar = new File(dbLocation+File.separator+"lib"+File.separator+"derbyclient.jar");
+            if (!derbyJar.exists()) {
+                CLILogger.getInstance().printMessage(getLocalizedString(
+                                                     "DatabaseNotInstalled",
+                                                     new Object[]{dblocation}));
+                throw new CommandException("derbyclient.jar not found in " + dblocation);
+            }
+        }
+        
+    }
 
 
     /**
