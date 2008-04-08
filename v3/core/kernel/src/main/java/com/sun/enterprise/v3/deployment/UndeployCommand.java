@@ -34,6 +34,7 @@ import com.sun.enterprise.v3.services.impl.GrizzlyService;
 import com.sun.enterprise.config.serverbeans.Applications;
 import com.sun.enterprise.config.serverbeans.Module;
 import com.sun.enterprise.config.serverbeans.Application;
+import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
@@ -41,13 +42,16 @@ import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.deployment.DeploymentContext;
+import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.config.TransactionFailure;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Properties;
 import java.util.logging.Logger;
+import java.util.logging.Level;
 
 /**
  * Undeploys applications.
@@ -78,6 +82,9 @@ public class UndeployCommand extends ApplicationLifecycle implements AdminComman
     @Inject
     Applications applications;
 
+    @Inject
+    ArchiveFactory archiveFactory;
+
     Logger logger = LogDomains.getLogger(LogDomains.DPL_LOGGER);
 
     public void execute(AdminCommandContext context) {
@@ -93,24 +100,47 @@ public class UndeployCommand extends ApplicationLifecycle implements AdminComman
 
         ApplicationInfo info = appRegistry.get(name);
 
-        if (!isRegistered(name)) {
+        Module module = getModule(name);
+        Application application = null;
+        if (module instanceof Application) {
+            application = (Application) module;
+        }
+
+        if (module==null) {
             report.setMessage(localStrings.getLocalString("application.notreg","Application {0} not registered", name));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE); 
             return;
  
         }
+        ReadableArchive source = null;
+        if (info==null) {
+            // probably disabled application
+            if (application!=null) {
+                File location = new File(application.getLocation());
+                if (location.exists()) {
+                    try {
+                        source = archiveFactory.openArchive(location);
+                    } catch (IOException e) {
+                        logger.log(Level.INFO, e.getMessage(),e );
+                    }
+                } else {
+                    logger.warning("Originally deployed application at "+ location + " not found");
+                }
+            }
+        } else {
+            source = info.getSource();
+        }
 
-        DeploymentContextImpl deploymentContext = new DeploymentContextImpl(logger, info.getSource(), parameters, env);        
+        DeploymentContextImpl deploymentContext = new DeploymentContextImpl(logger, source, parameters, env);
 
-        undeploy(name, deploymentContext, report);
+        if (info!=null) {
+            undeploy(name, deploymentContext, report);
+        }
 
         // check if it's directory deployment
         boolean isDirectoryDeployed = false;
-        for (Module module : applications.getModules()) {
-            if (module.getName().equals(name)) {
-                isDirectoryDeployed = Boolean.valueOf(
-                    ((Application)module).getDirectoryDeployed());
-            }
+        if (application!=null) {
+            isDirectoryDeployed = Boolean.valueOf(application.getDirectoryDeployed());
         }
 
         if (report.getActionExitCode().equals(ActionReport.ExitCode.SUCCESS)) {
@@ -124,9 +154,12 @@ public class UndeployCommand extends ApplicationLifecycle implements AdminComman
 
             //remove context from generated
             deleteContainerMetaInfo(deploymentContext);
-                //if directory deployment then do no remove the directory
-            if (!isDirectoryDeployed) {
-                FileUtils.whack(new File(info.getSource().getURI()));
+
+            //if directory deployment then do no remove the directory
+            if (source!=null) {
+                if (!isDirectoryDeployed && source.exists()) {
+                    FileUtils.whack(new File(info.getSource().getURI()));
+                }
             }
             report.setMessage(localStrings.getLocalString("undeploy.command.sucess",
                     "{0} undeployed successfully", name));

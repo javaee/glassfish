@@ -58,6 +58,9 @@ public abstract class ConfigPersistence extends ConfigApiTest {
             Transactions.get().addTransactionsListener(testListener);
 
             doTest();
+        } catch(TransactionFailure f) {
+            f.printStackTrace();
+            throw f;
 
         } finally {
             Transactions.get().waitForDrain();
@@ -67,6 +70,7 @@ public abstract class ConfigPersistence extends ConfigApiTest {
         // now check if we persisted correctly...
 
         final String resultingXml = baos.toString();
+        //System.out.println(resultingXml);
         logger.fine(resultingXml);
         assertTrue(assertResult(resultingXml));
     }

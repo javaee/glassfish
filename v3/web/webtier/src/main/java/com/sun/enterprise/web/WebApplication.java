@@ -70,6 +70,10 @@ public class WebApplication implements ApplicationContainer<WebBundleDescriptor>
 
         // TODO : dochez : add action report here...
         List<Result<WebModule>> results = container.loadWebModule(wmInfo, "null");
+        if (results==null) {
+            logger.log(Level.SEVERE, "Unknown error, loadWebModule returned null, file a bug");
+            return false;
+        }
 
         logger.info("Loading application " + wmInfo.getDescriptor().getName()
                 + " at " + wmInfo.getDescriptor().getContextRoot());

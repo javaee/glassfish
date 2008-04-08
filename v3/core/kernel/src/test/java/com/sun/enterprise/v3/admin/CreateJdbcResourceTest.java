@@ -117,6 +117,7 @@ public class CreateJdbcResourceTest extends ConfigApiTest {
        // Delete the created resource
        ConfigSupport.apply(new SingleConfigCode<Resources>() {
             public Object run(Resources param) throws PropertyVetoException, TransactionFailure {
+                JdbcResource target = null;
                 for (Resource resource : param.getResources()) {
                     if (resource instanceof JdbcResource) {
                         JdbcResource jr = (JdbcResource)resource;
@@ -125,9 +126,13 @@ public class CreateJdbcResourceTest extends ConfigApiTest {
                             jr.getJndiName().equals("jdbc/sun")||
                             jr.getJndiName().equals("jdbc/alldefaults")||
                             jr.getJndiName().equals("jdbc/junk")) {
-                            param.getResources().remove(resource);
+                            target = jr;
+                            break;
                         }
                     }
+                }
+                if (target!=null) {
+                    resources.getResources().remove(target);
                 }
                 return null;
             }                        

@@ -927,7 +927,6 @@ abstract public class ApplicationLifecycle {
                     // adding the application element
                     Application app = ConfigSupport.createChildOf(
                         (Applications)params[0], Application.class);
-                    applications.getModules().add(app);
 
                     // various attributes
                     app.setName(moduleProps.getProperty(ServerTags.NAME));
@@ -936,7 +935,7 @@ abstract public class ApplicationLifecycle {
                     app.setObjectType(moduleProps.getProperty(
                         ServerTags.OBJECT_TYPE));
                     // always set the enable attribute of application to true
-		    app.setEnabled(String.valueOf(true));
+        		    app.setEnabled(String.valueOf(true));
                     if (moduleProps.getProperty(ServerTags.CONTEXT_ROOT) !=
                         null) {
 		            app.setContextRoot(moduleProps.getProperty(
@@ -950,6 +949,7 @@ abstract public class ApplicationLifecycle {
                     app.setDirectoryDeployed(moduleProps.getProperty(
                         ServerTags.DIRECTORY_DEPLOYED));
 
+                    applications.getModules().add(app);
 
                     // engine element
                     for (ModuleInfo moduleInfo :
@@ -987,7 +987,6 @@ abstract public class ApplicationLifecycle {
                     // adding the application-ref element
                     ApplicationRef appRef = ConfigSupport.createChildOf(
                         (Server)params[1], ApplicationRef.class);
-                    server.getApplicationRef().add(appRef);
                     appRef.setRef(moduleProps.getProperty(ServerTags.NAME));
                     if (moduleProps.getProperty(
                         ServerTags.VIRTUAL_SERVERS) != null) {
@@ -997,6 +996,8 @@ abstract public class ApplicationLifecycle {
                     appRef.setEnabled(moduleProps.getProperty(
                         ServerTags.ENABLED));
 
+                    server.getApplicationRef().add(appRef);
+                    
                     return Boolean.TRUE;
                 }
 
@@ -1107,15 +1108,20 @@ abstract public class ApplicationLifecycle {
         return deploymentProps;
     }
 
-    // check if the application is registered in domain.xml
-    protected boolean isRegistered(String appName) {
+    protected com.sun.enterprise.config.serverbeans.Module getModule(String name) {
         for (com.sun.enterprise.config.serverbeans.Module module :
             applications.getModules()) {
-            if (module.getName().equals(appName)) {
-                return true;
+            if (module.getName().equals(name)) {
+                return module;
             }
         }
-        return false;
+        return null;
+
+    }
+
+    // check if the application is registered in domain.xml
+    protected boolean isRegistered(String appName) {
+        return getModule(appName)!=null;
     }
 
     // clean up generated files

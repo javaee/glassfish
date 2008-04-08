@@ -43,6 +43,8 @@ import org.jvnet.hk2.config.*;
 import org.jvnet.hk2.component.Habitat;
 import org.glassfish.tests.utils.Utils;
 import com.sun.enterprise.config.serverbeans.HttpService;
+import com.sun.enterprise.config.serverbeans.JavaConfig;
+
 import java.util.Map;
 import java.util.HashMap;
 
@@ -84,11 +86,19 @@ public class DirectAccessTest extends ConfigPersistence {
         changes.put(config, configChanges);
         changes.put(config2, config2Changes);
 
+        JavaConfig javaConfig = habitat.getComponent(JavaConfig.class);
+        ConfigBean javaConfigBean = (ConfigBean) ConfigBean.unwrap(javaConfig);
+        Map<String, String> javaConfigChanges = new HashMap<String, String>();
+        javaConfigChanges.put("jvm-options", "-XFooBar=false");
+        changes.put(javaConfigBean, javaConfigChanges);
+
         ConfigSupport.apply(changes);
     }
 
     public boolean assertResult(String s) {
         return ((s.indexOf("max-age-in-seconds=\"12543\"")!=-1)
-            && (s.indexOf("version=\"12351\"")!=-1));
+            && (s.indexOf("version=\"12351\"")!=-1)
+            && (s.indexOf("-XFooBar=false")!=-1)        
+        );
     }
 }
