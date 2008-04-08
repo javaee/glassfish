@@ -70,18 +70,17 @@
           <artifactId>eclipselink.jpa</artifactId>
           <version>1.0-SNAPSHOT</version>
         </dependency>
-<!--
         <dependency>
           <groupId>org.eclipse.persistence</groupId>
           <artifactId>eclipselink.extension.oracle</artifactId>
           <version>1.0-SNAPSHOT</version>
         </dependency>
--->
     </dependencies>
   <repositories>
     <repository>
        <id>EclipseLink Repo</id>
-         <url>http://www.eclipse.org/downloads/download.php?r=1&amp;nf=1&amp;file=/technology/eclipselink/maven.repo</url>
+         <!-- <url>http://www.eclipse.org/downloads/download.php?r=1&amp;nf=1&amp;file=/technology/eclipselink/maven.repo</url> -->
+         <url>http://download.eclipse.org/technology/eclipselink/maven.repo</url>
     </repository>
   </repositories>
 </project>
