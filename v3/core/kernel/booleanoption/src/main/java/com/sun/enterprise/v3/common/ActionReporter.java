@@ -1,0 +1,161 @@
+/*
+ * The contents of this file are subject to the terms 
+ * of the Common Development and Distribution License 
+ * (the License).  You may not use this file except in
+ * compliance with the License.
+ * 
+ * You can obtain a copy of the license at 
+ * https://glassfish.dev.java.net/public/CDDLv1.0.html or
+ * glassfish/bootstrap/legal/CDDLv1.0.txt.
+ * See the License for the specific language governing 
+ * permissions and limitations under the License.
+ * 
+ * When distributing Covered Code, include this CDDL 
+ * Header Notice in each file and include the License file 
+ * at glassfish/bootstrap/legal/CDDLv1.0.txt.  
+ * If applicable, add the following below the CDDL Header, 
+ * with the fields enclosed by brackets [] replaced by
+ * you own identifying information: 
+ * "Portions Copyrighted [year] [name of copyright owner]"
+ * 
+ * Copyright 2006 Sun Microsystems, Inc. All rights reserved.
+ */
+
+package com.sun.enterprise.v3.common;
+
+
+import java.io.*;
+import org.glassfish.api.ActionReport;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Superclass for common ActionReport implementation.
+ *
+ * @author Jerome Dochez
+ */
+public abstract class ActionReporter implements ActionReport {
+
+    protected Throwable exception = null;
+    protected String actionDescription = null;
+    protected List<ActionReporter> subActions = new ArrayList<ActionReporter>();
+    protected ExitCode exitCode = ExitCode.SUCCESS;
+    protected MessagePart topMessage = new MessagePart();
+    protected String contentType = "text/html";
+
+    /** Creates a new instance of HTMLActionReporter */
+    public ActionReporter() {
+    }
+
+    public void setFailure() {
+        setActionExitCode(ExitCode.FAILURE);
+    }
+    
+    public boolean isFailure() {
+        return getActionExitCode() == ExitCode.FAILURE;
+    }
+    
+    public void setWarning() {
+        setActionExitCode(ExitCode.WARNING);
+    }
+
+    public boolean isWarning() {
+        return getActionExitCode() == ExitCode.WARNING;
+    }
+    
+    public boolean isSuccess() {
+        return getActionExitCode() == ExitCode.SUCCESS;
+    }
+    
+    public void setSuccess() {
+        setActionExitCode(ExitCode.SUCCESS);
+    }
+    
+    public void setActionDescription(String message) {
+        this.actionDescription = message;
+    }
+
+    public void setFailureCause(Throwable t) {
+        this.exception = t;
+    }
+    public Throwable getFailureCause() {
+        return exception;
+    }
+        
+    public MessagePart getTopMessagePart() {
+        return topMessage;
+    }
+
+    public ActionReport addSubActionsReport() {
+        ActionReporter subAction;
+        try {
+            subAction = this.getClass().newInstance();
+        } catch (IllegalAccessException ex) {
+            return null;
+        } catch (InstantiationException ex) {
+            return null;
+        }
+        subActions.add(subAction);
+        return subAction;
+    }
+
+    public void setActionExitCode(ExitCode exitCode) {
+        this.exitCode = exitCode;
+    }
+
+    public ExitCode getActionExitCode() {
+        return exitCode;
+    }
+
+    public void setMessage(String message) {
+        topMessage.setMessage(message);
+    }
+
+    public String getMessage() {
+        return topMessage.getMessage();
+    }
+        
+    
+    public void setMessage(InputStream in) {
+        try {
+            if(in == null)
+                throw new NullPointerException("Internal Error - null InputStream");
+
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            copyStream(in, baos);
+            setMessage(baos.toString());
+        }
+        catch (Exception ex) {
+            setActionExitCode(ExitCode.FAILURE);
+            setFailureCause(ex);
+        }
+    }
+
+    private void copyStream(InputStream in, OutputStream out) throws IOException {
+        byte[] buf = new byte[1024];
+        int len;
+        while ((len = in.read(buf)) >= 0) {
+            out.write(buf, 0, len);
+        }
+
+        out.close();
+        in.close();
+    }
+    
+    /**
+     * Returns the content type to be used in sending the response back to 
+     * the client/caller.
+     * <p>
+     * This is the default type.  Specific subclasses of ActionReporter might
+     * override the method to return a different valid type.
+     * @return content type to be used in formatting the command response to the client
+     */
+    public String getContentType() {
+        return contentType;
+    }
+    public void setContentType(String s) {
+        contentType = s;
+    }
+}

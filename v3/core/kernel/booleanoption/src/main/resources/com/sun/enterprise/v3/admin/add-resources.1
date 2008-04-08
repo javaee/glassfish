@@ -1,0 +1,217 @@
+
+Administration Commands                          add-resources(1)
+
+NAME
+     add-resources - creates the resources specified  in  an  XML
+     file
+
+SYNOPSIS
+     add-resources
+     [--terse={true|false}][ --echo={true|false} ]
+     [ --interactive={true|false} ] [ --host  host]
+     [--port port] [--secure| -s ] [ --user  admin_user]
+     [--passwordfile filename] [--help]
+     [ --target  target]
+     xml_file_path
+
+DESCRIPTION
+     The add-resources command creates the resources named in the
+     specified XML file. The xml_file_path is the path to the XML
+     file containing the resources to  be  created.  The  DOCTYPE
+     must               be              specified              as
+     http://www.sun.com/software/appserver/dtds/sun-
+     resources_1_2.dtd in the resources.xml file.
+
+     This command is supported in remote mode only.
+
+OPTIONS
+     -t --terse
+
+         Indicates that any output data  must  be  very  concise,
+         typically avoiding human-friendly sentences and favoring
+         well-formatted data for consumption by a script. Default
+         is false.
+
+     -e --echo
+         Setting to true will echo the command line statement  on
+         the standard output. Default is false.
+
+     -I --interactive
+
+         If set to true (default),  only  the  required  password
+         options are prompted.
+
+     -H --host
+         The machine name where the domain administration  server
+         is running. The default value is localhost.
+
+     -p --port
+
+         The HTTP/S port for administration. This is the port  to
+
+Java EE 5           Last change: 30 Jan 2007                    1
+
+Administration Commands                          add-resources(1)
+
+         which  you  should point your browser in order to manage
+         the domain. For example, http://localhost:4848.
+
+         The default port number is 4848.
+
+     -s --secure
+
+         If set to true, uses SSL/TLS  to  communicate  with  the
+         domain administration server.
+
+     -u --user
+         The authorized domain administration server  administra-
+         tive username.
+
+         If you have authenticated to a domain using the  asadmin
+         login  command,  then  you  need  not specify the --user
+         option  on  subsequent  operations  to  this  particular
+         domain.
+
+     --passwordfile
+
+         The --passwordfile option specifies the name,  including
+         the full path, of a file containing the password entries
+         in a specific format. The entry for  the  password  must
+         have  the AS_ADMIN_ prefix followed by the password name
+         in uppercase letters.
+
+         For example, to specify the domain administration server
+         password,  use  an  entry  with  the  following  format:
+         AS_ADMIN_PASSWORD=password, where password is the actual
+         administrator  password.  Other  passwords  that  can be
+         specified        include        AS_ADMIN_MAPPEDPASSWORD,
+         AS_ADMIN_USERPASSWORD, and AS_ADMIN_ALIASPASSWORD.
+
+         All remote commands must specify the admin  password  to
+         authenticate to the domain administration server, either
+         through --passwordfile or  asadmin  login,  or  interac-
+         tively  on the command prompt. The asadmin login command
+         can be used only to  specify  the  admin  password.  For
+         other  passwords, that must be specified for remote com-
+         mands, use the --passwordfile or enter them at the  com-
+         mand prompt.
+
+         If you have authenticated to a domain using the  asadmin
+         login command, then you need not specify the admin pass-
+         word through the  --passwordfile  option  on  subsequent
+         operations  to  this particular domain. However, this is
+         applicable only to AS_ADMIN_PASSWORD  option.  You  will
+         still  need to provide the other passwords, for example,
+         AS_ADMIN_USERPASSWORD,   as   and   when   required   by
+
+Java EE 5           Last change: 30 Jan 2007                    2
+
+Administration Commands                          add-resources(1)
+
+         individual commands, such as update-file-user.
+
+         For security reasons, passwords specified as an environ-
+         ment variable will not be read by asadmin.
+
+         The  default  value   for   AS_ADMIN_MASTERPASSWORD   is
+         changeit.
+
+     --help
+
+         Displays the help text for the command.
+
+     --target
+         Specifies the target for  which  you  are  creating  the
+         resources. Valid values are
+
+         server
+
+             Creates  the  resources  for  the   default   server
+             instance server and is the default value.
+
+         domain
+             Creates the resources for the domain.
+
+         cluster_name
+
+             Creates the resources for every server  instance  in
+             the cluster.
+
+         instance_name
+             Creates  the  resources  for  a  particular   server
+             instance.
+
+OPERANDS
+     xml_file_path
+
+         The path to the XML file containing the  resource(s)  to
+         be  created.  The  XML  file must reside in the install-
+         dir/domains/domain1/config directory. If you  specify  a
+         relative  path  or  simply  provide  the name of the XML
+         file,    this    command    will    prepend     install-
+         dir/domains/domain1/config to this operand.
+
+         An example XML file follows.
+
+Java EE 5           Last change: 30 Jan 2007                    3
+
+Administration Commands                          add-resources(1)
+
+       <?xml version="1.0" encoding="UTF-8"?>
+       <!DOCTYPE resources PUBLIC
+         "-//Sun Microsystems Inc.//DTD Application Server 9.1 Domain//EN"
+         "*http://www.sun.com/software/appserver/dtds/sun-resources_1_2.dtd*">
+
+       <resources>
+       <jdbc-connection-pool name="SPECjPool" steady-pool-size="100"
+         max-pool-size="150" max-wait-time-in-millis="60000"
+         pool-resize-quantity="2" idle-timeout-in-seconds="300"
+         is-isolation-level-guaranteed="true"
+         is-connection-validation-required="false"
+         connection-validation-method="auto-commit"
+         fail-all-connections="false"
+         datasource-classname="oracle.jdbc.pool.OracleDataSource">
+        <property name="URL"
+          value="jdbc:oracle:thin:@iasperfsol12:1521:specdb"/>
+        <property name="User" value="spec"/>
+        <property name="Password" value="spec"/>
+        <property name="MaxStatements" value="200"/>
+        <property name="ImplicitCachingEnabled" value="true"/>
+       </jdbc-connection-pool>
+       <jdbc-resource enabled="true" pool-name="SPECjPool"
+         jndi-name="jdbc/SPECjDB"/>
+       </resources>
+
+EXAMPLES
+     Example 1 Using the add-resources command
+
+     The following command creates resources using  the  contents
+     of the XML file resource.xml:
+
+       asadmin> add-resources --user admin --passwordfile passwords.txt
+       --host localhost --port 4848 resource.xml
+       =========================
+       Added Resource Type: jdbc-connection-pool
+       =========================
+       Added Resource Type: jdbc-resource
+       =========================
+       Added Resource Type: persistence-manager-factory-resource
+       Command add-resources executed successfully.
+
+EXIT STATUS
+     0                           command executed successfully
+
+Java EE 5           Last change: 30 Jan 2007                    4
+
+Administration Commands                          add-resources(1)
+
+     1                           error in executing the command
+
+SEE ALSO
+     create-jdbc-connection-pool(1),     create-jdbc-resource(1),
+     create-jms-resource(1),   create-jndi-resource(1),   create-
+     javamail-resource(1),        create-persistence-resource(1),
+     create-custom-resource(1)
+
+Java EE 5           Last change: 30 Jan 2007                    5
+
