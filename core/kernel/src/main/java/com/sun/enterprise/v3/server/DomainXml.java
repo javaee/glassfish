@@ -53,9 +53,6 @@ public class DomainXml implements Populator {
     private File domainRoot;
     
     public void run(ConfigParser parser) {
-        if (context == null) {
-            System.err.println("Startup context not provided, cannot continue");
-        }
         if (logger.isLoggable(Level.FINE)) {
             logger.fine("Startup class : " + this.getClass().getName());
         }
