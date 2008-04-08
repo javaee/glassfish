@@ -102,17 +102,31 @@ public class JPADeployer extends SimpleDeployer<JPAContainer, JPAApplication> {
      * @InheritDoc
      */
     @Override public JPAApplication load(JPAContainer container, DeploymentContext context) {
-        Application application = context.getModuleMetaData(Application.class);
-        Set<BundleDescriptor> bundles = application.getBundleDescriptors();
+        return context.getModuleMetaData(JPAApplication.class);
+    }
 
-        //TODO Need to modify this to be more generic.
-        // Iterate through all the bundles for the app and collect pu references in referencedPus
-        List<PersistenceUnitDescriptor> allReferencedPus = new ArrayList<PersistenceUnitDescriptor>();
-        for (BundleDescriptor bundle : bundles) {
-            allReferencedPus.addAll(bundle.findReferencedPUs());
+    @Override public boolean prepare(DeploymentContext context) {
+        boolean prepared = super.prepare(context);
+
+        if(prepared) {
+
+            Application application = context.getModuleMetaData(Application.class);
+            Set<BundleDescriptor> bundles = application.getBundleDescriptors();
+
+            //TODO Need to modify this to be more generic.
+            // Iterate through all the bundles for the app and collect pu references in referencedPus
+            List<PersistenceUnitDescriptor> allReferencedPus = new ArrayList<PersistenceUnitDescriptor>();
+            for (BundleDescriptor bundle : bundles) {
+                allReferencedPus.addAll(bundle.findReferencedPUs());
+            }
+            //PUs get loaded here
+            JPAApplication jpaApp = new JPAApplication(allReferencedPus, new ProviderContainerContractInfoImpl(context, connectorRuntime));
+
+            //Store the app in DeploymentContext to retrieve it during load
+            context.addModuleMetaData(jpaApp);
         }
-
-        return new JPAApplication(allReferencedPus, new ProviderContainerContractInfoImpl(context, connectorRuntime));
+        
+        return prepared;
     }
 
 

@@ -102,8 +102,8 @@ public class PersistenceUnitInfoImpl implements PersistenceUnitInfo {
         String jtaDataSourceName = _calculateJtaDataSourceName();
         String nonJtaDataSourceName = _calculateNonJtaDataSourceName();
         try {
-            jtaDataSource = providerContainerContractInfo.lookupDataSource(jtaDataSourceName);
-            nonJtaDataSource = providerContainerContractInfo.lookupNonTxDataSource(nonJtaDataSourceName);
+            jtaDataSource = jtaDataSourceName == null ? null : providerContainerContractInfo.lookupDataSource(jtaDataSourceName);
+            nonJtaDataSource = nonJtaDataSource == null ? null : providerContainerContractInfo.lookupNonTxDataSource(nonJtaDataSourceName);
         } catch (NamingException e) {
 			throw new RuntimeException(e);
 		}
