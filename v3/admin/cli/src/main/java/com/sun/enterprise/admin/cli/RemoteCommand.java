@@ -354,7 +354,13 @@ public class RemoteCommand {
     }
 
     private void processHelp(Map<String,Map<String,String>> serverResponse) throws CommandException {
+        
         Map<String,String> mainAtts = serverResponse.get(ManifestUtils.MAIN_ATTS);
+        
+        // if we got a "real" man page -- process it & return
+        if(processManPage(mainAtts))
+            return;
+
         String usageText = mainAtts.get("SYNOPSYS_value");
 
         if(usageText == null) {
@@ -407,6 +413,19 @@ public class RemoteCommand {
         }
         displayOperands(operands, mainAtts);
     }
+
+    // bnevins Apr 8, 2008
+    private boolean processManPage(Map<String,String> mainAtts) throws CommandException {
+        String manPage = mainAtts.get("MANPAGE_value");
+
+        if(!ok(manPage)) {
+            return false;
+        }
+
+        logger.printMessage(manPage);
+        return true;
+    }
+        
 
     
     private void displayOperands(final List<String> operands, Map<String,String> mainAtts) {
@@ -471,7 +490,7 @@ public class RemoteCommand {
 
         // TODO We may need to  change this post-TP2
         if( CLILogger.isDebug() || !terse) {
-            if(StringUtils.ok(cause)) {
+            if(ok(cause)) {
                 message += StringUtils.NEWLINE + strings.get("cause", cause);
             }
         }        
@@ -631,5 +650,4 @@ public class RemoteCommand {
     private boolean echo = false;
     private final static LocalStringsImpl strings = new LocalStringsImpl(RemoteCommand.class);
 }
-
 

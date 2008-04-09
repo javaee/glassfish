@@ -36,6 +36,7 @@
 package com.sun.enterprise.v3.admin;
 
 import com.sun.enterprise.module.impl.Utils;
+import com.sun.enterprise.universal.collections.ManifestUtils;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.v3.common.PlainTextActionReporter;
 import com.sun.logging.LogDomains;
@@ -111,17 +112,13 @@ public class CommandRunner {
         
         if (parameters.size()==1 && parameters.get("help")!=null) {
             InputStream in = getManPage(commandName, command);
-            report.setMessage(in);
+            String manPage = encodeManPage(in);
 
-            // if there was any error -- failure will be set
-            if(report.getActionExitCode() != ActionReport.ExitCode.FAILURE) {
-                // everything was Kosher.  We will use the man page
-                ActionReport report2 = new PlainTextActionReporter();
-                report2.setMessage(report.getMessage());
-                report2.setActionExitCode(ActionReport.ExitCode.SUCCESS);
-                return report2;
-            }
-            getHelp(commandName, command, report);
+            if(manPage != null)
+                report.getTopMessagePart().addProperty("MANPAGE", manPage);
+            else
+                getHelp(commandName, command, report);
+
             return report;
         }
         report.setActionDescription(commandName + " AdminCommand");
@@ -796,7 +793,29 @@ public class CommandRunner {
             //all else return false
         return false;
     }
-    
+
+    // bnevins Apr 8, 2008
+    private String encodeManPage(InputStream in) {
+        final String eolToken = ManifestUtils.EOL_TOKEN;
+        
+        try {
+            if(in == null)
+                return null;
+
+            BufferedReader br = new BufferedReader(new InputStreamReader(in));
+            String line;
+            StringBuilder sb = new StringBuilder();
+            
+            while((line = br.readLine()) != null) {
+                sb.append(line);
+                sb.append(eolToken);
+            }
+            return sb.toString();
+        }
+        catch (Exception ex) {
+            return null;
+        }
+    }
 }
 
 
