@@ -183,23 +183,24 @@ public class ConfigSupport {
                 throw e;
             }
 
-        } catch (PropertyVetoException e) {
-            t.rollback();
-            throw new TransactionFailure(e.getMessage(), e);
         } catch(TransactionFailure e) {
             t.rollback();
             throw e;
+        } catch (Exception e) {
+            t.rollback();
+            throw new TransactionFailure(e.getMessage(), e);
         }
 
     }
 
-    static <T extends ConfigBeanProxy> WriteableView getWriteableView(T s, ConfigBean sourceBean) {
+    static <T extends ConfigBeanProxy> WriteableView getWriteableView(T s, ConfigBean sourceBean)
+        throws TransactionFailure {
 
         WriteableView f = new WriteableView(s);
         if (sourceBean.getLock().tryLock()) {
             return f;
         }
-        return null;
+        throw new TransactionFailure("Config bean already locked " + sourceBean, null);
     }
 
     /**
@@ -207,22 +208,12 @@ public class ConfigSupport {
      * @param source the configured interface implementation
      * @return the new interface implementation providing write access
      */
-    public static <T extends ConfigBeanProxy> T getWriteableView(final T source) {
+    public static <T extends ConfigBeanProxy> T getWriteableView(final T source)
+        throws TransactionFailure {
 
-        Transformer writeableTransformer = new Transformer() {
-
-            @SuppressWarnings("unchecked")
-            public <T extends ConfigBeanProxy> T transform(T s) {
-                ConfigView sourceBean = (ConfigView) Proxy.getInvocationHandler(s);
-                WriteableView writeableView = getWriteableView(source, (ConfigBean) sourceBean.getMasterView());
-                if (writeableView!=null) {
-                    return (T) writeableView.getProxy(sourceBean.getProxyType());
-                } else {
-                    return null;
-                }
-            }
-        };
-        return getView(writeableTransformer, source);
+        ConfigView sourceBean = (ConfigView) Proxy.getInvocationHandler(source);
+        WriteableView writeableView = getWriteableView(source, (ConfigBean) sourceBean.getMasterView());
+        return (T) writeableView.getProxy(sourceBean.getProxyType());
     }
 
     /**
@@ -339,7 +330,7 @@ public class ConfigSupport {
                 }
                 if (prop.isCollection()) {
                     try {
-                        List<String> values = (List<String>) writeable.gettter(prop,
+                        List<String> values = (List<String>) writeable.getter(prop,
                                 ConfigSupport.class.getDeclaredMethod("defaultPropertyValue", null).getGenericReturnType());
                         values.add(change.getValue());                        
                     } catch (NoSuchMethodException e) {
