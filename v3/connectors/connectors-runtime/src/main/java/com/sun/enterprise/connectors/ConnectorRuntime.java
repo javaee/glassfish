@@ -357,6 +357,25 @@ public class ConnectorRuntime implements ConnectorConstants, com.sun.appserv.con
         return connectorResourceAdmService.lookup(jndiName + NON_TX_JNDI_SUFFIX);
     }
 
+    /**
+      * Gets the properties of the Java bean connection definition class that
+      * have setter methods defined and the default values as provided by the
+      * Connection Definition java bean developer.
+      * This method is used to get properties of jdbc-data-source<br>
+      * To get Connection definition properties for Connector Connection Pool,
+      * use ConnectorRuntime.getMCFConfigProperties()<br>
+      * When the connection definition class is not found, standard JDBC
+      * properties (of JDBC 3.0 Specification) will be returned.<br>
+      *
+      * @param connectionDefinitionClassName
+      *                     The Connection Definition Java bean class for which
+      *                     overrideable properties are required.
+      * @return Map [property, defaultValue]
+      */
+    public Map getConnectionDefinitionPropertiesAndDefaults(String connectionDefinitionClassName) {
+        return ccPoolAdmService.getConnectionDefinitionPropertiesAndDefaults(
+            connectionDefinitionClassName);
+    }
 
     /**
      * Causes pool to switch on the matching of connections.
