@@ -7,6 +7,9 @@
 	<CommandProperty name="environment-prefix" value="AS_ADMIN_"/>
     </CommandProperties>
     <Options>
+	<Option name="port" type="string" value-required="true" default="8080">
+	    <shortoption>p</shortoption>
+	</Option>
 	<Option name="verbose" type="boolean" value-required="false" default="false">
 	    <shortoption>v</shortoption>
 	</Option>
@@ -130,6 +133,13 @@
             <ValidOption name="dbport"/>
             <ValidOption name="terse"/>
             <ValidOption name="echo"/>
+	</Command>
+        <Command name="start" classname="com.sun.enterprise.admin.cli.TempDomainCommand" 
+            numberofoperands="1" usage-text="start [--port|-p port] filepath">
+            <ValidOption name="port"/>
+            <ValidOption name="terse"/>
+            <ValidOption name="echo"/>
+            <ValidOption name="verbose"/>
 	</Command>
     </Commands>
 </CommandsAndOptions>
