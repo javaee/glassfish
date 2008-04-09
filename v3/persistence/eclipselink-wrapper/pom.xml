@@ -39,15 +39,78 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-	<groupId>org.glassfish.persistence</groupId>
-    	<artifactId>persistence</artifactId>
+    <groupId>org.glassfish.persistence</groupId>
+        <artifactId>persistence</artifactId>
         <version>10.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>eclipselink-wrapper</artifactId>
-    <packaging>hk2-jar</packaging>
+    <packaging>jar</packaging>
     <name>Repackaging of EclipseLink as a module</name>
     
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <configuration>
+                    <instructions>
+                        <!-- embed all first level dependencies with 
+                             groupId=org.eclipse.persistence and 
+                             artifactId=eclipselink.*
+                        -->
+                        <Embed-Dependency>
+                            *;groupId=org.eclipse.persistence;artifactId=eclipselink.*;inline=true
+                        </Embed-Dependency>
+                        <!-- There are some spurious split-package WARNINGs.
+                             I don't think there are any split packages. 
+                             To silence the WARNING, let's use -split-package
+                             instruction.
+                             TODO: Sahoo to find out why we are getting
+                             these WARNINGs.
+                        -->
+                        <Export-Package>org.eclipse.persistence.*;-split-package:=merge-first</Export-Package>
+                        <!-- Don't import the optional dependencies like:
+                             oracle.*, org.antlr.*, etc. Not sure, why
+                             some code depends on them instead of
+                             repackaged antlr. Mitesh to check.
+                        -->
+                        <Import-Package>!oracle.*,!org.antlr.*,*</Import-Package>
+                        <!-- !* matches with nothing, 
+                             so no other class will be included in this bundle,
+                             other than what is specified above 
+                        -->
+                        <Private-Package>!*</Private-Package>
+                        <!-- Make it an HK2 module, as GlassFish needs it to be
+                             HK2 module. This is needed because we don't want 
+                             to change the packaging type to hk2-jar. 
+                        -->
+                        <HK2-Bundle-Name>${groupId}:${artifactId}</HK2-Bundle-Name>
+                    </instructions>
+                    <!-- Maven uses the output directory (target/classes)
+                    rather than the final bundle, when compiling against
+                    projects in the same reactor (ie. the same build).
+                    Since this jar is assembled out of multiple jars,
+                    we need to unpack the classes.
+                    -->
+                    <unpackBundle>true</unpackBundle>
+                </configuration>
+                <!-- We don't use extensions as this interfers with
+                     hk2-maven-plugin and that results in hk2 artifacts
+                     being copied as .hk2-jar. Instead, we configure the
+                     plugin to run as part of package phase -->
+                <executions>
+                    <execution>
+                        <id>osgi-bundle</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>bundle</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
     <developers>
         <developer>
             <id>mm110999</id>
@@ -55,25 +118,41 @@
             <organization>Sun Microsystems, Inc.</organization>
             <roles>
                 <role>developer</role>
-		        <role>lead</role>
+                <role>lead</role>
+            </roles>
+        </developer>
+        <developer>
+            <id>ss141213</id>
+            <name>Sahoo</name>
+            <organization>Sun Microsystems, Inc.</organization>
+            <roles>
+                <role>developer</role>
             </roles>
         </developer>
     </developers>
     <dependencies>
+        <!-- We don't want the dependencies to be copied to distro, because
+             we include the classes directly in our wrapper.
+             By setting optional=true, gf-build-plugin won't
+             copy the dependencies to distribution.
+        -->
         <dependency>
           <groupId>org.eclipse.persistence</groupId>
           <artifactId>eclipselink.core</artifactId>
           <version>1.0-SNAPSHOT</version>
+          <optional>true</optional>
         </dependency>
         <dependency>
           <groupId>org.eclipse.persistence</groupId>
           <artifactId>eclipselink.jpa</artifactId>
           <version>1.0-SNAPSHOT</version>
+          <optional>true</optional>
         </dependency>
         <dependency>
           <groupId>org.eclipse.persistence</groupId>
           <artifactId>eclipselink.extension.oracle</artifactId>
           <version>1.0-SNAPSHOT</version>
+          <optional>true</optional>
         </dependency>
     </dependencies>
   <repositories>
