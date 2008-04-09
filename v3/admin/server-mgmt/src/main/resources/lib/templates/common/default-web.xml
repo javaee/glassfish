@@ -59,6 +59,14 @@
       <param-name>com.sun.faces.forceLoadConfiguration</param-name>
       <param-value>true</param-value>
   </context-param> 
+
+  <!-- Init parameter to specify the InjectionProvider implementation   -->
+  <!-- the JSF implemenation will use.                                  -->
+
+  <context-param>
+      <param-name>com.sun.faces.injectionProvider</param-name>
+      <param-value>org.glassfish.faces.integration.GlassFishInjectionProvider</param-value>
+  </context-param>
       
 
   <!-- ================== Built In Servlet Definitions ==================== -->
