@@ -156,6 +156,15 @@ public class GFLauncherInfo {
             throw new GFLauncherException("internalError", "Call to getInstanceRootDir() on an invalid GFLauncherInfo object.");
         }
     }
+    
+    public void setDeleteDomainOnExit(boolean b) {
+        deleteDomainOnExit = b;
+    }
+
+    public boolean isDeleteDomainOnExit() {
+        return deleteDomainOnExit;
+    }
+    
     /**
      *  TEMPORARY.  The guts of HK2 and V3 bootstrapping wants String[]
      * -- this will be changed soon, but it is messy to change it right now.
@@ -421,6 +430,7 @@ public class GFLauncherInfo {
     private String domainName;
     private String instanceName;
     private boolean valid = false;
+    private boolean deleteDomainOnExit = false;
     private Map<String, String> argsMap;
     private ArrayList<String> argsRaw = new ArrayList<String>();
     private Set<Integer> adminPorts;

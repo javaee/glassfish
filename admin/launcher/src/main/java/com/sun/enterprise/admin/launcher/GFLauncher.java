@@ -26,6 +26,7 @@ import com.sun.enterprise.universal.collections.CollectionUtils;
 import com.sun.enterprise.universal.glassfish.GFLauncherUtils;
 import com.sun.enterprise.universal.glassfish.TokenResolver;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
+import com.sun.enterprise.universal.io.FileUtils;
 import com.sun.enterprise.universal.io.SmartFile;
 import com.sun.enterprise.universal.process.ProcessStreamDrainer;
 import com.sun.enterprise.universal.xml.MiniXmlParserException;
@@ -35,6 +36,7 @@ import com.sun.enterprise.universal.glassfish.ASenvPropertyReader;
 import com.sun.enterprise.universal.xml.MiniXmlParser;
 import java.util.logging.Level;
 import static com.sun.enterprise.universal.glassfish.SystemPropertyConstants.*;
+import java.util.logging.Logger;
 
 /**
  * This is the main Launcher class designed for external and internal usage.
@@ -175,10 +177,18 @@ public abstract class GFLauncher {
         
         final String msg = strings.get("serverStopped", info.getType());
         Runtime.getRuntime().addShutdownHook(new Thread() {
+            @Override
             public void run() {
                 // logger won't work anymore...
                 System.out.println(msg);
                 p.destroy();
+                if(info.isDeleteDomainOnExit()) {
+                    // GIve time for jvm.log and server.log
+                    // o/w on Windows -- those files will remain
+                    try { Thread.sleep(200); }
+                    catch (InterruptedException ex) {}
+                    FileUtils.liquidate(info.getDomainRootDir());
+                }
             }});
     }
         
