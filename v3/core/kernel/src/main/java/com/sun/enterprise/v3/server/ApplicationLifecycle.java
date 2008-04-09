@@ -924,6 +924,9 @@ abstract public class ApplicationLifecycle {
             ConfigSupport.apply(new ConfigCode() {
                 public Object run(ConfigBeanProxy... params) throws PropertyVetoException, TransactionFailure {
 
+                    Applications apps = (Applications) params[0];
+                    Server servr = (Server) params[1];
+
                     // adding the application element
                     Application app = ConfigSupport.createChildOf(
                         (Applications)params[0], Application.class);
@@ -949,7 +952,7 @@ abstract public class ApplicationLifecycle {
                     app.setDirectoryDeployed(moduleProps.getProperty(
                         ServerTags.DIRECTORY_DEPLOYED));
 
-                    applications.getModules().add(app);
+                    apps.getModules().add(app);
 
                     // engine element
                     for (ModuleInfo moduleInfo :
@@ -996,7 +999,7 @@ abstract public class ApplicationLifecycle {
                     appRef.setEnabled(moduleProps.getProperty(
                         ServerTags.ENABLED));
 
-                    server.getApplicationRef().add(appRef);
+                    servr.getApplicationRef().add(appRef);
                     
                     return Boolean.TRUE;
                 }
@@ -1008,8 +1011,10 @@ abstract public class ApplicationLifecycle {
         throws TransactionFailure {
         ConfigSupport.apply(new ConfigCode() {
             public Object run(ConfigBeanProxy... params) throws PropertyVetoException, TransactionFailure {
+                Applications apps = (Applications) params[0];
+                Server servr = (Server) params[1];
                 // remove application-ref element
-                for (ApplicationRef appRef : server.getApplicationRef()) {
+                for (ApplicationRef appRef : servr.getApplicationRef()) {
                     if (appRef.getRef().equals(appName)) {
                         ((Server)params[1]).getApplicationRef().remove(appRef);
                         break;
@@ -1018,7 +1023,7 @@ abstract public class ApplicationLifecycle {
 
                 // remove application element
                 for (com.sun.enterprise.config.serverbeans.Module module :
-                    applications.getModules()) {
+                    apps.getModules()) {
                     if (module.getName().equals(appName)) {
                         ((Applications)params[0]).getModules().remove(module);
                         break;
