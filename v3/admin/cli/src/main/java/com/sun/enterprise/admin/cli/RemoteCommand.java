@@ -43,6 +43,7 @@ import java.net.*;
 import java.util.*;
 import com.sun.enterprise.admin.cli.util.*;
 import com.sun.enterprise.cli.framework.*;
+import com.sun.enterprise.universal.collections.ManifestUtils;
 import java.util.jar.*;
 import sun.misc.BASE64Encoder;
 /**
@@ -307,7 +308,7 @@ public class RemoteCommand {
         copyStream(in, baos);
         String responseString = baos.toString();
         in = new ByteArrayInputStream(baos.toByteArray());
-        Manifest m = null;
+        Map<String,Map<String,String>> serverResponse = null;
 
         logger.printDebugMessage("--------  RESPONSE DUMP         --------------");
         logger.printDebugMessage(responseString);
@@ -320,30 +321,27 @@ public class RemoteCommand {
         // it might not be formatted properly -- e.g. output of "amx" and man pages
         // in that case just print the message...
         try {
-            m = getManifest(in);
+            serverResponse = getServerData(in);
         }
         catch(Exception e) {
             // handled below...
         }
-        if (m == null) {
+        if (serverResponse == null) {
             processPlainText(responseString);
         }
         else if (params.size() == 1 && params.get("help") != null) {
-            processHelp(m);
+            processHelp(serverResponse);
         } else {
-            processMessage(m);
+            processMessage(serverResponse);
         }
     }
 
-    private Manifest getManifest(InputStream is) throws IOException {
+    private Map<String, Map<String,String>> getServerData(InputStream is) throws IOException {
         try {
             Manifest m = new Manifest();
             m.read(is);
-
-            if (Boolean.getBoolean("dump.manifest")) {
-                m.write(System.out);
-            }
-            return m;
+            Map<String, Map<String,String>> serverResponse = ManifestUtils.normalize(m);
+            return serverResponse;
         } finally {
             if (is != null) {
                 try {
@@ -355,29 +353,29 @@ public class RemoteCommand {
         }
     }
 
-    private void processHelp(Manifest m) throws CommandException {
-        Attributes attr = m.getMainAttributes();
-        String usageText = attr.getValue("SYNOPSYS_value");
+    private void processHelp(Map<String,Map<String,String>> serverResponse) throws CommandException {
+        Map<String,String> mainAtts = serverResponse.get(ManifestUtils.MAIN_ATTS);
+        String usageText = mainAtts.get("SYNOPSYS_value");
 
         if(usageText == null) {
             // this is one way to figure out there was an error!
             throw new CommandException(strings.get("remoteError", 
-                    m.getMainAttributes().getValue("message")));
+                    mainAtts.get("message")));
         }
         
         
         System.out.println("NAME :");
-        displayInProperLen(attr.getValue("message"));
+        displayInProperLen(mainAtts.get("message"));
         System.out.println("");
         System.out.println("SYNOPSIS :");
         if (usageText.startsWith("Usage: ")) {
-            System.out.println("\t" + attr.getValue("SYNOPSYS_value").substring(7));            
+            System.out.println("\t" + mainAtts.get("SYNOPSYS_value").substring(7));            
         } else {
-            System.out.println("\t" + attr.getValue("SYNOPSYS_value"));
+            System.out.println("\t" + mainAtts.get("SYNOPSYS_value"));
         }
         System.out.println("");
         boolean displayOptionTitle = true;
-        String keys = attr.getValue("keys");
+        String keys = mainAtts.get("keys");
         List<String> operands = new ArrayList();
         if (keys != null) {
             StringTokenizer token = new StringTokenizer(keys, ";");
@@ -399,24 +397,24 @@ public class RemoteCommand {
                         displayOptionTitle = false;
                     }
                     
-                    String name = attr.getValue(property + "_name");
-                    String value = attr.getValue(property + "_value");
+                    String name = mainAtts.get(property + "_name");
+                    String value = mainAtts.get(property + "_value");
                     logger.printMessage("\t--" + name);
                     displayInProperLen(value);
                     logger.printMessage("");
                 }
             }
         }
-        displayOperands(operands, attr);
+        displayOperands(operands, mainAtts);
     }
 
     
-    private void displayOperands(final List<String> operands, Attributes attr) {
+    private void displayOperands(final List<String> operands, Map<String,String> mainAtts) {
         //display operands
         if (!operands.isEmpty()) {
             System.out.println("OPERANDS : ");
             for (String operand : operands) {
-                final String value = attr.getValue(operand + "_value");
+                final String value = mainAtts.get(operand + "_value");
                 String displayStr = operand.substring(0, operand.length()-8)
                                     + " - " + value;
                 displayInProperLen(displayStr);
@@ -446,18 +444,21 @@ public class RemoteCommand {
     }
     
 
-    private void processMessage(Manifest m) throws CommandException {
-        String exitCode = m.getMainAttributes().getValue("exit-code");
-        String message = m.getMainAttributes().getValue("message");
+    private void processMessage(Map<String,Map<String,String>> serverResponse) throws CommandException {
+        
+        Map<String,String> mainAtts = serverResponse.get(ManifestUtils.MAIN_ATTS);
+        
+        String exitCode = mainAtts.get("exit-code");
+        String message = mainAtts.get("message");
 
         if (exitCode == null || exitCode.equalsIgnoreCase("Success")) {
             logger.printMessage(message);
-            processOneLevel("", null, m, m.getMainAttributes());
+            processOneLevel("", null, serverResponse, mainAtts);
             return;
         }
         // bnevins -- this block is pretty bizarre!
         //if there is any children message, then display it
-        final String childMsg = m.getMainAttributes().getValue("children");
+        final String childMsg = mainAtts.get("children");
         if (childMsg != null && !childMsg.equals("")) {
             StringTokenizer childTok = new StringTokenizer(childMsg, ";");
             while (childTok.hasMoreTokens()) {
@@ -466,7 +467,7 @@ public class RemoteCommand {
         }
 
         message = exitCode + " : " + message;
-        String cause = m.getMainAttributes().getValue("cause");
+        String cause = mainAtts.get("cause");
 
         // TODO We may need to  change this post-TP2
         if( CLILogger.isDebug() || !terse) {
@@ -477,13 +478,13 @@ public class RemoteCommand {
         throw new CommandException(message);
     }
 
-    private void processOneLevel(String prefix, String key, Manifest m,
-                                  Attributes attr) {
+    private void processOneLevel(String prefix, String key, Map<String, Map<String,String>> serverResponse,
+                                  Map<String,String> atts) {
 
-        if(attr == null) {
+        if(atts == null) {
             return;
         }
-        String keys = attr.getValue("keys");
+        String keys = atts.get("keys");
         if (keys != null) {
             StringTokenizer token = new StringTokenizer(keys, ";");
             boolean displayProperties = false;
@@ -496,8 +497,8 @@ public class RemoteCommand {
                         displayProperties = true;
                     }
                         
-                    String name = attr.getValue(property + "_name");
-                    String value = attr.getValue(property + "_value");
+                    String name = atts.get(property + "_name");
+                    String value = atts.get(property + "_value");
                     System.out.print(name + "=" + value);
                     if (token.hasMoreElements()) {
                         System.out.print(",");
@@ -508,13 +509,13 @@ public class RemoteCommand {
                 }
             }
         }
-        String children = attr.getValue("children");
+        String children = atts.get("children");
         if (children == null) {
             // no container currently started.
             return;
         }
 
-        String childrenType = attr.getValue("children-type");
+        String childrenType = atts.get("children-type");
         StringTokenizer token = new StringTokenizer(children, ";");
         while (token.hasMoreTokens()) {
             String container = token.nextToken();
@@ -525,8 +526,8 @@ public class RemoteCommand {
                 System.out.println(prefix + childrenType + " : " + container.substring(index));
             }
             // get container attributes
-            Attributes childAttr = m.getAttributes(container);
-            processOneLevel(prefix + "\t", container, m, childAttr);
+            Map<String,String> childAtts = serverResponse.get(container);
+            processOneLevel(prefix + "\t", container, serverResponse, childAtts);
         }
     }
 
