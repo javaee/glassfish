@@ -84,7 +84,7 @@ public class ApplicationLoaderService extends ApplicationLifecycle
     ServerEnvironment env;
 
     @Inject
-    Application[] applications;
+    Applications applications;
 
     @Inject
     Server server;
@@ -109,17 +109,20 @@ public class ApplicationLoaderService extends ApplicationLifecycle
 
         assert env!=null;
         logger.info("loader service postConstruct started at " + System.currentTimeMillis());
-        for (Application module : applications) {
-            for (ApplicationRef appRef : server.getApplicationRef()) {
-                if (appRef.getRef().equals(module.getName())) {
-                    if (appRef.getEnabled().equals(String.valueOf(
-                        Boolean.TRUE))) {
-                        // only process the application when the enable
-                        // attribute is true
-                        processApplication((Application)module, appRef, 
-                            logger);
+        for (Module m : applications.getModules()) {
+            if (m instanceof Application) {
+                Application module = (Application) m;
+                for (ApplicationRef appRef : server.getApplicationRef()) {
+                    if (appRef.getRef().equals(module.getName())) {
+                        if (appRef.getEnabled().equals(String.valueOf(
+                            Boolean.TRUE))) {
+                            // only process the application when the enable
+                            // attribute is true
+                            processApplication((Application)module, appRef,
+                                logger);
+                        }
+                        break;
                     }
-                    break;
                 }
             }
         }
@@ -150,6 +153,7 @@ public class ApplicationLoaderService extends ApplicationLifecycle
                         if (appSniffers!=null) {
                             Properties deploymentProperties = new Properties();
                             deploymentProperties.setProperty(DeployCommand.NAME, sourceFile.getName());
+                            deploymentProperties.setProperty(DeployCommand.ENABLED, "True");
                             DeploymentContextImpl depContext = new DeploymentContextImpl(
                                     logger,
                                     sourceArchive,
