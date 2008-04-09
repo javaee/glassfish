@@ -141,7 +141,7 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
     @Inject
     Domain domain;
 
-    @Param(primary=true, shortName = "p")
+    @Param(primary=true)
     String path;
 
     /**
