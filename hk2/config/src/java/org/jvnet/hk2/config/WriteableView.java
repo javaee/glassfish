@@ -75,28 +75,13 @@ public class WriteableView implements InvocationHandler, Transactor, ConfigView 
             throw new IllegalArgumentException("No corresponding property found for method: "+method);
 
         if(args==null || args.length==0) {
-            // getter
+            // getter, maybe one of our changed properties
             if (changedAttributes.containsKey(property.xmlName())) {
                 // serve masked changes.
                 return changedAttributes.get(property.xmlName()).getNewValue();
             } else {
                 // pass through.
-                Object value = bean.invoke(proxy, method, args);
-                if (value instanceof List) {
-                    if (!changedCollections.containsKey(property.xmlName())) {
-                        // wrap collections so we can record events on that collection mutation.
-                        try {
-                            if(!(method.getGenericReturnType() instanceof ParameterizedType))
-                                throw new IllegalArgumentException("List needs to be parameterized");
-                            changedCollections.put(property.xmlName(), new ProtectedList((List) value, readView, property.xmlName()));
-                        } catch(Exception e) {
-                            e.printStackTrace();
-                            throw e;
-                        }
-                    }
-                    return changedCollections.get(property.xmlName());
-                }
-                return value;
+                return getter(property, method.getGenericReturnType());
             }
         } else {
             setter(property, args[0], method.getGenericParameterTypes()[0]);
@@ -104,8 +89,8 @@ public class WriteableView implements InvocationHandler, Transactor, ConfigView 
         }
     }
 
-    public Object gettter(ConfigModel.Property property, java.lang.reflect.Type t) {
-        Object value =  bean.getter(property, t);
+    public Object getter(ConfigModel.Property property, java.lang.reflect.Type t) {
+        Object value =  bean._getter(property, t);
         if (value instanceof List) {
             if (!changedCollections.containsKey(property.xmlName())) {
                 // wrap collections so we can record events on that collection mutation.

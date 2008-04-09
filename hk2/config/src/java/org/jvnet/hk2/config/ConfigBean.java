@@ -146,11 +146,16 @@ public class ConfigBean extends Dom implements ConfigView {
         }
     }
 
-    protected Object getter(ConfigModel.Property target, Type t) {
-        final Object value = super.getter(target, t);
+    Object _getter(ConfigModel.Property target, Type t) {
+        final Object value = super.getter(target,t);
         for (ConfigBeanInterceptor interceptor : optionalFeatures.values()) {
             interceptor.readValue(this, target.xmlName(), value);
         }
+        return value;        
+    }
+
+    protected Object getter(ConfigModel.Property target, Type t) {
+        final Object value = _getter(target, t);
         if (value instanceof List) {
             final ConfigBean myself = this;
             final List valueList = (List) value;
@@ -167,24 +172,14 @@ public class ConfigBean extends Dom implements ConfigView {
                 }
 
                 public boolean add(Object o) {
-                    if (!myself.writeLock) {
-                        throw new IllegalStateException(new PropertyVetoException("Not part of a transaction !", null));
-                    }
-                    return valueList.add(o);
-
+                    throw new IllegalStateException("Not part of a transaction !", null);
                 }
                 public Object set(int index, Object element) {
-                    if (!myself.writeLock) {
-                        throw new IllegalStateException(new PropertyVetoException("Not part of a transaction !", null));
-                    }
-                    return valueList.set(index, element);
+                    throw new IllegalStateException("Not part of a transaction !", null);
                 }
 
                 public Object remove(int index) {
-                    if (!myself.writeLock) {
-                        throw new IllegalStateException(new PropertyVetoException("Not part of a transaction !", null));
-                    }
-                    return valueList.remove(index);
+                    throw new IllegalStateException("Not part of a transaction !", null);
                 }
             };
 
