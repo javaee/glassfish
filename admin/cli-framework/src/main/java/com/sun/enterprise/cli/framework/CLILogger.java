@@ -61,7 +61,7 @@ public class CLILogger
     private final static String ENV_DEBUG_FLAG = "AS_DEBUG";
     private final static int	kDefaultBufferSize	= 512;
     private final static String PACKAGE_NAME = "com.sun.enterprise.cli.framework";
-    
+    private static boolean allowLevelChanges = true;
     /** Creates a new instance of CLILogger */
     protected CLILogger() 
     {
@@ -122,7 +122,7 @@ public class CLILogger
      */
     public void setOutputLevel(Level level)
     {
-        if (!isDebug()) 
+        if (!isDebug() && allowLevelChanges) 
             s1asLogger.setLevel(level);
     }
     
@@ -190,6 +190,18 @@ public class CLILogger
         printDebugMessage(output.toString());
     }
 
+    /**
+     * bnevins 4/4/08 There is a new mixed CLI command that calls other CLI commands.
+     * it does not want any output from the internally called commands to be printed.  
+     * But the internally called commands are setting the output level.  
+     * This method enables or disables the ability to change the output level
+
+     * @param b
+     */
+    public void allowLevelChanges(boolean b)
+    {
+        allowLevelChanges = b;
+    }
     
     public class CLILoggerHandler extends Handler 
     {

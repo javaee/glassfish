@@ -98,7 +98,7 @@ public class CLIMain
      *  This is the important bulk of reading the xml, validating, creating 
      *  command vi command factory and invoke the command.
      */
-    public void invokeCommand(String[] args) 
+    public void invokeCommand(String... args) 
         throws CommandException, CommandValidationException, InvalidCommandException
     {
         ValidCommand validCommand = null;
