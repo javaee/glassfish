@@ -471,7 +471,8 @@ public class RemoteCommand {
         String message = mainAtts.get("message");
 
         if (exitCode == null || exitCode.equalsIgnoreCase("Success")) {
-            logger.printMessage(message);
+            if(ok(message))
+                logger.printMessage(message);
             processOneLevel("", null, serverResponse, mainAtts);
             return;
         }
