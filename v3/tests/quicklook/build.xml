@@ -269,15 +269,21 @@
     <echo>+-----------------------------+</echo>
     <echo>|                             |</echo>
     <echo>| S T A R T I N G   GLASSFISH |</echo>
-    <echo>|                             |</echo>
+    <echo>|     ON FELIX                |</echo>
     <echo>+-----------------------------+</echo>
     
     <antcall target="start-server-unix"/>
     <antcall target="start-server-windows"/>
+    <!-- GF takes longer than usual while starting Felix. Until we fix the
+         startup issue, let's introduce a delay.
+    -->
+    <echo message="Sleeping for 20 seconds while the server is starting"/>
+    <sleep seconds="20"/>
 </target>
 
 <target name="start-server-windows" if="isWindows">
     <exec executable="cmd" spawn="true">	
+        <env key="GlassFish_Platform" value="Felix"/>
         <arg value="/c"/>
         <arg value="${glassfish.home}/bin/asadmin.bat"/>
         <arg value="start-domain"/>
@@ -286,6 +292,7 @@
     
 <target name="start-server-unix" if="isUnix">
     <exec executable="${glassfish.home}/bin/asadmin">        
+        <env key="GlassFish_Platform" value="Felix"/>
         <arg value="start-domain"/>
     </exec>
 </target>
