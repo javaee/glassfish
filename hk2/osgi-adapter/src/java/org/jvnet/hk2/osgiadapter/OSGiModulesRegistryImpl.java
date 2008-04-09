@@ -137,7 +137,7 @@ public class OSGiModulesRegistryImpl
      * @param parent parent class loader
      */
     public void setParentClassLoader(ClassLoader parent) {
-        throw new UnsupportedOperationException("Not Yet Implemented"); // TODO(Sahoo)
+        throw new UnsupportedOperationException("This method can't be implemented in OSGi environment");
     }
 
     /**
