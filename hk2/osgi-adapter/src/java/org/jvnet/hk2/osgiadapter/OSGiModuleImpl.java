@@ -206,15 +206,24 @@ public final class OSGiModuleImpl implements Module {
 
     public <T> Iterable<Class<? extends T>> getProvidersClass(
             Class<T> serviceClass) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return (Iterable)getProvidersClass(serviceClass.getName());
     }
 
     public Iterable<Class> getProvidersClass(String name) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        List<Class> r = new ArrayList<Class>();
+        for( String provider : getMetadata().getEntry(name).providerNames) {
+            try {
+                r.add(getClassLoader().loadClass(provider));
+            } catch (ClassNotFoundException e) {
+                logger.log(Level.SEVERE, "Failed to load "+provider+" from "+getName(),e);
+            }
+        }
+        return r;
     }
 
     public boolean hasProvider(Class serviceClass) {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
+        String name = serviceClass.getName();
+        return getMetadata().getEntry(name).hasProvider();
     }
 
     public void addListener(ModuleChangeListener listener) {
@@ -315,11 +324,11 @@ public final class OSGiModuleImpl implements Module {
     }
 
     public void addImport(Module module) {
-        throw new UnsupportedOperationException("Not Yet Implemented"); // TODO(Sahoo)
+        throw new UnsupportedOperationException("This method can't be implemented in OSGi environment");
     }
 
     public Module addImport(ModuleDependency dependency) {
-        throw new UnsupportedOperationException("Not Yet Implemented"); // TODO(Sahoo)
+        throw new UnsupportedOperationException("This method can't be implemented in OSGi environment");
     }
 
     public boolean isSticky() {
