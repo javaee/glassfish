@@ -12,13 +12,12 @@ import java.util.Collections;
 import java.net.*;
 import java.io.File;
 import java.io.IOException;
+import java.io.FileFilter;
 
 /**
  * @author Sanjeeb.Sahoo@Sun.COM
  */
 public abstract class ASMainOSGi {
-
-    private String[] args;
 
     /**
      * The class loader used to intialize the OSGi platform.
@@ -38,6 +37,8 @@ public abstract class ASMainOSGi {
 
     protected File domainDir; // default is glassfish/domains/domain1
 
+    protected File fwDir; // OSGi framework directory
+
     // For the moment, we need to add the following jars to classpath as well:
     private String[] additionalJars = {
             "wstx-asl-3.2.3.jar", // needed by config module in HK2
@@ -52,7 +53,6 @@ public abstract class ASMainOSGi {
 
     public ASMainOSGi(Logger logger, String... args) {
         this.logger = logger;
-        this.args = args;
         findBootstrapFile();
         glassfishDir = bootstrapFile.getParentFile().getParentFile(); //glassfish/
         helper = new ASMainHelper(logger);
@@ -60,7 +60,10 @@ public abstract class ASMainOSGi {
         helper.parseAsEnv(glassfishDir);
         domainDir = helper.getDomainRoot(context);
         helper.verifyDomainRoot(domainDir);
+        setFwDir();
     }
+
+    protected abstract void setFwDir();
 
     public ASMainOSGi(String... args) {
         this(Logger.getAnonymousLogger());
@@ -71,13 +74,19 @@ public abstract class ASMainOSGi {
      *
      * @return
      */
-    protected abstract URL[] getFWJars();
+    protected abstract URL[] getFWJars() throws Exception;
 
-    protected abstract void launchOSGiFW(String ... args);
+    protected abstract void launchOSGiFW() throws Exception;
 
     public void run() {
-        setupLauncherClassLoader();
-        launchOSGiFW(args);
+        try {
+            System.setProperty("org.jvnet.hk2.osgiadapter.contextrootdir",
+                    new File(glassfishDir, "modules").getAbsolutePath());
+            setupLauncherClassLoader();
+            launchOSGiFW();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -90,19 +99,15 @@ public abstract class ASMainOSGi {
      * library class loader (for glassfish/lib and domain_dir/lib)
      * framework class loader (For loading OSGi framework classes)
      */
-    private void setupLauncherClassLoader() {
+    private void setupLauncherClassLoader() throws Exception {
         ClassLoader commonCL = createCommonClassLoader();
         ClassLoader libCL = helper.setupSharedCL(commonCL, getSharedRepos());
         List<URL> urls = new ArrayList<URL>();
         Collections.addAll(urls, getFWJars());
-        try {
-            File moduleDir = context.getRootDirectory().getParentFile();
-            for (String jar : additionalJars) {
-                URL url = new File(moduleDir, jar).toURI().toURL();
-                urls.add(url);
-            }
-        } catch (MalformedURLException e) {
-            throw new RuntimeException(e);
+        File moduleDir = context.getRootDirectory().getParentFile();
+        for (String jar : additionalJars) {
+            URL url = new File(moduleDir, jar).toURI().toURL();
+            urls.add(url);
         }
         this.launcherCL = new URLClassLoader(urls.toArray(new URL[0]), libCL);
         Thread.currentThread().setContextClassLoader(launcherCL);
@@ -191,4 +196,14 @@ public abstract class ASMainOSGi {
         return libs;
     }
 
+    protected boolean deleteRecurssive(File dir) {
+        for (File f : dir.listFiles()) {
+            if(f.isFile()) {
+                f.delete();
+            } else {
+                deleteRecurssive(f);
+            }
+        }
+        return dir.delete();
+    }
 }
