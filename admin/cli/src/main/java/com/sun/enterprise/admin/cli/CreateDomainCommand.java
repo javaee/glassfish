@@ -257,7 +257,7 @@ public class CreateDomainCommand extends BaseLifeCycleCommand {
         } catch (Exception e) {
             CLILogger.getInstance().printDetailMessage(e.getLocalizedMessage());
             throw new CommandException(getLocalizedString("CouldNotCreateDomain",
-                    new Object[]{domainName}), e);
+                    new Object[]{domainName, e.getLocalizedMessage()}), e);
         }
 
     }
