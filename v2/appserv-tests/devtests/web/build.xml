@@ -377,7 +377,9 @@
                 in="${xmlfile}" out="${htmlfile}"
                 basedir="${env.APS_HOME}" destdir="${env.APS_HOME}/devtests/web" />
                 
+       <!--
        <antcall target="copyMailJars"/>
+       -->
 
        <java classname="ResultsProducer" fork="true" failonerror="false" maxmemory="128M" dir="${build.classes.dir}">
             <arg value="${env.APS_HOME}/test_resultsValid.xml"/>
@@ -386,15 +388,17 @@
        </java>
 
        <!--  We need to execute ant using CMD line so the jars are picked -->
+       <!--
        <java classname="org.apache.tools.ant.Main" fork="true" failonerror="false" maxmemory="128M">
-            <!--classpath>
+            classpath>
                 <fileset dir="${env.S1AS_HOME}/lib/ant/lib">
                     <include name="*.jar" />
                 </fileset>
             </classpath>
-            <sysproperty key="ant.home" value="${env.S1AS_HOME}/lib/ant" /-->
+            <sysproperty key="ant.home" value="${env.S1AS_HOME}/lib/ant" /
             <arg line="-f ./mail.xml "/>
         </java>
+	-->
 
     </target>
 
