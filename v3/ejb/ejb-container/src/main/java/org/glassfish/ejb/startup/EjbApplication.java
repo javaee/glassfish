@@ -65,7 +65,7 @@ public class EjbApplication
         return ejbs;
     }
 
-    public boolean start() {
+    public boolean start(ClassLoader cl) {
         /*
         Set<EjbDescriptor> descs = (Set<EjbDescriptor>) bundleDesc.getEjbs();
 

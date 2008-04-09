@@ -79,10 +79,10 @@ public class ConnectorApplication implements ApplicationContainer {
      * use their prefered Logger instance to log any issue they encounter while
      * starting. Returning false from a start mean that the container failed
      * to start
-     *
+     * @param cl the application classloader
      * @return true if the container startup was successful.
      */
-    public boolean start() {
+    public boolean start(ClassLoader cl) {
         boolean started = false;
 
         deployResources(moduleName);

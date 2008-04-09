@@ -223,7 +223,6 @@ public class WebDeployer extends JavaEEDeployer<WebContainer, WebApplication>{
     public WebApplication load(WebContainer container, DeploymentContext dc) {
         
         WebModuleConfig wmInfo = loadWebModuleConfig(dc);    
-        wmInfo.setAppClassLoader(dc.getClassLoader());
 
         return new WebApplication(container, wmInfo, grizzlyAdapter);
     }

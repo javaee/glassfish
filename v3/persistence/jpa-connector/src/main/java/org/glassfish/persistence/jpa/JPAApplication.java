@@ -91,7 +91,7 @@ public class JPAApplication implements ApplicationContainer {
         return null;
     }
 
-    public boolean start() {
+    public boolean start(ClassLoader cl) {
         return true;
     }
 

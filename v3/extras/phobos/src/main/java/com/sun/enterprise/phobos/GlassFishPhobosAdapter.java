@@ -115,9 +115,10 @@ public class GlassFishPhobosAdapter extends GrizzlyPhobosAdapter implements Appl
      * use their prefered Logger instance to log any issue they encounter while
      * starting. Returning false from a start mean that the container failed
      * to start.
+     * @param cl the application classloader
      * @return true if the container startup was successful.
      */
-    public boolean start() {
+    public boolean start(ClassLoader cl) {
         return true;
     }
 

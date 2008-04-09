@@ -38,7 +38,7 @@ public class DummyApplication implements ApplicationContainer<Object> {
     public DummyApplication() {
     }
 
-    public boolean start() {
+    public boolean start(ClassLoader cl) {
         return true;
     }
 

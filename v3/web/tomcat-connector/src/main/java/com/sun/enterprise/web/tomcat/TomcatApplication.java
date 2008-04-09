@@ -36,7 +36,7 @@ public class TomcatApplication implements ApplicationContainer {
         this.ctx = ctx;
     }
 
-    public boolean start() {
+    public boolean start(ClassLoader cl) {
         return true;
     }
 

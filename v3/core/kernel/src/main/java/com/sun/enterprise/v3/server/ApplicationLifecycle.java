@@ -683,7 +683,8 @@ abstract public class ApplicationLifecycle {
         for (ModuleInfo module : appInfo.getModuleInfos()) {
 
             try {
-                module.getApplicationContainer().start();
+                module.getApplicationContainer().start(
+                    context.getClassLoader());
                 tracker.add("started", ModuleInfo.class, module);
 
                 // add the endpoint

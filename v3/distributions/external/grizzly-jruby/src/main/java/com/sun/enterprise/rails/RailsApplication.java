@@ -43,9 +43,10 @@ public class RailsApplication extends RailsAdapter
      * starting. Returning false from a start mean that the container failed 
      * to start and the application that wanted to use the container should 
      * no attempt to load(). 
+     * @param cl the application classloader
      * @return true if the container startup was successful. 
      */
-    public boolean start() {
+    public boolean start(ClassLoader cl) {
         return true;
     }
     
