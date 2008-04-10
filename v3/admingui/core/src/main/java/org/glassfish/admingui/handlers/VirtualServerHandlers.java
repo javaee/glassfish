@@ -61,6 +61,7 @@ import com.sun.appserv.management.config.ConfigConfig;
 import com.sun.appserv.management.config.VirtualServerConfig;
 import com.sun.appserv.management.config.ConfigElement;
 import com.sun.appserv.management.config.PropertiesAccess;
+import com.sun.appserv.management.config.VirtualServerConfigKeys;
 
 
 /**
@@ -274,19 +275,14 @@ public class VirtualServerHandlers {
                     putOptionalValue(accessLoggingFlag, convertedMap, "accessLoggingEnabled");
                 }
                 
+                convertedMap.put(VirtualServerConfigKeys.HTTP_LISTENERS_KEY,handlerCtx.getInputValue("Http"));
+                convertedMap.put(VirtualServerConfigKeys.DEFAULT_WEB_MODULE_KEY,handlerCtx.getInputValue("Web"));
+                convertedMap.put(VirtualServerConfigKeys.LOG_FILE_KEY,handlerCtx.getInputValue("LogFile"));
+                convertedMap.put(VirtualServerConfigKeys.STATE_KEY,handlerCtx.getInputValue("StateOption"));
                 System.out.println("::::::::::::::::::: in GUI:  createVirtualServerConfig: with Map = " + convertedMap);
                 VirtualServerConfig server = config.getHTTPServiceConfig().createVirtualServerConfig(
                         (String)handlerCtx.getInputValue("Name"), ((String)handlerCtx.getInputValue("Hosts")),  convertedMap);
-                
-                server.setHosts(((String)handlerCtx.getInputValue("Hosts")));
-                server.setHTTPListeners(((String)handlerCtx.getInputValue("Http")));
-                server.setDefaultWebModule(((String)handlerCtx.getInputValue("Web")));
-                server.setLogFile(((String)handlerCtx.getInputValue("LogFile")));
-                //server.setState(((String)handlerCtx.getInputValue("StateOption")));
-                String tmp = (String)handlerCtx.getInputValue("StateOption");
-                server.setState(tmp);
-                return;
-                
+                                
             }
             Map<String,VirtualServerConfig>vservers = config.getHTTPServiceConfig().getVirtualServerConfigMap();
             VirtualServerConfig vs = (VirtualServerConfig)vservers.get((String)handlerCtx.getInputValue("Name"));
