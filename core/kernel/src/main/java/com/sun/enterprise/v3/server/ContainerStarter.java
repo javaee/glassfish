@@ -124,7 +124,7 @@ public class ContainerStarter {
                 Inhabitant<? extends Container> provider = habitat.getInhabitant(Container.class, name);
                 if (provider==null) {
                     try {
-                        Class<? extends Container> containerClass = (Class<? extends Container>) containerClassLoader.loadClass(name);
+                        Class<? extends Container> containerClass = containerClassLoader.loadClass(name).asSubclass(Container.class);
                         if (containerClass!=null) {
                             provider = habitat.getInhabitant(containerClass, null);
                         }
