@@ -164,7 +164,9 @@ public class JdbcHandlers {
                 }
                 GuiUtil.prepareSuccessful(handlerCtx);
             }else{
-                 jdbc = AMXRoot.getInstance().getResourcesConfig().createJDBCResourceConfig(jndiName, poolName, null);
+                 Map optionalMap = new HashMap();
+                 optionalMap.put("enabled", "true");
+                 jdbc = AMXRoot.getInstance().getResourcesConfig().createJDBCResourceConfig(jndiName, poolName, optionalMap);
                  TargetUtil.createNewTargets(handlerCtx,  jndiName);
             }
             jdbc.setDescription((String)handlerCtx.getInputValue("description"));
