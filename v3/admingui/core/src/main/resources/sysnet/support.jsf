@@ -364,7 +364,22 @@
                       
 
 </div>             
-<div id="rightcolumn">  
+<div id="rightcolumn">
+    
+        <div id="box" class="md1">
+	    <div class="hd"> 
+		<h2>$resource{i18n.support.GlassFishBusiness}</h2>
+	    </div>
+	    <div id="boxbd" class="bd">
+		<div class="innerbox"> 
+</f:verbatim>
+<jmaki:widget name="jmaki.blockList" id="business" service="/xhp?key=gfbusiness" args="{count:1}" template="/resources/jmaki/blockList/blogs.htm" />
+<f:verbatim>
+<br clear="all"><a href="http://blogs.sun.com/GlassFishForBusiness/" target="_blank">$resource{i18n.support.moreBusiness}</a>
+		</div>
+            </div>   
+	</div> 
+         <p>
         <div id="box" class="md1">
             <div class="hd"> 
                 <h2>$resource{i18n.support.service}</h2>
@@ -399,7 +414,7 @@
 	    <div id="boxbd" class="bd">
 		<div class="innerbox"> 
 </f:verbatim>
-<jmaki:widget name="jmaki.blockList" id="blogs" service="/xhp?key=blogs" args="{count:1}" template="/resources/jmaki/blockList/blogs.htm" />
+<jmaki:widget name="jmaki.blockList" id="blogs" service="/xhp?key=stories" args="{count:1}" template="/resources/jmaki/blockList/blogs.htm" />
 <f:verbatim>
 <br clear="all"><a href="http://blogs.sun.com/stories/" target="_blank">$resource{i18n.support.moreStories}</a>
 		</div>
