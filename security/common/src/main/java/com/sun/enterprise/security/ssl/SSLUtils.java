@@ -46,6 +46,7 @@ import java.security.cert.CertificateException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.Arrays;
 import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
 import javax.net.ssl.HttpsURLConnection;
@@ -96,12 +97,12 @@ public final class SSLUtils {
             KeyStore[] keyStores = getKeyStores();
             initKeyManagers(keyStores, secSupp.getKeyStorePasswords());
             initTrustManagers(getTrustStores());
-            if (keyStores != null && keyStores.length > 0) {
-                for (int i = 0; i < keyStores.length; i++) {
-                    Enumeration aliases = keyStores[i].aliases();
+            if (keyStores != null) {
+                for (KeyStore keyStore : keyStores) {
+                    Enumeration aliases = keyStore.aliases();
                     while (aliases.hasMoreElements()) {
-                        String alias = (String)aliases.nextElement();
-                        if (keyStores[i].isKeyEntry(alias)) {
+                        String alias = (String) aliases.nextElement();
+                        if (keyStore.isKeyEntry(alias)) {
                             hasKey = true;
                             break;
                         }
@@ -236,8 +237,8 @@ public final class SSLUtils {
             if (count != -1) {
                 isTokenKeyAlias = kstores[count].isKeyEntry(aliasName);
             } else {
-                for (int i = 0; i < kstores.length; i++) {
-                    if (kstores[i].isKeyEntry(certNickname)) {
+                for (KeyStore kstore : kstores) {
+                    if (kstore.isKeyEntry(certNickname)) {
                         isTokenKeyAlias = true;
                         break;
                     }
@@ -318,39 +319,32 @@ public final class SSLUtils {
     private static void initKeyManagers(KeyStore[] kstores, String[] pwds) 
             throws Exception {
 
-        ArrayList keyManagers = new ArrayList();
+        ArrayList<KeyManager> keyManagers = new ArrayList<KeyManager>();
         for (int i = 0; i < kstores.length; i++) {
             checkCertificateDates(kstores[i]);
 	    KeyManagerFactory kmf = KeyManagerFactory.getInstance(
                     KeyManagerFactory.getDefaultAlgorithm());
 	    kmf.init(kstores[i], pwds[i].toCharArray());
             KeyManager[] kmgrs = kmf.getKeyManagers();
-            if (kmgrs != null) {
-                for (int j = 0; j < kmgrs.length; j++) {
-                     keyManagers.add(kmgrs[j]);
-                }
-            }
+            if (kmgrs != null)
+                keyManagers.addAll(Arrays.asList(kmgrs));
         }
 
         keyManager = new UnifiedX509KeyManager(
-            (X509KeyManager [])keyManagers.toArray(
-                new X509KeyManager[keyManagers.size()]),
+                keyManagers.toArray(new X509KeyManager[keyManagers.size()]),
             secSupp.getTokenNames());
     }
     
     private static void initTrustManagers(KeyStore[] tstores) throws Exception {
         ArrayList trustManagers = new ArrayList();
-        for (int i = 0; i < tstores.length; i++) {
-            checkCertificateDates(tstores[i]);
-	    TrustManagerFactory tmf = TrustManagerFactory.getInstance(
+        for (KeyStore tstore : tstores) {
+            checkCertificateDates(tstore);
+            TrustManagerFactory tmf = TrustManagerFactory.getInstance(
                     TrustManagerFactory.getDefaultAlgorithm());
-	    tmf.init(tstores[i]);
+            tmf.init(tstore);
             TrustManager[] tmgrs = tmf.getTrustManagers();
-            if (tmgrs != null) {
-                for (int j = 0; j < tmgrs.length; j++) {
-                     trustManagers.add(tmgrs[j]);
-                }
-            }
+            if (tmgrs != null)
+                trustManagers.addAll(Arrays.asList(tmgrs));
         }
         if (trustManagers.size() == 1) {
             trustManager = (TrustManager)trustManagers.get(0);
@@ -362,7 +356,7 @@ public final class SSLUtils {
     private static KeyStore mergingTrustStores(KeyStore[] trustStores)
             throws IOException, KeyStoreException,
             NoSuchAlgorithmException, CertificateException {
-        KeyStore mergedStore = null;
+        KeyStore mergedStore;
         try {
             mergedStore = KeyStore.getInstance("CaseExactJKS");
         } catch(KeyStoreException ex) {
@@ -384,7 +378,7 @@ public final class SSLUtils {
 
                 String alias3 = alias2;
                 boolean alreadyInStore = false;
-                Certificate aCert = null;
+                Certificate aCert;
                 int count = 1;
                 while ((aCert = mergedStore.getCertificate(alias3)) != null) {
                     if (aCert.equals(cert)) {
