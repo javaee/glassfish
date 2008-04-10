@@ -97,14 +97,14 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
     @Param(name=LIBRARIES, optional=true)
     String libraries = null;
 
-    @Param(optional=true)
-    String force = Boolean.FALSE.toString();
+    @Param(optional=true, defaultValue="false")
+    Boolean force;
 
-    @Param(optional=true)
-    String precompilejsp = Boolean.FALSE.toString();
+    @Param(optional=true, defaultValue="false")
+    Boolean precompilejsp;
 
-    @Param(optional=true)
-    String verify = Boolean.FALSE.toString();
+    @Param(optional=true, defaultValue="false")
+    Boolean verify;
     
     @Param(optional=true)
     String retrieve = null;
@@ -114,26 +114,26 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
 
     //mutually exclusive with dropandcreatetables
     @Param(optional=true)
-    String createtables = null;
+    Boolean createtables;
 
     //mutually exclusive with createtables
     @Param(optional=true)
-    String dropandcreatetables = null;
+    Boolean dropandcreatetables;
 
     @Param(optional=true)
-    String uniquetablenames = null;
+    Boolean uniquetablenames;
 
     @Param(optional=true)
     String deploymentplan = null;
 
-    @Param(optional=true)
-    String enabled = Boolean.TRUE.toString();
+    @Param(optional=true, defaultValue="true")
+    Boolean enabled;
     
-    @Param(optional=true)
-    String generatermistubs = Boolean.FALSE.toString();
+    @Param(optional=true, defaultValue="false")
+    Boolean generatermistubs;
     
-    @Param(optional=true)
-    String availabilityenabled = Boolean.FALSE.toString();
+    @Param(optional=true, defaultValue="false")
+    Boolean availabilityenabled;
     
     @Param(optional=true)
     String target = "server";
@@ -201,7 +201,7 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
 
             // clean up any left over repository files
             FileUtils.whack(new File(env.getApplicationRepositoryPath(), name));
-            parameters.put(ENABLED, enabled);
+            parameters.put(ENABLED, enabled.toString());
 
             File source = new File(archive.getURI().getSchemeSpecificPart());
             boolean isDirectoryDeployed = true;
@@ -269,7 +269,7 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
             if (libraries!=null) {
                 moduleProps.setProperty(ServerTags.LIBRARIES, libraries);
             }
-            moduleProps.setProperty(ServerTags.ENABLED, enabled);
+            moduleProps.setProperty(ServerTags.ENABLED, enabled.toString());
             moduleProps.setProperty(ServerTags.DIRECTORY_DEPLOYED, String.valueOf(isDirectoryDeployed));
             if (virtualservers != null) {
                 moduleProps.setProperty(ServerTags.VIRTUAL_SERVERS, 
@@ -327,15 +327,14 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
      */
     private void handleRedeploy(final String name, final ActionReport report) 
         throws Exception {
-        boolean isForce = Boolean.parseBoolean(force);
         boolean isRegistered = isRegistered(name);
-        if (isRegistered && !isForce) {
+        if (isRegistered && !force) {
             String msg = localStrings.getLocalString(
                 "application.alreadyreg.redeploy",
                 "Application {0} already registered, please use deploy --force=true to redeploy", name);
             throw new Exception(msg);
         }
-        else if (isRegistered && isForce) 
+        else if (isRegistered && force) 
         {
             //if applicaiton is already deployed and force=true,
             //then undeploy the application first.

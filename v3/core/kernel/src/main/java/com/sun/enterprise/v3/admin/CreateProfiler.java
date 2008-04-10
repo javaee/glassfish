@@ -70,8 +70,8 @@ public class CreateProfiler implements AdminCommand {
     @Param(optional=true)
     String classpath;
 
-    @Param(optional=true)
-    String enabled = Boolean.TRUE.toString();
+    @Param(optional=true, defaultValue="true")
+    Boolean enabled;
 
     @Param(name="nativelibrarypath", optional=true)
     String nativeLibraryPath;
@@ -104,7 +104,7 @@ public class CreateProfiler implements AdminCommand {
                     Profiler newProfiler = ConfigSupport.createChildOf(param, Profiler.class);
                     newProfiler.setName(name);
                     newProfiler.setClasspath(classpath);
-                    newProfiler.setEnabled(enabled);
+                    newProfiler.setEnabled(enabled.toString());
                     newProfiler.setNativeLibraryPath(nativeLibraryPath);
                     if (properties != null) {
                         for ( java.util.Map.Entry e : properties.entrySet()) {

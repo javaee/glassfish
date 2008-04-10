@@ -60,8 +60,8 @@ public class DeleteJdbcConnectionPool implements AdminCommand {
     
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(DeleteJdbcConnectionPool.class);    
 
-    @Param(defaultValue="false", optional=true)
-    String cascade;
+    @Param(optional=true, defaultValue="false")
+    Boolean cascade;
     
     @Param(name="jdbc_connection_pool_id", primary=true)
     String jdbc_connection_pool_id;
@@ -87,7 +87,7 @@ public class DeleteJdbcConnectionPool implements AdminCommand {
         try {
             JDBCConnectionPoolManager jdbcConnMgr = new JDBCConnectionPoolManager();
             ResourceStatus rs = jdbcConnMgr.delete(servers, resources, connPools, 
-                    cascade, jdbc_connection_pool_id);
+                    cascade.toString(), jdbc_connection_pool_id);
             if (rs.getStatus() == ResourceStatus.SUCCESS) {
                 report.setMessage(rs.getMessage());
                 report.setActionExitCode(ActionReport.ExitCode.SUCCESS);       

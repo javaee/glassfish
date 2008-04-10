@@ -67,8 +67,8 @@ public class CreateJdbcResource implements AdminCommand {
     @Param(name="connectionpoolid")
     String connectionPoolId;
 
-    @Param(optional=true)
-    String enabled = Boolean.TRUE.toString();
+    @Param(optional=true, defaultValue="true")
+    Boolean enabled;
 
     @Param(optional=true)
     String description;
@@ -104,7 +104,7 @@ public class CreateJdbcResource implements AdminCommand {
         attrList.put(ResourceConstants.JNDI_NAME, jndiName);
         attrList.put(ResourceConstants.POOL_NAME, connectionPoolId);
         attrList.put(ServerTags.DESCRIPTION, description);
-        attrList.put(ResourceConstants.ENABLED, enabled);
+        attrList.put(ResourceConstants.ENABLED, enabled.toString());
         ResourceStatus rs;
  
         try {
@@ -119,8 +119,12 @@ public class CreateJdbcResource implements AdminCommand {
         ActionReport.ExitCode ec = ActionReport.ExitCode.SUCCESS;
         if (rs.getStatus() == ResourceStatus.FAILURE) {
             ec = ActionReport.ExitCode.FAILURE;
-            report.setMessage(localStrings.getLocalString("create.jdbc.resource.failed",
-                    "JDBC resource {0} creation failed", jndiName));
+            if (rs.getMessage() != null) {
+                 report.setMessage(rs.getMessage());
+            } else {
+                report.setMessage(localStrings.getLocalString("create.jdbc.resource.failed",
+                   "JDBC resource {0} creation failed", jndiName));
+            }    
             if (rs.getException() != null)
                 report.setFailureCause(rs.getException());
         } else {
