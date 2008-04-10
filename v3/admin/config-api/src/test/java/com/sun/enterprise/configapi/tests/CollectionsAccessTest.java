@@ -1,6 +1,7 @@
 package com.sun.enterprise.configapi.tests;
 
 import org.junit.Test;
+import org.junit.Ignore;
 import static org.junit.Assert.*;
 import org.jvnet.hk2.config.TransactionFailure;
 import org.jvnet.hk2.config.ConfigSupport;
@@ -16,6 +17,7 @@ import java.beans.PropertyVetoException;
  * Date: Apr 8, 2008
  * Time: 9:45:21 PM
  */
+@Ignore
 public class CollectionsAccessTest extends ConfigApiTest  {
 
 
