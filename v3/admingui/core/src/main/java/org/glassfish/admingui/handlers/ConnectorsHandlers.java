@@ -135,7 +135,6 @@ public class ConnectorsHandlers {
         }
 
         handlerCtx.setOutputValue("poolName", resource.getPoolName());
-        //TODO-V3 TP2
         handlerCtx.setOutputValue("description", resource.getDescription());
         if (AMXRoot.getInstance().isEE()) {
             handlerCtx.setOutputValue("enabledString", TargetUtil.getEnabledStatus(resource, false));
@@ -394,17 +393,15 @@ public class ConnectorsHandlers {
 @HandlerOutput(name = "transactionSupport", type = String.class)
 })
     public static void getConnectorConnectionPoolDefaultInfo(HandlerContext handlerCtx) {
-        //Map defaultMap = AMXRoot.getInstance().getResourcesConfig().getDefaultValues(XTypes.CONNECTOR_CONNECTION_POOL_CONFIG);
-        //TODO-V3 TP2
-        Map defaultMap = new HashMap();
-        handlerCtx.setOutputValue("steadyPoolSize", defaultMap.get("steady-pool-size"));
-        handlerCtx.setOutputValue("maxPoolSize", defaultMap.get("max-pool-size"));
-        handlerCtx.setOutputValue("poolResizeQuantity", defaultMap.get("pool-resize-quantity"));
-        handlerCtx.setOutputValue("idleTimeoutInSeconds", defaultMap.get("idle-timeout-in-seconds"));
-        handlerCtx.setOutputValue("maxWaitTimeInMillis", defaultMap.get("max-wait-time-in-millis"));
-        handlerCtx.setOutputValue("isConnectionValidationRequired", defaultMap.get("is-connection-validation-required"));
-        handlerCtx.setOutputValue("failAllConnections", defaultMap.get("fail-all-connections"));
-        handlerCtx.setOutputValue("transactionSupport", defaultMap.get("transaction-support"));
+        Map defaultMap = AMXRoot.getInstance().getResourcesConfig().getDefaultValues(XTypes.CONNECTOR_CONNECTION_POOL_CONFIG);
+        handlerCtx.setOutputValue("steadyPoolSize", defaultMap.get("SteadyPoolSize"));
+        handlerCtx.setOutputValue("maxPoolSize", defaultMap.get("MaxPoolSize"));
+        handlerCtx.setOutputValue("poolResizeQuantity", defaultMap.get("PoolResizeQuantity"));
+        handlerCtx.setOutputValue("idleTimeoutInSeconds", defaultMap.get("IdleTimeoutInSeconds"));
+        handlerCtx.setOutputValue("maxWaitTimeInMillis", defaultMap.get("MaxWaitTimeInMillis"));
+        handlerCtx.setOutputValue("isConnectionValidationRequired", defaultMap.get("IsConnectionValidationRequired"));
+        handlerCtx.setOutputValue("failAllConnections", defaultMap.get("FailAllConnections"));
+        handlerCtx.setOutputValue("transactionSupport", defaultMap.get("TransactionSupport"));
     }
 
     /**
