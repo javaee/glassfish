@@ -40,7 +40,7 @@ import org.jvnet.hk2.annotations.Inject;
  * @author Jerome Dochez
  */
 @Service
-public final class ServerEnvironment {
+public class ServerEnvironment {
     @Inject
     StartupContext startupContext;
 
@@ -73,12 +73,15 @@ public final class ServerEnvironment {
 
     private final static String INSTANCE_ROOT_PROP_NAME = "com.sun.aas.instanceRoot";
 
-    
-    /** Creates a new instance of ServerEnvironment */
     public ServerEnvironment() {
-        this.root = new File(System.getProperty(INSTANCE_ROOT_PROP_NAME)).getAbsolutePath();
+        this(new File(System.getProperty(INSTANCE_ROOT_PROP_NAME)));
+    }
 
-        asenv.getProps().put(SystemPropertyConstants.INSTANCE_ROOT_PROPERTY, root);
+    /** Creates a new instance of ServerEnvironment */
+    public ServerEnvironment(File root) {
+        this.root = root.getAbsolutePath();
+        
+        asenv.getProps().put(SystemPropertyConstants.INSTANCE_ROOT_PROPERTY, this.root);
         Map<String, String> args = startupContext.getArguments();
 
         verbose = Boolean.parseBoolean(args.get("-verbose"));
@@ -88,14 +91,7 @@ public final class ServerEnvironment {
         String s = startupContext.getArguments().get("-domainname");
 
         if (!ok(s)) {
-            try {
-                // ugly but we must protect since we're working with a String -- 
-                // not a file!
-                s = new File(root).getName(); 
-            }
-            catch(Exception e) { 
-                s = ""; 
-            }
+            s = root.getName();
         }
         domainName = s;
 
@@ -149,9 +145,7 @@ public final class ServerEnvironment {
     }
 
     public String getLibPath() {
-        String[] fileNames = new String[]{root,
-            "lib"
-        };
+        String[] fileNames = new String[]{root,"lib"};
         return StringUtils.makeFilePath(fileNames, false);
 
     }
