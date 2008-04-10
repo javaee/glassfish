@@ -23,55 +23,70 @@
 
 package com.sun.enterprise.v3.server;
 
-import com.sun.enterprise.deploy.shared.ArchiveFactory;
-import com.sun.enterprise.module.*;
-import com.sun.enterprise.module.common_impl.Tokenizer;
-import com.sun.enterprise.module.impl.ClassLoaderProxy;
-import com.sun.enterprise.v3.data.*;
-import com.sun.enterprise.v3.deployment.DeploymentContextImpl;
-import com.sun.enterprise.v3.deployment.DeployCommand;
-import com.sun.enterprise.v3.deployment.EnableCommand;
-import com.sun.enterprise.v3.services.impl.GrizzlyService;
-import com.sun.enterprise.config.serverbeans.Applications;
 import com.sun.enterprise.config.serverbeans.Application;
+import com.sun.enterprise.config.serverbeans.ApplicationRef;
+import com.sun.enterprise.config.serverbeans.Applications;
 import com.sun.enterprise.config.serverbeans.Engine;
 import com.sun.enterprise.config.serverbeans.Property;
-import com.sun.enterprise.config.serverbeans.ServerTags;
 import com.sun.enterprise.config.serverbeans.Server;
-import com.sun.enterprise.config.serverbeans.ApplicationRef;
+import com.sun.enterprise.config.serverbeans.ServerTags;
+import com.sun.enterprise.deploy.shared.ArchiveFactory;
+import com.sun.enterprise.module.ManifestConstants;
+import com.sun.enterprise.module.Module;
+import com.sun.enterprise.module.ModuleDefinition;
+import com.sun.enterprise.module.ModulesRegistry;
+import com.sun.enterprise.module.ResolveError;
+import com.sun.enterprise.module.common_impl.Tokenizer;
+import com.sun.enterprise.module.impl.ClassLoaderProxy;
 import com.sun.enterprise.util.io.FileUtils;
+import com.sun.enterprise.v3.data.ApplicationInfo;
+import com.sun.enterprise.v3.data.ApplicationRegistry;
+import com.sun.enterprise.v3.data.ContainerInfo;
+import com.sun.enterprise.v3.data.ContainerRegistry;
+import com.sun.enterprise.v3.data.ModuleInfo;
+import com.sun.enterprise.v3.deployment.DeployCommand;
+import com.sun.enterprise.v3.deployment.DeploymentContextImpl;
+import com.sun.enterprise.v3.deployment.EnableCommand;
+import com.sun.enterprise.v3.services.impl.GrizzlyService;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.container.Adapter;
-import org.glassfish.api.container.Sniffer;
 import org.glassfish.api.container.Container;
-import org.glassfish.api.deployment.*;
+import org.glassfish.api.container.Sniffer;
+import org.glassfish.api.deployment.ApplicationContainer;
+import org.glassfish.api.deployment.Deployer;
+import org.glassfish.api.deployment.DeploymentContext;
+import org.glassfish.api.deployment.InstrumentableClassLoader;
+import org.glassfish.api.deployment.MetaData;
 import org.glassfish.api.deployment.archive.ArchiveHandler;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
+import org.jvnet.hk2.config.ConfigBeanProxy;
+import org.jvnet.hk2.config.ConfigCode;
 import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.SingleConfigCode;
-import org.jvnet.hk2.config.ConfigCode;
-import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.TransactionFailure;
 
-import java.util.*;
-import java.util.Properties;
-import java.util.Arrays;
-import java.util.jar.Manifest;
-import java.util.jar.JarFile;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.net.URL;
-import java.net.MalformedURLException;
+import java.beans.PropertyVetoException;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.beans.PropertyVetoException;
 import java.lang.instrument.ClassFileTransformer;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.jar.Manifest;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Application Loader is providing utitily methods to load applications
@@ -357,45 +372,12 @@ abstract public class ApplicationLifecycle {
 
         //List<ContainerInfo> startedContainers = new ArrayList<ContainerInfo>();
         for (Sniffer sniffer : sniffers) {
-            
             if (sniffer.getContainersNames()==null || sniffer.getContainersNames().length==0) {
                 failure(logger, "no container associated with application of type : " + sniffer.getModuleType(), null, report);
                 return null;
             }
 
-            String resourceName = sniffer.getClass().getName().replace(".","/")+".class";
-            URL resource = sniffer.getClass().getClassLoader().getResource(resourceName);
-            if (resource==null) {
-                failure(logger, "cannot find container module from service implementation " + sniffer.getClass(), null, report);
-                return null;
-            }
-            String resourceID = resource.toString();
-            String manifest = resourceID.substring(0, resourceID.length() - resourceName.length())+ JarFile.MANIFEST_NAME;
-            Manifest m = null;
-
-            InputStream is = null;
-            try {
-                URL manifestURL = new URL(manifest);
-                is = manifestURL.openStream();
-                if (is!=null) {
-                    m = new Manifest(is);
-                }
-            } catch (MalformedURLException e) {
-            } catch (IOException e) {
-            } finally {
-                if (is!=null) {
-                    try {
-                        is.close();
-                    } catch (IOException e) {
-                        logger.finer("cannot close manifest file input stream");
-                    }
-                }
-            }
-            Module snifferModule=null;
-            if (m!=null) {
-                String bundleName = m.getMainAttributes().getValue(ManifestConstants.BUNDLE_NAME);
-                snifferModule = modulesRegistry.makeModuleFor(bundleName, null);
-            }
+            Module snifferModule=modulesRegistry.find(sniffer.getClass());
             if (snifferModule==null) {
                 failure(logger, "cannot find container module from service implementation " + sniffer.getClass(), null, report);
                 return null;
