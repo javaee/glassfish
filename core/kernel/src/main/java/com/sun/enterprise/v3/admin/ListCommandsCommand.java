@@ -24,15 +24,21 @@
 package com.sun.enterprise.v3.admin;
 
 import com.sun.enterprise.module.common_impl.Tokenizer;
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import org.glassfish.api.ActionReport;
+import org.glassfish.api.I18n;
+import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.component.PerLookup;
 
 /**
  * Simple admin command to list all existing commands.
@@ -41,13 +47,29 @@ import org.jvnet.hk2.component.Habitat;
  * 
  */
 @Service(name="list-commands")
+@Scoped(PerLookup.class)
+@I18n("list.commands")
+
 public class ListCommandsCommand implements AdminCommand {
 
     private static final String DEBUG_PAIR = "mode=debug";
     @Inject
     Habitat habitat;
 
+    @Param
+    Boolean verbose = Boolean.FALSE;
 
+    @Param
+    Boolean debug = Boolean.TRUE;
+
+    @Param
+    Boolean xyz;
+    
+    @Param(defaultValue="true")
+    Boolean qbert;
+    
+    @Param
+    Boolean noDefValue = true;
     /**
      * Executes the command with the command parameters passed as Properties
      * where the keys are the paramter names and the values the parameter values
@@ -55,30 +77,30 @@ public class ListCommandsCommand implements AdminCommand {
      * @param context information
      */
     public void execute(AdminCommandContext context) {
-
+        setDebug();
         context.getActionReport().setActionExitCode(ActionReport.ExitCode.SUCCESS);
         ActionReport report = context.getActionReport();
-        report.setMessage("List of Commands");
+        report.setMessage("List of Commands XYZ = " + xyz );
         report.getTopMessagePart().setChildrenType("Command");
-        for (String name : sortedAdminCommands()) {
+        setAdminCommands();
+        sortAdminCommands();
+        
+        for (AdminCommand cmd : cmds) {
+            if(!debug && debugCommand(cmd)) {
+                continue;
+            }
+            String name = cmd.getClass().getAnnotation(Service.class).name();
             ActionReport.MessagePart part = report.getTopMessagePart().addChild();
             part.setMessage(name);
-        }
-    }
-    
-    private List<String> sortedAdminCommands() {
-        List<String> names = new ArrayList<String>();
-        for (AdminCommand command : habitat.getAllByContract(AdminCommand.class)) {
-            String name = command.getClass().getAnnotation(Service.class).name();
-            if (debugCommand(command)) { //it's a debug command, add only if debug is set
-                if (debugSet())
-                    names.add(name);                
-            } else { //always add non-debug commands
-                names.add(name);
+            if(verbose) {
+                part.addProperty("Class", cmd.getClass().getName());
+                Annotation[] anns = cmd.getClass().getDeclaredAnnotations();
+                for(int i = 0; i < anns.length; i++) {
+                    Annotation ann = anns[i]; 
+                    part.addProperty("Annotation " + i, ann.toString());
+                }
             }
         }
-        Collections.sort(names);
-        return (names);
     }
     
     private static boolean debugCommand(AdminCommand command) {
@@ -104,8 +126,29 @@ public class ListCommandsCommand implements AdminCommand {
         return ( contains );
     }
     
-    private static boolean debugSet() { //TODO take into a/c debug-enabled?
+    private void setDebug() { //TODO take into a/c debug-enabled?
+        // debug is set if either or both the param is true or AS_DEBUG is true
         String s = System.getenv("AS_DEBUG");
-        return ( Boolean.valueOf(s) );
+        debug = debug || Boolean.valueOf(s);
     }
+
+    private void setAdminCommands() {
+        cmds = new ArrayList<AdminCommand>();
+        for (AdminCommand command : habitat.getAllByContract(AdminCommand.class)) {
+            cmds.add(command);
+        }
+    }
+
+    private void sortAdminCommands() {
+        Collections.sort(cmds, new Comparator<AdminCommand>() {
+            public int compare(AdminCommand c1, AdminCommand c2) {
+                String name1 = c1.getClass().getAnnotation(Service.class).name();
+                String name2 = c2.getClass().getAnnotation(Service.class).name();
+                return name1.compareTo(name2);
+            }
+        }
+        );
+    }
+    
+    private List<AdminCommand> cmds;
 }
