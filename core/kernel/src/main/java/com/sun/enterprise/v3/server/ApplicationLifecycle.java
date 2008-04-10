@@ -902,85 +902,84 @@ abstract public class ApplicationLifecycle {
         applicationInfo, final DeploymentContext context)
         throws TransactionFailure {
         final Properties moduleProps = context.getProps();
-        Boolean commit = (Boolean)
-            ConfigSupport.apply(new ConfigCode() {
-                public Object run(ConfigBeanProxy... params) throws PropertyVetoException, TransactionFailure {
+        ConfigSupport.apply(new ConfigCode() {
+            public Object run(ConfigBeanProxy... params) throws PropertyVetoException, TransactionFailure {
 
-                    // adding the application element
-                    Application app = ConfigSupport.createChildOf(
-                            params[0], Application.class);
-                    applications.getModules().add(app);
+                // adding the application element
+                Application app = ConfigSupport.createChildOf(
+                        params[0], Application.class);
+                applications.getModules().add(app);
 
-                    // various attributes
-                    app.setName(moduleProps.getProperty(ServerTags.NAME));
-                    app.setLocation(moduleProps.getProperty(
-                        ServerTags.LOCATION));
-                    app.setObjectType(moduleProps.getProperty(
-                        ServerTags.OBJECT_TYPE));
-                    // always set the enable attribute of application to true
-		    app.setEnabled(String.valueOf(true));
-                    if (moduleProps.getProperty(ServerTags.CONTEXT_ROOT) !=
-                        null) {
-		            app.setContextRoot(moduleProps.getProperty(
-                                ServerTags.CONTEXT_ROOT));
-                    }
-                    if (moduleProps.getProperty(ServerTags.LIBRARIES) !=
-                        null) {
-		            app.setLibraries(moduleProps.getProperty(
-                                ServerTags.LIBRARIES));
-                    }
-                    app.setDirectoryDeployed(moduleProps.getProperty(
-                        ServerTags.DIRECTORY_DEPLOYED));
-
-
-                    // engine element
-                    for (ModuleInfo moduleInfo :
-                        applicationInfo.getModuleInfos()) {
-                        Engine engine = ConfigSupport.createChildOf(app,
-                        Engine.class);
-                        app.getEngine().add(engine);
-                        engine.setSniffer(moduleInfo.getContainerInfo(
-                            ).getSniffer().getModuleType());
-                    }
-
-                    // property element
-                    // trim the properties that have been written as attributes
-                    // the rest properties will be written as property element
-                    for (Iterator itr = moduleProps.keySet().iterator();
-                        itr.hasNext();) {
-                        String propName = (String) itr.next();
-                        if (!propName.equals(ServerTags.NAME) &&
-                            !propName.equals(ServerTags.LOCATION) &&
-                            !propName.equals(ServerTags.ENABLED) &&
-                            !propName.equals(ServerTags.CONTEXT_ROOT) &&
-                            !propName.equals(ServerTags.LIBRARIES) &&
-                            !propName.equals(ServerTags.OBJECT_TYPE) &&
-                            !propName.equals(ServerTags.VIRTUAL_SERVERS) &&
-                            !propName.equals(ServerTags.DIRECTORY_DEPLOYED))
-                        {
-                            Property prop = ConfigSupport.createChildOf(app,
-                                Property.class);
-                            app.getProperty().add(prop);
-                            prop.setName(propName);
-                            prop.setValue(moduleProps.getProperty(propName));
-                        }
-                    }
-
-                    // adding the application-ref element
-                    ApplicationRef appRef = ConfigSupport.createChildOf(
-                            params[1], ApplicationRef.class);
-                    server.getApplicationRef().add(appRef);
-                    appRef.setRef(moduleProps.getProperty(ServerTags.NAME));
-                    if (moduleProps.getProperty(
-                        ServerTags.VIRTUAL_SERVERS) != null) {
-                        appRef.setVirtualServers(moduleProps.getProperty(
-                            ServerTags.VIRTUAL_SERVERS));
-                    }
-                    appRef.setEnabled(moduleProps.getProperty(
-                        ServerTags.ENABLED));
-
-                    return Boolean.TRUE;
+                // various attributes
+                app.setName(moduleProps.getProperty(ServerTags.NAME));
+                app.setLocation(moduleProps.getProperty(
+                    ServerTags.LOCATION));
+                app.setObjectType(moduleProps.getProperty(
+                    ServerTags.OBJECT_TYPE));
+                // always set the enable attribute of application to true
+                app.setEnabled(String.valueOf(true));
+                if (moduleProps.getProperty(ServerTags.CONTEXT_ROOT) !=
+                    null) {
+                        app.setContextRoot(moduleProps.getProperty(
+                            ServerTags.CONTEXT_ROOT));
                 }
+                if (moduleProps.getProperty(ServerTags.LIBRARIES) !=
+                    null) {
+                        app.setLibraries(moduleProps.getProperty(
+                            ServerTags.LIBRARIES));
+                }
+                app.setDirectoryDeployed(moduleProps.getProperty(
+                    ServerTags.DIRECTORY_DEPLOYED));
+
+
+                // engine element
+                for (ModuleInfo moduleInfo :
+                    applicationInfo.getModuleInfos()) {
+                    Engine engine = ConfigSupport.createChildOf(app,
+                    Engine.class);
+                    app.getEngine().add(engine);
+                    engine.setSniffer(moduleInfo.getContainerInfo(
+                        ).getSniffer().getModuleType());
+                }
+
+                // property element
+                // trim the properties that have been written as attributes
+                // the rest properties will be written as property element
+                for (Iterator itr = moduleProps.keySet().iterator();
+                    itr.hasNext();) {
+                    String propName = (String) itr.next();
+                    if (!propName.equals(ServerTags.NAME) &&
+                        !propName.equals(ServerTags.LOCATION) &&
+                        !propName.equals(ServerTags.ENABLED) &&
+                        !propName.equals(ServerTags.CONTEXT_ROOT) &&
+                        !propName.equals(ServerTags.LIBRARIES) &&
+                        !propName.equals(ServerTags.OBJECT_TYPE) &&
+                        !propName.equals(ServerTags.VIRTUAL_SERVERS) &&
+                        !propName.equals(ServerTags.DIRECTORY_DEPLOYED))
+                    {
+                        Property prop = ConfigSupport.createChildOf(app,
+                            Property.class);
+                        app.getProperty().add(prop);
+                        prop.setName(propName);
+                        prop.setValue(moduleProps.getProperty(propName));
+                    }
+                }
+
+                // adding the application-ref element
+                ApplicationRef appRef = ConfigSupport.createChildOf(
+                        params[1], ApplicationRef.class);
+                server.getApplicationRef().add(appRef);
+                appRef.setRef(moduleProps.getProperty(ServerTags.NAME));
+                if (moduleProps.getProperty(
+                    ServerTags.VIRTUAL_SERVERS) != null) {
+                    appRef.setVirtualServers(moduleProps.getProperty(
+                        ServerTags.VIRTUAL_SERVERS));
+                }
+                appRef.setEnabled(moduleProps.getProperty(
+                    ServerTags.ENABLED));
+
+                return Boolean.TRUE;
+            }
 
         }, applications, server);
     }
