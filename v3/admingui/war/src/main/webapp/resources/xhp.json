@@ -43,7 +43,11 @@
       "url":"http://developers.sun.com/rss/techdaysreg.xml",
       "xslStyleSheet": "rss.xsl"
      },
-{"id": "blogs",
+{"id": "gfbusiness",
+      "url":"http://blogs.sun.com/GlassFishForBusiness/feed/entries/atom",
+      "xslStyleSheet": "rss.xsl"
+     },
+{"id": "stories",
       "url":"http://blogs.sun.com/stories/feed/entries/atom",
       "xslStyleSheet": "rss.xsl"
      },
