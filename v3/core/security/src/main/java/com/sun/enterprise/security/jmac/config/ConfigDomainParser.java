@@ -66,7 +66,7 @@ import sun.security.util.PropertyExpander.ExpandException;
 /**
  * Parser for message-security-config in domain.xml
  */
-public class ConfigDomainParser {
+public class ConfigDomainParser implements ConfigParser {
 
     private static Logger _logger=null;
     static {
