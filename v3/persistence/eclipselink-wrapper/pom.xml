@@ -86,6 +86,9 @@
                              to change the packaging type to hk2-jar. 
                         -->
                         <HK2-Bundle-Name>${groupId}:${artifactId}</HK2-Bundle-Name>
+
+                        <!-- Update Manifest with Premain-Class entry -->
+                        <Premain-Class>org.eclipse.persistence.internal.jpa.JavaSECMPInitializerAgent</Premain-Class>
                     </instructions>
                     <!-- Maven uses the output directory (target/classes)
                     rather than the final bundle, when compiling against
