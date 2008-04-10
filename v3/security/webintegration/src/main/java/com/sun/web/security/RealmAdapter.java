@@ -289,9 +289,11 @@ public class RealmAdapter extends RealmBase implements RealmInitializer {
      *
      * @param container The virtual server
      */
-    public void setVirtualServer(Container container) {
-        this.virtualServer = container;
-        this.helper = getConfigHelper();
+    public void setVirtualServer(Object container) {
+        this.virtualServer = (Container)container;
+        //this was causing classloading failure.
+        //TODO:reexamine after TP2
+        //this.helper = getConfigHelper();
     }
 
     public WebBundleDescriptor getWebDescriptor() {
@@ -1020,6 +1022,9 @@ public class RealmAdapter extends RealmBase implements RealmInitializer {
      */
     public SecurityConstraint[] findSecurityConstraints(HttpRequest request,
             Context context) {
+        if (this.helper == null) {
+            initConfigHelper();
+        }
         WebSecurityManager secMgr = getWebSecurityManager(false);
 
         if (secMgr != null && secMgr.hasNoConstrainedResources()) {
@@ -1533,5 +1538,13 @@ public class RealmAdapter extends RealmBase implements RealmInitializer {
 
     public void setCurrentSecurityContext(Principal principal) {
         SecurityContext.setCurrent(getSecurityContextForPrincipal(principal));
+    }
+
+    //TODO: reexamine this after TP2
+    public synchronized void initConfigHelper() {
+        if (this.helper != null) {
+            return;
+        }
+        this.helper = getConfigHelper();
     }
 }
