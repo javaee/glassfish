@@ -73,11 +73,6 @@ public class ContainerStarter {
         // version is null so far...
         String version = null;
         
-        // now we need to find the glue code which can be packaged inside
-        // our glassfish lib directory or within the container implementation
-        String bundleName = "gf-" + containerName + "-connector";
-        String jarFileName = bundleName + ".jar";
-
         // get the container installation
         String containerHome = StringUtils.getProperty(containerName + ".home");
         if (containerHome==null) {
