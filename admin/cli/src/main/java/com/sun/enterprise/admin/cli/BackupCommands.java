@@ -168,15 +168,17 @@ public class BackupCommands extends BaseLifeCycleCommand
 
 	private void setDomainName() throws CommandValidationException
 	{
-		try
-		{
-			domainName = getDomainName();
-		}
-		catch(CommandException ce)
-		{
-			throw new CommandValidationException(ce);
-		}
-		//domainName = (String)operands.firstElement();
+        if(operands.size() > 0)
+            domainName = (String)operands.firstElement();
+        else if(domainsDir != null)
+        {
+            // look for the one and only dir in domains dir
+            domainName = CLIUtils.getTheOneAndOnlyDomain(new File(domainsDir)).getName();
+        }
+        else
+        {
+            domainName = null;
+        }
 	}
 
 	///////////////////////////////////////////////////////////////////////////
@@ -187,6 +189,8 @@ public class BackupCommands extends BaseLifeCycleCommand
 
 		if(domainsDir == null || domainsDir.length() <= 0)
 			domainsDir = getSystemProperty(SystemPropertyConstants.DOMAINS_ROOT_PROPERTY);
+        
+        
 	}
 	
 	///////////////////////////////////////////////////////////////////////////
@@ -229,7 +233,7 @@ public class BackupCommands extends BaseLifeCycleCommand
 		// disallow backup & restore if server is running.  list-backups is OK anytime...
 		if(command == CmdType.BACKUP || command == CmdType.RESTORE)
 		{
-			if(!isNotRunning())
+			if(!isNotRunning(command))
 			{
 				throw new CommandValidationNoUsageException(getLocalizedString("Backup.DomainIsNotStopped",
 					new String[] {command.name} ));
@@ -295,13 +299,27 @@ public class BackupCommands extends BaseLifeCycleCommand
 	
 	///////////////////////////////////////////////////////////////////////////
 
-	private boolean isNotRunning() throws CommandValidationException
+	private boolean isNotRunning(CmdType command) throws CommandValidationException
 	{
-        File domainXml = CLIUtils.getDomainXml(domainsDir, domainName);
-        int port = CLIUtils.getAdminPort(domainXml);
-        return !RemoteCommand.pingDAS(port);
+        // if we get an error finding domain.xml -- it is an error for  backup 
+        // but perfectly OK for a restore
+        try {
+            return !CLIUtils.pingDAS(domainsDir, domainName);
+        }
+        catch(CommandValidationException cve) {
+            if(command == CmdType.BACKUP)
+                throw cve;
+            else
+                return true;
+        }
 	}
 	
+	///////////////////////////////////////////////////////////////////////////
+
+    private boolean isBackup() {
+        return command == CmdType.BACKUP;
+    }
+    
 	///////////////////////////////////////////////////////////////////////////
 
 	private static final	String			DOMAINSDIR	= "domaindir";

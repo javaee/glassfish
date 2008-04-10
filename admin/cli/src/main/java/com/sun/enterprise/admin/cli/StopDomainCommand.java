@@ -105,7 +105,7 @@ public class StopDomainCommand extends S1ASCommand {
             domainRootDir = new File(domainsDir, domainName);
         }
         else {
-            domainRootDir = getTheOneAndOnlyDomain(domainsDir);
+            domainRootDir = CLIUtils.getTheOneAndOnlyDomain(domainsDir);
         }
 
         if (!domainRootDir.isDirectory()) {
@@ -117,35 +117,6 @@ public class StopDomainCommand extends S1ASCommand {
     private void getDomainXml() throws CommandValidationException {
         // root-dir/config/domain.xml
         domainXml = CLIUtils.getDomainXml(domainRootDir);
-    }
-
-    /**
-     * It either throws an Exception or returns a valid directory
-     * @param parent
-     * @return
-     * @throws com.sun.enterprise.cli.framework.CommandValidationException
-     */
-    private File getTheOneAndOnlyDomain(File parent) throws CommandValidationException {
-        // look for subdirs in the parent dir -- there must be one and only one
-
-        File[] files = parent.listFiles(new FileFilter() {
-
-            public boolean accept(File f) {
-                return f.isDirectory();
-            }
-        });
-
-        if (files == null || files.length == 0) {
-            throw new CommandValidationException(
-                    strings.get("noDomainDirs", parent));
-        }
-
-        if (files.length > 1) {
-            throw new CommandValidationException(
-                    strings.get("StopDomain.tooManyDomainDirs", parent));
-        }
-
-        return files[0];
     }
 
     private static boolean ok(String s) {
