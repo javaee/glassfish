@@ -66,7 +66,7 @@ public class DomainXml implements Populator {
         File domainXml = new File(env.getConfigDirPath(), ServerEnvironment.kConfigXMLFileName);
         
         String instanceName = context.getArguments().get("-instancename");
-        if(instanceName == null || instanceName.length() <= 0)
+        if(instanceName == null || instanceName.length() == 0)
             instanceName = "server";
         
         parseDomainXml(parser, domainXml, instanceName);
