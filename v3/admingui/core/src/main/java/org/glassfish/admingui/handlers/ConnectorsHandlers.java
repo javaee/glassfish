@@ -1634,9 +1634,9 @@ public class ConnectorsHandlers {
                 }
                  */
             }
-            //a work around for now, delay 3000 for all systems
-            Thread.sleep(3000);
-            /*
+            
+            /* remove workaround as AMX will fix this.
+             * refer to issue# 4622
             if (File.separatorChar == '\\') {
                 //For Window, there is a timing issue that we need to put in some delay.
                 //Otherwise, when we redisplay the resource table after deletion, there will be exception thrown
