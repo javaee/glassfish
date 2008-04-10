@@ -1,5 +1,3 @@
-could not open /dev/kbd to get keyboard type US keyboard assumed
-could not get keyboard type US keyboard assumed
 /*
  * The contents of this file are subject to the terms 
  * of the Common Development and Distribution License 
