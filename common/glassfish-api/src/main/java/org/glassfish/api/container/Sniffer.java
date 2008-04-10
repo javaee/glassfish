@@ -84,7 +84,7 @@ public interface Sniffer {
      * Sets up the container libraries so that any imported bundle from the
      * connector jar file will now be known to the module subsystem
      *
-     * This method returns a {@link ModuleDefinition} for the module containing
+     * This method returns a {@link Module}s for the module containing
      * the core implementation of the container. That means that this module
      * will be locked as long as there is at least one module loaded in the
      * associated container.
