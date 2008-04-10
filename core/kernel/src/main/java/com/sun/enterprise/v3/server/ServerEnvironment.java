@@ -28,13 +28,21 @@ import com.sun.enterprise.universal.glassfish.ASenvPropertyReader;
 import com.sun.enterprise.universal.glassfish.SystemPropertyConstants;
 import java.io.*;
 import java.util.*;
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.Inject;
 
 /**
- * Fake for V2 InstanceEnvironment.
+ * Defines various global configuration for the running GlassFish instance.
+ *
+ * <p>
+ * This primarily replaces all the system variables in V2.
  *
  * @author Jerome Dochez
  */
+@Service
 public final class ServerEnvironment {
+    @Inject
+    StartupContext startupContext;
 
     /** folder where all generated code like compiled jsps, stubs is stored */
     public static final String kGeneratedDirName = "generated";
@@ -57,17 +65,19 @@ public final class ServerEnvironment {
     
     // TODO: this should be File
     final private String root;
-    final private StartupContext startupContext;
     private final boolean verbose;
     private final boolean debug;
     private static final ASenvPropertyReader asenv = new ASenvPropertyReader();
     private final String domainName; 
     private final String instanceName;
 
+    private final static String INSTANCE_ROOT_PROP_NAME = "com.sun.aas.instanceRoot";
+
+    
     /** Creates a new instance of ServerEnvironment */
-    public ServerEnvironment(String root, StartupContext startupContext) {
-        this.root = root;
-        this.startupContext = startupContext;
+    public ServerEnvironment() {
+        this.root = new File(System.getProperty(INSTANCE_ROOT_PROP_NAME)).getAbsolutePath();
+
         asenv.getProps().put(SystemPropertyConstants.INSTANCE_ROOT_PROPERTY, root);
         Map<String, String> args = startupContext.getArguments();
 

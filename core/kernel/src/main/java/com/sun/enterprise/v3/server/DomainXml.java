@@ -46,19 +46,14 @@ public class DomainXml implements Populator {
     @Inject
     XMLInputFactory xif;
 
-
-    private final static String DEFAULT_DOMAINS_DIR_PROPNAME = "AS_DEF_DOMAINS_PATH";
-    private final static String INSTANCE_ROOT_PROP_NAME = "com.sun.aas.instanceRoot";
+    @Inject
+    ServerEnvironment env;
 
     public void run(ConfigParser parser) {
         if (logger.isLoggable(Level.FINE)) {
             logger.fine("Startup class : " + this.getClass().getName());
         }
 
-        File domainRoot = new File(System.getProperty(INSTANCE_ROOT_PROP_NAME));
-        ServerEnvironment env = new ServerEnvironment(domainRoot.getPath(), context);
-        
-        habitat.add(new ExistingSingletonInhabitant<ServerEnvironment>(env));
         habitat.addComponent("parent-class-loader",
                 new ExistingSingletonInhabitant<ClassLoader>(ClassLoader.class, registry.getParentClassLoader()));
 
