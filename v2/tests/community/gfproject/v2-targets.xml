@@ -109,6 +109,7 @@
             <arg value="/c"/>
             <arg value="${glassfish.home}/bin/asadmin.bat"/>
             <arg line="undeploy"/>
+            <arg line="${as.props}"/>
             <arg line="${war.file}"/>
         </exec>
     </target>
