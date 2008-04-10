@@ -447,7 +447,7 @@ abstract public class ApplicationLifecycle {
                             requesters.add(deployer);
 						}
 						for (Class metadataType : metadata.provides()) {
-                            Deployer currentProvidindDeployer = metaDataProvided.get(metaDataProvided);
+                            Deployer currentProvidindDeployer = metaDataProvided.get(metadataType);
                             if(currentProvidindDeployer != null ) {
                                 failure(logger, "More than one deployer [" + currentProvidindDeployer +  ", " + deployer
                                     + "] provide same metadata : " + metadataType, null, report);
