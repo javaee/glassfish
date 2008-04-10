@@ -209,16 +209,15 @@ public class ServerHandlers {
         @HandlerOutput(name="AutoDeployDirectory", type=String.class)})     
         public static void getServerDefaultAppsConfigAttributes(HandlerContext handlerCtx) {
         
-        //tODO-V3 TP2
-        //Map defaultMap = config.getAdminServiceConfig().getDefaultValues(XTypes.DAS_CONFIG);
-        Map defaultMap = new HashMap();
+        ConfigConfig config = AMXRoot.getInstance().getConfig(((String)handlerCtx.getInputValue("ConfigName")));
+        Map defaultMap = config.getAdminServiceConfig().getDefaultValues(XTypes.DAS_CONFIG);
         String reload = (String) defaultMap.get("DynamicReloadEnabled");
         String reloadInterval = (String) defaultMap.get("DynamicReloadPollIntervalInSeconds");
         String autoDeploy = (String) defaultMap.get("AutodeployEnabled");
         String adminTimeout = (String) defaultMap.get("AdminSessionTimeoutInMinutes");
         String autoDeployInterval = (String) defaultMap.get("AutodeployPollingIntervalInSeconds");
         String autoDeployDirectory = (String) defaultMap.get("AutodeployDir") ;
-        String precompile = (String) defaultMap.get("AutodeployJSPPrecompilationEnabled");
+        String precompile = (String) defaultMap.get("AutodeployJspPrecompilationEnabled");
         String verifier = (String) defaultMap.get("AutodeployVerifierEnabled");
 
         if(reload.equals("true")) {
