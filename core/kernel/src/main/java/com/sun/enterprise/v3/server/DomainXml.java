@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.net.URLClassLoader;
 
 
 /**
@@ -50,33 +49,45 @@ public class DomainXml implements Populator {
 
     private final static String DEFAULT_DOMAINS_DIR_PROPNAME = "AS_DEF_DOMAINS_PATH";
     private final static String INSTANCE_ROOT_PROP_NAME = "com.sun.aas.instanceRoot";
-    private File domainRoot;
-    
+
     public void run(ConfigParser parser) {
         if (logger.isLoggable(Level.FINE)) {
             logger.fine("Startup class : " + this.getClass().getName());
         }
 
-        domainRoot = new File(System.getProperty(INSTANCE_ROOT_PROP_NAME));
-
+        File domainRoot = new File(System.getProperty(INSTANCE_ROOT_PROP_NAME));
         ServerEnvironment env = new ServerEnvironment(domainRoot.getPath(), context);
-        habitat.add(new ExistingSingletonInhabitant(ServerEnvironment.class, env));
-        habitat.addComponent("parent-class-loader",
-                new ExistingSingletonInhabitant(URLClassLoader.class, registry.getParentClassLoader()));
-        File domainXml = new File(env.getConfigDirPath(), ServerEnvironment.kConfigXMLFileName);
         
+        habitat.add(new ExistingSingletonInhabitant<ServerEnvironment>(env));
+        habitat.addComponent("parent-class-loader",
+                new ExistingSingletonInhabitant<ClassLoader>(ClassLoader.class, registry.getParentClassLoader()));
+
+        parseDomainXml(parser, getDomainXml(env), getInstanceName());
+    }
+
+    /**
+     * Determines the location of <tt>domain.xml</tt> to be parsed.
+     */
+    protected File getDomainXml(ServerEnvironment env) {
+        return new File(env.getConfigDirPath(), ServerEnvironment.kConfigXMLFileName);
+    }
+
+    /**
+     * Obtains the server instance name, which is then matched up with
+     * &lt;server> element in domain.xml.
+     */
+    protected String getInstanceName() {
         String instanceName = context.getArguments().get("-instancename");
         if(instanceName == null || instanceName.length() == 0)
             instanceName = "server";
-        
-        parseDomainXml(parser, domainXml, instanceName);
-     }
+        return instanceName;
+    }
 
 
     /**
      * Parses <tt>domain.xml</tt>
      */
-    private void parseDomainXml(ConfigParser parser, final File domainXml, final String serverName) {
+    protected void parseDomainXml(ConfigParser parser, final File domainXml, final String serverName) {
         try {
             DomainXmlReader xsr = new DomainXmlReader(domainXml, serverName);
             parser.parse(xsr, new GlassFishDocument(habitat));
