@@ -45,7 +45,9 @@ public abstract class ASMainOSGi {
             /* Commented this since we put javaee jar in higher class loader.
             "stax-api-1.0-2.jar", // needed by config module in HK2
              */
+            /* Commented since tiger-types has been repackaged as an OSGi bundle
             "tiger-types-1.0.jar", // needed by config module in HK2
+            */
             "jmxremote_optional-1.0_01-ea.jar" // until we make this a module 
     };
 
