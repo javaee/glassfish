@@ -99,12 +99,9 @@ public class JPADeployer extends SimpleDeployer<JPAContainer, JPAApplication> {
     }
 
     /**
-     * @InheritDoc
+     * EMFs for refered pus are created and stored in JPAApplication instance.
+     * The JPAApplication instance is stored in given DeploymentContext to be retrieved by load
      */
-    @Override public JPAApplication load(JPAContainer container, DeploymentContext context) {
-        return context.getModuleMetaData(JPAApplication.class);
-    }
-
     @Override public boolean prepare(DeploymentContext context) {
         boolean prepared = super.prepare(context);
 
@@ -119,16 +116,24 @@ public class JPADeployer extends SimpleDeployer<JPAContainer, JPAApplication> {
             for (BundleDescriptor bundle : bundles) {
                 allReferencedPus.addAll(bundle.findReferencedPUs());
             }
-            //PUs get loaded here
+            // EMFs get created here. JPAApplication maintains list of created EMFs so that they
+            // can be closed at undeploy
             JPAApplication jpaApp = new JPAApplication(allReferencedPus, new ProviderContainerContractInfoImpl(context, connectorRuntime));
 
-            //Store the app in DeploymentContext to retrieve it during load
+            // Store jpaApp in DeploymentContext to retrieve it during load
             context.addModuleMetaData(jpaApp);
         }
-        
+
         return prepared;
     }
 
+    /**
+     * @InheritDoc
+     */
+    @Override public JPAApplication load(JPAContainer container, DeploymentContext context) {
+        // Return the JPAApplication stored in DeploymentContext during prepaare phase
+        return context.getModuleMetaData(JPAApplication.class);
+    }
 
     private static class ProviderContainerContractInfoImpl
             implements ProviderContainerContractInfo {
