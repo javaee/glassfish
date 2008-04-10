@@ -63,6 +63,7 @@ import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.web.ServletFilterMapping;
 import com.sun.enterprise.config.serverbeans.Property;
 import com.sun.enterprise.deployment.runtime.web.WebProperty;
+import com.sun.enterprise.security.integration.RealmInitializer;
 import com.sun.enterprise.server.ServerContext;
 import com.sun.enterprise.web.pwc.PwcWebModule;
 import com.sun.enterprise.web.session.PersistenceType;
@@ -75,6 +76,7 @@ import org.apache.catalina.InstanceListener;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.LifecycleListener;
 import org.apache.catalina.Pipeline;
+import org.apache.catalina.Realm;
 import org.apache.catalina.Valve;
 import org.apache.catalina.Wrapper;
 import org.apache.catalina.core.StandardWrapper;
@@ -384,6 +386,10 @@ public class WebModule extends PwcWebModule {
         if (ra != null) {
           1  ra.setVirtualServer(container);
         }*/
+        Realm ra = getRealm();
+        if (ra != null && ra instanceof RealmInitializer) {
+            ((RealmInitializer) ra).setVirtualServer(container);
+        }
     }
 
     /**
