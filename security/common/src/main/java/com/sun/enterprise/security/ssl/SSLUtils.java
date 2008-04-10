@@ -80,7 +80,7 @@ public final class SSLUtils {
     private static final String TRUSTSTORE_PASS_PROP = "javax.net.ssl.trustStorePassword";
     public static final String HTTPS_OUTBOUND_KEY_ALIAS = "com.sun.enterprise.security.httpsOutboundKeyAlias";
 
-    private static Logger _logger=null;
+    private static final Logger _logger = LogDomains.getLogger(LogDomains.SECURITY_LOGGER);
     private static SecuritySupport secSupp = null;
     private static boolean hasKey = false;
     private static KeyManager keyManager = null;
@@ -89,8 +89,6 @@ public final class SSLUtils {
     private static final Date initDate;
 
     static{
-        _logger=LogDomains.getLogger(LogDomains.SECURITY_LOGGER);
-
         secSupp = getSecuritySupport();
         try {
             initDate = new Date();
@@ -297,7 +295,6 @@ public final class SSLUtils {
                     }
                 }
             }
-            passwords = null;
         }
 
         return privKeyEntry;
