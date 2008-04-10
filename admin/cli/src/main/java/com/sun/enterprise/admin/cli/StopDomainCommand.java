@@ -36,25 +36,20 @@
 package com.sun.enterprise.admin.cli;
 
 import com.sun.enterprise.cli.framework.CLILogger;
-import com.sun.enterprise.cli.framework.Command;
 import com.sun.enterprise.cli.framework.CommandException;
 import com.sun.enterprise.cli.framework.CommandValidationException;
-import com.sun.enterprise.universal.glassfish.GFLauncherUtils;
 import com.sun.enterprise.universal.glassfish.SystemPropertyConstants;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import com.sun.enterprise.universal.io.SmartFile;
-import com.sun.enterprise.universal.xml.MiniXmlParser;
-import com.sun.enterprise.universal.xml.MiniXmlParserException;
 import java.io.*;
 import java.util.*;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * A local StopDomain command
  * @author bnevins
  */
-public class StopDomainCommand extends Command {
+public class StopDomainCommand extends S1ASCommand {
 
     @Override
     public void runCommand() throws CommandException, CommandValidationException {
@@ -63,41 +58,24 @@ public class StopDomainCommand extends Command {
         getDomainRootDir();
         getDomainXml();
         domainRootDir = SmartFile.sanitize(domainRootDir);
-        Integer[] ports = null;
-
-        try {
-            MiniXmlParser parser = new MiniXmlParser(domainXml);
-            Set<Integer> portsSet = parser.getAdminPorts();
-            ports = portsSet.toArray(new Integer[portsSet.size()]);
-        }
-        catch (MiniXmlParserException ex) {
-            throw new CommandValidationException(
-                    strings.get("StopDomain.parserError", ex), ex);
-        }
-
-        // TODO -- it would be nice to know if it worked!  
-        // If so use other port numbers
+        int adminPort = CLIUtils.getAdminPort(domainXml);
         
         try {
-            new RemoteCommand("stop-domain", "--port", ports[0].toString());
+            CLILogger.getInstance().pushAndLockLevel(Level.WARNING);
+            new RemoteCommand("stop-domain", "--port", "" + adminPort);
         }
-        catch (Throwable ex) {
-            CLILogger.getInstance().printExceptionStackTrace(ex);
-            CLILogger.getInstance().printError(ex.getLocalizedMessage());
-            System.exit(1);
+        finally {
+            CLILogger.getInstance().popAndUnlockLevel();
         }
     }
 
     @Override
     public boolean validateOptions() throws CommandValidationException {
+        super.validateOptions();
         // get domainName
         if (!operands.isEmpty()) {
             domainName = (String) operands.firstElement();
         }
-
-        // get routine booleans
-        terse = getBooleanOption("terse");
-        echo = getBooleanOption("echo");
 
         // get domainsDir
         String domaindir = getOption("domaindir");
@@ -108,10 +86,6 @@ public class StopDomainCommand extends Command {
                 throw new CommandValidationException(
                         strings.get("StopDomain.badDomainsDir", domainsDir));
             }
-        }
-
-        if (echo) {
-            CLILogger.getInstance().printMessage("ECHO: " + toString());
         }
 
         return true;
@@ -142,12 +116,7 @@ public class StopDomainCommand extends Command {
 
     private void getDomainXml() throws CommandValidationException {
         // root-dir/config/domain.xml
-        domainXml = new File(domainRootDir, "config/domain.xml");
-
-        if (!domainXml.canRead()) {
-            throw new CommandValidationException(
-                    strings.get("StopDomain.noDomainXml", domainXml));
-        }
+        domainXml = CLIUtils.getDomainXml(domainRootDir);
     }
 
     /**
@@ -182,8 +151,6 @@ public class StopDomainCommand extends Command {
     private static boolean ok(String s) {
         return s != null && s.length() > 0;
     }
-    private boolean terse;
-    private boolean echo;
     private File domainsDir;
     private File domainRootDir;
     private String domainName;

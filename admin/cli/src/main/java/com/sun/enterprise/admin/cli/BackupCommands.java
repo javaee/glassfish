@@ -52,11 +52,8 @@ import com.sun.enterprise.backup.BackupRequest;
 import com.sun.enterprise.backup.BackupWarningException;
 import com.sun.enterprise.backup.ListManager;
 
-import com.sun.enterprise.admin.servermgmt.DomainsManager;
-import com.sun.enterprise.admin.servermgmt.DomainConfig;
-import com.sun.enterprise.admin.servermgmt.InstancesManager;
-//import com.sun.enterprise.admin.common.Status;
 //import com.sun.enterprise.admin.pluggable.ClientPluggableFeatureFactory;
+import com.sun.enterprise.cli.framework.CommandValidationNoUsageException;
 /**
  *  This is a local command for backing-up domains.
  *  @version  $Revision: 1.4 $
@@ -72,6 +69,7 @@ import com.sun.enterprise.admin.servermgmt.InstancesManager;
 
 public class BackupCommands extends BaseLifeCycleCommand
 {
+    @Override
 	public String toString()
 	{
 		return super.toString() + "\n" + ObjectAnalyzer.toString(this);
@@ -80,8 +78,10 @@ public class BackupCommands extends BaseLifeCycleCommand
 	/**
 	 *  An abstract method that validates the options
 	 *  on the specification in the xml properties file
-	 *  @return true if successfull
+     *  @return true if successfull
+     * @throws com.sun.enterprise.cli.framework.CommandValidationException 
 	 */
+    @Override
 	public boolean validateOptions() throws CommandValidationException
 	{
 		super.validateOptions();
@@ -95,7 +95,8 @@ public class BackupCommands extends BaseLifeCycleCommand
 	}
 	/**
 	 *  An abstract method that executes the command
-	 *  @throws CommandException
+     *  @throws CommandException
+     * @throws com.sun.enterprise.cli.framework.CommandValidationException 
 	 */
 	public void runCommand() throws CommandException, CommandValidationException
 	{
@@ -230,7 +231,7 @@ public class BackupCommands extends BaseLifeCycleCommand
 		{
 			if(!isNotRunning())
 			{
-				throw new CommandValidationException(getLocalizedString("DomainIsNotStopped",
+				throw new CommandValidationNoUsageException(getLocalizedString("Backup.DomainIsNotStopped",
 					new String[] {command.name} ));
 			}
 		}
@@ -296,43 +297,11 @@ public class BackupCommands extends BaseLifeCycleCommand
 
 	private boolean isNotRunning() throws CommandValidationException
 	{
-        // TODO no status available in V3 yet.
-        
-        return true;
-        /**
-		try
-		{
-			ClientPluggableFeatureFactory	cpff	= getFeatureFactory();
-			DomainsManager					dm		= cpff.getDomainsManager();
-			DomainConfig					dc		= getDomainConfig(domainName);
-			InstancesManager				im		= dm.getInstancesManager(dc);
-			final int						state	= im.getInstanceStatus();
-
-			return state == Status.kInstanceNotRunningCode;
-		}
-		catch(Exception e)
-		{
-			throw new CommandValidationException(e);
-		}
-         */
+        File domainXml = CLIUtils.getDomainXml(domainsDir, domainName);
+        int port = CLIUtils.getAdminPort(domainXml);
+        return !RemoteCommand.pingDAS(port);
 	}
 	
-	///////////////////////////////////////////////////////////////////////////
-	
-	/* temp debug code TBD FIXME 
-	private void dumpProps()
-	{
-		List list = SystemProps.get();
-		
-		for(Iterator it = list.iterator(); it.hasNext(); )
-		{
-			Map.Entry entry = (Map.Entry)it.next();
-			
-			if(((String)entry.getKey()).startsWith("com.sun."))
-				System.out.println((String)entry.getKey() + "=" + (String)entry.getValue());
-		}
-	}
-	*/	
 	///////////////////////////////////////////////////////////////////////////
 
 	private static final	String			DOMAINSDIR	= "domaindir";
