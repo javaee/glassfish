@@ -98,14 +98,13 @@ public class DeleteHttpListener implements AdminCommand {
                     return list;
                 }
             }, httpService);
+            report.setMessage(localStrings.getLocalString("delete.http.listener.success", "{0} deleted successfully", listenerId));
+            report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
 
         } catch(TransactionFailure e) {
             report.setMessage(localStrings.getLocalString("delete.http.listener.fail", "{0} delete failed ", listenerId));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
         }
-
-        report.setMessage(localStrings.getLocalString("delete.http.listener.success", "{0} deleted successfully", listenerId));
-        report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
     }
 }

@@ -72,6 +72,8 @@ public class DeleteVirtualServer implements AdminCommand {
     @Inject
     HttpService httpService;
 
+    //xxx
+    
     /**
      * Executes the command with the command parameters passed as Properties
      * where the keys are the paramter names and the values the parameter values
@@ -96,13 +98,13 @@ public class DeleteVirtualServer implements AdminCommand {
                 }
             }, httpService);
 
+            report.setMessage(localStrings.getLocalString("delete.virtual.server.success", "{0} deleted successfully", virtualServerId));
+            report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
+
         } catch(TransactionFailure e) {
             report.setMessage(localStrings.getLocalString("delete.virtual.server.fail", "{0} delete failed ", virtualServerId));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
         }
-
-        report.setMessage(localStrings.getLocalString("delete.virtual.server.success", "{0} deleted successfully", virtualServerId));
-        report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
     }
 }
