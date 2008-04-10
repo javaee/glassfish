@@ -61,6 +61,8 @@ public class CLILogger
     private final static String ENV_DEBUG_FLAG = "AS_DEBUG";
     private final static int	kDefaultBufferSize	= 512;
     private final static String PACKAGE_NAME = "com.sun.enterprise.cli.framework";
+    private static  boolean allowOutputLevelChanges = true;
+    private static Level pushedLevel;
     
     /** Creates a new instance of CLILogger */
     protected CLILogger() 
@@ -106,6 +108,17 @@ public class CLILogger
         }
         return logger;
     }
+
+    public void pushAndLockLevel(Level newLevel) {
+        pushedLevel = getOutputLevel();
+        setOutputLevel(newLevel);
+        allowOutputLevelChanges = false;
+    }
+
+    public void popAndUnlockLevel() {
+        allowOutputLevelChanges = true;
+        setOutputLevel(pushedLevel);
+    }
     
     /**
      * returns the current output Level
@@ -122,7 +135,7 @@ public class CLILogger
      */
     public void setOutputLevel(Level level)
     {
-        if (!isDebug()) 
+        if (!isDebug() && allowOutputLevelChanges) 
             s1asLogger.setLevel(level);
     }
     

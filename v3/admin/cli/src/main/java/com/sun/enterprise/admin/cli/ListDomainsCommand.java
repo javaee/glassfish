@@ -99,9 +99,6 @@ public class ListDomainsCommand extends BaseLifeCycleCommand
                 CLILogger.getInstance().printDetailMessage(
                    getLocalizedString("NoDomainsToList"));
             }
-            CLILogger.getInstance().printDetailMessage(getLocalizedString(
-                                                       "CommandSuccessful",
-                                                       new Object[] {name}));
         } catch (Exception ex) {
             CLILogger.getInstance().printDetailMessage(ex.getLocalizedMessage());
             throw new CommandException(getLocalizedString("CommandUnSuccessful",

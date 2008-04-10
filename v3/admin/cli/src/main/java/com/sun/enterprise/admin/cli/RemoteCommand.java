@@ -86,6 +86,13 @@ public class RemoteCommand {
             logger.printDebugMessage("RemoteCommandParser: " + rcp);
             final Map<String, String> params = rcp.getOptions();
             setBooleans(params);
+            if (terse) {
+                logger.setOutputLevel(java.util.logging.Level.INFO);
+            } 
+            else {
+                logger.setOutputLevel(java.util.logging.Level.FINE);
+            }
+            
             final Vector operands = rcp.getOperands();
 
             if(echo) {
@@ -490,7 +497,7 @@ public class RemoteCommand {
         String cause = mainAtts.get("cause");
 
         // TODO We may need to  change this post-TP2
-        if( CLILogger.isDebug() || !terse) {
+        if( CLILogger.isDebug()) {
             if(ok(cause)) {
                 message += StringUtils.NEWLINE + strings.get("cause", cause);
             }
@@ -647,7 +654,7 @@ public class RemoteCommand {
     private static final String FAILURE = "FAILURE";
     private static final String MAGIC = "PlainTextActionReporter";
     private boolean verbose = false;
-    private boolean terse = true;
+    private boolean terse = false;
     private boolean echo = false;
     private final static LocalStringsImpl strings = new LocalStringsImpl(RemoteCommand.class);
 }

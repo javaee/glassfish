@@ -54,7 +54,7 @@ import java.util.logging.Logger;
  * A local StopDomain command
  * @author bnevins
  */
-public class StopDomainCommand extends Command {
+public class StopDomainCommand extends S1ASCommand {
 
     @Override
     public void runCommand() throws CommandException, CommandValidationException {
@@ -79,25 +79,21 @@ public class StopDomainCommand extends Command {
         // If so use other port numbers
         
         try {
+            CLILogger.getInstance().pushAndLockLevel(Level.WARNING);
             new RemoteCommand("stop-domain", "--port", ports[0].toString());
         }
-        catch (Throwable ex) {
-            CLILogger.getInstance().printExceptionStackTrace(ex);
-            CLILogger.getInstance().printError(ex.getLocalizedMessage());
-            System.exit(1);
+        finally {
+            CLILogger.getInstance().popAndUnlockLevel();
         }
     }
 
     @Override
     public boolean validateOptions() throws CommandValidationException {
+        super.validateOptions();
         // get domainName
         if (!operands.isEmpty()) {
             domainName = (String) operands.firstElement();
         }
-
-        // get routine booleans
-        terse = getBooleanOption("terse");
-        echo = getBooleanOption("echo");
 
         // get domainsDir
         String domaindir = getOption("domaindir");
@@ -108,10 +104,6 @@ public class StopDomainCommand extends Command {
                 throw new CommandValidationException(
                         strings.get("StopDomain.badDomainsDir", domainsDir));
             }
-        }
-
-        if (echo) {
-            CLILogger.getInstance().printMessage("ECHO: " + toString());
         }
 
         return true;
@@ -182,8 +174,6 @@ public class StopDomainCommand extends Command {
     private static boolean ok(String s) {
         return s != null && s.length() > 0;
     }
-    private boolean terse;
-    private boolean echo;
     private File domainsDir;
     private File domainRootDir;
     private String domainName;
