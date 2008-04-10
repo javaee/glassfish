@@ -423,7 +423,7 @@ abstract public class ApplicationLifecycle {
         Map<Deployer, ContainerInfo> containerInfosByDeployers = new HashMap<Deployer, ContainerInfo>();
         for (Sniffer sniffer : sniffers) {
             for (String containerName : sniffer.getContainersNames()) {
-                ContainerInfo containerInfo = containerRegistry.getContainer(containerName);
+                ContainerInfo<?,?> containerInfo = containerRegistry.getContainer(containerName);
                 ClassLoader original = Thread.currentThread().getContextClassLoader();
                 try {
                     Thread.currentThread().setContextClassLoader(containerInfo.getClassLoader());
@@ -503,14 +503,14 @@ abstract public class ApplicationLifecycle {
         for (ContainerInfo containerInfo : sortedContainerInfos) {
 
             // get the deployer
-            Deployer deployer = containerInfo.getDeployer();
+            Deployer<?,?> deployer = containerInfo.getDeployer();
 
 
             ClassLoader currentCL = Thread.currentThread().getContextClassLoader();
             try {
                 Thread.currentThread().setContextClassLoader(containerInfo.getContainer().getClass().getClassLoader());
                 try {
-                    for (Class metadata : deployer.getMetaData().provides()) {
+                    for (Class<?> metadata : deployer.getMetaData().provides()) {
                         context.addModuleMetaData(deployer.loadMetaData(metadata, context));
                     }
                 } catch(Exception e) {
@@ -908,7 +908,7 @@ abstract public class ApplicationLifecycle {
 
                     // adding the application element
                     Application app = ConfigSupport.createChildOf(
-                        (Applications)params[0], Application.class);
+                            params[0], Application.class);
                     applications.getModules().add(app);
 
                     // various attributes
@@ -968,7 +968,7 @@ abstract public class ApplicationLifecycle {
 
                     // adding the application-ref element
                     ApplicationRef appRef = ConfigSupport.createChildOf(
-                        (Server)params[1], ApplicationRef.class);
+                            params[1], ApplicationRef.class);
                     server.getApplicationRef().add(appRef);
                     appRef.setRef(moduleProps.getProperty(ServerTags.NAME));
                     if (moduleProps.getProperty(
