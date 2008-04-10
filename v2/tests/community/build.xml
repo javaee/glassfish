@@ -173,7 +173,7 @@
     
     <taskdef name="testng" classname="org.testng.TestNGAntTask">
         <classpath>
-	    <pathelement path="${plugin_classpath}"/>
+            <pathelement path="./lib/testng-5.6-jdk15.jar"/>
         </classpath>
     </taskdef>
     
