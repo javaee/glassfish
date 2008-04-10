@@ -22,7 +22,6 @@
  */
 package com.sun.enterprise.v3.server;
 
-import com.sun.enterprise.util.StringUtils;
 import com.sun.enterprise.module.bootstrap.StartupContext;
 import com.sun.enterprise.universal.glassfish.ASenvPropertyReader;
 import com.sun.enterprise.universal.glassfish.SystemPropertyConstants;
@@ -30,6 +29,7 @@ import java.io.*;
 import java.util.*;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.component.PostConstruct;
 
 /**
  * Defines various global configuration for the running GlassFish instance.
@@ -40,7 +40,7 @@ import org.jvnet.hk2.annotations.Inject;
  * @author Jerome Dochez
  */
 @Service
-public class ServerEnvironment {
+public class ServerEnvironment implements PostConstruct {
     @Inject
     StartupContext startupContext;
 
@@ -63,25 +63,34 @@ public class ServerEnvironment {
     public static final String DEFAULT_ADMIN_CONSOLE_CONTEXT_ROOT = "/admin";
     public static final String DEFAULT_ADMIN_CONSOLE_APP_NAME     = "__admingui"; //same as folder
     
-    // TODO: this should be File
-    final private String root;
-    private final boolean verbose;
-    private final boolean debug;
+    private /*almost final*/ File root;
+    private /*almost final*/ boolean verbose;
+    private /*almost final*/ boolean debug;
     private static final ASenvPropertyReader asenv = new ASenvPropertyReader();
-    private final String domainName; 
-    private final String instanceName;
+    private /*almost final*/ String domainName;
+    private /*almost final*/ String instanceName;
 
     private final static String INSTANCE_ROOT_PROP_NAME = "com.sun.aas.instanceRoot";
 
+    /**
+     * Compute all the values per default.
+     */
     public ServerEnvironment() {
-        this(new File(System.getProperty(INSTANCE_ROOT_PROP_NAME)));
     }
 
-    /** Creates a new instance of ServerEnvironment */
     public ServerEnvironment(File root) {
-        this.root = root.getAbsolutePath();
-        
-        asenv.getProps().put(SystemPropertyConstants.INSTANCE_ROOT_PROPERTY, this.root);
+        this.root = root;
+    }
+
+    /**
+     * This is where the real initialization happens.
+     */
+    public void postConstruct() {
+        // default
+        if(this.root==null)
+            this.root = new File(System.getProperty(INSTANCE_ROOT_PROP_NAME));
+
+        asenv.getProps().put(SystemPropertyConstants.INSTANCE_ROOT_PROPERTY, root.getAbsolutePath());
         Map<String, String> args = startupContext.getArguments();
 
         verbose = Boolean.parseBoolean(args.get("-verbose"));
@@ -113,7 +122,7 @@ public class ServerEnvironment {
         return domainName;
     }
     
-    public String getDomainRoot() {
+    public File getDomainRoot() {
         return root;
     }
 
@@ -121,32 +130,43 @@ public class ServerEnvironment {
         return startupContext;
     }
 
-    public String getConfigDirPath() {
-        String[] folderNames = new String[]{root, kConfigDirName};
-        return StringUtils.makeFilePath(folderNames, false);
+    /**
+     * Gets the directory to store configuration.
+     * Normally {@code ROOT/config}
+     */
+    public File getConfigDirPath() {
+        return new File(root,kConfigDirName);
     }
 
-    public String getApplicationRepositoryPath() {
-        String[] onlyFolderNames = new String[]{root, kRepositoryDirName};
-        return StringUtils.makeFilePath(onlyFolderNames, false);
+    /**
+     * Gets the directory to store deployed applications
+     * Normally {@code ROOT/applications}
+     */
+    public File getApplicationRepositoryPath() {
+        return new File(root,kRepositoryDirName);
     }
 
-    public String getApplicationStubPath() {
-        String[] onlyFolderNames = new String[]{root, kGeneratedDirName};
-        return StringUtils.makeFilePath(onlyFolderNames, false);
-
+    /**
+     * Gets the directory to store generated stuff.
+     * Normally {@code ROOT/generated}
+     */
+    public File getApplicationStubPath() {
+        return new File(root,kGeneratedDirName);
     }
 
-    public String getInitFilePath() {
-        String[] fileNames = new String[]{root,
-            kConfigDirName, kInitFileName
-        };
-        return StringUtils.makeFilePath(fileNames, false);
+    /**
+     * Gets the <tt>init.conf</tt> file.
+     */
+    public File getInitFilePath() {
+        return new File(getConfigDirPath(),kInitFileName);
     }
 
-    public String getLibPath() {
-        String[] fileNames = new String[]{root,"lib"};
-        return StringUtils.makeFilePath(fileNames, false);
+    /**
+     * Gets the directory for hosting user-provided jar files.
+     * Normally {@code ROOT/lib}
+     */
+    public File getLibPath() {
+        return new File(root,"lib");
 
     }
 
@@ -155,23 +175,20 @@ public class ServerEnvironment {
     }
 
     /**
-    Returns the path for compiled JSP Pages from an J2EE application
-    that is deployed on this instance. By default all such compiled JSPs
-    should lie in the same folder.
+     * Returns the path for compiled JSP Pages from an J2EE application
+     * that is deployed on this instance. By default all such compiled JSPs
+     * should lie in the same folder.
      */
-    public String getApplicationCompileJspPath() {
-        String[] onlyFolderNames = new String[]{root,
-            kGeneratedDirName, kCompileJspDirName
-        };
-        return StringUtils.makeFilePath(onlyFolderNames, false);
+    public File getApplicationCompileJspPath() {
+        return new File(getApplicationStubPath(),kCompileJspDirName);
     }
 
     /**
-    Returns the path for compiled JSP Pages from an Web application
-    that is deployed standalone on this instance. By default all such compiled JSPs
-    should lie in the same folder.
+     * Returns the path for compiled JSP Pages from an Web application
+     * that is deployed standalone on this instance. By default all such compiled JSPs
+     * should lie in the same folder.
      */
-    public String getWebModuleCompileJspPath() {
+    public File getWebModuleCompileJspPath() {
         return getApplicationCompileJspPath();
     }
 
