@@ -719,8 +719,7 @@ abstract public class ApplicationLifecycle {
     }
 
     protected Collection<ContainerInfo> setupContainer(Sniffer sniffer, Module snifferModule,  Logger logger, ActionReport report) {
-
-        ContainerStarter starter = new ContainerStarter(modulesRegistry, habitat, logger);
+        ContainerStarter starter = habitat.getComponent(ContainerStarter.class);
         Collection<ContainerInfo> containersInfo = starter.startContainer(sniffer, snifferModule);
         if (containersInfo == null || containersInfo.size()==0) {
             failure(logger, "Cannot start container(s) associated to application of type : " + sniffer.getModuleType(), null, report);

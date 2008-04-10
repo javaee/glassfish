@@ -32,6 +32,8 @@ import org.glassfish.api.container.Sniffer;
 import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
+import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Service;
 
 import java.io.*;
 import java.nio.channels.Channels;
@@ -48,23 +50,20 @@ import java.util.logging.Logger;
 
 /**
  * This class is responsible for starting containers, it will look for the container
- * installation location, will eventually download the container and install it locally
+ * installation location, will eventually download the container and install it locally.
  *
  * @author Jerome Dochez
  */
+@Service
 public class ContainerStarter {
-
+    @Inject
     ModulesRegistry modulesRegistry;
 
+    @Inject
     Habitat habitat;
 
+    @Inject
     Logger logger;
-
-    public ContainerStarter(ModulesRegistry modulesRegistry, Habitat habitat, Logger logger) {
-        this.habitat = habitat;
-        this.modulesRegistry = modulesRegistry;
-        this.logger = logger;
-    }
 
     public Collection<ContainerInfo> startContainer(Sniffer sniffer, Module snifferModule) {
 
