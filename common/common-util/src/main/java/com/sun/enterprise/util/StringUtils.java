@@ -496,7 +496,7 @@ public class StringUtils
 
     /**
      * Get a system propety given a property name, possibly trying all combination
-     * of upercase, nane mangling to get a value.
+     * of upercase, name mangling to get a value.
      *
      * @param propName the approximate system property name
      * @return the property value if found, null otherwise
