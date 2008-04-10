@@ -53,5 +53,6 @@
     -->
     <modules>
 	    <module>stax</module>
+	    <module>tiger-types</module>
     </modules>
 </project>
