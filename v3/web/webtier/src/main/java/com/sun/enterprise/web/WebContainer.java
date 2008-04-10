@@ -3646,33 +3646,21 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
     *        web container log level
     */
     private void initLogLevel(LogService logserviceBean) {
-    //throws ConfigException {
 
-        Level level = Level.SEVERE;
-        setLogLevel(level);
+        Level level = Level.INFO;
         
-        if (logserviceBean != null) {
+        if (logserviceBean != null
+                && logserviceBean.getModuleLogLevels() != null) {
             try {
-                level = Level.parse(logserviceBean.getModuleLogLevels().getRoot());
-                setLogLevel(level);
-            } catch (NullPointerException e) {
-            } catch (IllegalArgumentException e) { }
+                level = Level.parse(logserviceBean.getModuleLogLevels().getWebContainer());
+            } catch (IllegalArgumentException iae) {
+                _logger.log(Level.WARNING,
+                            "Unable to parse web-container log level",
+                            iae);
+            }
         }
 
-        // If the <web-container> element in server.xml contains a
-        // log-level setting then use that
-        try {
-            Config config = _serverContext.getDefaultHabitat().getComponent(Config.class);
-            level = Level.parse(logserviceBean.getModuleLogLevels().getWebContainer());
-            setLogLevel(level);
-        } catch (NullPointerException e) {
-            if (_debug > 0)
-                _logger.finest("Defaulting <web-container> log-level");
-        } catch (IllegalArgumentException e) {
-        }
-        if (_debug > 0) {
-            _logger.fine("Web container log level: " + _logLevel);
-        }
+        setLogLevel(level);
     }
 
 
