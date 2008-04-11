@@ -279,14 +279,6 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
             ApplicationInfo appInfo = deploy(appSniffers, deploymentContext, report);
             if (report.getActionExitCode().equals(
                 ActionReport.ExitCode.SUCCESS)) {
-                /*
-                 * The caller may want to know the resulting module ID as
-                 * assigned by the server - if the caller did not specify it
-                 * on the deploy command in the first place.
-                 */
-                ActionReport.MessagePart msgPart = report.getTopMessagePart();
-                msgPart.addProperty(NAME, name);
-                
                 // register application information in domain.xml
                 registerAppInDomainXML(appInfo, deploymentContext);
 
