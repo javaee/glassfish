@@ -148,7 +148,7 @@ public final class DelegateToConfigBeanDelegate extends DelegateBase
                 //debug( "smartNameFind: mapped " + amxName + " to " + hint + " for " + info.amxInterface().getName() ); 
                 xmlName = hint;
             }
-   }
+        }
        return xmlName;
     }
     
@@ -361,103 +361,6 @@ public final class DelegateToConfigBeanDelegate extends DelegateBase
 	{
         throw new RuntimeException( "invoke() not yet implemented" );
 	}
-    
-
-//-------------------------------------------------------------------
-// test/exploratory code for create() methods
-    
-    /**
-        Find the @Configured interface that should be instantiated for the corresponding j2eeType.
-     */
-        private Class<? extends ConfigBeanProxy> 
-    getChildInterface( final String j2eeType )
-    {
-        Class<? extends ConfigBeanProxy>  intf = null;
-        
-        debug( "NO CODE YET TO FIND CHILD INTERFACE" );
-        
-        if ( intf == null )
-        {
-            throw new IllegalArgumentException( "Unknown j2eeType for creation: " + j2eeType );
-        }
-        
-        final AMXConfigInfo configInfo = intf.getAnnotation( AMXConfigInfo.class );
-        if ( configInfo == null )
-        {
-            throw new IllegalArgumentException( "no AMXConfigInfo found for " + intf.getName() );
-        }
-        
-        return intf;
-    }
-    
-    private static final class ChildMaker implements SingleConfigCode<ConfigBeanProxy>
-    {
-        private final Class<? extends ConfigBeanProxy> mIntf;
-        private final Map<String,String>    mAttrs;
-        
-        private ConfigBean  mChild = null;
-        
-        public ChildMaker(
-            final Class<? extends ConfigBeanProxy>  intf,
-            final Map<String,String> attrs)
-        {
-            mIntf  = intf;
-            mAttrs = attrs;
-        }
-        
-        public Object run(ConfigBeanProxy param) throws PropertyVetoException, TransactionFailure
-        {
-            final ConfigBeanProxy proxy = ConfigSupport.createChildOf( param, mIntf );
-            
-            mChild = (ConfigBean)Dom.unwrap( proxy );
-            
-            for( final String attrName : mAttrs.keySet() )
-            {
-                mChild.attribute( attrName, mAttrs.get(attrName) );
-            }
-            return mChild;
-        }
-        
-        public ConfigBean getNewborn() { return mChild; }
-    }
-    
-        private ConfigBean
-    createChild(
-        final Class<? extends ConfigBeanProxy> intf,
-        final Map<String,String>  attrs )
-    {
-        final AMXConfigInfo configInfo = intf.getAnnotation( AMXConfigInfo.class );
-        
-        final ChildMaker  mc = new ChildMaker( intf, attrs );
-        
-        try
-        {
-            ConfigSupport.apply( mc, mConfigBean.createProxy() );
-        }
-        catch( TransactionFailure e )
-        {
-            debug( ExceptionUtil.toString(e) );
-            throw new RuntimeException(e);
-        }
-        
-        final ConfigBean child = mc.getNewborn();
-
-        return child;
-    }
-
-
-        public ConfigBean
-    createChild(
-        final String j2eeType,
-        final Object... args )
-    {
-        final Class<? extends ConfigBeanProxy> intf = getChildInterface( j2eeType );
-        
-        final Map<String,String> attrs = new HashMap<String,String>();
-        // attrs must be filled in with attribute names mapped to values...
-        
-        return createChild( intf, attrs );
-    }
 }
 
 
