@@ -126,6 +126,9 @@ public class WebSecurityManager implements PostConstruct {
     protected Policy policy = Policy.getPolicy();
 
     protected PolicyConfiguration policyConfiguration  = null;
+
+    // if not available in the habitat, delegate to JDK's system-wide factory
+    @Inject(optional=true)
     protected PolicyConfigurationFactory policyConfigurationFactory = null;
     protected CodeSource codesource = null;
 
