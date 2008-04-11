@@ -96,7 +96,7 @@ public interface Applications extends ConfigBeanProxy, Injectable  {
         public static <T> List<T> getModules(Class<T> type, Applications apps) {
             List<T> modules = new ArrayList<T>();
             for (Object module : apps.getModules()) {
-                if (module.getClass().getName().equals(type.getClass().getName())) {
+                if (module==type) {
                     modules.add((T) module);
                 }
             }
@@ -110,7 +110,7 @@ public interface Applications extends ConfigBeanProxy, Injectable  {
             }
 
             for (Object module : apps.getModules()) {
-                if (module.getClass().getName().equals(type.getClass().getName())) {
+                if (module==type) {
                     Method m;
                     try {
                         m = type.getMethod("getName");
