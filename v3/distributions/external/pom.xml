@@ -63,6 +63,7 @@
         <module>jmxremote_optional</module>
         <module>sysnet-registration</module>
         <module>commons-codec</module>
+        <module>ldapbp</module>
     </modules>
 </project>
 
