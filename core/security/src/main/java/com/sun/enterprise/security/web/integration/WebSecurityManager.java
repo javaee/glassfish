@@ -71,6 +71,7 @@ import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.deployment.web.LoginConfiguration;
 import com.sun.enterprise.deployment.runtime.web.SunWebApp;
 import com.sun.enterprise.deployment.interfaces.SecurityRoleMapperFactory;
+import com.sun.enterprise.v3.server.Globals;
 //import org.apache.catalina.Globals;
 import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.annotations.Inject;
@@ -89,14 +90,13 @@ import org.jvnet.hk2.annotations.Service;
  * from this class and EJBSecurityManager class and extend this class from 
  * AbstractSecurityManager
  */
-@Service
 public class WebSecurityManager implements PostConstruct {
     private static Logger logger = 
     Logger.getLogger(LogDomains.SECURITY_LOGGER);
-    
+
     @Inject
     private  AuditManager auditManager;
- 
+
     /**
      * Request path. Copied from org.apache.catalina.Globals;
      * Required to break dependence on WebTier of Security Module
@@ -128,7 +128,6 @@ public class WebSecurityManager implements PostConstruct {
     protected PolicyConfiguration policyConfiguration  = null;
 
     // if not available in the habitat, delegate to JDK's system-wide factory
-    @Inject(optional=true)
     protected PolicyConfigurationFactory policyConfigurationFactory = null;
     protected CodeSource codesource = null;
 
@@ -160,7 +159,6 @@ public class WebSecurityManager implements PostConstruct {
     private static Set defaultPrincipalSet = 
 	SecurityContext.getDefaultSecurityContext().getPrincipalSet();
 
-    @Inject
     SecurityRoleMapperFactory factory;
 
     private ServerContext serverContext = null;
@@ -200,7 +198,11 @@ public class WebSecurityManager implements PostConstruct {
    }
       
     private void initialise() throws PolicyContextException {
-       String appName = wbd.getApplication().getRegistrationName();
+        factory = Globals.get(SecurityRoleMapperFactory.class);
+        policyConfigurationFactory = Globals.get(PolicyConfigurationFactory.class);
+        auditManager = Globals.get(AuditManager.class);
+
+        String appName = wbd.getApplication().getRegistrationName();
         CODEBASE = removeSpaces(CONTEXT_ID) ;
         //V3:Commented if(VirtualServer.ADMIN_VS.equals(getVirtualServers(appName))){
            if(ADMIN_VS.equals(getVirtualServers(appName))){
