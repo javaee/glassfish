@@ -177,6 +177,53 @@ import com.sun.enterprise.security.integration.RealmInitializer;
 public class WebContainer implements org.glassfish.api.container.Container, PostConstruct, PreDestroy {
         //MonitoringLevelListener {
 
+    // -------------------------------------------------- Constants & Statics
+
+    public static final String DISPATCHER_MAX_DEPTH="dispatcher-max-depth";
+
+    static final int DEFAULT_REAP_INTERVAL = 60;   // 1 minute
+
+    public static final String JWS_APPCLIENT_EAR_NAME = "__JWSappclients";
+    public static final String JWS_APPCLIENT_WAR_NAME = "sys";
+    private static final String JWS_APPCLIENT_MODULE_NAME = JWS_APPCLIENT_EAR_NAME + ":" + JWS_APPCLIENT_WAR_NAME + ".war";
+
+    private static final String DOC_BUILDER_FACTORY_PROPERTY =
+            "javax.xml.parsers.DocumentBuilderFactory";
+    private static final String DOC_BUILDER_FACTORY_IMPL =
+            "com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl";
+
+    private static final String DEFAULT_KEYSTORE_TYPE = "JKS";
+    private static final String DEFAULT_TRUSTSTORE_TYPE = "JKS";
+
+    private static final String DOL_DEPLOYMENT =
+            "com.sun.enterprise.web.deployment.backend";
+    
+    /**
+     * The logger to use for logging ALL web container related messages.
+     */
+    protected static final Logger _logger = LogDomains.getLogger(
+            LogDomains.WEB_LOGGER);
+
+    /**
+     * The current <code>WebContainer</code> instance used (single).
+     */
+    protected static WebContainer webContainer;
+
+    //HERCULES:add
+    //added for monitoring
+    private static boolean debugMonitoring=false;
+    private static long debugMonitoringPeriodMS = 30000L;
+    private static WebContainerTimer _timer = new WebContainerTimer();
+    //added for monitoring
+    //END HERCULES:add
+
+    /**
+     * Are we using Tomcat deployment backend or DOL?
+     */
+    protected static boolean useDOLforDeployment = true;
+
+    // ----------------------------------------------------- Instance Variables
+
     @Inject
     Domain domain;
 
@@ -206,30 +253,148 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
      */
     protected boolean globalAccessLoggingEnabled = true;
     
-   /**
-    * AccessLog buffer size for storing logs.
-    */
-   protected String globalAccessLogBufferSize = null;   
-   
-   /**
-    * AccessLog interval before the valve flush its buffer to the disk.
-    */
-   protected String globalAccessLogWriteInterval = null;  
-   
-   /**
-    * The default-redirect port
-    */
-    protected int defaultRedirectPort = -1;
-    
-    private static final String DEFAULT_KEYSTORE_TYPE = "JKS";
-    private static final String DEFAULT_TRUSTSTORE_TYPE = "JKS";
-    
     /**
-     * The logger to use for logging ALL web container related messages.
+     * AccessLog buffer size for storing logs.
      */
-    protected static final Logger _logger = LogDomains.getLogger(
-            LogDomains.WEB_LOGGER);
+    protected String globalAccessLogBufferSize = null;   
+   
+    /**
+     * AccessLog interval before the valve flush its buffer to the disk.
+     */
+    protected String globalAccessLogWriteInterval = null;  
+   
+    /**
+     * The default-redirect port
+     */
+    protected int defaultRedirectPort = -1;
 
+    /**
+     * <tt>false</tt> when the Grizzly File Cache is enabled. When disabled
+     * the Servlet Container temporary Naming cache is used when loading the
+     * resources.
+     */
+    protected boolean catalinaCachingAllowed = true;
+
+    protected ServerEnvironment instance = null;
+    
+    // TODO
+    //protected WebModulesManager webModulesManager = null;
+    //protected AppsManager appsManager = null;
+
+    /**
+     * The schema2beans object that represents the root node of server.xml.
+     */
+    private Server _serverBean = null;
+
+
+    /**
+     * The resource bundle containing the message strings for _logger.
+     */
+    protected static final ResourceBundle _rb = _logger.getResourceBundle();
+
+    /*
+     * The current web container monitoring level
+     */
+    protected static MonitoringLevel monitoringLevel;
+
+    /**
+     * The current level of logging verbosity for this object.
+     */
+    protected Level _logLevel = null;
+
+    /**
+     * Controls the verbosity of the web container subsystem's debug messages.
+     *
+     * This value is non-zero only when the iAS level is one of FINE, FINER
+     * or FINEST.
+     */
+    protected int _debug = 0;
+
+    /**
+     * Top-level directory for files generated (compiled JSPs) by
+     *  standalone web modules.
+     */
+    private String _modulesWorkRoot = null;
+
+    // START S1AS 6178005
+    /**
+     * Top-level directory where ejb stubs of standalone web modules are stored
+     */
+    private String modulesStubRoot = null;
+    // END S1AS 6178005
+
+    /**
+     * Absolute path for location where all the deployed
+     * standalone modules are stored for this Server Instance.
+     */
+    protected String _modulesRoot = null;
+
+    /**
+     * Top-level directory for files generated by application web modules.
+     */
+    private String _appsWorkRoot = null;
+
+    // START S1AS 6178005
+    /**
+     * Top-level directory where ejb stubs for applications are stored.
+     */
+    private String appsStubRoot = null;
+    // END S1AS 6178005
+
+    /**
+     * Indicates whether dynamic reloading is enabled (as specified by
+     * the dynamic-reload-enabled attribute of <applications> in server.xml)
+     */
+    private boolean _reloadingEnabled = false;
+
+    /**
+     * The number of seconds between checks for modified classes (if
+     * dynamic reloading is enabled).
+     *
+     * This value is specified by the reload-poll-interval attribute of
+     * <applications> in server.xml.
+     */
+    private int _pollInterval = 2;
+
+    /**
+     * Adds/removes standalone web modules to the reload monitor thread
+     * (when dynamic reloading is enabled in server.xml).
+     */
+    //private StandaloneWebModulesManager _reloadManager = null;
+
+    /**
+     * The lifecycle event support for this component.
+     */
+    //private LifecycleSupport _lifecycle = new LifecycleSupport(this);
+
+    /**
+     * Has this component been started yet?
+     */
+    protected boolean _started = false;
+
+    /**
+     * The global (at the http-service level) ssoEnabled property.
+     */
+    protected boolean globalSSOEnabled = true;
+
+    //private EjbWebServiceRegistryListener ejbWebServiceRegistryListener;
+
+    protected WebContainerFeatureFactory webFeatureFactory;
+
+    /**
+     * The value of the instance-level session property named "enableCookies"
+     */
+    boolean instanceEnableCookies = true;
+
+    /**
+     * Static initialization
+     */
+    static {
+        if (System.getProperty(DOL_DEPLOYMENT) != null){
+            useDOLforDeployment = Boolean.valueOf(
+                    System.getProperty(DOL_DEPLOYMENT)).booleanValue();
+        }
+    }
     
     public void postConstruct() {
 
@@ -1858,173 +2023,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             }
 
         }
-    }
-    
-    // ------------------------------------------------------------ Constants
-
-    public static final String DISPATCHER_MAX_DEPTH="dispatcher-max-depth";
-
-    static final int DEFAULT_REAP_INTERVAL = 60;   // 1 minute
-
-    public static final String JWS_APPCLIENT_EAR_NAME = "__JWSappclients";
-    public static final String JWS_APPCLIENT_WAR_NAME = "sys";
-    private static final String JWS_APPCLIENT_MODULE_NAME = JWS_APPCLIENT_EAR_NAME + ":" + JWS_APPCLIENT_WAR_NAME + ".war";
-
-    private static final String DOC_BUILDER_FACTORY_PROPERTY =
-            "javax.xml.parsers.DocumentBuilderFactory";
-    private static final String DOC_BUILDER_FACTORY_IMPL =
-            "com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl";
-
-    // ----------------------------------------------------- Instance Variables
-
-    protected ServerEnvironment instance = null;
-    
-    // TODO
-    //protected WebModulesManager webModulesManager = null;
-    //protected AppsManager appsManager = null;
-
-    /**
-     * The schema2beans object that represents the root node of server.xml.
-     */
-    private Server _serverBean = null;
-
-
-    /**
-     * The resource bundle containing the message strings for _logger.
-     */
-    protected static final ResourceBundle _rb = _logger.getResourceBundle();
-
-    /*
-     * The current web container monitoring level
-     */
-    protected static MonitoringLevel monitoringLevel;
-
-    /**
-     * The current level of logging verbosity for this object.
-     */
-    protected Level _logLevel = null;
-
-    /**
-     * Controls the verbosity of the web container subsystem's debug messages.
-     *
-     * This value is non-zero only when the iAS level is one of FINE, FINER
-     * or FINEST.
-     */
-    protected int _debug = 0;
-
-    /**
-     * Top-level directory for files generated (compiled JSPs) by
-     *  standalone web modules.
-     */
-    private String _modulesWorkRoot = null;
-
-    // START S1AS 6178005
-    /**
-     * Top-level directory where ejb stubs of standalone web modules are stored
-     */
-    private String modulesStubRoot = null;
-    // END S1AS 6178005
-
-    /**
-     * Absolute path for location where all the deployed
-     * standalone modules are stored for this Server Instance.
-     */
-    protected String _modulesRoot = null;
-
-    /**
-     * Top-level directory for files generated by application web modules.
-     */
-    private String _appsWorkRoot = null;
-
-    // START S1AS 6178005
-    /**
-     * Top-level directory where ejb stubs for applications are stored.
-     */
-    private String appsStubRoot = null;
-    // END S1AS 6178005
-
-    /**
-     * Indicates whether dynamic reloading is enabled (as specified by
-     * the dynamic-reload-enabled attribute of <applications> in server.xml)
-     */
-    private boolean _reloadingEnabled = false;
-
-    /**
-     * The number of seconds between checks for modified classes (if
-     * dynamic reloading is enabled).
-     *
-     * This value is specified by the reload-poll-interval attribute of
-     * <applications> in server.xml.
-     */
-    private int _pollInterval = 2;
-
-    /**
-     * Adds/removes standalone web modules to the reload monitor thread
-     * (when dynamic reloading is enabled in server.xml).
-     */
-    //private StandaloneWebModulesManager _reloadManager = null;
-
-    /**
-     * The lifecycle event support for this component.
-     */
-    //private LifecycleSupport _lifecycle = new LifecycleSupport(this);
-
-    /**
-     * Has this component been started yet?
-     */
-    protected boolean _started = false;
-
-    /**
-     * The global (at the http-service level) ssoEnabled property.
-     */
-    protected boolean globalSSOEnabled = true;
-
-    //private EjbWebServiceRegistryListener ejbWebServiceRegistryListener;
-
-    protected WebContainerFeatureFactory webFeatureFactory;
-
-    private static final String DOL_DEPLOYMENT =
-            "com.sun.enterprise.web.deployment.backend";
-
-    /**
-     * Are we using Tomcat deployment backend or DOL?
-     */
-    protected static boolean useDOLforDeployment = true;
-
-    /**
-     * The value of the instance-level session property named "enableCookies"
-     */
-    boolean instanceEnableCookies = true;
-
-
-    static {
-        if (System.getProperty(DOL_DEPLOYMENT) != null){
-            useDOLforDeployment = Boolean.valueOf(
-                    System.getProperty(DOL_DEPLOYMENT)).booleanValue();
-        }
-    }
-
-    /**
-     * The current <code>WebContainer</code> instance used (single).
-     */
-    protected static WebContainer webContainer;
-
-    //HERCULES:add
-    //added for monitoring
-    private static boolean debugMonitoring=false;
-    private static long debugMonitoringPeriodMS = 30000L;
-    private static WebContainerTimer _timer = new WebContainerTimer();
-    //added for monitoring
-    //END HERCULES:add
-
-
-    /**
-     * <tt>false</tt> when the Grizzly File Cache is enabled. When disabled
-     * the Servlet Container temporary Naming cache is used when loading the
-     * resources.
-     */
-    protected boolean catalinaCachingAllowed = true;
-
+    }    
 
     // ------------------------------------------------------------ Properties
 
