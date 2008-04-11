@@ -68,7 +68,7 @@ import java.util.jar.Attributes;
  * Convenient superclass for JavaEE Deployer implementations.
  *
  */
-public abstract class JavaEEDeployer<T extends Container, U extends ApplicationContainer>
+public abstract class   JavaEEDeployer<T extends Container, U extends ApplicationContainer>
         implements Deployer<T, U> {
 
     @Inject
@@ -196,9 +196,7 @@ public abstract class JavaEEDeployer<T extends Container, U extends ApplicationC
             return true;
         } catch (Exception ex) {
             // re-throw all the exceptions as runtime exceptions
-            RuntimeException re = new RuntimeException(ex.getMessage());
-            re.initCause(ex);
-            throw re;
+            throw new RuntimeException(ex.getMessage(),ex);
         }
     }
 
