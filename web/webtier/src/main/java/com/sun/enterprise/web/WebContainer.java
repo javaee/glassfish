@@ -286,26 +286,28 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         }
          */
 
-        LogService logService = null;
+        LogService logService;
         Config cfg = _serverContext.getDefaultHabitat().getComponent(Config.class);
         configureDynamicReloadingSettings();
         logService = cfg.getLogService();
         initLogLevel(logService);
         initMonitoringLevel(cfg.getMonitoringService());
 
-        Property maxDepth = cfg.getWebContainer().getProperty(DISPATCHER_MAX_DEPTH);
-        if (maxDepth != null && maxDepth.getValue() != null) {
+        String maxDepth = null;
+        if(cfg.getWebContainer()!=null)
+            maxDepth = cfg.getWebContainer().getPropertyValue(DISPATCHER_MAX_DEPTH);
+        if (maxDepth != null) {
             int depth = -1;
             try {
-                depth = Integer.parseInt(maxDepth.getValue());
-            } catch (Exception e) {}
+                depth = Integer.parseInt(maxDepth);
+            } catch (NumberFormatException e) {}
                 
             if (depth > 0) {
                 CoyoteRequest.setMaxDispatchDepth(depth);
                 if (_logger.isLoggable(Level.FINE)) {
                     _logger.fine("Maximum depth for nested request "
                             + "dispatches set to "
-                            + maxDepth.getValue());
+                            + maxDepth);
                 }
             }
         }
