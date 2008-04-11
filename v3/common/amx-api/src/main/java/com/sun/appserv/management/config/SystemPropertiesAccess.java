@@ -63,7 +63,67 @@ public interface SystemPropertiesAccess
 		accessing a property directly, this prefix must not be used.
 	 */
     final static String SYSTEM_PROPERTY_PREFIX = "system-" + PropertiesAccess.PROPERTY_PREFIX;
+
+//--------------------------------------------------------------
+	/**
+		Get the names of all system properties.
+        @deprecated use the SystemPropertyConfig MBeans from {@link #getSystemPropertyConfigMap}
+	 */
+	public String[]	getSystemPropertyNames( );
+	
+	
+	/**
+		@return Map containing all properties, keyed by name
+        @deprecated use the SystemPropertyConfig MBeans from {@link #getSystemPropertyConfigMap}
+	 */
+	public Map<String,String>		getSystemProperties();
+	
+	/**
+		Get the value of a property.  The property must exist, or an exception will be thrown.
+		
+		@param propertyName	the name of the property
+        @deprecated use the SystemPropertyConfig MBeans from {@link #getSystemPropertyConfigMap}
+	 */
+	public String	getSystemPropertyValue( String propertyName );
+					
+	/**
+		Set the value of a system property.  The property must already exist.
+		The existing description is retained.
+		
+		@param propertyName	the name of the property
+		@param propertyValue	the value of the property
+        @deprecated use the SystemPropertyConfig MBeans from {@link #getSystemPropertyConfigMap}
+	 */	
+	public void		setSystemPropertyValue( String propertyName, String propertyValue );
+						
+	/**
+		Return true if any system properties exist with the specified name.
+		
+		@param propertyName	the name of the property
+        @deprecated use the SystemPropertyConfig MBeans from {@link #getSystemPropertyConfigMap}
+	 */
+	public boolean	existsSystemProperty( String propertyName );
+	
+	/**
+		Create a new system property.
+		
+		@param propertyName		the name of the property
+		@param propertyValue	the value of the property
+        @deprecated use {@linke #createSystemPropertyConfig}
+	 */
+	public void		createSystemProperty( String propertyName, String propertyValue);
+	
+	/**
+		Remove a system property with the specified name. 
+		
+		@param propertyName	the name of the property
+        @deprecated use {@linke #removeSystemPropertyConfig}
+	 */
+	public void		removeSystemProperty( String propertyName );
     
+//--------------------------------------------------------------
+    
+
     
     /**
        @since Glassfish V3
