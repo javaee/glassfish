@@ -310,18 +310,18 @@ public class ApplicationLifecycle {
 
     // set up containers and prepare the sorted ModuleInfos
     protected LinkedList<ContainerInfo> setupContainerInfos(
-        Iterable<Sniffer> sniffers, DeploymentContextImpl context,
-        ActionReport report, ProgressTracker tracker) throws Exception {
+            Iterable<Sniffer> sniffers, DeploymentContextImpl context,
+            ActionReport report, ProgressTracker tracker) throws Exception {
 
         //List<ContainerInfo> startedContainers = new ArrayList<ContainerInfo>();
         for (Sniffer sniffer : sniffers) {
-            if (sniffer.getContainersNames()==null || sniffer.getContainersNames().length==0) {
+            if (sniffer.getContainersNames() == null || sniffer.getContainersNames().length == 0) {
                 report.failure(logger, "no container associated with application of type : " + sniffer.getModuleType(), null);
                 return null;
             }
 
-            Module snifferModule=modulesRegistry.find(sniffer.getClass());
-            if (snifferModule==null) {
+            Module snifferModule = modulesRegistry.find(sniffer.getClass());
+            if (snifferModule == null) {
                 report.failure(logger, "cannot find container module from service implementation " + sniffer.getClass(), null);
                 return null;
             }
@@ -331,10 +331,10 @@ public class ApplicationLifecycle {
             if (containerInfo == null) {
                 // need to synchronize on the registry to not end up starting the same container from
                 // different threads.
-                synchronized(containerRegistry) {
-                    if (containerRegistry.getContainer(sniffer.getContainersNames()[0])==null) {
+                synchronized (containerRegistry) {
+                    if (containerRegistry.getContainer(sniffer.getContainersNames()[0]) == null) {
                         Collection<ContainerInfo> containersInfo = setupContainer(sniffer, snifferModule, logger, report);
-                        if (containersInfo==null || containersInfo.size()==0) {
+                        if (containersInfo == null || containersInfo.size() == 0) {
                             String msg = "Cannot start container(s) associated to application of type : " + sniffer.getModuleType();
                             report.failure(logger, msg, null);
                             throw new Exception(msg);
@@ -356,7 +356,6 @@ public class ApplicationLifecycle {
         // all containers that have recognized parts of the application being deployed
         // have now been successfully started. Start the deployment process.
 
-
         // sort deployers based on medata required and provided by them
 
         // first spearate them in buckets...
@@ -366,7 +365,7 @@ public class ApplicationLifecycle {
         Map<Deployer, ContainerInfo> containerInfosByDeployers = new HashMap<Deployer, ContainerInfo>();
         for (Sniffer sniffer : sniffers) {
             for (String containerName : sniffer.getContainersNames()) {
-                ContainerInfo<?,?> containerInfo = containerRegistry.getContainer(containerName);
+                ContainerInfo<?, ?> containerInfo = containerRegistry.getContainer(containerName);
                 ClassLoader original = Thread.currentThread().getContextClassLoader();
                 try {
                     Thread.currentThread().setContextClassLoader(containerInfo.getClassLoader());
@@ -375,29 +374,29 @@ public class ApplicationLifecycle {
                     final MetaData metadata = deployer.getMetaData();
                     Class[] requires = metadata.requires();
                     Class[] provides = metadata.provides();
-                    if( (requires == null || requires.length == 0) && (provides == null || provides.length == 0) ) {
+                    if ((requires == null || requires.length == 0) && (provides == null || provides.length == 0)) {
                         // the deployer neither requires not provides any metadata. Put it in sortedModuleinfo
                         // they would effectively end up being in the middle of the list (see the sorting below)
                         sortedContainerInfos.add(containerInfo);
                     } else {
-						for (Class metadataType : metadata.requires()) {
-							List<Deployer> requesters = metaDataRequired.get(metadataType);
-                            if(requesters == null) {
+                        for (Class metadataType : metadata.requires()) {
+                            List<Deployer> requesters = metaDataRequired.get(metadataType);
+                            if (requesters == null) {
                                 //first requester deployer of this metadataType. Initialize the list
                                 requesters = new LinkedList<Deployer>();
                                 metaDataRequired.put(metadataType, requesters);
                             }
                             requesters.add(deployer);
-						}
-						for (Class metadataType : metadata.provides()) {
+                        }
+                        for (Class metadataType : metadata.provides()) {
                             Deployer currentProvidindDeployer = metaDataProvided.get(metadataType);
-                            if(currentProvidindDeployer != null ) {
-                                report.failure(logger, "More than one deployer [" + currentProvidindDeployer +  ", " + deployer
-                                                            + "] provide same metadata : " + metadataType, null);
+                            if (currentProvidindDeployer != null) {
+                                report.failure(logger, "More than one deployer [" + currentProvidindDeployer + ", " + deployer
+                                        + "] provide same metadata : " + metadataType, null);
                             }
                             metaDataProvided.put(metadataType, deployer);
-						}
-					}
+                        }
+                    }
                 } finally {
                     Thread.currentThread().setContextClassLoader(original);
                 }
@@ -405,21 +404,21 @@ public class ApplicationLifecycle {
         }
 
         // now sort...
-		for (Class required : metaDataRequired.keySet()) {
-			if (metaDataProvided.containsKey(required)) {
-				Deployer provider = metaDataProvided.get(required);
-				// TODO : better sorting job.
-				sortedContainerInfos.addFirst(containerInfosByDeployers.get(provider));
+        for (Class required : metaDataRequired.keySet()) {
+            if (metaDataProvided.containsKey(required)) {
+                Deployer provider = metaDataProvided.get(required);
+                // TODO : better sorting job.
+                sortedContainerInfos.addFirst(containerInfosByDeployers.get(provider));
                 List<Deployer> requesters = metaDataRequired.get(required);
                 for (Deployer requester : requesters) {
                     sortedContainerInfos.add(containerInfosByDeployers.get(requester));
                 }
 
-			} else {
-                            report.failure(logger, "Deployer " + metaDataRequired.get(required) + " requires " + required + " but no other deployer provides it", null);
-                            return null;
-			}
-		}
+            } else {
+                report.failure(logger, "Deployer " + metaDataRequired.get(required) + " requires " + required + " but no other deployer provides it", null);
+                return null;
+            }
+        }
 
         return sortedContainerInfos;
     }
