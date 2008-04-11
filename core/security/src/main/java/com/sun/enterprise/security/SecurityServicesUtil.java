@@ -40,9 +40,7 @@ public class SecurityServicesUtil {
      * code moved from J2EEServer.run()
      */
     public void initSecureSeed() {
-        String seedFile = habitat.getComponent(ServerEnvironment.class).getConfigDirPath() +
-                File.separator + "secure.seed";
-        File secureSeedFile = new File(seedFile);
+        File secureSeedFile = new File(habitat.getComponent(ServerEnvironment.class).getConfigDirPath(),"secure.seed");
 
         // read the secure random from the file
         long seed = readSecureSeed(secureSeedFile);
