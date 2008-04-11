@@ -264,27 +264,16 @@ public final class DelegateToConfigBeanDelegate extends DelegateBase
         // note that attributeListToStringMap() auto-converts types to 'String' which is desired here
         final Map<String, Object> amxAttrs = JMXUtil.attributeListToValueMap( attrsIn );
         
+        /*
         // auto convert certain special types such as String[] to String
         for( final String key : amxAttrs.keySet() )
         {
             final Object value = amxAttrs.get(key);
             
             String valueString = "" + value;
-            /*
-            if ( value.getClass() != String.class )
-            {
-                if ( value.getClass() == String[].class )
-                {
-                    valueString = StringUtil.toString( ":", (String[])value );
-                }
-            }
-            else
-            {
-                valueString = "" + value;
-            }
-            */
             amxAttrs.put( key, valueString );
         }
+        */
         
         // now map the AMX attribute names to xml attribute names
         final Map<String,String> xmlAttrs = new HashMap<String,String>();
