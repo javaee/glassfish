@@ -93,7 +93,7 @@ public interface Applications extends ConfigBeanProxy, Injectable  {
     <T> T getModule(Class<T> type, String moduleID);
     
     public class Duck {
-        public static <T> List<T> getModules(Class<T> type, Applications apps) {
+        public static <T> List<T> getModules(Applications apps, Class<T> type) {
             List<T> modules = new ArrayList<T>();
             for (Object module : apps.getModules()) {
                 if (type.isInstance(module)) {
@@ -103,7 +103,7 @@ public interface Applications extends ConfigBeanProxy, Injectable  {
             return modules;
         }
 
-        public static <T> T getModule(Class<T> type, Applications apps, String moduleID) {
+        public static <T> T getModule(Applications apps, Class<T> type, String moduleID) {
             if (moduleID == null) {
                 return null;
             }
