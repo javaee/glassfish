@@ -56,7 +56,7 @@ public class SecurityServicesUtil {
     /** read the secure random number from the file.
      *  If the seed is not present, the default expensive SecureRandom seed
      *  generation algorithm is invoked to return a new seed number
-     *  @param File the file to be read - here secure.seed file.
+     *  @param fname the file to be read - here secure.seed file.
      */
     private long readSecureSeed(File fname) {
         byte[] seed;
@@ -87,8 +87,8 @@ public class SecurityServicesUtil {
 
     /** write the new secure seed to the secure.seed file to speed up
      * startup the next time the server is started.
-     * @param File secure.seed file
-     * @param long seed the value of the 8 byte seed.
+     * @param fname secure.seed file
+     * @param seed seed the value of the 8 byte seed.
      */
     private void writeSecureSeed(File fname, long seed) {
         try {
