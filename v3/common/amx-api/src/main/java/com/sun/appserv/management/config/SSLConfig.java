@@ -36,12 +36,13 @@
 package com.sun.appserv.management.config;
 
 import com.sun.appserv.management.base.XTypes;
+import com.sun.appserv.management.base.Singleton;
 
 /**
 	Base interface Configuration for an &lt;ssl&gt; element.
 */
 @AMXCreateInfo(paramNames={"cert-nickname", "optional"})
-public interface SSLConfig extends ConfigElement
+public interface SSLConfig extends ConfigElement, Singleton
 {
 /** The j2eeType as returned by {@link com.sun.appserv.management.base.AMX#getJ2EEType}. */
 	public static final String	J2EE_TYPE	= XTypes.SSL_CONFIG;

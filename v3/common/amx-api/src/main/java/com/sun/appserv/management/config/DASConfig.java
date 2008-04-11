@@ -34,18 +34,10 @@
  * holder.
  */
 
-
-
-/*
- * $Header: /cvs/glassfish/appserv-api/src/java/com/sun/appserv/management/config/DASConfig.java,v 1.2 2007/05/05 05:30:32 tcfujii Exp $
- * $Revision: 1.2 $
- * $Date: 2007/05/05 05:30:32 $
- */
-
-
 package com.sun.appserv.management.config;
 
 import com.sun.appserv.management.base.XTypes;
+import com.sun.appserv.management.base.Singleton;
 
 
 /**
@@ -55,7 +47,7 @@ import com.sun.appserv.management.base.XTypes;
 	The name is confusing, this item actually lives inside an <admin-service>,
 	which is in turn inside a <config>
  */
-public interface DASConfig extends ConfigElement, PropertiesAccess
+public interface DASConfig extends ConfigElement, PropertiesAccess, Singleton
 {
 /** The j2eeType as returned by {@link com.sun.appserv.management.base.AMX#getJ2EEType}. */
 	public static final String	J2EE_TYPE	= XTypes.DAS_CONFIG;

@@ -38,14 +38,14 @@ package com.sun.appserv.management.config;
 import java.util.Map;
 
 import com.sun.appserv.management.base.XTypes;
-
+import com.sun.appserv.management.base.Singleton;
 import com.sun.appserv.management.base.Container;
 
 /**
     Configuration for the &lt;message-security-config&gt; element.
 */
 public interface MessageSecurityConfig 
-	extends NamedConfigElement, Container
+	extends NamedConfigElement, Container, Singleton
 {
 /** The j2eeType as returned by {@link com.sun.appserv.management.base.AMX#getJ2EEType}. */
 	public static final String	J2EE_TYPE	= XTypes.MESSAGE_SECURITY_CONFIG;

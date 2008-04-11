@@ -326,6 +326,23 @@ public final class GSetUtil
 		
 		return( result );
 	}
+    
+        public static String
+    findIgnoreCase( final Set<String> candidates, final String target)
+    {
+        String match = null;
+        // case-insensitive search
+        for( final String candidate : candidates )
+        {
+            if ( candidate.equalsIgnoreCase(target) )
+            {
+                match = candidate;
+                break;
+            }
+        }
+        return match;
+    }
+
 }
 
 

@@ -36,12 +36,13 @@
 package com.sun.appserv.management.config;
 
 import com.sun.appserv.management.base.XTypes;
+import com.sun.appserv.management.base.Singleton;
 
 /**
 Configuration for the &lt;http-protocol&gt; element.
 */
 
-public interface HTTPProtocolConfig extends ConfigElement 
+public interface HTTPProtocolConfig extends ConfigElement, Singleton
 {
 /** The j2eeType as returned by {@link com.sun.appserv.management.base.AMX#getJ2EEType}. */
 	public static final String	J2EE_TYPE	= XTypes.HTTP_PROTOCOL_CONFIG;

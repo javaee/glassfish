@@ -33,13 +33,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
- 
-/*
- * $Header: /cvs/glassfish/appserv-api/src/java/com/sun/appserv/management/base/AMX.java,v 1.2 2007/05/05 05:30:30 tcfujii Exp $
- * $Revision: 1.2 $
- * $Date: 2007/05/05 05:30:30 $
- */
-
 package com.sun.appserv.management.base;
 
 import java.util.Map;
@@ -84,7 +77,7 @@ import com.sun.appserv.management.DomainRoot;
     @see com.sun.appserv.management.monitor.MonitoringStats
     @see com.sun.appserv.management.j2ee.J2EEDomain
  */
-public interface AMX extends NotificationEmitter, AMXMBeanLogging
+public interface AMX extends NotificationEmitter, AMXMBeanLogging, Dotted
 {
     /**
         The prefix for all Notification types issued by AMX.

@@ -40,11 +40,12 @@ import java.util.Map;
 import javax.management.InstanceNotFoundException;
 
 import com.sun.appserv.management.base.Container;
+import com.sun.appserv.management.base.Singleton;
 
 /**
 	Manages the creation and removal of NotificationService MBeans.
  */
-public interface NotificationServiceMgr extends AMX, Utility, Container
+public interface NotificationServiceMgr extends AMX, Utility, Container, Singleton
 {
 /** The j2eeType as returned by {@link com.sun.appserv.management.base.AMX#getJ2EEType}. */
 	public static final String	J2EE_TYPE			= XTypes.NOTIFICATION_SERVICE_MGR;

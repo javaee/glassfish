@@ -44,7 +44,7 @@ import java.util.Map;
 	the server is PE/SE/EE, since the feature assortment could vary with
 	release.
  */
-public interface SystemInfo extends AMX
+public interface SystemInfo extends AMX, Singleton
 {
 /** The j2eeType as returned by {@link com.sun.appserv.management.base.AMX#getJ2EEType}. */
 	public static final String	J2EE_TYPE			= XTypes.SYSTEM_INFO;

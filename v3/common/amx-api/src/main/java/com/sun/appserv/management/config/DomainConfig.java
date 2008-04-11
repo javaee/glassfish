@@ -42,6 +42,7 @@ import java.util.List;
 
 import com.sun.appserv.management.base.Container;
 import com.sun.appserv.management.base.XTypes;
+import com.sun.appserv.management.base.Singleton;
 import com.sun.appserv.management.DomainRoot;
 
 
@@ -53,7 +54,7 @@ import com.sun.appserv.management.DomainRoot;
 
 public interface DomainConfig
 	extends PropertiesAccess, SystemPropertiesAccess,
-	ConfigElement, Container, ConfigRemover, DefaultValues
+	ConfigElement, Container, ConfigRemover, DefaultValues, Singleton
 {
 /** The j2eeType as returned by {@link com.sun.appserv.management.base.AMX#getJ2EEType}. */
 	public static final String	J2EE_TYPE	= XTypes.DOMAIN_CONFIG;

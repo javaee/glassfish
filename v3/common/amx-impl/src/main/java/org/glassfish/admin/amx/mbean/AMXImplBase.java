@@ -97,6 +97,7 @@ import com.sun.appserv.management.util.misc.CollectionUtil;
 import org.glassfish.admin.amx.util.ObjectNames;
 import com.sun.appserv.management.base.AMX;
 import com.sun.appserv.management.base.Container;
+import com.sun.appserv.management.base.Singleton;
 
 import com.sun.appserv.management.client.ProxyFactory;
 
@@ -111,6 +112,8 @@ import com.sun.appserv.management.config.PropertiesAccess;
 import com.sun.appserv.management.j2ee.J2EETypes;
 
 import org.glassfish.admin.amx.util.Issues;
+
+import org.glassfish.admin.amx.dotted.DottedName;
 
 
 /**
@@ -288,7 +291,175 @@ public class AMXImplBase extends MBeanImplBase
 	{
 		// the delegate has fatally failed
 	}
+    
+    private volatile String mDottedName = null;
+    private volatile String mDottedNamePart = null;
+    
+    /**
+        A subclass may override this method.
+     */
+        protected String
+    _getDottedNamePart()
+    {
+        String result = null;
+        
+        if ( isSingletonMBean( getInterface() ) )
+        {
+            result = getJ2EEType();
+            if ( result.startsWith( XTypes.PREFIX ) )
+            {
+                // strip "X-"
+                result = result.substring( XTypes.PREFIX.length(), result.length() );
+            }
+        }
+        else
+        {
+            result = getName();
+        }
+        return result;
+    }
+    
+        public final String
+    getDottedNamePart()
+    {
+        if ( mDottedNamePart != null )  // thread safe because it's 'volatile'
+        {
+            return mDottedNamePart;
+        }
+    
+        final String result = DottedName.escapePart( _getDottedNamePart() );
+                
+        mDottedNamePart = result;
+        return mDottedNamePart;
+    }
+    
+        public final String
+    getDottedName()
+    {
+        if ( mDottedName != null )  // thread safe because it's 'volatile'
+        {
+            return mDottedName;
+        }
+            
+        String result = null;
+        final Container container = getContainer();
+        if ( container != null )
+        {
+            result = container.getDottedName() + "." + getDottedNamePart();
+        }
+        else
+        {
+            result = getDottedNamePart();
+        }
+        
+        mDottedName = result;
+        return mDottedName;
+    }
 	
+    /**
+        Translate an Attribute name into a dotted name. Subclasses might wish to override
+        this method.  By default the dotted name is the same as the attribute name.
+     */
+        protected String
+    attributeNameToDottedValueName( final String s )
+    {
+        return s;
+    }
+    
+        public final Map<String,String>
+    getDottedToAttributes()
+    {
+        final Map<String,String> dottedToAttr = new HashMap<String, String>();
+        
+        final Set<String> attrNames = getAttributeInfos().keySet();
+        
+        for (final String attrName : attrNames )
+        {
+            // all dotted names are case insensitive
+            final String dottedValueName = attributeNameToDottedValueName( attrName );
+            //cdebug( "Attribute mapping: " + attrName + " => " + dottedValueName );
+            dottedToAttr.put( dottedValueName, attrName );
+        }
+        
+        return dottedToAttr;
+    }
+
+    /**
+        Resolve a dotted value, forgiving case-sensitivity, allowing attributes directly
+        as well as any formal dotted names.
+     */
+        private final String
+    _getDottedValue(
+        final Map<String,String> dottedToAttrs,
+        final String dottedName )
+    {
+        final Set<String> attrNames = getAttributeInfos().keySet();
+        
+        String attrName = null;
+        if ( attrNames.contains( dottedName ) )
+        {
+            // a normal attribute
+            attrName = dottedName;
+        }
+        else if ( dottedToAttrs.containsKey( dottedName )  )
+        {
+            // found a mapping
+            attrName =  dottedToAttrs.get( dottedName );
+        }
+        else
+        {
+            // search for attributes, ignoring case
+            attrName = GSetUtil.findIgnoreCase( attrNames, dottedName );
+            if ( attrName == null )
+            {
+                final String d = GSetUtil.findIgnoreCase( dottedToAttrs.keySet(), dottedName );
+                attrName = dottedToAttrs.get(d);
+            }
+        }
+                
+        if ( attrName == null )
+        {
+            final String msg = "No such dotted value: " + StringUtil.quote(dottedName) + " in MBean " + getObjectName() +
+                ", dottedToAttributes = " + MapUtil.toString(dottedToAttrs);
+            cdebug( msg );
+            throw new IllegalArgumentException( msg );
+        }
+        
+        cdebug( "_getDottedValue: " + dottedName );
+        final Object value = getAttributeNoThrow( attrName );
+        cdebug( "_getDottedValue: " + dottedName + " = " + value );
+        return "" + value;
+    }
+    
+        public final String
+    getDottedValue( final String dottedName )
+    {
+        return _getDottedValue( getDottedToAttributes(), dottedName );
+    }
+    
+        public final Map<String,String>
+    getDottedValues( final Set<String> dottedValueNamesIn )
+    {
+        final Map<String,String> dottedToAttr = getDottedToAttributes();
+        
+        // allow null for input set
+        final Set<String> dottedNames = dottedValueNamesIn != null ? dottedValueNamesIn : dottedToAttr.keySet();
+        
+        final Map<String,String> results = new HashMap<String, String>();
+        for( final String dottedName : dottedNames )
+        {
+            try
+            {
+                results.put( dottedName, "" + _getDottedValue( dottedToAttr, dottedName ) );
+            }
+            catch( Exception e )
+            {
+                // OK, ignore, we just won't return it
+            }
+        }
+        return results;
+    }
+
 	
         protected String
     getDebugID()
@@ -474,7 +645,7 @@ public class AMXImplBase extends MBeanImplBase
 	}
 	
 		protected static boolean
-	isSingletonMBean( final Class	mbeanInterface )
+	isSingletonMBean( final Class<? extends AMX>	mbeanInterface )
 	{
 		return( Singleton.class.isAssignableFrom( mbeanInterface ) );
 	}
@@ -492,19 +663,11 @@ public class AMXImplBase extends MBeanImplBase
 	}
 	
 	
-		public Container
-	getFactoryContainer()
-	{
-		return( Container.class.cast( getSelf() ) );
-	}
-	
-	
 		public final Container
 	getContainer()
 	{
 		final ObjectName	objectName	= getContainerObjectName();
-		
-		return(  getProxyFactory().getProxy( objectName, Container.class) );
+        return objectName == null ? null :  getProxyFactory().getProxy( objectName, Container.class);
 	}
 	
 		public ObjectName
@@ -807,6 +970,8 @@ public class AMXImplBase extends MBeanImplBase
 	}
 
     
+protected static void cdebug( final String s ) { System.out.println(s); }
+
 	/**
 		Get an Attribute value, first by looking for a getter method
 		of the correct name and signature, then by looking for a delegate,
@@ -824,7 +989,6 @@ public class AMXImplBase extends MBeanImplBase
 		
 		if ( ! (isLegalAttribute( name ) || name.equals( OBJECT_REF_ATTR_NAME) ) )
 		{
-			debug( "getAttribute: unknown Attribute " + name + ", legal Attributes are: " + toString( getAttributeInfos().keySet() ) );
 			throw new AttributeNotFoundException( name );
 		}
 		
@@ -864,14 +1028,14 @@ public class AMXImplBase extends MBeanImplBase
         final Method m	= findGetter( name );
         if ( m != null )
         {
-        //System.out.println( "getAttributeInternal: found getter method for: " + name );
+            //cdebug( "getAttributeInternal: found getter method for: " + name );
             result	= getAttributeByMethod( name, m );
             debug( "getAttribute: " + name + " CALLED GETTER: " + m + " = " + result);
             handleManually	= false;
         }
         else if ( isSpecialAMXAttr( name ) )
         {
-       // System.out.println( "getAttributeInternal: isSpecialAMXAttr for: " + name );
+        //cdebug( "getAttributeInternal: isSpecialAMXAttr for: " + name );
             handleManually = true;
         }
         else if ( haveDelegate() )

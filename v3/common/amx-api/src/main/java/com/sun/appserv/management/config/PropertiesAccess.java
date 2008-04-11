@@ -68,58 +68,6 @@ public interface PropertiesAccess extends Container
 	 */
     final static String PROPERTY_PREFIX = "property.";
     
-	/**
-		Get the names of all properties.
-        @deprecated use the PropertyConfig MBeans from {@link #getPropertyConfigMap}
-	 */
-	public String[]	getPropertyNames( );
-	
-	/**
-		@return Map containing all properties, keyed by name
-        @deprecated use the PropertyConfig MBeans from {@link #getPropertyConfigMap}
-	 */
-	public Map<String,String>	getProperties();
-	
-	/**
-		Get the value of a property.
-		
-		@param propertyName	the name of the property
-        @deprecated use the PropertyConfig MBeans from {@link #getPropertyConfigMap}
-	 */
-	public String	getPropertyValue( String propertyName );
-					
-	/**
-		Set the value of a property.  The property must already exist.
-		The existing description is retained.
-		
-		@param propertyName	the name of the property
-		@param propertyValue	the value of the property
-        @deprecated use the PropertyConfig MBeans from {@link #getPropertyConfigMap}
-	 */	
-	public void		setPropertyValue( String propertyName, String propertyValue );
-						
-	/**
-		Return true if any properties exist with the specified name.
-		
-		@param propertyName	the name of the property
-        @deprecated use the PropertyConfig MBeans from {@link #getPropertyConfigMap}
-	 */
-	public boolean	existsProperty( String propertyName );
-	
-	/**
-		Create a new property.
-		
-		@param propertyName		the name of the property
-		@param propertyValue	the value of the property
-        @deprecated use {@link #createPropertyConfig}
-	 */
-	public void		createProperty( String propertyName, String propertyValue);
-	
-	/**
-        @deprecated use {@link #removePropertyConfig}
-	 */
-	public void		removeProperty( String propertyName );
-    
     /**
        @since Glassfish V3
      */

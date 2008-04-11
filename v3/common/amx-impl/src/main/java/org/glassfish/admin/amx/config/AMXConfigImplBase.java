@@ -78,6 +78,7 @@ import com.sun.appserv.management.config.PropertyConfig;
 import com.sun.appserv.management.config.SystemPropertyConfig;
 import com.sun.appserv.management.config.AMXCreateInfo;
 import com.sun.appserv.management.config.DefaultValues;
+import com.sun.appserv.management.config.ConfigCollectionElement;
 
 import com.sun.appserv.management.base.XTypes;
 import com.sun.appserv.management.base.AMX;
@@ -133,6 +134,47 @@ public class AMXConfigImplBase extends AMXImplBase
         mSupplementaryInterface = supplementaryInterface;
 	}
     
+        private String
+    getTypeString()
+    {
+        // use the serverbeans type for now, later extract the XML element type
+        final ConfigBean cb = getConfigBean();
+        final Class<? extends ConfigBeanProxy> intf = cb.getProxyType();
+        final Package pkg = intf.getPackage();
+        String result = intf.getName().substring( pkg.getName().length() + 1, intf.getName().length() );
+        result = result.toLowerCase();
+
+        return result;
+    }
+    
+    @Override
+          protected String
+    _getDottedNamePart()
+    {
+        String result = super._getDottedNamePart();
+        
+        if ( isSingletonMBean( getInterface() ) )
+        {
+            result = getTypeString();
+        }
+        else
+        {
+            final Container container = getContainer();
+            if ( container instanceof ConfigCollectionElement )
+            {
+                // an intermediate MBean is already in place, providing a grouping
+                result = getName();
+            }
+            else
+            {
+                // we need to insert the type of the element to group them uniquely
+                result = getTypeString() + ":" + getName();
+            }
+        }
+        return result;
+    }
+
+
         public Set<String>
     getContaineeJ2EETypes()
     {
@@ -544,11 +586,7 @@ public class AMXConfigImplBase extends AMXImplBase
         
         return m;
     }
-    
- 
-    private static void cdebug( final String s ) { System.out.println(s); }
-
-    
+        
     /*
         protected ObjectName
    createAMXConfig(
@@ -1229,6 +1267,19 @@ cdebug( "removeConfig: by  j2eeType + name" );
 			sendAttributeChangeNotification( "", amxAttrName, attrType, whenChanged, oldValue, newValue );
         }
     }
+    
+    
+    /**
+        The dotted name for config should be the xml name.
+     */
+    @Override
+        protected String
+    attributeNameToDottedValueName( final String amxAttrName )
+    {
+        final String xmlName = NameMapping.getInstance(getJ2EEType()).getXMLName( amxAttrName );
+        return xmlName == null ? super.attributeNameToDottedValueName(amxAttrName) : xmlName;
+    }
+
 
 
 }

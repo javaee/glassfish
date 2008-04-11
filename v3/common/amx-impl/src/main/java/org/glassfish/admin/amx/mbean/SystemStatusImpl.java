@@ -37,13 +37,9 @@ package org.glassfish.admin.amx.mbean;
 
 import java.util.Map;
 import java.util.HashMap;
-
-
 import javax.management.ObjectName;
 
 import com.sun.appserv.management.base.SystemStatus;
-
-//import com.sun.appserv.connectors.spi.ConnectorRuntime;
 
 /**
     
@@ -61,8 +57,8 @@ public final class SystemStatusImpl extends AMXNonConfigImplBase
     {
         final Map<String,Object> result = new HashMap<String,Object>();
         
-        //ConnectorRuntime connRuntime = null;
-        //final boolean status =  status = connRuntime.pingConnectionPool(poolName);
+        //ConnectorRuntime rt =  com.sun.appserv.connectors.spi.ConnectorRuntime.getRuntime();
+        //final boolean status =  status = rt.pingConnectionPool(poolName);
         
         result.put( STATUS_STRING_KEY, "NOT YET IMPLEMENTED, status unknown for " + poolName );
         

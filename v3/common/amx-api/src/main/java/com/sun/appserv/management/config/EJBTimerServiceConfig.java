@@ -43,12 +43,13 @@ package com.sun.appserv.management.config;
 import com.sun.appserv.management.base.XTypes;
 import com.sun.appserv.management.config.AMXConfig;
 import com.sun.appserv.management.config.PropertiesAccess;
+import com.sun.appserv.management.base.Singleton;
 
 /**
 	Configuration for the &lt;ejb-timer-service&gt; element.
 */
 
-public interface EJBTimerServiceConfig extends AMXConfig, PropertiesAccess
+public interface EJBTimerServiceConfig extends AMXConfig, PropertiesAccess, Singleton
 {
 /** The j2eeType as returned by {@link com.sun.appserv.management.base.AMX#getJ2EEType}. */
 	public static final String	J2EE_TYPE	= XTypes.EJB_TIMER_SERVICE_CONFIG;

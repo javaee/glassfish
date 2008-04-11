@@ -163,13 +163,21 @@ public interface DomainRoot extends Container
 
     /**
         @return the singleton {@link ConfigDottedNames}.
+        @deprecated soon to go away, use getDottedNames
      */
     public ConfigDottedNames		getConfigDottedNames() ;
 
     /**
         @return the singleton {@link MonitoringDottedNames}
+        @deprecated soon to go away, use getDottedNames
      */
     public MonitoringDottedNames	getMonitoringDottedNames() ;
+    
+
+    /**
+        @return the singleton {@link DottedNames}.
+     */
+    public DottedNames		getDottedNames() ;
         
     /**
         @return the singleton {@link MonitoringRoot}.

@@ -67,7 +67,8 @@
             <resource>
                 <directory>src/main/java</directory>
                 <includes>
-                    <include>com/sun/enterprise/management/cmd/*.properties</include>
+                    <include>org/glassfish/admin/amx/cmd/*.properties</include>
+                    <include>org/glassfish/admin/amx/dotted/*.properties</include>
                 </includes>
             </resource>
         </resources>

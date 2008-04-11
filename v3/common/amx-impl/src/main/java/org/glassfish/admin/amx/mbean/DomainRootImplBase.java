@@ -44,6 +44,7 @@ import javax.management.JMException;
 import com.sun.appserv.management.DomainRoot;
 import com.sun.appserv.management.base.XTypes;
 import com.sun.appserv.management.base.AMX;
+import com.sun.appserv.management.base.SystemInfo;
 import com.sun.appserv.management.base.Util;
 import com.sun.appserv.management.base.NotificationEmitterServiceKeys;
 import com.sun.appserv.management.base.NotificationEmitterService;
@@ -67,6 +68,8 @@ import org.glassfish.admin.amx.util.Issues;
 
 import com.sun.appserv.server.util.Version;
 
+import org.glassfish.admin.amx.dotted.DottedNamesImpl;
+
 
 /**
  */
@@ -87,6 +90,13 @@ public class DomainRootImplBase extends AMXNonConfigImplBase
         super( DomainRoot.J2EE_TYPE, DomainRoot.J2EE_TYPE, null, DomainRoot.class, null );
 		mAppserverDomainName	= null;
 	}
+    
+    @Override
+        protected String
+    _getDottedNamePart()
+    {
+        return "root";
+    }
 	     
 		public ObjectName
 	preRegisterHook( final ObjectName selfObjectName )
@@ -187,7 +197,11 @@ public class DomainRootImplBase extends AMXNonConfigImplBase
                 J2EEDomain.J2EE_TYPE, j2eeDomainName, false );
 		mbean	= new DASJ2EEDomainImpl( self );
         registerChild( mbean, childObjectName );
-
+        
+		childObjectName	= objectNames.buildContaineeObjectName( self, getFullType(),
+                XTypes.DOTTED_NAMES, AMX.NO_NAME, false );
+		mbean	= new DottedNamesImpl(self);
+        registerChild( mbean, childObjectName );
 	}
     
 		protected final void

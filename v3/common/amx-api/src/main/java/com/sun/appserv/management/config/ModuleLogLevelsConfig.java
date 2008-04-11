@@ -38,6 +38,7 @@ package com.sun.appserv.management.config;
 import java.util.Map;
 
 import com.sun.appserv.management.base.XTypes;
+import com.sun.appserv.management.base.Singleton;
 
 
 
@@ -47,7 +48,7 @@ import com.sun.appserv.management.base.XTypes;
 	 Values are those defined in {@link LogLevelValues}.
 */
 
-public interface ModuleLogLevelsConfig extends PropertiesAccess, ConfigElement 
+public interface ModuleLogLevelsConfig extends PropertiesAccess, ConfigElement, Singleton
 {
 /** The j2eeType as returned by {@link com.sun.appserv.management.base.AMX#getJ2EEType}. */
 	public static final String	J2EE_TYPE	= XTypes.MODULE_LOG_LEVELS_CONFIG;

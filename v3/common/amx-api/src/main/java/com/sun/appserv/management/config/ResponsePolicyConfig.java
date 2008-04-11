@@ -34,22 +34,17 @@
  * holder.
  */
 
-/*
- * $Header: /cvs/glassfish/appserv-api/src/java/com/sun/appserv/management/config/ResponsePolicyConfig.java,v 1.2 2007/05/05 05:30:35 tcfujii Exp $
- * $Revision: 1.2 $
- * $Date: 2007/05/05 05:30:35 $
- */
-
 package com.sun.appserv.management.config;
 
 import com.sun.appserv.management.base.XTypes;
+import com.sun.appserv.management.base.Singleton;
 
 
 /**
 	 Configuration for the &lt;response-policy&gt; element.
 */
 
-public interface ResponsePolicyConfig extends ConfigElement
+public interface ResponsePolicyConfig extends ConfigElement, Singleton
 {
 /** The j2eeType as returned by {@link com.sun.appserv.management.base.AMX#getJ2EEType}. */
 	public static final String	J2EE_TYPE	= XTypes.RESPONSE_POLICY_CONFIG;

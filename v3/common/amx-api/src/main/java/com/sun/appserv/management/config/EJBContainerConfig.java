@@ -33,22 +33,14 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
- 
-/*
- * $Header: /cvs/glassfish/appserv-api/src/java/com/sun/appserv/management/config/EJBContainerConfig.java,v 1.2 2007/05/05 05:30:33 tcfujii Exp $
- * $Revision: 1.2 $
- * $Date: 2007/05/05 05:30:33 $
- */
-
 
 package com.sun.appserv.management.config;
 
 import java.util.Map;
 
-
-
 import com.sun.appserv.management.base.XTypes;
 import com.sun.appserv.management.base.Container;
+import com.sun.appserv.management.base.Singleton;
 
 
 
@@ -56,7 +48,7 @@ import com.sun.appserv.management.base.Container;
 	 Configuration for the &lt;ejb-container&gt; element.
  */
 public interface EJBContainerConfig extends 
-	AMXConfig, Container, PropertiesAccess, DefaultValues
+	AMXConfig, Container, PropertiesAccess, DefaultValues, Singleton
 {
 /** The j2eeType as returned by {@link com.sun.appserv.management.base.AMX#getJ2EEType}. */
 	public static final String	J2EE_TYPE	= XTypes.EJB_CONTAINER_CONFIG;

@@ -177,10 +177,9 @@ abstract class LoaderBase extends org.glassfish.admin.amx.mbean.MBeanImplBase
 		
 		try
 		{
-			loadSystemInfo( server );
+			//loadSystemInfo( server );  // now loaded as part of DomainRoot
 			
-			final MBeanServerNotificationFilter filter	=
-				new MBeanServerNotificationFilter();
+			final MBeanServerNotificationFilter filter	= new MBeanServerNotificationFilter();
 
             filter.enableAllObjectNames();
             
@@ -282,6 +281,7 @@ abstract class LoaderBase extends org.glassfish.admin.amx.mbean.MBeanImplBase
     		try
     		{
     			objectName  = mServer.registerMBean( domainRoot, objectName ).getObjectName();
+                loadSystemInfo( mServer );
     	        debug( "Registered DomainRoot: " + objectName );
     		}
     		catch( final Exception e )
