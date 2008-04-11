@@ -147,6 +147,18 @@ public class AMXConfigImplBase extends AMXImplBase
         return result;
     }
     
+    /**
+        The actual name could be different than the 'name' property in the ObjectName if it
+        contains characters that are illegal for an ObjectName.
+     */
+    @Override
+		public String
+	getName()
+	{
+        final ConfigBean cb = getConfigBean();
+        
+        return AMXConfigLoader.getName( cb, null );
+	}
       
     @Override
     /**

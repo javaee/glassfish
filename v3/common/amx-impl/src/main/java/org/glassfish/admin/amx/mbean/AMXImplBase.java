@@ -359,11 +359,25 @@ public class AMXImplBase extends MBeanImplBase
     /**
         Translate an Attribute name into a dotted name. Subclasses might wish to override
         this method.  By default the dotted name is the same as the attribute name.
+        <p>
+        A subclass can indicate that it does <em>not</em> want a dotted name to be made available
+        for the attribute by returning null.
+        <p>
+        By default, attributes containing ObjectNames or Maps/Sets thereof are excluded from
+        the dotted name listing.
      */
         protected String
-    attributeNameToDottedValueName( final String s )
+    attributeNameToDottedValueName( final String attrName )
     {
-        return s;
+        String dottedName = attrName;
+        
+        if ( attrName.endsWith( "ObjectName" ) || attrName.endsWith( "ObjectNameMap" ) ||
+            attrName.endsWith( "ObjectNameSet" ) || attrName.endsWith( "ObjectNameList" ) )
+        {
+            dottedName = null;
+        }
+        
+        return dottedName;
     }
     
         public final Map<String,String>
@@ -378,7 +392,10 @@ public class AMXImplBase extends MBeanImplBase
             // all dotted names are case insensitive
             final String dottedValueName = attributeNameToDottedValueName( attrName );
             //cdebug( "Attribute mapping: " + attrName + " => " + dottedValueName );
-            dottedToAttr.put( dottedValueName, attrName );
+            if ( dottedValueName != null )
+            {
+                dottedToAttr.put( dottedValueName, attrName );
+            }
         }
         
         return dottedToAttr;
@@ -1958,6 +1975,10 @@ protected static void cdebug( final String s ) { System.out.println(s); }
 		return( GROUP_OTHER );
 	}
 	
+    /**
+        A subclass might need to override this method if its name contains characters
+        that are illegal for the ObjectName.
+     */
 		public String
 	getName()
 	{

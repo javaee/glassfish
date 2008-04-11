@@ -743,18 +743,36 @@ debug( "AMXConfigLoader.sortAndDispatch: " + events.size() + " events" );
         return j2eeType;
     }
     
-        private String
+        public static String
     getName(
         final ConfigBean cb,
-        final AMXConfigInfoResolver info)
+        final AMXConfigInfo infoIn)
     {
-        String name = info.singleton() ? AMX.NO_NAME : cb.rawAttribute( info.nameHint() );
+        String name = null;
         
-        if ( name == null )
+        final AMXConfigInfo info = infoIn == null ? getAMXConfigInfo(cb) : infoIn;
+        
+        if ( info.singleton() )
         {
-            name = "BUG_NO_NAME_AVAILABLE";
+            name = AMX.NO_NAME;
         }
+        else
+        {
+            name = cb.rawAttribute( info.nameHint() );
+        }
+        
         return name;
+    }
+    
+        private static String
+    whackIllegals( final String s )
+    {
+        final char sub = '_';
+        String result = s.replace( ':', sub );
+        
+        result = result.replace( ',', sub );
+        
+        return result;
     }
     
         private ObjectName
@@ -763,7 +781,7 @@ debug( "AMXConfigLoader.sortAndDispatch: " + events.size() + " events" );
         final AMXConfigInfoResolver info )
     {
         final String j2eeType = getJ2EEType( cb, info );
-        final String name     = getName( cb, info );
+        final String name     = whackIllegals( getName( cb, info.getAMXConfigInfo() ) );
         
         String parentProps = "";
         String domain = AMX.JMX_DOMAIN;
