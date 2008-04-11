@@ -164,7 +164,7 @@ AVAILABLE_JDK=Available Java(TM) SDKs
 ALTERNATE_JDK=Alternate Java(TM) SDK location
 
 UPDATETOOL_TOP_TEXT=&lt;HTML&gt;&lt;BODY&gt;\
-If desired, installer will attempt to download and configure update client for this\
+If desired, installer will attempt to download and configure update client for this \
 installation.&lt;BR&gt;\
 &lt;/BODY&gt;&lt;/HTML&gt;
 

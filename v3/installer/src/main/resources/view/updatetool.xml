@@ -44,6 +44,14 @@
     <apt:category apt:name="updatetool" apt:label="Updatetool">
       <apt:page apt:name="Configuration_Item" apt:label="Configuration Settings">
         <apt:section apt:name="Configuration" apt:label="Configuration" >
+         <apt:property apt:name="UPDATETOOL_TEXT_TOP"
+         apt:dataPath=""
+         apt:type="xs:string">
+         <apt:prop-value>$UPDATETOOL_TOP_TEXT</apt:prop-value>
+         <apt:visual>
+            <apt:htmlPanel/>
+         </apt:visual>
+        </apt:property>
          <apt:property apt:name="BOOTSTRAP_UPDATETOOL"
               apt:dataPath="Configuration.BOOTSTRAP_UPDATETOOL"
               apt:label=""              
