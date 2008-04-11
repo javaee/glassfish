@@ -160,8 +160,7 @@ public class FileandSyslogHandler extends StreamHandler implements PostConstruct
         if (!serverLog.isAbsolute()) {
             serverLog = new File(env.getDomainRoot(), fileName);
         }
-        fileName = serverLog.getAbsolutePath();
-        changeFileName(fileName);
+        changeFileName(serverLog);
 
         Long rotationTimeLimitValue = 0L;
         try {
@@ -171,7 +170,7 @@ public class FileandSyslogHandler extends StreamHandler implements PostConstruct
                     "Cannot read rotationTimelimitInMinutes property from logging config file");
         }
 
-        if (rotationTimeLimitValue.longValue() != 0) {
+        if (rotationTimeLimitValue != 0) {
 
             Task rotationTask = new Task() {
                 public Object run() {
@@ -186,7 +185,7 @@ public class FileandSyslogHandler extends StreamHandler implements PostConstruct
 
             LogRotationTimer.getInstance().startTimer(
                     new LogRotationTimerTask(rotationTask,
-                            rotationTimeLimitValue.longValue()));
+                            rotationTimeLimitValue));
             // Disable the Size Based Rotation if the Time Based
             // Rotation is set.
             setLimitForRotation(0);
@@ -202,8 +201,7 @@ public class FileandSyslogHandler extends StreamHandler implements PostConstruct
             // We set the LogRotation limit here. The rotation limit is the
             // Threshold for the number of bytes in the log file after which
             // it will be rotated.
-            setLimitForRotation(
-                    rotationLimitAttrValue.intValue());
+            setLimitForRotation(rotationLimitAttrValue);
         }
 
         setLevel( Level.ALL );
