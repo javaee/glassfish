@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2008 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -32,65 +32,40 @@
  * and therefore, elected the GPL Version 2 license, then the option applies
  * only if the new code is made subject to such option by the copyright
  * holder.
- */
-
-
-
-package com.sun.enterprise.config.serverbeans;
-
-import org.jvnet.hk2.config.Attribute;
-import org.jvnet.hk2.config.Element;
-import org.jvnet.hk2.config.Configured;
-import org.jvnet.hk2.config.ConfigBeanProxy;
-import org.jvnet.hk2.component.Injectable;
-
-import java.beans.PropertyVetoException;
-import java.io.Serializable;
-import java.util.List;
-
-
-/**
  *
  */
 
-/* @XmlType(name = "", propOrder = {
-    "property"
-}) */
-//@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.ListenerConfig")
-@Configured
-public interface ListenerConfig extends ConfigBeanProxy, Injectable, PropertyBag {
+package com.sun.enterprise.config.serverbeans;
 
-    /**
-     * Gets the value of the listenerClassName property.
-     *
-     * @return possible object is
-     *         {@link String }
-     */
-    @Attribute(required = true, key=true)
-    public String getListenerClassName();
+import org.jvnet.hk2.config.Element;
 
-    /**
-     * Sets the value of the listenerClassName property.
-     *
-     * @param value allowed object is
-     *              {@link String }
-     */
-    public void setListenerClassName(String value) throws PropertyVetoException;
+import java.util.List;
 
+/**
+ * Base interface for those configuration objects that has nested &lt;property> elements.
+ * @author Kohsuke Kawaguchi
+ */
+public interface PropertyBag {
     /**
-     * Gets the value of the subscribeListenerWith property.
-     *
-     * @return possible object is
-     *         {@link String }
+     * Gets the value of the property property.
+     * <p/>
+     * <p/>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the property property.
+     * <p/>
+     * <p/>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getProperty().add(newItem);
+     * </pre>
+     * <p/>
+     * <p/>
+     * <p/>
+     * Objects of the following type(s) are allowed in the list
+     * {@link Property }
      */
-    @Attribute(required = true)
-    public String getSubscribeListenerWith();
-
-    /**
-     * Sets the value of the subscribeListenerWith property.
-     *
-     * @param value allowed object is
-     *              {@link String }
-     */
-    public void setSubscribeListenerWith(String value) throws PropertyVetoException;
+    @Element("property")
+    public List<Property> getProperty();
 }

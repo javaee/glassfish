@@ -85,29 +85,8 @@ public final class ConfigBeansUtilities {
 
     }
 
-    public static Property getPropertyByName(Object bean, String name) {
-        Method m;
-        try {
-            m = bean.getClass().getMethod("getProperty");
-        } catch (SecurityException ex) {
-            return null;
-        } catch (NoSuchMethodException ex) {
-            return null;
-        }
-        if (m == null) {
-            return null;
-        }
-        List<Property> properties;
-        try {
-            properties = (List<Property>) m.invoke(bean);
-        } catch (IllegalArgumentException ex) {
-            return null;
-        } catch (IllegalAccessException ex) {
-            return null;
-        } catch (InvocationTargetException ex) {
-            return null;
-        }
-        for (Property prop : properties) {
+    public static Property getPropertyByName(PropertyBag bean, String name) {
+        for (Property prop : bean.getProperty()) {
             if (prop.getName().equals(name)) {
                 return prop;
             }
@@ -123,7 +102,7 @@ public final class ConfigBeansUtilities {
      * @param name the property name requested
      * @return the property value of null if not found
      */
-    public static String getPropertyValueByName(Object bean, String name) {
+    public static String getPropertyValueByName(PropertyBag bean, String name) {
         Property prop = getPropertyByName(bean, name);
         if (prop != null) {
             return prop.getValue();

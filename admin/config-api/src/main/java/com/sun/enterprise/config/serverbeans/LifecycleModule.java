@@ -60,7 +60,7 @@ import java.util.List;
 }) */
 @org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="com.sun.appserv.management.config.LifecycleModuleConfig")
 @Configured
-public interface LifecycleModule extends ConfigBeanProxy, Injectable, Module {
+public interface LifecycleModule extends ConfigBeanProxy, Injectable, Module, PropertyBag {
 
     /**
      * Gets the value of the name property.
@@ -197,30 +197,4 @@ public interface LifecycleModule extends ConfigBeanProxy, Injectable, Module {
      *              {@link String }
      */
     public void setDescription(String value) throws PropertyVetoException;
-
-    /**
-     * Gets the value of the property property.
-     * <p/>
-     * <p/>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the property property.
-     * <p/>
-     * <p/>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getProperty().add(newItem);
-     * </pre>
-     * <p/>
-     * <p/>
-     * <p/>
-     * Objects of the following type(s) are allowed in the list
-     * {@link Property }
-     */
-    @Element("property")
-    public List<Property> getProperty();
-
-
-
 }
