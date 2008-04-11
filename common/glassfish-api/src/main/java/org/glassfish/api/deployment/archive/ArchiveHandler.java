@@ -65,6 +65,14 @@ public interface ArchiveHandler {
      */
     public boolean handles(ReadableArchive archive) throws IOException;
 
+    /**
+     * Creates a classloader that can load code from inside the archive.
+     *
+     * @param parent
+     *      The newly created classloader to be returned must eventually delegate to this classloader.
+     *      (This classloader is capable of resolving APIs and other things that the container
+     *      is expected to provide.)
+     */
     public ClassLoader getClassLoader(ClassLoader parent, ReadableArchive archive);
     
     /**
