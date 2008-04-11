@@ -18,11 +18,11 @@ import java.util.logging.Level;
 
 /**
 * Init service to take care of vm related tasks.
-*
-* @author Jerome Dochez
-*/
+ *
+ * @author Jerome Dochez
+ */
 // TODO: eventually use CageBuilder so that this gets triggered when JavaConfig enters Habitat.
- @Service
+@Service
 public class SystemTasks implements Init, PostConstruct {
 
     @Inject(optional = true)
@@ -60,3 +60,4 @@ public class SystemTasks implements Init, PostConstruct {
             }
         }
     }
+}
