@@ -379,6 +379,33 @@ public class ConfigSupport {
         return subTypes.toArray(new Class[subTypes.size()]);
     }
 
+    /**
+     * Returns the list of attributes names by the passed ConfigBean
+     * @return array of String for all the attributes names
+     */
+    public static String[] getAttributesNames(ConfigBean bean) {
+        return xmlNames(bean.model.attributes.values());
+    }
+
+
+    /**
+     * Returns the list of elements names by the passed ConfigBean
+     * @return array of String for all the elements names
+     */
+    public static String[] getElementsNames(ConfigBean bean) {
+        return xmlNames(bean.model.elements.values());
+    }
+
+    private static String[] xmlNames(Collection<? extends ConfigModel.Property> properties) {
+
+        List<String> names = new ArrayList<String>();
+        for (ConfigModel.Property attribute : properties) {
+            names.add(attribute.xmlName());
+        }
+        return names.toArray(new String[names.size()]);
+
+    }
+
 
     /**
      * Creates a new child of the passed child and add it to the parent's live
@@ -409,6 +436,39 @@ public class ConfigSupport {
         throws TransactionFailure {
 
 
+        return createAndSet(parent, childType, AttributeChanges.from(attributes), runnable);
+        
+    }
+    /**
+     * Creates a new child of the passed child and add it to the parent's live
+     * list of elements. The child is also initialized with the attributes passed
+     * where each key represent the xml property name for the attribute and the value
+     * represent the attribute's value.
+     *
+     * This code will be executed within a Transaction and can therefore throw
+     * a TransactionFailure when the creation or settings of attributes failed.
+     *
+     * Example creating a new http-listener element under http-service
+     *      ConfigBean httpService = ... // got it from somwhere.
+     *      Map<String, String> attributes = new HashMap<String, String>();
+     *      attributes.put("id", "jerome-listener");
+     *      attributes.put("enabled", "true");
+     *      ConfigSupport.createAndSet(httpService, HttpListener.class, attributes);
+     *
+     * @param parent parent config bean to which the child will be added.
+     * @param childType child type
+     * @param attributes list of attribute changes to apply to the newly created child
+     * @param runnable code that will be invoked as part of the transaction to add
+     * more attributes or elements to the newly create type
+     * @throws TransactionFailure if the creation or attribute settings failed
+     */
+    public static ConfigBean createAndSet(
+                final ConfigBean parent,
+                final Class<? extends ConfigBeanProxy> childType,
+                final List<AttributeChanges> attributes,
+                final TransactionCallBack<WriteableView> runnable)
+        throws TransactionFailure {
+
         ConfigBeanProxy readableView = parent.getProxy(parent.getProxyType());
         ConfigBeanProxy readableChild = (ConfigBeanProxy)
                 ConfigSupport.apply(new SingleConfigCode<ConfigBeanProxy>() {
@@ -436,6 +496,9 @@ public class ConfigSupport {
                 // first we need to find the element associated with this type
                 ConfigModel.Property element = null;
                 for (ConfigModel.Property e : parent.model.elements.values()) {
+                    if (e.isLeaf()) {
+                        continue;
+                    }
                     ConfigModel elementModel =  ((ConfigModel.Node) e).model;
 
                     if (Logger.getAnonymousLogger().isLoggable(Level.FINE)) {
@@ -500,16 +563,7 @@ public class ConfigSupport {
                 }
 
                 WriteableView writeableChild = (WriteableView) Proxy.getInvocationHandler(child);
-                 if (attributes!=null) {              
-                    for (Map.Entry<String, String> change : attributes.entrySet()) {
-
-                        ConfigModel.Property prop = writeableChild.getProperty(change.getKey());
-                        if (prop==null) {
-                            throw new TransactionFailure("Unknown property name " + change.getKey() + " on " + childType);
-                        }
-                        writeableChild.setter(prop, change.getValue(), String.class);
-                    }
-                }
+                applyProperties(writeableChild, attributes);
                 
                 if (runnable!=null) {
                     runnable.performOn(writeableChild);
@@ -519,6 +573,35 @@ public class ConfigSupport {
         }, readableView);
         return (ConfigBean) Dom.unwrap(readableChild);
     }
+
+    private static void applyProperties(WriteableView target, List<? extends AttributeChanges> changes)
+            throws TransactionFailure {
+
+        if (changes != null) {
+            for (AttributeChanges change : changes) {
+
+                ConfigModel.Property prop = target.getProperty(change.name);
+                if (prop == null) {
+                    throw new TransactionFailure("Unknown property name " + change.name + " on " + target.getProxyType());
+                }
+                if (prop.isCollection()) {
+                    // we need access to the List
+                    try {
+                        List list = (List) target.getter(prop, ConfigSupport.class.getDeclaredMethod("defaultPropertyValue", null).getGenericReturnType());
+                        for (String value : change.values()) {
+                            list.add(value);
+                        }
+                    } catch (NoSuchMethodException e) {
+                        throw new TransactionFailure(e.getMessage(), e);
+                    }
+                } else {
+                    target.setter(prop, change.values()[0], String.class);
+                }
+            }
+        }
+
+    }
+
 
     /**
      * Creates a new child of the passed child and add it to the parent's live
@@ -538,7 +621,7 @@ public class ConfigSupport {
      *
      * @param parent parent config bean to which the child will be added.
      * @param childType child type
-     * @param attributes map of key value pair to set on the newly created child
+     * @param attributes list of attributes changes to apply to the new created child
      * @throws TransactionFailure if the creation or attribute settings failed
      */
     public static ConfigBean createAndSet(
@@ -550,7 +633,15 @@ public class ConfigSupport {
         return createAndSet(parent, childType, attributes, null);        
     }
 
+    public static ConfigBean createAndSet(
+                final ConfigBean parent,
+                final Class<? extends ConfigBeanProxy> childType,
+                final List<AttributeChanges> attributes)
+            throws TransactionFailure {
 
+        return createAndSet(parent, childType, attributes, null);
+    }
+    
     public static void deleteChild(
                 final ConfigBean parent,
                 final ConfigBean child)
@@ -641,5 +732,52 @@ public class ConfigSupport {
     
     public interface TransactionCallBack<T> {
         public void performOn(T param) throws TransactionFailure;
+    }
+
+    public static abstract class AttributeChanges {
+        final String name;
+
+        AttributeChanges(String name) {
+            this.name = name;
+        }
+        abstract String[] values();
+
+        static List<AttributeChanges> from(Map<String, String> values) {
+            if (values==null) {
+                return null;
+            }
+            List<AttributeChanges> changes = new ArrayList<AttributeChanges>();
+            for(Map.Entry<String, String> entry : values.entrySet()) {
+                changes.add(new SingleAttributeChange(entry.getKey(), entry.getValue()));
+            }
+            return changes;
+        }
+        
+    }
+
+    public static class SingleAttributeChange extends AttributeChanges {
+        final String[] values = new String[1];
+        
+        public SingleAttributeChange(String name, String value) {
+            super(name);
+            values[0] = value;
+        }
+
+        String[] values() {
+            return values;
+        }
+    }
+
+    public static class MultipleAttributeChanges extends AttributeChanges {
+        final String[] values;
+
+        public MultipleAttributeChanges(String name, String[] values) {
+            super(name);
+            this.values = values;
+        }
+
+        String[] values() {
+            return values;
+        }
     }
  }
