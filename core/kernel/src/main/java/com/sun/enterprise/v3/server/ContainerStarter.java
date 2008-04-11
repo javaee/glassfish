@@ -65,6 +65,9 @@ public class ContainerStarter {
     @Inject
     Logger logger;
 
+    @Inject
+    ServerEnvironment env;
+
     public Collection<ContainerInfo> startContainer(Sniffer sniffer, Module snifferModule) {
 
         assert sniffer!=null;
@@ -79,17 +82,16 @@ public class ContainerStarter {
             // the container could be installed at the default location
             // which is in <Root Installation>/modules/containerName
             String root = System.getProperty("com.sun.aas.installRoot");
-            File location = new File(root);
-            location = new File(location, "modules");
-            location = new File(location, containerName);
-            containerHome = location.getAbsolutePath();
-            System.setProperty(containerName + ".home", containerHome);
+            if(root!=null) {
+                File location = new File(root);
+                location = new File(location, "modules");
+                location = new File(location, containerName);
+                containerHome = location.getAbsolutePath();
+                System.setProperty(containerName + ".home", containerHome);
+            }
         }
 
-        assert containerHome!=null;
-
-
-        Module[] modules = null;
+        Module[] modules;
         ClassLoader containerClassLoader;
         // I do the container setup first so the code has a chance to set up
         // repositories which would allow access to the connector module.
