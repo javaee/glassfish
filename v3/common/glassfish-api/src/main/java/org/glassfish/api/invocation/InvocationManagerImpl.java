@@ -6,12 +6,14 @@ import java.util.List;
 import org.glassfish.api.invocation.ComponentInvocation.ComponentInvocationType;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.Singleton;
+import org.jvnet.hk2.component.PostConstruct;
 
 @Service
 @Scoped(Singleton.class)
 public class InvocationManagerImpl
-        implements InvocationManager {
+        implements InvocationManager, PostConstruct {
 
     static public boolean debug;
 
@@ -20,6 +22,10 @@ public class InvocationManagerImpl
     // the stack of invocations on this thread. Accesses to the ArrayList
     // dont need to be synchronized because each thread has its own ArrayList.
     private InheritableThreadLocal<InvocationArray<ComponentInvocation>> frames;
+
+    @Inject(optional = true)
+    private ComponentInvocationHandler[] handlers
+            = new ComponentInvocationHandler[0]; //Just for junit testing
 
     public InvocationManagerImpl() {
 
@@ -70,6 +76,12 @@ public class InvocationManagerImpl
         };
     }
 
+    public void postConstruct() {
+        if (handlers == null) {
+            handlers = new ComponentInvocationHandler[0];
+        }
+    }
+
     public <T extends ComponentInvocation> void preInvoke(T inv)
             throws InvocationException {
 
@@ -85,8 +97,16 @@ public class InvocationManagerImpl
         // if ejb call EJBSecurityManager, for servlet call RealmAdapter
         ComponentInvocationType invType = inv.getInvocationType();
 
+        for (ComponentInvocationHandler handler : handlers) {
+            handler.beforePreInvoke(invType, prevInv, inv);
+        }
+
         //push this invocation on the stack
         v.add(inv);
+
+        for (ComponentInvocationHandler handler : handlers) {
+            handler.afterPreInvoke(invType, prevInv, inv);
+        }
 
     }
 
@@ -110,10 +130,19 @@ public class InvocationManagerImpl
 
         try {
             ComponentInvocationType invType = inv.getInvocationType();
-            //TODO: Need to notify listeners
+
+            for (ComponentInvocationHandler handler : handlers) {
+                handler.beforePostInvoke(invType, prevInv, curInv);
+            }
+
         } finally {
             // pop the stack
             v.remove(beforeSize - 1);
+
+
+            for (ComponentInvocationHandler handler : handlers) {
+                handler.afterPostInvoke(inv.getInvocationType(), prevInv, inv);
+            }
         }
 
     }
@@ -126,19 +155,16 @@ public class InvocationManagerImpl
         return ((v == null) || (v.size() == 0));
     }
 
-    // BEGIN IASRI# 4646060
     /**
      * return the Invocation object of the component
      * being called
      */
     public <T extends ComponentInvocation> T getCurrentInvocation() {
-        // END IASRI# 4646060
-
         ArrayList v = (ArrayList) frames.get();
         int size = v.size();
-        // BEGIN IASRI# 4646060
-        if (size == 0) return null;
-        // END IASRI# 4646060
+        if (size == 0) {
+            return null;
+        }
         return (T) v.get(size - 1);
     }
 
