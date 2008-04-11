@@ -493,7 +493,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         return "Web";
     }
 
-    public Class<? extends org.glassfish.api.deployment.Deployer> getDeployer() {
+    public Class<WebDeployer> getDeployer() {
         return WebDeployer.class;
     }
     
@@ -524,8 +524,8 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         } catch (NumberFormatException nfe) {
             String msg = _rb.getString("pewebcontainer.http_listener.invalid_port");
             msg = MessageFormat.format(msg,
-                                       new Object[] {httpListener.getPort(),
-                                       httpListener.getId() });
+                    httpListener.getPort(),
+                    httpListener.getId());
             throw new IllegalArgumentException(msg);
         }
 
@@ -1102,8 +1102,8 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
                 String msg = 
                     _rb.getString("pewebcontainer.virtual_server.invalid_docroot");
-                msg = MessageFormat.format(msg, 
-                                        new Object[] { vs_id , docroot});
+                msg = MessageFormat.format(msg,
+                        vs_id, docroot);
                 throw new IllegalArgumentException(msg);
             } else if (!isValid) {
 
@@ -1112,7 +1112,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             }
         } else if (defaultWebModule == null) {
             String msg = _rb.getString("pewebcontainer.virtual_server.missing_docroot");
-            msg = MessageFormat.format(msg, new Object[] { vs_id });
+            msg = MessageFormat.format(msg, vs_id);
             throw new IllegalArgumentException(msg);
         }
         return true;
@@ -1185,8 +1185,8 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                         "pewebcontainer.httpListener.mustNotDisable");
                     msg = MessageFormat.format(
                         msg,
-                        new Object[] { httpListeners[i].getId(),
-                                       vs.getName() });
+                            httpListeners[i].getId(),
+                            vs.getName());
                     throw new IllegalArgumentException(msg);
                 }
             }   
@@ -1258,7 +1258,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                             "web.monitoringRegistrationError");
             msg = MessageFormat.format(
                             msg,
-                            new Object[] { "PWCRequestStats" });
+                    "PWCRequestStats");
             _logger.log(Level.WARNING, msg, mre);
         }
     }
@@ -1463,8 +1463,8 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                     "pewebcontainer.invalidKeepAliveTimeout");
                 msg = MessageFormat.format(
                     msg,
-                    new Object[] { keepAlive.getTimeoutInSeconds(),
-                                   Integer.toString(timeoutInSeconds)});
+                        keepAlive.getTimeoutInSeconds(),
+                        Integer.toString(timeoutInSeconds));
                 _logger.log(Level.WARNING, msg, ex);
             }
 
@@ -1477,8 +1477,8 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                     "pewebcontainer.invalidKeepAliveMaxConnections");
                 msg = MessageFormat.format(
                     msg,
-                    new Object[] { keepAlive.getMaxConnections(),
-                                   Integer.toString(maxConnections)});
+                        keepAlive.getMaxConnections(),
+                        Integer.toString(maxConnections));
                 _logger.log(Level.WARNING, msg, ex);
             }
 
@@ -1490,8 +1490,8 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                     "pewebcontainer.invalidKeepAliveThreadCount");
                 msg = MessageFormat.format(
                     msg,
-                    new Object[] { keepAlive.getThreadCount(),
-                                   Integer.toString(threadCount)});
+                        keepAlive.getThreadCount(),
+                        Integer.toString(threadCount));
                 _logger.log(Level.WARNING, msg, ex);
             }
         }
@@ -1527,9 +1527,8 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         } catch (NumberFormatException ex){
             String msg = _rb.getString("pewebcontainer.invalidQueueSizeInBytes");
             msg = MessageFormat.format(
-                msg, new Object[] 
-                    { ConfigBeansUtilities.getDefaultQueueSizeInBytes(),
-                      Integer.toString(connector.getQueueSizeInBytes())});
+                msg, ConfigBeansUtilities.getDefaultQueueSizeInBytes(),
+                    Integer.toString(connector.getQueueSizeInBytes()));
             _logger.log(Level.WARNING, msg, ex);
         }
         
@@ -1549,9 +1548,8 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         } catch (NumberFormatException ex){
             String msg = _rb.getString("pewebcontainer.invalidMaxPendingCount");
             msg = MessageFormat.format(
-                msg, new Object[] 
-                    { cp.getMaxPendingCount(),
-                      Integer.toString(connector.getSocketServerBacklog())});
+                msg, cp.getMaxPendingCount(),
+                    Integer.toString(connector.getSocketServerBacklog()));
             _logger.log(Level.WARNING, msg, ex);
         }
         
@@ -1572,9 +1570,8 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         } catch (NumberFormatException ex) {
             String msg = _rb.getString("pewebcontainer.invalidBufferSize");
             msg = MessageFormat.format(
-                msg, new Object[] 
-                    { cp.getReceiveBufferSizeInBytes(),
-                      Integer.toString(connector.getBufferSize())});
+                msg, cp.getReceiveBufferSizeInBytes(),
+                    Integer.toString(connector.getBufferSize()));
             _logger.log(Level.WARNING, msg, ex);
         }
 
@@ -1595,9 +1592,8 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             String msg = _rb.getString(
                 "pewebcontainer.invalidMaxHttpHeaderSize");
             msg = MessageFormat.format(
-                msg, new Object[] 
-                    { cp.getSendBufferSizeInBytes(),
-                      Integer.toString(connector.getMaxHttpHeaderSize())});
+                msg, cp.getSendBufferSizeInBytes(),
+                    Integer.toString(connector.getMaxHttpHeaderSize()));
             _logger.log(Level.WARNING, msg, ex);
         }
     }
@@ -1729,7 +1725,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         } catch (Exception e) {
             String msg = _rb.getString(
                 "pewebcontainer.proxyHandlerClassLoadError");
-            msg = MessageFormat.format(msg, new Object[] { className });
+            msg = MessageFormat.format(msg, className);
             _logger.log(Level.SEVERE, msg, e);
         }
         if (handler != null) {
@@ -1822,7 +1818,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         File propertiesFile   = new File(propertiesURL);
         if ( !propertiesFile.exists() ) {
             String msg = _rb.getString( "pewebcontainer.missingJKProperties" );
-            msg = MessageFormat.format(msg, new Object[] { propertiesURL });
+            msg = MessageFormat.format(msg, propertiesURL);
             _logger.log(Level.WARNING, msg);
             return;
         }
@@ -1839,8 +1835,8 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         } catch (Exception ex) {
             String msg = _rb.getString("pewebcontainer.configureJK");
             msg = MessageFormat.format(
-                msg, 
-                new Object[] { Integer.valueOf(connector.getPort()) });
+                msg,
+                    Integer.valueOf(connector.getPort()));
             _logger.log(Level.SEVERE, msg, ex);
 
             } finally {
@@ -2455,8 +2451,8 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                                     "webcontainer.defaultWebModuleError");
                             msg = MessageFormat.format(
                                     msg,
-                                    new Object[] { defaultPath,
-                                    vs.getName() });
+                                    defaultPath,
+                                    vs.getName());
                             _logger.log(Level.SEVERE, msg, le);
                         }
 
@@ -3046,7 +3042,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
             String msg = _rb.getString("webcontainer.webModuleDisabled");
             msg = MessageFormat.format(msg,
-                    new Object[] { wmName });
+                    wmName);
             _logger.log(Level.SEVERE, msg, exception);
             result = new Result(exception);
         } else {
