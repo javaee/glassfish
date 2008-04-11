@@ -23,6 +23,8 @@
 
 package org.glassfish.api;
 
+import com.sun.tools.internal.ws.wsdl.document.MessagePart;
+
 import java.io.*;
 import java.util.*;
 import java.util.logging.Logger;
@@ -82,6 +84,13 @@ public abstract class ActionReport {
             setMessage(message);
         }
         setActionExitCode(ActionReport.ExitCode.FAILURE);
+    }
+
+    /**
+     * Short for {@code failure(logger,message,null)}
+     */
+    public final void failure(Logger logger, String message) {
+        failure(logger,message,null);
     }
 
     public static class MessagePart {
