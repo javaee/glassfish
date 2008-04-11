@@ -48,7 +48,6 @@ import org.jvnet.hk2.component.PerLookup;
 import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.logging.Level;
@@ -162,7 +161,7 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
             return;
         }
 
-        if (getSniffers().isEmpty()) {
+        if (snifferManager.hasNoSniffers()) {
             String msg = localStrings.getLocalString("nocontainer", "No container services registered, done...");
             logger.severe(msg);
             report.setMessage(msg);
@@ -237,11 +236,11 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
             }
 
             // create the parent class loader
-            ClassLoader parentCL = createSnifferParentCL(null, getSniffers());
+            ClassLoader parentCL = snifferManager.createSnifferParentCL(null);
             // now the archive class loader, this will only be used for the sniffers.handles() method
             final ClassLoader cloader = archiveHandler.getClassLoader(parentCL, archive);
 
-            final Collection<Sniffer> appSniffers = getSniffers(archive, cloader);
+            final Collection<Sniffer> appSniffers = snifferManager.getSniffers(archive, cloader);
             if (appSniffers.size()==0) {
                 report.setMessage(localStrings.getLocalString("deploy.unknownmoduletpe","Module type not recognized"));
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);

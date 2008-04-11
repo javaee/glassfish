@@ -23,7 +23,6 @@
 
 package org.glassfish.api.container;
 
-import org.glassfish.api.deployment.Deployer;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.jvnet.hk2.annotations.Contract;
 
@@ -33,15 +32,16 @@ import java.util.regex.Pattern;
 import java.lang.annotation.Annotation;
 
 import com.sun.enterprise.module.Module;
-import com.sun.enterprise.module.ModuleDefinition;
 
 /**
  * A sniffer implementation is responsible for identifying a particular
  * application type and/or a particular file type.
  *
+ * <p>
+ * For clients who want to work with Sniffers, see <tt>SnifferManager</tt> in the kernel.
+ *
  * @author Jerome Dochez
  */
-
 @Contract
 public interface Sniffer {
 
