@@ -1029,11 +1029,13 @@ AS_ADMIN_MASTERPASSWORD=${master.password}
   <echo message="Deploying ${assemble.dir}/${appname}-web.war from ${basedir}." 
       level="verbose"/>
   <property name="precompilejsp" value="true"/>
+  <property name="force" value="false"/>
   <exec executable="${ASADMIN}" failonerror="false">
     <arg line="deploy"/>
     <arg line="${as.props}"/>
     <arg line="--contextroot ${contextroot}"/>
     <arg line="--precompilejsp=${precompilejsp}"/>
+    <arg line="--force=${force}"/>
     <arg line="--upload=true"/>
     <arg line="--target ${appserver.instance.name}"/>	
     <arg line="${assemble.dir}/${appname}-web.war"/>
@@ -1041,13 +1043,15 @@ AS_ADMIN_MASTERPASSWORD=${master.password}
 </target> 
 
 <target name="deploy-war-commonee" if="ee">
- <property name="precompilejsp" value="true"/>
- <exec executable="${ASADMIN}" failonerror="false">
+  <property name="precompilejsp" value="true"/>
+  <property name="force" value="false"/>
+  <exec executable="${ASADMIN}" failonerror="false">
     <arg line="deploy"/>
     <arg line="${as.props}"/>
     <arg line="--type web"/>
     <arg line="--contextroot ${contextroot}"/>
     <arg line="--precompilejsp=${precompilejsp}"/>
+    <arg line="--force=${force}"/>
     <arg line="--upload=true"/>
     <arg line="--target ${appserver.instance.name}"/>	
     <arg line="${assemble.dir}/${appname}-web.war"/>
