@@ -91,22 +91,17 @@ public class WebTest {
                           + "/index.jsp");
         System.out.println("Connecting to: " + url.toString());
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setInstanceFollowRedirects(false);
         conn.connect();
-        int responseCode = conn.getResponseCode();
-        System.out.println("Response code: " + responseCode);
-        if (responseCode == HttpURLConnection.HTTP_MOVED_TEMP) {
-            url = new URL(conn.getHeaderField("Location"));
-            System.out.println("Redirected to: " + url.toString());
-            conn = (HttpURLConnection) url.openConnection();
-            conn.connect();
-            responseCode = conn.getResponseCode();
-        }
 
-        String cookie = null;
-        if (responseCode == HttpURLConnection.HTTP_OK) {
-            InputStream is = conn.getInputStream();
-            cookie = conn.getHeaderField("set-cookie");
+        int responseCode = conn.getResponseCode();
+        if (responseCode != HttpURLConnection.HTTP_MOVED_TEMP) {
+            throw new Exception("Unexpected response code: Got " +
+                                responseCode + ", expected: " +
+                                HttpURLConnection.HTTP_MOVED_TEMP);
         }
+                     
+        String cookie = conn.getHeaderField("set-cookie");
         if (cookie == null) {
             throw new Exception("Missing Set-Cookie response header");
         }
