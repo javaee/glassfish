@@ -43,10 +43,10 @@
 package com.sun.appserv.management.ext.update;
 
 
-import com.sun.appserv.management.base.XTypes;
 import com.sun.appserv.management.base.AMX;
 import com.sun.appserv.management.base.Singleton;
 import com.sun.appserv.management.base.Utility;
+import com.sun.appserv.management.base.XTypes;
 
 /**
 	Provides information about the updates from the Update Center Server.

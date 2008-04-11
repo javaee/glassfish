@@ -35,14 +35,8 @@
  */
  package com.sun.appserv.management.base;
 
-import java.util.Set;
-
-import javax.management.ObjectName;
 import javax.management.Attribute;
-import javax.management.AttributeList;
-
-import com.sun.appserv.management.base.AMX;
-import com.sun.appserv.management.base.XTypes;
+import javax.management.ObjectName;
 
 /**
 	Bulk access to various JMX constructs. The term "bulk" refers to the fact the multiple

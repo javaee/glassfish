@@ -35,25 +35,18 @@
  */
 package com.sun.appserv.management.util.jmx;
 
-import java.util.Map;
-import java.util.HashMap;
+import com.sun.appserv.management.util.misc.TypeCast;
 
-import java.io.Serializable;
-
-import javax.management.ObjectName;
-import javax.management.openmbean.OpenType;
 import javax.management.openmbean.ArrayType;
 import javax.management.openmbean.CompositeData;
 import javax.management.openmbean.CompositeDataSupport;
 import javax.management.openmbean.CompositeType;
-import javax.management.openmbean.TabularType;
-import javax.management.openmbean.TabularData;
-import javax.management.openmbean.SimpleType;
 import javax.management.openmbean.OpenDataException;
-import javax.management.openmbean.InvalidOpenTypeException;
-
-import com.sun.appserv.management.util.jmx.OpenMBeanUtil;
-import com.sun.appserv.management.util.misc.TypeCast;
+import javax.management.openmbean.OpenType;
+import javax.management.openmbean.SimpleType;
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 public class CompositeDataHelper
 {

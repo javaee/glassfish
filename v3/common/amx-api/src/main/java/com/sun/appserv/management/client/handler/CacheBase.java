@@ -35,14 +35,11 @@
  */
 package com.sun.appserv.management.client.handler;
 
-import java.util.Set;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Collection;
 import java.util.Collections;
-
-import java.util.logging.Logger;
-import com.sun.appserv.management.base.LoggerSupport;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 /**
 	Cache which caches anything

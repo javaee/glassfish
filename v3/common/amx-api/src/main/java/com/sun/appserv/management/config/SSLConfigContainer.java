@@ -36,9 +36,9 @@
 
 package com.sun.appserv.management.config;
 
-import java.util.Map;
-
 import com.sun.appserv.management.base.Container;
+
+import java.util.Map;
 
 /**
 	An MBean implementing this interface can optionally contain an SSLConfig.

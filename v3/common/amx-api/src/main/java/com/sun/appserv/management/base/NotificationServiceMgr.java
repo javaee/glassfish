@@ -35,12 +35,8 @@
  */
 package com.sun.appserv.management.base;
 
-import java.util.Map;
-
 import javax.management.InstanceNotFoundException;
-
-import com.sun.appserv.management.base.Container;
-import com.sun.appserv.management.base.Singleton;
+import java.util.Map;
 
 /**
 	Manages the creation and removal of NotificationService MBeans.

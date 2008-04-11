@@ -41,11 +41,10 @@
  */
 package com.sun.appserv.management.helper;
 
-import java.util.Map;
+import com.sun.appserv.management.base.NotificationService;
 
 import javax.management.Notification;
-
-import com.sun.appserv.management.base.NotificationService;
+import java.util.Map;
 
 /**
 	Helps make it easier to get Notifications from a NotificationService

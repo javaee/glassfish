@@ -39,10 +39,9 @@
 
 package com.sun.appserv.management.monitor;
 
-import javax.management.monitor.StringMonitorMBean;
-
 import com.sun.appserv.management.base.XTypes;
-import com.sun.appserv.management.base.AMX;
+
+import javax.management.monitor.StringMonitorMBean;
 
 /**
 	A javax.management.monitor.StringMonitorMBean that is an AMX

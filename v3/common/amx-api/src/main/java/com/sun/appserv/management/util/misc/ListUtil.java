@@ -39,10 +39,10 @@
  
 package com.sun.appserv.management.util.misc;
 
-import java.util.List;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 
 
 public final class ListUtil

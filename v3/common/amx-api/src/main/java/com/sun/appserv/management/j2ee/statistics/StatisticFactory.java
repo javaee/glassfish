@@ -35,21 +35,18 @@
  */
 package com.sun.appserv.management.j2ee.statistics;
 
-import java.util.Map;
-
-import javax.management.openmbean.CompositeData;
-import javax.management.openmbean.CompositeType;
-
-import javax.management.j2ee.statistics.Statistic;
-import javax.management.j2ee.statistics.CountStatistic;
-import javax.management.j2ee.statistics.RangeStatistic;
-import javax.management.j2ee.statistics.BoundaryStatistic;
-import javax.management.j2ee.statistics.BoundedRangeStatistic;
-import javax.management.j2ee.statistics.TimeStatistic;
-
 import com.sun.appserv.management.util.jmx.OpenMBeanUtil;
 import com.sun.appserv.management.util.misc.ClassUtil;
 import com.sun.appserv.management.util.misc.TypeCast;
+
+import javax.management.j2ee.statistics.BoundaryStatistic;
+import javax.management.j2ee.statistics.BoundedRangeStatistic;
+import javax.management.j2ee.statistics.CountStatistic;
+import javax.management.j2ee.statistics.RangeStatistic;
+import javax.management.j2ee.statistics.Statistic;
+import javax.management.j2ee.statistics.TimeStatistic;
+import javax.management.openmbean.CompositeData;
+import java.util.Map;
 
 /**
 	Creates Statistic implementations based on CompositeData or Map.

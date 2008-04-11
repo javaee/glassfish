@@ -41,10 +41,11 @@
  */
 
 package com.sun.appserv.management.monitor.statistics;
-import javax.management.j2ee.statistics.Stats;
-import javax.management.j2ee.statistics.CountStatistic;
+
 import javax.management.j2ee.statistics.BoundedRangeStatistic;
+import javax.management.j2ee.statistics.CountStatistic;
 import javax.management.j2ee.statistics.RangeStatistic;
+import javax.management.j2ee.statistics.Stats;
 
 /**
 	Stats interface for the monitorable attributes of a generic thread pool.

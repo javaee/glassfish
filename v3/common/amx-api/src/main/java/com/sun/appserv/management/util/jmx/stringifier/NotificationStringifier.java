@@ -35,13 +35,13 @@
  */
 package com.sun.appserv.management.util.jmx.stringifier;
 
-import java.util.Date;
-import javax.management.Notification;
-import javax.management.MBeanServerNotification;
-
-import com.sun.appserv.management.util.stringifier.Stringifier;
-import com.sun.appserv.management.util.stringifier.SmartStringifier;
 import com.sun.appserv.management.util.misc.StringUtil;
+import com.sun.appserv.management.util.stringifier.SmartStringifier;
+import com.sun.appserv.management.util.stringifier.Stringifier;
+
+import javax.management.MBeanServerNotification;
+import javax.management.Notification;
+import java.util.Date;
 
 public class NotificationStringifier implements Stringifier
 {

@@ -41,43 +41,21 @@
  */
 package com.sun.appserv.management.helper;
 
-import java.util.Set;
-import java.util.HashSet;
-import java.util.Collections;
-
-import javax.management.ObjectName;
-
 import com.sun.appserv.management.base.AMX;
 import com.sun.appserv.management.base.AMXDebug;
-import com.sun.appserv.management.base.XTypes;
+import com.sun.appserv.management.base.Extra;
 import com.sun.appserv.management.base.QueryMgr;
 import com.sun.appserv.management.base.Util;
-import com.sun.appserv.management.base.Extra;
-
+import com.sun.appserv.management.base.XTypes;
+import com.sun.appserv.management.config.*;
 import com.sun.appserv.management.util.misc.CollectionUtil;
 import com.sun.appserv.management.util.misc.GSetUtil;
 import com.sun.appserv.management.util.misc.Output;
 
-import com.sun.appserv.management.config.RefConfigReferent;
-import com.sun.appserv.management.config.DeployedItemRefConfigReferent;
-import com.sun.appserv.management.config.ResourceRefConfigReferent;
-import com.sun.appserv.management.config.ServerRefConfigReferent;
-import com.sun.appserv.management.config.ClusterRefConfigReferent;
-import com.sun.appserv.management.config.ClusterRefConfig;
-import com.sun.appserv.management.config.ServerRefConfig;
-import com.sun.appserv.management.config.ConfigRemover;
-
-import com.sun.appserv.management.config.RefConfig;
-import com.sun.appserv.management.config.ServerRefConfig;
-import com.sun.appserv.management.config.ClusterRefConfig;
-import com.sun.appserv.management.config.ResourceConfig;
-import com.sun.appserv.management.config.ResourceRefConfig;
-import com.sun.appserv.management.config.ResourceRefConfigCR;
-import com.sun.appserv.management.config.ModuleConfig;
-import com.sun.appserv.management.config.DeployedItemRefConfig;
-import com.sun.appserv.management.config.DeployedItemRefConfigCR;
-import com.sun.appserv.management.config.LifecycleModuleConfig;
-import com.sun.appserv.management.config.CustomMBeanConfig;
+import javax.management.ObjectName;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
     Helper routines for references.  This class should only be used

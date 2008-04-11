@@ -42,16 +42,13 @@
 
 package com.sun.appserv.management.j2ee.statistics;
 
-import java.util.Set;
-import java.util.Map;
-
-
-import javax.management.openmbean.CompositeData;
-
-import javax.management.j2ee.statistics.Stats;
-import javax.management.j2ee.statistics.Statistic;
-
 import com.sun.appserv.management.util.jmx.OpenMBeanUtil;
+
+import javax.management.j2ee.statistics.Statistic;
+import javax.management.j2ee.statistics.Stats;
+import javax.management.openmbean.CompositeData;
+import java.util.Map;
+import java.util.Set;
 
 /**
 	Implementation of Stats which expects a CompositeData to contain

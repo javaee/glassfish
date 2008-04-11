@@ -36,12 +36,10 @@
  
 package com.sun.appserv.management.j2ee;
 
-import java.util.Set;
-import java.util.Collections;
-
 import com.sun.appserv.management.base.AMX;
-
 import com.sun.appserv.management.util.misc.GSetUtil;
+
+import java.util.Set;
 
 /**
 	See JSR 77.3-1.<br>

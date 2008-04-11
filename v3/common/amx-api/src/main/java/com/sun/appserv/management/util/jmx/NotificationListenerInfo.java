@@ -41,8 +41,8 @@
  */
 package com.sun.appserv.management.util.jmx;
 
-import javax.management.NotificationListener;
 import javax.management.NotificationFilter;
+import javax.management.NotificationListener;
 
 
 /**

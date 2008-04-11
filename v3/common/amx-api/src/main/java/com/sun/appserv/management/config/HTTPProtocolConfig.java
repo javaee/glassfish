@@ -35,8 +35,8 @@
  */
 package com.sun.appserv.management.config;
 
-import com.sun.appserv.management.base.XTypes;
 import com.sun.appserv.management.base.Singleton;
+import com.sun.appserv.management.base.XTypes;
 
 /**
 Configuration for the &lt;http-protocol&gt; element.

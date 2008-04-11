@@ -35,15 +35,7 @@
  */
 package com.sun.appserv.management.j2ee;
 
-import java.util.Map;
-
-import java.io.Serializable;
-
-import com.sun.appserv.management.j2ee.J2EEManagedObject;
-import com.sun.appserv.management.j2ee.J2EETypes;
-import com.sun.appserv.management.monitor.WebServiceEndpointMonitor;
 import com.sun.appserv.management.ext.wsmgmt.MessageTrace;
-import com.sun.appserv.management.monitor.statistics.WebServiceEndpointAggregateStats;
 
 /**
  * The extension to the JSR 77 hierarchy for a WebService Endpoint.  

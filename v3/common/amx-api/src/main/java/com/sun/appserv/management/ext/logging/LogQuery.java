@@ -37,17 +37,10 @@
 
 package com.sun.appserv.management.ext.logging;
 
-import java.util.Map;
-import java.util.Set;
-import java.util.List;
-import java.util.Date;
-
-import java.util.logging.Level;
-
-import java.io.Serializable;
-
 import javax.management.Attribute;
-import javax.management.openmbean.CompositeData;
+import java.util.List;
+import java.util.Set;
+import java.util.logging.Level;
 
 /**
 	Provides access to log messages already present in the log file.

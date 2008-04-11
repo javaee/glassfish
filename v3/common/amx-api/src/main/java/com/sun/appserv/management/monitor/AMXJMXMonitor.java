@@ -39,8 +39,6 @@
 
 package com.sun.appserv.management.monitor;
 
-import javax.management.monitor.MonitorMBean;
-
 import com.sun.appserv.management.base.AMX;
 
 /**

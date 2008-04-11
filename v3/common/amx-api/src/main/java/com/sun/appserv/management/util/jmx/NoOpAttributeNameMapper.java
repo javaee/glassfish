@@ -35,11 +35,10 @@
  */
 package com.sun.appserv.management.util.jmx;
 
-import java.util.Set;
-import java.util.Collections;
+import com.sun.appserv.management.util.misc.GSetUtil;
 
-import com.sun.appserv.management.util.misc.GSetUtil;
-import com.sun.appserv.management.util.misc.GSetUtil;
+import java.util.Collections;
+import java.util.Set;
 
 /**
 	A mapper that maps every name to itself.

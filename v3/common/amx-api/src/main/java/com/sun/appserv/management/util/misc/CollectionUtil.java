@@ -36,12 +36,10 @@
  
 package com.sun.appserv.management.util.misc;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Arrays;
-import java.lang.reflect.Array;
-
 import com.sun.appserv.management.util.stringifier.SmartStringifier;
+
+import java.util.Arrays;
+import java.util.Collection;
 
 /**
 	Various helper utilities for Collections.

@@ -42,10 +42,9 @@
 
 package com.sun.appserv.management.j2ee.statistics;
 
-import java.util.Set;
-import java.util.Map;
-
 import javax.management.j2ee.statistics.Statistic;
+import java.util.Map;
+import java.util.Set;
 
 /**
 	A Statistic which contains its members in a Map.

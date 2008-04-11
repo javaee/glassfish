@@ -42,12 +42,9 @@
 
 package com.sun.appserv.management.deploy;
 
-import java.util.Map;
-import java.util.Locale;
-
-import javax.management.openmbean.CompositeData;
-
 import com.sun.appserv.management.base.MapCapable;
+
+import java.util.Locale;
 
 
 

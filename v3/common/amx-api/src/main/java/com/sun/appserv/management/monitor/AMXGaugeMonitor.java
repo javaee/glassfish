@@ -39,10 +39,9 @@
 
 package com.sun.appserv.management.monitor;
 
-import javax.management.monitor.GaugeMonitorMBean;
-
 import com.sun.appserv.management.base.XTypes;
-import com.sun.appserv.management.base.AMX;
+
+import javax.management.monitor.GaugeMonitorMBean;
 
 /**
 	A javax.management.monitor.GaugeMonitorMBean that is an AMX

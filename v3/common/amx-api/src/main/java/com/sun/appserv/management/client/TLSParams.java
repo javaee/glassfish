@@ -35,10 +35,9 @@
  */
 package com.sun.appserv.management.client;
 
-import java.io.File;
-
-import javax.net.ssl.X509TrustManager;
 import javax.net.ssl.HandshakeCompletedListener;
+import javax.net.ssl.X509TrustManager;
+import java.io.File;
 
 /**
 	Class encapsulating parameters available for use with TLS.

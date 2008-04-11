@@ -36,9 +36,8 @@
 
 package com.sun.appserv.management.ext.logging;
 
-import java.util.Map;
 import java.util.Date;
-import java.util.logging.Level;
+import java.util.Map;
 
 /**
 	An individual result representing a log entry found

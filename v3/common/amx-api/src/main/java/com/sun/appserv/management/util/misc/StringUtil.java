@@ -36,16 +36,15 @@
 package com.sun.appserv.management.util.misc;
 
 
-import java.util.Set;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
+import com.sun.appserv.management.util.jmx.JMXUtil;
+import com.sun.appserv.management.util.stringifier.SmartStringifier;
 
-import javax.management.ObjectName;
 import javax.management.Attribute;
 import javax.management.AttributeList;
-
-import com.sun.appserv.management.util.stringifier.SmartStringifier;
-import com.sun.appserv.management.util.jmx.JMXUtil;
+import javax.management.ObjectName;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 /**
 	Escapes/unescapes strings

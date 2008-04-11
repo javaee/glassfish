@@ -35,10 +35,9 @@
  */
 package com.sun.appserv.management.util.jmx.stringifier;
 
-import java.lang.reflect.Array;
-import javax.management.MBeanConstructorInfo;
-
 import com.sun.appserv.management.util.stringifier.Stringifier;
+
+import javax.management.MBeanConstructorInfo;
 
 
 public class MBeanConstructorInfoStringifier extends MBeanFeatureInfoStringifier implements Stringifier

@@ -35,13 +35,9 @@
  */
 package com.sun.appserv.management.base;
 
-import java.util.Map;
-
-import javax.management.ObjectName;
-import javax.management.MBeanInfo;
-import javax.management.NotificationEmitter;
-
 import com.sun.appserv.management.DomainRoot;
+
+import javax.management.NotificationEmitter;
 
 
 /**

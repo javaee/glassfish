@@ -35,9 +35,9 @@
  */
 package com.sun.appserv.management.util.jmx.stringifier;
 
-import javax.management.MBeanOperationInfo;
-
 import com.sun.appserv.management.util.stringifier.Stringifier;
+
+import javax.management.MBeanOperationInfo;
 
 public class MBeanOperationInfoStringifier
 	extends MBeanFeatureInfoStringifier implements Stringifier 

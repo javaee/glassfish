@@ -35,18 +35,15 @@
  */
 package com.sun.appserv.management.j2ee.statistics;
 
-import java.util.Map;
-import java.lang.reflect.Proxy;
-
-import javax.management.openmbean.CompositeData;
-import javax.management.openmbean.CompositeType;
+import com.sun.appserv.management.util.j2ee.J2EEUtil;
+import com.sun.appserv.management.util.jmx.OpenMBeanUtil;
+import com.sun.appserv.management.util.misc.ClassUtil;
+import com.sun.appserv.management.util.misc.TypeCast;
 
 import javax.management.j2ee.statistics.*;
-
-import com.sun.appserv.management.util.jmx.OpenMBeanUtil;
-import com.sun.appserv.management.util.j2ee.J2EEUtil;
-import com.sun.appserv.management.util.misc.TypeCast;
-import com.sun.appserv.management.util.misc.ClassUtil;
+import javax.management.openmbean.CompositeData;
+import java.lang.reflect.Proxy;
+import java.util.Map;
 
 /**
 	Factory to create Stats subclasses of any kind, based on supplied interface type 

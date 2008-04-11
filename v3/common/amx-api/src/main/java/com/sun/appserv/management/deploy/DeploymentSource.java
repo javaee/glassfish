@@ -42,11 +42,11 @@
 
 package com.sun.appserv.management.deploy;
 
+import com.sun.appserv.management.base.MapCapable;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.jar.JarInputStream;
-
-import com.sun.appserv.management.base.MapCapable;
 
 /**
 	Abstraction for archives delivery for a deployment operation

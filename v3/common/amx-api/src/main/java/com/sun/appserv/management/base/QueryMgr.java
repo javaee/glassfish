@@ -35,16 +35,8 @@
  */
 package com.sun.appserv.management.base;
 
-import java.util.Set;
-
 import javax.management.ObjectName;
-import javax.management.AttributeNotFoundException;
-import javax.management.InstanceNotFoundException;
-import javax.management.ReflectionException;
-import javax.management.MBeanException;
-
-import com.sun.appserv.management.base.XTypes;
-import com.sun.appserv.management.base.AMX;
+import java.util.Set;
 
 /**
 	Supports various types of queries to find s based on various Attributes.

@@ -40,9 +40,6 @@
 package com.sun.appserv.management.monitor;
 
 import com.sun.appserv.management.base.XTypes;
-
-
-
 import com.sun.appserv.management.monitor.statistics.KeepAliveStats;
 
 /**

@@ -35,24 +35,19 @@
  */
 package com.sun.appserv.management.base;
 
-import java.util.Set;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Collections;
-import java.io.Serializable;
-
-import java.lang.reflect.Proxy;
-
-import javax.management.ObjectName;
-import javax.management.Notification;
-
-import com.sun.appserv.management.base.AMX;
 import com.sun.appserv.management.util.jmx.JMXUtil;
-import com.sun.appserv.management.util.misc.MapUtil;
 import com.sun.appserv.management.util.misc.GSetUtil;
 import com.sun.appserv.management.util.misc.TypeCast;
+
+import javax.management.Notification;
+import javax.management.ObjectName;
+import java.io.Serializable;
+import java.lang.reflect.Proxy;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
 	Utility routines pertinent to the MBean API.

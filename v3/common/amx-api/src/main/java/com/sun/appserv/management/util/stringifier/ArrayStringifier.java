@@ -43,7 +43,6 @@
  
 package com.sun.appserv.management.util.stringifier;
 
-import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.Iterator;
 

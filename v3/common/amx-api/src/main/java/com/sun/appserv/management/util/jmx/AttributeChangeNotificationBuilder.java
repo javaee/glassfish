@@ -35,8 +35,8 @@
  */
 package com.sun.appserv.management.util.jmx;
 
-import javax.management.Notification;
 import javax.management.AttributeChangeNotification;
+import javax.management.Notification;
 import javax.management.ObjectName;
 
 /**

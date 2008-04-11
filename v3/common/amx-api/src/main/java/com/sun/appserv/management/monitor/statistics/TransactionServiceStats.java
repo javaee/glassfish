@@ -35,10 +35,10 @@
  */
 package com.sun.appserv.management.monitor.statistics;
 
-import javax.management.j2ee.statistics.Stats;
-import javax.management.j2ee.statistics.CountStatistic;
-
 import com.sun.appserv.management.j2ee.statistics.StringStatistic;
+
+import javax.management.j2ee.statistics.CountStatistic;
+import javax.management.j2ee.statistics.Stats;
 
 /**
 	@see com.sun.appserv.management.monitor.TransactionServiceMonitor

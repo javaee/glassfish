@@ -36,11 +36,6 @@
  
 package com.sun.appserv.management.ext.support;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import com.sun.appserv.management.ext.support.ExtendedAMX;
-
 /**
  * Utility class for extended AMX support
  */

@@ -37,12 +37,6 @@ package com.sun.appserv.management.base;
 
 import java.util.Map;
 
-import javax.management.ObjectName;
-
-import com.sun.appserv.management.base.AMX;
-import com.sun.appserv.management.base.XTypes;
-import com.sun.appserv.management.base.Singleton;
-
 /**
     The DottedNames MBean--resolves dotted names to AMX MBeans.  Each AMX MBean
     has a "dotted name"; see {@link AMX#getDottedName} and {@link AMX#getDottedNamePart}.  These

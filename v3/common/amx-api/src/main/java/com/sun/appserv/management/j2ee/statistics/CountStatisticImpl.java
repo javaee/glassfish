@@ -42,16 +42,13 @@
 
 package com.sun.appserv.management.j2ee.statistics;
 
-import java.util.Map;
-import java.io.Serializable;
-
-import javax.management.openmbean.CompositeData;
-
-import javax.management.j2ee.statistics.Statistic;
-import javax.management.j2ee.statistics.CountStatistic;
-
 import com.sun.appserv.management.util.jmx.OpenMBeanUtil;
 import com.sun.appserv.management.util.misc.ObjectUtil;
+
+import javax.management.j2ee.statistics.CountStatistic;
+import javax.management.openmbean.CompositeData;
+import java.io.Serializable;
+import java.util.Map;
 
 
 /**

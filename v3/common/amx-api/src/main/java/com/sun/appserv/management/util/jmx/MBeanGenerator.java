@@ -36,21 +36,16 @@
 
 package com.sun.appserv.management.util.jmx;
 
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Arrays;
+import com.sun.appserv.management.util.misc.ClassUtil;
 
-import javax.management.MBeanServerConnection;
 import javax.management.MBeanAttributeInfo;
 import javax.management.MBeanInfo;
 import javax.management.MBeanOperationInfo;
 import javax.management.MBeanParameterInfo;
-import javax.management.ObjectName;
-
-import com.sun.appserv.management.util.misc.ClassUtil;
-import com.sun.appserv.management.util.jmx.AttributeNameMapper;
-import com.sun.appserv.management.util.jmx.AttributeNameMapperImpl;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
 	Generate an MBean ".java" file.

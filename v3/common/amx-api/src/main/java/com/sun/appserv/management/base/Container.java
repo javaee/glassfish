@@ -35,8 +35,8 @@
  */
 package com.sun.appserv.management.base;
 
-import java.util.Set;
 import java.util.Map;
+import java.util.Set;
 
 /**
 	All MBeans which <i>logically contain</i> other MBeans implement this interface;

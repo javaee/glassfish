@@ -42,12 +42,11 @@
 
 package com.sun.appserv.management.util.jmx;
 
-import java.io.IOException;
+import com.sun.appserv.management.client.ConnectionSource;
 
 import javax.management.MBeanServerConnection;
 import javax.management.remote.JMXConnector;
-
-import com.sun.appserv.management.client.ConnectionSource;
+import java.io.IOException;
 
 
 /**

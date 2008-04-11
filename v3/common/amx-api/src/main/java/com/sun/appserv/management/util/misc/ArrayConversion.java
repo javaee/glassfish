@@ -35,13 +35,10 @@
  */
 package com.sun.appserv.management.util.misc;
 
-import java.util.Set;
-import java.util.HashSet;
-import java.util.Collections;
-
 import java.lang.reflect.Array;
-
-import com.sun.appserv.management.util.misc.ClassUtil;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
 	Provides:

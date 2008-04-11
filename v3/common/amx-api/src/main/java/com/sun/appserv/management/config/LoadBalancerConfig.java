@@ -42,13 +42,7 @@
 
 package com.sun.appserv.management.config;
 
-import java.util.Map;
-
-import static com.sun.appserv.management.base.XTypes.*;
-import com.sun.appserv.management.config.NamedConfigElement;
-import com.sun.appserv.management.config.AMXConfig;
-import com.sun.appserv.management.config.PropertiesAccess;
-import com.sun.appserv.management.monitor.Monitoring;
+import static com.sun.appserv.management.base.XTypes.LOAD_BALANCER_CONFIG;
 
 /**
    Configuration for the load-balancer element.

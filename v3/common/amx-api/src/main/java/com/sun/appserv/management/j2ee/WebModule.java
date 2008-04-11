@@ -42,9 +42,9 @@
  
 package com.sun.appserv.management.j2ee;
 
-import java.util.Map;
-
 import com.sun.appserv.management.base.Container;
+
+import java.util.Map;
 
 /**
 	A J2EE WebModule. Extends the J2EE management model with

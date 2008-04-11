@@ -42,8 +42,8 @@
 
 package com.sun.appserv.management.config;
 
-import com.sun.appserv.management.base.XTypes;
 import com.sun.appserv.management.base.Container;
+import com.sun.appserv.management.base.XTypes;
 
 /**
  * represents the &lt;server-ref&gt; element.

@@ -37,9 +37,6 @@ package com.sun.appserv.management.config;
 
 import java.util.Map;
 
-import com.sun.appserv.management.base.Container;
-import com.sun.appserv.management.base.XTypes;
-
 
 /**
 	All MBeans that have system Properties must extend this interface.

@@ -35,17 +35,15 @@
  */
 package com.sun.appserv.management.util.jmx.stringifier;
 
-import java.util.Set;
-import java.util.List;
-import java.util.Iterator;
-
-import javax.management.openmbean.TabularData;
-import javax.management.openmbean.CompositeData;
-import javax.management.openmbean.TabularType;
-
-import com.sun.appserv.management.util.misc.StringUtil;
-import com.sun.appserv.management.util.stringifier.Stringifier;
 import com.sun.appserv.management.util.stringifier.SmartStringifier;
+import com.sun.appserv.management.util.stringifier.Stringifier;
+
+import javax.management.openmbean.CompositeData;
+import javax.management.openmbean.TabularData;
+import javax.management.openmbean.TabularType;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 
 public class TabularDataStringifier implements Stringifier

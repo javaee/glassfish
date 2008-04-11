@@ -40,14 +40,8 @@
 package com.sun.appserv.management.config;
 
 
-import java.util.Map;
-
-
-
-
-import com.sun.appserv.management.base.XTypes;
-import com.sun.appserv.management.base.Container;
 import com.sun.appserv.management.base.Singleton;
+import com.sun.appserv.management.base.XTypes;
 
 
 

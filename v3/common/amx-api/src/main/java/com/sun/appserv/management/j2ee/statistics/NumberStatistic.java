@@ -37,7 +37,6 @@
 
 package com.sun.appserv.management.j2ee.statistics;
 
-import java.lang.Number;
 import javax.management.j2ee.statistics.Statistic;
 
 /**

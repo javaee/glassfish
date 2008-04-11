@@ -43,11 +43,10 @@
 
 package com.sun.appserv.management.util.jmx.stringifier;
 
-import javax.management.MBeanNotificationInfo;
-
-
-import com.sun.appserv.management.util.stringifier.Stringifier;
 import com.sun.appserv.management.util.stringifier.ArrayStringifier;
+import com.sun.appserv.management.util.stringifier.Stringifier;
+
+import javax.management.MBeanNotificationInfo;
 
 public class MBeanNotificationInfoStringifier
 	extends MBeanFeatureInfoStringifier implements Stringifier

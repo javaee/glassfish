@@ -37,10 +37,6 @@
 
 package com.sun.appserv.management.config;
 
-import com.sun.appserv.management.base.XTypes;
-
-
-
 /**
     Marker interface indicating that this item represents
     a configuration element in domain.xml.

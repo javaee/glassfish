@@ -43,11 +43,9 @@
 
 package com.sun.appserv.management.util.jmx;
 
-import java.util.Map;
-import java.util.HashMap;
-
-import com.sun.appserv.management.base.XTypes;
 import com.sun.appserv.management.util.misc.MapUtil;
+
+import java.util.Map;
 
 
 

@@ -35,15 +35,14 @@
  */
 package com.sun.appserv.management.base;
 
-import java.io.IOException;
-
 import javax.management.Attribute;
 import javax.management.AttributeList;
 import javax.management.AttributeNotFoundException;
+import javax.management.InstanceNotFoundException;
 import javax.management.InvalidAttributeValueException;
 import javax.management.MBeanException;
-import javax.management.InstanceNotFoundException;
 import javax.management.ReflectionException;
+import java.io.IOException;
 
 /**
 	Standard API for access to JMX MBean Attributes.  The exceptions from these

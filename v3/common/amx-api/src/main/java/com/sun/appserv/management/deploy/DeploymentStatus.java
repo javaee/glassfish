@@ -35,12 +35,12 @@
  */
 package com.sun.appserv.management.deploy;
 
-import java.util.Map;
-import java.util.List;
-import java.util.Iterator;
-import java.io.Serializable;
-
 import com.sun.appserv.management.base.OperationStatus;
+
+import java.io.Serializable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
 	Final status of a deployment.

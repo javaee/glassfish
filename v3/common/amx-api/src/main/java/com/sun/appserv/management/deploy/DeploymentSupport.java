@@ -35,12 +35,8 @@
  */
 package com.sun.appserv.management.deploy;
 
-import java.util.Map;
 import java.io.Serializable;
-
-import com.sun.appserv.management.deploy.DeploymentSource;
-import com.sun.appserv.management.deploy.DeploymentProgress;
-import com.sun.appserv.management.deploy.DeploymentStatus;
+import java.util.Map;
 
 
 /**

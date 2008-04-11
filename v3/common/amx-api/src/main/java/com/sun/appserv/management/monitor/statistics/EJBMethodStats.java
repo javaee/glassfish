@@ -41,8 +41,9 @@
  */
 
 package com.sun.appserv.management.monitor.statistics;
-import javax.management.j2ee.statistics.Stats;
+
 import javax.management.j2ee.statistics.CountStatistic;
+import javax.management.j2ee.statistics.Stats;
 import javax.management.j2ee.statistics.TimeStatistic;
 
 /** A Stats interface to represent the statistical data exposed by an EJB Business Method.

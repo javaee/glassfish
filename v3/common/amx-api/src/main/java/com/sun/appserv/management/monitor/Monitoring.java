@@ -36,7 +36,6 @@
 package com.sun.appserv.management.monitor;
 
 import com.sun.appserv.management.base.AMX;
-import com.sun.appserv.management.monitor.ServerRootMonitor;
 
 /**
 	Interface which all Monitoring MBeans should extend whether they provide Stats or not.

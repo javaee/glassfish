@@ -35,9 +35,9 @@
  */
 package com.sun.appserv.management.monitor;
 
-import javax.management.openmbean.CompositeDataSupport;
-import javax.management.j2ee.statistics.Stats;
 import javax.management.j2ee.statistics.Statistic;
+import javax.management.j2ee.statistics.Stats;
+import javax.management.openmbean.CompositeDataSupport;
 
 /**
 	Monitoring MBeans which expose one or more

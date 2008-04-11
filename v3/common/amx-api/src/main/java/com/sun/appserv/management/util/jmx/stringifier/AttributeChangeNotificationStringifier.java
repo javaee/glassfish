@@ -35,10 +35,10 @@
  */
 package com.sun.appserv.management.util.jmx.stringifier;
 
-import javax.management.AttributeChangeNotification;
-
-import com.sun.appserv.management.util.stringifier.Stringifier;
 import com.sun.appserv.management.util.stringifier.SmartStringifier;
+import com.sun.appserv.management.util.stringifier.Stringifier;
+
+import javax.management.AttributeChangeNotification;
 
 
 public class AttributeChangeNotificationStringifier

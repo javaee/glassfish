@@ -37,9 +37,9 @@
 
 package com.sun.appserv.management.client;
 
-import java.io.IOException;
 import javax.management.MBeanServerConnection;
 import javax.management.remote.JMXConnector;
+import java.io.IOException;
 
 /**
 	A source of an MBeanServerConnection.

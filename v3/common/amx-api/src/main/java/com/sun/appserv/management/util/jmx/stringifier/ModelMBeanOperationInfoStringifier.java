@@ -35,9 +35,6 @@
  */
 package com.sun.appserv.management.util.jmx.stringifier;
 
-import javax.management.modelmbean.ModelMBeanOperationInfo;
-
-
 import com.sun.appserv.management.util.stringifier.Stringifier;
 
 public class ModelMBeanOperationInfoStringifier

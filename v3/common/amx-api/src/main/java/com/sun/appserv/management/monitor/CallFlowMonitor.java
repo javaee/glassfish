@@ -39,10 +39,10 @@
 
 package com.sun.appserv.management.monitor;
 
+import com.sun.appserv.management.base.XTypes;
+
 import java.util.List;
 import java.util.Map;
-
-import com.sun.appserv.management.base.XTypes;
 
 /**
  * Provides CallFlow Monitoring information as well as enables/disables 

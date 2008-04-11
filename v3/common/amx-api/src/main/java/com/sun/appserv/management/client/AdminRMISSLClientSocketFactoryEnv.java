@@ -41,11 +41,8 @@
  */
 package com.sun.appserv.management.client;
 
-import java.io.File;
-
-import javax.net.ssl.KeyManager;
-import javax.net.ssl.TrustManager;
 import javax.net.ssl.HandshakeCompletedListener;
+import javax.net.ssl.TrustManager;
 
 	
 interface AdminRMISSLClientSocketFactoryEnv

@@ -35,15 +35,13 @@
  */
 package com.sun.appserv.management.util.jmx.stringifier;
 
-import java.util.Set;
-import java.util.Iterator;
+import com.sun.appserv.management.util.stringifier.SmartStringifier;
+import com.sun.appserv.management.util.stringifier.Stringifier;
 
 import javax.management.openmbean.CompositeData;
 import javax.management.openmbean.CompositeType;
-
-import com.sun.appserv.management.util.misc.StringUtil;
-import com.sun.appserv.management.util.stringifier.Stringifier;
-import com.sun.appserv.management.util.stringifier.SmartStringifier;
+import java.util.Iterator;
+import java.util.Set;
 
 
 public class CompositeDataStringifier implements Stringifier

@@ -41,19 +41,14 @@
  */
 package com.sun.appserv.management.util.jmx;
 
-import java.util.Set;
-import java.util.HashSet;
-import java.util.regex.*;
-import java.util.Hashtable;
-import java.util.Enumeration;
-import java.util.Iterator;
-
-
-import javax.management.MBeanServerConnection;
-import javax.management.ObjectName;
-import javax.management.MalformedObjectNameException;
-
 import com.sun.appserv.management.util.misc.EnumerationIterator;
+
+import javax.management.ObjectName;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.regex.Pattern;
 
 public class ObjectNameQueryImpl implements ObjectNameQuery
 {

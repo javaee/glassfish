@@ -37,14 +37,12 @@
 
 package com.sun.appserv.management.base;
 
-import java.util.Set;
-import java.util.Map;
-
-import javax.management.ObjectName;
 import javax.management.InstanceNotFoundException;
-import javax.management.Notification;
 import javax.management.NotificationFilter;
 import javax.management.NotificationListener;
+import javax.management.ObjectName;
+import java.util.Map;
+import java.util.Set;
 
 /**
 	Provides enhanced abilities for working with Notifications.  Listens 

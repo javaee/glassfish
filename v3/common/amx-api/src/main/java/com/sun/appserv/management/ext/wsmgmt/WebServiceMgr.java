@@ -35,15 +35,13 @@
  */
 package com.sun.appserv.management.ext.wsmgmt;
 
-import java.util.Map;
-import java.util.Set;
-
 import com.sun.appserv.management.base.AMX;
-import com.sun.appserv.management.base.Container;
 import com.sun.appserv.management.base.Singleton;
 import com.sun.appserv.management.base.XTypes;
-
 import com.sun.appserv.management.j2ee.WebServiceEndpoint;
+
+import java.util.Map;
+import java.util.Set;
 
 /**
  * WebServiceMgr is used to obtained information about web service end points 

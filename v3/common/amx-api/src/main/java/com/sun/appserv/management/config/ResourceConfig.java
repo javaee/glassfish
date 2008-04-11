@@ -43,9 +43,6 @@
 
 package com.sun.appserv.management.config;
 
-import com.sun.appserv.management.base.XTypes;
-
-
 /**
 	Base interface for all XXXResource classes.
  */

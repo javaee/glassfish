@@ -42,21 +42,22 @@
  
 package com.sun.appserv.management.util.jmx.stringifier;
 
+import com.sun.appserv.management.util.j2ee.stringifier.StatisticStringifier;
+import com.sun.appserv.management.util.j2ee.stringifier.StatsStringifier;
+import com.sun.appserv.management.util.stringifier.StringifierRegistry;
+
 import javax.management.*;
-import javax.management.modelmbean.*;
+import javax.management.j2ee.statistics.Statistic;
+import javax.management.j2ee.statistics.Stats;
+import javax.management.modelmbean.ModelMBeanAttributeInfo;
+import javax.management.modelmbean.ModelMBeanConstructorInfo;
+import javax.management.modelmbean.ModelMBeanInfo;
+import javax.management.modelmbean.ModelMBeanNotificationInfo;
+import javax.management.modelmbean.ModelMBeanOperationInfo;
 import javax.management.openmbean.CompositeData;
 import javax.management.openmbean.CompositeDataSupport;
 import javax.management.openmbean.TabularData;
 import javax.management.openmbean.TabularDataSupport;
-
-import com.sun.appserv.management.util.jmx.stringifier.*;
-
-
-import javax.management.j2ee.statistics.Stats;
-import javax.management.j2ee.statistics.Statistic;
-import com.sun.appserv.management.util.j2ee.stringifier.*;
-
-import com.sun.appserv.management.util.stringifier.StringifierRegistry;
 
 /**
 	Registers all included stringifiers with the default registry.

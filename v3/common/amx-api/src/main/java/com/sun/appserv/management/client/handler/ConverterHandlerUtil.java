@@ -36,9 +36,9 @@
 package com.sun.appserv.management.client.handler;
 
 
-import java.lang.reflect.Proxy;
-
 import com.sun.appserv.management.base.AMX;
+
+import java.lang.reflect.Proxy;
 
 
 /**

@@ -35,12 +35,7 @@
  */
 package com.sun.appserv.management.util.jmx;
 
-import java.util.Set;
 import java.util.Map;
-import java.util.HashMap;
-import java.util.Iterator;
-
-import com.sun.appserv.management.util.misc.GSetUtil;
 
 /**
 	Implements the mapping by removing illegal characters and

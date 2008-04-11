@@ -35,25 +35,23 @@
  */
 package com.sun.appserv.management.util.jmx;
 
-import java.util.List;
-import java.util.Map;
+import com.sun.appserv.management.util.misc.ListUtil;
+
+import javax.management.AttributeChangeNotification;
+import javax.management.AttributeChangeNotificationFilter;
+import javax.management.ListenerNotFoundException;
+import javax.management.MBeanServerNotification;
+import javax.management.Notification;
+import javax.management.NotificationBroadcasterSupport;
+import javax.management.NotificationFilter;
+import javax.management.NotificationFilterSupport;
+import javax.management.NotificationListener;
+import javax.management.relation.MBeanServerNotificationFilter;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Collections;
-
-import javax.management.NotificationBroadcasterSupport;
-import javax.management.NotificationListener;
-import javax.management.NotificationFilter;
-import javax.management.relation.MBeanServerNotificationFilter;
-import javax.management.AttributeChangeNotificationFilter;
-import javax.management.NotificationFilterSupport;
-import javax.management.Notification;
-import javax.management.AttributeChangeNotification;
-import javax.management.MBeanServerNotification;
-import javax.management.ListenerNotFoundException;
-
-
-import com.sun.appserv.management.util.misc.ListUtil;
+import java.util.List;
+import java.util.Map;
 
 /**
 	Features:

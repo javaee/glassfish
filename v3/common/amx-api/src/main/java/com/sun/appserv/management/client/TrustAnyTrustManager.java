@@ -35,11 +35,9 @@
  */
 package com.sun.appserv.management.client;
 
-import java.security.cert.X509Certificate;
-import java.security.cert.CertificateException;
-import java.io.IOException;
-
 import javax.net.ssl.X509TrustManager;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 
 
 /**

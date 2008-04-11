@@ -35,11 +35,12 @@
  */
 package com.sun.appserv.management.util.jmx;
 
-import javax.management.*;
-import java.io.IOException;
-import java.util.Set;
-
 import com.sun.appserv.management.util.misc.GSetUtil;
+
+import javax.management.InstanceNotFoundException;
+import javax.management.MBeanServerConnection;
+import javax.management.ObjectName;
+import java.util.Set;
 
 
 /**

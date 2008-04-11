@@ -42,10 +42,9 @@
 
 package com.sun.appserv.management.util.jmx;
 
-import java.util.logging.Logger;
-
-import javax.management.ObjectName;
 import javax.management.MBeanInfo;
+import javax.management.ObjectName;
+import java.util.logging.Logger;
 
 /**
 	Documents built-in supported operations of {@link MBeanProxyHandler}.

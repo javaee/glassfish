@@ -35,17 +35,15 @@
  */
 package com.sun.appserv.management.config;
 
-import java.io.File;
-
-import java.lang.reflect.Constructor;
+import com.sun.appserv.management.DomainRoot;
+import com.sun.appserv.management.base.AMX;
+import com.sun.appserv.management.base.Util;
+import com.sun.appserv.management.client.ProxyFactory;
 
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
-
-import com.sun.appserv.management.base.AMX;
-import com.sun.appserv.management.base.Util;
-import com.sun.appserv.management.DomainRoot;
-import com.sun.appserv.management.client.ProxyFactory;
+import java.io.File;
+import java.lang.reflect.Constructor;
 
 
 

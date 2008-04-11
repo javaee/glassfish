@@ -36,7 +36,6 @@
  
 package com.sun.appserv.management.ext.support;
 
-import java.util.HashMap;
 import java.util.Map;
 
 /**

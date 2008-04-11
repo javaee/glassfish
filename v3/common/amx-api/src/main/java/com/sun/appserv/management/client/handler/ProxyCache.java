@@ -35,11 +35,10 @@
  */
 package com.sun.appserv.management.client.handler;
 
-import javax.management.ObjectName;
-import java.util.Iterator;
-
 import com.sun.appserv.management.base.AMX;
 import com.sun.appserv.management.base.Util;
+
+import javax.management.ObjectName;
 
 /**
     <b>INTERNAL interface, do not use</b>

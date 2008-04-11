@@ -35,34 +35,29 @@
  */
 package com.sun.appserv.management.util.jmx;
 
-import java.util.Map;
-import java.util.Set;
-import java.util.HashMap;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.Collection;
-import java.io.Serializable;
-
-import java.math.BigInteger;
-import java.math.BigDecimal;
-
-import java.lang.reflect.Array;
+import com.sun.appserv.management.util.misc.ArrayConversion;
+import com.sun.appserv.management.util.misc.IteratorUtil;
+import com.sun.appserv.management.util.misc.TypeCast;
 
 import javax.management.ObjectName;
-import javax.management.openmbean.OpenType;
 import javax.management.openmbean.ArrayType;
 import javax.management.openmbean.CompositeData;
 import javax.management.openmbean.CompositeDataSupport;
 import javax.management.openmbean.CompositeType;
-import javax.management.openmbean.TabularType;
-import javax.management.openmbean.TabularData;
-import javax.management.openmbean.SimpleType;
-import javax.management.openmbean.OpenDataException;
 import javax.management.openmbean.InvalidOpenTypeException;
-
-import com.sun.appserv.management.util.misc.ArrayConversion;
-import com.sun.appserv.management.util.misc.IteratorUtil;
-import com.sun.appserv.management.util.misc.TypeCast;
+import javax.management.openmbean.OpenDataException;
+import javax.management.openmbean.OpenType;
+import javax.management.openmbean.SimpleType;
+import javax.management.openmbean.TabularData;
+import java.io.Serializable;
+import java.lang.reflect.Array;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 /**
 	Utilities dealing with OpenMBeans

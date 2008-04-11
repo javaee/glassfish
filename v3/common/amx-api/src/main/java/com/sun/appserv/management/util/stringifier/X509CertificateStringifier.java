@@ -44,11 +44,11 @@
 package com.sun.appserv.management.util.stringifier;
 
 
-import java.security.cert.X509Certificate;
+import com.sun.appserv.management.util.misc.StringUtil;
+
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-
-import com.sun.appserv.management.util.misc.StringUtil;
+import java.security.cert.X509Certificate;
 
 
 /**

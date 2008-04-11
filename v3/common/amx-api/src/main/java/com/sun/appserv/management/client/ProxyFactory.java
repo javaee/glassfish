@@ -35,51 +35,43 @@
  */
 package com.sun.appserv.management.client;
 
-import java.util.Collection;
-import java.util.Set;
-import java.util.HashSet;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Collections;
-import java.io.IOException;
-import java.lang.reflect.Proxy;
-
-import javax.management.MBeanServerConnection;
-import javax.management.InstanceNotFoundException;
-import javax.management.ObjectName;
-import javax.management.MBeanServer;
-import javax.management.MalformedObjectNameException;
-import javax.management.JMException;
-import javax.management.relation.MBeanServerNotificationFilter;
-import javax.management.MBeanServerNotification;
-import javax.management.Notification;
-import javax.management.NotificationListener;
-import javax.management.remote.JMXConnector;
-import javax.management.remote.JMXConnectionNotification;
-
 import com.sun.appserv.management.DomainRoot;
 import com.sun.appserv.management.base.AMX;
 import com.sun.appserv.management.base.AMXAttributes;
-import com.sun.appserv.management.base.XTypes;
 import com.sun.appserv.management.base.Util;
-import com.sun.appserv.management.util.jmx.MBeanProxyHandler;
-import com.sun.appserv.management.util.jmx.MBeanServerConnectionSource;
-import com.sun.appserv.management.util.jmx.MBeanServerConnectionConnectionSource;
-import com.sun.appserv.management.util.misc.ClassUtil;
-import com.sun.appserv.management.util.misc.TypeCast;
-
-import com.sun.appserv.management.client.ConnectionSource;
+import com.sun.appserv.management.base.XTypes;
 import com.sun.appserv.management.client.handler.ConverterHandlerFactory;
 import com.sun.appserv.management.client.handler.ConverterHandlerUtil;
 import com.sun.appserv.management.client.handler.ProxyCache;
-
-import com.sun.appserv.management.util.misc.GSetUtil;
-import com.sun.appserv.management.util.misc.ExceptionUtil;
-import com.sun.appserv.management.util.jmx.JMXUtil;
-
 import com.sun.appserv.management.helper.AMXDebugHelper;
+import com.sun.appserv.management.util.jmx.JMXUtil;
+import com.sun.appserv.management.util.jmx.MBeanProxyHandler;
+import com.sun.appserv.management.util.jmx.MBeanServerConnectionConnectionSource;
+import com.sun.appserv.management.util.jmx.MBeanServerConnectionSource;
+import com.sun.appserv.management.util.misc.ClassUtil;
+import com.sun.appserv.management.util.misc.ExceptionUtil;
+import com.sun.appserv.management.util.misc.GSetUtil;
+
+import javax.management.MBeanServer;
+import javax.management.MBeanServerConnection;
+import javax.management.MBeanServerNotification;
+import javax.management.MalformedObjectNameException;
+import javax.management.Notification;
+import javax.management.NotificationListener;
+import javax.management.ObjectName;
+import javax.management.relation.MBeanServerNotificationFilter;
+import javax.management.remote.JMXConnectionNotification;
+import javax.management.remote.JMXConnector;
+import java.io.IOException;
+import java.lang.reflect.Proxy;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
 	Factory for {@link AMX} proxies.

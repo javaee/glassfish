@@ -35,10 +35,10 @@
  */
 package com.sun.appserv.management.ext.logging;
 
+import com.sun.appserv.management.util.misc.GSetUtil;
+
 import java.util.Collections;
 import java.util.Set;
-
-import com.sun.appserv.management.util.misc.GSetUtil;
 
 /**
 	Names of log level modules.

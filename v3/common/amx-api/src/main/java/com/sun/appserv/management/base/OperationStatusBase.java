@@ -35,10 +35,10 @@
  */
 package com.sun.appserv.management.base;
 
-import java.util.Map;
-import java.io.Serializable;
-
 import com.sun.appserv.management.util.misc.ThrowableMapper;
+
+import java.io.Serializable;
+import java.util.Map;
 
 /**
 	Base class for OperationStatus.

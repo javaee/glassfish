@@ -35,17 +35,14 @@
  */
 package com.sun.appserv.management.deploy;
 
-import java.util.Set;
-import java.util.Map;
-import java.util.Iterator;
-import java.util.jar.JarInputStream;
-import java.io.FileInputStream;
+import com.sun.appserv.management.base.MapCapableBase;
+
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.Serializable;
-
-import com.sun.appserv.management.base.MapCapableBase;
-import com.sun.appserv.management.deploy.DeploymentSource;
+import java.util.Map;
+import java.util.jar.JarInputStream;
 
 
 /**

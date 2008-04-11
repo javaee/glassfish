@@ -35,15 +35,13 @@
  */
 package com.sun.appserv.management.util.jmx;
 
+import com.sun.appserv.management.util.misc.Output;
+
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
-import java.util.Iterator;
-import java.util.HashSet;
-import java.util.Arrays;
-import java.util.Collections;
-
-import com.sun.appserv.management.util.misc.Output;
 
 /**
 	Maps Attribute names to legal Java identifiers, so that they can

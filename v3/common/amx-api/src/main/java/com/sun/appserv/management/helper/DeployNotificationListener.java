@@ -35,21 +35,20 @@
  */
 package com.sun.appserv.management.helper;
 
-import java.util.Map;
-import java.io.Serializable;
-
-import javax.management.NotificationListener;
-import javax.management.Notification;
-import javax.management.ListenerNotFoundException;
-
 import com.sun.appserv.management.base.Util;
+import com.sun.appserv.management.deploy.DeploymentMgr;
+import static com.sun.appserv.management.deploy.DeploymentMgr.NOTIF_DEPLOYMENT_COMPLETED_STATUS_KEY;
+import static com.sun.appserv.management.deploy.DeploymentMgr.NOTIF_DEPLOYMENT_PROGRESS_KEY;
+import com.sun.appserv.management.deploy.DeploymentProgress;
+import com.sun.appserv.management.deploy.DeploymentStatus;
+import com.sun.appserv.management.deploy.DeploymentSupport;
 import com.sun.appserv.management.util.misc.TypeCast;
 
-import com.sun.appserv.management.deploy.DeploymentStatus;
-import com.sun.appserv.management.deploy.DeploymentMgr;
-import static com.sun.appserv.management.deploy.DeploymentMgr.*;
-import com.sun.appserv.management.deploy.DeploymentSupport;
-import com.sun.appserv.management.deploy.DeploymentProgress;
+import javax.management.ListenerNotFoundException;
+import javax.management.Notification;
+import javax.management.NotificationListener;
+import java.io.Serializable;
+import java.util.Map;
 
 
 /**
