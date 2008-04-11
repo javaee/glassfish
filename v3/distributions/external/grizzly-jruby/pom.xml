@@ -79,6 +79,15 @@
                 <role>developer</role>
             </roles>
         </developer>
+        <developer>
+            <!-- author of this pom.xml to a certain extent -->
+            <id>ss141213</id>
+            <name>Sahoo</name>
+            <organization>Sun Microsystems, Inc.</organization>
+            <roles>
+                <role>developer</role>
+            </roles>
+        </developer>
     </developers>
     <build>
         <plugins>
