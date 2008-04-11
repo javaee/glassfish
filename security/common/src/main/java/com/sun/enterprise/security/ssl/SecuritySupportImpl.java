@@ -47,7 +47,6 @@ import java.security.Provider;
 //V3:Commented import com.sun.enterprise.config.ConfigContext;
 import com.sun.enterprise.server.pluggable.SecuritySupport;
 import com.sun.logging.LogDomains;
-import java.io.File;
 import javax.security.auth.callback.CallbackHandler;
 import org.jvnet.hk2.annotations.Service;
 
@@ -65,10 +64,10 @@ public class SecuritySupportImpl implements SecuritySupport {
             LogDomains.getLogger(LogDomains.SECURITY_LOGGER);
 
     protected static boolean initialized = false;
-    protected static final List keyStores = new ArrayList();
-    protected static final List trustStores = new ArrayList();
-    protected static final List keyStorePasswords = new ArrayList();
-    protected static final List tokenNames = new ArrayList();
+    protected static final List<KeyStore> keyStores = new ArrayList<KeyStore>();
+    protected static final List<KeyStore> trustStores = new ArrayList<KeyStore>();
+    protected static final List<String> keyStorePasswords = new ArrayList<String>();
+    protected static final List<String> tokenNames = new ArrayList<String>();
 
 
     public SecuritySupportImpl() {
@@ -173,14 +172,14 @@ public class SecuritySupportImpl implements SecuritySupport {
      * certificates.
      */
     public KeyStore[] getKeyStores() {
-        return (KeyStore[])keyStores.toArray(new KeyStore[keyStores.size()]);
+        return keyStores.toArray(new KeyStore[keyStores.size()]);
     }
 
     /**
      * This method returns an array of truststores containing certificates.
      */
     public KeyStore[] getTrustStores() {
-        return (KeyStore[])trustStores.toArray(new KeyStore[trustStores.size()]);
+        return trustStores.toArray(new KeyStore[trustStores.size()]);
     }
 
     /**
@@ -188,7 +187,7 @@ public class SecuritySupportImpl implements SecuritySupport {
      * array of keystores.
      */
     public String[] getKeyStorePasswords() {
-        return (String[])keyStorePasswords.toArray(new String[keyStorePasswords.size()]);
+        return keyStorePasswords.toArray(new String[keyStorePasswords.size()]);
     }
 
     /**
@@ -196,7 +195,7 @@ public class SecuritySupportImpl implements SecuritySupport {
      * array of keystores.
      */
     public String[] getTokenNames() {
-        return (String[])tokenNames.toArray(new String[tokenNames.size()]);
+        return tokenNames.toArray(new String[tokenNames.size()]);
     }
 
     /**
@@ -220,7 +219,7 @@ public class SecuritySupportImpl implements SecuritySupport {
         if (idx < 0) {
             return null;
         }
-        return (KeyStore)keyStores.get(idx);
+        return keyStores.get(idx);
     }
 
     /**
@@ -232,7 +231,7 @@ public class SecuritySupportImpl implements SecuritySupport {
         if (idx < 0) {
             return null;
         }
-        return (KeyStore)trustStores.get(idx);        
+        return trustStores.get(idx);
     }
 
     /**
@@ -244,7 +243,7 @@ public class SecuritySupportImpl implements SecuritySupport {
         if (idx < 0) {
             return null;
         }
-        return (String)keyStorePasswords.get(idx);
+        return keyStorePasswords.get(idx);
     }
    
     /**
