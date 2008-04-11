@@ -415,7 +415,8 @@ debug( "AMXConfigLoader.sortAndDispatch: " + events.size() + " events" );
             mMBeanServer    = server;
             
             mLoaderThread   = new AMXConfigLoaderThread( mPendingConfigBeans );
-            mLoaderThread.submit( RunnableBase.HowToRun.RUN_IN_SEPARATE_THREAD );
+            mLoaderThread.setDaemon(true);
+            mLoaderThread.start();
         
             // Make the listener start listening
             final ObjectName objectName = JMXUtil.newObjectName( "amx-support", "name=amx-config-loader" );
@@ -436,15 +437,17 @@ debug( "AMXConfigLoader.sortAndDispatch: " + events.size() + " events" );
         return mLoaderThread != null;
     }
     
-    private final class AMXConfigLoaderThread extends RunnableBase
+    private final class AMXConfigLoaderThread extends Thread
     {
         private final LinkedBlockingQueue<Job> mQueue;
         volatile boolean    mQuit = false;
         
         AMXConfigLoaderThread( final LinkedBlockingQueue<Job> queue )
         {
-            super( "AMXConfigLoader.AMXConfigLoaderThread", null );
+            super( "AMXConfigLoader.AMXConfigLoaderThread" );
             mQueue = queue;
+            
+            this.setDaemon( true );
         }
         
         void quit() { mQuit = true; }
@@ -475,6 +478,18 @@ debug( "AMXConfigLoader.sortAndDispatch: " + events.size() + " events" );
             }
             
             return objectName;
+        }
+        
+        public void run()
+        {
+            try
+            {
+                doRun();
+            }
+            catch( Throwable t )
+            {
+                t.printStackTrace();
+            }
         }
         
             protected void
