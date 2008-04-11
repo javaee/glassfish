@@ -142,7 +142,7 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
     Domain domain;
 
     @Param(primary=true, shortName = "p")
-    String path;
+    File path;
 
     /**
      * Entry point from the framework into the command execution
@@ -155,7 +155,7 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
         final Properties parameters = context.getCommandParameters();
         final ActionReport report = context.getActionReport();
 
-        File file = new File(path);
+        File file = path;
         if (!file.exists()) {
             report.setMessage(localStrings.getLocalString("fnf","File not found", file.getAbsolutePath()));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
@@ -277,8 +277,7 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
             } 
 
             ApplicationInfo appInfo = deploy(appSniffers, deploymentContext, report);
-            if (report.getActionExitCode().equals(
-                ActionReport.ExitCode.SUCCESS)) {
+            if (report.getActionExitCode()==ActionReport.ExitCode.SUCCESS) {
                 /*
                  * The caller may want to know the resulting module ID as
                  * assigned by the server - if the caller did not specify it
