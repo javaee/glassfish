@@ -46,8 +46,8 @@ import org.jvnet.hk2.component.Injectable;
 import java.util.List;
 
 
-import org.glassfish.api.amx.AMXConfigInfo;
 import org.glassfish.api.amx.AMXCreatorInfo;
+
 /**
  *
  */
@@ -66,7 +66,7 @@ public interface Applications extends ConfigBeanProxy, Injectable  {
      * Gets the value of the lifecycleModuleOrJ2EeApplicationOrEjbModuleOrWebModuleOrConnectorModuleOrAppclientModuleOrMbeanOrExtensionModuleorApplication property.
      * Objects of the following type(s) are allowed in the list
      * {@link LifecycleModule }
-     * {@link J2EeApplication }
+     * {@link J2eeApplication }
      * {@link EjbModule }
      * {@link WebModule }
      * {@link ConnectorModule }
