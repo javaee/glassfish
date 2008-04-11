@@ -44,6 +44,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 import java.util.logging.Level;
+import java.util.logging.LogRecord;
 import java.util.ResourceBundle;
 import java.util.Vector;
 
@@ -3040,10 +3041,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         if (exception != null){
             ctx.setAvailable(false);
 
-            String msg = _rb.getString("webcontainer.webModuleDisabled");
-            msg = MessageFormat.format(msg,
-                    wmName);
-            _logger.log(Level.SEVERE, msg, exception);
+            _logger.log(Level.SEVERE, "webcontainer.webModuleDisabled", exception);
             result = new Result(exception);
         } else {
             result = new Result(ctx);
