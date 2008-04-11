@@ -296,6 +296,27 @@ public interface Domain extends ConfigBeanProxy, Injectable, PropertyBag  {
     @DuckTyped
     ApplicationRef getApplicationRefInServer(String sn, String name);
 
+    /**
+     * Returns the list of system-applications that are referenced from the given server.
+     * A server references an application, if the server has an element named
+     * &lt;application-ref> in it that points to given application. The given server
+     * is a &lt;server> element inside domain.
+     *
+     * @param sn the string denoting name of the server
+     * @return List of system-applications for that server, an empty list in case there is none
+     */
+    @DuckTyped
+    List<Application> getSystemApplicationsReferencedFrom(String sn);
+
+    @DuckTyped
+    Application getSystemApplicationReferencedFrom(String sn, String appName);
+
+    @DuckTyped
+    boolean isNamedSystemApplicationReferencedFrom(String appName, String serverName);
+
+    @DuckTyped
+    Server getServerNamed(String name);
+
     public class Duck {
         public static List<Application> getAllDefinedSystemApplications(Domain me) {
             List<Application> allSysApps = new ArrayList<Application>();
@@ -332,5 +353,56 @@ public interface Domain extends ConfigBeanProxy, Injectable, PropertyBag  {
             return ( aref );
         }
 
+        public static List<Application> getSystemApplicationsReferencedFrom(Domain d, String sn) {
+            if (d == null || sn == null)
+                throw new IllegalArgumentException("Null argument");
+            List<Application> allApps = d.getAllDefinedSystemApplications();
+            if (allApps.size() == 0)
+                return (allApps); //if there are no sys-apps, none can reference one :)
+            //allApps now contains ALL the system applications
+            Server s = getServerNamed(sn, d);
+            List<Application> referencedApps = new ArrayList<Application>();
+            List<ApplicationRef> appsReferenced = s.getApplicationRef();
+            for (ApplicationRef ref : appsReferenced) {
+                for (Application app : allApps) {
+                    if (ref.getRef().equals(app.getName())) {
+                        referencedApps.add(app);
+                    }
+                }
+            }
+            return ( referencedApps );
+        }
+
+        public static Application getSystemApplicationReferencedFrom(Domain d, String sn, String appName) {
+            //returns null in case there is none
+            List<Application> allApps = getSystemApplicationsReferencedFrom(d, sn);
+            for (Application app : allApps) {
+                if (app.getName().equals(appName)) {
+                    return ( app );
+                }
+            }
+            return ( null );
+        }
+
+        public static boolean isNamedSystemApplicationReferencedFrom(Domain d, String appName, String serverName) {
+            List <Application> referencedApps = getSystemApplicationsReferencedFrom(d, serverName);
+            for (Application app : referencedApps) {
+                if (app.getName().equals(appName))
+                    return ( true );
+            }
+            return ( false );
+        }
+
+        public static Server getServerNamed(Domain d, String name) {
+            if (d.getServers() == null || name == null)
+                throw new IllegalArgumentException ("no <servers> element");
+            List<Server> servers = d.getServers().getServer();
+            for (Server s : servers) {
+                if (name.equals(s.getName().trim())) {
+                    return ( s );
+                }
+            }
+            return ( null );
+        }
     }
 }

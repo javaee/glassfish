@@ -26,7 +26,6 @@ package com.sun.enterprise.v3.admin.adapter;
 import com.sun.enterprise.config.serverbeans.AdminService;
 import com.sun.enterprise.config.serverbeans.Application;
 import com.sun.enterprise.config.serverbeans.ApplicationRef;
-import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.Property;
 import com.sun.enterprise.config.serverbeans.ServerTags;
@@ -199,8 +198,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
 
     private Application getConfig() {
         //no application-ref logic here -- that's on purpose for now
-        Application app = ConfigBeansUtilities.getSystemApplicationReferencedFrom(domain,
-                env.getInstanceName(), ADMIN_APP_NAME);
+        Application app = domain.getSystemApplicationReferencedFrom(env.getInstanceName(), ADMIN_APP_NAME);
         
         return ( app );
     }

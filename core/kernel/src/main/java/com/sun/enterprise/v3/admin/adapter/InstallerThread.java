@@ -25,7 +25,6 @@ package com.sun.enterprise.v3.admin.adapter;
 
 import com.sun.enterprise.config.serverbeans.Application;
 import com.sun.enterprise.config.serverbeans.ApplicationRef;
-import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.Engine;
 import com.sun.enterprise.config.serverbeans.Server;
@@ -185,7 +184,7 @@ final class InstallerThread extends Thread {
                 return ( true );
             }
         };
-        Server server = ConfigBeansUtilities.getServerNamed(env.getInstanceName(), domain);
+        Server server = domain.getServerNamed(env.getInstanceName());
         ConfigSupport.apply(code, domain.getSystemApplications(), server);
         syncMessage("Installed the application ...");
     }
