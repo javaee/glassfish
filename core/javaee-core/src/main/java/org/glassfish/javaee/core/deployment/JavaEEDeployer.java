@@ -131,7 +131,7 @@ public abstract class JavaEEDeployer<T extends Container, U extends ApplicationC
     protected String getCommonClassPath() {
         StringBuffer sb = new StringBuffer();
 
-        File libDir = new File(env.getLibPath());
+        File libDir = env.getLibPath();
         String libDirPath = libDir.getAbsolutePath();
 
         // Append domain_root/lib/classes
