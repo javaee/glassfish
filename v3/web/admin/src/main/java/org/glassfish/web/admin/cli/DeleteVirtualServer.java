@@ -40,6 +40,7 @@ import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.ActionReport;
+import org.glassfish.api.ActionReport.ExitCode;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Inject;
@@ -52,7 +53,6 @@ import com.sun.enterprise.config.serverbeans.VirtualServer;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 
 import java.beans.PropertyVetoException;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -67,7 +67,7 @@ public class DeleteVirtualServer implements AdminCommand {
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(DeleteVirtualServer.class);
 
     @Param(name="virtual_server_id", primary=true)
-    String virtualServerId;
+    String vsid;
 
     @Inject
     HttpService httpService;
@@ -82,29 +82,54 @@ public class DeleteVirtualServer implements AdminCommand {
      */
     public void execute(AdminCommandContext context) {
         ActionReport report = context.getActionReport();
+ 
+        if(!exists()) {
+            report.setMessage(localStrings.getLocalString("delete.virtual.server.notexists", "{0} doesn't exist", vsid));
+            report.setActionExitCode(ExitCode.FAILURE);
+            return;
+        }
         try {
-            ConfigSupport.apply(new SingleConfigCode<HttpService>() {
-
-                public Object run(HttpService param) throws PropertyVetoException, TransactionFailure {
-                    List<VirtualServer> list = param.getVirtualServer();
-                    Iterator iter = list.iterator();
-                    while (iter.hasNext()) {
-                        VirtualServer virtualServer = (VirtualServer)iter.next();
-                        if (virtualServer.getId().equals(virtualServerId)) {
-                            list.remove(virtualServer);
-                        }
-                    };
-                    return list;
-                }
-            }, httpService);
-
-            report.setMessage(localStrings.getLocalString("delete.virtual.server.success", "{0} deleted successfully", virtualServerId));
+            ConfigSupport.apply(new Config(vsid), httpService);
+            report.setMessage(localStrings.getLocalString("delete.virtual.server.success", "{0} deleted successfully", vsid));
             report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
 
         } catch(TransactionFailure e) {
-            report.setMessage(localStrings.getLocalString("delete.virtual.server.fail", "{0} delete failed ", virtualServerId));
+            report.setMessage(localStrings.getLocalString("delete.virtual.server.fail", "{0} delete failed ", vsid));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
         }
+    }
+    
+    private boolean exists() {
+        if(vsid == null)
+            return false;
+        
+        List<VirtualServer> list = httpService.getVirtualServer();
+        
+        for(VirtualServer vs : list) {
+            String currId = vs.getId();
+         
+            if(currId != null && currId.equals(vsid))
+                return true;
+        }
+        return false;
+    }
+
+    private static class Config implements SingleConfigCode<HttpService> {
+        private Config(String vsid) {
+            this.vsid = vsid;
+        }
+        public Object run(HttpService param) throws PropertyVetoException, TransactionFailure {
+            List<VirtualServer> list = param.getVirtualServer();
+            for(VirtualServer item : list) {
+                String currId = item.getId();
+                if (currId != null && currId.equals(vsid)) {
+                    list.remove(item);
+                    break;
+                }
+            }
+            return list;
+        }
+        private String vsid;
     }
 }

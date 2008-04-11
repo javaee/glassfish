@@ -40,6 +40,7 @@ import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.ActionReport;
+import org.glassfish.api.ActionReport.ExitCode;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Inject;
@@ -52,7 +53,6 @@ import com.sun.enterprise.config.serverbeans.HttpService;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 
 import java.beans.PropertyVetoException;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -67,7 +67,7 @@ public class DeleteHttpListener implements AdminCommand {
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(DeleteHttpListener.class);
 
     @Param(name="listener_id", primary=true)
-    String listenerId;
+    String lid;
 
     @Param(name="secure", optional=true)
     String secure;
@@ -83,28 +83,55 @@ public class DeleteHttpListener implements AdminCommand {
      */
     public void execute(AdminCommandContext context) {
         ActionReport report = context.getActionReport();
+        
+        if(!exists()) {
+            report.setMessage(localStrings.getLocalString("delete.http.listener.notexists", "{0} doesn't exist", lid));
+            report.setActionExitCode(ExitCode.FAILURE);
+            return;
+        }
         try {
-            ConfigSupport.apply(new SingleConfigCode<HttpService>() {
-
-                public Object run(HttpService param) throws PropertyVetoException, TransactionFailure {
-                    List<HttpListener> list = param.getHttpListener();
-                    Iterator iter = list.iterator();
-                    while (iter.hasNext()) {
-                        HttpListener listener = (HttpListener)iter.next();
-                        if (listener.getId().equals(listenerId)) {
-                            list.remove(listener);
-                        }
-                    };
-                    return list;
-                }
-            }, httpService);
-            report.setMessage(localStrings.getLocalString("delete.http.listener.success", "{0} deleted successfully", listenerId));
-            report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
+            ConfigSupport.apply(new Config(lid), httpService);
+            report.setMessage(localStrings.getLocalString("delete.http.listener.success", "{0} deleted successfully", lid));
+            report.setActionExitCode(ExitCode.SUCCESS);
 
         } catch(TransactionFailure e) {
-            report.setMessage(localStrings.getLocalString("delete.http.listener.fail", "{0} delete failed ", listenerId));
-            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            report.setMessage(localStrings.getLocalString("delete.http.listener.fail", "failed", lid));
+            report.setActionExitCode(ExitCode.FAILURE);
             report.setFailureCause(e);
         }
+    }
+
+    private boolean exists() {
+
+        if(lid == null)
+            return false;
+        
+        List<HttpListener> list = httpService.getHttpListener();
+        
+        for(HttpListener hl : list) {
+            String currId = hl.getId();
+         
+            if(currId != null && currId.equals(lid))
+                return true;
+        }
+        return false;
+    }
+
+    private static class Config implements SingleConfigCode<HttpService> {
+        private Config(String lid) {
+            this.lid = lid;
+        }
+        public Object run(HttpService param) throws PropertyVetoException, TransactionFailure {
+            List<HttpListener> list = param.getHttpListener();
+            for(HttpListener listener : list) {
+                String currId = listener.getId();
+                if (currId != null && currId.equals(lid)) {
+                    list.remove(listener);
+                    break;
+                }
+            }
+            return list;
+        }
+        private String lid;
     }
 }
