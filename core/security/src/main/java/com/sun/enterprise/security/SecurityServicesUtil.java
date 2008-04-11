@@ -18,6 +18,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.Inject;
 
 @Service
 public class SecurityServicesUtil {
@@ -32,6 +33,9 @@ public class SecurityServicesUtil {
     // & web/security/SSLSocketFactory classes.
     public static final SecureRandom secureRandom = new SecureRandom();
 
+    @Inject
+    ServerEnvironment env;
+
     static {
         secureRandom.setSeed(System.currentTimeMillis());
     }
@@ -40,7 +44,7 @@ public class SecurityServicesUtil {
      * code moved from J2EEServer.run()
      */
     public void initSecureSeed() {
-        File secureSeedFile = new File(habitat.getComponent(ServerEnvironment.class).getConfigDirPath(),"secure.seed");
+        File secureSeedFile = new File(env.getConfigDirPath(),"secure.seed");
 
         // read the secure random from the file
         long seed = readSecureSeed(secureSeedFile);
