@@ -110,6 +110,6 @@ public class SecurityServicesUtil {
 
     public static SecurityServicesUtil getInstance() {
         // return my singleton service
-        return (SecurityServicesUtil)habitat.getComponent(SecurityServicesUtil.class);
+        return habitat.getComponent(SecurityServicesUtil.class);
     }
 }
