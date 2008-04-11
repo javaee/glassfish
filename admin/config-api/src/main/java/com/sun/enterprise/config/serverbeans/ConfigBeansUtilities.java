@@ -86,6 +86,7 @@ public final class ConfigBeansUtilities {
     }
 
     public static Property getPropertyByName(PropertyBag bean, String name) {
+        if(bean==null)  return null;
         for (Property prop : bean.getProperty()) {
             if (prop.getName().equals(name)) {
                 return prop;
