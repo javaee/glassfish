@@ -976,7 +976,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             List vsListeners =
                 StringUtils.parseStringList(vse.getHttpListeners(), ",");
             for (int j=0; vsListeners!=null && j<vsListeners.size(); j++) {
-                if (listenerId.equals((String)vsListeners.get(j))) {
+                if (listenerId.equals(vsListeners.get(j))) {
                     if (listenerVses == null) {
                         listenerVses = new ArrayList();
                     }
@@ -1004,7 +1004,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                             listenerVses.get(k);
                     List otherHosts = StringUtils.parseStringList(otherVs.getHosts(), ",");
                     for (int l=0; otherHosts!=null && l<otherHosts.size(); l++) {
-                        if (host.equals((String) otherHosts.get(l))) {
+                        if (host.equals(otherHosts.get(l))) {
                             _logger.log(Level.SEVERE,
                                         "pewebcontainer.duplicate_host_name",
                                         new Object[] { host, vs.getId(),
@@ -1674,7 +1674,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
     protected void configureRequestProcessing(HttpService httpService){
 
         RequestProcessing rp = httpService.getRequestProcessing();
-        Connector[] connectors = (Connector[])_embedded.findConnectors();       
+        Connector[] connectors = _embedded.findConnectors();
                     
         for (int i=0; i < connectors.length; i++){    
             configureRequestProcessing(rp,(PECoyoteConnector)connectors[i]);
@@ -1852,7 +1852,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         Enumeration enumeration = properties.keys();
         while (enumeration.hasMoreElements()) {
             String name = (String) enumeration.nextElement();
-            String value = (String) properties.getProperty(name);
+            String value = properties.getProperty(name);
             if (value != null) {
                 IntrospectionUtils.setProperty(connector, name, value);
             }
@@ -2584,7 +2584,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
      */
     protected boolean isEnabled(String moduleName) {
         // TODO dochez : optimize
-        Domain domain = (Domain) _serverContext.getDefaultHabitat().getComponent(Domain.class);
+        Domain domain = _serverContext.getDefaultHabitat().getComponent(Domain.class);
         /* applications = domain.getApplications().getLifecycleModuleOrJ2EeApplicationOrEjbModuleOrWebModuleOrConnectorModuleOrAppclientModuleOrMbeanOrExtensionModule();
         com.sun.enterprise.config.serverbeans.WebModule webModule = null;
         for (Object module : applications) {
@@ -2998,7 +2998,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                 // post processing DOL object for standalone web module
                 if (wbd.getApplication() != null &&
                         wbd.getApplication().isVirtual()) {
-                    wbd.visit((WebBundleVisitor) new WebValidatorWithoutCL());
+                    wbd.visit(new WebValidatorWithoutCL());
                 }
 
                 NamingManager namingMgr = _serverContext.getDefaultHabitat().getComponent(NamingManager.class);
@@ -3438,7 +3438,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                     if (context != null) {
                         host.removeChild(context);
                         try {
-                            ((StandardContext)context).destroy();
+                            context.destroy();
                         } catch (Exception ex) {
                             _logger.log(Level.WARNING,
                                     "[WebContainer] Context " + contextRoot
@@ -3450,7 +3450,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                                     + " undeployed from " + host);
                         }
                         hasBeenUndeployed = true;
-                        ((StandardHost)host).fireContainerEvent(
+                        host.fireContainerEvent(
                                 Deployer.REMOVE_EVENT, context);
                         /*
                          * If the web module that has been unloaded
