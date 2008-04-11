@@ -47,6 +47,7 @@ import java.util.List;
 
 
 import org.glassfish.api.amx.AMXCreatorInfo;
+import org.glassfish.api.amx.AMXConfigInfo;
 
 /**
  *
@@ -55,7 +56,7 @@ import org.glassfish.api.amx.AMXCreatorInfo;
 /* @XmlType(name = "", propOrder = {
     "lifecycleModuleOrJ2EeApplicationOrEjbModuleOrWebModuleOrConnectorModuleOrAppclientModuleOrMbeanOrExtensionModule"
 }) */
-@org.glassfish.api.amx.AMXConfigInfo( amxInterfaceName="org.glassfish.admin.amx.loader.AMXConfigVoid", omitAsAncestorInChildObjectName=true, singleton=true)
+@AMXConfigInfo( amxInterfaceName="org.glassfish.admin.amx.loader.AMXConfigVoid", omitAsAncestorInChildObjectName=true, singleton=true)
 
 // general solution needed; this is intermediate solution
 @AMXCreatorInfo( creatables={Application.class})
