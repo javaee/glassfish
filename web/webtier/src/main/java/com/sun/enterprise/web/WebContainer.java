@@ -2982,13 +2982,13 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                      * unless they specify their own
                      */
                     
-                    if (realm != null && realm instanceof RealmInitializer) {
+                    if (realm instanceof RealmInitializer) {
                         ((RealmInitializer)realm).initializeRealm(
                                 wbd, isSystem, vs.getAuthRealmName());
                         ctx.setRealm(realm);
                     }
                 } else {
-                    if (realm != null && realm instanceof RealmInitializer) {
+                    if (realm instanceof RealmInitializer) {
                         ((RealmInitializer)realm).initializeRealm(
                                 wbd, isSystem, null);
                         ctx.setRealm(realm);
