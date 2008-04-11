@@ -23,14 +23,17 @@
 
 package com.sun.enterprise.v3.server;
 
-import com.sun.enterprise.module.ModulesRegistry;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
 import org.glassfish.internal.api.Init;
 
 /**
- * Very sensitive class, anything stored here cannot be garbage collected
+ * Very sensitive class, anything stored here cannot be garbage collected.
+ *
+ * <p>
+ * This is a bridging code so that old code that's not converted into
+ * {@link Service} can still access other components in the habitat.
  *
  * @author Jerome Dochez
  */
