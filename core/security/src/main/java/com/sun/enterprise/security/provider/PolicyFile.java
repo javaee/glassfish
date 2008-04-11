@@ -567,7 +567,7 @@ if (overrideAll) {
 if (debug != null) {
 debug.println("overriding other policies!");
 }
-return Boolean.valueOf(loaded_policy);
+return loaded_policy;
 }
 }
 }
@@ -607,11 +607,11 @@ e.printStackTrace();
 }
 n++;
 }
-return Boolean.valueOf(loaded_policy);
+return loaded_policy;
 }
 });
 
-return loadedPolicy.booleanValue();
+return loadedPolicy;
 }
 
 /** 
@@ -1328,10 +1328,10 @@ debug.println("evaluate codesources:\n" +
 Boolean imp = AccessController.doPrivileged
 (new PrivilegedAction<Boolean>() { 
 public Boolean run() {
-return new Boolean(entry.getCodeSource().implies(cs)); 
+return entry.getCodeSource().implies(cs);
 } 
 }); 
-if (!imp.booleanValue()) {
+if (!imp) {
 if (debug != null) {
 debug.println("evaluation (codesource) failed");
 }
