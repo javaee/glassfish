@@ -124,6 +124,11 @@ public interface DomainRoot extends Container
     public SystemStatus		getSystemStatus();
 	
     /**
+        @return the singleton KitchenSink
+     */
+    public KitchenSink		getKitchenSink();
+	
+    /**
        @return the singleton WebServiceMgr for this domain.
        @since AppServer 9.0
     */

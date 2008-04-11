@@ -38,13 +38,11 @@ package org.glassfish.admin.amx.mbean;
 import java.util.Map;
 import java.util.HashMap;
 
-
 import javax.management.ObjectName;
 import javax.resource.ResourceException;
 
-import com.sun.appserv.management.base.SystemStatus;
+import com.sun.appserv.management.base.KitchenSink;
 import com.sun.appserv.management.util.misc.ExceptionUtil;
-import com.sun.appserv.management.config.JDBCConnectionPoolConfig;
 
 import com.sun.appserv.connectors.spi.ConnectorRuntime;
 
@@ -54,34 +52,25 @@ import org.jvnet.hk2.component.ComponentException;
 /**
     
  */
-public final class SystemStatusImpl extends AMXNonConfigImplBase
-	implements SystemStatus
+public final class KitchenSinkImpl extends AMXNonConfigImplBase
+	implements KitchenSink
 {
-    public SystemStatusImpl(final ObjectName parentObjectName)
+    public KitchenSinkImpl(final ObjectName parentObjectName)
 	{
-        super( SystemStatus.J2EE_TYPE, SystemStatus.J2EE_TYPE, parentObjectName, SystemStatus.class, null );
+        super( KitchenSink.J2EE_TYPE, KitchenSink.J2EE_TYPE, parentObjectName, KitchenSink.class, null );
 	}
     
         public Map<String,Object>
-    pingJDBCConnectionPool( final String poolName )
+    getConnectionDefinitionPropertiesAndDefaults( final String datasourceClassName )
     {
         final Map<String,Object> result = new HashMap<String,Object>();
-        boolean pingable = false;
+        Map connProps = null;
         final Habitat habitat = com.sun.enterprise.v3.server.Globals.getDefaultHabitat();
         ConnectorRuntime connRuntime;
 
-        // check pool name
-        final JDBCConnectionPoolConfig  cfg = 
-        getDomainRoot().getDomainConfig().getResourcesConfig().getJDBCConnectionPoolConfigMap().get( poolName );
-        if (cfg == null) {
-            result.put( PING_SUCCEEDED_KEY, pingable);
-            result.put( REASON_FAILED_KEY, "The pool name " + poolName + " does not exist");
-            return result;
-        }
-
         // habitat
         if (habitat == null) {
-            result.put( PING_SUCCEEDED_KEY, pingable);
+            result.put( PROPERTY_MAP_KEY, connProps );
             result.put( REASON_FAILED_KEY, "Habitat is null");
             return result;
         }
@@ -90,22 +79,14 @@ public final class SystemStatusImpl extends AMXNonConfigImplBase
         try {
             connRuntime = habitat.getComponent(ConnectorRuntime.class, null);
         } catch (ComponentException e) {
-            result.put( PING_SUCCEEDED_KEY, pingable);
+            result.put( PROPERTY_MAP_KEY, connProps );
             result.put( REASON_FAILED_KEY, ExceptionUtil.toString(e));
             return result;
         }
         
-        // ping
-        try {
-            pingable = connRuntime.pingConnectionPool(poolName);
-        } catch (ResourceException e) {
-            result.put( PING_SUCCEEDED_KEY, pingable);
-            result.put( REASON_FAILED_KEY, ExceptionUtil.toString(e));
-            return result;
-        }
-        
-        // success
-        result.put( PING_SUCCEEDED_KEY, pingable);
+        // get properties
+        connProps = connRuntime.getConnectionDefinitionPropertiesAndDefaults( datasourceClassName );
+        result.put( PROPERTY_MAP_KEY, connProps );
         return result;
     }
 }

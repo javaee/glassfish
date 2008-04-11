@@ -79,6 +79,11 @@ public final class XTypes
 	public final static String	SYSTEM_STATUS				=  P + "SystemStatus";
 	
 	/**
+		ID for {@link com.sun.appserv.management.base.KitchenSink}
+	 */
+	public final static String	KITCHEN_SINK				=  P + "KitchenSink";
+	
+	/**
 		ID for {@link com.sun.appserv.management.ext.update.UpdateStatus}
 	 */
 	public final static String	UPDATE_STATUS				=  P + "UpdateStatus";

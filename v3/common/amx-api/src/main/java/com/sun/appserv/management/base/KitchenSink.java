@@ -39,27 +39,27 @@ import java.util.Map;
 
 
 /**
-	Provides various routines for system status.
+        Provides various routines which need to be reorganized.
     <p>
     <b>WARNING: some of these routines may be relocated.</b>
-    @see SystemInfo
  */
-public interface SystemStatus extends AMX, Utility, Singleton
+public interface KitchenSink extends AMX, Utility, Singleton
 {
 /** The j2eeType as returned by {@link com.sun.appserv.management.base.AMX#getJ2EEType}. */
-	public static final String	J2EE_TYPE			= XTypes.SYSTEM_STATUS;
+	public static final String	J2EE_TYPE			= XTypes.KITCHEN_SINK;
         
     /** Key into Map returned by various methods including {@link #pingJDBCConnectionPool} */
-    public static final String PING_SUCCEEDED_KEY = "PingSucceededKey";
+    public static final String PROPERTY_MAP_KEY = "PropertyMapKey";
     public static final String REASON_FAILED_KEY = "ReasonFailedKey";
     
     /**
-        Ping the JDBCConnectionPool and return status.
-        @see #PING_SUCCEEDED_KEY
+        Get properties of JDBC Data Source
+        @see #PROPERTY_MAP_KEY
         @see #REASON_FAILED_KEY
 
      */
-    public Map<String,Object> pingJDBCConnectionPool( final String poolName );
+    public Map<String,Object> 
+        getConnectionDefinitionPropertiesAndDefaults( final String datasourceClassName );
 }
 
 
