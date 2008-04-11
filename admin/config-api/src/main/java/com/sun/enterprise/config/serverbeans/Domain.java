@@ -38,18 +38,17 @@
 
 package com.sun.enterprise.config.serverbeans;
 
-import org.jvnet.hk2.config.Attribute;
-import org.jvnet.hk2.config.Configured;
-import org.jvnet.hk2.config.Element;
-import org.jvnet.hk2.config.ConfigBeanProxy;
+import org.glassfish.api.amx.AMXConfigInfo;
 import org.jvnet.hk2.component.Injectable;
+import org.jvnet.hk2.config.Attribute;
+import org.jvnet.hk2.config.ConfigBeanProxy;
+import org.jvnet.hk2.config.Configured;
+import org.jvnet.hk2.config.DuckTyped;
+import org.jvnet.hk2.config.Element;
 
 import java.beans.PropertyVetoException;
-import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
-
-
-import org.glassfish.api.amx.AMXConfigInfo;
 
 /**
  *
@@ -290,4 +289,48 @@ public interface Domain extends ConfigBeanProxy, Injectable, PropertyBag  {
      */
     @Element
     public List<SystemProperty> getSystemProperty();
+
+    @DuckTyped
+    List<Application> getAllDefinedSystemApplications();
+
+    @DuckTyped
+    ApplicationRef getApplicationRefInServer(String sn, String name);
+
+    public class Duck {
+        public static List<Application> getAllDefinedSystemApplications(Domain me) {
+            List<Application> allSysApps = new ArrayList<Application>();
+            SystemApplications sa = me.getSystemApplications();
+            if (sa != null) {
+                for (Module m : sa.getModules()) {
+                    if (m instanceof Application)
+                        allSysApps.add((Application)m);
+                }
+            }
+            return ( allSysApps );
+        }
+
+        public static ApplicationRef getApplicationRefInServer(Domain me, String sn, String name) {
+            Servers ss = me.getServers();
+            List<Server> list = ss.getServer();
+            Server theServer = null;
+            for (Server s : list) {
+                if (s.getName().equals(sn)) {
+                    theServer = s;
+                    break;
+                }
+            }
+            ApplicationRef aref = null;
+            if (theServer != null) {
+                List <ApplicationRef> arefs = theServer.getApplicationRef();
+                for (ApplicationRef ar : arefs) {
+                    if (ar.getRef().equals(name)) {
+                        aref = ar;
+                        break;
+                    }
+                }
+            }
+            return ( aref );
+        }
+
+    }
 }

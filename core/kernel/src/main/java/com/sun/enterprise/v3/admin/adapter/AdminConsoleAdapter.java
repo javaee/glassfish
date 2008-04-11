@@ -382,7 +382,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
             throw new IllegalStateException("handleInstalledButNotLoadedState called with no system app entry");
         }
         String sn = env.getInstanceName();
-        ApplicationRef ref = ConfigBeansUtilities.getApplicationRefInServer(domain, sn, ADMIN_APP_NAME);
+        ApplicationRef ref = domain.getApplicationRefInServer(sn, ADMIN_APP_NAME);
         habitat.getComponent(ApplicationLoaderService.class).processApplication(config ,ref, logger);
     }
     

@@ -26,8 +26,6 @@ package com.sun.enterprise.config.serverbeans;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.List;
 
 /**
@@ -148,7 +146,7 @@ public final class ConfigBeansUtilities {
     public static List<Application> getSystemApplicationsReferencedFrom(Domain d, String sn) {
         if (d == null || sn == null)
             throw new IllegalArgumentException("Null argument");
-        List<Application> allApps = getAllDefinedSystemApplications(d);
+        List<Application> allApps = d.getAllDefinedSystemApplications();
         if (allApps.size() == 0)
             return (allApps); //if there are no sys-apps, none can reference one :)
         //allApps now contains ALL the system applications
@@ -195,41 +193,6 @@ public final class ConfigBeansUtilities {
         }
         return ( null );
     }
-    
-    public static List<Application> getAllDefinedSystemApplications(Domain d) {
-        List<Application> allSysApps = new ArrayList<Application>();
-        SystemApplications sa = d.getSystemApplications();
-        if (sa != null) {
-            for (Module m : sa.getModules()) {
-                if (m instanceof Application)
-                    allSysApps.add((Application)m);
-            }
-        }
-        return ( allSysApps );
-    }
-    
-    public static ApplicationRef getApplicationRefInServer(Domain d, String sn, String name) {
-        Servers ss = d.getServers();
-        List<Server> list = ss.getServer();
-        Server theServer = null;
-        for (Server s : list) {
-            if (s.getName().equals(sn)) {
-                theServer = s;
-                break;
-            }
-        }
-        ApplicationRef aref = null;
-        if (theServer != null) {
-            List <ApplicationRef> arefs = theServer.getApplicationRef();
-            for (ApplicationRef ar : arefs) {
-                if (ar.getRef().equals(name)) {
-                    aref = ar;
-                    break;
-                }
-            }
-        }
-        return ( aref );
-    }
-}
+
 
 
