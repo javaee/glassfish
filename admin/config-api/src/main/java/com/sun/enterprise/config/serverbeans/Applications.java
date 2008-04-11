@@ -97,7 +97,7 @@ public interface Applications extends ConfigBeanProxy, Injectable  {
             List<T> modules = new ArrayList<T>();
             for (Object module : apps.getModules()) {
                 if (module==type) {
-                    modules.add((T) module);
+                    modules.add(type.cast(module));
                 }
             }
             return modules;
@@ -122,7 +122,7 @@ public interface Applications extends ConfigBeanProxy, Injectable  {
                     if (m != null) {
                         try {
                             if (moduleID.equals(m.invoke(module))) {
-                                return (T) module;
+                                return type.cast(module);
                             }
                         } catch (IllegalArgumentException ex) {
                             return null;
