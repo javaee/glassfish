@@ -171,7 +171,7 @@ public class ListComponentsCommand extends ApplicationLifecycle implements Admin
          * @return true if visible, else false.
          */
     boolean displaySnifferEngine(String engType) {
-        final Sniffer sniffer = getSniffer(engType);
+        final Sniffer sniffer = snifferManager.getSniffer(engType);
         return sniffer.isUserVisible();
     }
 }
