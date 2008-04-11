@@ -131,7 +131,7 @@ on the target system for the ${PRODUCT_NAME} product.&lt;BR&gt;\
 &lt;/BODY&gt;&lt;/HTML&gt;
 SPECIFY_HOME_MSG=Specify installation directory for installation.
 INSTALL_BOTTOM_TEXT=&lt;HTML&gt;&lt;BODY&gt;\
-If you specify a non-existent installation directory, this installation\
+If you specify a non-existent installation directory, this installation \
 program will automatically create it for you.\
 &lt;/BODY&gt;&lt;/HTML&gt;
 
@@ -162,6 +162,11 @@ JDK_TYPE_IN_TOOLTIP=You can type a Java(TM) SDK location here.
 
 AVAILABLE_JDK=Available Java(TM) SDKs
 ALTERNATE_JDK=Alternate Java(TM) SDK location
+
+UPDATETOOL_TOP_TEXT=&lt;HTML&gt;&lt;BODY&gt;\
+If desired, installer will attempt to download and configure update client for this\
+installation.&lt;BR&gt;\
+&lt;/BODY&gt;&lt;/HTML&gt;
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~PRODUCT SELECTION PAGE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ADD_BUTTON_LABEL=Add >

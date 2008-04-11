@@ -44,7 +44,8 @@
     </page>
     <page name="License"/>
     <page name="InstallHome"/>
-    <page name="GlassFishV3"/>
+    <page name="glassfish"/>
+    <page name="updatetool"/>
     <page name="ReadyToInstall"/>
     <page name="Progress"/>
     <page name="Summary"/>

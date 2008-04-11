@@ -41,10 +41,61 @@
 <project name="GlassFish Installer build" default="all" basedir=".">  
 
     <property name="component.name" value="installer"/>
-
+    <property name="maven.repo.local" value="${user.home}/.m2/repository"/>
+    <property name="stage.dir" value="${basedir}/target/stage" />
+    <property name="resources.dir" value="${basedir}/src/main/resources" />
+    <property name="gf.zip.dir" value="${basedir}/../packager/build" />
       
     <!-- all -->
-    <target name="all"  description="Build entire component">
+    <target name="all" depends="extract.oi, assemble, package"  description="Build entire component">
+    </target>
+
+    <target name="extract.oi"  description="Extracting openInstaller files">
+        <mkdir dir="${stage.dir}"/>
+        <unzip src="${maven.repo.local}/org/openinstaller/engine/0.9.4/engine-0.9.4.zip"
+            dest="${stage.dir}"/>
+        <unzip src="${maven.repo.local}/org/openinstaller/resources/0.9.4/resources-0.9.4.zip"
+            dest="${stage.dir}"/>
+    </target>
+
+    <target name="assemble"  description="Assembling installer distribution layout">
+         <mkdir dir="${stage.dir}/metadata"/>
+         <mkdir dir="${stage.dir}/product/packages"/>
+
+         <echo message="Staging installer metadata"/>
+         <copy todir="${stage.dir}/metadata/dependency">
+               <fileset dir="${resources.dir}/dependency" excludes=".svn"/> 
+         </copy>
+         <copy todir="${stage.dir}/metadata/model">
+               <fileset dir="${resources.dir}/model" excludes=".svn"/>
+         </copy>
+         <copy todir="${stage.dir}/metadata/templates">
+               <fileset dir="${resources.dir}/templates" excludes=".svn"/>
+         </copy>
+         <copy todir="${stage.dir}/metadata/view">
+               <fileset dir="${resources.dir}/view" excludes=".svn"/> 
+         </copy>
+         <copy todir="${stage.dir}/metadata"
+               file="${resources.dir}/pagesequence.xml">
+         </copy>
+         <copy todir="${stage.dir}/metadata"
+               file="${resources.dir}/pagesequence.properties">
+         </copy>
+
+         <echo message="Staging wrappers"/>
+
+         <copy todir="${stage.dir}">
+               <fileset dir="${resources.dir}/wrappers" excludes=".svn"/>
+         </copy>
+
+         <echo message="Staging product payload"/>
+
+         
+
+    </target>
+
+    <target name="package"  description="Packaging installer distributions">
+
     </target>
 
 </project>
