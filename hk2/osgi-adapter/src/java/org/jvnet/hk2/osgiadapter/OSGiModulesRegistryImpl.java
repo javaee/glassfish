@@ -239,25 +239,38 @@ public class OSGiModulesRegistryImpl
             // We need a compound enumeration so that we can aggregate the results from
             // various delegates.
             class CompositeEnumeration implements Enumeration<URL> {
-                List<Enumeration<URL>> enumerators;
-                int index = 0; // current position
+                Enumeration<URL>[] enumerators;
+                int index = 0; // current position, lazily initialized
 
                 public CompositeEnumeration(List<Enumeration<URL>> enumerators) {
-                    this.enumerators = enumerators;
+                    this.enumerators = enumerators.toArray(new Enumeration[enumerators.size()]);
                 }
 
                 public boolean hasMoreElements() {
-                    int size = enumerators.size();
-                    for (Enumeration<URL> e = enumerators.get(index);index < size;index++) {
-                        if (e.hasMoreElements()) {
-                            return true;
-                        }
-                    }
-                    return false;
+                    Enumeration<URL> current = getCurrent();
+                    return (current!=null) ? true : false;
                 }
 
                 public URL nextElement() {
-                    return enumerators.get(index).nextElement();
+                    Enumeration<URL> current = getCurrent();
+                    if (current != null) {
+                        return current.nextElement();
+                    } else {
+                        throw new NoSuchElementException("No more elements in this enumeration");
+                    }
+                }
+
+                private Enumeration<URL> getCurrent() {
+                    for (int start = index; start < enumerators.length; start++) {
+                        Enumeration<URL> e = enumerators[start];
+                        if (e.hasMoreElements()) {
+                            index = start;
+                            return e;
+                        }
+                    }
+                    // no one has any elements, set the index to max and return null
+                    index = enumerators.length;
+                    return null;
                 }
             }
         };
