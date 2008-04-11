@@ -50,7 +50,6 @@ import java.security.PrivilegedAction;
 import javax.security.auth.Subject;
 import com.sun.enterprise.deployment.PrincipalImpl;
 import com.sun.enterprise.config.serverbeans.*;
-import com.sun.enterprise.config.*;
 import com.sun.enterprise.security.auth.login.DistinguishedPrincipalCredential;
 //V3:Comment import com.sun.enterprise.server.ApplicationServer;
 import com.sun.enterprise.security.web.integration.PrincipalGroupFactory;
@@ -149,12 +148,10 @@ public class SecurityContext extends AbstractSecurityContext implements PostCons
             AppservAccessController.doPrivileged(new PrivilegedAction(){
                 public java.lang.Object run() {
                     Principal prin = null;
-                    Iterator pcIter = fsub.getPublicCredentials().iterator();
-                    while (pcIter.hasNext()) {
-                        Object obj = pcIter.next();
+                    for (Object obj : fsub.getPublicCredentials()) {
                         if (obj instanceof DistinguishedPrincipalCredential) {
                             DistinguishedPrincipalCredential dpc =
-                                (DistinguishedPrincipalCredential)obj;
+                                    (DistinguishedPrincipalCredential) obj;
                             prin = dpc.getPrincipal();
                             break;
                         }
@@ -311,7 +308,8 @@ public class SecurityContext extends AbstractSecurityContext implements PostCons
     
     /**
      * This method sets the SecurityContext stored in the TLS. 
-     * @param The Security Context that should be stored in TLS.
+     * @param sc
+     * The Security Context that should be stored in TLS.
      * This public static method needs to be protected
      * such that it can only be called by container code. Otherwise
      * it can be called by application code to set its subject (which the
