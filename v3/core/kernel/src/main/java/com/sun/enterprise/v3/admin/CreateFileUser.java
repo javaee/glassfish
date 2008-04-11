@@ -67,6 +67,7 @@ import com.sun.enterprise.security.auth.realm.BadRealmException;
 import com.sun.enterprise.security.auth.realm.NoSuchUserException;
 import com.sun.enterprise.security.auth.realm.NoSuchRealmException;
 import com.sun.enterprise.security.auth.realm.User;
+import com.sun.enterprise.security.auth.realm.Realm;
 import com.sun.enterprise.config.serverbeans.Property;
 import com.sun.enterprise.config.serverbeans.SecurityService;
 
@@ -227,6 +228,7 @@ public class CreateFileUser implements AdminCommand {
             report.getTopMessagePart().setMessage(localStrings.getLocalString(
                 "create.file.user.success", 
                 "create-file-user successful"));                        
+            refreshRealm(authRealmName);
         } catch (Exception e) {
             e.printStackTrace();
             report.setMessage(
@@ -269,4 +271,19 @@ public class CreateFileUser implements AdminCommand {
         } 
         return password;
     } */
+   public void refreshRealm(String realmName){
+      if(realmName != null && realmName.length()  >0){
+         try{
+            Realm realm = Realm.getInstance(realmName);
+       
+	    if(realm != null){
+	       realm.refresh();
+	    }
+         }catch(com.sun.enterprise.security.auth.realm.NoSuchRealmException nre){
+            //	    _logger.fine("Realm: "+realmName+" is not configured");
+	 }catch(com.sun.enterprise.security.auth.realm.BadRealmException bre){
+            //	    _logger.fine("Realm: "+realmName+" is not configured");
+	 }
+      }
+  }
 }
