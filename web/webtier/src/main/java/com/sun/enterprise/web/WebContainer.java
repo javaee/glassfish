@@ -185,6 +185,9 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
     @Inject
     ComponentEnvManager componentEnvManager;
+
+    @Inject(optional=true)
+    DasConfig dasConfig;
     
     HashMap<String, Integer> portMap = new HashMap<String, Integer>();
     HashMap<Integer, Adapter> adapterMap = new HashMap<Integer, Adapter>();
@@ -285,7 +288,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
         LogService logService = null;
         Config cfg = _serverContext.getDefaultHabitat().getComponent(Config.class);
-        getDynamicReloadingSettings(cfg.getAdminService().getDasConfig());
+        configureDynamicReloadingSettings();
         logService = cfg.getLogService();
         initLogLevel(logService);
         initMonitoringLevel(cfg.getMonitoringService());
@@ -3605,10 +3608,10 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
      * Save the server-wide dynamic reloading settings for use when
      * configuring each web module.
      */
-    private void getDynamicReloadingSettings(DasConfig appsBean) {
-        if (appsBean != null) {
-            _reloadingEnabled = Boolean.parseBoolean(appsBean.getDynamicReloadEnabled());
-            String seconds = appsBean.getDynamicReloadPollIntervalInSeconds();
+    private void configureDynamicReloadingSettings() {
+        if (dasConfig != null) {
+            _reloadingEnabled = Boolean.parseBoolean(dasConfig.getDynamicReloadEnabled());
+            String seconds = dasConfig.getDynamicReloadPollIntervalInSeconds();
             if (seconds != null) {
                 try {
                     _pollInterval = Integer.parseInt(seconds);
