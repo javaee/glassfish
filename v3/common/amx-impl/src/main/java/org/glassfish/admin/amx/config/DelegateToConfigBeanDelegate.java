@@ -169,6 +169,12 @@ public final class DelegateToConfigBeanDelegate extends DelegateBase
                 
                 xmlName = mNameMapping.matchAMXName( amxName, xmlNames );
                 //debug( "Matched: " + amxName + " => " + xmlName );
+                if ( xmlName == null )
+                {
+                    final Set<String> leafNames = mConfigBean.getLeafElementNames();
+                    xmlName = mNameMapping.matchAMXName( amxName, leafNames );
+                    //debug( "Matched leaf element names: " + CollectionUtil.toString(leafNames) + " = " + xmlName );
+                }
             }
             else
             {
@@ -186,12 +192,19 @@ public final class DelegateToConfigBeanDelegate extends DelegateBase
 	getAttribute( final String attrName )
 		throws AttributeNotFoundException
 	{
-        //debug( "DelegateToConfigBeanDelegate.getAttribute: " + attrName );
         final String xmlName = getXMLName(attrName);
         
-        final Object result = mConfigBean.rawAttribute( xmlName );
-       
-        //debug( "Attribute " + attrName + " has class " + ((result == null) ? "null" : result.getClass()) );
+        debug( "DelegateToConfigBeanDelegate.getAttribute: " + attrName + ", xmlName = " + xmlName);
+        Object result = mConfigBean.rawAttribute( xmlName );
+        if ( result == null )
+        {
+            final List<String> leafElements = mConfigBean.leafElements(xmlName);
+            final String[] values = new String[leafElements.size()];
+            leafElements.toArray( values );
+            result = values;
+        }
+        
+        debug( "Attribute " + attrName + " has class " + ((result == null) ? "null" : result.getClass()) );
         return result;
 	}
     
