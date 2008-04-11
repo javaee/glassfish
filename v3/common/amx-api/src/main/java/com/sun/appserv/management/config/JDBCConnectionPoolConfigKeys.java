@@ -100,7 +100,7 @@ public final class JDBCConnectionPoolConfigKeys
 	*/
 	public final static String	RES_TYPE_KEY					= "res-type";
 	/** Key for use with @link { DomainConfig#createJDBCConnectionPoolConfig(String, String, Map)} */
-	public final static String	STEADY_POOL_SIZE_KEY			= "stead-pool-size";
+	public final static String	STEADY_POOL_SIZE_KEY			= "steady-pool-size";
 	/** Key for use with @link { DomainConfig#createJDBCConnectionPoolConfig(String, String, Map)} */
 	public final static String	DATABASE_NAME_KEY				= "property.DatabaseName";
 	/** Key for use with @link { DomainConfig#createJDBCConnectionPoolConfig(String, String, Map)} */
