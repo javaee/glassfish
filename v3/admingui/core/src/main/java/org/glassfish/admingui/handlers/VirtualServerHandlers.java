@@ -207,20 +207,22 @@ public class VirtualServerHandlers {
       
         Map <String,String> defaultMap = config.getHTTPServiceConfig().getDefaultValues(XTypes.VIRTUAL_SERVER_CONFIG);
         handlerCtx.setOutputValue("Hosts", defaultMap.get("hosts"));
-        handlerCtx.setOutputValue("StateOption", "on" ); //defaultMap.get("state"));
+        handlerCtx.setOutputValue("StateOption", defaultMap.get("state"));
         handlerCtx.setOutputValue("Http", defaultMap.get("http-listeners"));
         handlerCtx.setOutputValue("Web", defaultMap.get("default-web-module"));
-        handlerCtx.setOutputValue("LogFile", "${com.sun.aas.instanceRoot}/logs/server.log"); // defaultMap.get("log-file"));
+        handlerCtx.setOutputValue("LogFile", defaultMap.get("log-file"));
         handlerCtx.setOutputValue("sso", Boolean.FALSE);
-        //handlerCtx.setOutputValue("docroot", defaultMap.get("docroot"));
-        handlerCtx.setOutputValue("docroot", "${com.sun.aas.instanceRoot}/docroot");
-        
+        handlerCtx.setOutputValue("docroot", defaultMap.get("docroot"));
         
         Map<String, VirtualServerConfig> vsMap = config.getHTTPServiceConfig().getVirtualServerConfigMap();
-        Object[] vsc = vsMap.entrySet().toArray();
-        //TODO-V3   hardcode for now
-        //Map dMap = AMXRoot.getInstance().getDomainConfig().getDefaultAttributeValues(HTTPAccessLogConfig.J2EE_TYPE);  
-        handlerCtx.setOutputValue("accesslog", "${com.sun.aas.instanceRoot}/logs/access" ); //dMap.get("log-directory"));
+        if (vsMap.size() > 0){
+            Object[] vsc = vsMap.entrySet().toArray();
+            VirtualServerConfig vs = (VirtualServerConfig) vsc[0];
+            handlerCtx.setOutputValue("accesslog", vs.getDefaultValues(XTypes.HTTP_ACCESS_LOG_CONFIG).get("LogDirectory"));
+        }else {
+            //just hard code
+            handlerCtx.setOutputValue("accesslog", "${com.sun.aas.instanceRoot}/logs/access" );
+        }
         handlerCtx.setOutputValue("sso", Boolean.FALSE);
         handlerCtx.setOutputValue("accessLoggingFlag", "off");
         handlerCtx.setOutputValue("Properties", new HashMap());
@@ -383,14 +385,14 @@ public class VirtualServerHandlers {
 
         public static void getAllWebModules(HandlerContext handlerCtx) {
         
-        Map<String,WebModuleConfig> webs = AMXRoot.getInstance().getDomainConfig().getWebModuleConfigMap();
+        Map<String,WebModuleConfig> webs = AMXRoot.getInstance().getApplicationsConfig().getWebModuleConfigMap();
         List result = new ArrayList();
         result.add("");
         for(String nm : webs.keySet()){
             result.add(nm);
         }
         
-        Map<String,J2EEApplicationConfig> ears = AMXRoot.getInstance().getDomainConfig().getJ2EEApplicationConfigMap();
+        Map<String,J2EEApplicationConfig> ears = AMXRoot.getInstance().getApplicationsConfig().getJ2EEApplicationConfigMap();
         
         try{
             for(String appName : ears.keySet()){
@@ -428,7 +430,7 @@ public class VirtualServerHandlers {
 
         public static void getAllWebModules(HandlerContext handlerCtx) {
         
-        Map<String,ApplicationConfig> webs = AMXRoot.getInstance().getDomainConfig().getApplicationConfigMap();
+        Map<String,ApplicationConfig> webs = AMXRoot.getInstance().getApplicationsConfig().getApplicationConfigMap();
         List result = new ArrayList();
         result.add("");
         for(String nm : webs.keySet()){

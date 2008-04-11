@@ -1590,8 +1590,8 @@ public class ServerHandlers {
             /* TODO-V3
         try {
 	    	if(supportCluster) {
-            	Set<String> standaloneSet = AMXRoot.getInstance().getDomainConfig().getStandaloneServerConfigMap().keySet();
-            	Set<String> clusterSet = AMXRoot.getInstance().getDomainConfig().getClusteredServerConfigMap().keySet();           
+            	Set<String> standaloneSet = AMXRoot.getInstance().getServersConfig().getStandaloneServerConfigMap().keySet();
+            	Set<String> clusterSet = AMXRoot.getInstance().getServersConfig().getClusteredServerConfigMap().keySet();           
             	Set<String> allTargets = new TreeSet<String>();
             	allTargets.addAll(standaloneSet);
             	allTargets.addAll(clusterSet);

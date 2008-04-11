@@ -140,7 +140,7 @@ public class ApplicationHandlers {
          * TODO-V3  need to revisit when more than web app is supported.
          * 
 	if ("application".equals(appType)){
-	    module = amxRoot.getDomainConfig().getJ2EEApplicationConfigMap().get(name);
+	    module = amxRoot.getApplicationsConfig().getJ2EEApplicationConfigMap().get(name);
             if (module != null){
                 J2EEApplicationConfig j2eeApp = (J2EEApplicationConfig) module;
 		//handlerCtx.setOutputValue("javaWebStart", j2eeApp.getJavaWebStartEnabled());
@@ -153,14 +153,14 @@ public class ApplicationHandlers {
 	    }
 	}else
 	if ("ejbModule".equals(appType)){
-            module = amxRoot.getDomainConfig().getEJBModuleConfigMap().get(name);
+            module = amxRoot.getApplicationsConfig().getEJBModuleConfigMap().get(name);
             if (module != null){
                 EJBModuleConfig ejbModule = (EJBModuleConfig) module;
 		handlerCtx.setOutputValue("availEnabled", ejbModule.getAvailabilityEnabled());
 	    }
 	}else
 	if ("webApp".equals(appType)){
-            module = amxRoot.getDomainConfig().getWebModuleConfigMap().get(name);
+            module = amxRoot.getApplicationsConfig().getWebModuleConfigMap().get(name);
 	    if (module != null){
                 WebModuleConfig webModule = (WebModuleConfig) module;
 		handlerCtx.setOutputValue("contextRoot", webModule.getContextRoot());
@@ -172,9 +172,9 @@ public class ApplicationHandlers {
 	    }
 	}else
 	if ("connector".equals(appType)){
-            module = amxRoot.getDomainConfig().getRARModuleConfigMap().get(name);
+            module = amxRoot.getApplicationsConfig().getRARModuleConfigMap().get(name);
 	    if (module != null){
-		ResourceAdapterConfig adapter = amxRoot.getDomainConfig().getResourceAdapterConfigMap().get(name);
+		ResourceAdapterConfig adapter = amxRoot.getApplicationsConfig().getResourceAdapterConfigMap().get(name);
 		if (adapter != null)
 		    handlerCtx.setOutputValue("threadPool", adapter.getThreadPoolIDs());
 	    }
@@ -186,7 +186,7 @@ public class ApplicationHandlers {
         */
         
         //No need to test the type for TP2
-        ApplicationConfig appConfig = amxRoot.getDomainConfig().getApplicationConfigMap().get(name);
+        ApplicationConfig appConfig = amxRoot.getApplicationsConfig().getApplicationConfigMap().get(name);
         handlerCtx.setOutputValue("contextRoot", appConfig.getContextRoot());
 	//handlerCtx.setOutputValue("availEnabled", appConfig.getAvailabilityEnabled());
         if(!amxRoot.supportCluster()) {
@@ -253,7 +253,7 @@ public class ApplicationHandlers {
         try{
 	ModuleConfig module = null;
 	if ("application".equals(appType)){
-	    module = amxRoot.getDomainConfig().getJ2EEApplicationConfigMap().get(name);
+	    module = amxRoot.getApplicationsConfig().getJ2EEApplicationConfigMap().get(name);
             if (module != null){
                 J2EEApplicationConfig j2eeApp = (J2EEApplicationConfig) module;
 		j2eeApp.setJavaWebStartEnabled((Boolean)handlerCtx.getInputValue("javaWebStart"));
@@ -271,7 +271,7 @@ public class ApplicationHandlers {
 	    }
 	}else
 	if ("ejbModule".equals(appType)){
-	    module = amxRoot.getDomainConfig().getEJBModuleConfigMap().get(name);
+	    module = amxRoot.getApplicationsConfig().getEJBModuleConfigMap().get(name);
             if (module != null){
                 EJBModuleConfig ejbModule = (EJBModuleConfig) module;
                 if (amxRoot.isEE()){
@@ -282,7 +282,7 @@ public class ApplicationHandlers {
 	    }
 	}else
 	if ("webApp".equals(appType)){
-	    module = amxRoot.getDomainConfig().getWebModuleConfigMap().get(name);
+	    module = amxRoot.getApplicationsConfig().getWebModuleConfigMap().get(name);
 	    if (module != null){
                 WebModuleConfig webModule = (WebModuleConfig) module;
 		webModule.setContextRoot((String)handlerCtx.getInputValue("contextRoot"));
@@ -299,11 +299,11 @@ public class ApplicationHandlers {
 	    }
 	}else
 	if ("connector".equals(appType)){
-	    module = amxRoot.getDomainConfig().getRARModuleConfigMap().get(name);
+	    module = amxRoot.getApplicationsConfig().getRARModuleConfigMap().get(name);
 	    if (module != null){
-                ResourceAdapterConfig adapter = amxRoot.getDomainConfig().getResourceAdapterConfigMap().get(name);
+                ResourceAdapterConfig adapter = amxRoot.getApplicationsConfig().getResourceAdapterConfigMap().get(name);
 		if (adapter == null)
-		    adapter = amxRoot.getDomainConfig().createResourceAdapterConfig(name, null);
+		    adapter = amxRoot.getResourcesConfig().createResourceAdapterConfig(name, null);
                 adapter.setThreadPoolIDs((String) handlerCtx.getInputValue("threadPool"));
 	    }
 	}
@@ -351,7 +351,7 @@ public class ApplicationHandlers {
         
         try{
 	
-	    ApplicationConfig appConfig = amxRoot.getDomainConfig().getApplicationConfigMap().get(name);
+	    ApplicationConfig appConfig = amxRoot.getApplicationsConfig().getApplicationConfigMap().get(name);
 	    if (appConfig != null){
 		appConfig.setContextRoot((String)handlerCtx.getInputValue("contextRoot"));
                 if (amxRoot.isEE()){
@@ -397,7 +397,7 @@ public class ApplicationHandlers {
     public static void getAppClientInfo(HandlerContext handlerCtx) {
         
         String name = (String) handlerCtx.getInputValue("name");
-	AppClientModuleConfig module = AMXRoot.getInstance().getDomainConfig().getAppClientModuleConfigMap().get(name);
+	AppClientModuleConfig module = AMXRoot.getInstance().getApplicationsConfig().getAppClientModuleConfigMap().get(name);
 	if (module == null){
             GuiUtil.handleError(handlerCtx, GuiUtil.getMessage("msg.NoSuchAppclient"));
             return;
@@ -423,7 +423,7 @@ public class ApplicationHandlers {
         })
     public static void saveAppClientInfo(HandlerContext handlerCtx) {
         String name = (String) handlerCtx.getInputValue("name");
-	AppClientModuleConfig module = AMXRoot.getInstance().getDomainConfig().getAppClientModuleConfigMap().get(name);
+	AppClientModuleConfig module = AMXRoot.getInstance().getApplicationsConfig().getAppClientModuleConfigMap().get(name);
 	if (module == null){
 	    GuiUtil.handleError(handlerCtx, GuiUtil.getMessage("msg.NoSuchAppclient"));
 	    return;
@@ -457,7 +457,7 @@ public class ApplicationHandlers {
     public static void getLifecycleModuleInfo(HandlerContext handlerCtx) {
         
         String name = (String) handlerCtx.getInputValue("name");
-	LifecycleModuleConfig module = AMXRoot.getInstance().getDomainConfig().getLifecycleModuleConfigMap().get(name);
+	LifecycleModuleConfig module = AMXRoot.getInstance().getApplicationsConfig().getLifecycleModuleConfigMap().get(name);
 	if (module == null){
 	    GuiUtil.handleError(handlerCtx, GuiUtil.getMessage("msg.NoSuchLifecycle"));
 	    return;
@@ -496,7 +496,7 @@ public class ApplicationHandlers {
     public static void saveLifecycleModuleInfo(HandlerContext handlerCtx) {
         String name = (String) handlerCtx.getInputValue("name");
         AMXRoot amxRoot = AMXRoot.getInstance();
-	LifecycleModuleConfig module = amxRoot.getDomainConfig().getLifecycleModuleConfigMap().get(name);
+	LifecycleModuleConfig module = amxRoot.getApplicationsConfig().getLifecycleModuleConfigMap().get(name);
 	
         if (module == null){
             GuiUtil.handleError(handlerCtx,  GuiUtil.getMessage("msg.NoSuchLifecycle"));
@@ -596,7 +596,7 @@ public class ApplicationHandlers {
         Boolean isFailureFatal = (Boolean) handlerCtx.getInputValue("isFailureFatal");
         if (enabled == null) enabled = false;
         if (isFailureFatal == null) isFailureFatal = false;
-	LifecycleModuleConfig module = AMXRoot.getInstance().getDomainConfig().createLifecycleModuleConfig(
+	LifecycleModuleConfig module = AMXRoot.getInstance().getApplicationsConfig().createLifecycleModuleConfig(
                 name,
                 (String)handlerCtx.getInputValue("description"),
                 (String)handlerCtx.getInputValue("classname"),
@@ -633,7 +633,7 @@ public class ApplicationHandlers {
             for(int i=0; i< selectedRows.size(); i++){
                 Map oneRow = (Map) selectedRows.get(i);
                 String name = (String)oneRow.get("name");
-                LifecycleModuleConfig module = AMXRoot.getInstance().getDomainConfig().getLifecycleModuleConfigMap().get(name);
+                LifecycleModuleConfig module = AMXRoot.getInstance().getApplicationsConfig().getLifecycleModuleConfigMap().get(name);
                 deleteLifecycleReferences(module);
                 Object[] params = new Object[]{ name , defaultTarget};
                 
@@ -715,7 +715,7 @@ public class ApplicationHandlers {
                 if(hasAction){
                     if ("AppClientModule".equals(on.getKeyProperty("j2eeType"))){
                         oneRow.put("downloadText", GuiUtil.getMessage("ComponentTable.downloadClientStub"));
-                        J2EEApplicationConfig appConfig = AMXRoot.getInstance().getDomainConfig().getJ2EEApplicationConfigMap().get(appName);
+                        J2EEApplicationConfig appConfig = AMXRoot.getInstance().getApplicationsConfig().getJ2EEApplicationConfigMap().get(appName);
                         boolean javaWebStart = appConfig.getJavaWebStartEnabled();
                         oneRow.put("javaWebStart", javaWebStart);
                     }else{
@@ -744,7 +744,7 @@ public class ApplicationHandlers {
      )
     public static void getDeployedAppInfo(HandlerContext handlerCtx){
         
-        Iterator<J2EEApplicationConfig> iter = AMXRoot.getInstance().getDomainConfig().getJ2EEApplicationConfigMap().values().iterator();
+        Iterator<J2EEApplicationConfig> iter = AMXRoot.getInstance().getApplicationsConfig().getJ2EEApplicationConfigMap().values().iterator();
         List result = new ArrayList();
         while(iter.hasNext()){
             J2EEApplicationConfig appConfig = iter.next();
@@ -775,7 +775,7 @@ public class ApplicationHandlers {
     public static void getDeployedWebInfo(HandlerContext handlerCtx){
         
         String serverName = (String) handlerCtx.getInputValue("serverName");
-        Iterator<ApplicationConfig> iter = AMXRoot.getInstance().getDomainConfig().getApplicationConfigMap().values().iterator();
+        Iterator<ApplicationConfig> iter = AMXRoot.getInstance().getApplicationsConfig().getApplicationConfigMap().values().iterator();
         List result = new ArrayList();
         while(iter.hasNext()){
             ApplicationConfig appConfig = iter.next();
@@ -824,7 +824,7 @@ public class ApplicationHandlers {
      )
     public static void getDeployedEJBModuleInfo(HandlerContext handlerCtx){
         
-        Iterator<EJBModuleConfig> iter = AMXRoot.getInstance().getDomainConfig().getEJBModuleConfigMap().values().iterator();
+        Iterator<EJBModuleConfig> iter = AMXRoot.getInstance().getApplicationsConfig().getEJBModuleConfigMap().values().iterator();
         List result = new ArrayList();
         while(iter.hasNext()){
             EJBModuleConfig appConfig = iter.next();
@@ -853,7 +853,7 @@ public class ApplicationHandlers {
      )
     public static void getDeployedConnectorModuleInfo(HandlerContext handlerCtx){
         
-        Iterator<RARModuleConfig> iter = AMXRoot.getInstance().getDomainConfig().getRARModuleConfigMap().values().iterator();
+        Iterator<RARModuleConfig> iter = AMXRoot.getInstance().getApplicationsConfig().getRARModuleConfigMap().values().iterator();
         List result = new ArrayList();
         while(iter.hasNext()){
             RARModuleConfig appConfig = iter.next();
@@ -882,7 +882,7 @@ public class ApplicationHandlers {
      )
     public static void getDeployedLifecycleInfo(HandlerContext handlerCtx){
         
-        Iterator<LifecycleModuleConfig> iter = AMXRoot.getInstance().getDomainConfig().getLifecycleModuleConfigMap().values().iterator();
+        Iterator<LifecycleModuleConfig> iter = AMXRoot.getInstance().getApplicationsConfig().getLifecycleModuleConfigMap().values().iterator();
         List result = new ArrayList();
         while(iter.hasNext()){
             LifecycleModuleConfig appConfig = iter.next();
@@ -914,7 +914,7 @@ public class ApplicationHandlers {
      )
     public static void getDeployedAppClientInfo(HandlerContext handlerCtx){
         
-        Iterator<AppClientModuleConfig> iter = AMXRoot.getInstance().getDomainConfig().getAppClientModuleConfigMap().values().iterator();
+        Iterator<AppClientModuleConfig> iter = AMXRoot.getInstance().getApplicationsConfig().getAppClientModuleConfigMap().values().iterator();
         List result = new ArrayList();
         while(iter.hasNext()){
             AppClientModuleConfig appConfig = iter.next();
@@ -956,7 +956,7 @@ public class ApplicationHandlers {
             List<String>targetList = TargetUtil.getDeployedTargets(appName, forApp.booleanValue());
             for(String target : targetList){
                 HashMap oneRow = new HashMap();
-                StandaloneServerConfig server = amxRoot.getDomainConfig().getStandaloneServerConfigMap().get(target);
+                StandaloneServerConfig server = amxRoot.getServersConfig().getStandaloneServerConfigMap().get(target);
                 if (server != null){
                     oneRow.put("target", target);
                     oneRow.put("image", amxRoot.getStatusForDisplay(
@@ -982,7 +982,7 @@ public class ApplicationHandlers {
      */
     private static String getClusterStatus(String clusterName){
         AMXRoot amxRoot = AMXRoot.getInstance();
-        ClusterConfig cluster = amxRoot.getDomainConfig().getClusterConfigMap().get(clusterName);
+        ClusterConfig cluster = amxRoot.getClustersConfig().getClusterConfigMap().get(clusterName);
         if (cluster == null) return "";
         Map<String,ClusteredServerConfig> serverMap = cluster.getClusteredServerConfigMap();
         if (serverMap.size() == 0) return "";
@@ -1056,7 +1056,7 @@ public class ApplicationHandlers {
             List<String>targetList = TargetUtil.getDeployedTargets(appName, forApp.booleanValue());
             for(String target : targetList){
                 HashMap oneRow = new HashMap();
-                StandaloneServerConfig server = amxRoot.getDomainConfig().getStandaloneServerConfigMap().get(target);
+                StandaloneServerConfig server = amxRoot.getServersConfig().getStandaloneServerConfigMap().get(target);
                 Enabled module = getModuleConfig(appName, appType);
                 oneRow.put("selected", false);
                 oneRow.put("enabled", Boolean.toString(TargetUtil.isApplicationEnabled(module, target)));
@@ -1148,13 +1148,13 @@ public class ApplicationHandlers {
         AMXRoot amxRoot = AMXRoot.getInstance();
         
         if (isServer){
-            StandaloneServerConfig server = amxRoot.getDomainConfig().getStandaloneServerConfigMap().get(target);
+            StandaloneServerConfig server = amxRoot.getServersConfig().getStandaloneServerConfigMap().get(target);
             refs = server.getDeployedItemRefConfigMap().values();
             //TODO-V3
             //Map lbMap =  amxRoot.getLBConfigHelper().getLoadBalancers(target, false);
             //handlerCtx.setOutputValue("hasLB", !lbMap.isEmpty());
         }else{
-            ClusterConfig cluster = amxRoot.getDomainConfig().getClusterConfigMap().get(target);
+            ClusterConfig cluster = amxRoot.getClustersConfig().getClusterConfigMap().get(target);
             refs = cluster.getDeployedItemRefConfigMap().values();
             //TODO-V3
             //Map lbMap =  amxRoot.getLBConfigHelper().getLoadBalancers(target, true);
@@ -1194,10 +1194,10 @@ public class ApplicationHandlers {
         AMXRoot amxRoot = AMXRoot.getInstance();
         
         if (TargetUtil.isCluster(target)){
-            ClusterConfig cluster = amxRoot.getDomainConfig().getClusterConfigMap().get(target);
+            ClusterConfig cluster = amxRoot.getClustersConfig().getClusterConfigMap().get(target);
             refs = cluster.getDeployedItemRefConfigMap().values();
         }else {
-            StandaloneServerConfig server = amxRoot.getDomainConfig().getStandaloneServerConfigMap().get(target);
+            StandaloneServerConfig server = amxRoot.getServersConfig().getStandaloneServerConfigMap().get(target);
             refs= server.getDeployedItemRefConfigMap().values();
         }
         
@@ -1948,25 +1948,25 @@ public class ApplicationHandlers {
         Enabled module=null;
         AMXRoot amxRoot = AMXRoot.getInstance();
         if ("application".equals(appType)){
-	    module = amxRoot.getDomainConfig().getJ2EEApplicationConfigMap().get(appName);
+	    module = amxRoot.getApplicationsConfig().getApplicationConfigMap().get(appName);
         }else
         if ("ejbModule".equals(appType)){
-            module = amxRoot.getDomainConfig().getEJBModuleConfigMap().get(appName);
+            module = amxRoot.getApplicationsConfig().getEJBModuleConfigMap().get(appName);
         }else
         if ("webApp".equals(appType)){
             //V3: TP2 was using J2EEApplicaitonConfigMap() to be the web App
-            //module = amxRoot.getDomainConfig().getWebModuleConfigMap().get(appName);
+            //module = amxRoot.getApplicationsConfig().getWebModuleConfigMap().get(appName);
             
-            module = amxRoot.getDomainConfig().getApplicationsConfig().getApplicationConfigMap().get(appName);
+            module = amxRoot.getApplicationsConfig().getApplicationConfigMap().get(appName);
         }else
         if ("connector".equals(appType)){
-            module = amxRoot.getDomainConfig().getRARModuleConfigMap().get(appName);
+            module = amxRoot.getApplicationsConfig().getRARModuleConfigMap().get(appName);
         }else
         if ("lifecycle".equals(appType)){
-            module = amxRoot.getDomainConfig().getLifecycleModuleConfigMap().get(appName);
+            module = amxRoot.getApplicationsConfig().getLifecycleModuleConfigMap().get(appName);
         } 
          if ("mbean".equals(appType)){
-            module = amxRoot.getDomainConfig().getCustomMBeanConfigMap().get(appName);
+            module = amxRoot.getApplicationsConfig().getCustomMBeanConfigMap().get(appName);
         } 
         return module;
     }

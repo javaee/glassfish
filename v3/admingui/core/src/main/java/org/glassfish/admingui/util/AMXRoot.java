@@ -53,6 +53,7 @@ import com.sun.appserv.management.config.AMXConfig;
 import com.sun.appserv.management.config.AppClientModuleConfig;
 import com.sun.appserv.management.config.ApplicationsConfig;
 import com.sun.appserv.management.config.ClusterConfig;
+import com.sun.appserv.management.config.ClustersConfig;
 import com.sun.appserv.management.config.ConfigConfig;
 import com.sun.appserv.management.config.CustomMBeanConfig;
 import com.sun.appserv.management.config.DomainConfig;
@@ -84,8 +85,6 @@ import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -108,8 +107,8 @@ public class AMXRoot {
 
     private  final DomainRoot domainRoot;
     private  final DomainConfig domainConfig;
-    private  final ConfigsConfig configsConfig;
     private  final ApplicationsConfig applicationsConfig;
+    private  final ConfigsConfig configsConfig;
     private  final J2EEDomain j2eeDomain;
     private  final MonitoringRoot monitoringRoot;
     private  final QueryMgr queryMgr;
@@ -118,6 +117,7 @@ public class AMXRoot {
     private  final MBeanServerConnection mbaenServerConnection;
     private  final ResourcesConfig resourcesConfig;
     private  final ServersConfig serversConfig;
+    private  final ClustersConfig clustersConfig;
     //private  final LBConfigHelper lbConfigHelper;
 
     private AMXRoot(DomainRoot dd,  MBeanServerConnection msc) {
@@ -134,6 +134,7 @@ public class AMXRoot {
         resourcesConfig = domainConfig.getResourcesConfig();
         applicationsConfig = domainConfig.getApplicationsConfig();
         serversConfig = domainConfig.getServersConfig();
+        clustersConfig = domainConfig.getClustersConfig();
         //lbConfigHelper = new LBConfigHelper(domainRoot);
     }
 
@@ -209,6 +210,11 @@ public class AMXRoot {
     public  ServersConfig getServersConfig() {
         return serversConfig;
     }
+    
+    public  ClustersConfig getClustersConfig() {
+        return clustersConfig;
+    }
+    
 
     public  J2EEDomain getJ2EEDomain() {
         return j2eeDomain;

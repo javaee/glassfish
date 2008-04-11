@@ -1554,7 +1554,7 @@ public class ConnectorsHandlers {
                     }
                     result.add(oneRow);
                  } catch (Exception ex) {
-                        System.out.println("!!!! Catch exception when trying to iterate through resource list.  Resource Name = name");
+                        System.out.println("!!!! Catch exception when trying to iterate through resource list.  Resource Name ");
                         ex.printStackTrace();
                 }
             }
@@ -1671,10 +1671,10 @@ public class ConnectorsHandlers {
         List result = new ArrayList();
 
         if (isServer) {
-            StandaloneServerConfig server = AMXRoot.getInstance().getDomainConfig().getStandaloneServerConfigMap().get(target);
+            StandaloneServerConfig server = AMXRoot.getInstance().getServersConfig().getStandaloneServerConfigMap().get(target);
             refs = server.getResourceRefConfigMap().values();
         } else {
-            ClusterConfig cluster = AMXRoot.getInstance().getDomainConfig().getClusterConfigMap().get(target);
+            ClusterConfig cluster = AMXRoot.getInstance().getClustersConfig().getClusterConfigMap().get(target);
             refs = cluster.getResourceRefConfigMap().values();
         }
 
