@@ -47,17 +47,18 @@
                             onClick="return guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'); " >       
                           <!command
                             getUIComponent(clientId="$pageSession{jvmTableRowGroupId}", component=>$attribute{tableRowGroup});      
-                            prepareSuccessfulMsg();
                             getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});                            
                             convertListToArrayList(TableList="#{newList}", Name="option", NameList=>$attribute{nameList});
                             saveServerProfilerSettings(
-                            ConfigName="#{configName}",
-                            ProfilerName="#{profilerName}"
-                            ProfilerEnabled="#{profilerEnabled}"
-                            Classpath="#{classPath}"
-                            NativeLibrary="#{nativeLibrary}"
+                                ConfigName="#{configName}",
+                                ProfilerName="#{profilerName}"
+                                ProfilerEnabled="#{profilerEnabled}"
+                                Classpath="#{classPath}"
+                                NativeLibrary="#{nativeLibrary}"
                             );
-                            saveProfilerJvmOptions(NameList="#{nameList}", ConfigName="#{configName}");                   /> 
+                            saveProfilerJvmOptions(NameList="#{nameList}", ConfigName="#{configName}"); 
+                            prepareSuccessfulMsg();
+                  /> 
                         </sun:button>
                     </sun:panelGroup>
                     </facet>   
@@ -67,7 +68,8 @@
                         <!-- Text Field section -->               
                         <sun:propertySheetSection id="propertSectionTextField">
                             <sun:property id="profilerNameProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.jvm.ProfilerName}">
-                                <sun:textField id="ProfilerName" styleClass="required" columns="$int{55}" text="#{requestScope.profilerName}" required="#{true}"/> 
+                                <sun:textField id="ProfilerName" rendered="#{!edit}" styleClass="required" columns="$int{55}" text="#{profilerName}" required="#{true}"/> 
+                                <sun:staticText id="ProfilerName2" rendered="#{edit}" text="#{profilerName}"/>
                             </sun:property>
                            <sun:property id="profilerEnabledProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.jvm.Profiler}">
                                 <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{requestScope.profilerEnabled}" />   

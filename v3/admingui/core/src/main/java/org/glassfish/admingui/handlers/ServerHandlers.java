@@ -1101,12 +1101,14 @@ public class ServerHandlers {
         ArrayList names = (ArrayList)handlerCtx.getInputValue("NameList");
         ConfigConfig config = AMXRoot.getInstance().getConfig(((String)handlerCtx.getInputValue("ConfigName")));
         try{
-            JavaConfig javaConfig = config.getJavaConfig();
-            ProfilerConfig profilerConfig = javaConfig.getProfilerConfig();
-            if(profilerConfig != null && names != null) {
+            ProfilerConfig profilerConfig = config.getJavaConfig().getProfilerConfig();
+            if(names != null && names.size()>0) {
                 String[] options = (String[])names.toArray(new String[names.size()]);
                 profilerConfig.setJVMOptions(options);
+            }else{
+                profilerConfig.setJVMOptions(null);
             }
+            
         }catch (Exception ex){
             GuiUtil.handleException(handlerCtx, ex);
         }
@@ -1129,7 +1131,9 @@ public class ServerHandlers {
         @HandlerOutput(name="ProfilerName", type=String.class),
         @HandlerOutput(name="ProfilerEnabled", type=Boolean.class),        
         @HandlerOutput(name="Classpath", type=String.class),
-        @HandlerOutput(name="NativeLibrary", type=String.class)})
+        @HandlerOutput(name="NativeLibrary", type=String.class),
+        @HandlerOutput(name="edit", type=Boolean.class)
+    })
         public static void getServerProfilerAttributes(HandlerContext handlerCtx) {
         
         ConfigConfig config = AMXRoot.getInstance().getConfig(((String)handlerCtx.getInputValue("ConfigName")));
@@ -1145,6 +1149,10 @@ public class ServerHandlers {
                 handlerCtx.setOutputValue("NativeLibrary", nativeLibrary);
                 handlerCtx.setOutputValue("ProfilerName", name);
                 handlerCtx.setOutputValue("ProfilerEnabled", enabled);
+                handlerCtx.setOutputValue("edit", true);
+            }else{
+                handlerCtx.setOutputValue("ProfilerEnabled", true);
+                handlerCtx.setOutputValue("edit", false);
             }
         }catch (Exception ex){
             GuiUtil.handleException(handlerCtx, ex);
@@ -1174,31 +1182,24 @@ public class ServerHandlers {
         public static void saveServerProfilerSettings(HandlerContext handlerCtx) {
         
         ConfigConfig config = AMXRoot.getInstance().getConfig(((String)handlerCtx.getInputValue("ConfigName")));
-      JavaConfig javaConfig = config.getJavaConfig();
-        boolean removeProfiler = true;
-        if(javaConfig.getProfilerConfig() == null){
-            createProfiler(handlerCtx, javaConfig);
-        } else {
-            //TODO-V3
-            //uncomment the following line when removeProfilerConfig() is available.
-            //javaConfig.removeProfilerConfig();
-            createProfiler(handlerCtx, javaConfig);
-        }
-    }
-    
-    private static void createProfiler(HandlerContext handlerCtx, JavaConfig javaConfig){
+        JavaConfig javaConfig = config.getJavaConfig();
+        ProfilerConfig profiler = javaConfig.getProfilerConfig();
         String classpath = (String)handlerCtx.getInputValue("Classpath");
         String nativelibrary = (String)handlerCtx.getInputValue("NativeLibrary");
         Boolean profilerenabled = (Boolean)handlerCtx.getInputValue("ProfilerEnabled");
-        Map map = new HashMap();
-        if(classpath != null)
-            map.put(CLASSPATH_KEY, classpath);
-        if(nativelibrary != null)
-            map.put(NATIVE_LIBRARY_PATH_KEY, nativelibrary);
-        map.put(ENABLED_KEY, (profilerenabled == null) ? "false" : profilerenabled.toString());
-        
-        
-        javaConfig.createProfilerConfig((String)handlerCtx.getInputValue("ProfilerName"), map);
+        if(profiler == null){
+            Map map = new HashMap();
+            if(classpath != null)
+                map.put(CLASSPATH_KEY, classpath);
+            if(nativelibrary != null)
+                map.put(NATIVE_LIBRARY_PATH_KEY, nativelibrary);
+            map.put(ENABLED_KEY, (profilerenabled == null) ? "false" : profilerenabled.toString());
+            javaConfig.createProfilerConfig((String)handlerCtx.getInputValue("ProfilerName"), map);
+        } else {
+            profiler.setClasspath(classpath);
+            profiler.setEnabled((profilerenabled == null) ? false : profilerenabled);
+            profiler.setNativeLibraryPath(nativelibrary);
+        }
     }
     
     /**
