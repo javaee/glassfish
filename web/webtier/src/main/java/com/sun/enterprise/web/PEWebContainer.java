@@ -262,8 +262,8 @@ public class PEWebContainer extends WebContainer {
         } catch (NumberFormatException nfe) {
             String msg = _rb.getString("pewebcontainer.http_listener.invalid_port");
             msg = MessageFormat.format(msg,
-                                       new Object[] {httpListener.getPort(),
-                                       httpListener.getId() });
+                    httpListener.getPort(),
+                    httpListener.getId());
             throw new IllegalArgumentException(msg);
         }
 
@@ -297,7 +297,7 @@ public class PEWebContainer extends WebContainer {
 
         if ( _logger.isLoggable(Level.FINE)){
             _logger.log(Level.FINE, "create.listenerport",
-                new Object[] {Integer.valueOf(port), connector});
+                new Object[] {port, connector});
         }
 
         _embedded.addConnector(connector);
@@ -332,9 +332,9 @@ public class PEWebContainer extends WebContainer {
     private void setDefaultRedirectPort(int defaultRedirectPort) {
         if (defaultRedirectPort != -1) {
             Connector[] connectors = _embedded.getConnectors();
-            for (int i=0; i<connectors.length; i++) {
-                if (connectors[i].getRedirectPort() == -1) {
-                    connectors[i].setRedirectPort(defaultRedirectPort);
+            for (Connector connector : connectors) {
+                if (connector.getRedirectPort() == -1) {
+                    connector.setRedirectPort(defaultRedirectPort);
                 }
             } 
         }
@@ -368,8 +368,8 @@ public class PEWebContainer extends WebContainer {
  
             boolean found = false;
             int[] ports = defaultVs.getPorts();
-            for (int i=0; i<ports.length; i++) {
-                if (ports[i] == port) {
+            for (int port1 : ports) {
+                if (port1 == port) {
                     found = true;
                     break;
                 }
@@ -394,7 +394,7 @@ public class PEWebContainer extends WebContainer {
         Engine engine = _embedded.createEngine();
         _embedded.addEngine(engine);
 
-        ((StandardEngine)engine).setName(engineName);
+        engine.setName(engineName);
         if (isTomcatUsingDefaultDomain()) {
             ((StandardEngine)engine).setDomain(
                         _serverContext.getDefaultDomainName());
@@ -546,8 +546,8 @@ public class PEWebContainer extends WebContainer {
 
                 String msg = 
                     _rb.getString("pewebcontainer.virtual_server.invalid_docroot");
-                msg = MessageFormat.format(msg, 
-                                        new Object[] { vs_id , docroot});
+                msg = MessageFormat.format(msg,
+                        vs_id, docroot);
                 throw new IllegalArgumentException(msg);
             } else if (!isValid) {
 
@@ -556,7 +556,7 @@ public class PEWebContainer extends WebContainer {
             }
         } else if (defaultWebModule == null) {
             String msg = _rb.getString("pewebcontainer.virtual_server.missing_docroot");
-            msg = MessageFormat.format(msg, new Object[] { vs_id });
+            msg = MessageFormat.format(msg, vs_id);
             throw new IllegalArgumentException(msg);
         }
         return true;
@@ -617,25 +617,25 @@ public class PEWebContainer extends WebContainer {
             && !vs.getName().equalsIgnoreCase(VirtualServer.ADMIN_VS));
 
         ArrayList<Integer> portsList = new ArrayList();
-       
-        for (int i=0; i < httpListeners.length; i++){
-            if (Boolean.getBoolean(httpListeners[i].getEnabled())){
+
+        for (HttpListener httpListener : httpListeners) {
+            if (Boolean.getBoolean(httpListener.getEnabled())) {
                 PECoyoteConnector conn = connectorMap.get(
-                    httpListeners[i].getId());
+                        httpListener.getId());
                 if (conn != null) {
-                    portsList.add(Integer.valueOf(conn.getPort()));
+                    portsList.add(conn.getPort());
                 }
             } else {
                 if ((vs.getName().equalsIgnoreCase(VirtualServer.ADMIN_VS))) {
                     String msg = _rb.getString(
-                        "pewebcontainer.httpListener.mustNotDisable");
+                            "pewebcontainer.httpListener.mustNotDisable");
                     msg = MessageFormat.format(
-                        msg,
-                        new Object[] { httpListeners[i].getId(),
-                                       vs.getName() });
+                            msg,
+                            httpListener.getId(),
+                            vs.getName());
                     throw new IllegalArgumentException(msg);
                 }
-            }            
+            }
         }
 
         int numPorts = portsList.size();
@@ -808,7 +808,7 @@ public class PEWebContainer extends WebContainer {
         connector.setXpoweredBy(Boolean.getBoolean(httpListener.getXpoweredBy()));
         
         // Application root
-        connector.setWebAppRootPath(getModulesRoot());
+        connector.setWebAppRootPath(getModulesRoot().getAbsolutePath());
         
         // server-name (may contain scheme and colon-separated port number)
         String serverName = httpListener.getServerName();
@@ -1208,7 +1208,7 @@ public class PEWebContainer extends WebContainer {
             String msg = _logger.getResourceBundle().getString(
                                             "web.monitoringRegistrationError");
             msg = MessageFormat.format(msg,
-                                       new Object[] { "PWCKeepAliveStats" });
+                    "PWCKeepAliveStats");
             _logger.log(Level.WARNING, msg, mre);
         }
         
@@ -1220,7 +1220,7 @@ public class PEWebContainer extends WebContainer {
             String msg = _logger.getResourceBundle().getString(
                                             "web.monitoringRegistrationError");
             msg = MessageFormat.format(msg,
-                                       new Object[] { "PWCFileCacheStats" });
+                    "PWCFileCacheStats");
             _logger.log(Level.WARNING, msg, mre);
         }
 
@@ -1233,7 +1233,7 @@ public class PEWebContainer extends WebContainer {
             String msg = _logger.getResourceBundle().getString(
                                             "web.monitoringRegistrationError");
             msg = MessageFormat.format(msg,
-                                       new Object[] { "PWCThreadPoolStats" });
+                    "PWCThreadPoolStats");
             _logger.log(Level.WARNING, msg, mre);
         }
 
@@ -1246,7 +1246,7 @@ public class PEWebContainer extends WebContainer {
             String msg = _logger.getResourceBundle().getString(
                                             "web.monitoringRegistrationError");
             msg = MessageFormat.format(msg,
-                                       new Object[] { "PWCConnectionQueueStats" });
+                    "PWCConnectionQueueStats");
             _logger.log(Level.WARNING, msg, mre);
         }
 
@@ -1325,7 +1325,7 @@ public class PEWebContainer extends WebContainer {
                     "web.monitoringRegistrationError");
             msg = MessageFormat.format(
                     msg,
-                    new Object[] { "HTTPListenerStats" });
+                    "HTTPListenerStats");
             _logger.log(Level.WARNING, msg, mre);
         }        
     }
@@ -1350,7 +1350,7 @@ public class PEWebContainer extends WebContainer {
             List vsListeners =
                 StringUtils.parseStringList(vse.getHttpListeners(), ",");
             for (int j=0; vsListeners!=null && j<vsListeners.size(); j++) {
-                if (listenerId.equals((String)vsListeners.get(j))) {
+                if (listenerId.equals(vsListeners.get(j))) {
                     if (listenerVses == null) {
                         listenerVses = new ArrayList();
                     }
@@ -1378,7 +1378,7 @@ public class PEWebContainer extends WebContainer {
                             listenerVses.get(k);
                     List otherHosts = StringUtils.parseStringList(otherVs.getHosts(), ",");
                     for (int l=0; otherHosts!=null && l<otherHosts.size(); l++) {
-                        if (host.equals((String) otherHosts.get(l))) {
+                        if (host.equals(otherHosts.get(l))) {
                             _logger.log(Level.SEVERE,
                                         "pewebcontainer.duplicate_host_name",
                                         new Object[] { host, vs.getId(),
@@ -1420,11 +1420,11 @@ public class PEWebContainer extends WebContainer {
      */
     private void enableVirtualServerMonitoring() {
         Engine[] engines = _embedded.getEngines();
-        for (int j = 0; j < engines.length; j++) {
-            Container[] hostArray = engines[j].findChildren();
-            for (int i = 0; i < hostArray.length; i++) {
-                VirtualServer vs = (VirtualServer) hostArray[i];
-                enableVirtualServerMonitoring(vs);            
+        for (Engine engine1 : engines) {
+            Container[] hostArray = engine1.findChildren();
+            for (Container aHostArray : hostArray) {
+                VirtualServer vs = (VirtualServer) aHostArray;
+                enableVirtualServerMonitoring(vs);
             }
         }
     }
@@ -1462,7 +1462,7 @@ public class PEWebContainer extends WebContainer {
                             "web.monitoringRegistrationError");
             msg = MessageFormat.format(
                             msg,
-                            new Object[] { "PWCRequestStats" });
+                    "PWCRequestStats");
             _logger.log(Level.WARNING, msg, mre);
         }
     }
@@ -1570,8 +1570,8 @@ public class PEWebContainer extends WebContainer {
                     "pewebcontainer.invalidKeepAliveTimeout");
                 msg = MessageFormat.format(
                     msg,
-                    new Object[] { keepAlive.getTimeoutInSeconds(),
-                                   Integer.toString(timeoutInSeconds)});
+                        keepAlive.getTimeoutInSeconds(),
+                        Integer.toString(timeoutInSeconds));
                 _logger.log(Level.WARNING, msg, ex);
             }
 
@@ -1584,8 +1584,8 @@ public class PEWebContainer extends WebContainer {
                     "pewebcontainer.invalidKeepAliveMaxConnections");
                 msg = MessageFormat.format(
                     msg,
-                    new Object[] { keepAlive.getMaxConnections(),
-                                   Integer.toString(maxConnections)});
+                        keepAlive.getMaxConnections(),
+                        Integer.toString(maxConnections));
                 _logger.log(Level.WARNING, msg, ex);
             }
 
@@ -1597,8 +1597,8 @@ public class PEWebContainer extends WebContainer {
                     "pewebcontainer.invalidKeepAliveThreadCount");
                 msg = MessageFormat.format(
                     msg,
-                    new Object[] { keepAlive.getThreadCount(),
-                                   Integer.toString(threadCount)});
+                        keepAlive.getThreadCount(),
+                        Integer.toString(threadCount));
                 _logger.log(Level.WARNING, msg, ex);
             }
         }
@@ -1635,9 +1635,8 @@ public class PEWebContainer extends WebContainer {
         } catch (NumberFormatException ex){
             String msg = _rb.getString("pewebcontainer.invalidQueueSizeInBytes");
             msg = MessageFormat.format(
-                msg, new Object[] 
-                    { ConfigBeansUtilities.getDefaultQueueSizeInBytes(),
-                      Integer.toString(connector.getQueueSizeInBytes())});
+                msg, ConfigBeansUtilities.getDefaultQueueSizeInBytes(),
+                    Integer.toString(connector.getQueueSizeInBytes()));
             _logger.log(Level.WARNING, msg, ex);
         }
         
@@ -1657,9 +1656,8 @@ public class PEWebContainer extends WebContainer {
         } catch (NumberFormatException ex){
             String msg = _rb.getString("pewebcontainer.invalidMaxPendingCount");
             msg = MessageFormat.format(
-                msg, new Object[] 
-                    { cp.getMaxPendingCount(),
-                      Integer.toString(connector.getSocketServerBacklog())});
+                msg, cp.getMaxPendingCount(),
+                    Integer.toString(connector.getSocketServerBacklog()));
             _logger.log(Level.WARNING, msg, ex);
         }
         
@@ -1680,9 +1678,8 @@ public class PEWebContainer extends WebContainer {
         } catch (NumberFormatException ex) {
             String msg = _rb.getString("pewebcontainer.invalidBufferSize");
             msg = MessageFormat.format(
-                msg, new Object[] 
-                    { cp.getReceiveBufferSizeInBytes(),
-                      Integer.toString(connector.getBufferSize())});
+                msg, cp.getReceiveBufferSizeInBytes(),
+                    Integer.toString(connector.getBufferSize()));
             _logger.log(Level.WARNING, msg, ex);
         }
 
@@ -1703,9 +1700,8 @@ public class PEWebContainer extends WebContainer {
             String msg = _rb.getString(
                 "pewebcontainer.invalidMaxHttpHeaderSize");
             msg = MessageFormat.format(
-                msg, new Object[] 
-                    { cp.getSendBufferSizeInBytes(),
-                      Integer.toString(connector.getMaxHttpHeaderSize())});
+                msg, cp.getSendBufferSizeInBytes(),
+                    Integer.toString(connector.getMaxHttpHeaderSize()));
             _logger.log(Level.WARNING, msg, ex);
         }
     }
@@ -1767,30 +1763,30 @@ public class PEWebContainer extends WebContainer {
                     break;
                 }
             }
-        }       
-        
-        for (int i=0;i < virtualServers.length; i++){
-            virtualServer = (VirtualServer)virtualServers[i];
-            
-            if (virtualServer != null ){           
+        }
+
+        for (Container virtualServer1 : virtualServers) {
+            virtualServer = (VirtualServer) virtualServer1;
+
+            if (virtualServer != null) {
                 if (virtualServer.getID().equals(VirtualServer.ADMIN_VS)) {
-                    throw new 
-                      LifecycleException("Cannot delete admin virtual-server.");
-                }     
+                    throw new
+                            LifecycleException("Cannot delete admin virtual-server.");
+                }
 
                 Container[] webModules = virtualServer.findChildren();
-                for (int j=0; j < webModules.length; j++){
-                    unloadWebModule(webModules[j].getName(),
-                                    webModules[j].getName(), 
-                                    virtualServer.getID(),
-                                    null);
+                for (Container webModule : webModules) {
+                    unloadWebModule(webModule.getName(),
+                            webModule.getName(),
+                            virtualServer.getID(),
+                            null);
                 }
-                try {                
+                try {
                     virtualServer.destroy();
                 } catch (Exception e) {
                     _logger.log(Level.WARNING,
-                                "Error during destruction of virtual server "
-                                + virtualServer.getID(), e);
+                            "Error during destruction of virtual server "
+                                    + virtualServer.getID(), e);
                 }
             }
         }
@@ -1857,64 +1853,64 @@ public class PEWebContainer extends WebContainer {
 
         // Disassociate the virtual server from all http listeners that
         // have been removed from its http-listeners attribute
-        for (int i=0; i<oldPorts.length; i++) {
+        for (int oldPort1 : oldPorts) {
             boolean found = false;
-            for (int j=0; j<newPorts.length; j++) {
-                if (oldPorts[i] == newPorts[j]) {
+            for (int newPort : newPorts) {
+                if (oldPort1 == newPort) {
                     found = true;
                 }
             }
             if (!found) {
                 // http listener was removed
                 Connector[] connectors = _embedded.findConnectors();
-                for (int k=0; k<connectors.length; k++) {
+                for (Connector connector : connectors) {
                     PECoyoteConnector conn = (PECoyoteConnector)
-                        connectors[k];
-                    if (oldPorts[i] == conn.getPort()) {
+                            connector;
+                    if (oldPort1 == conn.getPort()) {
                         try {
-                             conn.getMapperListener().unregisterHost(
-                                virtualServer.getJmxName());
+                            conn.getMapperListener().unregisterHost(
+                                    virtualServer.getJmxName());
                         } catch (Exception e) {
                             throw new LifecycleException(e);
                         }
-                    } 
+                    }
                 }
-                
+
             }
         }
 
         // Associate the virtual server with all http listeners that
         // have been added to its http-listeners attribute
-        for (int i=0; i<newPorts.length; i++) {
+        for (int newPort : newPorts) {
             boolean found = false;
-            for (int j=0; j<oldPorts.length; j++) {
-                if (newPorts[i] == oldPorts[j]) {
+            for (int oldPort : oldPorts) {
+                if (newPort == oldPort) {
                     found = true;
                 }
             }
             if (!found) {
                 // http listener was added
                 Connector[] connectors = _embedded.findConnectors();
-                for (int k=0; k<connectors.length; k++) {
+                for (Connector connector : connectors) {
                     PECoyoteConnector conn = (PECoyoteConnector)
-                        connectors[k];
-                    if (newPorts[i] == conn.getPort()) {
-                        if (!conn.isAvailable()){
+                            connector;
+                    if (newPort == conn.getPort()) {
+                        if (!conn.isAvailable()) {
                             conn.start();
                             enableHttpListenerMonitoring(
-                                virtualServer,
-                                conn.getPort(),
-                                conn.getName());
+                                    virtualServer,
+                                    conn.getPort(),
+                                    conn.getName());
                         }
                         try {
                             conn.getMapperListener().registerHost(
-                                virtualServer.getJmxName());
+                                    virtualServer.getJmxName());
                         } catch (Exception e) {
                             throw new LifecycleException(e);
                         }
                     }
                 }
-            } 
+            }
         }
 
         // Remove the old default web module if one was configured, by
@@ -2148,8 +2144,8 @@ public class PEWebContainer extends WebContainer {
         
         boolean found = false;
         int[] ports = virtualServer.getPorts();
-        for (int i=0; i<ports.length; i++) {
-            if (ports[i] == connector.getPort()) {
+        for (int port : ports) {
+            if (port == connector.getPort()) {
                 found = true;
                 break;
             }
@@ -2172,7 +2168,7 @@ public class PEWebContainer extends WebContainer {
     public void deleteConnector(HttpService httpService) 
                                                     throws LifecycleException{
         
-        Connector[] connectors = (Connector[])_embedded.findConnectors().clone();
+        Connector[] connectors = _embedded.findConnectors().clone();
                    
         for (int i=0; i < connectors.length; i++){ 
             for (HttpListener httpListener : httpService.getHttpListener()) {
@@ -2183,10 +2179,10 @@ public class PEWebContainer extends WebContainer {
                 }
             }            
         }
-        
-        for (int i=0; i < connectors.length; i++){
-            if ( connectors[i] != null ){
-                _embedded.removeConnector((PECoyoteConnector)connectors[i]);
+
+        for (Connector connector : connectors) {
+            if (connector != null) {
+                _embedded.removeConnector(connector);
             }
         }                  
     }  
@@ -2198,11 +2194,11 @@ public class PEWebContainer extends WebContainer {
      */
     public void updateAccessLog(HttpService httpService) {
         Container[] virtualServers = _embedded.getEngines()[0].findChildren();
-        for (int i=0; i<virtualServers.length; i++) {
-            ((VirtualServer) virtualServers[i]).reconfigureAccessLog(
-                httpService,
-                _serverContext.getDefaultHabitat().getComponent(
-                        WebContainerFeatureFactory.class));
+        for (Container virtualServer : virtualServers) {
+            ((VirtualServer) virtualServer).reconfigureAccessLog(
+                    httpService,
+                    _serverContext.getDefaultHabitat().getComponent(
+                            WebContainerFeatureFactory.class));
         }
     }
 
@@ -2319,10 +2315,10 @@ public class PEWebContainer extends WebContainer {
     protected void configureRequestProcessing(HttpService httpService){
 
         RequestProcessing rp = httpService.getRequestProcessing();
-        Connector[] connectors = (Connector[])_embedded.findConnectors();       
-                    
-        for (int i=0; i < connectors.length; i++){    
-            configureRequestProcessing(rp,(PECoyoteConnector)connectors[i]);
+        Connector[] connectors = _embedded.findConnectors();
+
+        for (Connector connector : connectors) {
+            configureRequestProcessing(rp, (PECoyoteConnector) connector);
         }
     }
     
@@ -2331,7 +2327,7 @@ public class PEWebContainer extends WebContainer {
      * Configures an HTTP connector with the given request-processing
      * config.
      *
-     * @param RequestProcessing http-service config to use
+     * @param rp http-service config to use
      * @param connector the connector used.
      */
     protected void configureRequestProcessing(RequestProcessing rp, 
@@ -2374,7 +2370,7 @@ public class PEWebContainer extends WebContainer {
         } catch (Exception e) {
             String msg = _rb.getString(
                 "pewebcontainer.proxyHandlerClassLoadError");
-            msg = MessageFormat.format(msg, new Object[] { className });
+            msg = MessageFormat.format(msg, className);
             _logger.log(Level.SEVERE, msg, e);
         }
         if (handler != null) {
@@ -2469,7 +2465,7 @@ public class PEWebContainer extends WebContainer {
         File propertiesFile   = new File(propertiesURL);
         if ( !propertiesFile.exists() ) {
             String msg = _rb.getString( "pewebcontainer.missingJKProperties" );
-            msg = MessageFormat.format(msg, new Object[] { propertiesURL });
+            msg = MessageFormat.format(msg, propertiesURL);
             _logger.log(Level.WARNING, msg);
             return;
         }
@@ -2485,9 +2481,7 @@ public class PEWebContainer extends WebContainer {
 
         } catch (Exception ex) {
             String msg = _rb.getString("pewebcontainer.configureJK");
-            msg = MessageFormat.format(
-                msg, 
-                new Object[] { Integer.valueOf(connector.getPort()) });
+            msg = MessageFormat.format( msg, connector.getPort());
             _logger.log(Level.SEVERE, msg, ex);
 
             } finally {
@@ -2501,7 +2495,7 @@ public class PEWebContainer extends WebContainer {
         Enumeration enumeration = properties.keys();
         while (enumeration.hasMoreElements()) {
             String name = (String) enumeration.nextElement();
-            String value = (String) properties.getProperty(name);
+            String value = properties.getProperty(name);
             if (value != null) {
                 IntrospectionUtils.setProperty(connector, name, value);
             }
