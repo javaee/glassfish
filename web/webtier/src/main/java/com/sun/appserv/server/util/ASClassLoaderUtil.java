@@ -48,7 +48,6 @@ import java.util.logging.*;
 //import com.sun.enterprise.config.ConfigContext;
 //import com.sun.enterprise.config.ConfigException;
 import com.sun.enterprise.config.serverbeans.Applications;
-import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.WebModule;
 import com.sun.enterprise.deployment.util.FileUtil;
@@ -58,7 +57,6 @@ import com.sun.enterprise.module.ModulesRegistry;
 //import com.sun.enterprise.server.PELaunch;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.web.WebDeployer;
-import com.sun.enterprise.v3.server.Globals;
 import org.jvnet.hk2.component.Habitat;
 
 public class ASClassLoaderUtil {
@@ -187,8 +185,8 @@ public class ASClassLoaderUtil {
      * specified by the deployer.
      */    
     public static <T> String getLibrariesForModule(Habitat habitat, Class<T> type, String moduleId) {
-        
-        T app = ConfigBeansUtilities.getModule(type, getApplications(habitat), moduleId);
+
+        T app = getApplications(habitat).getModule(type, moduleId);
         if (app==null) return null;
         
         String librariesStr=null;
@@ -215,9 +213,8 @@ public class ASClassLoaderUtil {
      * specified by the deployer.
      */
     public static String getLibrariesForWebModule(Habitat habitat, String moduleId) {
-            
-        WebModule module = ConfigBeansUtilities.getModule(WebModule.class, 
-                getApplications(habitat), moduleId);
+
+        WebModule module = getApplications(habitat).getModule(WebModule.class, moduleId);
         if(module == null) 
             return null;
 

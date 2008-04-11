@@ -38,51 +38,6 @@ public final class ConfigBeansUtilities {
     private ConfigBeansUtilities() {
     }
 
-    public static <T> List<T> getModules(Class<T> type, Applications apps) {
-        List<T> modules = new ArrayList<T>();
-        for (Object module : apps.getModules()) {
-            if (module.getClass().getName().equals(type.getClass().getName())) {
-                modules.add((T) module);
-            }
-        }
-        return modules;
-    }
-
-    public static <T> T getModule(Class<T> type, Applications apps, String moduleID) {
-
-        if (moduleID == null) {
-            return null;
-        }
-
-        for (Object module : apps.getModules()) {
-            if (module.getClass().getName().equals(type.getClass().getName())) {
-                Method m;
-                try {
-                    m = type.getMethod("getName");
-                } catch (SecurityException ex) {
-                    return null;
-                } catch (NoSuchMethodException ex) {
-                    return null;
-                }
-                if (m != null) {
-                    try {
-                        if (moduleID.equals(m.invoke(module))) {
-                            return (T) module;
-                        }
-                    } catch (IllegalArgumentException ex) {
-                        return null;
-                    } catch (IllegalAccessException ex) {
-                        return null;
-                    } catch (InvocationTargetException ex) {
-                        return null;
-                    }
-                }
-            }
-        }
-        return null;
-
-    }
-
     /**
      * Get the default value of Format from dtd
      */

@@ -2503,7 +2503,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         Applications appsBean = domain.getApplications();
 
         if (appsBean != null) {
-            List<J2eeApplication> modules = ConfigBeansUtilities.getModules(J2eeApplication.class, appsBean);
+            List<J2eeApplication> modules = appsBean.getModules(J2eeApplication.class);
             for (J2eeApplication module : modules) {
                 if (isReferenced(module.getName())) {
                     loadJ2EEApplicationWebModules(module);
@@ -3791,7 +3791,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
      */
     private void enableAllWSEndpoints() {
 
-        List<J2eeApplication> j2eeAppBeans =  ConfigBeansUtilities.getModules(J2eeApplication.class, domain.getApplications());
+        List<J2eeApplication> j2eeAppBeans = domain.getApplications().getModules(J2eeApplication.class);
         for (J2eeApplication appBean : j2eeAppBeans) {
             //Begin EE: 4927099 - load only associated applications
             if ( isReferenced(appBean.getName()) ) {

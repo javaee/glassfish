@@ -546,7 +546,7 @@ public class VirtualServer extends StandardHost {
 
             // Look up the list of standalone web modules
             if (wmInfo == null) {
-                WebModule wm = ConfigBeansUtilities.getModule(WebModule.class, appsBean, wmID);
+                WebModule wm = appsBean.getModule(WebModule.class, wmID);
                 if (wm != null) {
                     if (isActive(wm, false)) {
                         // Create a copy as we need to change the name

@@ -41,9 +41,13 @@ package com.sun.enterprise.config.serverbeans;
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.Element;
 import org.jvnet.hk2.config.ConfigBeanProxy;
+import org.jvnet.hk2.config.DuckTyped;
 import org.jvnet.hk2.component.Injectable;
 
 import java.util.List;
+import java.util.ArrayList;
+import java.lang.reflect.Method;
+import java.lang.reflect.InvocationTargetException;
 
 
 import org.glassfish.api.amx.AMXCreatorInfo;
@@ -79,4 +83,59 @@ public interface Applications extends ConfigBeanProxy, Injectable  {
     @Element("*")
     public List<Module> getModules();
 
+    /**
+     * Gets a subset of {@link #getModules()} that has the given type.
+     */
+    @DuckTyped
+    <T> List<T> getModules(Class<T> type);
+    
+    @DuckTyped
+    <T> T getModule(Class<T> type, String moduleID);
+    
+    public class Duck {
+        public static <T> List<T> getModules(Class<T> type, Applications apps) {
+            List<T> modules = new ArrayList<T>();
+            for (Object module : apps.getModules()) {
+                if (module.getClass().getName().equals(type.getClass().getName())) {
+                    modules.add((T) module);
+                }
+            }
+            return modules;
+        }
+
+        public static <T> T getModule(Class<T> type, Applications apps, String moduleID) {
+
+            if (moduleID == null) {
+                return null;
+            }
+
+            for (Object module : apps.getModules()) {
+                if (module.getClass().getName().equals(type.getClass().getName())) {
+                    Method m;
+                    try {
+                        m = type.getMethod("getName");
+                    } catch (SecurityException ex) {
+                        return null;
+                    } catch (NoSuchMethodException ex) {
+                        return null;
+                    }
+                    if (m != null) {
+                        try {
+                            if (moduleID.equals(m.invoke(module))) {
+                                return (T) module;
+                            }
+                        } catch (IllegalArgumentException ex) {
+                            return null;
+                        } catch (IllegalAccessException ex) {
+                            return null;
+                        } catch (InvocationTargetException ex) {
+                            return null;
+                        }
+                    }
+                }
+            }
+            return null;
+
+        }
+    }
 }
