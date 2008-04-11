@@ -38,6 +38,7 @@
 package com.sun.enterprise.config.serverbeans;
 
 import org.jvnet.hk2.config.Element;
+import org.jvnet.hk2.config.DuckTyped;
 
 import java.util.List;
 
@@ -67,5 +68,38 @@ public interface PropertyBag {
      * {@link Property }
      */
     @Element("property")
-    public List<Property> getProperty();
+    List<Property> getProperty();
+
+    @DuckTyped
+    Property getProperty(String name);
+
+    /**
+     * Returns a property value if the bean has properties and one of its
+     * properties name is equal to the one passed.
+     *
+     * @param name the property name requested
+     * @return the property value of null if not found
+     */
+    @DuckTyped
+    String getPropertyValue(String name);
+
+    
+    public class Duck {
+        public static Property getProperty(PropertyBag me, String name) {
+            for (Property prop : me.getProperty()) {
+                if (prop.getName().equals(name)) {
+                    return prop;
+                }
+            }
+            return null;
+        }
+
+        public static String getPropertyValue(PropertyBag me, String name) {
+            Property prop = getProperty(me, name);
+            if (prop != null) {
+                return prop.getValue();
+            }
+            return null;
+        }
+    }
 }

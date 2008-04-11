@@ -24,7 +24,6 @@
 package com.sun.enterprise.web.tomcat;
 
 import com.sun.enterprise.config.serverbeans.*;
-import com.sun.enterprise.module.Module;
 import com.sun.enterprise.server.ServerContext;
 import com.sun.enterprise.util.StringUtils;
 import com.sun.grizzly.tcp.Adapter;
@@ -164,9 +163,9 @@ public class TomcatContainer implements Container, PostConstruct, PreDestroy {
 
     private void createVirtualServer(
                 com.sun.enterprise.config.serverbeans.VirtualServer vsBean) {
-        
+
         String docroot =
-            ConfigBeansUtilities.getPropertyValueByName(vsBean, "docroot");
+                vsBean.getPropertyValue("docroot");
         Host vs = embedded.createHost(vsBean.getId(), docroot);
 
         // Configure the virtual server with the port numbers of its

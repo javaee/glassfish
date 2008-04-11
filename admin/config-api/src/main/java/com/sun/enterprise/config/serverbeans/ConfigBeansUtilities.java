@@ -85,32 +85,6 @@ public final class ConfigBeansUtilities {
 
     }
 
-    public static Property getPropertyByName(PropertyBag bean, String name) {
-        if(bean==null)  return null;
-        for (Property prop : bean.getProperty()) {
-            if (prop.getName().equals(name)) {
-                return prop;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Returns a property value if the bean has properties and one of its
-     * properties name is equal to the one passed.
-     *
-     * @param bean the config-api bean
-     * @param name the property name requested
-     * @return the property value of null if not found
-     */
-    public static String getPropertyValueByName(PropertyBag bean, String name) {
-        Property prop = getPropertyByName(bean, name);
-        if (prop != null) {
-            return prop.getValue();
-        }
-        return null;
-    }
-
     /**
      * Get the default value of Format from dtd
      */

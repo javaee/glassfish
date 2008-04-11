@@ -38,25 +38,14 @@ package com.sun.enterprise.web;
 
 import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
 import com.sun.enterprise.web.stats.PWCRequestStatsImpl;
-import com.sun.enterprise.v3.server.Globals;
-import java.beans.PropertyVetoException;
-import java.io.File;
-import java.text.MessageFormat;
-import java.util.ArrayList;
+
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.Set;
-import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.apache.catalina.Container;
 import org.apache.catalina.ContainerListener;
-import org.apache.catalina.Context;
-import org.apache.catalina.InstanceListener;
-import org.apache.catalina.Lifecycle;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.LifecycleListener;
 import org.apache.catalina.Pipeline;
@@ -77,18 +66,11 @@ import com.sun.enterprise.config.serverbeans.Property;
 
 //import com.sun.enterprise.config.serverbeans.VirtualServerClass;
 import com.sun.enterprise.config.serverbeans.WebModule;
-import com.sun.enterprise.v3.data.ApplicationInfo;
-import com.sun.enterprise.v3.data.ModuleInfo;
-import com.sun.enterprise.v3.data.ApplicationRegistry;
-import com.sun.enterprise.web.WebDeployer;
 
 import com.sun.enterprise.security.web.SingleSignOn;
 import com.sun.enterprise.web.pluggable.WebContainerFeatureFactory;
 import com.sun.enterprise.util.StringUtils;
-import com.sun.enterprise.util.io.FileUtils;
 
-import com.sun.enterprise.deployment.Application;
-import com.sun.enterprise.deployment.WebBundleDescriptor;
 //import com.sun.enterprise.deployment.backend.DeploymentUtils;
 import com.sun.logging.LogDomains;
 
@@ -1767,8 +1749,8 @@ public class VirtualServer extends StandardHost {
      * false otherwise.
      */
     boolean isAccessLoggingEnabled(boolean globalAccessLoggingEnabled) {
-        Property prop  = 
-            ConfigBeansUtilities.getPropertyByName(vsBean, Constants.ACCESS_LOGGING_ENABLED);
+        Property prop  =
+                vsBean.getProperty(Constants.ACCESS_LOGGING_ENABLED);
         
         if (prop == null || prop.getValue() == null) {
             return globalAccessLoggingEnabled;

@@ -53,14 +53,9 @@ import java.util.Properties;
 import org.apache.catalina.Container;
 import org.apache.catalina.Connector;
 import org.apache.catalina.startup.Embedded;
-import org.apache.catalina.Valve;
 import org.apache.catalina.Engine;
 import org.apache.catalina.LifecycleException;
-import org.apache.catalina.core.StandardWrapper;
-import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.core.StandardEngine;
-import org.apache.catalina.core.StandardHost;
-import org.apache.coyote.tomcat5.CoyoteConnector;
 import org.apache.tomcat.util.IntrospectionUtils;
 
 //import com.sun.enterprise.config.ConfigContext;
@@ -83,13 +78,9 @@ import com.sun.enterprise.config.serverbeans.Ssl;
 import com.sun.enterprise.server.ServerContext;
 //import com.sun.enterprise.admin.common.PasswordConfReader;
 import com.sun.enterprise.web.connector.coyote.PECoyoteConnector;
-import com.sun.enterprise.web.logger.IASLogger;
 import com.sun.enterprise.web.pluggable.WebContainerFeatureFactory;
-import com.sun.enterprise.web.session.PersistenceType;
 import com.sun.enterprise.util.StringUtils;
 
-import com.sun.enterprise.deployment.Application;
-import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.appserv.server.ServerLifecycleException;
 import com.sun.appserv.ProxyHandler;
 
@@ -99,10 +90,8 @@ import com.sun.appserv.ProxyHandler;
 //import com.sun.enterprise.admin.event.http.HSVirtualServerEvent;
 
 // monitoring imports
-import com.sun.enterprise.admin.monitor.stats.HTTPListenerStats;
 import com.sun.enterprise.admin.monitor.registry.MonitoringRegistry;
 import com.sun.enterprise.admin.monitor.registry.MonitoringRegistrationException;
-import com.sun.enterprise.admin.monitor.registry.MonitoringLevelListener;
 
 //import com.sun.enterprise.web.reconfig.ReconfigListener;
 
@@ -477,7 +466,7 @@ public class PEWebContainer extends WebContainer {
         MimeMap mm = null;
         String vs_id = vse.getId();
 
-        Property element = ConfigBeansUtilities.getPropertyByName(vse, "docroot");
+        Property element = vse.getProperty("docroot");
         if ( element != null){
             docroot = element.getValue();
         } else {
@@ -493,8 +482,7 @@ public class PEWebContainer extends WebContainer {
                                     httpService.getHttpProtocol());
 
         // cache control
-        Property cacheProp = ConfigBeansUtilities.getPropertyByName(vse, 
-                                                    "setCacheControl");
+        Property cacheProp = vse.getProperty("setCacheControl");
         if ( cacheProp != null ){
             vs.configureCacheControl(cacheProp.getValue());   
         }
@@ -692,7 +680,7 @@ public class PEWebContainer extends WebContainer {
                     "pewebcontainer.unsupportedAttribute.version");
             }
 
-            if ( ConfigBeansUtilities.getPropertyByName(httpService, "ssl-enabled") 
+            if ( httpService.getProperty("ssl-enabled")
                     != null) {
                 _logger.log(Level.FINE,
                             "pewebcontainer.unsupportedAttribute.ssl-enabled");

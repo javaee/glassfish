@@ -373,8 +373,7 @@ public class ApplicationLifecycle {
                     containerInfosByDeployers.put(deployer, containerInfo);
                     final MetaData metadata = deployer.getMetaData();
                     Class[] requires = metadata.requires();
-                    Class[] provides = metadata.provides();
-                    if ((requires == null || requires.length == 0) && (provides == null || provides.length == 0)) {
+                    if ((requires == null || requires.length == 0)) {
                         // the deployer neither requires not provides any metadata. Put it in sortedModuleinfo
                         // they would effectively end up being in the middle of the list (see the sorting below)
                         sortedContainerInfos.add(containerInfo);
@@ -388,14 +387,14 @@ public class ApplicationLifecycle {
                             }
                             requesters.add(deployer);
                         }
-                        for (Class metadataType : metadata.provides()) {
-                            Deployer currentProvidindDeployer = metaDataProvided.get(metadataType);
-                            if (currentProvidindDeployer != null) {
-                                report.failure(logger, "More than one deployer [" + currentProvidindDeployer + ", " + deployer
-                                        + "] provide same metadata : " + metadataType, null);
-                            }
-                            metaDataProvided.put(metadataType, deployer);
+                    }
+                    for (Class metadataType : metadata.provides()) {
+                        Deployer currentProvidindDeployer = metaDataProvided.get(metadataType);
+                        if (currentProvidindDeployer != null) {
+                            report.failure(logger, "More than one deployer [" + currentProvidindDeployer + ", " + deployer
+                                    + "] provide same metadata : " + metadataType, null);
                         }
+                        metaDataProvided.put(metadataType, deployer);
                     }
                 } finally {
                     Thread.currentThread().setContextClassLoader(original);

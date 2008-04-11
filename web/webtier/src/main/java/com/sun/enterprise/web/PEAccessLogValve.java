@@ -757,8 +757,8 @@ public final class PEAccessLogValve
          * If both have been specified, the latter takes precedence.
          */
         String accessLog = "access";
-        if (ConfigBeansUtilities.getPropertyByName(vsBean, Constants.ACCESS_LOG_PROPERTY) != null) {
-            accessLog = ConfigBeansUtilities.getPropertyByName(vsBean, Constants.ACCESS_LOG_PROPERTY).getValue();
+        if (vsBean.getProperty(Constants.ACCESS_LOG_PROPERTY) != null) {
+            accessLog = vsBean.getProperty(Constants.ACCESS_LOG_PROPERTY).getValue();
         } else if (vsBean.getHttpAccessLog() != null) {
             accessLog = vsBean.getHttpAccessLog().getLogDirectory();
         }
@@ -793,8 +793,8 @@ public final class PEAccessLogValve
         // If the property is defined under virtual-server, override the one
         // defined under http-service.
         String acWriteInterval = accessLogWriteInterval;
-        if (ConfigBeansUtilities.getPropertyByName(vsBean, Constants.ACCESS_LOG_WRITE_INTERVAL_PROPERTY) != null){
-            acWriteInterval = ConfigBeansUtilities.getPropertyByName(vsBean, Constants.ACCESS_LOG_WRITE_INTERVAL_PROPERTY).getValue();
+        if (vsBean.getProperty(Constants.ACCESS_LOG_WRITE_INTERVAL_PROPERTY) != null){
+            acWriteInterval = vsBean.getProperty(Constants.ACCESS_LOG_WRITE_INTERVAL_PROPERTY).getValue();
         }
         if (acWriteInterval != null){
             try{
@@ -809,8 +809,8 @@ public final class PEAccessLogValve
         // If the property is defined under virtual-server, override the one
         // defined under http-service.
         String acBufferSize = accessLogBufferSize;
-        if (ConfigBeansUtilities.getPropertyByName(vsBean, Constants.ACCESS_LOG_BUFFER_SIZE_PROPERTY) != null){
-            acBufferSize =  ConfigBeansUtilities.getPropertyByName(vsBean, Constants.ACCESS_LOG_BUFFER_SIZE_PROPERTY).getValue();
+        if (vsBean.getProperty(Constants.ACCESS_LOG_BUFFER_SIZE_PROPERTY) != null){
+            acBufferSize =  vsBean.getProperty(Constants.ACCESS_LOG_BUFFER_SIZE_PROPERTY).getValue();
         }
         if (acBufferSize != null){
             try{

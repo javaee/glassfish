@@ -37,43 +37,31 @@
 package com.sun.enterprise.web;
 
 import java.io.File;
-import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 
 import org.apache.catalina.Connector;
-import org.apache.catalina.Container;
 import org.apache.catalina.ContainerListener;
 import org.apache.catalina.Context;
 import org.apache.catalina.Host;
 import org.apache.catalina.Engine;
-import org.apache.catalina.InstanceListener;
 import org.apache.catalina.Lifecycle;
 import org.apache.catalina.Realm;
-import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.core.StandardEngine;
 import org.apache.catalina.session.StandardManager;
 import org.apache.catalina.startup.Embedded;
 import org.apache.catalina.startup.ContextConfig;
-import org.apache.catalina.mbeans.MBeanUtils;
-import org.apache.catalina.net.ServerSocketFactory;
 import org.apache.catalina.logger.FileLogger;
-import org.apache.tomcat.util.IntrospectionUtils;
 
 //import org.openide.util.Lookup;
 import org.glassfish.api.invocation.InvocationManager;
-import org.jvnet.hk2.component.Habitat;
 
 import com.sun.enterprise.config.serverbeans.Property;
-import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
 import com.sun.enterprise.container.common.spi.util.InjectionManager;
 import com.sun.enterprise.deployment.WebBundleDescriptor; 
 import com.sun.web.server.WebContainerListener;
 import com.sun.enterprise.server.ServerContext;
-import com.sun.enterprise.web.connector.coyote.PECoyoteConnector;
 import com.sun.enterprise.web.pluggable.WebContainerFeatureFactory;
 
 
@@ -168,19 +156,19 @@ public final class EmbeddedWebContainer extends Embedded {
             state = vsBean.getState();
 
             //Begin EE: 4920692 Make the default-web.xml be relocatable
-            Property prop = ConfigBeansUtilities.getPropertyByName(vsBean, "default-web-xml");
+            Property prop = vsBean.getProperty("default-web-xml");
             if (prop != null) {
                 defaultWebXmlLocation = prop.getValue();
             }
             //End EE: 4920692 Make the default-web.xml be relocatable
 
             // allowLinking
-            prop = ConfigBeansUtilities.getPropertyByName(vsBean, "allowLinking");
+            prop = vsBean.getProperty("allowLinking");
             if (prop != null) {
                 allowLinking = Boolean.parseBoolean(prop.getValue());
             }
 
-            prop = ConfigBeansUtilities.getPropertyByName(vsBean, "contextXmlDefault");
+            prop = vsBean.getProperty("contextXmlDefault");
             if (prop != null) {
                 defaultContextXmlLocation = prop.getValue();
             }

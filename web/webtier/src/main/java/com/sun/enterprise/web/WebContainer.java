@@ -292,9 +292,8 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         logService = cfg.getLogService();
         initLogLevel(logService);
         initMonitoringLevel(cfg.getMonitoringService());
-        
-        Property maxDepth = ConfigBeansUtilities.getPropertyByName(
-                cfg.getWebContainer(), DISPATCHER_MAX_DEPTH);
+
+        Property maxDepth = cfg.getWebContainer().getProperty(DISPATCHER_MAX_DEPTH);
         if (maxDepth != null && maxDepth.getValue() != null) {
             int depth = -1;
             try {
@@ -1022,7 +1021,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         String vs_id = vsBean.getId();
 
         String docroot =
-            ConfigBeansUtilities.getPropertyValueByName(vsBean, "docroot");
+                vsBean.getPropertyValue("docroot");
         
         validateDocroot(docroot,
                         vs_id,
@@ -1033,8 +1032,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                                     httpService.getHttpProtocol());
 
         // cache control
-        Property cacheProp = ConfigBeansUtilities.getPropertyByName(vsBean, 
-                                                    "setCacheControl");
+        Property cacheProp = vsBean.getProperty("setCacheControl");
         if ( cacheProp != null ){
             vs.configureCacheControl(cacheProp.getValue());   
         }        

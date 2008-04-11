@@ -32,7 +32,6 @@ import com.sun.grizzly.standalone.DynamicContentAdapter;
 import com.sun.grizzly.util.buf.ByteChunk;
 import com.sun.enterprise.module.impl.Utils;
 import com.sun.enterprise.config.serverbeans.VirtualServer;
-import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
 import com.sun.enterprise.v3.server.HK2Dispatcher;
 import com.sun.enterprise.util.StringUtils;
 
@@ -45,11 +44,9 @@ import java.io.FileInputStream;
 import java.net.URLConnection;
 import java.text.SimpleDateFormat;
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -216,7 +213,7 @@ public class VsAdapter extends AbstractAdapter implements Adapter {
         String docRoot = virtualServer.getDocroot();
         if (docRoot==null) {
             // look for the properties...
-            return ConfigBeansUtilities.getPropertyValueByName(virtualServer, "docroot");
+            return virtualServer.getPropertyValue("docroot");
         }
         return "/";
     }
