@@ -23,9 +23,9 @@
 
 package com.sun.enterprise.groovy;
 
-import org.glassfish.api.deployment.ApplicationContainer;
-import org.glassfish.api.container.Adapter;
 import com.sun.grizzly.groovy.GroovletAdapter;
+import org.glassfish.api.container.Adapter;
+import org.glassfish.api.deployment.ApplicationContainer;
 
 
 public class GroovyApplication extends GroovletAdapter 

@@ -1,21 +1,22 @@
 package com.sun.enterprise.groovy;
 
-import com.sun.enterprise.v3.deployment.GenericSniffer;
-import com.sun.enterprise.module.impl.CookedModuleDefinition;
 import com.sun.enterprise.module.Module;
 import com.sun.enterprise.module.ModuleDefinition;
 import com.sun.enterprise.module.ModulesRegistry;
+import com.sun.enterprise.module.impl.CookedModuleDefinition;
+import com.sun.enterprise.v3.deployment.GenericSniffer;
 import org.glassfish.api.container.Sniffer;
+import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.component.Singleton;
 import org.jvnet.hk2.component.Habitat;
-import java.util.logging.Logger;
-import java.util.logging.Level;
-import java.util.jar.Attributes;
-import java.io.IOException;
+import org.jvnet.hk2.component.Singleton;
+
 import java.io.File;
+import java.io.IOException;
+import java.util.jar.Attributes;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Groovy sniffer

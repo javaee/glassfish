@@ -24,11 +24,12 @@
 
 package com.sun.enterprise.groovy;
 
-import org.jvnet.hk2.annotations.Service;
-import org.glassfish.api.deployment.Deployer;
 import org.glassfish.api.container.Container;
+import org.glassfish.api.deployment.Deployer;
+import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.PreDestroy;
+
 import java.net.MalformedURLException;
 import java.net.URL;
 

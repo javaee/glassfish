@@ -23,14 +23,13 @@
 
 package com.sun.grizzly.groovy.standalone;
 
+import com.sun.grizzly.groovy.GroovletAdapter;
 import com.sun.grizzly.http.SelectorThread;
-import com.sun.grizzly.standalone.StaticStreamAlgorithm;
 import com.sun.grizzly.util.ClassLoaderUtil;
 import com.sun.grizzly.util.ExpandJar;
+
 import java.io.File;
 import java.net.URL;
-//import java.net.URLClassLoader;
-import com.sun.grizzly.groovy.*;
 import java.net.URLClassLoader;
 
 /**

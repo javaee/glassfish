@@ -22,10 +22,10 @@
  */
 package com.sun.grizzly.groovy;
 
-import com.sun.grizzly.tcp.http11.GrizzlyRequest;
-import com.sun.grizzly.tcp.http11.GrizzlyResponse;
 import com.sun.grizzly.tcp.Adapter;
 import com.sun.grizzly.tcp.http11.GrizzlyAdapter;
+import com.sun.grizzly.tcp.http11.GrizzlyRequest;
+import com.sun.grizzly.tcp.http11.GrizzlyResponse;
 import com.sun.grizzly.util.http.Globals;
 import groovy.lang.Binding;
 import groovy.lang.Closure;
@@ -33,6 +33,9 @@ import groovy.servlet.ServletCategory;
 import groovy.util.GroovyScriptEngine;
 import groovy.util.ResourceException;
 import groovy.util.ScriptException;
+import org.codehaus.groovy.runtime.GroovyCategorySupport;
+
+import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -40,8 +43,6 @@ import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
-import javax.servlet.http.HttpServletResponse;
-import org.codehaus.groovy.runtime.GroovyCategorySupport;
 
 /**
  * Adapter implementation that bridge Groovy with Grizzly.
