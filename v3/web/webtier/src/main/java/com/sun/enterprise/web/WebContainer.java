@@ -379,7 +379,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
     //private EjbWebServiceRegistryListener ejbWebServiceRegistryListener;
 
-    protected WebContainerFeatureFactory webFeatureFactory;
+    protected WebContainerFeatureFactory webContainerFeatureFactory;
 
     /**
      * The value of the instance-level session property named "enableCookies"
@@ -436,10 +436,15 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
         instanceName = _serverContext.getInstanceName();
 
+        /* FIXME
+        webContainerFeatureFactory = _serverContext.getPluggableFeatureFactory().getWebContainerFeatureFactory();
+        */
+        webContainerFeatureFactory =
+            _serverContext.getDefaultHabitat().getComponent(
+                PEWebContainerFeatureFactoryImpl.class);
+
         /* TODO : revisit later
          ejbWebServiceRegistryListener = new EjbWebServiceRegistryListener(this);
-         webFeatureFactory = _serverContext.getPluggableFeatureFactory().getWebContainerFeatureFactory();
-
          try {
             webModulesManager = new WebModulesManager(instance);
             appsManager = new AppsManager(instance);
@@ -1222,9 +1227,8 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         
         PEAccessLogValve accessLogValve = vs.getAccessLogValve();
         boolean startAccessLog = accessLogValve.configure(
-            vs_id, vsBean, httpService, domain, _serverContext.getDefaultHabitat(), 
-            _serverContext.getDefaultHabitat().
-                getComponent(PEWebContainerFeatureFactoryImpl.class),
+            vs_id, vsBean, httpService, domain,
+            _serverContext.getDefaultHabitat(), webContainerFeatureFactory,
             globalAccessLogBufferSize, globalAccessLogWriteInterval);
         if (startAccessLog
                 && vs.isAccessLoggingEnabled(globalAccessLoggingEnabled)) {
@@ -2043,8 +2047,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
     private void initHealthChecker() {
         //added the pluggable interface way of getting the health checker
-        WebContainerFeatureFactory webContainerFeatureFactory =
-                _serverContext.getDefaultHabitat().getComponent(WebContainerFeatureFactory.class);
         HealthChecker healthChecker = null;
         try {
             healthChecker = webContainerFeatureFactory.getHADBHealthChecker(this);
@@ -2271,7 +2273,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         //vs.configureVirtualServerState();  
         vs.configureRemoteAddressFilterValve();
         vs.configureRemoteHostFilterValve(httpProtocol);
-        vs.configureSSOValve(globalSSOEnabled, _serverContext.getDefaultHabitat().getComponent(WebContainerFeatureFactory.class));
+        vs.configureSSOValve(globalSSOEnabled, webContainerFeatureFactory);
         vs.configureRedirect();
         vs.configureErrorPage();
 
@@ -2377,7 +2379,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
     public WebContainerStartStopOperation getWebContainerStartStopOperation() {
 
         //added the pluggable interface way of getting the start/stop operation
-        WebContainerFeatureFactory webContainerFeatureFactory = _serverContext.getDefaultHabitat().getComponent(WebContainerFeatureFactory.class);
         if (webContainerFeatureFactory==null) {
             return null;
         }
@@ -4103,9 +4104,8 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             WebModule ctx,
             MonitoringLevelListener listener) {
 
-        WebContainerFeatureFactory webFeatureFac = _serverContext.getDefaultHabitat().getComponent(WebContainerFeatureFactory.class);
         WebModuleStatsImpl webStats = (WebModuleStatsImpl)
-        webFeatureFactory.getWebModuleStats();
+                webContainerFeatureFactory.getWebModuleStats();
         PwcWebModuleStatsImpl pwcWebStats = new PwcWebModuleStatsImpl(
                 ctx.getObjectName(),
                 ctx.getEncodedPath(),
