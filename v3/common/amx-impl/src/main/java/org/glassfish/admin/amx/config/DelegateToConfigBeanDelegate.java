@@ -163,7 +163,7 @@ public final class DelegateToConfigBeanDelegate extends DelegateBase
         
         debug( "DelegateToConfigBeanDelegate.getAttribute: " + attrName + ", xmlName = " + xmlName);
         Object result = mConfigBean.rawAttribute( xmlName );
-        if ( result == null )
+        if ( result == null && false )
         {
             final List<String> leafElements = mConfigBean.leafElements(xmlName);
             final String[] values = new String[leafElements.size()];
