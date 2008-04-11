@@ -235,7 +235,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
         setJspFactory();
 
-        instance = _serverContext.getDefaultHabitat().getComponent(ServerEnvironment.class);
         _modulesWorkRoot = instance.getWebModuleCompileJspPath();
         _appsWorkRoot = instance.getApplicationCompileJspPath();
         _modulesRoot = instance.getApplicationRepositoryPath();
@@ -1877,7 +1876,8 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
     // ----------------------------------------------------- Instance Variables
 
-    protected ServerEnvironment instance = null;
+    @Inject
+    protected ServerEnvironment instance;
     
     // TODO
     //protected WebModulesManager webModulesManager = null;
