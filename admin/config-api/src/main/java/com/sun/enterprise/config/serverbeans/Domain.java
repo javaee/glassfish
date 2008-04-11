@@ -360,7 +360,7 @@ public interface Domain extends ConfigBeanProxy, Injectable, PropertyBag  {
             if (allApps.size() == 0)
                 return (allApps); //if there are no sys-apps, none can reference one :)
             //allApps now contains ALL the system applications
-            Server s = getServerNamed(sn, d);
+            Server s = getServerNamed(d,sn);
             List<Application> referencedApps = new ArrayList<Application>();
             List<ApplicationRef> appsReferenced = s.getApplicationRef();
             for (ApplicationRef ref : appsReferenced) {
