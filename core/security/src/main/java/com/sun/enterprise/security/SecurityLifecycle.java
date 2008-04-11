@@ -145,11 +145,6 @@ public class SecurityLifecycle implements  PostConstruct, PreDestroy {
             LoginContextDriver.AUDIT_MANAGER = auditManager;
             
             secServUtil.initSecureSeed();
-            // init SSL store
-            // need this for jaxr https for PE
-            // need this for webcore, etc for SE
-            //TODO:V3 try creating a Service and injecting it here.
-            SSLUtils.initStoresAtStartup();
 
             //jmac
             initializeJMAC();

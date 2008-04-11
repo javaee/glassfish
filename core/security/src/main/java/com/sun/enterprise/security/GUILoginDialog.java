@@ -42,6 +42,8 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.security.auth.callback.*;
 import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.enterprise.v3.server.Globals;
+
 import java.util.logging.*;
 import com.sun.logging.*;
 
@@ -240,7 +242,7 @@ class PassphraseDialog extends JDialog
 	    kpPanel.add (lbl);
 	    kpPanel.add (keystorePassword);
 	    /* get the keystore password */
-	    keystorePass = SSLUtils.getKeyStorePass ();
+	    keystorePass = Globals.getDefaultHabitat().getComponent(SSLUtils.class).getKeyStorePass();
 	    // ok button For keystore password
 	    okForKP = new
 		JButton(localStrings.getLocalString

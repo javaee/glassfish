@@ -59,7 +59,6 @@ import javax.security.auth.message.callback.SecretKeyCallback;
 import javax.security.auth.message.callback.TrustStoreCallback;
 
 import com.sun.enterprise.security.UsernamePasswordStore;
-import com.sun.enterprise.security.ssl.SSLUtils;
 
 /**
  * Appclient side Callback Handler for WSS.
@@ -84,8 +83,9 @@ final class ClientContainerCallbackHandler
         // to process further as the inside loop, just takes care
         // of processing all callbacks
         boolean processedSomeAppclientCallbacks = false;
-        
-        for (int i=0; i < callbacks.length; i++) {
+
+        int i=0;
+        while (i < callbacks.length) {
             if (!processedSomeAppclientCallbacks) {
                 if ((callbacks[i] instanceof NameCallback) ||
                         (callbacks[i] instanceof PasswordCallback) ||
@@ -106,15 +106,15 @@ final class ClientContainerCallbackHandler
                         UsernamePasswordStore.set(loginName, password);
                     }
                     //TODO: V3 CallbackHandler callbackHandler = AppContainer.getCallbackHandler();
-                    CallbackHandler callbackHandler = SSLUtils.getSecuritySupport().getAppContainerCallbackHandler();
+                    CallbackHandler callbackHandler = secSup.getAppContainerCallbackHandler();
                     if(loginName != null && password != null){
                         // username/password set already
-                        for(int j = 0; j < callbacks.length; j++){
-                            if(callbacks[j] instanceof NameCallback){
-                                NameCallback nc = (NameCallback)callbacks[j];
+                        for (Callback callback : callbacks) {
+                            if (callback instanceof NameCallback) {
+                                NameCallback nc = (NameCallback) callback;
                                 nc.setName(loginName);
-                            } else if (callbacks[j] instanceof PasswordCallback){
-                                PasswordCallback pc = (PasswordCallback)callbacks[j];
+                            } else if (callback instanceof PasswordCallback) {
+                                PasswordCallback pc = (PasswordCallback) callback;
                                 pc.setPassword(password.toCharArray());
                             }
                         }
@@ -131,6 +131,7 @@ final class ClientContainerCallbackHandler
                 }
             }
             processCallback(callbacks[i]);
+            i++;
         }
     }
 

@@ -40,18 +40,15 @@ import java.util.Map;
 import java.util.Enumeration;
 import java.security.KeyStore;
 import java.security.cert.X509Certificate;
-import javax.net.ssl.*;
 import javax.security.auth.*;
 import javax.security.auth.callback.*;
 import javax.security.auth.login.LoginException;
+import javax.security.auth.login.FailedLoginException;
 import javax.security.auth.spi.LoginModule;
 //V3:Commented import com.sun.enterprise.config.clientbeans.Ssl;
-import com.sun.enterprise.config.serverbeans.Ssl;
 
 import com.sun.enterprise.deployment.PrincipalImpl;
-import com.sun.enterprise.security.ssl.SSLUtils;
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.enterprise.security.auth.login.LoginContextDriver;
 import java.util.logging.*;
 import com.sun.logging.*;
 
@@ -129,22 +126,6 @@ public class ClientCertificateLoginModule implements LoginModule {
 
 	// initialize any configured options
 	debug = "true".equalsIgnoreCase((String)options.get("debug"));
-
-	init();
-    }
-
-    /**
-     * Initialize the key store.
-     */
-    private void init() {
-	try {
-	    if(ks == null) {
-	        SSLUtils.initStoresAtStartup();
-	    }
-
-	} catch(Exception e) {
-	    _logger.log(Level.SEVERE,"java_security.initkeystore_exception",e);
-	}
     }
 
 

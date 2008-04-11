@@ -50,10 +50,14 @@ import com.sun.enterprise.security.ssl.SSLUtils;
 //V3:Commented import com.sun.enterprise.server.J2EEServer;
 import com.sun.enterprise.security.SecurityServicesUtil;
 import com.sun.enterprise.security.ssl.J2EEKeyManager;
+import com.sun.enterprise.v3.server.Globals;
+
 import java.util.logging.*;
 import com.sun.logging.*;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.X509KeyManager;
+
+import org.jvnet.hk2.component.Habitat;
 
 
 /**
@@ -63,7 +67,7 @@ import javax.net.ssl.X509KeyManager;
  * @author Vivek Nagar
  * @author Harpreet Singh
  */
-
+// TODO: this should become a HK2 component
 public class SSLSocketFactory implements org.apache.catalina.net.ServerSocketFactory {
 
     static Logger _logger=LogDomains.getLogger(LogDomains.WEB_LOGGER);
@@ -116,7 +120,7 @@ public class SSLSocketFactory implements org.apache.catalina.net.ServerSocketFac
 
     /**
      * Create the socket at the specified port.
-     * @param the port number.
+     * @param port the port number.
      * @return the SSL server socket.
      */
     public ServerSocket createSocket (int port)
@@ -130,7 +134,7 @@ public class SSLSocketFactory implements org.apache.catalina.net.ServerSocketFac
 
     /**
      * Specify whether the server will require client authentication.
-     * @param the SSL server socket.
+     * @param socket the SSL server socket.
      */
     private void init(SSLServerSocket socket) {
 	// Some initialization goes here.....
@@ -140,7 +144,7 @@ public class SSLSocketFactory implements org.apache.catalina.net.ServerSocketFac
 
     /**
      * Create the socket at the specified port.
-     * @param the port number.
+     * @param port the port number.
      * @return the SSL server socket.
      */
     public ServerSocket createSocket (int port, int backlog)
@@ -154,7 +158,7 @@ public class SSLSocketFactory implements org.apache.catalina.net.ServerSocketFac
 
     /**
      * Create the socket at the specified port.
-     * @param the port number.
+     * @param port the port number.
      * @return the SSL server socket.
      */
     public ServerSocket createSocket (int port, int backlog, InetAddress ifAddress)
@@ -178,20 +182,23 @@ public class SSLSocketFactory implements org.apache.catalina.net.ServerSocketFac
         if (initialized) {
             return;
         }
-        keyManagers = SSLUtils.getKeyManagers();
-        trustManagers = SSLUtils.getTrustManagers();
+        Habitat habitat = Globals.getDefaultHabitat();
+        SSLUtils sslUtils = habitat.getComponent(SSLUtils.class);
+
+        keyManagers = sslUtils.getKeyManagers();
+        trustManagers = sslUtils.getTrustManagers();
 	
         // Creating a default SSLContext and HttpsURLConnection for clients 
         // that use Https
         SSLContext ctx = SSLContext.getInstance("TLS");
         String keyAlias = System.getProperty(SSLUtils.HTTPS_OUTBOUND_KEY_ALIAS);
-        KeyManager[] kMgrs = SSLUtils.getKeyManagers();
+        KeyManager[] kMgrs = sslUtils.getKeyManagers();
         if (keyAlias != null && keyAlias.length() > 0 && kMgrs != null) {
             for (int i = 0; i < kMgrs.length; i++) {
-                kMgrs[i] = new J2EEKeyManager((X509KeyManager)kMgrs[i], keyAlias);
+                kMgrs[i] = new J2EEKeyManager(habitat, (X509KeyManager)kMgrs[i], keyAlias);
             }
         }
-	ctx.init(kMgrs, SSLUtils.getTrustManagers(), null);
+	ctx.init(kMgrs, sslUtils.getTrustManagers(), null);
         HttpsURLConnection.setDefaultSSLSocketFactory(ctx.getSocketFactory());
         initialized = true;
     }

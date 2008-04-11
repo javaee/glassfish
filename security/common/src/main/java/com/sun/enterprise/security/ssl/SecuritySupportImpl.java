@@ -49,12 +49,15 @@ import com.sun.enterprise.server.pluggable.SecuritySupport;
 import com.sun.logging.LogDomains;
 import javax.security.auth.callback.CallbackHandler;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.Inject;
 
 /**
  * This implements SecuritySupport used in PluggableFeatureFactory.
  * @author Shing Wai Chan
  */
-@Service(name="PE")
+// TODO: when we have two SecuritySupport implementations,
+// we create Habitat we'll select which SecuritySupport implementation to use.
+@Service
 public class SecuritySupportImpl implements SecuritySupport {
 
     private static final String keyStoreProp = "javax.net.ssl.keyStore";
@@ -68,7 +71,6 @@ public class SecuritySupportImpl implements SecuritySupport {
     protected static final List<KeyStore> trustStores = new ArrayList<KeyStore>();
     protected static final List<String> keyStorePasswords = new ArrayList<String>();
     protected static final List<String> tokenNames = new ArrayList<String>();
-
 
     public SecuritySupportImpl() {
         this(true);
