@@ -90,9 +90,23 @@ import java.util.logging.Logger;
 /**
  * Application Loader is providing utitily methods to load applications
  *
+ * <p>
+ * TODO: this class has a "feature-envy" problem. For better encapsulation and
+ * API navigability, much of these methods should be moved to ApplicationInfo/
+ * ContainerInfo/ModuleInfo. For example the {@link #startModules} method
+ * clearly belongs to {@link ApplicationInfo} - KK.
+ *
+ * <p>
+ * Having admin commands extend from this is also not a very good idea
+ * in terms of allowing re-wiring in different environments.
+ *
+ * <p>
+ * For now I'm just making this class reusable on its own.
+ *
  * @author Jerome Dochez
  */
-abstract public class ApplicationLifecycle {
+@Service
+public class ApplicationLifecycle {
 
     @Inject
     protected SnifferManager snifferManager;
@@ -401,7 +415,7 @@ abstract public class ApplicationLifecycle {
                 for (Deployer requester : requesters) {
                     sortedContainerInfos.add(containerInfosByDeployers.get(requester));
                 }
-                
+
 			} else {
 				failure(logger,"Deployer " + metaDataRequired.get(required) + " requires " + required + " but no other deployer provides it", null, report);
 				return null;
