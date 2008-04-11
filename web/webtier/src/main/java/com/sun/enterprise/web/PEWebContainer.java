@@ -692,7 +692,7 @@ public class PEWebContainer extends WebContainer {
                     "pewebcontainer.unsupportedAttribute.version");
             }
 
-            if ( ConfigBeansUtilities.getPropertyByName(httpService.getHttpProtocol(), "ssl-enabled") 
+            if ( ConfigBeansUtilities.getPropertyByName(httpService, "ssl-enabled") 
                     != null) {
                 _logger.log(Level.FINE,
                             "pewebcontainer.unsupportedAttribute.ssl-enabled");
