@@ -446,8 +446,6 @@ debug( "AMXConfigLoader.sortAndDispatch: " + events.size() + " events" );
         {
             super( "AMXConfigLoader.AMXConfigLoaderThread" );
             mQueue = queue;
-            
-            this.setDaemon( true );
         }
         
         void quit() { mQuit = true; }
