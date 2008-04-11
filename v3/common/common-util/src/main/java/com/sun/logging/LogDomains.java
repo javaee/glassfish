@@ -226,6 +226,24 @@ public class LogDomains
      * @return
      */
     public static Logger getLogger(String name) {
-        return Logger.getLogger(name, null);
+        Logger l = LogManager.getLogManager().getLogger(name);
+        if (l==null) {
+            l = new Logger(name, null) {
+                /**
+                 * Retrieve the localization resource bundle for this
+                 * logger for the current default locale.  Note that if
+                 * the result is null, then the Logger will use a resource
+                 * bundle inherited from its parent.
+                 *
+                 * @return localization bundle (may be null)
+                 */
+                public ResourceBundle getResourceBundle() {
+                    return null;
+                }
+            };
+            LogManager.getLogManager().addLogger(l);
+        }
+        return l;
+        //return Logger.getLogger(name, getLoggerResourceBundleName(name));
     }
 }
