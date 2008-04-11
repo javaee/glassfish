@@ -49,7 +49,7 @@ public final class ProfilerConfigKeys
 {
 	private ProfilerConfigKeys()	{}
 	
-	public static final String	CLASSPATH_KEY				=	"Classpath";
-	public static final String	NATIVE_LIBRARY_PATH_KEY	=	"NativeLibraryPath";
-	public static final String	ENABLED_KEY				=	"Enabled";
+	public static final String	CLASSPATH_KEY				=	"classpath";
+	public static final String	NATIVE_LIBRARY_PATH_KEY	=	"native-library-path";
+	public static final String	ENABLED_KEY				=	"enabled";
 }
