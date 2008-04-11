@@ -58,36 +58,36 @@ public final class JDBCConnectionPoolConfigKeys
 		
 		See {@link ConnectionValidationMethodValues}.
 	*/
-	public final static String	CONNECTION_VALIDATION_METHOD_KEY= "ConnectionValidationMethod";
+	public final static String	CONNECTION_VALIDATION_METHOD_KEY= "connection-validation-method";
 	
 	
 	/** Key for use with @link { DomainConfig#createJDBCConnectionPoolConfig(String, String, Map)} */
-	public final static String	VALIDATION_TABLE_NAME_KEY       = "ValidationTableName";
+	public final static String	VALIDATION_TABLE_NAME_KEY       = "validation-table-name";
 	/** Key for use with @link { DomainConfig#createJDBCConnectionPoolConfig(String, String, Map)} */
-	public final static String	DATASOURCE_CLASSNAME_KEY		= "DatasourceClassname";
+	public final static String	DATASOURCE_CLASSNAME_KEY		= "datasource-classname";
 	/** Key for use with {@link DomainConfig#createJDBCConnectionPoolConfig(String, String, Map)}  */
-	public final static String	FAIL_ALL_CONNECTIONS_KEY		= "FailAllConnections";
+	public final static String	FAIL_ALL_CONNECTIONS_KEY		= "fail-all-connections";
 	/** Key for use with @link { DomainConfig#createJDBCConnectionPoolConfig(String, String, Map)} */
-	public final static String	IDLE_TIMEOUT_IN_SECONDS_KEY		= "IdleTimeoutInSeconds";
+	public final static String	IDLE_TIMEOUT_IN_SECONDS_KEY		= "idle-timeout-in-seconds";
 	/** Key for use with @link { DomainConfig#createJDBCConnectionPoolConfig(String, String, Map)} */
-	public final static String	IS_CONNECTION_VALIDATION_REQUIRED_KEY= "IsConnectionValidationRequired";
+	public final static String	IS_CONNECTION_VALIDATION_REQUIRED_KEY= "is-connection-validation-required";
 	/** Key for use with @link { DomainConfig#createJDBCConnectionPoolConfig(String, String, Map)} */
-	public final static String	IS_ISOLATION_LEVEL_GUARANTEED_KEY= "IsIsolationLevelGuaranteed";
+	public final static String	IS_ISOLATION_LEVEL_GUARANTEED_KEY= "is-isolation-level-guaranteed";
 	/**
 		Key for use with @link { DomainConfig#createJDBCConnectionPoolConfig(String, String, Map)}
 		See {@link IsolationValues}.
 	*/
-	public final static String	TRANSACTION_ISOLATION_LEVEL_KEY= "TransactionIsolationLevel";
+	public final static String	TRANSACTION_ISOLATION_LEVEL_KEY= "transaction-isolation-level";
 	/** Key for use with @link { DomainConfig#createJDBCConnectionPoolConfig(String, String, Map)} */
-	public final static String	MAX_POOL_SIZE_KEY				= "MaxPoolSize";
+	public final static String	MAX_POOL_SIZE_KEY				= "max-pool-size";
 	/** Key for use with @link { DomainConfig#createJDBCConnectionPoolConfig(String, String, Map)} */
-	public final static String	MAX_WAIT_TIME_MILLIS_KEY		= "MaxWaitTimeInMillis";
+	public final static String	MAX_WAIT_TIME_MILLIS_KEY		= "max-wait-time-in-millis";
 	/** Key for use with @link { DomainConfig#createJDBCConnectionPoolConfig(String, String, Map)} */
-	public final static String	POOL_RESIZE_QUANTITY_KEY		= "PoolResizeQuantity";
+	public final static String	POOL_RESIZE_QUANTITY_KEY		= "pool-resize-quantity";
 	/** Key for use with @link { DomainConfig#createJDBCConnectionPoolConfig(String, String, Map)} */
-	public final static String NON_TRANSACTIONAL_CONNECTIONS_KEY = "NonTransactionalConnections";
+	public final static String NON_TRANSACTIONAL_CONNECTIONS_KEY = "non-transactional-connections";
 	/** Key for use with @link { DomainConfig#createJDBCConnectionPoolConfig(String, String, Map)} */
-	public final static String ALLOW_NON_COMPONENT_CALLERS_KEY = "AllowNonComponentCallers";
+	public final static String ALLOW_NON_COMPONENT_CALLERS_KEY = "allow-non-component-callers";
 
 	/**
 		Key for use with @link { DomainConfig#createJDBCConnectionPoolConfig(String, String, Map)}
@@ -98,15 +98,16 @@ public final class JDBCConnectionPoolConfigKeys
 		<li>javax.sql.ConnectionPoolDataSource</li>
 		</ul>
 	*/
-	public final static String	RES_TYPE_KEY					= "ResType";
+	public final static String	RES_TYPE_KEY					= "res-type";
 	/** Key for use with @link { DomainConfig#createJDBCConnectionPoolConfig(String, String, Map)} */
-	public final static String	STEADY_POOL_SIZE_KEY			= "SteadyPoolSize";
+	public final static String	STEADY_POOL_SIZE_KEY			= "stead-pool-size";
 	/** Key for use with @link { DomainConfig#createJDBCConnectionPoolConfig(String, String, Map)} */
 	public final static String	DATABASE_NAME_KEY				= "property.DatabaseName";
 	/** Key for use with @link { DomainConfig#createJDBCConnectionPoolConfig(String, String, Map)} */
 	public final static String	DATABASE_USER_KEY				= "property.User";
 	/** Key for use with @link { DomainConfig#createJDBCConnectionPoolConfig(String, String, Map)} */
 	public final static String	DATABASE_PASSWORD_KEY			= "property.Password";
-	
-	
 }
+
+
+
