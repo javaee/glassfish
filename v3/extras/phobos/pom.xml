@@ -97,9 +97,9 @@
 			<optional>true</optional>
         </dependency>
         <dependency>
-            <groupId>com.sun.commons</groupId>
-            <artifactId>logging-api</artifactId>
-            <version>${com.sun.commons.logging.version}</version>
+            <groupId>org.glassfish.external</groupId>
+            <artifactId>apache-commons</artifactId>
+            <version>${project.version}</version>
         </dependency>        
     </dependencies>
 </project>

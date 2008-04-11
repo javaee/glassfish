@@ -36,42 +36,19 @@
 * holder. 
 */ 
 --> 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <parent>
         <groupId>org.glassfish.external</groupId>
         <artifactId>external</artifactId>
         <version>10.0-SNAPSHOT</version>
     </parent>
-    <artifactId>apache-commons</artifactId>
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>sysnet-registration-repackaged</artifactId>
     <!-- Don't use bundle packaging. There are issues in using
          maven-bundle-plugin and hk2-maven-plugin together -->
-    <packaging>jar</packaging> 
-    <name>com.sun Apache commons library repackaged as OSGi and HK2 bundle</name>
-    <description>Module repackaging of the Apache commons library</description>
+    <packaging>jar</packaging>
+    <name>com.sun.scn.sysnet-registration repackaged as a module</name>
 
-    <developers>
-        <developer>
-            <id>dochez</id>
-            <name>Jerome Dochez</name>
-            <url>http://blogs.sun.com/dochez</url>
-            <organization>Sun Microsystems, Inc.</organization>
-            <roles>
-                <role>lead</role>
-                <role>developer</role>
-            </roles>
-        </developer>
-        <developer>
-            <id>ss141213</id>
-            <name>Sahoo</name>
-            <organization>Sun Microsystems, Inc.</organization>
-            <roles>
-                <role>developer</role>
-            </roles>
-        </developer>
-    </developers>
     <build>
         <plugins>
             <plugin>
@@ -79,19 +56,26 @@
                 <artifactId>maven-bundle-plugin</artifactId>
                 <configuration>
                     <instructions>
-                        <!-- embed all compile and runtime scope dependencies -->
-                        <Embed-Dependency>*;groupId=com.sun.commons;inline=true</Embed-Dependency>
-                        <Export-Package>com.sun.org.apache.commons.*</Export-Package>
-                        <Import-Package>*</Import-Package>
-                        <!-- Package everything from the embedded jar in the final bundle -->
+                        <Embed-Dependency>
+                            *;scope=compile;inline=true
+                        </Embed-Dependency>
+                        <!-- Export everything from the embedded jar 
+                             in the final bundle 
+                        -->
                         <_exportcontents>*</_exportcontents>
+                        <!-- Exclude some unnecessary imports -->
+                        <Import-Package>!com.sun.scn.client.ui,*</Import-Package>
                         <!-- !* matches with nothing, so no other class will be included in this bundle,
                          other than what is specified above -->
                         <Private-Package>!*</Private-Package>
-                        <!-- Make it an HK2 module, as GlassFish needs it to be HK2 module.
-                         This is needed because we don't want to change the packaging type to
-                         hk2-jar. -->
+                        <!-- Make it a HK2 bundle -->
                         <HK2-Bundle-Name>${groupId}:${artifactId}</HK2-Bundle-Name>
+                        <!-- We need this dependency to be set, because
+                             sysnet depends on commons-codec. Although
+                             OSGi can do pacage wiring, HK2 only works with
+                             module wiring.
+                        -->
+                        <HK2-Import-Bundles>${groupId}:commons-codec-repackaged</HK2-Import-Bundles>
                     </instructions>
                     <!-- Maven uses the output directory (target/classes)
                     rather than the final bundle, when compiling against
@@ -115,40 +99,24 @@
         </plugins>
     </build>
     <dependencies>
-        <!-- The dependencies are marked as optional so that they don't
-             become part of GF distribution which tries to include
-             everything transitively. Since, we embed the classes in
-             this wrapper, we don't have to distribute these jars. 
+        <!-- Mark them as optional so that GF distribution mechanism
+             won't package them. It is sufficient to package the wrapped jar. 
         -->
         <dependency>
-            <groupId>com.sun.commons</groupId>
-            <artifactId>modeler</artifactId>
-            <version>${com.sun.commons.modeler.version}</version>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.commons</groupId>
-            <artifactId>logging-api</artifactId>
-            <version>${com.sun.commons.logging.version}</version>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.commons</groupId>
-            <artifactId>digester</artifactId>
-            <version>${com.sun.commons.digester.version}</version>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.commons</groupId>
-            <artifactId>collections</artifactId>
-            <version>${com.sun.commons.collections.version}</version>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.commons</groupId>
-            <artifactId>beanutils</artifactId>
-            <version>${com.sun.commons.beanutils.version}</version>
+            <groupId>com.sun.scn</groupId>
+            <artifactId>sysnet-registration</artifactId>
+            <version>1.0.2</version>
             <optional>true</optional>
         </dependency>
     </dependencies>
+    <developers>
+        <developer>
+            <id>ss141213</id>
+            <name>Sahoo</name>
+            <organization>Sun Microsystems, Inc.</organization>
+            <roles>
+                <role>developer</role>
+            </roles>
+        </developer>
+    </developers>
 </project>

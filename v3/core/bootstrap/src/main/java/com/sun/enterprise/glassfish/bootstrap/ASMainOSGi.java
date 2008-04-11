@@ -41,14 +41,7 @@ public abstract class ASMainOSGi {
 
     // For the moment, we need to add the following jars to classpath as well:
     private String[] additionalJars = {
-            "wstx-asl-3.2.3.jar", // needed by config module in HK2
-            /* Commented this since we put javaee jar in higher class loader.
-            "stax-api-1.0-2.jar", // needed by config module in HK2
-             */
-            /* Commented since tiger-types has been repackaged as an OSGi bundle
-            "tiger-types-1.0.jar", // needed by config module in HK2
-            */
-            "jmxremote_optional-1.0_01-ea.jar" // until we make this a module 
+            "wstx-asl-3.2.3.jar" // needed by config module in HK2
     };
 
     private static final String javaeeJarPath = "modules/javax.javaee-10.0-SNAPSHOT.jar";

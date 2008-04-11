@@ -56,10 +56,13 @@
 
     <modules>
         <module>ant</module>
-	    <module>jaxb</module>
-	    <module>grizzly-http</module>
-	    <module>grizzly-jruby</module>        
-	    <module>apache-commons</module>
+        <module>jaxb</module>
+        <module>grizzly-http</module>
+        <module>grizzly-jruby</module>        
+        <module>apache-commons</module>
+        <module>jmxremote_optional</module>
+        <module>sysnet-registration</module>
+        <module>commons-codec</module>
     </modules>
 </project>
 

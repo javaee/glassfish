@@ -65,10 +65,14 @@
 
     <dependencies>
         <dependency>
+            <groupId>com.sun.enterprise</groupId>
+            <artifactId>hk2</artifactId>
+            <version>${hk2.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.glassfish.common</groupId>
             <artifactId>glassfish-api</artifactId>
             <version>10.0-SNAPSHOT</version>
-	    <scope>provided</scope>
         </dependency>
     </dependencies>
 </project>
