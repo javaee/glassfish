@@ -89,35 +89,35 @@ public final class ConfigBeansUtilities {
      * Get the default value of Format from dtd
      */
     public static String getDefaultFormat() {
-        return "%client.name% %auth-user-name% %datetime% %request% %status% %response.length%".trim();
+        return "%client.name% %auth-user-name% %datetime% %request% %status% %response.length%";
     }
 
     /**
      * Get the default value of RotationPolicy from dtd
      */
     public static String getDefaultRotationPolicy() {
-        return "time".trim();
+        return "time";
     }
 
     /**
      * Get the default value of RotationEnabled from dtd
      */
     public static String getDefaultRotationEnabled() {
-        return "true".trim();
+        return "true";
     }
 
     /**
      * Get the default value of RotationIntervalInMinutes from dtd
      */
     public static String getDefaultRotationIntervalInMinutes() {
-        return "1440".trim();
+        return "1440";
     }
 
     /**
      * Get the default value of QueueSizeInBytes from dtd
      */
     public static String getDefaultQueueSizeInBytes() {
-        return "4096".trim();
+        return "4096";
     }
 
     /**
