@@ -96,7 +96,7 @@ public interface Applications extends ConfigBeanProxy, Injectable  {
         public static <T> List<T> getModules(Class<T> type, Applications apps) {
             List<T> modules = new ArrayList<T>();
             for (Object module : apps.getModules()) {
-                if (module==type) {
+                if (type.isInstance(module)) {
                     modules.add(type.cast(module));
                 }
             }
@@ -104,36 +104,14 @@ public interface Applications extends ConfigBeanProxy, Injectable  {
         }
 
         public static <T> T getModule(Class<T> type, Applications apps, String moduleID) {
-
             if (moduleID == null) {
                 return null;
             }
 
-            for (Object module : apps.getModules()) {
-                if (module==type) {
-                    Method m;
-                    try {
-                        m = type.getMethod("getName");
-                    } catch (SecurityException ex) {
-                        return null;
-                    } catch (NoSuchMethodException ex) {
-                        return null;
-                    }
-                    if (m != null) {
-                        try {
-                            if (moduleID.equals(m.invoke(module))) {
-                                return type.cast(module);
-                            }
-                        } catch (IllegalArgumentException ex) {
-                            return null;
-                        } catch (IllegalAccessException ex) {
-                            return null;
-                        } catch (InvocationTargetException ex) {
-                            return null;
-                        }
-                    }
-                }
-            }
+            for (Module module : apps.getModules())
+                if (type.isInstance(module) && module.getName().equals(moduleID))
+                    return type.cast(module);
+
             return null;
 
         }
