@@ -618,7 +618,6 @@ return loadedPolicy;
 * Reads a policy configuration into the Policy object using a
 * Reader object.
 * 
-* @param policyFile the policy Reader object.
 */
 private boolean init(URL policy, PolicyInfo newInfo) {
 boolean success = false;
@@ -1127,8 +1126,8 @@ init(url);
 * the ProtectionDomain and tests whether the permission is 
 * granted.
 *
-* @param domain the ProtectionDomain to test
-* @param permission the Permission object to be tested for implication.
+* @param pd the ProtectionDomain to test
+* @param p the Permission object to be tested for implication.
 *
 * @return true if "permission" is a proper subset of a permission
 * granted to this ProtectionDomain.
@@ -1212,7 +1211,7 @@ return perms;
 * Examines this Policy and creates a PermissionCollection object with
 * the set of permissions for the specified CodeSource.
 *
-* @param CodeSource the codesource associated with the caller.
+* @param codesource the codesource associated with the caller.
 * This encapsulates the original location of the code (where the code
 * came from) and the public key(s) of its signer.
 *
@@ -1227,7 +1226,7 @@ return getPermissions(new Permissions(), codesource);
 * object with additional permissions granted to the specified
 * ProtectionDomain.
 *
-* @param perm the Permissions to populate
+* @param perms the Permissions to populate
 * @param pd the ProtectionDomain associated with the caller.
 *
 * @return the set of Permissions according to the policy.  
@@ -1256,8 +1255,8 @@ return getPermissions(perms, canonCodeSource, pd.getPrincipals());
 * object with additional permissions granted to the specified
 * CodeSource.
 *
-* @param permissions the permissions to populate
-* @param codesource the codesource associated with the caller.
+* @param perms the permissions to populate
+* @param cs the codesource associated with the caller.
 * This encapsulates the original location of the code (where the code
 * came from) and the public key(s) of its signer.
 *
