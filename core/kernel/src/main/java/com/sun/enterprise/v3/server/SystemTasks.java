@@ -25,8 +25,9 @@ import java.util.logging.Level;
 @Service
 public class SystemTasks implements Init, PostConstruct {
 
+    // in embedded environment, JavaConfig is not necessary
     @Inject(optional = true)
-         JavaConfig javaConfig;
+    JavaConfig javaConfig;
 
     Logger _logger = Logger.getAnonymousLogger();
 
