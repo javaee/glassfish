@@ -86,7 +86,8 @@ public class HttpUtils {
                                     start = byteBuffer.position();
                                 }
                             }
-                         } else if (c == 0x20){
+                         } else if (c == 0x20 || c == 0x3b) {
+                            // ' ' or ';' met
                             if (separatorPos != -1){
                                 end = separatorPos;
                             } else {
