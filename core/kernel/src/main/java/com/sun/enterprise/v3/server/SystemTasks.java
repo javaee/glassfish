@@ -7,6 +7,8 @@ import com.sun.enterprise.util.SystemPropertyConstants;
 import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.CompanionOf;
+import org.jvnet.hk2.annotations.Lead;
 import org.glassfish.config.support.TranslatedConfigView;
 
 import java.util.regex.Pattern;
@@ -19,41 +21,42 @@ import java.util.logging.Level;
 *
 * @author Jerome Dochez
 */
-@Service
+// TODO: eventually use CageBuilder so that this gets triggered when JavaConfig enters Habitat.
+ @Service
 public class SystemTasks implements Init, PostConstruct {
 
-  @Inject
-  JavaConfig javaConfig;
+    @Inject(optional = true)
+         JavaConfig javaConfig;
 
-  Logger _logger = Logger.getAnonymousLogger();
-    
-  public void postConstruct() {
+    Logger _logger = Logger.getAnonymousLogger();
 
-      // adding our version of some system properties.
-      System.setProperty(SystemPropertyConstants.JAVA_ROOT_PROPERTY, System.getProperty("java.home"));
+    public void postConstruct() {
 
-      String hostname = "localhost";
-      try {
-          // canonical name checks to make sure host is proper
-          hostname = NetUtils.getCanonicalHostName();
-      } catch (Exception ex) {
-          if (_logger != null)
-              _logger.log(Level.SEVERE, "cannot determine host name, will use localhost exclusively", ex);
-      }
-      if (_logger != null)
+        // adding our version of some system properties.
+        System.setProperty(SystemPropertyConstants.JAVA_ROOT_PROPERTY, System.getProperty("java.home"));
 
-      System.setProperty(SystemPropertyConstants.HOST_NAME_PROPERTY, hostname);
+        String hostname = "localhost";
+        try {
+            // canonical name checks to make sure host is proper
+            hostname = NetUtils.getCanonicalHostName();
+        } catch (Exception ex) {
+            if (_logger != null)
+                _logger.log(Level.SEVERE, "cannot determine host name, will use localhost exclusively", ex);
+        }
+        if (_logger != null)
 
-      Pattern p = Pattern.compile("-D([^=]*)=(.*)");
-      for (String jvmOption : javaConfig.getJvmOptions()) {
-          Matcher m = p.matcher(jvmOption);
-          if (m.matches())
-          {
-              System.setProperty(m.group(1), TranslatedConfigView.getTranslatedValue(m.group(2)).toString());
-              if (_logger.isLoggable(Level.FINE)) {
-                _logger.fine("Setting " + m.group(1) + " = " + TranslatedConfigView.getTranslatedValue(m.group(2)));
-              }
-          }
-      }
-  }
-}
+            System.setProperty(SystemPropertyConstants.HOST_NAME_PROPERTY, hostname);
+
+        if (javaConfig != null) {
+            Pattern p = Pattern.compile("-D([^=]*)=(.*)");
+            for (String jvmOption : javaConfig.getJvmOptions()) {
+                Matcher m = p.matcher(jvmOption);
+                if (m.matches()) {
+                    System.setProperty(m.group(1), TranslatedConfigView.getTranslatedValue(m.group(2)).toString());
+                    if (_logger.isLoggable(Level.FINE)) {
+                        _logger.fine("Setting " + m.group(1) + " = " + TranslatedConfigView.getTranslatedValue(m.group(2)));
+                    }
+                }
+            }
+        }
+    }
