@@ -35,7 +35,7 @@
 '
 
 
-' Sample fake product.
+
 PRODUCTNAME="glassfish"
 
 Set wShell = CreateObject("WScript.Shell")

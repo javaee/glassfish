@@ -60,6 +60,14 @@
             <apt:visual>
                 <apt:checkBox apt:labelPost="Install Update Client" apt:toolTip="Requires Online Installation" />
             </apt:visual>
+           </apt:property>
+          <apt:property apt:name="PROXY_URL"
+              apt:label="Proxy URL"
+              apt:dataPath="Configuration.PROXY_URL"
+              apt:type="xs:string">
+            <apt:visual>
+                <apt:textField  apt:toolTip="Enter Proxy URL if required" />
+            </apt:visual>
            </apt:property>           
           <apt:property apt:name="ALLOW_UPDATE_CHECK"
               apt:label=""
