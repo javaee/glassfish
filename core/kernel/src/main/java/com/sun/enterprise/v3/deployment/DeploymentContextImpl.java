@@ -111,7 +111,7 @@ public class DeploymentContextImpl implements DeploymentContext {
         final String appName = parameters.getProperty(DeployCommand.NAME);
         File rootScratchDir;
         if (subDirName == null ) {
-            rootScratchDir = new File(env.getApplicationStubPath());
+            rootScratchDir = env.getApplicationStubPath();
         } else {
             rootScratchDir = new File(env.getApplicationStubPath(),
                 subDirName);
