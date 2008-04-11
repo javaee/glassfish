@@ -23,8 +23,6 @@
 
 package org.glassfish.api;
 
-import com.sun.tools.internal.ws.wsdl.document.MessagePart;
-
 import java.io.*;
 import java.util.*;
 import java.util.logging.Logger;
