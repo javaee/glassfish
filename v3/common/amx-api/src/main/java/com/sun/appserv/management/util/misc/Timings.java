@@ -140,7 +140,7 @@ public final class Timings
         public void
     add( final String checkpointName, final TimingDelta delta )
     {
-        add( checkpointName, delta.elapsed() );
+        add( checkpointName, delta.elapsedMillis() );
     }
     
     /**

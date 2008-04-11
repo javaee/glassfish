@@ -62,7 +62,9 @@ public final class MapUtil
 		public static Object[]
 	getKeyObjects( final Map<?,?> m)
 	{
-		return( SetUtil.toArray( m.keySet() ) );
+        final Object[] keys = new Object[ m.keySet().size() ];
+        m.keySet().toArray( keys );
+        return keys;
 	}
 	
 		public static String[]

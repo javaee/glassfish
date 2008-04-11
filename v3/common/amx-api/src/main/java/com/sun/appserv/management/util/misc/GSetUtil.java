@@ -304,7 +304,8 @@ public final class GSetUtil
 		final Set<T>	 set1,
 		final Set<T>   set2 )
 	{
-		final Set<T>	result	= SetUtil.newSet( set1 );
+		final Set<T>	result	= new HashSet<T>();
+        result.addAll( set1 );
 		result.removeAll( set2 );
 		
 		return( result );

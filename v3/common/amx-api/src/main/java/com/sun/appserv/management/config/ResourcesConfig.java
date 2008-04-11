@@ -458,6 +458,29 @@ public interface ResourcesConfig
 		@param jndiName
 	*/                
 	public void             removeMailResourceConfig( String jndiName );
+    
+   /**
+    */
+	public ResourceConfig				getResourceConfig( String name );
+
+    /**
+	*/
+	public CustomMBeanConfig    createCustomMBeanConfig(
+                        	        String name,
+                        	        String implClassname,
+                        	        String objectName,
+                        	        boolean enabled,
+                        	        Map<String,String> reserved );
+                        	        
+    /** 
+     */
+	public void                  removeCustomMBeanConfig( String name );
+	    
+	
+	/**
+	 */
+	public Map<String,CustomMBeanConfig>    getCustomMBeanConfigMap();
+
 }
 
 
