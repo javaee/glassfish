@@ -36,7 +36,6 @@
 
 package com.sun.enterprise.security.web.integration;
 
-import com.sun.enterprise.security.*;
 import com.sun.enterprise.security.web.integration.WebPrincipal;
 import com.sun.enterprise.server.ServerContext;
 import java.security.*;
@@ -52,11 +51,10 @@ import javax.security.jacc.*;
 
 import java.util.logging.*; 
 import java.util.HashMap;
-import java.util.Map;
+
 import com.sun.logging.LogDomains;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.security.common.AppservAccessController;
-import com.sun.enterprise.security.authorize.*;
 import com.sun.enterprise.security.CachedPermission;
 import com.sun.enterprise.security.CachedPermissionImpl;
 import com.sun.enterprise.security.PermissionCache;
@@ -69,12 +67,10 @@ import com.sun.enterprise.deployment.runtime.common.SecurityRoleMapping;
 import com.sun.enterprise.deployment.PrincipalImpl;
 import com.sun.enterprise.deployment.Group;
 import com.sun.enterprise.config.serverbeans.*;
-import com.sun.enterprise.config.*;
 //V3:Commented import com.sun.enterprise.server.ApplicationServer;
 import com.sun.enterprise.deployment.web.LoginConfiguration;
 import com.sun.enterprise.deployment.runtime.web.SunWebApp;
 import com.sun.enterprise.deployment.interfaces.SecurityRoleMapperFactory;
-import com.sun.enterprise.deployment.interfaces.SecurityRoleMapperFactoryMgr;
 //import org.apache.catalina.Globals;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
@@ -160,8 +156,8 @@ public class WebSecurityManager {
     private static Set defaultPrincipalSet = 
 	SecurityContext.getDefaultSecurityContext().getPrincipalSet();
 
-    private static SecurityRoleMapperFactory factory = 
-	SecurityRoleMapperFactoryMgr.getFactory();
+    @Inject
+    private SecurityRoleMapperFactory factory;
 
     private ServerContext serverContext = null;
     // WebBundledescriptor

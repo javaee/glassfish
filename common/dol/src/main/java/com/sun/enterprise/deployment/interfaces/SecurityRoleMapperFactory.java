@@ -35,10 +35,13 @@
  */
 package com.sun.enterprise.deployment.interfaces;
 
+import org.jvnet.hk2.annotations.Contract;
+
 /**
  *
  * @author  dochez
  */
+@Contract
 public interface SecurityRoleMapperFactory {
     
      /**

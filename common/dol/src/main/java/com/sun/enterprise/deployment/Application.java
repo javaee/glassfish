@@ -42,7 +42,6 @@ import com.sun.enterprise.deploy.shared.FileArchive;
 import com.sun.enterprise.deployment.deploy.shared.InputJarArchive;
 import com.sun.enterprise.deployment.interfaces.SecurityRoleMapper;
 import com.sun.enterprise.deployment.interfaces.SecurityRoleMapperFactory;
-import com.sun.enterprise.deployment.interfaces.SecurityRoleMapperFactoryMgr;
 import com.sun.enterprise.deployment.node.ApplicationNode;
 import com.sun.enterprise.deployment.runtime.common.SecurityRoleMapping;
 import com.sun.enterprise.deployment.types.RoleMappingContainer;
@@ -53,6 +52,7 @@ import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.resource.Resource;
 
 import org.glassfish.api.deployment.archive.ReadableArchive;
+import org.jvnet.hk2.component.Habitat;
 import javax.enterprise.deploy.shared.ModuleType;
 import javax.persistence.EntityManagerFactory;
 import java.io.File;
@@ -152,22 +152,13 @@ public class Application extends RootDeploymentDescriptor
 
     private boolean isPackagedAsSingleModule = false;
 
-    /**
-     * Creates a new application object with the diven display name and file.
-     *
-     * @param name the display name of the application
-     * @the file object used to initialize the archivist.
-     */
-    public Application(String name, File jar) {
-        super(name, localStrings.getLocalString(
-                "enterprise.deployment.application.description",
-                "Application description"));
-    }
+    private final Habitat habitat;
 
-    public Application() {
+    public Application(Habitat habitat) {
         super("", localStrings.getLocalString(
                 "enterprise.deployment.application.description",
                 "Application description"));
+        this.habitat = habitat;
     }
 
     // Create logger object per Java SDK 1.4 to log messages
@@ -191,10 +182,10 @@ public class Application extends RootDeploymentDescriptor
      * @param newModule the standalone module descriptor
      * @return the application
      */
-    public static Application createApplication(String name, ModuleDescriptor<BundleDescriptor> newModule) {
+    public static Application createApplication(Habitat habitat, String name, ModuleDescriptor<BundleDescriptor> newModule) {
 
         // create a new empty application
-        Application application = new Application();
+        Application application = new Application(habitat);
         application.setVirtual(true);
         if (name == null && newModule.getDescriptor() != null) {
             name = newModule.getDescriptor().getDisplayName();
@@ -226,9 +217,9 @@ public class Application extends RootDeploymentDescriptor
      *                   constructed from reading the application.xml from
      *                   the archive.
      */
-    public static Application createApplication(
+    public static Application createApplication(Habitat habitat,
             ReadableArchive archive, boolean introspect) {
-        return createApplication(archive, introspect, false);
+        return createApplication(habitat, archive, introspect, false);
     }
 
     /**
@@ -242,10 +233,10 @@ public class Application extends RootDeploymentDescriptor
      *                   the archive.
      * @param directory  whether the application is packaged as a directory
      */
-    public static Application createApplication(
+    public static Application createApplication(Habitat habitat,
             ReadableArchive archive, boolean introspect, boolean directory) {
         if (introspect) {
-            return getApplicationFromIntrospection(archive, directory);
+            return getApplicationFromIntrospection(habitat,archive, directory);
         } else {
             return getApplicationFromAppXml(archive);
         }
@@ -279,9 +270,9 @@ public class Application extends RootDeploymentDescriptor
      * @param directory whether this is a directory deployment
      */
     private static Application getApplicationFromIntrospection(
-            ReadableArchive archive, boolean directory) {
+            Habitat habitat, ReadableArchive archive, boolean directory) {
         String appRoot = archive.getURI().getSchemeSpecificPart(); //archive is a directory
-        Application app = new Application();
+        Application app = new Application(habitat);
         app.setLoadedFromApplicationXml(false);
         app.setVirtual(false);
 
@@ -437,10 +428,9 @@ public class Application extends RootDeploymentDescriptor
             roleMapper = getRoleMapper();
         } catch (IllegalArgumentException ignore) {
         }
-        ;
 
         if (roleMapper != null) {
-            SecurityRoleMapperFactory factory = SecurityRoleMapperFactoryMgr.getFactory();
+            SecurityRoleMapperFactory factory = habitat.getComponent(SecurityRoleMapperFactory.class);
             if (factory == null) {
                 throw new IllegalArgumentException(localStrings.getLocalString(
                         "enterprise.deployment.norolemapperfactorydefine",
@@ -1458,7 +1448,7 @@ public class Application extends RootDeploymentDescriptor
      */
     public SecurityRoleMapper getRoleMapper() {
         if (this.roleMapper == null) {
-            SecurityRoleMapperFactory factory = SecurityRoleMapperFactoryMgr.getFactory();
+            SecurityRoleMapperFactory factory = habitat.getComponent(SecurityRoleMapperFactory.class);
             if (factory == null) {
                 _logger.log(Level.FINE, "SecurityRoleMapperFactory NOT set.");
             } else {

@@ -68,7 +68,7 @@ import com.sun.enterprise.util.LocalStringManagerImpl;
 
 import com.sun.enterprise.deployment.interfaces.SecurityRoleMapper;
 import com.sun.enterprise.deployment.interfaces.SecurityRoleMapperFactory;
-import com.sun.enterprise.deployment.interfaces.SecurityRoleMapperFactoryMgr;
+import com.sun.enterprise.v3.server.Globals;
 
 /** 
  * Implementation of Jacc PolicyConfiguration Interface
@@ -95,8 +95,7 @@ public class PolicyConfigurationImpl implements PolicyConfiguration {
     // used to represent configuration linkages
     private static HashMap linkTable = new HashMap();
     
-    private static SecurityRoleMapperFactory factory = 
-	SecurityRoleMapperFactoryMgr.getFactory();
+    private static SecurityRoleMapperFactory factory = Globals.get(SecurityRoleMapperFactory.class);
 
     // set in PolicyLoader from domain.xml
     private static final String REPOSITORY_HOME_PROP =
