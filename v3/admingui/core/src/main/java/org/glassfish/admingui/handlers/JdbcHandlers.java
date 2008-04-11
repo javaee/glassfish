@@ -612,8 +612,6 @@ public class JdbcHandlers {
                         if (datasourceClassName==null) 
                             datasourceClassName="";
                         extra.put("DatasourceClassname",  datasourceClassName);
-                        String PROPERTY_MAP_KEY = "PropertyMapKey";
-                        String REASON_FAILED_KEY = "ReasonFailedKey";
                         
                         KitchenSink ks = AMXRoot.getInstance().getDomainRoot().getKitchenSink();
                         Map<String, Object> result = ks.getConnectionDefinitionPropertiesAndDefaults(datasourceClassName);
