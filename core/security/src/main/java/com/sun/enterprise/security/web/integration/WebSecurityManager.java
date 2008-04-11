@@ -72,6 +72,7 @@ import com.sun.enterprise.deployment.web.LoginConfiguration;
 import com.sun.enterprise.deployment.runtime.web.SunWebApp;
 import com.sun.enterprise.deployment.interfaces.SecurityRoleMapperFactory;
 //import org.apache.catalina.Globals;
+import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 
@@ -89,7 +90,7 @@ import org.jvnet.hk2.annotations.Service;
  * AbstractSecurityManager
  */
 @Service
-public class WebSecurityManager {
+public class WebSecurityManager implements PostConstruct {
     private static Logger logger = 
     Logger.getLogger(LogDomains.SECURITY_LOGGER);
     
@@ -157,7 +158,7 @@ public class WebSecurityManager {
 	SecurityContext.getDefaultSecurityContext().getPrincipalSet();
 
     @Inject
-    private SecurityRoleMapperFactory factory;
+    SecurityRoleMapperFactory factory;
 
     private ServerContext serverContext = null;
     // WebBundledescriptor
@@ -166,20 +167,18 @@ public class WebSecurityManager {
     public static final String ADMIN_VS = "__asadmin";
     // Create a WebSecurityObject
     public WebSecurityManager(WebBundleDescriptor wbd) throws PolicyContextException {
-        this.wbd = wbd;
-        this.CONTEXT_ID = getContextID(wbd);
-        String appname = getAppId();
-        factory.setAppNameForContext(appname, CONTEXT_ID);
-        initialise();
+        this(wbd,null);
     }
     
     public WebSecurityManager(WebBundleDescriptor wbd,ServerContext svc) throws PolicyContextException {
         this.wbd = wbd;
         this.CONTEXT_ID = getContextID(wbd);
-        String appname = getAppId();
         this.serverContext = svc;
-        factory.setAppNameForContext(appname, CONTEXT_ID);
         initialise();
+    }
+
+    public void postConstruct() {
+        factory.setAppNameForContext(getAppId(), CONTEXT_ID);
     }
 
     private String removeSpaces(String withSpaces){
@@ -207,18 +206,17 @@ public class WebSecurityManager {
                 String realmName = lgConf.getRealmName();
                 SunWebApp sunDes = wbd.getSunDescriptor();
                 if(sunDes != null){
-                    SecurityRoleMapping[] sr = sunDes.getSecurityRoleMapping();
-                    if(sr != null){
-                        for(int i=0; i<sr.length; i++){
-                            String[] principal = sr[i].getPrincipalName();
-                            if(principal != null){
-                                for(int plen=0;plen<principal.length; plen++ ){
-                                    ADMIN_PRINCIPAL.put(realmName+principal[plen], new PrincipalImpl(principal[plen]));
+                    SecurityRoleMapping[] srms = sunDes.getSecurityRoleMapping();
+                    if(srms != null){
+                        for (SecurityRoleMapping srm : srms) {
+                            String[] principals = srm.getPrincipalName();
+                            if (principals != null) {
+                                for (String principal : principals) {
+                                    ADMIN_PRINCIPAL.put(realmName + principal, new PrincipalImpl(principal));
                                 }
                             }
-                            List<String> groups = sr[i].getGroupNames();
-                            for(int glen = 0; glen < groups.size(); glen++ ){
-                                ADMIN_GROUP.put(realmName+groups.get(glen), new Group(groups.get(glen))) ;
+                            for (String group : srm.getGroupNames()) {
+                                ADMIN_GROUP.put(realmName + group, new Group(group));
                             }
                         }
                     }
