@@ -213,6 +213,48 @@ public final class DottedName
 		return( result );
 	}
 	
+      /**
+        Insert a "-" characer between every lower/upper transition and/or every
+        acronym transition, and lowercase the entire result.
+        Examples:<br>
+        FooBarBee => foo-bar-bee<br>
+        fooBarBEE => foo-bar-bee<br>
+        HTTPService => httpservice
+     */
+        public static String
+    dashify( final String name )
+    {
+        final int length = name.length();
+        final StringBuffer b = new StringBuffer();
+        
+        for ( int i = 0; i < length; ++i)
+        {
+            final char    c = name.charAt(i);
+            final boolean isUpper = Character.isUpperCase(c);
+            final char    lowerc = isUpper ? Character.toLowerCase(c) : c;
+            
+            // transition from run of uppercase to lowercase?
+            // eg the 'S' in HTTPService
+            if ( isUpper && i != 0 && Character.isUpperCase(name.charAt(i-1)) )
+            {
+                b.append( "-" );
+                b.append( lowerc );
+            }
+            // transition from lower to upper case?
+            else if ( (!isUpper) && i < length-1 && Character.isUpperCase(name.charAt(i+1)) )
+            {
+                b.append( lowerc );
+                b.append( "-" );
+            }
+            else
+            {
+                b.append( lowerc );
+            }
+        }
+        //cdebug( "dashify: " + name + " => " + b.toString() );
+        return b.toString();
+    }
+
 	
 	
 		static String

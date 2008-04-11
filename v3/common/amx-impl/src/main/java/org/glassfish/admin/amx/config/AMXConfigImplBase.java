@@ -100,6 +100,7 @@ import org.glassfish.admin.amx.util.SingletonEnforcer;
 import org.glassfish.admin.amx.mbean.MBeanInfoCache;
 import org.glassfish.admin.amx.util.AMXConfigInfoResolver;
 import org.glassfish.admin.amx.loader.AMXConfigVoid;
+import org.glassfish.admin.amx.dotted.DottedName;
 
 import org.jvnet.hk2.config.ConfigBean;
 import org.jvnet.hk2.config.ConfigSupport;
@@ -142,33 +143,36 @@ public class AMXConfigImplBase extends AMXImplBase
         final Class<? extends ConfigBeanProxy> intf = cb.getProxyType();
         final Package pkg = intf.getPackage();
         String result = intf.getName().substring( pkg.getName().length() + 1, intf.getName().length() );
-        result = result.toLowerCase();
 
         return result;
     }
     
+      
     @Override
-          protected String
+    /**
+        By default take a camel-case name and insert dashes
+     */
+        protected String
     _getDottedNamePart()
     {
         String result = super._getDottedNamePart();
         
         if ( isSingletonMBean( getInterface() ) )
         {
-            result = getTypeString();
+            result = DottedName.dashify(getTypeString());
         }
         else
         {
             final Container container = getContainer();
             if ( container instanceof ConfigCollectionElement )
             {
-                // an intermediate MBean is already in place, providing a grouping
+                // an intermediate MBean is already in place (self), providing a grouping
                 result = getName();
             }
             else
             {
                 // we need to insert the type of the element to group them uniquely
-                result = getTypeString() + ":" + getName();
+                result = DottedName.dashify(getTypeString()) + ":" + getName();
             }
         }
         return result;
