@@ -61,7 +61,7 @@ public class StartDomainCommand extends S1ASCommand {
             waitForDAS(info.getAdminPorts());
         }
         catch(GFLauncherException gfle) {
-            throw new CommandValidationException(gfle.getMessage());
+            throw new CommandException(gfle.getMessage());
         }
         finally {
             CLILogger.getInstance().popAndUnlockLevel();

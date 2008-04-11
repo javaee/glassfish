@@ -71,7 +71,7 @@ public abstract class GFLauncher {
         }
         catch (Throwable t) {
             // hk2 might throw a java.lang.Error
-            throw new GFLauncherException("unknownError", t);
+            throw new GFLauncherException(strings.get("unknownError", t.getMessage()) ,t);
         }
         finally {
             GFLauncherLogger.removeLogFileHandler();
