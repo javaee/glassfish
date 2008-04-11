@@ -234,7 +234,7 @@ public class ApplicationLifecycle {
             LinkedList<ContainerInfo> sortedContainerInfos =
                 setupContainerInfos(sniffers, context, report, tracker);
             if (sortedContainerInfos==null || sortedContainerInfos.isEmpty()) {
-                failure(logger, "There is no installed container capable of handling this application", null, report);
+                report.failure(logger, "There is no installed container capable of handling this application", null);
                 tracker.actOn(logger);
                 return null;
             }
@@ -245,8 +245,7 @@ public class ApplicationLifecycle {
                 context, report, tracker);
 
             if (appInfo == null) {
-                failure(logger, "Exception while loading the app", null,
-                    report);
+                report.failure(logger, "Exception while loading the app", null);
                 tracker.actOn(logger);
                 return null;
             }
@@ -261,7 +260,7 @@ public class ApplicationLifecycle {
             return appInfo;
 
         } catch (Exception e) {
-            failure(logger, "Exception while deploying the app", e, report);
+            report.failure(logger, "Exception while deploying the app", e);
             tracker.actOn(logger);
             return null;
         }
@@ -288,7 +287,7 @@ public class ApplicationLifecycle {
             try {
                 return startModules(appInfo, context, report, tracker);
             } catch (Exception e) {
-                failure(logger, "Exception while enabling the app", e, report);
+                report.failure(logger, "Exception while enabling the app", e);
                 tracker.actOn(logger);
                 return null;
             }
@@ -317,13 +316,13 @@ public class ApplicationLifecycle {
         //List<ContainerInfo> startedContainers = new ArrayList<ContainerInfo>();
         for (Sniffer sniffer : sniffers) {
             if (sniffer.getContainersNames()==null || sniffer.getContainersNames().length==0) {
-                failure(logger, "no container associated with application of type : " + sniffer.getModuleType(), null, report);
+                report.failure(logger, "no container associated with application of type : " + sniffer.getModuleType(), null);
                 return null;
             }
 
             Module snifferModule=modulesRegistry.find(sniffer.getClass());
             if (snifferModule==null) {
-                failure(logger, "cannot find container module from service implementation " + sniffer.getClass(), null, report);
+                report.failure(logger, "cannot find container module from service implementation " + sniffer.getClass(), null);
                 return null;
             }
 
@@ -337,7 +336,7 @@ public class ApplicationLifecycle {
                         Collection<ContainerInfo> containersInfo = setupContainer(sniffer, snifferModule, logger, report);
                         if (containersInfo==null || containersInfo.size()==0) {
                             String msg = "Cannot start container(s) associated to application of type : " + sniffer.getModuleType();
-                            failure(logger, msg, null, report);
+                            report.failure(logger, msg, null);
                             throw new Exception(msg);
                         }
                         tracker.addAll(ContainerInfo.class, containersInfo);
@@ -350,7 +349,7 @@ public class ApplicationLifecycle {
         // now start all containers, by now, they should be all setup...
         if (!startContainers(tracker.get(ContainerInfo.class), logger, report)) {
             String msg = "Failed to start containers";
-            failure(logger, msg, null, report);
+            report.failure(logger, msg, null);
             throw new Exception(msg);
         }
 
@@ -393,8 +392,8 @@ public class ApplicationLifecycle {
 						for (Class metadataType : metadata.provides()) {
                             Deployer currentProvidindDeployer = metaDataProvided.get(metadataType);
                             if(currentProvidindDeployer != null ) {
-                                failure(logger, "More than one deployer [" + currentProvidindDeployer +  ", " + deployer
-                                    + "] provide same metadata : " + metadataType, null, report);
+                                report.failure(logger, "More than one deployer [" + currentProvidindDeployer +  ", " + deployer
+                                                            + "] provide same metadata : " + metadataType, null);
                             }
                             metaDataProvided.put(metadataType, deployer);
 						}
@@ -417,8 +416,8 @@ public class ApplicationLifecycle {
                 }
 
 			} else {
-				failure(logger,"Deployer " + metaDataRequired.get(required) + " requires " + required + " but no other deployer provides it", null, report);
-				return null;
+                            report.failure(logger, "Deployer " + metaDataRequired.get(required) + " requires " + required + " but no other deployer provides it", null);
+                            return null;
 			}
 		}
 
@@ -458,7 +457,7 @@ public class ApplicationLifecycle {
                         context.addModuleMetaData(deployer.loadMetaData(metadata, context));
                     }
                 } catch(Exception e) {
-                    failure(logger, "Exception while invoking " + deployer.getClass() + " prepare method",e, report);
+                    report.failure(logger, "Exception while invoking " + deployer.getClass() + " prepare method", e);
                     throw e;
                 }
             } finally {
@@ -503,7 +502,7 @@ public class ApplicationLifecycle {
                                     icl.addTransformer(transformer);
                                 }
                             } catch (Exception e) {
-                                failure(logger, "Class loader used for loading application cannot handle bytecode enhancer",e, report);
+                                report.failure(logger, "Class loader used for loading application cannot handle bytecode enhancer", e);
                                 throw e;
 
                             }
@@ -517,7 +516,7 @@ public class ApplicationLifecycle {
 
                     tracker.add(Deployer.class, deployer);
                 } catch(Exception e) {
-                    failure(logger, "Exception while invoking " + deployer.getClass() + " prepare method",e, report);
+                    report.failure(logger, "Exception while invoking " + deployer.getClass() + " prepare method", e);
                     throw e;
                 }
             } finally {
@@ -562,7 +561,7 @@ public class ApplicationLifecycle {
                     ApplicationContainer appCtr = deployer.load(containerInfo.getContainer(), context);
                     if (appCtr==null) {
                         String msg = "Cannot load application in " + containerInfo.getContainer().getName() + " container";
-                        failure(logger, msg, null, report);
+                        report.failure(logger, msg, null);
                         throw new Exception(msg);
                     }
 
@@ -582,7 +581,7 @@ public class ApplicationLifecycle {
                         }
                     }
                 } catch(Exception e) {
-                    failure(logger, "Exception while invoking " + deployer.getClass() + " prepare method",e, report);
+                    report.failure(logger, "Exception while invoking " + deployer.getClass() + " prepare method", e);
                     throw e;
                 }
             } finally {
@@ -621,7 +620,7 @@ public class ApplicationLifecycle {
                 }
 
             } catch(Exception e) {
-                failure(logger, "Exception while invoking " + module.getApplicationContainer().getClass() + " start method",e, report);
+                report.failure(logger, "Exception while invoking " + module.getApplicationContainer().getClass() + " start method", e);
                 throw e;
             }
         }
@@ -666,7 +665,7 @@ public class ApplicationLifecycle {
         ContainerStarter starter = habitat.getComponent(ContainerStarter.class);
         Collection<ContainerInfo> containersInfo = starter.startContainer(sniffer, snifferModule);
         if (containersInfo == null || containersInfo.size()==0) {
-            failure(logger, "Cannot start container(s) associated to application of type : " + sniffer.getModuleType(), null, report);
+            report.failure(logger, "Cannot start container(s) associated to application of type : " + sniffer.getModuleType(), null);
             return null;
         }
         return containersInfo;
@@ -690,13 +689,13 @@ public class ApplicationLifecycle {
                         deployer = habitat.getComponent(deployerClass);
                         containerInfo.setDeployer(deployer);
                 } catch (ComponentException e) {
-                    failure(logger, "Cannot instantiate or inject "+deployerClass, e, report);
+                    report.failure(logger, "Cannot instantiate or inject "+deployerClass, e);
                     stopContainer(logger, containerInfo);
                     return false;
                 } catch (ClassCastException e) {
                     stopContainer(logger, containerInfo);
-                    failure(logger, deployerClass+" does not implement " +
-                            " the org.jvnet.glassfish.api.deployment.Deployer interface", e, report);
+                    report.failure(logger, deployerClass+" does not implement " +
+                                        " the org.jvnet.glassfish.api.deployment.Deployer interface", e);
                     return false;
                 }
             }  finally {
@@ -749,7 +748,7 @@ public class ApplicationLifecycle {
 
         ApplicationInfo info = appRegistry.get(appName);
         if (info==null) {
-            failure(context.getLogger(), "Application " + appName + " not registered", null, report);
+            report.failure(context.getLogger(), "Application " + appName + " not registered", null);
             return null;
 
         }
@@ -774,23 +773,11 @@ public class ApplicationLifecycle {
                 try {
                     moduleInfo.getContainerInfo().getDeployer().clean(context);
                 } catch(Exception e) {
-                    failure(context.getLogger(), "Exception while cleaning application artifacts", e, report);
+                    report.failure(context.getLogger(), "Exception while cleaning application artifacts", e);
                     return;
                 }
             }
         }
-    }
-
-    protected void failure(Logger logger, String message, Throwable e, ActionReport report) {
-
-        if (e!=null) {
-            logger.log(Level.SEVERE, message ,e);
-            report.setMessage(message + " : "+ e.toString());
-        } else {
-            logger.log(Level.SEVERE, message);
-            report.setMessage(message);
-        }
-        report.setActionExitCode(ActionReport.ExitCode.FAILURE);
     }
 
     protected boolean unloadModule(ModuleInfo module,
@@ -821,7 +808,7 @@ public class ApplicationLifecycle {
                             + module.getContainerInfo().getSniffer().getModuleType());
                 }
             } catch(Exception e) {
-                failure(context.getLogger(), "Exception while stopping the application", e, report);
+                report.failure(context.getLogger(), "Exception while stopping the application", e);
                 return false;
             }
 
@@ -830,7 +817,7 @@ public class ApplicationLifecycle {
             try {
                 deployer.unload(module.getApplicationContainer(), context);
             } catch(Exception e) {
-                failure(context.getLogger(), "Exception while shutting down application container", e, report);
+                report.failure(context.getLogger(), "Exception while shutting down application container", e);
                 return false;
             }
             module.getContainerInfo().remove(info);
