@@ -105,5 +105,10 @@
             <artifactId>glassfish-ee-api</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.sun</groupId>
+            <artifactId>ldapbp</artifactId>
+            <version>1.0</version>
+        </dependency>
     </dependencies>
 </project>
