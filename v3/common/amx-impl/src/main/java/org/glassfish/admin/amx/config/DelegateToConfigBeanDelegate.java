@@ -35,52 +35,19 @@
  */
 package org.glassfish.admin.amx.config;
 
-import java.util.Set;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Collections;
-
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyVetoException;
-
-import javax.management.ObjectName;
-import javax.management.MBeanServer;
-import javax.management.MBeanServerConnection;
-import javax.management.MBeanInfo;
-import javax.management.AttributeList;
-import javax.management.Attribute;
-import javax.management.AttributeNotFoundException;
-import javax.management.InvalidAttributeValueException;
-import javax.management.InstanceNotFoundException;
-import javax.management.IntrospectionException;
-import javax.management.ReflectionException;
-
-import org.jvnet.hk2.config.ConfigBean;
-import org.jvnet.hk2.config.ConfigSupport;
-import org.jvnet.hk2.config.SingleConfigCode;
-import org.jvnet.hk2.config.ConfigBeanProxy;
-import org.jvnet.hk2.config.Transactions;
-import org.jvnet.hk2.config.TransactionListener;
-import org.jvnet.hk2.config.TransactionFailure;
-import org.jvnet.hk2.config.Dom;
-
-
 import com.sun.appserv.management.base.AMXAttributes;
-import com.sun.appserv.management.config.AMXConfig;
-import com.sun.appserv.management.config.PropertyConfig;
-
+import com.sun.appserv.management.util.jmx.JMXUtil;
 import com.sun.appserv.management.util.misc.CollectionUtil;
 import com.sun.appserv.management.util.misc.ExceptionUtil;
-import com.sun.appserv.management.util.misc.StringUtil;
-import com.sun.appserv.management.util.jmx.JMXUtil;
-
-import org.glassfish.api.amx.AMXConfigInfo;
-
-import org.glassfish.admin.amx.mbean.Delegate;
 import org.glassfish.admin.amx.mbean.DelegateBase;
-
 import org.glassfish.admin.amx.util.AMXConfigInfoResolver;
+import org.glassfish.api.amx.AMXConfigInfo;
+import org.jvnet.hk2.config.*;
+
+import javax.management.AttributeList;
+import javax.management.AttributeNotFoundException;
+import java.beans.PropertyChangeEvent;
+import java.util.*;
 
 /**
 	Delegate which delegates to another MBean.

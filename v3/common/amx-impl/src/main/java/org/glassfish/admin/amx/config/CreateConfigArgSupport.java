@@ -35,32 +35,14 @@
 */
 package org.glassfish.admin.amx.config;
 
-import java.util.Set;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.List;
-import java.util.ArrayList;
-
-import com.sun.appserv.management.util.misc.CollectionUtil;
-
-import org.jvnet.hk2.config.ConfigBeanProxy;
-
-import org.glassfish.admin.amx.mbean.MBeanInfoCache;
-import org.glassfish.admin.amx.util.AMXConfigInfoResolver;
-import org.glassfish.admin.amx.loader.AMXConfigVoid;
-
-import org.jvnet.hk2.config.ConfigBean;
-import org.jvnet.hk2.config.ConfigSupport;
-
-import org.glassfish.api.amx.AMXConfigInfo;
-import org.glassfish.api.amx.AMXCreatorInfo;
-
-
 import com.sun.appserv.management.config.PropertiesAccess;
 import com.sun.appserv.management.config.SystemPropertiesAccess;
 import com.sun.appserv.management.util.misc.TypeCast;
-import com.sun.appserv.management.util.misc.GSetUtil;
+
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 
 

@@ -35,26 +35,12 @@
  */
 package org.glassfish.admin.amx.dotted.valueaccessor;
 
-import java.util.Set;
-import java.util.HashSet;
-
-import javax.management.MBeanServerConnection;
-import javax.management.IntrospectionException;
-import javax.management.ReflectionException;
-import javax.management.InstanceNotFoundException;
-import javax.management.AttributeNotFoundException;
-import javax.management.InvalidAttributeValueException;
-import javax.management.MBeanException;
-import javax.management.AttributeList;
-import javax.management.MBeanInfo;
-import javax.management.MBeanAttributeInfo;
-import javax.management.ObjectName;
-import javax.management.Attribute;
-
-
+import com.sun.appserv.management.util.misc.ClassUtil;
 import org.glassfish.admin.amx.dotted.DottedNameStrings;
 
-import com.sun.appserv.management.util.misc.ClassUtil;
+import javax.management.*;
+import java.util.HashSet;
+import java.util.Set;
 
 public class AttributeValueAccessor extends ValueAccessorBase
 {

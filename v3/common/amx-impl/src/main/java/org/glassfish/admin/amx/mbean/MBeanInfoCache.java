@@ -35,15 +35,14 @@
  */
 package org.glassfish.admin.amx.mbean;
 
-import java.util.Map;
-import java.util.HashMap;
-
-import javax.management.MBeanInfo;
-import javax.management.MBeanAttributeInfo;
-
-import com.sun.appserv.management.base.Extra;
 import com.sun.appserv.management.base.AMX;
+import com.sun.appserv.management.base.Extra;
 import com.sun.appserv.management.util.jmx.JMXUtil;
+
+import javax.management.MBeanAttributeInfo;
+import javax.management.MBeanInfo;
+import java.util.HashMap;
+import java.util.Map;
 
 
 /**

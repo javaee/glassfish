@@ -36,9 +36,9 @@
 package org.glassfish.admin.amx.dotted.valueaccessor;
 
 
+import javax.management.Attribute;
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
-import javax.management.Attribute;
 
 /*
 	Encapsulates all accessors so that caller need not distinguish between them.

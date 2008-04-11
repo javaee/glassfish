@@ -35,40 +35,23 @@
  */
 package org.glassfish.admin.amx.mbean;
 
-import java.util.Set;
-
-import javax.management.ObjectName;
-import javax.management.MBeanServer;
-import javax.management.JMException;
-
 import com.sun.appserv.management.DomainRoot;
-import com.sun.appserv.management.base.XTypes;
 import com.sun.appserv.management.base.AMX;
-import com.sun.appserv.management.base.SystemInfo;
-import com.sun.appserv.management.base.Util;
-import com.sun.appserv.management.base.NotificationEmitterServiceKeys;
 import com.sun.appserv.management.base.NotificationEmitterService;
-
+import com.sun.appserv.management.base.NotificationEmitterServiceKeys;
+import com.sun.appserv.management.base.XTypes;
 import com.sun.appserv.management.j2ee.J2EEDomain;
-
+import com.sun.appserv.management.util.misc.GSetUtil;
+import com.sun.appserv.server.util.Version;
+import org.glassfish.admin.amx.dotted.DottedNamesImpl;
 import org.glassfish.admin.amx.j2ee.DASJ2EEDomainImpl;
-import org.glassfish.admin.amx.j2ee.J2EEDomainImpl;
-
-
-import com.sun.appserv.management.util.misc.GSetUtil;
-import com.sun.appserv.management.util.misc.GSetUtil;
-
 import org.glassfish.admin.amx.loader.BootUtil;
+import org.glassfish.admin.amx.util.FeatureAvailability;
+import org.glassfish.admin.amx.util.Issues;
 import org.glassfish.admin.amx.util.ObjectNames;
 
-import org.glassfish.admin.amx.util.FeatureAvailability;
-
-import org.glassfish.admin.amx.util.Issues;
-
-
-import com.sun.appserv.server.util.Version;
-
-import org.glassfish.admin.amx.dotted.DottedNamesImpl;
+import javax.management.ObjectName;
+import java.util.Set;
 
 
 /**

@@ -35,19 +35,13 @@
  */
 package org.glassfish.admin.amx.j2ee;
 
-import java.util.Set;
-import java.util.Collections;
-
-
-import javax.management.ObjectName;
-import javax.management.AttributeNotFoundException;
-
-
 import com.sun.appserv.management.j2ee.J2EEDeployedObject;
-import com.sun.appserv.management.j2ee.StateManageable;
-
 import com.sun.appserv.management.util.misc.GSetUtil;
 import org.glassfish.admin.amx.mbean.Delegate;
+
+import javax.management.ObjectName;
+import java.util.Collections;
+import java.util.Set;
 
 /**
  */

@@ -35,13 +35,10 @@
  */
 package org.glassfish.admin.amx.dotted;
 
-import java.util.Map;
 import java.util.HashMap;
-import java.util.Set;
 import java.util.HashSet;
-import java.util.Collections;
-
-import javax.management.ObjectName;
+import java.util.Map;
+import java.util.Set;
 
 /*
 	This class maintains a cache of the current server info as an optimization.

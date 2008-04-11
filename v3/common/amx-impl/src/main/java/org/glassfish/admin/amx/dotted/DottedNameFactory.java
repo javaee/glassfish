@@ -35,8 +35,8 @@
  */
 package org.glassfish.admin.amx.dotted;
 
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 
 
 /*

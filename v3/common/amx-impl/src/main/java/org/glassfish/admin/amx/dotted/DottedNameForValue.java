@@ -35,9 +35,9 @@
  */
 package org.glassfish.admin.amx.dotted;
 
-import java.util.List;
-
 import org.glassfish.admin.amx.dotted.valueaccessor.PrefixedValueSupport;
+
+import java.util.List;
 
 /* 
 	A class which interprets a DottedName as containing a value name.

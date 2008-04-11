@@ -35,10 +35,9 @@
  */
 package org.glassfish.admin.amx.dotted;
 
-import java.util.Set;
-import java.util.HashSet;
-
 import com.sun.appserv.management.util.misc.GSetUtil;
+
+import java.util.Set;
 
 public class DottedNameAliasSupport
 {

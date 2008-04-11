@@ -35,12 +35,10 @@
  */
 package org.glassfish.admin.amx.mbean;
 
-import java.util.Map;
-
-import javax.management.MBeanInfo;
 import javax.management.AttributeList;
-import javax.management.Attribute;
 import javax.management.AttributeNotFoundException;
+import javax.management.MBeanInfo;
+import java.util.Map;
 
 /**
 	Delegate which delegates to another MBean.

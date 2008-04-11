@@ -35,20 +35,9 @@
  */
 package org.glassfish.admin.amx.mbean;
 
-import java.util.Map;
-
-import javax.management.ObjectName;
-import javax.management.MBeanInfo;
 import javax.management.AttributeList;
-import javax.management.Attribute;
 import javax.management.AttributeNotFoundException;
-import javax.management.InvalidAttributeValueException;
-import javax.management.InstanceNotFoundException;
-import javax.management.ReflectionException;
-import javax.management.MBeanException;
-
-
-import java.beans.PropertyChangeEvent;
+import java.util.Map;
 
 
 /**

@@ -34,17 +34,14 @@
  * holder.
  */
 package org.glassfish.admin.amx.j2ee;
- 
-import java.util.Map;
-import com.sun.appserv.management.util.misc.CollectionUtil;
-import javax.management.ObjectName;
-
-import com.sun.appserv.management.j2ee.ResourceAdapterModule;
 
 import com.sun.appserv.management.j2ee.J2EETypes;
-
-
+import com.sun.appserv.management.j2ee.ResourceAdapterModule;
+import com.sun.appserv.management.util.misc.CollectionUtil;
 import org.glassfish.admin.amx.mbean.Delegate;
+
+import javax.management.ObjectName;
+import java.util.Map;
 /**
  */
 public final class ResourceAdapterModuleImpl

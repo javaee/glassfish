@@ -35,14 +35,12 @@
  */
 package org.glassfish.admin.amx.mbean;
 
-import java.util.Set;
-import java.util.Collections;
-import java.util.HashSet;
+import com.sun.appserv.management.base.AMX;
 
 import javax.management.ObjectName;
-import org.glassfish.admin.amx.mbean.Delegate;
-
-import com.sun.appserv.management.base.AMX;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
 	Base class from which all AMX MBeans should derive which are NOT

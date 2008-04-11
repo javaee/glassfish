@@ -35,43 +35,25 @@
  */
 package org.glassfish.admin.amx.mbean;
 
-import java.util.Set;
-import java.util.Collections;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.io.IOException;
-
-
-import javax.management.ObjectName;
-import javax.management.MBeanInfo;
-import javax.management.JMException;
-
-import javax.management.MBeanServer;
-import javax.management.MBeanServerConnection;
-import javax.management.AttributeNotFoundException;
-import javax.management.InstanceNotFoundException;
-import javax.management.ReflectionException;
-import javax.management.MBeanException;
-
 import com.sun.appserv.management.base.AMX;
 import com.sun.appserv.management.base.AMXAttributes;
+import com.sun.appserv.management.base.QueryMgr;
 import com.sun.appserv.management.base.Util;
-import com.sun.appserv.management.base.QueryMgr;
-import com.sun.appserv.management.base.XTypes;
-import com.sun.appserv.management.j2ee.J2EETypes;
-import com.sun.appserv.management.base.QueryMgr;
-
-import com.sun.appserv.management.util.jmx.ObjectNameQueryImpl;
 import com.sun.appserv.management.util.jmx.JMXUtil;
-import com.sun.appserv.management.util.misc.RegexUtil;
-import com.sun.appserv.management.util.misc.ArrayConversion;
-
+import com.sun.appserv.management.util.jmx.ObjectNameQueryImpl;
 import com.sun.appserv.management.util.misc.ClassUtil;
 import com.sun.appserv.management.util.misc.GSetUtil;
-import com.sun.appserv.management.util.misc.ListUtil;
+import com.sun.appserv.management.util.misc.RegexUtil;
 import com.sun.appserv.management.util.stringifier.SmartStringifier;
+
+import javax.management.JMException;
+import javax.management.MBeanServer;
+import javax.management.MBeanServerConnection;
+import javax.management.ObjectName;
+import java.io.IOException;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 
 /**

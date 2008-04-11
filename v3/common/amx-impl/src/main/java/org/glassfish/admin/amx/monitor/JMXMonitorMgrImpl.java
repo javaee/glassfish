@@ -36,22 +36,18 @@
 
 package org.glassfish.admin.amx.monitor;
 
-import java.util.Map;
-import java.util.Set;
-import java.util.Collections;
-
-import javax.management.ObjectName;
-import javax.management.JMException;
-
-import com.sun.appserv.management.base.XTypes;
 import com.sun.appserv.management.base.AMX;
 import com.sun.appserv.management.base.Util;
+import com.sun.appserv.management.base.XTypes;
 import com.sun.appserv.management.monitor.JMXMonitorMgr;
 import com.sun.appserv.management.util.misc.GSetUtil;
-
 import org.glassfish.admin.amx.mbean.AMXNonConfigImplBase;
-
 import org.glassfish.admin.amx.util.ObjectNames;
+
+import javax.management.JMException;
+import javax.management.ObjectName;
+import java.util.Map;
+import java.util.Set;
 
 /**
 */

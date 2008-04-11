@@ -36,15 +36,10 @@
  
 package org.glassfish.admin.amx.mbean;
 
-import java.util.List;
-import java.util.Map;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Properties;
-import java.util.logging.Level;
-
 import javax.management.AttributeList;
 import javax.management.NotificationEmitter;
+import java.util.*;
+import java.util.logging.Level;
 
 
 /**

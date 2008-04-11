@@ -35,46 +35,12 @@
  */
 package org.glassfish.admin.amx.dotted;
 
-import java.util.Map;
-import java.util.Map;
-import java.util.Set;
-import java.util.List;
-import java.util.HashSet;
-import java.util.HashMap;
-import java.util.ArrayList;
-import java.util.concurrent.locks.ReentrantLock;
-
-import javax.management.ObjectName;
-import javax.management.MBeanInfo;
-import javax.management.MBeanServer;
-import javax.management.MBeanAttributeInfo;
-import javax.management.MBeanOperationInfo;
-import javax.management.Attribute;
-import javax.management.AttributeList;
-import javax.management.AttributeChangeNotification;
-import javax.management.InstanceNotFoundException;
-import javax.management.ReflectionException;
-import javax.management.MBeanException;
-import javax.management.IntrospectionException;
-import javax.management.AttributeNotFoundException;
-import javax.management.InvalidAttributeValueException;
-
-import javax.management.MBeanServerInvocationHandler;
-
-import com.sun.appserv.management.util.misc.ClassUtil;
-import com.sun.appserv.management.util.misc.GSetUtil;
-import com.sun.appserv.management.util.jmx.JMXUtil;
-import com.sun.appserv.management.base.Util;
-
-import com.sun.appserv.management.base.DottedNames;
 import com.sun.appserv.management.base.AMX;
-
 import com.sun.appserv.management.helper.AMXDebugHelper;
-
-import org.glassfish.admin.amx.util.FeatureAvailability;
 import org.glassfish.admin.amx.mbean.AMXNonConfigImplBase;
 
-import static org.glassfish.admin.amx.util.FeatureAvailability.SERVER_STARTED_FEATURE;
+import javax.management.AttributeNotFoundException;
+import javax.management.ObjectName;
 
 
 /**

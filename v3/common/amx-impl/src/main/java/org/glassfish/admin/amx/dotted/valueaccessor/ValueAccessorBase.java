@@ -35,24 +35,12 @@
  */
 package org.glassfish.admin.amx.dotted.valueaccessor;
 
-import java.lang.reflect.Array;
+import com.sun.appserv.management.util.misc.*;
 
-import javax.management.MBeanServerConnection;
-import javax.management.IntrospectionException;
-import javax.management.ReflectionException;
-import javax.management.InstanceNotFoundException;
-import javax.management.AttributeList;
-import javax.management.MBeanInfo;
-import javax.management.MBeanAttributeInfo;
-import javax.management.ObjectName;
 import javax.management.Attribute;
-
-import com.sun.appserv.management.util.misc.ClassUtil;
-import com.sun.appserv.management.util.misc.Tokenizer;
-import com.sun.appserv.management.util.misc.TokenizerParams;
-import com.sun.appserv.management.util.misc.TokenizerImpl;
-
-import com.sun.appserv.management.util.misc.TokenizerException;
+import javax.management.MBeanServerConnection;
+import javax.management.ObjectName;
+import java.lang.reflect.Array;
 
 
 abstract class ValueAccessorBase implements ValueAccessor

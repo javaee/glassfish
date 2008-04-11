@@ -35,10 +35,10 @@
  */
 package org.glassfish.admin.amx.dotted;
 
+import static org.glassfish.admin.amx.dotted.DottedNameSpecialChars.LEGAL_CHARS;
+
 import java.util.Collections;
 import java.util.List;
-
-import static org.glassfish.admin.amx.dotted.DottedNameSpecialChars.*;
 /*
  */
 final class ParsedDottedName implements java.io.Serializable

@@ -35,39 +35,14 @@
  */
 package org.glassfish.admin.amx.mbean;
 
-import java.util.Map;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Collections;
-import java.util.Iterator;
-
-import java.io.Serializable;
-
-import javax.management.ObjectName;
-import javax.management.MBeanServer;
-import javax.management.MBeanRegistration;
-import javax.management.NotificationEmitter;
-import javax.management.NotificationFilter;
-import javax.management.NotificationListener;
-import javax.management.Notification;
-import javax.management.ListenerNotFoundException;
-import javax.management.NotificationBroadcasterSupport;
-import javax.management.MBeanNotificationInfo;
-import javax.management.AttributeNotFoundException;
-
-import javax.management.Attribute;
-import javax.management.AttributeList;
-import javax.management.MBeanInfo;
-import javax.management.MBeanAttributeInfo;
-import javax.management.DynamicMBean;
-
-import com.sun.appserv.management.base.Sample;
 import com.sun.appserv.management.base.AMXDebug;
+import com.sun.appserv.management.base.Util;
 import com.sun.appserv.management.util.jmx.JMXUtil;
 import com.sun.appserv.management.util.jmx.NotificationBuilder;
 import com.sun.appserv.management.util.misc.Output;
-import com.sun.appserv.management.base.Util;
+
+import javax.management.*;
+import java.util.*;
 
 
 /**

@@ -37,22 +37,15 @@
 
 package org.glassfish.admin.amx.logging;
 
-import java.util.Map;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Iterator;
-import java.util.logging.LogRecord;
-import java.util.logging.Logger;
+import com.sun.appserv.management.base.AMXLoggerBase;
+import com.sun.appserv.management.base.Util;
+import org.glassfish.admin.amx.util.ObjectNames;
 
 import javax.management.ObjectName;
-
-
-import com.sun.appserv.management.base.AMX;
-import com.sun.appserv.management.base.AMXLoggerBase;
-import com.sun.appserv.management.base.LoggerSupport;
-import com.sun.appserv.management.base.Util;
-
-import org.glassfish.admin.amx.util.ObjectNames;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.logging.LogRecord;
+import java.util.logging.Logger;
 //import org.glassfish.admin.amx.types.TypeInfos;
 
 

@@ -34,28 +34,14 @@
  * holder.
  */
 package org.glassfish.admin.amx.j2ee;
- 
-import java.util.Map;
-import java.util.Set;
-
-import javax.management.ObjectName;
-import javax.management.j2ee.statistics.ServletStats;
-
-import com.sun.appserv.management.j2ee.Servlet;
-import com.sun.appserv.management.j2ee.WebModule;
-import com.sun.appserv.management.j2ee.J2EETypes;
 
 import com.sun.appserv.management.base.XTypes;
-import com.sun.appserv.management.base.Util;
-
-
-import com.sun.appserv.management.util.misc.MapUtil;
-import com.sun.appserv.management.util.misc.ExceptionUtil;
-import com.sun.appserv.management.util.misc.GSetUtil;
-import com.sun.appserv.management.util.misc.StringUtil;
-import com.sun.appserv.management.util.misc.CollectionUtil;
-
+import com.sun.appserv.management.j2ee.J2EETypes;
+import com.sun.appserv.management.j2ee.Servlet;
 import org.glassfish.admin.amx.mbean.Delegate;
+
+import javax.management.ObjectName;
+import java.util.Map;
 
 //import com.sun.appserv.management.monitor.WebModuleVirtualServerMonitor;
 //import com.sun.appserv.management.monitor.ServletMonitor;

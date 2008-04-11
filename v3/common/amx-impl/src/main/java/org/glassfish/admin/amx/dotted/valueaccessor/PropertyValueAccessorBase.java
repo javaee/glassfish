@@ -38,18 +38,7 @@ package org.glassfish.admin.amx.dotted.valueaccessor;
 
 import org.glassfish.admin.amx.dotted.DottedNameStrings;
 
-import javax.management.Attribute;
-import javax.management.AttributeList;
-import javax.management.ObjectName;
-import javax.management.MBeanServerConnection;
-import javax.management.ReflectionException;
-import javax.management.MBeanException;
-import javax.management.InstanceNotFoundException;
-import javax.management.AttributeNotFoundException;
-import javax.management.RuntimeOperationsException;
-import javax.management.JMException;
-
-import javax.management.MBeanServerConnection;
+import javax.management.*;
 
 public abstract class PropertyValueAccessorBase extends PrefixedValueAccessorBase
 {

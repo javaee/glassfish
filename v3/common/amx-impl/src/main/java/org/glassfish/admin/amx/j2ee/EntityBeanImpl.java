@@ -34,15 +34,13 @@
  * holder.
  */
 package org.glassfish.admin.amx.j2ee;
- 
-import javax.management.ObjectName;
-
-import javax.management.j2ee.statistics.EntityBeanStats;
 
 import com.sun.appserv.management.j2ee.EntityBean;
 import com.sun.appserv.management.j2ee.J2EETypes;
-
 import org.glassfish.admin.amx.mbean.Delegate;
+
+import javax.management.ObjectName;
+import javax.management.j2ee.statistics.EntityBeanStats;
 
 /**
  */

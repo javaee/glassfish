@@ -35,25 +35,19 @@
  */
 package org.glassfish.admin.amx.j2ee;
 
-import java.util.Set;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Collections;
-
-import javax.management.ObjectName;
-import javax.management.InstanceNotFoundException;
-
-import com.sun.appserv.management.base.Util;
 import com.sun.appserv.management.base.AMX;
 import com.sun.appserv.management.base.XTypes;
-import com.sun.appserv.management.j2ee.JVM;
-import com.sun.appserv.management.j2ee.J2EEServer;
-
 import com.sun.appserv.management.config.ServerConfig;
-
+import com.sun.appserv.management.j2ee.J2EEServer;
+import com.sun.appserv.management.j2ee.JVM;
 import com.sun.appserv.management.util.misc.GSetUtil;
-
 import org.glassfish.admin.amx.mbean.Delegate;
+
+import javax.management.ObjectName;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 /**
 	Identifies a Java VM being utilized by a server.

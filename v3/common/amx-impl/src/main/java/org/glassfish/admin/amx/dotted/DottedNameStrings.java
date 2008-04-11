@@ -35,10 +35,9 @@
  */
 package org.glassfish.admin.amx.dotted;
 
-import java.util.ResourceBundle;
-import java.util.Properties;
-import java.util.MissingResourceException;
 import java.text.MessageFormat;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
 
 /**
    Message strings for various messages and errors.

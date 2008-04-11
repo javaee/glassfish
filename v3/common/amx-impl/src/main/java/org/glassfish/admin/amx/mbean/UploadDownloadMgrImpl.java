@@ -35,28 +35,19 @@
  */
 package org.glassfish.admin.amx.mbean;
 
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Set;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Collections;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import com.sun.appserv.management.base.AMX;
+import com.sun.appserv.management.base.Singleton;
+import com.sun.appserv.management.base.UploadDownloadMgr;
+import com.sun.appserv.management.base.Utility;
+import com.sun.appserv.management.util.misc.GSetUtil;
+import org.glassfish.admin.amx.util.UniqueIDGenerator;
 
 import javax.management.ObjectName;
-
-import com.sun.appserv.management.base.AMX;
-import com.sun.appserv.management.base.Utility;
-import com.sun.appserv.management.base.Singleton;
-import com.sun.appserv.management.base.XTypes;
-import com.sun.appserv.management.base.UploadDownloadMgr;
-
-import com.sun.appserv.management.util.misc.GSetUtil;
-
-import org.glassfish.admin.amx.util.UniqueIDGenerator;
+import java.io.File;
+import java.io.IOException;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 public final class UploadDownloadMgrImpl extends AMXNonConfigImplBase
 	implements Utility, Singleton, UploadDownloadMgr

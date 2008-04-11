@@ -35,85 +35,28 @@
  */
 package org.glassfish.admin.amx.mbean;
 
-import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Set;
-import java.util.Collections;
-import java.util.Properties;
-import java.util.HashSet;
-
-import java.util.logging.Logger;
-
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.InvocationTargetException;
-
-import java.io.IOException;
+import com.sun.appserv.management.DomainRoot;
+import com.sun.appserv.management.base.*;
+import com.sun.appserv.management.client.ConnectionSource;
+import com.sun.appserv.management.client.ProxyFactory;
+import com.sun.appserv.management.config.NamedConfigElement;
+import com.sun.appserv.management.j2ee.J2EETypes;
+import com.sun.appserv.management.util.jmx.AttributeChangeNotificationBuilder;
+import com.sun.appserv.management.util.jmx.JMXUtil;
+import com.sun.appserv.management.util.jmx.MBeanServerConnectionSource;
+import com.sun.appserv.management.util.jmx.stringifier.AttributeChangeNotificationStringifier;
+import com.sun.appserv.management.util.jmx.stringifier.MBeanInfoStringifier;
+import com.sun.appserv.management.util.misc.*;
+import com.sun.appserv.management.util.stringifier.SmartStringifier;
+import org.glassfish.admin.amx.dotted.DottedName;
+import org.glassfish.admin.amx.util.Issues;
+import org.glassfish.admin.amx.util.ObjectNames;
 
 import javax.management.*;
-
-import com.sun.appserv.management.util.stringifier.SmartStringifier;
-import com.sun.appserv.management.util.stringifier.ArrayStringifier;
-import com.sun.appserv.management.util.jmx.stringifier.AttributeChangeNotificationStringifier;
-
-
-import com.sun.appserv.management.base.AMX;
-import com.sun.appserv.management.base.AMXDebug;
-import com.sun.appserv.management.base.AMXAttributes;
-import com.sun.appserv.management.base.Extra;
-import com.sun.appserv.management.base.Container;
-import com.sun.appserv.management.base.Singleton;
-import com.sun.appserv.management.base.Utility;
-
-import com.sun.appserv.management.base.QueryMgr;
-import com.sun.appserv.management.base.XTypes;
-/*
-import org.glassfish.admin.amx.types.XTypesMapper;
-import org.glassfish.admin.amx.types.AllTypesMapper;
-import org.glassfish.admin.amx.types.TypeInfos;
-import org.glassfish.admin.amx.types.TypeInfo;
-*/
-
-import com.sun.appserv.management.base.AMXLoggerBase;
-
-import com.sun.appserv.management.config.NamedConfigElement;
-
-import com.sun.appserv.management.base.QueryMgr;
-import com.sun.appserv.management.DomainRoot;
-import com.sun.appserv.management.base.Util;
-
-import com.sun.appserv.management.client.ConnectionSource;
-import com.sun.appserv.management.util.jmx.MBeanServerConnectionSource;
-import com.sun.appserv.management.util.jmx.JMXUtil;
-
-import com.sun.appserv.management.util.misc.ClassUtil;
-import com.sun.appserv.management.util.misc.ExceptionUtil;
-import com.sun.appserv.management.util.misc.GSetUtil;
-import com.sun.appserv.management.util.misc.ThrowableMapper;
-import com.sun.appserv.management.util.misc.StringUtil;
-import com.sun.appserv.management.util.misc.CollectionUtil;
-
-import org.glassfish.admin.amx.util.ObjectNames;
-import com.sun.appserv.management.base.AMX;
-import com.sun.appserv.management.base.Container;
-import com.sun.appserv.management.base.Singleton;
-
-import com.sun.appserv.management.client.ProxyFactory;
-
-import com.sun.appserv.management.util.jmx.NotificationBuilder;
-import com.sun.appserv.management.util.jmx.AttributeChangeNotificationBuilder;
-import com.sun.appserv.management.util.jmx.stringifier.MBeanInfoStringifier;
-
-import com.sun.appserv.management.util.misc.MapUtil;
-import com.sun.appserv.management.config.AMXConfig;
-import com.sun.appserv.management.config.PropertiesAccess;
-
-import com.sun.appserv.management.j2ee.J2EETypes;
-
-import org.glassfish.admin.amx.util.Issues;
-
-import org.glassfish.admin.amx.dotted.DottedName;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.*;
+import java.util.logging.Logger;
 
 
 /**

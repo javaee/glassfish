@@ -35,35 +35,16 @@
  */
 package org.glassfish.admin.amx.dotted;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Collections;
-import java.util.List;
-import java.util.ArrayList;
-
-
-import javax.management.ObjectName;
-import javax.management.MalformedObjectNameException;
-import javax.management.AttributeNotFoundException;
-import javax.management.Attribute;
-import javax.management.MBeanServerConnection;
-import javax.management.ReflectionException;
-import javax.management.InstanceNotFoundException;
-import javax.management.MBeanException;
-import javax.management.MBeanServerInvocationHandler;
-
-import com.sun.appserv.management.util.misc.ArrayConversion;
-import com.sun.appserv.management.client.ProxyFactory;
-
 import com.sun.appserv.management.DomainRoot;
-
-import com.sun.appserv.management.config.ServersConfig;
-import com.sun.appserv.management.config.ServerConfig;
-import com.sun.appserv.management.config.ConfigsConfig;
-import com.sun.appserv.management.config.ConfigConfig;
 import com.sun.appserv.management.base.Util;
+import com.sun.appserv.management.client.ProxyFactory;
+import com.sun.appserv.management.config.ConfigConfig;
+import com.sun.appserv.management.config.ConfigsConfig;
+import com.sun.appserv.management.config.ServerConfig;
+import com.sun.appserv.management.config.ServersConfig;
+
+import javax.management.*;
+import java.util.*;
 
 
 

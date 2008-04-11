@@ -35,22 +35,18 @@
  */
 package org.glassfish.admin.amx.mbean;
 
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Collections;
-import java.util.Iterator;
-
-import java.io.Serializable;
-
-import javax.management.NotificationEmitter;
-import javax.management.Attribute;
-import javax.management.MBeanInfo;
-import javax.management.ObjectName;
-import javax.management.MBeanAttributeInfo;
-
 import com.sun.appserv.management.base.Sample;
 import com.sun.appserv.management.util.jmx.JMXUtil;
-import com.sun.appserv.management.base.XTypes;
+
+import javax.management.Attribute;
+import javax.management.MBeanAttributeInfo;
+import javax.management.MBeanInfo;
+import javax.management.ObjectName;
+import java.io.Serializable;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 
 /**

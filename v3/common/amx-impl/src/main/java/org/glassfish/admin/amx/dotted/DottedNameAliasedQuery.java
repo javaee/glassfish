@@ -35,12 +35,10 @@
  */
 package org.glassfish.admin.amx.dotted;
 
-import java.util.Collections;
-import java.util.Set;
-import java.util.HashSet;
-import java.util.Iterator;
-
 import javax.management.ObjectName;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 /*
 	Implements DottedNameQuery over config dotted names by presenting a view

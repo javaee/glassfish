@@ -35,20 +35,16 @@
  */
 package org.glassfish.admin.amx.mbean;
 
-import java.util.Set;
+import static com.sun.appserv.management.base.SystemInfo.*;
+import com.sun.appserv.management.base.Util;
+import com.sun.appserv.management.util.jmx.JMXUtil;
+import com.sun.appserv.management.util.misc.GSetUtil;
 
+import javax.management.JMException;
+import javax.management.MBeanInfo;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
-import javax.management.MBeanInfo;
-import javax.management.JMException;
-
-import static com.sun.appserv.management.base.SystemInfo.*;
-
-import com.sun.appserv.management.base.Util;
-import com.sun.appserv.management.util.misc.GSetUtil;
-import com.sun.appserv.management.util.jmx.JMXUtil;
-
-import org.glassfish.admin.amx.mbean.SystemInfoImpl;
+import java.util.Set;
 
 /**
     Single-use utility class to contain the  details of initializing various

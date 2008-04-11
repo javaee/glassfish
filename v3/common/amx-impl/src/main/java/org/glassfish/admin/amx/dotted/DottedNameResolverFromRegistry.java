@@ -35,9 +35,8 @@
  */
 package org.glassfish.admin.amx.dotted;
 
-import javax.management.ObjectName;
-import javax.management.MBeanServerConnection;
 import javax.management.MalformedObjectNameException;
+import javax.management.ObjectName;
 
 
 

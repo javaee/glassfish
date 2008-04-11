@@ -3,14 +3,12 @@
 package org.glassfish.admin.amx.config;
 
 
+import org.glassfish.admin.amx.util.SingletonEnforcer;
+import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.CageBuilder;
 import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.component.PostConstruct;
-import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.config.ConfigBean;
-
-import com.sun.appserv.management.config.AMXConfig;
-import org.glassfish.admin.amx.util.SingletonEnforcer;
 
 
 /**

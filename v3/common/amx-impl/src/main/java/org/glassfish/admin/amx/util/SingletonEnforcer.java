@@ -35,8 +35,8 @@
  */
 package org.glassfish.admin.amx.util;
 
-import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 /**
     Enforce singletone semantics: if an item already exists, an Error is thrown.

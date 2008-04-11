@@ -34,10 +34,10 @@
  * holder.
  */
  
-package org.glassfish.admin.amx.dotted; 
- 
-import java.util.Set;
+package org.glassfish.admin.amx.dotted;
+
 import javax.management.ObjectName;
+import java.util.Set;
 
 /*
 	A lookup service for DottedNames. No assumptions are made about how the

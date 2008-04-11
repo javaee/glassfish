@@ -22,38 +22,22 @@
  */
 package org.glassfish.admin.amx.cmd;
 
-import java.util.Set;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Collections;
-
-import javax.management.MBeanServer;
-import javax.management.ObjectName;
-import javax.management.JMException;
-import javax.management.MBeanServerDelegateMBean;
-import javax.management.MBeanServerInvocationHandler;
-
-import java.lang.management.ManagementFactory;
-
-import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.annotations.Extract;
-
-import org.glassfish.api.admin.AdminCommand;
-import org.glassfish.api.admin.AdminCommandContext;
-import org.glassfish.api.ActionReport;
-import org.glassfish.api.I18n;
-import org.glassfish.api.ActionReport.ExitCode;
-
 import com.sun.appserv.management.DomainRoot;
 import com.sun.appserv.management.client.ProxyFactory;
-
 import com.sun.appserv.management.util.jmx.JMXUtil;
 import com.sun.appserv.management.util.misc.StringUtil;
-import com.sun.appserv.management.util.misc.TimingDelta;
-
 import org.glassfish.admin.amx.loader.AMXStartupService;
+import org.glassfish.api.ActionReport;
+import org.glassfish.api.ActionReport.ExitCode;
+import org.glassfish.api.I18n;
+import org.glassfish.api.admin.AdminCommand;
+import org.glassfish.api.admin.AdminCommandContext;
+import org.jvnet.hk2.annotations.Service;
+
+import javax.management.ObjectName;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 
 
 /**

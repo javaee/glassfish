@@ -36,13 +36,10 @@
 
 package org.glassfish.admin.amx.config;
 
-import javax.management.ObjectName;
-import javax.management.NotificationListener;
-import javax.management.MBeanRegistration;
-
-
-
 import org.glassfish.admin.amx.mbean.AMXSupport;
+
+import javax.management.MBeanRegistration;
+import javax.management.NotificationListener;
 
 /**
 	<b>INTERNAL USE ONLY</b>

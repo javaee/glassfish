@@ -1,54 +1,35 @@
 
 package org.glassfish.admin.amx.config;
 
-import java.util.Set;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.CountDownLatch;
-import java.util.logging.Logger;
-
-import javax.management.MBeanServer;
-import javax.management.ObjectName;
-import javax.management.JMException;
-import javax.management.ObjectInstance;
-import javax.management.Notification;
-import javax.management.NotificationListener;
-
-import org.jvnet.hk2.config.ConfigBean;
-import org.jvnet.hk2.config.ConfigBeanProxy;
-import org.jvnet.hk2.config.Transactions;
-import org.jvnet.hk2.config.TransactionListener;
-import org.jvnet.hk2.config.ConfigSupport;
-import org.jvnet.hk2.config.Changed;
-import java.beans.PropertyChangeEvent;
-import com.sun.appserv.management.util.jmx.JMXUtil;
-
-import org.glassfish.api.amx.AMXConfigInfo;
-import org.glassfish.api.amx.AMXMBeanMetadata;
-
 import com.sun.appserv.management.base.AMX;
+import com.sun.appserv.management.base.Container;
 import com.sun.appserv.management.base.Util;
 import com.sun.appserv.management.base.XTypes;
-import com.sun.appserv.management.base.Container;
 import com.sun.appserv.management.client.ProxyFactory;
 import com.sun.appserv.management.config.AMXConfig;
-import com.sun.appserv.management.util.misc.RunnableBase;
+import com.sun.appserv.management.util.jmx.JMXUtil;
 import com.sun.appserv.management.util.misc.ClassUtil;
 import com.sun.appserv.management.util.misc.ExceptionUtil;
-
-
-import org.glassfish.admin.amx.logging.AMXMBeanRootLogger;
-import org.glassfish.admin.amx.mbean.AMXSupport;
-import org.glassfish.admin.amx.mbean.MBeanImplBase;
-import org.glassfish.admin.amx.mbean.Delegate;
-import org.glassfish.admin.amx.mbean.AMXImplBase;
-import org.glassfish.admin.amx.util.ObjectNames;
-import org.glassfish.admin.amx.util.AMXConfigInfoResolver;
 import org.glassfish.admin.amx.loader.AMXConfigVoid;
-
+import org.glassfish.admin.amx.logging.AMXMBeanRootLogger;
+import org.glassfish.admin.amx.mbean.AMXImplBase;
+import org.glassfish.admin.amx.mbean.Delegate;
+import org.glassfish.admin.amx.mbean.MBeanImplBase;
+import org.glassfish.admin.amx.util.AMXConfigInfoResolver;
 import org.glassfish.admin.amx.util.FeatureAvailability;
+import org.glassfish.admin.amx.util.ObjectNames;
+import org.glassfish.api.amx.AMXConfigInfo;
+import org.glassfish.api.amx.AMXMBeanMetadata;
+import org.jvnet.hk2.config.*;
+
+import javax.management.*;
+import java.beans.PropertyChangeEvent;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.logging.Logger;
 
 
 /**

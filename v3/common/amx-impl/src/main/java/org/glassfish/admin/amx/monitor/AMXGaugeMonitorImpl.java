@@ -36,12 +36,10 @@
 
 package org.glassfish.admin.amx.monitor;
 
-import javax.management.monitor.GaugeMonitor;
-
-import com.sun.appserv.management.base.AMX;
 import com.sun.appserv.management.monitor.AMXGaugeMonitor;
-
 import org.glassfish.admin.amx.util.ObjectNames;
+
+import javax.management.monitor.GaugeMonitor;
 
 /**
 	Implementation of javax.management.monitor.GaugeMonitor which is an AMX.

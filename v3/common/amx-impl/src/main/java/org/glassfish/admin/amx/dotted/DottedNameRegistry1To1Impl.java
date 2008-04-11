@@ -34,14 +34,13 @@
  * holder.
  */
 package org.glassfish.admin.amx.dotted;
- 
- 
-import java.util.Set;
-import java.util.HashSet;
-import java.util.HashMap;
-import java.util.Map;
+
 
 import javax.management.ObjectName;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /*
 	While a dotted name can refer to only 1 ObjectName, an ObjectName could

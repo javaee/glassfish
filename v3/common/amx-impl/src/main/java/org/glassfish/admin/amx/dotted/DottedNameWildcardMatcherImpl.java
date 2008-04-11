@@ -36,13 +36,9 @@
 package org.glassfish.admin.amx.dotted;
 
 import java.util.HashSet;
-import java.util.Set;
-import java.util.List;
-import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Set;
 import java.util.regex.Pattern;
-
-import javax.management.ObjectName;
 
 
 /*

@@ -35,14 +35,10 @@
  */
 package org.glassfish.admin.amx.j2ee;
 
-import javax.management.ObjectName;
-
 import com.sun.appserv.management.j2ee.JMSResource;
-
-import com.sun.appserv.management.j2ee.J2EETypes;
-
-
 import org.glassfish.admin.amx.mbean.Delegate;
+
+import javax.management.ObjectName;
 /**
  */
 public final class JMSResourceImpl

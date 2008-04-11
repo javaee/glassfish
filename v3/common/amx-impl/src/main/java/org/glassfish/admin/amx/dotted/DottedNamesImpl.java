@@ -35,30 +35,15 @@
  */
 package org.glassfish.admin.amx.dotted;
 
-import javax.management.ObjectName;
-
-import java.util.Map;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
-import java.util.HashSet;
-import java.util.Collections;
-
-import com.sun.appserv.management.base.DottedNames;
-import com.sun.appserv.management.base.AMX;
-import com.sun.appserv.management.base.QueryMgr;
-
-import com.sun.appserv.management.base.Container;
-import com.sun.appserv.management.base.Util;
-import com.sun.appserv.management.base.Dotted;
-
-import com.sun.appserv.management.util.jmx.JMXUtil;
-import com.sun.appserv.management.util.misc.StringUtil;
-import com.sun.appserv.management.util.misc.ExceptionUtil;
-
+import com.sun.appserv.management.base.*;
 import com.sun.appserv.management.config.ConfigDottedNames;
-
 import com.sun.appserv.management.config.DomainConfig;
+import com.sun.appserv.management.util.jmx.JMXUtil;
+import com.sun.appserv.management.util.misc.ExceptionUtil;
+import com.sun.appserv.management.util.misc.StringUtil;
+
+import javax.management.ObjectName;
+import java.util.*;
 
 
 public final class DottedNamesImpl  extends DottedNamesBase
@@ -223,6 +208,7 @@ public final class DottedNamesImpl  extends DottedNamesBase
         final Map<String,ObjectName> all = getAllDottedNameTargetsObjectNameMap();
         
         String dump = "";
+        int numProblems = 0;
         for( final String dottedName : all.keySet() )
         {
             try
@@ -235,8 +221,13 @@ public final class DottedNamesImpl  extends DottedNamesBase
             {
                 //cdebug( "RESOLVE FAILURE: " + dottedName + " : " + ExceptionUtil.toString(e) );
                 dump = dump + dottedName + " => " + ExceptionUtil.toString(e) + StringUtil.NEWLINE();
+                
+                ++numProblems;
             }
         }
+        
+        dump = dump + "PROBLEMS FOUND: " + numProblems;
+        
         return dump;
     }
     
@@ -368,7 +359,7 @@ public final class DottedNamesImpl  extends DottedNamesBase
             final AMX amx = resolveToAnAMX( pieces.getPath() );
             if ( amx != null )
             {
-    cdebug( "Resolved " + pieces.getPath() + " to " + Util.getObjectName(amx) );
+                cdebug( "Resolved " + pieces.getPath() + " to " + Util.getObjectName(amx) );
                 try
                 {
                     final String value = "" + amx.getDottedValue(pieces.getValueName());

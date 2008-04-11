@@ -35,8 +35,6 @@
  */
 package org.glassfish.admin.amx.dotted;
 
-import java.util.Set;
-
 import javax.management.ObjectName;
 
 

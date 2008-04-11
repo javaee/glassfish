@@ -35,17 +35,16 @@
  */
 package org.glassfish.admin.amx.dotted;
 
-import java.util.Collections;
-import java.util.Arrays;
-import java.util.List;
-import java.util.ArrayList;
-
 import com.sun.appserv.management.util.misc.Tokenizer;
-import com.sun.appserv.management.util.misc.TokenizerImpl;
 import com.sun.appserv.management.util.misc.TokenizerException;
+import com.sun.appserv.management.util.misc.TokenizerImpl;
 import com.sun.appserv.management.util.misc.TokenizerParams;
+import static org.glassfish.admin.amx.dotted.DottedNameSpecialChars.ESCAPE_CHAR;
+import static org.glassfish.admin.amx.dotted.DottedNameSpecialChars.WILDCARDS;
 
-import static org.glassfish.admin.amx.dotted.DottedNameSpecialChars.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /*
 	Represents a dotted name.  The dotted name consists of a domain (usually empty),
@@ -222,7 +221,7 @@ public final class DottedName
         HTTPService => httpservice
      */
         public static String
-    dashify( final String name )
+    hyphenate( final String name )
     {
         final int length = name.length();
         final StringBuffer b = new StringBuffer();

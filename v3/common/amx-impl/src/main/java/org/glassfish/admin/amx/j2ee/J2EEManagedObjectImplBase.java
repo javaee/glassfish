@@ -22,42 +22,22 @@
  */
 package org.glassfish.admin.amx.j2ee;
 
-import java.util.Set;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Collections;
-
-import javax.management.ObjectName;
-import javax.management.MBeanInfo;
-import javax.management.MBeanAttributeInfo;
-import javax.management.j2ee.statistics.Stats;
-import javax.management.Attribute;
-import javax.management.AttributeNotFoundException;
-
-import org.glassfish.admin.amx.mbean.AMXNonConfigImplBase;
-
+import com.sun.appserv.management.base.AMX;
+import com.sun.appserv.management.base.Extra;
+import com.sun.appserv.management.base.Util;
+import com.sun.appserv.management.base.XTypes;
+import com.sun.appserv.management.config.ServerConfig;
+import com.sun.appserv.management.j2ee.J2EEManagedObject;
+import com.sun.appserv.management.j2ee.J2EEServer;
+import com.sun.appserv.management.j2ee.J2EETypes;
 import com.sun.appserv.management.util.misc.GSetUtil;
 import com.sun.appserv.management.util.misc.MapUtil;
-import com.sun.appserv.management.util.misc.ExceptionUtil;
-import com.sun.appserv.management.util.jmx.JMXUtil;
-
-import com.sun.appserv.management.base.Util;
-import com.sun.appserv.management.base.AMX;
-import com.sun.appserv.management.base.XTypes;
-import com.sun.appserv.management.base.QueryMgr;
-import com.sun.appserv.management.base.Extra;
-
-import com.sun.appserv.management.j2ee.J2EETypes;
-import com.sun.appserv.management.j2ee.J2EEServer;
-import com.sun.appserv.management.j2ee.J2EEManagedObject;
-import com.sun.appserv.management.j2ee.ConfigPeer;
-
-import com.sun.appserv.management.monitor.MonitoringStats;
-
-import com.sun.appserv.management.config.ServerConfig;
-
+import org.glassfish.admin.amx.mbean.AMXNonConfigImplBase;
 import org.glassfish.admin.amx.mbean.Delegate;
+
+import javax.management.ObjectName;
+import javax.management.j2ee.statistics.Stats;
+import java.util.*;
 
 
 /**

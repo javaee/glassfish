@@ -36,6 +36,7 @@
 package org.glassfish.admin.amx.dotted;
 
 import com.sun.logging.LogDomains;
+
 import java.util.logging.Logger;
 
 public final class DottedNameLogger

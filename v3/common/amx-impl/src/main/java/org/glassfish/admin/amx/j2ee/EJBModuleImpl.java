@@ -35,20 +35,14 @@
  */
 package org.glassfish.admin.amx.j2ee;
 
-import java.util.Set;
-import java.util.Map;
-import java.util.Collections;
-
-import javax.management.ObjectName;
-
+import com.sun.appserv.management.base.XTypes;
 import com.sun.appserv.management.j2ee.EJBModule;
 import com.sun.appserv.management.j2ee.J2EETypes;
-import com.sun.appserv.management.base.XTypes;
-import com.sun.appserv.management.base.Util;
-
 import com.sun.appserv.management.util.misc.GSetUtil;
-
 import org.glassfish.admin.amx.mbean.Delegate;
+
+import javax.management.ObjectName;
+import java.util.Set;
 
 /**
  */

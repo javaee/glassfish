@@ -22,22 +22,16 @@
  */
 package org.glassfish.admin.amx.cmd;
 
-import javax.management.MBeanServer;
-import java.lang.management.ManagementFactory;
-
-import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.annotations.Inject;
-
+import com.sun.enterprise.util.LocalStringManagerImpl;
+import org.glassfish.admin.amx.loader.AMXStartupService;
+import org.glassfish.admin.mbeanserver.AppserverMBeanServerFactory;
+import org.glassfish.api.ActionReport;
+import org.glassfish.api.ActionReport.ExitCode;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
-import org.glassfish.api.ActionReport;
-import org.glassfish.api.I18n;
-import org.glassfish.api.ActionReport.ExitCode;
+import org.jvnet.hk2.annotations.Inject;
 
-import com.sun.enterprise.util.LocalStringManagerImpl;
-import org.glassfish.admin.mbeanserver.AppserverMBeanServerFactory;
-
-import org.glassfish.admin.amx.loader.AMXStartupService;
+import javax.management.MBeanServer;
 
 /**
     Base class for AMX commands.

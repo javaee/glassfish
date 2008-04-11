@@ -35,19 +35,15 @@
  */
 package org.glassfish.admin.amx.mbean;
 
-import java.util.Map;
-import java.util.HashMap;
-
-import javax.management.ObjectName;
-import javax.resource.ResourceException;
-
+import com.sun.appserv.connectors.spi.ConnectorRuntime;
 import com.sun.appserv.management.base.KitchenSink;
 import com.sun.appserv.management.util.misc.ExceptionUtil;
-
-import com.sun.appserv.connectors.spi.ConnectorRuntime;
-
-import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.ComponentException;
+import org.jvnet.hk2.component.Habitat;
+
+import javax.management.ObjectName;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
     

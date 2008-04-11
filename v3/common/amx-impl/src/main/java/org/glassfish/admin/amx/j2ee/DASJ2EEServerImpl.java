@@ -35,41 +35,15 @@
  */
 package org.glassfish.admin.amx.j2ee;
 
-import java.util.Set;
-import java.util.Map;
+import static com.sun.appserv.management.j2ee.StateManageable.*;
+import com.sun.appserv.management.util.misc.ExceptionUtil;
+import org.glassfish.admin.amx.mbean.DummyDelegate;
+import org.glassfish.admin.amx.util.Issues;
 
-import javax.management.ObjectName;
+import javax.management.AttributeNotFoundException;
 import javax.management.Notification;
 import javax.management.NotificationListener;
-import javax.management.MBeanServer;
-import javax.management.MBeanInfo;
-import javax.management.MBeanAttributeInfo;
-import javax.management.MBeanOperationInfo;
-import javax.management.MBeanServerConnection;
-import javax.management.MBeanException;
-import javax.management.AttributeNotFoundException;
-import javax.management.InstanceNotFoundException;
-import javax.management.ReflectionException;
-import javax.management.MBeanServerInvocationHandler;
-
-import com.sun.appserv.management.base.Util;
-import com.sun.appserv.management.util.misc.GSetUtil;
-import com.sun.appserv.management.util.jmx.JMXUtil;
-import com.sun.appserv.management.util.misc.ExceptionUtil;
-import com.sun.appserv.management.client.ProxyFactory;
-import com.sun.appserv.management.j2ee.J2EEServer;
-import com.sun.appserv.management.j2ee.J2EETypes;
-import com.sun.appserv.management.j2ee.StateManageable;
-import static com.sun.appserv.management.j2ee.StateManageable.*;
-import com.sun.appserv.management.j2ee.J2EEServer;
-
-import org.glassfish.admin.amx.mbean.Delegate;
-import org.glassfish.admin.amx.mbean.DummyDelegate;
-import org.glassfish.admin.amx.mbean.QueryMgrImpl;
-
-import com.sun.appserv.management.j2ee.J2EETypes;
-
-import org.glassfish.admin.amx.util.Issues;
+import javax.management.ObjectName;
 
 /**
 	JSR 77 extension representing an Appserver standalone server (non-clustered)

@@ -35,40 +35,16 @@
  */
 package org.glassfish.admin.amx.util;
 
-import java.util.Set;
-import java.util.List;
-import java.util.Collections;
-import java.util.Map;
-import java.util.Iterator;
-
-import java.lang.reflect.Field;
-import java.io.File;
-
-import javax.management.ObjectName;
-import javax.management.InstanceNotFoundException;
-import javax.management.MalformedObjectNameException;
-import javax.management.MBeanServer;
-
-import com.sun.appserv.management.base.AMX;
-import com.sun.appserv.management.base.AMXAttributes;
-import com.sun.appserv.management.base.AMXDebug;
-
-import com.sun.appserv.management.base.Util;
-import com.sun.appserv.management.DomainRoot;
-import com.sun.appserv.management.base.QueryMgr;
-import com.sun.appserv.management.deploy.DeploymentMgr;
-import com.sun.appserv.management.base.XTypes;
-import com.sun.appserv.management.config.*;
-import com.sun.appserv.management.monitor.*;
-import com.sun.appserv.management.j2ee.J2EETypes;
-
-import com.sun.appserv.management.util.misc.ListUtil;
+import com.sun.appserv.management.base.*;
 import com.sun.appserv.management.util.jmx.JMXUtil;
-
 import com.sun.appserv.management.util.misc.ClassUtil;
 import com.sun.appserv.management.util.misc.GSetUtil;
 import com.sun.appserv.management.util.stringifier.SmartStringifier;
 import org.glassfish.admin.amx.loader.BootUtil;
+
+import javax.management.MBeanServer;
+import javax.management.ObjectName;
+import java.util.Set;
 
 
 /**

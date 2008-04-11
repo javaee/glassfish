@@ -35,9 +35,6 @@
  */
 package org.glassfish.admin.amx.dotted;
 
-import javax.management.Attribute;
-import javax.management.AttributeList;
-
 /*
 	Interface for supporting CLI 'get' and 'set' commands.
  */
