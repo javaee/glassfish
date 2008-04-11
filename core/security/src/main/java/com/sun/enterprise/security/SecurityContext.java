@@ -87,8 +87,8 @@ public class SecurityContext extends AbstractSecurityContext implements PostCons
         _logger=LogDomains.getLogger(LogDomains.SECURITY_LOGGER);
     }
 
-    private static InheritableThreadLocal currentSecCtx =
-        new InheritableThreadLocal();
+    private static InheritableThreadLocal<SecurityContext> currentSecCtx =
+        new InheritableThreadLocal<SecurityContext>();
     private static SecurityContext defaultSecurityContext = 
 	generateDefaultSecurityContext();
 
@@ -217,7 +217,7 @@ public class SecurityContext extends AbstractSecurityContext implements PostCons
      * principal case
      */
     public static SecurityContext init(){
-        SecurityContext sc = (SecurityContext) currentSecCtx.get();
+        SecurityContext sc = currentSecCtx.get();
         if(sc == null) { // there is no current security context...
             sc = defaultSecurityContext;
 	}
@@ -250,7 +250,7 @@ public class SecurityContext extends AbstractSecurityContext implements PostCons
                                     SecurityService securityService = _serverContext.getDefaultHabitat().getComponent(SecurityService.class);
 				    assert(securityService != null);
 				    return securityService.getDefaultPrincipal();*/
-                                    SecurityService securityService =(SecurityService) SecurityServicesUtil.getInstance().getHabitat().getComponent(SecurityService.class);
+                                    SecurityService securityService = SecurityServicesUtil.getInstance().getHabitat().getComponent(SecurityService.class);
                                     assert(securityService != null);
                                     return securityService.getDefaultPrincipal();
 				}
@@ -301,7 +301,7 @@ public class SecurityContext extends AbstractSecurityContext implements PostCons
      * null if SecurityContext could not be found in the current thread.
      */
     public static SecurityContext getCurrent() {
-	SecurityContext sc = (SecurityContext) currentSecCtx.get();
+	SecurityContext sc = currentSecCtx.get();
  	if (sc == null) {
 	    sc = defaultSecurityContext;
 	}
@@ -323,7 +323,7 @@ public class SecurityContext extends AbstractSecurityContext implements PostCons
 
  	if (sc != null && sc != defaultSecurityContext) {
  
- 	    SecurityContext current = (SecurityContext)currentSecCtx.get();
+ 	    SecurityContext current = currentSecCtx.get();
  
  	    if (sc != current) {
  
@@ -452,9 +452,8 @@ public class SecurityContext extends AbstractSecurityContext implements PostCons
         } else if (p instanceof WebPrincipal) {
             return ((WebPrincipal) p).getSecurityContext();
         } else {
-            return (SecurityContext) AccessController.doPrivileged(new PrivilegedAction() {
-
-                public Object run() {
+            return AccessController.doPrivileged(new PrivilegedAction<SecurityContext>() {
+                public SecurityContext run() {
                     Subject s = new Subject();
                     s.getPrincipals().add(p);
                     return new SecurityContext(p.getName(), s);
