@@ -493,7 +493,11 @@ public class RemoteCommand {
             }
         }
 
-        message = exitCode + " : " + message;
+        if(ok(message))
+            message = exitCode + " : " + message;
+        else
+            message = exitCode;
+        
         String cause = mainAtts.get("cause");
 
         // TODO We may need to  change this post-TP2
@@ -617,7 +621,7 @@ public class RemoteCommand {
     }
 
     private boolean ok(String s) {
-        return s != null && s.length() > 0;
+        return s != null && s.length() > 0 && !s.equals("null");
     }
 
     /* this is a TP2 Hack!  THis class should be derived from S1ASCommand
