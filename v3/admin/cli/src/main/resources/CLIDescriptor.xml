@@ -49,6 +49,14 @@
         <Option name="dbhost" type="string" value-required="true" default="0.0.0.0"/>
         <Option name="dbport" type="string" value-required="true" default="1527"/>
         <Option name="dbhome" type="string" value-required="true" />
+        <Option name="host" type="string" value-required="true">
+                <shortoption>H</shortoption>
+        </Option>
+        <Option name="port" type="string" value-required="true">
+                <shortoption>p</shortoption>
+        </Option>
+    	<Option name="localonly" type="boolean" value-required="false" default="false"/>
+    	<Option name="remoteonly" type="boolean" value-required="false" default="false"/>
     </Options>
     <Commands>
 	<Command name="dummy" classname="com.sun.enterprise.admin.cli.DummyCommand" numberofoperands="?" usage-text="dummy">
@@ -98,7 +106,7 @@
         <Command name="stop-domain" 
               classname="com.sun.enterprise.admin.cli.StopDomainCommand" 
               numberofoperands="?" 
-              usage-text=" [--terse=false] [--echo=false] [--domaindir domain_directory] [domain_name]">
+              usage-text="stop-domain [--terse=false] [--echo=false] [--domaindir domain_directory] [domain_name]">
             <ValidOption name="domaindir"/>
             <ValidOption name="terse"/>
             <ValidOption name="echo"/>
@@ -130,6 +138,16 @@
             <ValidOption name="dbport"/>
             <ValidOption name="terse"/>
             <ValidOption name="echo"/>
+	</Command>
+        <Command name="list-commands" classname="com.sun.enterprise.admin.cli.ListCommandsCommand"
+              numberofoperands="0" 
+              usage-text="list-commands [--host hostname] [--port adminport] [--terse=false] [--echo=false] [--localonly=false] [--remoteonly=false]">
+            <ValidOption name="terse"/>
+            <ValidOption name="echo"/>
+            <ValidOption name="host"/>
+            <ValidOption name="port"/>
+            <ValidOption name="localonly"/>
+            <ValidOption name="remoteonly"/>
 	</Command>
     </Commands>
 </CommandsAndOptions>

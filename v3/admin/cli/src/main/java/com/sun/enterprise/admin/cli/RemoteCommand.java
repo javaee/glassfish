@@ -56,7 +56,7 @@ public class RemoteCommand {
     public RemoteCommand(String... args) throws CommandException {
         handleRemoteCommand(args);
     }
-    
+
 
     public void handleRemoteCommand(String... args) throws CommandException {
         handleRemoteCommand(args, "hk2-cli", null);
@@ -218,15 +218,6 @@ public class RemoteCommand {
         }
     }
 
-    static boolean pingDAS(int port) {
-        try {
-            new RemoteCommand("version", "--port", Integer.toString(port));
-            return true;
-        }
-        catch (Exception ex) {
-            return false;
-        }
-    }
     /**
      * Returns either the name of the file/directory or the canonical form
      * of the file/directory.  If <code>uploadFile</code> is
@@ -315,7 +306,6 @@ public class RemoteCommand {
         copyStream(in, baos);
         String responseString = baos.toString();
         in = new ByteArrayInputStream(baos.toByteArray());
-        Map<String,Map<String,String>> serverResponse = null;
 
         logger.printDebugMessage("--------  RESPONSE DUMP         --------------");
         logger.printDebugMessage(responseString);
@@ -516,6 +506,7 @@ public class RemoteCommand {
             return;
         }
         String keys = atts.get("keys");
+        String output = "";
         if (keys != null) {
             StringTokenizer token = new StringTokenizer(keys, ";");
             boolean displayProperties = false;
@@ -524,19 +515,21 @@ public class RemoteCommand {
                 //a kludge for NB plugin
                 if (!property.startsWith("nb-")) {
                     if (!displayProperties) {
-                        System.out.print(prefix + "properties=(");
+                        output += prefix + "properties=(";
                         displayProperties = true;
                     }
                         
                     String name = atts.get(property + "_name");
                     String value = atts.get(property + "_value");
-                    System.out.print(name + "=" + value);
+                    output += name + "=" + value;
                     if (token.hasMoreElements()) {
-                        System.out.print(",");
+                        output += ",";
                     }
                 }
                 if (displayProperties) {
-                    System.out.println(")");
+                    output += ")";
+                    logger.printMessage(output);
+                    output = "";
                 }
             }
         }
@@ -552,9 +545,9 @@ public class RemoteCommand {
             String container = token.nextToken();
             int index = key == null ? 0 : key.length() + 1;
             if (childrenType.equals("null") || childrenType.equals("")) {
-                System.out.println(container.substring(index));
+                logger.printMessage(container.substring(index));
             } else {
-                System.out.println(prefix + childrenType + " : " + container.substring(index));
+                logger.printMessage(prefix + childrenType + " : " + container.substring(index));
             }
             // get container attributes
             Map<String,String> childAtts = serverResponse.get(container);
@@ -652,6 +645,26 @@ public class RemoteCommand {
         
         return sb.toString();
     }
+
+    Map<String,Map<String,String>> getServerResponse() {
+        return serverResponse;
+    }
+    
+    /**
+     * See if DAS is alive.
+     * @param port The admin port of DAS
+     * @return true if DAS can be reached and can handle commands, otherwise false.
+     */
+    static boolean pingDAS(int port)
+    {
+        try {
+            new RemoteCommand("version", "--port", Integer.toString(port));
+            return true;
+        }
+        catch (Exception ex) {
+            return false;
+        }
+    }
             
     private static final CLILogger logger = CLILogger.getInstance();
     private static final String SUCCESS = "SUCCESS";
@@ -660,6 +673,7 @@ public class RemoteCommand {
     private boolean verbose = false;
     private boolean terse = false;
     private boolean echo = false;
+    private Map<String,Map<String,String>> serverResponse;
     private final static LocalStringsImpl strings = new LocalStringsImpl(RemoteCommand.class);
 }
 
