@@ -95,6 +95,11 @@
            <version>0.9.4</version>
            <type>zip</type>
         </dependency> 
+        <dependency>
+           <groupId>com.sun.pkg.client</groupId>
+           <artifactId>ucbootstrap</artifactId>
+           <version>0.0.0.1</version>
+        </dependency>
     </dependencies>
 </project>
 

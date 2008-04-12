@@ -43,6 +43,7 @@
     <property name="component.name" value="installer"/>
     <property name="maven.repo.local" value="${user.home}/.m2/repository"/>
     <property name="stage.dir" value="${basedir}/target/stage" />
+    <property name="tmp.dir" value="${basedir}/target/tmp" />
     <property name="resources.dir" value="${basedir}/src/main/resources" />
     <property name="gf.zip.dir" value="${basedir}/../packager/build" />
       
@@ -90,6 +91,40 @@
 
          <echo message="Staging product payload"/>
 
+         <echo message="Copying Glassfish zip file"/>
+<!--  
+         <copy tofile="${stage.dir}/product/packages/glassfish.zip"
+               file="${gf.zip.dir}/V3IPSImage_Installer.zip" />
+-->
+         <echo message="Copying openInstaller zip files"/>
+ 
+         <copy tofile="${stage.dir}/product/packages/Engine.zip"
+               file="${maven.repo.local}/org/openinstaller/engine/0.9.4/engine-0.9.4.zip"/>
+
+         <copy tofile="${stage.dir}/product/packages/Resources.zip"
+               file="${maven.repo.local}/org/openinstaller/resources/0.9.4/resources-0.9.4.zip"/>
+               
+         <echo message="Creating icons zip file"/>
+
+         <copy todir="${tmp.dir}/glassfish/icons">
+             <fileset dir="${resources.dir}/icons" excludes=".svn"/>
+         </copy>
+
+         <zip destfile="${stage.dir}/product/packages/icons.zip"
+             basedir="${tmp.dir}" />
+
+         <delete dir="${tmp.dir}/glassfish" />
+
+         <echo message="Creating updatetool bootstrap zip file"/>
+
+         <copy tofile="${tmp.dir}/updatetool/lib/ucbootstrap.jar"
+             file="${maven.repo.local}/com/sun/pkg/client/ucbootstrap/0.0.0.1/ucbootstrap-0.0.0.1.jar"/>
+
+         <zip destfile="${stage.dir}/product/packages/updatetool.zip"
+             basedir="${tmp.dir}" />
+
+         <delete dir="${tmp.dir}/updatetool" />
+         
          
 
     </target>

@@ -49,6 +49,18 @@
     <Vendor>Sun Microsystems Inc.</Vendor>
   </Identity>  
 
+  <Requirements>
+     <ComponentRefs>
+      <ComponentRef>
+        <ComponentIdentifier>updatetool</ComponentIdentifier>
+        <ComponentRefVersion>
+          <VersionBaseline>0.5</VersionBaseline>
+        </ComponentRefVersion>
+      </ComponentRef>
+     </ComponentRefs>
+  </Requirements>
+
+
   <Payload>
     <CompositeUnit>
       <Name>core</Name>
@@ -70,6 +82,7 @@
 
         </OS>
         <InstallableUnit>glassfish.zip</InstallableUnit>
+        <InstallableUnit>icons.zip</InstallableUnit>
         
       </Realization>
 
@@ -90,6 +103,7 @@
           </RequirementsRealization>
         </OS>
         <InstallableUnit>glassfish.zip</InstallableUnit>
+        <InstallableUnit>icons.zip</InstallableUnit>
                
       </Realization>
 
@@ -109,6 +123,7 @@
           </RequirementsRealization>
         </OS>
         <InstallableUnit>glassfish.zip</InstallableUnit>
+        <InstallableUnit>icons.zip</InstallableUnit>
         
       </Realization>
 
@@ -128,6 +143,7 @@
           </RequirementsRealization>
         </OS>
         <InstallableUnit>glassfish.zip</InstallableUnit>
+        <InstallableUnit>icons.zip</InstallableUnit>
         
       </Realization>
 
