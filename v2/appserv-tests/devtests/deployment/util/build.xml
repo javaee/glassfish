@@ -16,8 +16,7 @@
                debug="on"
                failonerror="true">
             <classpath>
-                <path refid="test.compile.classpath"/>
-                <pathelement location="${inst}/lib/appserv-rt.jar"/>
+                <path refid="gfv3.classpath"/>
                 <pathelement location="${junit.jar}"/>
             </classpath>
         </javac>

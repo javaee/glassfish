@@ -20,7 +20,7 @@
                destdir="${build}/${testName}/WEB-INF/classes"
                debug="on"
                failonerror="true">
-            <classpath refid="test.compile.classpath"/>
+            <classpath refid="gfv3.classpath" />
         </javac>
     </target>
 

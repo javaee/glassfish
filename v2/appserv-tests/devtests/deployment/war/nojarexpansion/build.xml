@@ -31,8 +31,8 @@
                destdir="${build}"
                debug="on"
                failonerror="true">
-            <classpath >
-                <path location="${inst}/lib/j2ee.jar"/>
+            <classpath>
+                <path refid="gfv3.classpath"/>
                 <path location="${inst}/jdk/lib/tools.jar"/>
                 <path location="${dummy.jar}"/>
             </classpath >
@@ -153,7 +153,7 @@
             <jvmarg value="-Djava.endorsed.dirs=${inst}/lib/endorsed"/>
 
             <classpath>
-                <path location="${inst}/lib/j2ee.jar"/>
+                <path refid="gfv3.classpath"/>
                 <path location="${build}"/>
             </classpath>
 

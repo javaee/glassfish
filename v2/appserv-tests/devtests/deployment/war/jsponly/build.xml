@@ -7,7 +7,6 @@
 <project name="jsponlyApp" default="usage" basedir=".">
 
     &commonBuild;
-
     <property name="contextRoot" value="war"/>
     <property name="testName" value="jsponly"/>
 
@@ -49,7 +48,7 @@
 
     <target name="redeploy.asadmin" depends="prepare">
         <antcall target="common.redeploy.asadmin">
-            <param name="arg.list" value="${all.war}"/>
+            <param name="arg.list" value="--force=true ${all.war}"/>
             <param name="testName" value="${testName}"/>
         </antcall>
     </target>
@@ -126,12 +125,11 @@
             <jvmarg value="-Djava.endorsed.dirs=${inst}/lib/endorsed"/>
 
             <classpath>
-               <path location="${inst}/lib/j2ee.jar"/>
+	       <path refid="gfv3.classpath"/>
                <path location="${build}"/>
             </classpath>
 
             <arg line="${arg.list}"/>
-
         </javaWithResult>
 
         <antcall target="processResult">

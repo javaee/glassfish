@@ -3,10 +3,10 @@
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
  */
 package devtests.deployment.util;
-                                                                                
-import com.sun.enterprise.deployment.annotation.ErrorHandler;
-import com.sun.enterprise.deployment.annotation.AnnotationProcessorException;
-import com.sun.enterprise.deployment.annotation.impl.AnnotationUtils;
+
+import org.glassfish.apf.ErrorHandler;
+import org.glassfish.apf.AnnotationProcessorException;
+import org.glassfish.apf.impl.AnnotationUtils;
                                                                                 
 /**
  * Standalone Implementation of ErrorHandler.

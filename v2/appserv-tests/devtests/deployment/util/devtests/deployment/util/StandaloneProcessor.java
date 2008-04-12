@@ -27,19 +27,19 @@ import com.sun.enterprise.deployment.EjbBundleDescriptor;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.WebComponentDescriptor;
 
-import com.sun.enterprise.deployment.annotation.AnnotatedElementHandler;
-import com.sun.enterprise.deployment.annotation.AnnotationHandler;
-import com.sun.enterprise.deployment.annotation.AnnotationProcessor;
-import com.sun.enterprise.deployment.annotation.ProcessingContext;
-import com.sun.enterprise.deployment.annotation.ProcessingResult;
-import com.sun.enterprise.deployment.annotation.Scanner;
+import org.glassfish.apf.AnnotatedElementHandler;
+import org.glassfish.apf.AnnotationHandler;
+import org.glassfish.apf.AnnotationProcessor;
+import org.glassfish.apf.ProcessingContext;
+import org.glassfish.apf.ProcessingResult;
+import org.glassfish.apf.Scanner;
 import com.sun.enterprise.deployment.annotation.context.AppClientContext;
 import com.sun.enterprise.deployment.annotation.context.EjbBundleContext;
 import com.sun.enterprise.deployment.annotation.context.WebBundleContext;
 import com.sun.enterprise.deployment.annotation.factory.SJSASFactory;
-import com.sun.enterprise.deployment.annotation.impl.AnnotationUtils;
+import org.glassfish.apf.impl.AnnotationUtils;
 import com.sun.enterprise.deployment.annotation.impl.AppClientScanner;
-import com.sun.enterprise.deployment.annotation.impl.DirectoryScanner;
+import org.glassfish.apf.impl.DirectoryScanner;
 import com.sun.enterprise.deployment.annotation.impl.EjbJarScanner;
 import com.sun.enterprise.deployment.annotation.impl.WarScanner;
 
@@ -125,7 +125,9 @@ public class StandaloneProcessor {
                     if (ModuleType.EJB.equals(type)) {
                         EjbBundleDescriptor ejbBundleDesc =
                                 (EjbBundleDescriptor)bundleDescriptor;
-                        scanner = new EjbJarScanner(f, ejbBundleDesc, classLoader);
+                        scanner = new EjbJarScanner();
+                        scanner.process(f, ejbBundleDesc, classLoader);
+                        
                     } else if (ModuleType.WAR.equals(type)) {
                         WebBundleDescriptor webBundleDesc =
                                 (WebBundleDescriptor)bundleDescriptor;
@@ -136,16 +138,21 @@ public class StandaloneProcessor {
                             webCompDesc.setWebComponentImplementation(cname);
                             webBundleDesc.addWebComponentDescriptor(webCompDesc);
                         }
-                        scanner = new WarScanner(f, webBundleDesc, classLoader);
+                        scanner = new WarScanner();
+                        scanner.process(f, webBundleDesc, classLoader);
+                        
                     } else if (ModuleType.CAR.equals(type)) {
                         String mainClassName = compClassNames.iterator().next();
                         ApplicationClientDescriptor appClientDesc = 
                                 (ApplicationClientDescriptor)bundleDescriptor;
                         appClientDesc.setMainClassName(mainClassName);
-                        scanner = new AppClientScanner(f, appClientDesc, classLoader);
+                        scanner = new AppClientScanner();
+                        scanner.process(f, appClientDesc, classLoader);
+                        
                     }
 
-                    AnnotationProcessor ap = SJSASFactory.getAnnotationProcessor();
+                    AnnotationProcessor ap = (new SJSASFactory()).getAnnotationProcessor();
+                    
                     
                     // if the user indicated a directory for handlers, time to add the                    
                     String handlersDir = System.getProperty("handlers.dir");
@@ -195,8 +202,7 @@ public class StandaloneProcessor {
 
     public void generateWebXmlFile(String dir) throws IOException {
          WebDeploymentDescriptorFile webdf = new WebDeploymentDescriptorFile();
-         webdf.write(bundleDescriptor, dir);
-    
+         webdf.write((WebBundleDescriptor)bundleDescriptor, dir);
     }
 
     public void generateWebServicesXmlFile(String dir) throws IOException {
@@ -207,12 +213,14 @@ public class StandaloneProcessor {
     private void addHandlers(AnnotationProcessor ap, String handlersDir) {
         try {
         System.out.println("Handlers dir set at " + handlersDir);
-        DirectoryScanner scanner = new DirectoryScanner(new File(handlersDir));
+        DirectoryScanner scanner = new DirectoryScanner();
+        scanner.process(new File(handlersDir),null,null);
+        
         Set<Class> elements = scanner.getElements();
         for (Class handlerClass : elements) {
             Class[] interfaces = handlerClass.getInterfaces();
             for (Class interf : interfaces) {
-                if (interf.equals(com.sun.enterprise.deployment.annotation.AnnotationHandler.class)) {
+                if (interf.equals(org.glassfish.apf.AnnotationHandler.class)) {
                     AnnotationHandler handler = (AnnotationHandler) handlerClass.newInstance();
                     if (AnnotationUtils.shouldLog("handler")) {
                         AnnotationUtils.getLogger().fine("Registering handler " + handlerClass 
