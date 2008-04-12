@@ -65,6 +65,8 @@ public class ListCommandsCommand extends S1ASCommand {
         
         if(!localOnly)
             printRemoteCommands();
+        
+        logger.printMessage("");
     }
 
     @Override
@@ -82,7 +84,7 @@ public class ListCommandsCommand extends S1ASCommand {
         return true;
     }
 
-    private void getLocalCommands() throws CommandValidationException {
+    String[] getLocalCommands() throws CommandValidationException {
         CLIDescriptorsReader r = CLIDescriptorsReader.getInstance();
         Iterator<ValidCommand> it = r.getCommandsList().getCommands();
         List<String> names = new ArrayList<String>();
@@ -91,9 +93,11 @@ public class ListCommandsCommand extends S1ASCommand {
             names.add(it.next().getName());
         }
         localCommands = names.toArray(new String[names.size()]);
+        Arrays.sort(localCommands);
+        return localCommands;
     }
 
-    private void getRemoteCommands() throws CommandException {
+    String[] getRemoteCommands() throws CommandException {
         try {
             CLILogger.getInstance().pushAndLockLevel(Level.WARNING);
             RemoteCommand rc = new RemoteCommand(getRemoteArgs());
@@ -101,6 +105,7 @@ public class ListCommandsCommand extends S1ASCommand {
             Map<String,String> mainAtts = rc.getServerResponse().get(ManifestUtils.MAIN_ATTS);
             String cmds = mainAtts.get("children");
             remoteCommands = cmds.split(";");
+            return remoteCommands;
         }
         catch(CommandException e) {
             throw e;
@@ -132,7 +137,7 @@ public class ListCommandsCommand extends S1ASCommand {
         return s != null && s.length() > 0 && !s.equals("null");
     }
 
-    private void printLocalCommands() {
+    void printLocalCommands() {
         logger.printMessage("********** Local Commands **********");
         
         for(String s : localCommands) {
@@ -140,12 +145,29 @@ public class ListCommandsCommand extends S1ASCommand {
         }
     }
 
-    private void printRemoteCommands() {
+    void printRemoteCommands() {
         logger.printMessage("********** Remote Commands **********");
         
-        for(String s : remoteCommands) {
-            logger.printMessage(s);
+        // there are a LOT of remote commands -- make 2 columns
+        int num = remoteCommands.length;
+        int offset = (num / 2) + (num % 2);
+        StringBuilder sb = new StringBuilder();
+        
+        for(int i = 0; i < offset; i++) {
+            sb.append(remoteCommands[i]);
+            sb.append(justify(remoteCommands[i], 40));
+            if(i + offset < num) {
+                sb.append(remoteCommands[i + offset]);
+            }
+            if(i < offset - 1)
+            sb.append(EOL);
         }
+        logger.printMessage(sb.toString());
+    }
+    
+    private String justify(String s, int width) {
+        int numSpaces = width - s.length();
+        return SPACES.substring(0, numSpaces);
     }
     
     String[] remoteCommands;
@@ -156,5 +178,6 @@ public class ListCommandsCommand extends S1ASCommand {
     boolean remoteOnly;
     private final static LocalStringsImpl strings = new LocalStringsImpl(ListCommandsCommand.class);
     private final static CLILogger logger = CLILogger.getInstance();
-
+    private static final String SPACES = "                                                            ";
+    private static final String EOL = System.getProperty("line.separator");
 }

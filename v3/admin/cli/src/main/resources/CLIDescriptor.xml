@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <CommandsAndOptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="CLISpecification.xsd">
-    <CommandProperties defaultcommand="multimode" helpclass="com.sun.enterprise.admin.cli.HelpCommand">
+    <CommandProperties defaultcommand="introduction" helpclass="com.sun.enterprise.admin.cli.HelpCommand">
 	<CommandProperty name="base-package" value="com.sun.enterprise.admin.cli"/>
 	<CommandProperty name="property-file-name" value="LocalStrings"/>
 	<CommandProperty name="environment-prefix" value="AS_ADMIN_"/>
@@ -59,8 +59,6 @@
     	<Option name="remoteonly" type="boolean" value-required="false" default="false"/>
     </Options>
     <Commands>
-	<Command name="dummy" classname="com.sun.enterprise.admin.cli.DummyCommand" numberofoperands="?" usage-text="dummy">
-	</Command>
 	<Command name="start-domain" classname="com.sun.enterprise.admin.cli.StartDomainCommand" numberofoperands="?" 
              usage-text=" [--domaindir domain_directory] [--verbose=false] [--debug=false] [domain_name]">
 	    <ValidOption name="verbose"/>
@@ -148,6 +146,10 @@
             <ValidOption name="port"/>
             <ValidOption name="localonly"/>
             <ValidOption name="remoteonly"/>
+	</Command>
+        <Command name="introduction" classname="com.sun.enterprise.admin.cli.IntroductionCommand"
+              numberofoperands="0" 
+              usage-text="introduction">
 	</Command>
     </Commands>
 </CommandsAndOptions>

@@ -54,13 +54,20 @@ public class AsadminMain {
             CLILogger.getInstance().printDebugMessage(e.getMessage());
             exitCode = main.remote(args);
         }
+        String name;
+        if(args.length == 0)
+            name = "introduction";
+        else
+            name = args[0];
         
         if(exitCode == SUCCESS) {
-            CLILogger.getInstance().printDetailMessage(strings.get("CommandSuccessful", args[0]));
+            CLILogger.getInstance().printDetailMessage(
+                strings.get("CommandSuccessful", name));
         }
         
         if(exitCode == ERROR) {
-            CLILogger.getInstance().printDetailMessage(strings.get("CommandUnSuccessful", args[0]));
+            CLILogger.getInstance().printDetailMessage(
+                strings.get("CommandUnSuccessful", name));
         }
         System.exit(exitCode);
     }
