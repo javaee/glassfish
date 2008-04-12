@@ -92,10 +92,11 @@
          <echo message="Staging product payload"/>
 
          <echo message="Copying Glassfish zip file"/>
-<!--  
+<!-- 
          <copy tofile="${stage.dir}/product/packages/glassfish.zip"
                file="${gf.zip.dir}/V3IPSImage_Installer.zip" />
 -->
+
          <echo message="Copying openInstaller zip files"/>
  
          <copy tofile="${stage.dir}/product/packages/Engine.zip"
@@ -123,13 +124,16 @@
          <zip destfile="${stage.dir}/product/packages/updatetool.zip"
              basedir="${tmp.dir}" />
 
-         <delete dir="${tmp.dir}/updatetool" />
+         <delete dir="${tmp.dir}" />
          
          
 
     </target>
 
     <target name="package"  description="Packaging installer distributions">
+
+         <zip destfile="${basedir}/target/installer_distro.zip"
+             basedir="${stage.dir}" />
 
     </target>
 
