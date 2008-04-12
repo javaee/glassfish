@@ -24,15 +24,40 @@
 
 package com.sun.enterprise.security;
 
+import com.sun.enterprise.deployment.Application;
+import com.sun.enterprise.deployment.WebBundleDescriptor;
+import com.sun.enterprise.deployment.interfaces.SecurityRoleMapperFactory;
+import com.sun.enterprise.deployment.interfaces.SecurityRoleMapperFactoryMgr;
+import com.sun.enterprise.security.util.IASSecurityException;
+import com.sun.enterprise.security.web.integration.WebSecurityManager;
+import com.sun.enterprise.security.web.integration.WebSecurityManagerFactory;
+import com.sun.enterprise.server.ServerContext;
 import org.glassfish.api.container.Container;
+import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.PostConstruct;
 
 /**
  * Security container service
  *
  */
 @Service(name="com.sun.enterprise.security.SecurityContainer")
-public class SecurityContainer implements Container {
+public class SecurityContainer implements Container, PostConstruct{
+
+    @Inject 
+    private PolicyLoader policyLoader;
+    @Inject
+    private ServerContext serverContext;
+    static {
+        initRoleMapperFactory();
+    }
+    
+    /**
+     * The system-assigned default web module's name/identifier.
+     *
+     * This has to be the same value as is in j2ee/WebModule.cpp.
+     */
+    public static final String DEFAULT_WEB_MODULE_NAME = "__default-web-module";
 
     public String getName() {
         return "Security";
@@ -41,6 +66,63 @@ public class SecurityContainer implements Container {
     public Class<? extends org.glassfish.api.deployment.Deployer> 
         getDeployer() {
         return SecurityDeployer.class;
+    }
+
+    public void postConstruct() {
+        //Generate Policy for the Dummy Module
+        WebBundleDescriptor wbd = new WebBundleDescriptor();
+        Application application = new Application();
+        application.setVirtual(true);
+        application.setName(DEFAULT_WEB_MODULE_NAME);
+        application.setRegistrationName(DEFAULT_WEB_MODULE_NAME);
+        wbd.setApplication(application);
+        generatePolicy(wbd);
+    }
+    private void generatePolicy(WebBundleDescriptor wbd) {
+        String name = null;
+        try {
+            policyLoader.loadPolicy();
+            
+            WebSecurityManagerFactory wsmf =
+                    WebSecurityManagerFactory.getInstance();
+            // this should create all permissions
+            wsmf.newWebSecurityManager(wbd,serverContext);
+            // for an application the securityRoleMapper should already be
+            // created. I am just creating the web permissions and handing
+            // it to the security component.
+            name = WebSecurityManager.getContextID(wbd);
+            SecurityUtil.generatePolicyFile(name);
+
+        } catch (IASSecurityException se) {
+            String msg = "Error in generating security policy for " + name;
+            throw new RuntimeException(msg, se);
+        }
+    }
+    
+    private static void initRoleMapperFactory() //throws Exception
+    {
+        Object o = null;
+        Class c = null;
+        // this should never fail.
+        try {
+            c = Class.forName("com.sun.enterprise.security.acl.RoleMapperFactory");
+            if (c != null) {
+                o = c.newInstance();
+                if (o != null && o instanceof SecurityRoleMapperFactory) {
+                    SecurityRoleMapperFactoryMgr.registerFactory((SecurityRoleMapperFactory) o);
+                }
+            }
+            if (o == null) {
+            //               _logger.log(Level.SEVERE,_localStrings.getLocalString("j2ee.norolemapper", "Cannot instantiate the SecurityRoleMapperFactory"));
+            }
+        } catch (Exception cnfe) {
+//            _logger.log(Level.SEVERE,
+//			_localStrings.getLocalString("j2ee.norolemapper", "Cannot instantiate the SecurityRoleMapperFactory"), 
+//			cnfe);
+//		cnfe.printStackTrace();
+//		throw new RuntimeException(cnfe);
+        //   throw  cnfe;
+        }
     }
 }
 
