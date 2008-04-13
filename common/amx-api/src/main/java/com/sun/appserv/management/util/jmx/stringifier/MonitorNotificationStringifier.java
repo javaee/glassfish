@@ -35,9 +35,9 @@
  */
 package com.sun.appserv.management.util.jmx.stringifier;
 
-import javax.management.monitor.MonitorNotification;
-
 import com.sun.appserv.management.util.stringifier.Stringifier;
+
+import javax.management.monitor.MonitorNotification;
 
 public class MonitorNotificationStringifier
 				extends NotificationStringifier implements Stringifier

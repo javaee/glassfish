@@ -41,19 +41,14 @@
  */
 package com.sun.appserv.management.helper;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-
-import javax.net.ssl.HandshakeCompletedListener;
-
-import com.sun.appserv.management.base.UploadDownloadMgr;
-
-import com.sun.appserv.management.DomainRoot;
-import com.sun.appserv.management.client.TLSParams;
 import com.sun.appserv.management.client.AppserverConnectionSource;
 import com.sun.appserv.management.client.HandshakeCompletedListenerImpl;
+import com.sun.appserv.management.client.TLSParams;
 import com.sun.appserv.management.client.TrustStoreTrustManager;
+
+import javax.net.ssl.HandshakeCompletedListener;
+import java.io.File;
+import java.io.IOException;
 
 /**
 	Miscellaneous helper routines for connecting to the Appserver.

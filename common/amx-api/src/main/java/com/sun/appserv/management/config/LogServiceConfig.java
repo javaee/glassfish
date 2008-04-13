@@ -33,24 +33,13 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
- 
-/*
- * $Header: /cvs/glassfish/appserv-api/src/java/com/sun/appserv/management/config/LogServiceConfig.java,v 1.2 2007/05/05 05:30:34 tcfujii Exp $
- * $Revision: 1.2 $
- * $Date: 2007/05/05 05:30:34 $
- */
-
-
 package com.sun.appserv.management.config;
 
+import com.sun.appserv.management.base.Container;
+import com.sun.appserv.management.base.Singleton;
 import com.sun.appserv.management.base.XTypes;
 
-
-
 import java.util.Map;
-
-
-import com.sun.appserv.management.base.Container;
 
 /**
 	Configuration for the &lt;log-service&gt; element.
@@ -58,7 +47,7 @@ import com.sun.appserv.management.base.Container;
 	@see ModuleLogLevelsConfigKeys
  */
 public interface LogServiceConfig
-	extends PropertiesAccess, Container, ConfigElement
+	extends PropertiesAccess, Container, ConfigElement, Singleton
 {
 /** The j2eeType as returned by {@link com.sun.appserv.management.base.AMX#getJ2EEType}. */
 	public static final String	J2EE_TYPE			= XTypes.LOG_SERVICE_CONFIG;

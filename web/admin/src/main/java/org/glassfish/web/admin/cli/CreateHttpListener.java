@@ -84,8 +84,8 @@ public class CreateHttpListener implements AdminCommand {
     @Param(name="acceptorthreads", optional=true)
     String acceptorThreads;
 
-    @Param(name="xpowered", optional=true)
-    String xPoweredBy = Boolean.TRUE.toString();
+    @Param(name="xpowered", optional=true, defaultValue="true")
+    Boolean xPoweredBy;
 
     @Param(name="redirectport", optional=true)
     String redirectPort;
@@ -93,20 +93,20 @@ public class CreateHttpListener implements AdminCommand {
     @Param(name="externalport", optional=true)
     String externalPort;
     
-    @Param(name="securityenabled", optional=true)
-    String securityEnabled = Boolean.FALSE.toString();
+    @Param(name="securityenabled", optional=true, defaultValue="false")
+    Boolean securityEnabled;
 
-    @Param(optional=true)
-    String enabled = Boolean.TRUE.toString();
+    @Param(optional=true, defaultValue="true")
+    Boolean enabled;
 
-    @Param(optional=true)
-    String secure = Boolean.FALSE.toString(); //FIXME
+    @Param(optional=true, defaultValue="false")
+    Boolean secure; //FIXME
 
     @Param(name="family", optional=true)
     String family;
 
-    @Param(name="blockingenabled", optional=true)
-    String blockingEnabled = Boolean.FALSE.toString();
+    @Param(name="blockingenabled", optional=true, defaultValue="false")
+    Boolean blockingEnabled;
 
     @Param(name="property", optional=true)
     Properties properties;
@@ -150,15 +150,15 @@ public class CreateHttpListener implements AdminCommand {
                     newListener.setPort(listenerPort);
                     newListener.setExternalPort(externalPort);
                     newListener.setAcceptorThreads(acceptorThreads);
-                    newListener.setSecurityEnabled(securityEnabled);
+                    newListener.setSecurityEnabled(securityEnabled.toString());
                     newListener.setDefaultVirtualServer(defaultVirtualServer);
                     //newListener.setRedirectPort(redirectPort) FIXME: Applicable only in case of cluster or enterprise profile
-                    newListener.setXpoweredBy(xPoweredBy);
+                    newListener.setXpoweredBy(xPoweredBy.toString());
                     //newListener.Ssl(ssl); FIXME
-                    newListener.setEnabled(enabled);
+                    newListener.setEnabled(enabled.toString());
                     newListener.setServerName(serverName);
                     newListener.setFamily(family);
-                    newListener.setBlockingEnabled(blockingEnabled);
+                    newListener.setBlockingEnabled(blockingEnabled.toString());
 
                     //add properties
                     if (properties != null) {
@@ -182,7 +182,5 @@ public class CreateHttpListener implements AdminCommand {
             report.setFailureCause(e);
         }
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
-        report.setMessage(localStrings.getLocalString("create.http.listener.success",
-                "Http listener {0} created successfully", listenerId));
     }
 }

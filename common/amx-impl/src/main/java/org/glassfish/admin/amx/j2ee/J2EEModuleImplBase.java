@@ -35,24 +35,14 @@
  */
 package org.glassfish.admin.amx.j2ee;
 
-import java.util.Set;
+import com.sun.appserv.management.base.Util;
+import com.sun.appserv.management.j2ee.J2EEModule;
+import com.sun.appserv.management.j2ee.J2EETypes;
+import com.sun.appserv.management.util.misc.GSetUtil;
+import org.glassfish.admin.amx.mbean.Delegate;
 
 import javax.management.ObjectName;
-import javax.management.AttributeNotFoundException;
-
-import com.sun.appserv.management.j2ee.J2EEModule;
-import com.sun.appserv.management.j2ee.J2EEServer;
-
-
-import com.sun.appserv.management.base.Util;
-
-
-import com.sun.appserv.management.util.jmx.JMXUtil;
-import com.sun.appserv.management.util.misc.GSetUtil;
-
-import com.sun.appserv.management.j2ee.J2EETypes;
-
-import org.glassfish.admin.amx.mbean.Delegate;
+import java.util.Set;
 
 /**
  */

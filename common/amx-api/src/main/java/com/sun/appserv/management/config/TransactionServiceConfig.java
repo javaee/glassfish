@@ -34,14 +34,9 @@
  * holder.
  */
  
-/*
- * $Header: /cvs/glassfish/appserv-api/src/java/com/sun/appserv/management/config/TransactionServiceConfig.java,v 1.2 2007/05/05 05:30:36 tcfujii Exp $
- * $Revision: 1.2 $
- * $Date: 2007/05/05 05:30:36 $
- */
-
 package com.sun.appserv.management.config;
 
+import com.sun.appserv.management.base.Singleton;
 import com.sun.appserv.management.base.XTypes;
 
 
@@ -49,7 +44,7 @@ import com.sun.appserv.management.base.XTypes;
 	 Configuration for the &lt;transaction-service&gt; element.
 */
 
-public interface TransactionServiceConfig extends ConfigElement, PropertiesAccess
+public interface TransactionServiceConfig extends ConfigElement, PropertiesAccess, Singleton
 {
 /** The j2eeType as returned by {@link com.sun.appserv.management.base.AMX#getJ2EEType}. */
 	public static final String	J2EE_TYPE	= XTypes.TRANSACTION_SERVICE_CONFIG;

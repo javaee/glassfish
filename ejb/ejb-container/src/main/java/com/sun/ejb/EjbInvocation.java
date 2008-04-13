@@ -124,8 +124,9 @@ public class EjbInvocation
     public ComponentContext context;
     
     EjbInvocation(String compEnvId, Container container) {
-         super.componentId = compEnvId;
+        super.componentId = compEnvId;
         super.container = container;
+        super.setComponentInvocationType(ComponentInvocation.ComponentInvocationType.EJB_INVOCATION);
     }
     
     /**

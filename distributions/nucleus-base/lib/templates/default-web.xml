@@ -61,7 +61,7 @@
 
   <context-param>
       <param-name>com.sun.faces.injectionProvider</param-name>
-      <param-value>com.sun.faces.vendor.GlassFishInjectionProvider</param-value>
+      <param-value>org.glassfish.faces.GlassFishInjectionProvider</param-value>
   </context-param>
      
   <!-- Init parameter to force the XML validation of JSF configuration  --> 

@@ -111,7 +111,7 @@
         <jsf-impl.version>1.2_08</jsf-impl.version>        
         <deployment-api.version>1.2</deployment-api.version>
         <jaxrpc-api.version>1.1</jaxrpc-api.version>
-        <grizzly.version>1.7-SNAPSHOT</grizzly.version>
+        <grizzly.version>1.7.3</grizzly.version>
         <jasper-jsr199.version>9.1</jasper-jsr199.version>
         <jaxb-api.version>2.1</jaxb-api.version>
         <jaxws-api.version>2.0</jaxws-api.version>
@@ -167,12 +167,18 @@
             <id>glassfish-repository</id>
             <name>Java.net Repository for Glassfish</name>
             <url>http://download.java.net/maven/glassfish</url>
+	          <snapshots>
+			          <updatePolicy>never</updatePolicy>
+				    </snapshots>
         </repository>
         <repository>
             <!-- back up glassfish maven repository in case the 'glassfish-repository' goes down -->
             <id>glassfish-repository-wsinterop</id>
             <name>Java.net Repository for Glassfish</name>
             <url>http://maven.dyndns.org/glassfish/</url>
+	          <snapshots>
+			          <updatePolicy>never</updatePolicy>
+				    </snapshots>
         </repository>
         <!-- all the other repositories are inherited -->
     </repositories>

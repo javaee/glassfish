@@ -36,8 +36,8 @@
 package com.sun.appserv.management.util.jmx.stringifier;
 
 
-import com.sun.appserv.management.util.stringifier.Stringifier;
 import com.sun.appserv.management.util.stringifier.ArrayStringifier;
+import com.sun.appserv.management.util.stringifier.Stringifier;
 
 
 public class ModelMBeanInfoStringifier extends MBeanInfoStringifier implements Stringifier

@@ -50,11 +50,54 @@
     <packaging>jar</packaging>
     <name>JSF</name>
     <description>JSF API Repackaged as OSGi bundle in GlassFish</description>
+    <properties>
+        <jsf-impl.version>1.2_08</jsf-impl.version>
+    </properties>
+    <build>
+        <plugins>
+            <plugin>
+                <!-- Configure maven-bundle-plugin which takes care of
+                     OSGi packaging -->
+                <!-- We need to override the plugin settings -->
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <!-- We don't use extensions as this interfers with
+                     hk2-maven-plugin and that results in hk2 artifacts
+                     being copied as .hk2-jar. Instead, we configure the
+                     plugin to run as part of package phase. By Sahoo.
+                <extensions>true</extensions>
+                -->
+                <configuration>
+                    <instructions>
+                        <Embed-Dependency>*;artifactId=jsf-api;inline=true</Embed-Dependency>
+                        <!-- Include only javax.faces.Message* from jsf-impl.jar
+                             See issue 4754 for details.
+                        -->
+                        <Include-Resource>
+                            @jsf-impl-${jsf-impl.version}.jar!/javax/faces/Message*,
+                            {maven-resources}
+                        </Include-Resource>
+                        <Export-Package>${project.artifactId}.*</Export-Package>
+                    </instructions>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
     <dependencies>
         <dependency>
             <groupId>javax.faces</groupId>
             <artifactId>jsf-api</artifactId>
             <version>${jsf-api.version}</version>
+            <optional>true</optional>
+        </dependency>
+        <!-- Need javax.faces.Message* from jsf-impl otherwise they won't be
+             loaded since this artifact exports javax.faces package.
+             Refer to issue #4754
+        -->
+        <dependency>
+            <groupId>javax.faces</groupId>
+            <artifactId>jsf-impl</artifactId>
+            <version>${jsf-impl.version}</version>
             <optional>true</optional>
         </dependency>
     </dependencies>

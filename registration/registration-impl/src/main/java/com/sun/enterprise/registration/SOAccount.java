@@ -71,7 +71,7 @@ public class SOAccount implements RegistrationAccount {
     }
     
     public void setCompany(String str) {        
-        account.setCity(str);        
+        account.setCompany(str);        
     }
     
     public void setCountry(String str) {        

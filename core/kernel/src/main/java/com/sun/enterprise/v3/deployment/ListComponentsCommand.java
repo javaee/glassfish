@@ -78,7 +78,6 @@ public class ListComponentsCommand extends ApplicationLifecycle implements Admin
             return;
         }
         ActionReport.MessagePart part = report.getTopMessagePart();        
-        part.setMessage(localStrings.getLocalString("list.components.success", "list-componets successful"));
         int numOfApplications = 0;
         for (Module module : applications.getModules()) {
             if (module instanceof Application) {

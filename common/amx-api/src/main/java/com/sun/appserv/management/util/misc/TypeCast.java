@@ -36,17 +36,14 @@
 package com.sun.appserv.management.util.misc;
 
 
+import java.io.Serializable;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Hashtable;
-
-import java.io.Serializable;
-
-import javax.management.ObjectName;
 
 
 /**

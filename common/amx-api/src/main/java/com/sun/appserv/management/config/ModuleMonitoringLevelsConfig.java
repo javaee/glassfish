@@ -34,18 +34,12 @@
  * holder.
  */
  
-/*
- * $Header: /cvs/glassfish/appserv-api/src/java/com/sun/appserv/management/config/ModuleMonitoringLevelsConfig.java,v 1.2 2007/05/05 05:30:34 tcfujii Exp $
- * $Revision: 1.2 $
- * $Date: 2007/05/05 05:30:34 $
- */
-
-
 package com.sun.appserv.management.config;
 
-import java.util.Map;
-
+import com.sun.appserv.management.base.Singleton;
 import com.sun.appserv.management.base.XTypes;
+
+import java.util.Map;
 
 
 
@@ -55,7 +49,7 @@ import com.sun.appserv.management.base.XTypes;
 	Each monitoring level can be one of the values defined in
 	{@link ModuleMonitoringLevelValues}.
  */
-public interface ModuleMonitoringLevelsConfig extends ConfigElement, PropertiesAccess
+public interface ModuleMonitoringLevelsConfig extends ConfigElement, PropertiesAccess, Singleton
 {
 /** The j2eeType as returned by {@link com.sun.appserv.management.base.AMX#getJ2EEType}. */
 	public static final String	J2EE_TYPE	= XTypes.MODULE_MONITORING_LEVELS_CONFIG;

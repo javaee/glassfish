@@ -35,10 +35,8 @@
  */
 package com.sun.appserv.management.util.misc;
 
-import java.util.Set;
 import java.lang.reflect.Constructor;
-
-import com.sun.appserv.management.util.misc.GSetUtil;
+import java.util.Set;
 
 
 

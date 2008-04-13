@@ -81,7 +81,7 @@ public class JPAApplication implements ApplicationContainer {
    JPAApplication(Collection<PersistenceUnitDescriptor> allReferencedPus, ProviderContainerContractInfo providerContainerContractInfo) {
        this.referencedPus = allReferencedPus;
        this.providerContainerContractInfo = providerContainerContractInfo;
-       //TODO shift this to start
+       //PUs need to be loaded here so that transformers can be registered into Deploymentcontext in correct phase
        loadAllPus();
 
    }
@@ -91,7 +91,7 @@ public class JPAApplication implements ApplicationContainer {
         return null;
     }
 
-    public boolean start() {
+    public boolean start(ClassLoader cl) {
         return true;
     }
 

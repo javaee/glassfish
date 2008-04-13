@@ -38,7 +38,6 @@ package com.sun.appserv.management.util.misc;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
-import java.io.FileNotFoundException;
 
 /**
 	Directs output to a file. Lazy initialization; the file

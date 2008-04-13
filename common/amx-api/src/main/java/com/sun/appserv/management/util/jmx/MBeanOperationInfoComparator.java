@@ -36,10 +36,10 @@
 
 package com.sun.appserv.management.util.jmx;
 
-import javax.management.MBeanOperationInfo;
-
-import com.sun.appserv.management.util.jmx.stringifier.MBeanOperationInfoStringifier;
 import com.sun.appserv.management.util.jmx.stringifier.MBeanFeatureInfoStringifierOptions;
+import com.sun.appserv.management.util.jmx.stringifier.MBeanOperationInfoStringifier;
+
+import javax.management.MBeanOperationInfo;
 
 
 /**

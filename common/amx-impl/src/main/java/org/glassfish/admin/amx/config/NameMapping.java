@@ -35,11 +35,11 @@
  */
 package org.glassfish.admin.amx.config;
 
-import java.util.Set;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.ConcurrentHashMap;
-
 import com.sun.appserv.management.base.AMXAttributes;
+
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 /**
     Maintains a cache from AMX Attribute names to XML attribute names.

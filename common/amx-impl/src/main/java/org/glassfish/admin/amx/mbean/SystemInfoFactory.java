@@ -37,8 +37,6 @@ package org.glassfish.admin.amx.mbean;
 
 import javax.management.MBeanServer;
 
-import org.glassfish.admin.amx.mbean.SystemInfoImpl;
-
 /**
     Factory to create the com.sun.appserv.management.base.SystemInfo implementation.
     For now, only one implementation instance is allowed.

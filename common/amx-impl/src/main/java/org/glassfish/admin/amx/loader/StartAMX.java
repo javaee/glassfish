@@ -22,35 +22,18 @@
  */
 package org.glassfish.admin.amx.loader;
 
-import java.util.Set;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Collections;
+import com.sun.appserv.management.util.jmx.JMXUtil;
+import org.glassfish.admin.amx.config.AMXConfigRegistrar;
 
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
-import javax.management.JMException;
-
-import com.sun.appserv.management.util.jmx.JMXUtil;
-import com.sun.appserv.management.util.misc.StringUtil;
-import com.sun.appserv.management.util.misc.TimingDelta;
-
-
-import java.net.MalformedURLException;
-import java.io.IOException;
+import javax.management.remote.JMXConnectorServer;
 import javax.management.remote.JMXConnectorServerFactory;
 import javax.management.remote.JMXServiceURL;
-import javax.management.remote.JMXConnectorServer;
-import javax.management.remote.JMXConnector;
-
-
-//import java.rmi.registry.LocateRegistry;
-//import java.rmi.registry.Registry;
-
-import javax.management.remote.jmxmp.JMXMPConnectorServer;
-
-import org.glassfish.admin.amx.config.AMXConfigRegistrar;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.util.HashMap;
+import java.util.Map;
 
 
 /**

@@ -35,24 +35,14 @@
  */
 package org.glassfish.admin.amx.j2ee;
 
-import java.util.Set;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Collections;
-
-import javax.management.ObjectName;
-
-import com.sun.appserv.management.base.Util;
-import com.sun.appserv.management.util.misc.GSetUtil;
-import com.sun.appserv.management.util.misc.ExceptionUtil;
-
 import com.sun.appserv.management.j2ee.J2EECluster;
-import com.sun.appserv.management.j2ee.J2EETypes;
 import com.sun.appserv.management.j2ee.StateManageable;
-
 import org.glassfish.admin.amx.mbean.Delegate;
 import org.glassfish.admin.amx.util.Issues;
+
+import javax.management.ObjectName;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
 	JSR 77 extension representing an Appserver Cluster

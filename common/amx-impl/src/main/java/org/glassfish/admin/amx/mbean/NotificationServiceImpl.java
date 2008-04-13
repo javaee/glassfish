@@ -35,36 +35,15 @@
  */
 package org.glassfish.admin.amx.mbean;
 
-import java.util.Set;
-import java.util.HashSet;
-import java.util.List;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Collections;
-import java.io.Serializable;
-
-import javax.management.MBeanServer;
-import javax.management.ObjectName;
-import javax.management.Notification;
-import javax.management.MBeanServerNotification;
-import javax.management.NotificationListener;
-import javax.management.NotificationFilter;
-import javax.management.NotificationFilterSupport;
-import javax.management.ListenerNotFoundException;
-import javax.management.InstanceNotFoundException;
-import javax.management.NotificationEmitter;
-import javax.management.MBeanNotificationInfo;
-
-
-import com.sun.appserv.management.base.NotificationService;
-import com.sun.appserv.management.base.XTypes;
 import com.sun.appserv.management.base.AMX;
-
+import com.sun.appserv.management.base.NotificationService;
+import com.sun.appserv.management.util.jmx.JMXUtil;
 import com.sun.appserv.management.util.misc.GSetUtil;
 import com.sun.appserv.management.util.misc.OverflowHandler;
-import com.sun.appserv.management.util.jmx.JMXUtil;
-import com.sun.appserv.management.util.jmx.NotificationBuilder;
+
+import javax.management.*;
+import java.io.Serializable;
+import java.util.*;
 
 
 /**

@@ -52,8 +52,8 @@ import java.util.Properties;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Test;
 import org.junit.Ignore;
+import org.junit.Test;
 import static org.junit.Assert.*;
 import org.jvnet.hk2.component.Habitat;
 import org.glassfish.api.ActionReport;
@@ -119,7 +119,7 @@ public class CreateJdbcResourceTest extends ConfigApiTest {
        // Delete the created resource
        ConfigSupport.apply(new SingleConfigCode<Resources>() {
             public Object run(Resources param) throws PropertyVetoException, TransactionFailure {
-                JdbcResource target = null;
+                Resource target = null;
                 for (Resource resource : param.getResources()) {
                     if (resource instanceof JdbcResource) {
                         JdbcResource jr = (JdbcResource)resource;
@@ -128,13 +128,13 @@ public class CreateJdbcResourceTest extends ConfigApiTest {
                             jr.getJndiName().equals("jdbc/sun")||
                             jr.getJndiName().equals("jdbc/alldefaults")||
                             jr.getJndiName().equals("jdbc/junk")) {
-                            target = jr;
+                            target = resource;
                             break;
                         }
                     }
                 }
                 if (target!=null) {
-                    resources.getResources().remove(target);
+                    param.getResources().remove(target);
                 }
                 return null;
             }                        
@@ -175,9 +175,7 @@ public class CreateJdbcResourceTest extends ConfigApiTest {
             }
         }       
         assertTrue(isCreated);
-        
-        // Check the success message
-        assertEquals("JDBC resource jdbc/foo created successfully.", context.getActionReport().getMessage());
+       
         logger.fine("msg: " + context.getActionReport().getMessage());       
         
         // Check resource-ref created
@@ -233,8 +231,6 @@ public class CreateJdbcResourceTest extends ConfigApiTest {
         }       
         assertTrue(isCreated);
         
-        // Check the success message
-        assertEquals("JDBC resource jdbc/alldefaults created successfully.", context.getActionReport().getMessage());
         logger.fine("msg: " + context.getActionReport().getMessage());    
     }
 
@@ -289,8 +285,8 @@ public class CreateJdbcResourceTest extends ConfigApiTest {
         }       
         assertEquals(1, numDupRes);
         
-        // Check the error message - test fails, need bug fix before uncommenting
-        //assertEquals("A JDBC resource named jdbc/foo already exists.", context.getActionReport().getMessage());
+        // Check the error message
+        assertEquals("A JDBC resource named dupRes already exists.", context.getActionReport().getMessage());
         logger.fine("msg: " + context.getActionReport().getMessage());
     }
     
@@ -326,9 +322,9 @@ public class CreateJdbcResourceTest extends ConfigApiTest {
         }       
         assertFalse(isCreated);
 
-        // Check the error message - test fails, need bug fix before uncommenting
-        //assertEquals(Attribute value (pool-name = {0}) is not found in list of jdbc connection pools.",
-        //context.getActionReport().getMessage());
+        // Check the error message
+        assertEquals("Attribute value (pool-name = xxxxxx) is not found in list of jdbc connection pools.",
+        context.getActionReport().getMessage());
     }
     
     /**
@@ -345,11 +341,10 @@ public class CreateJdbcResourceTest extends ConfigApiTest {
         // Call CommandRunner.doCommand(..) to execute the command
         cr.doCommand("create-jdbc-resource", command, parameters, context.getActionReport());
         
-        // Check the exit code is Failure - test fails, need bug fix before uncommenting
-        //assertEquals(ActionReport.ExitCode.FAILURE, context.getActionReport().getActionExitCode());
+        // Check the exit code is Failure
+        assertEquals(ActionReport.ExitCode.FAILURE, context.getActionReport().getActionExitCode());
 
-        // Check the error message - test fails, need bug fix before uncommenting
-        //assertEquals("Invalid value for enabled.  Option accepts true or false.", context.getActionReport().getMessage());
+        // Don't check error message.  Error message being set by CommandRunner.    
     }
     
     /**
@@ -376,8 +371,7 @@ public class CreateJdbcResourceTest extends ConfigApiTest {
                 JdbcResource jr = (JdbcResource)resource;
                 if (jr.getJndiName().equals("jdbc/sun")) {
                     assertEquals("DerbyPool", jr.getPoolName());
-        // test fails, need bug fix before uncommenting
-        //            assertEquals("true", jr.getEnabled());
+                    assertEquals("true", jr.getEnabled());
                     assertEquals("my resource", jr.getDescription());
                     isCreated = true;
                     continue;
@@ -386,8 +380,6 @@ public class CreateJdbcResourceTest extends ConfigApiTest {
         }       
         assertTrue(isCreated);
         
-        // Check the success message
-        assertEquals("JDBC resource jdbc/sun created successfully.", context.getActionReport().getMessage());
         logger.fine("msg: " + context.getActionReport().getMessage());
     }
 }

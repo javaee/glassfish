@@ -35,9 +35,9 @@
  */
 package com.sun.appserv.management.base;
 
-import java.util.Set;
-
 import com.sun.appserv.management.util.misc.GSetUtil;
+
+import java.util.Set;
 
 /**
 	Attributes available within the MBean every AMX references.

@@ -37,10 +37,6 @@
 
 package com.sun.appserv.management.config;
 
-import com.sun.appserv.management.base.XTypes;
-
-
-
 /**
     Mixin interface for access to library path.
  */

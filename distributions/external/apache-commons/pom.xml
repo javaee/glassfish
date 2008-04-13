@@ -63,6 +63,14 @@
                 <role>developer</role>
             </roles>
         </developer>
+        <developer>
+            <id>ss141213</id>
+            <name>Sahoo</name>
+            <organization>Sun Microsystems, Inc.</organization>
+            <roles>
+                <role>developer</role>
+            </roles>
+        </developer>
     </developers>
     <build>
         <plugins>
@@ -85,6 +93,14 @@
                          hk2-jar. -->
                         <HK2-Bundle-Name>${groupId}:${artifactId}</HK2-Bundle-Name>
                     </instructions>
+                    <!-- Maven uses the output directory (target/classes)
+                    rather than the final bundle, when compiling against
+                    projects in the same reactor (ie. the same build).
+                    Since this jar comprises of classes that come from
+                    some other jar and other modules depend on this
+                    artifact, we need to unpack.
+                    -->
+                    <unpackBundle>true</unpackBundle>
                 </configuration>
                 <executions>
                     <execution>
@@ -99,30 +115,40 @@
         </plugins>
     </build>
     <dependencies>
+        <!-- The dependencies are marked as optional so that they don't
+             become part of GF distribution which tries to include
+             everything transitively. Since, we embed the classes in
+             this wrapper, we don't have to distribute these jars. 
+        -->
         <dependency>
             <groupId>com.sun.commons</groupId>
             <artifactId>modeler</artifactId>
             <version>${com.sun.commons.modeler.version}</version>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>com.sun.commons</groupId>
             <artifactId>logging-api</artifactId>
             <version>${com.sun.commons.logging.version}</version>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>com.sun.commons</groupId>
             <artifactId>digester</artifactId>
             <version>${com.sun.commons.digester.version}</version>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>com.sun.commons</groupId>
             <artifactId>collections</artifactId>
             <version>${com.sun.commons.collections.version}</version>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>com.sun.commons</groupId>
             <artifactId>beanutils</artifactId>
             <version>${com.sun.commons.beanutils.version}</version>
+            <optional>true</optional>
         </dependency>
     </dependencies>
 </project>

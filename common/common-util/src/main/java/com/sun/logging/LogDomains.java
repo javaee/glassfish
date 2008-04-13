@@ -237,7 +237,7 @@ public class LogDomains
                  *
                  * @return localization bundle (may be null)
                  */
-                public ResourceBundle getResourceBundle() {                    
+                public ResourceBundle getResourceBundle() {
                     return null;
                 }
             };

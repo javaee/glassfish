@@ -36,16 +36,9 @@
 package org.glassfish.admin.amx.util;
 
 
-import java.util.Set;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Collection;
-import java.util.Collections;
-
 import javax.management.MBeanInfo;
-import javax.management.MBeanAttributeInfo;
-import javax.management.MBeanOperationInfo;
+import java.util.Map;
+import java.util.Set;
 
 
 /**

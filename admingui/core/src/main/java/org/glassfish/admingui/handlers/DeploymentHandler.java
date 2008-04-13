@@ -208,7 +208,7 @@ public class DeploymentHandler {
              Properties deploymentProps = new Properties();
              //If we are redeploying a web app, we want to preserve context root.
              //TODO TP3:  need to preserve context root.
-//             WebModuleConfig module = AMXRoot.getInstance().getDomainConfig().getWebModuleConfigMap().get(appName);
+//             WebModuleConfig module = AMXRoot.getInstance().getApplicationsConfig().getWebModuleConfigMap().get(appName);
 //	     if (module != null){
 //                deploymentProps.setProperty(DFDeploymentProperties.CONTEXT_ROOT, ((WebModuleConfig) module).getContextRoot());
 //             }
@@ -348,7 +348,7 @@ public class DeploymentHandler {
         Properties dProps = (Properties)handlerCtx.getInputValue("dProps");
 
         String name = dProps.getProperty("name");
-        ResourceAdapterConfig ra = AMXRoot.getInstance().getDomainConfig().createResourceAdapterConfig(name, null);
+        ResourceAdapterConfig ra = AMXRoot.getInstance().getResourcesConfig().createResourceAdapterConfig(name, null);
 
         String threadPool = dProps.getProperty("threadPool");
         if(!GuiUtil.isEmpty(threadPool))

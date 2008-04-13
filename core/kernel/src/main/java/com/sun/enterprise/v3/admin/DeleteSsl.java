@@ -150,7 +150,6 @@ public class DeleteSsl implements AdminCommand {
             report.setFailureCause(e);
         }
 
-        report.setMessage(localStrings.getLocalString("delete.ssl.success", "Deletion of Ssl in {0} completed successfully", listenerId));
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
     }
 }

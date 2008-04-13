@@ -117,7 +117,7 @@ public class EESupportHandlers {
         @HandlerOutput(name="clusterList", type=java.util.List.class),
         @HandlerOutput(name="hasCluster", type=Boolean.class)})
     public static void getClustersList(HandlerContext handlerCtx) {
-        Set clusterSet = AMXRoot.getInstance().getDomainConfig().getClusterConfigMap().keySet();
+        Set clusterSet = AMXRoot.getInstance().getClustersConfig().getClusterConfigMap().keySet();
         ArrayList sortedClusterList = new ArrayList( new TreeSet(clusterSet));
         handlerCtx.setOutputValue("clusterList", sortedClusterList);
         handlerCtx.setOutputValue("hasCluster", (sortedClusterList.size()> 0) ? true : false);
@@ -134,7 +134,7 @@ public class EESupportHandlers {
         output={
         @HandlerOutput(name="serverList", type=java.util.List.class)})
     public static void getStandaloneServerList(HandlerContext handlerCtx) {
-        Set serverSet = AMXRoot.getInstance().getDomainConfig().getStandaloneServerConfigMap().keySet();
+        Set serverSet = AMXRoot.getInstance().getServersConfig().getStandaloneServerConfigMap().keySet();
         ArrayList sortedServerList = new ArrayList( new TreeSet(serverSet));
         handlerCtx.setOutputValue("serverList", sortedServerList);
     }
@@ -151,8 +151,8 @@ public class EESupportHandlers {
         @HandlerOutput(name="serverList", type=java.util.List.class)})
     public static void getAllServerList(HandlerContext handlerCtx) {
         AMXRoot amxRoot = AMXRoot.getInstance();
-        Set standaloneSet = amxRoot.getDomainConfig().getStandaloneServerConfigMap().keySet();
-        Set clusteredSet = amxRoot.getDomainConfig().getClusteredServerConfigMap().keySet();
+        Set standaloneSet = amxRoot.getServersConfig().getStandaloneServerConfigMap().keySet();
+        Set clusteredSet = amxRoot.getServersConfig().getClusteredServerConfigMap().keySet();
         
         ArrayList serverList = new ArrayList(standaloneSet);
         serverList.addAll(clusteredSet);
@@ -198,8 +198,8 @@ public class EESupportHandlers {
         @HandlerOutput(name="allTargetList", type=java.util.List.class)})
     public static void getAllTargetList(HandlerContext handlerCtx) {
         AMXRoot amxRoot = AMXRoot.getInstance();
-        Set<String> standaloneSet = amxRoot.getDomainConfig().getStandaloneServerConfigMap().keySet();
-        Set<String> clusterSet = amxRoot.getDomainConfig().getClusterConfigMap().keySet();
+        Set<String> standaloneSet = amxRoot.getServersConfig().getStandaloneServerConfigMap().keySet();
+        Set<String> clusterSet = amxRoot.getClustersConfig().getClusterConfigMap().keySet();
         
         Set<String> allTargets = new TreeSet<String>();
         allTargets.addAll(standaloneSet);
@@ -231,7 +231,7 @@ public class EESupportHandlers {
             handlerCtx.setOutputValue("serverList", servers);
             return;
         }
-        ClusterConfig cluster = AMXRoot.getInstance().getDomainConfig().getClusterConfigMap().get(clusterName);
+        ClusterConfig cluster = AMXRoot.getInstance().getClustersConfig().getClusterConfigMap().get(clusterName);
         if (cluster == null){
              //TODO: Log warning of no such cluster
             System.out.println("getServerofCluster:  cluster does not exist --  " + clusterName);
@@ -399,8 +399,8 @@ public class EESupportHandlers {
         @HandlerOutput(name="SelectedTargets", type=String[].class) })
     public static void getTargetsOptionsList(HandlerContext handlerCtx) {
         AMXRoot amxRoot = AMXRoot.getInstance();
-        Set standaloneSet = amxRoot.getDomainConfig().getStandaloneServerConfigMap().keySet();
-        Set clusteredSet = amxRoot.getDomainConfig().getClusterConfigMap().keySet();
+        Set standaloneSet = amxRoot.getServersConfig().getStandaloneServerConfigMap().keySet();
+        Set clusteredSet = amxRoot.getClustersConfig().getClusterConfigMap().keySet();
         ArrayList serverList = new ArrayList(standaloneSet);
         serverList.addAll(clusteredSet);
         Option[] availableOptions = null;
@@ -582,8 +582,8 @@ public class EESupportHandlers {
     private static Vector getReferencedInstances(String configName){
         Vector targets = new Vector();
         AMXRoot amxRoot = AMXRoot.getInstance();
-        Map standaloneMap = amxRoot.getDomainConfig().getStandaloneServerConfigMap(); 
-        Map clusteredMap = amxRoot.getDomainConfig().getClusteredServerConfigMap();
+        Map standaloneMap = amxRoot.getServersConfig().getStandaloneServerConfigMap(); 
+        Map clusteredMap = amxRoot.getServersConfig().getClusteredServerConfigMap();
         for(Iterator it = standaloneMap.values().iterator(); it.hasNext();){
             StandaloneServerConfig server = (StandaloneServerConfig) it.next();
             String config = server.getReferencedConfigName();
@@ -619,7 +619,7 @@ public class EESupportHandlers {
         @HandlerOutput(name="TableList",        type=java.util.List.class) })
     public static void getSystemProperties(HandlerContext handlerCtx) {
         String configName = (String) handlerCtx.getInputValue("ConfigName");
-        ConfigConfig config = AMXRoot.getInstance().getDomainConfig().getConfigConfigMap().get(configName);
+        ConfigConfig config = AMXRoot.getInstance().getConfigsConfig().getConfigConfigMap().get(configName);
         
         handlerCtx.setOutputValue("DynamicReconfig", config.getDynamicReconfigurationEnabled());
         List data = new ArrayList();
@@ -741,14 +741,14 @@ public class EESupportHandlers {
                 boolean isCluster = ((Boolean)oneRow.get("isCluster")).booleanValue();
                 String propValue = (String)oneRow.get("value");
                 if(isCluster){
-                    ClusteredServerConfig clusterConfig = amxRoot.getDomainConfig().getClusteredServerConfigMap().get(instanceName);
+                    ClusteredServerConfig clusterConfig = amxRoot.getServersConfig().getClusteredServerConfigMap().get(instanceName);
                     if(Arrays.asList(clusterConfig.getSystemPropertyNames()).contains(propName)){
                         clusterConfig.setSystemPropertyValue(propName, propValue);
                     }else{
                         clusterConfig.createSystemProperty(propName, propValue);
                     }
                 }else{
-                    StandaloneServerConfig serverConfig = amxRoot.getDomainConfig().getStandaloneServerConfigMap().get(instanceName);
+                    StandaloneServerConfig serverConfig = amxRoot.getServersConfig().getStandaloneServerConfigMap().get(instanceName);
                     if(Arrays.asList(serverConfig.getSystemPropertyNames()).contains(propName)){
                         serverConfig.setSystemPropertyValue(propName, propValue);
                     }else{
@@ -779,10 +779,10 @@ public class EESupportHandlers {
         try {
             HashMap configMap = new HashMap();
             if("default-config".equals(copyFromConfigName)) {
-                amxRoot.getDomainConfig().createConfigConfig(configurationName, configMap);
+                amxRoot.getConfigsConfig().createConfigConfig(configurationName, configMap);
             }else{
                 configMap.put(ConfigConfigKeys.SRC_CONFIG_NAME_KEY, copyFromConfigName);
-                amxRoot.getDomainConfig().createConfigConfig(configurationName, configMap);
+                amxRoot.getConfigsConfig().createConfigConfig(configurationName, configMap);
             }
          }catch(Exception ex){
             GuiUtil.handleException(handlerCtx, ex);
@@ -809,7 +809,7 @@ public class EESupportHandlers {
                     ServerConfig servConfig = (ServerConfig)targets.get(i);
                     AMXRoot.getInstance().getDomainConfig().
                 }*/
-                AMXRoot.getInstance().getDomainConfig().removeConfigConfig(name);
+                AMXRoot.getInstance().getConfigsConfig().removeConfigConfig(name);
             }    
         }catch(Exception ex){
             GuiUtil.handleException(handlerCtx, ex);
@@ -817,7 +817,7 @@ public class EESupportHandlers {
     }
     
     public static String getClusterForServer(String clusteredInstance){
-        Map clusterConfMap = AMXRoot.getInstance().getDomainConfig().getClusterConfigMap();
+        Map clusterConfMap = AMXRoot.getInstance().getClustersConfig().getClusterConfigMap();
         String clusterName = "";
         for(Iterator it = clusterConfMap.values().iterator(); it.hasNext();){
             ClusterConfig clusterConf = (ClusterConfig) it.next();

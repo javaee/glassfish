@@ -35,17 +35,11 @@
  */
 package org.glassfish.admin.amx.util;
 
+import com.sun.appserv.management.util.jmx.JMXUtil;
+
+import javax.management.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-
-import javax.management.MBeanServerConnection;
-import javax.management.ObjectName;
-import javax.management.Notification;
-import javax.management.NotificationListener;
-import javax.management.MBeanServerNotification;
-import javax.management.InstanceNotFoundException;
-
-import com.sun.appserv.management.util.jmx.JMXUtil;
 
 /**
     Blocks until an MBean is UNregistered using a CountdownLatch (highly efficient).

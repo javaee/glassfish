@@ -35,8 +35,8 @@
  */
 package com.sun.appserv.management.base;
 
-import java.util.logging.Logger;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
 	Base Logger class for AMX loggers.

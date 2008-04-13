@@ -36,6 +36,7 @@
 package com.sun.enterprise.v3.admin;
 
 import com.sun.enterprise.module.impl.Utils;
+import com.sun.enterprise.universal.collections.ManifestUtils;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.v3.common.PlainTextActionReporter;
 import com.sun.logging.LogDomains;
@@ -111,17 +112,13 @@ public class CommandRunner {
         
         if (parameters.size()==1 && parameters.get("help")!=null) {
             InputStream in = getManPage(commandName, command);
-            report.setMessage(in);
+            String manPage = encodeManPage(in);
 
-            // if there was any error -- failure will be set
-            if(report.getActionExitCode() != ActionReport.ExitCode.FAILURE) {
-                // everything was Kosher.  We will use the man page
-                ActionReport report2 = new PlainTextActionReporter();
-                report2.setMessage(report.getMessage());
-                report2.setActionExitCode(ActionReport.ExitCode.SUCCESS);
-                return report2;
-            }
-            getHelp(commandName, command, report);
+            if(manPage != null)
+                report.getTopMessagePart().addProperty("MANPAGE", manPage);
+            else
+                getHelp(commandName, command, report);
+
             return report;
         }
         report.setActionDescription(commandName + " AdminCommand");
@@ -268,7 +265,7 @@ public class CommandRunner {
             t.start();
             report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
             report.setMessage(
-                    adminStrings.getLocalString("adapter.command.launch", "{0} launch successful", commandName));
+                    adminStrings.getLocalString("adapter.command.launch", "Command {0} was successfully initiated asynchronously.", commandName));
         }
         return report;
     }
@@ -517,53 +514,65 @@ public class CommandRunner {
         StringBuffer operand = new StringBuffer();
         for (Field f : command.getClass().getDeclaredFields()) {
             final Param param = f.getAnnotation(Param.class);
-            if (param!=null) {
-                final boolean optional = param.optional();
-                // this is a param.
-                if (param.primary()) {
-                    if (optional) {
-                        operand.append("[").append(getParamName(param, f)).append("] ");
-                    }
-                    else {
-                        operand.append(getParamName(param, f)).append(" ");
-                    }
-                    continue;
-                }
-                final String paramName = getParamName(param, f);
-                if (optional) { usageText.append("["); }
-                usageText.append("--").append(paramName);
-                if (param.defaultValue().equals("")) {
-                    if (f.getType().isAssignableFrom(String.class)) {
-                        try {
-                                //check if there is a default value assigned
-                            f.setAccessible(true);
-                            if (f.get(command)!=null && !f.get(command).equals("")) {
-                                usageText.append("=").append(f.get(command));
-                                if (optional) { usageText.append("] "); }
-                                else { usageText.append(" "); }
-                            } else {
-                                usageText.append("=").append(paramName);
-                                if (optional) { usageText.append("] "); }
-                                else { usageText.append(" "); }
-                            }
-                        }
-                        catch (IllegalAccessException iae) {
-                            usageText.append("=").append(paramName);
-                            if (optional) { usageText.append("] "); }
-                            else { usageText.append(" "); }
-                        }
-                    }
-                    else {
-                        usageText.append("=").append(paramName);
-                        if (optional) { usageText.append("] "); }
-                        else { usageText.append(" "); }
-                    }
+            if (param==null) {
+                continue;
+            }
+            final String paramName = getParamName(param, f);
+            final boolean optional = param.optional();
+            final Class<?> ftype = f.getType();
+            Object fvalue = null;
+            String fvalueString = null;
+            try {
+                f.setAccessible(true);
+                fvalue = f.get(command);
+                if(fvalue != null)
+                    fvalueString = fvalue.toString();
+            }
+            catch(Exception e) {
+                // just leave it as null...
+            }
+            // this is a param.
+            if (param.primary()) {
+                if (optional) {
+                    operand.append("[").append(paramName).append("] ");
                 }
                 else {
-                    usageText.append("=").append(param.defaultValue());
-                    if(optional) { usageText.append("] "); }
+                    operand.append(paramName).append(" ");
+                }
+                continue;
+            }
+            if (optional) { usageText.append("["); }
+            usageText.append("--").append(paramName);
+
+            if (ok(param.defaultValue())) {
+                usageText.append("=").append(param.defaultValue());
+                if(optional) { usageText.append("] "); }
+                else { usageText.append(" "); }
+            }
+            else if (ftype.isAssignableFrom(String.class)) {
+                    //check if there is a default value assigned
+                if (ok(fvalueString)) {
+                    usageText.append("=").append(fvalueString);
+                    if (optional) { usageText.append("] "); }
+                    else { usageText.append(" "); }
+                } else {
+                    usageText.append("=").append(paramName);
+                    if (optional) { usageText.append("] "); }
                     else { usageText.append(" "); }
                 }
+            }
+            else if (ftype.isAssignableFrom(Boolean.class)) {
+                // note: There is no defaultValue for this param.  It might
+                // hava  value -- but we don't care -- it isn't an official
+                // default value.
+                    usageText.append("=").append("true|false");
+                    if (optional) { usageText.append("] "); }
+                    else { usageText.append(" "); }
+            }
+            else {
+                usageText.append("=").append(paramName);
+                if (optional) { usageText.append("] "); }
+                else { usageText.append(" "); }
             }
         }//for
         usageText.append(operand);
@@ -796,7 +805,29 @@ public class CommandRunner {
             //all else return false
         return false;
     }
-    
+
+    // bnevins Apr 8, 2008
+    private String encodeManPage(InputStream in) {
+        final String eolToken = ManifestUtils.EOL_TOKEN;
+        
+        try {
+            if(in == null)
+                return null;
+
+            BufferedReader br = new BufferedReader(new InputStreamReader(in));
+            String line;
+            StringBuilder sb = new StringBuilder();
+            
+            while((line = br.readLine()) != null) {
+                sb.append(line);
+                sb.append(eolToken);
+            }
+            return sb.toString();
+        }
+        catch (Exception ex) {
+            return null;
+        }
+    }
 }
 
 

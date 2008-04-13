@@ -50,6 +50,7 @@
 
 package org.glassfish.admingui.handlers;
 
+import com.sun.appserv.management.config.ClusteredServerConfig;
 import com.sun.jsftemplating.annotation.Handler;
 import com.sun.jsftemplating.annotation.HandlerInput;
 import com.sun.jsftemplating.annotation.HandlerOutput;
@@ -65,6 +66,7 @@ import com.sun.appserv.management.config.HTTPListenerConfig;
 import com.sun.appserv.management.config.IIOPServiceConfig;
 import com.sun.appserv.management.config.IIOPListenerConfig;
 import com.sun.appserv.management.config.ServerConfig;
+import com.sun.appserv.management.config.StandaloneServerConfig;
 import com.sun.appserv.management.ext.logging.LogFileAccess;
 import com.sun.appserv.management.monitor.ServerRootMonitor;
 
@@ -183,9 +185,15 @@ public class InstanceHandler {
     }
     
     private static String resolveToken(String pn, String serverName) {
-        ServerConfig serverConfig = AMXRoot.getInstance().getDomainConfig().getServerConfigMap().get(serverName);
-        String value = serverConfig.getSystemPropertyValue(pn);
-        return value;
+        StandaloneServerConfig ss = AMXRoot.getInstance().getServersConfig().getStandaloneServerConfigMap().get(serverName);
+        if (ss != null){
+            return ss.getSystemPropertyConfigMap().get(pn).getValue();
+        }
+        ClusteredServerConfig  cs = AMXRoot.getInstance().getServersConfig().getClusteredServerConfigMap().get(serverName);
+        if (cs != null){
+            return cs.getSystemPropertyConfigMap().get(pn).getValue();
+        }
+        return "";
     }
     
     /**

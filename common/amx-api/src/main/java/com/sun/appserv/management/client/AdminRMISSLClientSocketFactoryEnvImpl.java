@@ -41,13 +41,10 @@
  */
 package com.sun.appserv.management.client;
 
-import java.io.File;
+import javax.net.ssl.HandshakeCompletedListener;
+import javax.net.ssl.TrustManager;
 import java.util.HashMap;
 import java.util.Map;
-
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
-import javax.net.ssl.HandshakeCompletedListener;
 
 /**
 	<b>Not for public use</b>

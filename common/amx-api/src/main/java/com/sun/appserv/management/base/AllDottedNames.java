@@ -43,9 +43,6 @@
 
 package com.sun.appserv.management.base;
 
-import com.sun.appserv.management.base.XTypes;
-import com.sun.appserv.management.base.AMX;
-
 /**
 	Marker interface for exposing all <i>asadmin</i> CLI dotted names 
 	as JMX <i>Attributes</i>.

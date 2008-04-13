@@ -183,10 +183,6 @@ public class ListFileUser implements AdminCommand {
         try {
             Enumeration users = fr.getUserNames();
             
-            report.getTopMessagePart().setMessage(localStrings.getLocalString(
-                "list.file.user.success", 
-                "list-file-users successful"));
-            report.getTopMessagePart().setChildrenType("file-user");
             while (users.hasMoreElements()) {
                 final ActionReport.MessagePart part = report.getTopMessagePart().addChild();
                 part.setMessage((String) users.nextElement());

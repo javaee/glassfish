@@ -35,49 +35,25 @@
  */
 package org.glassfish.admin.amx.loader;
 
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Collections;
-import java.util.Iterator;
-import java.io.IOException;
-
-import java.lang.reflect.Proxy;
-
-import javax.management.ObjectName;
-import javax.management.MBeanServer;
-import javax.management.Notification;
-import javax.management.MBeanServerNotification;
-import javax.management.InstanceNotFoundException;
-import javax.management.MBeanRegistrationException;
-import javax.management.InstanceAlreadyExistsException;
-import javax.management.NotCompliantMBeanException;
-
-import javax.management.relation.MBeanServerNotificationFilter;
-
-
-import com.sun.appserv.management.base.XTypes;
+import com.sun.appserv.management.DomainRoot;
 import com.sun.appserv.management.base.Util;
-
-import com.sun.appserv.management.util.jmx.stringifier.NotificationStringifier;
+import com.sun.appserv.management.client.ProxyFactory;
 import com.sun.appserv.management.util.jmx.JMXUtil;
 import com.sun.appserv.management.util.jmx.MBeanProxyHandler;
 import com.sun.appserv.management.util.jmx.MBeanServerConnectionSource;
 import com.sun.appserv.management.util.jmx.stringifier.StringifierRegistryIniter;
-
 import com.sun.appserv.management.util.misc.ExceptionUtil;
-
-import com.sun.appserv.management.util.stringifier.StringifierRegistryIniterImpl;
 import com.sun.appserv.management.util.stringifier.StringifierRegistryImpl;
-
-import com.sun.appserv.management.DomainRoot;
-import com.sun.appserv.management.client.ProxyFactory;
-
+import com.sun.appserv.management.util.stringifier.StringifierRegistryIniterImpl;
+import org.glassfish.admin.amx.mbean.SystemInfoFactory;
+import org.glassfish.admin.amx.mbean.SystemInfoImpl;
 import org.glassfish.admin.amx.util.AMXDebugSupport;
 import org.glassfish.admin.amx.util.ObjectNames;
-import org.glassfish.admin.amx.mbean.SystemInfoImpl;
-import org.glassfish.admin.amx.mbean.SystemInfoFactory;
+
+import javax.management.*;
+import javax.management.relation.MBeanServerNotificationFilter;
+import java.io.IOException;
+import java.lang.reflect.Proxy;
 
 /**
 	
@@ -177,10 +153,9 @@ abstract class LoaderBase extends org.glassfish.admin.amx.mbean.MBeanImplBase
 		
 		try
 		{
-			loadSystemInfo( server );
+			//loadSystemInfo( server );  // now loaded as part of DomainRoot
 			
-			final MBeanServerNotificationFilter filter	=
-				new MBeanServerNotificationFilter();
+			final MBeanServerNotificationFilter filter	= new MBeanServerNotificationFilter();
 
             filter.enableAllObjectNames();
             
@@ -282,6 +257,7 @@ abstract class LoaderBase extends org.glassfish.admin.amx.mbean.MBeanImplBase
     		try
     		{
     			objectName  = mServer.registerMBean( domainRoot, objectName ).getObjectName();
+                loadSystemInfo( mServer );
     	        debug( "Registered DomainRoot: " + objectName );
     		}
     		catch( final Exception e )

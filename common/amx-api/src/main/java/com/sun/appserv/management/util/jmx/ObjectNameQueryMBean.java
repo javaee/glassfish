@@ -41,10 +41,9 @@
  */
 package com.sun.appserv.management.util.jmx;
 
-import java.util.Set;
-
-import javax.management.ObjectName;
 import javax.management.MalformedObjectNameException;
+import javax.management.ObjectName;
+import java.util.Set;
 
 public interface ObjectNameQueryMBean
 	extends ObjectNameQuery

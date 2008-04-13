@@ -42,13 +42,12 @@
 
 package com.sun.appserv.management.j2ee.statistics;
 
-import java.io.Serializable;
-
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
-
 import com.sun.appserv.management.util.jmx.JMXUtil;
 import com.sun.appserv.management.util.misc.StringUtil;
+
+import java.io.Serializable;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
 
 /**
 	Abstract base {@link InvocationHandler} for any getXXX() method.

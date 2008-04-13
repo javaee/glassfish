@@ -41,8 +41,8 @@
  */
 package com.sun.appserv.management.util.misc;
 
-import java.util.Iterator;
 import java.util.Enumeration;
+import java.util.Iterator;
 
 
 /**

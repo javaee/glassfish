@@ -35,13 +35,10 @@
  */
 package com.sun.appserv.management.ext.wsmgmt;
 
-import java.util.Map;
-import java.util.HashMap;
-import java.io.Serializable;
-
-import com.sun.appserv.management.base.XTypes;
-import com.sun.appserv.management.base.MapCapable;
 import com.sun.appserv.management.base.MapCapableBase;
+
+import java.io.Serializable;
+import java.util.Map;
 
 /**
  * Provides details of a SOAP invocation. 

@@ -68,8 +68,8 @@ public class CreateResourceRef implements AdminCommand {
     
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(CreateResourceRef.class);
     
-    @Param(optional=true)
-    String enabled = Boolean.TRUE.toString();
+    @Param(optional=true, defaultValue="true")
+    Boolean enabled;
     
     @Param(optional=true)
     String target = SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME;
@@ -140,7 +140,7 @@ public class CreateResourceRef implements AdminCommand {
                     }
                     
                     // create new ResourceRef as a child of Server
-                    ResourceUtils.createResourceRef(server, enabled, refName);
+                    ResourceUtils.createResourceRef(server, enabled.toString(), refName);
                 }
             }
         } catch(TransactionFailure tfe) {
@@ -157,8 +157,6 @@ public class CreateResourceRef implements AdminCommand {
             return;
         }
         ActionReport.ExitCode ec = ActionReport.ExitCode.SUCCESS;
-        report.setMessage(localStrings.getLocalString("create.resource.ref.success",
-                    "Resource ref {0} created successfully", refName));
         report.setActionExitCode(ec);
     }
     

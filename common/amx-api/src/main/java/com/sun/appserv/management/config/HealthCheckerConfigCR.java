@@ -42,8 +42,6 @@
 
 package com.sun.appserv.management.config;
 
-import java.util.Map;
-
 /**
     Supports creation and removal of health checker configurations.
 */

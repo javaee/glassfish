@@ -41,8 +41,8 @@
  */
 package com.sun.enterprise.management.deploy;
 
-import com.sun.appserv.management.deploy.DeploymentStatus;
 import com.sun.appserv.management.deploy.DeploymentProgress;
+import com.sun.appserv.management.deploy.DeploymentStatus;
 
 /**
 	Intended for implementing code to make note of the relevant

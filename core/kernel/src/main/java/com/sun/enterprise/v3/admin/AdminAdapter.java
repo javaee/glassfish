@@ -199,8 +199,12 @@ public class AdminAdapter implements Adapter, PostConstruct {
             report.setMessage(msg);
             report.setActionDescription("Authentication error");
             InternalOutputBuffer outputBuffer = (InternalOutputBuffer) res.getOutputBuffer();
-            res.setStatus(401);
-            res.setHeader("WWW-Authenticate", "BASIC");
+            if (req.getHeader("User-Agent").startsWith("hk2-cli")) {
+                res.setStatus(200);
+            } else {
+                res.setStatus(401);                
+                res.setHeader("WWW-Authenticate", "BASIC");
+            }
             res.setContentType(report.getContentType());
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
             report.writeReport(bos);

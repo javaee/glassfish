@@ -41,16 +41,14 @@
  */
 package com.sun.appserv.management.util.jmx;
 
-import java.util.Set;
-
-import javax.management.StandardMBean;
-import javax.management.ObjectName;
+import javax.management.MBeanRegistration;
 import javax.management.MBeanServer;
 import javax.management.MBeanServerConnection;
-import javax.management.NotCompliantMBeanException;
-
 import javax.management.MalformedObjectNameException;
-import javax.management.MBeanRegistration;
+import javax.management.NotCompliantMBeanException;
+import javax.management.ObjectName;
+import javax.management.StandardMBean;
+import java.util.Set;
 
 /**
 	An MBean implementing ObjectNameQueryMBean

@@ -39,17 +39,12 @@
 
 package com.sun.appserv.management.monitor;
 
-import java.util.Map;
-
-import com.sun.appserv.management.base.XTypes;
 import com.sun.appserv.management.base.AMX;
 import com.sun.appserv.management.base.Singleton;
 import com.sun.appserv.management.base.Utility;
-import com.sun.appserv.management.base.Container;
+import com.sun.appserv.management.base.XTypes;
 
-import com.sun.appserv.management.monitor.AMXStringMonitor;
-import com.sun.appserv.management.monitor.AMXCounterMonitor;
-import com.sun.appserv.management.monitor.AMXGaugeMonitor;
+import java.util.Map;
 
 
 /**

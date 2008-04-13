@@ -43,6 +43,7 @@ import java.net.*;
 import java.util.*;
 import com.sun.enterprise.admin.cli.util.*;
 import com.sun.enterprise.cli.framework.*;
+import com.sun.enterprise.universal.collections.ManifestUtils;
 import java.util.jar.*;
 import sun.misc.BASE64Encoder;
 /**
@@ -55,7 +56,7 @@ public class RemoteCommand {
     public RemoteCommand(String... args) throws CommandException {
         handleRemoteCommand(args);
     }
-    
+
 
     public void handleRemoteCommand(String... args) throws CommandException {
         handleRemoteCommand(args, "hk2-cli", null);
@@ -74,10 +75,7 @@ public class RemoteCommand {
                                      OutputStream userOut) 
                                      throws CommandException{
         if (args.length == 0) {
-            String msg = "Usage: asadmin <command-name> [options]\n" +
-                         "Start the server using \"asadmin start-domain\" or \"startserv\" script\n" +
-                         "and run \"asadmin list-commands\" to get a complete list of commands";
-            throw new CommandException(msg);
+            throw new CommandException(strings.get("remote.noargs"));
         }
         try {
             //testing RemoteCommandParser.java
@@ -85,6 +83,13 @@ public class RemoteCommand {
             logger.printDebugMessage("RemoteCommandParser: " + rcp);
             final Map<String, String> params = rcp.getOptions();
             setBooleans(params);
+            if (terse) {
+                logger.setOutputLevel(java.util.logging.Level.INFO);
+            } 
+            else {
+                logger.setOutputLevel(java.util.logging.Level.FINE);
+            }
+            
             final Vector operands = rcp.getOperands();
 
             if(echo) {
@@ -210,15 +215,6 @@ public class RemoteCommand {
         }
     }
 
-    static boolean pingDAS(int port) {
-        try {
-            new RemoteCommand("version", "--port", Integer.toString(port));
-            return true;
-        }
-        catch (Exception ex) {
-            return false;
-        }
-    }
     /**
      * Returns either the name of the file/directory or the canonical form
      * of the file/directory.  If <code>uploadFile</code> is
@@ -307,7 +303,6 @@ public class RemoteCommand {
         copyStream(in, baos);
         String responseString = baos.toString();
         in = new ByteArrayInputStream(baos.toByteArray());
-        Manifest m = null;
 
         logger.printDebugMessage("--------  RESPONSE DUMP         --------------");
         logger.printDebugMessage(responseString);
@@ -320,30 +315,27 @@ public class RemoteCommand {
         // it might not be formatted properly -- e.g. output of "amx" and man pages
         // in that case just print the message...
         try {
-            m = getManifest(in);
+            serverResponse = getServerData(in);
         }
         catch(Exception e) {
             // handled below...
         }
-        if (m == null) {
+        if (serverResponse == null) {
             processPlainText(responseString);
         }
         else if (params.size() == 1 && params.get("help") != null) {
-            processHelp(m);
+            processHelp(serverResponse);
         } else {
-            processMessage(m);
+            processMessage(serverResponse);
         }
     }
 
-    private Manifest getManifest(InputStream is) throws IOException {
+    private Map<String, Map<String,String>> getServerData(InputStream is) throws IOException {
         try {
             Manifest m = new Manifest();
             m.read(is);
-
-            if (Boolean.getBoolean("dump.manifest")) {
-                m.write(System.out);
-            }
-            return m;
+            Map<String, Map<String,String>> serverResponse = ManifestUtils.normalize(m);
+            return serverResponse;
         } finally {
             if (is != null) {
                 try {
@@ -355,29 +347,35 @@ public class RemoteCommand {
         }
     }
 
-    private void processHelp(Manifest m) throws CommandException {
-        Attributes attr = m.getMainAttributes();
-        String usageText = attr.getValue("SYNOPSYS_value");
+    private void processHelp(Map<String,Map<String,String>> serverResponse) throws CommandException {
+        
+        Map<String,String> mainAtts = serverResponse.get(ManifestUtils.MAIN_ATTS);
+        
+        // if we got a "real" man page -- process it & return
+        if(processManPage(mainAtts))
+            return;
+
+        String usageText = mainAtts.get("SYNOPSYS_value");
 
         if(usageText == null) {
             // this is one way to figure out there was an error!
             throw new CommandException(strings.get("remoteError", 
-                    m.getMainAttributes().getValue("message")));
+                    mainAtts.get("message")));
         }
         
         
         System.out.println("NAME :");
-        displayInProperLen(attr.getValue("message"));
+        displayInProperLen(mainAtts.get("message"));
         System.out.println("");
         System.out.println("SYNOPSIS :");
         if (usageText.startsWith("Usage: ")) {
-            System.out.println("\t" + attr.getValue("SYNOPSYS_value").substring(7));            
+            System.out.println("\t" + mainAtts.get("SYNOPSYS_value").substring(7));            
         } else {
-            System.out.println("\t" + attr.getValue("SYNOPSYS_value"));
+            System.out.println("\t" + mainAtts.get("SYNOPSYS_value"));
         }
         System.out.println("");
         boolean displayOptionTitle = true;
-        String keys = attr.getValue("keys");
+        String keys = mainAtts.get("keys");
         List<String> operands = new ArrayList();
         if (keys != null) {
             StringTokenizer token = new StringTokenizer(keys, ";");
@@ -399,24 +397,37 @@ public class RemoteCommand {
                         displayOptionTitle = false;
                     }
                     
-                    String name = attr.getValue(property + "_name");
-                    String value = attr.getValue(property + "_value");
+                    String name = mainAtts.get(property + "_name");
+                    String value = mainAtts.get(property + "_value");
                     logger.printMessage("\t--" + name);
                     displayInProperLen(value);
                     logger.printMessage("");
                 }
             }
         }
-        displayOperands(operands, attr);
+        displayOperands(operands, mainAtts);
     }
 
+    // bnevins Apr 8, 2008
+    private boolean processManPage(Map<String,String> mainAtts) throws CommandException {
+        String manPage = mainAtts.get("MANPAGE_value");
+
+        if(!ok(manPage)) {
+            return false;
+        }
+
+        logger.printMessage(manPage);
+        return true;
+    }
+        
+
     
-    private void displayOperands(final List<String> operands, Attributes attr) {
+    private void displayOperands(final List<String> operands, Map<String,String> mainAtts) {
         //display operands
         if (!operands.isEmpty()) {
             System.out.println("OPERANDS : ");
             for (String operand : operands) {
-                final String value = attr.getValue(operand + "_value");
+                final String value = mainAtts.get(operand + "_value");
                 String displayStr = operand.substring(0, operand.length()-8)
                                     + " - " + value;
                 displayInProperLen(displayStr);
@@ -446,18 +457,22 @@ public class RemoteCommand {
     }
     
 
-    private void processMessage(Manifest m) throws CommandException {
-        String exitCode = m.getMainAttributes().getValue("exit-code");
-        String message = m.getMainAttributes().getValue("message");
+    private void processMessage(Map<String,Map<String,String>> serverResponse) throws CommandException {
+        
+        Map<String,String> mainAtts = serverResponse.get(ManifestUtils.MAIN_ATTS);
+        
+        String exitCode = mainAtts.get("exit-code");
+        String message = mainAtts.get("message");
 
         if (exitCode == null || exitCode.equalsIgnoreCase("Success")) {
-            logger.printMessage(message);
-            processOneLevel("", null, m, m.getMainAttributes());
+            if(ok(message))
+                logger.printMessage(message);
+            processOneLevel("", null, serverResponse, mainAtts);
             return;
         }
         // bnevins -- this block is pretty bizarre!
         //if there is any children message, then display it
-        final String childMsg = m.getMainAttributes().getValue("children");
+        final String childMsg = mainAtts.get("children");
         if (childMsg != null && !childMsg.equals("")) {
             StringTokenizer childTok = new StringTokenizer(childMsg, ";");
             while (childTok.hasMoreTokens()) {
@@ -465,25 +480,30 @@ public class RemoteCommand {
             }
         }
 
-        message = exitCode + " : " + message;
-        String cause = m.getMainAttributes().getValue("cause");
+        if(ok(message))
+            message = exitCode + " : " + message;
+        else
+            message = exitCode;
+        
+        String cause = mainAtts.get("cause");
 
         // TODO We may need to  change this post-TP2
-        if( CLILogger.isDebug() || !terse) {
-            if(StringUtils.ok(cause)) {
+        if( CLILogger.isDebug()) {
+            if(ok(cause)) {
                 message += StringUtils.NEWLINE + strings.get("cause", cause);
             }
         }        
         throw new CommandException(message);
     }
 
-    private void processOneLevel(String prefix, String key, Manifest m,
-                                  Attributes attr) {
+    private void processOneLevel(String prefix, String key, Map<String, Map<String,String>> serverResponse,
+                                  Map<String,String> atts) {
 
-        if(attr == null) {
+        if(atts == null) {
             return;
         }
-        String keys = attr.getValue("keys");
+        String keys = atts.get("keys");
+        String output = "";
         if (keys != null) {
             StringTokenizer token = new StringTokenizer(keys, ";");
             boolean displayProperties = false;
@@ -492,41 +512,43 @@ public class RemoteCommand {
                 //a kludge for NB plugin
                 if (!property.startsWith("nb-")) {
                     if (!displayProperties) {
-                        System.out.print(prefix + "properties=(");
+                        output += prefix + "properties=(";
                         displayProperties = true;
                     }
                         
-                    String name = attr.getValue(property + "_name");
-                    String value = attr.getValue(property + "_value");
-                    System.out.print(name + "=" + value);
+                    String name = atts.get(property + "_name");
+                    String value = atts.get(property + "_value");
+                    output += name + "=" + value;
                     if (token.hasMoreElements()) {
-                        System.out.print(",");
+                        output += ",";
                     }
                 }
                 if (displayProperties) {
-                    System.out.println(")");
+                    output += ")";
+                    logger.printMessage(output);
+                    output = "";
                 }
             }
         }
-        String children = attr.getValue("children");
+        String children = atts.get("children");
         if (children == null) {
             // no container currently started.
             return;
         }
 
-        String childrenType = attr.getValue("children-type");
+        String childrenType = atts.get("children-type");
         StringTokenizer token = new StringTokenizer(children, ";");
         while (token.hasMoreTokens()) {
             String container = token.nextToken();
             int index = key == null ? 0 : key.length() + 1;
             if (childrenType.equals("null") || childrenType.equals("")) {
-                System.out.println(container.substring(index));
+                logger.printMessage(container.substring(index));
             } else {
-                System.out.println(prefix + childrenType + " : " + container.substring(index));
+                logger.printMessage(prefix + childrenType + " : " + container.substring(index));
             }
             // get container attributes
-            Attributes childAttr = m.getAttributes(container);
-            processOneLevel(prefix + "\t", container, m, childAttr);
+            Map<String,String> childAtts = serverResponse.get(container);
+            processOneLevel(prefix + "\t", container, serverResponse, childAtts);
         }
     }
 
@@ -589,7 +611,7 @@ public class RemoteCommand {
     }
 
     private boolean ok(String s) {
-        return s != null && s.length() > 0;
+        return s != null && s.length() > 0 && !s.equals("null");
     }
 
     /* this is a TP2 Hack!  THis class should be derived from S1ASCommand
@@ -620,15 +642,35 @@ public class RemoteCommand {
         
         return sb.toString();
     }
+
+    Map<String,Map<String,String>> getServerResponse() {
+        return serverResponse;
+    }
+    
+    /**
+     * See if DAS is alive.
+     * @param port The admin port of DAS
+     * @return true if DAS can be reached and can handle commands, otherwise false.
+     */
+    static boolean pingDAS(int port)
+    {
+        try {
+            new RemoteCommand("version", "--port", Integer.toString(port));
+            return true;
+        }
+        catch (Exception ex) {
+            return false;
+        }
+    }
             
     private static final CLILogger logger = CLILogger.getInstance();
     private static final String SUCCESS = "SUCCESS";
     private static final String FAILURE = "FAILURE";
     private static final String MAGIC = "PlainTextActionReporter";
     private boolean verbose = false;
-    private boolean terse = true;
+    private boolean terse = false;
     private boolean echo = false;
+    private Map<String,Map<String,String>> serverResponse;
     private final static LocalStringsImpl strings = new LocalStringsImpl(RemoteCommand.class);
 }
-
 

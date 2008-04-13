@@ -88,11 +88,11 @@ public class CreateJdbcConnectionPool implements AdminCommand {
     @Param(name="isolationlevel", optional=true)
     String isolationlevel;
             
-    @Param(name="isisolationguaranteed", optional=true)
-    String isisolationguaranteed = Boolean.TRUE.toString();
+    @Param(name="isisolationguaranteed", optional=true, defaultValue="true")
+    Boolean isisolationguaranteed;
                 
-    @Param(name="isconnectvalidatereq", optional=true)
-    String isconnectvalidatereq = Boolean.FALSE.toString();
+    @Param(name="isconnectvalidatereq", optional=true, defaultValue="false")
+    Boolean isconnectvalidatereq;
     
     @Param(name="validationmethod", optional=true)
     String validationmethod = "auto-commit";
@@ -100,14 +100,14 @@ public class CreateJdbcConnectionPool implements AdminCommand {
     @Param(name="validationtable", optional=true)
     String validationtable;
     
-    @Param(name="failconnection", optional=true)
-    String failconnection = Boolean.FALSE.toString();
+    @Param(name="failconnection", optional=true, defaultValue="false")
+    Boolean failconnection;
     
-    @Param(name="allownoncomponentcallers", optional=true)
-    String allownoncomponentcallers = Boolean.FALSE.toString();
+    @Param(name="allownoncomponentcallers", optional=true, defaultValue="false")
+    Boolean allownoncomponentcallers;
     
-    @Param(name="nontransactionalconnections", optional=true)
-    String nontransactionalconnections = Boolean.FALSE.toString();
+    @Param(name="nontransactionalconnections", optional=true, defaultValue="false")
+    Boolean nontransactionalconnections;
     
     @Param(name="validateatmostonceperiod", optional=true)
     String validateatmostonceperiod = "0";
@@ -115,8 +115,8 @@ public class CreateJdbcConnectionPool implements AdminCommand {
     @Param(name="leaktimeout", optional=true)
     String leaktimeout = "0";
     
-    @Param(name="leakreclaim", optional=true)
-    String leakreclaim = Boolean.FALSE.toString();
+    @Param(name="leakreclaim", optional=true, defaultValue="false")
+    Boolean leakreclaim;
     
     @Param(name="creationretryattempts", optional=true)
     String creationretryattempts = "0";
@@ -127,23 +127,23 @@ public class CreateJdbcConnectionPool implements AdminCommand {
     @Param(name="statementtimeout", optional=true)
     String statementtimeout = "-1";
     
-    @Param(name="lazyconnectionenlistment", optional=true)
-    String lazyconnectionenlistment = Boolean.FALSE.toString();
+    @Param(name="lazyconnectionenlistment", optional=true, defaultValue="false")
+    Boolean lazyconnectionenlistment;
     
-    @Param(name="lazyconnectionassociation", optional=true)
-    String lazyconnectionassociation = Boolean.FALSE.toString();
+    @Param(name="lazyconnectionassociation", optional=true, defaultValue="false")
+    Boolean lazyconnectionassociation;
     
-    @Param(name="associatewiththread", optional=true)
-    String associatewiththread = Boolean.FALSE.toString();
+    @Param(name="associatewiththread", optional=true, defaultValue="false")
+    Boolean associatewiththread;
     
-    @Param(name="matchconnections", optional=true)
-    String matchconnections = Boolean.FALSE.toString();
+    @Param(name="matchconnections", optional=true, defaultValue="false")
+    Boolean matchconnections;
     
     @Param(name="maxconnectionusagecount", optional=true)
     String maxconnectionusagecount = "0";
     
-    @Param(name="wrapjdbcobjects", optional=true)
-    String wrapjdbcobjects = Boolean.FALSE.toString();
+    @Param(name="wrapjdbcobjects", optional=true, defaultValue="false")
+    Boolean wrapjdbcobjects;
     
     @Param(name="description", optional=true)
     String description;
@@ -185,25 +185,25 @@ public class CreateJdbcConnectionPool implements AdminCommand {
         attrList.put(ResourceConstants.POOL_SIZE_QUANTITY, poolresize);
         attrList.put(ResourceConstants.IDLE_TIME_OUT_IN_SECONDS, idletimeout);
         attrList.put(ResourceConstants.TRANS_ISOLATION_LEVEL, isolationlevel);
-        attrList.put(ResourceConstants.IS_ISOLATION_LEVEL_GUARANTEED, isisolationguaranteed);
-        attrList.put(ResourceConstants.IS_CONNECTION_VALIDATION_REQUIRED, isconnectvalidatereq);
+        attrList.put(ResourceConstants.IS_ISOLATION_LEVEL_GUARANTEED, isisolationguaranteed.toString());
+        attrList.put(ResourceConstants.IS_CONNECTION_VALIDATION_REQUIRED, isconnectvalidatereq.toString());
         attrList.put(ResourceConstants.CONNECTION_VALIDATION_METHOD, validationmethod);
         attrList.put(ResourceConstants.VALIDATION_TABLE_NAME, validationtable);
-        attrList.put(ResourceConstants.CONN_FAIL_ALL_CONNECTIONS, failconnection);
-        attrList.put(ResourceConstants.NON_TRANSACTIONAL_CONNECTIONS, nontransactionalconnections);
-        attrList.put(ResourceConstants.ALLOW_NON_COMPONENT_CALLERS, allownoncomponentcallers);
+        attrList.put(ResourceConstants.CONN_FAIL_ALL_CONNECTIONS, failconnection.toString());
+        attrList.put(ResourceConstants.NON_TRANSACTIONAL_CONNECTIONS, nontransactionalconnections.toString());
+        attrList.put(ResourceConstants.ALLOW_NON_COMPONENT_CALLERS, allownoncomponentcallers.toString());
         attrList.put(ResourceConstants.VALIDATE_ATMOST_ONCE_PERIOD, validateatmostonceperiod);
         attrList.put(ResourceConstants.CONNECTION_LEAK_TIMEOUT, leaktimeout);
-        attrList.put(ResourceConstants.CONNECTION_LEAK_RECLAIM, leakreclaim);
+        attrList.put(ResourceConstants.CONNECTION_LEAK_RECLAIM, leakreclaim.toString());
         attrList.put(ResourceConstants.CONNECTION_CREATION_RETRY_ATTEMPTS, creationretryattempts);
         attrList.put(ResourceConstants.CONNECTION_CREATION_RETRY_INTERVAL, creationretryinterval);
         attrList.put(ResourceConstants.STATEMENT_TIMEOUT, statementtimeout);
-        attrList.put(ResourceConstants.LAZY_CONNECTION_ASSOCIATION, lazyconnectionassociation);
-        attrList.put(ResourceConstants.LAZY_CONNECTION_ENLISTMENT, lazyconnectionenlistment);
-        attrList.put(ResourceConstants.ASSOCIATE_WITH_THREAD, associatewiththread);
-        attrList.put(ResourceConstants.MATCH_CONNECTIONS, matchconnections);
+        attrList.put(ResourceConstants.LAZY_CONNECTION_ASSOCIATION, lazyconnectionassociation.toString());
+        attrList.put(ResourceConstants.LAZY_CONNECTION_ENLISTMENT, lazyconnectionenlistment.toString());
+        attrList.put(ResourceConstants.ASSOCIATE_WITH_THREAD, associatewiththread.toString());
+        attrList.put(ResourceConstants.MATCH_CONNECTIONS, matchconnections.toString());
         attrList.put(ResourceConstants.MAX_CONNECTION_USAGE_COUNT, maxconnectionusagecount);
-        attrList.put(ResourceConstants.WRAP_JDBC_OBJECTS, wrapjdbcobjects);
+        attrList.put(ResourceConstants.WRAP_JDBC_OBJECTS, wrapjdbcobjects.toString());
         
         ResourceStatus rs;
  
@@ -220,13 +220,14 @@ public class CreateJdbcConnectionPool implements AdminCommand {
         ActionReport.ExitCode ec = ActionReport.ExitCode.SUCCESS;
         if (rs.getStatus() == ResourceStatus.FAILURE) {
             ec = ActionReport.ExitCode.FAILURE;
-            report.setMessage(localStrings.getLocalString("create.jdbc.connection.pool.fail",
+            if (rs.getMessage() != null) {
+                report.setMessage(rs.getMessage());
+            } else {
+                 report.setMessage(localStrings.getLocalString("create.jdbc.connection.pool.fail",
                     "JDBC connection pool {0} creation failed", jdbc_connection_pool_id));
+            }
             if (rs.getException() != null)
                 report.setFailureCause(rs.getException());
-        } else {
-            report.setMessage(localStrings.getLocalString("create.jdbc.connection.pool.success",
-                    "JDBC connection pool {0} created successfully", jdbc_connection_pool_id));
         }
         report.setActionExitCode(ec);
     }

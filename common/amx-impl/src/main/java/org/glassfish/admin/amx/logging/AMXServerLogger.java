@@ -37,10 +37,10 @@
 package org.glassfish.admin.amx.logging;
 
 
-import java.util.logging.Logger;
-
 import com.sun.appserv.management.base.AMXLoggerBase;
 import com.sun.appserv.management.base.LoggerSupport;
+
+import java.util.logging.Logger;
 
 /**
 	Root Logger for all AMX

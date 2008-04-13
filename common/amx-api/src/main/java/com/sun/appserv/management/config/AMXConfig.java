@@ -35,12 +35,6 @@
  */
 package com.sun.appserv.management.config;
 
-import com.sun.appserv.management.base.XTypes;
-
-
-
-import javax.management.NotificationEmitter;
-
 import com.sun.appserv.management.base.AMX;
 
 /**

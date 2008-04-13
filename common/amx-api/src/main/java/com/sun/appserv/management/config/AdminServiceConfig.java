@@ -33,27 +33,20 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
- 
-/*
- * $Header: /cvs/glassfish/appserv-api/src/java/com/sun/appserv/management/config/AdminServiceConfig.java,v 1.2 2007/05/05 05:30:32 tcfujii Exp $
- * $Revision: 1.2 $
- * $Date: 2007/05/05 05:30:32 $
- */
-
 
 package com.sun.appserv.management.config;
 
-import java.util.Map;
-
-import com.sun.appserv.management.base.XTypes;
-import com.sun.appserv.management.base.AMX;
 import com.sun.appserv.management.base.Container;
+import com.sun.appserv.management.base.Singleton;
+import com.sun.appserv.management.base.XTypes;
+
+import java.util.Map;
 
 /**
 	 Configuration for the &lt;admin-service&gt; element.
  */
 public interface AdminServiceConfig
-	extends AMXConfig, PropertiesAccess, Container
+	extends AMXConfig, PropertiesAccess, Container, Singleton, DefaultValues
 {  
 /** The j2eeType as returned by {@link com.sun.appserv.management.base.AMX#getJ2EEType}. */
 	public static final String	J2EE_TYPE	= XTypes.ADMIN_SERVICE_CONFIG;

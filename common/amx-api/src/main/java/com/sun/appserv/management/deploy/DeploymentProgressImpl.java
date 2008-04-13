@@ -35,13 +35,11 @@
  */
 package com.sun.appserv.management.deploy;
 
+import com.sun.appserv.management.base.MapCapableBase;
+
+import java.io.Serializable;
 import java.util.Locale;
 import java.util.Map;
-import java.io.Serializable;
-
-
-import com.sun.appserv.management.deploy.DeploymentProgress;
-import com.sun.appserv.management.base.MapCapableBase;
 
 /**
 	Use DeploymentSupport to create a new instance of this class.

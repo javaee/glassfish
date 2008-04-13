@@ -42,8 +42,6 @@
 
 package com.sun.appserv.management.util.misc;
 
-import com.sun.appserv.management.util.misc.ClassUtil;
-
 /**
 	Provides a variety of useful utilities for comparing objects.
  */

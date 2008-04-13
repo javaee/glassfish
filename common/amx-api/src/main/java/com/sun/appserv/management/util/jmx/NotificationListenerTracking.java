@@ -41,13 +41,12 @@
  */
 package com.sun.appserv.management.util.jmx;
 
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Collections;
-
-import javax.management.NotificationListener;
 import javax.management.NotificationFilter;
+import javax.management.NotificationListener;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 
 
 /**

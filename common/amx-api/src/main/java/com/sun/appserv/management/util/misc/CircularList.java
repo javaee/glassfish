@@ -35,12 +35,9 @@
  */
 package com.sun.appserv.management.util.misc;
 
-import java.util.List;
-import java.util.ArrayList;
-import java.util.AbstractList;
-import java.lang.reflect.Array;
-
 import com.sun.appserv.management.util.stringifier.ArrayStringifier;
+
+import java.util.AbstractList;
 
 
 /**

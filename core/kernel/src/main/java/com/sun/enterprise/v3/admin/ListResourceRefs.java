@@ -76,7 +76,6 @@ public class ListResourceRefs implements AdminCommand {
     public void execute(AdminCommandContext context) {
         final ActionReport report = context.getActionReport();
         
-        report.getTopMessagePart().setMessage(localStrings.getLocalString("list.resource.refs.success", "list-resource-refs successful"));
         try {
             for (Server server : servers) {
                 if (server.getName().equals(target)) {

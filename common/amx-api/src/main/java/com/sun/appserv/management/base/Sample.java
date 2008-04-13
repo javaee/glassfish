@@ -41,11 +41,6 @@
  */
 package com.sun.appserv.management.base;
 
-import javax.management.Attribute;
-
-import com.sun.appserv.management.base.AMX;
-import com.sun.appserv.management.base.XTypes;
-
 /**
 	Interface for a sample MBean , used as target for sample and test code.
 	Various Attributes of varying types are made available for testing.

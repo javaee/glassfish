@@ -41,9 +41,13 @@ import org.jvnet.hk2.config.*;
 import org.glassfish.tests.utils.Utils;
 import com.sun.enterprise.config.serverbeans.HttpService;
 import com.sun.enterprise.config.serverbeans.AccessLog;
+import com.sun.enterprise.config.serverbeans.JavaConfig;
+import com.sun.enterprise.config.serverbeans.Profiler;
 
 import java.util.Map;
 import java.util.HashMap;
+import java.util.List;
+import java.util.ArrayList;
 
 
 import org.junit.Before;
@@ -95,7 +99,26 @@ public class DirectCreationTest extends ConfigPersistence {
             }
         }
 
-        ConfigSupport.createAndSet(serviceBean, AccessLog.class, null);
+        ConfigSupport.createAndSet(serviceBean, AccessLog.class, (List) null);
+
+        List<ConfigSupport.AttributeChanges> profilerChanges = new ArrayList<ConfigSupport.AttributeChanges>();
+        String[] values = { "-Xmx512m", "-RFtrq", "-Xmw24" };
+        ConfigSupport.MultipleAttributeChanges multipleChanges = new ConfigSupport.MultipleAttributeChanges("jvm-options", values );
+        profilerChanges.add(multipleChanges);
+        ConfigSupport.createAndSet((ConfigBean) ConfigBean.unwrap(habitat.getComponent(JavaConfig.class))
+                , Profiler.class, profilerChanges);
+    }
+
+    @Test
+    public void directAttributeNameTest() throws ClassNotFoundException {
+
+        boolean foundOne=false;
+        for (String attrName : ConfigSupport.getAttributesNames(
+                (ConfigBean) ConfigBean.unwrap(habitat.getComponent(JavaConfig.class)))) {
+            assertTrue(attrName!=null);
+            foundOne=true;
+        }
+        assertTrue(foundOne);
     }
 
     public boolean assertResult(String s) {

@@ -46,7 +46,7 @@ public class EjbApplicationContainer
         this.bundleDesc = bundleDesc;
     }
 
-    public boolean start() {
+    public boolean start(ClassLoader cl) {
         return true;
     }
 

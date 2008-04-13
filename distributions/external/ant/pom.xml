@@ -92,6 +92,16 @@
                          hk2-jar. -->
                         <HK2-Bundle-Name>${groupId}:${artifactId}</HK2-Bundle-Name>
                     </instructions>
+                    <!-- Maven uses the output directory (target/classes)
+                    rather than the final bundle, when compiling against
+                    projects in the same reactor (ie. the same build).
+                    Since this jar comprises of classes that come from
+                    some other jars and those other jars are marked as
+                    optional, maven won't add them to classpath when
+                    other modules depend on this artifact, so we need to unpack.
+                    -->
+                    <unpackBundle>true</unpackBundle>
+
                 </configuration>
                 <executions>
                     <execution>
@@ -115,18 +125,31 @@
                 <role>developer</role>
             </roles>
         </developer>
+        <developer>
+            <id>ss141213</id>
+            <name>Sahoo</name>
+            <organization>Sun Microsystems, Inc.</organization>
+            <roles>
+                <role>developer</role>
+            </roles>
+        </developer>
     </developers>
     <dependencies>
         <!-- for javac dependency -->
+        <!-- Mark them as optional so that GF distribution mechanism
+             won't package them. It is sufficient to package the wrapped jar. 
+        -->
         <dependency>
             <groupId>org.apache.ant</groupId>
             <artifactId>ant</artifactId>
             <version>1.7.0</version>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.apache.ant</groupId>
             <artifactId>ant-launcher</artifactId>
             <version>1.7.0</version>
+            <optional>true</optional>
         </dependency>
     </dependencies>
 </project>

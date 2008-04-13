@@ -42,15 +42,11 @@
 
 package com.sun.appserv.management.j2ee.statistics;
 
-import java.io.Serializable;
-import java.util.Map;
+import com.sun.appserv.management.util.j2ee.stringifier.StatisticStringifier;
+import com.sun.appserv.management.util.misc.ObjectUtil;
 
 import javax.management.j2ee.statistics.Statistic;
-
-import com.sun.appserv.management.util.misc.MapUtil;
-import com.sun.appserv.management.util.misc.ObjectUtil;
-import com.sun.appserv.management.util.j2ee.stringifier.StatisticStringifier;
-import com.sun.appserv.management.util.j2ee.J2EEUtil;
+import java.io.Serializable;
 
 
 /**

@@ -35,14 +35,12 @@
  */
 package com.sun.appserv.management.util.stringifier;
 
+import com.sun.appserv.management.util.misc.ArrayConversion;
+import com.sun.appserv.management.util.misc.ClassUtil;
+
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Collection;
-import java.lang.reflect.Array;
-
-
-import com.sun.appserv.management.util.misc.ClassUtil;
-import com.sun.appserv.management.util.misc.ArrayConversion;
 
 
 /**

@@ -36,13 +36,10 @@
 package com.sun.appserv.management.util.misc;
 
 import java.lang.reflect.Constructor;
-import java.util.ResourceBundle;
-import java.util.Locale;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
-
-
-import com.sun.appserv.management.util.misc.ClassUtil;
+import java.util.ResourceBundle;
 
 /**
 	A StringSource for a package which first looks for a class in the the package

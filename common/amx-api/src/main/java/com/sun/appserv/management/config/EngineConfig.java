@@ -37,11 +37,7 @@
 
 package com.sun.appserv.management.config;
 
-import java.util.Map;
-import java.util.List;
-
 import com.sun.appserv.management.base.XTypes;
-import com.sun.appserv.management.base.Container;
 
 /**
  * Config AMX MBean for Engine's config

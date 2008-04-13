@@ -41,8 +41,7 @@
  */
 package com.sun.appserv.management.j2ee;
 
-import java.util.*;
-import javax.management.ObjectName;
+import java.util.Map;
 
 
 /**

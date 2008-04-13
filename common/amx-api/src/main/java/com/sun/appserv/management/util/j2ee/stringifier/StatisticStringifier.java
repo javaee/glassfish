@@ -35,18 +35,15 @@
  */
 package com.sun.appserv.management.util.j2ee.stringifier;
 
-import java.util.Arrays;
-import java.util.SortedMap;
-import java.util.TreeMap;
-import java.util.Iterator;
+import com.sun.appserv.management.util.j2ee.J2EEUtil;
+import com.sun.appserv.management.util.misc.StringUtil;
+import com.sun.appserv.management.util.stringifier.SmartStringifier;
+import com.sun.appserv.management.util.stringifier.Stringifier;
 
 import javax.management.j2ee.statistics.Statistic;
-
-import com.sun.appserv.management.util.stringifier.Stringifier;
-import com.sun.appserv.management.util.stringifier.SmartStringifier;
-import com.sun.appserv.management.util.misc.StringUtil;
-
-import com.sun.appserv.management.util.j2ee.J2EEUtil;
+import java.util.Iterator;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 /**
 	Stringifier for javax.management.j2ee.Statistic 

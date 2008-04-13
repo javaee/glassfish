@@ -42,10 +42,10 @@
  
 package com.sun.appserv.management.util.misc;
 
-import java.util.Properties;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.Properties;
 
 /**
 	An abstraction for getting a String, given an id string.

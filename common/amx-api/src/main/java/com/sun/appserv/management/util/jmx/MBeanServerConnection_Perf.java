@@ -35,14 +35,12 @@
  */
 package com.sun.appserv.management.util.jmx;
 
-import javax.management.*;
-import java.io.IOException;
-import java.io.PrintStream;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Collections;
-
 import com.sun.appserv.management.util.misc.Output;
+
+import javax.management.MBeanServerConnection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 
 

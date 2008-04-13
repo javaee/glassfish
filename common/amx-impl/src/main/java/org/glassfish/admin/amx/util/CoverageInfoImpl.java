@@ -35,25 +35,18 @@
  */
 package org.glassfish.admin.amx.util;
 
-import java.io.Serializable;
-
-import java.util.Set;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Collection;
-import java.util.Collections;
-
-import javax.management.MBeanInfo;
-import javax.management.MBeanAttributeInfo;
-import javax.management.MBeanOperationInfo;
-
-import com.sun.appserv.management.util.misc.StringUtil;
+import com.sun.appserv.management.util.jmx.JMXUtil;
+import com.sun.appserv.management.util.jmx.ReadWriteAttributeFilter;
 import com.sun.appserv.management.util.misc.CollectionUtil;
 import com.sun.appserv.management.util.misc.ExceptionUtil;
 import com.sun.appserv.management.util.misc.GSetUtil;
-import com.sun.appserv.management.util.jmx.JMXUtil;
-import com.sun.appserv.management.util.jmx.ReadWriteAttributeFilter;
+import com.sun.appserv.management.util.misc.StringUtil;
+
+import javax.management.MBeanAttributeInfo;
+import javax.management.MBeanInfo;
+import javax.management.MBeanOperationInfo;
+import java.io.Serializable;
+import java.util.*;
 
 
 /**

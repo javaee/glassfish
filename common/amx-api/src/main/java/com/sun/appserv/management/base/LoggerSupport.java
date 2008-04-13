@@ -42,17 +42,6 @@
 
 package com.sun.appserv.management.base;
 
-import javax.management.ObjectName;
-
-
-import java.util.logging.Logger;
-import java.util.logging.LogManager;
-import java.util.logging.Level;
-import java.util.logging.Handler;
-import java.util.logging.ConsoleHandler;
-
-
-
 public final class LoggerSupport
 {
 	private LoggerSupport()	{}

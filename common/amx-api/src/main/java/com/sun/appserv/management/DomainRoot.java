@@ -36,21 +36,19 @@
 
 package com.sun.appserv.management;
 
-import java.util.Map;
-
-import javax.management.ObjectName;
-
 import com.sun.appserv.management.base.*;
-import com.sun.appserv.management.ext.wsmgmt.WebServiceMgr;
-import com.sun.appserv.management.ext.update.UpdateStatus;
-import com.sun.appserv.management.config.DomainConfig;
 import com.sun.appserv.management.config.ConfigDottedNames;
+import com.sun.appserv.management.config.DomainConfig;
+import com.sun.appserv.management.deploy.DeploymentMgr;
 import com.sun.appserv.management.ext.lb.LoadBalancer;
+import com.sun.appserv.management.ext.update.UpdateStatus;
+import com.sun.appserv.management.ext.wsmgmt.WebServiceMgr;
+import com.sun.appserv.management.j2ee.J2EEDomain;
+import com.sun.appserv.management.monitor.JMXMonitorMgr;
 import com.sun.appserv.management.monitor.MonitoringDottedNames;
 import com.sun.appserv.management.monitor.MonitoringRoot;
-import com.sun.appserv.management.monitor.JMXMonitorMgr;
-import com.sun.appserv.management.deploy.DeploymentMgr;
-import com.sun.appserv.management.j2ee.J2EEDomain;
+
+import java.util.Map;
 
 /**
 	The top-level interface for an appserver domain. Access to all other
@@ -124,6 +122,11 @@ public interface DomainRoot extends Container
     public SystemStatus		getSystemStatus();
 	
     /**
+        @return the singleton KitchenSink
+     */
+    public KitchenSink		getKitchenSink();
+	
+    /**
        @return the singleton WebServiceMgr for this domain.
        @since AppServer 9.0
     */
@@ -163,13 +166,21 @@ public interface DomainRoot extends Container
 
     /**
         @return the singleton {@link ConfigDottedNames}.
+        @deprecated soon to go away, use getDottedNames
      */
     public ConfigDottedNames		getConfigDottedNames() ;
 
     /**
         @return the singleton {@link MonitoringDottedNames}
+        @deprecated soon to go away, use getDottedNames
      */
     public MonitoringDottedNames	getMonitoringDottedNames() ;
+    
+
+    /**
+        @return the singleton {@link DottedNames}.
+     */
+    public DottedNames		getDottedNames() ;
         
     /**
         @return the singleton {@link MonitoringRoot}.

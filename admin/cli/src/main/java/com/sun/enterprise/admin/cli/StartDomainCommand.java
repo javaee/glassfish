@@ -23,6 +23,7 @@
 package com.sun.enterprise.admin.cli;
 
 import com.sun.enterprise.admin.launcher.GFLauncher;
+import com.sun.enterprise.admin.launcher.GFLauncherException;
 import com.sun.enterprise.admin.launcher.GFLauncherFactory;
 import com.sun.enterprise.admin.launcher.GFLauncherInfo;
 import com.sun.enterprise.cli.framework.*;
@@ -53,11 +54,17 @@ public class StartDomainCommand extends S1ASCommand {
             info.setDebug(getBooleanOption("debug"));
             info.setEmbedded(getBooleanOption("embedded"));
             launcher.launch();
+            // don't allow RemoteCommand to chnge CLI log level!
+            // but do it here -- not in pingDAS() so we don't have to do it more
+            // than once
+            CLILogger.getInstance().pushAndLockLevel(Level.WARNING);
             waitForDAS(info.getAdminPorts());
         }
-        catch (Throwable t) {
-            throw new CommandException(getLocalizedString("CommandUnSuccessfulWithArg",
-                    new Object[]{name, t.getMessage()}), t);
+        catch(GFLauncherException gfle) {
+            throw new CommandException(gfle.getMessage());
+        }
+        finally {
+            CLILogger.getInstance().popAndUnlockLevel();
         }
     }
 
@@ -73,7 +80,7 @@ public class StartDomainCommand extends S1ASCommand {
         CLILogger.getInstance().printMessage(getLocalizedString("WaitDAS"));
 
         boolean alive = false;
-        
+
         while(!timedOut(startWait) && !alive) {
             for (int port : ports) {
                 if (pingDAS(port)) {

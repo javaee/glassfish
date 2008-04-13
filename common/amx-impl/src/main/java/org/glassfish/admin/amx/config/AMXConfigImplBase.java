@@ -35,80 +35,32 @@
  */
 package org.glassfish.admin.amx.config;
 
-import java.util.Set;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Collections;
-
-import java.lang.reflect.Method;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-
-import javax.management.ObjectName;
-import javax.management.MBeanInfo;
-import javax.management.MBeanNotificationInfo;
-import javax.management.MBeanAttributeInfo;
-import javax.management.Attribute;
-import javax.management.AttributeList;
-import javax.management.AttributeNotFoundException;
-import javax.management.AttributeChangeNotification;
-import javax.management.MBeanException;
-import javax.management.ReflectionException;
-import javax.management.InstanceNotFoundException;
-
-import com.sun.appserv.management.util.misc.ClassUtil;
-import com.sun.appserv.management.util.misc.CollectionUtil;
-import com.sun.appserv.management.util.misc.MapUtil;
-import com.sun.appserv.management.util.misc.GSetUtil;
-import com.sun.appserv.management.util.misc.StringUtil;
-import com.sun.appserv.management.util.misc.ExceptionUtil;
-import com.sun.appserv.management.util.misc.TypeCast;
-import com.sun.appserv.management.util.jmx.JMXUtil;
-
-import com.sun.appserv.management.config.PropertiesAccess;
-import com.sun.appserv.management.config.SystemPropertiesAccess;
-import com.sun.appserv.management.config.AMXConfig;
-import com.sun.appserv.management.config.RefConfig;
-import com.sun.appserv.management.config.RefConfigReferent;
-import com.sun.appserv.management.config.AnyPropertyConfig;
-import com.sun.appserv.management.config.PropertyConfig;
-import com.sun.appserv.management.config.SystemPropertyConfig;
-import com.sun.appserv.management.config.AMXCreateInfo;
-import com.sun.appserv.management.config.DefaultValues;
-
-import com.sun.appserv.management.base.XTypes;
 import com.sun.appserv.management.base.AMX;
-import com.sun.appserv.management.base.AMXDebug;
 import com.sun.appserv.management.base.Container;
 import com.sun.appserv.management.base.Util;
-
+import com.sun.appserv.management.base.XTypes;
+import com.sun.appserv.management.config.*;
 import com.sun.appserv.management.helper.RefHelper;
-
-import org.jvnet.hk2.config.ConfigBeanProxy;
-
+import com.sun.appserv.management.util.jmx.JMXUtil;
+import com.sun.appserv.management.util.misc.*;
+import org.glassfish.admin.amx.dotted.DottedName;
 import org.glassfish.admin.amx.mbean.AMXImplBase;
-import org.glassfish.admin.amx.mbean.Delegate;
 import org.glassfish.admin.amx.mbean.ContainerSupport;
-import org.glassfish.admin.amx.util.Issues;
-import org.glassfish.admin.amx.util.UnregistrationListener;
-import org.glassfish.admin.amx.util.SingletonEnforcer;
-
-import org.glassfish.admin.amx.mbean.MBeanInfoCache;
+import org.glassfish.admin.amx.mbean.Delegate;
 import org.glassfish.admin.amx.util.AMXConfigInfoResolver;
-import org.glassfish.admin.amx.loader.AMXConfigVoid;
-
+import org.glassfish.admin.amx.util.SingletonEnforcer;
+import org.glassfish.admin.amx.util.UnregistrationListener;
 import org.jvnet.hk2.config.ConfigBean;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.ConfigSupport;
-import org.jvnet.hk2.config.Dom;
-
-import org.glassfish.api.amx.AMXConfigInfo;
-import org.glassfish.api.amx.AMXCreatorInfo;
-
-
 import org.jvnet.hk2.config.TransactionFailure;
+
+import javax.management.*;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 /**
 	Base class from which all AMX Config MBeans should derive (but not "must").
@@ -133,6 +85,62 @@ public class AMXConfigImplBase extends AMXImplBase
         mSupplementaryInterface = supplementaryInterface;
 	}
     
+        private String
+    getTypeString()
+    {
+        // use the serverbeans type for now, later extract the XML element type
+        final ConfigBean cb = getConfigBean();
+        final Class<? extends ConfigBeanProxy> intf = cb.getProxyType();
+        final Package pkg = intf.getPackage();
+        String result = intf.getName().substring( pkg.getName().length() + 1, intf.getName().length() );
+
+        return result;
+    }
+    
+    /**
+        The actual name could be different than the 'name' property in the ObjectName if it
+        contains characters that are illegal for an ObjectName.
+     */
+    @Override
+		public String
+	getName()
+	{
+        final ConfigBean cb = getConfigBean();
+        
+        return AMXConfigLoader.getName( cb, null );
+	}
+      
+    @Override
+    /**
+        By default take a camel-case name and insert dashes
+     */
+        protected String
+    _getDottedNamePart()
+    {
+        String result = super._getDottedNamePart();
+        
+        if ( isSingletonMBean( getInterface() ) )
+        {
+            result = DottedName.hyphenate(getTypeString());
+        }
+        else
+        {
+            final Container container = getContainer();
+            if ( container instanceof ConfigCollectionElement )
+            {
+                // an intermediate MBean is already in place (self), providing a grouping
+                result = getName();
+            }
+            else
+            {
+                // we need to insert the type of the element to group them uniquely
+                result = DottedName.hyphenate(getTypeString()) + ":" + getName();
+            }
+        }
+        return result;
+    }
+
+
         public Set<String>
     getContaineeJ2EETypes()
     {
@@ -544,11 +552,7 @@ public class AMXConfigImplBase extends AMXImplBase
         
         return m;
     }
-    
- 
-    private static void cdebug( final String s ) { System.out.println(s); }
-
-    
+        
     /*
         protected ObjectName
    createAMXConfig(
@@ -1229,6 +1233,19 @@ cdebug( "removeConfig: by  j2eeType + name" );
 			sendAttributeChangeNotification( "", amxAttrName, attrType, whenChanged, oldValue, newValue );
         }
     }
+    
+    
+    /**
+        The dotted name for config should be the xml name.
+     */
+    @Override
+        protected String
+    attributeNameToDottedValueName( final String amxAttrName )
+    {
+        final String xmlName = NameMapping.getInstance(getJ2EEType()).getXMLName( amxAttrName );
+        return xmlName == null ? super.attributeNameToDottedValueName(amxAttrName) : xmlName;
+    }
+
 
 
 }

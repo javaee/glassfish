@@ -35,56 +35,34 @@
  */
 package com.sun.appserv.management.client.handler;
 
-import java.io.IOException;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Set;
-import java.util.HashSet;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Collections;
-import java.util.logging.Logger;
-
-import javax.management.Attribute;
-import javax.management.AttributeList;
-import javax.management.MBeanInfo;
-import javax.management.MBeanAttributeInfo;
-import javax.management.MBeanServerConnection;
-import javax.management.NotificationListener;
-import javax.management.NotificationFilter;
-import javax.management.ListenerNotFoundException;
-import javax.management.ObjectName;
-import javax.management.NotificationBroadcaster;
-import javax.management.ReflectionException;
-import javax.management.IntrospectionException;
-import javax.management.JMException;
-import javax.management.InstanceNotFoundException;
-import javax.management.AttributeNotFoundException;
-import javax.management.ListenerNotFoundException;
-import javax.management.MBeanException;
-
-import java.lang.reflect.Proxy;
-import java.lang.reflect.Method;
-
+import com.sun.appserv.management.DomainRoot;
 import com.sun.appserv.management.base.AMX;
-import com.sun.appserv.management.base.AMXDebug;
 import com.sun.appserv.management.base.AMXAttributes;
-import com.sun.appserv.management.base.Extra;
 import com.sun.appserv.management.base.AMXClientLogger;
+import com.sun.appserv.management.base.AMXDebug;
+import com.sun.appserv.management.base.Container;
+import com.sun.appserv.management.base.Extra;
 import com.sun.appserv.management.base.Util;
 import com.sun.appserv.management.client.ConnectionSource;
-import com.sun.appserv.management.util.jmx.MBeanProxyHandler;
+import com.sun.appserv.management.client.ProxyFactory;
 import com.sun.appserv.management.util.jmx.JMXUtil;
+import com.sun.appserv.management.util.jmx.MBeanProxyHandler;
 import com.sun.appserv.management.util.misc.ClassUtil;
 import com.sun.appserv.management.util.misc.GSetUtil;
-import com.sun.appserv.management.util.misc.TypeCast;
 import com.sun.appserv.management.util.misc.StringUtil;
-import com.sun.appserv.management.util.stringifier.SmartStringifier;
+import com.sun.appserv.management.util.misc.TypeCast;
 import com.sun.appserv.management.util.stringifier.ArrayStringifier;
-import com.sun.appserv.management.DomainRoot;
-import com.sun.appserv.management.base.Container;
-import com.sun.appserv.management.client.ProxyFactory;
+import com.sun.appserv.management.util.stringifier.SmartStringifier;
+
+import javax.management.*;
+import java.io.IOException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
 	Extends MBeanProxyHandler by also supporting the functionality required of an AMX.

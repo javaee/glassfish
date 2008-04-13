@@ -35,19 +35,12 @@
  */
 package com.sun.appserv.management.base;
 
-import java.util.Map;
-import java.io.IOException;
-
-import javax.management.ObjectName;
-import javax.management.MBeanInfo;
-import javax.management.IntrospectionException;
-import javax.management.ReflectionException;
-import javax.management.InstanceNotFoundException;
-import javax.management.MBeanException;
-
-import com.sun.appserv.management.DomainRoot;
-import com.sun.appserv.management.client.ProxyFactory;
 import com.sun.appserv.management.client.ConnectionSource;
+import com.sun.appserv.management.client.ProxyFactory;
+
+import javax.management.MBeanInfo;
+import javax.management.ObjectName;
+import java.util.Map;
 
 
 /**

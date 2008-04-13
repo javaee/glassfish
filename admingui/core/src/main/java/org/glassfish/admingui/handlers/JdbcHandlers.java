@@ -51,6 +51,8 @@
 
 package org.glassfish.admingui.handlers;
 
+import com.sun.appserv.management.base.KitchenSink;
+import com.sun.appserv.management.base.SystemStatus;
 import com.sun.appserv.management.base.XTypes;
 import com.sun.jsftemplating.annotation.Handler;
 import com.sun.jsftemplating.annotation.HandlerInput;
@@ -58,12 +60,11 @@ import com.sun.jsftemplating.annotation.HandlerOutput;
 import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Iterator;
-
+import java.util.List;
 
 import org.glassfish.admingui.util.AMXRoot;
 import org.glassfish.admingui.util.AMXUtil;
@@ -72,10 +73,10 @@ import org.glassfish.admingui.util.TargetUtil;
 
 import com.sun.appserv.management.config.JDBCConnectionPoolConfig;
 import com.sun.appserv.management.config.JDBCResourceConfig;
-//import com.sun.enterprise.connectors.ConnectorRuntime;
-//import com.sun.enterprise.connectors.util.ConnectionDefinitionUtils;
+import com.sun.appserv.management.base.SystemStatus;
 
 import com.sun.webui.jsf.component.Field;
+
 
 public class JdbcHandlers {
     /** Creates a new instance of JdbcHandler */
@@ -164,7 +165,9 @@ public class JdbcHandlers {
                 }
                 GuiUtil.prepareSuccessful(handlerCtx);
             }else{
-                 jdbc = AMXRoot.getInstance().getResourcesConfig().createJDBCResourceConfig(jndiName, poolName, null);
+                 Map optionalMap = new HashMap();
+                 optionalMap.put("enabled", "true");
+                 jdbc = AMXRoot.getInstance().getResourcesConfig().createJDBCResourceConfig(jndiName, poolName, optionalMap);
                  TargetUtil.createNewTargets(handlerCtx,  jndiName);
             }
             jdbc.setDescription((String)handlerCtx.getInputValue("description"));
@@ -373,7 +376,7 @@ public class JdbcHandlers {
                 )
         public static void getJdbcConnectionPoolDefaultInfo(HandlerContext handlerCtx) {
         
-            Map <String,String> defaultMap = AMXRoot.getInstance().getDomainConfig().getResourcesConfig().getDefaultValues(XTypes.JDBC_CONNECTION_POOL_CONFIG); 
+            Map <String,String> defaultMap = AMXRoot.getInstance().getResourcesConfig().getDefaultValues(XTypes.JDBC_CONNECTION_POOL_CONFIG); 
             handlerCtx.setOutputValue("steadyPoolSize", defaultMap.get("SteadyPoolSize"));
             handlerCtx.setOutputValue("maxPoolSize",defaultMap.get("MaxPoolSize"));
             handlerCtx.setOutputValue("poolResizeQuantity", defaultMap.get("PoolResizeQuantity"));
@@ -520,13 +523,15 @@ public class JdbcHandlers {
             String jndiName = (String) handlerCtx.getInputValue("jndiName");
             JDBCConnectionPoolConfig pool = AMXRoot.getInstance().getResourcesConfig().getJDBCConnectionPoolConfigMap().get(jndiName);
             try {
-                //TODO-V3 TP2
-                Boolean result = false; //pool.ping();
-                if ( (result != null) && (Boolean)result){
-                        GuiUtil.prepareAlert(handlerCtx,"success", GuiUtil.getMessage("msg.PingSucceed"), null);
+    
+                SystemStatus ss = AMXRoot.getInstance().getDomainRoot().getSystemStatus();
+                Map<String, Object> statusMap = ss.pingJDBCConnectionPool(jndiName);
+                if ((Boolean) statusMap.get(SystemStatus.PING_SUCCEEDED_KEY)){
+                    GuiUtil.prepareAlert(handlerCtx,"success", GuiUtil.getMessage("msg.PingSucceed"), null);
                 }else{
-                    GuiUtil.prepareAlert(handlerCtx, "error", GuiUtil.getMessage("msg.Error"), "msg.PingError");
+                    GuiUtil.prepareAlert(handlerCtx, "error", GuiUtil.getMessage("msg.Error"), statusMap.get(SystemStatus.REASON_FAILED_KEY).toString() );
                 }
+                    
             }catch(Exception ex){
 		GuiUtil.handleException(handlerCtx, ex);
             }
@@ -607,11 +612,16 @@ public class JdbcHandlers {
                         if (datasourceClassName==null) 
                             datasourceClassName="";
                         extra.put("DatasourceClassname",  datasourceClassName);
-                        /* TODO-V3
-                        Map propsMap = ConnectorRuntime.getConnectionDefinitionPropertiesAndDefaults(datasourceClassName);
-                         
+                        
+                        KitchenSink ks = AMXRoot.getInstance().getDomainRoot().getKitchenSink();
+                        Map<String, Object> result = ks.getConnectionDefinitionPropertiesAndDefaults(datasourceClassName);
+                        Map propsMap = (Map) result.get(KitchenSink.PROPERTY_MAP_KEY);
+                        if (propsMap == null){
+                            //TODO use logger
+                            System.out.println( "!!!!!! JdbcHandlers:updateJDBCPoolWizard(), error getting property map");
+                            System.out.println(result.get(KitchenSink.REASON_FAILED_KEY));
+                        }
                         handlerCtx.getFacesContext().getExternalContext().getSessionMap().put("wizardPoolProperties", propsMap);
-                         */
                     }
                     
 		    extra.put("PreviousResType", resType);

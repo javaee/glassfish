@@ -3,7 +3,7 @@
 /* 
 * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER. 
 * 
-* Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved. 
+* Copyright 2007-2008 Sun Microsystems, Inc. All rights reserved. 
 * 
 * The contents of this file are subject to the terms of either the GNU 
 * General Public License Version 2 only ("GPL") or the Common Development 
@@ -44,7 +44,8 @@
     </page>
     <page name="License"/>
     <page name="InstallHome"/>
-    <page name="GlassFishV3"/>
+    <page name="glassfish"/>
+    <page name="updatetool"/>
     <page name="ReadyToInstall"/>
     <page name="Progress"/>
     <page name="Summary"/>

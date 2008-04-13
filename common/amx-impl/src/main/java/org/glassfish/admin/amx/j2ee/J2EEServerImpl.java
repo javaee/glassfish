@@ -35,23 +35,17 @@
  */
 package org.glassfish.admin.amx.j2ee;
 
-import java.util.Set;
-import java.util.Map;
+import com.sun.appserv.management.base.AMX;
+import com.sun.appserv.management.base.Util;
+import com.sun.appserv.management.j2ee.J2EEServer;
+import com.sun.appserv.management.j2ee.J2EETypes;
+import com.sun.appserv.management.j2ee.JVM;
+import com.sun.appserv.management.util.misc.GSetUtil;
+import org.glassfish.admin.amx.mbean.Delegate;
+import org.glassfish.admin.amx.util.Issues;
 
 import javax.management.ObjectName;
-
-import com.sun.appserv.management.j2ee.J2EEServer;
-import com.sun.appserv.management.j2ee.JVM;
-import com.sun.appserv.management.j2ee.J2EETypes;
-
-import com.sun.appserv.management.util.misc.GSetUtil;
-
-import com.sun.appserv.management.base.Util;
-import com.sun.appserv.management.base.AMX;
-
-import org.glassfish.admin.amx.mbean.Delegate;
-
-import org.glassfish.admin.amx.util.Issues;
+import java.util.Set;
 
 
 /**

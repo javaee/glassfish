@@ -35,19 +35,12 @@
  */
 package org.glassfish.admin.amx.loader;
 
-import java.util.List;
-import java.util.Set;
-import java.util.Iterator;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.logging.Logger;
-
-import java.util.concurrent.ArrayBlockingQueue;
+import com.sun.appserv.management.util.misc.ExceptionUtil;
 
 import javax.management.ObjectName;
-
-import com.sun.appserv.management.util.misc.ExceptionUtil;
-import com.sun.appserv.management.util.jmx.JMXUtil;
+import java.util.List;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.logging.Logger;
 	
 final class LoaderRegThread extends Thread
 {

@@ -36,17 +36,16 @@
 
 package com.sun.appserv.management.deploy;
 
+import com.sun.appserv.management.base.AMX;
+import com.sun.appserv.management.base.Singleton;
+import com.sun.appserv.management.base.Util;
+import com.sun.appserv.management.base.Utility;
+import com.sun.appserv.management.base.XTypes;
+
+import javax.management.Notification;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Map;
-
-import javax.management.Notification;
-
-import com.sun.appserv.management.base.XTypes;
-import com.sun.appserv.management.base.AMX;
-import com.sun.appserv.management.base.Utility;
-import com.sun.appserv.management.base.Singleton;
-import com.sun.appserv.management.base.Util;
 
 /**
  @deprecated Please use JSR 88 instead

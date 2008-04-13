@@ -36,10 +36,10 @@
 
 package com.sun.appserv.management.util.jmx;
 
-import javax.management.MBeanAttributeInfo;
-
 import com.sun.appserv.management.util.jmx.stringifier.MBeanAttributeInfoStringifier;
 import com.sun.appserv.management.util.jmx.stringifier.MBeanFeatureInfoStringifierOptions;
+
+import javax.management.MBeanAttributeInfo;
 
 /**
 	Caution: this Comparator may be inconsistent with equals() because it ignores the description.

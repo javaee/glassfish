@@ -74,7 +74,7 @@
 	    <td></td>
 	</tr>
             <tr><td class="LogMidBnd"></td>
-	    <td class="LogCntTd" style="background-image: url(#{request.contextPath}/resource/images/login-backimage.jpg);background-repeat:no-repeat;background-position:left top;" alt="THIS IS" align="center" valign="middle">
+	    <td class="LogCntTd" style="background-image: url(#{request.contextPath}/resource/images/login-backimage.jpg);background-repeat:no-repeat;background-position:left top;" alt=" " align="center" valign="middle">
 		<table border="0" background="#{request.contextPath}/theme/com/sun/webui/jsf/suntheme/images/other/dot.gif" cellpadding="0" cellspacing="0" width="100%" title="">
 		    <tr><td width="260">
 </f:verbatim>

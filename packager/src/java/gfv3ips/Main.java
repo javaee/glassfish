@@ -21,6 +21,7 @@ public class Main {
 
     public static HashMap<String, String> zipWebEntries = new HashMap();
     public static HashMap<String, String> zipNucleusEntries = new HashMap();
+    public static HashMap<String, String> zipBundleEntries = new HashMap();
 
     /**
      * @param args the command line arguments
@@ -32,30 +33,62 @@ public class Main {
 	       return;
         }
 
+	boolean done=false;
+
         String CHANGEME = args[0]; //Where is V3 repository
         
         File web = new File(CHANGEME+"/v3/distributions/web/target/web.zip");
         File nucleus = new File(CHANGEME+"/v3/distributions/nucleus/target/nucleus.zip");
-        try {
+        if (web.isFile() && nucleus.isFile())
+        {
+          try {
+              unzip(web, zipWebEntries);
+              unzip(nucleus, zipNucleusEntries);
+          } catch (IOException ex) {
+              ex.printStackTrace();
+          }
 
-            unzip(web, zipWebEntries);
-            unzip(nucleus, zipNucleusEntries);
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-
-        if (args[1].indexOf("nucleus")  != -1) {
-           printNucleus();
-        }
+          if (args[1].indexOf("nucleus")  != -1) {
+             printNucleus();
+	     done = true;
+          }
             
-        if (args[1].indexOf("web")  != -1) {
-           printWeb();
-        }
+          if (args[1].indexOf("web")  != -1) {
+             printWeb();
+	     done = true;
+          }
 
-        if (args[1].indexOf("common")  != -1) {
-           printCommon();
+          if (args[1].indexOf("common")  != -1) {
+             printCommon();
+	     done = true;
+          }
         }
+       
+        if ( done != true) {
+           //Any generic bundle can be used to create prototype for SVR4 pkg.
+	   File generic = new File (CHANGEME);
+           if (generic.isFile()) {
+             try {
+                 unzip(generic, zipBundleEntries);
+             } catch (IOException ex) {
+                  ex.printStackTrace();
+             }
 
+             printBundle(args[1]);
+	     done = true;
+          }
+	}
+
+    }
+
+    public static void printBundle(String bundle) {
+	printInitial();
+        for (Iterator it = zipBundleEntries.keySet().iterator(); it.hasNext();) {
+            String object = (String) it.next();
+            if (object.indexOf(bundle) >= 0) {
+                System.out.println(object);
+            }
+        }
     }
 
     public static void printInitial() {

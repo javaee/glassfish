@@ -35,29 +35,15 @@
  */
 package com.sun.appserv.management.client.handler;
 
-import java.lang.reflect.Method;
-
-import java.util.List;
-
-import java.io.Serializable;
-import java.io.IOException;
-
-import javax.management.ObjectName;
-
-import com.sun.appserv.management.client.ConnectionSource;
-
-import com.sun.appserv.management.base.XTypes;
 import com.sun.appserv.management.base.Util;
-
-import static com.sun.appserv.management.j2ee.J2EETypes.WEB_SERVICE_ENDPOINT;
 import static com.sun.appserv.management.base.XTypes.LOGGING;
 import static com.sun.appserv.management.base.XTypes.WEB_SERVICE_MGR;
-
-import com.sun.appserv.management.util.misc.TypeCast;
+import com.sun.appserv.management.client.ConnectionSource;
+import static com.sun.appserv.management.j2ee.J2EETypes.WEB_SERVICE_ENDPOINT;
 import com.sun.appserv.management.util.jmx.MBeanProxyHandler;
 
-import com.sun.appserv.management.ext.logging.LogQueryResult;
-import com.sun.appserv.management.ext.logging.LogQueryResultImpl;
+import javax.management.ObjectName;
+import java.io.IOException;
 
 
 /**

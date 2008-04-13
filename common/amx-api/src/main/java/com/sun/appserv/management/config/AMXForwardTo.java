@@ -35,8 +35,6 @@
  */
 package com.sun.appserv.management.config;
 
-import java.util.List;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

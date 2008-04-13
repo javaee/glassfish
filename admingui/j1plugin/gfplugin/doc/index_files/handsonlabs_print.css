@@ -1,0 +1,14 @@
+/* 
+    Document   : handsonlabs
+    Created on : Mar 20, 2008, 4:07:39 PM
+    Author     : dant
+    Description:
+        Stylesheet containing JavaOne Hands-on Labs style classes for printing.
+*/
+
+/* Override default settings that aren't printer-friendly */
+.d7 div.cornerBL {background: white;}
+a:link, a.named:visited, div#breadcrumb a:visited, div.breadcrumb, div.breadcrumb a:visited, div.sitelinks a:visited, a code, .e2 table.navblue a:visited, .e5 a:visited, .e8v0 a:visited, .e9v0 a:visited {color: black; text-decoration: underline}
+div.codebox pre {border: solid 2px black; background-color: white;}
+div.console pre {border: double 4px black; background-color: white; color: black;}
+.j1holtip {border: groove 3px black; background-color: white;}

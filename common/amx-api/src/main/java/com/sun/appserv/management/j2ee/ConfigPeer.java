@@ -42,8 +42,6 @@
 
 package com.sun.appserv.management.j2ee;
 
-import javax.management.ObjectName;
-
 import com.sun.appserv.management.base.AMX;
 
 /**

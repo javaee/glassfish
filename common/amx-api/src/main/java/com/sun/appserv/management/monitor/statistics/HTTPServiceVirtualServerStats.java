@@ -42,9 +42,9 @@
 
 package com.sun.appserv.management.monitor.statistics;
 
-import javax.management.j2ee.statistics.Stats;
-
 import com.sun.appserv.management.j2ee.statistics.StringStatistic;
+
+import javax.management.j2ee.statistics.Stats;
 
 /**
 	@see com.sun.appserv.management.monitor.HTTPServiceVirtualServerMonitor

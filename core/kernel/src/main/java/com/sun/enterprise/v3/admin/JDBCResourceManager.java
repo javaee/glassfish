@@ -168,8 +168,8 @@ public class JDBCResourceManager implements ResourceManager {
 
         // ensure we already have this resource
         if (!isResourceExists(resources, jndiName)) {
-            String msg = localStrings.getLocalString("jdbc.resource.resourceDoesNotExist",
-                    "A JDBC resource named {0} does not exits.", jndiName);
+            String msg = localStrings.getLocalString("delete.jdbc.resource.notfound",
+                    "A JDBC resource named {0} does not exist.", jndiName);
             ResourceStatus status = new ResourceStatus(ResourceStatus.FAILURE, msg);
             return status;
         }

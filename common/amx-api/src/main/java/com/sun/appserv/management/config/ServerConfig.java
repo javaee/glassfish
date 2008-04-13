@@ -44,11 +44,9 @@
 package com.sun.appserv.management.config;
 
 
+import com.sun.appserv.management.base.Container;
 
 import java.util.Map;
-
-import com.sun.appserv.management.config.TemplateResolver;
-import com.sun.appserv.management.base.Container;
 
 /**
 	Base interface for server configuration for the &lt;server&gt; element.

@@ -41,13 +41,10 @@
  */
 package com.sun.appserv.management.util.jmx;
 
-import javax.management.*;
-import java.io.IOException;
-import java.io.PrintStream;
-import java.util.Set;
-
 import com.sun.appserv.management.util.misc.DebugState;
 import com.sun.appserv.management.util.misc.Output;
+
+import javax.management.MBeanServerConnection;
 
 
 

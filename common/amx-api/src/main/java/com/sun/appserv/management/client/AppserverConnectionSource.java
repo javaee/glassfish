@@ -42,33 +42,22 @@
 
 package com.sun.appserv.management.client;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.logging.Logger;
-
-import java.io.IOException;
-import java.io.File;
-
-import java.net.MalformedURLException;
-
-import java.security.KeyStore;
-import javax.net.ssl.X509TrustManager;
-import javax.net.ssl.HandshakeCompletedListener;
-
-import javax.management.MBeanServerConnection;
-import javax.management.remote.JMXConnector;
-import javax.management.remote.JMXServiceURL;
-import javax.management.remote.JMXConnectorFactory;
-import javax.management.remote.JMXConnectionNotification;
-import javax.management.Notification;
-import javax.management.NotificationListener;
-
-
-import com.sun.appserv.management.client.ConnectionSource;
-import com.sun.appserv.management.util.jmx.JMXConnectorConnectionSource;
+import com.sun.appserv.management.DomainRoot;
 import com.sun.appserv.management.util.misc.MapUtil;
 
-import com.sun.appserv.management.DomainRoot;
+import javax.management.MBeanServerConnection;
+import javax.management.Notification;
+import javax.management.NotificationListener;
+import javax.management.remote.JMXConnectionNotification;
+import javax.management.remote.JMXConnector;
+import javax.management.remote.JMXConnectorFactory;
+import javax.management.remote.JMXServiceURL;
+import javax.net.ssl.HandshakeCompletedListener;
+import javax.net.ssl.X509TrustManager;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.util.HashMap;
+import java.util.Map;
 
 
 /**

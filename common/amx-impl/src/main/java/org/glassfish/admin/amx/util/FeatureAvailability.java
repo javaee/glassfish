@@ -36,13 +36,12 @@
 package org.glassfish.admin.amx.util;
 
 
-import java.util.Map;
-import java.util.HashMap;
-import java.util.concurrent.CountDownLatch;
+import com.sun.appserv.management.util.misc.ExceptionUtil;
 
 import javax.management.MBeanServer;
-
-import com.sun.appserv.management.util.misc.ExceptionUtil;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.CountDownLatch;
 
 /**
     Central registry of available features for fine-grained dependency enforcement in a

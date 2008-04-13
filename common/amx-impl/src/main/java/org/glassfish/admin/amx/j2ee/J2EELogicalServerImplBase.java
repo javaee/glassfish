@@ -35,22 +35,13 @@
  */
 package org.glassfish.admin.amx.j2ee;
 
-import java.util.Map;
-import java.util.Iterator;
-import java.io.Serializable;
-
-import javax.management.ObjectName;
-import javax.management.AttributeNotFoundException;
-
-import com.sun.appserv.management.deploy.DeploymentStatus;
-import com.sun.appserv.management.deploy.DeploymentSupport;
-
-import com.sun.appserv.management.util.misc.TypeCast;
-
 import com.sun.appserv.management.j2ee.J2EELogicalServer;
-import com.sun.appserv.management.j2ee.J2EETypes;
-
 import org.glassfish.admin.amx.mbean.Delegate;
+
+import javax.management.AttributeNotFoundException;
+import javax.management.ObjectName;
+import java.io.Serializable;
+import java.util.Map;
 
 /**
 	Base interface only (for cluster and standalone server)

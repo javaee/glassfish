@@ -42,10 +42,10 @@
 
 package com.sun.appserv.management.ext.lb;
 
-import java.util.Date;
-
-import static com.sun.appserv.management.base.XTypes.*;
 import com.sun.appserv.management.base.AMX;
+import static com.sun.appserv.management.base.XTypes.LOAD_BALANCER;
+
+import java.util.Date;
 
 /**
    Runtime counterpart for the config MBean {@link com.sun.appserv.management.config.LoadBalancerConfig} 

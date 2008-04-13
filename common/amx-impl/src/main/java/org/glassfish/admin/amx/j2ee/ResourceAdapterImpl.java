@@ -34,13 +34,11 @@
  * holder.
  */
 package org.glassfish.admin.amx.j2ee;
- 
-import javax.management.ObjectName;
 
 import com.sun.appserv.management.j2ee.ResourceAdapter;
-
-
 import org.glassfish.admin.amx.mbean.Delegate;
+
+import javax.management.ObjectName;
 
 /**
  */

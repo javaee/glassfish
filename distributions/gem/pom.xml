@@ -122,10 +122,10 @@
                 spec = Gem::Specification.new do |s| 
                   s.name = "glassfish"
                   s.version = "0.1.2"
-                  s.author = "Pramod Gopinath, Jerome Dochez"
-                  s.email = "pramod.gopinath@sun.com, jerome.dochez@sun.com"
+                  s.author = "Vivek Pandey, Pramod Gopinath, Jerome Dochez"
+                  s.email = "vivek.pandey@sun.com, pramod.gopinath@sun.com, jerome.dochez@sun.com"
                   s.homepage = "http://wiki.glassfish.java.net/Wiki.jsp?page=JRuby"
-                  s.platform = Gem::Platform::CURRENT
+                  s.platform = "universal-java"
                   s.summary = "GlassFish V3 Application Server for JRuby"
                   s.description = "GlassFish gem is an embedded GlassFish V3 application server which would help run your Ruby on Rails application"
                   s.files = FileList["{bin,lib,modules,config,javadb,domains,ext}/**/*"].to_a
@@ -153,50 +153,16 @@
             </configuration>
           </execution>
         </executions>
-      </plugin>
-      <plugin>
-        <artifactId>maven-install-plugin</artifactId>
-        <executions>
-            <execution>
-                <id>install-gem</id>
-                <phase>install</phase>
-                <configuration>
-                    <groupId>org.glassfish.distributions</groupId>
-                    <artifactId>glassfish-gem</artifactId>
-                    <version>0.1.2-SNAPSHOT</version>	
-                    <generatePom>false</generatePom>
-                    <packaging>gem</packaging>
-                    <file>target/dependency/glassfish/pkg/glassfish-0.1.2-universal-java-1.5.gem</file>
-                </configuration>
-                <goals>
-                    <goal>install-file</goal>
-                </goals>
-            </execution>
-          </executions>
-      </plugin>
-            <plugin>
-                <artifactId>maven-deploy-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>deploy-gem</id>
-                        <phase>deploy</phase>
-                        <goals>
-                            <goal>deploy-file</goal>
-                        </goals>
-                        <configuration>
-                            <groupId>org.glassfish.distributions</groupId>
-                            <artifactId>glassfish-gem</artifactId>
-                            <version>0.1.2-SNAPSHOT</version>	
-                            <file>target/dependency/glassfish/pkg/glassfish-0.1.2-universal-java-1.5.gem</file>
-                            <url>sftp://trx2.sun.com:/export/nfs/dlc/maven/glassfish</url>						
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
+      </plugin>      
         </plugins>
     </build>
   
     <dependencies>
+        <dependency>
+            <groupId>org.glassfish.external</groupId>
+            <artifactId>grizzly-jruby-module</artifactId>
+            <version>${glassfish-jruby.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.glassfish.extras</groupId>
             <artifactId>gf-jruby-connector</artifactId>
@@ -208,4 +174,5 @@
             <version>${pe.version}</version>
         </dependency>
     </dependencies>
+
 </project>

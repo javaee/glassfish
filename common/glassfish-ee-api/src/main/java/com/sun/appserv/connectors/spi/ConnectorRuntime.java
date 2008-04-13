@@ -41,6 +41,7 @@ import org.jvnet.hk2.annotations.Contract;
 import javax.naming.NamingException;
 import javax.resource.ResourceException;
 import java.util.Collection;
+import java.util.Map;
 
 import com.sun.enterprise.config.serverbeans.JdbcConnectionPool;
 
@@ -165,5 +166,22 @@ public interface ConnectorRuntime {
     public JdbcConnectionPool getJdbcConnectionPoolConfig(String poolName);
 
     public boolean pingConnectionPool(String poolName) throws ResourceException;
+
+    /**
+      * Gets the properties of the Java bean connection definition class that
+      * have setter methods defined and the default values as provided by the
+      * Connection Definition java bean developer.
+      * This method is used to get properties of jdbc-data-source<br>
+      * To get Connection definition properties for Connector Connection Pool,
+      * use ConnectorRuntime.getMCFConfigProperties()<br>
+      * When the connection definition class is not found, standard JDBC
+      * properties (of JDBC 3.0 Specification) will be returned.<br>
+      *
+      * @param connectionDefinitionClassName
+      *                     The Connection Definition Java bean class for which
+      *                     overrideable properties are required.
+      * @return Map [property, defaultValue]
+      */
+    public Map getConnectionDefinitionPropertiesAndDefaults(String connectionDefinitionClassName);
 
 }

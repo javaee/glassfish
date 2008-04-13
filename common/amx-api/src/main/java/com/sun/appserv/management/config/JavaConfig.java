@@ -35,17 +35,18 @@
  */
 package com.sun.appserv.management.config;
 
-import java.util.Map;
-
-import com.sun.appserv.management.base.XTypes;
 import com.sun.appserv.management.base.Container;
+import com.sun.appserv.management.base.Singleton;
+import com.sun.appserv.management.base.XTypes;
+
+import java.util.Map;
 
 /**
 	 Configuration for the &lt;java-config&gt; element.
 */
 
 public interface JavaConfig
-	extends ConfigElement, PropertiesAccess, Container
+	extends ConfigElement, PropertiesAccess, Container, Singleton
 {
 /** The j2eeType as returned by {@link com.sun.appserv.management.base.AMX#getJ2EEType}. */
 	public static final String	J2EE_TYPE	= XTypes.JAVA_CONFIG;
@@ -130,5 +131,5 @@ public interface JavaConfig
 	/**
 		Removes profiler element.  Even though only one can exist, the name must be specified.
 	 */
-	public void			removeProfilerConfig( final String name );
+	public void			removeProfilerConfig();
 }

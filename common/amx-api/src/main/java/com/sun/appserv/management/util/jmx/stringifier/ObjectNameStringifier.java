@@ -35,20 +35,19 @@
  */
 package com.sun.appserv.management.util.jmx.stringifier;
 
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.Set;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.Arrays;
-
-import javax.management.ObjectName;
-
-import com.sun.appserv.management.util.stringifier.Stringifier;
 import com.sun.appserv.management.util.misc.ListUtil;
 import com.sun.appserv.management.util.misc.StringUtil;
 import com.sun.appserv.management.util.misc.TypeCast;
+import com.sun.appserv.management.util.stringifier.Stringifier;
+
+import javax.management.ObjectName;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 
 /**

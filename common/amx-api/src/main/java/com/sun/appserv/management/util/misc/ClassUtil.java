@@ -43,13 +43,11 @@
 package com.sun.appserv.management.util.misc;
 
 import java.lang.reflect.Array;
-import java.lang.reflect.Field;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.lang.ClassLoader;
-
-import java.util.Set;
 import java.util.HashSet;
+import java.util.Set;
 
 /*
 	Used internally.

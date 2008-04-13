@@ -39,11 +39,11 @@
 
 package com.sun.appserv.management.monitor;
 
-import java.util.Map;
-
-import com.sun.appserv.management.base.Singleton;
-import static com.sun.appserv.management.base.XTypes.*;
 import com.sun.appserv.management.base.Container;
+import com.sun.appserv.management.base.Singleton;
+import static com.sun.appserv.management.base.XTypes.MONITORING_ROOT;
+
+import java.util.Map;
 
 /**
 	Top-level interface for accessing all monitoring information.

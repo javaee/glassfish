@@ -35,12 +35,10 @@
  */
 package com.sun.appserv.management.util.jmx;
 
-import java.util.Map;
-import java.util.HashMap;
-import java.io.Serializable;
-
 import javax.management.Notification;
-import javax.management.ObjectName;
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
 	Base class for building AMX Notifications.  AMX Notifications

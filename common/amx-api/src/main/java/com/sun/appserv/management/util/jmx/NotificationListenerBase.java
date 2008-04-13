@@ -35,23 +35,21 @@
  */
 package com.sun.appserv.management.util.jmx;
 
-import java.util.Set;
-import java.util.HashSet;
-import java.util.Collections;
+import com.sun.appserv.management.util.misc.GSetUtil;
 
-import java.io.IOException;
-
-import javax.management.ObjectName;
-import javax.management.Notification;
-import javax.management.NotificationListener;
-import javax.management.NotificationFilter;
-import javax.management.MBeanServerNotification;
-import javax.management.MBeanServer;
-import javax.management.MBeanServerConnection;
 import javax.management.InstanceNotFoundException;
 import javax.management.JMException;
-
-import com.sun.appserv.management.util.misc.GSetUtil;
+import javax.management.MBeanServer;
+import javax.management.MBeanServerConnection;
+import javax.management.MBeanServerNotification;
+import javax.management.Notification;
+import javax.management.NotificationFilter;
+import javax.management.NotificationListener;
+import javax.management.ObjectName;
+import java.io.IOException;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
 	Convenience base class for listening for Notifications

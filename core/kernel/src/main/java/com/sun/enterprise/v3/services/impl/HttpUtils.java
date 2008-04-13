@@ -50,12 +50,14 @@ public class HttpUtils {
         int start =0;
         int end = 0;  
         int separatorPos = -1;
-        int lastPos = -1;
         try {                         
-            byte c;            
-            
+            byte c = -1;            
+            byte prev = -1;
+            byte prevPrev;
             // Rule b - try to determine the context-root
             while(byteBuffer.hasRemaining()) {
+                prevPrev = prev;
+                prev = c;
                 c = byteBuffer.get();
                 // State Machine
                 // 0 - Search for the first SPACE ' ' between the method and the
@@ -67,20 +69,25 @@ public class HttpUtils {
                         if (c == 0x20){
                             state = 1;
                             start = byteBuffer.position();
-                            lastPos = start;
                         }
                         break;
                     case 1: // Search for next valid '/', and then ' '
-                        if (c == 0x2f && separatorPos == -1){
-                            if (byteBuffer.position() != lastPos + 1){
-                                separatorPos = byteBuffer.position() - 1;
-                            } else if (byteBuffer.position() - 1 == start){
+                        if (c == 0x2f) {
+                            // check for '://', which we should skip
+                            if (prev == 0x2f && prevPrev == 0x3a) {
+                                start = -1;
+                            } else if (start == -1) {
                                 start = byteBuffer.position();
-                                lastPos = start;
-                            } else {
-                                lastPos = byteBuffer.position();
-                            }                            
-                         } else if (c == 0x20){
+                                separatorPos = -1;
+                            } else if (separatorPos == -1) {
+                                if (byteBuffer.position() != start + 1) {
+                                    separatorPos = byteBuffer.position() - 1;
+                                } else {
+                                    start = byteBuffer.position();
+                                }
+                            }
+                         } else if (c == 0x20 || c == 0x3b) {
+                            // ' ' or ';' met
                             if (separatorPos != -1){
                                 end = separatorPos;
                             } else {
@@ -102,7 +109,7 @@ public class HttpUtils {
                         break;
                     default:
                         throw new IllegalArgumentException("Unexpected state");
-                }      
+                }
             }
             throw new IllegalStateException("Invalid request");
         } finally {     

@@ -35,10 +35,9 @@
  */
 package com.sun.appserv.management.config;
 
-import java.util.Map;
-
-import com.sun.appserv.management.base.XTypes;
 import com.sun.appserv.management.base.Container;
+
+import java.util.Map;
 
 
 /**
@@ -68,7 +67,8 @@ public interface PropertiesAccess extends Container
 	 */
     final static String PROPERTY_PREFIX = "property.";
     
-	/**
+//----------------------------------------------------------------------------------
+    /**
 		Get the names of all properties.
         @deprecated use the PropertyConfig MBeans from {@link #getPropertyConfigMap}
 	 */
@@ -119,6 +119,8 @@ public interface PropertiesAccess extends Container
         @deprecated use {@link #removePropertyConfig}
 	 */
 	public void		removeProperty( String propertyName );
+    
+//----------------------------------------------------------------------------------
     
     /**
        @since Glassfish V3

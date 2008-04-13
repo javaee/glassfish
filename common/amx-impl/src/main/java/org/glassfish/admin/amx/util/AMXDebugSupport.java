@@ -36,16 +36,14 @@
 package org.glassfish.admin.amx.util;
 
 
-import javax.management.MBeanServer;
-import javax.management.ObjectName;
-
-import java.io.File;
-
 import com.sun.appserv.management.base.AMXDebug;
 import com.sun.appserv.management.base.Util;
 import com.sun.appserv.management.util.misc.FileUtils;
-
 import org.glassfish.admin.amx.loader.BootUtil;
+
+import javax.management.MBeanServer;
+import javax.management.ObjectName;
+import java.io.File;
 
 
 /**

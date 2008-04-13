@@ -92,7 +92,7 @@
         <classpath>
             <pathelement location="${component.classes.dir}"/>
         </classpath>
-        <arg value="${basedir}/../.."/>
+        <arg value="${repo.home}"/>
         <arg value="${pkgname}"/>
     </java>
 </target>

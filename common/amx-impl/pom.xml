@@ -67,7 +67,8 @@
             <resource>
                 <directory>src/main/java</directory>
                 <includes>
-                    <include>com/sun/enterprise/management/cmd/*.properties</include>
+                    <include>org/glassfish/admin/amx/cmd/*.properties</include>
+                    <include>org/glassfish/admin/amx/dotted/*.properties</include>
                 </includes>
             </resource>
         </resources>
@@ -112,10 +113,29 @@
         </dependency>  		
 		
 		<dependency>
-            <groupId>org.jvnet.opendmk</groupId>
-            <artifactId>jmxremote_optional</artifactId>
-            <version>1.0_01-ea</version>
+            <groupId>org.glassfish.external</groupId>
+            <artifactId>jmxremote_optional-repackaged</artifactId>
+            <version>${project.version}</version>
         </dependency>     
+
+        <dependency>
+            <groupId>org.glassfish.core</groupId>
+            <artifactId>kernel</artifactId>
+            <version>10.0-SNAPSHOT</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.glassfish.common</groupId>
+            <artifactId>glassfish-ee-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.glassfish.tests</groupId>
+            <artifactId>utils</artifactId>
+            <version>${project.parent.version}</version>
+            <scope>test</scope>
+        </dependency>
         
     </dependencies>
 </project>

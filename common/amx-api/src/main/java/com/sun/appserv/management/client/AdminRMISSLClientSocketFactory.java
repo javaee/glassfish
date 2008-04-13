@@ -41,31 +41,16 @@
  */
 package com.sun.appserv.management.client;
 
-import java.io.File;
-import java.io.FileInputStream;
+import javax.net.ssl.HandshakeCompletedListener;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocket;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.Socket;
-import java.util.logging.Logger;
-
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
-import javax.net.ssl.KeyManager;
-import javax.net.ssl.KeyManagerFactory;
-import javax.net.ssl.SSLSocket;
-import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManagerFactory;
-import javax.net.ssl.HandshakeCompletedListener;
-
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.cert.CertificateException;
-import java.security.NoSuchAlgorithmException;
-
 import java.rmi.server.RMIClientSocketFactory;
-
-import com.sun.appserv.management.client.TrustAnyTrustManager;
+import java.util.logging.Logger;
 
 
 /**

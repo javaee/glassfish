@@ -54,9 +54,20 @@ public class AsadminMain {
             CLILogger.getInstance().printDebugMessage(e.getMessage());
             exitCode = main.remote(args);
         }
+        String name;
+        if(args.length == 0)
+            name = "introduction";
+        else
+            name = args[0];
         
         if(exitCode == SUCCESS) {
-            CLILogger.getInstance().printMessage(strings.get("CommandSuccessful", args[0]));
+            CLILogger.getInstance().printDetailMessage(
+                strings.get("CommandSuccessful", name));
+        }
+        
+        if(exitCode == ERROR) {
+            CLILogger.getInstance().printDetailMessage(
+                strings.get("CommandUnSuccessful", name));
         }
         System.exit(exitCode);
     }
@@ -68,11 +79,11 @@ public class AsadminMain {
             return SUCCESS;
         }
         catch(CommandException ce) {
-            CLILogger.getInstance().printMessage(ce.getMessage());
+            CLILogger.getInstance().printError(ce.getMessage());
             return ERROR;
         }
         catch(CommandValidationException cve) {
-            CLILogger.getInstance().printMessage(cve.getMessage());
+            CLILogger.getInstance().printError(cve.getMessage());
             return ERROR;
         }
         catch(NoClassDefFoundError ncdfe)

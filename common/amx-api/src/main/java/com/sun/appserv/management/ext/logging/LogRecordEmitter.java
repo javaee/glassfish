@@ -37,17 +37,16 @@
 
 package com.sun.appserv.management.ext.logging;
 
-import java.util.Set;
-import java.util.Collections;
-import java.util.logging.Level;
-import java.util.logging.LogRecord;
-
-import javax.management.Notification;
-import javax.management.NotificationEmitter;
-
 import com.sun.appserv.management.base.ListenerInfo;
 import com.sun.appserv.management.base.Util;
 import com.sun.appserv.management.util.misc.GSetUtil;
+
+import javax.management.Notification;
+import javax.management.NotificationEmitter;
+import java.util.Collections;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.LogRecord;
 
 
 /**

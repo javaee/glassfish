@@ -39,16 +39,14 @@
 
 package com.sun.appserv.management.monitor;
 
-import java.util.Map;
-
-import com.sun.appserv.management.base.XTypes;
 import com.sun.appserv.management.base.Container;
 
 import javax.management.j2ee.statistics.EJBStats;
-import javax.management.j2ee.statistics.StatelessSessionBeanStats;
-import javax.management.j2ee.statistics.StatefulSessionBeanStats;
 import javax.management.j2ee.statistics.EntityBeanStats;
 import javax.management.j2ee.statistics.MessageDrivenBeanStats;
+import javax.management.j2ee.statistics.StatefulSessionBeanStats;
+import javax.management.j2ee.statistics.StatelessSessionBeanStats;
+import java.util.Map;
 
 
 /**

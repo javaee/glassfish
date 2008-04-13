@@ -42,38 +42,16 @@
 
 package com.sun.appserv.management.util.jmx;
 
-import java.io.IOException;
-
-import java.lang.reflect.Proxy;
-import java.lang.reflect.Method;
-import java.util.logging.Logger;
-
-import javax.management.Attribute;
-import javax.management.AttributeList;
-import javax.management.MBeanAttributeInfo;
-import javax.management.MBeanInfo;
-import javax.management.MBeanServerConnection;
-import javax.management.ObjectName;
-import javax.management.MBeanServerInvocationHandler;
-import javax.management.NotificationBroadcaster;
-import javax.management.ReflectionException;
-import javax.management.IntrospectionException;
-import javax.management.InstanceNotFoundException;
-import javax.management.AttributeNotFoundException;
-import javax.management.InvalidAttributeValueException;
-import javax.management.MBeanException;
-
-
 import com.sun.appserv.management.base.AMXDebug;
 import com.sun.appserv.management.client.ConnectionSource;
-import com.sun.appserv.management.util.jmx.JMXUtil;
-import com.sun.appserv.management.util.jmx.AttributeNameMangler;
-import com.sun.appserv.management.util.jmx.AttributeNameMapper;
-import com.sun.appserv.management.util.jmx.AttributeNameMapperImpl;
-import com.sun.appserv.management.util.misc.ExceptionUtil;
-import com.sun.appserv.management.util.misc.StringUtil;
 import com.sun.appserv.management.util.misc.ObjectUtil;
 import com.sun.appserv.management.util.misc.Output;
+import com.sun.appserv.management.util.misc.StringUtil;
+
+import javax.management.*;
+import java.io.IOException;
+import java.lang.reflect.Method;
+import java.util.logging.Logger;
 
 
 /**

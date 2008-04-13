@@ -35,14 +35,13 @@
  */
 package com.sun.appserv.management.util.misc;
 
-import java.util.Set;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Properties;
-
 import com.sun.appserv.management.util.stringifier.SmartStringifier;
+
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
 
 
 public final class MapUtil
@@ -63,7 +62,9 @@ public final class MapUtil
 		public static Object[]
 	getKeyObjects( final Map<?,?> m)
 	{
-		return( SetUtil.toArray( m.keySet() ) );
+        final Object[] keys = new Object[ m.keySet().size() ];
+        m.keySet().toArray( keys );
+        return keys;
 	}
 	
 		public static String[]

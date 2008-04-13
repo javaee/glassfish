@@ -90,26 +90,26 @@ public class CreateSsl implements AdminCommand {
     @Param(name="type")
     String type;
 
-    @Param(name="ssl2enabled", optional=true)
-    String ssl2Enabled = Boolean.TRUE.toString();
+    @Param(name="ssl2enabled", optional=true, defaultValue="true")
+    Boolean ssl2Enabled;
     
     @Param(name="ssl2ciphers", optional=true)
     String ssl2ciphers;
     
-    @Param(name="ssl3enabled", optional=true)
-    String ssl3Enabled = Boolean.TRUE.toString();
+    @Param(name="ssl3enabled", optional=true, defaultValue="true")
+    Boolean ssl3Enabled;
     
     @Param(name="ssl3tlsciphers", optional=true)
     String ssl3tlsciphers;
     
-    @Param(name="tlsenabled", optional=true)
-    String tlsenabled = Boolean.TRUE.toString();
+    @Param(name="tlsenabled", optional=true, defaultValue="true")
+    Boolean tlsenabled;
     
-    @Param(name="tlsrollbackenabled", optional=true)
-    String tlsrollbackenabled = Boolean.TRUE.toString();
+    @Param(name="tlsrollbackenabled", optional=true, defaultValue="true")
+    Boolean tlsrollbackenabled;
         
-    @Param(name="clientauthenabled", optional=true)
-    String clientauthenabled = Boolean.TRUE.toString();
+    @Param(name="clientauthenabled", optional=true, defaultValue="true")
+    Boolean clientauthenabled;
 
     @Param(optional=true)
     String target;
@@ -236,18 +236,16 @@ public class CreateSsl implements AdminCommand {
     
     private void reportSuccess(ActionReport report) {
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
-        report.setMessage(localStrings.getLocalString("create.ssl.success",
-                "Creation of Ssl in {0} completed successfully", listenerId));        
     }
     
     private void populateSslElement(Ssl newSsl) throws PropertyVetoException {
         newSsl.setCertNickname(certName);
-        newSsl.setClientAuthEnabled(clientauthenabled);                                       
+        newSsl.setClientAuthEnabled(clientauthenabled.toString());                                       
         newSsl.setSsl2Ciphers(ssl2ciphers);
-        newSsl.setSsl2Enabled(ssl2Enabled);
-        newSsl.setSsl3Enabled(ssl3Enabled);                    
+        newSsl.setSsl2Enabled(ssl2Enabled.toString());
+        newSsl.setSsl3Enabled(ssl3Enabled.toString());                    
         newSsl.setSsl3TlsCiphers(ssl3tlsciphers);
-        newSsl.setTlsEnabled(tlsenabled);
-        newSsl.setTlsRollbackEnabled(tlsrollbackenabled);
+        newSsl.setTlsEnabled(tlsenabled.toString());
+        newSsl.setTlsRollbackEnabled(tlsrollbackenabled.toString());
     }    
 }

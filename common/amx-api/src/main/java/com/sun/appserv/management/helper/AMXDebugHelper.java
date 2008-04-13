@@ -35,18 +35,9 @@
  */
 package com.sun.appserv.management.helper;
 
-import java.util.Map;
-
-import javax.management.ObjectName;
-import javax.management.Attribute;
-import javax.management.AttributeList;
-
 import com.sun.appserv.management.base.AMXDebug;
 import com.sun.appserv.management.util.misc.Output;
 import com.sun.appserv.management.util.misc.StringUtil;
-import com.sun.appserv.management.util.misc.ExceptionUtil;
-import com.sun.appserv.management.util.jmx.JMXUtil;
-import com.sun.appserv.management.util.misc.MapUtil;
 
 
 /**

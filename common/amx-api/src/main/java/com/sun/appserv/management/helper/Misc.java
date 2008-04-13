@@ -35,11 +35,11 @@
  */
 package com.sun.appserv.management.helper;
 
+import com.sun.appserv.management.base.UploadDownloadMgr;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-
-import com.sun.appserv.management.base.UploadDownloadMgr;
 
 /**
 	Miscellaneous helper routines specific to AMX.  These routines

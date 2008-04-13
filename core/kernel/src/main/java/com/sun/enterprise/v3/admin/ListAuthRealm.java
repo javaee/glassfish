@@ -107,11 +107,6 @@ public class ListAuthRealm implements AdminCommand {
         Config config = configList.get(0);
         SecurityService securityService = config.getSecurityService();
 
-        report.getTopMessagePart().setMessage(
-            localStrings.getLocalString(
-                "list.auth.realm.success", 
-                "list-auth-realms successful"));
-        report.getTopMessagePart().setChildrenType("auth-realm");
         for (AuthRealm realm : securityService.getAuthRealm()) {
             ActionReport.MessagePart part = report.getTopMessagePart().addChild();
             part.setMessage(realm.getName());

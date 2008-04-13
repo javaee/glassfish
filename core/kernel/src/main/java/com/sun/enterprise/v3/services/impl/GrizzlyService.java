@@ -103,7 +103,8 @@ public class GrizzlyService implements Startup, PostConstruct, PreDestroy {
                 // attach all virtual servers to this port
                 for (VirtualServer vs : httpService.getVirtualServer()) {
                     List<String> vsListeners = StringUtils.parseStringList(vs.getHttpListeners(), " ,");
-                    if (vsListeners.contains(listener.getId())) {
+                    if (vsListeners == null || vsListeners.size() == 0 || 
+                            vsListeners.contains(listener.getId())) {
                         proxy.getVsMapper().addVirtualServer(vs);
                     }
                 }

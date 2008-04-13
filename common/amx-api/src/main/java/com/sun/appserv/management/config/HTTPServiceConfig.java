@@ -43,16 +43,18 @@
 
 package com.sun.appserv.management.config;
 
+import com.sun.appserv.management.base.Container;
+import com.sun.appserv.management.base.Singleton;
+import com.sun.appserv.management.base.XTypes;
+
 import java.util.Map;
 
-import com.sun.appserv.management.base.XTypes;
-import com.sun.appserv.management.base.Container;
 
 /**
 	 Configuration for the &lt;http-service&gt; element.
  */
 public interface HTTPServiceConfig
-	extends ConfigElement, PropertiesAccess, Container, DefaultValues
+	extends ConfigElement, PropertiesAccess, Container, DefaultValues, Singleton
 {
 /** The j2eeType as returned by {@link com.sun.appserv.management.base.AMX#getJ2EEType}. */
 	public static final String	J2EE_TYPE	= XTypes.HTTP_SERVICE_CONFIG;

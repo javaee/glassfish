@@ -106,7 +106,7 @@ public class StandAloneInstanceHandlers{
      )
      public static void getStandaloneInstances(HandlerContext handlerCtx){
         
-        Iterator iter = AMXRoot.getInstance().getDomainConfig().getStandaloneServerConfigMap().values().iterator();
+        Iterator iter = AMXRoot.getInstance().getServersConfig().getStandaloneServerConfigMap().values().iterator();
         
         List result = new ArrayList();
         if (iter != null){
@@ -214,11 +214,11 @@ public class StandAloneInstanceHandlers{
                 configCopied = true;
                 HashMap configMap = new HashMap();
                 if("default-config".equals(configName)) {
-                    AMXRoot.getInstance().getDomainConfig().createConfigConfig(name+"-config", configMap);
+                    AMXRoot.getInstance().getConfigsConfig().createConfigConfig(name+"-config", configMap);
                     
                 } else {
                     configMap.put(ConfigConfigKeys.SRC_CONFIG_NAME_KEY, configName);
-                    AMXRoot.getInstance().getDomainConfig().createConfigConfig(name+"-config", configMap);
+                    AMXRoot.getInstance().getConfigsConfig().createConfigConfig(name+"-config", configMap);
                 }
                 
             }
@@ -235,7 +235,7 @@ public class StandAloneInstanceHandlers{
                 };
                 //JMX throws PortReplaceException which we can catch and ignore. AMX throws MBeanException for ALL exceptions
                 //and we can't ignore all exceptions 
-                // AMXUtil.getDomainConfig().createStandaloneServerConfig(name, nodeAgent, configName, new HashMap());
+                // AMXUtil.getServersConfig().createStandaloneServerConfig(name, nodeAgent, configName, new HashMap());
                 JMXUtil.getMBeanServer().invoke(new ObjectName("com.sun.appserv:type=servers,category=config"), "createServerInstance", params, signature);
                 
         }catch (Exception ex){
@@ -267,7 +267,7 @@ public class StandAloneInstanceHandlers{
         try{
             for(Map oneRow : selectedRows){
                 String name = (String)oneRow.get("name");
-                AMXRoot.getInstance().getDomainConfig().removeStandaloneServerConfig(name);                
+                AMXRoot.getInstance().getServersConfig().removeStandaloneServerConfig(name);                
             }
         }catch(Exception ex){
             GuiUtil.handleException(handlerCtx, ex);
@@ -407,7 +407,7 @@ public class StandAloneInstanceHandlers{
                  String name = (String)instance.get("name");
                  String weight = (String)instance.get("weight");
                  if (weight != null && (! weight.trim().equals(""))) {
-                     AMXRoot.getInstance().getDomainConfig().getStandaloneServerConfigMap().get(name).setLBWeight(weight);
+                     AMXRoot.getInstance().getServersConfig().getStandaloneServerConfigMap().get(name).setLBWeight(weight);
                  } else {
                      foundError = true;
                  }
@@ -457,7 +457,7 @@ public class StandAloneInstanceHandlers{
         String instanceName = (String) handlerCtx.getInputValue("instanceName");
         Boolean isAdminServer = (Boolean) handlerCtx.getInputValue("isAdminServer");
         try {
-            StandaloneServerConfig server = AMXRoot.getInstance().getDomainConfig().getStandaloneServerConfigMap().get(instanceName);
+            StandaloneServerConfig server = AMXRoot.getInstance().getServersConfig().getStandaloneServerConfigMap().get(instanceName);
             J2EEServer j2eeServer = AMXRoot.getInstance().getJ2EEDomain().getJ2EEServerMap().get(instanceName);
             String config = server.getReferencedConfigName();
             String version = j2eeServer.getserverVersion();
@@ -557,9 +557,9 @@ public class StandAloneInstanceHandlers{
     private static String resolveToken(String pn, String configName, String instanceName) {
         //For EE, the instance will have its own override System Properties value instead of using the one from config.
         if (AMXRoot.getInstance().isEE()){
-            SystemPropertiesAccess sprops = AMXRoot.getInstance().getDomainConfig().getStandaloneServerConfigMap().get(instanceName);
+            SystemPropertiesAccess sprops = AMXRoot.getInstance().getServersConfig().getStandaloneServerConfigMap().get(instanceName);
             if (sprops == null){
-                sprops = AMXRoot.getInstance().getDomainConfig().getClusteredServerConfigMap().get(instanceName);
+                sprops = AMXRoot.getInstance().getServersConfig().getClusteredServerConfigMap().get(instanceName);
             }
             if (sprops != null){
                 if (sprops.existsSystemProperty(pn)){
@@ -598,7 +598,7 @@ public class StandAloneInstanceHandlers{
                  String name = (String)instance.get("name");
                  String override = (String)instance.get("override");
                  if (override != null && (!override.trim().equals(""))) {
-                     amxRoot.getDomainConfig().getStandaloneServerConfigMap().get(instanceName).setSystemPropertyValue(name, override);
+                     amxRoot.getServersConfig().getStandaloneServerConfigMap().get(instanceName).setSystemPropertyValue(name, override);
                  } else {
                      foundError = true;
                  }
@@ -629,7 +629,7 @@ public class StandAloneInstanceHandlers{
     public static void saveStandaloneInstanceProperties(HandlerContext handlerCtx) {
         String instanceName = (String)handlerCtx.getInputValue("InstanceName");
         AMXRoot amxRoot = AMXRoot.getInstance();
-        StandaloneServerConfig serverConfig = amxRoot.getDomainConfig().getStandaloneServerConfigMap().get(instanceName);
+        StandaloneServerConfig serverConfig = amxRoot.getServersConfig().getStandaloneServerConfigMap().get(instanceName);
         ArrayList removeProps = (ArrayList)handlerCtx.getInputValue("RemoveProps");
         Map addProps = (Map)handlerCtx.getInputValue("AddProps");
         String[] remove = (String[])removeProps.toArray(new String[ removeProps.size()]);
@@ -664,7 +664,7 @@ public class StandAloneInstanceHandlers{
         String instanceName = (String) handlerCtx.getInputValue("instanceName");
         AMXRoot amxRoot = AMXRoot.getInstance();
         try {
-            StandaloneServerConfig serverConfig = amxRoot.getDomainConfig().getStandaloneServerConfigMap().get(instanceName);
+            StandaloneServerConfig serverConfig = amxRoot.getServersConfig().getStandaloneServerConfigMap().get(instanceName);
             ConfigConfig defaultConfig = amxRoot.getConfig("default-config");
             String[] propNames = serverConfig.getSystemPropertyNames();
             List result = new ArrayList();
@@ -698,7 +698,7 @@ public class StandAloneInstanceHandlers{
         @HandlerOutput(name="Properties", type=Map.class)})
         public static void getStandaloneInstanceProperties(HandlerContext handlerCtx) {
         String instanceName = (String)handlerCtx.getInputValue("InstanceName");
-        StandaloneServerConfig serverConfig = AMXRoot.getInstance().getDomainConfig().getStandaloneServerConfigMap().get(instanceName);
+        StandaloneServerConfig serverConfig = AMXRoot.getInstance().getServersConfig().getStandaloneServerConfigMap().get(instanceName);
         Map<String, String> props = serverConfig.getProperties();
         handlerCtx.setOutputValue("Properties", props);
         

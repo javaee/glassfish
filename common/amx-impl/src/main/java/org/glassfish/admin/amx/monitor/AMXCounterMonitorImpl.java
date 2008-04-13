@@ -36,13 +36,10 @@
 
 package org.glassfish.admin.amx.monitor;
 
-import javax.management.monitor.CounterMonitor;
-
-import com.sun.appserv.management.base.AMX;
 import com.sun.appserv.management.monitor.AMXCounterMonitor;
-
-
 import org.glassfish.admin.amx.util.ObjectNames;
+
+import javax.management.monitor.CounterMonitor;
 /**
 	Implementation of javax.management.monitor.CounterMonitor which is an AMX.
 */

@@ -35,10 +35,8 @@
  */
 package com.sun.appserv.management.ext.wsmgmt;
 
-import java.util.Map;
 import java.io.Serializable;
-
-import com.sun.appserv.management.ext.wsmgmt.MessageTrace;
+import java.util.Map;
 
 
 /**

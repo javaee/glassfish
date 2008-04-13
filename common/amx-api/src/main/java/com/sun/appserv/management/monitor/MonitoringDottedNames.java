@@ -43,11 +43,10 @@
 
 package com.sun.appserv.management.monitor;
 
-import com.sun.appserv.management.base.XTypes;
-
-import com.sun.appserv.management.base.DottedNames;
 import com.sun.appserv.management.base.AllDottedNames;
+import com.sun.appserv.management.base.DottedNames;
 import com.sun.appserv.management.base.Singleton;
+import com.sun.appserv.management.base.XTypes;
 
 /**
 	Access to all dotted-names for monitoring.  Note that monitoring

@@ -42,8 +42,8 @@
  
 package com.sun.appserv.management.util.stringifier;
 
-import java.util.Iterator;
 import java.util.Collection;
+import java.util.Iterator;
 
 
 /**

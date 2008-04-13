@@ -35,13 +35,10 @@
  */
 package com.sun.appserv.management.util.misc;
 
-import java.util.Map;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.ArrayList;
-import java.util.Collections;
-
-import com.sun.appserv.management.util.misc.MapUtil;
+import java.util.Map;
 
 
 //import com.sun.appserv.management.helper.AMXDebugHelper;
@@ -143,7 +140,7 @@ public final class Timings
         public void
     add( final String checkpointName, final TimingDelta delta )
     {
-        add( checkpointName, delta.elapsed() );
+        add( checkpointName, delta.elapsedMillis() );
     }
     
     /**

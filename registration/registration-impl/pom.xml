@@ -67,14 +67,14 @@
             <version>${project.parent.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.sun.scn</groupId>
-            <artifactId>sysnet-registration</artifactId>
-            <version>1.0.2</version>            
+            <groupId>org.glassfish.external</groupId>
+            <artifactId>sysnet-registration-repackaged</artifactId>
+            <version>${project.parent.version}</version>
         </dependency>
         <dependency>
-            <groupId>commons-codec</groupId>
-            <artifactId>commons-codec</artifactId>
-            <version>20041127.091804</version>  
+            <groupId>org.glassfish.external</groupId>
+            <artifactId>commons-codec-repackaged</artifactId>
+            <version>${project.parent.version}</version>
         </dependency>        
     </dependencies>
 </project>

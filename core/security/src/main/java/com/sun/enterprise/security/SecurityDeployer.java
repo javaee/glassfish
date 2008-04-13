@@ -62,7 +62,7 @@ public class SecurityDeployer extends SimpleDeployer<SecurityContainer, DummyApp
     private PolicyLoader policyLoader;
     static {
         _logger = LogDomains.getLogger(LogDomains.SECURITY_LOGGER);
-        initRoleMapperFactory();
+        //initRoleMapperFactory();
         
     }
     // creates security policy if needed
@@ -164,30 +164,30 @@ public class SecurityDeployer extends SimpleDeployer<SecurityContainer, DummyApp
         return new MetaData(false, apis.toArray(new ModuleDefinition[apis.size()]), null, new Class[] {Application.class});
     }
 
-    private static void initRoleMapperFactory() //throws Exception
-    {
-        Object o = null;
-        Class c = null;
-        // this should never fail.
-        try {
-            c = Class.forName("com.sun.enterprise.security.acl.RoleMapperFactory");
-            if (c != null) {
-                o = c.newInstance();
-                if (o != null && o instanceof SecurityRoleMapperFactory) {
-                    SecurityRoleMapperFactoryMgr.registerFactory((SecurityRoleMapperFactory) o);
-                }
-            }
-            if (o == null) {
-            //               _logger.log(Level.SEVERE,_localStrings.getLocalString("j2ee.norolemapper", "Cannot instantiate the SecurityRoleMapperFactory"));
-            }
-        } catch (Exception cnfe) {
-//            _logger.log(Level.SEVERE,
-//			_localStrings.getLocalString("j2ee.norolemapper", "Cannot instantiate the SecurityRoleMapperFactory"), 
-//			cnfe);
-//		cnfe.printStackTrace();
-//		throw new RuntimeException(cnfe);
-        //   throw  cnfe;
-        }
-    }
+//    private static void initRoleMapperFactory() //throws Exception
+//    {
+//        Object o = null;
+//        Class c = null;
+//        // this should never fail.
+//        try {
+//            c = Class.forName("com.sun.enterprise.security.acl.RoleMapperFactory");
+//            if (c != null) {
+//                o = c.newInstance();
+//                if (o != null && o instanceof SecurityRoleMapperFactory) {
+//                    SecurityRoleMapperFactoryMgr.registerFactory((SecurityRoleMapperFactory) o);
+//                }
+//            }
+//            if (o == null) {
+//            //               _logger.log(Level.SEVERE,_localStrings.getLocalString("j2ee.norolemapper", "Cannot instantiate the SecurityRoleMapperFactory"));
+//            }
+//        } catch (Exception cnfe) {
+////            _logger.log(Level.SEVERE,
+////			_localStrings.getLocalString("j2ee.norolemapper", "Cannot instantiate the SecurityRoleMapperFactory"), 
+////			cnfe);
+////		cnfe.printStackTrace();
+////		throw new RuntimeException(cnfe);
+//        //   throw  cnfe;
+//        }
+//    }
 }
 

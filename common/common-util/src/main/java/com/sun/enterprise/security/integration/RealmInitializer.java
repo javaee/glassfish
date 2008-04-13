@@ -44,4 +44,6 @@ import java.security.Principal;
  */
 public interface RealmInitializer  {
  public void initializeRealm(Object bundledescriptor, boolean isSystemApp,String realmName);
+ //TODO: FIXME, dilution paramater type from Container to Object
+ public void setVirtualServer(Object container);
 }

@@ -35,52 +35,19 @@
  */
 package org.glassfish.admin.amx.config;
 
-import java.util.Set;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Collections;
-
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyVetoException;
-
-import javax.management.ObjectName;
-import javax.management.MBeanServer;
-import javax.management.MBeanServerConnection;
-import javax.management.MBeanInfo;
-import javax.management.AttributeList;
-import javax.management.Attribute;
-import javax.management.AttributeNotFoundException;
-import javax.management.InvalidAttributeValueException;
-import javax.management.InstanceNotFoundException;
-import javax.management.IntrospectionException;
-import javax.management.ReflectionException;
-
-import org.jvnet.hk2.config.ConfigBean;
-import org.jvnet.hk2.config.ConfigSupport;
-import org.jvnet.hk2.config.SingleConfigCode;
-import org.jvnet.hk2.config.ConfigBeanProxy;
-import org.jvnet.hk2.config.Transactions;
-import org.jvnet.hk2.config.TransactionListener;
-import org.jvnet.hk2.config.TransactionFailure;
-import org.jvnet.hk2.config.Dom;
-
-
 import com.sun.appserv.management.base.AMXAttributes;
-import com.sun.appserv.management.config.AMXConfig;
-import com.sun.appserv.management.config.PropertyConfig;
-
+import com.sun.appserv.management.util.jmx.JMXUtil;
 import com.sun.appserv.management.util.misc.CollectionUtil;
 import com.sun.appserv.management.util.misc.ExceptionUtil;
-import com.sun.appserv.management.util.misc.StringUtil;
-import com.sun.appserv.management.util.jmx.JMXUtil;
-
-import org.glassfish.api.amx.AMXConfigInfo;
-
-import org.glassfish.admin.amx.mbean.Delegate;
 import org.glassfish.admin.amx.mbean.DelegateBase;
-
 import org.glassfish.admin.amx.util.AMXConfigInfoResolver;
+import org.glassfish.api.amx.AMXConfigInfo;
+import org.jvnet.hk2.config.*;
+
+import javax.management.AttributeList;
+import javax.management.AttributeNotFoundException;
+import java.beans.PropertyChangeEvent;
+import java.util.*;
 
 /**
 	Delegate which delegates to another MBean.
@@ -148,7 +115,7 @@ public final class DelegateToConfigBeanDelegate extends DelegateBase
                 //debug( "smartNameFind: mapped " + amxName + " to " + hint + " for " + info.amxInterface().getName() ); 
                 xmlName = hint;
             }
-   }
+        }
        return xmlName;
     }
     
@@ -169,6 +136,12 @@ public final class DelegateToConfigBeanDelegate extends DelegateBase
                 
                 xmlName = mNameMapping.matchAMXName( amxName, xmlNames );
                 //debug( "Matched: " + amxName + " => " + xmlName );
+                if ( xmlName == null )
+                {
+                    final Set<String> leafNames = mConfigBean.getLeafElementNames();
+                    xmlName = mNameMapping.matchAMXName( amxName, leafNames );
+                    //debug( "Matched leaf element names: " + CollectionUtil.toString(leafNames) + " = " + xmlName );
+                }
             }
             else
             {
@@ -186,12 +159,19 @@ public final class DelegateToConfigBeanDelegate extends DelegateBase
 	getAttribute( final String attrName )
 		throws AttributeNotFoundException
 	{
-        //debug( "DelegateToConfigBeanDelegate.getAttribute: " + attrName );
         final String xmlName = getXMLName(attrName);
         
-        final Object result = mConfigBean.rawAttribute( xmlName );
-       
-        //debug( "Attribute " + attrName + " has class " + ((result == null) ? "null" : result.getClass()) );
+        debug( "DelegateToConfigBeanDelegate.getAttribute: " + attrName + ", xmlName = " + xmlName);
+        Object result = mConfigBean.rawAttribute( xmlName );
+        if ( result == null && false )
+        {
+            final List<String> leafElements = mConfigBean.leafElements(xmlName);
+            final String[] values = new String[leafElements.size()];
+            leafElements.toArray( values );
+            result = values;
+        }
+        
+        debug( "Attribute " + attrName + " has class " + ((result == null) ? "null" : result.getClass()) );
         return result;
 	}
     
@@ -251,27 +231,16 @@ public final class DelegateToConfigBeanDelegate extends DelegateBase
         // note that attributeListToStringMap() auto-converts types to 'String' which is desired here
         final Map<String, Object> amxAttrs = JMXUtil.attributeListToValueMap( attrsIn );
         
+        /*
         // auto convert certain special types such as String[] to String
         for( final String key : amxAttrs.keySet() )
         {
             final Object value = amxAttrs.get(key);
             
             String valueString = "" + value;
-            /*
-            if ( value.getClass() != String.class )
-            {
-                if ( value.getClass() == String[].class )
-                {
-                    valueString = StringUtil.toString( ":", (String[])value );
-                }
-            }
-            else
-            {
-                valueString = "" + value;
-            }
-            */
             amxAttrs.put( key, valueString );
         }
+        */
         
         // now map the AMX attribute names to xml attribute names
         final Map<String,String> xmlAttrs = new HashMap<String,String>();
@@ -361,103 +330,6 @@ public final class DelegateToConfigBeanDelegate extends DelegateBase
 	{
         throw new RuntimeException( "invoke() not yet implemented" );
 	}
-    
-
-//-------------------------------------------------------------------
-// test/exploratory code for create() methods
-    
-    /**
-        Find the @Configured interface that should be instantiated for the corresponding j2eeType.
-     */
-        private Class<? extends ConfigBeanProxy> 
-    getChildInterface( final String j2eeType )
-    {
-        Class<? extends ConfigBeanProxy>  intf = null;
-        
-        debug( "NO CODE YET TO FIND CHILD INTERFACE" );
-        
-        if ( intf == null )
-        {
-            throw new IllegalArgumentException( "Unknown j2eeType for creation: " + j2eeType );
-        }
-        
-        final AMXConfigInfo configInfo = intf.getAnnotation( AMXConfigInfo.class );
-        if ( configInfo == null )
-        {
-            throw new IllegalArgumentException( "no AMXConfigInfo found for " + intf.getName() );
-        }
-        
-        return intf;
-    }
-    
-    private static final class ChildMaker implements SingleConfigCode<ConfigBeanProxy>
-    {
-        private final Class<? extends ConfigBeanProxy> mIntf;
-        private final Map<String,String>    mAttrs;
-        
-        private ConfigBean  mChild = null;
-        
-        public ChildMaker(
-            final Class<? extends ConfigBeanProxy>  intf,
-            final Map<String,String> attrs)
-        {
-            mIntf  = intf;
-            mAttrs = attrs;
-        }
-        
-        public Object run(ConfigBeanProxy param) throws PropertyVetoException, TransactionFailure
-        {
-            final ConfigBeanProxy proxy = ConfigSupport.createChildOf( param, mIntf );
-            
-            mChild = (ConfigBean)Dom.unwrap( proxy );
-            
-            for( final String attrName : mAttrs.keySet() )
-            {
-                mChild.attribute( attrName, mAttrs.get(attrName) );
-            }
-            return mChild;
-        }
-        
-        public ConfigBean getNewborn() { return mChild; }
-    }
-    
-        private ConfigBean
-    createChild(
-        final Class<? extends ConfigBeanProxy> intf,
-        final Map<String,String>  attrs )
-    {
-        final AMXConfigInfo configInfo = intf.getAnnotation( AMXConfigInfo.class );
-        
-        final ChildMaker  mc = new ChildMaker( intf, attrs );
-        
-        try
-        {
-            ConfigSupport.apply( mc, mConfigBean.createProxy() );
-        }
-        catch( TransactionFailure e )
-        {
-            debug( ExceptionUtil.toString(e) );
-            throw new RuntimeException(e);
-        }
-        
-        final ConfigBean child = mc.getNewborn();
-
-        return child;
-    }
-
-
-        public ConfigBean
-    createChild(
-        final String j2eeType,
-        final Object... args )
-    {
-        final Class<? extends ConfigBeanProxy> intf = getChildInterface( j2eeType );
-        
-        final Map<String,String> attrs = new HashMap<String,String>();
-        // attrs must be filled in with attribute names mapped to values...
-        
-        return createChild( intf, attrs );
-    }
 }
 
 

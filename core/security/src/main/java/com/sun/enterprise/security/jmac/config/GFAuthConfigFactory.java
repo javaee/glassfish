@@ -415,9 +415,10 @@ public class GFAuthConfigFactory extends AuthConfigFactory {
      * configured in a factory configuration file.
      */
     static List<EntryInfo> getDefaultProviders() {
-        List<EntryInfo> entries = new ArrayList<EntryInfo>(2);
-        entries.add(new EntryInfo(
-            "com.sun.xml.wss.provider.wsit.WSITAuthConfigProvider", null));
+        //TODO:V3 TP2 uncomment later List<EntryInfo> entries = new ArrayList<EntryInfo>(2);
+        List<EntryInfo> entries = new ArrayList<EntryInfo>(1);
+        /*TODO: V3 uncomment later entries.add(new EntryInfo(
+            "com.sun.xml.wss.provider.wsit.WSITAuthConfigProvider", null));*/
         entries.add(new EntryInfo(
             GFServerConfigProvider.class.getName(), null));
         return entries;

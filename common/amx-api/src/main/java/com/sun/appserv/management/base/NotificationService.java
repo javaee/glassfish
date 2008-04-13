@@ -34,22 +34,15 @@
  * holder.
  */
  
-/*
- * $Header: /cvs/glassfish/appserv-api/src/java/com/sun/appserv/management/base/NotificationService.java,v 1.2 2007/05/05 05:30:30 tcfujii Exp $
- * $Revision: 1.2 $
- * $Date: 2007/05/05 05:30:30 $
- */
 
 package com.sun.appserv.management.base;
 
-import java.util.Set;
-import java.util.Map;
-
-import javax.management.ObjectName;
 import javax.management.InstanceNotFoundException;
-import javax.management.Notification;
 import javax.management.NotificationFilter;
 import javax.management.NotificationListener;
+import javax.management.ObjectName;
+import java.util.Map;
+import java.util.Set;
 
 /**
 	Provides enhanced abilities for working with Notifications.  Listens 
@@ -73,7 +66,7 @@ import javax.management.NotificationListener;
 	is emitted
  */
 public interface NotificationService
-	extends AMX, NotificationListener
+	extends AMX, NotificationListener, Singleton
 {
 /** The j2eeType as returned by {@link com.sun.appserv.management.base.AMX#getJ2EEType}. */
 	public static final String	J2EE_TYPE	= XTypes.NOTIFICATION_SERVICE;

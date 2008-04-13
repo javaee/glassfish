@@ -36,10 +36,8 @@
 package com.sun.appserv.management.util.misc;
 
 import java.text.StringCharacterIterator;
-import java.util.List;
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Arrays;
+import java.util.List;
 
 
 class IllegalEscapeSequenceException extends TokenizerException

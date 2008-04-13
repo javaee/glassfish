@@ -37,7 +37,6 @@
 package com.sun.appserv.management.base;
 
 import javax.management.Notification;
-import javax.management.NotificationEmitter;
 
 /**
 	Enables the emitting of JMX Notifications by any code with

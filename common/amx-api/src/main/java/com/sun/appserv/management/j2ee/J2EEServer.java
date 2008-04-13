@@ -35,12 +35,9 @@
  */
 package com.sun.appserv.management.j2ee;
 
-import java.util.Map;
-import java.util.Set;
-
-import javax.management.ObjectName;
-
 import com.sun.appserv.management.base.Container;
+
+import java.util.Set;
 
 
 /**

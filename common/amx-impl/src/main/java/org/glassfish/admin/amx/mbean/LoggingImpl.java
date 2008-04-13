@@ -36,63 +36,25 @@
  
 package org.glassfish.admin.amx.mbean;
 
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Set;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.LogRecord;
-import java.util.logging.Formatter;
+import com.sun.appserv.management.base.AMX;
+import com.sun.appserv.management.base.Util;
+import com.sun.appserv.management.base.XTypes;
+import com.sun.appserv.management.ext.logging.Logging;
+import static com.sun.appserv.management.ext.logging.Logging.*;
+import com.sun.appserv.management.util.jmx.JMXUtil;
+import com.sun.appserv.management.util.jmx.NotificationBuilder;
+import com.sun.appserv.management.util.misc.*;
+import org.glassfish.admin.amx.util.ObjectNames;
 
+import javax.management.*;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Serializable;
-import java.io.PrintStream;
-import java.io.File;
-
-
-import javax.management.MBeanServer;
-import javax.management.Attribute;
-import javax.management.AttributeList;
-import javax.management.MBeanInfo;
-import javax.management.MBeanOperationInfo;
-import javax.management.MBeanNotificationInfo;
-import javax.management.NotificationListener;
-import javax.management.NotificationFilter;
-import javax.management.Notification;
-import javax.management.NotificationEmitter;
-import javax.management.ObjectName;
-import javax.management.MBeanServerInvocationHandler;
-
-import com.sun.appserv.management.base.AMX;
-import com.sun.appserv.management.base.Util;
-import com.sun.appserv.management.base.XTypes;
-
-import com.sun.appserv.management.ext.logging.Logging;
-import static com.sun.appserv.management.ext.logging.Logging.*;
-import com.sun.appserv.management.ext.logging.LogQueryResult;
-import com.sun.appserv.management.ext.logging.LogQueryResultImpl;
-import com.sun.appserv.management.util.misc.ListUtil;
-import com.sun.appserv.management.util.misc.MapUtil;
-import com.sun.appserv.management.util.misc.GSetUtil;
-import com.sun.appserv.management.util.misc.FileUtils;
-import com.sun.appserv.management.util.misc.ThrowableMapper;
-import com.sun.appserv.management.util.misc.ExceptionUtil;
-import com.sun.appserv.management.util.misc.TypeCast;
-
-import com.sun.appserv.management.util.jmx.NotificationBuilder;
-import com.sun.appserv.management.util.jmx.JMXUtil;
-import com.sun.appserv.management.util.jmx.NotificationEmitterSupport;
-
-
-import org.glassfish.admin.amx.mbean.AMXNonConfigImplBase;
-import org.glassfish.admin.amx.loader.BootUtil;
-import org.glassfish.admin.amx.util.ObjectNames;
+import java.util.*;
+import java.util.logging.Formatter;
+import java.util.logging.Level;
+import java.util.logging.LogRecord;
 
 //import com.sun.enterprise.server.logging.LoggingImplHook;
 

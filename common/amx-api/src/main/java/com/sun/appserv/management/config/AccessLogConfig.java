@@ -35,6 +35,7 @@
  */
 package com.sun.appserv.management.config;
 
+import com.sun.appserv.management.base.Singleton;
 import com.sun.appserv.management.base.XTypes;
 
 /**
@@ -42,7 +43,7 @@ import com.sun.appserv.management.base.XTypes;
 	 <p>
 */
 
-public interface AccessLogConfig extends ConfigElement 
+public interface AccessLogConfig extends ConfigElement, Singleton
 {
 /** The j2eeType as returned by {@link com.sun.appserv.management.base.AMX#getJ2EEType}. */
 	public static final String	J2EE_TYPE	= XTypes.ACCESS_LOG_CONFIG;

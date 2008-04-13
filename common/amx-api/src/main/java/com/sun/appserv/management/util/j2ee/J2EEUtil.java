@@ -35,34 +35,27 @@
  */
 package com.sun.appserv.management.util.j2ee;
 
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Set;
-import java.util.HashSet;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Collections;
-
-import java.lang.reflect.Method;
-
-import javax.management.openmbean.CompositeType;
-import javax.management.openmbean.CompositeData;
-import javax.management.openmbean.CompositeDataSupport;
-import javax.management.openmbean.OpenType;
-import javax.management.openmbean.OpenDataException;
+import com.sun.appserv.management.j2ee.StateManageable;
+import com.sun.appserv.management.j2ee.statistics.MapStatistic;
+import com.sun.appserv.management.j2ee.statistics.NumberStatistic;
+import com.sun.appserv.management.j2ee.statistics.StringStatistic;
+import com.sun.appserv.management.util.jmx.JMXUtil;
+import com.sun.appserv.management.util.jmx.OpenMBeanUtil;
+import com.sun.appserv.management.util.misc.CollectionUtil;
+import com.sun.appserv.management.util.misc.GSetUtil;
 
 import javax.management.j2ee.statistics.*;
-
-import com.sun.appserv.management.util.jmx.OpenMBeanUtil;
-import com.sun.appserv.management.util.misc.GSetUtil;
-import com.sun.appserv.management.util.misc.CollectionUtil;
-import com.sun.appserv.management.util.jmx.JMXUtil;
-
-import com.sun.appserv.management.j2ee.statistics.MapStatistic;
-import com.sun.appserv.management.j2ee.statistics.StringStatistic;
-import com.sun.appserv.management.j2ee.statistics.NumberStatistic;
-
-import com.sun.appserv.management.j2ee.StateManageable;
+import javax.management.openmbean.CompositeData;
+import javax.management.openmbean.CompositeDataSupport;
+import javax.management.openmbean.CompositeType;
+import javax.management.openmbean.OpenDataException;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
 	J2EE JSR 77 utilities

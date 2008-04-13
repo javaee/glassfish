@@ -35,12 +35,11 @@
  */
 package com.sun.appserv.management.j2ee.statistics;
 
-import java.util.Map;
-import java.io.Serializable;
-
 import com.sun.appserv.management.util.misc.MapUtil;
 import com.sun.appserv.management.util.misc.ObjectUtil;
-import com.sun.appserv.management.util.misc.TypeCast;
+
+import java.io.Serializable;
+import java.util.Map;
 
 /**
 	Implements getXXX() based on a Map whose keys are the XXX part of the getXXX() method name.

@@ -37,9 +37,6 @@ package com.sun.appserv.management.config;
 
 import java.util.Map;
 
-import com.sun.appserv.management.base.Container;
-import com.sun.appserv.management.base.XTypes;
-
 
 /**
 	All MBeans that have system Properties must extend this interface.
@@ -63,8 +60,8 @@ public interface SystemPropertiesAccess
 		accessing a property directly, this prefix must not be used.
 	 */
     final static String SYSTEM_PROPERTY_PREFIX = "system-" + PropertiesAccess.PROPERTY_PREFIX;
-    
-    
+
+//--------------------------------------------------------------
 	/**
 		Get the names of all system properties.
         @deprecated use the SystemPropertyConfig MBeans from {@link #getSystemPropertyConfigMap}
@@ -121,6 +118,9 @@ public interface SystemPropertiesAccess
 	 */
 	public void		removeSystemProperty( String propertyName );
     
+//--------------------------------------------------------------
+    
+
     
     /**
        @since Glassfish V3

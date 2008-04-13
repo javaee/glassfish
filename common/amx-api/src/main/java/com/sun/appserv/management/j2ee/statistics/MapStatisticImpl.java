@@ -42,20 +42,15 @@
 
 package com.sun.appserv.management.j2ee.statistics;
 
-import java.io.Serializable;
-
-import java.util.Set;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Collections;
-
-import javax.management.openmbean.CompositeData;
-
-import javax.management.j2ee.statistics.Statistic;
-
 import com.sun.appserv.management.util.j2ee.J2EEUtil;
 import com.sun.appserv.management.util.misc.MapUtil;
+
+import javax.management.j2ee.statistics.Statistic;
+import java.io.Serializable;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 /**
 	Generic implementation of Statistic which contains its members in a Map.

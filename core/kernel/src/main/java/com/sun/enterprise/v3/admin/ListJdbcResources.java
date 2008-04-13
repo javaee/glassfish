@@ -73,7 +73,6 @@ public class ListJdbcResources implements AdminCommand {
 
         final ActionReport report = context.getActionReport();
 
-        report.getTopMessagePart().setMessage(localStrings.getLocalString("list.jdbc.resources.success", "list-jdbc-resources successful"));
         try {
             JDBCResourceManager jdbcMgr = new JDBCResourceManager();
             ArrayList<String> list = jdbcMgr.list(resources);

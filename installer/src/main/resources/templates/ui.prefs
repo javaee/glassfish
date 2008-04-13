@@ -1,6 +1,6 @@
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER. 
 # 
-# Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved. 
+# Copyright 2007-2008 Sun Microsystems, Inc. All rights reserved. 
 # 
 # The contents of this file are subject to the terms of either the GNU 
 # General Public License Version 2 only ("GPL") or the Common Development 
@@ -89,7 +89,7 @@ btnpanel_bgcolor=WHITE
 button_font=Arial Narrow-PLAIN-11
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~W E L C O M E   P A G E~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Welcome_WELCOME_TEXT=&lt;HTML&gt;&lt;BODY&gt;\
+Welcome_WELCOME_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;\
             Welcome to the ${PRODUCT_NAME} installation.&lt;BR&gt;&lt;BR&gt;\
             Before you begin, please refer to the &lt;BR&gt;&lt;i&gt;${PRODUCT_NAME} \
             Release Notes and Installation Guide&lt;/i&gt;.&lt;BR&gt;&lt;BR&gt;\
@@ -97,14 +97,14 @@ Welcome_WELCOME_TEXT=&lt;HTML&gt;&lt;BODY&gt;\
                         &lt;/BODY&gt;&lt;/HTML&gt;
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~L I C E N S E   P A G E~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-License_LICENSE_TEXT1=&lt;HTML&gt;&lt;BODY&gt;\
+License_LICENSE_TEXT1=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;\
               Before you install this product, you must read and accept \
               the agreement under which this product is licensed for use.\
               &lt;/BODY&gt;&lt;/HTML&gt;
 
 License_LICENSE_TEXT2=SOFTWARE LICENSE AGREEMENT placeholder \n\n\
 
-License_LICENSE_TEXT3=&lt;HTML&gt; &lt;BODY&gt;\
+License_LICENSE_TEXT3=&lt;HTML&gt; &lt;BODY&gt;&lt;font face='Sans-Serif'&gt;\
              Have you read, and do you accept, all of the terms of the preceding&lt;BR&gt;\
              Software License Agreement? If you click &lt;B&gt;Cancel&lt;/B&gt; the installer&lt;BR&gt;\
              will exit without installing any product.&lt;BR&gt;&lt;/BODY&gt;&lt;/HTML&gt;
@@ -125,13 +125,13 @@ LICENSE_DECLINE_TEXT=I do not accept the terms in the license agreement
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~I N S T A L L    H O M E   P A G E~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 DEFAULT_INSTALL_HOME=C:\Program Files\Sun
 INSTALL_HOME_LABEL=Installation Directory
-INSTALL_TOP_TEXT=&lt;HTML&gt;&lt;BODY&gt;\
+INSTALL_TOP_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;\
 Specify the installation directory that will serve as the default install location \
 on the target system for the ${PRODUCT_NAME} product.&lt;BR&gt;\
 &lt;/BODY&gt;&lt;/HTML&gt;
 SPECIFY_HOME_MSG=Specify installation directory for installation.
-INSTALL_BOTTOM_TEXT=&lt;HTML&gt;&lt;BODY&gt;\
-If you specify a non-existent installation directory, this installation\
+INSTALL_BOTTOM_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;\
+If you specify a non-existent installation directory, this installation \
 program will automatically create it for you.\
 &lt;/BODY&gt;&lt;/HTML&gt;
 
@@ -162,6 +162,11 @@ JDK_TYPE_IN_TOOLTIP=You can type a Java(TM) SDK location here.
 
 AVAILABLE_JDK=Available Java(TM) SDKs
 ALTERNATE_JDK=Alternate Java(TM) SDK location
+
+UPDATETOOL_TOP_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;\
+If connection is available, installer will attempt to download and configure update client for this \
+installation.&lt;BR&gt;\
+&lt;/BODY&gt;&lt;/HTML&gt;
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~PRODUCT SELECTION PAGE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ADD_BUTTON_LABEL=Add >

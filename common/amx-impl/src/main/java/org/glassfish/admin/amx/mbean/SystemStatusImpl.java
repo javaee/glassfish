@@ -35,15 +35,17 @@
  */
 package org.glassfish.admin.amx.mbean;
 
-import java.util.Map;
-import java.util.HashMap;
-
+import com.sun.appserv.connectors.spi.ConnectorRuntime;
+import com.sun.appserv.management.base.SystemStatus;
+import com.sun.appserv.management.config.JDBCConnectionPoolConfig;
+import com.sun.appserv.management.util.misc.ExceptionUtil;
+import org.jvnet.hk2.component.ComponentException;
+import org.jvnet.hk2.component.Habitat;
 
 import javax.management.ObjectName;
-
-import com.sun.appserv.management.base.SystemStatus;
-
-//import com.sun.appserv.connectors.spi.ConnectorRuntime;
+import javax.resource.ResourceException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
     
@@ -60,12 +62,46 @@ public final class SystemStatusImpl extends AMXNonConfigImplBase
     pingJDBCConnectionPool( final String poolName )
     {
         final Map<String,Object> result = new HashMap<String,Object>();
+        boolean pingable = false;
+        final Habitat habitat = com.sun.enterprise.v3.server.Globals.getDefaultHabitat();
+        ConnectorRuntime connRuntime;
+
+        // check pool name
+        final JDBCConnectionPoolConfig  cfg = 
+        getDomainRoot().getDomainConfig().getResourcesConfig().getJDBCConnectionPoolConfigMap().get( poolName );
+        if (cfg == null) {
+            result.put( PING_SUCCEEDED_KEY, pingable);
+            result.put( REASON_FAILED_KEY, "The pool name " + poolName + " does not exist");
+            return result;
+        }
+
+        // habitat
+        if (habitat == null) {
+            result.put( PING_SUCCEEDED_KEY, pingable);
+            result.put( REASON_FAILED_KEY, "Habitat is null");
+            return result;
+        }
+
+        // get connector runtime
+        try {
+            connRuntime = habitat.getComponent(ConnectorRuntime.class, null);
+        } catch (ComponentException e) {
+            result.put( PING_SUCCEEDED_KEY, pingable);
+            result.put( REASON_FAILED_KEY, ExceptionUtil.toString(e));
+            return result;
+        }
         
-        //ConnectorRuntime connRuntime = null;
-        //final boolean status =  status = connRuntime.pingConnectionPool(poolName);
+        // ping
+        try {
+            pingable = connRuntime.pingConnectionPool(poolName);
+        } catch (ResourceException e) {
+            result.put( PING_SUCCEEDED_KEY, pingable);
+            result.put( REASON_FAILED_KEY, ExceptionUtil.toString(e));
+            return result;
+        }
         
-        result.put( STATUS_STRING_KEY, "NOT YET IMPLEMENTED, status unknown for " + poolName );
-        
+        // success
+        result.put( PING_SUCCEEDED_KEY, pingable);
         return result;
     }
 }

@@ -42,13 +42,11 @@
  
 package com.sun.appserv.management.util.jmx.stringifier;
 
-import java.util.Iterator;
-
-import javax.management.Attribute;
-import javax.management.AttributeList;
-
-import com.sun.appserv.management.util.stringifier.Stringifier;
 import com.sun.appserv.management.util.stringifier.IteratorStringifier;
+import com.sun.appserv.management.util.stringifier.Stringifier;
+
+import javax.management.AttributeList;
+import java.util.Iterator;
 
 public final class AttributeListStringifier implements Stringifier
 {

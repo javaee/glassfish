@@ -41,9 +41,7 @@
  */
  
 package com.sun.appserv.management.j2ee;
- 
 
-import com.sun.appserv.management.monitor.statistics.AltServletStats;
 
 /**
 	@see com.sun.appserv.management.monitor.ServletMonitor

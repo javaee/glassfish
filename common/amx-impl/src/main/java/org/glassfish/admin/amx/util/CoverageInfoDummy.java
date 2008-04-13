@@ -35,13 +35,11 @@
  */
 package org.glassfish.admin.amx.util;
 
-import java.io.Serializable;
-
-import java.util.Set;
-import java.util.Map;
-import java.util.Collections;
-
 import javax.management.MBeanInfo;
+import java.io.Serializable;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Set;
 
 /**
 	Dummy implementation used when coverage is not being gathered.

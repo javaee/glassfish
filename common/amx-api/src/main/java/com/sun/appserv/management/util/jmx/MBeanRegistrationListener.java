@@ -35,16 +35,11 @@
  */
 package com.sun.appserv.management.util.jmx;
 
-import java.io.IOException;
-
-import javax.management.ObjectName;
-import javax.management.Notification;
-import javax.management.NotificationListener;
-import javax.management.NotificationFilter;
-import javax.management.MBeanServerNotification;
 import javax.management.MBeanServerConnection;
-import javax.management.InstanceNotFoundException;
-import com.sun.appserv.management.base.AMXRootLogger;
+import javax.management.MBeanServerNotification;
+import javax.management.Notification;
+import javax.management.ObjectName;
+import java.io.IOException;
 
 /**
 	Convenience base class for listening to 

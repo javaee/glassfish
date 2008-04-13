@@ -35,16 +35,15 @@
  */
 package com.sun.appserv.management.helper;
 
-import java.util.Set;
-import java.util.HashSet;
+import com.sun.appserv.management.DomainRoot;
+import com.sun.appserv.management.base.AMX;
+import com.sun.appserv.management.base.BulkAccess;
+import com.sun.appserv.management.base.QueryMgr;
+import com.sun.appserv.management.base.Util;
 
 import javax.management.ObjectName;
-
-import com.sun.appserv.management.base.Util;
-import com.sun.appserv.management.base.AMX;
-import com.sun.appserv.management.DomainRoot;
-import com.sun.appserv.management.base.QueryMgr;
-import com.sun.appserv.management.base.BulkAccess;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
 	Base class for Helpers, useable alone as well.

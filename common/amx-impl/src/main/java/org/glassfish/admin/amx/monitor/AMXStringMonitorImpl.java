@@ -36,13 +36,10 @@
 
 package org.glassfish.admin.amx.monitor;
 
-import javax.management.monitor.StringMonitor;
-
-import com.sun.appserv.management.base.AMX;
 import com.sun.appserv.management.monitor.AMXStringMonitor;
-
-
 import org.glassfish.admin.amx.util.ObjectNames;
+
+import javax.management.monitor.StringMonitor;
 
 /**
 	Implementation of {@link javax.management.monitor.StringMonitor} which is an AMX.

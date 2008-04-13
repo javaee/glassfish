@@ -35,37 +35,23 @@
  */
 package org.glassfish.admin.amx.mbean;
 
-import java.util.Set;
-
-import javax.management.ObjectName;
-import javax.management.MBeanServer;
-import javax.management.JMException;
-
 import com.sun.appserv.management.DomainRoot;
-import com.sun.appserv.management.base.XTypes;
 import com.sun.appserv.management.base.AMX;
-import com.sun.appserv.management.base.Util;
-import com.sun.appserv.management.base.NotificationEmitterServiceKeys;
 import com.sun.appserv.management.base.NotificationEmitterService;
-
+import com.sun.appserv.management.base.NotificationEmitterServiceKeys;
+import com.sun.appserv.management.base.XTypes;
 import com.sun.appserv.management.j2ee.J2EEDomain;
-
+import com.sun.appserv.management.util.misc.GSetUtil;
+import com.sun.appserv.server.util.Version;
+import org.glassfish.admin.amx.dotted.DottedNamesImpl;
 import org.glassfish.admin.amx.j2ee.DASJ2EEDomainImpl;
-import org.glassfish.admin.amx.j2ee.J2EEDomainImpl;
-
-
-import com.sun.appserv.management.util.misc.GSetUtil;
-import com.sun.appserv.management.util.misc.GSetUtil;
-
 import org.glassfish.admin.amx.loader.BootUtil;
+import org.glassfish.admin.amx.util.FeatureAvailability;
+import org.glassfish.admin.amx.util.Issues;
 import org.glassfish.admin.amx.util.ObjectNames;
 
-import org.glassfish.admin.amx.util.FeatureAvailability;
-
-import org.glassfish.admin.amx.util.Issues;
-
-
-import com.sun.appserv.server.util.Version;
+import javax.management.ObjectName;
+import java.util.Set;
 
 
 /**
@@ -87,6 +73,13 @@ public class DomainRootImplBase extends AMXNonConfigImplBase
         super( DomainRoot.J2EE_TYPE, DomainRoot.J2EE_TYPE, null, DomainRoot.class, null );
 		mAppserverDomainName	= null;
 	}
+    
+    @Override
+        protected String
+    _getDottedNamePart()
+    {
+        return "root";
+    }
 	     
 		public ObjectName
 	preRegisterHook( final ObjectName selfObjectName )
@@ -150,6 +143,11 @@ public class DomainRootImplBase extends AMXNonConfigImplBase
         registerChild( mbean, childObjectName );
         
 		childObjectName	= objectNames.buildContaineeObjectName( self, getFullType(),
+                XTypes.KITCHEN_SINK, AMX.NO_NAME, false );
+		mbean	= new KitchenSinkImpl(self);
+        registerChild( mbean, childObjectName );
+        
+		childObjectName	= objectNames.buildContaineeObjectName( self, getFullType(),
                 XTypes.NOTIFICATION_EMITTER_SERVICE, NotificationEmitterServiceKeys.DOMAIN_KEY, false );
 		mbean	= new NotificationEmitterServiceImpl(self);
         registerChild( mbean, childObjectName );
@@ -187,7 +185,11 @@ public class DomainRootImplBase extends AMXNonConfigImplBase
                 J2EEDomain.J2EE_TYPE, j2eeDomainName, false );
 		mbean	= new DASJ2EEDomainImpl( self );
         registerChild( mbean, childObjectName );
-
+        
+		childObjectName	= objectNames.buildContaineeObjectName( self, getFullType(),
+                XTypes.DOTTED_NAMES, AMX.NO_NAME, false );
+		mbean	= new DottedNamesImpl(self);
+        registerChild( mbean, childObjectName );
 	}
     
 		protected final void

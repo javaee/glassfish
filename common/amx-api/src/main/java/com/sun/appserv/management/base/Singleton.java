@@ -33,19 +33,12 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
- 
-/*
- * $Header: /cvs/glassfish/appserv-api/src/java/com/sun/appserv/management/base/Singleton.java,v 1.2 2007/05/05 05:30:30 tcfujii Exp $
- * $Revision: 1.2 $
- * $Date: 2007/05/05 05:30:30 $
- */
 
 package com.sun.appserv.management.base;
 
 
 /**
-	A marker interface which indicates that this MBean 
-	is one-of-a-kind.
+	A marker interface which indicates that this MBean is one-of-a-kind *within its scope*.
  */
 public interface Singleton
 {

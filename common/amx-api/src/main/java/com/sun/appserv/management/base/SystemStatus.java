@@ -50,12 +50,13 @@ public interface SystemStatus extends AMX, Utility, Singleton
 	public static final String	J2EE_TYPE			= XTypes.SYSTEM_STATUS;
         
     /** Key into Map returned by various methods including {@link #pingJDBCConnectionPool} */
-    public static final String STATUS_STRING_KEY = "StatusString";
+    public static final String PING_SUCCEEDED_KEY = "PingSucceededKey";
+    public static final String REASON_FAILED_KEY = "ReasonFailedKey";
     
     /**
         Ping the JDBCConnectionPool and return status.
-        @see #OBJECT_NAME_KEY
-        @see #STATUS_STRING_KEY
+        @see #PING_SUCCEEDED_KEY
+        @see #REASON_FAILED_KEY
 
      */
     public Map<String,Object> pingJDBCConnectionPool( final String poolName );

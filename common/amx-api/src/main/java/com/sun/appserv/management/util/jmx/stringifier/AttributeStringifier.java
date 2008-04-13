@@ -42,8 +42,8 @@
  
 package com.sun.appserv.management.util.jmx.stringifier;
 
-import com.sun.appserv.management.util.stringifier.Stringifier;
 import com.sun.appserv.management.util.stringifier.SmartStringifier;
+import com.sun.appserv.management.util.stringifier.Stringifier;
 
 import javax.management.Attribute;
 

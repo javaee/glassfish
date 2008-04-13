@@ -35,11 +35,11 @@
  */
 package com.sun.appserv.management.util.misc;
 
-import java.util.Set;
-import java.util.HashSet;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 
 /**
@@ -304,7 +304,8 @@ public final class GSetUtil
 		final Set<T>	 set1,
 		final Set<T>   set2 )
 	{
-		final Set<T>	result	= SetUtil.newSet( set1 );
+		final Set<T>	result	= new HashSet<T>();
+        result.addAll( set1 );
 		result.removeAll( set2 );
 		
 		return( result );
@@ -326,6 +327,23 @@ public final class GSetUtil
 		
 		return( result );
 	}
+    
+        public static String
+    findIgnoreCase( final Set<String> candidates, final String target)
+    {
+        String match = null;
+        // case-insensitive search
+        for( final String candidate : candidates )
+        {
+            if ( candidate.equalsIgnoreCase(target) )
+            {
+                match = candidate;
+                break;
+            }
+        }
+        return match;
+    }
+
 }
 
 

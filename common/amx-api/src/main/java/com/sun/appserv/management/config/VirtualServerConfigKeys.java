@@ -33,12 +33,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
- 
-/*
- * $Header: /cvs/glassfish/appserv-api/src/java/com/sun/appserv/management/config/VirtualServerConfigKeys.java,v 1.2 2007/05/05 05:30:36 tcfujii Exp $
- * $Revision: 1.2 $
- * $Date: 2007/05/05 05:30:36 $
- */
 
 
 package com.sun.appserv.management.config;
@@ -49,10 +43,10 @@ package com.sun.appserv.management.config;
 public interface VirtualServerConfigKeys
 {
 	/** comma-separated list of http-listeners */
-	public final static String	HTTP_LISTENERS_KEY		= "HTTPListeners";
-	public final static String	DEFAULT_WEB_MODULE_KEY	= "DefaultWebModule";
-	public final static String	LOG_FILE_KEY			= "LogFile";
-	public final static String	DOC_ROOT_KEY			= "Docroot";
+	public final static String	HTTP_LISTENERS_KEY		= "http-listeners";
+	public final static String	DEFAULT_WEB_MODULE_KEY	= "default-web-module";
+	public final static String	LOG_FILE_KEY			= "log-file";
+	public final static String	DOC_ROOT_KEY			= "docroot";
 
 	public static final String	DOC_ROOT_PROPERTY_KEY	= PropertiesAccess.PROPERTY_PREFIX + "docroot";
 	public static final String	ACCESS_LOG_PROPERTY_KEY = PropertiesAccess.PROPERTY_PREFIX + "accesslog";

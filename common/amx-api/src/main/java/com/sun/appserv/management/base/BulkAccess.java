@@ -33,22 +33,10 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
- 
-/*
- * $Header: /cvs/glassfish/appserv-api/src/java/com/sun/appserv/management/base/BulkAccess.java,v 1.2 2007/05/05 05:30:30 tcfujii Exp $
- * $Revision: 1.2 $
- * $Date: 2007/05/05 05:30:30 $
- */
-package com.sun.appserv.management.base;
+ package com.sun.appserv.management.base;
 
-import java.util.Set;
-
-import javax.management.ObjectName;
 import javax.management.Attribute;
-import javax.management.AttributeList;
-
-import com.sun.appserv.management.base.AMX;
-import com.sun.appserv.management.base.XTypes;
+import javax.management.ObjectName;
 
 /**
 	Bulk access to various JMX constructs. The term "bulk" refers to the fact the multiple

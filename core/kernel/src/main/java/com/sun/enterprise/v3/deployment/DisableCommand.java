@@ -74,7 +74,6 @@ public class DisableCommand extends ApplicationLifecycle implements AdminCommand
             if (report.getActionExitCode().equals(
                 ActionReport.ExitCode.SUCCESS)) {
                 setEnableAttributeInDomainXML(component, false);
-                report.setMessage(localStrings.getLocalString("disable.command.success", "{0} disabled successfully", component));
             }
 
         } catch(Exception e) {

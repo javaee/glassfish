@@ -99,22 +99,41 @@ public class JPADeployer extends SimpleDeployer<JPAContainer, JPAApplication> {
     }
 
     /**
+     * EMFs for refered pus are created and stored in JPAApplication instance.
+     * The JPAApplication instance is stored in given DeploymentContext to be retrieved by load
+     */
+    @Override public boolean prepare(DeploymentContext context) {
+        boolean prepared = super.prepare(context);
+
+        if(prepared) {
+
+            Application application = context.getModuleMetaData(Application.class);
+            Set<BundleDescriptor> bundles = application.getBundleDescriptors();
+
+            //TODO Need to modify this to be more generic.
+            // Iterate through all the bundles for the app and collect pu references in referencedPus
+            List<PersistenceUnitDescriptor> allReferencedPus = new ArrayList<PersistenceUnitDescriptor>();
+            for (BundleDescriptor bundle : bundles) {
+                allReferencedPus.addAll(bundle.findReferencedPUs());
+            }
+            // EMFs get created here. JPAApplication maintains list of created EMFs so that they
+            // can be closed at undeploy
+            JPAApplication jpaApp = new JPAApplication(allReferencedPus, new ProviderContainerContractInfoImpl(context, connectorRuntime));
+
+            // Store jpaApp in DeploymentContext to retrieve it during load
+            context.addModuleMetaData(jpaApp);
+        }
+
+        return prepared;
+    }
+
+    /**
      * @InheritDoc
      */
     @Override public JPAApplication load(JPAContainer container, DeploymentContext context) {
-        Application application = context.getModuleMetaData(Application.class);
-        Set<BundleDescriptor> bundles = application.getBundleDescriptors();
-
-        //TODO Need to modify this to be more generic.
-        // Iterate through all the bundles for the app and collect pu references in referencedPus
-        List<PersistenceUnitDescriptor> allReferencedPus = new ArrayList<PersistenceUnitDescriptor>();
-        for (BundleDescriptor bundle : bundles) {
-            allReferencedPus.addAll(bundle.findReferencedPUs());
-        }
-
-        return new JPAApplication(allReferencedPus, new ProviderContainerContractInfoImpl(context, connectorRuntime));
+        // Return the JPAApplication stored in DeploymentContext during prepaare phase
+        return context.getModuleMetaData(JPAApplication.class);
     }
-
 
     private static class ProviderContainerContractInfoImpl
             implements ProviderContainerContractInfo {

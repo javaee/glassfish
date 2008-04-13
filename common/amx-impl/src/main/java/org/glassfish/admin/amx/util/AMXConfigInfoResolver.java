@@ -35,15 +35,11 @@
  */
 package org.glassfish.admin.amx.util;
 
-import java.util.Set;
-import java.util.HashSet;
-import java.util.Collections;
-
-import org.glassfish.api.amx.AMXConfigInfo;
+import com.sun.appserv.management.base.Util;
 import com.sun.appserv.management.config.AMXConfig;
 import com.sun.appserv.management.config.PropertiesAccess;
 import com.sun.appserv.management.config.SystemPropertiesAccess;
-import com.sun.appserv.management.base.Util;
+import org.glassfish.api.amx.AMXConfigInfo;
 
 
 /**
@@ -108,6 +104,7 @@ public final class AMXConfigInfoResolver
         return Util.getJ2EEType( amxInterface() );
     }
     
+    public AMXConfigInfo  getAMXConfigInfo() { return mAMXConfigInfo; }
     public String nameHint() { return mAMXConfigInfo.nameHint(); }
     public boolean singleton() { return mAMXConfigInfo.singleton(); }
     public boolean omitAsAncestorInChildObjectName() { return mAMXConfigInfo.omitAsAncestorInChildObjectName(); }

@@ -35,14 +35,8 @@
  */
 package com.sun.appserv.management.client;
 
-import java.security.cert.X509Certificate;
-import java.security.cert.CertificateException;
-
-import java.security.cert.Certificate;
-
-import javax.net.ssl.HandshakeCompletedListener;
 import javax.net.ssl.HandshakeCompletedEvent;
-import javax.net.ssl.SSLPeerUnverifiedException;
+import javax.net.ssl.HandshakeCompletedListener;
 
 	
 /**

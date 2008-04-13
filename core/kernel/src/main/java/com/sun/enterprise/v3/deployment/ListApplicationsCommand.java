@@ -68,7 +68,6 @@ public class ListApplicationsCommand extends ListComponentsCommand {
             return;
         }
         ActionReport.MessagePart part = report.getTopMessagePart();        
-        part.setMessage(localStrings.getLocalString("list.applications.success", "list-applications successful"));
         int numOfApplications = 0;
         for (Module module : applications.getModules()) {
             if (module instanceof Application) {

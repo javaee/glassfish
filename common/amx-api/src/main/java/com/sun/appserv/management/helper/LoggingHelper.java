@@ -35,23 +35,18 @@
  */
 package com.sun.appserv.management.helper;
 
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Set;
-import java.util.HashSet;
-
-import java.util.logging.Level;
-
-import javax.management.Attribute;
-
-import com.sun.appserv.management.ext.logging.Logging;
-import static com.sun.appserv.management.ext.logging.Logging.*;
-import com.sun.appserv.management.ext.logging.LogQuery;
 import com.sun.appserv.management.ext.logging.LogModuleNames;
+import com.sun.appserv.management.ext.logging.LogQuery;
 import com.sun.appserv.management.ext.logging.LogQueryResult;
 import com.sun.appserv.management.ext.logging.LogQueryResultImpl;
-
+import com.sun.appserv.management.ext.logging.Logging;
+import static com.sun.appserv.management.ext.logging.Logging.*;
 import com.sun.appserv.management.util.misc.GSetUtil;
+
+import javax.management.Attribute;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 
 /**

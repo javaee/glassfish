@@ -34,61 +34,26 @@
  * holder.
  */
 
-/*
- * $Header: /cvs/glassfish/admin-core/mbeanapi/src/java/com/sun/appserv/management/helper/LBConfigHelper.java
- * $Revision: 1.0
- * $Date: 2007/07/24 00:11:28 $
- */
 package com.sun.appserv.management.helper;
 
-import java.io.FileNotFoundException;
+import com.sun.appserv.management.DomainRoot;
+import com.sun.appserv.management.config.*;
+import com.sun.appserv.management.ext.lb.LoadBalancer;
+import com.sun.appserv.management.util.misc.Formatter;
+import com.sun.appserv.management.util.misc.StringSourceBase;
+
+import javax.management.MBeanException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.management.MBeanException;
-
-import com.sun.appserv.management.DomainRoot;
-import com.sun.appserv.management.config.ServerRefConfig;
-import com.sun.appserv.management.config.ClusterRefConfig;
-import com.sun.appserv.management.config.HealthCheckerConfig;
-import com.sun.appserv.management.config.LBConfig;
-import com.sun.appserv.management.config.LoadBalancerConfig;
-import com.sun.appserv.management.config.DomainConfig;
-import com.sun.appserv.management.config.ClusterConfig;
-import com.sun.appserv.management.config.StandaloneServerConfig;
-import com.sun.appserv.management.config.ClusteredServerConfig;
-import com.sun.appserv.management.config.DeployedItemRefConfig;
-import com.sun.appserv.management.config.J2EEApplicationConfig;
-import com.sun.appserv.management.config.EJBModuleConfig;
-import com.sun.appserv.management.config.WebModuleConfig;
-import com.sun.appserv.management.config.RARModuleConfig;
-import com.sun.appserv.management.config.AppClientModuleConfig;
-import com.sun.appserv.management.config.LBConfigKeys;
-import com.sun.appserv.management.config.ObjectTypeValues;
-import com.sun.appserv.management.config.ServerConfig;
-import com.sun.appserv.management.ext.lb.LoadBalancer;
-/*import com.sun.appserv.management.monitor.LoadBalancerApplicationMonitor;
-import com.sun.appserv.management.monitor.LoadBalancerClusterMonitor;
-import com.sun.appserv.management.monitor.LoadBalancerContextRootMonitor;
-import com.sun.appserv.management.monitor.LoadBalancerMonitor;
-import com.sun.appserv.management.monitor.LoadBalancerServerMonitor;
-*/
-import com.sun.appserv.management.monitor.MonitoringRoot;
-import com.sun.appserv.management.monitor.statistics.LoadBalancerContextRootStats;
-import com.sun.appserv.management.monitor.statistics.LoadBalancerServerStats;
-import com.sun.appserv.management.util.misc.Formatter;
-import com.sun.appserv.management.util.misc.StringSourceBase;
 
 /**
  * Helper class for simplifying load balancer administration.
@@ -113,7 +78,7 @@ public final class LBConfigHelper {
      * @see com.sun.appserv.management.config.LBConfig
      */
     public List<LBConfig> getLBConfigsForServer(String serverName) {
-        Map<String,LBConfig> lbconfigs = mDomainConfig.getLBConfigMap();
+        Map<String,LBConfig> lbconfigs = mDomainConfig.getLBConfigsConfig().getLBConfigMap();
         List<LBConfig> list = new ArrayList<LBConfig>();
         for(LBConfig config:lbconfigs.values()){
             Map<String,ServerRefConfig> map = config.getServerRefConfigMap();
@@ -132,7 +97,7 @@ public final class LBConfigHelper {
      * @see com.sun.appserv.management.config.LBConfig
      */
     public List<LBConfig> getLBConfigsForCluster(String clusterName) {
-        Map<String,LBConfig> lbconfigs = mDomainConfig.getLBConfigMap();
+        Map<String,LBConfig> lbconfigs = mDomainConfig.getLBConfigsConfig().getLBConfigMap();
         List<LBConfig> list = new ArrayList<LBConfig>();
         for(LBConfig config:lbconfigs.values()){
             Map<String,ClusterRefConfig> map = config.getClusterRefConfigMap();
@@ -152,7 +117,7 @@ public final class LBConfigHelper {
      * @see com.sun.appserv.management.config.LBConfig
      */
     public Map<String, ServerRefConfig> getServersInLBConfig(String lbConfigName) {
-        Map<String,LBConfig> lbconfigs = mDomainConfig.getLBConfigMap();
+        Map<String,LBConfig> lbconfigs = mDomainConfig.getLBConfigsConfig().getLBConfigMap();
         LBConfig lbconfig = lbconfigs.get(lbConfigName);
         return lbconfig.getServerRefConfigMap();
     }
@@ -164,7 +129,7 @@ public final class LBConfigHelper {
      * @see com.sun.appserv.management.config.LBConfig
      */
     public Map<String, ClusterRefConfig> getClustersInLBConfig(String lbConfigName) {
-        Map<String,LBConfig> lbconfigs = mDomainConfig.getLBConfigMap();
+        Map<String,LBConfig> lbconfigs = mDomainConfig.getLBConfigsConfig().getLBConfigMap();
         LBConfig lbconfig = lbconfigs.get(lbConfigName);
         return lbconfig.getClusterRefConfigMap();
     }
@@ -178,13 +143,13 @@ public final class LBConfigHelper {
         Set<String> targetSet = new HashSet<String>();
         
         Map<String,ClusterConfig> cConfigMap =
-                mDomainConfig.getClusterConfigMap();
+                mDomainConfig.getClustersConfig().getClusterConfigMap();
         
         if (cConfigMap != null) {
             targetSet.addAll( cConfigMap.keySet());
         }
         Map<String,StandaloneServerConfig> ssConfigMap =
-                mDomainConfig.getStandaloneServerConfigMap();
+                mDomainConfig.getServersConfig().getStandaloneServerConfigMap();
         
         if (ssConfigMap != null) {
             targetSet.addAll( ssConfigMap.keySet());
@@ -208,7 +173,7 @@ public final class LBConfigHelper {
         Set<String> targetSet = new HashSet<String>();
         
         Map<String, LoadBalancerConfig> lbMap =
-                mDomainConfig.getLoadBalancerConfigMap();
+                mDomainConfig.getLoadBalancersConfig().getLoadBalancerConfigMap();
         
         if (lbMap == null) {
             return null;
@@ -220,7 +185,7 @@ public final class LBConfigHelper {
         }
         
         String lbConfigName = lb.getLbConfigName();
-        Map<String, LBConfig> lbConfigMap = mDomainConfig.getLBConfigMap();
+        Map<String, LBConfig> lbConfigMap = mDomainConfig.getLBConfigsConfig().getLBConfigMap();
         if ((lbConfigMap == null) || (lbConfigName == null) ){
             return null;
         }
@@ -282,7 +247,7 @@ public final class LBConfigHelper {
         
         //the following block tries to get a unique lb-config name
         //get all the lb-configs
-        Map<String,LBConfig> lbconfigMap = mDomainConfig.getLBConfigMap();
+        Map<String,LBConfig> lbconfigMap = mDomainConfig.getLBConfigsConfig().getLBConfigMap();
         if(lbconfigMap != null){
             //keep appending a counter till there is no lb-config by that name
             for(int i=1;lbconfigMap.get(lbConfigName) != null;i++){
@@ -291,7 +256,7 @@ public final class LBConfigHelper {
         }
         
         //create the lb-config
-        LBConfig lbConfig = mDomainConfig.createLBConfig(lbConfigName, params);
+        LBConfig lbConfig = mDomainConfig.getLBConfigsConfig().createLBConfig(lbConfigName, params);
         
         //get the default values for health-checker
         final Map healthCheckerAttrsMap = mDomainRoot.getDomainConfig().getDefaultValues(HealthCheckerConfig.J2EE_TYPE);
@@ -322,7 +287,7 @@ public final class LBConfigHelper {
         }
         
         // now create the load-balancer element
-        return mDomainConfig.createLoadBalancerConfig(loadbalancerName,
+        return mDomainConfig.getLoadBalancersConfig().createLoadBalancerConfig(loadbalancerName,
                 lbConfigName, autoApplyEnabled, null);
     }
     
@@ -357,7 +322,7 @@ public final class LBConfigHelper {
                     "loadbalancerName can not be null");
         }
         //check if the load-balancer with the name already exists
-        if (mDomainConfig.getLoadBalancerConfigMap().get(loadbalancerName)!=null)
+        if (mDomainConfig.getLoadBalancersConfig().getLoadBalancerConfigMap().get(loadbalancerName)!=null)
         {
             String msg = formatter.format(
                             resBundle.getString("LoadBalancerConfigExists"),
@@ -383,7 +348,7 @@ public final class LBConfigHelper {
         
         //the following block tries to get a unique lb-config name
         //get all the lb-configs
-        Map<String,LBConfig> lbconfigMap = mDomainConfig.getLBConfigMap();
+        Map<String,LBConfig> lbconfigMap = mDomainConfig.getLBConfigsConfig().getLBConfigMap();
         if(lbconfigMap != null){
             //keep appending a counter till there is no lb-config by that name
             for(int i=1;lbconfigMap.get(lbConfigName) != null;i++){
@@ -400,7 +365,7 @@ public final class LBConfigHelper {
             }
         }
         //create the lb-config
-        LBConfig lbConfig = mDomainConfig.createLBConfig(lbConfigName, params);
+        LBConfig lbConfig = mDomainConfig.getLBConfigsConfig().createLBConfig(lbConfigName, params);
         
         if(isCluster){
             
@@ -428,7 +393,7 @@ public final class LBConfigHelper {
             enableAllApplications(target);
 
         // now create the load-balancer element
-        return mDomainConfig.createLoadBalancerConfig(loadbalancerName,
+        return mDomainConfig.getLoadBalancersConfig().createLoadBalancerConfig(loadbalancerName,
                 lbConfigName, autoApplyEnabled, properties);
     }
     
@@ -440,7 +405,7 @@ public final class LBConfigHelper {
 
         //first get the lbConfigName
         final LoadBalancerConfig loadbalancerConfig = 
-                mDomainConfig.getLoadBalancerConfigMap().get(loadbalancerName);
+                mDomainConfig.getLoadBalancersConfig().getLoadBalancerConfigMap().get(loadbalancerName);
         if(loadbalancerConfig == null){
             final String msg = formatter.format(
                 resBundle.getString("LoadBalancerConfigNotDefined"),loadbalancerName);
@@ -449,7 +414,7 @@ public final class LBConfigHelper {
         final String lbConfigName = loadbalancerConfig .getLbConfigName();
         
         //get the load balancers map
-        final Map<String, LoadBalancerConfig> lbMap = mDomainConfig.getLoadBalancerConfigMap();
+        final Map<String, LoadBalancerConfig> lbMap = mDomainConfig.getLoadBalancersConfig().getLoadBalancerConfigMap();
         if ( lbMap != null) {
             // check to see if any other load-balancer is using lb-config
             for(LoadBalancerConfig lbConfig : lbMap.values()){
@@ -463,9 +428,9 @@ public final class LBConfigHelper {
             }
         }        
         // now remove load-balancer element
-        mDomainConfig.removeLoadBalancerConfig(loadbalancerName);
+        mDomainConfig.getLoadBalancersConfig().removeLoadBalancerConfig(loadbalancerName);
         // no load-balancer element is using this lb-config, remove it
-        mDomainConfig.removeLBConfig(lbConfigName);
+        mDomainConfig.getLBConfigsConfig().removeLBConfig(lbConfigName);
     }
     
     /**
@@ -484,7 +449,7 @@ public final class LBConfigHelper {
         
         boolean isCluster = isCluster(target);
         if((configName!=null) && 
-            (mDomainConfig.getLBConfigMap().get(configName)==null)){
+            (mDomainConfig.getLBConfigsConfig().getLBConfigMap().get(configName)==null)){
                 
             String msg = formatter.format(resBundle.getString("LbConfigNotDefined"),
                                             configName);
@@ -492,7 +457,7 @@ public final class LBConfigHelper {
         }
         else if (lbName!=null){
             LoadBalancerConfig loadBalancerConfig = 
-                    mDomainConfig.getLoadBalancerConfigMap().get(lbName);
+                    mDomainConfig.getLoadBalancersConfig().getLoadBalancerConfigMap().get(lbName);
             if (loadBalancerConfig==null){
                 String msg = formatter.format(
                     resBundle.getString("LoadBalancerConfigNotDefined"),lbName);
@@ -500,12 +465,12 @@ public final class LBConfigHelper {
             }
             configName = loadBalancerConfig.getLbConfigName();
         }
-        LBConfig lbConfig = mDomainConfig.getLBConfigMap().get(configName);
+        LBConfig lbConfig = mDomainConfig.getLBConfigsConfig().getLBConfigMap().get(configName);
         if(isCluster){
             if (!force){
             //check the lb-enabled flag for all server-refs in this cluster
                 Map<String, ServerRefConfig> serverRefConfigMap = 
-                    mDomainConfig.getClusterConfigMap().get(target).getServerRefConfigMap();
+                    mDomainConfig.getClustersConfig().getClusterConfigMap().get(target).getServerRefConfigMap();
                 for (ServerRefConfig serverRefConfig : serverRefConfigMap.values()) {
                     if (serverRefConfig.getLBEnabled()){
                         String msg = formatter.format(
@@ -694,7 +659,7 @@ public final class LBConfigHelper {
                 Boolean.getBoolean(options.get(LB_ENABLE_ALL_APPLICATIONS));
         
         if((configName!=null) && 
-            (mDomainConfig.getLBConfigMap().get(configName)==null)){
+            (mDomainConfig.getLBConfigsConfig().getLBConfigMap().get(configName)==null)){
                 
             String msg = formatter.format(resBundle.getString("LbConfigNotDefined"),
                                             configName);
@@ -702,7 +667,7 @@ public final class LBConfigHelper {
         }
         else if (lbName!=null){
             LoadBalancerConfig loadBalancerConfig = 
-                    mDomainConfig.getLoadBalancerConfigMap().get(lbName);
+                    mDomainConfig.getLoadBalancersConfig().getLoadBalancerConfigMap().get(lbName);
             if (loadBalancerConfig==null){
                 String msg = formatter.format(
                     resBundle.getString("LoadBalancerConfigNotDefined"),lbName);
@@ -710,7 +675,7 @@ public final class LBConfigHelper {
             }
             configName = loadBalancerConfig.getLbConfigName();
         }
-        LBConfig lbConfig = mDomainConfig.getLBConfigMap().get(configName);
+        LBConfig lbConfig = mDomainConfig.getLBConfigsConfig().getLBConfigMap().get(configName);
         if(!isCluster){
             if((lbPolicy!=null) || (lbPolicyModule!=null)){
                 //throw exception
@@ -753,7 +718,7 @@ public final class LBConfigHelper {
     public void configureLBWeight(String clusterName, Map instanceVsWeights) {
         
         //get ALL clustered <server> elements
-        Map<String,ClusterConfig> clusterConfigMap = mDomainConfig.getClusterConfigMap();
+        Map<String,ClusterConfig> clusterConfigMap = mDomainConfig.getClustersConfig().getClusterConfigMap();
         //get the cluster config for the given cluster
         ClusterConfig clusterConfig = clusterConfigMap.get(clusterName);
         if(clusterConfig == null)
@@ -779,11 +744,11 @@ public final class LBConfigHelper {
         //check if the target is cluster
         if (isCluster(target)) {
             //get the cluster config
-            ClusterConfig cRef = mDomainConfig.getClusterConfigMap().get(target);
+            ClusterConfig cRef = mDomainConfig.getClustersConfig().getClusterConfigMap().get(target);
             enableAllApplications(cRef.getDeployedItemRefConfigMap());
         } else {
             //The target must be server, get the server config for this target
-            ServerConfig serverConfig = mDomainConfig.getServerConfigMap().get(target);
+            StandaloneServerConfig serverConfig = mDomainConfig.getServersConfig().getStandaloneServerConfigMap().get(target);
             if(serverConfig != null){
                 enableAllApplications(serverConfig.getDeployedItemRefConfigMap());
             }
@@ -800,8 +765,8 @@ public final class LBConfigHelper {
         for (DeployedItemRefConfig deployedItemRefConfig : deployedItemRefConfigMap.values()) {
             
             //Check to see if the deployed item is App or Module (Web, EJB, RAR or Appclient)
-            final J2EEApplicationConfig app = 
-                    mDomainConfig.getJ2EEApplicationConfigMap().get(deployedItemRefConfig.getName());
+            final ApplicationConfig app = 
+                    mDomainConfig.getApplicationsConfig().getApplicationConfigMap().get(deployedItemRefConfig.getName());
             if(app != null) {
                 //if the type is user, then only set the lb-enabled to true
                 if(app.getObjectType().equals(ObjectTypeValues.USER)) {
@@ -811,7 +776,7 @@ public final class LBConfigHelper {
             }
             //Check to see if this is Web module
             final WebModuleConfig web = 
-                    mDomainConfig.getWebModuleConfigMap().get(deployedItemRefConfig.getName());
+                    mDomainConfig.getApplicationsConfig().getWebModuleConfigMap().get(deployedItemRefConfig.getName());
             if (web != null) {
                 //if the type is user, then only set the lb-enabled to true
                 if(web.getObjectType().equals(ObjectTypeValues.USER)) {
@@ -821,7 +786,7 @@ public final class LBConfigHelper {
             }
             //Check to see if this is EJB module
             final EJBModuleConfig ejb = 
-                    mDomainConfig.getEJBModuleConfigMap().get(deployedItemRefConfig.getName());
+                    mDomainConfig.getApplicationsConfig().getEJBModuleConfigMap().get(deployedItemRefConfig.getName());
             if (ejb != null) {
                 //if the type is user, then only set the lb-enabled to true
                 if(ejb.getObjectType().equals(ObjectTypeValues.USER)) {
@@ -831,7 +796,7 @@ public final class LBConfigHelper {
             }
             //Check to see if this is RAR module
             final RARModuleConfig rar = 
-                    mDomainConfig.getRARModuleConfigMap().get(deployedItemRefConfig.getName());
+                    mDomainConfig.getApplicationsConfig().getRARModuleConfigMap().get(deployedItemRefConfig.getName());
             if (rar != null) {
                 //if the type is user, then only set the lb-enabled to true
                 if(rar.getObjectType().equals(ObjectTypeValues.USER)) {
@@ -841,7 +806,7 @@ public final class LBConfigHelper {
             }
             //Check to see if this is AppClient module
             final AppClientModuleConfig appClient = 
-                    mDomainConfig.getAppClientModuleConfigMap().get(deployedItemRefConfig.getName());
+                    mDomainConfig.getApplicationsConfig().getAppClientModuleConfigMap().get(deployedItemRefConfig.getName());
             if (appClient != null) {
                 //if the type is user (There is no API yet), then only set the lb-enabled to true
                 //if(appClient.getObjectType().equals(ObjectTypeValues.USER)) {
@@ -854,7 +819,7 @@ public final class LBConfigHelper {
     
     boolean isCluster(String name) {
         Map<String,ClusterConfig> cConfigMap =
-                mDomainConfig.getClusterConfigMap();
+                mDomainConfig.getClustersConfig().getClusterConfigMap();
         
         if (cConfigMap == null) {
             return false;
@@ -869,7 +834,7 @@ public final class LBConfigHelper {
     
     boolean isStandaloneServer(String name) {
         Map<String,StandaloneServerConfig> ssConfigMap =
-                mDomainConfig.getStandaloneServerConfigMap();
+                mDomainConfig.getServersConfig().getStandaloneServerConfigMap();
         
         if (ssConfigMap == null) {
             return false;
@@ -904,7 +869,7 @@ public final class LBConfigHelper {
             // disables cluster if target is a cluster
             if (isCluster(target)) {
                 //get the cluster config
-                ClusterConfig cRef = mDomainConfig.getClusterConfigMap().get(target);
+                ClusterConfig cRef = mDomainConfig.getClustersConfig().getClusterConfigMap().get(target);
                 if (cRef == null) {
                     mLogger.log(Level.FINEST," server " + target +
                             " does not exist in any cluster in the domain");
@@ -922,7 +887,7 @@ public final class LBConfigHelper {
                 ServerRefConfig sRef = null;
                 boolean foundTarget = false;
                 //get all the lb-configs
-                Map<String,LBConfig> lbConfigs = mDomainConfig.getLBConfigMap();
+                Map<String,LBConfig> lbConfigs = mDomainConfig.getLBConfigsConfig().getLBConfigMap();
                 //iterate through lb-configs
                 for(LBConfig lbConfig : lbConfigs.values()){
                     //get the server-ref in this lb-config
@@ -1019,18 +984,18 @@ public final class LBConfigHelper {
             // disables cluster if target is a cluster
             if (isCluster(target)) {
                 //get the clusterConfig for this cluster
-                Map<String,ClusterConfig> clusterConfigs = mDomainConfig.getClusterConfigMap();
+                Map<String,ClusterConfig> clusterConfigs = mDomainConfig.getClustersConfig().getClusterConfigMap();
                 ClusterConfig clusterConfig = clusterConfigs.get(target);
                 //get the deployed item object corresponding to the given appName
                 dRef = clusterConfig.getDeployedItemRefConfigMap().get(appName);
             } else { // target is a server
                 //get the standalone serverConfig
                 Map<String,StandaloneServerConfig> ssConfigMap =
-                        mDomainConfig.getStandaloneServerConfigMap();
+                        mDomainConfig.getServersConfig().getStandaloneServerConfigMap();
                 StandaloneServerConfig ssc = ssConfigMap.get(target);
                 if (ssc == null) {
                     //get the clustered server config
-                    ClusteredServerConfig s = mDomainConfig.getClusteredServerConfigMap().get(target);
+                    ClusteredServerConfig s = mDomainConfig.getServersConfig().getClusteredServerConfigMap().get(target);
                     //get the deployed item object corresponding to the given appName
                     dRef = s.getDeployedItemRefConfigMap().get(appName);
                 }else{
@@ -1090,7 +1055,7 @@ public final class LBConfigHelper {
         // check if this server is part of cluster, then
         // turn on lb-enable flag in the cluster.
         //get all the lb-configs
-        Map<String,LBConfig> lbConfigs = mDomainConfig.getLBConfigMap();
+        Map<String,LBConfig> lbConfigs = mDomainConfig.getLBConfigsConfig().getLBConfigMap();
         //iterate through all the lb-configs
         for(LBConfig lbConfig : lbConfigs.values()){
             //get the cluster-refs in this lb-config
@@ -1102,7 +1067,7 @@ public final class LBConfigHelper {
                 String clusterName = clusterRef.getReferencedClusterName();
                 
                 //get the clusterConfig for this clustername
-                Map<String,ClusterConfig> clusterConfigs =  mDomainConfig.getClusterConfigMap();
+                Map<String,ClusterConfig> clusterConfigs =  mDomainConfig.getClustersConfig().getClusterConfigMap();
                 ClusterConfig config = clusterConfigs.get(clusterName);
                 
                 //get all the server-refs for this cluster
@@ -1226,7 +1191,7 @@ public final class LBConfigHelper {
         String targetName, boolean isCluster) {
 
         Map<String,LBConfig> result = new HashMap<String,LBConfig>();
-        Map<String,LBConfig> lbConfigMap = mDomainConfig.getLBConfigMap();
+        Map<String,LBConfig> lbConfigMap = mDomainConfig.getLBConfigsConfig().getLBConfigMap();
         
         if (isCluster) {
             for (String lbConfigName : lbConfigMap.keySet()) {
@@ -1261,7 +1226,7 @@ public final class LBConfigHelper {
                 Map<String,ClusterRefConfig> lbClusterRefConfigMap =
                     lbConfig.getClusterRefConfigMap();
                 Map<String,ClusterConfig> clusterConfigMap =
-                    mDomainConfig.getClusterConfigMap();
+                    mDomainConfig.getClustersConfig().getClusterConfigMap();
                 Map<String,ClusterConfig> relevantClusterConfigMap = new HashMap<String,ClusterConfig>();
                 for (String clusterRef : lbClusterRefConfigMap.keySet()) 
                     relevantClusterConfigMap.put(clusterRef, 
@@ -1292,7 +1257,7 @@ public final class LBConfigHelper {
         for (String lbConfigName : lbConfigMap.keySet()) {
             //collect all load-balancer elements which refer to this lb-config
             Map<String,LoadBalancerConfig> allLoadBalancerConfigMap =
-                 mDomainRoot.getDomainConfig().getLoadBalancerConfigMap();
+                 mDomainRoot.getDomainConfig().getLoadBalancersConfig().getLoadBalancerConfigMap();
 
             for (String loadBalancerName : allLoadBalancerConfigMap.keySet()) {
                 LoadBalancerConfig loadBalancerConfig = 
@@ -1326,7 +1291,7 @@ public final class LBConfigHelper {
     */
     
     private LoadBalancer createLoadBalancer(final String configName) {
-        mDomainConfig.createLoadBalancerConfig(
+        mDomainConfig.getLoadBalancersConfig().createLoadBalancerConfig(
             configName+LB_SUFFIX, configName, false, null);
         Map<String,LoadBalancer> lbs = mDomainRoot.getLoadBalancerMap();
         LoadBalancer lb = lbs.get(configName+LB_SUFFIX);

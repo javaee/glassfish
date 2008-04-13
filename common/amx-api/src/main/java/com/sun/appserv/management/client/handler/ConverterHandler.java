@@ -35,15 +35,11 @@
  */
 package com.sun.appserv.management.client.handler;
 
-import java.io.IOException;
-
-import java.lang.reflect.Method;
+import com.sun.appserv.management.client.ConnectionSource;
 
 import javax.management.ObjectName;
-
-
-import com.sun.appserv.management.base.Util;
-import com.sun.appserv.management.client.ConnectionSource;
+import java.io.IOException;
+import java.lang.reflect.Method;
 
 /**
     Base class for specialize proxy handlers.

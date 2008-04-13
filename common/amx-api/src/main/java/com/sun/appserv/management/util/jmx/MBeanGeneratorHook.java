@@ -48,8 +48,6 @@ import javax.management.MBeanAttributeInfo;
 import javax.management.MBeanInfo;
 import javax.management.MBeanOperationInfo;
 
-import com.sun.appserv.management.util.misc.ClassUtil;
-
 /**
 	Hook to be passed to MBeanGenerator
  */

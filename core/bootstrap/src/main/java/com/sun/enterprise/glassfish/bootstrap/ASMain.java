@@ -63,6 +63,14 @@ public class ASMain {
                 logger.info("Launching GlassFish on Apache Felix OSGi platform");
                 new ASMainFelix(logger, args).run();
                 break;
+            case Equinox:
+                logger.info("Launching GlassFish on Equinox OSGi platform");
+                new ASMainEquinox(logger, args).run();
+                break;
+            case KnopflerFish:
+                logger.info("Launching GlassFish on Knopflerfish OSGi platform");
+                new ASMainKnopflerFish(logger, args).run();
+                break;
             case HK2:
                 logger.info("Launching GlassFish on HK2 platform");
                 (new ASMainHK2(logger)).run(args);

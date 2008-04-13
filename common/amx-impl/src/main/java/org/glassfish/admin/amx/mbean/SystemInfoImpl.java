@@ -35,31 +35,17 @@
  */
 package org.glassfish.admin.amx.mbean;
 
-import java.util.Map;
+import com.sun.appserv.management.base.AMX;
+import com.sun.appserv.management.base.SystemInfo;
+import org.glassfish.admin.amx.util.ObjectNames;
+
+import javax.management.MBeanServer;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Set;
-import java.util.Collections;
-
-import javax.management.ObjectName;
-
-import javax.management.ObjectName;
-import javax.management.MBeanServer;
-import javax.management.JMException;
-import javax.management.MBeanInfo;
-import javax.management.MBeanOperationInfo;
-
-import com.sun.appserv.management.base.AMX;
-import com.sun.appserv.management.base.XTypes;
-import com.sun.appserv.management.base.SystemInfo;
-import com.sun.appserv.management.base.Util;
-import com.sun.appserv.management.util.misc.GSetUtil;
-import com.sun.appserv.management.util.jmx.JMXUtil;
-
-import org.glassfish.admin.amx.util.ObjectNames;
 
 /**
     Loaded as MBean "amx:j2eeType=X-SystemInfo,name=na"

@@ -57,7 +57,8 @@ public class WebApplication implements ApplicationContainer<WebBundleDescriptor>
     }
 
 
-    public boolean start() {
+    public boolean start(ClassLoader cl) {
+        wmInfo.setAppClassLoader(cl);
         String vsIDs = wmInfo.getVirtualServers();
         List<String> vsList = StringUtils.parseStringList(vsIDs, " ,");
         return start(vsList);

@@ -35,21 +35,16 @@
  */
 package com.sun.appserv.management.client;
 
-import java.util.Map;
-import java.io.Serializable;
-
+import static com.sun.appserv.management.base.MapCapable.MAP_CAPABLE_CLASS_NAME_KEY;
+import static com.sun.appserv.management.deploy.DeploymentProgress.DEPLOYMENT_PROGRESS_CLASS_NAME;
+import static com.sun.appserv.management.deploy.DeploymentSource.DEPLOYMENT_SOURCE_CLASS_NAME;
+import static com.sun.appserv.management.deploy.DeploymentStatus.DEPLOYMENT_STATUS_CLASS_NAME;
 import com.sun.appserv.management.deploy.DeploymentSupport;
 import com.sun.appserv.management.ext.wsmgmt.MessageTrace;
 import com.sun.appserv.management.ext.wsmgmt.MessageTraceImpl;
 
-import static com.sun.appserv.management.base.
-                MapCapable.MAP_CAPABLE_CLASS_NAME_KEY;
-import static com.sun.appserv.management.deploy.
-                DeploymentProgress.DEPLOYMENT_PROGRESS_CLASS_NAME;
-import static com.sun.appserv.management.deploy.DeploymentSource.
-                DEPLOYMENT_SOURCE_CLASS_NAME;
-import static com.sun.appserv.management.deploy.DeploymentStatus.
-                DEPLOYMENT_STATUS_CLASS_NAME;
+import java.io.Serializable;
+import java.util.Map;
 
 /**
     Converts Maps obtained from the server back into their

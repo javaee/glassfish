@@ -35,15 +35,14 @@
  */
 package com.sun.appserv.management.util.jmx.stringifier;
 
-import java.lang.reflect.Array;
-import javax.management.MBeanInfo;
-import javax.management.MBeanOperationInfo;
+import com.sun.appserv.management.util.stringifier.ArrayStringifier;
+import com.sun.appserv.management.util.stringifier.Stringifier;
+
 import javax.management.MBeanAttributeInfo;
 import javax.management.MBeanConstructorInfo;
+import javax.management.MBeanInfo;
 import javax.management.MBeanNotificationInfo;
-
-import com.sun.appserv.management.util.stringifier.Stringifier;
-import com.sun.appserv.management.util.stringifier.ArrayStringifier;
+import javax.management.MBeanOperationInfo;
 
 public class MBeanInfoStringifier extends MBeanFeatureInfoStringifier implements Stringifier
 {

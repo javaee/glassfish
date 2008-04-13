@@ -138,8 +138,6 @@ public class CreateSystemProperties implements AdminCommand {
             return;
         }
         ActionReport.ExitCode ec = ActionReport.ExitCode.SUCCESS;
-        report.setMessage(localStrings.getLocalString("create.system.properties.success",
-                    "System property {0} created successfully", sysPropName));
         report.setActionExitCode(ec);
     }
 }

@@ -35,22 +35,85 @@
  */
 package com.sun.appserv.management.base;
 
-import com.sun.appserv.management.base.XTypes;
+import java.util.Map;
 
 /**
-	Programmatic access to dotted-names corresponding to <i>asadmin</i> CLI
-	functionality.
+    The DottedNames MBean--resolves dotted names to AMX MBeans.  Each AMX MBean
+    has a "dotted name"; see {@link AMX#getDottedName} and {@link AMX#getDottedNamePart}.  These
+    dotted names are typically used by the 'asadmin' command line, but can be used by other
+    clients as well.
+    <p>
+    The dotted name hierarchy starts at 'root'.  Examples of dotted names:
+    <ul>
+    <li>root -- represents {@link com.sun.appserv.management.DomainRoot}</li>
+    <li>root.SystemStatus -- represents {@link com.sun.appserv.management.base.SystemStatus}</li>
+    <li>root.domain -- represents {@link com.sun.appserv.management.config.DomainConfig}</li>
+    <li>root.domain.servers.server -- represents {@link com.sun.appserv.management.config.ServerConfig 'server'}</li>
+    </ul>
 	<p>
-	Note that the set of dotted names is periodically refreshed; to force
-	an update use {@link #refresh}.
-	
-	@see DottedNames
-	@see AllDottedNames
-	@see com.sun.appserv.management.config.ConfigDottedNames
-	@see com.sun.appserv.management.monitor.MonitoringDottedNames
+    A 'target' of a dotted name is the AMX MBean to which it resolves.
+    <p>
+   @since GlassFish V3
  */
-public interface DottedNames extends AMX
+public interface DottedNames extends AMX, Singleton
 {
+/** The j2eeType as returned by {@link com.sun.appserv.management.base.AMX#getJ2EEType}. */
+	public static final String	J2EE_TYPE	= XTypes.DOTTED_NAMES;
+    
+    /**
+       Resolve a single dotted name to an AMX.  Wildcards may <em>not</em> be used. 
+       
+       @see AMX#getDottedName
+       @see AMX#getDottedNamePart
+       @return the AMX, or null if not found
+        @since GlassFish V3
+     */
+    public AMX  getDottedNameTarget( final String dottedName );
+    
+    /**
+       Resolve any number of dotted names.  The resulting Map is keyed by dotted name,
+       and values are of type {@link AMX}.  Wildcards may <em>not</em> be used.  Dotted names which
+       do not resolve will have a null value in the Map.
+       
+       @see #getTarget
+       @see AMX#getDottedName
+       @see AMX#getDottedNamePart
+     */
+    public Map<String,AMX>  getDottedNameTargetMap( final String[] dottedNames );
+    
+    /**
+        Get all AMX MBeans, keyed by their dotted names.
+        @since GlassFish V3
+     */
+    public Map<String,AMX>  getAllDottedNameTargetsMap();
+    
+    /**
+        Get all dotted names.  This is equivalent to {@link #getAllDottedNameTargetsMap}.keySet().
+        <b>Will be removed (probably)</b>
+        @since GlassFish V3
+     */
+    public String[]  getAllDottedNames();
+    
+    /**
+        Get values for all the requested dotted names.  If a dotted name value does not exist,
+        then it is not returned in the Map.  Passing null for the Set returns all values
+        for all dotted names (relatively expensive operation).
+        <p>
+        <b>NOTE:</b> this method does not support wildcards.
+        @since GlassFish V3
+     */
+    public Map<String,String> getDottedNameValuesMap( final String[] dottedNames );
+    
+    
+    /** temporary, will be removed */
+    public String testResolve();
+    
+    /**
+        Get the value of a single dotted name.
+     */
+    public String getDottedNameValue( final String dottedName );
+    
+    
 	/**
 		Return an array of values corresponding to each dotted-name.
 		Each slot in the array will contain either an Attribute or an Exception.
@@ -79,12 +142,8 @@ public interface DottedNames extends AMX
 		@param nameValuePairs
 	 */
 	public Object[]	dottedNameSet( String[] nameValuePairs );
-	
-	/**
-		Force a refresh of the list of dotted names.
-	 */
-	public void	refresh();
-
-
 
 }
+
+
+

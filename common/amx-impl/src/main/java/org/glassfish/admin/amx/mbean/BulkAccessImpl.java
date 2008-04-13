@@ -36,18 +36,14 @@
 
 package org.glassfish.admin.amx.mbean;
 
-import javax.management.ObjectName;
-import javax.management.MBeanInfo;
-import javax.management.MBeanAttributeInfo;
-import javax.management.MBeanOperationInfo;
+import com.sun.appserv.management.base.AMX;
+import com.sun.appserv.management.base.BulkAccess;
+import com.sun.appserv.management.util.jmx.JMXUtil;
 
 import javax.management.Attribute;
 import javax.management.AttributeList;
-
-import com.sun.appserv.management.base.BulkAccess;
-import com.sun.appserv.management.base.XTypes;
-import com.sun.appserv.management.base.AMX;
-import com.sun.appserv.management.util.jmx.JMXUtil;
+import javax.management.MBeanInfo;
+import javax.management.ObjectName;
 
 
 /**

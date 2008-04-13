@@ -68,6 +68,7 @@ import javax.security.auth.Subject;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.Map;
 import java.util.logging.Level;
 
 
@@ -396,6 +397,21 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
      */
     public void killPool(String poolName) {
         _runtime.getPoolManager().killPool(poolName);
+    }
+
+    /**
+     * Gets the properties of the Java bean connection definition class that
+     * have setter methods defined and the default values as provided by the
+     * Connection Definition java bean developer.
+     *
+     * @param connectionDefinitionClassName The Connection Definition Java bean class for which
+     *                                      overrideable properties are required.
+     * @return Map [property, defaultValue]
+     */
+    public static Map getConnectionDefinitionPropertiesAndDefaults(String connectionDefinitionClassName) {
+        return ConnectionDefinitionUtils
+                .getConnectionDefinitionPropertiesAndDefaults(
+                        connectionDefinitionClassName);
     }
 
     /**

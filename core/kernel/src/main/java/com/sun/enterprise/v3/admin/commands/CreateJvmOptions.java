@@ -74,9 +74,6 @@ public final class CreateJvmOptions implements AdminCommand {
         try {
             List<Joe> joes             = Joe.toJoes(optString);
             joes                       = Joe.pruneJoes(jc.getJvmOptions(), joes);
-            report.getTopMessagePart().setMessage(lsm.getStringWithDefault(
-                    "create.jvm.options.success", "Command: create-jvm-options successfully executed"));
-            report.getTopMessagePart().setChildrenType("jvm-options");
         
             addX(jc, Joe.toStrings(joes));
             ActionReport.MessagePart part = report.getTopMessagePart().addChild();
@@ -86,7 +83,8 @@ public final class CreateJvmOptions implements AdminCommand {
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             return;
         } catch (Exception e) {
-            String msg = lsm.getStringWithDefault("create.jvm.options.failed",
+            String msg = e.getMessage() != null ? e.getMessage() : 
+                lsm.getStringWithDefault("create.jvm.options.failed",
                     "Command: create-jvm-options failed", new String[]{e.getMessage()});
             report.setMessage(msg);
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);

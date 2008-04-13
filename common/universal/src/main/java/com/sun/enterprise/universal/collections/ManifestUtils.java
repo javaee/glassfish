@@ -28,14 +28,25 @@ import java.util.jar.*;
 
 /**
  * all-static methods for handling operations with Manifests
+ * It automatically replace all occurences of EOL_TOKEN with linefeeds
  * @author bnevins
  */
 public class ManifestUtils {
     /**
+     * Embed this token to encode linefeeds in Strings that are placed 
+     * in Manifest objects
+     */
+    public static final String EOL_TOKEN = "%%%EOL%%%";
+    /**
      * The name of the Manifest's main attributes.
      */
     public static final String MAIN_ATTS = "main";
-    
+
+    /**
+     * The line separator character on this OS
+     */
+    public static final String EOL = System.getProperty("line.separator");
+
     /**
      * Convert a Manifest into an easier data structure.  It returns a Map of Maps.
      * The main attributes become the map where the key is MAIN_ATTS.
@@ -43,7 +54,7 @@ public class ManifestUtils {
      * @param m
      * @return
      */
-    public static Map<String, Map<String,String>> normalize(Manifest m)
+    public final static Map<String, Map<String,String>> normalize(Manifest m)
     {
         // first add the "main attributes
         Map<String, Map<String,String>> all = new HashMap<String, Map<String,String>>();
@@ -66,14 +77,14 @@ public class ManifestUtils {
      * @param att
      * @return
      */
-    public static Map<String,String> normalize(Attributes att)
+    public final static Map<String,String> normalize(Attributes att)
     {
         Set<Map.Entry<Object,Object>> entries = att.entrySet();
         Map<String,String> pristine = new HashMap<String,String>(entries.size());
         
         for(Map.Entry<Object,Object> entry : entries) {
             String key = entry.getKey().toString();
-            String value = entry.getValue().toString();
+            String value = decode(entry.getValue().toString());
             if(key == null) // impossible!
                 continue;
             pristine.put(key, value);
@@ -82,7 +93,12 @@ public class ManifestUtils {
         return pristine;
     }
 
-    private ManifestUtils() {
+    private final static String decode(String s) {
+        // replace special tokens with eol
         
+        return s.replaceAll(EOL_TOKEN, EOL);
     }
+    private ManifestUtils() {
+    }
+    
 }

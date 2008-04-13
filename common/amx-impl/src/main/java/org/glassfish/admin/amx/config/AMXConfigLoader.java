@@ -1,54 +1,35 @@
 
 package org.glassfish.admin.amx.config;
 
-import java.util.Set;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.CountDownLatch;
-import java.util.logging.Logger;
-
-import javax.management.MBeanServer;
-import javax.management.ObjectName;
-import javax.management.JMException;
-import javax.management.ObjectInstance;
-import javax.management.Notification;
-import javax.management.NotificationListener;
-
-import org.jvnet.hk2.config.ConfigBean;
-import org.jvnet.hk2.config.ConfigBeanProxy;
-import org.jvnet.hk2.config.Transactions;
-import org.jvnet.hk2.config.TransactionListener;
-import org.jvnet.hk2.config.ConfigSupport;
-import org.jvnet.hk2.config.Changed;
-import java.beans.PropertyChangeEvent;
-import com.sun.appserv.management.util.jmx.JMXUtil;
-
-import org.glassfish.api.amx.AMXConfigInfo;
-import org.glassfish.api.amx.AMXMBeanMetadata;
-
 import com.sun.appserv.management.base.AMX;
+import com.sun.appserv.management.base.Container;
 import com.sun.appserv.management.base.Util;
 import com.sun.appserv.management.base.XTypes;
-import com.sun.appserv.management.base.Container;
 import com.sun.appserv.management.client.ProxyFactory;
 import com.sun.appserv.management.config.AMXConfig;
-import com.sun.appserv.management.util.misc.RunnableBase;
+import com.sun.appserv.management.util.jmx.JMXUtil;
 import com.sun.appserv.management.util.misc.ClassUtil;
 import com.sun.appserv.management.util.misc.ExceptionUtil;
-
-
-import org.glassfish.admin.amx.logging.AMXMBeanRootLogger;
-import org.glassfish.admin.amx.mbean.AMXSupport;
-import org.glassfish.admin.amx.mbean.MBeanImplBase;
-import org.glassfish.admin.amx.mbean.Delegate;
-import org.glassfish.admin.amx.mbean.AMXImplBase;
-import org.glassfish.admin.amx.util.ObjectNames;
-import org.glassfish.admin.amx.util.AMXConfigInfoResolver;
 import org.glassfish.admin.amx.loader.AMXConfigVoid;
-
+import org.glassfish.admin.amx.logging.AMXMBeanRootLogger;
+import org.glassfish.admin.amx.mbean.AMXImplBase;
+import org.glassfish.admin.amx.mbean.Delegate;
+import org.glassfish.admin.amx.mbean.MBeanImplBase;
+import org.glassfish.admin.amx.util.AMXConfigInfoResolver;
 import org.glassfish.admin.amx.util.FeatureAvailability;
+import org.glassfish.admin.amx.util.ObjectNames;
+import org.glassfish.api.amx.AMXConfigInfo;
+import org.glassfish.api.amx.AMXMBeanMetadata;
+import org.jvnet.hk2.config.*;
+
+import javax.management.*;
+import java.beans.PropertyChangeEvent;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.logging.Logger;
 
 
 /**
@@ -415,7 +396,8 @@ debug( "AMXConfigLoader.sortAndDispatch: " + events.size() + " events" );
             mMBeanServer    = server;
             
             mLoaderThread   = new AMXConfigLoaderThread( mPendingConfigBeans );
-            mLoaderThread.submit( RunnableBase.HowToRun.RUN_IN_SEPARATE_THREAD );
+            mLoaderThread.setDaemon(true);
+            mLoaderThread.start();
         
             // Make the listener start listening
             final ObjectName objectName = JMXUtil.newObjectName( "amx-support", "name=amx-config-loader" );
@@ -436,14 +418,14 @@ debug( "AMXConfigLoader.sortAndDispatch: " + events.size() + " events" );
         return mLoaderThread != null;
     }
     
-    private final class AMXConfigLoaderThread extends RunnableBase
+    private final class AMXConfigLoaderThread extends Thread
     {
         private final LinkedBlockingQueue<Job> mQueue;
         volatile boolean    mQuit = false;
         
         AMXConfigLoaderThread( final LinkedBlockingQueue<Job> queue )
         {
-            super( "AMXConfigLoader.AMXConfigLoaderThread", null );
+            super( "AMXConfigLoader.AMXConfigLoaderThread" );
             mQueue = queue;
         }
         
@@ -475,6 +457,18 @@ debug( "AMXConfigLoader.sortAndDispatch: " + events.size() + " events" );
             }
             
             return objectName;
+        }
+        
+        public void run()
+        {
+            try
+            {
+                doRun();
+            }
+            catch( Throwable t )
+            {
+                t.printStackTrace();
+            }
         }
         
             protected void
@@ -730,18 +724,36 @@ debug( "AMXConfigLoader.sortAndDispatch: " + events.size() + " events" );
         return j2eeType;
     }
     
-        private String
+        public static String
     getName(
         final ConfigBean cb,
-        final AMXConfigInfoResolver info)
+        final AMXConfigInfo infoIn)
     {
-        String name = info.singleton() ? AMX.NO_NAME : cb.rawAttribute( info.nameHint() );
+        String name = null;
         
-        if ( name == null )
+        final AMXConfigInfo info = infoIn == null ? getAMXConfigInfo(cb) : infoIn;
+        
+        if ( info.singleton() )
         {
-            name = "BUG_NO_NAME_AVAILABLE";
+            name = AMX.NO_NAME;
         }
+        else
+        {
+            name = cb.rawAttribute( info.nameHint() );
+        }
+        
         return name;
+    }
+    
+        private static String
+    whackIllegals( final String s )
+    {
+        final char sub = '_';
+        String result = s.replace( ':', sub );
+        
+        result = result.replace( ',', sub );
+        
+        return result;
     }
     
         private ObjectName
@@ -750,7 +762,7 @@ debug( "AMXConfigLoader.sortAndDispatch: " + events.size() + " events" );
         final AMXConfigInfoResolver info )
     {
         final String j2eeType = getJ2EEType( cb, info );
-        final String name     = getName( cb, info );
+        final String name     = whackIllegals( getName( cb, info.getAMXConfigInfo() ) );
         
         String parentProps = "";
         String domain = AMX.JMX_DOMAIN;

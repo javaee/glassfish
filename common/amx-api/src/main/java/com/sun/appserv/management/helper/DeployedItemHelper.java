@@ -41,16 +41,12 @@
  */
 package com.sun.appserv.management.helper;
 
-import java.util.Set;
-import java.util.HashSet;
+import com.sun.appserv.management.DomainRoot;
+import com.sun.appserv.management.base.Util;
+import com.sun.appserv.management.base.XTypes;
 
 import javax.management.ObjectName;
-
-import com.sun.appserv.management.base.AMX;
-import com.sun.appserv.management.base.XTypes;
-import com.sun.appserv.management.base.Util;
-import com.sun.appserv.management.DomainRoot;
-import com.sun.appserv.management.base.QueryMgr;
+import java.util.Set;
 
 /**
 	Helper for deployed items (modules).

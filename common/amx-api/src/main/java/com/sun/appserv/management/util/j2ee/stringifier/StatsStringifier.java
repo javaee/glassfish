@@ -35,14 +35,12 @@
  */
 package com.sun.appserv.management.util.j2ee.stringifier;
 
-import java.util.Arrays;
+import com.sun.appserv.management.util.stringifier.ArrayStringifier;
+import com.sun.appserv.management.util.stringifier.SmartStringifier;
+import com.sun.appserv.management.util.stringifier.Stringifier;
 
 import javax.management.j2ee.statistics.Stats;
-import javax.management.j2ee.statistics.Statistic;
-
-import com.sun.appserv.management.util.stringifier.Stringifier;
-import com.sun.appserv.management.util.stringifier.SmartStringifier;
-import com.sun.appserv.management.util.stringifier.ArrayStringifier;
+import java.util.Arrays;
 
 /**
 	Stringifier for javax.management.j2ee.statistics 

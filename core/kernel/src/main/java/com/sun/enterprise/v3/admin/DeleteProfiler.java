@@ -84,7 +84,6 @@ public class DeleteProfiler implements AdminCommand {
                public Object run(JavaConfig param) throws PropertyVetoException, TransactionFailure {
                    if (param.getProfiler() != null) {
                        param.setProfiler(null);
-                       report.setMessage(localStrings.getLocalString("delete.profiler.success", "deleted successfully"));
                        report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
 			return param;
                    }

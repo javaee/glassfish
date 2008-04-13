@@ -35,15 +35,14 @@
  */
 package com.sun.appserv.management.ext.logging;
 
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Date;
-import java.util.logging.Level;
-
+import static com.sun.appserv.management.ext.logging.LogRecordFields.*;
 import com.sun.appserv.management.util.misc.ArrayUtil;
 import com.sun.appserv.management.util.misc.ObjectUtil;
 
-import static com.sun.appserv.management.ext.logging.LogRecordFields.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.logging.Level;
 
 //import static com.sun.appserv.management.ext.logging.LogRecordFields;
 

@@ -35,12 +35,11 @@
  */
 package com.sun.appserv.management.util.jmx;
 
+import com.sun.appserv.management.util.misc.TypeCast;
+
 import javax.management.*;
 import java.io.IOException;
 import java.util.Set;
-
-import com.sun.appserv.management.util.stringifier.ArrayStringifier;
-import com.sun.appserv.management.util.misc.TypeCast;
 
 
 /**

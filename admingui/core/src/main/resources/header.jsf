@@ -70,9 +70,8 @@
 			<sun:hyperlink id="logoutLink" toolTip="$resource{i18n.logoutTooltip}" target="_top" text="$resource{i18n.masthead.Logout}"
                             onClick="if (!confirm('$resource{i18n.msg.JS.confirmLogout}')) return false;" onKeyPress="javascript: return true;" > 
                             <!command
-			    <!-- / is breaking, need to check jsft navigate -->
-				navigate("/login.jsf");
                                 logout();
+				redirect("#{request.contextPath}/index.jsf");
 			    />
 			</sun:hyperlink>
 		   </facet>

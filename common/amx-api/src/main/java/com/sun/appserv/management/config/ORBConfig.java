@@ -34,14 +34,9 @@
  * holder.
  */
 
-/**
-	Generated: Fri Jan 30 18:44:42 PST 2004
-	Generated from:
-	com.sun.appserv:type=orb,config=server-config,category=config
-*/
-
 package com.sun.appserv.management.config;
 
+import com.sun.appserv.management.base.Singleton;
 import com.sun.appserv.management.base.XTypes;
 
 
@@ -51,7 +46,7 @@ import com.sun.appserv.management.base.XTypes;
 	 Configuration for the &lt;orb&gt; config element.
 */
 
-public interface ORBConfig extends AMXConfig, PropertiesAccess 
+public interface ORBConfig extends AMXConfig, PropertiesAccess, Singleton
 {
 /** The j2eeType as returned by {@link com.sun.appserv.management.base.AMX#getJ2EEType}. */
 	public static final String	J2EE_TYPE	= XTypes.ORB_CONFIG;

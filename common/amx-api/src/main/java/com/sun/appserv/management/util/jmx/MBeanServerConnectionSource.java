@@ -42,11 +42,11 @@
 
 package com.sun.appserv.management.util.jmx;
 
+import com.sun.appserv.management.client.ConnectionSource;
+
 import javax.management.MBeanServer;
 import javax.management.MBeanServerConnection;
 import javax.management.remote.JMXConnector;
-
-import com.sun.appserv.management.client.ConnectionSource;
 
 
 /**

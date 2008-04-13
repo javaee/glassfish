@@ -43,14 +43,11 @@
 package com.sun.appserv.management.util.misc;
 
 
-import java.text.MessageFormat;
-
-import com.sun.appserv.management.util.misc.ClassUtil;
-
-import com.sun.appserv.management.util.stringifier.Stringifier;
 import com.sun.appserv.management.util.stringifier.SmartStringifier;
 import com.sun.appserv.management.util.stringifier.StringifierRegistry;
 import com.sun.appserv.management.util.stringifier.StringifierRegistryImpl;
+
+import java.text.MessageFormat;
 
 /**
 	Escapes/unescapes strings

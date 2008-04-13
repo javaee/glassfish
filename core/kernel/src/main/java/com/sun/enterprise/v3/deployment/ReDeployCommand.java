@@ -86,9 +86,6 @@ public class ReDeployCommand implements AdminCommand {
         deployParam.put("force", Boolean.TRUE.toString());
         deployParam.put("path", path);
         commandRunner.doCommand("deploy", deployParam, report);
-        if (report.getActionExitCode().equals(ActionReport.ExitCode.SUCCESS)) {
-            report.setMessage(localStrings.getLocalString("redeploy.command.sucess", "{0} redeployed successfully", name));
-        } // else a message should have been provided for the failure. don't overwrite.
     }
 
         /**

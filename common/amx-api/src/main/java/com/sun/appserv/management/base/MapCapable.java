@@ -35,9 +35,8 @@
  */
 package com.sun.appserv.management.base;
 
-import java.util.Map;
-
 import java.io.Serializable;
+import java.util.Map;
 
 
 

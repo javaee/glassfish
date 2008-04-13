@@ -35,8 +35,6 @@
  */
 package com.sun.appserv.management.base;
 
-import java.util.logging.Level;
-
 /**
 	Interface that all AMX MBeans implement for logging.
  */

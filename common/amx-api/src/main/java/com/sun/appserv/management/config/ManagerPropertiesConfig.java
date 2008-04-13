@@ -33,16 +33,11 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
- 
-/*
- * $Header: /cvs/glassfish/appserv-api/src/java/com/sun/appserv/management/config/ManagerPropertiesConfig.java,v 1.2 2007/05/05 05:30:34 tcfujii Exp $
- * $Revision: 1.2 $
- * $Date: 2007/05/05 05:30:34 $
- */
 
 
 package com.sun.appserv.management.config;
 
+import com.sun.appserv.management.base.Singleton;
 import com.sun.appserv.management.base.XTypes;
 
 
@@ -51,7 +46,7 @@ import com.sun.appserv.management.base.XTypes;
 /**
 	 Configuration for the &lt;manager-properties&gt; element.
  */
-public interface ManagerPropertiesConfig extends AMXConfig, PropertiesAccess
+public interface ManagerPropertiesConfig extends AMXConfig, PropertiesAccess, Singleton
 {
 /** The j2eeType as returned by {@link com.sun.appserv.management.base.AMX#getJ2EEType}. */
 	public static final String	J2EE_TYPE	= XTypes.MANAGER_PROPERTIES_CONFIG;

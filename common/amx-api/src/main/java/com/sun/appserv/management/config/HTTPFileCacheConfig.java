@@ -35,6 +35,7 @@
  */
 package com.sun.appserv.management.config;
 
+import com.sun.appserv.management.base.Singleton;
 import com.sun.appserv.management.base.XTypes;
 
 /**
@@ -42,8 +43,7 @@ import com.sun.appserv.management.base.XTypes;
 	 but is no longer used.
 	 @deprecated 
 */
-
-public interface HTTPFileCacheConfig extends ConfigElement 
+public interface HTTPFileCacheConfig extends ConfigElement, Singleton
 {
 /** The j2eeType as returned by {@link com.sun.appserv.management.base.AMX#getJ2EEType}. */
 	public static final String	J2EE_TYPE	= XTypes.HTTP_FILE_CACHE_CONFIG;

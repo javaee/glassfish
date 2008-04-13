@@ -153,7 +153,5 @@ public class CreateVirtualServer implements AdminCommand {
             report.setFailureCause(e);
         }
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
-        report.setMessage(localStrings.getLocalString("create.virtual.server.success",
-                "Virtual server {0} created successfully", virtualServerId));
     }
 }

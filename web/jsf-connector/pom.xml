@@ -158,6 +158,10 @@
             <groupId>javax.faces</groupId>
             <artifactId>jsf-impl</artifactId>
             <version>${jsf-impl.version}</version>
+            <!-- Mark it optional because we are inlining the classes
+                 in our wrapper jar and we don't want jsf-impl.jar to be
+                 part of the distribution -->
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.glassfish.common</groupId>

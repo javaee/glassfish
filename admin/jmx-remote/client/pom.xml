@@ -124,11 +124,11 @@
 
 	<dependency>
 
-            <groupId>org.jvnet.opendmk</groupId>
+            <groupId>org.glassfish.external</groupId>
 
-            <artifactId>jmxremote_optional</artifactId>
+            <artifactId>jmxremote_optional-repackaged</artifactId>
 
-            <version>1.0_01-ea</version>
+            <version>${project.version}</version>
 
         </dependency>         
 

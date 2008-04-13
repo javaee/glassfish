@@ -185,7 +185,6 @@ public class EnableCommand extends ApplicationLifecycle implements AdminCommand 
             if (report.getActionExitCode().equals(
                 ActionReport.ExitCode.SUCCESS)) {
                 setEnableAttributeInDomainXML(component, true);
-                report.setMessage(localStrings.getLocalString("enable.command.success", "{0} enabled successfully", component));
             }
         } catch(Exception e) {
             logger.log(Level.SEVERE, "Error during enabling: ", e);
