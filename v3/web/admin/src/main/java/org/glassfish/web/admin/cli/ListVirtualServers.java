@@ -78,9 +78,6 @@ public class ListVirtualServers implements AdminCommand {
      */
     public void execute(AdminCommandContext context) {
         final ActionReport report = context.getActionReport();
-        report.setMessage(localStrings.getLocalString("list.virtual.servers.success", 
-            "list-virtual-servers successful"));
-        report.getTopMessagePart().setChildrenType("virtual-server");
 
         List<VirtualServer> list = httpService.getVirtualServer();
         Iterator iter = list.iterator();

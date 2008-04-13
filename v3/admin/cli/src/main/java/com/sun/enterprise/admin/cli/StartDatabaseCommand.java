@@ -225,9 +225,6 @@ public final class StartDatabaseCommand extends DatabaseCommand
                 CLILogger.getInstance().printMessage(getLocalizedString(
                                                      "StartDatabaseStatus",
                                                      new Object[]{dbHost, dbPort}));
-                CLILogger.getInstance().printDetailMessage(getLocalizedString(
-                                                           "CommandSuccessful",
-                                                           new Object[] {name}));
             }
         }
         catch (IllegalThreadStateException ite) {
@@ -255,10 +252,6 @@ public final class StartDatabaseCommand extends DatabaseCommand
 	            CLILogger.getInstance().printMessage(getLocalizedString("LogRedirectedTo",
                                                      new Object[]{dbLog}));
 	        }
-
-            CLILogger.getInstance().printDetailMessage(getLocalizedString(
-                                                       "CommandSuccessful",
-                                                       new Object[] {name}));
         }
         catch (Exception e) {
             throw new CommandException(getLocalizedString("CommandUnSuccessful",

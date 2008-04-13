@@ -91,15 +91,17 @@ public class DeleteJdbcResource implements AdminCommand {
             JDBCResourceManager jdbcResMgr = new JDBCResourceManager();
             ResourceStatus rs = jdbcResMgr.delete(resources, jdbcResources, jndiName, targetServer);
             if (rs.getStatus() == ResourceStatus.SUCCESS) {
-                report.setMessage(rs.getMessage());
                 report.setActionExitCode(ActionReport.ExitCode.SUCCESS);       
             } else {
                 report.setMessage(rs.getMessage());
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                if (rs.getException() != null)
+                    report.setFailureCause(rs.getException());
             }
         } catch(Exception e) {
             report.setMessage(localStrings.getLocalString("delete.jdbc.resource.fail", "{0} delete failed ", jndiName));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            report.setFailureCause(e);
         }
     }
 }

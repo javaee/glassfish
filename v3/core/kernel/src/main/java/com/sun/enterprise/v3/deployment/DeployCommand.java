@@ -282,9 +282,6 @@ public class DeployCommand extends ApplicationLifecycle implements AdminCommand 
                 // register application information in domain.xml
                 registerAppInDomainXML(appInfo, deploymentContext);
 
-                report.setMessage(localStrings.getLocalString(
-                        "deploy.command.success",
-                        "Application {0} deployed successfully", name));
             }
         } catch(Exception e) {
             logger.log(Level.SEVERE, "Error during deployment : ", e);

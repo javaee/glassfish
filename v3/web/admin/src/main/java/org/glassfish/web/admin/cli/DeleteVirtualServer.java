@@ -90,7 +90,6 @@ public class DeleteVirtualServer implements AdminCommand {
         }
         try {
             ConfigSupport.apply(new Config(vsid), httpService);
-            report.setMessage(localStrings.getLocalString("delete.virtual.server.success", "{0} deleted successfully", vsid));
             report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
 
         } catch(TransactionFailure e) {

@@ -126,9 +126,6 @@ public final class StopDatabaseCommand extends DatabaseCommand
                     throw new CommandException(getLocalizedString("CommandUnSuccessful",
                                                               new Object[] {name} ));
                 }
-                CLILogger.getInstance().printDetailMessage(getLocalizedString(
-                                                           "CommandSuccessful",
-                                                           new Object[] {name}));
             }
         }
         catch (Exception e) {

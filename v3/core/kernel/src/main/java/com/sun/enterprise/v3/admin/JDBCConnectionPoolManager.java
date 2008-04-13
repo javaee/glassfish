@@ -263,7 +263,8 @@ class JDBCConnectionPoolManager implements ResourceManager{
             }
             
         } catch(TransactionFailure tfe) {
-            String msg = localStrings.getLocalString("jdbcConnPool.resource.deletionFailed", 
+            String msg = tfe.getMessage() != null ? tfe.getMessage() :
+                localStrings.getLocalString("jdbcConnPool.resource.deletionFailed", 
                             "JDBC Connection pool {0} delete failed ", jdbcconnectionpoolid);
             ResourceStatus status = new ResourceStatus(ResourceStatus.FAILURE, msg);
             status.setException(tfe);

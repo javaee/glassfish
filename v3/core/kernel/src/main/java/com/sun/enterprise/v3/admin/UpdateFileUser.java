@@ -220,9 +220,7 @@ public class UpdateFileUser implements AdminCommand {
             }
             fr.updateUser(userName, password, groups1);
             fr.writeKeyFile(keyFile);
-            report.getTopMessagePart().setMessage(localStrings.getLocalString(
-                "update.file.user.success", 
-                "update-file-user successful"));            
+            report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
         } catch (Exception e) {
             report.setMessage(
                 localStrings.getLocalString("update.file.user.userupdatefailed",

@@ -225,9 +225,6 @@ public class CreateFileUser implements AdminCommand {
             }
             fr.addUser(userName, password, groups1);
             fr.writeKeyFile(keyFile);
-            report.getTopMessagePart().setMessage(localStrings.getLocalString(
-                "create.file.user.success", 
-                "create-file-user successful"));                        
             refreshRealm(authRealmName);
         } catch (Exception e) {
             e.printStackTrace();

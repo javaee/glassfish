@@ -70,14 +70,14 @@ public final class DeleteJvmOptions implements AdminCommand {
         logfh("Injected JavaConfig: " + jc);
         final ActionReport report = context.getActionReport();
         List<Joe> joes             = Joe.toJoes(optString);
-        report.getTopMessagePart().setMessage(lsm.getStringWithDefault("delete.jvm.options.success", "Command: delete-jvm-options successfully executed"));
-        report.getTopMessagePart().setChildrenType("jvm-options");
+        
         try {
             deleteX(jc, Joe.toStrings(joes));
             ActionReport.MessagePart part = report.getTopMessagePart().addChild();
             part.setMessage("deleted " + joes.size() + " option(s)");
         } catch (Exception e) {
-            String msg = lsm.getStringWithDefault("delete.jvm.options.failed",
+            String msg = e.getMessage() != null ? e.getMessage() : 
+                lsm.getStringWithDefault("delete.jvm.options.failed",
                     "Command: delete-jvm-options failed", new String[]{e.getMessage()});
             report.setMessage(msg);
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);

@@ -153,8 +153,6 @@ public class CreateAuthRealm implements AdminCommand {
             report.setFailureCause(e);        
         }
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
-        report.setMessage(localStrings.getLocalString("create.auth.realm.success",
-            "Creation of Authrealm {0} completed successfully", authRealmName));        
     }       
     
     private void populateAuthRealmElement(AuthRealm newAuthRealm) 

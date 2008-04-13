@@ -182,7 +182,5 @@ public class CreateHttpListener implements AdminCommand {
             report.setFailureCause(e);
         }
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
-        report.setMessage(localStrings.getLocalString("create.http.listener.success",
-                "Http listener {0} created successfully", listenerId));
     }
 }

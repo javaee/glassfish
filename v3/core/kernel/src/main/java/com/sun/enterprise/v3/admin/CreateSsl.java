@@ -236,8 +236,6 @@ public class CreateSsl implements AdminCommand {
     
     private void reportSuccess(ActionReport report) {
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
-        report.setMessage(localStrings.getLocalString("create.ssl.success",
-                "Creation of Ssl in {0} completed successfully", listenerId));        
     }
     
     private void populateSslElement(Ssl newSsl) throws PropertyVetoException {

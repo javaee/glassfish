@@ -91,7 +91,6 @@ public class DeleteHttpListener implements AdminCommand {
         }
         try {
             ConfigSupport.apply(new Config(lid), httpService);
-            report.setMessage(localStrings.getLocalString("delete.http.listener.success", "{0} deleted successfully", lid));
             report.setActionExitCode(ExitCode.SUCCESS);
 
         } catch(TransactionFailure e) {

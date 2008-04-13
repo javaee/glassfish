@@ -71,7 +71,6 @@ public class ListJdbcConnectionPools implements AdminCommand {
     public void execute(AdminCommandContext context) {
         final ActionReport report = context.getActionReport();
 
-        report.getTopMessagePart().setMessage(localStrings.getLocalString("list.jdbc.connection.pools.success", "list-jdbc-connection-pools successful"));
          try {
             JDBCConnectionPoolManager connPoolMgr = new JDBCConnectionPoolManager();
             ArrayList<String> list = connPoolMgr.list(connPools);

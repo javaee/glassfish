@@ -126,7 +126,5 @@ public class CreateProfiler implements AdminCommand {
             report.setFailureCause(e);
         }
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
-        report.setMessage(localStrings.getLocalString("create.profiler.success",
-                "Profiler {0} created successfully", name));
     }
 }

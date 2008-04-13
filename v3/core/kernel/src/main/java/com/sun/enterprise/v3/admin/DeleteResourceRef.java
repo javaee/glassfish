@@ -106,8 +106,6 @@ public class DeleteResourceRef implements AdminCommand {
             report.setFailureCause(e);
             return;
         }
-        report.setMessage(localStrings.getLocalString("delete.resource.ref.success",
-                    "Resource ref {0} deleted successfully", refName));
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
     }
     

@@ -79,9 +79,6 @@ public class PingJdbcConnectionPool implements AdminCommand {
             status = connRuntime.pingConnectionPool(poolName);
             if (status) {
                 report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
-                report.setMessage(
-                    localStrings.getLocalString( "ping.connection.pool.success", 
-                    "Ping JDBC Connection Pool for {0} is Successful", poolName));
             } else {
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                 report.setMessage(

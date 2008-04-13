@@ -105,8 +105,6 @@ public class ListSystemProperties implements AdminCommand {
             report.setFailureCause(e);
             return;
         }
-        report.getTopMessagePart().setMessage(localStrings.getLocalString(
-                "list.system.properties.success", "list-system-properties successful"));
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
     }
 }

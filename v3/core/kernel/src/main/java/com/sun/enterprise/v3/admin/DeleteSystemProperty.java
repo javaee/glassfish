@@ -125,8 +125,6 @@ public class DeleteSystemProperty implements AdminCommand {
             report.setFailureCause(e);
             return;
         }
-        report.setMessage(localStrings.getLocalString("delete.system.property.success",
-                    "System property {0} deleted successfully", propName));
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
     }
 }

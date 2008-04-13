@@ -220,13 +220,14 @@ public class CreateJdbcConnectionPool implements AdminCommand {
         ActionReport.ExitCode ec = ActionReport.ExitCode.SUCCESS;
         if (rs.getStatus() == ResourceStatus.FAILURE) {
             ec = ActionReport.ExitCode.FAILURE;
-            report.setMessage(localStrings.getLocalString("create.jdbc.connection.pool.fail",
+            if (rs.getMessage() != null) {
+                report.setMessage(rs.getMessage());
+            } else {
+                 report.setMessage(localStrings.getLocalString("create.jdbc.connection.pool.fail",
                     "JDBC connection pool {0} creation failed", jdbc_connection_pool_id));
+            }
             if (rs.getException() != null)
                 report.setFailureCause(rs.getException());
-        } else {
-            report.setMessage(localStrings.getLocalString("create.jdbc.connection.pool.success",
-                    "JDBC connection pool {0} created successfully", jdbc_connection_pool_id));
         }
         report.setActionExitCode(ec);
     }

@@ -117,10 +117,7 @@ public class AddResources implements AdminCommand {
             }
             report.setActionExitCode(
                     (isSuccess)?ActionReport.ExitCode.SUCCESS:ActionReport.ExitCode.FAILURE);
-            if (isSuccess)
-                report.setMessage(localStrings.getLocalString("add.resources.success", 
-                                                "add-resources successfull"));
-            else
+            if (!isSuccess)
                 report.setMessage(localStrings.getLocalString("add.resources.failed", 
                                                 "add-resources <{0}> failed", xmlFileName));
                 

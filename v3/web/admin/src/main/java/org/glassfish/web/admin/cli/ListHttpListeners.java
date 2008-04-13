@@ -78,8 +78,6 @@ public class ListHttpListeners implements AdminCommand {
      */
     public void execute(AdminCommandContext context) {
         final ActionReport report = context.getActionReport();
-        report.setMessage(localStrings.getLocalString("list.http.listeners.success", "list-http-listeners successful"));
-        report.getTopMessagePart().setChildrenType("http-listener");
 
         List<HttpListener> list = httpService.getHttpListener();
         Iterator iter = list.iterator();
