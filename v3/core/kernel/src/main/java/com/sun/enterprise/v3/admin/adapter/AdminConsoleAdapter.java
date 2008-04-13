@@ -170,7 +170,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
     public void ready() {
         lock.unlock();
         if (log != null) 
-            log.info("AdminConsoleAdapter is ready ...");
+            log.info("AdminConsoleAdapter is ready.");
     }
     
     private void init() {
