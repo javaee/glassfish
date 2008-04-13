@@ -175,9 +175,7 @@ public class CreateJdbcResourceTest extends ConfigApiTest {
             }
         }       
         assertTrue(isCreated);
-        
-        // Check the success message
-        assertEquals("JDBC resource jdbc/foo created successfully.", context.getActionReport().getMessage());
+       
         logger.fine("msg: " + context.getActionReport().getMessage());       
         
         // Check resource-ref created
@@ -233,8 +231,6 @@ public class CreateJdbcResourceTest extends ConfigApiTest {
         }       
         assertTrue(isCreated);
         
-        // Check the success message
-        assertEquals("JDBC resource jdbc/alldefaults created successfully.", context.getActionReport().getMessage());
         logger.fine("msg: " + context.getActionReport().getMessage());    
     }
 
@@ -384,8 +380,6 @@ public class CreateJdbcResourceTest extends ConfigApiTest {
         }       
         assertTrue(isCreated);
         
-        // Check the success message
-        assertEquals("JDBC resource jdbc/sun created successfully.", context.getActionReport().getMessage());
         logger.fine("msg: " + context.getActionReport().getMessage());
     }
 }
