@@ -11,9 +11,9 @@
     <version>1.0</version>
   </skin>
   <body>
-    <links>
+    <!--links>
       <item name="Glassfish" href="http://glassfish.dev.java.net/"/>
-    </links>
+    </links-->
 
     <menu name="Module Subsystem">
       <item name="Introduction" href="index.html"/>
