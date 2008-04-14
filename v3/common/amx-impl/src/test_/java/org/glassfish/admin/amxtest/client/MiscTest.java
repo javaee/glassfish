@@ -33,12 +33,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
-/*
-* $Header: /cvs/glassfish/admin/mbeanapi-impl/tests/org.glassfish.admin.amxtest/client/MiscTest.java,v 1.6 2007/05/05 05:23:53 tcfujii Exp $
-* $Revision: 1.6 $
-* $Date: 2007/05/05 05:23:53 $
-*/
 package org.glassfish.admin.amxtest.client;
 
 import com.sun.appserv.management.base.NotificationService;
