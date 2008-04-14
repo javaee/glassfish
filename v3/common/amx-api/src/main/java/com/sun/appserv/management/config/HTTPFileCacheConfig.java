@@ -39,9 +39,8 @@ import com.sun.appserv.management.base.Singleton;
 import com.sun.appserv.management.base.XTypes;
 
 /**
-	 This element remains in the DTD for compatibility reasons,
-	 but is no longer used.
-	 @deprecated 
+	 This element might or might not remain in V3 pending analysis on how
+     the Grizzly code is to be integrated.
 */
 public interface HTTPFileCacheConfig extends ConfigElement, Singleton
 {
