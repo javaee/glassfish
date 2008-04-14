@@ -42,8 +42,7 @@
         <!command
         getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
         getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
-        convertListToArrayList(TableList="#{newList}", NameList=>$attribute{nameList});
-        getAddRemoveProps(NewList="#{newList}", OldList="#{props}", NameList="#{nameList}", AddProps=>$attribute{addProps}, RemoveProps=>$attribute{removeProps});
+        convertRowsToProperties(NewList="#{newList}", AddProps=>$attribute{newProps});
         prepareSuccessfulMsg();
          saveServerAppsConfigAttributes(
         ConfigName="#{configName}"
@@ -55,8 +54,7 @@
         Verifier="#{verifier}"
         Precompile="#{precompile}"
         AutoDeployDirectory="#{autoDeployDirectory}"                            
-        AddProps="${addProps}",
-        RemoveProps="${removeProps}"
+        newProps="${newProps}"
         );
         />
     </sun:button>
