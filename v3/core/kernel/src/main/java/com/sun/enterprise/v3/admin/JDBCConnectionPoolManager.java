@@ -304,19 +304,24 @@ class JDBCConnectionPoolManager implements ResourceManager{
         
         return ConfigSupport.apply(new SingleConfigCode<Resources>() {
             public Object run(Resources param) throws PropertyVetoException, TransactionFailure {
+                Resource res = null;
                 for (Resource resource : param.getResources()) {
                     if (resource instanceof JdbcResource) {
                         if (((JdbcResource)resource).getPoolName().equals(connPoolId)) {
                             if (cascade) {
-                                // delete jdbc-resource
-                                param.getResources().remove(resource);
                                 // delete resource-refs
                                 deleteResourceRefs(servers, ((JdbcResource)resource).getJndiName());
+                                res = resource;
+                                break;
                             } else {
                                 return Integer.valueOf(ResourceStatus.FAILURE);
                             }
                         }
                     }
+                 }
+                 // delete jdbc-resource
+                 if (res != null) {
+                     param.getResources().remove(res);
                  }
                  return null;
             }
