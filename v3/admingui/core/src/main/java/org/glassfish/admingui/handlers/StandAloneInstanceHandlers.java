@@ -51,29 +51,20 @@ import com.sun.jsftemplating.component.dataprovider.MultipleListDataProvider;
 import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.ListIterator;
 
 import javax.faces.model.SelectItem;
-import javax.management.MBeanException;
-import javax.management.ObjectName;
 
-import java.lang.reflect.Array;
-import java.lang.reflect.Constructor;
 
 import org.glassfish.admingui.util.AMXRoot;
 import org.glassfish.admingui.util.GuiUtil;
-import org.glassfish.admingui.util.TargetUtil;
 
 import com.sun.webui.jsf.component.TableRowGroup;
 
-import com.sun.appserv.management.config.DomainConfig;
-import com.sun.appserv.management.config.DASConfig;
 import com.sun.appserv.management.config.StandaloneServerConfig;
 import com.sun.appserv.management.config.NodeAgentConfig;
 import com.sun.appserv.management.config.HTTPServiceConfig;
@@ -81,13 +72,10 @@ import com.sun.appserv.management.config.HTTPListenerConfig;
 import com.sun.appserv.management.config.IIOPServiceConfig;
 import com.sun.appserv.management.config.IIOPListenerConfig;
 import com.sun.appserv.management.config.ConfigConfig;
-import com.sun.appserv.management.config.ServerConfig;
-import com.sun.appserv.management.config.ConfigConfigKeys;
 import com.sun.appserv.management.config.SystemPropertiesAccess;
 
-import com.sun.appserv.management.j2ee.StateManageable;
 import com.sun.appserv.management.j2ee.J2EEServer;
-import javax.faces.context.FacesContext;
+import org.glassfish.admingui.util.AMXUtil;
 
 
 /**
@@ -634,14 +622,14 @@ public class StandAloneInstanceHandlers{
         Map addProps = (Map)handlerCtx.getInputValue("AddProps");
         String[] remove = (String[])removeProps.toArray(new String[ removeProps.size()]);
         for(int i=0; i<remove.length; i++){
-            serverConfig.removeProperty(remove[i]);
+            serverConfig.removePropertyConfig(remove[i]);
         }
         if(addProps != null ){
             Iterator additer = addProps.keySet().iterator();
             while(additer.hasNext()){
                 Object key = additer.next();
                 String addvalue = (String)addProps.get(key);
-                serverConfig.setPropertyValue((String)key, addvalue);
+                AMXUtil.setPropertyValue(serverConfig,(String)key, addvalue);
                 
             }
         }      
@@ -695,12 +683,11 @@ public class StandAloneInstanceHandlers{
     input={
         @HandlerInput(name="InstanceName", type=String.class, required=true)},
     output={
-        @HandlerOutput(name="Properties", type=Map.class)})
+        @HandlerOutput(name="propConfig", type=Map.class)})
         public static void getStandaloneInstanceProperties(HandlerContext handlerCtx) {
         String instanceName = (String)handlerCtx.getInputValue("InstanceName");
         StandaloneServerConfig serverConfig = AMXRoot.getInstance().getServersConfig().getStandaloneServerConfigMap().get(instanceName);
-        Map<String, String> props = serverConfig.getProperties();
-        handlerCtx.setOutputValue("Properties", props);
+        handlerCtx.setOutputValue("propConfig", serverConfig.getPropertyConfigMap());
         
     }   
 }

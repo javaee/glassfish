@@ -72,6 +72,8 @@ import com.sun.appserv.management.config.ProfilerConfig;
 import com.sun.appserv.management.config.DomainConfig;
 import com.sun.appserv.management.config.ModuleLogLevelsConfig;
 import com.sun.appserv.management.config.DASConfig;
+import com.sun.appserv.management.config.PropertiesAccess;
+import org.glassfish.admingui.util.AMXUtil;
 
 
 /**
@@ -168,7 +170,6 @@ public class ServerHandlers {
         String autoDeployDirectory = dConfig.getAutodeployDir() ;
         boolean precompile = dConfig.getAutodeployJSPPrecompilationEnabled();
         boolean verifier = dConfig.getAutodeployVerifierEnabled();
-        Map<String, String> props = dConfig.getProperties();
         handlerCtx.setOutputValue("Reload", reload);
         handlerCtx.setOutputValue("ReloadInterval", reloadInterval);
         handlerCtx.setOutputValue("AutoDeploy", autoDeploy);
@@ -177,7 +178,7 @@ public class ServerHandlers {
         handlerCtx.setOutputValue("AutoDeployDirectory", autoDeployDirectory);
         handlerCtx.setOutputValue("Precompile", precompile);
         handlerCtx.setOutputValue("Verifier", verifier);        
-        handlerCtx.setOutputValue("Properties", props);
+        handlerCtx.setOutputValue("Properties", dConfig.getPropertyConfigMap());
         
     }    
     
@@ -271,36 +272,20 @@ public class ServerHandlers {
         @HandlerInput(name="Verifier", type=Boolean.class),
         @HandlerInput(name="Precompile", type=Boolean.class),
         @HandlerInput(name="AutoDeployDirectory", type=String.class),
-        @HandlerInput(name="AddProps", type=Map.class),
-        @HandlerInput(name="RemoveProps", type=ArrayList.class)})
+        @HandlerInput(name="newProps",    type=Map.class)})
         public static void saveServerAppsConfigAttributes(HandlerContext handlerCtx) {
-        
-        ConfigConfig config = AMXRoot.getInstance().getConfig(((String)handlerCtx.getInputValue("ConfigName")));
-        DASConfig dConfig = config.getAdminServiceConfig().getDASConfig();
-        ArrayList removeProps = (ArrayList)handlerCtx.getInputValue("RemoveProps");
-        Map addProps = (Map)handlerCtx.getInputValue("AddProps");
-        String[] remove = (String[])removeProps.toArray(new String[ removeProps.size()]);
-        for(int i=0; i<remove.length; i++){
-            dConfig.removeProperty(remove[i]);
+            ConfigConfig config = AMXRoot.getInstance().getConfig(((String)handlerCtx.getInputValue("ConfigName")));
+            DASConfig dConfig = config.getAdminServiceConfig().getDASConfig();
+            dConfig.setDynamicReloadEnabled(((Boolean)handlerCtx.getInputValue("Reload")).booleanValue());
+            dConfig.setDynamicReloadPollIntervalInSeconds((String)handlerCtx.getInputValue("ReloadInterval"));
+            dConfig.setAutodeployEnabled(((Boolean)handlerCtx.getInputValue("AutoDeploy")).booleanValue());
+            dConfig.setAdminSessionTimeoutInMinutes((String)handlerCtx.getInputValue("AdminTimeout"));
+            dConfig.setAutodeployPollingIntervalInSeconds((String)handlerCtx.getInputValue("AutoDeployInterval"));
+            dConfig.setAutodeployDir((String)handlerCtx.getInputValue("AutoDeployDirectory")) ;
+            dConfig.setAutodeployJSPPrecompilationEnabled(((Boolean)handlerCtx.getInputValue("Precompile")).booleanValue());
+            dConfig.setAutodeployVerifierEnabled(((Boolean)handlerCtx.getInputValue("Verifier")).booleanValue());
+            AMXUtil.updateProperties( dConfig, (Map)handlerCtx.getInputValue("newProps"));
         }
-        if(addProps != null ){
-            Iterator additer = addProps.keySet().iterator();
-            while(additer.hasNext()){
-                Object key = additer.next();
-                String addvalue = (String)addProps.get(key);
-                dConfig.setPropertyValue((String)key, addvalue);
-                
-            }
-        }      
-        dConfig.setDynamicReloadEnabled(((Boolean)handlerCtx.getInputValue("Reload")).booleanValue());
-        dConfig.setDynamicReloadPollIntervalInSeconds((String)handlerCtx.getInputValue("ReloadInterval"));
-        dConfig.setAutodeployEnabled(((Boolean)handlerCtx.getInputValue("AutoDeploy")).booleanValue());
-        dConfig.setAdminSessionTimeoutInMinutes((String)handlerCtx.getInputValue("AdminTimeout"));
-        dConfig.setAutodeployPollingIntervalInSeconds((String)handlerCtx.getInputValue("AutoDeployInterval"));
-        dConfig.setAutodeployDir((String)handlerCtx.getInputValue("AutoDeployDirectory")) ;
-        dConfig.setAutodeployJSPPrecompilationEnabled(((Boolean)handlerCtx.getInputValue("Precompile")).booleanValue());
-        dConfig.setAutodeployVerifierEnabled(((Boolean)handlerCtx.getInputValue("Verifier")).booleanValue());                
-    }
     
     
     /**
@@ -559,14 +544,8 @@ public class ServerHandlers {
         String util = mConfig.getUtil();
         String verifier = mConfig.getVerifier();
         String web = mConfig.getWebContainer();
-        String jaxws = "INFO";
-        String jbi = "INFO";
-        
-        if (mConfig.existsProperty(JAXWS_MODULE_PROPERTY))
-            jaxws = mConfig.getPropertyValue(JAXWS_MODULE_PROPERTY);
-        
-        if (mConfig.existsProperty(JBI_MODULE_PROPERTY))
-            jbi = mConfig.getPropertyValue(JBI_MODULE_PROPERTY);
+        String jaxws = AMXUtil.getPropertyValue(mConfig, JAXWS_MODULE_PROPERTY, "INFO");
+        String jbi = AMXUtil.getPropertyValue(mConfig, JBI_MODULE_PROPERTY, "INFO");
         
         handlerCtx.setOutputValue("Admin", admin);
         handlerCtx.setOutputValue("Classloader", classLoader);
@@ -732,15 +711,8 @@ public class ServerHandlers {
             mConfig.setGroupManagementService((String)handlerCtx.getInputValue("Gms"));
         }
         
-        if (mConfig.existsProperty(JBI_MODULE_PROPERTY))
-            mConfig.setPropertyValue(JBI_MODULE_PROPERTY, (String)handlerCtx.getInputValue("Jbi"));
-        else
-            mConfig.createProperty(JBI_MODULE_PROPERTY, (String)handlerCtx.getInputValue("Jbi"));
-        
-        if (mConfig.existsProperty(JAXWS_MODULE_PROPERTY))
-            mConfig.setPropertyValue(JAXWS_MODULE_PROPERTY, (String)handlerCtx.getInputValue("Jaxws"));
-        else
-            mConfig.createProperty(JAXWS_MODULE_PROPERTY, (String)handlerCtx.getInputValue("Jaxws"));
+        AMXUtil.setPropertyValue(mConfig, JBI_MODULE_PROPERTY, (String)handlerCtx.getInputValue("Jbi"));
+        AMXUtil.setPropertyValue(mConfig, JAXWS_MODULE_PROPERTY, (String)handlerCtx.getInputValue("Jaxws"));
         
     }        
 
@@ -1038,14 +1010,14 @@ public class ServerHandlers {
                 Map addProps = (Map)handlerCtx.getInputValue("AddProps");
                 String[] remove = (String[])removeProps.toArray(new String[ removeProps.size()]);
                 for(int i=0; i<remove.length; i++){
-                    lc.removeProperty(remove[i]);
+                    lc.removePropertyConfig(remove[i]);
                 }
                 if(addProps != null ){
                     Iterator additer = addProps.keySet().iterator();
                     while(additer.hasNext()){
                         Object key = additer.next();
                         String addvalue = (String)addProps.get(key);
-                        lc.setPropertyValue((String)key, addvalue);
+                        AMXUtil.setPropertyValue(lc, (String)key, addvalue);
 
                     }
                 }         
@@ -1281,17 +1253,9 @@ public class ServerHandlers {
     output={
         @HandlerOutput(name="PersistenceLogLevel", type=String.class)})
         public static void getPersistenceLogLevel(HandlerContext handlerCtx) {    
-        String value = null;
         ConfigConfig config = AMXRoot.getInstance().getConfig(((String)handlerCtx.getInputValue("ConfigName")));
         ModuleLogLevelsConfig mConfig = config.getLogServiceConfig().getModuleLogLevelsConfig();
-        try {
-            value = mConfig.getPropertyValue(PERSISTENCE_MODULE_PROPERTY); 
-        }catch (Exception ex){
-            //ignore exception if the property doesn't exist
-        }        
-        if(value == null)
-            value = mConfig.getJDO();
-        handlerCtx.setOutputValue("PersistenceLogLevel", value);
+        handlerCtx.setOutputValue("PersistenceLogLevel", AMXUtil.getPropertyValue(mConfig, PERSISTENCE_MODULE_PROPERTY, mConfig.getJDO()));
      }
     
    /**
@@ -1312,7 +1276,7 @@ public class ServerHandlers {
         String value = (String)handlerCtx.getInputValue("Value");
         ModuleLogLevelsConfig mConfig = config.getLogServiceConfig().getModuleLogLevelsConfig();
         
-        mConfig.setPropertyValue(PERSISTENCE_MODULE_PROPERTY, value);
+        AMXUtil.setPropertyValue(mConfig, PERSISTENCE_MODULE_PROPERTY, value);
         mConfig.setJDO(value);
         mConfig.setCMP(value);
     }
@@ -1475,10 +1439,8 @@ public class ServerHandlers {
         public static void getModuleLogLevelProperties(HandlerContext handlerCtx) {
         ConfigConfig config = AMXRoot.getInstance().getConfig(((String)handlerCtx.getInputValue("ConfigName")));
         ModuleLogLevelsConfig mConfig = config.getLogServiceConfig().getModuleLogLevelsConfig();
-        /* TODO-V3
         Map newMap = AMXUtil.getNonSkipPropertiesMap(mConfig, skipLogModulePropsList);
         handlerCtx.setOutputValue("Properties", newMap);
-         */
         handlerCtx.setOutputValue("Properties", " ");
     }     
     
@@ -1493,12 +1455,10 @@ public class ServerHandlers {
         @HandlerInput(name="ConfigName", type=String.class, required=true)},
     output={
         @HandlerOutput(name="Properties", type=Map.class)})
-        public static void getLoggingProperties(HandlerContext handlerCtx) {
+    public static void getLoggingProperties(HandlerContext handlerCtx) {
         ConfigConfig config = AMXRoot.getInstance().getConfig(((String)handlerCtx.getInputValue("ConfigName")));
         LogServiceConfig lc = config.getLogServiceConfig();
-        Map<String, String> props = config.getLogServiceConfig().getProperties();
-        handlerCtx.setOutputValue("Properties", props);
-        
+        handlerCtx.setOutputValue("Properties", config.getLogServiceConfig().getPropertyConfigMap());
     }  
     
     /**
@@ -1681,6 +1641,8 @@ public class ServerHandlers {
         
         return list;
     }
+    
+    
     private static HashMap viewOperationMap = new HashMap();
     static {
        viewOperationMap.put("Summary", "getSummary");

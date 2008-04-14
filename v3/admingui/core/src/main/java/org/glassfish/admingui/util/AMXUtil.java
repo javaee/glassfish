@@ -20,7 +20,7 @@ import java.util.Set;
 public class AMXUtil {
 
     /**
-     *	<p> Returns the value of the given property and MBean
+     *	<p> Returns the value of the  property of the MBean
      *
      *	@param	mbean MBean with properties
      *   (extends <code>com.sun.appserv.management.config.PropertiesAccess</code>).
@@ -28,17 +28,52 @@ public class AMXUtil {
      *
      *	@return	String property value.
      */
-    public static String getPropertyValue(PropertiesAccess mbean, String propName) {
-        if (mbean.getPropertyConfigMap().get(propName) == null){
-            return "";
-        }else
-            return mbean.getPropertyConfigMap().get(propName).getValue();
+    public static String getPropertyValue(PropertiesAccess mbean, String key) {
+       return getPropertyValue(mbean, key, "");
     }
 
+    public static String getPropertyValue(PropertiesAccess mbean, String key, String defaultValue){
+        if ( mbean.getPropertyConfigMap().get(key) != null)
+            defaultValue = mbean.getPropertyConfigMap().get(key).getValue();
+        return defaultValue;
+    }
+    
+    
+    /**
+     *  Change the property of a config mbean
+     *  If the property Value is null or empty, this property will be removed.
+     *  If the property  already exist,  the property value will be updated if the value is different.
+     *  If the property doesn't exist, a new property will be created. 
+     * 
+     * @param config    mbean whose Property element to be changed
+     * @param propName  name of the property
+     * @param propValue value of this property
+     * 
+     */
+    public static void setPropertyValue(PropertiesAccess config, String propName, String propValue) {
+        Map<String, PropertyConfig> pMap = config.getPropertyConfigMap();
+        if (pMap.containsKey(propName)) {
+            if (GuiUtil.isEmpty(propValue)) {
+                config.removePropertyConfig(propName);
+            } else {
+                //don't change the value if it is equal.
+                PropertyConfig cp = config.getPropertyConfigMap().get(propName);
+                if (!cp.getValue().equals(propValue)) {
+                    cp.setValue(propValue);
+                }
+            }
+        } else {
+            if (!GuiUtil.isEmpty(propValue)) {
+                config.createPropertyConfig(propName, propValue);
+            }
+        }
+    }
+
+    
     public static void updateProperties(PropertiesAccess config, Map<String, String> newProps) {
         updateProperties(config, newProps, null);
     }
-
+    
 
     /*
      * update the properties of a config.
@@ -100,37 +135,20 @@ public class AMXUtil {
      * Normally, this is followed by updateProperites() with the ignore list the same as the skipList
      * specified here when user does a Save.
      */
-    public static Map getNonSkipPropertiesMap(PropertiesAccess config, List skipList) {
+    public static Map<String, PropertyConfig> getNonSkipPropertiesMap(PropertiesAccess config, List skipList) {
         Map<String, PropertyConfig> props = config.getPropertyConfigMap();
-        Map newMap = new HashMap<String, String>();
+        Map<String, PropertyConfig> newMap = new HashMap<String, PropertyConfig>();
 
         for (String propsName : props.keySet()) {
             if (skipList.contains(propsName)) {
                 continue;
             }
-            newMap.put(propsName, props.get(propsName).getValue());
+            newMap.put(propsName, props.get(propsName));
         }
         return newMap;
     }
 
 
-    //Chagen the Property Value of a config
-    public static void changeProperty(PropertiesAccess config, String propName, String propValue) {
-        Map<String, PropertyConfig> pMap = config.getPropertyConfigMap();
-        if (pMap.containsKey(propName)) {
-            if (GuiUtil.isEmpty(propValue)) {
-                config.removePropertyConfig(propName);
-            } else {
-                //don't change the value if it is equal.
-                PropertyConfig cp = config.getPropertyConfigMap().get(propName);
-                if (!cp.getValue().equals(propValue)) {
-                    cp.setValue(propValue);
-                }
-            }
-        } else {
-            if (!GuiUtil.isEmpty(propValue)) {
-                config.createPropertyConfig(propName, propValue);
-            }
-        }
-    }
 }
+
+   

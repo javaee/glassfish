@@ -472,9 +472,9 @@ public class HttpServiceHandlers {
         
             AMXUtil.updateProperties(hConfig, newProps, httpServiceSkipPropsList);
             
-            AMXUtil.changeProperty(hConfig, "accessLogBufferSize", (String)handlerCtx.getInputValue("accessLogBufferSize"));
-            AMXUtil.changeProperty(hConfig, "accessLogWriteInterval", (String)handlerCtx.getInputValue("accessLogWriteInterval"));
-            AMXUtil.changeProperty(hConfig, "accessLoggingEnabled", ""+handlerCtx.getInputValue("accessLoggingEnabled"));
+            AMXUtil.setPropertyValue(hConfig, "accessLogBufferSize", (String)handlerCtx.getInputValue("accessLogBufferSize"));
+            AMXUtil.setPropertyValue(hConfig, "accessLogWriteInterval", (String)handlerCtx.getInputValue("accessLogWriteInterval"));
+            AMXUtil.setPropertyValue(hConfig, "accessLoggingEnabled", ""+handlerCtx.getInputValue("accessLoggingEnabled"));
             
         }catch (Exception ex){
             GuiUtil.handleException(handlerCtx, ex);
@@ -1069,13 +1069,12 @@ public class HttpServiceHandlers {
             handlerCtx.setOutputValue("Acceptor", httpListConfig.getAcceptorThreads());
             handlerCtx.setOutputValue("PoweredBy", httpListConfig.getXpoweredBy());
             handlerCtx.setOutputValue("Blocking", httpListConfig.getBlockingEnabled());
-            Map<String, String> pMap = httpListConfig.getProperties();
             
             //refer to issue#2920; If we want to hide this property, just uncomment the following 2 lines.
             //if (httpListenerName.equals(ADMIN_LISTENER))
             //    pMap.remove(PROXIED_PROTOCOLS);
             
-            handlerCtx.setOutputValue("Properties", pMap);
+            handlerCtx.setOutputValue("Properties", httpListConfig.getPropertyConfigMap());
         }catch (Exception ex){
             GuiUtil.handleException(handlerCtx, ex);
         }

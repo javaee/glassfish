@@ -44,6 +44,7 @@ package org.glassfish.admingui.handlers;
 
 import com.sun.appserv.management.config.ConfigConfig;
 import com.sun.appserv.management.config.ManagerPropertiesConfig;
+import com.sun.appserv.management.config.PropertyConfig;
 import com.sun.appserv.management.config.SessionConfig;
 import com.sun.appserv.management.config.SessionManagerConfig;
 import com.sun.appserv.management.config.SessionPropertiesConfig;
@@ -84,8 +85,7 @@ public class ContainerHandlers {
         String configName = (String) handlerCtx.getInputValue("ConfigName");
         ConfigConfig config = AMXRoot.getInstance().getConfig(configName);
         WebContainerConfig webConfig = config.getWebContainerConfig();
-        Map<String, String> props = webConfig.getProperties();
-        handlerCtx.setOutputValue("Properties", props);
+        handlerCtx.setOutputValue("Properties", webConfig.getPropertyConfigMap());
     }
     
     /**
@@ -107,13 +107,13 @@ public class ContainerHandlers {
         String configName = (String) handlerCtx.getInputValue("ConfigName");
         ConfigConfig config = AMXRoot.getInstance().getConfig(configName);
         SessionConfig sessionConfig = config.getWebContainerConfig().getSessionConfig();  
-        Map<String, String> props = new HashMap();
+        Map<String, PropertyConfig> props = new HashMap();
         if(sessionConfig != null){
             SessionPropertiesConfig ssPropConfig = sessionConfig.getSessionPropertiesConfig();
             if(ssPropConfig != null){
                 String sessTimeout =ssPropConfig.getTimeoutInSeconds();
                 handlerCtx.setOutputValue("SessionTimeout", sessTimeout);
-                props = ssPropConfig.getProperties();
+                props = ssPropConfig.getPropertyConfigMap();
             }
         }
         handlerCtx.setOutputValue("Properties", props);
@@ -199,7 +199,7 @@ public class ContainerHandlers {
         String configName = (String) handlerCtx.getInputValue("ConfigName");
         ConfigConfig config = AMXRoot.getInstance().getConfig(configName);
         SessionConfig sessionConfig = config.getWebContainerConfig().getSessionConfig();
-        Map<String, String> props = new HashMap();
+        Map<String, PropertyConfig> props = new HashMap();
         if(sessionConfig != null){
             SessionManagerConfig sessMgrConfig = sessionConfig.getSessionManagerConfig();
             if(sessMgrConfig != null){
@@ -209,7 +209,7 @@ public class ContainerHandlers {
                     String maxSessions = mgrPropConfig.getMaxSessions();
                     String sessFileName = mgrPropConfig.getSessionFileName();
                     String sessionIdGen = mgrPropConfig.getSessionIdGeneratorClassname();
-                    props = mgrPropConfig.getProperties();
+                    props = mgrPropConfig.getPropertyConfigMap();
                     
                     handlerCtx.setOutputValue("ReapInterval", reapInterval);
                     handlerCtx.setOutputValue("MaxSessions", maxSessions);
@@ -296,7 +296,7 @@ public class ContainerHandlers {
         String configName = (String) handlerCtx.getInputValue("ConfigName");
         ConfigConfig config = AMXRoot.getInstance().getConfig(configName);
         SessionConfig sessionConfig = config.getWebContainerConfig().getSessionConfig();
-        Map <String, String> props = new HashMap();
+        Map <String, PropertyConfig> props = new HashMap();
         if(sessionConfig != null){
             SessionManagerConfig sessMgrConfig = sessionConfig.getSessionManagerConfig();
             if(sessMgrConfig != null){
@@ -304,7 +304,7 @@ public class ContainerHandlers {
                 if(storePropConfig != null){
                     String reapInterval = storePropConfig.getReapIntervalInSeconds();
                     String directory = storePropConfig.getDirectory();
-                    props = storePropConfig.getProperties();
+                    props = storePropConfig.getPropertyConfigMap();
                     
                     handlerCtx.setOutputValue("ReapInterval", reapInterval);
                     handlerCtx.setOutputValue("Directory", directory);

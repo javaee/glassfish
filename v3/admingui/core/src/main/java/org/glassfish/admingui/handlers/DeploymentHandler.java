@@ -356,7 +356,7 @@ public class DeploymentHandler {
 
         String registry = dProps.getProperty("registry");
         if (!GuiUtil.isEmpty(registry)){
-            ra.createProperty(registry, "true");
+            ra.createPropertyConfig(registry, "true");
         }
         
         Map<String,String> addProps = (Map)handlerCtx.getInputValue("AddProps");
@@ -364,7 +364,7 @@ public class DeploymentHandler {
              for(String key: addProps.keySet()){
                  String value = addProps.get(key);
                  if (!GuiUtil.isEmpty(value))
-                    ra.createProperty(key,value);
+                    ra.createPropertyConfig(key,value);
              }  
          }
         handlerCtx.setOutputValue("nextPage", "applications/connectorModules.jsf");

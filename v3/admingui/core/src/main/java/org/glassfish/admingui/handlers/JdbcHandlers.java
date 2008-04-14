@@ -260,8 +260,7 @@ public class JdbcHandlers {
             if (pool == null){
 		GuiUtil.handleError(handlerCtx, GuiUtil.getMessage("msg.noSuchJDBCConnectionPool"));
             }
-            Map<String, String> props = pool.getProperties();
-            handlerCtx.setOutputValue("properties", props);
+            handlerCtx.setOutputValue("properties", pool.getPropertyConfigMap());
         }
 
 
