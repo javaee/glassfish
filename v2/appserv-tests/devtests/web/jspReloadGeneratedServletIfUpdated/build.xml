@@ -83,9 +83,9 @@
     </target>
 
     <target name="update" depends="init-common">
-        <delete file="${env.S1AS_HOME}/domains/${admin.domain}/generated/jsp/j2ee-modules/web-jsp-reload-generated-servlet-if-updated-web/org/apache/jsp/jsp/test_jsp.class"/>
+        <delete file="${env.S1AS_HOME}/domains/${admin.domain}/generated/jsp/web-jsp-reload-generated-servlet-if-updated-web/org/apache/jsp/jsp/test_jsp.class"/>
         <copy file="test_jsp.class"
-            todir="${env.S1AS_HOME}/domains/${admin.domain}/generated/jsp/j2ee-modules/web-jsp-reload-generated-servlet-if-updated-web/org/apache/jsp/jsp"
+            todir="${env.S1AS_HOME}/domains/${admin.domain}/generated/jsp/web-jsp-reload-generated-servlet-if-updated-web/org/apache/jsp/jsp"
             failonerror="true"/>
     </target>
 
