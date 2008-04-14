@@ -51,7 +51,7 @@ import com.sun.appserv.management.util.jmx.ObjectNameComparator;
 import com.sun.appserv.management.util.stringifier.SmartStringifier;
 import junit.extensions.ActiveTestSuite;
 import junit.framework.TestSuite;
-import org.glassfish.admin.amxtest.util.jmx.JMXTestBase;
+import org.glassfish.admin.amxtest.JMXTestBase;
 
 import javax.management.JMException;
 import javax.management.MBeanInfo;

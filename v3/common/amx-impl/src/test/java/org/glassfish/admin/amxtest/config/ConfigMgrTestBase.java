@@ -50,7 +50,7 @@ import com.sun.appserv.management.util.misc.ClassUtil;
 import com.sun.appserv.management.util.misc.ExceptionUtil;
 import com.sun.appserv.management.util.misc.MapUtil;
 import org.glassfish.admin.amxtest.AMXTestBase;
-import org.glassfish.admin.amxtest.CreateRemoveListener;
+import org.glassfish.admin.amxtest.support.CreateRemoveListener;
 
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;

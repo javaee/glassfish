@@ -60,7 +60,6 @@ import com.sun.appserv.management.util.misc.ExceptionUtil;
 import com.sun.appserv.management.util.misc.GSetUtil;
 import com.sun.appserv.management.util.misc.TypeCast;
 import org.glassfish.admin.amx.util.AMXDebugSupportMBean;
-import org.glassfish.admin.amxtest.util.jmx.JMXTestBase;
 
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
@@ -371,7 +370,7 @@ public class AMXTestBase
 
     protected MBeanServerConnection
     getConnection() {
-        return (getGlobalConnection());
+        return (getGlobalMBeanServerConnection());
     }
 
     protected ProxyFactory

@@ -47,6 +47,8 @@ import com.sun.appserv.management.util.misc.StringUtil;
 import com.sun.appserv.management.util.misc.TypeCast;
 import org.glassfish.admin.amx.util.AMXDebugStuff;
 
+import org.glassfish.admin.amxtest.support.AMXComparator;
+
 import javax.management.ObjectName;
 import java.util.Arrays;
 import java.util.Collection;

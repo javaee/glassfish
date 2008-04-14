@@ -38,13 +38,14 @@ package org.glassfish.admin.amxtest.base;
 import com.sun.appserv.management.base.Util;
 import org.glassfish.admin.amx.mbean.TestDummy;
 import org.glassfish.admin.amx.mbean.TestDummyMBean;
-import org.glassfish.admin.amxtest.util.jmx.JMXTestBase;
+import org.glassfish.admin.amxtest.JMXTestBase;
 
 import javax.management.JMException;
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
 import java.io.IOException;
 
+import org.glassfish.admin.amxtest.JMXTestBase;
 
 /**
  */
