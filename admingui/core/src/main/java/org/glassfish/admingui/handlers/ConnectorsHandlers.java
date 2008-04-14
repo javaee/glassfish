@@ -307,8 +307,7 @@ public class ConnectorsHandlers {
             GuiUtil.handleError(handlerCtx, GuiUtil.getMessage("msg.NoSuchConnectorConnectionPool"));
             return;
         }
-        Map<String, String> props = pool.getProperties();
-        handlerCtx.setOutputValue("properties", props);
+        handlerCtx.setOutputValue("properties", pool.getPropertyConfigMap());
     }
 
     /**
@@ -910,8 +909,7 @@ public class ConnectorsHandlers {
     handlerCtx.setOutputValue("enabledString", TargetUtil.getEnabledStatus(resource, false));
     else
     handlerCtx.setOutputValue("enabled", TargetUtil.isResourceEnabled(resource, "server" ));
-    Map<String, String> props = resource.getProperties();
-    handlerCtx.setOutputValue("properties", props);
+    handlerCtx.setOutputValue("properties", resource.getPropertyConfigMap());
      */
     }
 

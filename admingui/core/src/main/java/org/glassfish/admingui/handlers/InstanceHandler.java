@@ -187,10 +187,12 @@ public class InstanceHandler {
     private static String resolveToken(String pn, String serverName) {
         StandaloneServerConfig ss = AMXRoot.getInstance().getServersConfig().getStandaloneServerConfigMap().get(serverName);
         if (ss != null){
+            if (ss.getSystemPropertyConfigMap().containsKey(pn))
             return ss.getSystemPropertyConfigMap().get(pn).getValue();
         }
         ClusteredServerConfig  cs = AMXRoot.getInstance().getServersConfig().getClusteredServerConfigMap().get(serverName);
         if (cs != null){
+            if (cs.getSystemPropertyConfigMap().containsKey(pn))
             return cs.getSystemPropertyConfigMap().get(pn).getValue();
         }
         return "";

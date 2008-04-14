@@ -77,6 +77,7 @@ import com.sun.appserv.management.config.ConfigConfig;
 import com.sun.appserv.management.config.DASConfig;
 
 import com.sun.appserv.management.config.PropertyConfig;
+import java.util.HashMap;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.Cookie;
 
@@ -573,9 +574,7 @@ public class CommonHandlers {
             return;
         }
         for(int i=0; i<propsName.size(); i++){
-           String newValue = propsValue.get(i);
-           String nm = propsName.get(i);
-           AMXUtil.changeProperty(mbean, nm, newValue);
+           AMXUtil.setPropertyValue(mbean, propsValue.get(i), propsName.get(i));
         }
     }
     
@@ -595,7 +594,7 @@ public class CommonHandlers {
         
         PropertiesAccess mbean = (PropertiesAccess)handlerCtx.getInputValue("mbean");
         List<String> ignoreProps = (List)handlerCtx.getInputValue("ignoreProps");
-        Map<String,String> allProps = mbean.getProperties();
+        Map<String,PropertyConfig> allProps = mbean.getPropertyConfigMap();
         
         if (ignoreProps != null ){
             for(String nm : ignoreProps){
@@ -726,6 +725,8 @@ public class CommonHandlers {
             handlerCtx.setOutputValue("supportCluster", AMXRoot.getInstance().supportCluster());  
             handlerCtx.setOutputValue("supportHADB", false);
     }
+    
+        
     
     
     private static final String CHARTING_COOKIE_NAME = "as91-doCharting";

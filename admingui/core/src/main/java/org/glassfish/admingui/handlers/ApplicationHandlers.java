@@ -471,8 +471,7 @@ public class ApplicationHandlers {
             handlerCtx.setOutputValue("enabledString", TargetUtil.getEnabledStatus(module, true));
         else
             handlerCtx.setOutputValue("enabled", TargetUtil.isApplicationEnabled(module, "server" ));
-        Map<String, String> props = module.getProperties();
-        handlerCtx.setOutputValue("properties", props);     
+        handlerCtx.setOutputValue("properties", module.getPropertyConfigMap());     
     }
     
     

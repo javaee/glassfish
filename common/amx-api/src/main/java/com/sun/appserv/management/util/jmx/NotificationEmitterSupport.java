@@ -64,8 +64,8 @@ import java.util.Map;
 public class NotificationEmitterSupport
     extends NotificationBroadcasterSupport
 {
-	private final boolean		mAsyncDelivery;
-	private SenderThread		mSenderThread;
+	private final boolean               mAsyncDelivery;
+	private volatile SenderThread		mSenderThread;
 	private final Map<String,Integer>   mListenerTypeCounts;
 	private final NotificationListenerTracking   mListeners;
 	
@@ -115,9 +115,11 @@ public class NotificationEmitterSupport
 		public void
 	sendAll( )
 	{
-		if ( mSenderThread != null )
+        // use a temp in case variable goes null after we read it
+        final SenderThread senderThread = mSenderThread;
+		if ( senderThread != null )
 		{
-			mSenderThread.sendAll();
+			senderThread.sendAll();
 		}
 	}
 	
@@ -342,6 +344,7 @@ public class NotificationEmitterSupport
 			public
 		SenderThread()
 		{
+            setDaemon(true);
 			mQuit	= false;
 			mPendingNotifications	=
 			    Collections.synchronizedList( new LinkedList<Notification>() );
@@ -371,7 +374,12 @@ public class NotificationEmitterSupport
 			notifySelf();
 		}
 		
-			public boolean
+        /**
+            This method is synchronized because it can be invoked by either SenderThread
+            or an external call as a regular method.  Besides, there is no point having
+            more than one thread process the queue.
+         */
+			public synchronized boolean
 		sendAll()
 		{
 			Notification	notif			= null;

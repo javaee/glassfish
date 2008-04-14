@@ -61,6 +61,7 @@ import com.sun.appserv.management.config.ConfigConfig;
 import com.sun.appserv.management.config.VirtualServerConfig;
 import com.sun.appserv.management.config.ConfigElement;
 import com.sun.appserv.management.config.PropertiesAccess;
+import com.sun.appserv.management.config.PropertyConfig;
 import com.sun.appserv.management.config.VirtualServerConfigKeys;
 
 
@@ -172,12 +173,12 @@ public class VirtualServerHandlers {
             
             Map aMap = AMXUtil.getNonSkipPropertiesMap(vs, vsSkipPropsList);
             handlerCtx.setOutputValue("Properties", aMap);
-            Map origProps = vs.getProperties();
-            handlerCtx.setOutputValue("accessLogBufferSize", origProps.get("accessLogBufferSize"));
-            handlerCtx.setOutputValue("accessLogWriteInterval", origProps.get("accessLogWriteInterval"));
-            handlerCtx.setOutputValue("accesslog", origProps.get("accesslog"));
-            handlerCtx.setOutputValue("docroot", origProps.get("docroot"));
-            String sso = (String) origProps.get("sso-enabled");
+            Map<String, PropertyConfig> origProps = vs.getPropertyConfigMap();
+            handlerCtx.setOutputValue("accessLogBufferSize", origProps.get("accessLogBufferSize").getValue());
+            handlerCtx.setOutputValue("accessLogWriteInterval", origProps.get("accessLogWriteInterval").getValue());
+            handlerCtx.setOutputValue("accesslog", origProps.get("accesslog").getValue());
+            handlerCtx.setOutputValue("docroot", origProps.get("docroot").getValue());
+            String sso = (String) origProps.get("sso-enabled").getValue();
             Boolean ssoFlag = false;
             if ( GuiUtil.isEmpty(sso))
                 ssoFlag = false;
@@ -186,7 +187,7 @@ public class VirtualServerHandlers {
             
             handlerCtx.setOutputValue("sso", ssoFlag);
             
-            String accessLoggingFlag = (String) origProps.get("accessLoggingEnabled");
+            String accessLoggingFlag = (String) origProps.get("accessLoggingEnabled").getValue();
             if (GuiUtil.isEmpty(accessLoggingFlag)){
                 handlerCtx.setOutputValue("accessLoggingFlag", "off");
             }else
@@ -296,15 +297,15 @@ public class VirtualServerHandlers {
             vs.setDefaultWebModule(((String)handlerCtx.getInputValue("Web")));
             vs.setLogFile(((String)handlerCtx.getInputValue("LogFile")));
             
-            AMXUtil.changeProperty(vs, "accesslog", (String)handlerCtx.getInputValue("accesslog"));
-            AMXUtil.changeProperty(vs, "accessLogBufferSize", (String)handlerCtx.getInputValue("accessLogBufferSize"));
-            AMXUtil.changeProperty(vs, "accessLogWriteInterval", (String)handlerCtx.getInputValue("accessLogWriteInterval"));
-            AMXUtil.changeProperty(vs, "docroot", (String)handlerCtx.getInputValue("docroot"));
-            AMXUtil.changeProperty(vs, "sso-enabled", ""+handlerCtx.getInputValue("sso"));
+            AMXUtil.setPropertyValue(vs, "accesslog", (String)handlerCtx.getInputValue("accesslog"));
+            AMXUtil.setPropertyValue(vs, "accessLogBufferSize", (String)handlerCtx.getInputValue("accessLogBufferSize"));
+            AMXUtil.setPropertyValue(vs, "accessLogWriteInterval", (String)handlerCtx.getInputValue("accessLogWriteInterval"));
+            AMXUtil.setPropertyValue(vs, "docroot", (String)handlerCtx.getInputValue("docroot"));
+            AMXUtil.setPropertyValue(vs, "sso-enabled", ""+handlerCtx.getInputValue("sso"));
             String accessLoggingFlag = (String)handlerCtx.getInputValue("accessLoggingFlag");
             if (accessLoggingFlag.equals("off"))
                 accessLoggingFlag=null;
-            AMXUtil.changeProperty(vs, "accessLoggingEnabled", accessLoggingFlag);
+            AMXUtil.setPropertyValue(vs, "accessLoggingEnabled", accessLoggingFlag);
             
         }catch (Exception ex){
             GuiUtil.handleException(handlerCtx, ex);

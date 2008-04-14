@@ -1,3 +1,4 @@
+<<<<<<< .working
 <?xml version="1.0" encoding="UTF-8"?>
 
 <CommandsAndOptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="CLISpecification.xsd">
@@ -7,9 +8,6 @@
 	<CommandProperty name="environment-prefix" value="AS_ADMIN_"/>
     </CommandProperties>
     <Options>
-	<Option name="port" type="string" value-required="true" default="8080">
-	    <shortoption>p</shortoption>
-	</Option>
 	<Option name="verbose" type="boolean" value-required="false" default="false">
 	    <shortoption>v</shortoption>
 	</Option>
@@ -163,3 +161,160 @@
 	</Command>
     </Commands>
 </CommandsAndOptions>
+=======
+<?xml version="1.0" encoding="UTF-8"?>
+
+<CommandsAndOptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="CLISpecification.xsd">
+    <CommandProperties defaultcommand="introduction" helpclass="com.sun.enterprise.admin.cli.HelpCommand">
+	<CommandProperty name="base-package" value="com.sun.enterprise.admin.cli"/>
+	<CommandProperty name="property-file-name" value="LocalStrings"/>
+	<CommandProperty name="environment-prefix" value="AS_ADMIN_"/>
+    </CommandProperties>
+    <Options>
+	<Option name="verbose" type="boolean" value-required="false" default="false">
+	    <shortoption>v</shortoption>
+	</Option>
+        <Option name="domaindir" type="string" value-required="true"/>
+        <Option name="debug" type="boolean" value-required="false"/>
+	<Option name="terse" type="boolean" value-required="false" default="false">
+	    <shortoption>t</shortoption>
+	</Option>
+	<Option name="echo" type="boolean" value-required="false" default="false">
+            <shortoption>e</shortoption>
+	</Option>
+	<Option name="user" type="string" value-required="true">
+	    <shortoption>u</shortoption>
+	</Option>
+	<Option name="interactive" type="boolean" value-required="false" default="true">
+	    <shortoption>I</shortoption>
+	</Option>
+        <Option name="adminport" type="string" value-required="true"/>
+        <Option name="adminuser" type="string" value-required="true"/>
+        <Option name="adminpassword" type="string" value-required="true"/>
+        <Option name="password" type="string" value-required="true">
+            <shortoption>w</shortoption>
+        </Option>
+        <Option name="profile" type="string" value-required="true"/>
+        <Option name="template" type="string" value-required="true"/>
+        <Option name="instance" type="string" value-required="true">
+                <shortoption>i</shortoption>
+        </Option>
+        <Option name="instanceport" type="string" value-required="true"/>
+        <Option name="portbase" type="string" value-required="true"/>
+        <Option name="domainproperties" type="string" value-required="true"/>
+        <Option name="path" type="string" value-required="true"/>
+        <Option name="passwordfile" type="string" value-required="true"/>
+        <Option name="checkports" type="boolean" value-required="true" default="true"/>
+        <Option name="masterpassword" type="string" value-required="true"/>
+        <Option name="savemasterpassword" type="boolean" value-required="false" default="false"/>
+        <Option name="savelogin" type="boolean" value-required="false" default="false"/>
+        <Option name="filename" type="string" value-required="true"/>
+        <Option name="description" type="string" value-required="true"/>
+        <Option name="dbhost" type="string" value-required="true" default="0.0.0.0"/>
+        <Option name="dbport" type="string" value-required="true" default="1527"/>
+        <Option name="dbhome" type="string" value-required="true" />
+        <Option name="host" type="string" value-required="true">
+                <shortoption>H</shortoption>
+        </Option>
+        <Option name="port" type="string" value-required="true">
+                <shortoption>p</shortoption>
+        </Option>
+    	<Option name="localonly" type="boolean" value-required="false" default="false"/>
+    	<Option name="remoteonly" type="boolean" value-required="false" default="false"/>
+    </Options>
+    <Commands>
+	<Command name="start-domain" classname="com.sun.enterprise.admin.cli.StartDomainCommand" numberofoperands="?" 
+             usage-text=" [--domaindir domain_directory] [--verbose=false] [--debug=false] [domain_name]">
+	    <ValidOption name="verbose"/>
+            <ValidOption name="domaindir"/>
+            <ValidOption name="debug"/>
+	    <ValidOption name="terse"/>
+	    <ValidOption name="echo"/>
+            <ValidOption name="user"/>
+	    <ValidOption name="interactive"/>
+	    <ValidOption name="passwordfile"/>			
+	</Command>
+        <Command name="create-domain" classname="com.sun.enterprise.admin.cli.CreateDomainCommand"  numberofoperands="1" 
+           usage-text="create-domain [--user admin] --adminport port_number | --portbase portbase [--terse=false] [--echo=false] [--interactive=true] [--domaindir domain_directory] [--passwordfile filename ] [--instanceport port_number] [--savemasterpassword=false] [--domainproperties (name=value)[:name=value]*] [--savelogin=false] [--checkports=true] domain_name">
+                <ValidOption name="adminport"/>
+                <ValidOption name="adminuser"/>
+                <ValidOption name="adminpassword"/>
+                <ValidOption name="user" deprecatedoption="adminuser"/>
+                <ValidOption name="password" />
+                <ValidOption name="interactive"/>
+                <ValidOption name="terse"/>
+                <ValidOption name="echo"/>
+                <ValidOption name="instanceport"/>
+                <ValidOption name="domainproperties"/>
+                <ValidOption name="portbase"/>
+                <ValidOption name="path"/>
+                <ValidOption name="domaindir" deprecatedoption="path"/>
+                <ValidOption name="passwordfile"/>
+                <ValidOption name="checkports"/>
+                <ValidOption name="masterpassword"/>
+                <ValidOption name="savemasterpassword"/>
+                <ValidOption name="savelogin"/>
+        </Command>
+        <Command name="list-domains" classname="com.sun.enterprise.admin.cli.ListDomainsCommand" numberofoperands="0" usage-text="list-domains [--terse=false] [--echo=false] [--domaindir domain_directory]">
+                <ValidOption name="terse"/>
+                <ValidOption name="echo"/>
+                <ValidOption name="domaindir"/>
+        </Command>
+        <Command name="delete-domain" classname="com.sun.enterprise.admin.cli.DeleteDomainCommand" numberofoperands="1" usage-text="delete-domain [--terse=false] [--echo=false] [--domaindir domain_directory] domain_name">
+                <ValidOption name="terse"/>
+                <ValidOption name="echo"/>
+                <ValidOption name="domaindir"/>
+        </Command>
+        <Command name="stop-domain" 
+              classname="com.sun.enterprise.admin.cli.StopDomainCommand" 
+              numberofoperands="?" 
+              usage-text="stop-domain [--terse=false] [--echo=false] [--domaindir domain_directory] [domain_name]">
+            <ValidOption name="domaindir"/>
+            <ValidOption name="terse"/>
+            <ValidOption name="echo"/>
+        </Command>
+        <Command name="backup-domain" classname="com.sun.enterprise.admin.cli.BackupCommands" numberofoperands="?" usage-text="backup-domain [--domaindir domain_directory] [--description description] [--echo=false] [--terse=false] [--verbose=false] [domain_name]">
+                <ValidOption name="domaindir"/>
+                <ValidOption name="description"/>
+                <ValidOption name="terse"/>
+                <ValidOption name="verbose"/>
+                <ValidOption name="echo"/>
+        </Command>
+        <Command name="restore-domain" classname="com.sun.enterprise.admin.cli.BackupCommands" numberofoperands="?" usage-text="restore-domain [--domaindir domain_directory] [--filename backup_filename]  [--description description] [--terse=false] [--echo=false] [--verbose=false] [domain_name]">
+                <ValidOption name="domaindir"/>
+                <ValidOption name="filename"/>
+                <ValidOption name="description"/>
+                <ValidOption name="terse"/>
+                <ValidOption name="echo"/>
+                <ValidOption name="verbose"/>
+        </Command>
+        <Command name="start-database" classname="com.sun.enterprise.admin.cli.StartDatabaseCommand" numberofoperands="0" usage-text="start-database [--dbhost 0.0.0.0] [--dbport 1527] [--dbhome db_directory] [--echo=false] [--terse=false]">
+	    <ValidOption name="dbhost"/>
+            <ValidOption name="dbport"/>
+            <ValidOption name="dbhome"/>
+            <ValidOption name="echo"/>
+            <ValidOption name="terse"/>
+	</Command>
+        <Command name="stop-database" classname="com.sun.enterprise.admin.cli.StopDatabaseCommand" numberofoperands="0" usage-text="stop-database [--dbhost 0.0.0.0] [--dbport 1527]">
+	    <ValidOption name="dbhost"/>
+            <ValidOption name="dbport"/>
+            <ValidOption name="terse"/>
+            <ValidOption name="echo"/>
+	</Command>
+        <Command name="list-commands" classname="com.sun.enterprise.admin.cli.ListCommandsCommand"
+              numberofoperands="0" 
+              usage-text="list-commands [--host hostname] [--port adminport] [--terse=false] [--echo=false] [--localonly=false] [--remoteonly=false]">
+            <ValidOption name="terse"/>
+            <ValidOption name="echo"/>
+            <ValidOption name="host"/>
+            <ValidOption name="port"/>
+            <ValidOption name="localonly"/>
+            <ValidOption name="remoteonly"/>
+	</Command>
+        <Command name="introduction" classname="com.sun.enterprise.admin.cli.IntroductionCommand"
+              numberofoperands="0" 
+              usage-text="introduction">
+	</Command>
+    </Commands>
+</CommandsAndOptions>
+>>>>>>> .merge-right.r20019

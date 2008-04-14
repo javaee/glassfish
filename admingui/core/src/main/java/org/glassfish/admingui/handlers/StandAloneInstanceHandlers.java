@@ -51,29 +51,20 @@ import com.sun.jsftemplating.component.dataprovider.MultipleListDataProvider;
 import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.ListIterator;
 
 import javax.faces.model.SelectItem;
-import javax.management.MBeanException;
-import javax.management.ObjectName;
 
-import java.lang.reflect.Array;
-import java.lang.reflect.Constructor;
 
 import org.glassfish.admingui.util.AMXRoot;
 import org.glassfish.admingui.util.GuiUtil;
-import org.glassfish.admingui.util.TargetUtil;
 
 import com.sun.webui.jsf.component.TableRowGroup;
 
-import com.sun.appserv.management.config.DomainConfig;
-import com.sun.appserv.management.config.DASConfig;
 import com.sun.appserv.management.config.StandaloneServerConfig;
 import com.sun.appserv.management.config.NodeAgentConfig;
 import com.sun.appserv.management.config.HTTPServiceConfig;
@@ -81,13 +72,12 @@ import com.sun.appserv.management.config.HTTPListenerConfig;
 import com.sun.appserv.management.config.IIOPServiceConfig;
 import com.sun.appserv.management.config.IIOPListenerConfig;
 import com.sun.appserv.management.config.ConfigConfig;
-import com.sun.appserv.management.config.ServerConfig;
-import com.sun.appserv.management.config.ConfigConfigKeys;
 import com.sun.appserv.management.config.SystemPropertiesAccess;
 
-import com.sun.appserv.management.j2ee.StateManageable;
+import com.sun.appserv.management.config.SystemPropertyConfig;
 import com.sun.appserv.management.j2ee.J2EEServer;
-import javax.faces.context.FacesContext;
+import java.util.Collection;
+import org.glassfish.admingui.util.AMXUtil;
 
 
 /**
@@ -562,13 +552,13 @@ public class StandAloneInstanceHandlers{
                 sprops = AMXRoot.getInstance().getServersConfig().getClusteredServerConfigMap().get(instanceName);
             }
             if (sprops != null){
-                if (sprops.existsSystemProperty(pn)){
-                    return sprops.getSystemPropertyValue(pn);
+                if (sprops.getSystemPropertyConfigMap().containsKey(pn)){
+                    return sprops.getSystemPropertyConfigMap().get(pn).getValue();
                 }
             }
         }
         ConfigConfig config = AMXRoot.getInstance().getConfig(configName);
-        return config.getSystemPropertyValue(pn);
+        return config.getSystemPropertyConfigMap().get(pn).getValue();
     }
     
        /**
@@ -598,7 +588,7 @@ public class StandAloneInstanceHandlers{
                  String name = (String)instance.get("name");
                  String override = (String)instance.get("override");
                  if (override != null && (!override.trim().equals(""))) {
-                     amxRoot.getServersConfig().getStandaloneServerConfigMap().get(instanceName).setSystemPropertyValue(name, override);
+                     amxRoot.getServersConfig().getStandaloneServerConfigMap().get(instanceName).getSystemPropertyConfigMap().get(name).setValue(override);
                  } else {
                      foundError = true;
                  }
@@ -634,14 +624,14 @@ public class StandAloneInstanceHandlers{
         Map addProps = (Map)handlerCtx.getInputValue("AddProps");
         String[] remove = (String[])removeProps.toArray(new String[ removeProps.size()]);
         for(int i=0; i<remove.length; i++){
-            serverConfig.removeProperty(remove[i]);
+            serverConfig.removePropertyConfig(remove[i]);
         }
         if(addProps != null ){
             Iterator additer = addProps.keySet().iterator();
             while(additer.hasNext()){
                 Object key = additer.next();
                 String addvalue = (String)addProps.get(key);
-                serverConfig.setPropertyValue((String)key, addvalue);
+                AMXUtil.setPropertyValue(serverConfig,(String)key, addvalue);
                 
             }
         }      
@@ -666,17 +656,15 @@ public class StandAloneInstanceHandlers{
         try {
             StandaloneServerConfig serverConfig = amxRoot.getServersConfig().getStandaloneServerConfigMap().get(instanceName);
             ConfigConfig defaultConfig = amxRoot.getConfig("default-config");
-            String[] propNames = serverConfig.getSystemPropertyNames();
+            Collection<SystemPropertyConfig> systemPropConfigs = serverConfig.getSystemPropertyConfigMap().values();
             List result = new ArrayList();
-             for(int i=0; i<propNames.length; i++){                
+             for(SystemPropertyConfig spc : systemPropConfigs){
                HashMap oneRow = new HashMap();
-               String name = propNames[i];
-               //System.out.println("testing"+propNames[i] +);
-               String propValue = serverConfig.getSystemPropertyValue(propNames[i]);
-               String defaultValue = (String)defaultConfig.getSystemPropertyValue(propNames[i]);
-               oneRow.put("name", propNames[i]);
-               oneRow.put("default", defaultValue);
-               oneRow.put("override", propValue);
+               String name = spc.getName();
+               oneRow.put("name",name);
+               oneRow.put("override", spc.getValue());
+               SystemPropertyConfig  defaultProp = defaultConfig.getSystemPropertyConfigMap().get(name);
+               oneRow.put("default", (defaultProp == null)? "" : defaultProp.getValue());
                result.add(oneRow);
             }
             handlerCtx.setOutputValue("result", result);
@@ -695,12 +683,11 @@ public class StandAloneInstanceHandlers{
     input={
         @HandlerInput(name="InstanceName", type=String.class, required=true)},
     output={
-        @HandlerOutput(name="Properties", type=Map.class)})
+        @HandlerOutput(name="propConfig", type=Map.class)})
         public static void getStandaloneInstanceProperties(HandlerContext handlerCtx) {
         String instanceName = (String)handlerCtx.getInputValue("InstanceName");
         StandaloneServerConfig serverConfig = AMXRoot.getInstance().getServersConfig().getStandaloneServerConfigMap().get(instanceName);
-        Map<String, String> props = serverConfig.getProperties();
-        handlerCtx.setOutputValue("Properties", props);
+        handlerCtx.setOutputValue("propConfig", serverConfig.getPropertyConfigMap());
         
     }   
 }
