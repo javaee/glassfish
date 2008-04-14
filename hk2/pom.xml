@@ -158,9 +158,7 @@
         <module>core</module>
         <module>config</module>
         <module>config-generator</module>
-        <module>external</module>
         <!--module>toy-http-server</module-->
-        <module>hk2</module>
         <module>hk2-maven</module>
         <module>hk2-maven-plugin</module>
         <module>osgi-adapter</module>
@@ -176,19 +174,41 @@
         </dependency>
     </dependencies>
 
-    <!-- no 'auto-depends-test' module during release.  -->
     <profiles>
         <profile>
+            <!-- this profile is used during the development -->
             <id>debug</id>
             <activation>
                 <activeByDefault>true</activeByDefault>
             </activation>
             <modules>
                 <module>auto-depends-tests</module>
+                <module>external</module>
+                <module>hk2</module>
             </modules>
         </profile>
         <profile>
+            <!-- this profile is used when maven release plugin runs. see the mojo configuration above -->
             <id>release</id>
+            <modules>
+                <module>hk2</module>
+            </modules>
+        </profile>
+        <profile>
+            <!--
+                The hk2 module depends on hk2-maven-plugin as an extension,
+                so it causes a chicken and egg problem during a release;
+                Maven tries to resolve all extensions early on, but it fails
+                because the hk2-maven-plugin is not built yet.
+
+                So the work around is a release in two-phase. First we
+                do "mvn release:prepare", which fails due to the problem described above.
+                At this point the workspace is left with POM that has non-SNAPSHOT version.
+                So now we run "mvn -P release-phase1" and build the whole thing
+                except the hk2 module. This puts maven-hk2-jar in local repo,
+                so the retry of "mvn release:prepare" now works.
+            -->
+            <id>release-phase1</id>
         </profile>
     </profiles>
 
