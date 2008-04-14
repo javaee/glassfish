@@ -33,6 +33,7 @@ import com.sun.grizzly.http.DefaultProcessorTask;
 import com.sun.grizzly.http.HttpWorkerThread;
 import com.sun.grizzly.http.ProcessorTask;
 import com.sun.grizzly.http.SelectorThread;
+import com.sun.grizzly.standalone.StaticStreamAlgorithm;
 import com.sun.grizzly.tcp.Adapter;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -78,8 +79,10 @@ public class GrizzlyEmbeddedHttp extends SelectorThread implements EndpointMappe
      */
     @Override
     protected void initAlgorithm(){
+        
         if (!algorithInitialized.getAndSet(true)) {
-            super.initAlgorithm();
+            algorithmClass = StaticStreamAlgorithm.class;
+            defaultAlgorithmInstalled = true;
         }
     }
 
