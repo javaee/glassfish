@@ -37,72 +37,34 @@
 */ 
 --> 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-
-
-
-
-
     <parent>
-
         <groupId>org.glassfish.admin</groupId>
-
         <artifactId>admin</artifactId>
-
         <version>10.0-SNAPSHOT</version>
-
     </parent>
-
     <modelVersion>4.0.0</modelVersion>
-
     <groupId>org.glassfish.admin.jmx-remote</groupId>
-
     <artifactId>jmx-remote</artifactId>
-
     <packaging>pom</packaging>
-
     <name>JMX Remote Service</name>
-
     <description>Private APIs for JMX connector infrastructure used internally within Glassfish V3</description>
-
-    
-
     <developers>
 
         <developer>
-
             <id>ne110415</id>
-
             <name>Nandini Ektare</name>
-
             <url>http://blogs.sun.com/nektare</url>
-
             <organization>Sun Microsystems, Inc.</organization>
-
             <roles>
-
                 <role>lead</role>
-
                 <role>developer</role>
-
             </roles>
-
         </developer>
-
     </developers>
-
-
-
     <modules>
-
 	<module>common</module>
-
 	<module>client</module>
-
         <module>server</module>
-
     </modules>
-
-
-
 </project>
 
