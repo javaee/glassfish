@@ -7,12 +7,6 @@
     <packaging>pom</packaging>
 
     <version>0.2-SNAPSHOT</version>
-    <properties>
-        <!-- Sice OSGi versioning scheme differs from Maven versioning scheme,
-   every time we change Maven version, we need to change the OSGi
-   version (below property) as well. -->
-        <hk2-osgi-version>0.2.0.SNAPSHOT</hk2-osgi-version>
-    </properties>
     <name>Modules Subsystem</name>
     <description>Generic Modules subsystem</description>
     <developers>
