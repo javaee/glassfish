@@ -42,6 +42,10 @@ public class MiniXmlParserTest {
            MiniXmlParserTest.class.getClassLoader().getResource("adminport.xml").getPath());
         adminport2 = new File(
            MiniXmlParserTest.class.getClassLoader().getResource("adminport2.xml").getPath());
+        noCloseRightOrder = new File(
+           MiniXmlParserTest.class.getClassLoader().getResource("rightordernoclosedomain.xml").getPath());
+        noCloseWrongOrder = new File(
+           MiniXmlParserTest.class.getClassLoader().getResource("wrongordernoclosedomain.xml").getPath());
         assertTrue(wrongOrder.exists());
         assertTrue(rightOrder.exists());
         assertTrue(noconfig.exists());
@@ -250,6 +254,28 @@ public class MiniXmlParserTest {
             MiniXmlParser instance = new MiniXmlParser(adminport, "server");
             assertEquals(instance.getLogFilename(), "${com.sun.aas.instanceRoot}/logs/server.log");
     }
+
+    /**
+     * Test that the correct Exception is thrown for a "right-order"
+     * xml that has no /domain  element in it 
+     * @throws com.sun.enterprise.universal.xml.MiniXmlParserException
+     */
+    @Test( expected=MiniXmlParserException.class)
+    public void testNoClosingDomainRightOrder() throws MiniXmlParserException {
+            MiniXmlParser instance = new MiniXmlParser(noCloseRightOrder, "server");
+        
+    }
+    
+    /**
+     * Test that the correct Exception is thrown for a "wrong-order"
+     * xml that has no /domain  element in it 
+     * @throws com.sun.enterprise.universal.xml.MiniXmlParserException
+     */
+    @Test( expected=MiniXmlParserException.class)
+    public void testNoClosingDomainWrongOrder() throws MiniXmlParserException {
+            MiniXmlParser instance = new MiniXmlParser(noCloseWrongOrder, "server");
+        
+    }
     
     
     
@@ -259,5 +285,7 @@ public class MiniXmlParserTest {
     private static File noconfig;
     private static File adminport;
     private static File adminport2;
+    private static File noCloseRightOrder;
+    private static File noCloseWrongOrder;
 }
 
