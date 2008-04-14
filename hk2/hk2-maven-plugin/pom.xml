@@ -82,5 +82,10 @@
             <artifactId>ant</artifactId>
             <version>1.7.0</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.maven.shared</groupId>
+            <artifactId>maven-osgi</artifactId>
+            <version>0.2.0</version>
+        </dependency>
     </dependencies>
 </project>
