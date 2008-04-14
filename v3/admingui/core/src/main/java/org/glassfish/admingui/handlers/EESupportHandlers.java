@@ -661,7 +661,7 @@ public class EESupportHandlers {
         if(removeProps != null){
             String[] remove = (String[])removeProps.toArray(new String[ removeProps.size()]);
             for(int i=0; i<remove.length; i++){
-                config.removeSystemProperty(remove[i]);
+                config.removeSystemPropertyConfig(remove[i]);
             }
         }
         if(addProps != null ){
@@ -669,10 +669,10 @@ public class EESupportHandlers {
                 String value = addProps.get(key);
                 if (GuiUtil.isEmpty(value))
                     continue;
-                if (config.existsSystemProperty(key))
-                    config.setSystemPropertyValue(key, value);
+                if (config.getSystemPropertyConfigMap().containsKey(key))
+                    config.getSystemPropertyConfigMap().get(key).setValue(value);
                 else
-                    config.createSystemProperty(key,value);
+                    config.createSystemPropertyConfig(key, value);
             }
         }
     }
@@ -691,7 +691,7 @@ public class EESupportHandlers {
         @HandlerOutput(name="InstancesList",        type=java.util.List.class) })
     public static void getInstancevalues(HandlerContext handlerCtx) {
         String configName = (String) handlerCtx.getInputValue("ConfigName");
-        ConfigConfig config = AMXRoot.getInstance().getConfigsConfig().getConfigConfigMap().get(configName);
+        ConfigConfig config = AMXRoot.getInstance().getConfig(configName);
         String propName = (String) handlerCtx.getInputValue("PropertyName");
         Vector instances = getReferencedInstances(configName);
         List data = new ArrayList();
@@ -700,11 +700,9 @@ public class EESupportHandlers {
             ServerConfig servConfig = (ServerConfig)instances.get(i);
             String name = servConfig.getName();
             String propValue = ""; //NOI18N
-            if(Arrays.asList(servConfig.getSystemPropertyNames()).contains(propName)){
-                propValue = servConfig.getSystemPropertyValue(propName);
-            }
+            if (servConfig.getSystemPropertyConfigMap().containsKey(propName))
+                propValue = servConfig.getSystemPropertyConfigMap().get(propName).getValue();
             if(servConfig instanceof ClusteredServerConfig){
-                ClusteredServerConfig conf = (ClusteredServerConfig)servConfig;
                 String clusterName = getClusterForServer(name);
                 oneRow.put("clusterName", clusterName);
                 oneRow.put("isCluster", true);
@@ -742,17 +740,17 @@ public class EESupportHandlers {
                 String propValue = (String)oneRow.get("value");
                 if(isCluster){
                     ClusteredServerConfig clusterConfig = amxRoot.getServersConfig().getClusteredServerConfigMap().get(instanceName);
-                    if(Arrays.asList(clusterConfig.getSystemPropertyNames()).contains(propName)){
-                        clusterConfig.setSystemPropertyValue(propName, propValue);
+                    if (clusterConfig.getSystemPropertyConfigMap().containsKey(propName)){
+                        clusterConfig.getSystemPropertyConfigMap().get(propName).setValue(propValue);
                     }else{
-                        clusterConfig.createSystemProperty(propName, propValue);
+                        clusterConfig.createSystemPropertyConfig(propName, propValue);
                     }
                 }else{
                     StandaloneServerConfig serverConfig = amxRoot.getServersConfig().getStandaloneServerConfigMap().get(instanceName);
-                    if(Arrays.asList(serverConfig.getSystemPropertyNames()).contains(propName)){
-                        serverConfig.setSystemPropertyValue(propName, propValue);
+                    if (serverConfig.getSystemPropertyConfigMap().containsKey(propName)){
+                        serverConfig.getSystemPropertyConfigMap().get(propName).setValue(propValue);
                     }else{
-                        serverConfig.createSystemProperty(propName, propValue);
+                        serverConfig.createSystemPropertyConfig(propName, propValue);
                     }
                 }
             }

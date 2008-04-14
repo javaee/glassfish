@@ -74,7 +74,9 @@ import com.sun.appserv.management.config.IIOPListenerConfig;
 import com.sun.appserv.management.config.ConfigConfig;
 import com.sun.appserv.management.config.SystemPropertiesAccess;
 
+import com.sun.appserv.management.config.SystemPropertyConfig;
 import com.sun.appserv.management.j2ee.J2EEServer;
+import java.util.Collection;
 import org.glassfish.admingui.util.AMXUtil;
 
 
@@ -550,7 +552,7 @@ public class StandAloneInstanceHandlers{
                 sprops = AMXRoot.getInstance().getServersConfig().getClusteredServerConfigMap().get(instanceName);
             }
             if (sprops != null){
-                if (sprops.getSystemPropertyConfigMap().get(pn) != null){
+                if (sprops.getSystemPropertyConfigMap().containsKey(pn)){
                     return sprops.getSystemPropertyConfigMap().get(pn).getValue();
                 }
             }
@@ -586,7 +588,7 @@ public class StandAloneInstanceHandlers{
                  String name = (String)instance.get("name");
                  String override = (String)instance.get("override");
                  if (override != null && (!override.trim().equals(""))) {
-                     amxRoot.getServersConfig().getStandaloneServerConfigMap().get(instanceName).setSystemPropertyValue(name, override);
+                     amxRoot.getServersConfig().getStandaloneServerConfigMap().get(instanceName).getSystemPropertyConfigMap().get(name).setValue(override);
                  } else {
                      foundError = true;
                  }
@@ -654,17 +656,15 @@ public class StandAloneInstanceHandlers{
         try {
             StandaloneServerConfig serverConfig = amxRoot.getServersConfig().getStandaloneServerConfigMap().get(instanceName);
             ConfigConfig defaultConfig = amxRoot.getConfig("default-config");
-            String[] propNames = serverConfig.getSystemPropertyNames();
+            Collection<SystemPropertyConfig> systemPropConfigs = serverConfig.getSystemPropertyConfigMap().values();
             List result = new ArrayList();
-             for(int i=0; i<propNames.length; i++){                
+             for(SystemPropertyConfig spc : systemPropConfigs){
                HashMap oneRow = new HashMap();
-               String name = propNames[i];
-               //System.out.println("testing"+propNames[i] +);
-               String propValue = serverConfig.getSystemPropertyValue(propNames[i]);
-               String defaultValue = (String)defaultConfig.getSystemPropertyValue(propNames[i]);
-               oneRow.put("name", propNames[i]);
-               oneRow.put("default", defaultValue);
-               oneRow.put("override", propValue);
+               String name = spc.getName();
+               oneRow.put("name",name);
+               oneRow.put("override", spc.getValue());
+               SystemPropertyConfig  defaultProp = defaultConfig.getSystemPropertyConfigMap().get(name);
+               oneRow.put("default", (defaultProp == null)? "" : defaultProp.getValue());
                result.add(oneRow);
             }
             handlerCtx.setOutputValue("result", result);
