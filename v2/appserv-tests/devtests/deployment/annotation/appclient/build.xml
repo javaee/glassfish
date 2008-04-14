@@ -26,8 +26,7 @@
   <target name="compile" depends="init, prepare, compile.util">
     <javac srcdir="${src}" destdir="${build}" debug="on">
       <classpath>
-        <path refid="test.compile.classpath"/>
-        <pathelement location="${inst}/lib/appserv-rt.jar"/>
+        <path refid="gfv3.classpath"/>
         <pathelement location="${junit.jar}"/>
         <pathelement path="${testsRoot}/util/build"/>
       </classpath>

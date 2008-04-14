@@ -21,7 +21,7 @@
 <property name="customtasks.src" value="${testsRoot}/util/customAntTasks"/>
 <property name="customtasks.dest" value="${testsRoot}/util/build/customAntTasks"/>
 <property name="customtasks.jar" value="${customtasks.dest}/customAntTasks.jar"/>
-<property name="junit.jar" value="${env.S1AS_HOME}/modules/junit-4.3.1.jar"/>
+<property name="junit.jar" value="${env.APS_HOME}/devtests/deployment/extlib/junit-4.3.1.jar" />
 <property name="junit-anttask.jar" value="${testsRoot}/extlib/junit-anttask.jar"/>
 <property name="annotation.report.dir" value="${testsRoot}/annotation/report"/>
 

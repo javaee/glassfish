@@ -42,8 +42,8 @@
         <javac srcdir="."
                destdir="${build}"
                debug="on"
-               classpath="${inst}/lib/appserv-rt.jar"
                failonerror="true">
+            <classpath refid="gfv3.classpath" />
         </javac>
     </target>
 
