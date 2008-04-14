@@ -45,15 +45,22 @@ import java.util.HashSet;
 import java.util.Set;
 
 
-import org.glassfish.admin.amx.test.testsupport.JMXTestBase;
+import org.glassfish.admin.amx.test.testsupport.MBeanServerSupport;
 
 public class NotificationListenerBaseTest
-        extends JMXTestBase {
+        extends junit.framework.TestCase {
 
     private static final String TEST = "t";
 
     public NotificationListenerBaseTest() {
     }
+
+        private synchronized MBeanServer
+    getTestMBeanServer()
+    {
+        return MBeanServerSupport.getInstance().getMBeanServer();
+    }
+
 
     protected ObjectName
     registerMBean(

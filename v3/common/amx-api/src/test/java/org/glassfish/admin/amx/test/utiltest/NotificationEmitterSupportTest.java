@@ -49,10 +49,8 @@ import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
-import org.glassfish.admin.amx.test.testsupport.JMXTestBase;
-
 public class NotificationEmitterSupportTest
-        extends JMXTestBase {
+        extends junit.framework.TestCase {
     public NotificationEmitterSupportTest() {
     }
 
