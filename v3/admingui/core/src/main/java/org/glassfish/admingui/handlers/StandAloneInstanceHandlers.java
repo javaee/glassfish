@@ -550,13 +550,13 @@ public class StandAloneInstanceHandlers{
                 sprops = AMXRoot.getInstance().getServersConfig().getClusteredServerConfigMap().get(instanceName);
             }
             if (sprops != null){
-                if (sprops.existsSystemProperty(pn)){
-                    return sprops.getSystemPropertyValue(pn);
+                if (sprops.getSystemPropertyConfigMap().get(pn) != null){
+                    return sprops.getSystemPropertyConfigMap().get(pn).getValue();
                 }
             }
         }
         ConfigConfig config = AMXRoot.getInstance().getConfig(configName);
-        return config.getSystemPropertyValue(pn);
+        return config.getSystemPropertyConfigMap().get(pn).getValue();
     }
     
        /**
