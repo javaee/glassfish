@@ -62,7 +62,7 @@ public final class NodeAgentConfigTest
 
     public void
     testGetters() {
-        final Map<String, NodeAgentConfig> m = getDomainConfig().getNodeAgentConfigMap();
+        final Map<String, NodeAgentConfig> m = getDomainConfig().getNodeAgentsConfig().getNodeAgentConfigMap();
 
         if (m.size() == 0) {
             warning("NodeAgentConfigTest: no NodeAgentConfigs to test");

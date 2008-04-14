@@ -79,7 +79,7 @@ public final class AuthRealmConfigTest
 
             if (AuthRealmConfig.DEFAULT_REALM_CLASSNAME.equals(c.getClassname())) {
                 try {
-                    final String file = c.getPropertyValue("file");
+                    final String file = c.getPropertyConfigMap().get("file").getValue();
                     if (file == null) {
                         warnings.add("Realm " + name +
                                 " does not have a 'file' property (test skipped)");

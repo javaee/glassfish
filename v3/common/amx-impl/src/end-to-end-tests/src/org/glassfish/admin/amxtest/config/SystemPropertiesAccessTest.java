@@ -37,6 +37,7 @@ package org.glassfish.admin.amxtest.config;
 
 import com.sun.appserv.management.base.AMX;
 import com.sun.appserv.management.config.SystemPropertiesAccess;
+import com.sun.appserv.management.config.SystemPropertyConfig;
 import org.glassfish.admin.amxtest.AMXTestBase;
 
 import javax.management.ObjectName;
@@ -63,29 +64,25 @@ public final class SystemPropertiesAccessTest
 
     private void
     checkPropertiesGet(final SystemPropertiesAccess props) {
-        final Map<String, String> all = props.getSystemProperties();
+        final Map<String, SystemPropertyConfig> all = props.getSystemPropertyConfigMap();
 
-        final String[] propNames = props.getSystemPropertyNames();
-
-        for (final String name : propNames) {
-            assert (props.existsSystemProperty(name));
-            final String value = props.getSystemPropertyValue(name);
+        for (final SystemPropertyConfig prop : all.values() ) {
+            final String value = prop.getValue();
         }
     }
 
     private void
     testPropertiesSetToSameValue(final SystemPropertiesAccess props) {
-        final String[] propNames = props.getSystemPropertyNames();
+        final Map<String, SystemPropertyConfig> all = props.getSystemPropertyConfigMap();
 
         // get each property, set it to the same value, the verify
         // it's the same.
-        for (int i = 0; i < propNames.length; ++i) {
-            final String propName = propNames[i];
+        for ( final SystemPropertyConfig prop : all.values() ) {
 
-            final String value = props.getSystemPropertyValue(propName);
-            props.setSystemPropertyValue(propName, value);
+            final String value = prop.getValue();
+            prop.setValue(value);
 
-            assert (props.getSystemPropertyValue(propName).equals(value));
+            assert prop.getValue().equals(value);
         }
     }
 
@@ -93,15 +90,15 @@ public final class SystemPropertiesAccessTest
     testCreateEmptySystemProperty(final SystemPropertiesAccess props) {
         final String NAME = "test.empty";
 
-        props.createSystemProperty(NAME, "");
-        assert (props.existsSystemProperty(NAME));
-        props.removeSystemProperty(NAME);
-        assert (!props.existsSystemProperty(NAME));
+        props.createSystemPropertyConfig(NAME, "");
+        assert props.getSystemPropertyConfigMap().get(NAME) != null;
+        props.removeSystemPropertyConfig(NAME);
+        assert props.getSystemPropertyConfigMap().get(NAME) == null;
     }
 
     private void
     testSystemPropertiesCreateRemove(final SystemPropertiesAccess props) {
-        final String[] propNames = props.getSystemPropertyNames();
+        final Map<String, SystemPropertyConfig> all = props.getSystemPropertyConfigMap();
 
         // add some properties, then delete them
         final int numToAdd = 1;
@@ -109,28 +106,28 @@ public final class SystemPropertiesAccessTest
         for (int i = 0; i < numToAdd; ++i) {
             final String testName = "__junittest_" + i + now;
 
-            if (props.existsSystemProperty(testName)) {
+            if ( all.get(testName) != null) {
                 failure("test property already exists: " + testName);
             }
 
-            props.createSystemProperty(testName, "value_" + i);
-            assert (props.existsSystemProperty(testName));
+            props.createSystemPropertyConfig(testName, "value_" + i);
+            assert props.getSystemPropertyConfigMap().get(testName) != null;
         }
-        final int numProps = props.getSystemPropertyNames().length;
+        final int numProps = props.getSystemPropertyConfigMap().keySet().size();
 
-        if (numProps != numToAdd + propNames.length) {
-            failure("expecting " + numProps + " have " + numToAdd + propNames.length);
+        if (numProps != numToAdd + all.keySet().size() ) {
+            failure("expecting " + numProps + " have " + numToAdd + all.keySet().size());
         }
 
         // remove the ones we added
         for (int i = 0; i < numToAdd; ++i) {
             final String testName = "__junittest_" + i + now;
 
-            props.removeSystemProperty(testName);
-            assert (!props.existsSystemProperty(testName));
+            props.removeSystemPropertyConfig(testName);
+            assert props.getSystemPropertyConfigMap().get(testName) == null;
         }
 
-        assert (props.getSystemPropertyNames().length == propNames.length);
+        assert (props.getSystemPropertyConfigMap().keySet().size() == all.keySet().size() );
 
     }
 

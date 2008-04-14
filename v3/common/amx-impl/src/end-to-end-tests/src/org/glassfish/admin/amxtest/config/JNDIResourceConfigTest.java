@@ -66,7 +66,7 @@ public final class JNDIResourceConfigTest
     public static JNDIResourceConfig
     ensureDefaultInstance(final DomainConfig dc) {
         JNDIResourceConfig result =
-                dc.getJNDIResourceConfigMap().get(getDefaultInstanceName());
+                dc.getResourcesConfig().getJNDIResourceConfigMap().get(getDefaultInstanceName());
 
         if (result == null) {
             result = createInstance(dc,
@@ -88,7 +88,7 @@ public final class JNDIResourceConfigTest
             final String resType,
             final String factoryClass,
             final Map<String, String> optional) {
-        return dc.createJNDIResourceConfig(
+        return dc.getResourcesConfig().createJNDIResourceConfig(
                 name, jndiLookupName, resType, factoryClass, optional);
     }
 
@@ -107,16 +107,16 @@ public final class JNDIResourceConfigTest
     protected void
     removeProgeny(final String name) {
         final JNDIResourceConfig item =
-                getDomainConfig().getJNDIResourceConfigMap().get(name);
+                getDomainConfig().getResourcesConfig().getJNDIResourceConfigMap().get(name);
 
-        getDomainConfig().removeJNDIResourceConfig(name);
+        getDomainConfig().getResourcesConfig().removeJNDIResourceConfig(name);
     }
 
     protected final AMXConfig
     createProgeny(
             final String name,
             final Map<String, String> options) {
-        final JNDIResourceConfig config = getDomainConfig().createJNDIResourceConfig(name,
+        final JNDIResourceConfig config = getDomainConfig().getResourcesConfig().createJNDIResourceConfig(name,
                                                                                      JNDI_RESOURCE_JNDI_LOOKUP_NAME,
                                                                                      JNDI_RESOURCE_RES_TYPE,
                                                                                      JNDI_RESOURCE_FACTORY_CLASS,

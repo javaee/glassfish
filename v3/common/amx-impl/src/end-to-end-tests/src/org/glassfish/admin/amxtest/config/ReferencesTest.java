@@ -65,7 +65,7 @@ public final class ReferencesTest
     MailResourceConfig
     createMailResourceConfig() {
         final MailResourceConfig mr =
-                getDomainConfig().createMailResourceConfig(
+                getDomainConfig().getResourcesConfig().createMailResourceConfig(
                         MAIL_RESOURCE_NAME,
                         "localhost",
                         "mailuser@domain.com",
@@ -77,7 +77,7 @@ public final class ReferencesTest
     MailResourceConfig
     ensureMailResourceConfig() {
         final Map<String, MailResourceConfig> mails =
-                getDomainConfig().getMailResourceConfigMap();
+                getDomainConfig().getResourcesConfig().getMailResourceConfigMap();
 
         MailResourceConfig mr = mails.get(MAIL_RESOURCE_NAME);
         if (mr == null) {
@@ -89,11 +89,11 @@ public final class ReferencesTest
     void
     removeMailResourceConfig() {
         final Map<String, MailResourceConfig> mails =
-                getDomainConfig().getMailResourceConfigMap();
+                getDomainConfig().getResourcesConfig().getMailResourceConfigMap();
 
         MailResourceConfig mr = mails.get(MAIL_RESOURCE_NAME);
         if (mr != null) {
-            getDomainConfig().removeMailResourceConfig(mr.getName());
+            getDomainConfig().getResourcesConfig().removeMailResourceConfig(mr.getName());
         }
     }
 
@@ -158,7 +158,7 @@ public final class ReferencesTest
 
         final DomainConfig domainConfig = getDomainRoot().getDomainConfig();
         final StandaloneServerConfig serverConfig =
-                domainConfig.getStandaloneServerConfigMap().get("server");
+                domainConfig.getServersConfig().getStandaloneServerConfigMap().get("server");
 
         try {
             serverConfig.createResourceRefConfig(MISSING_NAME);

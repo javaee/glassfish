@@ -85,7 +85,7 @@ public final class MailResourceConfigTest
      */
     public static synchronized MailResourceConfig
     ensureDefaultInstance(final DomainConfig dc) {
-        MailResourceConfig result = dc.getMailResourceConfigMap().get(getDefaultInstanceName());
+        MailResourceConfig result = dc.getResourcesConfig().getMailResourceConfigMap().get(getDefaultInstanceName());
 
         /*
         if ( result != null )
@@ -102,7 +102,7 @@ public final class MailResourceConfigTest
                                     MAIL_RESOURCE_HOST, MAIL_RESOURCE_USER, MAIL_RESOURCE_FROM, OPTIONS);
             assert !result.getEnabled();
 
-            final StandaloneServerConfig serverConfig = dc.getStandaloneServerConfigMap().get("server");
+            final StandaloneServerConfig serverConfig = dc.getServersConfig().getStandaloneServerConfigMap().get("server");
 
             final Map<String, String> options = new HashMap<String, String>();
             options.put(ResourceConfigKeys.ENABLED_KEY, "false");
@@ -123,7 +123,7 @@ public final class MailResourceConfigTest
             final String user,
             final String from,
             Map<String, String> optional) {
-        return ss.createMailResourceConfig(name, host, user, from, optional);
+        return ss.getResourcesConfig().createMailResourceConfig(name, host, user, from, optional);
     }
 
     protected String
@@ -144,7 +144,7 @@ public final class MailResourceConfigTest
 
     protected void
     removeProgeny(final String name) {
-        getDomainConfig().removeMailResourceConfig(name);
+        getDomainConfig().getResourcesConfig().removeMailResourceConfig(name);
     }
 
     protected final AMXConfig
@@ -152,7 +152,7 @@ public final class MailResourceConfigTest
             final String name,
             final Map<String, String> options) {
         final MailResourceConfig config =
-                getDomainConfig().createMailResourceConfig(name,
+                getDomainConfig().getResourcesConfig().createMailResourceConfig(name,
                                                            MAIL_RESOURCE_HOST,
                                                            MAIL_RESOURCE_USER,
                                                            MAIL_RESOURCE_FROM,

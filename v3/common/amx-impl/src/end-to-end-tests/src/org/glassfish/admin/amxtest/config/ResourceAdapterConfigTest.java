@@ -101,7 +101,7 @@ public final class ResourceAdapterConfigTest
                 testGetters(resAdapterConfig);
             }
             finally {
-                getDomainConfig().removeResourceAdapterConfig(resAdapterConfig.getName());
+                getDomainConfig().getResourcesConfig().removeResourceAdapterConfig(resAdapterConfig.getName());
             }
         }
     }

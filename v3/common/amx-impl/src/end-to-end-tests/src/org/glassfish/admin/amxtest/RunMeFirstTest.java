@@ -64,7 +64,7 @@ public final class RunMeFirstTest
         final String AMX_DEBUG2 = "-DAMX-DEBUG=true";
 
         // set AMX-DEBUG.enabled=true in all ConfigConfig JVM options
-        final Map<String, ConfigConfig> configs = getDomainConfig().getConfigConfigMap();
+        final Map<String, ConfigConfig> configs = getDomainConfig().getConfigsConfig().getConfigConfigMap();
         for (final ConfigConfig config : configs.values()) {
             final JavaConfig jc = config.getJavaConfig();
             final Set<String> jvmOptions = GSetUtil.newStringSet(jc.getJVMOptions());

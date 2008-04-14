@@ -556,7 +556,7 @@ public final class TestMain
             final DomainRoot domainRoot,
             final PropertyGetter getter) {
         final Map<String, NodeAgentConfig> nodeAgentConfigs =
-                domainRoot.getDomainConfig().getNodeAgentConfigMap();
+                domainRoot.getDomainConfig().getNodeAgentsConfig().getNodeAgentConfigMap();
 
         final Map<String, AppserverConnectionSource> nodeAgentConnections =
                 new HashMap<String, AppserverConnectionSource>();

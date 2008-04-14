@@ -68,7 +68,7 @@ public final class ConnectorConnectionPoolConfigTest
     public static ConnectorConnectionPoolConfig
     ensureDefaultInstance(final DomainConfig dc) {
         ConnectorConnectionPoolConfig result =
-                dc.getConnectorConnectionPoolConfigMap().get(getDefaultInstanceName());
+                dc.getResourcesConfig().getConnectorConnectionPoolConfigMap().get(getDefaultInstanceName());
 
         if (result == null) {
             result = createInstance(dc, getDefaultInstanceName(),
@@ -86,7 +86,7 @@ public final class ConnectorConnectionPoolConfigTest
             final String resourceAdapterName,
             final String connectorDefinitionName,
             Map<String, String> optional) {
-        return dc.createConnectorConnectionPoolConfig(name,
+        return dc.getResourcesConfig().createConnectorConnectionPoolConfig(name,
                                                       connectorDefinitionName, resourceAdapterName, optional);
     }
 
@@ -102,7 +102,7 @@ public final class ConnectorConnectionPoolConfigTest
 
     protected void
     removeProgeny(final String name) {
-        getDomainConfig().removeConnectorConnectionPoolConfig(name);
+        getDomainConfig().getResourcesConfig().removeConnectorConnectionPoolConfig(name);
     }
 
     protected final AMXConfig
@@ -112,7 +112,7 @@ public final class ConnectorConnectionPoolConfigTest
         final Map<String, String> allOptions = MapUtil.newMap(OPTIONS, options);
 
         final ConnectorConnectionPoolConfig config =
-                getDomainConfig().createConnectorConnectionPoolConfig(
+                getDomainConfig().getResourcesConfig().createConnectorConnectionPoolConfig(
                         name,
                         RESOURCE_ADAPTOR_NAME,
                         CONNECTOR_DEF_NAME, allOptions);

@@ -79,7 +79,7 @@ public final class LBTest
             params.put("reload-poll-interval-in-seconds", reloadInterval);
 
             try {
-                getDomainConfig().createLBConfig(name, params);
+                getDomainConfig().getLBConfigsConfig().createLBConfig(name, params);
             } catch (Throwable t) {
                 t.printStackTrace();
             }
@@ -96,7 +96,7 @@ public final class LBTest
             boolean autoApplyEnabled = true;
             Map<String, String> optional = null;
             try {
-                getDomainConfig().createLoadBalancerConfig(name, lbConfigName, autoApplyEnabled, optional);
+                getDomainConfig().getLoadBalancersConfig().createLoadBalancerConfig(name, lbConfigName, autoApplyEnabled, optional);
             } catch (Throwable t) {
                 t.printStackTrace();
             }
@@ -105,7 +105,7 @@ public final class LBTest
 
     public void testGetLBConfigMap() {
         try {
-            Map map = getDomainConfig().getLBConfigMap();
+            Map map = getDomainConfig().getLBConfigsConfig().getLBConfigMap();
             //System.out.println("Here is a list of Load Balancer Config MBeans in DAS: ");
             //System.out.println(map);
         } catch (Throwable t) {
@@ -118,7 +118,7 @@ public final class LBTest
             return;
         }
         try {
-            Map map = getDomainConfig().getLoadBalancerConfigMap();
+            Map map = getDomainConfig().getLoadBalancersConfig().getLoadBalancerConfigMap();
             //System.out.println("Here is a list of Load Balancer Config MBeans in DAS: ");
             //System.out.println(map);
             ObjectName objName = new ObjectName("amx:j2eeType=X-LoadBalancerConfig,name=test-load-balancer");
@@ -152,7 +152,7 @@ public final class LBTest
             }
             String name = "test-load-balancer";
             try {
-                getDomainConfig().removeLoadBalancerConfig(name);
+                getDomainConfig().getLoadBalancersConfig().removeLoadBalancerConfig(name);
             } catch (Throwable t) {
                 t.printStackTrace();
             }
@@ -167,7 +167,7 @@ public final class LBTest
             }
             String name = "test-lb-config";
             try {
-                getDomainConfig().removeLBConfig(name);
+                getDomainConfig().getLBConfigsConfig().removeLBConfig(name);
             } catch (Throwable t) {
                 t.printStackTrace();
             }

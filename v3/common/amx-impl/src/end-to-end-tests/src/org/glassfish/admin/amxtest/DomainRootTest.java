@@ -62,21 +62,9 @@ public final class DomainRootTest
     }
 
     public void
-    testGetDeploymentMgr() {
-        assert (getDomainRoot().getDeploymentMgr() != null);
-    }
-
-    public void
-    testGetConfigDottedNames() {
-        if (checkNotOffline("testGetConfigDottedNames")) {
-            assert (getDomainRoot().getConfigDottedNames() != null);
-        }
-    }
-
-    public void
-    testGetMonitoringDottedNames() {
-        if (checkNotOffline("testGetConfigDottedNames")) {
-            assert (getDomainRoot().getMonitoringDottedNames() != null);
+    testGetDottedNames() {
+        if (checkNotOffline("testGetDottedNames")) {
+            assert (getDomainRoot().getDottedNames() != null);
         }
     }
 

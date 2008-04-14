@@ -173,11 +173,11 @@ public final class SecurityServiceConfigTest
                 }
             }
             finally {
-                getDomainConfig().removeConnectorConnectionPoolConfig(ccpc.getName());
+                getDomainConfig().getResourcesConfig().removeConnectorConnectionPoolConfig(ccpc.getName());
             }
         }
         finally {
-            getDomainConfig().removeResourceAdapterConfig(rac.getName());
+            getDomainConfig().getResourcesConfig().removeResourceAdapterConfig(rac.getName());
         }
     }
 

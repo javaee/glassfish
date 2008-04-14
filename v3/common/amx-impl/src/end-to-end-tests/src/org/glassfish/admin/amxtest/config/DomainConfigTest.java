@@ -106,30 +106,30 @@ public final class DomainConfigTest
     testGetMaps() {
         final DomainConfig m = getDomainConfig();
 
-        checkMap(m.getServerConfigMap());
-        checkMap(m.getStandaloneServerConfigMap());
-        checkMap(m.getClusteredServerConfigMap());
-        checkMap(m.getLBConfigMap());
-        checkMap(m.getLoadBalancerConfigMap());
-        checkMap(m.getNodeAgentConfigMap());
-        checkMap(m.getConfigConfigMap());
-        checkMap(m.getClusterConfigMap());
+        //checkMap(m.getServersConfig().getServerConfigMap());
+        checkMap(m.getServersConfig().getStandaloneServerConfigMap());
+        checkMap(m.getServersConfig().getClusteredServerConfigMap());
+        checkMap(m.getLBConfigsConfig().getLBConfigMap());
+        checkMap(m.getLoadBalancersConfig().getLoadBalancerConfigMap());
+        checkMap(m.getNodeAgentsConfig().getNodeAgentConfigMap());
+        checkMap(m.getConfigsConfig().getConfigConfigMap());
+        checkMap(m.getClustersConfig().getClusterConfigMap());
 
-        checkMap(m.getPersistenceManagerFactoryResourceConfigMap());
-        checkMap(m.getJDBCResourceConfigMap());
-        checkMap(m.getJDBCConnectionPoolConfigMap());
-        checkMap(m.getConnectorResourceConfigMap());
-        checkMap(m.getConnectorConnectionPoolConfigMap());
-        checkMap(m.getAdminObjectResourceConfigMap());
-        checkMap(m.getResourceAdapterConfigMap());
-        checkMap(m.getMailResourceConfigMap());
+        checkMap(m.getResourcesConfig().getPersistenceManagerFactoryResourceConfigMap());
+        checkMap(m.getResourcesConfig().getJDBCResourceConfigMap());
+        checkMap(m.getResourcesConfig().getJDBCConnectionPoolConfigMap());
+        checkMap(m.getResourcesConfig().getConnectorResourceConfigMap());
+        checkMap(m.getResourcesConfig().getConnectorConnectionPoolConfigMap());
+        checkMap(m.getResourcesConfig().getAdminObjectResourceConfigMap());
+        checkMap(m.getResourcesConfig().getResourceAdapterConfigMap());
+        checkMap(m.getResourcesConfig().getMailResourceConfigMap());
 
-        checkMap(m.getJ2EEApplicationConfigMap());
-        checkMap(m.getEJBModuleConfigMap());
-        checkMap(m.getWebModuleConfigMap());
-        checkMap(m.getRARModuleConfigMap());
-        checkMap(m.getAppClientModuleConfigMap());
-        checkMap(m.getLifecycleModuleConfigMap());
+        //checkMap(m.getApplicationsConfig().getJ2EEApplicationConfigMap());
+        checkMap(m.getApplicationsConfig().getEJBModuleConfigMap());
+        checkMap(m.getApplicationsConfig().getWebModuleConfigMap());
+        checkMap(m.getApplicationsConfig().getRARModuleConfigMap());
+        checkMap(m.getApplicationsConfig().getAppClientModuleConfigMap());
+        checkMap(m.getApplicationsConfig().getLifecycleModuleConfigMap());
     }
 
     /*

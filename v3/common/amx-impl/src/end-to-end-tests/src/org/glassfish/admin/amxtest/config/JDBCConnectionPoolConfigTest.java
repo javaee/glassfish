@@ -70,7 +70,7 @@ public final class JDBCConnectionPoolConfigTest
     public static JDBCConnectionPoolConfig
     ensureDefaultInstance(final DomainConfig domainConfig) {
         JDBCConnectionPoolConfig result =
-                domainConfig.getJDBCConnectionPoolConfigMap().get(
+                domainConfig.getResourcesConfig().getJDBCConnectionPoolConfigMap().get(
                         getDefaultInstanceName());
 
         if (result == null) {
@@ -87,7 +87,7 @@ public final class JDBCConnectionPoolConfigTest
             final String name,
             final String datasourceClassname,
             final Map<String, String> optional) {
-        return domainConfig.createJDBCConnectionPoolConfig(
+        return domainConfig.getResourcesConfig().createJDBCConnectionPoolConfig(
                 name, datasourceClassname, optional);
     }
 
@@ -105,7 +105,7 @@ public final class JDBCConnectionPoolConfigTest
 
     protected void
     removeProgeny(final String name) {
-        getDomainConfig().removeJDBCConnectionPoolConfig(name);
+        getDomainConfig().getResourcesConfig().removeJDBCConnectionPoolConfig(name);
     }
 
     protected final AMXConfig
@@ -113,7 +113,7 @@ public final class JDBCConnectionPoolConfigTest
             String name,
             Map<String, String> options) {
         final JDBCConnectionPoolConfig config =
-                getDomainConfig().createJDBCConnectionPoolConfig(name,
+                getDomainConfig().getResourcesConfig().createJDBCConnectionPoolConfig(name,
                                                                  JDBC_DATASOURCE_CLASSNAME,
                                                                  options);
         assert (config != null);

@@ -52,6 +52,8 @@ import com.sun.appserv.management.config.DomainConfig;
 import com.sun.appserv.management.config.ModuleMonitoringLevelValues;
 import com.sun.appserv.management.config.ModuleMonitoringLevelsConfig;
 import com.sun.appserv.management.config.NodeAgentConfig;
+import com.sun.appserv.management.config.ServerConfig;
+import com.sun.appserv.management.config.ServersConfig;
 import com.sun.appserv.management.j2ee.J2EEDomain;
 import com.sun.appserv.management.util.jmx.JMXUtil;
 import com.sun.appserv.management.util.jmx.MBeanServerConnectionConnectionSource;
@@ -69,6 +71,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.HashMap;
 
 /**
  Base class for testing the AMX API
@@ -111,6 +114,18 @@ public class AMXTestBase
         mTestUtil = new TestUtil(getDomainRoot());
     }
 
+
+        protected Map<String, ServerConfig>
+    getServerConfigMap( final ServersConfig sc )
+    {
+        final Map<String,ServerConfig> all = new HashMap<String,ServerConfig>();
+
+        all.putAll( sc.getStandaloneServerConfigMap() );
+        all.putAll( sc.getClusteredServerConfigMap() );
+        return all;
+    }
+
+    
     protected Set<AMX>
     getAllAMX() {
         return getTestUtil().getAllAMX();
@@ -566,7 +581,7 @@ public class AMXTestBase
 
         NodeAgentConfig config = null;
         if (name != null) {
-            config = getDomainConfig().getNodeAgentConfigMap().get(name);
+            config = getDomainConfig().getNodeAgentsConfig().getNodeAgentConfigMap().get(name);
         }
 
         return config;

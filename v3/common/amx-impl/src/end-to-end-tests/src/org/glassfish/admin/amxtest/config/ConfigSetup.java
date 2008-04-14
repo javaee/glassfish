@@ -68,17 +68,17 @@ public final class ConfigSetup {
         final Map<String, String> options = new HashMap<String, String>();
 
         final ConfigConfig config =
-                getDomainConfig().createConfigConfig(name, options);
+                getDomainConfig().getConfigsConfig().createConfigConfig(name, options);
 
         return config;
     }
 
     public boolean
     removeConfig(final String name) {
-        boolean exists = getDomainConfig().getConfigConfigMap().get(name) != null;
+        boolean exists = getDomainConfig().getConfigsConfig().getConfigConfigMap().get(name) != null;
 
         if (exists) {
-            getDomainConfig().removeConfigConfig(name);
+            getDomainConfig().getConfigsConfig().removeConfigConfig(name);
         }
 
         return exists;
@@ -111,7 +111,7 @@ public final class ConfigSetup {
         setupServerPorts(options, basePort);
 
         final StandaloneServerConfig server =
-                getDomainConfig().createStandaloneServerConfig(
+                getDomainConfig().getServersConfig().createStandaloneServerConfig(
                         name, nodeAgentName, configName, options);
 
         return server;
@@ -120,10 +120,10 @@ public final class ConfigSetup {
 
     public boolean
     removeServer(final String name) {
-        boolean exists = getDomainConfig().getStandaloneServerConfigMap().get(name) != null;
+        boolean exists = getDomainConfig().getServersConfig().getStandaloneServerConfigMap().get(name) != null;
 
         if (exists) {
-            getDomainConfig().removeStandaloneServerConfig(name);
+            getDomainConfig().getServersConfig().removeStandaloneServerConfig(name);
         }
 
         return exists;

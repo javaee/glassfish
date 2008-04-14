@@ -64,7 +64,7 @@ public final class ConfigConfigTest
         ConfigConfig config = null;
 
         final DomainConfig domainConfig = domainRoot.getDomainConfig();
-        final Map<String, ConfigConfig> existing = domainConfig.getConfigConfigMap();
+        final Map<String, ConfigConfig> existing = domainConfig.getConfigsConfig().getConfigConfigMap();
 
         if (supportsMultipleServers(domainRoot)) {
             config = existing.get(getDefaultInstanceName(domainRoot));
@@ -119,7 +119,7 @@ public final class ConfigConfigTest
 
         final String NAME = "ConfigConfigTest.testCreateRemove";
 
-        final Map<String, ConfigConfig> before = getDomainConfig().getConfigConfigMap();
+        final Map<String, ConfigConfig> before = getDomainConfig().getConfigsConfig().getConfigConfigMap();
 
         final int NUM = 2;
         final ConfigConfig[] configs = new ConfigConfig[NUM];
@@ -142,7 +142,7 @@ public final class ConfigConfigTest
             }
         }
 
-        final Map<String, ConfigConfig> after = getDomainConfig().getConfigConfigMap();
+        final Map<String, ConfigConfig> after = getDomainConfig().getConfigsConfig().getConfigConfigMap();
         assert (before.keySet().equals(after.keySet()));
     }
 }

@@ -66,7 +66,7 @@ public final class AdminObjectResourceConfigTest
     public static AdminObjectResourceConfig
     ensureDefaultInstance(final DomainConfig domainConfig) {
         AdminObjectResourceConfig result =
-                domainConfig.getAdminObjectResourceConfigMap().get(getDefaultInstanceName());
+                domainConfig.getResourcesConfig().getAdminObjectResourceConfigMap().get(getDefaultInstanceName());
 
         if (result == null) {
             result = createInstance(
@@ -87,7 +87,7 @@ public final class AdminObjectResourceConfigTest
             final String resType,
             final String resAdapter,
             final Map<String, String> optional) {
-        return domainConfig.createAdminObjectResourceConfig(name,
+        return domainConfig.getResourcesConfig().createAdminObjectResourceConfig(name,
                                                             resType, resAdapter, optional);
     }
 
@@ -105,7 +105,7 @@ public final class AdminObjectResourceConfigTest
 
     protected void
     removeProgeny(final String name) {
-        getDomainConfig().removeAdminObjectResourceConfig(name);
+        getDomainConfig().getResourcesConfig().removeAdminObjectResourceConfig(name);
     }
 
     protected String
@@ -117,7 +117,7 @@ public final class AdminObjectResourceConfigTest
     createProgeny(
             final String name,
             final Map<String, String> options) {
-        final AdminObjectResourceConfig config = getDomainConfig().createAdminObjectResourceConfig(
+        final AdminObjectResourceConfig config = getDomainConfig().getResourcesConfig().createAdminObjectResourceConfig(
                 name,
                 ADM_OBJ_RES_TYPE,
                 ADM_OBJ_RES_ADAPTER,

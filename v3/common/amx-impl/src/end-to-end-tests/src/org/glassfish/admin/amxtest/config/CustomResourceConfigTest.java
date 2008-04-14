@@ -107,7 +107,7 @@ public final class CustomResourceConfigTest
 
     protected void
     removeProgeny(final String name) {
-        getDomainConfig().removeCustomResourceConfig(name);
+        getDomainConfig().getResourcesConfig().removeCustomResourceConfig(name);
     }
 
     protected String

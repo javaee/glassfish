@@ -64,10 +64,10 @@ public final class ClusterConfigTest
     public static ClusterConfig
     ensureDefaultInstance(final DomainConfig domainConfig) {
         ClusterConfig result =
-                domainConfig.getClusterConfigMap().get(getDefaultInstanceName());
+                domainConfig.getClustersConfig().getClusterConfigMap().get(getDefaultInstanceName());
 
         if (result == null) {
-            result = domainConfig.createClusterConfig(
+            result = domainConfig.getClustersConfig().createClusterConfig(
                     getDefaultInstanceName(), null, null);
         }
 
@@ -87,7 +87,7 @@ public final class ClusterConfigTest
 
     protected void
     removeProgeny(final String name) {
-        getDomainConfig().removeClusterConfig(name);
+        getDomainConfig().getClustersConfig().removeClusterConfig(name);
     }
 
 
@@ -96,19 +96,19 @@ public final class ClusterConfigTest
             final String name,
             final Map<String, String> options) {
         assert (name != null && name.length() >= 1);
-        return getDomainConfig().createClusterConfig(name, null, options);
+        return getDomainConfig().getClustersConfig().createClusterConfig(name, null, options);
     }
 
     public void
     testCreateWithIllegalConfig() {
         try {
-            getDomainConfig().createClusterConfig("dummy-cluster-1", "no such config", null);
+            getDomainConfig().getClustersConfig().createClusterConfig("dummy-cluster-1", "no such config", null);
             failure("expecting failure creating cluster with illegal config name");
 
-            getDomainConfig().createClusterConfig("dummy-cluster-2", "server-config", null);
+            getDomainConfig().getClustersConfig().createClusterConfig("dummy-cluster-2", "server-config", null);
             failure("expecting failure creating cluster with name 'server-config'");
 
-            getDomainConfig().createClusterConfig("dummy-cluster-2", "default-config", null);
+            getDomainConfig().getClustersConfig().createClusterConfig("dummy-cluster-2", "default-config", null);
             failure("expecting failure creating name 'default-config'");
         }
         catch (Exception e) {

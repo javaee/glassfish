@@ -68,7 +68,7 @@ public final class ConnectorResourceConfigTest
     public static ConnectorResourceConfig
     ensureDefaultInstance(final DomainConfig domainConfig) {
         ConnectorResourceConfig result =
-                domainConfig.getConnectorResourceConfigMap().get(getDefaultInstanceName());
+                domainConfig.getResourcesConfig().getConnectorResourceConfigMap().get(getDefaultInstanceName());
 
         final ConnectorConnectionPoolConfig connectorConnectionPool =
                 ConnectorConnectionPoolConfigTest.ensureDefaultInstance(domainConfig);
@@ -88,7 +88,7 @@ public final class ConnectorResourceConfigTest
             final String name,
             final String poolName,
             final Map<String, String> optional) {
-        return domainConfig.createConnectorResourceConfig(
+        return domainConfig.getResourcesConfig().createConnectorResourceConfig(
                 name, poolName, optional);
     }
 
@@ -113,7 +113,7 @@ public final class ConnectorResourceConfigTest
         final Set<ResourceRefConfig> resourceRefs =
                 getQueryMgr().queryJ2EETypeNameSet(XTypes.RESOURCE_REF_CONFIG, name);
 
-        getDomainConfig().removeConnectorResourceConfig(name);
+        getDomainConfig().getResourcesConfig().removeConnectorResourceConfig(name);
     }
 
 
@@ -124,7 +124,7 @@ public final class ConnectorResourceConfigTest
         final String poolName =
                 ConnectorConnectionPoolConfigTest.ensureDefaultInstance(getDomainConfig()).getName();
 
-        assert (getDomainConfig().getConnectorResourceConfigMap().get(name) == null) :
+        assert (getDomainConfig().getResourcesConfig().getConnectorResourceConfigMap().get(name) == null) :
                 "A resource already exists with name: " + name;
 
         final Set<ResourceRefConfig> resourceRefs =
@@ -139,7 +139,7 @@ public final class ConnectorResourceConfigTest
                     ", {" +
                     CollectionUtil.toString(resourceRefObjectNames) + "} (SKIPPING TEST)");
         } else {
-            config = getDomainConfig().createConnectorResourceConfig(name,
+            config = getDomainConfig().getResourcesConfig().createConnectorResourceConfig(name,
                                                                      poolName, options);
 
             final Set<ResourceRefConfig> refs =

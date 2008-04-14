@@ -61,7 +61,7 @@ public final class PersistenceManagerFactoryResourceConfigTest
     public static PersistenceManagerFactoryResourceConfig
     ensureDefaultInstance(final DomainConfig dc) {
         PersistenceManagerFactoryResourceConfig result =
-                dc.getPersistenceManagerFactoryResourceConfigMap().get(getDefaultInstanceName());
+                dc.getResourcesConfig().getPersistenceManagerFactoryResourceConfigMap().get(getDefaultInstanceName());
 
         if (result == null) {
             result = createInstance(dc,
@@ -77,7 +77,7 @@ public final class PersistenceManagerFactoryResourceConfigTest
             final DomainConfig dc,
             final String name,
             final Map<String, String> optional) {
-        return dc.createPersistenceManagerFactoryResourceConfig(
+        return dc.getResourcesConfig().createPersistenceManagerFactoryResourceConfig(
                 name, optional);
     }
 
@@ -95,7 +95,7 @@ public final class PersistenceManagerFactoryResourceConfigTest
 
     protected void
     removeProgeny(final String name) {
-        getDomainConfig().removePersistenceManagerFactoryResourceConfig(name);
+        getDomainConfig().getResourcesConfig().removePersistenceManagerFactoryResourceConfig(name);
     }
 
     protected final AMXConfig
@@ -103,7 +103,7 @@ public final class PersistenceManagerFactoryResourceConfigTest
             final String name,
             final Map<String, String> options) {
         final PersistenceManagerFactoryResourceConfig config =
-                getDomainConfig().createPersistenceManagerFactoryResourceConfig(name, options);
+                getDomainConfig().getResourcesConfig().createPersistenceManagerFactoryResourceConfig(name, options);
 
         addReference(config);
 

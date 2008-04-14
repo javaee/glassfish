@@ -103,7 +103,7 @@ public final class ThreadPoolConfigTest
 
     protected void
     removeProgeny(final String name) {
-        getConfigConfig().removeThreadPoolConfig(name);
+        getConfigConfig().getThreadPoolsConfig().removeThreadPoolConfig(name);
     }
 
     protected final AMXConfig

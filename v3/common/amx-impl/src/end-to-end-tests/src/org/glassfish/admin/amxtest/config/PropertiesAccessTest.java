@@ -39,11 +39,13 @@ import com.sun.appserv.management.base.AMX;
 import com.sun.appserv.management.base.Util;
 import com.sun.appserv.management.base.XTypes;
 import com.sun.appserv.management.config.PropertiesAccess;
+import com.sun.appserv.management.config.PropertyConfig;
 import com.sun.appserv.management.util.misc.GSetUtil;
 import org.glassfish.admin.amxtest.AMXTestBase;
 import org.glassfish.admin.amxtest.TestUtil;
 
 import javax.management.ObjectName;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -68,36 +70,34 @@ public final class PropertiesAccessTest
     testCreateEmptyProperty(final PropertiesAccess props) {
         final String NAME = "test.empty";
 
-        props.createProperty(NAME, "");
-        assert (props.existsProperty(NAME));
-        props.removeProperty(NAME);
-        assert (!props.existsProperty(NAME));
+        final PropertyConfig pc = props.createPropertyConfig(NAME, "");
+        assert props.getPropertyConfigMap().get(NAME) != null;
+        props.removePropertyConfig(NAME);
+        assert props.getPropertyConfigMap().get(NAME) == null;
     }
 
     private void
     testPropertiesGet(final PropertiesAccess props) {
-        final String[] propNames = props.getPropertyNames();
+        final Map<String, PropertyConfig> all = props.getPropertyConfigMap();
 
-        for (final String name : propNames) {
-            assert (props.existsProperty(name));
-            final String value = props.getPropertyValue(name);
+        for (final PropertyConfig prop : all.values() ) {
+            final String name = prop.getName(); 
+            final String value = prop.getValue();
         }
     }
 
     private void
     testPropertiesSetToSameValue(final PropertiesAccess props) {
-        final String[] propNames = props.getPropertyNames();
+        final Map<String, PropertyConfig> all = props.getPropertyConfigMap();
 
         // get each property, set it to the same value, the verify
         // it's the same.
-        for (int i = 0; i < propNames.length; ++i) {
-            final String propName = propNames[i];
+        for ( final PropertyConfig prop : all.values() ) {
+            
+            final String value = prop.getValue();
+            prop.setValue(value);
 
-            assert (props.existsProperty(propName));
-            final String value = props.getPropertyValue(propName);
-            props.setPropertyValue(propName, value);
-
-            assert (props.getPropertyValue(propName).equals(value));
+            assert (prop.getValue().equals(value));
         }
     }
 
@@ -120,7 +120,6 @@ public final class PropertiesAccessTest
 
     private void
     testPropertiesCreateRemove(final PropertiesAccess props) {
-        final String[] propNames = props.getPropertyNames();
 
         final AMX amx = Util.asAMX(props);
         final String j2eeType = amx.getJ2EEType();
@@ -128,34 +127,35 @@ public final class PropertiesAccessTest
             return;
         }
 
+        final Map<String, PropertyConfig> startProps = props.getPropertyConfigMap();
         // add some properties, then delete them
         final int numToAdd = 1;
         final long now = System.currentTimeMillis();
         for (int i = 0; i < numToAdd; ++i) {
             final String testName = "__junittest_" + i + now;
 
-            if (props.existsProperty(testName)) {
+            if (props.getPropertyConfigMap().get(testName) != null) {
                 failure("test property already exists: " + testName);
             }
 
-            props.createProperty(testName, "value_" + i);
-            assert (props.existsProperty(testName));
+            props.createPropertyConfig(testName, "value_" + i);
+            assert (props.getPropertyConfigMap().get(testName) != null);
         }
-        final int numProps = props.getPropertyNames().length;
+        final int numProps = props.getPropertyConfigMap().keySet().size();
 
-        if (numProps != numToAdd + propNames.length) {
-            failure("expecting " + numProps + " have " + numToAdd + propNames.length);
+        if (numProps != numToAdd + startProps.keySet().size() ) {
+            failure("expecting " + numProps + " have " + numToAdd + startProps.keySet().size());
         }
 
         // remove the ones we added
         for (int i = 0; i < numToAdd; ++i) {
             final String testName = "__junittest_" + i + now;
 
-            props.removeProperty(testName);
-            assert (!props.existsProperty(testName));
+            props.removePropertyConfig(testName);
+            assert props.getPropertyConfigMap().get(testName) == null;
         }
 
-        assert (props.getPropertyNames().length == propNames.length);
+        assert (props.getPropertyConfigMap().size() == startProps.keySet().size() );
     }
 
     public void

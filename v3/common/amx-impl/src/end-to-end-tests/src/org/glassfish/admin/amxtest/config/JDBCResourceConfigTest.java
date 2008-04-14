@@ -69,7 +69,7 @@ public final class JDBCResourceConfigTest
     public static JDBCResourceConfig
     ensureDefaultInstance(final DomainConfig domainConfig) {
         JDBCResourceConfig result =
-                domainConfig.getJDBCResourceConfigMap().get(getDefaultInstanceName());
+                domainConfig.getResourcesConfig().getJDBCResourceConfigMap().get(getDefaultInstanceName());
 
         if (result == null) {
             final JDBCConnectionPoolConfig pool =
@@ -88,7 +88,7 @@ public final class JDBCResourceConfigTest
             final String name,
             final String datasourceClassname,
             final Map<String, String> optional) {
-        return domainConfig.createJDBCResourceConfig(
+        return domainConfig.getResourcesConfig().createJDBCResourceConfig(
                 name, datasourceClassname, optional);
     }
 
@@ -106,7 +106,7 @@ public final class JDBCResourceConfigTest
 
     protected void
     removeProgeny(final String name) {
-        getDomainConfig().removeJDBCConnectionPoolConfig(name);
+        getDomainConfig().getResourcesConfig().removeJDBCConnectionPoolConfig(name);
     }
 
     protected String
@@ -117,13 +117,13 @@ public final class JDBCResourceConfigTest
     private JDBCConnectionPoolConfig
     createPool(final String name) {
         try {
-            getDomainConfig().removeJDBCConnectionPoolConfig(name);
+            getDomainConfig().getResourcesConfig().removeJDBCConnectionPoolConfig(name);
         }
         catch (Exception e) {
         }
 
         final JDBCConnectionPoolConfig config =
-                getDomainConfig().createJDBCConnectionPoolConfig(name, JDBC_DATASOURCE_CLASSNAME, null);
+                getDomainConfig().getResourcesConfig().createJDBCConnectionPoolConfig(name, JDBC_DATASOURCE_CLASSNAME, null);
 
         return (config);
     }
@@ -135,7 +135,7 @@ public final class JDBCResourceConfigTest
         mPool = createPool(name + "-temppool");
 
         final JDBCResourceConfig config =
-                getDomainConfig().createJDBCResourceConfig(name, mPool.getName(), options);
+                getDomainConfig().getResourcesConfig().createJDBCResourceConfig(name, mPool.getName(), options);
         assert (config != null);
 
         addReference(config);
@@ -145,10 +145,10 @@ public final class JDBCResourceConfigTest
 
     protected final void
     remove(String name) {
-        getDomainConfig().removeJDBCResourceConfig(name);
+        getDomainConfig().getResourcesConfig().removeJDBCResourceConfig(name);
 
         if (mPool != null) {
-            getDomainConfig().removeJDBCConnectionPoolConfig(mPool.getName());
+            getDomainConfig().getResourcesConfig().removeJDBCConnectionPoolConfig(mPool.getName());
             mPool = null;
         }
     }

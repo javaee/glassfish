@@ -314,8 +314,7 @@ public final class ProxyTest
         assert (root.getQueryMgr() == root.getQueryMgr());
         assert (root.getBulkAccess() == root.getBulkAccess());
         assert (root.getUploadDownloadMgr() == root.getUploadDownloadMgr());
-        assert (root.getConfigDottedNames() == root.getConfigDottedNames());
-        assert (root.getMonitoringDottedNames() == root.getMonitoringDottedNames());
+        assert (root.getDottedNames() == root.getDottedNames());
 
         assert (root.getJ2EEDomain() == root.getJ2EEDomain());
     }
@@ -340,9 +339,7 @@ public final class ProxyTest
             root.getQueryMgr();
             root.getBulkAccess();
             root.getUploadDownloadMgr();
-            root.getConfigDottedNames();
-            root.getMonitoringDottedNames();
-            root.getDeploymentMgr();
+            root.getDottedNames();
         }
         final long elapsed = now() - start;
 

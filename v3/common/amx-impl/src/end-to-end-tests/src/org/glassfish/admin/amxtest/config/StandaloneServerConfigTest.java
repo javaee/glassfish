@@ -75,7 +75,7 @@ public final class StandaloneServerConfigTest
     public static StandaloneServerConfig
     ensureDefaultInstance(final DomainRoot domainRoot) {
         final Map<String, StandaloneServerConfig> servers =
-                domainRoot.getDomainConfig().getStandaloneServerConfigMap();
+                domainRoot.getDomainConfig().getServersConfig().getStandaloneServerConfigMap();
 
         StandaloneServerConfig server = servers.get(getDefaultInstanceName());
         assert (server != null);
@@ -95,7 +95,7 @@ public final class StandaloneServerConfigTest
             final int basePort) {
         final ConfigSetup setup = new ConfigSetup(getDomainRoot());
 
-        final Map<String, NodeAgentConfig> nodeAgentConfigs = getDomainConfig().getNodeAgentConfigMap();
+        final Map<String, NodeAgentConfig> nodeAgentConfigs = getDomainConfig().getNodeAgentsConfig().getNodeAgentConfigMap();
 
         if (nodeAgentConfigs.keySet().size() == 0) {
             warning("testCreateStandaloneServerConfig: No node agents available, skipping test.");

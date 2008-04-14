@@ -87,18 +87,18 @@ public final class ClusteredServerConfigTest
             final int basePort) {
         final DomainConfig domainConfig = getDomainConfig();
 
-        if (domainConfig.getClusteredServerConfigMap().get(serverName) != null) {
-            domainConfig.removeClusteredServerConfig(serverName);
-        } else if (domainConfig.getStandaloneServerConfigMap().get(serverName) != null) {
-            domainConfig.removeStandaloneServerConfig(serverName);
+        if (domainConfig.getServersConfig().getClusteredServerConfigMap().get(serverName) != null) {
+            domainConfig.getServersConfig().removeClusteredServerConfig(serverName);
+        } else if (domainConfig.getServersConfig().getStandaloneServerConfigMap().get(serverName) != null) {
+            domainConfig.getServersConfig().removeStandaloneServerConfig(serverName);
         }
 
         final ClusterConfig clusterConfig =
                 ClusterConfigTest.ensureDefaultInstance(domainConfig);
 
-        if (domainConfig.getClusteredServerConfigMap().get(serverName) != null) {
-            domainConfig.removeClusteredServerConfig(serverName);
-            assert domainConfig.getClusteredServerConfigMap().get(serverName) == null;
+        if (domainConfig.getServersConfig().getClusteredServerConfigMap().get(serverName) != null) {
+            domainConfig.getServersConfig().removeClusteredServerConfig(serverName);
+            assert domainConfig.getServersConfig().getClusteredServerConfigMap().get(serverName) == null;
         }
 
         final ConfigSetup setup = new ConfigSetup(getDomainRoot());
@@ -106,7 +106,7 @@ public final class ClusteredServerConfigTest
         setup.setupServerPorts(options, basePort);
 
         final ClusteredServerConfig csc =
-                domainConfig.createClusteredServerConfig(serverName,
+                domainConfig.getServersConfig().createClusteredServerConfig(serverName,
                                                          clusterConfig.getName(),
                                                          nodeAgentName,
                                                          options);
@@ -158,7 +158,7 @@ public final class ClusteredServerConfigTest
 
             for (int i = 0; i < NUM; ++i) {
                 final String name = servers[i].getName();
-                domainConfig.removeClusteredServerConfig(name);
+                domainConfig.getServersConfig().removeClusteredServerConfig(name);
                 printVerbose("Removed ClusteredServerConfig: " + name);
             }
 

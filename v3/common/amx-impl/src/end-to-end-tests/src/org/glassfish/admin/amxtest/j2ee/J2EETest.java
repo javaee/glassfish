@@ -81,14 +81,13 @@ public final class J2EETest
     getCapabilities() {
         return getOfflineCapableCapabilities(false);
     }
-
+    
     /**
      Verify that there is one J2EEServer for each ServerConfig (standalone or not)
      */
     public void
     testJ2EEServerMatchesServerConfig() {
-        final Map<String, ServerConfig> serverConfigMap =
-                getDomainConfig().getServerConfigMap();
+        final Map<String, ServerConfig> serverConfigMap = getServerConfigMap( getDomainConfig().getServersConfig() );
 
         final Map<String, J2EEServer> j2eeServerMap =
                 getDomainRoot().getJ2EEDomain().getJ2EEServerMap();
@@ -106,7 +105,7 @@ public final class J2EETest
      */
     public void
     testJ2EEClusterMatchesClusterConfig() {
-        final Map<String, ClusterConfig> clusterConfigMap = getDomainConfig().getClusterConfigMap();
+        final Map<String, ClusterConfig> clusterConfigMap = getDomainConfig().getClustersConfig().getClusterConfigMap();
         final Map<String, J2EECluster> j2eeClusterMap = getJ2EEDomain().getJ2EEClusterMap();
 
         assert (clusterConfigMap.keySet().equals(j2eeClusterMap.keySet())) :
