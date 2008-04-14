@@ -158,6 +158,7 @@
         <module>core</module>
         <module>config</module>
         <module>config-generator</module>
+        <module>external</module>
         <!--module>toy-http-server</module-->
         <module>hk2-maven</module>
         <module>hk2-maven-plugin</module>
@@ -183,7 +184,6 @@
             </activation>
             <modules>
                 <module>auto-depends-tests</module>
-                <module>external</module>
                 <module>hk2</module>
             </modules>
         </profile>
