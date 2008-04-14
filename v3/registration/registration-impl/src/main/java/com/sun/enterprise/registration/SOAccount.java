@@ -178,20 +178,6 @@ public class SOAccount implements RegistrationAccount {
         }
         return null;        
     }
-
-    public static final String CITY = "city";
-    public static final String COMPANY = "company";
-    public static final String CONFIRMPASSWORD = "confirmPassword";
-    public static final String COUNTRY = "country";
-    public static final String EMAIL = "email";
-    public static final String FIRSTNAME = "firstName";
-    public static final String LASTNAME = "lastName";
-    public static final String PASSWORD = "password";
-    public static final String SECURITYANSWER = "securityAnswer";
-    public static final String STATE = "state";
-    public static final String ADDRESS = "address";
-    public static final String USERID = "userID";
-    public static final String ZIP = "zip";
     
     private final SunOnlineAccount account;
 }
