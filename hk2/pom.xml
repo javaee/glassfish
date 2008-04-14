@@ -128,7 +128,6 @@
                 </configuration>
             </plugin>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
                 <executions>
                     <execution>
@@ -139,6 +138,16 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-release-plugin</artifactId>
+                <configuration>
+                    <!--
+                      execute release in the release profile to exclude test related modules
+                      that don't need to be published.
+                    -->
+                    <arguments>-P release</arguments>
+                </configuration>
             </plugin>
         </plugins>
     </build>
