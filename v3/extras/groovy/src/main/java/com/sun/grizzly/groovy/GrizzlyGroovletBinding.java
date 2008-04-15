@@ -28,7 +28,7 @@ import java.util.Map;
 /**
  * Servlet-specific binding extension to lazy load the writer or the output
  * stream from the response.
- * 
+ *
  * <p>
  * <h3>Default variables bound</h3>
  * <ul>
@@ -40,7 +40,7 @@ import java.util.Map;
  * <li><tt>"params"</tt> : map of all form parameters - can be empty</li>
  * <li><tt>"headers"</tt> : map of all <b>request</b> header fields</li>
  * </ul>
- * 
+ *
  * <p>
  * <h3>Implicite bound variables</h3>
  * <ul>
@@ -49,7 +49,7 @@ import java.util.Map;
  * <li><tt>"html"</tt> : new MarkupBuilder(response.getWriter()) </li>
  * </ul>
  * </p>
- * 
+ *
  * @author Guillaume Laforge
  * @author Christian Stein
  */
@@ -139,7 +139,7 @@ public class GrizzlyGroovletBinding extends Binding {
         /*
          * TODO Check default key names. See constructor(s).
          */
-        
+
         /*
          * All checks passed, set the variable.
          */
@@ -172,7 +172,7 @@ public class GrizzlyGroovletBinding extends Binding {
             if ("out".equals(name)) {
                 return response.getWriter();
             }
-            if ("sout".equals(name)) {                
+            if ("sout".equals(name)) {
                 return response.getOutputStream();
             }
             if ("html".equals(name)) {
