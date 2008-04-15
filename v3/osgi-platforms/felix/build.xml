@@ -20,9 +20,9 @@ own identifying information: Portions Copyright [yyyy]
 [name of copyright owner]
 -->
 <project name="felix distribution fragment creation" default="create.bundle" basedir="target/stage">
-   <target name="create.bundle">
-       <zip destfile="target/felix.zip" basedir="target/classes/"/>
-       <attachArtifact file="target/felix.zip"/>
-   </target>
+    <target name="create.bundle">
+        <zip destfile="target/felix.zip" basedir="target/classes/"/>
+        <attachArtifact file="target/felix.zip"/>
+    </target>
 </project>
 
