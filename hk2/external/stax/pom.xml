@@ -92,6 +92,7 @@
                     <tasks>
                         <resolveAll todir="target/source-jars" classifier="sources">
                             <scope level="compile,runtime" />
+                            <groupId not="${project.groupId}" />
                         </resolveAll>
                         <zip destfile="target/${artifactId}-${version}-sources.jar">
                             <zipgroupfileset dir="target/source-jars" includes="*.jar" />
