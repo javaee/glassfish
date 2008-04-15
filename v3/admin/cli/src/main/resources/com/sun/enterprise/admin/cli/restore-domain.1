@@ -16,50 +16,52 @@ DESCRIPTION
      mode only.
 
 OPTIONS
-     --domaindir                 This option specifies the parent
-                                 directory  of  the  domain  upon
-                                 which the command will  operate.
-                                 The          default          is
-                                 install_dir/domains.
+     --domaindir
 
-     --filename                  The restore is  performed  using
-                                 the  specified  zip  file as the
-                                 source.
+         This option specifies the parent directory of the domain
+         upon  which  the  command  will  operate. The default is
+         install_dir/domains.
 
-     --description               A description  can  contain  any
-                                 string to help identify the par-
-                                 ticular backup. The  description
-                                 is  displayed  as  part  of  the
-                                 information for any backup.
+     --filename
+         The restore is performed using the specified zip file as
+         the source.
 
-     -t --terse                  Indicates that any  output  data
-                                 must  be very concise, typically
-                                 avoiding   human-friendly   sen-
-                                 tences    and   favoring   well-
-                                 formatted data  for  consumption
-                                 by a script. Default is false.
+     --description
 
-     -v --verbose                Indicates that  output  data  is
-                                 displayed with detailed informa-
-                                 tion. Default is false.
+         A description can contain any string  to  help  identify
+         the  particular  backup. The description is displayed as
+         part of the information for any backup.
+
+     -t --terse
+         Indicates that any output data  must  be  very  concise,
+         typically avoiding human-friendly sentences and favoring
+         well-formatted data for consumption by a script. Default
+         is false.
+
+     -v --verbose
+
+         Indicates that output data is  displayed  with  detailed
+         information. Default is false.
 
 OPERANDS
-     domain_name                 This is the name of  the  domain
-                                 to restore. If the domain is not
-                                 specified and  only  one  domain
+     domain_name
+         This is the name of the domain to restore. If the domain
+         is  not specified and only one domain exists, it will be
 
 Java EE 5           Last change: 30 Jan 2007                    1
 
 Administration Commands                         restore-domain(1)
 
-                                 exists, it will be used automat-
-                                 ically.
+         used automatically.
 
 EXAMPLES
      Example 1 Using restore-domain
 
-       asadmin>restore-domain --domaindir /opt/SUNWappserver/nondefaultdomaindir/domain1 --filename sjsas_backup_v00001.zip domain1
-       Successfully restored the domain (domain1), from /opt/SUNWappserver/nondefaultdomaindir/domain1/backups/sjsas_backup_v00001.zip
+       asadmin>restore-domain
+       --domaindir /opt/SUNWappserver/nondefaultdomaindir/domain1
+       --filename sjsas_backup_v00001.zip domain1
+       Successfully restored the domain (domain1), from /opt/SUNWappserver/nondefaultdomaindir/domain1/
+       backups/sjsas_backup_v00001.zip
 
        Description: 1137030607263
        Backup Filename: /opt/SUNWappserver/nondefaultdomaindir/domain1/backups/sjsas_backup_v00001.zip

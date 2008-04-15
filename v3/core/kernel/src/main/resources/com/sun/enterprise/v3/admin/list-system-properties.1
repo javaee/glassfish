@@ -1,23 +1,33 @@
 
-Administration Commands                       update-file-user(1)
+Administration Commands                 list-system-properties(1)
 
 NAME
-     update-file-user - updates a current file user as specified
+     list-system-properties - lists the system properties of  the
+     domain, configuration, cluster, or server instance
 
 SYNOPSIS
-     update-file-user
+     lists-system-properties
      [--terse={true|false}][ --echo={true|false} ]
      [ --interactive={true|false} ] [ --host  host]
      [--port port] [--secure| -s ] [ --user  admin_user]
      [--passwordfile filename] [--help]
-     [ --groups  user_groups[:user_groups]*]
-     [--authrealmname authrealm_name] [--target target]
-     username
+     [target target_name]
 
 DESCRIPTION
-     This command updates an existing entry in the keyfile  using
-     the  specified  user  name,  password  and  groups. Multiple
-     groups can be entered by separating them, with a colon (:)
+     Note -
+
+       This command is available only in domains that are config-
+       ured to support clusters, such as domains that are created
+       with the cluster profile or the  enterprise  profile.  For
+       information about profiles, see Usage Profiles in Sun Java
+       System Application Server 9.1 Administration Guide.
+
+     Shared or clustered server  instances  will  often  need  to
+     override  attributes  defined in their referenced configura-
+     tion. Any configuration attribute in a server  instance  can
+     be overridden through a system property of the corresponding
+     name. This command lists the system properties of a  domain,
+     configuration, cluster, or server instance.
 
 OPTIONS
      -t --terse
@@ -38,6 +48,11 @@ OPTIONS
 
      -H --host
          The machine name where the domain administration  server
+
+Java EE 5           Last change: 13 Jul 2007                    1
+
+Administration Commands                 list-system-properties(1)
+
          is running. The default value is localhost.
 
      -p --port
@@ -47,16 +62,12 @@ OPTIONS
          browser   to   manage   the   domain,    for    example,
          http://localhost:8080/admin.
 
-Java EE 5           Last change: 30 Jan 2007                    1
-
-Administration Commands                       update-file-user(1)
-
      -s --secure
-
          If set to true, uses SSL/TLS  to  communicate  with  the
          domain administration server.
 
      -u --user
+
          The user name of the authorized administrative  user  of
          the domain administration server.
 
@@ -65,7 +76,6 @@ Administration Commands                       update-file-user(1)
          option for subsequent operations on the domain.
 
      --passwordfile
-
          Specifies the name, including the full path, of  a  file
          that contains the password entries in a specific format.
 
@@ -91,6 +101,10 @@ Administration Commands                       update-file-user(1)
          server. The password can be specified by one of the fol-
          lowing means:
 
+Java EE 5           Last change: 13 Jul 2007                    2
+
+Administration Commands                 list-system-properties(1)
+
              o    Through the --passwordfile option
 
              o    Through the asadmin login command
@@ -102,11 +116,6 @@ Administration Commands                       update-file-user(1)
          or specify them at the command prompt.
 
          After authenticating to a domain by  using  the  asadmin
-
-Java EE 5           Last change: 30 Jan 2007                    2
-
-Administration Commands                       update-file-user(1)
-
          login  command,  you need not specify the administration
          password through the --passwordfile  option  for  subse-
          quent  operations  on  the  domain.  However,  only  the
@@ -125,49 +134,45 @@ Administration Commands                       update-file-user(1)
 
          Displays the help text for the command.
 
-     --groups
-         This is the name of the group to  which  the  file  user
-         belongs.
+OPERANDS
+     target
+         This option specifies the target on which you are  list-
+         ing the system properties. Valid values are:
 
-     --authrealmname
+         domain
 
-         This is the file  where  the  user  may  have  different
-         stores for file auth realm.
+             Lists the system properties defined for the domain.
 
-     --target
-         This option helps specify the target on  which  you  are
-         updating a file user. Valid values are:
-
-         server
-
-             Updates  the  file  user  in  the   default   server
-             instance. This is the default value.
+         configuration_name
+             Lists the system properties for the named configura-
+             tion  as well as those the cluster inherits from the
+             domain.
 
          cluster_name
-             Updates the file user on every  server  instance  in
-             the cluster.
+
+             Lists the system properties defined  for  the  named
+             cluster  as well as those the cluster. inherits from
+             its configuration and the domain.
+
+Java EE 5           Last change: 13 Jul 2007                    3
+
+Administration Commands                 list-system-properties(1)
 
          instance_name
 
-             Updates the file user on a specified sever instance.
-
-Java EE 5           Last change: 30 Jan 2007                    3
-
-Administration Commands                       update-file-user(1)
-
-OPERANDS
-     username                    This is the  name  of  the  file
-                                 user to be updated.
+             Lists the system properties defined  for  the  named
+             server instance as well as those the server inherits
+             from its cluster (if the instance is clustered), its
+             configuration, and the domain.
 
 EXAMPLES
-     Example 1 Using the update-file-user command
+     Example 1 Using list-system-properties
 
-       asadmin> update-file-user --user admin1 --passwordfile passwords.txt
-       --host pigeon --port 5001 --groups staff:manager:engineer sample_user
-       Command update-file-user executed successfully
-
-     Where sample_user is the file  user  for whom the groups and
-     the user name are updated.
+       asadmin> list-system-properties --user admin
+       --passwordfile password.txt --host localhost --port 4848
+       http-listener-port=1088 mycluster
+       http-listener-port=1088
+       Command list-system-properties executed successfully.
 
 EXIT STATUS
      0                           command executed successfully
@@ -175,8 +180,7 @@ EXIT STATUS
      1                           error in executing the command
 
 SEE ALSO
-     delete-file-user(1),    list-file-users(1),     create-file-
-     user(1), list-file-groups(1)
+     create-system-properties(1), delete-system-property(1)
 
-Java EE 5           Last change: 30 Jan 2007                    4
+Java EE 5           Last change: 13 Jul 2007                    4
 

@@ -45,7 +45,7 @@ DESCRIPTION
          is false.
 
      -e --echo
-         Setting to true will echo the command line statement  on
+         If set to true, the command-line statement is echoed  on
          the standard output. Default is false.
 
 Java EE 5           Last change: 22 Dec 2004                    1
@@ -63,11 +63,10 @@ Utility Commands                                      asadmin(1M)
 
      -p --port
 
-         The HTTP/S port for administration. This is the port  to
-         which  you  should point your browser in order to manage
-         the domain. For example, http://localhost:4848.
-
-         The default port number is 4848.
+         The HTTP port or HTTPS  port  for  administration.  This
+         port is the port in the URL that you specify in your web
+         browser   to   manage   the   domain,    for    example,
+         http://localhost:8080/admin.
 
      -s --secure
          If set to true, uses SSL/TLS  to  communicate  with  the
@@ -75,53 +74,64 @@ Utility Commands                                      asadmin(1M)
 
      -u --user
 
-         The authorized domain administration server  administra-
-         tive username.
+         The user name of the authorized administrative  user  of
+         the domain administration server.
 
-         If you have authenticated to a domain using the  asadmin
-         login  command,  then  you  need  not specify the --user
-         option  on  subsequent  operations  to  this  particular
-         domain.
+         If you have authenticated to a domain by using the asad-
+         min  login  command,  you  need  not  specify the --user
+         option for subsequent operations on the domain.
 
      --passwordfile
-         The --passwordfile option specifies the name,  including
-         the full path, of a file containing the password entries
-         in a specific format. The entry for  the  password  must
-         have  the AS_ADMIN_ prefix followed by the password name
-         in uppercase letters.
+         Specifies the name, including the full path, of  a  file
+         that contains the password entries in a specific format.
 
-         For example, to specify the domain administration server
-         password,  use  an  entry  with  the  following  format:
-         AS_ADMIN_PASSWORD=password, where password is the actual
-         administrator  password.  Other  passwords  that  can be
-         specified        include        AS_ADMIN_MAPPEDPASSWORD,
-         AS_ADMIN_USERPASSWORD, and AS_ADMIN_ALIASPASSWORD.
+         The entry for a password must have the AS_ADMIN_  prefix
+         followed  by the password name in uppercase letters. For
+         example, to specify the password for the domain adminis-
+         tration server, use an entry with the following format:
 
-         All remote commands must specify the admin  password  to
-         authenticate to the domain administration server, either
+           AS_ADMIN_PASSWORD=password
+
+         In this example, password is  the  actual  administrator
+         password.
+
+         The following other passwords can also be specified:
+
+             o    AS_ADMIN_MAPPEDPASSWORD
 
 Java EE 5           Last change: 22 Dec 2004                    2
 
 Utility Commands                                      asadmin(1M)
 
-         through --passwordfile or  asadmin  login,  or  interac-
-         tively  on the command prompt. The asadmin login command
-         can be used only to  specify  the  admin  password.  For
-         other  passwords, that must be specified for remote com-
-         mands, use the --passwordfile or enter them at the  com-
-         mand prompt.
+             o    AS_ADMIN_USERPASSWORD
 
-         If you have authenticated to a domain using the  asadmin
-         login command, then you need not specify the admin pass-
-         word through the  --passwordfile  option  on  subsequent
-         operations  to  this particular domain. However, this is
-         applicable only to AS_ADMIN_PASSWORD  option.  You  will
-         still  need to provide the other passwords, for example,
-         AS_ADMIN_USERPASSWORD, as and when required  by  indivi-
-         dual commands, such as update-file-user.
+             o    AS_ADMIN_ALIASPASSWORD
+         All remote  commands  must  specify  the  administration
+         password  to  authenticate  to the domain administration
+         server. The password can be specified by one of the fol-
+         lowing means:
 
-         For security reasons, passwords specified as an environ-
-         ment variable will not be read by asadmin.
+             o    Through the --passwordfile option
+
+             o    Through the asadmin login command
+
+             o    Interactively at the command prompt
+         The asadmin login command can be used  only  to  specify
+         the  administration  password.  For other passwords that
+         remote commands require, use the  --passwordfile  option
+         or specify them at the command prompt.
+
+         After authenticating to a domain by  using  the  asadmin
+         login  command,  you need not specify the administration
+         password through the --passwordfile  option  for  subse-
+         quent  operations  on  the  domain.  However,  only  the
+         AS_ADMIN_PASSWORD option is not required. You still must
+         provide    the    other    passwords,    for    example,
+         AS_ADMIN_USERPASSWORD, when required by individual  com-
+         mands, such as update-file-user.
+
+         For security reasons, a password that is specified as an
+         environment variable is not read by the asadmin command.
 
          The  default  value   for   AS_ADMIN_MASTERPASSWORD   is
          changeit.
@@ -141,6 +151,11 @@ Utility Commands                                      asadmin(1M)
      If  AS_ADMIN_PASSWORD  has  been  exported  to  the   global
      environment,  specifying the --passwordfile option will pro-
      duce a warning about  using  the  --password  option.  Unset
+
+Java EE 5           Last change: 22 Dec 2004                    3
+
+Utility Commands                                      asadmin(1M)
+
      AS_ADMIN_PASSWORD to prevent this from happening.
 
      The master password is not propagated on the command line or
@@ -150,10 +165,6 @@ Utility Commands                                      asadmin(1M)
      To use the --secure option, you must use the set command  to
      enable  the security-enabled flag in the admin http-listener
      in the domain.xml configuration file.
-
-Java EE 5           Last change: 22 Dec 2004                    3
-
-Utility Commands                                      asadmin(1M)
 
      When you  use  the  asadmin  subcommands  to  create  and/or
      delete,  you  must  restart the server for the newly created

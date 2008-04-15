@@ -1,23 +1,56 @@
 
-Administration Commands                       update-file-user(1)
+Administration Commands                       list-jvm-options(1)
 
 NAME
-     update-file-user - updates a current file user as specified
+     list-jvm-options - lists options for  the  Java  application
+     launcher
 
 SYNOPSIS
-     update-file-user
+     list-jvm-options
      [--terse={true|false}][ --echo={true|false} ]
      [ --interactive={true|false} ] [ --host  host]
      [--port port] [--secure| -s ] [ --user  admin_user]
      [--passwordfile filename] [--help]
-     [ --groups  user_groups[:user_groups]*]
-     [--authrealmname authrealm_name] [--target target]
-     username
 
 DESCRIPTION
-     This command updates an existing entry in the keyfile  using
-     the  specified  user  name,  password  and  groups. Multiple
-     groups can be entered by separating them, with a colon (:)
+     The list-jvm-options command displays a list of command-line
+     options  that  are passed to the JavaTM application launcher
+     when the Application Server is started. The list-jvm-options
+     command displays the following options:
+
+         o    Startup parameters for the Virtual Machine for  the
+              Java   platform  (Java  Virtual  Machine  or  JVMTM
+              machine). Startup parameters are set through the -X
+              option  of the Java application launcher, for exam-
+              ple, -Xmx1024m.
+
+         o    Java system properties. System properties  are  set
+              through  the  -D  option  of  the  Java application
+              launcher, for example, -Djava.security.manager.
+
+     The options are specified through the  JVM Options  page  of
+     the Admin Console GUI or through the following commands:
+
+         o    create-jvm-options(1)
+
+         o    delete-jvm-options(1)
+
+     This command is supported in remote mode only.
+
+     For more information about the  Java  application  launcher,
+     see the reference page for the operating system that you are
+     using:
+
+         o    SolarisTM Operating System (Solaris OS) and  Linux:
+              java    -    the    Java    application    launcher
+              (http://java.sun.com/javase/6/docs/technotes/tools/solaris/java.html)
+
+         o    Windows:  java  -  the  Java  application  launcher
+              (http://java.sun.com/javase/6/docs/technotes/tools/windows/java.html)
+
+Java EE 5           Last change: 11 Apr 2008                    1
+
+Administration Commands                       list-jvm-options(1)
 
 OPTIONS
      -t --terse
@@ -47,16 +80,12 @@ OPTIONS
          browser   to   manage   the   domain,    for    example,
          http://localhost:8080/admin.
 
-Java EE 5           Last change: 30 Jan 2007                    1
-
-Administration Commands                       update-file-user(1)
-
      -s --secure
-
          If set to true, uses SSL/TLS  to  communicate  with  the
          domain administration server.
 
      -u --user
+
          The user name of the authorized administrative  user  of
          the domain administration server.
 
@@ -65,9 +94,12 @@ Administration Commands                       update-file-user(1)
          option for subsequent operations on the domain.
 
      --passwordfile
-
          Specifies the name, including the full path, of  a  file
          that contains the password entries in a specific format.
+
+Java EE 5           Last change: 11 Apr 2008                    2
+
+Administration Commands                       list-jvm-options(1)
 
          The entry for a password must have the AS_ADMIN_  prefix
          followed  by the password name in uppercase letters. For
@@ -102,11 +134,6 @@ Administration Commands                       update-file-user(1)
          or specify them at the command prompt.
 
          After authenticating to a domain by  using  the  asadmin
-
-Java EE 5           Last change: 30 Jan 2007                    2
-
-Administration Commands                       update-file-user(1)
-
          login  command,  you need not specify the administration
          password through the --passwordfile  option  for  subse-
          quent  operations  on  the  domain.  However,  only  the
@@ -125,49 +152,24 @@ Administration Commands                       update-file-user(1)
 
          Displays the help text for the command.
 
-     --groups
-         This is the name of the group to  which  the  file  user
-         belongs.
+Java EE 5           Last change: 11 Apr 2008                    3
 
-     --authrealmname
-
-         This is the file  where  the  user  may  have  different
-         stores for file auth realm.
-
-     --target
-         This option helps specify the target on  which  you  are
-         updating a file user. Valid values are:
-
-         server
-
-             Updates  the  file  user  in  the   default   server
-             instance. This is the default value.
-
-         cluster_name
-             Updates the file user on every  server  instance  in
-             the cluster.
-
-         instance_name
-
-             Updates the file user on a specified sever instance.
-
-Java EE 5           Last change: 30 Jan 2007                    3
-
-Administration Commands                       update-file-user(1)
-
-OPERANDS
-     username                    This is the  name  of  the  file
-                                 user to be updated.
+Administration Commands                       list-jvm-options(1)
 
 EXAMPLES
-     Example 1 Using the update-file-user command
+     Example 1 Using the list-jvm-options command
 
-       asadmin> update-file-user --user admin1 --passwordfile passwords.txt
-       --host pigeon --port 5001 --groups staff:manager:engineer sample_user
-       Command update-file-user executed successfully
-
-     Where sample_user is the file  user  for whom the groups and
-     the user name are updated.
+       asadmin> list-jvm-options --user admin1 --passwordfile passwords.txt
+       -Djava.security.policy=${com.sun.aas.instanceRoot}/config/server.policy
+       -Djavax.net.ssl.keyStore=${com.sun.aas.instanceRoot}/config/keystore.jks
+       -Djavax.net.ssl.trustStore=${com.sun.aas.instanceRoot}/config/cacerts.jks
+       -Djdbc.drivers=org.apache.derby.jdbc.ClientDriver
+       -Dsun.rmi.dgc.client.gcInterval=3600000
+       -Dsun.rmi.dgc.server.gcInterval=3600000
+       -XX:NewRatio=2
+       -Xmx1024m
+       -client
+       Command list-jvm-options executed successfully
 
 EXIT STATUS
      0                           command executed successfully
@@ -175,8 +177,14 @@ EXIT STATUS
      1                           error in executing the command
 
 SEE ALSO
-     delete-file-user(1),    list-file-users(1),     create-file-
-     user(1), list-file-groups(1)
+     create-jvm-options(1), delete-jvm-options(1),
 
-Java EE 5           Last change: 30 Jan 2007                    4
+     java  - the Java application launcher reference page for the
+     Solaris               OS              and              Linux
+     (http://java.sun.com/javase/6/docs/technotes/tools/solaris/java.html),
+     java  -  the  Java  application launcher  reference page for
+     Windows
+     (http://java.sun.com/javase/6/docs/technotes/tools/windows/java.html)
+
+Java EE 5           Last change: 11 Apr 2008                    4
 

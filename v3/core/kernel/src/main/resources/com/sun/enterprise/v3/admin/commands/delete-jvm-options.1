@@ -1,23 +1,29 @@
 
-Administration Commands                       update-file-user(1)
+Administration Commands                     delete-jvm-options(1)
 
 NAME
-     update-file-user - updates a current file user as specified
+     delete-jvm-options - removes JVM options from the Java  con-
+     figuration or profiler elements of the domain.xml file
 
 SYNOPSIS
-     update-file-user
+     delete-jvm-options
      [--terse={true|false}][ --echo={true|false} ]
      [ --interactive={true|false} ] [ --host  host]
      [--port port] [--secure| -s ] [ --user  admin_user]
      [--passwordfile filename] [--help]
-     [ --groups  user_groups[:user_groups]*]
-     [--authrealmname authrealm_name] [--target target]
-     username
+     [ --target  target]
+     [--profiler={true|false}] (jvm_option_name[=jvm_option_value])
+     [:jvm_option_name[=jvm_option_name]]*
 
 DESCRIPTION
-     This command updates an existing entry in the keyfile  using
-     the  specified  user  name,  password  and  groups. Multiple
-     groups can be entered by separating them, with a colon (:)
+     The delete-jvm-options command removes JVM options from  the
+     Java  configuration  or  profiler elements of the domain.xml
+     file.
+
+     Note -
+
+       In the syntax, there can be  more  than  one  JVM  option,
+       separated by a colon.
 
 OPTIONS
      -t --terse
@@ -43,13 +49,14 @@ OPTIONS
      -p --port
 
          The HTTP port or HTTPS  port  for  administration.  This
+
+Java EE 5           Last change: 11 Jul 2007                    1
+
+Administration Commands                     delete-jvm-options(1)
+
          port is the port in the URL that you specify in your web
          browser   to   manage   the   domain,    for    example,
          http://localhost:8080/admin.
-
-Java EE 5           Last change: 30 Jan 2007                    1
-
-Administration Commands                       update-file-user(1)
 
      -s --secure
 
@@ -97,16 +104,16 @@ Administration Commands                       update-file-user(1)
 
              o    Interactively at the command prompt
          The asadmin login command can be used  only  to  specify
+
+Java EE 5           Last change: 11 Jul 2007                    2
+
+Administration Commands                     delete-jvm-options(1)
+
          the  administration  password.  For other passwords that
          remote commands require, use the  --passwordfile  option
          or specify them at the command prompt.
 
          After authenticating to a domain by  using  the  asadmin
-
-Java EE 5           Last change: 30 Jan 2007                    2
-
-Administration Commands                       update-file-user(1)
-
          login  command,  you need not specify the administration
          password through the --passwordfile  option  for  subse-
          quent  operations  on  the  domain.  However,  only  the
@@ -125,49 +132,52 @@ Administration Commands                       update-file-user(1)
 
          Displays the help text for the command.
 
-     --groups
-         This is the name of the group to  which  the  file  user
-         belongs.
-
-     --authrealmname
-
-         This is the file  where  the  user  may  have  different
-         stores for file auth realm.
-
      --target
-         This option helps specify the target on  which  you  are
-         updating a file user. Valid values are:
+         This option helps specify the target from which you want
+         to remove the JVM options. Valid target is server, clus-
+         ter, or instance. The default is server.
 
-         server
+         This option is valid only in domains that are configured
+         to  support  clusters,  such as domains that are created
+         with the cluster profile or the enterprise profile.
 
-             Updates  the  file  user  in  the   default   server
-             instance. This is the default value.
+     --profiler
 
-         cluster_name
-             Updates the file user on every  server  instance  in
-             the cluster.
-
-         instance_name
-
-             Updates the file user on a specified sever instance.
-
-Java EE 5           Last change: 30 Jan 2007                    3
-
-Administration Commands                       update-file-user(1)
+         Indicates whether the JVM options are for the  profiler.
+         The profiler must exist for this option to be true.
 
 OPERANDS
-     username                    This is the  name  of  the  file
-                                 user to be updated.
+     jvm_option_name=jvm_option_value
+         the left side of the equal sign (=) is  the  JVM  option
+         name.  The  right  side of the equal sign (=) is the JVM
+         option value. A colon (:) is a  delimiter  for  multiple
+         options.
 
 EXAMPLES
-     Example 1 Using the update-file-user command
+     Example 1 Using the delete-jvm-options command
 
-       asadmin> update-file-user --user admin1 --passwordfile passwords.txt
-       --host pigeon --port 5001 --groups staff:manager:engineer sample_user
-       Command update-file-user executed successfully
+Java EE 5           Last change: 11 Jul 2007                    3
 
-     Where sample_user is the file  user  for whom the groups and
-     the user name are updated.
+Administration Commands                     delete-jvm-options(1)
+
+     To remove more than one JVM  option,  use  a  colon  (:)  to
+     separate  the  options.  If the JVM option itself contains a
+     colon (:), use the backslash (\) to  offset  the  colon  (:)
+     delimiter.
+
+       asadmin> delete-jvm-options -e
+       --interactive=true --secure=true --passwordfile passwords.txt
+       --terse=false --user admin --target server --host localhost
+       --echo=true --port 4848 "\-Dtmp=sun"
+       Command delete-jvm-options executed successfully
+
+     Where more than one JVM options are deleted.
+
+       asadmin> delete-jvm-options -e \-Doption1=value1
+       --interactive=true --secure=true --passwordfile passwords.txt
+       --terse=false --user admin --target server --host localhost
+       --echo=true --port 4848 "\-Doption1=value1:-Doption2=value2"
+       Command delete-jvm-options executed successfully
 
 EXIT STATUS
      0                           command executed successfully
@@ -175,8 +185,7 @@ EXIT STATUS
      1                           error in executing the command
 
 SEE ALSO
-     delete-file-user(1),    list-file-users(1),     create-file-
-     user(1), list-file-groups(1)
+     create-jvm-options(1), list-jvm-options(1)
 
-Java EE 5           Last change: 30 Jan 2007                    4
+Java EE 5           Last change: 11 Jul 2007                    4
 

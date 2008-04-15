@@ -1,23 +1,27 @@
 
-Administration Commands                       update-file-user(1)
+Administration Commands                    generate-jvm-report(1)
 
 NAME
-     update-file-user - updates a current file user as specified
+     generate-jvm-report - shows the threads, classes and  memory
+     for a given target instance.
 
 SYNOPSIS
-     update-file-user
+     generate-jvm-report
      [--terse={true|false}][ --echo={true|false} ]
      [ --interactive={true|false} ] [ --host  host]
      [--port port] [--secure| -s ] [ --user  admin_user]
      [--passwordfile filename] [--help]
-     [ --groups  user_groups[:user_groups]*]
-     [--authrealmname authrealm_name] [--target target]
-     username
+     [target] [ --type =summary|memory|class|thread]
 
 DESCRIPTION
-     This command updates an existing entry in the keyfile  using
-     the  specified  user  name,  password  and  groups. Multiple
-     groups can be entered by separating them, with a colon (:)
+     This command  shows  the  threads  (dump  of  stack  trace),
+     classes  and  memory  for a given target instance, including
+     the Domain Administration Service. This command  works  only
+     with the application server instance processes. This command
+     replaces the traditional techniques like sending  ctrl+break
+     or kill -3 signals to application server processes. The com-
+     mand will not work if the target server instance is not run-
+     ning.
 
 OPTIONS
      -t --terse
@@ -45,11 +49,12 @@ OPTIONS
          The HTTP port or HTTPS  port  for  administration.  This
          port is the port in the URL that you specify in your web
          browser   to   manage   the   domain,    for    example,
-         http://localhost:8080/admin.
 
 Java EE 5           Last change: 30 Jan 2007                    1
 
-Administration Commands                       update-file-user(1)
+Administration Commands                    generate-jvm-report(1)
+
+         http://localhost:8080/admin.
 
      -s --secure
 
@@ -99,14 +104,14 @@ Administration Commands                       update-file-user(1)
          The asadmin login command can be used  only  to  specify
          the  administration  password.  For other passwords that
          remote commands require, use the  --passwordfile  option
-         or specify them at the command prompt.
-
-         After authenticating to a domain by  using  the  asadmin
 
 Java EE 5           Last change: 30 Jan 2007                    2
 
-Administration Commands                       update-file-user(1)
+Administration Commands                    generate-jvm-report(1)
 
+         or specify them at the command prompt.
+
+         After authenticating to a domain by  using  the  asadmin
          login  command,  you need not specify the administration
          password through the --passwordfile  option  for  subse-
          quent  operations  on  the  domain.  However,  only  the
@@ -125,58 +130,62 @@ Administration Commands                       update-file-user(1)
 
          Displays the help text for the command.
 
-     --groups
-         This is the name of the group to  which  the  file  user
-         belongs.
+     --type
+         The type of report user wants to see.
 
-     --authrealmname
+         summary
 
-         This is the file  where  the  user  may  have  different
-         stores for file auth realm.
+             Displays    summary    information     about     the
+             threads/classes and memory.
 
-     --target
-         This option helps specify the target on  which  you  are
-         updating a file user. Valid values are:
+         memory
+             Provides information about heap and non-heap  memory
+             consumption,  memory  pools,  and garbage collection
+             statistics for a given target instance.
 
-         server
+         classes
 
-             Updates  the  file  user  in  the   default   server
-             instance. This is the default value.
+             Provides information about the class  loader  for  a
+             given target instance.
 
-         cluster_name
-             Updates the file user on every  server  instance  in
-             the cluster.
-
-         instance_name
-
-             Updates the file user on a specified sever instance.
+         threads
+             Provides information about threads running  and  the
+             thread   dump  (stack  trace)  for  a  given  target
+             instance.
 
 Java EE 5           Last change: 30 Jan 2007                    3
 
-Administration Commands                       update-file-user(1)
+Administration Commands                    generate-jvm-report(1)
 
 OPERANDS
-     username                    This is the  name  of  the  file
-                                 user to be updated.
+     target
+
+         This option specifies the ending location of the connec-
+         tor  resources.  Valid targets are server, domain, clus-
+         ter, and instance. The default target is server.
 
 EXAMPLES
-     Example 1 Using the update-file-user command
+     Example 1 Using the generate-jvm-report command
 
-       asadmin> update-file-user --user admin1 --passwordfile passwords.txt
-       --host pigeon --port 5001 --groups staff:manager:engineer sample_user
-       Command update-file-user executed successfully
-
-     Where sample_user is the file  user  for whom the groups and
-     the user name are updated.
+       asadmin> generate-jvm-report --user admin --passwordfile passwords.txt
+       --type summary server1
+       Operating System Information:
+       Name of the Operating System: Linux
+       Binary Architecture name of the Operating System: i386, Version:
+       2.6.9-22.ELsmp
+       Number of processors available on the Operating System: 2
+       ...
+       ...
+       ...
+       user.language = en
+       user.name = root
+       user.timezone = America/Los_Angeles
+       Command generate-jvm-report executed successfully
 
 EXIT STATUS
      0                           command executed successfully
 
      1                           error in executing the command
-
-SEE ALSO
-     delete-file-user(1),    list-file-users(1),     create-file-
-     user(1), list-file-groups(1)
 
 Java EE 5           Last change: 30 Jan 2007                    4
 

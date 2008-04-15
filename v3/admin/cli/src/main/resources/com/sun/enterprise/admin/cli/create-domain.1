@@ -6,7 +6,7 @@ NAME
 
 SYNOPSIS
      create-domain  [--user user] [--passwordfile passwordfile]
-     [(--adminport port_number | --portbase portbase)]
+     {--adminport port_number | --portbase portbase}
      [(--profile developer | cluster | enterprise ] --template domain_template)]
      [--domaindir domain_directory/domains]
      [--instanceport port_number] [--savemasterpassword=false]
@@ -46,7 +46,7 @@ DESCRIPTION
      You can choose the developer, cluster, or enterprise profile
      for the domain you create.
 
-Java EE 5           Last change: 22 Dec 2004                    1
+Java EE 5           Last change: 14 Apr 2008                    1
 
 Administration Commands                          create-domain(1)
 
@@ -98,7 +98,7 @@ OPTIONS
 
          The file name of a domain.xml template  used  to  create
 
-Java EE 5           Last change: 22 Dec 2004                    2
+Java EE 5           Last change: 14 Apr 2008                    2
 
 Administration Commands                          create-domain(1)
 
@@ -110,11 +110,33 @@ Administration Commands                          create-domain(1)
 
          The HTTP/S port for  administration. This is the port to
          which   you   should   point   your  browser   (example,
-         http://localhost:this-port) to manage the  domain.  This
-         option  is  mandatory unless you specify a value for the
-         --portbase option.
+         http://localhost:this-port) to manage the domain.
+
+         Either the --adminport option or the  --portbase  option
+         must be specified.
+
+     --portbase
+         Determines the number with  which  the  port  assignment
+         should  start.  A  domain uses a certain number of ports
+         that are statically assigned. The portbase value  deter-
+         mines  where  the  assignment  should start. Choose this
+         value judiciously. The values for the ports  are  calcu-
+         lated  as  follows:   Admin  port:  portbase  + 48, HTTP
+         listener port: portbase + 80, IIOP listener port:  port-
+         base  +  37,  JMX port: portbase + 86. See the output of
+         this command for a complete list of occupied ports, when
+         --portbase option is specified.
+
+         Either the --adminport option or the  --portbase  option
+         must be specified.
+
+         Note -
+
+           The --portbase option  cannot  be  used  with  the  --
+           adminport or the --instanceport option.
 
      --passwordfile
+
          The file containing the domain application server  pass-
          word  associated  with  the administrative instance. The
          create-domain command reads values for AS_ADMIN_PASSWORD
@@ -130,6 +152,10 @@ Administration Commands                          create-domain(1)
          If AS_ADMIN_PASSWORD or AS_ADMIN_MASTERPASSWORD  is  not
          in  the password file, the create-domain command prompts
          for admin password and master password.
+
+Java EE 5           Last change: 14 Apr 2008                    3
+
+Administration Commands                          create-domain(1)
 
      -t --terse
 
@@ -150,11 +176,6 @@ Administration Commands                          create-domain(1)
 
          Setting this option to true allows the masterpassword to
          be  written  to  the  file  system. A master password is
-
-Java EE 5           Last change: 22 Dec 2004                    3
-
-Administration Commands                          create-domain(1)
-
          really a password for the secure key store. A domain  is
          designed  to  keep   its own certificate (created at the
          time of domain creation) in a safe place in  the  confi-
@@ -184,6 +205,10 @@ Administration Commands                          create-domain(1)
          password  gives  an  extra  level  of  security  to  the
          environment.
 
+Java EE 5           Last change: 14 Apr 2008                    4
+
+Administration Commands                          create-domain(1)
+
      --domainproperties
 
          Setting the  optional  name/value  pairs  overrides  the
@@ -204,10 +229,6 @@ Administration Commands                          create-domain(1)
              Specifies the ORB listener port   for  IIOP  connec-
              tions on which orb-listener-1 listens.
 
-Java EE 5           Last change: 22 Dec 2004                    4
-
-Administration Commands                          create-domain(1)
-
          http.ssl.port
 
              Specifies the port number for http-listener-2. Valid
@@ -225,25 +246,7 @@ Administration Commands                          create-domain(1)
              on  which  the  IIOP  listener called SSL_MUTUALAUTH
              listens.
 
-     --portbase
-         Determines the number with  which  the  port  assignment
-         should  start.  A  domain uses a certain number of ports
-         that are statically assigned. The portbase value  deter-
-         mines  where  the  assignment  should start. Choose this
-         value judiciously. The values for the ports  are  calcu-
-         lated  as  follows:   Admin  port:  portbase  + 48, HTTP
-         listener port: portbase + 80, IIOP listener port:  port-
-         base  +  37,  JMX port: portbase + 86. See the output of
-         this command for a complete list of occupied ports, when
-         --portbase option is specified.
-
-         Note -
-
-           The --portbase option  cannot  be  used  with  the  --
-           adminport or the --instanceport option.
-
       --savelogin
-
          Saves the admin user name and password if you  set  this
          option to true. The default value is false. The username
          and password are stored  in  the  .asadminpass  file  in
@@ -251,14 +254,15 @@ Administration Commands                          create-domain(1)
          locally and hence while using the above option, the host
          name  saved in .asadminpass will always be localhost. If
          the user has specified default admin port while creating
+
+Java EE 5           Last change: 14 Apr 2008                    5
+
+Administration Commands                          create-domain(1)
+
          the  domain,  there  is  no  need  to specify --user, --
          passwordfile, --host, or --port on any of the subsequent
          asadmin  remote commands. These values will be automati-
          cally obtained.
-
-Java EE 5           Last change: 22 Dec 2004                    5
-
-Administration Commands                          create-domain(1)
 
          Note -
 
@@ -301,12 +305,12 @@ EXAMPLES
      Example 2 Using the create-domain command  (enterprise  pro-
      file)
 
-     The  following  command  creates  sampleDomain  domain  with
-     enterprise profile in the /export/domains directory.
-
-Java EE 5           Last change: 22 Dec 2004                    6
+Java EE 5           Last change: 14 Apr 2008                    6
 
 Administration Commands                          create-domain(1)
+
+     The  following  command  creates  sampleDomain  domain  with
+     enterprise profile in the /export/domains directory.
 
        asadmin> create-domain --domaindir /export/domains
        --profile enterprise --adminport 7070 --adminuser admin
@@ -352,15 +356,15 @@ Administration Commands                          create-domain(1)
        Domain being created with profile:enterprise, as specified by variable
        AS_ADMIN_PROFILE in configuration file.
        adSecurity Store used should be NSS
+
+Java EE 5           Last change: 14 Apr 2008                    7
+
+Administration Commands                          create-domain(1)
+
        Domain myDomain created.
        Login information relevant to admin user name [admin] for this domain [myDomain]
        stored at [/.asadminpass] successfully.
        Make sure that this file remains protected. Information stored in this file will be
-
-Java EE 5           Last change: 22 Dec 2004                    7
-
-Administration Commands                          create-domain(1)
-
        used by asadmin commands to manage this domain.
 
 EXIT STATUS
@@ -372,5 +376,5 @@ SEE ALSO
      login(1), delete-domain(1), start-domain(1), stop-domain(1),
      list-domains(1)
 
-Java EE 5           Last change: 22 Dec 2004                    8
+Java EE 5           Last change: 14 Apr 2008                    8
 

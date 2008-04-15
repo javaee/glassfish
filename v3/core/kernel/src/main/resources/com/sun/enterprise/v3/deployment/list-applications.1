@@ -1,23 +1,38 @@
 
-Administration Commands                       update-file-user(1)
+Administration Commands                      list-applications(1)
 
 NAME
-     update-file-user - updates a current file user as specified
+     list-applications - lists deployed applications
 
 SYNOPSIS
-     update-file-user
+     list-applications
      [--terse={true|false}][ --echo={true|false} ]
      [ --interactive={true|false} ] [ --host  host]
      [--port port] [--secure| -s ] [ --user  admin_user]
      [--passwordfile filename] [--help]
-     [ --groups  user_groups[:user_groups]*]
-     [--authrealmname authrealm_name] [--target target]
-     username
+     [ --type  type]
 
 DESCRIPTION
-     This command updates an existing entry in the keyfile  using
-     the  specified  user  name,  password  and  groups. Multiple
-     groups can be entered by separating them, with a colon (:)
+     The command  list-applications  lists  deployed  Java  EE  5
+     applications  and  the  type  of  each  application  that is
+     listed. The possible types are as follows:
+
+         o    application
+
+         o    connector
+
+         o    ejb
+
+         o    jruby
+
+         o    web
+
+         o    webservice
+
+     If the --type option is not specified, all applications  are
+     listed.
+
+     This command is supported in remote mode only.
 
 OPTIONS
      -t --terse
@@ -34,22 +49,23 @@ OPTIONS
      -I --interactive
 
          If set to true (default),  only  the  required  password
+
+Java EE 5           Last change: 14 Apr 2008                    1
+
+Administration Commands                      list-applications(1)
+
          options are prompted.
 
      -H --host
+
          The machine name where the domain administration  server
          is running. The default value is localhost.
 
      -p --port
-
          The HTTP port or HTTPS  port  for  administration.  This
          port is the port in the URL that you specify in your web
          browser   to   manage   the   domain,    for    example,
          http://localhost:8080/admin.
-
-Java EE 5           Last change: 30 Jan 2007                    1
-
-Administration Commands                       update-file-user(1)
 
      -s --secure
 
@@ -86,6 +102,11 @@ Administration Commands                       update-file-user(1)
              o    AS_ADMIN_USERPASSWORD
 
              o    AS_ADMIN_ALIASPASSWORD
+
+Java EE 5           Last change: 14 Apr 2008                    2
+
+Administration Commands                      list-applications(1)
+
          All remote  commands  must  specify  the  administration
          password  to  authenticate  to the domain administration
          server. The password can be specified by one of the fol-
@@ -102,11 +123,6 @@ Administration Commands                       update-file-user(1)
          or specify them at the command prompt.
 
          After authenticating to a domain by  using  the  asadmin
-
-Java EE 5           Last change: 30 Jan 2007                    2
-
-Administration Commands                       update-file-user(1)
-
          login  command,  you need not specify the administration
          password through the --passwordfile  option  for  subse-
          quent  operations  on  the  domain.  However,  only  the
@@ -125,58 +141,41 @@ Administration Commands                       update-file-user(1)
 
          Displays the help text for the command.
 
-     --groups
-         This is the name of the group to  which  the  file  user
-         belongs.
+     --type
+         Specifies the type of the applications that  are  to  be
+         listed. The options are as follows:
 
-     --authrealmname
+             o    application
 
-         This is the file  where  the  user  may  have  different
-         stores for file auth realm.
+             o    connector
 
-     --target
-         This option helps specify the target on  which  you  are
-         updating a file user. Valid values are:
+             o    ejb
 
-         server
+             o    jruby
 
-             Updates  the  file  user  in  the   default   server
-             instance. This is the default value.
+             o    web
 
-         cluster_name
-             Updates the file user on every  server  instance  in
-             the cluster.
+             o    webservice
+         If no type is specified, all applications are listed.
 
-         instance_name
+Java EE 5           Last change: 14 Apr 2008                    3
 
-             Updates the file user on a specified sever instance.
-
-Java EE 5           Last change: 30 Jan 2007                    3
-
-Administration Commands                       update-file-user(1)
-
-OPERANDS
-     username                    This is the  name  of  the  file
-                                 user to be updated.
+Administration Commands                      list-applications(1)
 
 EXAMPLES
-     Example 1 Using the update-file-user command
+     Example 1 Using the list-applications command
 
-       asadmin> update-file-user --user admin1 --passwordfile passwords.txt
-       --host pigeon --port 5001 --groups staff:manager:engineer sample_user
-       Command update-file-user executed successfully
-
-     Where sample_user is the file  user  for whom the groups and
-     the user name are updated.
+       asadmin> list-applications --user admin --passwordfile password.txt
+       hellojsp <web>
+       Command list-applications executed successfully
 
 EXIT STATUS
-     0                           command executed successfully
+     0                   command executed successfully
 
-     1                           error in executing the command
+     1                   error in executing the command
 
 SEE ALSO
-     delete-file-user(1),    list-file-users(1),     create-file-
-     user(1), list-file-groups(1)
+     list-components(1)
 
-Java EE 5           Last change: 30 Jan 2007                    4
+Java EE 5           Last change: 14 Apr 2008                    4
 

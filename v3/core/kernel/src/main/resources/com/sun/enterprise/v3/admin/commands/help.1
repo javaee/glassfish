@@ -1,0 +1,989 @@
+
+Administration Commands                                   help(1)
+
+NAME
+     help - displays the asadmin utility commands
+
+SYNOPSIS
+     help  [command_name]
+
+     command_name  [--help | -?]
+
+DESCRIPTION
+     The help command displays a list of all the asadmin  utility
+     commands.  Specify the command to display the usage informa-
+     tion for that command. To display the man page of each  com-
+     mand,  use  the  syntax: asadmin command_name --help | -? or
+     asadmin help command_name
+
+     The following is a list of all the asadmin utility commands:
+
+     add-resources
+
+         registers the resource in the specified XML file
+
+     apply-http-lb-changes
+         applies load balancer configuration changes to the  load
+         balancer
+
+     backup-domain
+
+         performs a backup on the domain
+
+     change-admin-password
+         changes the administrator password
+
+     change-master-password
+
+         changes the master password
+
+     clear-ha-store
+         deletes tables in the HA database
+
+     configure-ha-cluster
+
+         configures an existing cluster to be High Availability
+
+Java EE 5           Last change: 27 Jul 2007                    1
+
+Administration Commands                                   help(1)
+
+     configure-ha-persistence
+
+         enables configuration of parameters related  to  session
+         persistence
+
+     configure-lb-weight
+         sets load balancing weights for clustered instances
+
+     configure-webservice-management
+
+          sets the monitoring or maxhistory or  attributes  of  a
+         deployed webservice
+
+     copy-config
+         copies an existing configuration to create a new  confi-
+         guration
+
+     create-admin-object
+
+         adds the administered object  with  the  specified  JNDI
+         name
+
+     create-application-ref
+         creates a reference to an application
+
+     create-audit-module
+
+         creates an audit module for the optional plugin module
+
+     create-auth-realm
+         adds the named authorized realm
+
+     create-cluster
+
+         creates a cluster
+
+     create-connector-connection-pool
+         adds a connection pool  with  the  specified  connection
+         pool name
+
+     create-connector-resource
+
+         registers the resource with the specified JNDI name
+
+Java EE 5           Last change: 27 Jul 2007                    2
+
+Administration Commands                                   help(1)
+
+     create-connector-security-map
+
+         creates or modifies a security map for the named connec-
+         tor connection pool
+
+     create-custom-resource
+         registers the custom resource
+
+     create-domain
+
+         creates a domain with the specified name
+
+     create-file-user
+         creates a new file user
+
+     create-ha-store
+
+         creates tables in HA database that are used by HA  clus-
+         ter
+
+     create-http-health-checker
+         creates a health-checker for a specified  load  balancer
+         configuration
+
+     create-http-lb
+
+         creates a load balancer
+
+     create-http-lb-config
+         creates a configuration for the load balancer
+
+     create-http-lb-ref
+
+         add an existing cluster or server instance to an  exist-
+         ing load balancer configuration
+
+     create-http-listener
+         adds a new HTTP listener socket
+
+     create-iiop-listener
+
+         adds the IIOP listener
+
+Java EE 5           Last change: 27 Jul 2007                    3
+
+Administration Commands                                   help(1)
+
+     create-instance
+
+         creates an instance with the given name
+
+     create-javamail-resource
+         registers the Javamail resource
+
+     create-jdbc-connection-pool
+
+         registers the JDBC connection pool
+
+     create-jdbc-resource
+         registers the JDBC resource
+
+     create-jms-host
+
+         creates a JMS host
+
+     create-jms-resource
+         registers the JMS resource
+
+     create-jmsdest
+
+         adds the named destination
+
+     create-jndi-resource
+         registers the JNDI resource
+
+     create-jvm-options
+
+         creates the JVM options from the Java  configuration  or
+         profiler elements
+
+     create-lifecycle-module
+         adds a lifecycle module
+
+     create-management-rule
+
+         creates a new management rule
+
+Java EE 5           Last change: 27 Jul 2007                    4
+
+Administration Commands                                   help(1)
+
+     create-mbean
+
+         creates and registers a custom MBean
+
+     create-message-security-provider
+         enables administrators to create  the  message-security-
+         config and provider-config sub-elements for the security
+         service in domain.xml
+
+     create-node-agent-config
+
+         adds a new unbound node agent to a domain
+
+     create-node-agent
+         creates a node agent and its associated directory struc-
+         ture
+
+     create-password-alias
+
+         creates a password alias
+
+     create-persistence-resource
+         registers the persistence resource
+
+     create-profiler
+
+         creates the profiler element
+
+     create-resource-adapter-config
+          creates the resource adapter Java bean
+
+     create-resource-ref
+
+         creates a reference to a resource
+
+     create-service
+         configures the starting of a DAS or  node  agent  on  an
+         unattended boot
+
+     create-ssl
+
+         creates the SSL element in the  HTTP  listener  or  IIOP
+         listener
+
+Java EE 5           Last change: 27 Jul 2007                    5
+
+Administration Commands                                   help(1)
+
+     create-system-properties
+
+         adds or updates one or more  system  properties  of  the
+         domain, configuration, cluster, or server instance
+
+     create-threadpool
+         creates the thread pool
+
+     create-transformation-rule
+
+         creates transformation rule for a deployed web service
+
+     create-virtual-server
+         adds the named virtual server
+
+     delete-admin-object
+
+         removes the administered object with the specified  JNDI
+         name
+
+     delete-application-ref
+         removes a reference to an application
+
+     delete-audit-module
+
+         deletes the audit-module for the optional plugin module
+
+     delete-auth-realm
+         removes the named authorized realm
+
+     delete-cluster
+
+         deletes a cluster
+
+     delete-config
+         deletes an existing configuration
+
+     delete-connector-connection-pool
+
+         removes the specified connection pool
+
+Java EE 5           Last change: 27 Jul 2007                    6
+
+Administration Commands                                   help(1)
+
+     delete-connector-resource
+
+         removes the named resource connector
+
+     delete-connector-security-map
+         deletes the named security map
+
+     delete-custom-resource
+
+         removes the custom resource
+
+     delete-domain
+         deletes the given domain
+
+     delete-file-user
+
+         removes the named file user
+
+     delete-http-health-checker
+         deletes a health-checker for a specified  load  balancer
+         configuration
+
+     delete-http-lb
+
+         deletes a load balancer
+
+     delete-http-lb-config
+         deletes a load balancer configuration
+
+     delete-http-lb-ref
+
+         deletes the cluster  or  server  instance  from  a  load
+         balancer configuration
+
+     delete-http-listener
+         removes the HTTP listener
+
+     delete-iiop-listener
+
+         removes the IIOP listener
+
+Java EE 5           Last change: 27 Jul 2007                    7
+
+Administration Commands                                   help(1)
+
+     delete-instance
+
+         deletes the instance that is not running
+
+     delete-javamail-resource
+         removes the Javamail resource
+
+     delete-jdbc-connection-pool
+
+         removes the JDBC connection pool
+
+     delete-jdbc-resource
+         removes the JDBC resource
+
+     delete-jms-host
+
+         removes a JMS host
+
+     delete-jms-resource
+         removes the JMS resource
+
+     delete-jmsdest
+
+         destroys the named destination
+
+     delete-jndi-resource
+         removes the JNDI resource
+
+     delete-jvm-options
+
+         deletes the JVM options from the Java  configuration  or
+         profiler elements
+
+     delete-lifecycle-module
+         removes the lifecycle module
+
+     delete-management-rule
+
+         deletes a specified management rule
+
+Java EE 5           Last change: 27 Jul 2007                    8
+
+Administration Commands                                   help(1)
+
+     delete-mbean
+
+         deletes a custom MBean
+
+     delete-message-security-provider
+         enables administrators to delete a provider-config  sub-
+         element  for  the given message layer (message-security-
+         config element of domain.xml)
+
+     delete-node-agent-config
+
+         removes a node agent from a domain
+
+     delete-node-agent
+         deletes the node  agent  and  its  associated  directory
+         structure
+
+     delete-password-alias
+
+         deletes a password alias
+
+     delete-persistence-resource
+         removes the persistence resource
+
+     delete-profiler
+
+         deletes the profiler element
+
+     delete-resource-adapter-config
+         deletes the resource adapter Java bean
+
+     delete-resource-ref
+
+         removes a reference to a resource
+
+     delete-ssl
+         deletes the ssl element from the HTTP listener  or  IIOP
+         listener
+
+     delete-system-property
+
+         removes one or more system  properties  of  the  domain,
+         configuration, cluster, or server instance
+
+Java EE 5           Last change: 27 Jul 2007                    9
+
+Administration Commands                                   help(1)
+
+     delete-threadpool
+
+         deletes the thread pool
+
+     delete-transformation-rule
+         deletes the transformation rule of a given web service
+
+     delete-virtual-server
+
+         deletes the virtual server with the named virtual server
+         ID
+
+     deploy-jbi-service-assembly
+         deploys a service assembly into the JBI environment
+
+     deploy
+
+         deploys the specified component
+
+     deploydir
+         deploys the component that is in  the  specified  direc-
+         tory, located in the domain application server
+
+     disable-http-lb-server
+
+         disables a sever or cluster managed by a load balancer
+
+     disable-http-lb-application
+         disables an application managed by a load balancer
+
+     disable
+
+         stops the specified, deployed component
+
+     display-error-distribution
+         displays distribution of errors from instance server.log
+         at module level
+
+     display-error-statistics
+
+         displays a summary list of severities and warnings
+
+Java EE 5           Last change: 27 Jul 2007                   10
+
+Administration Commands                                   help(1)
+
+     display-log-records
+
+         displays all the error messages for a given module at  a
+         given timestamp
+
+     enable-http-lb-application
+         enables a previously-disabled application managed  by  a
+         load balancer
+
+     enable-http-lb-server
+
+         enables a previously disabled sever or  cluster  managed
+         by a load balancer
+
+     enable
+         runs the specified, deployed component
+
+     export-http-lb-config
+
+         exports the load balancer configuration to a  file  that
+         can be used by the load balancer
+
+     export
+         marks a  variable  name  for  automatic  export  to  the
+         environment of subsequent commands in multimode
+
+     flush-jmsdest
+
+         purges the messages in a JMS destination
+
+     freeze-transaction-service
+         immobilizes the named transaction service
+
+     generate-diagnostic-report
+
+         generates reports that  can  help  diagnose  application
+         server malfunctioning
+
+     generate-jvm-report
+         shows the threads, classes and memory for a given target
+         instance
+
+Java EE 5           Last change: 27 Jul 2007                   11
+
+Administration Commands                                   help(1)
+
+     get-client-stubs
+
+         gets the stubs of the client
+
+     get
+         gets the  values  of  the  monitorable  or  configurable
+         attributes
+
+     get-health
+
+         provides information on the cluster health
+
+     help
+         displays a list of all the  commands  available  in  the
+         command-line interface
+
+     install-jbi-component
+
+         installs a service engine or binding component into  the
+         JBI environment
+
+     install-jbi-shared-library
+         installs a shared library into the JBI environment
+
+     jms-ping
+
+         checks to see if the JMS provider is running
+
+     list-admin-objects
+         lists all the administered objects
+
+     list-application-refs
+
+         lists  all  application  references  in  a  cluster   or
+         unclustered server instance
+
+     list-audit-modules
+         lists the audit modules
+
+     list-auth-realms
+
+         lists the authorized realms
+
+Java EE 5           Last change: 27 Jul 2007                   12
+
+Administration Commands                                   help(1)
+
+     list-backups
+
+         lists all backups and restores
+
+     list-clusters
+         lists the existing clusters
+
+     list-components
+
+         lists deployed components
+
+     list-configs
+         lists all existing configurations
+
+     list-connector-connection-pools
+
+          gets all the connection pools
+
+     list-connector-resources
+         gets all the connector resources
+
+     list-connector-security-maps
+
+         lists the security maps  for  the  connector  connection
+         pool
+
+     list-custom-resources
+         gets all the custom resources
+
+     list-domains
+
+         lists the domains in the given domains directory
+
+     list-file-groups
+         lists the file groups
+
+     list-file-users
+
+         lists the file users
+
+Java EE 5           Last change: 27 Jul 2007                   13
+
+Administration Commands                                   help(1)
+
+     list-http-lb-configs
+
+         lists load balancer configurations
+
+     list-http-lbs
+         lists load balancers
+
+     list-http-listeners
+
+         gets the HTTP listeners
+
+     list-iiop-listeners
+         gets the IIOP listeners
+
+     list-instances
+
+         lists all the instances in the server
+
+     list-javamail-resources
+         gets all the Javamail resources
+
+     list-jdbc-connection-pools
+
+         registers the JDBC connection pool
+
+     list-jdbc-resources
+         gets all the JDBC resources
+
+     list-jbi-binding-components
+
+         lists the binding components installed on the  specified
+         target
+
+     list-jbi-service-assemblies
+         lists the service  assemblies  installed  into  the  JBI
+         environment
+
+     list-jbi-service-engines
+
+         lists the service engines  installed  on  the  specified
+         target
+
+Java EE 5           Last change: 27 Jul 2007                   14
+
+Administration Commands                                   help(1)
+
+     list-jbi-shared-libraries
+
+         lists the JBI shared libraries that are  installed  into
+         the JBI environment
+
+     list-jms-hosts
+         lists the existing JMS hosts
+
+     list-jms-resources
+
+         gets all the JMS resources
+
+     list-jmsdest
+         gets all the named destinations
+
+     list-jndi-entries
+
+         gets all the named destinations, browses and queries the
+         JNDI tree
+
+     list-jndi-resources
+         gets all the JNDI resources
+
+     list-lifecycle-modules
+
+         gets the lifecycle modules
+
+     list-management-rules
+         lists the management rules  created  using  the  create-
+         management-rule command
+
+     list-mbeans
+
+         lists the  custom  mbeans  for  a  given  target  server
+         instance
+
+     list-message-security-providers
+         enables administrators to list all security message pro-
+         viders (provider-config sub-elements) for the given mes-
+         sage   layer   (message-security-config    element    of
+         domain.xml)
+
+Java EE 5           Last change: 27 Jul 2007                   15
+
+Administration Commands                                   help(1)
+
+     list-node-agents
+
+         lists the node agents along with their status
+
+     list-password-aliases
+         lists all password aliases
+
+     list-persistence-resources
+
+         gets all the persistence resources
+
+     list-registry-locations
+         returns list of configured web service  registry  access
+         points
+
+     list-resource-adapter-configs
+
+         lists the resource adapters configured in an instance
+
+     list-resource-refs
+         lists the existing resource references
+
+     list-sub-components
+
+         lists EJBs or Servlets in a  deployed  module  or  in  a
+         module of a deployed application
+
+     list-system-properties
+         lists the system properties of  the  domain,  configura-
+         tion, cluster, or server instance
+
+     list-threadpools
+
+         lists the thread pools
+
+     list-timers
+         lists all of the timers owned by server instance(s)
+
+     list-transformation-rules
+
+         lists all the transformation rules of a given webservice
+
+Java EE 5           Last change: 27 Jul 2007                   16
+
+Administration Commands                                   help(1)
+
+     list-virtual-servers
+
+         gets the virtual servers
+
+     list
+         lists the configurable elements and provides  the  fully
+         qualified dotted names of the management components that
+         have read-only or modifiable attributes
+
+     login
+
+         lets you log in to a domain
+
+     migrate-timers
+         moves a timer when a server instance stops
+
+     monitor
+
+         displays monitoring data for  commonly-used  Application
+         Server components
+
+     multimode
+         allows you to execute multiple commands while  returning
+         environment  settings and remaining in the asadmin util-
+         ity
+
+     ping-connection-pool
+
+         tests if a connection pool is usable
+
+     publish-to-registry
+         publishes all the web service artifacts to registries
+
+     recover-transactions
+
+         manually recovers pending transactions
+
+     remove-ha-cluster
+         returns an HA cluster to non-HA status
+
+     restore-domain
+
+         restores files from backup
+
+Java EE 5           Last change: 27 Jul 2007                   17
+
+Administration Commands                                   help(1)
+
+     rollback-transaction
+
+         rolls back the named transaction
+
+     set
+         sets the values of attributes. Set command can  be  used
+         to modify default properties of a resource.
+
+     show-component-status
+
+         displays the status of the deployed component
+
+     show-jbi-binding-component
+         shows detailed information about the  specified  binding
+         component
+
+     show-jbi-service-assembly
+
+         shows detailed information  about  a  specified  service
+         assembly
+
+     show-jbi-service-engine
+         shows detailed information about the  specified  service
+         engine
+
+     show-jbi-shared-library
+
+         shows detailed  information  about  a  specified  shared
+         library
+
+     shut-down-jbi-component
+         shuts down a service engine or a  binding  component  on
+         the specified target
+
+     shut-down-jbi-service-assembly
+
+         shuts down a JBI service assembly on the specified  tar-
+         get
+
+     start-appserv
+         starts the domains in the specified domains directory
+
+Java EE 5           Last change: 27 Jul 2007                   18
+
+Administration Commands                                   help(1)
+
+     start-callflow-monitoring
+
+         provides the complete callflow/path of a request
+
+     start-cluster
+         starts a cluster
+
+     start-database
+
+         starts the bundled Java DB database
+
+     start-domain
+         starts the given domain
+
+     start-instance
+
+         starts a server instance
+
+     start-jbi-component
+         starts a service engine or a binding  component  on  the
+         specified target
+
+     start-jbi-service-assembly
+
+         starts a service assembly on the specified target
+
+     start-node-agent
+         starts a node agent
+
+     stop-appserv
+
+         stops the domains in the specified domains directory
+
+     stop-callflow-monitoring
+         disables collection of callflow information of a request
+
+     stop-cluster
+
+         stops a cluster
+
+Java EE 5           Last change: 27 Jul 2007                   19
+
+Administration Commands                                   help(1)
+
+     stop-database
+
+         stops the bundled Java DB database
+
+     stop-domain
+         stops the given domain
+
+     stop-instance
+
+         stops a server instance
+
+     stop-jbi-component
+         stops a service engine or a  binding  component  on  the
+         specified target
+
+     stop-jbi-service-assembly
+
+         stops a service assembly on the specified target
+
+     stop-node-agent
+         stops a node agent
+
+     undeploy-jbi-service-assembly
+
+         undeploys a service assembly on the specified target
+
+     undeploy
+         removes a component in the domain application server
+
+     unfreeze-transaction-service
+
+         mobilizes the named transaction service
+
+     uninstall-jbi-component
+         uninstalls a service engine or binding component on  the
+         specified target
+
+     uninstall-jbi-shared-library
+
+         uninstalls a shared library on the specified target
+
+Java EE 5           Last change: 27 Jul 2007                   20
+
+Administration Commands                                   help(1)
+
+     unpublish-from-registry
+
+         unpublishes the web service artifacts  from  the  regis-
+         tries
+
+     unset
+         removes  one  or  more  variables  from  the   multimode
+         environment
+
+     update-connector-security-map
+
+         creates or modifies a security  map  for  the  specified
+         connector connection pool
+
+     update-file-user
+         updates a current file user as specified
+
+     update-password-alias
+
+         updates a password alias
+
+     verify-domain-xml
+         verifies the content of the domain.xml
+
+     version
+
+         displays the version information
+
+     The following commands are deprecated:
+
+         o    display-license
+
+         o    install-license
+
+         o    restart-instance
+
+         o    shutdown
+
+         o    create-acl
+
+         o    delete-acl
+
+         o    list-acls
+
+         o    start-appserv
+
+Java EE 5           Last change: 27 Jul 2007                   21
+
+Administration Commands                                   help(1)
+
+         o    stop-appserv
+
+EXAMPLES
+     Example 1 Using help
+
+       asadmin> help
+       asadmin> create-domain --help
+
+     Where: create-domain is the command you  wish  to  view  the
+     usage for.
+
+SEE ALSO
+     asadmin(1M)
+
+Java EE 5           Last change: 27 Jul 2007                   22
+

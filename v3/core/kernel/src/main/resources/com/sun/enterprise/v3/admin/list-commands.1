@@ -1,23 +1,27 @@
 
-Administration Commands                       update-file-user(1)
+Administration Commands                          list-commands(1)
 
 NAME
-     update-file-user - updates a current file user as specified
+     list-commands - lists available commands
 
 SYNOPSIS
-     update-file-user
+     list-commands
      [--terse={true|false}][ --echo={true|false} ]
      [ --interactive={true|false} ] [ --host  host]
      [--port port] [--secure| -s ] [ --user  admin_user]
      [--passwordfile filename] [--help]
-     [ --groups  user_groups[:user_groups]*]
-     [--authrealmname authrealm_name] [--target target]
-     username
+     [ --localonly ={false|true}] [ --remoteonly ={false|true}]
 
 DESCRIPTION
-     This command updates an existing entry in the keyfile  using
-     the  specified  user  name,  password  and  groups. Multiple
-     groups can be entered by separating them, with a colon (:)
+     The list-commands command lists available Application Server
+     commands.
+
+     You can specify that only remote commands or only local com-
+     mands  are  listed.  By  default,  the list-commands command
+     displays a list of local commands  followed  by  a  list  of
+     remote commands.
+
+     This command is supported in local mode and remote mode.
 
 OPTIONS
      -t --terse
@@ -43,13 +47,14 @@ OPTIONS
      -p --port
 
          The HTTP port or HTTPS  port  for  administration.  This
+
+Java EE 5           Last change: 14 Apr 2008                    1
+
+Administration Commands                          list-commands(1)
+
          port is the port in the URL that you specify in your web
          browser   to   manage   the   domain,    for    example,
          http://localhost:8080/admin.
-
-Java EE 5           Last change: 30 Jan 2007                    1
-
-Administration Commands                       update-file-user(1)
 
      -s --secure
 
@@ -97,16 +102,16 @@ Administration Commands                       update-file-user(1)
 
              o    Interactively at the command prompt
          The asadmin login command can be used  only  to  specify
+
+Java EE 5           Last change: 14 Apr 2008                    2
+
+Administration Commands                          list-commands(1)
+
          the  administration  password.  For other passwords that
          remote commands require, use the  --passwordfile  option
          or specify them at the command prompt.
 
          After authenticating to a domain by  using  the  asadmin
-
-Java EE 5           Last change: 30 Jan 2007                    2
-
-Administration Commands                       update-file-user(1)
-
          login  command,  you need not specify the administration
          password through the --passwordfile  option  for  subse-
          quent  operations  on  the  domain.  However,  only  the
@@ -125,49 +130,95 @@ Administration Commands                       update-file-user(1)
 
          Displays the help text for the command.
 
-     --groups
-         This is the name of the group to  which  the  file  user
-         belongs.
+     --localonly
+         If this option is set to true, only local  commands  are
+         listed. Default is false.
 
-     --authrealmname
+         If this option is set to true, the  --remoteonly  option
+         must be set to false. Otherwise, an error occurs.
 
-         This is the file  where  the  user  may  have  different
-         stores for file auth realm.
+     --remoteonly
 
-     --target
-         This option helps specify the target on  which  you  are
-         updating a file user. Valid values are:
+         If this option is set to true, only remote commands  are
+         listed. Default is false.
 
-         server
-
-             Updates  the  file  user  in  the   default   server
-             instance. This is the default value.
-
-         cluster_name
-             Updates the file user on every  server  instance  in
-             the cluster.
-
-         instance_name
-
-             Updates the file user on a specified sever instance.
-
-Java EE 5           Last change: 30 Jan 2007                    3
-
-Administration Commands                       update-file-user(1)
-
-OPERANDS
-     username                    This is the  name  of  the  file
-                                 user to be updated.
+         If this option is set to true,  the  --localonly  option
+         must be set to false. Otherwise, an error occurs.
 
 EXAMPLES
-     Example 1 Using the update-file-user command
+     Example 1 Using the list-commands command
 
-       asadmin> update-file-user --user admin1 --passwordfile passwords.txt
-       --host pigeon --port 5001 --groups staff:manager:engineer sample_user
-       Command update-file-user executed successfully
+       asadmin> list-commands --user admin1 --passwordfile passwords.txt
+       ********** Local Commands **********
+       create-domain
+       backup-domain
+       delete-domain
+       start-domain
+       restore-domain
+       stop-domain
 
-     Where sample_user is the file  user  for whom the groups and
-     the user name are updated.
+Java EE 5           Last change: 14 Apr 2008                    3
+
+Administration Commands                          list-commands(1)
+
+       stop-database
+       list-domains
+       start-database
+       list-commands
+       ********** Remote Commands **********
+       add-resources
+       create-auth-realm
+       create-file-user
+       create-http-listener
+       create-jdbc-connection-pool
+       create-jdbc-resource
+       create-jvm-options
+       create-profiler
+       create-resource-ref
+       create-ssl
+       create-system-properties
+       create-virtual-server
+       delete-auth-realm
+       delete-file-user
+       delete-http-listener
+       delete-jdbc-connection-pool
+       delete-jdbc-resource
+       delete-jvm-options
+       delete-profiler
+       delete-resource-ref
+       delete-ssl
+       delete-system-property
+       delete-virtual-server
+       deploy
+       deploydir
+       disable
+       enable
+       list-applications
+       list-auth-realms
+       list-commands
+       list-components
+       list-containers
+       list-file-users
+       list-http-listeners
+       list-jdbc-connection-pools
+       list-jdbc-resources
+       list-jvm-options
+       list-modules
+       list-resource-refs
+       list-system-properties
+       list-virtual-servers
+       ping-connection-pool
+       redeploy
+       stop-domain
+       undeploy
+       update-file-user
+       version
+
+Java EE 5           Last change: 14 Apr 2008                    4
+
+Administration Commands                          list-commands(1)
+
+       Command list-commands executed successfully.
 
 EXIT STATUS
      0                           command executed successfully
@@ -175,8 +226,7 @@ EXIT STATUS
      1                           error in executing the command
 
 SEE ALSO
-     delete-file-user(1),    list-file-users(1),     create-file-
-     user(1), list-file-groups(1)
+     list-components(1), list-containers(1), list-modules(1)
 
-Java EE 5           Last change: 30 Jan 2007                    4
+Java EE 5           Last change: 14 Apr 2008                    5
 

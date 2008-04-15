@@ -1,23 +1,36 @@
 
-Administration Commands                       update-file-user(1)
+Administration Commands;                  ping-connection-pool(1)
 
 NAME
-     update-file-user - updates a current file user as specified
+     ping-connection-pool - tests if a connection pool is usable
 
 SYNOPSIS
-     update-file-user
+     ping-connection-pool
      [--terse={true|false}][ --echo={true|false} ]
      [ --interactive={true|false} ] [ --host  host]
      [--port port] [--secure| -s ] [ --user  admin_user]
      [--passwordfile filename] [--help]
-     [ --groups  user_groups[:user_groups]*]
-     [--authrealmname authrealm_name] [--target target]
-     username
+     pool_name
 
 DESCRIPTION
-     This command updates an existing entry in the keyfile  using
-     the  specified  user  name,  password  and  groups. Multiple
-     groups can be entered by separating them, with a colon (:)
+     This command tests if a connection pool is usable  for  both
+     JDBC  connection  pools  and connector connection pools. For
+     example, if you create a new JDBC  connection  pool  for  an
+     application  that is expected to be deployed later, the JDBC
+     pool is tested with this command before deploying the appli-
+     cation.
+
+     A JDBC connection pool or a connector connection  pool  with
+     authentication  can  be  created. You can either use a -pro-
+     perty option to specify user, password, or other  connection
+     information  using  the command line, or specify the connec-
+     tion information in the xml descriptor file.
+
+     Before pinging a connection pool, you must create  the  con-
+     nection  pool with authentication and ensure that the enter-
+     prise server or database is started.
+
+     This command is supported in remote mode only.
 
 OPTIONS
      -t --terse
@@ -36,20 +49,20 @@ OPTIONS
          If set to true (default),  only  the  required  password
          options are prompted.
 
+Java EE 5           Last change: 11 Apr 2008                    1
+
+Administration Commands;                  ping-connection-pool(1)
+
      -H --host
+
          The machine name where the domain administration  server
          is running. The default value is localhost.
 
      -p --port
-
          The HTTP port or HTTPS  port  for  administration.  This
          port is the port in the URL that you specify in your web
          browser   to   manage   the   domain,    for    example,
          http://localhost:8080/admin.
-
-Java EE 5           Last change: 30 Jan 2007                    1
-
-Administration Commands                       update-file-user(1)
 
      -s --secure
 
@@ -88,8 +101,13 @@ Administration Commands                       update-file-user(1)
              o    AS_ADMIN_ALIASPASSWORD
          All remote  commands  must  specify  the  administration
          password  to  authenticate  to the domain administration
-         server. The password can be specified by one of the fol-
-         lowing means:
+         server. The password can be  specified  by  one  of  the
+
+Java EE 5           Last change: 11 Apr 2008                    2
+
+Administration Commands;                  ping-connection-pool(1)
+
+         following means:
 
              o    Through the --passwordfile option
 
@@ -102,11 +120,6 @@ Administration Commands                       update-file-user(1)
          or specify them at the command prompt.
 
          After authenticating to a domain by  using  the  asadmin
-
-Java EE 5           Last change: 30 Jan 2007                    2
-
-Administration Commands                       update-file-user(1)
-
          login  command,  you need not specify the administration
          password through the --passwordfile  option  for  subse-
          quent  operations  on  the  domain.  However,  only  the
@@ -125,58 +138,30 @@ Administration Commands                       update-file-user(1)
 
          Displays the help text for the command.
 
-     --groups
-         This is the name of the group to  which  the  file  user
-         belongs.
-
-     --authrealmname
-
-         This is the file  where  the  user  may  have  different
-         stores for file auth realm.
-
      --target
-         This option helps specify the target on  which  you  are
-         updating a file user. Valid values are:
-
-         server
-
-             Updates  the  file  user  in  the   default   server
-             instance. This is the default value.
-
-         cluster_name
-             Updates the file user on every  server  instance  in
-             the cluster.
-
-         instance_name
-
-             Updates the file user on a specified sever instance.
-
-Java EE 5           Last change: 30 Jan 2007                    3
-
-Administration Commands                       update-file-user(1)
+         This option is deprecated.
 
 OPERANDS
-     username                    This is the  name  of  the  file
-                                 user to be updated.
+     pool_name                   This is the name of the pool  to
+                                 test.
 
 EXAMPLES
-     Example 1 Using the update-file-user command
+     Example 1 Using the ping-connection-pool command
 
-       asadmin> update-file-user --user admin1 --passwordfile passwords.txt
-       --host pigeon --port 5001 --groups staff:manager:engineer sample_user
-       Command update-file-user executed successfully
+       asadmin> ping-connection-pool --user admin1 --passwordfile pwordfile
+       Command ping-connection-pool executed successfully
 
-     Where sample_user is the file  user  for whom the groups and
-     the user name are updated.
+Java EE 5           Last change: 11 Apr 2008                    3
+
+Administration Commands;                  ping-connection-pool(1)
+
+     Where: asadmin is the command prompt  and  sampleConnection-
+     Pool is the name of the connection pool to ping.
 
 EXIT STATUS
      0                           command executed successfully
 
      1                           error in executing the command
 
-SEE ALSO
-     delete-file-user(1),    list-file-users(1),     create-file-
-     user(1), list-file-groups(1)
-
-Java EE 5           Last change: 30 Jan 2007                    4
+Java EE 5           Last change: 11 Apr 2008                    4
 

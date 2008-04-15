@@ -11,14 +11,14 @@ SYNOPSIS
      [--port port] [--secure| -s ] [ --user  admin_user]
      [--passwordfile filename] [--help]
      [ --virtualservers  virtual_servers]
-     [--contextroot context_root] [--force=true]
-     [ --precompilejsp =false] [ --verify =false]
-     [ --name  component_name] [--upload=true]
+     [--contextroot context_root] [--force={false|true}]
+     [ --precompilejsp ={false|true}] [ --verify ={false|true}]
+     [ --name  component_name] [--upload={true|false}]
      [ --retrieve  local_dirpath] [--dbvendorname dbvendorname]
-     [--createtables=true|false | --dropandcreatetables=true|false]
-     [--uniquetablenames=true|false] [--deploymentplan deployment_plan]
-     [--enabled=true] [ --generatermistubs =false]
-     [ --availabilityenabled =false]
+     [--createtables={true|false} |  --dropandcreatetables ={true|false}]
+     [ --uniquetablenames ={true|false}] [ --deploymentplan  deployment_plan]
+     [--enabled={true|false}] [ --generatermistubs ={false|true}]
+     [ --availabilityenabled ={false|true}]
      [ --libraries  jar_file[(path_separator)jar_file*]]
      [--target target] filepath
 
@@ -50,13 +50,13 @@ OPTIONS
          well-formatted data for consumption by a script. Default
          is false.
 
-Java EE 5            Last change: 3 Aug 2007                    1
+Java EE 5           Last change: 14 Apr 2008                    1
 
 Administration Commands                                 deploy(1)
 
      -e --echo
 
-         Setting to true will echo the command line statement  on
+         If set to true, the command-line statement is echoed  on
          the standard output. Default is false.
 
      -I --interactive
@@ -69,11 +69,10 @@ Administration Commands                                 deploy(1)
          is running. The default value is localhost.
 
      -p --port
-         The HTTP/S port for administration. This is the port  to
-         which  you  should point your browser in order to manage
-         the domain. For example, http://localhost:4848.
-
-         The default port number is 4848.
+         The HTTP port or HTTPS  port  for  administration.  This
+         port is the port in the URL that you specify in your web
+         browser   to   manage   the   domain,    for    example,
+         http://localhost:8080/admin.
 
      -s --secure
 
@@ -81,54 +80,65 @@ Administration Commands                                 deploy(1)
          domain administration server.
 
      -u --user
-         The authorized domain administration server  administra-
-         tive username.
+         The user name of the authorized administrative  user  of
+         the domain administration server.
 
-         If you have authenticated to a domain using the  asadmin
-         login  command,  then  you  need  not specify the --user
-         option  on  subsequent  operations  to  this  particular
-         domain.
+         If you have authenticated to a domain by using the asad-
+         min  login  command,  you  need  not  specify the --user
+         option for subsequent operations on the domain.
 
      --passwordfile
 
-         The --passwordfile option specifies the name,  including
-         the full path, of a file containing the password entries
-         in a specific format. The entry for  the  password  must
-         have  the AS_ADMIN_ prefix followed by the password name
-         in uppercase letters.
+         Specifies the name, including the full path, of  a  file
+         that contains the password entries in a specific format.
 
-         For example, to specify the domain administration server
-         password,  use  an  entry  with  the  following  format:
-         AS_ADMIN_PASSWORD=password, where password is the actual
-         administrator  password.  Other  passwords  that  can be
+         The entry for a password must have the AS_ADMIN_  prefix
+         followed  by the password name in uppercase letters. For
+         example, to specify the password for the domain adminis-
+         tration server, use an entry with the following format:
 
-Java EE 5            Last change: 3 Aug 2007                    2
+           AS_ADMIN_PASSWORD=password
+
+         In this example, password is  the  actual  administrator
+         password.
+
+Java EE 5           Last change: 14 Apr 2008                    2
 
 Administration Commands                                 deploy(1)
 
-         specified        include        AS_ADMIN_MAPPEDPASSWORD,
-         AS_ADMIN_USERPASSWORD, and AS_ADMIN_ALIASPASSWORD.
+         The following other passwords can also be specified:
 
-         All remote commands must specify the admin  password  to
-         authenticate to the domain administration server, either
-         through --passwordfile or  asadmin  login,  or  interac-
-         tively  on the command prompt. The asadmin login command
-         can be used only to  specify  the  admin  password.  For
-         other  passwords, that must be specified for remote com-
-         mands, use the --passwordfile or enter them at the  com-
-         mand prompt.
+             o    AS_ADMIN_MAPPEDPASSWORD
 
-         If you have authenticated to a domain using the  asadmin
-         login command, then you need not specify the admin pass-
-         word through the  --passwordfile  option  on  subsequent
-         operations  to  this particular domain. However, this is
-         applicable only to AS_ADMIN_PASSWORD  option.  You  will
-         still  need to provide the other passwords, for example,
-         AS_ADMIN_USERPASSWORD, as and when required  by  indivi-
-         dual commands, such as update-file-user.
+             o    AS_ADMIN_USERPASSWORD
 
-         For security reasons, passwords specified as an environ-
-         ment variable will not be read by asadmin.
+             o    AS_ADMIN_ALIASPASSWORD
+         All remote  commands  must  specify  the  administration
+         password  to  authenticate  to the domain administration
+         server. The password can be specified by one of the fol-
+         lowing means:
+
+             o    Through the --passwordfile option
+
+             o    Through the asadmin login command
+
+             o    Interactively at the command prompt
+         The asadmin login command can be used  only  to  specify
+         the  administration  password.  For other passwords that
+         remote commands require, use the  --passwordfile  option
+         or specify them at the command prompt.
+
+         After authenticating to a domain by  using  the  asadmin
+         login  command,  you need not specify the administration
+         password through the --passwordfile  option  for  subse-
+         quent  operations  on  the  domain.  However,  only  the
+         AS_ADMIN_PASSWORD option is not required. You still must
+         provide    the    other    passwords,    for    example,
+         AS_ADMIN_USERPASSWORD, when required by individual  com-
+         mands, such as update-file-user.
+
+         For security reasons, a password that is specified as an
+         environment variable is not read by the asadmin command.
 
          The  default  value   for   AS_ADMIN_MASTERPASSWORD   is
          changeit.
@@ -147,42 +157,43 @@ Administration Commands                                 deploy(1)
          for  other  archive  types; defaults to filename without
          extension.
 
-     --force
-         If set to true, makes sure the component  is  redeployed
-         even   if  the  specified  component  has  already  been
-         deployed or already exists. The default is true.
-
-Java EE 5            Last change: 3 Aug 2007                    3
+Java EE 5           Last change: 14 Apr 2008                    3
 
 Administration Commands                                 deploy(1)
 
-     --precompilejsp
+     --force
 
+         If set to true, makes sure the component  is  redeployed
+         even   if  the  specified  component  has  already  been
+         deployed or already exists. The default is false.
+
+     --precompilejsp
          By default this option is set to false, which  does  not
          allow  the JSP to pre-compile during deployment. Instead
          JSPs are compiled during runtime.
 
      --verify
+
          If set to true, the syntax and semantics of the  deploy-
-         ment descriptor is verified.
+         ment descriptor is verified. Default is false.
 
      --name
-
          Name of the deployable component.
 
      --upload
-         When set to true, uploads the  deployable  file  to  the
-         administration server. If the filepath of the deployable
-         file is  mounted  to  the  server  machine,  or  if  the
-         administration server is running locally, set the upload
-         option to false.
+
+         When set to true (the default), uploads  the  deployable
+         file  to  the  administration server. If the filepath of
+         the deployable file is mounted to the server machine, or
+         if the administration server is running locally, set the
+         upload option to false.
 
      --retrieve
-
          Retrieves the client  stub  JAR  file  from  the  server
          machine to the local directory.
 
      --dbvendorname
+
          Specifies the name of  the  database  vendor  for  which
          tables are created. Supported values include db2, mssql,
          oracle,  derby,  javadb,  postgresql,   pointbase,   and
@@ -195,6 +206,10 @@ Administration Commands                                 deploy(1)
          cannot  be  established,  or  if the value is not recog-
          nized, SQL-92 compliance is presumed.
 
+Java EE 5           Last change: 14 Apr 2008                    4
+
+Administration Commands                                 deploy(1)
+
      --createtables
 
          Creates tables at  deployment  of  an  application  with
@@ -202,12 +217,7 @@ Administration Commands                                 deploy(1)
          deploy entry in the cmp-resource  element  of  the  sun-
          ejb-jar.xml file.
 
-Java EE 5            Last change: 3 Aug 2007                    4
-
-Administration Commands                                 deploy(1)
-
      --dropandcreatetables
-
          If set to true, when the component  is  redeployed,  the
          tables  created  by  the previous deployment are dropped
          before creating  the  new  tables.  Applies  to  already
@@ -220,19 +230,20 @@ Administration Commands                                 deploy(1)
          to true.
 
      --uniquetablenames
+
          Guarantees unique table names  for  all  the  beans  and
          results  in a hashcode added to the table names. This is
          useful if you have an  application  with  case-sensitive
          bean names.
 
      --deploymentplan
-
          Takes the deployment plan, which  is  a  JAR  containing
          Sun-specific descriptors, and deploys it. This should be
          passed along when deploying a pure EAR file. A pure  EAR
          file is an EAR without Sun-specific descriptors.
 
      --enabled
+
          If set to true (default), allows  users  to  access  the
          application.  If set to false, users will not be able to
          access the application. In a domain whose profile is the
@@ -243,21 +254,20 @@ Administration Commands                                 deploy(1)
          deploy to a specific instance or cluster.
 
      --generatermistubs
-
          If set to true, static RMI-IIOP stubs are generated  and
          put  into  the client.jar. If set to false (default) the
          stubs are not generated.
 
+Java EE 5           Last change: 14 Apr 2008                    5
+
+Administration Commands                                 deploy(1)
+
      --availabilityenabled
+
          This option is valid only in domains that are configured
          to  support  clusters,  such as domains that are created
          with the cluster profile or the enterprise profile. This
          option controls whether high-availability is enabled for
-
-Java EE 5            Last change: 3 Aug 2007                    5
-
-Administration Commands                                 deploy(1)
-
          SFSB checkpointing and potentially passivation.  If  set
          to  false  (default)  all SFSB checkpointing is disabled
          for the specified application or EJB module. If  set  to
@@ -267,7 +277,6 @@ Administration Commands                                 deploy(1)
          such as the server and container levels.
 
      --libraries
-
          A comma-separated list of library JAR files. Specify the
          library  JAR  files by their relative or absolute paths.
          Specify   relative   paths   relative    to    instance-
@@ -275,6 +284,7 @@ Administration Commands                                 deploy(1)
          the application in the order specified.
 
      --target
+
          This option is valid only in domains that are configured
          to  support  clusters,  such as domains that are created
          with the cluster  profile  or  the  enterprise  profile.
@@ -282,11 +292,11 @@ Administration Commands                                 deploy(1)
          values are:
 
          server
-
              Deploys the component to the default server instance
              server and is the default value.
 
          domain
+
              Deploys the component to the domain.  If  domain  is
              the  target  for an initial deployment, the applica-
              tion is  deployed  to  the  domain,  but  no  server
@@ -302,22 +312,22 @@ Administration Commands                                 deploy(1)
              the application until the  clustered  or  standalone
              server instances are restarted.
 
+Java EE 5           Last change: 14 Apr 2008                    6
+
+Administration Commands                                 deploy(1)
+
          cluster_name
 
              Deploys the component to every  server  instance  in
              the cluster.
 
-Java EE 5            Last change: 3 Aug 2007                    6
-
-Administration Commands                                 deploy(1)
-
          instance_name
-
              Deploys  the  component  to   a   particular   sever
              instance.
 
 OPERANDS
      filepath
+
          Path to the deployable file on the local machine if  the
          upload  option  is  set  to true; otherwise the absolute
          path to the file on the server machine.
@@ -346,14 +356,14 @@ EXAMPLES
        asadmin> deploy --user admin --passwordfile myfile hello.war
        Command deploy executed successfully
 
+Java EE 5           Last change: 14 Apr 2008                    7
+
+Administration Commands                                 deploy(1)
+
      Example 3 Deploying an enterprise bean (EJB component)
 
      Deploy an enterprise bean with container-managed persistence
      (CMP) and create the database tables used by the bean.
-
-Java EE 5            Last change: 3 Aug 2007                    7
-
-Administration Commands                                 deploy(1)
 
      This example uses the --target option,  which  is  available
      only  in  domains  that  are configured to support clusters,
@@ -387,8 +397,12 @@ EXIT STATUS
 
      1                           error in executing the command
 
+Java EE 5           Last change: 14 Apr 2008                    8
+
+Administration Commands                                 deploy(1)
+
 SEE ALSO
      undeploy(1), list-components(1)
 
-Java EE 5            Last change: 3 Aug 2007                    8
+Java EE 5           Last change: 14 Apr 2008                    9
 

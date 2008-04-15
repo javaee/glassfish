@@ -1,23 +1,36 @@
 
-Administration Commands                       update-file-user(1)
+Administration Commands                    delete-resource-ref(1)
 
 NAME
-     update-file-user - updates a current file user as specified
+     delete-resource-ref - removes a reference to a resource
 
 SYNOPSIS
-     update-file-user
+     delete-resource-ref
      [--terse={true|false}][ --echo={true|false} ]
      [ --interactive={true|false} ] [ --host  host]
      [--port port] [--secure| -s ] [ --user  admin_user]
      [--passwordfile filename] [--help]
-     [ --groups  user_groups[:user_groups]*]
-     [--authrealmname authrealm_name] [--target target]
-     username
+     [ --target  target]
+     reference_name
 
 DESCRIPTION
-     This command updates an existing entry in the keyfile  using
-     the  specified  user  name,  password  and  groups. Multiple
-     groups can be entered by separating them, with a colon (:)
+     The delete-resource-ref command removes a reference  from  a
+     cluster or an unclustered server instance to a resource (for
+     example, a JDBC resource). This effectively results  in  the
+     removal  of  the resource from the JNDI tree of the targeted
+     instance or cluster.
+
+     The target instance or instances making up the cluster  need
+     not  be running or available for this command to succeed. If
+     one or more instances are not available, they will no longer
+     load the resource in the JNDI tree the next time they start.
+
+     Removal of the reference does not result in removal  of  the
+     resource  from  the  domain. The resource is removed only by
+     the delete command for that resource (for  example,  delete-
+     jdbc-resource).
+
+     This command is supported in remote mode only.
 
 OPTIONS
      -t --terse
@@ -36,20 +49,20 @@ OPTIONS
          If set to true (default),  only  the  required  password
          options are prompted.
 
+Java EE 5           Last change: 22 Dec 2004                    1
+
+Administration Commands                    delete-resource-ref(1)
+
      -H --host
+
          The machine name where the domain administration  server
          is running. The default value is localhost.
 
      -p --port
-
          The HTTP port or HTTPS  port  for  administration.  This
          port is the port in the URL that you specify in your web
          browser   to   manage   the   domain,    for    example,
          http://localhost:8080/admin.
-
-Java EE 5           Last change: 30 Jan 2007                    1
-
-Administration Commands                       update-file-user(1)
 
      -s --secure
 
@@ -88,8 +101,13 @@ Administration Commands                       update-file-user(1)
              o    AS_ADMIN_ALIASPASSWORD
          All remote  commands  must  specify  the  administration
          password  to  authenticate  to the domain administration
-         server. The password can be specified by one of the fol-
-         lowing means:
+         server. The password can be  specified  by  one  of  the
+
+Java EE 5           Last change: 22 Dec 2004                    2
+
+Administration Commands                    delete-resource-ref(1)
+
+         following means:
 
              o    Through the --passwordfile option
 
@@ -102,11 +120,6 @@ Administration Commands                       update-file-user(1)
          or specify them at the command prompt.
 
          After authenticating to a domain by  using  the  asadmin
-
-Java EE 5           Last change: 30 Jan 2007                    2
-
-Administration Commands                       update-file-user(1)
-
          login  command,  you need not specify the administration
          password through the --passwordfile  option  for  subse-
          quent  operations  on  the  domain.  However,  only  the
@@ -125,58 +138,54 @@ Administration Commands                       update-file-user(1)
 
          Displays the help text for the command.
 
-     --groups
-         This is the name of the group to  which  the  file  user
-         belongs.
-
-     --authrealmname
-
-         This is the file  where  the  user  may  have  different
-         stores for file auth realm.
-
      --target
-         This option helps specify the target on  which  you  are
-         updating a file user. Valid values are:
+         Specifies the target from which  you  are  removing  the
+         resource reference. Valid values are
 
          server
 
-             Updates  the  file  user  in  the   default   server
-             instance. This is the default value.
+             Removes the  resource  reference  from  the  default
+             server instance server and is the default value.
 
          cluster_name
-             Updates the file user on every  server  instance  in
-             the cluster.
+             Removes the resource  reference  from  every  server
+             instance in the cluster.
 
          instance_name
 
-             Updates the file user on a specified sever instance.
+             Removes  the  resource  reference  from  the   named
+             unclustered server instance.
 
-Java EE 5           Last change: 30 Jan 2007                    3
+Java EE 5           Last change: 22 Dec 2004                    3
 
-Administration Commands                       update-file-user(1)
+Administration Commands                    delete-resource-ref(1)
+
+         This option is valid only in domains that are configured
+         to  support  clusters,  such as domains that are created
+         with the cluster profile or the enterprise profile.
 
 OPERANDS
-     username                    This is the  name  of  the  file
-                                 user to be updated.
+     reference_name              The name or  JNDI  name  of  the
+                                 resource.
 
 EXAMPLES
-     Example 1 Using the update-file-user command
+     Example 1 Using the delete-resource-ref command
 
-       asadmin> update-file-user --user admin1 --passwordfile passwords.txt
-       --host pigeon --port 5001 --groups staff:manager:engineer sample_user
-       Command update-file-user executed successfully
+     The following command removes a reference to the JMS  desti-
+     nation resource jms/Topic on the unclustered server instance
+     NewServer.
 
-     Where sample_user is the file  user  for whom the groups and
-     the user name are updated.
+       asadmin> delete-resource-ref --user admin2
+       --passwordfile passwords.txt --target NewServer jms/Topic
+       Command delete-resource-ref executed successfully.
 
 EXIT STATUS
-     0                           command executed successfully
+     0    command executed successfully
 
-     1                           error in executing the command
+     1    error in executing the command
 
 SEE ALSO
-     delete-file-user(1),    list-file-users(1),     create-file-
-     user(1), list-file-groups(1)
+     create-resource-ref(1), list-resource-refs(1)
 
-Java EE 5           Last change: 30 Jan 2007                    4
+Java EE 5           Last change: 22 Dec 2004                    4
 

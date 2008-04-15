@@ -1,23 +1,32 @@
 
-Administration Commands                       update-file-user(1)
+Administration Commands                     create-jvm-options(1)
 
 NAME
-     update-file-user - updates a current file user as specified
+     create-jvm-options - creates JVM options in the Java  confi-
+     guration or profiler element of the domain.xml file.
 
 SYNOPSIS
-     update-file-user
+     create-jvm-options
      [--terse={true|false}][ --echo={true|false} ]
      [ --interactive={true|false} ] [ --host  host]
      [--port port] [--secure| -s ] [ --user  admin_user]
      [--passwordfile filename] [--help]
-     [ --groups  user_groups[:user_groups]*]
-     [--authrealmname authrealm_name] [--target target]
-     username
+     [ --target  target]
+     [--profiler={true|false}] (jvm_option_name=jvm_option_value)
+     [:jvm_option_name=jvm_option_name*]
 
 DESCRIPTION
-     This command updates an existing entry in the keyfile  using
-     the  specified  user  name,  password  and  groups. Multiple
-     groups can be entered by separating them, with a colon (:)
+     The create-jvm-options command creates JVM  options  in  the
+     Java  configuration  or  profiler elements of the domain.xml
+     file. If JVM options are created for a  profiler,  they  are
+     used  to record the settings needed to get a particular pro-
+     filer going.
+
+     This command is supported in remote mode only.
+
+     You must restart the server for newly created JVM options to
+     take  effect.  Use  the start/stop-domain command to restart
+     the domain administration server.
 
 OPTIONS
      -t --terse
@@ -38,6 +47,11 @@ OPTIONS
 
      -H --host
          The machine name where the domain administration  server
+
+Java EE 5           Last change: 11 Jul 2007                    1
+
+Administration Commands                     create-jvm-options(1)
+
          is running. The default value is localhost.
 
      -p --port
@@ -47,16 +61,12 @@ OPTIONS
          browser   to   manage   the   domain,    for    example,
          http://localhost:8080/admin.
 
-Java EE 5           Last change: 30 Jan 2007                    1
-
-Administration Commands                       update-file-user(1)
-
      -s --secure
-
          If set to true, uses SSL/TLS  to  communicate  with  the
          domain administration server.
 
      -u --user
+
          The user name of the authorized administrative  user  of
          the domain administration server.
 
@@ -65,7 +75,6 @@ Administration Commands                       update-file-user(1)
          option for subsequent operations on the domain.
 
      --passwordfile
-
          Specifies the name, including the full path, of  a  file
          that contains the password entries in a specific format.
 
@@ -91,6 +100,10 @@ Administration Commands                       update-file-user(1)
          server. The password can be specified by one of the fol-
          lowing means:
 
+Java EE 5           Last change: 11 Jul 2007                    2
+
+Administration Commands                     create-jvm-options(1)
+
              o    Through the --passwordfile option
 
              o    Through the asadmin login command
@@ -102,11 +115,6 @@ Administration Commands                       update-file-user(1)
          or specify them at the command prompt.
 
          After authenticating to a domain by  using  the  asadmin
-
-Java EE 5           Last change: 30 Jan 2007                    2
-
-Administration Commands                       update-file-user(1)
-
          login  command,  you need not specify the administration
          password through the --passwordfile  option  for  subse-
          quent  operations  on  the  domain.  However,  only  the
@@ -125,49 +133,41 @@ Administration Commands                       update-file-user(1)
 
          Displays the help text for the command.
 
-     --groups
-         This is the name of the group to  which  the  file  user
-         belongs.
-
-     --authrealmname
-
-         This is the file  where  the  user  may  have  different
-         stores for file auth realm.
-
      --target
-         This option helps specify the target on  which  you  are
-         updating a file user. Valid values are:
+         Specifies the target  on  which  you  are  creating  jvm
+         options. Valid targets are config, instance, cluster, or
+         server. The default is server.
 
-         server
+     --profiler
 
-             Updates  the  file  user  in  the   default   server
-             instance. This is the default value.
-
-         cluster_name
-             Updates the file user on every  server  instance  in
-             the cluster.
-
-         instance_name
-
-             Updates the file user on a specified sever instance.
-
-Java EE 5           Last change: 30 Jan 2007                    3
-
-Administration Commands                       update-file-user(1)
+         Indicates whether the JVM options are for the  profiler.
+         The  profiler  must  exist  for  this option to be true.
+         Default is false.
 
 OPERANDS
-     username                    This is the  name  of  the  file
-                                 user to be updated.
+     jvm_option_name
+         The left side of the equal sign (=) is  the  JVM  option
+         name.  The  right  side of the equal sign (=) is the JVM
+         option value. A colon (:) is a  delimiter  for  multiple
+         options.
+
+Java EE 5           Last change: 11 Jul 2007                    3
+
+Administration Commands                     create-jvm-options(1)
 
 EXAMPLES
-     Example 1 Using the update-file-user command
+     Example 1 Using the create-jvm-options command
 
-       asadmin> update-file-user --user admin1 --passwordfile passwords.txt
-       --host pigeon --port 5001 --groups staff:manager:engineer sample_user
-       Command update-file-user executed successfully
+     JVM options must start with a dash (-).  Use  the  backslash
+     (\) to escape the dash delimiter.
 
-     Where sample_user is the file  user  for whom the groups and
-     the user name are updated.
+       asadmin> create-jvm-options --interactive=true
+       --secure=true --passwordfile passwords.txt --terse=false
+       --user admin --host localhost --port 4848 --target server
+       \\-Dunixlocation=/root/example:
+       -Dvariable=\$HOME:-Dwindowslocation=d\\:\\\sun\\\appserver:
+       -Doption1=-value1
+       Command create-jvm-options executed successfully
 
 EXIT STATUS
      0                           command executed successfully
@@ -175,8 +175,7 @@ EXIT STATUS
      1                           error in executing the command
 
 SEE ALSO
-     delete-file-user(1),    list-file-users(1),     create-file-
-     user(1), list-file-groups(1)
+     delete-jvm-options(1), list-jvm-options(1)
 
-Java EE 5           Last change: 30 Jan 2007                    4
+Java EE 5           Last change: 11 Jul 2007                    4
 
