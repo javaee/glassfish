@@ -98,7 +98,7 @@
         <dependency>
               <groupId>com.sun.enterprise</groupId>
               <artifactId>hk2-maven</artifactId>
-              <version>0.2-SNAPSHOT</version>
+              <version>${hk2.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.maven</groupId>
