@@ -170,7 +170,7 @@
     </dependencies>
     
     <properties>
-      <hk2.version>0.2-SNAPSHOT</hk2.version>
+      <hk2.version>0.2</hk2.version>
       <amx-api.version>2.0-SNAPSHOT</amx-api.version>
     </properties>
 </project>
