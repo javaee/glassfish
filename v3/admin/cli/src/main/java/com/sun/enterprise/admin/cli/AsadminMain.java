@@ -36,7 +36,6 @@
 package com.sun.enterprise.admin.cli;
 
 import com.sun.enterprise.cli.framework.*;
-import com.sun.enterprise.universal.i18n.LocalStrings;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 
 /**
@@ -46,7 +45,15 @@ public class AsadminMain {
     public static void main(String[] args) {
         AsadminMain main = new AsadminMain();
         int exitCode = ERROR;
-        
+
+        if(args.length <= 0) {
+             String msg = "Usage: asadmin <command-name> [options]\n" + 
+                          "Multimode not available for TP2 release.\n" +
+                          "Start the server using \"asadmin start-domain\" or \"startserv\" script\n" +
+                          "and run \"asadmin list-commands\" to get a complete list of commands";
+             System.out.println(msg);
+             System.exit(0);
+        }
         try {
             exitCode = main.local(args);
         }
@@ -54,20 +61,14 @@ public class AsadminMain {
             CLILogger.getInstance().printDebugMessage(e.getMessage());
             exitCode = main.remote(args);
         }
-        String name;
-        if(args.length == 0)
-            name = "introduction";
-        else
-            name = args[0];
-        
         if(exitCode == SUCCESS) {
             CLILogger.getInstance().printDetailMessage(
-                strings.get("CommandSuccessful", name));
+                strings.get("CommandSuccessful", args[0]));
         }
         
         if(exitCode == ERROR) {
             CLILogger.getInstance().printDetailMessage(
-                strings.get("CommandUnSuccessful", name));
+                strings.get("CommandUnSuccessful", args[0]));
         }
         System.exit(exitCode);
     }
