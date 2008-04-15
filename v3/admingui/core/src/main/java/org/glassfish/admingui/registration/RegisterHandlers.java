@@ -346,7 +346,8 @@ public class RegisterHandlers {
             map.put(RegistrationAccount.LASTNAME, lastName);
             
             if (! GuiUtil.isEmpty(companyName))
-                map.put(RegistrationAccount.COMPANY,  companyName);
+                //map.put(RegistrationAccount.COMPANY,  companyName);
+                map.put("company",  companyName);
 //System.out.println("====== DEBUG ====  Creating account with the following: " + map.toString());
             Object[] accountParams = { map };
             try {
