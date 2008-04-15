@@ -25,11 +25,19 @@ own identifying information: Portions Copyright [yyyy]
 
        <resolveArtifact artifactId="nucleus-base" property="nucleus-base.zip"/>
        <resolveArtifact artifactId="felix" groupId="org.glassfish.osgi-platforms" property="felix.zip"/>
+       <resolveArtifact artifactId="v3-docs" property="v3-docs.zip"/>
 
        <resolveAll todir="target/stage/glassfish/modules">
          <scope level="compile,runtime" />
        </resolveAll>
+
        <delete dir="target/stage/glassfish/modules" includes="*.zip" />
+
+       <unzip src="${v3-docs.zip}" dest="target/stage/glassfish">
+              <patternset>
+                 <exclude name="META-INF/**"/>
+              </patternset>
+       </unzip>
 
        <zip file="target/nucleus.zip" basedir="target/stage">
            <zipgroupfileset file="${nucleus-base.zip}"/>
