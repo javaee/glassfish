@@ -73,15 +73,10 @@
         <site>
             <url>file:../www/</url>
         </site>
-        <!--repository>
-            <uniqueVersion>false</uniqueVersion>
-            <id>glassfish-repository</id>
-            <url>sftp://trx2.sun.com:/export/nfs/dlc/maven/glassfish</url>
-        </repository-->
         <repository>
             <uniqueVersion>false</uniqueVersion>
-            <id>glassfish-repository-internal</id>
-            <url>scp://rator.sfbay.sun.com/files/hudson/repositories/glassfish</url>
+            <id>rator.sfbay</id>
+            <url>dav:http://rator.sfbay/maven/repositories/glassfish/</url> 
         </repository>
     </distributionManagement>
     <repositories>
@@ -154,6 +149,13 @@
                 </configuration>
             </plugin>
         </plugins>
+        <extensions>
+             <extension>
+                  <groupId>org.apache.maven.wagon</groupId>
+                  <artifactId>wagon-webdav</artifactId>
+                  <version>1.0-beta-2</version>
+             </extension>
+        </extensions>
     </build>
 
     <modules>
