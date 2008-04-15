@@ -345,11 +345,15 @@ public class AMXRoot {
     }
 
     public  boolean isEE(){
+        return false;
+    
         //TODO-V3
+        /*
         SystemInfo systemInfo = domainRoot.getSystemInfo();
         if (systemInfo == null)
             return false;
         return systemInfo.supportsFeature(SystemInfo.CLUSTERS_FEATURE);
+         * */
     }
 
 
