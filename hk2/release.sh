@@ -29,3 +29,5 @@ mvn -P release-phase1 install
 
 # finally a release
 mvn -B release:perform
+
+# Boy, Maven sucks!
