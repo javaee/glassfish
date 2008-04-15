@@ -89,13 +89,13 @@
         <repository>
             <id>maven2-repository.dev.java.net</id>
             <name>Java.net Repository for Maven</name>
-            <url>http://download.java.net/maven/2/</url>
+            <url>https://maven2-repository.dev.java.net/repository</url>
         </repository>
         <repository>
             <id>maven-repository.dev.java.net</id>
             <name>Java.net Repository for Maven</name>
             <layout>legacy</layout>
-            <url>http://download.java.net/maven/1/</url>
+            <url>https://maven-repository.dev.java.net/repository</url>
         </repository>
     </repositories>
     <pluginRepositories>
