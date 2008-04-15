@@ -4,52 +4,82 @@
 	<div class="j1holcontents">
 
 	    <h1>Exercise 0: Configuring your environment</h1>
+	    <p>&nbsp;</p>
 
     <p class="j1holheader">Step-by-Step Instructions:</p>
 
     <p>	The following steps will guide you through setting up the environment
-	necessary for completing this lab.  This consists of the following steps:</p>
+	necessary to complete this lab.  This consists of the following
+	steps:</p>
 
     <ol class="j1hollist">
-	<li><b><a href="#ex0LaunchIDE">Launch the NetBeans 6.0 IDE.</a></b></li>
-	<li><b><a href="#ex0mvn">Ensure the Maven 2 plugin for NetBeans 6.0 is installed.</a></b></li>
-	<li><b><a href="#ex0svn">Install Subversion.</a></b></li>
-	<li><b><a href="#ex0gf">Checkout, build, and install the GlassFish v3 application server.</a></b></li>
+	<li><b><a href="#ex0InstallGlassFish">Install GlassFish v3.</a></b></li>
+	<li><b><a href="#ex0InstallMaven">Install Maven.</a></b></li>
+	<li><b><a href="#ex0ConfigureNetBeans">Configure NetBeans.</a></b></li>
+	<li><b><a href="#ex0InstallSVN">Install Subversion.</a></b></li>
     </ol>
 
 <br />
 <p class="j1holsubheader">Steps:</p>
 
 <ol class="j1hollist">
-    <li><a name="ex0LaunchIDE">
-	Launch the NetBeans 6.0 IDE.
-	<ul class="j1hollist"><li>On Windows: <b>Start --&gt; Programs --&gt; NetBeans IDE --&gt;
-		    NetBeans IDE 6.0 --&gt; NetBeans IDE</b></li>
-	    <li>On Solaris or Linux: open a terminal window, and type:
+    <li><a name="ex0InstallGlassFish">
+	<b>Install GlassFish v3.</b>
+	<ul class="j1hollist">
+	    <li>GlassFish v3 is already installed when you unzip the lab .zip
+		file, it can be found at: <code>gfplugin/glassfish/</code>.
+		Please use this copy of GlassFish as it has been tested with
+		this lab.</li>
+	</ul>
+	</a></li>
+    <li><a name="ex0InstallMaven">
+	<b>Install Maven.</b>
+	<ul class="j1hollist">
+	    <li>Download Maven 2 from
+		<a href="http://maven.apache.org/download.html">http://maven.apache.org/download.html</a>.
+		This page also contains instructions you should follow to
+		install maven on your machine, please follow these
+		instructions.</li>
+	</ul>
+	</a></li>
+    <li><a name="ex0ConfigureNetBeans">
+	<b>Configure NetBeans</b> (<span class="j1holnote">only if you use NetBeans</span>).
+	<ul class="j1hollist">
+	    <li>Install NetBeans.
+		<ul class="j1hollist">
+		    <li>(<span class="j1holnote">Skip if you already
+			have NetBeans 6+ installed.</span>)
+			Download NetBeans from
+			<a href="http://www.netbeans.org">http://www.netbeans.org</a>.
+			Follow the installation instructions on the NetBeans
+			web site to install NetBeans.</li>
+		</ul>
+	    </li>
+	    <li>Launch NetBeans 6.
+		<ul class="j1hollist"><li>On Windows: <b>Start --&gt; Programs --&gt; NetBeans IDE --&gt;
+			    NetBeans IDE 6.0 --&gt; NetBeans IDE</b></li>
+		    <li>On Solaris or Linux: open a terminal window, and type:
 <div class="console"><pre>
 netbeans
 </pre></div>
+		    </li>
+		</ul>
+	    </li>
+	    <li><a name="ex0mvn">Ensure the Maven 2 plugin for NetBeans 6.0 is installed.
+		<p> This plugin is required in order to build the lab files as well as
+		GlassFish modules.</p>
+		<ul class="j1hollist"><li>Choose <b>Plugins</b> from the <b>Tools</b> menu.</li>
+		    <li>Select the <b>Available Plugins</b> tab.</li>
+		    <li>Select the <b>Maven</b> plugin and press the <b>Install</b> button.
+		<p> <img src="images/ex0-mavenplugin.jpg"></p>
+		<div class="figure">Figure 0-1: Installing the Maven Plugin</div>
+		    </li></ul>
+		</a>
 	    </li>
 	</ul>
-	</a>
-    </li>
-    <li><a name="ex0mvn">Ensure the Maven 2 plugin for NetBeans 6.0 is installed.
-	<p> This plugin is required in order to build the lab files as well as
-	GlassFish modules.</p>
-	<ul class="j1hollist"><li>Choose <code><b>Plugins</b></code> from the <code>Tools</code> menu.</li>
-	    <li>Select the <code><b>Available Plugins</b></code> tab.</li>
-	    <li>Select the <code><b>Maven</b></code> plugin and press the <code><b>Install</b></code> button.
-	<p> <img src="images/ex0-mavenplugin.jpg"></p>
-	<div class="figure">Figure 0-1: Installing the Maven Plugin</div>
-	    </li></ul>
-	</a>
-    </li>
-    <li><a name="ex0svn">Install Subversion.
-	<p> Installation of Subversion is only required if you need to
-	    checkout the v3 source code. Subversion is
-	    <span class="j1holwarn">NOT</span> needed to complete this lab.
-	    <a href="#ex0step4">Step 4</a> explains how to checkout the Glassfish
-		v3 source and build it.</p>
+	</a></li>
+    <li><a name="ex0InstallSVN">
+	<b>Install Subversion</b> (<span class="j1holnote">only needed if you wish to checkout the GlassFish source</span>).
 	<ul class="j1hollist">
 	    <li>Choose <b>Plugins</b> from the <b>Tools</b> menu. Select the <b>Available Plugins</b> tab.</li>
 	    <li>Select the <b>Subversion Plugin</b> and press the <b>Install</b> Button.</li>
@@ -59,44 +89,8 @@ netbeans
 	</a>
     </li>
 
-    <li><a name="ex0gf">Checkout, build, and install the GlassFish v3 application server.
-    <p>	This step is <span class="j1holwarn">not</span> required for this lab.
-	For your reference, a snapshot of the GlassFish v3 source code has
-	been included, and GlassFish v3 has been installed in the
-	"<code>glassfish</code>" directory. However, if you
-	want the latest code, you may checkout and build the source code,
-	follow the steps below for more detail.</p>
-
-	<ol class="j1hollist">
-	   <li>Checkout GlassFish v3 source code:
-	       <div class="console">
-<pre>
-svn checkout https://svn.dev.java.net/svn/glassfish-svn/trunk/v3
-</pre>
-		</div>
-		<p> NOTE: You may need to register with the GlassFish project
-		    on java.net as an <code>Observer</code>.  Visit the
-		    GlassFish "<a href="https://glassfish.dev.java.net/servlets/ProjectMembershipRequest">Request
-		    Project Role</a>" page to request the
-		    <code>Observer</code> role.</p></li>
-	    <li>
-	    Build the GlassFish server:
-<div class="console">
-<pre>
-cd v3
-mvn install
-</pre>
-</div>
-	    </li>
-	    <li>Install the GlassFish v3 application server:
-<div class="console">
-<pre>
-unzip v3/distribution/glassfish/target/glassfish.zip
-</pre>
-</div>
-	    </li>
-	</ol>
-
+    <br />
+    <p class="j1holsubheader">References:</p>
 	<p> For more information regarding the GlassFish v3 development
 	    environment and workspace, refer to the build instructions at:
 <a href="http://wiki.glassfish.java.net/Wiki.jsp?page=V3FullBuildInstruction">http://wiki.glassfish.java.net/Wiki.jsp?page=V3FullBuildInstruction</a>.
