@@ -197,6 +197,7 @@
             <!-- this profile is used when maven release plugin runs. see the mojo configuration above -->
             <id>release</id>
             <modules>
+                <module>auto-depends-tests</module>
                 <module>hk2</module>
             </modules>
         </profile>
