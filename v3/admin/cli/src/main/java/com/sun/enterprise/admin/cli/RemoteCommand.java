@@ -35,6 +35,10 @@
  */
 package com.sun.enterprise.admin.cli;
 
+import com.sun.appserv.management.client.prefs.LoginInfo;
+import com.sun.appserv.management.client.prefs.LoginInfoStore;
+import com.sun.appserv.management.client.prefs.LoginInfoStoreFactory;
+import com.sun.appserv.management.client.prefs.StoreException;
 import com.sun.enterprise.universal.StringUtils;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import com.sun.enterprise.admin.cli.deployment.FileUploadUtil;
@@ -110,17 +114,22 @@ public class RemoteCommand {
                 //set default value of secure to false
             final String secure = (params.get("secure") == null ? "false" : params.get("secure"));
             final boolean isSecure = Boolean.parseBoolean(secure);
-                //temporary make user as optional
-            final String user = (params.get("user") == null ? "" : params.get("user"));            
-                //temporary make password as optional
-            String password = "";
+            String user = null, password = null;
             Map<String, String> passwordOptions = null;            
             if (params.get("passwordfile") != null) {
                 passwordOptions = 
                     CLIUtil.readPasswordFileOptions(params.get("passwordfile"), true);
-                password = 
-                   (String)passwordOptions.get(CLIUtil.ENV_PREFIX + "PASSWORD");
             }
+            try {
+                store = LoginInfoStoreFactory.getDefaultStore();
+            } catch (StoreException se) {
+                throw new CommandException(se);
+            }
+            LoginInfo li    = store.read(hostName, Integer.parseInt(hostPort));
+            user            = getUser(li, params);
+            //System.out.println("User = " + user);
+            password        = getPassword(li, params);
+            //System.out.println("Password = " + password);
             
             uriConnection = "/__asadmin/" + rcp.getCommandName();
             
@@ -662,7 +671,28 @@ public class RemoteCommand {
             return false;
         }
     }
-            
+    private String getUser(LoginInfo li, Map<String, String> params) {
+        String user = params.get("user");
+        if (user == null && li != null) { //not on command line & in .asadminpass
+            user = li.getUser();
+        }
+        return ( user );
+    }
+    
+    private String getPassword(LoginInfo li, Map<String, String> params) throws CommandException {
+        Map<String, String> passwordOptions = null;
+        String password = null;
+        if (params.get("passwordfile") != null) {
+            passwordOptions = 
+                CLIUtil.readPasswordFileOptions(params.get("passwordfile"), true);
+            password = 
+               (String)passwordOptions.get(CLIUtil.ENV_PREFIX + "PASSWORD");
+        }
+        if (password == null && li != null) { //not in passwordfile and in .asadminpass
+            password = li.getPassword();
+        }
+        return ( password );
+    }            
     private static final CLILogger logger = CLILogger.getInstance();
     private static final String SUCCESS = "SUCCESS";
     private static final String FAILURE = "FAILURE";
@@ -672,5 +702,6 @@ public class RemoteCommand {
     private boolean echo = false;
     private Map<String,Map<String,String>> serverResponse;
     private final static LocalStringsImpl strings = new LocalStringsImpl(RemoteCommand.class);
+    private LoginInfoStore store = null;
 }
 
