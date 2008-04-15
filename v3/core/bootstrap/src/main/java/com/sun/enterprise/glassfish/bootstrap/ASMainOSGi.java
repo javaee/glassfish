@@ -1,18 +1,21 @@
 package com.sun.enterprise.glassfish.bootstrap;
 
 import com.sun.enterprise.module.Repository;
-import com.sun.enterprise.module.common_impl.DirectoryBasedRepository;
 import com.sun.enterprise.module.bootstrap.StartupContext;
+import com.sun.enterprise.module.common_impl.DirectoryBasedRepository;
 
-import java.util.logging.Logger;
-import java.util.logging.Level;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.net.*;
 import java.io.File;
 import java.io.IOException;
-import java.io.FileFilter;
+import java.net.JarURLConnection;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * @author Sanjeeb.Sahoo@Sun.COM
@@ -39,9 +42,15 @@ public abstract class ASMainOSGi {
 
     protected File fwDir; // OSGi framework directory
 
-    // For the moment, we need to add the following jars to classpath as well:
-    private String[] additionalJars = {
-            "wstx-asl-3.2.3.jar" // needed by config module in HK2
+    //
+    /**
+     * The following jars in the modules directory are to be added to {@link #launcherCL}.
+     *
+     * These are the prefixes of the jar names (to avoid hard-coding versions),
+     * and so for entry "foo", we'll find "foo*.jar"
+     */
+    private String[] additionalJarPrefixes = {
+        "wstx-asl" // needed by config module in HK2
     };
 
     private static final String javaeeJarPath = "modules/javax.javaee-10.0-SNAPSHOT.jar";
@@ -97,14 +106,20 @@ public abstract class ASMainOSGi {
     private void setupLauncherClassLoader() throws Exception {
         ClassLoader commonCL = createCommonClassLoader();
         ClassLoader libCL = helper.setupSharedCL(commonCL, getSharedRepos());
-        List<URL> urls = new ArrayList<URL>();
+        final List<URL> urls = new ArrayList<URL>();
         Collections.addAll(urls, getFWJars());
         File moduleDir = context.getRootDirectory().getParentFile();
-        for (String jar : additionalJars) {
-            URL url = new File(moduleDir, jar).toURI().toURL();
-            urls.add(url);
+        File[] jars = moduleDir.listFiles();
+        if(jars!=null) {
+            for( File f : jars) {
+                for (String prefix : additionalJarPrefixes) {
+                    String name = f.getName();
+                    if(name.startsWith(prefix) && name.endsWith(".jar"))
+                        urls.add(f.toURI().toURL());
+                }
+            }
         }
-        this.launcherCL = new URLClassLoader(urls.toArray(new URL[0]), libCL);
+        this.launcherCL = new URLClassLoader(urls.toArray(new URL[urls.size()]), libCL);
         Thread.currentThread().setContextClassLoader(launcherCL);
     }
 
@@ -123,7 +138,7 @@ public abstract class ASMainOSGi {
                 logger.warning("JDK tools.jar does not exist at " + jdkToolsJar);
             }
             ClassLoader extCL = ClassLoader.getSystemClassLoader().getParent();
-            return new URLClassLoader(urls.toArray(new URL[0]), extCL);
+            return new URLClassLoader(urls.toArray(new URL[urls.size()]), extCL);
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }
