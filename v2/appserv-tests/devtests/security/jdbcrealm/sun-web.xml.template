@@ -1,7 +1,0 @@
-<!-- sun-web-app -->
-<sun-web-app>
-  <security-role-mapping>
-    <role-name>staff</role-name>
-    <principal-name>USER_ID_HERE</principal-name>
-  </security-role-mapping>
-</sun-web-app>

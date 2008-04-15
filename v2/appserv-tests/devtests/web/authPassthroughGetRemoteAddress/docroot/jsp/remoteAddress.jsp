@@ -1,1 +1,0 @@
-RemoteAddress=${pageContext.request.remoteAddr}

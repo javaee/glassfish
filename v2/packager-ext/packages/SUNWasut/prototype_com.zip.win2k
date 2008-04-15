@@ -1,8 +1,0 @@
-lib/appserv-upgrade.jar
-lib/install/templates/asupgrade.bat.template
-lib/install/templates/pk12util.bat.template
-lib/install/templates/certutil.bat.template
-lib/pk12util.exe
-lib/certutil.exe
-lib/upgrade/pk12util.exe
-lib/upgrade/certutil.exe
