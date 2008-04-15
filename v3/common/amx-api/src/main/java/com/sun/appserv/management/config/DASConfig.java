@@ -70,6 +70,16 @@ public interface DASConfig extends ConfigElement, PropertiesAccess, Singleton
 	public boolean	getAutodeployVerifierEnabled();
 	public void	setAutodeployVerifierEnabled( boolean value );
 
+    /**
+       @since Glassfish V3
+     */
+    public String  getAutodeployRetryTimeout();
+    
+    /**
+       @since Glassfish V3
+     */
+    public void setAutodeployRetryTimeout( String value );
+
 	/**
 		See {@link ValidationLevelValues}.  Read-only.
 	 */
