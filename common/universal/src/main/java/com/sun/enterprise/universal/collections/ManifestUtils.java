@@ -94,8 +94,11 @@ public class ManifestUtils {
     }
 
     private final static String decode(String s) {
-        // replace special tokens with eol
+        // replace "null" with null
+        if(s == null || s.equals("null"))
+            return null;
         
+        // replace special tokens with eol
         return s.replaceAll(EOL_TOKEN, EOL);
     }
     private ManifestUtils() {
