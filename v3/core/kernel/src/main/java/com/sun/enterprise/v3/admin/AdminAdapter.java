@@ -169,15 +169,15 @@ public class AdminAdapter implements Adapter, PostConstruct {
         res.finish();
     }
 
-    private boolean authenticate(Request req, ActionReport report, Response res)
+    public static boolean authenticate(Request req, ServerEnvironment serverEnviron) 
             throws Exception {
-
         String authHeader = req.getHeader("Authorization");
         boolean authenticated = false;
+        // the file containing userid and password
         FileRealm f =
-                new FileRealm(env.getProps().get(SystemPropertyConstants.INSTANCE_ROOT_PROPERTY) + "/config/admin-keyfile");
-        // auth header not found
+                new FileRealm(serverEnviron.getProps().get(SystemPropertyConstants.INSTANCE_ROOT_PROPERTY) + "/config/admin-keyfile");
         if (authHeader == null || !authHeader.startsWith(BASIC)) {
+            // auth header not found - try anonymous auth
             authenticated = authenticateAnonymous(f);
         } else {
             String base64Coded = authHeader.substring(BASIC.length());
@@ -192,6 +192,29 @@ public class AdminAdapter implements Adapter, PostConstruct {
                 authenticated = f.authenticate(userName, password) != null;
             }
         }
+        return authenticated;
+    }
+    
+    private static boolean authenticateAnonymous(FileRealm f) throws Exception {
+        Enumeration<String> users = f.getUserNames();
+        if (users.hasMoreElements()) {
+            String userNameInRealm = users.nextElement();
+            // allow anonymous authentication if the only user in the key file is the
+            // default user, with default password
+            if (!users.hasMoreElements() &&
+                    userNameInRealm.equals(SystemPropertyConstants.DEFAULT_ADMIN_USER)) {
+                logger.finer("Allowed anonymous access");
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean authenticate(Request req, ActionReport report, Response res)
+            throws Exception {
+
+        String authHeader = req.getHeader("Authorization");
+        boolean authenticated = authenticate(req, env);
         if (!authenticated) {
             String msg = adminStrings.getLocalString("adapter.auth.userpassword",
                     "Invalid user name or password");
@@ -214,19 +237,6 @@ public class AdminAdapter implements Adapter, PostConstruct {
             res.finish();
         }
         return authenticated;
-    }
-
-    private boolean authenticateAnonymous(FileRealm f) throws Exception {
-        Enumeration<String> users = f.getUserNames();
-        if (users.hasMoreElements()) {
-            String userNameInRealm = users.nextElement();
-            if (!users.hasMoreElements() &&
-                    userNameInRealm.equals(SystemPropertyConstants.DEFAULT_ADMIN_USER)) {
-                logger.finer("Allowed anonymous access");
-                return true;
-            }
-        }
-        return false;
     }
 
     private ActionReport doCommand(Request req, ActionReport report) {
