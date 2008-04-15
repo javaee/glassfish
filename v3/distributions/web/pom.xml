@@ -120,7 +120,7 @@
             <groupId>org.glassfish.connectors.jdbc-ra.jdbc-ra-distribution</groupId>
             <artifactId>jdbc-ra</artifactId>
             <version>${jdbc-ra.version}</version>
-            <type>zip</type>
+            <type>distribution-fragment</type>
         </dependency>
         <dependency>
            <groupId>org.glassfish.connectors</groupId>
