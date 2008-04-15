@@ -36,6 +36,8 @@
 package com.sun.appserv.management.client.prefs;
 
 import java.util.Arrays;
+import com.sun.appserv.management.client.prefs.LoginInfo;
+import com.sun.appserv.management.client.prefs.LoginInfoStoreFactory;
 
 /** A factory class to create instances of LoginInfoStore.
  * @since Appserver 9.0
@@ -66,7 +68,7 @@ public class LoginInfoStoreFactory {
         return ( store );
     }
     
-    private static LoginInfoStore getDefaultStore() throws StoreException {
+    public static LoginInfoStore getDefaultStore() throws StoreException {
         return ( new MemoryHashLoginInfoStore() );
     }
     
