@@ -139,6 +139,7 @@ public class ServerHandlers {
      *  <p> Output value: "AutoDeploy" -- Type: <code>java.lang.Boolean</code></p>
      *  <p> Output value: "AdminTimeout" -- Type: <code>java.lang.String</code></p>
      *  <p> Output value: "AutoDeployInterval" -- Type: <code>java.lang.String</code></p>
+     *  <p> Output value: "AutoDeployTimeout" -- Type: <code>java.lang.String</code></p>
      *  <p> Output value: "Verifier" -- Type: <code>java.lang.Boolean</code></p>
      *  <p> Output value: "Precompile" -- Type: <code>java.lang.Boolean</code></p>
      *  <p> Output value: "AutoDeployDirectory" -- Type: <code>java.lang.String</code></p>
@@ -154,6 +155,7 @@ public class ServerHandlers {
         @HandlerOutput(name="AutoDeploy", type=Boolean.class),
         @HandlerOutput(name="AdminTimeout", type=String.class),
         @HandlerOutput(name="AutoDeployInterval", type=String.class),
+        @HandlerOutput(name="AutoDeployTimeout", type=String.class),
         @HandlerOutput(name="Verifier", type=Boolean.class),
         @HandlerOutput(name="Precompile", type=Boolean.class),
         @HandlerOutput(name="AutoDeployDirectory", type=String.class),
@@ -167,6 +169,7 @@ public class ServerHandlers {
         boolean autoDeploy = dConfig.getAutodeployEnabled();
         String adminTimeout = dConfig.getAdminSessionTimeoutInMinutes();
         String autoDeployInterval = dConfig.getAutodeployPollingIntervalInSeconds();
+        String autoDeployTimeout = dConfig.getAutodeployRetryTimeout();
         String autoDeployDirectory = dConfig.getAutodeployDir() ;
         boolean precompile = dConfig.getAutodeployJSPPrecompilationEnabled();
         boolean verifier = dConfig.getAutodeployVerifierEnabled();
@@ -175,6 +178,7 @@ public class ServerHandlers {
         handlerCtx.setOutputValue("AutoDeploy", autoDeploy);
         handlerCtx.setOutputValue("AdminTimeout", adminTimeout);
         handlerCtx.setOutputValue("AutoDeployInterval", autoDeployInterval);
+        handlerCtx.setOutputValue("AutoDeployTimeout", autoDeployTimeout);
         handlerCtx.setOutputValue("AutoDeployDirectory", autoDeployDirectory);
         handlerCtx.setOutputValue("Precompile", precompile);
         handlerCtx.setOutputValue("Verifier", verifier);        
@@ -191,6 +195,7 @@ public class ServerHandlers {
      *  <p> Output value: "AutoDeploy" -- Type: <code>java.lang.Boolean</code></p>
      *  <p> Output value: "AdminTimeout" -- Type: <code>java.lang.String</code></p>
      *  <p> Output value: "AutoDeployInterval" -- Type: <code>java.lang.String</code></p>
+     *  <p> Output value: "AutoDeployTimeout" -- Type: <code>java.lang.String</code></p>
      *  <p> Output value: "Verifier" -- Type: <code>java.lang.Boolean</code></p>
      *  <p> Output value: "Precompile" -- Type: <code>java.lang.Boolean</code></p>
      *  <p> Output value: "AutoDeployDirectory" -- Type: <code>java.lang.String</code></p>
@@ -205,6 +210,7 @@ public class ServerHandlers {
         @HandlerOutput(name="AutoDeploy", type=Boolean.class),
         @HandlerOutput(name="AdminTimeout", type=String.class),
         @HandlerOutput(name="AutoDeployInterval", type=String.class),
+        @HandlerOutput(name="AutoDeployTimeout", type=String.class),
         @HandlerOutput(name="Verifier", type=Boolean.class),
         @HandlerOutput(name="Precompile", type=Boolean.class),
         @HandlerOutput(name="AutoDeployDirectory", type=String.class)})     
@@ -217,6 +223,7 @@ public class ServerHandlers {
         String autoDeploy = (String) defaultMap.get("AutodeployEnabled");
         String adminTimeout = (String) defaultMap.get("AdminSessionTimeoutInMinutes");
         String autoDeployInterval = (String) defaultMap.get("AutodeployPollingIntervalInSeconds");
+        String autoDeployTimeout = (String) defaultMap.get("AutodeployRetryTimeout");
         String autoDeployDirectory = (String) defaultMap.get("AutodeployDir") ;
         String precompile = (String) defaultMap.get("AutodeployJspPrecompilationEnabled");
         String verifier = (String) defaultMap.get("AutodeployVerifierEnabled");
@@ -234,6 +241,7 @@ public class ServerHandlers {
         }        
         handlerCtx.setOutputValue("AdminTimeout", adminTimeout);
         handlerCtx.setOutputValue("AutoDeployInterval", autoDeployInterval);
+        handlerCtx.setOutputValue("AutoDeployTimeout", autoDeployTimeout);
         handlerCtx.setOutputValue("AutoDeployDirectory", autoDeployDirectory);
         if(precompile.equals("true")) {
             handlerCtx.setOutputValue("Precompile", true);    
@@ -269,6 +277,7 @@ public class ServerHandlers {
         @HandlerInput(name="AutoDeploy", type=Boolean.class),
         @HandlerInput(name="AdminTimeout", type=String.class),
         @HandlerInput(name="AutoDeployInterval", type=String.class),
+        @HandlerInput(name="AutoDeployTimeout", type=String.class),
         @HandlerInput(name="Verifier", type=Boolean.class),
         @HandlerInput(name="Precompile", type=Boolean.class),
         @HandlerInput(name="AutoDeployDirectory", type=String.class),
@@ -281,6 +290,7 @@ public class ServerHandlers {
             dConfig.setAutodeployEnabled(((Boolean)handlerCtx.getInputValue("AutoDeploy")).booleanValue());
             dConfig.setAdminSessionTimeoutInMinutes((String)handlerCtx.getInputValue("AdminTimeout"));
             dConfig.setAutodeployPollingIntervalInSeconds((String)handlerCtx.getInputValue("AutoDeployInterval"));
+            dConfig.setAutodeployRetryTimeout((String)handlerCtx.getInputValue("AutoDeployTimeout"));
             dConfig.setAutodeployDir((String)handlerCtx.getInputValue("AutoDeployDirectory")) ;
             dConfig.setAutodeployJSPPrecompilationEnabled(((Boolean)handlerCtx.getInputValue("Precompile")).booleanValue());
             dConfig.setAutodeployVerifierEnabled(((Boolean)handlerCtx.getInputValue("Verifier")).booleanValue());

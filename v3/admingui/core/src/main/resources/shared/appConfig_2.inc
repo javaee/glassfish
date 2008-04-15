@@ -43,7 +43,8 @@
         <sun:button id="loadDefaults" style="margin-left: 8pt"  primary="#{false}"  text="$resource{i18n.button.LoadDefaults}" >    
             <!command
                 getServerDefaultAppsConfigAttributes(ConfigName="#{configName}", Reload=>$attribute{reload}, ReloadInterval=>$attribute{reloadInterval}, 
-                AutoDeploy=>$attribute{autoDeploy}, AdminTimeout=>$attribute{adminTimeout}, AutoDeployInterval=>$attribute{autoDeployInterval}, 
+                AutoDeploy=>$attribute{autoDeploy}, AdminTimeout=>$attribute{adminTimeout}, AutoDeployInterval=>$attribute{autoDeployInterval},
+                AutoDeployTimeout=>$attribute{autoDeployTimeout}, 
                 Verifier=>$attribute{verifier}, Precompile=>$attribute{precompile}, AutoDeployDirectory=>$attribute{autoDeployDirectory});
                 />
         </sun:button>
@@ -77,6 +78,10 @@
                 </sun:property>           
                <sun:property id="AutoDeployIntervalProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.server.AutoDeployPollInterval}" helpText="$resource{i18n.server.AutoDeployPollIntervalHelp}">
                     <sun:textField id="AutoDeployInterval" styleClass="integer" columns="$int{15}" text="#{requestScope.autoDeployInterval}" />      
+                    <sun:staticText id="secs" style="padding: 8pt" text="$resource{i18n.common.Seconds}"/>
+                </sun:property>
+                <sun:property id="AutoDeployTimeoutProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.server.AutoDeployTimeout}" helpText="$resource{i18n.server.AutoDeployTimeoutHelp}">
+                    <sun:textField id="AutoDeployTimeout" styleClass="integer" columns="$int{15}" text="#{requestScope.autoDeployTimeout}" />      
                     <sun:staticText id="secs" style="padding: 8pt" text="$resource{i18n.common.Seconds}"/>
                 </sun:property>
                <sun:property id="AutoDeployDirectoryProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.server.AutoDeployDirectory}" helpText="$resource{i18n.server.AutoDeployDirectoryHelp}">

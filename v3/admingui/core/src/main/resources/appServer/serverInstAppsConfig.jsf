@@ -49,8 +49,8 @@ setAttribute(key="helpKey" value="$resource{help.serverInstAppsConfig}" );
         setPageSessionAttribute(key="configName", value="$requestParameter{configName}");  
         setPageSessionAttribute(key="instanceName" value="server");       # we can hard code it here because this page is only for DAS                                   
         getServerAppsConfigAttributes(ConfigName="#{configName}", Reload=>$attribute{reload}, ReloadInterval=>$attribute{reloadInterval}, 
-        AutoDeploy=>$attribute{autoDeploy}, AdminTimeout=>$attribute{adminTimeout}, AutoDeployInterval=>$attribute{autoDeployInterval}, 
-        Verifier=>$attribute{verifier}, Precompile=>$attribute{precompile}, AutoDeployDirectory=>$attribute{autoDeployDirectory}, Properties=>$page{props});
+            AutoDeploy=>$attribute{autoDeploy}, AdminTimeout=>$attribute{adminTimeout}, AutoDeployInterval=>$attribute{autoDeployInterval}, AutoDeployTimeout=>$attribute{autoDeployTimeout}, 
+            Verifier=>$attribute{verifier}, Precompile=>$attribute{precompile}, AutoDeployDirectory=>$attribute{autoDeployDirectory}, Properties=>$page{props});
         getTableList(Properties="#{props}", TableList=>$attribute{tableList});
         />   
 #include "/shared/restart.inc"

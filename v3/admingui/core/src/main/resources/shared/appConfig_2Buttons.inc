@@ -51,6 +51,7 @@
         AutoDeploy="#{autoDeploy}"
         AdminTimeout="#{adminTimeout}"
         AutoDeployInterval="#{autoDeployInterval}"
+        AutoDeployTimeout="#{autoDeployTimeout}"
         Verifier="#{verifier}"
         Precompile="#{precompile}"
         AutoDeployDirectory="#{autoDeployDirectory}"                            
