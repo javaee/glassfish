@@ -87,7 +87,7 @@
                             <HK2-Repository-shared>uri=. weight=35 type=directory</HK2-Repository-shared>
                             <HK2-Repository-lib>uri=../lib weight=10 type=directory</HK2-Repository-lib>
                             <HK2-Main-Bundle>org.glassfish.core:kernel</HK2-Main-Bundle>
-                            <Class-Path>hk2-0.2-SNAPSHOT.jar config-0.2-SNAPSHOT.jar auto-depends-0.2-SNAPSHOT.jar</Class-Path>
+                            <Class-Path>hk2-${hk2.version}.jar config-${hk2.version}.jar auto-depends-${hk2.version}.jar</Class-Path>
                         </manifestEntries>
                     </archive>
                 </configuration>
