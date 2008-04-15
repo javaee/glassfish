@@ -63,7 +63,7 @@ public class ListComponentsCommand extends ApplicationLifecycle implements Admin
     Applications applications;
 
         // [--type application|ejb|web|connector|webservice|jruby]
-    @Param(optional=true)
+    @Param(optional=true, acceptableValues="application, ejb, web, connector, webservice, jruby")
     String type = null;
 
     private final String VALID_TYPES = "application|ejb|web|connector|webservice|jruby";

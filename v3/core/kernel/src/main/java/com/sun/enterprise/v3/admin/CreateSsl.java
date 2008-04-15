@@ -87,7 +87,7 @@ public class CreateSsl implements AdminCommand {
     @Param(name="certname")
     String certName;
 
-    @Param(name="type")
+    @Param(name="type", acceptableValues="http-listener, iiop-listener")
     String type;
 
     @Param(name="ssl2enabled", optional=true, defaultValue="true")

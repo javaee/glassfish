@@ -74,7 +74,7 @@ public class DeleteSsl implements AdminCommand {
     
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(DeleteSsl.class);
 
-    @Param(name="type")
+    @Param(name="type", acceptableValues="http-listener, iiop-listener")
     String type;
     
     @Param(name="listener_id", primary=true)

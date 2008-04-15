@@ -56,7 +56,7 @@ import com.sun.enterprise.config.serverbeans.Application;
 @Scoped(PerLookup.class)
 public class ListApplicationsCommand extends ListComponentsCommand {
 
-    @Param(optional=true)
+    @Param(optional=true, acceptableValues="application, ejb, web, connector, webservice, jruby")
     String type = null;
 
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(DeployDirCommand.class);
