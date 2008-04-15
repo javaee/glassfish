@@ -59,8 +59,6 @@ import com.sun.jsftemplating.annotation.HandlerOutput;
 import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
 
 import com.sun.enterprise.registration.RegistrationAccount;
-import com.sun.enterprise.registration.RegistrationAccountConfig;
-import com.sun.enterprise.registration.RegistrationAccountFactory;
 import com.sun.enterprise.registration.RegistrationService;
 import com.sun.enterprise.registration.RegistrationService.RegistrationStatus;
 import com.sun.enterprise.registration.RegistrationService.RegistrationReminder;
@@ -70,7 +68,9 @@ import com.sun.enterprise.registration.SOAccount;
 import com.sun.enterprise.registration.SysnetRegistrationService;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.Locale;
 import java.util.Random;
+import javax.faces.context.FacesContext;
 
 
 /**
@@ -274,6 +274,7 @@ public class RegisterHandlers {
         @HandlerInput(name="screenName", type=String.class),
         @HandlerInput(name="firstName", type=String.class),
         @HandlerInput(name="lastName", type=String.class),
+        @HandlerInput(name="companyName", type=String.class),
         @HandlerInput(name="country", type=String.class, required=true),
         @HandlerInput(name="accountStatus", type=String.class, required=true),
         @HandlerInput(name="newProxy", type=String.class),
@@ -321,6 +322,7 @@ public class RegisterHandlers {
             String screenName = (String) handlerCtx.getInputValue("screenName");
             String firstName = (String) handlerCtx.getInputValue("firstName");
             String lastName = (String) handlerCtx.getInputValue("lastName");
+            String companyName = (String) handlerCtx.getInputValue("companyName");
             String country = (String) handlerCtx.getInputValue("country");
 
             Map map = new HashMap();
@@ -341,7 +343,10 @@ public class RegisterHandlers {
             if (GuiUtil.isEmpty(lastName)) {
                 lastName = " ";
             }
-		map.put(RegistrationAccount.LASTNAME, lastName);
+            map.put(RegistrationAccount.LASTNAME, lastName);
+            
+            if (! GuiUtil.isEmpty(companyName))
+                map.put(RegistrationAccount.COMPANY,  companyName);
 //System.out.println("====== DEBUG ====  Creating account with the following: " + map.toString());
             Object[] accountParams = { map };
             try {
@@ -398,16 +403,11 @@ public class RegisterHandlers {
         
         handlerCtx.setOutputValue("labels", lab );
         handlerCtx.setOutputValue("values", lab );
-        /*
         Locale locale = com.sun.jsftemplating.util.Util.getLocale(FacesContext.getCurrentInstance());
-        //List countryList = getCountryList(locale);
         RegistrationService regService = getRegistrationService();
         List countryList = regService.getAvailableCountries(locale);
-        
-        
         handlerCtx.setOutputValue("labels", countryList.get(0) );
         handlerCtx.setOutputValue("values", countryList.get(1) );
-         */
     }
 
     
