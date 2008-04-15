@@ -21,6 +21,13 @@ own identifying information: Portions Copyright [yyyy]
 -->
 <project name="felix distribution fragment creation" default="create.bundle" basedir="target/stage">
     <target name="create.bundle">
+        <echo>v=${hk2.version}</echo>
+        <copy todir="target/classes" overwrite="true">
+            <fileset dir="src/main/resources" />
+            <filterset begintoken="@" endtoken="@">
+                <filter token="HK2.VERSION" value="${hk2.version}" />
+            </filterset>
+        </copy>
         <zip destfile="target/felix.zip" basedir="target/classes/"/>
         <attachArtifact file="target/felix.zip"/>
     </target>

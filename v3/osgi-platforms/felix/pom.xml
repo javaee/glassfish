@@ -15,7 +15,8 @@
    This is exactly how the layout would look if one downloads the Felix
    distribution from Felix project and installs.
 -->
-<project>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
       <groupId>org.glassfish.osgi-platforms</groupId>
@@ -40,7 +41,6 @@
                 <artifactId>maven-dependency-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>copy-felix</id>
                         <phase>validate</phase>
                         <goals>
                            <goal>copy</goal>
@@ -82,12 +82,19 @@
                 <artifactId>maven-antrun-extended-plugin</artifactId>
                 <configuration>
                     <tasks>
+                        <!--
+                            Because of the way Maven exports its properties to Ant
+                            (which is resolver-based and don't eagerly populate
+                            the property bag of Ant),
+                            these values are lost when we launch another Ant project.
+                            So explicitly reset them so that the build.xml can see this value.
+                        -->
+                        <property name="hk2.version" value="${hk2.version}" />
                         <ant dir="." antfile="build.xml" target="create.bundle"/>
                     </tasks>
                 </configuration>
                 <executions>
                     <execution>
-                        <id>ant-run</id>
                         <phase>package</phase>
                         <goals>
                             <goal>run</goal>
@@ -95,16 +102,6 @@
                     </execution>
                 </executions>
             </plugin>
-            <!--
-            <plugin>
-                <artifactId>maven-resources-plugin</artifactId>
-                <configuration>
-                   <resources>${project.resources}</resources>
-                   <outputDirectory>target/stage</outputDirectory>
-                </configuration>
-                <executions>
-            </plugin>
-            -->
         </plugins>
     </build>
 </project>
