@@ -104,6 +104,11 @@
             <name>Glassfish repository</name>
             <url>http://download.java.net/maven/glassfish/</url>
         </pluginRepository>
+        <pluginRepository>
+            <id>mavaen2-repository</id>
+            <name>Java.net maven2 repository</name>
+            <url>http://download.java.net/maven/2/</url>
+        </pluginRepository>
     </pluginRepositories>
     <reporting>
         <plugins>
