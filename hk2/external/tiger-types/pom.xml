@@ -102,6 +102,7 @@
                     <tasks>
                         <resolveAll todir="target/source-jars" classifier="sources">
                             <scope level="compile,runtime" />
+                            <groupId value="org.jvnet" />
                         </resolveAll>
                         <zip destfile="target/${artifactId}-${version}-sources.jar">
                             <zipgroupfileset dir="target/source-jars" includes="*.jar" />
