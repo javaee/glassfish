@@ -195,14 +195,17 @@ public class CommandRunner {
             }
         } catch (UnsatisfiedDepedencyException e) {
             Param param = e.getUnsatisfiedElement().getAnnotation(Param.class);
-            String paramName = getParamName(param, e.getUnsatisfiedElement());
+            String paramName = getParamName(param, e.getUnsatisfiedElement());            
             String paramDesc = getParamDescription(localStrings, i18n_key, paramName, e.getUnsatisfiedElement());
             final String usage = getUsageText(command);                                
             String errorMsg;
             if (param.primary()) {
                 errorMsg = adminStrings.getLocalString("commandrunner.operand.required",
                                                        "Operand required.");
-            }            
+            }
+            else if (param.password() == true) {
+                errorMsg = adminStrings.getLocalString("adapter.param.missing.passwordfile", "{0} command requires the passwordfile parameter containing {1} entry.", commandName, paramName);
+            }
             else if (paramDesc!=null) {
                 errorMsg = adminStrings.getLocalString("admin.param.missing",
                                                        "{0} command requires the {1} parameter : {2}", commandName, paramName, paramDesc);
@@ -668,8 +671,6 @@ public class CommandRunner {
                     validOption = true;
                     continue;
                 }
-                    //key = key.substring("AS_ADMIN_".length()).toLowerCase();
-                                
                 if (field.getName().equals(key) ||
                     param.name().equals(key) ) {
                     validOption=true;

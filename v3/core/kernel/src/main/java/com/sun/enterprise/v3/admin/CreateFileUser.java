@@ -96,9 +96,6 @@ public class CreateFileUser implements AdminCommand {
     @Param(name="groups", optional=true)
     List<String> groups;
 
-    // @Param(name="userpasswordfile", optional=true)
-    // String passwordFile;
-
     @Param(name="userpassword", password=true)
     String userpassword;
 

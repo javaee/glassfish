@@ -380,13 +380,8 @@ public class AdminAdapter implements Adapter, PostConstruct {
                 continue;
             String paramName = null;
             String value = null;
-            if (token.startsWith("AS_ADMIN_")) {
-                paramName = token.substring(0, token.indexOf("="));
-                value = token.substring(token.indexOf("=") + 1);
-            } else {
-                paramName = token.substring(0, token.lastIndexOf("="));
-                value = token.substring(token.lastIndexOf("=") + 1);
-            }
+            paramName = token.substring(0, token.indexOf("="));
+            value = token.substring(token.indexOf("=") + 1);
             try {
                 value = URLDecoder.decode(value, "UTF-8");
             } catch (UnsupportedEncodingException e) {
