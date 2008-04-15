@@ -32,7 +32,16 @@ import java.nio.ByteBuffer;
  * @author Jeanfrancois
  */
 public class HttpUtils {
-
+    private final static String CSS =
+        "H1 {font-family:Tahoma,Arial,sans-serif;color:white;background-color:#525D76;font-size:22px;} " +
+        "H2 {font-family:Tahoma,Arial,sans-serif;color:white;background-color:#525D76;font-size:16px;} " +
+        "H3 {font-family:Tahoma,Arial,sans-serif;color:white;background-color:#525D76;font-size:14px;} " +
+        "BODY {font-family:Tahoma,Arial,sans-serif;color:black;background-color:white;} " +
+        "B {font-family:Tahoma,Arial,sans-serif;color:white;background-color:#525D76;} " +
+        "P {font-family:Tahoma,Arial,sans-serif;background:white;color:black;font-size:12px;}" +
+        "A {color : black;}" +
+        "HR {color : #525D76;}";
+    
     /** 
      * Return the Context root of the request.
      */
@@ -257,4 +266,25 @@ public class HttpUtils {
             }
         }       
     }    
+    
+    
+    public final static byte[] getErrorPage(String serverName, String message){
+        StringBuffer sb = new StringBuffer();
+        sb.append("<html><head><title>");
+        sb.append(serverName);
+        sb.append("</title>");
+        sb.append("<style><!--");
+        sb.append(CSS);
+        sb.append("--></style> ");
+        sb.append("</head><body>");
+        sb.append("<h1>");
+        sb.append(message);
+        sb.append("</h1>");
+        sb.append("</h3> type Status report<br>message<br>description The requested resource () is not available</h3>");
+        sb.append("<HR size=\"1\" noshade>");
+        sb.append("<h3>").append(serverName).append("</h3>");
+        sb.append("</body></html>");
+        return sb.toString().getBytes();
+    }
+    
 }

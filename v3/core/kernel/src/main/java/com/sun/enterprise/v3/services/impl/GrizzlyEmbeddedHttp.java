@@ -92,6 +92,7 @@ public class GrizzlyEmbeddedHttp extends SelectorThread implements EndpointMappe
     @Override
     protected void initController() {
         super.initController();
+        selectorHandler.setReuseAddress(false);
         DefaultProtocolChainInstanceHandler instanceHandler = new DefaultProtocolChainInstanceHandler() {
 
             private final ConcurrentLinkedQueue<ProtocolChain> chains = 

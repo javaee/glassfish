@@ -144,7 +144,9 @@ public class WebProtocolHandler implements ProtocolHandler {
                 ByteBuffer bb = HtmlHelper.getErrorPage("Not Found", "HTTP/1.1 404 Not Found\n");
                 OutputWriter.flushChannel(protocolRequest.getChannel(), bb);
             } catch (IOException ex){
-                logger.log(Level.FINE, "Send Error failed", ex);
+                if (logger.isLoggable(Level.FINE)){
+                    logger.log(Level.FINE, "Send Error failed", ex);
+                }
             } finally{
                 ((WorkerThread)Thread.currentThread()).getByteBuffer().clear();
             }
@@ -216,7 +218,7 @@ public class WebProtocolHandler implements ProtocolHandler {
 
                     StaticResourcesAdapter adapter = new StaticResourcesAdapter();
                     adapter.setRootFolder(GrizzlyEmbeddedHttp.getWebAppRootPath());
-
+ 
                     fallbackContextRootInfo = new ContextRootMapper.ContextRootInfo(adapter,
                             null, Collections.<ProtocolFilter>singletonList(new DefaultProtocolFilter(
                             StaticStreamAlgorithm.class, grizzlyEmbeddedHttp.getPort())));

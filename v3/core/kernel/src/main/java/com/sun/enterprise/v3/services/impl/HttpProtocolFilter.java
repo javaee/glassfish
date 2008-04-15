@@ -27,10 +27,13 @@ import com.sun.grizzly.Context;
 import com.sun.grizzly.ProtocolFilter;
 import com.sun.grizzly.http.HtmlHelper;
 import com.sun.grizzly.tcp.Adapter;
+import com.sun.grizzly.tcp.Request;
+import com.sun.grizzly.tcp.Response;
 import com.sun.grizzly.tcp.StaticResourcesAdapter;
 import com.sun.grizzly.util.ByteBufferInputStream;
 import com.sun.grizzly.util.OutputWriter;
 import com.sun.grizzly.util.WorkerThread;
+import com.sun.grizzly.util.buf.ByteChunk;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.logging.Level;
@@ -55,13 +58,28 @@ public class HttpProtocolFilter implements ProtocolFilter {
      *  Fallback context-root information
      */
     private ContextRootMapper.ContextRootInfo fallbackContextRootInfo;
-
+    
+    
+    private static byte[] errorBody =
+            HttpUtils.getErrorPage("Glassfish/v3","HTTP Status 404");
+      
     
     public HttpProtocolFilter(ProtocolFilter wrappedFilter, GrizzlyEmbeddedHttp grizzlyEmbeddedHttp) {
         this.grizzlyEmbeddedHttp = grizzlyEmbeddedHttp;
         this.wrappedFilter = wrappedFilter;
         
-        StaticResourcesAdapter adapter = new StaticResourcesAdapter();
+        StaticResourcesAdapter adapter = new StaticResourcesAdapter(){
+            @Override
+              protected void customizedErrorPage(Request req,
+                    Response res) throws Exception {
+                
+                ByteChunk chunk = new ByteChunk();
+                chunk.setBytes(errorBody,0,errorBody.length);
+                res.setContentLength(errorBody.length);        
+                res.sendHeaders();
+                res.doWrite(chunk);
+            }              
+        };
         adapter.setRootFolder(GrizzlyEmbeddedHttp.getWebAppRootPath());
                         
         fallbackContextRootInfo = new ContextRootMapper.ContextRootInfo(adapter,
