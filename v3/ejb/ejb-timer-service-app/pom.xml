@@ -7,14 +7,30 @@
    </parent>
 
    <artifactId>ejb-timer-service-app</artifactId>
-   <packaging>hk2-jar</packaging>
-   <!-- packaging>ejb</packaging -->
+   <!-- packaging>hk2-jar</packaging -->
+   <packaging>war</packaging>
    <name>EJB Timer Service Application</name>
+   <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-war-plugin</artifactId>
+            <configuration>
+              <archive>
+                  <manifestEntries>
+                      <HK2-Import-Bundles>org.glassfish.ejb:ejb-container</HK2-Import-Bundles>
+                      <Require-Bundle>org.glassfish.ejb.ejb-container;bundle-version="[10.0.0.SNAPSHOT, 10.0.0.SNAPSHOT]";resolution:=mandatory;visibility:=private</Require-Bundle>
+                  </manifestEntries>
+              </archive>
+            </configuration>
+          </plugin>
+        </plugins>
+    </build>
     <dependencies>
         <dependency>
             <groupId>org.glassfish.ejb</groupId>
             <artifactId>ejb-container</artifactId>
             <version>${project.version}</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 </project>

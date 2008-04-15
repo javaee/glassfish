@@ -36,6 +36,7 @@
             <groupId>org.glassfish</groupId>
             <artifactId>javax.javaee</artifactId>
             <version>${project.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.sun.enterprise</groupId>
@@ -46,11 +47,13 @@
             <groupId>com.sun.corba</groupId>
             <artifactId>glassfish-corba-orblib</artifactId>
             <version>1.0</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.glassfish.core</groupId>
             <artifactId>security</artifactId>
             <version>${project.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.glassfish.core</groupId>

@@ -72,8 +72,8 @@ public final class ContainerFactoryImpl implements ContainerFactory {
                 EjbSessionDescriptor sd = (EjbSessionDescriptor)ejbDescriptor;
                 if ( sd.isStateless() ) {
                     if ((ejbDescriptor.getLocalClassName() != null) &&
-                            (ejbDescriptor.getLocalClassName()
-                             .equals("com.sun.ejb.containers.TimerLocal"))) {
+                            (ejbDescriptor.getLocalBusinessClassNames()
+                             .contains("com.sun.ejb.containers.TimerLocal"))) {
                         container = new TimerBeanContainer(ejbDescriptor, loader);
                     } else {
                         container = new StatelessSessionContainer(ejbDescriptor, loader);
