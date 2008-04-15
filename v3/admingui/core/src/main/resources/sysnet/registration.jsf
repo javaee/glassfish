@@ -48,6 +48,7 @@
     #setComponentRequired(id="form1:pSheet:pSection:screenName:screenName" required="$boolean{false}" );
     setComponentRequired(id="form1:pSheet:pSection:firstName:firstName" required="$boolean{false}" );
     setComponentRequired(id="form1:pSheet:pSection:lastName:lastName" required="$boolean{false}" );
+    setComponentRequired(id="form1:pSheet:pSection:companyName:companyName" required="$boolean{false}" );
     setComponentRequired(id="form1:pSheet:pSection:country:country" required="$boolean{false}" );
 
 />  
@@ -100,7 +101,7 @@
                             userName="#{userName}", pswd="#{pswd}",
                             emailAdr="#{emailAdr}", newPswd="#{newPswd}",
                             screenName="#{screenName}", firstName="#{firstName}",lastName="#{lastName}",
-                            country="#{country}", accountStatus="#{accountGroup}");
+                            country="#{country}", companyName="#{companyName}", accountStatus="#{accountGroup}");
                             redirect("support.jsf");
                             />
                         </sun:button>
@@ -121,10 +122,11 @@
                         onClick="javascript: showNewAccount(false)" onKeyPress="javascript: return true;" />
                     </sun:property>
                      <sun:property id="unameProp" style="margin-left: 17pt;" labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18n.reg.userName}" helpText="$resource{i18n.reg.userNameHelp}" >                           
-                       <!afterCreate
-                        getClientId(component="$this{component}" clientId=>$page{userNameId});
+                        <sun:textField id="userName" styleClass="required" columns="$int{40}" text="#{requestScope.userName}" required="#{false}" >
+                        <!afterCreate
+                            getClientId(component="$this{component}" clientId=>$page{userNameId});
                         />
-                        <sun:textField id="userName" styleClass="required" columns="$int{40}" text="#{requestScope.userName}" required="#{false}" />
+                    </sun:textField>
                     </sun:property>
                     
                     <sun:property id="pswdProp" style="margin-left: 17pt" labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18n.reg.pswd}" helpText="$resource{i18n.reg.resetPswdHelp}" >                           
@@ -204,6 +206,13 @@
                         <sun:textField id="lastName" styleClass="required" columns="$int{40}" text="#{requestScope.lastName}" required="#{false}" />
                     </sun:property>
                     
+                    <sun:property id="companyName" visible="#{false}"  style="margin-left: 17pt" labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18n.reg.companyName}" >                           
+                        <!afterCreate
+                            getClientId(component="$this{component}" clientId=>$page{companyNameId});
+                        />
+                        <sun:textField id="companyName" columns="$int{40}" text="#{requestScope.companyName}" required="#{false}" />
+                    </sun:property>
+                    
                     <sun:property id="country" visible="#{false}"  style="margin-left: 17pt" labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18n.reg.country}" >                           
                         <!afterCreate
                             getClientId(component="$this{component}" clientId=>$page{countryId});
@@ -215,6 +224,7 @@
                         />
                         </sun:dropDown>
                     </sun:property>
+                    
                     
                     <sun:property id="newSpace"  >                      
                         <sun:label text=""/>
@@ -256,7 +266,7 @@
                             userName="#{userName}", pswd="#{pswd}", proxy="#{proxy}" port="#{port}",
                             emailAdr="#{emailAdr}", newPswd="#{newPswd}",
                             screenName="#{screenName}", firstName="#{firstName}",lastName="#{lastName}",
-                            country="#{country}", accountStatus="#{accountGroup}"
+                            country="#{country}", companyName="#{companyName}" accountStatus="#{accountGroup}"
                             newProxy="#{newProxy}" newPort="#{newPort}" );
                          redirect("support.jsf");
                          />
@@ -284,6 +294,7 @@
                 //webui.suntheme.common.setVisible( '#{screenNameId}', value);
                 webui.suntheme.common.setVisible( '#{firstNameId}', value);
                 webui.suntheme.common.setVisible( '#{lastNameId}', value);
+                webui.suntheme.common.setVisible( '#{companyNameId}', value);
                 webui.suntheme.common.setVisible( '#{countryId}', value);
                 webui.suntheme.common.setVisible( '#{newProxyId}', value);
                 webui.suntheme.common.setVisible( '#{newPortId}', value);
@@ -300,11 +311,11 @@
             function validateRegisterField(){
                 ss = getSelectedValue('accountGroup');
                 if( ss =='hasAccount'){
-                    test= (checkRequired('#{userNameId}:userName', '#{reqMsg}') && checkRequired('#{pswdId}:pswd',  '#{reqMsg}') ) ;
+                    test= (checkRequired('#{userNameId}', '#{reqMsg}') && checkRequired('#{pswdId}',  '#{reqMsg}') ) ;
                     if (!test){
                         return test;
                     }
-                    if (! checkProxyPort('#{portId}:port')){
+                    if (! checkProxyPort('#{portId}')){
                         return false;
                     }
                     return true;
