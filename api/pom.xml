@@ -42,12 +42,13 @@
     <parent>
         <groupId>org.glassfish</groupId>
         <artifactId>pom</artifactId>
-        <version>1</version>
+        <version>2</version>
     </parent>
     
     <groupId>org.glassfish.api</groupId>
     <artifactId>api</artifactId>
     <packaging>pom</packaging>
+    <version>1</version>
     <name>Java EE API modules, usually not built as part of GlassFish</name>  
 
 	<build>
@@ -102,6 +103,21 @@
         <module>jstl</module>
         <module>jmac</module>
     </modules>
+    
+    <properties>
+        <jaxrpc-api.version>1.1</jaxrpc-api.version>
+        <transaction-api.version>1.1</transaction-api.version>
+        <servlet-api.version>2.5</servlet-api.version>
+        <jsp-api.version>2.1</jsp-api.version>
+        <jstl-api.version>1.2</jstl-api.version>        
+        <jsf-api.version>1.2_08</jsf-api.version>
+        <mail-api.version>1.4</mail-api.version>        
+        <mail.version>1.4.1-ea-SNAPSHOT</mail.version>
+        <ejb-api.version>3.0</ejb-api.version>
+        <persistence-api.version>1.0.3-SNAPSHOT</persistence-api.version>
+        <connector-api.version>1.5</connector-api.version>
+        <management-api.version>1.1</management-api.version>
+    </properties>
     
     <repositories>
         <repository>
