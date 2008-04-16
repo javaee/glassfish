@@ -36,6 +36,7 @@
  */
 package com.sun.enterprise.groovy;
 
+import com.sun.enterprise.module.ManifestConstants;
 import com.sun.enterprise.module.Module;
 import com.sun.enterprise.module.ModuleDefinition;
 import com.sun.enterprise.module.ModulesRegistry;
@@ -98,7 +99,7 @@ public class GroovySniffer extends GenericSniffer implements Sniffer {
         }
 
         grailsRootLoc = new File(grailsRootLoc, "lib");
-        CookedModuleDefinition groovy = null;
+        ModuleDefinition groovy = null;
         try {
             Attributes groovyAttr = new Attributes();
             StringBuffer classpath = new StringBuffer();
@@ -115,6 +116,7 @@ public class GroovySniffer extends GenericSniffer implements Sniffer {
                 }
             }
             groovyAttr.putValue(Attributes.Name.CLASS_PATH.toString(), classpath.toString());
+            groovyAttr.putValue(ManifestConstants.BUNDLE_NAME, "org.codehaus.groovy:groovy-all");
             groovy = new CookedModuleDefinition(
                     new File(grailsRootLoc, groovyJarName), groovyAttr);
         } catch (IOException e) {
@@ -122,16 +124,20 @@ public class GroovySniffer extends GenericSniffer implements Sniffer {
             throw e;
         }
 
-        registry.add(groovy);
-        Module groovyModule = registry.makeModuleFor(groovy.getName(), groovy.getVersion());
+        Module m = registry.add(groovy);
         
-//        Module grizzlyGroovy = registry.makeModuleFor("org.glassfish.external:grizzly-groovy-module", null);
-//        if (grizzlyGroovy != null) {
-//            grizzlyGroovy.addImport(groovyModule);
-//        }
+        Module groovyModule = registry.makeModuleFor(groovy.getName(), null);
+        if (groovyModule==null) {
+            logger.log(Level.SEVERE, "Cannot find module " + groovy.getName());
+            throw new IOException("cannot find module " + groovy.getName());
+        }
         
-        Module[] modules = { /*grizzlyGroovy, */groovyModule};
+        if (m != null) {
+            groovyModule.addImport(m);
+        }
+        Module[] modules = { groovyModule};
         return modules;
+        
     }
 
     public String[] getContainersNames() {
