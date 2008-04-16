@@ -42,7 +42,7 @@
     <parent>
         <groupId>org.glassfish.common</groupId>
         <artifactId>common</artifactId>
-        <version>10.0-SNAPSHOT</version>
+        <version>10.0-tp-2-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>common-ee-util</artifactId>

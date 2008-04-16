@@ -33,7 +33,7 @@
         <dependency>
             <groupId>org.glassfish.core</groupId>
             <artifactId>kernel</artifactId>
-            <version>10.0-SNAPSHOT</version>
+            <version>10.0-tp-2-SNAPSHOT</version>
 	    <scope>provided</scope>
         </dependency>
         <dependency>
@@ -58,21 +58,21 @@
         <dependency>
             <groupId>org.glassfish.core</groupId>
             <artifactId>deployment-client</artifactId>
-            <version>10.0-SNAPSHOT</version>
+            <version>10.0-tp-2-SNAPSHOT</version>
 	    <scope>provided</scope>
         </dependency>
         
         <dependency>
             <groupId>org.glassfish.registration</groupId>
             <artifactId>registration-api</artifactId>
-            <version>10.0-SNAPSHOT</version>
+            <version>10.0-tp-2-SNAPSHOT</version>
 	    <scope>provided</scope>
         </dependency>
         
         <dependency>
             <groupId>org.glassfish.registration</groupId>
             <artifactId>registration-impl</artifactId>
-            <version>10.0-SNAPSHOT</version>
+            <version>10.0-tp-2-SNAPSHOT</version>
 	    <scope>provided</scope>
         </dependency>
         

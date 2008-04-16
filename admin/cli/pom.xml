@@ -41,7 +41,7 @@
     <parent>
         <groupId>org.glassfish.admin</groupId>
         <artifactId>admin</artifactId>
-        <version>10.0-SNAPSHOT</version>
+        <version>10.0-tp-2-SNAPSHOT</version>
     </parent>
     
     <artifactId>admin-cli</artifactId>
@@ -137,7 +137,7 @@
                             <mainClass>com.sun.enterprise.admin.cli.AsadminMain</mainClass> 
                         </manifest>
                         <manifestEntries>
-                            <Class-Path>cli-framework-10.0-SNAPSHOT.jar glassfish-10.0-SNAPSHOT.jar server-mgmt-10.0-SNAPSHOT.jar common-util-10.0-SNAPSHOT.jar admin-util-10.0-SNAPSHOT.jar launcher-10.0-SNAPSHOT.jar universal-10.0-SNAPSHOT.jar realms-10.0-SNAPSHOT.jar backup-10.0-SNAPSHOT.jar amx-api-2.0-SNAPSHOT.jar</Class-Path>
+                            <Class-Path>cli-framework-${project.version}.jar glassfish-${project.version}.jar server-mgmt-${project.version}.jar common-util-${project.version}.jar admin-util-${project.version}.jar launcher-${project.version}.jar universal-${project.version}.jar realms-${project.version}.jar backup-${project.version}.jar amx-api-2.0-SNAPSHOT.jar</Class-Path>
                         </manifestEntries>
 
                     </archive>
