@@ -48,12 +48,12 @@ public class GlassfishProtocolChain extends DefaultProtocolChain {
      * @return position of next <code>ProtocolFilter</code> to exexute
      */
     @Override
-    protected int executeProtocolFilter(Context ctx) {
+    protected int executeProtocolFilter(Context ctx, int firstFilter) {
         boolean invokeNext = true;
         int currentPosition = 0;
         ProtocolFilter protocolFilter = null;
         
-        for (int i=0; ; i++) {
+        for (int i=firstFilter; ; i++) {
             try {
                 protocolFilter = getProtocolFilter(i);
                 if (protocolFilter == null) break;
