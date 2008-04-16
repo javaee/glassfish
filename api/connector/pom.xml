@@ -47,8 +47,9 @@
     <groupId>javax.resource</groupId>
     <artifactId>connector-api</artifactId>
     <packaging>jar</packaging>
-    <version>1.5.1-SNAPSHOT</version>
+    <version>1.6-alpha-1-SNAPSHOT</version>
     <name>Java EE Connector Architecture API Specification</name>
+    <url>http://jcp.org/en/jsr/detail?id=322</url>
 
     <developers>
         <developer>
