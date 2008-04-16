@@ -798,13 +798,21 @@ public class WebappLoader
         }
 
         // Throw away our current class loader
-        if (classLoader instanceof Lifecycle)
-            ((Lifecycle) classLoader).stop();
-        DirContextURLStreamHandler.unbind((ClassLoader) classLoader);
+        stopNestedClassLoader();
         classLoader = null;
 
         destroy();
 
+    }
+
+
+    /**
+     * Stops the nested classloader
+     */
+    public void stopNestedClassLoader() throws LifecycleException {
+        if (classLoader instanceof Lifecycle) {
+            ((Lifecycle) classLoader).stop();
+        }
     }
 
 

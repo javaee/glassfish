@@ -4662,4 +4662,13 @@ class V3WebappLoader extends WebappLoader {
         return cl;
     }
 
+    /**
+     * Stops the nested classloader
+     */
+    @Override
+    public void stopNestedClassLoader() {
+        // Do nothing. The nested (Webapp)ClassLoader is stopped in
+        // WebApplication.stop()
+    }
+
 }

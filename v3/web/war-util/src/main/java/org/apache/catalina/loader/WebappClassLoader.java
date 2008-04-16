@@ -99,6 +99,7 @@ import org.apache.catalina.LifecycleException;
 import org.apache.catalina.LifecycleListener;
 import org.apache.catalina.util.StringManagerTemp;
 import org.apache.naming.JndiPermission;
+import org.apache.naming.resources.DirContextURLStreamHandler;
 import org.apache.naming.resources.Resource;
 import org.apache.naming.resources.ResourceAttributes;
 import org.apache.naming.resources.FileDirContext;
@@ -1738,6 +1739,7 @@ public class WebappClassLoader
             deleteDir(loaderDir);
         }
 
+        DirContextURLStreamHandler.unbind(this);
     }
 
 

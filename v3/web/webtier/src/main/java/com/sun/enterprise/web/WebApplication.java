@@ -27,6 +27,8 @@ import org.glassfish.api.deployment.ApplicationContainer;
 import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.core.StandardHost;
 import org.apache.catalina.Container;
+import org.apache.catalina.Lifecycle;
+import org.apache.catalina.LifecycleException;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.util.StringUtils;
 import com.sun.enterprise.v3.common.Result;
@@ -104,6 +106,7 @@ public class WebApplication implements ApplicationContainer<WebBundleDescriptor>
 
     boolean stop(List<String> targets) {
 
+        boolean isLeftOver = false;
         boolean unloadFromAll = (targets == null) || (targets.size() == 0);
         final String ctxtRoot = getDescriptor().getContextRoot();
 
@@ -116,13 +119,11 @@ public class WebApplication implements ApplicationContainer<WebBundleDescriptor>
                 continue;
             }
 
-            if (unloadFromAll
-                    || targets.contains(vs.getName())
-                    || isAliasMatched(targets, vs)) {
-
-                StandardContext ctxt = (StandardContext)
-                        vs.findChild(ctxtRoot);
-                if (ctxt != null) {
+            StandardContext ctxt = (StandardContext) vs.findChild(ctxtRoot);
+            if (ctxt != null) {
+                if (unloadFromAll
+                        || targets.contains(vs.getName())
+                        || isAliasMatched(targets, vs)) {
                     vs.removeChild(ctxt);
                     try {
                         ctxt.destroy();
@@ -136,9 +137,22 @@ public class WebApplication implements ApplicationContainer<WebBundleDescriptor>
                             + vs.getName());
                     // ToDo : dochez : not good, we unregister from everywhere...
                     grizzlyAdapter.unregisterEndpoint(ctxtRoot, this);
+                } else {
+                    isLeftOver = true;
                 }
             }
         }
+
+        if ((unloadFromAll || !isLeftOver)
+                && (getClassLoader() instanceof Lifecycle)) {
+            try {
+                ((Lifecycle) getClassLoader()).stop();
+            } catch (LifecycleException le) {
+                logger.log(Level.WARNING,
+                           "Unable to stop classloader for " + this, le);
+            }
+        }
+
         return true;
     }
 
