@@ -39,7 +39,6 @@
  *
  * Created on July 29, 2003, 5:11 PM
  */
-
 package com.sun.enterprise.cli.framework;
 
 //imports
@@ -52,58 +51,53 @@ import java.io.ByteArrayOutputStream;
  *
  * @author  pa100654
  */
-public class CLILogger 
-{
+public class CLILogger {
+
     private static boolean debug;
     private static CLILogger logger;
     private Logger s1asLogger;
     private final static String DEBUG_FLAG = "Debug";
     private final static String ENV_DEBUG_FLAG = "AS_DEBUG";
-    private final static int	kDefaultBufferSize	= 512;
+    private final static int kDefaultBufferSize = 512;
     private final static String PACKAGE_NAME = "com.sun.enterprise.cli.framework";
-    private static  boolean allowOutputLevelChanges = true;
+    private static boolean allowOutputLevelChanges = true;
     private static Level pushedLevel;
-    
+
     /** Creates a new instance of CLILogger */
-    protected CLILogger() 
-    {
+    protected CLILogger() {
         // System Prop just needs to exist
         // Env Var. needs to be set to "true"
         String sys = System.getProperty(DEBUG_FLAG);
         boolean env = Boolean.parseBoolean(System.getenv(ENV_DEBUG_FLAG));
-        
-        
-        if ( sys != null || env) {
+
+
+        if (sys != null || env) {
             debug = true;
         }
         else {
             debug = false;
         }
-        
+
         s1asLogger = Logger.getLogger(PACKAGE_NAME, null);
-        if (isDebug() ) 
+        if (isDebug())
             s1asLogger.setLevel(Level.FINEST);
-        else
-	{
+        else {
             s1asLogger.setLevel(Level.INFO);
-            //s1asLogger.setLevel(Level.SEVERE);
-	}
+        //s1asLogger.setLevel(Level.SEVERE);
+        }
         s1asLogger.addHandler(new CLILoggerHandler());
         s1asLogger.setUseParentHandlers(false);
     }
-    
-    public static boolean isDebug()
-    {
+
+    public static boolean isDebug() {
         return debug;
     }
-    
+
     /**
      * returns the instance of the logger
      */
-    public static synchronized CLILogger getInstance()
-    {
-        if (logger == null)
-        {
+    public static synchronized CLILogger getInstance() {
+        if (logger == null) {
             logger = new CLILogger();
         }
         return logger;
@@ -119,159 +113,139 @@ public class CLILogger
         allowOutputLevelChanges = true;
         setOutputLevel(pushedLevel);
     }
-    
+
     /**
      * returns the current output Level
      * @return Level the java.util.logging.Level
      */
-    public Level getOutputLevel()
-    {
+    public Level getOutputLevel() {
         return s1asLogger.getLevel();
     }
-    
+
     /**
      * Sets the output Level
      * @param level the java.util.logging.Level
      */
-    public void setOutputLevel(Level level)
-    {
-        if (!isDebug() && allowOutputLevelChanges) 
+    public void setOutputLevel(Level level) {
+        if (!isDebug() && allowOutputLevelChanges)
             s1asLogger.setLevel(level);
     }
-    
+
     /**
      * prints the message with level as INFO
      * @param message the message to be written on the output stream
      */
-    public void printMessage(String message)
-    {
+    public void printMessage(String message) {
         s1asLogger.log(Level.INFO, message);
     }
-    
+
     /**
      * prints the message with level as FINE
      * @param message the message to be written on the output stream
      */
-    public void printDetailMessage(String message)
-    {
+    public void printDetailMessage(String message) {
         s1asLogger.log(Level.FINE, message);
     }
-    
+
     /**
      * prints the message with level as WARNING
      * @param message the message to be written on the output stream
      */
-    public void printWarning(String message)
-    {
+    public void printWarning(String message) {
         s1asLogger.log(Level.WARNING, message);
     }
-    
+
     /**
      * prints the message with level as SEVERE
      * @param message the message to be written on the output stream
      */
-    public void printError(String message)
-    {
+    public void printError(String message) {
         s1asLogger.log(Level.SEVERE, message);
     }
-    
+
     /**
      * prints the message with level as FINEST
      * @param message the message to be written on the output stream
      */
-    public void printDebugMessage(String message)
-    {
+    public void printDebugMessage(String message) {
         s1asLogger.log(Level.FINEST, message);
     }
-
 
     /**
      * prints the exception message with level as FINEST
      * @param e - the exception object to print
      */
-    public void printExceptionStackTrace(java.lang.Throwable e)
-    {
-	/*
-	java.lang.StackTraceElement[] ste = e.getStackTrace();
-	for (int ii=0; ii<ste.length; ii++)
+    public void printExceptionStackTrace(java.lang.Throwable e) {
+        /*
+        java.lang.StackTraceElement[] ste = e.getStackTrace();
+        for (int ii=0; ii<ste.length; ii++)
         {
-	    printDebugMessage(ste[ii].toString());
-	}
-	*/
-    	final ByteArrayOutputStream output = new ByteArrayOutputStream( kDefaultBufferSize );
-    	e.printStackTrace( new java.io.PrintStream(output));
+        printDebugMessage(ste[ii].toString());
+        }
+         */
+        final ByteArrayOutputStream output = new ByteArrayOutputStream(kDefaultBufferSize);
+        e.printStackTrace(new java.io.PrintStream(output));
         printDebugMessage(output.toString());
     }
 
-    
-    public class CLILoggerHandler extends Handler 
-    {
+    public class CLILoggerHandler extends Handler {
 
         /** Creates a new instance of CLILoggerHandler */
-        public CLILoggerHandler() 
-        {
+        public CLILoggerHandler() {
         }
 
-        public void publish(java.util.logging.LogRecord logRecord) 
-        {
-            if (logRecord.getLevel() == Level.SEVERE)
-            {
-		InputsAndOutputs.getInstance().getErrorOutput().println(logRecord.getMessage());
+        public void publish(java.util.logging.LogRecord logRecord) {
+            if (logRecord.getLevel() == Level.SEVERE) {
+                InputsAndOutputs.getInstance().getErrorOutput().println(logRecord.getMessage());
             }
-            else
-            {
+            else {
                 InputsAndOutputs.getInstance().getUserOutput().println(logRecord.getMessage());
             }
-            //for now prints to System.out, fix me
+        //for now prints to System.out, fix me
         }
 
-        public void close() throws java.lang.SecurityException 
-        {
+        public void close() throws java.lang.SecurityException {
         }
 
-        public void flush() 
-        {
+        public void flush() {
         }
     }
 
-    public static void main(String[] args)
-    {
+    public static void main(String[] args) {
         CLILogger logger = new CLILogger();
-	try 
-	{
-	    String sLevel = null;
-	    // LocalStringsManager lsm = LocalStringsManagerFactory.getLocalStringsManager("com.sun.enterprise.cli.framework", "LocalStrings" );
-	    LocalStringsManager lsm = LocalStringsManagerFactory.getFrameworkLocalStringsManager();
+        try {
+            String sLevel = null;
+            // LocalStringsManager lsm = LocalStringsManagerFactory.getLocalStringsManager("com.sun.enterprise.cli.framework", "LocalStrings" );
+            LocalStringsManager lsm = LocalStringsManagerFactory.getFrameworkLocalStringsManager();
 
-	    InputsAndOutputs.getInstance().getUserOutput().print(lsm.getString("PROMPT"));
-	    sLevel = InputsAndOutputs.getInstance().getUserInput().getLine();
-	    logger.setOutputLevel(java.util.logging.Level.parse(sLevel));
+            InputsAndOutputs.getInstance().getUserOutput().print(lsm.getString("PROMPT"));
+            sLevel = InputsAndOutputs.getInstance().getUserInput().getLine();
+            logger.setOutputLevel(java.util.logging.Level.parse(sLevel));
 
-	    System.out.println("Logger level = " + logger.getOutputLevel());
-	    logger.printDetailMessage("Fine");
-	    logger.printMessage("Info");
-	    logger.printError("Error");
-	    logger.printWarning("Warning");
-	    logger.printDebugMessage("Debug");
+            System.out.println("Logger level = " + logger.getOutputLevel());
+            logger.printDetailMessage("Fine");
+            logger.printMessage("Info");
+            logger.printError("Error");
+            logger.printWarning("Warning");
+            logger.printDebugMessage("Debug");
 
-	    // test from file
-	    InputsAndOutputs.getInstance().setUserOutputFile("UserOutput.txt");
-	    InputsAndOutputs.getInstance().setErrorOutputFile("ErrorOutput.txt");
-	    InputsAndOutputs.getInstance().setUserInputFile("test_input.txt");
-	    InputsAndOutputs.getInstance().getUserOutput().print(lsm.getString("PROMPT"));
-	    sLevel = InputsAndOutputs.getInstance().getUserInput().getLine();
-	    logger.setOutputLevel(java.util.logging.Level.parse(sLevel));
-	    logger.printDetailMessage("Fine");
-	    logger.printMessage("Info");
-	    logger.printError("Error");
-	    logger.printWarning("Warning");
-	    logger.printDebugMessage("Debug");
+            // test from file
+            InputsAndOutputs.getInstance().setUserOutputFile("UserOutput.txt");
+            InputsAndOutputs.getInstance().setErrorOutputFile("ErrorOutput.txt");
+            InputsAndOutputs.getInstance().setUserInputFile("test_input.txt");
+            InputsAndOutputs.getInstance().getUserOutput().print(lsm.getString("PROMPT"));
+            sLevel = InputsAndOutputs.getInstance().getUserInput().getLine();
+            logger.setOutputLevel(java.util.logging.Level.parse(sLevel));
+            logger.printDetailMessage("Fine");
+            logger.printMessage("Info");
+            logger.printError("Error");
+            logger.printWarning("Warning");
+            logger.printDebugMessage("Debug");
 
-	}
-	catch (Exception e)
-	{
-	    logger.printExceptionStackTrace(e);
-	    //e.printStackTrace();
-	}
+        }
+        catch (Exception e) {
+            logger.printExceptionStackTrace(e);
+        //e.printStackTrace();
+        }
     }
 }
