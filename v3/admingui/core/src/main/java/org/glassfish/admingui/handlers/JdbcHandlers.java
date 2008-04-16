@@ -651,7 +651,28 @@ public class JdbcHandlers {
                 pool.remove("ValidationTableName");
             }
             
-            Map allOptions = new HashMap(pool);
+            
+            //TODO
+            //There seems to be a bug in Woodstock 4.2 that dropdown selected cannot use '-',   selected="#{wizardPool.transaction-isolation-level}"
+            //so we have to use the camelCase and then change it back before passing to backend.
+            
+            Map allOptions = new HashMap();
+           
+            allOptions.put("res-type", pool.get("ResType"));
+            allOptions.put("Connection-validation-method", pool.get("ConnectionValidationMethod"));
+            allOptions.put("transaction-isolation-level", pool.get("TransactionIsolationLevel"));
+            allOptions.put("steady-pool-size", pool.get("SteadyPoolSize"));
+            allOptions.put("max-pool-size", pool.get("MaxPoolSize"));
+            allOptions.put("max-wait-time-in-millis", pool.get("MaxWaitTimeInMillis"));
+            allOptions.put("pool-resize-quantity", pool.get("PoolResizeQuantity"));
+            allOptions.put("idle-timeout-in-seconds", pool.get("IdleTimeoutInSeconds"));
+            allOptions.put("is-isolation-level-guaranteed", pool.get("IsIsolationLevelGuaranteed"));
+            allOptions.put("fail-all-connections", pool.get("FailAllConnections"));
+            allOptions.put("non-transactional-connections", pool.get("NonTransactionalConnections"));
+            allOptions.put("allow-non-component-callers", pool.get("AllowNonComponentCallers"));
+            allOptions.put("is-connection-validation-required", pool.get("IsConnectionValidationRequired"));
+            allOptions.put("validation-table-name", pool.get("ValidationTableName"));
+            
             allOptions = AMXUtil.convertToPropertiesOptionMap(properties, allOptions);
             
             System.out.println("!!!! calling getResourcesConfig().createJDBCConnectionPoolConfig  ");

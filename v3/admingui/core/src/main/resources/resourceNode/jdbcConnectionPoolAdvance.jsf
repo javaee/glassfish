@@ -45,7 +45,7 @@
                 advance=>$page{advance}
         );
         />
-#include "shared/restart.inc"        
+#include "/shared/restart.inc"        
     <sun:html id="html2">
         <sun:head id="propertyhead" title="$resource{i18n.jdbcConnectionPool.advancePageTitle}" >
             <sun:script url="/resource/js/adminjsf.js" />
