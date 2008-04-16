@@ -27,7 +27,6 @@ import com.sun.grizzly.groovy.GroovletAdapter;
 import com.sun.grizzly.http.SelectorThread;
 import com.sun.grizzly.util.ClassLoaderUtil;
 import com.sun.grizzly.util.ExpandJar;
-
 import java.io.File;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -119,7 +118,7 @@ public class GroovletLauncher {
         SelectorThread.setWebAppRootPath(folder);
                             
         GroovletAdapter adapter = new GroovletAdapter();
-        adapter.setRootFolder("file://" + folder);
+        adapter.setRootFolder(SelectorThread.getWebAppRootPath());
         selectorThread.setAdapter(adapter);
         
         System.out.println("Launching Groovlet: " + groovletName);

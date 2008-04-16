@@ -22,20 +22,19 @@
  */
 package com.sun.grizzly.groovy;
 
-import com.sun.grizzly.tcp.Adapter;
-import com.sun.grizzly.tcp.http11.GrizzlyAdapter;
+import com.sun.grizzly.http.servlet.HttpServletRequestImpl;
+import com.sun.grizzly.http.servlet.HttpServletResponseImpl;
 import com.sun.grizzly.tcp.http11.GrizzlyRequest;
 import com.sun.grizzly.tcp.http11.GrizzlyResponse;
+import com.sun.grizzly.tcp.http11.GrizzlyAdapter;
 import com.sun.grizzly.util.http.Globals;
 import groovy.lang.Binding;
 import groovy.lang.Closure;
+import groovy.servlet.ServletBinding;
 import groovy.servlet.ServletCategory;
 import groovy.util.GroovyScriptEngine;
 import groovy.util.ResourceException;
 import groovy.util.ScriptException;
-import org.codehaus.groovy.runtime.GroovyCategorySupport;
-
-import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -43,13 +42,15 @@ import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
-
+import javax.servlet.http.HttpServletResponse;
+import org.codehaus.groovy.runtime.GroovyCategorySupport;
+    
 /**
  * Adapter implementation that bridge Groovy with Grizzly.
  *
  * @author Martin Grebac
  */
-public class GroovletAdapter extends GrizzlyAdapter implements Adapter {
+public class GroovletAdapter extends GrizzlyAdapter /*implements Adapter*/ {
     
     private GroovyScriptEngine scriptEngine = null;
     
@@ -76,10 +77,6 @@ public class GroovletAdapter extends GrizzlyAdapter implements Adapter {
     protected String resourceNameReplacement;
     
     boolean verbose = true;
-
-    public GroovletAdapter() {
-        super();
-    }
     
     public void setContextRoot(String contextRoot) {
         this.contextRoot = contextRoot;
@@ -89,34 +86,41 @@ public class GroovletAdapter extends GrizzlyAdapter implements Adapter {
         return contextRoot;
     }
     
-    public GroovletAdapter(String publicDirectory) {
-        super(publicDirectory);
-    }
-
     @Override
-    public void service(final GrizzlyRequest request, final GrizzlyResponse response) {
+    public void service(GrizzlyRequest request, GrizzlyResponse response) {
         
-        String uri = getScriptUri(request);
-        String ctxRoot = getContextRoot();
-        if (uri.startsWith(ctxRoot) && (uri.length() > ctxRoot.length())) {
-            uri = uri.substring(ctxRoot.length() + 1);
-        }
-
-        final String scriptUri = uri;
-        
-        if (!(scriptUri.endsWith(".groovy") || (scriptUri.endsWith(".gdo")))) {
-            return;
-        }
-
         try {
+            String uri = getScriptUri(request);
+            String ctxRoot = getContextRoot();
+            if (ctxRoot != null) {
+                if (uri.startsWith(ctxRoot) && (uri.length() > ctxRoot.length())) {
+                    uri = uri.substring(ctxRoot.length() + 1);
+                }
+            } else {
+                uri = uri.substring(1);
+            }
+
+            final String scriptUri = uri;
+
+            if (!(scriptUri.endsWith(".groovy") || (scriptUri.endsWith(".gdo")))) {
+                return;
+            }
+
             if (scriptEngine == null) {
-                URL[] roots = new URL[] {new URL(this.getRootFolder())};
+                URL[] roots = new URL[] {
+                                    new File(this.getRootFolder()).toURL(),
+                                    new File(new File(this.getRootFolder()).getPath() + "/src/groovy").toURL()
+                                };
                 scriptEngine = new GroovyScriptEngine(roots);
             }
             
             // Set it to HTML by default
             response.setContentType("text/html");
-            final Binding b = new GrizzlyGroovletBinding(request, response);
+
+            final Binding b = new ServletBinding(
+                                    new HttpServletRequestImpl(request), 
+                                    new HttpServletResponseImpl(response), 
+                                    null);
 
             // Run the script
             try {
@@ -133,7 +137,7 @@ public class GroovletAdapter extends GrizzlyAdapter implements Adapter {
                     }
 
                 };
-                GroovyCategorySupport.use(ServletCategory.class, closure);
+                GroovyCategorySupport.use(ServletCategory.class, closure);               
                 /*
                  * Set reponse code 200.
                  */
@@ -200,15 +204,13 @@ public class GroovletAdapter extends GrizzlyAdapter implements Adapter {
                 // servletContext.log("Flushed response buffer.");
             }
             
+//        } catch (URISyntaxException ex) {
+//            Logger.getLogger(GroovletAdapter.class.getName()).log(Level.SEVERE, null, ex);
         } catch (MalformedURLException ex) {
             Logger.getLogger(GroovletAdapter.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
             Logger.getLogger(GroovletAdapter.class.getName()).log(Level.SEVERE, null, ex);
         }
-    }
-
-    @Override
-    public void afterService(GrizzlyRequest arg0, GrizzlyResponse arg1) throws Exception {
     }
 
     protected String getScriptUri(GrizzlyRequest request) {
@@ -242,5 +244,10 @@ public class GroovletAdapter extends GrizzlyAdapter implements Adapter {
         }        
         return uri;
     }
-    
+
+    @Override
+    public void afterService(GrizzlyRequest request, GrizzlyResponse response) throws Exception {
+
+    }
+
 }
