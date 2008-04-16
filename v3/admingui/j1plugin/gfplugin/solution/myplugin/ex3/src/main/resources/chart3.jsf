@@ -1,5 +1,5 @@
 <!-- Use composition to define template -->
-<!composition template="templates/javaOneTemplate.tpl">
+<!composition template="/templates/javaOneTemplate.tpl">
 <!define name="content">
 
 <sun:dropDown submitForm="true"
