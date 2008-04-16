@@ -1,0 +1,22 @@
+#!/bin/sh
+#
+# @(#)simpleclient	1.13	99/12/09
+#
+JAVAPRG=/usr/local/java/jdk1.1.6/solaris/bin/java
+unset JAVA_HOME
+
+# If JAF_JAR is not set, then use the latest version
+JAF_JAR=${JAF_JAR:=/usr/local/jaf/activation.jar}
+
+# Use another swing file if needed
+SWING_JAR=${SWING_JAR:=/usr/local/java/swing-1.1.1/swingall.jar}
+
+# Use the classes dir if there is no MAIL_JAR
+MAIL_JAR=${MAIL_JAR:=../../../../../build/solaris/classes}
+
+# setup the classpath
+CLASSPATH=$MAIL_JAR:$JAF_JAR:$SWING_JAR:$CLASSPATH
+export CLASSPATH
+
+# run it
+exec $JAVAPRG SimpleClient "$@"
