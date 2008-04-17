@@ -25,6 +25,7 @@ package com.sun.enterprise.v3.services.impl;
 
 import com.sun.grizzly.util.buf.Ascii;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.nio.ByteBuffer;
 
 /**
@@ -50,7 +51,7 @@ public class HttpUtils {
         int curLimit = byteBuffer.limit();
       
         if (byteBuffer.position() == 0){
-            throw new IllegalStateException("Invalid state");
+            throw new MalformedURLException("Invalid state");
         }
        
         byteBuffer.position(0);
@@ -117,10 +118,10 @@ public class HttpUtils {
                         }
                         break;
                     default:
-                        throw new IllegalArgumentException("Unexpected state");
+                        throw new MalformedURLException("Unexpected state during URL parsing");
                 }
             }
-            throw new IllegalStateException("Invalid request");
+            throw new MalformedURLException("Invalid request");
         } finally {     
             byteBuffer.limit(curLimit);
             byteBuffer.position(curPosition);                               
