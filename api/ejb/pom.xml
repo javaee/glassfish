@@ -48,7 +48,7 @@
     <groupId>javax.ejb</groupId>
     <artifactId>ejb-api</artifactId>
     <packaging>jar</packaging>
-    <version>3.0-alpha-1</version>
+    <version>3.0-alpha-2-SNAPSHOT</version>
     <name>Enterprise JavaBeans(TM) Specification</name>
     <description>Project GlassFish Enterprise JavaBean API</description>
     
@@ -74,10 +74,5 @@
             <artifactId>jaxrpc-api</artifactId>
             <version>${jaxrpc-api.version}</version>
 		</dependency>
-    </dependencies>    
-
-  <scm>
-    <connection>scm:svn:https://kohsuke@svn.dev.java.net/svn/glassfish-svn/tags/ejb-api-3.0-alpha-1</connection>
-    <developerConnection>scm:svn:https://kohsuke@svn.dev.java.net/svn/glassfish-svn/tags/ejb-api-3.0-alpha-1</developerConnection>
-  </scm>
+    </dependencies>
 </project>
