@@ -47,7 +47,7 @@
     <groupId>javax.servlet.jsp.jstl</groupId>
     <artifactId>jstl-api</artifactId>
     <packaging>jar</packaging>
-    <version>1.2-rev-1</version>
+    <version>1.2-rev-2-SNAPSHOT</version>
     <name>JavaServer Pages(TM) Standard Tag Library</name>
     <url>http://jcp.org/en/jsr/detail?id=52</url>
 
@@ -108,9 +108,4 @@
             <version>${jsp-api.version}</version>
         </dependency>
     </dependencies>
-
-  <scm>
-    <connection>scm:svn:https://kohsuke@svn.dev.java.net/svn/glassfish-svn/tags/jstl-api-1.2-rev-1</connection>
-    <developerConnection>scm:svn:https://kohsuke@svn.dev.java.net/svn/glassfish-svn/tags/jstl-api-1.2-rev-1</developerConnection>
-  </scm>
 </project>
