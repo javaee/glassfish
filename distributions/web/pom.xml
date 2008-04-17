@@ -72,7 +72,7 @@
         <dependency>
             <groupId>org.glassfish.distributions</groupId>
             <artifactId>nucleus</artifactId>
-            <version>${nucleus.version}</version>
+            <version>${project.version}</version>
             <type>zip</type>
         </dependency>
         

@@ -46,7 +46,6 @@
   </parent>
   
   <artifactId>gem</artifactId>
-  <!-- the real artifact is created by distribution-builder plugin -->
   <version>${pe.version}</version>
   
   <name>Glassfish JRuby Gem distribution</name>

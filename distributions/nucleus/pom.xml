@@ -47,7 +47,6 @@
    </parent>
 
    <artifactId>nucleus</artifactId>
-   <version>${nucleus.version}</version>
 
    <name>Glassfish Nucleus distribution image</name>
    <description>This pom describes how to assemble the Glassfish Nucleus Bundle</description>
@@ -103,7 +102,7 @@
            <!-- base distribution image -->
            <groupId>org.glassfish.distributions</groupId>
            <artifactId>nucleus-base</artifactId>
-           <version>${nucleus.version}</version>
+           <version>${project.version}</version>
            <type>zip</type>
        </dependency>
        <dependency>
