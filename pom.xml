@@ -148,6 +148,9 @@
              associated with it. Currently, I have no idea as to why
              bnd fails when javaee-api/javax.javaee is built from
              top level. By Sahoo.
+
+	     Kohsuke 2008/04/17:
+	     When I added it back, Maven just hangs at "[INFO] Scanning for projects..."
         <module>javaee-api</module>
         -->
       	<module>common</module>
