@@ -139,17 +139,29 @@ public class MiniXmlParser {
             // this will fail if config is above servers in domain.xml!
             getConfig(); // might throw
             findDomainName();
+            findDomainEnd();
+            return;
         }
         catch (EndDocumentException ex) {
             createParser();
             skipRoot("domain");
             getConfig();
             findDomainName();
+            findDomainEnd();
             Logger.getLogger(MiniXmlParser.class.getName()).log(
                     Level.WARNING, strings.get("secondpass"));
         }
     }
 
+    private void findDomainEnd() {
+        // make sure that </domain> is present
+        try {
+            skipToEnd("domain");
+        }
+        catch(Exception e) {
+            throw new RuntimeException(strings.get("noDomainEnd"));
+        }
+    }
     private void createParser() throws FileNotFoundException, XMLStreamException {
         domainXmlstream = new FileInputStream(domainXml);
         XMLInputFactory xif = XMLInputFactory.newInstance();
