@@ -98,6 +98,7 @@
         <javac   debug="true"
                  fork="true"
                  source="1.5"
+		 target="1.5"
                  srcdir="src/test"
                  destdir="${test.class.output}">
 		 <classpath>
@@ -147,6 +148,7 @@
         <javac   debug="true"
                  fork="true"
                  source="1.5"
+		 target="1.5"
                  classpathref="class.path"
                  srcdir="src"
                  destdir="${class.output}"/>
@@ -166,6 +168,7 @@
     <javac   debug="true"
     fork="true"
     source="1.5"
+    target="1.5"
     classpathref="class.path"
     srcdir="src/java"
     destdir="${class.output}"/>
@@ -219,6 +222,7 @@
     <javac   debug="true"
     fork="true"
     source="1.5"
+    target="1.5"
     classpathref="class.path"
     srcdir="src/java"
     destdir="${class.output}/app"/>
@@ -254,6 +258,7 @@
     <javac   debug="true"
     fork="true"
     source="1.5"
+    target="1.5"
     classpathref="class.path"
     srcdir="src/myapp/java"
     destdir="${class.output}/app"/>
