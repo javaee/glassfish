@@ -108,7 +108,7 @@ public class WebDeployer extends JavaEEDeployer<WebContainer, WebApplication>{
      */
     public MetaData getMetaData() {
         List<ModuleDefinition> apis = new ArrayList<ModuleDefinition>();
-        Module module = modulesRegistry.makeModuleFor("org.glassfish:javax.javaee", "10.0-SNAPSHOT");
+        Module module = modulesRegistry.makeModuleFor("org.glassfish:javax.javaee",null);
         if (module!=null) {
             apis.add(module.getModuleDefinition());
         }
