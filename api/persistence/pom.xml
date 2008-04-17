@@ -46,7 +46,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>javax.persistence</groupId>
     <artifactId>persistence-api</artifactId>
-    <version>1.0-rev-1</version>
+    <version>1.0-rev-2-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>Java(TM) Persistence API Specification</name>
     <developers>
@@ -60,9 +60,4 @@
             </roles>
         </developer>
     </developers>
-
-  <scm>
-    <connection>scm:svn:https://kohsuke@svn.dev.java.net/svn/glassfish-svn/tags/persistence-api-1.0-rev-1</connection>
-    <developerConnection>scm:svn:https://kohsuke@svn.dev.java.net/svn/glassfish-svn/tags/persistence-api-1.0-rev-1</developerConnection>
-  </scm>
 </project>
