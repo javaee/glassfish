@@ -199,7 +199,8 @@
         depends="publish-init"
         description="Creating IPS Image with Domains">
     <antcall target="create-common-image"/>
-    <copy todir="${image.dir}">
+    <mkdir dir="${image.dir}/glassfish/domains" />
+    <copy todir="${image.dir}/glassfish/domains">
             <fileset dir="${install.dir}/domains"/>
     </copy>
     <zip destfile="${image.dir}/../V3IPSImage_GF.zip">
