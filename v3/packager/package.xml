@@ -6,10 +6,10 @@
 
 <target name="package" 
         depends="
-		 package-SUNWglassfishv3-nucleus,
-		 package-SUNWglassfishv3-web,
-		 package-SUNWglassfishv3-common,
-		 package-SUNWjavadb,
+		 package-glassfishv3-nucleus,
+		 package-glassfishv3-web,
+		 package-glassfishv3-common,
+		 package-javadb,
 		 clean-tmp" >
 </target>
 
@@ -27,36 +27,36 @@
     </exec>
 </target>
 
-<target name="package-SUNWglassfishv3-nucleus" 
+<target name="package-glassfishv3-nucleus" 
         depends="publish-init,package-install-init"
-        description="Package SUNWglassfishv3-nucleus">
+        description="Package glassfishv3-nucleus">
 
     <!-- resolveArtifact artifactId="nucleus" property="nucleus.zip"/>
     <resolveArtifact artifactId="web" property="web.zip"/>
     <echo message="web.zip: ${web.zip}, nucleus.zip: ${nucleus.zip}"/ -->
 
-    <echo message="Creating package SUNWglassfishv3-nucleus..."/>
+    <echo message="Creating package glassfishv3-nucleus..."/>
 
     <mkdir dir="${basedir}/build" />
     <unzip src="${basedir}/../distributions/nucleus/target/nucleus.zip"
            dest="${basedir}/build"/>
 
     <antcall target="create-prototype-com">
-        <param name="component.package" value="SUNWglassfishv3-nucleus"/>
+        <param name="component.package" value="glassfishv3-nucleus"/>
         <param name="package.home" value="${package.home}"/>
         <param name="repo.home" value="${basedir}/../.."/>
         <param name="pkgname" value="nucleus"/>
     </antcall>
 
     <antcall target="build-solaris-package">	
-        <param name="component.package" value="SUNWglassfishv3-nucleus"/>
+        <param name="component.package" value="glassfishv3-nucleus"/>
         <param name="package.home" value="${package.home}"/>
         <param name="component.publish.home" 
                value="${install.tmp.dir}"/>
     </antcall>
 
     <antcall target="package-common">
-        <param name="component.package" value="SUNWglassfishv3-nucleus"/>
+        <param name="component.package" value="glassfishv3-nucleus"/>
         <param name="package.home" value="${package.home}"/>
         <param name="publish.package.home" value="${tools.package.home}"/>
         <param name="component.publish.home" value="${install.dir}/.."/>
@@ -65,31 +65,31 @@
     <delete dir="${basedir}/build"/>
 </target>
 
-<target name="package-SUNWglassfishv3-web" 
+<target name="package-glassfishv3-web" 
         depends="publish-init,package-install-init"
-        description="Package SUNWglassfishv3-web">
-    <echo message="Creating package SUNWglassfishv3-web..."/>
+        description="Package glassfishv3-web">
+    <echo message="Creating package glassfishv3-web..."/>
 
     <mkdir dir="${basedir}/build" />
     <unzip src="${basedir}/../distributions/web/target/web.zip"
            dest="${basedir}/build"/>
 
     <antcall target="create-prototype-com">
-        <param name="component.package" value="SUNWglassfishv3-web"/>
+        <param name="component.package" value="glassfishv3-web"/>
         <param name="package.home" value="${package.home}"/>
         <param name="repo.home" value="${basedir}/../.."/>
         <param name="pkgname" value="web"/>
     </antcall>
 
     <antcall target="build-solaris-package">	
-        <param name="component.package" value="SUNWglassfishv3-web"/>
+        <param name="component.package" value="glassfishv3-web"/>
         <param name="package.home" value="${package.home}"/>
         <param name="component.publish.home" 
                value="${install.tmp.dir}"/>
     </antcall>
 
     <antcall target="package-common">
-        <param name="component.package" value="SUNWglassfishv3-web"/>
+        <param name="component.package" value="glassfishv3-web"/>
         <param name="package.home" value="${package.home}"/>
         <param name="publish.package.home" value="${tools.package.home}"/>
         <param name="component.publish.home" value="${install.dir}/.."/>
@@ -97,27 +97,27 @@
 
 </target>
 
-<target name="package-SUNWglassfishv3-common" 
+<target name="package-glassfishv3-common" 
         depends="publish-init,package-install-init"
-        description="Package SUNWglassfishv3-common">
-    <echo message="Creating package SUNWglassfishv3-common..."/>
+        description="Package glassfishv3-common">
+    <echo message="Creating package glassfishv3-common..."/>
 
     <antcall target="create-prototype-com">
-        <param name="component.package" value="SUNWglassfishv3-common"/>
+        <param name="component.package" value="glassfishv3-common"/>
         <param name="package.home" value="${package.home}"/>
         <param name="repo.home" value="${basedir}/../.."/>
         <param name="pkgname" value="common"/>
     </antcall>
 
     <antcall target="build-solaris-package">	
-        <param name="component.package" value="SUNWglassfishv3-common"/>
+        <param name="component.package" value="glassfishv3-common"/>
         <param name="package.home" value="${package.home}"/>
         <param name="component.publish.home" 
                value="${install.tmp.dir}"/>
     </antcall>
 
     <antcall target="package-common">
-        <param name="component.package" value="SUNWglassfishv3-common"/>
+        <param name="component.package" value="glassfishv3-common"/>
         <param name="package.home" value="${package.home}"/>
         <param name="publish.package.home" value="${tools.package.home}"/>
         <param name="component.publish.home" value="${install.dir}/.."/>
@@ -125,30 +125,30 @@
 
 </target>
 
-<target name="package-SUNWjavadb" 
+<target name="package-javadb" 
         depends="publish-init,package-install-init"
-        description="Package SUNWjavadb">
-    <echo message="Creating package SUNWjavadb..."/>
+        description="Package javadb">
+    <echo message="Creating package javadb..."/>
 
     <unzip src="${maven.repo.local}/javadb/javadb/${javadb.version}/${javadb.name}-${javadb.version}.jar" dest="${basedir}/build"/>
 
     <unzip src="${basedir}/build/javadb.zip" dest="${basedir}/build"/>
 
     <antcall target="create-prototype-com">
-        <param name="component.package" value="SUNWjavadb"/>
+        <param name="component.package" value="javadb"/>
         <param name="package.home" value="${package.home}"/>
         <param name="repo.home" value="${basedir}/build/javadb.zip"/>
         <param name="pkgname" value="javadb"/>
     </antcall>
 
     <antcall target="build-solaris-package">	
-        <param name="component.package" value="SUNWjavadb"/>
+        <param name="component.package" value="javadb"/>
         <param name="package.home" value="${package.home}"/>
         <param name="component.publish.home" value="${basedir}/build"/>
     </antcall>
 
     <antcall target="package-common">
-        <param name="component.package" value="SUNWjavadb"/>
+        <param name="component.package" value="javadb"/>
         <param name="package.home" value="${package.home}"/>
         <param name="publish.package.home" value="${tools.package.home}"/>
         <param name="component.publish.home" value="${install.dir}/.."/>
@@ -160,22 +160,22 @@
         depends="publish-init"
         description="Publishing packages to IPS Repository ${REPO_URL}">
     <antcall target="push-package">
-        <param name="pkgname" value="SUNWglassfishv3-common"/>
+        <param name="pkgname" value="glassfishv3-common"/>
         <param name="pkg.dir" value="${pkgs.home}"/>
         <param name="REPO_URL" value="${REPO_URL}"/>
     </antcall>
     <antcall target="push-package">
-        <param name="pkgname" value="SUNWglassfishv3-web"/>
+        <param name="pkgname" value="glassfishv3-web"/>
         <param name="pkg.dir" value="${pkgs.home}"/>
         <param name="REPO_URL" value="${REPO_URL}"/>
     </antcall>
     <antcall target="push-package">
-        <param name="pkgname" value="SUNWglassfishv3-nucleus"/>
+        <param name="pkgname" value="glassfishv3-nucleus"/>
         <param name="pkg.dir" value="${pkgs.home}"/>
         <param name="REPO_URL" value="${REPO_URL}"/>
     </antcall>
     <antcall target="push-package">
-        <param name="pkgname" value="SUNWjavadb"/>
+        <param name="pkgname" value="javadb"/>
         <param name="pkg.dir" value="${pkgs.home}"/>
         <param name="REPO_URL" value="${REPO_URL}"/>
     </antcall>
@@ -215,15 +215,15 @@
         <param name="REPO_URL" value="${REPO_URL}"/>
     </antcall>
     <antcall target="install-package">
-        <param name="pkgname" value="SUNWglassfishv3-common"/>
+        <param name="pkgname" value="glassfishv3-common"/>
     </antcall>
     <antcall target="install-package">
-        <param name="pkgname" value="SUNWglassfishv3-nucleus"/>
+        <param name="pkgname" value="glassfishv3-nucleus"/>
     </antcall>
     <antcall target="install-package">
-        <param name="pkgname" value="SUNWglassfishv3-web"/>
+        <param name="pkgname" value="glassfishv3-web"/>
     </antcall>
     <antcall target="install-package">
-        <param name="pkgname" value="SUNWjavadb"/>
+        <param name="pkgname" value="javadb"/>
     </antcall>
 </target>
