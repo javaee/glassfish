@@ -326,7 +326,7 @@ public class ServerHandlers {
         JavaConfig javaConfig = config.getJavaConfig();
         String javaHome = javaConfig.getJavaHome();
         String javacOptions = javaConfig.getJavacOptions();
-        boolean debugEnabled = javaConfig.getDebugEnabled();
+        String debugEnabled = javaConfig.getDebugEnabled();
         String debugOptions = javaConfig.getDebugOptions();
         String rmicOptions = javaConfig.getRMICOptions();
         String bytecodePreprocessors = javaConfig.getBytecodePreprocessors();
@@ -802,7 +802,7 @@ public class ServerHandlers {
         
         javaConfig.setJavaHome((String)handlerCtx.getInputValue("JavaHome"));
         javaConfig.setJavacOptions((String)handlerCtx.getInputValue("JavacOptions"));
-        javaConfig.setDebugEnabled(((Boolean)handlerCtx.getInputValue("DebugEnabled")).booleanValue());
+        javaConfig.setDebugEnabled( "" + handlerCtx.getInputValue("DebugEnabled"));
         javaConfig.setDebugOptions((String)handlerCtx.getInputValue("DebugOptions"));
         javaConfig.setRMICOptions((String)handlerCtx.getInputValue("RmicOptions"));
         javaConfig.setBytecodePreprocessors((String)handlerCtx.getInputValue("BytecodePreprocessor"));
