@@ -50,6 +50,19 @@
     <packaging>jar</packaging>
     <name>SAAJ API</name>
     <description>SAAJ API Repackaged as OSGi bundle in GlassFish</description>
+
+    <repositories>
+        <!-- SAAJ API wants activation 1.0.2 which is only in M1 repo -->
+        <repository>
+            <id>java.net-maven1-repository</id>
+            <name>Java.net Maven1 repository</name>
+            <url>http://download.java.net/maven/1</url>
+	          <snapshots>
+			          <updatePolicy>never</updatePolicy>
+				    </snapshots>
+        </repository>
+    </repositories>
+
     <dependencies>
         <dependency>
             <groupId>javax.xml.soap</groupId>
