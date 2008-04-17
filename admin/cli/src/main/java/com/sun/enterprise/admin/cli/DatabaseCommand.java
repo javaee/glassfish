@@ -42,6 +42,7 @@ import com.sun.enterprise.cli.framework.CommandValidationException;
 import static com.sun.enterprise.universal.glassfish.SystemPropertyConstants.*;
 import com.sun.enterprise.util.OS;
 import java.io.File;
+import java.io.FileFilter;
 
 /**
  *  This is an abstract class to be inherited by
@@ -52,23 +53,21 @@ import java.io.File;
  *  @author <a href="mailto:jane.young@sun.com">Jane Young</a> 
  *  @version  $Revision: 1.5 $
  */
+// TODO: If you were the one who wrote this code, please come talk to me - Kohsuke
 public abstract class DatabaseCommand extends S1ASCommand
 {
     private final static String DB_HOST       = "dbhost";
     private final static String DB_PORT       = "dbport";
-    private static final String GLASSFISH_V3_JAR = "glassfish-10.0-SNAPSHOT.jar";
-    private static final String ADMIN_CLI_V3_JAR = "admin-cli-10.0-SNAPSHOT.jar";
-    private static final String CLI_FRAMEWORK_V3_JAR = "cli-framework-10.0-SNAPSHOT.jar";
-    private static final String COMMON_UTIL_V3_JAR = "common-util-10.0-SNAPSHOT.jar";
-    
+    private static final String[] MODULES_IN_CLASSPATH = {"glassfish-","admin-cli-","cli-framework-","common-util-"};
+
     protected String dbHost;
     protected String dbPort;
-    protected String dbLocation;
-    protected String sJavaHome;
-    protected String sInstallRoot;
-    protected String installModules;
-    protected String sClasspath;
-    protected String sDatabaseClasspath;
+    protected File dbLocation;
+    protected File sJavaHome;
+    protected File sInstallRoot;
+    protected File installModules;
+    protected final ClassPathBuilder sClasspath = new ClassPathBuilder();
+    protected final ClassPathBuilder sDatabaseClasspath = new ClassPathBuilder();
 
     /**
      * Prepare variables to invoke start/ping database command
@@ -76,30 +75,31 @@ public abstract class DatabaseCommand extends S1ASCommand
      */
     protected void prepareProcessExecutor() throws Exception
     {
-        sInstallRoot = getSystemProperty(INSTALL_ROOT_PROPERTY);
+        sInstallRoot = new File(getSystemProperty(INSTALL_ROOT_PROPERTY));
         dbHost = getOption(DB_HOST);
         dbPort = getOption(DB_PORT);
 	checkIfPortIsValid(dbPort);
-        sJavaHome = getSystemProperty(JAVA_ROOT_PROPERTY);
-        installModules = sInstallRoot+File.separator+"modules";
-        dbLocation = getSystemProperty(DERBY_ROOT_PROPERTY);
+        sJavaHome = new File(getSystemProperty(JAVA_ROOT_PROPERTY));
+        installModules = new File(sInstallRoot,"modules");
+        dbLocation = new File(getSystemProperty(DERBY_ROOT_PROPERTY));
         checkIfDbInstalled(dbLocation);
         
-	sClasspath = installModules+File.separator+GLASSFISH_V3_JAR
-                +File.pathSeparator+installModules+File.separator+ADMIN_CLI_V3_JAR
-                +File.pathSeparator+installModules+File.separator+CLI_FRAMEWORK_V3_JAR
-                +File.pathSeparator+installModules+File.separator+COMMON_UTIL_V3_JAR;
-        
-        sDatabaseClasspath = dbLocation+File.separator+"lib"+
-                                       File.separator+"derby.jar"+
-                                       File.pathSeparator+dbLocation+
-                                       File.separator+"lib"+File.separator+
-                                       "derbytools.jar"+File.pathSeparator+
-                                       dbLocation+File.separator+"lib"+
-                                       File.separator+"derbynet.jar"+
-                                       File.pathSeparator+dbLocation+File.separator+
-                                       "lib"+File.separator+"derbyclient.jar";
-        
+	sClasspath.addAll(installModules,new FileFilter() {
+            public boolean accept(File f) {
+                String n = f.getName();
+                for (String prefix : MODULES_IN_CLASSPATH) {
+                    if(n.startsWith(prefix) && n.endsWith(".jar"))
+                        return true;
+                }
+                return false;
+            }
+        });
+
+        sDatabaseClasspath
+                .add(dbLocation,"lib","derby.jar")
+                .add(dbLocation,"lib","derbytools.jar")
+                .add(dbLocation,"lib","derbynet.jar")
+                .add(dbLocation,"lib","derbyclient.jar");
     }
 
 
@@ -120,17 +120,15 @@ public abstract class DatabaseCommand extends S1ASCommand
     
   /** check if database is installed.
    */
-    private void checkIfDbInstalled(final String dblocation) throws CommandException
+    private void checkIfDbInstalled(final File dblocation) throws CommandException
     {
-        
-        File file = new File(dblocation);
-        if (!file.exists()) {
+        if (!dblocation.exists()) {
             CLILogger.getInstance().printMessage(getLocalizedString(
                                                      "DatabaseNotInstalled",
                                                      new Object[]{dblocation}));
             throw new CommandException("dblocation not found: " + dblocation);
         } else {
-            File derbyJar = new File(dbLocation+File.separator+"lib"+File.separator+"derbyclient.jar");
+            File derbyJar = new File(new File(dbLocation,"lib"),"derbyclient.jar");
             if (!derbyJar.exists()) {
                 CLILogger.getInstance().printMessage(getLocalizedString(
                                                      "DatabaseNotInstalled",
@@ -150,8 +148,7 @@ public abstract class DatabaseCommand extends S1ASCommand
     protected String[] pingDatabaseCmd(boolean bRedirect) throws Exception
     {
         if (OS.isDarwin()) {
-            return new String[]{sJavaHome + File.separator + "bin" + File.separator +
-                         "java",
+            return new String[]{getJavaExe().toString(),
                     "-Djava.library.path=" + sInstallRoot + File.separator +
                     "lib", "-Dderby.storage.fileSyncTransactionLog=True", "-cp",
                     sClasspath + File.pathSeparator + sDatabaseClasspath,
@@ -159,13 +156,19 @@ public abstract class DatabaseCommand extends S1ASCommand
                     dbHost, dbPort, Boolean.valueOf(bRedirect).toString()};
         }
         else {
-            return new String[]{sJavaHome + File.separator + "bin" + File.separator +
-                         "java",
+            return new String[]{getJavaExe().toString(),
                     "-Djava.library.path=" + sInstallRoot + File.separator +
                     "lib", "-cp",
                     sClasspath + File.pathSeparator + sDatabaseClasspath,
                     "com.sun.enterprise.admin.cli.DerbyControl", "ping",
                     dbHost, dbPort, Boolean.valueOf(bRedirect).toString()};
         }
+    }
+
+    /**
+     * Computes the java executable location from {@link #sJavaHome}.
+     */
+    protected final File getJavaExe() {
+        return new File(new File(sJavaHome,"bin"),"java");
     }
 }
