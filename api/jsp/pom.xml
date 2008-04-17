@@ -47,7 +47,7 @@
     <groupId>javax.servlet.jsp</groupId>
     <artifactId>jsp-api</artifactId>
     <packaging>jar</packaging>
-    <version>2.1-rev-1-SNAPSHOT</version>
+    <version>2.1-rev-1</version>
     <name>JavaServer Pages(TM) Specification</name>
 
     <developers>
@@ -102,4 +102,9 @@
             <version>${servlet-api.version}</version>
         </dependency>
    </dependencies>    
+
+  <scm>
+    <connection>scm:svn:https://kohsuke@svn.dev.java.net/svn/glassfish-svn/tags/jsp-api-2.1-rev-1</connection>
+    <developerConnection>scm:svn:https://kohsuke@svn.dev.java.net/svn/glassfish-svn/tags/jsp-api-2.1-rev-1</developerConnection>
+  </scm>
 </project>
