@@ -131,7 +131,7 @@
         <dependency>
             <groupId>javax.activation</groupId>
             <artifactId>activation</artifactId>
-            <version>${activation-api.version}</version>
+            <version>1.1-rev-1</version>
         </dependency>
     </dependencies>
 </project>
