@@ -46,7 +46,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>javax.management.j2ee</groupId>
     <artifactId>management-api</artifactId>
-    <version>1.1-rev-1-SNAPSHOT</version>
+    <version>1.1-rev-1</version>
     <packaging>jar</packaging>
     <name>Java EE Management API</name>
     <url>http://jcp.org/en/jsr/detail?id=77</url>
@@ -70,4 +70,9 @@
             <version>3.0-alpha-1</version>
         </dependency>
    </dependencies>    
+
+  <scm>
+    <connection>scm:svn:https://kohsuke@svn.dev.java.net/svn/glassfish-svn/tags/management-api-1.1-rev-1</connection>
+    <developerConnection>scm:svn:https://kohsuke@svn.dev.java.net/svn/glassfish-svn/tags/management-api-1.1-rev-1</developerConnection>
+  </scm>
 </project>
