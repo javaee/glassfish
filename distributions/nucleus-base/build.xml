@@ -21,6 +21,8 @@
 -->
 <project name="nucleus-base bundle creation" basedir=".">
     <target name="create.bundle">
+        <!-- force resource processing as version could change behind the scene without Ant ever noticing it -->
+	<delete dir="target/resources"/>
         <mkdir dir="target/resources"/>
         <copy todir="target/resources">
             <fileset dir=".">
