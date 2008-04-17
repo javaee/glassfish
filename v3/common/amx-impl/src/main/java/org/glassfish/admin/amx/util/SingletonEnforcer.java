@@ -63,7 +63,7 @@ public final class SingletonEnforcer
     {
         if ( mItems.putIfAbsent(theClass, theInstance) != null )
         {
-            throw new Error( "Do not instantiate more than one AMXConfigRegistrar!!!" );
+            throw new IllegalArgumentException( "Illegal to register more than one instance of " + theClass.getName() );
         }
     }
     

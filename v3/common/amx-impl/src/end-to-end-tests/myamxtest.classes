@@ -1,6 +1,70 @@
+#
+# The list of classes to be tested when the AMX unit tests are run.
+#
+# BE SURE TO ADD NEW TESTS TO Tests.java
+#
 
-com.sun.enterprise.management.util.jmx.NotificationEmitterSupportTest
+#
+# tests that are *standalone*; no server connection required, run these first
+# since implementation (server and client) depend on them.
+#
+org.glassfish.admin.amxtest.base.AMXDebugTest
 
+
+# Run this before doing any tests against AMX MBeans
+org.glassfish.admin.amxtest.RunMeFirstTest
+org.glassfish.admin.amxtest.config.ConfigRunMeFirstTest
+
+#
+# Tests for client specific code
+#
+org.glassfish.admin.amxtest.client.ProxyTest
+org.glassfish.admin.amxtest.client.ProxyFactoryTest
+
+#
+# Top level tests
+#
+org.glassfish.admin.amxtest.TestTemplateTest
+org.glassfish.admin.amxtest.DomainRootTest
+
+#
+
+#
+# Tests for interfaces defined in com.sun.appserv.management.base
+#
+org.glassfish.admin.amxtest.base.AMXTest
+org.glassfish.admin.amxtest.base.GetSetAttributeTest
+org.glassfish.admin.amxtest.base.ContainerTest
+org.glassfish.admin.amxtest.base.GenericTest
+org.glassfish.admin.amxtest.config.PropertiesAccessTest
+org.glassfish.admin.amxtest.config.SystemPropertiesAccessTest
+org.glassfish.admin.amxtest.base.UploadDownloadMgrTest
+org.glassfish.admin.amxtest.base.BulkAccessTest
+org.glassfish.admin.amxtest.base.QueryMgrTest
+org.glassfish.admin.amxtest.base.NotificationEmitterServiceTest
+org.glassfish.admin.amxtest.base.NotificationServiceMgrTest
+org.glassfish.admin.amxtest.base.NotificationServiceTest
+org.glassfish.admin.amxtest.base.ListenerTest
+org.glassfish.admin.amxtest.client.MiscTest
+
+#
+# Tests for client performance
+#
+#org.glassfish.admin.amxtest.client.PerformanceTest
+
+
+#
+# Test for callflow
+#
+
+# run again, to hit any MBeans created during testing
+#org.glassfish.admin.amxtest.base.GenericTest
+#org.glassfish.admin.amxtest.base.AMXTest
+#org.glassfish.admin.amxtest.base.GetSetAttributeTest
+
+
+# do this last!!!
+org.glassfish.admin.amxtest.RunMeLastTest
 
 
 

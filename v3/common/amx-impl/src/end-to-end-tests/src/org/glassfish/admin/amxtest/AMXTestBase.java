@@ -65,6 +65,8 @@ import org.glassfish.admin.amx.util.AMXDebugSupportMBean;
 
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
+import javax.management.Attribute;
+import javax.management.AttributeList;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.Collection;
@@ -147,29 +149,47 @@ public class AMXTestBase
         return getModuleMonitoringLevelsConfig(null);
     }
 
+
+   private void changeAllLevels( final ModuleMonitoringLevelsConfig config, final String value )
+   {
+        final Set<String> names = ModuleMonitoringLevelsConfig.ALL_LEVEL_NAMES;
+        
+        final AttributeList attrs = new AttributeList();
+        for( final String name : names )
+        {
+            attrs.add( new Attribute( name, value ) );
+        }
+        try {
+            Util.getExtra(config).setAttributes( attrs );
+        } catch ( Exception e ) {
+           // ignore
+        }
+   }
+   
     /**
      Ensure that monitoring is enabled so that unit tests don't miss anything
      */
     protected synchronized void
-    turnOnMonitoring() {
-        if (!MONITORING_ENABLED) {
-            synchronized (AMXTestBase.class) {
-                final String[] configNames = getConfigNames();
-                for (int i = 0; i < configNames.length; ++i) {
-                    getModuleMonitoringLevelsConfig(configNames[i]).changeAll(ModuleMonitoringLevelValues.HIGH);
-                }
-
-                MONITORING_ENABLED = true;
+    setMonitoring( final String value ) {
+        synchronized (AMXTestBase.class) {
+            final String[] configNames = getConfigNames();
+            for (int i = 0; i < configNames.length; ++i) {
+                final ModuleMonitoringLevelsConfig mml =   getModuleMonitoringLevelsConfig(configNames[i] );
+                changeAllLevels( mml, value );
             }
         }
     }
 
-    protected synchronized void
+    protected void
     turnOffMonitoring() {
-        synchronized (AMXTestBase.class) {
-            getModuleMonitoringLevelsConfig().changeAll(ModuleMonitoringLevelValues.OFF);
-            MONITORING_ENABLED = false;
-        }
+        setMonitoring( ModuleMonitoringLevelValues.OFF );
+        MONITORING_ENABLED = false;
+    }
+
+    protected void
+    turnOnMonitoring() {
+        setMonitoring( ModuleMonitoringLevelValues.HIGH );
+        MONITORING_ENABLED = true;
     }
 
     private static final Set<String> EXPECTED_REMOTE_INCOMPLETE_TYPES =

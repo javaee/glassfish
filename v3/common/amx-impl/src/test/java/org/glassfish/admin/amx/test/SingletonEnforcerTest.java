@@ -33,58 +33,60 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.appserv.management.deploy;
+package org.glassfish.admin.amx.test;
 
-import java.io.Serializable;
-import java.util.Map;
+import static org.junit.Assert.assertTrue;
 
+import org.junit.Test;
 
-/**
-	Routines to convert to/from Map and Deployment types.
+import org.glassfish.admin.amx.util.SingletonEnforcer;
 
-	{link com.sun.appserv.management.deploy.DeploymentMgr}
- */
-
-public final class DeploymentSupport
+public final class SingletonEnforcerTest extends TestBase
 {
-	/**
-		Create a DeploymentSource represented by a Map.
-		
-		@param m a Map representing a DeploymentSource.
-		@return an implementation of DeploymentSource
-	 */
-		public static <T extends Serializable> DeploymentSource
-	mapToDeploymentSource( final Map<String,T> m )
-	{
-		return( new DeploymentSourceImpl( m ) );
-	}
-	
-	
-	/**
-		Create a DeploymentProgress represented by a Map.
-		
-		@param m a Map representing a DeploymentProgress.
-		@return an implementation of DeploymentProgress
-	 */
-		public static <T extends Serializable> DeploymentProgress
-	mapToDeploymentProgress( final Map<String,T> m )
-	{
-		return( new DeploymentProgressImpl( m ) );
-	}
-	
-	
-	/**
-		Create a DeploymentProgress represented by a Map.
-		
-		@param m a Map representing a DeploymentStatus.
-		@return a DeploymentStatus
-	 */
-		public static <T extends Serializable> DeploymentStatus
-	mapToDeploymentStatus( final Map<String,T> m )
-	{
-		return( new DeploymentStatusImpl( m ) );
-	}
+    public SingletonEnforcerTest() {
+    }
+
+    private static final class Dummy {}
+    
+    @Test
+    public void testForNull() {
+        assertTrue( SingletonEnforcer.get( Dummy.class ) == null );
+    }
+
+    @Test
+    public void testVariety() {
+        SingletonEnforcer.register( String.class, "hello" );
+        assertNotNull( SingletonEnforcer.get( String.class ) );
+        
+        SingletonEnforcer.register( Boolean.class, Boolean.TRUE );
+        assertNotNull( SingletonEnforcer.get( Boolean.class ) );
+        
+        SingletonEnforcer.register( Integer.class, new Integer(0) );
+        assertNotNull( SingletonEnforcer.get( Integer.class ) );
+    }
+    
+    /*
+    @Test(expected=IllegalArgumentException.class)
+    public void testForBrokenJUnit() {
+        throw new IllegalArgumentException( "expected" );
+    }
+    */
+
+
+    private static final class Dummy2 {}
+    @Test
+    public void testForDuplicates() {
+        final String s = "";
+        SingletonEnforcer.register( Dummy2.class, this );
+        try {
+            SingletonEnforcer.register( Dummy2.class, this );
+        }
+        catch( IllegalArgumentException e) { /*OK*/ }
+    }
 }
+
+
+
 
 
 

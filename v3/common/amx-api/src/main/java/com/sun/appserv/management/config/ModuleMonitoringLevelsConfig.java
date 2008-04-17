@@ -38,8 +38,9 @@ package com.sun.appserv.management.config;
 
 import com.sun.appserv.management.base.Singleton;
 import com.sun.appserv.management.base.XTypes;
+import com.sun.appserv.management.util.misc.GSetUtil;
 
-import java.util.Map;
+import java.util.Set;
 
 
 
@@ -54,23 +55,23 @@ public interface ModuleMonitoringLevelsConfig extends ConfigElement, PropertiesA
 /** The j2eeType as returned by {@link com.sun.appserv.management.base.AMX#getJ2EEType}. */
 	public static final String	J2EE_TYPE	= XTypes.MODULE_MONITORING_LEVELS_CONFIG;
 	
-	/**
-		Get a Map keyed by Attribute name of all monitoring levels.
-		Attribute names correspond to the various get methods eg
-		"JVM" for {@link #getJVM},
-		"ConnectorService" for {@link #getConnectorService}, etc.
-		<p>
-		The possible levels are as defined in {@link ModuleMonitoringLevelValues}.
-	 */
-	public Map<String,String>		getAllLevels();
-	
-	/**
-		Change all monitoring levels to the specified value.
-		
-		@param value one of the values in {@link ModuleMonitoringLevelValues}
-	 */
-	public void		changeAll( final String value );
-	
+    /**
+       Names of all the modules which have a monitoring level.
+     */
+    public static final Set<String> ALL_LEVEL_NAMES = GSetUtil.newUnmodifiableStringSet(
+        "JVM",
+        "ConnectorService",
+        "JMSService",
+        "ConnectorConnectionPool",
+        "EJBContainer",
+        "HTTPService",
+        "JDBCConnectionPool",
+        "ORB",
+        "ThreadPool",
+        "TransactionService",
+        "WebContainer"
+        );
+        	
 	public String	getJVM();
 	
 	/** @param value one of the values in {@link ModuleMonitoringLevelValues} */

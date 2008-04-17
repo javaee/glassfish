@@ -251,7 +251,7 @@ public final class ProxyTest
                     if (isRemoteIncomplete(objectName)) {
                         trace("remoteIncomplete: " + objectName);
                     } else {
-                        trace("failure: " + methodName + " = " + t.getClass().getName());
+                        trace("failure: " + methodName + " = " + t.getClass().getName() + " on MBean " + objectName );
                         failedMethods.add(method);
                         exceptions.add(t);
                     }

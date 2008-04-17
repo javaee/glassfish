@@ -104,8 +104,8 @@ public class StandAloneInstanceHandlers{
                 StandaloneServerConfig server = (StandaloneServerConfig) iter.next();
                 HashMap oneRow = new HashMap();
                 String name = server.getName();
-                String config = server.getReferencedConfigName();
-                String node = server.getReferencedNodeAgentName();
+                String config = server.getConfigRef();
+                String node = server.getNodeAgentRef();
                 String weight = server.getLBWeight();
                 // TODO-V3
                 //String status = JMXUtil.getStatusForDisplay("com.sun.appserv:type=server,name="+name+",category=config");
@@ -136,7 +136,7 @@ public class StandAloneInstanceHandlers{
             @HandlerOutput(name="NodeAgents", type=SelectItem[].class)})
     public static void getNodeAgentsForDropdown(HandlerContext handlerCtx) {
         Map<String,NodeAgentConfig> nodeAgentMap = 
-            (Map)AMXRoot.getInstance().getDomainConfig().getNodeAgentConfigMap();
+            (Map)AMXRoot.getInstance().getDomainConfig().getNodeAgentsConfig().getNodeAgentConfigMap();
 	String[] nodeAgents = nodeAgentMap == null ?  null : 		(String[])nodeAgentMap.keySet().toArray(new String[nodeAgentMap.size()]);
 	/* TODO-V3
         SelectItem[] agents = ConfigurationHandlers.getOptions(nodeAgents);
@@ -449,7 +449,7 @@ public class StandAloneInstanceHandlers{
         try {
             StandaloneServerConfig server = AMXRoot.getInstance().getServersConfig().getStandaloneServerConfigMap().get(instanceName);
             J2EEServer j2eeServer = AMXRoot.getInstance().getJ2EEDomain().getJ2EEServerMap().get(instanceName);
-            String config = server.getReferencedConfigName();
+            String config = server.getConfigRef();
             String version = j2eeServer.getserverVersion();
             String sts = null;
             String node = null;

@@ -1,8 +1,8 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
- * 
+ *
  * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
- * 
+ *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
@@ -10,7 +10,7 @@
  * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
  * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
- * 
+ *
  * When distributing the software, include this License Header Notice in each
  * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
  * Sun designates this particular file as subject to the "Classpath" exception
@@ -19,9 +19,9 @@
  * Header, with the fields enclosed by brackets [] replaced by your own
  * identifying information: "Portions Copyrighted [year]
  * [name of copyright owner]"
- * 
+ *
  * Contributor(s):
- * 
+ *
  * If you wish your version of this file to be governed by only the CDDL or
  * only the GPL Version 2, indicate your decision by adding "[Contributor]
  * elects to include this software in this distribution under the [CDDL or GPL
@@ -33,72 +33,71 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
-/*
- * DeploymentProgress.java
- *
- * Created on April 8, 2004, 9:35 AM
- */
-
-package com.sun.appserv.management.deploy;
-
-import com.sun.appserv.management.base.MapCapable;
-
-import java.util.Locale;
-
-
+package org.glassfish.admin.amx.config;
 
 /**
-	Interface to provide deployment feedback while deployment 
-	is executing in the server backend.
-
-	This interface may be instantiated by using routines in
-	{@link com.sun.appserv.management.deploy.DeploymentSupport}
+    Maintains required information needed for mapping AMX attributes to the underlying
+    XML ones. This info can be generated dynamically or cached.
  */
-public interface DeploymentProgress extends MapCapable
+final class AttrInfo
 {
-	/**
-		Value of the MAP_CAPABLE_TYPE_KEY when turned into a Map.
-	 */
-	public final static String	DEPLOYMENT_PROGRESS_CLASS_NAME	=
-			"com.sun.appserv.management.deploy.DeploymentProgress";
+    private final String   mAMXName;
+    private final String   mXMLName;
+    private final boolean  mIsLeaf;
+    private final boolean  mIsCollection;
 
+    public AttrInfo(
+        final String amxName,
+        final String xmlName)
+    {
+        this( amxName, xmlName, false, false );
+    }
 
-	/**
-		Key for the progress percent as returned by getProgressPercent().
-	 */
-	public static final String	PROGRESS_PERCENT_KEY	= "ProgressPercent";
-	
-	/**
-		Key for the Description as returned by getDescription().
-	 */
-	public static final String	DESCRIPTION_KEY	= "Description";
-	
-	/**
-		Key prefix for the Description as returned by getDescription().  The key for
-		a given locale is LOCALIZED_DESCRIPTION_KEY_BASE + "_" + Locale.toString()
-	 */
-	public static final String	LOCALIZED_DESCRIPTION_KEY_BASE	= "LocalizedDescription";
+    public AttrInfo(
+        final String amxName,
+        final String xmlName,
+        final boolean isLeaf,
+        final boolean isCollection )
+    {
+        mAMXName      = amxName;
+        mXMLName      = xmlName;
+        mIsLeaf       = isLeaf;
+        mIsCollection = isCollection;
+    }
 
+    public String amxName() { return mAMXName; }
+    public String xmlName() { return mXMLName; }
+    public boolean isCollection() { return mIsCollection; }
+    public boolean isLeaf() { return mIsLeaf; }
+
+    public String toString() {
+        return "amxName = " + mAMXName + ", xmlName = " + mXMLName +
+            ", isLeaf = " + mIsLeaf + ", isCollection = " + mIsCollection;
+    }
+
+    public boolean equals( final Object rhsIn ) {
+        if ( ! (rhsIn instanceof AttrInfo) ) return false;
+
+        final AttrInfo rhs = (AttrInfo)rhsIn;
+        return mAMXName.equals( rhs.mAMXName ) && mXMLName.equals(rhs.mXMLName) &&
+                mIsLeaf == rhs.mIsLeaf && mIsCollection == rhs.mIsCollection;
+    }
+
+    private int booleanHash( final boolean b )
+    {
+        return b ? Boolean.TRUE.hashCode() : Boolean.FALSE.hashCode();
+    }
     
-    /**
-     * @return the deployment progress number between 0 and 
-     * 100 (deployment finished). This number is purely 
-     * indicative and cannot be used to calculate actual 
-     * remaining time
-     * @return number from 0 to 100 indicating status
-     */
-    public byte getProgressPercent();
-    
-    /**
-     * @return the last meaningful description of the current
-     * deployment operation
-     */
-    public String getDescription();
-    
-    /**
-     * @return the last meaningful localized description of 
-     * the current deployment operation.
-     */
-    public String getLocalizedDescription(Locale locale);
+    @Override
+    public int hashCode() {
+        return mAMXName.hashCode() ^ mXMLName.hashCode() ^ booleanHash(mIsLeaf) ^ booleanHash(mIsCollection);
+    }
 }
+
+
+
+
+
+
+
+

@@ -203,19 +203,6 @@ public interface SecurityServiceConfig extends
 	 */
 	public Map<String,MessageSecurityConfig>	getMessageSecurityConfigMap();
 	
-	/**
-    could never have worked; removing
-		Create a new &lt;message-security-config&gt;
-
-		@param authLayer
-		@param reserved
-		@return A proxy to the MessageSecurityConfig MBean.
-		@see MessageSecurityConfigKeys
-        @deprecated use the form which takes providerID, etc.
-	public MessageSecurityConfig	createMessageSecurityConfig(
-		String	authLayer,
-		Map<String,String>		reserved );
-	*/
         
     /**
 		Create a new &lt;message-security-config&gt;.  Because there must exist at least one

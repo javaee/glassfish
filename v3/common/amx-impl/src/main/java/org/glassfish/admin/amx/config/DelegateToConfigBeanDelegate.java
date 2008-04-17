@@ -49,6 +49,8 @@ import javax.management.AttributeNotFoundException;
 import java.beans.PropertyChangeEvent;
 import java.util.*;
 
+import com.sun.appserv.management.util.misc.TypeCast;
+
 /**
 	Delegate which delegates to another MBean.
  */
@@ -99,10 +101,31 @@ public final class DelegateToConfigBeanDelegate extends DelegateBase
 	}
     
     /**
+        Belongs in HK2 itself (Dom.java), but here until versioning can be worked out.
+     */
+        protected ConfigModel.Property
+    getConfigModel_Property( final String xmlName ) {
+        final ConfigModel.Property cmp = mConfigBean.model.findIgnoreCase(xmlName);
+        if (cmp == null) {
+            throw new IllegalArgumentException( "Illegal name: " + xmlName );
+        }
+        return cmp;
+    }
+    
+    public boolean isLeaf( final String xmlName ) {
+        return getConfigModel_Property(xmlName).isLeaf();
+    }
+    
+    public boolean isCollection( final String xmlName ) {
+        return getConfigModel_Property(xmlName).isCollection();
+    }
+
+    
+    /**
         Utilize AMXConfigInfo for arbitrary name mappings, at least nameHint()
      */
         private String
-    smartNameFind( final String amxName )
+    smartAttrNameFind( final String amxName )
     {
         String xmlName = null;
         // look for nameHint() in annotation
@@ -128,7 +151,7 @@ public final class DelegateToConfigBeanDelegate extends DelegateBase
         String xmlName = mNameMapping.getXMLName( amxName );
         if ( xmlName == null )
         {
-            xmlName = smartNameFind( amxName );
+            xmlName = smartAttrNameFind( amxName );
             if ( xmlName == null )
             {
                 final Set<String> xmlNames = mConfigBean.getAttributeNames();
@@ -154,24 +177,45 @@ public final class DelegateToConfigBeanDelegate extends DelegateBase
         return xmlName;
     }
     
+    /**
+        Get an AttrInfo based on the AMX attribute name.
+     */
+        private AttrInfo
+    getAttrInfo_AMX( final String amxName )
+    {
+        final String xmlName = getXMLName(amxName);
+
+        final boolean isLeaf       = isLeaf(xmlName);
+        final boolean isCollection = isCollection(xmlName);
+
+        return new AttrInfo( amxName, getXMLName( amxName), isLeaf, isCollection );
+    }
             
 		public final Object
-	getAttribute( final String attrName )
+	getAttribute( final String amxName )
 		throws AttributeNotFoundException
 	{
-        final String xmlName = getXMLName(attrName);
+        final AttrInfo info = getAttrInfo_AMX( amxName );
         
-        debug( "DelegateToConfigBeanDelegate.getAttribute: " + attrName + ", xmlName = " + xmlName);
-        Object result = mConfigBean.rawAttribute( xmlName );
-        if ( result == null && false )
+        Object result = null;
+        final String xmlName = info.xmlName();
+        debug( "DelegateToConfigBeanDelegate.getAttribute: attrInfo: " + info );
+        if ( info.isCollection() )
         {
-            final List<String> leafElements = mConfigBean.leafElements(xmlName);
-            final String[] values = new String[leafElements.size()];
-            leafElements.toArray( values );
-            result = values;
+            final List<?> leafElementsX = mConfigBean.leafElements(xmlName);
+            if ( leafElementsX != null ) {
+                // verify that it is List<String> -- no other types are supported in this way
+                final List<String> leafElements = TypeCast.checkList( leafElementsX, String.class );
+                result = CollectionUtil.toArray( leafElements, String.class);
+            }
+        }
+        else
+        {
+            // all plain attributes are 'String'
+            result = (String)mConfigBean.rawAttribute( xmlName );
         }
         
-        debug( "Attribute " + attrName + " has class " + ((result == null) ? "null" : result.getClass()) );
+        debug( "Attribute " + amxName + " has class " + ((result == null) ? "null" : result.getClass()) );
         return result;
 	}
     
@@ -223,6 +267,20 @@ public final class DelegateToConfigBeanDelegate extends DelegateBase
         return m;
     }
     
+        private Object
+    autoStringify( final Object o )
+    {
+        Object result = o;
+        
+        if ( o != null &&
+            ((o instanceof Boolean) || (o instanceof Integer) || (o instanceof Long)) )
+        {
+            result = "" + o;
+        }
+        
+        return result;
+    }
+    
 		public AttributeList
 	setAttributes( final AttributeList attrsIn, final Map<String,Object> oldValues )
 	{
@@ -249,8 +307,22 @@ public final class DelegateToConfigBeanDelegate extends DelegateBase
             final String xmlName = getXMLName(amxAttrName);
             if ( xmlName != null )
             {
-                final String value = (String)amxAttrs.get(amxAttrName);
-                xmlAttrs.put( xmlName, value);
+                final Object valueIn = amxAttrs.get(amxAttrName);
+                final Object value = autoStringify( valueIn );
+                if ( value != valueIn )
+                {
+                    debug( "Attribute " + amxAttrName + " auto converted from " +
+                        valueIn.getClass().getName() + " to " + value.getClass().getName() );
+                }
+                
+                if ( ! (value instanceof String) )
+                {
+                    debug( "Attribute " + amxAttrName + " is not a String, IGNORING" );
+                }
+                else
+                {
+                    xmlAttrs.put( xmlName, (String)value);
+                }
             }
         }
         

@@ -27,6 +27,7 @@ import com.sun.appserv.management.base.Extra;
 import com.sun.appserv.management.base.Util;
 import com.sun.appserv.management.base.XTypes;
 import com.sun.appserv.management.config.ServerConfig;
+import com.sun.appserv.management.config.ServersConfig;
 import com.sun.appserv.management.j2ee.J2EEManagedObject;
 import com.sun.appserv.management.j2ee.J2EEServer;
 import com.sun.appserv.management.j2ee.J2EETypes;
@@ -38,6 +39,9 @@ import org.glassfish.admin.amx.mbean.Delegate;
 import javax.management.ObjectName;
 import javax.management.j2ee.statistics.Stats;
 import java.util.*;
+
+import java.util.Map;
+import java.util.HashMap;
 
 
 /**
@@ -113,11 +117,14 @@ public abstract class J2EEManagedObjectImplBase extends AMXNonConfigImplBase
 		final String	serverName	= getServerName();
 		if ( serverName != null )
 		{
-			final Map<String,ServerConfig>	m	=
-			    getDomainRoot().getDomainConfig().getServerConfigMap();
+            final ServersConfig sc = getDomainRoot().getDomainConfig().getServersConfig();
+            final HashMap<String,ServerConfig> all = new HashMap<String,ServerConfig>();
+            
+            all.putAll( sc.getStandaloneServerConfigMap() );
+            all.putAll( sc.getClusteredServerConfigMap() );
 			
-			final ServerConfig	serverConfig	= m.get( serverName );
-			type	= serverConfig.getJ2EEType();
+			final ServerConfig	serverConfig = all.get( serverName );
+            type	= serverConfig.getJ2EEType();
 		}
 		
 		return( type );

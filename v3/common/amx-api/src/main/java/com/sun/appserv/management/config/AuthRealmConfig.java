@@ -68,42 +68,6 @@ public interface AuthRealmConfig extends PropertiesAccess, NamedConfigElement
 	 */
 	public static final String KEY_FILE_PREFIX         = "${com.sun.aas.instanceRoot}/config/";
 	
-	
 	public String	getClassname();
 	public void	setClassname( String value );
-
-    /**
-        <b>Supported only for the default implementation ({@link #DEFAULT_REALM_CLASSNAME})</b>.
-     */
-	public void			addUser( String user, String password, String[] groupList );
-	
-    /**
-        <b>Supported only for the default implementation ({@link #DEFAULT_REALM_CLASSNAME})</b>.
-     */
-	public String[]		getGroupNames();
-	
-    /**
-        <b>Supported only for the default implementation ({@link #DEFAULT_REALM_CLASSNAME})</b>.
-     */
-	public String[]		getUserGroupNames( String user );
-	
-    /**
-        <b>Supported only for the default implementation ({@link #DEFAULT_REALM_CLASSNAME})</b>.
-     */
-	public String[]		getUserNames();
-	
-    /**
-        <b>Supported only for the default implementation ({@link #DEFAULT_REALM_CLASSNAME})</b>.
-     */
-	public void			removeUser( String user );
-	
-    /**
-        <b>Supported only for the default implementation ({@link #DEFAULT_REALM_CLASSNAME})</b>.
-     */
-	public void			updateUser( String user, String password, String[] groupList );
-
-
-
-
-
 }

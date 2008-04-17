@@ -139,6 +139,7 @@ public final class AppserverConnectionSource
 	{
 		return(	protocol != null &&
 				(
+					protocol.equals( PROTOCOL_JMXMP ) ||
 					protocol.equals( PROTOCOL_HTTP ) ||
 					protocol.equals( PROTOCOL_RMI )
 				)
@@ -165,10 +166,18 @@ public final class AppserverConnectionSource
 		it is subject to change</b>
 	 */
 	public final static String	PROTOCOL_RMI		= PROTOCOL_PREFIX + "rmi";
+	
+	/**
+		JMXMP protocol to the Appserver.
+		<b>Do not use the literal value of this constant in your code;
+		it is subject to change</b>
+	 */
+	public final static String	PROTOCOL_JMXMP		= PROTOCOL_PREFIX + "jmxmp";
+    
 	/**
 		Default protocol to the Appserver eg PROTOCOL_RMI.
 	 */
-	public final static String	DEFAULT_PROTOCOL	= PROTOCOL_RMI;
+	public final static String	DEFAULT_PROTOCOL	= PROTOCOL_JMXMP;
 	
 	/**
 		Internal unsupported protocol.  Not supported for external use.
@@ -373,6 +382,10 @@ public final class AppserverConnectionSource
 			final String	internalProtocol	= useTLS() ? INTERNAL_HTTPS : INTERNAL_HTTP;
 			url	= new JMXServiceURL( internalProtocol, mHost, mPort);
 		}
+		else if ( mProtocol.equals( PROTOCOL_JMXMP) )
+		{
+            url = new JMXServiceURL( "jmxmp", mHost, mPort );
+        }
 		else if ( mProtocol.equals( PROTOCOL_RMI ) )
 		{
 			if ( useTLS() )
@@ -394,8 +407,18 @@ public final class AppserverConnectionSource
 		{
 			assert( false );
 		}
-		
-		final JMXConnector conn	= JMXConnectorFactory.connect( url, env );
+	
+    System.out.println( "Connecting using JMXServiceURL: " + url );
+    JMXConnector conn = null;
+    try
+    {
+		conn	= JMXConnectorFactory.connect( url, env );
+    }
+    catch( Exception e )
+    {
+        e.printStackTrace();
+        throw new RuntimeException(e);
+    }
 		
 		/*
 			If the connection was established with RMI, it could have been an insecure

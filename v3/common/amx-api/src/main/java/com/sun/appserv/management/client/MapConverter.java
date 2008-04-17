@@ -36,10 +36,6 @@
 package com.sun.appserv.management.client;
 
 import static com.sun.appserv.management.base.MapCapable.MAP_CAPABLE_CLASS_NAME_KEY;
-import static com.sun.appserv.management.deploy.DeploymentProgress.DEPLOYMENT_PROGRESS_CLASS_NAME;
-import static com.sun.appserv.management.deploy.DeploymentSource.DEPLOYMENT_SOURCE_CLASS_NAME;
-import static com.sun.appserv.management.deploy.DeploymentStatus.DEPLOYMENT_STATUS_CLASS_NAME;
-import com.sun.appserv.management.deploy.DeploymentSupport;
 import com.sun.appserv.management.ext.wsmgmt.MessageTrace;
 import com.sun.appserv.management.ext.wsmgmt.MessageTraceImpl;
 
@@ -66,19 +62,7 @@ public final class MapConverter
         final String interfaceName = (String)m.get(MAP_CAPABLE_CLASS_NAME_KEY);
         if ( interfaceName != null )
         {
-            if ( DEPLOYMENT_PROGRESS_CLASS_NAME.equals( interfaceName ) )
-            {
-                result  = DeploymentSupport.mapToDeploymentProgress( m );
-            }
-            else if ( DEPLOYMENT_SOURCE_CLASS_NAME.equals( interfaceName ) )
-            {
-                result  = DeploymentSupport.mapToDeploymentSource( m );
-            }
-            else if ( DEPLOYMENT_STATUS_CLASS_NAME.equals( interfaceName ) )
-            {
-                result  = DeploymentSupport.mapToDeploymentStatus( m );
-            }
-            else if ( MessageTrace.CLASS_NAME.equals( interfaceName ) )
+            if ( MessageTrace.CLASS_NAME.equals( interfaceName ) )
             {
                 result  = new MessageTraceImpl( m, MessageTrace.class.getName());
             }

@@ -158,7 +158,7 @@ public class SSLHandlers {
                     HTTPListenerConfig httpConfig = config.getHTTPServiceConfig().getHTTPListenerConfigMap().get(oName);
                     sslContainerConfig = (SSLConfigContainer)httpConfig;
                 }else if(type.equals("nodeagent")){
-                    NodeAgentConfig agentConfig = AMXRoot.getInstance().getDomainConfig().getNodeAgentConfigMap().get(oName);
+                    NodeAgentConfig agentConfig = AMXRoot.getInstance().getDomainConfig().getNodeAgentsConfig().getNodeAgentConfigMap().get(oName);
                     JMXConnectorConfig jmxConfig = agentConfig.getJMXConnectorConfig();
                     sslContainerConfig = (SSLConfigContainer)jmxConfig;
                 }
@@ -274,7 +274,7 @@ public class SSLHandlers {
                         IIOPListenerConfig iiopConfig = config.getIIOPServiceConfig().getIIOPListenerConfigMap().get(oName);
                         sslContainerConfig = (SSLConfigContainer)iiopConfig;
                     }else if(type.equals("nodeagent")){
-                        NodeAgentConfig agentConfig = amxRoot.getDomainConfig().getNodeAgentConfigMap().get(oName);
+                        NodeAgentConfig agentConfig = amxRoot.getDomainConfig().getNodeAgentsConfig().getNodeAgentConfigMap().get(oName);
                         JMXConnectorConfig jmxConfig = agentConfig.getJMXConnectorConfig();
                         sslContainerConfig = (SSLConfigContainer)jmxConfig;
                     }

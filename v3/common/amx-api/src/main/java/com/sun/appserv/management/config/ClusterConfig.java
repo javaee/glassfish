@@ -64,7 +64,7 @@ public interface ClusterConfig
 	/**
 		Get the name of the config element referenced by this cluster.
 	 */
-	public String	getReferencedConfigName();
+	public String	getConfigRef();
 
 	/**
 		Calls Container.getContaineeMap( XTypes.SERVER_REF_CONFIG ).

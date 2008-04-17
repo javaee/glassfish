@@ -87,7 +87,7 @@ public final class JVMImpl
 	{
 		final J2EEServer	server			= (J2EEServer)getContainer();
 		final ServerConfig 	serverConfig	= (ServerConfig)server.getConfigPeer();
-		final String		configName		= serverConfig.getReferencedConfigName();
+		final String		configName		= serverConfig.getConfigRef();
 		
 		final Map<String,String>	props	= new HashMap<String,String>();
 		

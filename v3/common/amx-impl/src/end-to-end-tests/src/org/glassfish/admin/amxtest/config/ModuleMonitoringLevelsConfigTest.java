@@ -33,19 +33,16 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
-/*
-* $Header: /cvs/glassfish/admin/mbeanapi-impl/tests/org.glassfish.admin.amxtest/config/ModuleMonitoringLevelsConfigTest.java,v 1.7 2007/05/05 05:23:55 tcfujii Exp $
-* $Revision: 1.7 $
-* $Date: 2007/05/05 05:23:55 $
-*/
 package org.glassfish.admin.amxtest.config;
 
+import com.sun.appserv.management.base.Util;
 import com.sun.appserv.management.config.ModuleMonitoringLevelsConfig;
 import com.sun.appserv.management.config.MonitoringServiceConfig;
 import org.glassfish.admin.amxtest.AMXTestBase;
 
-import java.util.Map;
+import javax.management.AttributeList;
+import javax.management.JMException;
+import java.io.IOException;
 
 
 /**
@@ -56,24 +53,24 @@ public final class ModuleMonitoringLevelsConfigTest
     }
 
     public void
-    testGetAll() {
-        final ModuleMonitoringLevelsConfig config = getModuleMonitoringLevelsConfig();
+    testGetAll() throws JMException, IOException {
+        final ModuleMonitoringLevelsConfig mml = getModuleMonitoringLevelsConfig();
 
-        final Map<String, String> all = config.getAllLevels();
-        assert (all.size() == 11);
+        final String[] allNames = new String[ ModuleMonitoringLevelsConfig.ALL_LEVEL_NAMES.size() ];
+        ModuleMonitoringLevelsConfig.ALL_LEVEL_NAMES.toArray( allNames );
+        
+        final AttributeList attrs = Util.getExtra(mml).getAttributes( allNames );
+        assert allNames.length == attrs.size();
     }
 
 
-    public void
+        public void
     testCreateRemove() {
         ModuleMonitoringLevelsConfig existing = getModuleMonitoringLevelsConfig();
 
         final MonitoringServiceConfig mon = getConfigConfig().getMonitoringServiceConfig();
         mon.removeModuleMonitoringLevelsConfig();
-        final ModuleMonitoringLevelsConfig newMM =
-                mon.createModuleMonitoringLevelsConfig(null);
-
-        newMM.changeAll("HIGH");
+        final ModuleMonitoringLevelsConfig newMM = mon.createModuleMonitoringLevelsConfig(null);
     }
 }
 

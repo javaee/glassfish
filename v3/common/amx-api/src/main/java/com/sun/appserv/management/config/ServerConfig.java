@@ -33,14 +33,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
- 
-/*
- * $Header: /cvs/glassfish/appserv-api/src/java/com/sun/appserv/management/config/ServerConfig.java,v 1.2 2007/05/05 05:30:35 tcfujii Exp $
- * $Revision: 1.2 $
- * $Date: 2007/05/05 05:30:35 $
- */
-
-
 package com.sun.appserv.management.config;
 
 
@@ -59,13 +51,15 @@ public interface ServerConfig
 {
 	/**
 		Get the name of the config element referenced by this server.
+        @since Glassfish V3
 	 */
-	public String		getReferencedConfigName( );
+	public String		getConfigRef( );
 	
 	/**
 		Get the name of the node-agent element referenced by this server.
+        @since Glassfish V3
 	 */
-	public String		getReferencedNodeAgentName( );
+	public String		getNodeAgentRef( );
 	
 	/**
 		Calls Container.getContaineeMap( XTypes.DEPLOYED_ITEM_REF_CONFIG ).

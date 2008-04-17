@@ -33,69 +33,43 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+package org.glassfish.admin.amx.test;
 
-/*
- * DeploymentSource.java
- *
- * Created on April 8, 2004, 9:13 AM
- */
+import javax.management.ObjectName;
+import org.glassfish.admin.amx.util.ObjectNames;
+import static org.junit.Assert.*;
 
-package com.sun.appserv.management.deploy;
+import org.junit.Test;
+import org.junit.Before;
 
-import com.sun.appserv.management.base.MapCapable;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.jar.JarInputStream;
-
-/**
-	Abstraction for archives delivery for a deployment operation
-
-	This interface may be instantiated by using routines in
-	{@link com.sun.appserv.management.deploy.DeploymentSupport}
- */
-public interface DeploymentSource extends MapCapable
+public final class ObjectNamesTest extends TestBase
 {
-	/**
-		Value of the MAP_CAPABLE_TYPE_KEY when turned into a Map.
-	 */
-	public final static String	DEPLOYMENT_SOURCE_CLASS_NAME	= 
-			"com.sun.appserv.management.deploy.DeploymentSource";
-			
-    /** 
-     * (Optional)
-     * @return the archive as a file handle if possible 
-     * otherwise return null.
-     */
-    public File getArchive();
-       
-    /** 
-     * @return a JarInputStream on the archive. 
-     */
-    public JarInputStream getArchiveAsStream()
-    	throws IOException;
+    public ObjectNamesTest() {
+    }
+
+    private ObjectNames get() { return ObjectNames.getInstance(); }
     
-    /** 
-     * @return true if this archive is complete or false
-     * if it is a partial delivery (redeploy).
-     */
-    public boolean isCompleteArchive();
+    @Before
+    public void setUp() {
+        initBootUtil();
+    }
     
-    /**
-     * In case of a partial delivery.
-     * @return entries added iterator
-     */
-    public String[] getEntriesAdded();
+    @Test
+    public void testCreate() {
+        final ObjectNames objectNames = get();
+    }
     
-    /**
-     * In case of a partial archive delivery.
-     * @return entries removed iterator
-     */
-    public String[] getEntriesRemoved();
-    
-    /**
-     * In case of a partial delivery.
-     * @return entries deleted iterator
-     */
-    public String[] getEntriesDeleted();
+    @Test
+    public void testMisc() {
+        get().getJMXDomain();
+        final ObjectName objectName = get().getDomainRootObjectName();
+        
+        get().getSingletonName( "X-FooBar" );
+    }
 }
+
+
+
+
+
+

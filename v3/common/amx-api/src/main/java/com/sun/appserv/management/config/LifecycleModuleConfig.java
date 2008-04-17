@@ -57,12 +57,6 @@ public interface LifecycleModuleConfig
 	public String	getLoadOrder();
 	public void		setLoadOrder( String order );
 	
-	/**
-	    Use {@link #getIsFailureFatal}.
-	 @deprecated
-	 */
-	public boolean	isFailureFatal();
-	
 	public boolean	getIsFailureFatal();
 	public void 	setIsFailureFatal( boolean isFatal );
 }

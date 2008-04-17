@@ -33,34 +33,45 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
- 
-/*
- * $Header: /cvs/glassfish/appserv-api/src/java/com/sun/enterprise/management/deploy/DeploymentCallback.java,v 1.2 2007/05/05 05:31:15 tcfujii Exp $
- * $Revision: 1.2 $
- * $Date: 2007/05/05 05:31:15 $
- */
-package com.sun.enterprise.management.deploy;
+package org.glassfish.admin.amx.test;
 
-import com.sun.appserv.management.deploy.DeploymentProgress;
-import com.sun.appserv.management.deploy.DeploymentStatus;
+import org.glassfish.admin.amx.util.ObjectNames;
+import org.glassfish.admin.amx.loader.BootUtil;
 
-/**
-	Intended for implementing code to make note of the relevant
-	deployment events.
- */
-public interface DeploymentCallback
-{
-	/**
-		Deployment has finished.  This callback should only be made once when
-		the deployment has finished.
-	 */
-	public void	deploymentDone( DeploymentStatus finalStatus );
-	
-	/**
-		New progress information is available.  This callback may be called
-		an arbitrary number of times, but may not be called after deploymentDone()
-		has been called.
-	 */
-	public void	deploymentProgress( DeploymentProgress progress );
+import org.junit.Ignore;
+import org.junit.Before;
+import org.junit.After;
+
+@Ignore
+class TestBase extends junit.framework.TestCase {
+
+    /** some tests might need this */
+    protected static void initBootUtil() {
+        System.setProperty( "com.sun.aas.instanceRoot", "/tmp/amx-test" );
+        BootUtil.init( true );
+        BootUtil.getInstance();
+    }
+
+    
+    protected void
+    checkAssertsOn() {
+        try {
+            assert false;
+            throw new Error("Assertions must be enabled for unit tests");
+        }
+        catch (AssertionError a) {
+            // OK, this is the desired outcome
+        }
+    }
+
+
+    public TestBase() {
+        checkAssertsOn();
+    }
 }
+
+
+
+
+
 
