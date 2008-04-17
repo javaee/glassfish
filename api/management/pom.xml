@@ -67,7 +67,7 @@
         <dependency>
             <groupId>javax.ejb</groupId>
             <artifactId>ejb-api</artifactId>
-            <version>${ejb-api.version}</version>
+            <version>3.0-alpha-1</version>
         </dependency>
    </dependencies>    
 </project>
