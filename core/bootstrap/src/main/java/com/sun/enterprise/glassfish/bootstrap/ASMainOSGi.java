@@ -89,8 +89,6 @@ public abstract class ASMainOSGi {
         "wstx-asl" // needed by config module in HK2
     };
 
-    private static final String javaeeJarPath = "modules/javax.javaee-10.0-SNAPSHOT.jar";
-
     public ASMainOSGi(Logger logger, String... args) {
         this.logger = logger;
         findBootstrapFile();
@@ -145,28 +143,28 @@ public abstract class ASMainOSGi {
         final List<URL> urls = new ArrayList<URL>();
         Collections.addAll(urls, getFWJars());
         File moduleDir = context.getRootDirectory().getParentFile();
-        File[] jars = moduleDir.listFiles();
+        addPaths(moduleDir, additionalJarPrefixes, urls);
+        this.launcherCL = new URLClassLoader(urls.toArray(new URL[urls.size()]), libCL);
+        Thread.currentThread().setContextClassLoader(launcherCL);
+    }
+
+    private void addPaths(File dir, String[] jarPrefixes, List<URL> urls) throws MalformedURLException {
+        File[] jars = dir.listFiles();
         if(jars!=null) {
             for( File f : jars) {
-                for (String prefix : additionalJarPrefixes) {
+                for (String prefix : jarPrefixes) {
                     String name = f.getName();
                     if(name.startsWith(prefix) && name.endsWith(".jar"))
                         urls.add(f.toURI().toURL());
                 }
             }
         }
-        this.launcherCL = new URLClassLoader(urls.toArray(new URL[urls.size()]), libCL);
-        Thread.currentThread().setContextClassLoader(launcherCL);
     }
 
     private ClassLoader createCommonClassLoader() {
         try {
             List<URL> urls = new ArrayList<URL>();
-            File javaeeJar = new File(glassfishDir, javaeeJarPath);
-            if (!javaeeJar.exists()) {
-                throw new RuntimeException(javaeeJar + " does not exist.");
-            }
-            urls.add(javaeeJar.toURI().toURL());
+            addPaths(new File(glassfishDir,"modules"), new String[]{"javax.javaee-"}, urls);
             File jdkToolsJar = helper.getJDKToolsJar();
             if (jdkToolsJar.exists()) {
                 urls.add(jdkToolsJar.toURI().toURL());
