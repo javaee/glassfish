@@ -5,5 +5,5 @@ REM Copyright 1997-2008 Sun Microsystems, Inc.  All rights reserved.
 REM Use is subject to license terms.
 REM
 
-java -jar "%~dp0..\modules\admin-cli-10.0-SNAPSHOT.jar" start-domain --verbose %*
+java -jar "%~dp0..\modules\admin-cli-@VERSION@.jar" start-domain --verbose %*
 
