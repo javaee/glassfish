@@ -60,14 +60,14 @@ public interface JavaConfig
 	public String	getClasspathSuffix();
 	public void	setClasspathSuffix( String value );
 
-	public boolean	getDebugEnabled();
-	public void	setDebugEnabled( boolean value );
+	public String	getDebugEnabled();
+	public void	setDebugEnabled( String value );
 
 	public String	getDebugOptions();
 	public void	setDebugOptions( String value );
 
-	public boolean	getEnvClasspathIgnored();
-	public void	setEnvClasspathIgnored( boolean value );
+	public String	getEnvClasspathIgnored();
+	public void	setEnvClasspathIgnored( String value );
 
 	public String	getJavaHome();
 	public void	setJavaHome( String value );
