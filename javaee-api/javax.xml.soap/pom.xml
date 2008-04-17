@@ -57,6 +57,7 @@
             <id>java.net-maven1-repository</id>
             <name>Java.net Maven1 repository</name>
             <url>http://download.java.net/maven/1</url>
+	    <layout>legacy</layout>
 	          <snapshots>
 			          <updatePolicy>never</updatePolicy>
 				    </snapshots>
