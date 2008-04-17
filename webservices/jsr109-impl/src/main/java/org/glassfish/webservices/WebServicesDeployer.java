@@ -336,7 +336,7 @@ public class WebServicesDeployer extends WebDeployer {
     public MetaData getMetaData() {
 
         List<ModuleDefinition> apis = new ArrayList<ModuleDefinition>();       
-        Module module = modulesRegistry.makeModuleFor("org.glassfish:javax.javaee", "10.0-SNAPSHOT");
+        Module module = modulesRegistry.makeModuleFor("org.glassfish:javax.javaee",null);
         if (module!=null) {
             apis.add(module.getModuleDefinition());
         }
