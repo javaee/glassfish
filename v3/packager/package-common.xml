@@ -110,7 +110,7 @@
     <echo message="Creating local IPS image for ${REPO_URL}"/>
     <mkdir dir="${image.dir}"/>
     <exec executable="pkg" failonerror="true">
-        <arg line="image-create -U -a sun.com=${REPO_URL} ${image.dir}" />
+        <arg line="image-create -U -a ${authority}=${REPO_URL} ${image.dir}" />
     </exec>
     <exec dir="${image.dir}" executable="pkg" failonerror="true">
         <arg line="refresh" />
