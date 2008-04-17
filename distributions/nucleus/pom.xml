@@ -109,7 +109,7 @@
        <dependency>
            <groupId>org.glassfish.docs</groupId>
            <artifactId>v3-docs</artifactId>
-           <version>${glassfish.version}</version>
+	   <version>0.1</version>
        </dependency>
    </dependencies>
 </project>
