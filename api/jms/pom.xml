@@ -46,9 +46,10 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>javax.jms</groupId>
 	<artifactId>jms-api</artifactId>
-	<version>1.1.1-SNAPSHOT</version>
+	<version>1.1-rev-1-SNAPSHOT</version>
     <packaging>jar</packaging>
 	<name>Java EE JMS API</name>
+	<url>http://jcp.org/en/jsr/detail?id=914</url>
 
 	<developers>
 		<developer>
