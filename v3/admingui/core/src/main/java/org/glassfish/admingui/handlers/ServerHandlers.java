@@ -839,7 +839,7 @@ public class ServerHandlers {
         JavaConfig javaConfig = config.getJavaConfig();
         String systemClasspath = javaConfig.getSystemClasspath();
         String serverClasspath = javaConfig.getServerClasspath();
-        boolean ignoreEnvClasspath = javaConfig.getEnvClasspathIgnored();
+        String ignoreEnvClasspath = javaConfig.getEnvClasspathIgnored();
         String classpathPrefix = javaConfig.getClasspathPrefix();
         String classpathSuffix = javaConfig.getClasspathSuffix();
         String nativeLibPathPrefix = javaConfig.getNativeLibraryPathPrefix();
@@ -890,7 +890,7 @@ public class ServerHandlers {
         String nativeSuffix = (String)handlerCtx.getInputValue("NativeLibPathSuffix");
         javaConfig.setSystemClasspath(formatStringsforSaving(sysCP));
         javaConfig.setServerClasspath(formatStringsforSaving(serverCP));
-        javaConfig.setEnvClasspathIgnored(((Boolean)handlerCtx.getInputValue("IgnoreEnvClasspath")).booleanValue());
+        javaConfig.setEnvClasspathIgnored("" + handlerCtx.getInputValue("IgnoreEnvClasspath"));
         javaConfig.setClasspathPrefix(formatStringsforSaving(cpPrefix));
         javaConfig.setClasspathSuffix(formatStringsforSaving(cpSuffix));
         javaConfig.setNativeLibraryPathPrefix(formatStringsforSaving(nativePrefix));
