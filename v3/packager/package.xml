@@ -214,6 +214,9 @@
     <antcall target="create-local-image">
         <param name="REPO_URL" value="${REPO_URL}"/>
     </antcall>
+    <antcall target="update-cfg-cache">
+        <param name="REPO_URL" value="${REPO_URL}"/>
+    </antcall>
     <antcall target="install-package">
         <param name="pkgname" value="glassfishv3-common"/>
     </antcall>
