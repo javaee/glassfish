@@ -47,7 +47,7 @@
     <groupId>javax.servlet</groupId>
     <artifactId>servlet-api</artifactId>
     <packaging>jar</packaging>
-    <version>3.0-alpha-1-SNAPSHOT</version>
+    <version>3.0-alpha-1</version>
     <name>JavaServlet(TM) Specification</name>
     <url>http://jcp.org/en/jsr/detail?id=315</url>
     
@@ -93,4 +93,9 @@
             </resource>
         </resources>
     </build>
+
+  <scm>
+    <connection>scm:svn:https://kohsuke@svn.dev.java.net/svn/glassfish-svn/tags/servlet-api-3.0-alpha-1</connection>
+    <developerConnection>scm:svn:https://kohsuke@svn.dev.java.net/svn/glassfish-svn/tags/servlet-api-3.0-alpha-1</developerConnection>
+  </scm>
 </project>
