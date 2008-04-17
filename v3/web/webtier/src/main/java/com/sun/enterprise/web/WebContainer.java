@@ -153,6 +153,7 @@ import com.sun.enterprise.config.serverbeans.Servers;
 import com.sun.enterprise.container.common.spi.util.ComponentEnvManager;
 import com.sun.enterprise.v3.server.ServerEnvironment;
 import com.sun.enterprise.v3.common.Result;
+import com.sun.enterprise.v3.services.impl.GrizzlyService;
 
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
@@ -232,6 +233,9 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
     @Inject
     ComponentEnvManager componentEnvManager;
+    
+    @Inject
+    GrizzlyService grizzlyAdapter;
     
     HashMap<String, Integer> portMap = new HashMap<String, Integer>();
     HashMap<Integer, Adapter> adapterMap = new HashMap<Integer, Adapter>();
@@ -600,10 +604,10 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         
         // Load the web modules specified in each j2ee-application
         loadAllJ2EEApplicationWebModules(true);
+        */
 
         loadDefaultWebModules();
-         */
-
+       
         //_lifecycle.fireLifecycleEvent(START_EVENT, null);
         _started = true;
         // start the embedded container
@@ -2441,7 +2445,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
                     VirtualServer vs = (VirtualServer) vsArray[i];
 
-                    String defaultPath = vs.getDefaultContextPath(_serverBean);
+                    String defaultPath = vs.getDefaultContextPath(domain);
                     if (defaultPath != null) {
                         // Virtual server declares default-web-module
                         try {
@@ -2461,9 +2465,18 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                         // Create default web module off of virtual
                         // server's docroot if necessary
                         WebModuleConfig wmInfo =
-                                vs.createSystemDefaultWebModuleIfNecessary();
+                                vs.createSystemDefaultWebModuleIfNecessary(
+                                _serverContext.getDefaultHabitat().getComponent(
+                                WebDeployer.class));
                         if (wmInfo != null) {
                             loadStandaloneWebModule(vs, wmInfo);
+                        }
+                        for (int port : vs.getPorts()) {
+                            Adapter adapter = adapterMap.get(Integer.valueOf(port));
+                            WebApplication application = new WebApplication(this, 
+                                    wmInfo, grizzlyAdapter);
+ 	                    grizzlyAdapter.registerEndpoint(wmInfo.getContextPath(), 
+                                    adapter, application);
                         }
                     }
                 }
@@ -2972,27 +2985,30 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                 String resourceType = wmInfo.getObjectType();
                 boolean isSystem = (resourceType != null &&
                         resourceType.startsWith("system-"));
-                // TODO : v3 : dochez Need to remove dependency on security
-                Realm realm = this._serverContext.getDefaultHabitat().getByContract(Realm.class);
-                if ("null".equals(j2eeApplication)) {
-                    /*
-                     * Standalone webapps inherit the realm referenced by
-                     * the virtual server on which they are being deployed,
-                     * unless they specify their own
-                     */
+                // security will generate policy for system default web module
+                if (!wmName.startsWith(Constants.DEFAULT_WEB_MODULE_NAME)) {
+                    // TODO : v3 : dochez Need to remove dependency on security
+                    Realm realm = this._serverContext.getDefaultHabitat().getByContract(Realm.class);
+                    if ("null".equals(j2eeApplication)) {
+                        /*
+                        * Standalone webapps inherit the realm referenced by
+                        * the virtual server on which they are being deployed,
+                        * unless they specify their own
+                        */
                     
-                    if (realm != null && realm instanceof RealmInitializer) {
-                        ((RealmInitializer)realm).initializeRealm(
+                        if (realm != null && realm instanceof RealmInitializer) {
+                            ((RealmInitializer)realm).initializeRealm(
                                 wbd, isSystem, vs.getAuthRealmName());
-                        ctx.setRealm(realm);
-                    }
-                } else {
-                    if (realm != null && realm instanceof RealmInitializer) {
-                        ((RealmInitializer)realm).initializeRealm(
+                            ctx.setRealm(realm);
+                        }
+                    } else {
+                        if (realm != null && realm instanceof RealmInitializer) {
+                            ((RealmInitializer)realm).initializeRealm(
                                 wbd, isSystem, null);
-                        ctx.setRealm(realm);
+                            ctx.setRealm(realm);
+                        }
                     }
-                } 
+                }
 
                 // post processing DOL object for standalone web module
                 if (wbd.getApplication() != null &&
@@ -3473,7 +3489,9 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                         // START GlassFish 141
                         if (!dummy) {
                             WebModuleConfig wmInfo =
-                                    host.createSystemDefaultWebModuleIfNecessary();
+                                    host.createSystemDefaultWebModuleIfNecessary(
+                                    _serverContext.getDefaultHabitat().getComponent(
+                                    WebDeployer.class));
                             if (wmInfo != null) {
                                 loadStandaloneWebModule(host, wmInfo);
                             }
