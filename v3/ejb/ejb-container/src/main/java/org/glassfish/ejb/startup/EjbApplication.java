@@ -73,24 +73,19 @@ public class EjbApplication
         */
         long appUniqueID = 0;
         if (appUniqueID == 0) {
-            System.out.println("*** EjbApp::start() => ASSIGNING RANDOM uniqueID..");
             appUniqueID = (System.currentTimeMillis() & 0xFFFFFFFF) << 16;
         }
-        System.out.println("*** EjbApp::start() => " + appName
-                + "; uID => " + appUniqueID);
 
         //System.out.println("**CL => " + bundleDesc.getClassLoader());
         int counter = 0;
         for (EjbDescriptor desc : ejbs) {
             desc.setUniqueId(appUniqueID + (counter++));
-            System.out.println("==>UniqueID: " + desc.getUniqueId() + " ==> "
-                    + desc.getName() + "   isLocal: " + desc.toString());
             try {
                 Container container = ejbContainerFactory.createContainer(desc, ejbAppClassLoader,
                     null, dc);
                 containers.add(container);
             } catch (Throwable th) {
-                throw new RuntimeException("Error", th);
+                throw new RuntimeException("Error during EjbApplication.start() ", th);
             }
         }
 

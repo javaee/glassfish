@@ -52,10 +52,14 @@ public final class MethodDescriptor extends Descriptor {
     public static final String EJB_HOME = "Home";
     /** Represents the bean local home interface ejbClassSymbol.*/
     public static final String EJB_LOCALHOME = "LocalHome";
+    /** Represents the bean local home interface ejbClassSymbol.*/
+    public static final String EJB_OPTIONAL_LOCALHOME = "OptionalLocalHome";        
     /** Represents the bean remote interface ejbClassSymbol.*/
     public static final String EJB_REMOTE = "Remote";
     /** Represents the bean local interface ejbClassSymbol.*/
     public static final String EJB_LOCAL = "Local";
+    /** Represents the optional local interface */
+    public static final String EJB_OPTIONAL_LOCAL = "OptionalLocal";
     /** Represents the web service interface ejbClassSymbol.*/
     public static final String EJB_WEB_SERVICE = "ServiceEndpoint";
     /** Represents the bean class ejbClassSymbol.*/

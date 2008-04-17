@@ -72,9 +72,7 @@ public class EjbDeployer
      * Constructor
      */
     public EjbDeployer() {
-        System.out.println("**********************************");
-        System.out.println("*********** EjbDeployer **********");
-        System.out.println("**********************************");
+
     }
     
 
@@ -83,7 +81,6 @@ public class EjbDeployer
     }
 
     protected RootDeploymentDescriptor getDefaultBundleDescriptor() {
-        System.out.println("**EjbDeployer: getDefaultBundleDesc..");
         return null;
     }
 
@@ -96,7 +93,7 @@ public class EjbDeployer
         }
 
         String[] otherExportedPackages = new String[] {
-                "org.glassfish.ejb:ejb-container"};
+                "org.glassfish.ejb:ejb-container", "org.objectweb.asm:asm-all"};
 
         for (String otherExportedPackage : otherExportedPackages) {
             module = modulesRegistry.makeModuleFor(otherExportedPackage, null);
@@ -193,9 +190,11 @@ public class EjbDeployer
 
         EjbApplication ejbApp = new EjbApplication(ebds, dc, dc.getClassLoader());
 
+        /*
         System.out.println("**EjbDeployer: " + ejbApp
             + ";  CL => " + dc.getClassLoader()
             + "; TCCL => " + Thread.currentThread().getContextClassLoader());
+        */
         return ejbApp;
     }
 
