@@ -24,8 +24,10 @@
 package com.sun.enterprise.v3.admin;
 
 import com.sun.enterprise.module.common_impl.Tokenizer;
+import com.sun.enterprise.universal.collections.ManifestUtils;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
+import java.util.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -42,7 +44,7 @@ import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.PerLookup;
 
 /**
- * Simple admin command to list all existing commands.
+ * Create data structures that describe the command.
  *
  * @author Jerome Dochez
  * 
@@ -62,16 +64,23 @@ public class ListCommandDescriptorsCommand implements AdminCommand {
         for (AdminCommand cmd : adminCmds) {
             cliCmds.add(reflect(cmd));
         }
-        
+        ActionReport report = context.getActionReport();
+        String s = "ALL COMMANDS: " + EOL;
+        for(CLICommand cli : cliCmds) {
+            s += cli.toString() + EOL;
+        }
+        report.setMessage(s);
+        report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
     }
     
     private CLICommand reflect(AdminCommand cmd) {
-        CLICommand cliCmd = new CLICommand(cmd.getClass().getAnnotation(Service.class).name());
+        CLICommand cliCmd = new CLICommand(cmd);
 
         for (Field f : cmd.getClass().getDeclaredFields()) {
             final Param param = f.getAnnotation(Param.class);
             if (param==null)
                 continue;
+            
             Option option = new Option(param, f);
             cliCmd.options.add(option);
         }
@@ -171,18 +180,34 @@ public class ListCommandDescriptorsCommand implements AdminCommand {
     private static boolean ok(String s) {
         return s != null && s.length() > 0 && !s.equals("null");
     }
+    
     private List<AdminCommand> adminCmds;
-    private List<CLICommand> cliCmds = new ArrayList<CLICommand>();
+    private List<CLICommand> cliCmds = new LinkedList<CLICommand>();
+    private final static String EOL = ManifestUtils.EOL_TOKEN;
     
     private static class CLICommand {
-        CLICommand(String name) {
-            this.name = name;
+        CLICommand(AdminCommand adminCommand) {
+            this.adminCommand = adminCommand;
+            name = adminCommand.getClass().getAnnotation(Service.class).name();
         }
+
+        @Override
+        public String toString() {
+            String s = "CLI Command:" +
+                    " name=" + name +
+                    " class=" + adminCommand.getClass().getName();
+            
+            for(Option opt : options) {
+                s += opt.toString() + EOL;
+            }
+            return s;
+        }
+
+        AdminCommand adminCommand;
         String name;
-        List<Option> options = new ArrayList<Option>();
+        List<Option> options = new LinkedList<Option>();
     }
     private static class Option {
-        private enum Type { bool, string }; 
         Option(Param p, Field f) {
             final Class<?> ftype = f.getType();
             name = p.name();
@@ -190,19 +215,27 @@ public class ListCommandDescriptorsCommand implements AdminCommand {
             if(!ok(name)) {
                 name = f.getName();
             }
+
             required = !p.optional();
             operand = p.primary();
             defaultValue = p.defaultValue();
-            if(ftype.isAssignableFrom(Boolean.class) || ftype.isAssignableFrom(boolean.class))
-                type = Type.bool;
-            else
-                type = Type.string;
+            type = ftype;
         }
+        @Override
+        public String toString() {
+            String s = "   Option:" + 
+                    " name=" + name + 
+                    " required=" + required +
+                    " operand=" + operand +
+                    " defaultValue=" + defaultValue +
+                    " type=" + type.getName();
+            return s;
+        }
+
         private boolean required;
         private boolean operand;
         private String name;
         private String defaultValue;
-        private Type type;
+        private Class<?> type;
     }
-        
 }
