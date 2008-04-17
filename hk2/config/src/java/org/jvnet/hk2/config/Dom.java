@@ -802,6 +802,23 @@ public class Dom extends LazyInhabitant implements InvocationHandler, Observable
         // at this point name should match XML names in the model, modulo case.
         return model.findIgnoreCase(name);
     }
+    
+        protected ConfigModel.Property
+    getConfigModel_Property( final String xmlName ) {
+        final ConfigModel.Property cmp = model.findIgnoreCase(xmlName);
+        if (cmp == null) {
+            throw new IllegalArgumentException( "Illegal name: " + xmlName );
+        }
+        return cmp;
+    }
+    
+    public boolean isLeaf( final String xmlName ) {
+        return getConfigModel_Property(xmlName).isLeaf();
+    }
+    
+    public boolean isCollection( final String xmlName ) {
+        return getConfigModel_Property(xmlName).isCollection();
+    }
 
     public static String convertName(String name) {
         // first, trim off the prefix
