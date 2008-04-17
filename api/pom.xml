@@ -91,12 +91,12 @@
         <module>connector</module>
         <module>deployment</module>
         <module>ejb</module>
-        <module>jacc</module>
         <module>javaee</module>
         <module>jms</module>
         <module>jsp</module>
         <module>mail</module>
         <module>management</module>
+        <module>security-api</module>
         <module>servlet</module>
         <module>persistence</module>
         <module>transaction</module>
