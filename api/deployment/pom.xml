@@ -46,7 +46,7 @@
     <groupId>javax.enterprise.deploy</groupId>
     <artifactId>deployment-api</artifactId>
     <packaging>jar</packaging>
-    <version>1.2-rev-1</version>
+    <version>1.2-rev-2-SNAPSHOT</version>
     <name>Java EE Deployment API</name>
     <description>Project Glassfish Java EE Deployment API</description>
     <url>http://jcp.org/en/jsr/detail?id=88</url>
@@ -62,9 +62,4 @@
             </roles>
         </developer>
     </developers>
-
-  <scm>
-    <connection>scm:svn:https://kohsuke@svn.dev.java.net/svn/glassfish-svn/tags/deployment-api-1.2-rev-1</connection>
-    <developerConnection>scm:svn:https://kohsuke@svn.dev.java.net/svn/glassfish-svn/tags/deployment-api-1.2-rev-1</developerConnection>
-  </scm>
 </project>
