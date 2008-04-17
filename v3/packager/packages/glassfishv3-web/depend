@@ -19,14 +19,3 @@
 # <type> <pkg.abbr> <name>
 # ...
 
-P SUNWcar	Core Architecture, (Root)
-P SUNWkvm	Core Architecture, (Kvm)
-P SUNWcsr	Core Solaris, (Root)
-P SUNWcsu	Core Solaris, (Usr)
-P SUNWcsd	Core Solaris Devices
-P SUNWcsl	Core Solaris Libraries
-P SUNWascmn	Sun Java System Application Server (common)
-P SUNWmcon	Sun(TM) Web Console 2.1 (Core)
-P SUNWmctag	Sun(TM) Web Console 2.1 (Tags & Components)
-P SUNWjato	Java Studio Enterprise Web Application Framework
-P SUNWhadbj    Sun Java System High Availability Database JDBC client software
