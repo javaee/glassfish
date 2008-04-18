@@ -47,7 +47,6 @@
     <artifactId>glassfish-mbeanserver</artifactId>
     <packaging>hk2-jar</packaging>
     <name>Glassfish MBeanServer support</name>
-    <version>${glassfish-mbeanserver.version}</version>
     <description>Support for instantiation of Glassfish MBeanServer</description>
     
     <developers>
@@ -73,7 +72,7 @@
         <dependency>
             <groupId>org.glassfish.common</groupId>
             <artifactId>internal-api</artifactId>
-            <version>${project.parent.version}</version>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 </project>
