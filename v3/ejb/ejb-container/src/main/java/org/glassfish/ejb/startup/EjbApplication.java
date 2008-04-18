@@ -51,6 +51,11 @@ public class EjbApplication
     ClassLoader ejbAppClassLoader;
     DeploymentContext dc;
 
+    // TODO: move restoreEJBTimers to correct location
+    private static boolean restored = false;
+    private static Object lock = new Object();
+    // TODO: move restoreEJBTimers to correct location
+
     public EjbApplication(
             Collection<EjbDescriptor> bundleDesc, DeploymentContext dc,
             ClassLoader cl) {
@@ -92,6 +97,20 @@ public class EjbApplication
         for (Container container : containers) {
             container.doAfterApplicationDeploy();
         }
+
+        // TODO: move restoreEJBTimers to correct location
+        synchronized(lock) {
+            System.out.println("==> Restore Timers? == " + restored);
+            if (!restored) {
+                com.sun.ejb.containers.EJBTimerService ejbTimerService = 
+                    com.sun.ejb.containers.EjbContainerUtilImpl.getInstance().getEJBTimerService();
+                if (ejbTimerService != null) {
+                    restored = ejbTimerService.restoreEJBTimers();
+                    System.out.println("==> Restored Timers? == " + restored);
+                }
+            }
+        }
+        // TODO: move restoreEJBTimers to correct location
 
         return true;
     }

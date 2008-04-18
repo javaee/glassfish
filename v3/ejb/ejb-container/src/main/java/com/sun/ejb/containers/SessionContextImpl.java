@@ -172,7 +172,7 @@ public final class SessionContextImpl
             throw new EJBException("EJB Timer service not available");
         }
 
-        return null; //TODO return new EJBTimerServiceWrapper(timerService, this);
+        return new EJBTimerServiceWrapper(timerService, this);
     }
     
     public UserTransaction getUserTransaction()

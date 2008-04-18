@@ -2965,11 +2965,8 @@ public abstract class BaseContainer
         inv.beanMethod = ejbTimeoutMethod;
 
         // Application must be passed a TimerWrapper.
-        /*TODO
         Object[] args  = { new TimerWrapper(timerState.getTimerId(),
                                             timerService) };
-        */
-        Object[] args = new Object[2];
         inv.methodParams = args;
      
         // Delegate to subclass for i.ejbObject / i.isLocal setup.
