@@ -44,7 +44,6 @@
         <version>10.0-tp-2-SNAPSHOT</version>
     </parent>    
     <artifactId>web</artifactId>
-    <version>${pe.version}</version>
     <name>Glassfish Web Bundle</name>
     <packaging>distribution-base-zip</packaging>
     <description>This pom describes how to assemble the Glassfish PE Bundle</description>
@@ -93,7 +92,7 @@
         <dependency>
             <groupId>org.glassfish.web</groupId>
             <artifactId>webtier-all</artifactId>
-            <version>${pe.version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <!-- admin GUI extension points should be in modules/ not modules/web -->
@@ -104,7 +103,7 @@
         <dependency>
             <groupId>org.glassfish.extras</groupId>
             <artifactId>gf-jruby-connector</artifactId>
-            <version>${pe.version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.external</groupId>
@@ -114,7 +113,7 @@
         <dependency>
             <groupId>org.glassfish.extras</groupId>
             <artifactId>gf-phobos-connector</artifactId>
-            <version>${pe.version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.connectors.jdbc-ra.jdbc-ra-distribution</groupId>
@@ -125,47 +124,47 @@
         <dependency>
            <groupId>org.glassfish.connectors</groupId>
            <artifactId>gf-connectors-connector</artifactId>
-           <version>${pe.version}</version>
+           <version>${project.version}</version>
         </dependency>
         <dependency>
            <groupId>org.glassfish.connectors</groupId>
            <artifactId>connectors-runtime</artifactId>
-           <version>${pe.version}</version>
+           <version>${project.version}</version>
         </dependency>
         <dependency>
            <groupId>org.glassfish.core</groupId>
            <artifactId>shared-components</artifactId>
-           <version>${pe.version}</version>
+           <version>${project.version}</version>
         </dependency>         
         <dependency>
            <groupId>org.glassfish.core</groupId>
            <artifactId>jta</artifactId>
-           <version>${pe.version}</version>
+           <version>${project.version}</version>
         </dependency>           
         <dependency>
            <groupId>org.glassfish.persistence</groupId>
            <artifactId>jpa-connector</artifactId>
-           <version>${pe.version}</version>
+           <version>${project.version}</version>
         </dependency>           
         <dependency>
            <groupId>org.glassfish.persistence</groupId>
            <artifactId>eclipselink-wrapper</artifactId>
-           <version>${pe.version}</version>
+           <version>${project.version}</version>
         </dependency>
         <dependency>
            <groupId>org.glassfish.core</groupId>
            <artifactId>deployment-client</artifactId>
-           <version>${pe.version}</version>
+           <version>${project.version}</version>
         </dependency>           
         <dependency>
             <groupId>org.glassfish.common</groupId>
             <artifactId>amx-impl</artifactId>
-            <version>${pe.version}</version>
+            <version>${project.version}</version>
         </dependency>
          <dependency>
            <groupId>org.glassfish.web</groupId>
            <artifactId>gf-web-connector</artifactId>
-           <version>${pe.version}</version>
+           <version>${project.version}</version>
         </dependency>
         <dependency>
            <groupId>org.glassfish.registration</groupId>

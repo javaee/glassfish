@@ -22,7 +22,7 @@
               <distribution>
                   <groupId>org.glassfish.distributions</groupId>
                   <artifactId>web</artifactId>
-                  <version>${pe.version}</version>
+                  <version>${project.version}</version>
               </distribution>
           </configuration>
       </plugin>

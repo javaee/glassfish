@@ -44,7 +44,6 @@
         <version>10.0-tp-2-SNAPSHOT</version>
     </parent>    
     <artifactId>deployment-client</artifactId>
-    <version>${pe.version}</version>
     <packaging>hk2-jar</packaging>
     <name>Deployment Client Classes and Interfaces</name>
 

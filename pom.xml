@@ -128,8 +128,6 @@
         <hk2.version>0.2</hk2.version>
         <jsr223-api.version>1.0</jsr223-api.version>
         <phobos.version>0.5.10</phobos.version>
-        <pe.version>10.0-tp-2-SNAPSHOT</pe.version>
-        <dist.version>10.0-tp-2-SNAPSHOT</dist.version>
         <product.name>GlassFish</product.name>
         <build.id>${user.name}-private</build.id><!-- on Hudson and RE, this gets replaced by real build ID -->
         <abbrev_product_name>GlassFish</abbrev_product_name>
@@ -199,7 +197,7 @@
                     <distribution>
                         <groupId>org.glassfish.distributions</groupId>
                         <artifactId>web</artifactId>
-                        <version>${pe.version}</version>
+                        <version>${project.version}</version>
                     </distribution>
                 </configuration>
             </plugin>
