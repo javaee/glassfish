@@ -53,8 +53,8 @@ public interface LogServiceConfig
 	public static final String	J2EE_TYPE			= XTypes.LOG_SERVICE_CONFIG;
 	
 
-	public boolean	getAlarms();
-	public void	setAlarms( boolean value );
+	public String	getAlarms();
+	public void	setAlarms( String value );
 
 	public String	getFile();
 	public void	setFile( String value );
@@ -74,11 +74,11 @@ public interface LogServiceConfig
 	public String	getLogRotationLimitInBytes();
 	public void	setLogRotationLimitInBytes( String value );
 
-	public boolean	getLogToConsole();
-	public void	setLogToConsole( boolean value );
+	public String	getLogToConsole();
+	public void	setLogToConsole( String value );
 
-	public boolean	getUseSystemLogging();
-	public void	setUseSystemLogging( boolean value );
+	public String	getUseSystemLogging();
+	public void	setUseSystemLogging( String value );
 	
 	
 	public String  getRetainErrorStatisticsForHours();

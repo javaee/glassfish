@@ -47,14 +47,14 @@ public interface HTTPFileCacheConfig extends ConfigElement, Singleton
 /** The j2eeType as returned by {@link com.sun.appserv.management.base.AMX#getJ2EEType}. */
 	public static final String	J2EE_TYPE	= XTypes.HTTP_FILE_CACHE_CONFIG;
 
-	public boolean	getFileCachingEnabled();
-	public void	setFileCachingEnabled( final boolean value );
+	public String	getFileCachingEnabled();
+	public void	setFileCachingEnabled( final String value );
 
-	public boolean	getFileTransmissionEnabled();
-	public void	setFileTransmissionEnabled( final boolean value );
+	public String	getFileTransmissionEnabled();
+	public void	setFileTransmissionEnabled( final String value );
 
-	public boolean	getGloballyEnabled();
-	public void	setGloballyEnabled( final boolean value );
+	public String	getGloballyEnabled();
+	public void	setGloballyEnabled( final String value );
 
 	public String	getHashInitSize();
 	public void	setHashInitSize( final String value );

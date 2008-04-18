@@ -33,38 +33,41 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
- 
-/*
- * $Header: /cvs/glassfish/appserv-api/src/java/com/sun/appserv/management/config/TemplateResolver.java,v 1.2 2007/05/05 05:30:36 tcfujii Exp $
- * $Revision: 1.2 $
- * $Date: 2007/05/05 05:30:36 $
- */
 package com.sun.appserv.management.config;
 
 
+import  com.sun.appserv.management.helper.TemplateResolverHelper;
+
 /**
 	Interface implemented by MBeans which can resolve a template
-	String to a value.  Template strings are of the form ${XYZ} and
-	are returned as the values of certain Attributes.
+	String to a value.  Template strings are of the form ${...} and
+	are returned as the values of certain Attributes.  This facility is intended for use
+    <em>only</em> with {@link AMXConfig} MBeans.
+    <p>
+    The class {@link TemplateResolverHelper} should be used
+    in most cases for dealing with template values.
+    @see com.sun.apperv.management.helper.TemplateResolverHelper
  */
 public interface TemplateResolver
 {
 	/**
-		If the String is a template, return true.  A template String is a String
-		of the form ${XYZ}.
+        Resolve a value to a literal.
+        <p>
+        If the String is not a template string, return the string unchanged.
+        <p>
+        If the String is a template string, resolve its value if it can be resolved, or 'null'
+        if it cannot be resolved.
+        <p>
+        Examples:</br>
+        <pre>
+        "${com.sun.aas.installRoot}" => "/glassfish"
+        "${does-not-exist}" => null
+        "${com.myco.moonIsBlue}" => "true"
+        "8080" => "8080"
+        "hello" => "hello"
+        </pre>
 		
-		@param s
-		@return true if the String is template String, false otherwise.
-	 */
-	public boolean	isTemplateString( String s );
-	
-	/**
-		If the String is a template, resolve it. If it is a template, but
-		cannot be resolved, return it unchanged.
-		<p>
-		If the String is not a template, return it unchanged.
-		
-		@param template	a template String
+		@param template	any String
 		@return resolved value
 	 */
 	public String	resolveTemplateString( String template );

@@ -53,8 +53,8 @@ public interface WebContainerAvailabilityConfig extends ConfigElement, Propertie
 /** The j2eeType as returned by {@link com.sun.appserv.management.base.AMX#getJ2EEType}. */
 	public static final String	J2EE_TYPE	= XTypes.WEB_CONTAINER_AVAILABILITY_CONFIG;
 
-	public boolean	getAvailabilityEnabled();
-	public void	setAvailabilityEnabled( final boolean value );
+	public String	getAvailabilityEnabled();
+	public void	setAvailabilityEnabled( final String value );
 
 	public String	getHTTPSessionStorePoolName();
 	public void	setHTTPSessionStorePoolName( final String value );
@@ -76,8 +76,8 @@ public interface WebContainerAvailabilityConfig extends ConfigElement, Propertie
 	 */
 	public void	setPersistenceScope( final String value );
 
-	public boolean	getPersistenceStoreHealthCheckEnabled();
-	public void	setPersistenceStoreHealthCheckEnabled( final boolean value );
+	public String	getPersistenceStoreHealthCheckEnabled();
+	public void	setPersistenceStoreHealthCheckEnabled( final String value );
 
 	public String	getPersistenceType();
 	/**
@@ -85,8 +85,8 @@ public interface WebContainerAvailabilityConfig extends ConfigElement, Propertie
 	 */
 	public void	setPersistenceType( final String value );
 
-	public boolean	getSSOFailoverEnabled();
-	public void	setSSOFailoverEnabled( final boolean value );
+	public String	getSSOFailoverEnabled();
+	public void	setSSOFailoverEnabled( final String value );
 
 
 

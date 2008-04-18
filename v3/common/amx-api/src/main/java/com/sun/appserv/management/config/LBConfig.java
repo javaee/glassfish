@@ -74,21 +74,21 @@ public interface LBConfig extends
     public void	setResponseTimeoutInSeconds(final String responseTimeoutInSeconds);
 
     /**
-      Returns a boolean flag indicating how load-balancer will route HTTPS
+      Returns a String flag indicating how load-balancer will route HTTPS
       requests. If true, then an HTTPS request to the load-balancer will 
       result in an HTTPS request to the server; if false, then HTTPS requests 
       to the load-balancer result in HTTP requests to the server. 
      */
-    public boolean getHttpsRouting();
+    public String getHttpsRouting();
 
     /**
-      Set the boolean flag indicating how load-balancer will route HTTPS
+      Set the String flag indicating how load-balancer will route HTTPS
       requests. If true, then an HTTPS request to the load-balancer will 
       result in an HTTPS request to the server; if false, then HTTPS requests 
       to the load-balancer result in HTTP requests to the server. 
       Default is to use HTTP (i.e. value of false);
      */
-    public void	setHttpsRouting(final boolean value);
+    public void	setHttpsRouting(final String value);
     
     /**
       Returns the maximum period, in seconds, that a change to the load
@@ -107,28 +107,28 @@ public interface LBConfig extends
     public void	setReloadPollIntervalInSeconds(final String reloadPollIntervalInSeconds);
 
     /**
-      Returns the boolean flag that determines whether monitoring is switched
+      Returns the String flag that determines whether monitoring is switched
       on or not. Default is that monitoring is switched off (false)
      */
-    public boolean getMonitoringEnabled();
+    public String getMonitoringEnabled();
 
     /**
-      Set the boolean flag that determines whether monitoring is switched
+      Set the String flag that determines whether monitoring is switched
       on or not. Default is that monitoring is switched off (false)
      */
-    public void	setMonitoringEnabled(final boolean value);
+    public void	setMonitoringEnabled(final String value);
    
     /**
-      Returns the boolean flag that determines whether a route cookie is or is
+      Returns the String flag that determines whether a route cookie is or is
       not enabled.
      */
-    public boolean getRouteCookieEnabled();
+    public String getRouteCookieEnabled();
 
     /**
-      Set the boolean flag that determines whether a route cookie is or is
+      Set the String flag that determines whether a route cookie is or is
       not enabled. Default is enabled (true).
      */
-    public void	setRouteCookieEnabled(final boolean value);
+    public void	setRouteCookieEnabled(final String value);
     
     /**
       Calls Container.getContaineeMap(XTypes.CLUSTER_REF_CONFIG ).

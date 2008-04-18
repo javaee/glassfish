@@ -73,8 +73,8 @@ public interface JMSServiceConfig
 	public String	getReconnectAttempts();
 	public void	    setReconnectAttempts( final String value );
 
-	public boolean	getReconnectEnabled();
-	public void	    setReconnectEnabled( final boolean value );
+	public String	getReconnectEnabled();
+	public void	    setReconnectEnabled( final String value );
 
 	public String	getReconnectIntervalInSeconds();
 	public void	    setReconnectIntervalInSeconds( final String value );

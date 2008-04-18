@@ -95,8 +95,8 @@ public interface AvailabilityServiceConfig
 		Get the WebContainerAvailabilityConfig MBean.
 	 */
 	WebContainerAvailabilityConfig		getWebContainerAvailabilityConfig();
-	boolean getAvailabilityEnabled();
-	void	setAvailabilityEnabled( boolean enabled );
+	String getAvailabilityEnabled();
+	void	setAvailabilityEnabled( String enabled );
 
 	/**
 	* If set to true, the lifecycle of the highly available store   
@@ -108,7 +108,7 @@ public interface AvailabilityServiceConfig
 	* @return the value of auto-manage-ha-store
 	* @since AppServer 9.0
 	*/
-	boolean	getAutoManageHAStore();
+	String	getAutoManageHAStore();
 	/**
 	 * If set to true, the lifecycle of the highly available store   
 	 * is matched with the lifecycle of the highly available         
@@ -119,7 +119,7 @@ public interface AvailabilityServiceConfig
 	 * @param enabled sets the value of auto-manage-ha-store
 	* @since AppServer 9.0
 	 */	
-	void	setAutoManageHAStore(boolean enabled);
+	void	setAutoManageHAStore(String enabled);
 
 
 	/**
@@ -245,12 +245,12 @@ public interface AvailabilityServiceConfig
 	 * @return the value of the flag 
      * @since AppServer 9.0
 	 */
-	boolean	getHAStoreHealthcheckEnabled();
-	void	setHAStoreHealthcheckEnabled( boolean value );
+	String	getHAStoreHealthcheckEnabled();
+	void	setHAStoreHealthcheckEnabled( String value );
 
 	public JMSAvailabilityConfig    getJMSAvailabilityConfig();
 	public void createJMSAvailabilityConfig(
-	                boolean availabilityEnabled, String mqStorePoolName );
+	                String availabilityEnabled, String mqStorePoolName );
 	public void removeJMSAvailabilityConfig();
 }
 

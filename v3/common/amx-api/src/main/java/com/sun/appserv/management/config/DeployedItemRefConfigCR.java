@@ -84,9 +84,9 @@ public interface DeployedItemRefConfigCR extends ConfigRemover
 		@return A proxy to the DeployedItemRefConfig MBean that manages the 
 		config of newly created application-ref.
 	 */
-	public DeployedItemRefConfig createDeployedItemRefConfig(boolean enabled, 
+	public DeployedItemRefConfig createDeployedItemRefConfig(String enabled, 
 		String referencedApplicationName, String virtualServers,
-		boolean lbEnabled, int disableTimeoutInMinutes);
+		String lbEnabled, int disableTimeoutInMinutes);
         
 	/**
 		Creates a new application-ref element.

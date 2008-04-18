@@ -50,25 +50,25 @@ public interface SSLConfig extends ConfigElement, Singleton
 	public String	getCertNickname();
 	public void	setCertNickname( String value );
 
-	public boolean	getClientAuthEnabled();
-	public void	setClientAuthEnabled( boolean value );
+	public String	getClientAuthEnabled();
+	public void	setClientAuthEnabled( String value );
 
 	public String	getSSL2Ciphers();
 	public void	setSSL2Ciphers( String value );
 
-	public boolean	getSSL2Enabled();
-	public void	setSSL2Enabled( boolean value );
+	public String	getSSL2Enabled();
+	public void	setSSL2Enabled( String value );
 
-	public boolean	getSSL3Enabled();
-	public void	setSSL3Enabled( boolean value );
+	public String	getSSL3Enabled();
+	public void	setSSL3Enabled( String value );
 
 	public String	getSSL3TLSCiphers();
 	public void	setSSL3TLSCiphers( String value );
 
-	public boolean	getTLSEnabled();
-	public void	setTLSEnabled( boolean value );
+	public String	getTLSEnabled();
+	public void	setTLSEnabled( String value );
 
-	public boolean	getTLSRollbackEnabled();
-	public void	setTLSRollbackEnabled( boolean value );
+	public String	getTLSRollbackEnabled();
+	public void	setTLSRollbackEnabled( String value );
 
 }

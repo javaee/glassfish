@@ -55,7 +55,7 @@ public interface MailResourceConfig extends ResourceConfig
 	public String	getHost();
 	public String	getUser();
 	public String	getFrom();
-	public boolean	getDebug();
+	public String	getDebug();
 
 
 	public void	    setStoreProtocol( final String storeProtocol );
@@ -65,6 +65,6 @@ public interface MailResourceConfig extends ResourceConfig
 	public void	    setHost( final String host );
 	public void	    setUser( final String user );
 	public void	    setFrom( final String from );
-	public void	    setDebug( final boolean debug );
+	public void	    setDebug( final String debug );
 
 }

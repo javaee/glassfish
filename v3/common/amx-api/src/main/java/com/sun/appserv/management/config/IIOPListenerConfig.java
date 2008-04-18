@@ -61,7 +61,7 @@ public interface IIOPListenerConfig
 	public String	getPort();
 	public void	setPort( String value );
 
-	public boolean	getSecurityEnabled();
-	public void	setSecurityEnabled( boolean value );
+	public String	getSecurityEnabled();
+	public void	setSecurityEnabled( String value );
 
 }

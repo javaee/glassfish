@@ -58,17 +58,17 @@ public interface DASConfig extends ConfigElement, PropertiesAccess, Singleton
 	public String	getAutodeployDir();
 	public void	setAutodeployDir( String value );
 
-	public boolean	getAutodeployEnabled();
-	public void	setAutodeployEnabled( boolean value );
+	public String	getAutodeployEnabled();
+	public void	setAutodeployEnabled( String value );
 
-	public boolean	getAutodeployJSPPrecompilationEnabled();
-	public void	setAutodeployJSPPrecompilationEnabled( boolean value );
+	public String	getAutodeployJSPPrecompilationEnabled();
+	public void	setAutodeployJSPPrecompilationEnabled( String value );
 
 	public String	getAutodeployPollingIntervalInSeconds();
 	public void	setAutodeployPollingIntervalInSeconds( String value );
 
-	public boolean	getAutodeployVerifierEnabled();
-	public void	setAutodeployVerifierEnabled( boolean value );
+	public String	getAutodeployVerifierEnabled();
+	public void	setAutodeployVerifierEnabled( String value );
 
     /**
        @since Glassfish V3
@@ -85,8 +85,8 @@ public interface DASConfig extends ConfigElement, PropertiesAccess, Singleton
 	 */
 	public String	getDeployXMLValidation();
 
-	public boolean	getDynamicReloadEnabled();
-	public void	setDynamicReloadEnabled( boolean value );
+	public String	getDynamicReloadEnabled();
+	public void	setDynamicReloadEnabled( String value );
 
 	public String	getDynamicReloadPollIntervalInSeconds();
 	public void	setDynamicReloadPollIntervalInSeconds( String value );

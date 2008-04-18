@@ -41,6 +41,7 @@ import com.sun.appserv.management.base.Util;
 import com.sun.appserv.management.base.XTypes;
 import com.sun.appserv.management.config.*;
 import com.sun.appserv.management.helper.RefHelper;
+import com.sun.appserv.management.helper.TemplateResolverHelper;
 import com.sun.appserv.management.util.jmx.JMXUtil;
 import com.sun.appserv.management.util.misc.*;
 import org.glassfish.admin.amx.dotted.DottedName;
@@ -251,131 +252,66 @@ public class AMXConfigImplBase extends AMXImplBase
         return getConfigDelegate().getConfigBean();
     }
 
-
-//========================================================================================
-    protected Map<String,PropertyConfig> getPropertyConfigMap() { return getSelf(PropertiesAccess.class).getPropertyConfigMap(); }
-    
-    	public Map<String,String>
-	getProperties( )
-	{
-        return asNameValuePairs( getPropertyConfigMap() );
-	}
-	
-		public String[]
-	getPropertyNames( )
-	{
-		return( GSetUtil.toStringArray( getPropertyConfigMap().keySet() ) );
-	}
-	
-		public String
-	getPropertyValue( String propertyName )
-	{   
-        return getPropertyValue( getPropertyConfigMap(), propertyName );
-    }
-	
-		public final void
-	setPropertyValue(
-		final String propertyName,
-		final String propertyValue )
-	{
-		validateNameValue( propertyName, propertyValue );
-        
-        final PropertyConfig prop =  getPropertyConfigMap().get( propertyName );
-        if ( prop != null )
-        {
-            prop.setValue( propertyValue );
-        }
-        else
-        {
-            createProperty( propertyName, propertyValue );
-        }
-	}
-	
-		public final boolean
-	existsProperty( final String propertyName )
-	{
-		return getPropertyConfigMap().keySet().contains( propertyName );
-	}
-	
-		public final void
-	removeProperty( final String propertyName )
-	{
-        // reinvoke with non-deprecated auto-generic impl
-        getSelf( PropertiesAccess.class ).removePropertyConfig( propertyName );
-	}
-	
-		public final void
-	createProperty( final String propertyName, final String propertyValue )
-	{
-        // reinvoke with non-deprecated auto-generic impl
-        getSelf( PropertiesAccess.class ).createPropertyConfig( propertyName, propertyValue );
-	}
-
 		public final String
 	getGroup()
 	{
 		return( AMX.GROUP_CONFIGURATION );
 	}
-	
-//========================================================================================
-    protected Map<String,SystemPropertyConfig> getSystemPropertyConfigMap() { return getSelf(SystemPropertiesAccess.class).getSystemPropertyConfigMap(); }
 
-		public Map<String,String>
-	getSystemProperties( )
-	{
-        return asNameValuePairs( getSystemPropertyConfigMap() );
-	}
+
+    protected Map<String,PropertyConfig> getPropertyConfigMap()
+    {
+        return getSelf(PropertiesAccess.class).getPropertyConfigMap();
+    }
 	
-		public String[]
-	getSystemPropertyNames( )
-	{
-		return( GSetUtil.toStringArray( getSystemPropertyConfigMap().keySet() ) );
-	}
-	
-		public String
-	getSystemPropertyValue( final String propertyName )
-	{
-        return getPropertyValue( getSystemPropertyConfigMap(), propertyName );
-	}
-	
-		public final void
-	setSystemPropertyValue(
-		final String propertyName,
-		final String propertyValue )
-	{
-		validateNameValue( propertyName, propertyValue );
+    protected Map<String,SystemPropertyConfig> getSystemPropertyConfigMap()
+    {
+        return getSelf(SystemPropertiesAccess.class).getSystemPropertyConfigMap();
+    }
+    
+    /**
+        Resolve a template String.  See {@link TemplateResolver} for details.
+     */
+        public String
+    resolveTemplateString( final String varString )
+    {
+        String result = null;
+        final String temp = varString.trim();
         
-        final SystemPropertyConfig prop =  getSystemPropertyConfigMap().get( propertyName );
-        if ( prop != null )
+        // first look for a system property
+        final Object value = System.getProperty( temp );
+        if ( value != null )
         {
-            prop.setValue( propertyValue );
+            result = "" + value;
         }
         else
         {
-            createSystemProperty( propertyName, propertyValue );
+            // Look successively at Containers for SystemProperties
+            AMX amx = getSelf(AMXConfig.class);
+            while ( amx != null && amx instanceof AMXConfig && result == null )
+            {
+                if ( amx instanceof SystemPropertiesAccess )
+                {
+                    final Map<String,SystemPropertyConfig> props = ((SystemPropertiesAccess)amx).getSystemPropertyConfigMap();
+                    
+                    // look by calling getName().  We can't just look in the map, because the ObjectName
+                    // might not allow some characters that might be allowed in the name field
+                    for( final SystemPropertyConfig prop : props.values() )
+                    {
+                        if ( prop.getName().equals( temp ) )
+                        {
+                            result = prop.getValue();
+                            break;
+                        }
+                    }
+                }
+                // continue up the containment hierarchy until we run out of config objects
+                amx = amx.getContainer();
+            }
         }
-	}
-	
-		public final boolean
-	existsSystemProperty( final String propertyName )
-	{
-		return getSystemPropertyConfigMap().keySet().contains( propertyName );
-	}
-	
-		public final void
-	removeSystemProperty( String propertyName )
-	{
-        // reinvoke with non-deprecated auto-generic impl
-        getSelf( SystemPropertiesAccess.class ).removeSystemPropertyConfig( propertyName );
-	}
-	
-		public final void
-	createSystemProperty( String propertyName, String propertyValue )
-	{
-        // reinvoke with non-deprecated auto-generic impl
-        getSelf( SystemPropertiesAccess.class ).createSystemPropertyConfig( propertyName, propertyValue );
-	}
-	
+        return result;
+    }
+    
 //========================================================================================
     
 	    public MBeanNotificationInfo[]

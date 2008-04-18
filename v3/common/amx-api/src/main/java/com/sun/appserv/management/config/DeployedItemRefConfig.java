@@ -66,19 +66,19 @@ public interface DeployedItemRefConfig extends RefConfig
 
     /**
         <b>EE only</b>
-        Return the boolean flag that causes any and all load-balancers using
+        Return the String flag that causes any and all load-balancers using
         this application to consider this application unavailable to
         them. Defaults to unavailable (false).
      */    
-    public boolean getLBEnabled();
+    public String getLBEnabled();
 
     /**
         <b>EE only</b>
-        Set the boolean flag that causes any and all load-balancers using
+        Set the String flag that causes any and all load-balancers using
         this application to consider this application unavailable to
         them. 
      */    
-    public void setLBEnabled(final boolean lbEnabled);
+    public void setLBEnabled(final String lbEnabled);
     
     /**
         The time, in minutes, that it takes this application to reach 

@@ -60,7 +60,7 @@ import java.util.Map;
     There can be more than one pool for one connection-definition in one       
     resource-adapter.    
      <p>
-     NOTE: some getters/setters use int/boolean. This will be corrected at a future time; these
+     NOTE: some getters/setters use int/String. This will be corrected at a future time; these
      methods cannot use the AppServer template facility, whereby an Attribute value can be of 
      the form attr-name=${ATTR_VALUE}.  For an example of where/how this facility is used, see
      the &lt;http-listener> element, which looks like this:<br/>
@@ -68,7 +68,7 @@ import java.util.Map;
 &lt;http-listener id="http-listener-1" address="0.0.0.0" port="${HTTP_LISTENER_PORT}" acceptor-threads="1" security-enabled="false" default-virtual server="server" server-name="" xpowered-by="true" enabled="true">
 </pre>
     The 'port' attribute above is set to the value "${HTTP_LISTENER_PORT}", which is a system
-    property.  Obviously no method that uses 'boolean' could get or set a String.
+    property.  Obviously no method that uses 'String' could get or set a String.
 */
 
 @AMXCreateInfo(paramNames={"name","resource-adapter-name", "connection-definition-name", "optional"})
@@ -83,12 +83,12 @@ public interface ConnectorConnectionPoolConfig
         Specifies if the connection that is about to   
         be returned is to be validated by the container.
       */
-    public boolean  getConnectionValidationRequired();
+    public String  getConnectionValidationRequired();
     
 	/**
 	    See {@link #getConnectionValidationRequired}.
 	*/
-    public void     setConnectionValidationRequired( final boolean required );
+    public void     setConnectionValidationRequired( final String required );
     
 	/**             
         Unique name, identifying one connection-definition in a       
@@ -107,12 +107,12 @@ public interface ConnectorConnectionPoolConfig
         false. One attempt will be made to re-establish failed        
         connections.               
 	*/
-	public boolean  getFailAllConnections();
+	public String  getFailAllConnections();
 	
 	/**
 	    See {@link #getFailAllConnections}.
 	*/
-	public void     setFailAllConnections( final boolean value );
+	public void     setFailAllConnections( final String value );
 
 	/**
         Maximum time in seconds, that a connection can remain idle in 
@@ -250,7 +250,7 @@ public interface ConnectorConnectionPoolConfig
     void    setConnectionLeakTimeoutInSeconds( String timeout );
     
     /**
-        connection-leak-reclaim (boolean) <br>
+        connection-leak-reclaim (String) <br>
          If enabled, connection will be re-usable (put back to pool) after  
          connection-leak-timeout-in-seconds occurs. Default value is false.
          @since AppServer 9.1
@@ -307,7 +307,7 @@ public interface ConnectorConnectionPoolConfig
     void       setValidateAtMostOncePeriodInSeconds( String seconds );
          
     /**
-     lazy-connection-enlistment (boolean)<br>
+     lazy-connection-enlistment (String)<br>
          Enlist a resource to the transaction only when it is actually used in 
          a method, which avoids enlistment of connections, that are not used, 
          in a transaction. This also prevents unnecessary enlistment of connections
@@ -323,7 +323,7 @@ public interface ConnectorConnectionPoolConfig
     void       setLazyConnectionEnlistment( String enlist );
          
     /**
-        lazy-connection-association (boolean)<br>
+        lazy-connection-association (String)<br>
          Connections are lazily associated when an operation  is performed on 
          them. Also they are disassociated when the transaction is completed 
          and a component method ends, which helps to reuse the physical 
@@ -339,7 +339,7 @@ public interface ConnectorConnectionPoolConfig
     void       setLazyConnectionAssociation( String associate);
          
     /**
-        associate-with-thread (boolean)<br>
+        associate-with-thread (String)<br>
         Associate a connection with the thread such that when the
         same thread is in need of a connection, it can reuse the connection 
         already associated with that thread, thereby not incurring the overhead 
@@ -357,7 +357,7 @@ public interface ConnectorConnectionPoolConfig
 
          
     /**
-        match-connections (boolean)<br>
+        match-connections (String)<br>
         To switch on/off connection matching for the pool. It can be set to false if the
         administrator knows that the connections in the pool
         will always be homogeneous and hence a connection picked from the pool

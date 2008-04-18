@@ -60,12 +60,12 @@ public interface WebServiceEndpointConfig extends NamedConfigElement, Container
     /**
     * visibility of this endoint as a service in JBI
     */
-    public boolean getJBIEnabled();
+    public String getJBIEnabled();
 
     /**
     * visibility of this endoint as a service in JBI
     */
-    public void setJBIEnabled( boolean enabled );
+    public void setJBIEnabled( String enabled );
 
     /**
     * Get the web service' monitoring level can be OFF, LOW or HIGH.

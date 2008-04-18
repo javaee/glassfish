@@ -46,8 +46,7 @@ import java.util.Map;
 	{@link StandaloneServerConfig} and {@link ClusteredServerConfig}.
  */
 public interface ServerConfig
-	extends PropertiesAccess, SystemPropertiesAccess,
-	NamedConfigElement, TemplateResolver, Container
+	extends PropertiesAccess, SystemPropertiesAccess, NamedConfigElement, Container
 {
 	/**
 		Get the name of the config element referenced by this server.

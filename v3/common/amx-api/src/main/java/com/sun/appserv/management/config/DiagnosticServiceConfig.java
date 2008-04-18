@@ -54,51 +54,51 @@ public interface DiagnosticServiceConfig
     /**
         @return true if the diagnostic service is computing the checksum for the data
      */
-    public boolean getComputeChecksum();
+    public String getComputeChecksum();
     
     /**
         See {@link #getComputeChecksum}.
      */
-    public void setComputeChecksum(final boolean value);
+    public void setComputeChecksum(final String value);
     
     /**
      @return true if installation log is collected for diagnosis, false otherwise
      */
-    public boolean getCaptureInstallLog();
+    public String getCaptureInstallLog();
     
     /**
         See {@link #getCaptureInstallLog}.
      */
-    public void setCaptureInstallLog(final boolean value);
+    public void setCaptureInstallLog(final String value);
     
     /**
      @return true if operating system information is being collected, false otherwise
      */
-    public boolean getCaptureSystemInfo();
+    public String getCaptureSystemInfo();
     
     /** Set capturing system information to specified value.
      */
-    public void setCaptureSystemInfo(final boolean value);
+    public void setCaptureSystemInfo(final String value);
     
     /**
         @return true if HA data-base information is being collected, false otherwise
      */
-    public boolean getCaptureHADBInfo();
+    public String getCaptureHADBInfo();
     
     /**
         See {@link #getCaptureHADBInfo}.
      */
-    public void setCaptureHADBInfo(final boolean value);
+    public void setCaptureHADBInfo(final String value);
 
     /**
         @return true if app deployment descriptor data is being collected, false otherwise
      */
-    public boolean getCaptureAppDD();
+    public String getCaptureAppDD();
     
     /**
         See {@link #getCaptureAppDD}.
      */
-    public void setCaptureAppDD(final boolean value);
+    public void setCaptureAppDD(final String value);
     
     /**
         The level at which the messages for diagnostic services will
@@ -130,12 +130,12 @@ public interface DiagnosticServiceConfig
         Indicates whether output of verify-config asadmin command is
         included in the diagnostic report.                                               
      */
-    public boolean  getVerifyConfig();
+    public String  getVerifyConfig();
     
     /**
         See {@link #getVerifyConfig}
      */
-    public void     setVerifyConfig( boolean verify );
+    public void     setVerifyConfig( String verify );
 }
 
 

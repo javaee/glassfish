@@ -50,7 +50,7 @@ import com.sun.appserv.management.base.XTypes;
 /**
 	 Configuration for the &lt;jdbc-connection-pool&gt; element.
      <p>
-     NOTE: some getters/setters use java.lang.boolean. This is a problem; these
+     NOTE: some getters/setters use java.lang.String. This is a problem; these
      methods cannot use the AppServer template facility, whereby an Attribute value can be of 
      the form attr-name=${ATTR_VALUE}.  For an example of where/how this facility is used, see
      the &lt;http-listener> element, which looks like this:<br/>
@@ -58,7 +58,7 @@ import com.sun.appserv.management.base.XTypes;
 &lt;http-listener id="http-listener-1" address="0.0.0.0" port="${HTTP_LISTENER_PORT}" acceptor-threads="1" security-enabled="false" default-virtual server="server" server-name="" xpowered-by="true" enabled="true">
 </pre>
     The 'port' attribute above is set to the value "${HTTP_LISTENER_PORT}", which is a system
-    property.  Obviously no method that uses 'boolean' could get or set a String.
+    property.  Obviously no method that uses 'String' could get or set a String.
 */
 
 @AMXCreateInfo(paramNames={"name","datasource-classname", "optional"})
@@ -74,17 +74,17 @@ public interface JDBCConnectionPoolConfig
 	public String	getDatasourceClassname();
 	public void	setDatasourceClassname( String value );
 
-	public boolean	getFailAllConnections();
-	public void	setFailAllConnections( boolean value );
+	public String	getFailAllConnections();
+	public void	setFailAllConnections( String value );
 
 	public String	getIdleTimeoutInSeconds();
 	public void	setIdleTimeoutInSeconds( String value );
 
-	public boolean	getIsConnectionValidationRequired();
-	public void	setIsConnectionValidationRequired( boolean value );
+	public String	getIsConnectionValidationRequired();
+	public void	setIsConnectionValidationRequired( String value );
 
-	public boolean	getIsIsolationLevelGuaranteed();
-	public void	setIsIsolationLevelGuaranteed( boolean value );
+	public String	getIsIsolationLevelGuaranteed();
+	public void	setIsIsolationLevelGuaranteed( String value );
 
 	public String	getMaxPoolSize();
 	public void	setMaxPoolSize( String value );
@@ -117,13 +117,13 @@ public interface JDBCConnectionPoolConfig
         
         @since AppServer 9.0
      */
-    public boolean getNonTransactionalConnections();
+    public String getNonTransactionalConnections();
     
     /**
         @see #getNonTransactionalConnections          
         @since AppServer 9.0
      */
-    public void setNonTransactionalConnections( boolean enabled );
+    public void setNonTransactionalConnections( String enabled );
     
     /**                                
         A pool with this property set to true, can be used by         
@@ -140,13 +140,13 @@ public interface JDBCConnectionPoolConfig
         
         @since AppServer 9.0
      */
-    public boolean getAllowNonComponentCallers();
+    public String getAllowNonComponentCallers();
     
     /**
         @see #getAllowNonComponentCallers          
         @since AppServer 9.0
      */
-    public void setAllowNonComponentCallers( boolean enabled );
+    public void setAllowNonComponentCallers( String enabled );
 
 
     
@@ -169,7 +169,7 @@ public interface JDBCConnectionPoolConfig
     void    setConnectionLeakTimeoutInSeconds( String timeout );
     
     /**
-        connection-leak-reclaim (boolean) <br>
+        connection-leak-reclaim (String) <br>
          If enabled, connection will be re-usable (put back to pool) after  
          connection-leak-timeout-in-seconds occurs. Default value is false.
          @since AppServer 9.1
@@ -226,7 +226,7 @@ public interface JDBCConnectionPoolConfig
     void       setValidateAtMostOncePeriodInSeconds( String seconds );
          
     /**
-     lazy-connection-enlistment (boolean)<br>
+     lazy-connection-enlistment (String)<br>
          Enlist a resource to the transaction only when it is actually used in 
          a method, which avoids enlistment of connections, that are not used, 
          in a transaction. This also prevents unnecessary enlistment of connections
@@ -242,7 +242,7 @@ public interface JDBCConnectionPoolConfig
     void       setLazyConnectionEnlistment( String enlist );
          
     /**
-        lazy-connection-association (boolean)<br>
+        lazy-connection-association (String)<br>
          Connections are lazily associated when an operation  is performed on 
          them. Also they are disassociated when the transaction is completed 
          and a component method ends, which helps to reuse the physical 
@@ -258,7 +258,7 @@ public interface JDBCConnectionPoolConfig
     void       setLazyConnectionAssociation( String associate);
          
     /**
-        associate-with-thread (boolean)<br>
+        associate-with-thread (String)<br>
         Associate a connection with the thread such that when the
         same thread is in need of a connection, it can reuse the connection 
         already associated with that thread, thereby not incurring the overhead 
@@ -276,7 +276,7 @@ public interface JDBCConnectionPoolConfig
 
          
     /**
-        match-connections (boolean)<br>
+        match-connections (String)<br>
         To switch on/off connection matching for the pool. It can be set to false if the
         administrator knows that the connections in the pool
         will always be homogeneous and hence a connection picked from the pool
@@ -310,7 +310,7 @@ public interface JDBCConnectionPoolConfig
 
     
     /**
-       wrap-jdbc-objects (boolean)</br>
+       wrap-jdbc-objects (String)</br>
        When set to true, application will get wrapped jdbc objects for Statement,
        PreparedStatement, CallableStatement, ResultSet, DatabaseMetaData. 
          @since AppServer 9.1

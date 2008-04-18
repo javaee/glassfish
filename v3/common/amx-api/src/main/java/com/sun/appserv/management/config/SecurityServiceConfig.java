@@ -50,8 +50,8 @@ public interface SecurityServiceConfig extends
 /** The j2eeType as returned by {@link com.sun.appserv.management.base.AMX#getJ2EEType}. */
 	public static final String	J2EE_TYPE	= XTypes.SECURITY_SERVICE_CONFIG;
 
-	public boolean	getAuditEnabled();
-	public void	setAuditEnabled( boolean value );
+	public String	getAuditEnabled();
+	public void	setAuditEnabled( String value );
 
 	public String	getAuditModules();
 	public void	setAuditModules( String value );
@@ -97,12 +97,12 @@ public interface SecurityServiceConfig extends
         Tomcat servlet container. It is off by default.    
         @since AppServer 9.0
      */
-    public boolean  getActivateDefaultPrincipalToRoleMapping();
+    public String  getActivateDefaultPrincipalToRoleMapping();
     /**
         @see #getActivateDefaultPrincipalToRoleMapping
         @since AppServer 9.0
      */
-    public void     setActivateDefaultPrincipalToRoleMapping( boolean enabled );
+    public void     setActivateDefaultPrincipalToRoleMapping( String enabled );
 
 // -------------------- Operations --------------------
 

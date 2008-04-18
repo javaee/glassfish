@@ -117,11 +117,11 @@ public interface ClusterConfig
 	/**
 	 * @since AppServer 9.0
 	*/
-	public boolean getHeartbeatEnabled();
+	public String getHeartbeatEnabled();
 	/**
 	 * @since AppServer 9.0
 	*/
-	public void setHeartbeatEnabled(final boolean enabled);
+	public void setHeartbeatEnabled(final String enabled);
 
 	/**
 	 * @since AppServer 9.0
