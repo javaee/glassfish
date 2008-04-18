@@ -173,12 +173,11 @@ public class VirtualServerHandlers {
             
             Map aMap = AMXUtil.getNonSkipPropertiesMap(vs, vsSkipPropsList);
             handlerCtx.setOutputValue("Properties", aMap);
-            Map<String, PropertyConfig> origProps = vs.getPropertyConfigMap();
-            handlerCtx.setOutputValue("accessLogBufferSize", origProps.get("accessLogBufferSize").getValue());
-            handlerCtx.setOutputValue("accessLogWriteInterval", origProps.get("accessLogWriteInterval").getValue());
-            handlerCtx.setOutputValue("accesslog", origProps.get("accesslog").getValue());
-            handlerCtx.setOutputValue("docroot", origProps.get("docroot").getValue());
-            String sso = (String) origProps.get("sso-enabled").getValue();
+            handlerCtx.setOutputValue("accessLogBufferSize", AMXUtil.getPropertyValue(vs, "accessLogBufferSize"));
+            handlerCtx.setOutputValue("accessLogWriteInterval", AMXUtil.getPropertyValue(vs, "accessLogWriteInterval"));
+            handlerCtx.setOutputValue("accesslog", AMXUtil.getPropertyValue(vs, "accesslog"));
+            handlerCtx.setOutputValue("docroot", AMXUtil.getPropertyValue(vs, "docroot"));
+            String sso = AMXUtil.getPropertyValue(vs, "sso-enabled");
             Boolean ssoFlag = false;
             if ( GuiUtil.isEmpty(sso))
                 ssoFlag = false;
@@ -187,7 +186,7 @@ public class VirtualServerHandlers {
             
             handlerCtx.setOutputValue("sso", ssoFlag);
             
-            String accessLoggingFlag = (String) origProps.get("accessLoggingEnabled").getValue();
+            String accessLoggingFlag = AMXUtil.getPropertyValue(vs, "accessLoggingEnabled") ;
             if (GuiUtil.isEmpty(accessLoggingFlag)){
                 handlerCtx.setOutputValue("accessLoggingFlag", "off");
             }else
@@ -217,7 +216,7 @@ public class VirtualServerHandlers {
         
         Map<String, VirtualServerConfig> vsMap = config.getHTTPServiceConfig().getVirtualServerConfigMap();
         if (vsMap.size() > 0){
-            Object[] vsc = vsMap.entrySet().toArray();
+            Object[] vsc = vsMap.values().toArray();
             VirtualServerConfig vs = (VirtualServerConfig) vsc[0];
             handlerCtx.setOutputValue("accesslog", vs.getDefaultValues(XTypes.HTTP_ACCESS_LOG_CONFIG).get("LogDirectory"));
         }else {
