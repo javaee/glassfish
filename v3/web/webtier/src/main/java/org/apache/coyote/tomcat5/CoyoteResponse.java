@@ -1499,11 +1499,14 @@ public class CoyoteResponse
         // Are we in a valid session that is not using cookies?
         final CoyoteRequest hreq = request;
         final Session session = hreq.getSessionInternal(false);
-        if (session == null)
+        if (session == null) {
             return (false);
-        if (hreq.isRequestedSessionIdFromCookie())
+        }
+        if (hreq.isRequestedSessionIdFromCookie() ||
+                (getContext() != null && getContext().getCookies())) {
             return (false);
-        
+        }
+
         if (SecurityUtil.isPackageProtectionEnabled()) {
             return ((Boolean)
                 AccessController.doPrivileged(new PrivilegedAction() {
