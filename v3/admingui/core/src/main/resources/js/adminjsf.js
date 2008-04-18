@@ -1116,8 +1116,8 @@ function checkForNumericValue(value) {
 //Special check for StatementTimeout for JDBC and connector connection pool
 
 function checkPoolAttr(componentId, msg){
-    component = getTextElement(componentId);
-    value = component.value;
+    var component = getTextElement(componentId);
+    var value = component.getProps().value;
     if (value == '' || value == '-1' || checkForIntValue(value))
         return true;
     showAlert(msg + ' ' + getLabel(component));
@@ -1128,9 +1128,11 @@ function checkPoolAttr(componentId, msg){
 
 function checkRequired(componentId, reqMsg){
     component = document.getElementById(componentId);
-    var result = (component.value != '') && (isWhitespace(component.value) == false); 
+    var value = component.getProps().value;
+    var result = (value != '') && (isWhitespace(value) == false); 
     if (result == false) {
         showAlert(reqMsg + ' ' + getLabel(component));
+        component.select();
         component.focus();
     }
     return result;
