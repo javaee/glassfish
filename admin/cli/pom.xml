@@ -137,7 +137,7 @@
                             <mainClass>com.sun.enterprise.admin.cli.AsadminMain</mainClass> 
                         </manifest>
                         <manifestEntries>
-                            <Class-Path>cli-framework-${project.version}.jar glassfish-${project.version}.jar server-mgmt-${project.version}.jar common-util-${project.version}.jar admin-util-${project.version}.jar launcher-${project.version}.jar universal-${project.version}.jar realms-${project.version}.jar backup-${project.version}.jar amx-api-2.0-SNAPSHOT.jar</Class-Path>
+				<Class-Path>cli-framework-${project.version}.jar glassfish-${project.version}.jar server-mgmt-${project.version}.jar common-util-${project.version}.jar admin-util-${project.version}.jar launcher-${project.version}.jar universal-${project.version}.jar realms-${project.version}.jar backup-${project.version}.jar amx-api-${amx-api.version}.jar</Class-Path>
                         </manifestEntries>
 
                     </archive>
