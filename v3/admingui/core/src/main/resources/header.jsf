@@ -52,7 +52,7 @@
 	</sun:head>
 	<sun:body>
 	    <sun:form id="propertyForm">
-		<sun:masthead id="Masthead" productImageURL="/resource/images/PrimaryProductName.gif" productImageDescription="$resource{i18n.mastHeadDescription}" productImageWidth="$int{452}" productImageHeight="$int{23}" 
+		<sun:masthead id="Masthead" productImageURL="/resource/images/PrimaryProductName.gif" productImageDescription="$resource{i18n.mastHeadDescription}" productImageWidth="$int{289}" productImageHeight="$int{23}" 
                     userInfo="#{userName}"  userInfoLabel="$resource{i18n.masthead.userInfoLabel}"
                     roleInfo="#{domainName}" roleInfoLabel="$resource{i18n.masthead.domainInfoLabel}"
                     serverInfo="#{serverName}" serverInfoLabel="$resource{i18n.masthead.serverInfoLabel}"
