@@ -126,7 +126,7 @@ public class NotificationEmitterSupportTest
     }
     
     /** use a big number which might help catch race conditions */
-    private static final int NUM_NOTIFS = 25000;
+    private static final int NUM_NOTIFS = 2000;
 
     private void
     doTest(final boolean async) {
@@ -152,11 +152,13 @@ public class NotificationEmitterSupportTest
                 "Items sent are not the same as the items received";
     }
 
+/*
     public void
     testSync()
             throws Exception {
         doTest(false);
     }
+*/
 
     private final class EmitterThread
             extends RunnableBase {
@@ -172,12 +174,16 @@ public class NotificationEmitterSupportTest
     public void
     testAsync()
             throws Exception {
-        final int numEmitters = 10;
+        final int numEmitters = 50;
 
+        // create them all first...
         final EmitterThread[] emitters = new EmitterThread[numEmitters];
-
         for (int i = 0; i < numEmitters; ++i) {
             emitters[i] = new EmitterThread("emitter-" + i);
+        }
+        
+        // let them fight it out by starting them all at once
+        for (int i = 0; i < numEmitters; ++i) {
             emitters[i].submit(RunnableBase.HowToRun.RUN_IN_SEPARATE_THREAD);
         }
 

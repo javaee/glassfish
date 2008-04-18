@@ -53,6 +53,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.CountDownLatch;
+
+
 /**
 	Features:
 	<ul>
@@ -60,12 +64,14 @@ import java.util.Map;
 	be made on the number of listeners, and the number of listeners of each type</li>
 	<li>optionally sends all Notifications asynchronously via a separate Thread</li>
 	</ul>
+    <p>
+    For async use, a shared sender thread is used for all Notifications.
  */
-public class NotificationEmitterSupport
+public final class NotificationEmitterSupport
     extends NotificationBroadcasterSupport
 {
-	private final boolean               mAsyncDelivery;
-	private volatile SenderThread		mSenderThread;
+	private final boolean                   mAsyncDelivery;
+	private static volatile SenderThread	sSenderThread = null;
 	private final Map<String,Integer>   mListenerTypeCounts;
 	private final NotificationListenerTracking   mListeners;
 	
@@ -75,37 +81,24 @@ public class NotificationEmitterSupport
 		final boolean	asyncDelivery)
 	{
 		mAsyncDelivery	= asyncDelivery;
-		// don't create a thread until needed
-		mSenderThread	= null;
 		
 		mListenerTypeCounts = Collections.synchronizedMap( new HashMap<String,Integer>() );
 		
 		mListeners = new NotificationListenerTracking( true );
 	}
-	
-		private synchronized SenderThread
-	getSenderThread()
-	{
-		if ( mSenderThread == null )
-		{
-			mSenderThread	= mAsyncDelivery ? new SenderThread() : null;
-			if ( mSenderThread != null )
-			{
-				mSenderThread.start();
-			}
-		}
-		
-		return( mSenderThread );
-	}
-	
-		public synchronized void
+    	
+		public void
 	cleanup()
 	{
+        // NO-OP with the shared SenderThread
+        
+        /*
 		if ( mSenderThread != null )
 		{
 			mSenderThread.quit();
 			mSenderThread	= null;
 		}
+        */
 	}
 	
 	/**
@@ -115,12 +108,13 @@ public class NotificationEmitterSupport
 		public void
 	sendAll( )
 	{
-        // use a temp in case variable goes null after we read it
-        final SenderThread senderThread = mSenderThread;
-		if ( senderThread != null )
-		{
-			senderThread.sendAll();
-		}
+        // they will all be sent as fast as the sender thread can go, but the caller wants
+        // them all sent before return
+        
+        if ( sSenderThread != null )
+        {
+            sSenderThread.waitSentAll( this );
+        }
 	}
 	
 		public int
@@ -320,14 +314,15 @@ public class NotificationEmitterSupport
 		then this routine returns immediately and the Notification is sent
 		on a separate Thread.
 	 */
-		public void
+		public synchronized void
 	sendNotification( final Notification notif )
 	{
 		if ( getListenerCount() != 0 )
 		{
-			if ( getSenderThread() != null )
+            final SenderThread senderThread = getSenderThread(mAsyncDelivery);
+			if ( senderThread!= null )
 			{
-				mSenderThread.enqueue( notif );
+				senderThread.enqueue( notif, this );
 			}
 			else
 			{
@@ -335,113 +330,132 @@ public class NotificationEmitterSupport
 			}
 		}
 	}
+    
+    
 	
-	private final class SenderThread extends Thread
+    private static Object SenderThreadLock = new Object();
+		private static SenderThread
+	getSenderThread( final boolean asyncDelivery )
 	{
-		private boolean	mQuit;
-		private List<Notification>	mPendingNotifications;
+        // sSenderThread MUST be 'volatile' for this to be thread-safe
+        if ( sSenderThread != null ) { return sSenderThread; }
+        
+        synchronized( SenderThreadLock )
+        {
+            if ( sSenderThread == null )
+            {
+                sSenderThread	= asyncDelivery ? new SenderThread() : null;
+                if ( sSenderThread != null )
+                {
+                    sSenderThread.start();
+                }
+            }
+        }
 		
+		return( sSenderThread );
+	}
+
+	
+	private static final class SenderThread extends Thread
+	{
+		private volatile boolean	mQuit;
+		private final LinkedBlockingQueue<QueueItem>	mPendingNotifications;
+		
+        private final class QueueItem 
+        {
+            private final Notification               mNotif;
+            private final NotificationEmitterSupport mSender;
+            
+            public QueueItem( final Notification notif, final NotificationEmitterSupport sender )
+            {
+                mNotif  = notif;
+                mSender = sender;
+            }
+        }
+        
 			public
 		SenderThread()
 		{
             setDaemon(true);
 			mQuit	= false;
-			mPendingNotifications	=
-			    Collections.synchronizedList( new LinkedList<Notification>() );
+			mPendingNotifications = new LinkedBlockingQueue<QueueItem>();
 		}
 		
 			public void
 		quit()
 		{
 			mQuit	= true;
-			notifySelf();
-		}
-		
-		
-			private void
-		notifySelf()
-		{
-			synchronized( this )
-			{
-				this.notify();
-			}
+            this.interrupt();
 		}
 		
 			private void
-		enqueue( final Notification notif )
+		enqueue(
+            final Notification notif,
+            final NotificationEmitterSupport sender )
 		{
-			mPendingNotifications.add( notif );
-			notifySelf();
+			mPendingNotifications.add( new QueueItem( notif, sender) );
 		}
-		
+        
         /**
-            This method is synchronized because it can be invoked by either SenderThread
-            or an external call as a regular method.  Besides, there is no point having
-            more than one thread process the queue.
+            A fake Notification to used for waitSentAll()
          */
-			public synchronized boolean
-		sendAll()
-		{
-			Notification	notif			= null;
-			boolean			sentSomething	= false;
-			
-			while ( ! mPendingNotifications.isEmpty() )
-			{
-				sentSomething	= true;	// or rather, we'll try to
-				
-				try
-				{
-					notif = mPendingNotifications.remove( 0 );
-					internalSendNotification( notif );
-				}
-				catch( ArrayIndexOutOfBoundsException e )
-				{
-					// can happen if more than one Thread is in here
-				}
-			}
-			
-			return( sentSomething );
-		}
-		
+        final class CountDownLatchNofication extends Notification
+        {
+            final CountDownLatch mLatch = new CountDownLatch(1);
+            CountDownLatchNofication( final Object source)
+            {
+                super( "CountDownLatchNofication", source, 0 );
+            }
+        }
+        
+        /**
+            Ensure that all existing items have been sent.
+            Check the queue for empty does not work; we need to see that thread has
+            not only emptied the queue, but grabbed the next item.
+         */
+            public void
+        waitSentAll( final NotificationEmitterSupport sender )
+        {
+            final CountDownLatchNofication notif =  new CountDownLatchNofication(this);
+            enqueue( notif, sender );
+            try { notif.mLatch.await(); } catch( InterruptedException e) { e.printStackTrace(); }
+        }
+     		
 			public void
 		run()
 		{
-			// wake up every 5 minutes
-			final int	INTERVAL	=  5 * 1000;
-			
-			mQuit	= false;
-			
 			while ( ! mQuit )
 			{
-				try
-				{
-					synchronized( this )
-					{
-						wait( INTERVAL );
-					}
-				}
-				catch( InterruptedException e )
-				{
-				}
-				
-				if ( mQuit )
-				{
-					break;
-				}
-				
-				final boolean	sentSomething	= sendAll();
-				
-				// nothing available, get rid of ourself till needed
-				if ( ! sentSomething )
-				{
-					cleanup();
-					// now no new ones can be added, but ensure any pending are sent
-					sendAll();
-					break;
-				}
+                try
+                {
+                    final QueueItem    item = mPendingNotifications.take();
+                    final Notification notif = item.mNotif;
+                    
+                    if ( notif instanceof CountDownLatchNofication )
+                    {
+                        // internal mechanism, see waitEmpty()
+                        ((CountDownLatchNofication)notif).mLatch.countDown();
+                    }
+                    else
+                    {
+                        item.mSender.internalSendNotification( notif );
+                    }
+                }
+                catch( InterruptedException e )
+                {
+                    // what does this mean if interrupted other than by quit() ?
+                    // Presumably we're supposed to stop working
+                    mQuit = true;
+                }
 			}
 		}
 	}
-
 }
+
+
+
+
+
+
+
 
