@@ -18,15 +18,24 @@
         </excludes>	  
       </resource>
     </resources>
+    <plugins>
+	    <plugin>
+	      <!--
+	        Use JDBC 3.0 API regardless of which JDK we are building with.
+	      -->
+	      <artifactId>maven-compiler-plugin</artifactId>
+	      <configuration>
+	        <compilerArgument>-Xbootclasspath/p:${project.basedir}/jdbc30.jar</compilerArgument>
+	      </configuration>
+	    </plugin>
+	  </plugins>
   </build>
 
   <dependencies>
-
     <dependency>
       <groupId>org.glassfish.connectors.jdbc-ra.jdbc-core</groupId>
       <artifactId>jdbc-core</artifactId>
       <version>${project.parent.version}</version>
     </dependency>
-
   </dependencies>
 </project>

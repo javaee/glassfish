@@ -87,29 +87,8 @@
 
   <modules>
     <module>jdbc-core</module>
+    <module>jdbc30</module>
+    <module>jdbc40</module>
     <module>jdbc-ra-distribution</module>
   </modules>
-
-<!--  <profiles>
-    <profile>
-      <id>jdk15</id>
-      <activation>
-        <jdk>1.5</jdk>
-      </activation>
-      <modules>
-        <module>jdbc30</module>
-        <module>jdbc-ra-distribution</module>
-      </modules>
-    </profile>
-    <profile>
-      <id>jdk16</id>
-      <activation>
-        <jdk>1.6</jdk>
-      </activation>
-      <modules>
-        <module>jdbc40</module>
-        <module>jdbc-ra-distribution</module>
-      </modules>
-    </profile>
-  </profiles>-->
 </project>
