@@ -1124,7 +1124,7 @@ public class ServerHandlers {
             if(javaConfig.getProfilerConfig() != null) {
                 ProfilerConfig profilerConfig = javaConfig.getProfilerConfig();
                 String name = profilerConfig.getName();
-                boolean enabled = profilerConfig.getEnabled();
+                String enabled = profilerConfig.getEnabled();
                 String classPath = profilerConfig.getClasspath();
                 String nativeLibrary = profilerConfig.getNativeLibraryPath();
                 handlerCtx.setOutputValue("Classpath", classPath);
@@ -1179,7 +1179,7 @@ public class ServerHandlers {
             javaConfig.createProfilerConfig((String)handlerCtx.getInputValue("ProfilerName"), map);
         } else {
             profiler.setClasspath(classpath);
-            profiler.setEnabled((profilerenabled == null) ? false : profilerenabled);
+            profiler.setEnabled((profilerenabled == null) ? "false" : ""+profilerenabled);
             profiler.setNativeLibraryPath(nativelibrary);
         }
     }

@@ -924,7 +924,7 @@ public class HttpServiceHandlers {
                     oneRow.put("name", name);
                     oneRow.put("selected", (hasOrig)? GuiUtil.isSelected(name, selectedList): false);
                     HTTPListenerConfig httpConfig = (HTTPListenerConfig)configE; 
-                    boolean enabled = httpConfig.getEnabled();
+                    String enabled = httpConfig.getEnabled();
                     String ntwkAddress = httpConfig.getAddress();
                     String listPort = httpConfig.getPort();
                     String virtualServer = httpConfig.getDefaultVirtualServer();
@@ -1149,7 +1149,7 @@ public class HttpServiceHandlers {
                 httpListConfig.setPort((String)handlerCtx.getInputValue("ListenerPort"));
                 httpListConfig.setDefaultVirtualServer(virtualServer);
                 httpListConfig.setServerName(serverName);
-                httpListConfig.setEnabled((Boolean)handlerCtx.getInputValue("Listener"));
+                httpListConfig.setEnabled(""+ handlerCtx.getInputValue("Listener"));
                 httpListConfig.setSecurityEnabled((Boolean)handlerCtx.getInputValue("security"));
                 httpListConfig.setRedirectPort((String)handlerCtx.getInputValue("RedirectPort"));
                 httpListConfig.setAcceptorThreads((String)handlerCtx.getInputValue("Acceptor"));

@@ -314,7 +314,7 @@ public class SSLHandlers {
                                 vs,
                                 serverName,
                                 options);
-                        httpConfig.setEnabled(GuiUtil.getBooleanValue(props, "enabled"));
+                        httpConfig.setEnabled( "" + GuiUtil.getBooleanValue(props, "enabled"));
                         httpConfig.setSecurityEnabled(GuiUtil.getBooleanValue(props, "securityEnabled"));
                         httpConfig.setRedirectPort((String)props.get("redirectPort"));
                         httpConfig.setAcceptorThreads((String)props.get("acceptor-threads"));

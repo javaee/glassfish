@@ -74,7 +74,6 @@ import org.glassfish.admingui.util.AMXRoot;
 import org.glassfish.admingui.util.GuiUtil;
 import org.glassfish.admingui.util.TargetUtil;
 
-import com.sun.appserv.management.base.AMX;
 import com.sun.appserv.management.config.AppClientModuleConfig;
 import com.sun.appserv.management.config.ApplicationConfig;
 import com.sun.appserv.management.config.ClusterConfig;
@@ -1171,7 +1170,7 @@ public class ApplicationHandlers {
                     oneRow.put("lbEnabled", "");
                     oneRow.put("timeout", "");
                 }else{
-                    oneRow.put("enabled", refObject.getEnabled()? "true" : "false");
+                    oneRow.put("enabled", refObject.getEnabled());
                     oneRow.put("lbEnabled", refObject.getLBEnabled()? "true" : "false");
                     oneRow.put("timeout", refObject.getDisableTimeoutInMinutes());
                 }
@@ -1231,7 +1230,7 @@ public class ApplicationHandlers {
      )
     public static void changeAppEnableForTarget(HandlerContext handlerCtx){
         List<Map> selectedRows = (List) handlerCtx.getInputValue("selectedRows");
-        boolean enabled = ((Boolean)handlerCtx.getInputValue("enabled")).booleanValue();
+        String enabled = "" + handlerCtx.getInputValue("enabled");
         boolean LB = ((Boolean)handlerCtx.getInputValue("LB")).booleanValue();
         try{
             for(Map oneRow: selectedRows){
@@ -1241,9 +1240,10 @@ public class ApplicationHandlers {
                 ObjectName objName = new ObjectName((String)oneRow.get("objectName"));
                 Set<DeployedItemRefConfig> appRefs = AMXRoot.getInstance().getQueryMgr().queryPatternSet(objName);
                 for(DeployedItemRefConfig ref : appRefs){
-                    if (LB)  //should only be 1 in the set.
-                        ref.setLBEnabled(enabled);
-                    else
+                    //TODO V3
+//                    if (LB)  //should only be 1 in the set.
+//                        ref.setLBEnabled(enabled);
+//                    else
                         ref.setEnabled(enabled); 
                 }
             }
