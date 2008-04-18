@@ -48,7 +48,6 @@
     <!-- Don't change packaging to bundle as there are issues
          using both hk2 and bundle plugin -->
     <packaging>jar</packaging>
-    <version>${grizzly.version}</version>
     <name>grizzly-http repackaged as HK2 and OSGi bundle</name>
     <description>Grizzly HTTP/Comet Module for GlassFish v3</description>
     <build>

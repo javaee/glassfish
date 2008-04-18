@@ -46,7 +46,6 @@
     <artifactId>grizzly-jruby-module</artifactId>
     <!-- Don't change packaging to bundle -->
     <packaging>hk2-jar</packaging>
-    <version>${glassfish-jruby.version}</version>
     <name>grizzly-jruby adapter repackaged as OSGi and HK2 module</name>
     <description>JRUBY grizzly adapter for GlassFish v3</description>
 
@@ -133,7 +132,7 @@
         <dependency>
             <groupId>org.glassfish.external</groupId>
             <artifactId>grizzly-module</artifactId>
-            <version>${grizzly.version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>com.sun.enterprise</groupId>

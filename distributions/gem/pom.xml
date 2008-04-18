@@ -68,7 +68,7 @@
                 <artifactItem>
                   <groupId>org.glassfish.distributions</groupId>
                   <artifactId>nucleus</artifactId>
-                  <version>${nucleus.version}</version>
+                  <version>${project.version}</version>
                   <type>zip</type>
                   <overWrite>true</overWrite>
                 </artifactItem>
@@ -108,7 +108,7 @@
       <plugin>
         <groupId>org.jruby.plugins</groupId>
         <artifactId>jruby-rake-plugin</artifactId>
-        <version>${jruby.version}</version>
+        <version>${project.version}</version>
         <executions>
           <execution>
             <id>download-actionwebservice</id>
