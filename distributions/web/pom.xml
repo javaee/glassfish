@@ -87,7 +87,7 @@
         <dependency>
             <groupId>org.glassfish.external</groupId>
             <artifactId>javadb</artifactId>
-            <version>10.2.2.1-1-SNAPSHOT</version>
+            <version>${project.version}</version>
             <type>distribution-fragment</type>
         </dependency>
         <dependency>
@@ -170,7 +170,7 @@
         <dependency>
            <groupId>org.glassfish.registration</groupId>
            <artifactId>registration-impl</artifactId>
-           <version>${pe.version}</version>
+           <version>${project.version}</version>
         </dependency>
     </dependencies>
 </project>
