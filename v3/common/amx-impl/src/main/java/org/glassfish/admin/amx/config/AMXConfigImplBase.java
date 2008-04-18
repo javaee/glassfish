@@ -1214,8 +1214,6 @@ cdebug( "removeConfig: by  j2eeType + name" );
     {
         if ( ! _namesInited ) initNames();
         
-        final DelegateToConfigBeanDelegate delegate = getConfigDelegate();
-        
         String attrType = String.class.getName();
         String amxAttrName = NameMapping.getInstance(getJ2EEType()).getAMXName( xmlAttrName );
         if ( amxAttrName == null )
