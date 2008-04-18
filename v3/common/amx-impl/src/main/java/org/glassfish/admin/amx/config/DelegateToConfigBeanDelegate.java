@@ -232,8 +232,9 @@ public final class DelegateToConfigBeanDelegate extends DelegateBase
     {
         private static final List<PropertyChangeEvent> EMPTY = Collections.emptyList();
         private volatile List<PropertyChangeEvent> mChangeEvents = EMPTY;
+        private final ConfigBean    mTarget;
         
-        MyTransactionListener() {}
+        MyTransactionListener( final ConfigBean target ) { mTarget = target;}
         
         public void transactionCommited(List<PropertyChangeEvent> changes) {
             if ( mChangeEvents != EMPTY )
@@ -242,6 +243,23 @@ public final class DelegateToConfigBeanDelegate extends DelegateBase
             }
             
             mChangeEvents = changes;
+            
+            for( final PropertyChangeEvent event : changes )
+            {
+                final Object source = event.getSource();
+                if ( source instanceof ConfigBeanProxy )
+                {
+                    final Dom dom = Dom.unwrap( (ConfigBeanProxy)source );
+                    if ( dom instanceof ConfigBeanProxy )
+                    {
+                        if ( mTarget == (ConfigBean)dom )
+                        {
+                            debug( "added change event" );
+                            mChangeEvents.add( event );
+                        }
+                    }
+                }
+            }
         }
         List<PropertyChangeEvent>  getChangeEvents() { return mChangeEvents; }
     };
@@ -332,7 +350,7 @@ public final class DelegateToConfigBeanDelegate extends DelegateBase
         debug( "DelegateToConfigBeanDelegate.setAttributes(): " + attrsIn.size() + " attributes: {" +
             CollectionUtil.toString(amxAttrs.keySet()) + "} mapped to xml names {" + CollectionUtil.toString(xmlAttrs.keySet()) + "}");
         
-        final MyTransactionListener  myListener = new MyTransactionListener();
+        final MyTransactionListener  myListener = new MyTransactionListener( mConfigBean );
         Transactions.get().addTransactionsListener(myListener);
             
         // results should contain only those that succeeded which will be all or none
