@@ -327,14 +327,20 @@ public final class DelegateToConfigBeanDelegate extends DelegateBase
                         valueIn.getClass().getName() + " to " + value.getClass().getName() );
                 }
                 
-                if ( ! (value instanceof String) )
-                {
-                    debug( "Attribute " + amxAttrName + " is not a String, IGNORING" );
-                }
-                else
+                // We accept only Strings or null values
+                if ( valueIn == null || (value instanceof String))
                 {
                     xmlAttrs.put( xmlName, (String)value);
                 }
+                else
+                {
+                    debug( "Attribute " + amxAttrName + "<=>" + xmlName +
+                        " is of class " + ((value == null) ? null : value.getClass().getName()) );
+                }
+            }
+            else
+            {
+                debug( "WARNING: setAttributes(): no xmlName match found for AMX attribute: " + amxAttrName );
             }
         }
         
