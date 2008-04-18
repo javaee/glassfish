@@ -740,7 +740,7 @@ public class AMXConfigImplBase extends AMXImplBase
         catch( Throwable t )
         {
             cdebug( ExceptionUtil.toString(t) );
-            t.printStackTrace();
+            throw new RuntimeException( t );
         }
 
         final AMXConfigLoader  amxLoader = SingletonEnforcer.get( AMXConfigLoader.class );
