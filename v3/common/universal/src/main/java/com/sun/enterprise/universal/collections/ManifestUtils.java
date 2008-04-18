@@ -93,6 +93,13 @@ public class ManifestUtils {
         return pristine;
     }
 
+    
+    public final static String encode(String s) {
+        // do DOS linefeed first!
+        s = s.replaceAll("\r\n", EOL_TOKEN);
+        
+        return s.replaceAll("\n", EOL_TOKEN);
+    }
     private final static String decode(String s) {
         // replace "null" with null
         if(s == null || s.equals("null"))

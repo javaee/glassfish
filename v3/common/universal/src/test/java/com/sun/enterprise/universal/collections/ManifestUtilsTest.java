@@ -107,4 +107,21 @@ public class ManifestUtilsTest {
         assertEquals(normMainAtt.get("mainKey"), "mainValue");
     }
 
+    @Test
+    public void encode() {
+        String noLinefeed = "abc";
+        String linefeed = "abc\ndef";
+        String dosfeed = "abc\r\ndef";
+        String s1 = ManifestUtils.encode(noLinefeed);
+        String s2 = ManifestUtils.encode(linefeed);
+        String s3 = ManifestUtils.encode(dosfeed);
+        
+        String desired = "abc" + ManifestUtils.EOL_TOKEN + "def";
+        
+        assertEquals(noLinefeed, s1);
+        assertFalse(linefeed.equals(s2));
+        assertFalse(dosfeed.equals(s3));
+        assertEquals(s2, desired);
+        assertEquals(s3, desired);
+    }
 }

@@ -38,6 +38,8 @@ package com.sun.enterprise.v3.admin;
 
 import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.module.impl.ModulesRegistryImpl;
+import com.sun.enterprise.universal.collections.ManifestUtils;
+import com.sun.enterprise.v3.common.PropsFileActionReporter;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.ActionReport.ExitCode;
 import org.glassfish.api.admin.AdminCommand;
@@ -70,6 +72,15 @@ public class DumpHK2Command implements AdminCommand {
 
         ActionReport report = context.getActionReport();
         report.setActionExitCode(ExitCode.SUCCESS);
-        report.setMessage(baos.toString());
+        String msg = baos.toString();
+        
+        // the proper way to do this is to check the user-agent of the caller,
+        // but I can't access that -- so I'll just check the type of the 
+        // ActionReport.  If we are sending back to CLI then linefeeds will 
+        // cause problems.  Manifest.write() is OK but Manifest.read() explodes!
+        if(report instanceof PropsFileActionReporter) {
+            msg = ManifestUtils.encode(msg);
+        }
+        report.setMessage(msg);
     }
 }
