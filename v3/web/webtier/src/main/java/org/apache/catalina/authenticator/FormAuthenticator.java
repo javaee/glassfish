@@ -93,7 +93,7 @@ import com.sun.org.apache.commons.logging.LogFactory;
  *
  * @author Craig R. McClanahan
  * @author Remy Maucherat
- * @version $Revision: 1.8 $ $Date: 2007/07/23 16:48:23 $
+ * @version $Revision: 1.8.2.2 $ $Date: 2008/04/17 18:37:04 $
  */
 
 public class FormAuthenticator
@@ -310,7 +310,13 @@ public class FormAuthenticator
             // for the context root, and have the welcome page mechanism take
             // care of it
             requestURI = hreq.getContextPath() + "/";
-            saveRequest(requestURI, hreq.getMethod(), session);
+            register(request, response, principal, Constants.FORM_METHOD,
+                     (String) session.getNote(Constants.SESS_USERNAME_NOTE),
+                     (String) session.getNote(Constants.SESS_PASSWORD_NOTE));
+            String ssoId = (String) request.getNote(Constants.REQ_SSOID_NOTE);
+            if (ssoId != null) {
+                associate(ssoId, session);
+            }
         }
 
         if (log.isDebugEnabled()) {
