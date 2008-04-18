@@ -72,7 +72,7 @@
         <dependency>
             <groupId>org.glassfish.common</groupId>
             <artifactId>glassfish-api</artifactId>
-            <version>10.0-tp-2-SNAPSHOT</version>
+	    <version>${glassfish.version}</version>
         </dependency>
     </dependencies>
 </project>

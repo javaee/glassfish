@@ -170,7 +170,7 @@
     </dependencies>
     
     <properties>
-      <hk2.version>0.2</hk2.version>
-      <amx-api.version>2.0-SNAPSHOT</amx-api.version>
+        <hk2.version>0.2</hk2.version>
+        <glassfish.version>10.0-tp-2-SNAPSHOT</glassfish.version>
     </properties>
 </project>
