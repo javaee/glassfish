@@ -41,6 +41,9 @@
 <project name="GlassFish Installer build" default="all" basedir=".">  
 
     <property name="component.name" value="installer"/>
+    <property name="src.dir" value="${basedir}/src/main/java"/>
+    <property name="component.classes.dir" value="${basedir}/target/classes"/>
+    <property name="component.lib.dir" value="${basedir}/target/lib"/>
     <property name="maven.repo.local" value="${user.home}/.m2/repository"/>
     <property name="stage.dir" value="${basedir}/target/stage" />
     <property name="tmp.dir" value="${basedir}/target/tmp" />
@@ -48,7 +51,7 @@
     <property name="gf.zip.dir" value="${basedir}/../packager/build" />
       
     <!-- all -->
-    <target name="all" depends="extract.oi, assemble, package"  description="Build entire component">
+    <target name="all" depends="extract.oi, compile, assemble, package"  description="Build entire component">
     </target>
 
     <target name="extract.oi"  description="Extracting openInstaller files">
@@ -57,6 +60,30 @@
             dest="${stage.dir}"/>
         <unzip src="${maven.repo.local}/org/openinstaller/resources/0.9.4/resources-0.9.4.zip"
             dest="${stage.dir}"/>
+    </target>
+
+    <target name="compile"  description="Compiling configurator">
+
+         <mkdir dir="${component.classes.dir}"/>
+
+         <javac srcdir="${src.dir}" 
+               destdir="${component.classes.dir}"               
+               failonerror="true">
+               <classpath>              
+                   <pathelement location="${stage.dir}/install/lib/engine.jar"/>
+                   <pathelement location="${stage.dir}/install/lib/config.jar"/>
+                   <pathelement location="${stage.dir}/install/lib/providers/providers.jar"/>
+               </classpath>
+        </javac>
+ 
+
+        <jar jarfile="${stage.dir}/install-configurator.jar">
+            <fileset dir="${component.classes.dir}">
+                <include name="com/sun/enterprise/**/*.class"/>
+            </fileset>
+        </jar>
+
+
     </target>
 
     <target name="assemble"  description="Assembling installer distribution layout">
@@ -92,10 +119,9 @@
          <echo message="Staging product payload"/>
 
          <echo message="Copying Glassfish zip file"/>
-<!-- 
+ 
          <copy tofile="${stage.dir}/product/packages/glassfish.zip"
-               file="${gf.zip.dir}/V3IPSImage_Installer.zip" />
--->
+               file="${gf.zip.dir}/V3IPSImage_GF.zip" />
 
          <echo message="Copying openInstaller zip files"/>
  
@@ -119,7 +145,11 @@
          <echo message="Creating updatetool bootstrap zip file"/>
 
          <copy tofile="${tmp.dir}/updatetool/lib/ucbootstrap.jar"
-             file="${maven.repo.local}/com/sun/pkg/client/ucbootstrap/0.0.0.1/ucbootstrap-0.0.0.1.jar"/>
+             file="${maven.repo.local}/com/sun/pkg/client/ucbootstrap/0.0.0.2/ucbootstrap-0.0.0.2.jar"/>
+
+         <copy todir="${tmp.dir}/updatetool/bin">                        
+             <fileset dir="${resources.dir}/configurators" excludes=".svn"/>
+         </copy>   
 
          <zip destfile="${stage.dir}/product/packages/updatetool.zip"
              basedir="${tmp.dir}" />
