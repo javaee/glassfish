@@ -317,9 +317,9 @@ class Validator {
                         // Treat "UTF-16", "UTF-16BE", and "UTF-16LE" as
                         // identical.
                         if (value != null
-                                && !value.equals(bom) 
-                                && (!value.startsWith("UTF-16")
-                                    || !bom.startsWith("UTF-16"))) {
+                                && !value.equalsIgnoreCase(bom) 
+                                && (!value.toLowerCase().startsWith("utf-16")
+                                    || !bom.toLowerCase().startsWith("utf-16"))) {
                             err.jspError(
                                 n,
                                 "jsp.error.bom_tagdir_encoding_mismatch",
@@ -385,9 +385,9 @@ class Validator {
              * pattern matches this page.
              * Treat "UTF-16", "UTF-16BE", and "UTF-16LE" as identical.
              */
-	    if (configEnc != null && !pageDirEnc.equals(configEnc) 
-		    && (!pageDirEnc.startsWith("UTF-16")
-			|| !configEnc.startsWith("UTF-16"))) {
+	    if (configEnc != null && !pageDirEnc.equalsIgnoreCase(configEnc) 
+		    && (!pageDirEnc.toLowerCase().startsWith("utf-16")
+			|| !configEnc.toLowerCase().startsWith("utf-16"))) {
 		err.jspError(pageDir,
                              "jsp.error.config_pagedir_encoding_mismatch",
 			     configEnc, pageDirEnc);
@@ -402,9 +402,9 @@ class Validator {
              */
             if (root.isXmlSyntax() && root.isEncodingSpecifiedInProlog()) {
 		String pageEnc = root.getPageEncoding();
-		if (!pageDirEnc.equals(pageEnc) 
-		        && (!pageDirEnc.startsWith("UTF-16")
-			    || !pageEnc.startsWith("UTF-16"))) {
+		if (!pageDirEnc.equalsIgnoreCase(pageEnc) 
+		        && (!pageDirEnc.toLowerCase().startsWith("utf-16")
+			    || !pageEnc.toLowerCase().startsWith("utf-16"))) {
 		    err.jspError(pageDir,
                                  "jsp.error.prolog_pagedir_encoding_mismatch",
 				 pageEnc, pageDirEnc);
@@ -418,9 +418,9 @@ class Validator {
              */
             if (root.hasBom()) {
                 String pageEnc = root.getPageEncoding();
-                if (!pageDirEnc.equals(pageEnc) 
-                        && (!pageDirEnc.startsWith("UTF-16")
-                            || !pageEnc.startsWith("UTF-16"))) {
+                if (!pageDirEnc.equalsIgnoreCase(pageEnc) 
+                        && (!pageDirEnc.toLowerCase().startsWith("utf-16")
+                            || !pageEnc.toLowerCase().startsWith("utf-16"))) {
                     err.jspError(pageDir,
                                  "jsp.error.bom_pagedir_encoding_mismatch",
                                  pageEnc, pageDirEnc);

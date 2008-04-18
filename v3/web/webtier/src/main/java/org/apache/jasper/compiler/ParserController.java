@@ -284,9 +284,9 @@ class ParserController implements TagConstants {
              * that in the JSP config element, treating "UTF-16", "UTF-16BE",
              * and "UTF-16LE" as identical.
              */
-            if (!jspConfigPageEnc.equals(sourceEnc)
-                    && (!jspConfigPageEnc.startsWith("UTF-16")
-                        || !sourceEnc.startsWith("UTF-16"))) {
+            if (!jspConfigPageEnc.equalsIgnoreCase(sourceEnc)
+                    && (!jspConfigPageEnc.toLowerCase().startsWith("utf-16")
+                        || !sourceEnc.toLowerCase().startsWith("utf-16"))) {
                 err.jspError("jsp.error.prolog_config_encoding_mismatch",
                              sourceEnc, jspConfigPageEnc);
             }
@@ -298,9 +298,9 @@ class ParserController implements TagConstants {
              * that in the JSP config element, treating "UTF-16", "UTF-16BE",
              * and "UTF-16LE" as identical.
              */
-            if (!jspConfigPageEnc.equals(sourceEnc)
-                    && (!jspConfigPageEnc.startsWith("UTF-16")
-                        || !sourceEnc.startsWith("UTF-16"))) {
+            if (!jspConfigPageEnc.equalsIgnoreCase(sourceEnc)
+                    && (!jspConfigPageEnc.toLowerCase().startsWith("utf-16")
+                        || !sourceEnc.toLowerCase().startsWith("utf-16"))) {
                 err.jspError("jsp.error.bom_config_encoding_mismatch",
                              sourceEnc, jspConfigPageEnc);
             }
@@ -383,7 +383,7 @@ class ParserController implements TagConstants {
                 hasBom = true;
 	    }
 
-	    if (!isXml && sourceEnc.equals("UTF-8") && !hasBom) {
+	    if (!isXml && sourceEnc.equalsIgnoreCase("utf-8") && !hasBom) {
 		/*
 		 * We don't know if we're dealing with XML or standard syntax.
 		 * Therefore, we need to check to see if the page contains
