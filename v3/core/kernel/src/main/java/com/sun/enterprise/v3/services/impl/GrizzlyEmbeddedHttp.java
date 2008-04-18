@@ -92,7 +92,8 @@ public class GrizzlyEmbeddedHttp extends SelectorThread implements EndpointMappe
     @Override
     protected void initController() {
         super.initController();
-        selectorHandler.setReuseAddress(false);
+        // Re-start problem when set to true as of 04/18.
+        //selectorHandler.setReuseAddress(false);
         DefaultProtocolChainInstanceHandler instanceHandler = new DefaultProtocolChainInstanceHandler() {
 
             private final ConcurrentLinkedQueue<ProtocolChain> chains = 
