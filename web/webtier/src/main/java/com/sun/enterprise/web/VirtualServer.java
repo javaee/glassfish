@@ -63,6 +63,7 @@ import org.apache.catalina.Pipeline;
 import org.apache.catalina.Valve;
 import org.apache.catalina.core.StandardHost;
 import org.apache.catalina.deploy.ErrorPage;
+import org.apache.catalina.loader.WebappClassLoader;
 import org.apache.catalina.valves.RemoteAddrValve;
 import org.apache.catalina.valves.RemoteHostValve;
 
@@ -550,10 +551,9 @@ public class VirtualServer extends StandardHost {
      *              it specifies a value for the virtual-servers attribute) or
      *              if there was an error loading its deployment descriptors.
      */
-    protected String getDefaultContextPath(Server serverBean) {
+    protected String getDefaultContextPath(Domain domain) {
 
         String contextRoot = null;
-        Domain domain = com.sun.enterprise.v3.server.Globals.getDefaultHabitat().getComponent(Domain.class);
         Applications appsBean = domain.getApplications();
 
         String wmID = getDefaultWebModuleID();
@@ -605,34 +605,26 @@ public class VirtualServer extends StandardHost {
      * this virtual server's list of modules (only then will one know whether
      * the user has already configured a default web module or not).
      */
-    protected WebModuleConfig createSystemDefaultWebModuleIfNecessary() {
+    protected WebModuleConfig createSystemDefaultWebModuleIfNecessary(WebDeployer webDeployer) {
 
         WebModuleConfig wmInfo = null;
-        /*
-        //
+        
         // Add a default context only if one hasn't already been loaded
         // and then too only if docroot is not null
         //
         String docroot = getAppBase();
         if (getDefaultWebModuleID() == null && (findChild("") == null)
                 && (docroot != null)) {
-            wmInfo = new WebModuleConfig();
-            WebModule wm = new WebModule();
-            try {
-            wm.setName(Constants.DEFAULT_WEB_MODULE_NAME);
-            wm.setContextRoot("");
-            wm.setLocation(docroot);
-            wmInfo.setBean(wm);
-            } catch (PropertyVetoException pve) {
-                // XXX
-            }
-            WebDeployer webDeployer = Globals.getGlobals().getDefaultHabitat().
-                getComponent(WebDeployer.class);
             
-            wmInfo.setDescriptor(
-                webDeployer.getDefaultWebXMLBundleDescriptor());
+            WebBundleDescriptor wbd = webDeployer.getDefaultWebXMLBundleDescriptor();
  
-            WebBundleDescriptor wbd = wmInfo.getDescriptor();
+            wmInfo = new WebModuleConfig();
+            wbd.setName(Constants.DEFAULT_WEB_MODULE_NAME);
+            wbd.setContextRoot("");
+            wmInfo.setLocation(docroot);            
+            wmInfo.setDescriptor(wbd);
+            wmInfo.setParentLoader(EmbeddedWebContainer.class.getClassLoader());
+            wmInfo.setAppClassLoader(new WebappClassLoader(wmInfo.getParentLoader()));
             if ( wbd.getApplication() == null ) {
                 Application application = new Application();
                 application.setVirtual(true);
@@ -640,8 +632,9 @@ public class VirtualServer extends StandardHost {
                 wbd.setApplication(application);
             }
         }
-        */
+        
         return wmInfo;
+        
     }
 
 
