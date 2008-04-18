@@ -68,7 +68,7 @@ class GFDomainLauncher extends GFLauncher {
 
     List<File> getMainClasspath() throws GFLauncherException {
         List<File> list = new ArrayList<File>();
-        File dir = new File(getEnvProps().get(INSTALL_ROOT_PROPERTY));
+        File dir = new File(getEnvProps().get(INSTALL_ROOT_PROPERTY),"modules");
 
         File[] matches = dir.listFiles(new FilenameFilter() {
             public boolean accept(File dir, String name) {
