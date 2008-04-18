@@ -230,31 +230,25 @@ public final class DelegateToConfigBeanDelegate extends DelegateBase
 
     private static final class MyTransactionListener implements TransactionListener
     {
-        private static final List<PropertyChangeEvent> EMPTY = Collections.emptyList();
-        private volatile List<PropertyChangeEvent> mChangeEvents = EMPTY;
+        private final List<PropertyChangeEvent> mChangeEvents = new ArrayList<PropertyChangeEvent>();
         private final ConfigBean    mTarget;
         
         MyTransactionListener( final ConfigBean target ) { mTarget = target;}
         
         public void transactionCommited(List<PropertyChangeEvent> changes) {
-            if ( mChangeEvents != EMPTY )
-            {
-                throw new IllegalStateException( "can commit only once!" );
-            }
-            
-            mChangeEvents = changes;
-            
+            // include only events that match the desired config bean; other transactions
+            // could generate events on other ConfigBeans. For that matter, it's unclear
+            // why more than one transaction on the same ConfigBean couldn't be "heard" here.
             for( final PropertyChangeEvent event : changes )
             {
                 final Object source = event.getSource();
                 if ( source instanceof ConfigBeanProxy )
                 {
                     final Dom dom = Dom.unwrap( (ConfigBeanProxy)source );
-                    if ( dom instanceof ConfigBeanProxy )
+                    if ( dom instanceof ConfigBean )
                     {
                         if ( mTarget == (ConfigBean)dom )
                         {
-                            debug( "added change event" );
                             mChangeEvents.add( event );
                         }
                     }
@@ -379,7 +373,8 @@ public final class DelegateToConfigBeanDelegate extends DelegateBase
             final List<PropertyChangeEvent> changeEvents = myListener.getChangeEvents();
             if ( successfulAttrs.size() != changeEvents.size() )
             {
-                throw new IllegalStateException( "List<PropertyChangeEvent> does not match the number of Attributes" );
+                throw new IllegalStateException( "List<PropertyChangeEvent> size=" + changeEvents.size() +
+                    " does not match the number of Attributes, size = " + successfulAttrs.size() );
             }
             
             //
