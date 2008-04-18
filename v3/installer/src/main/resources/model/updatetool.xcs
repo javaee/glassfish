@@ -69,12 +69,18 @@
              <desc xml:lang="en-US">Allow anonymous usage data collection</desc>
            </info>
         </prop>  
-        <prop oor:name="PROXY_URL" oor:type="xs:string">
+        <prop oor:name="PROXY_HOST" oor:type="xs:string">
            <value></value>
            <info>
-             <desc xml:lang="en-US">Proxy URL value</desc>
+             <desc xml:lang="en-US">Proxy Host value</desc>
            </info>
-        </prop>        
+        </prop>  
+           <prop oor:name="PROXY_PORT" oor:type="xs:string">
+           <value></value>
+           <info>
+             <desc xml:lang="en-US">Proxy Host value</desc>
+           </info>
+        </prop>           
      </group>
  </component>
 </oor:component-schema>
