@@ -36,7 +36,7 @@ import java.util.logging.Logger;
  */
 public class AdminCommandContext implements ExecutionContext {
     
-    public final ActionReport report;
+    public  ActionReport report;
     public final Properties params;
     public final Logger logger;
     
@@ -51,6 +51,13 @@ public class AdminCommandContext implements ExecutionContext {
      */
     public ActionReport getActionReport() {
         return report;
+    }
+    /**
+     * Change the Reporter for this action
+     * @param newReport The ActionReport to set.
+     */
+    public void setActionReport(ActionReport newReport) {
+        report = newReport;
     }
     
     /**
