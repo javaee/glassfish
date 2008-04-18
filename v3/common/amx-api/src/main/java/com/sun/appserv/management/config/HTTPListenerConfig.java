@@ -61,8 +61,8 @@ public interface HTTPListenerConfig
 	public String	getDefaultVirtualServer();
 	public void		setDefaultVirtualServer( String value );
 
-	public boolean	getEnabled();
-	public void		setEnabled( boolean value );
+	public String	getEnabled();
+	public void		setEnabled( String value );
 
 	/**
 
