@@ -49,6 +49,11 @@ import java.net.MalformedURLException;
 import java.util.jar.Manifest;
 import java.util.jar.JarFile;
 
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import static javax.xml.stream.XMLStreamConstants.*;
+
 import com.sun.enterprise.deploy.shared.AbstractArchiveHandler;
 
 /**
@@ -58,6 +63,12 @@ import com.sun.enterprise.deploy.shared.AbstractArchiveHandler;
  */
 @Service
 public class WarHandler extends AbstractArchiveHandler implements ArchiveHandler {
+    private static XMLInputFactory xmlIf = null;
+
+    static {
+        xmlIf = XMLInputFactory.newInstance();
+        xmlIf.setProperty(XMLInputFactory.SUPPORT_DTD, false);
+    }
 
     public String getArchiveType() {
         return "war";               
@@ -73,14 +84,21 @@ public class WarHandler extends AbstractArchiveHandler implements ArchiveHandler
             FileDirContext r = new FileDirContext();
             File base = new File(archive.getURI());
             r.setDocBase(base.getAbsolutePath());
+            SunWebXmlParser sunWebXmlParser = new SunWebXmlParser(base.getAbsolutePath());
+            cloader.setDelegate(sunWebXmlParser.isDelegate());
             cloader.setResources(r);
             cloader.addRepository("WEB-INF/classes/", new File(base, "WEB-INF/classes/"));
             File libDir = new File(base, "WEB-INF/lib");
             if (libDir.exists()) {
+                final boolean ignoreHiddenJarFiles = sunWebXmlParser.isIgnoreHiddenJarFiles();
+
                 for (File file : libDir.listFiles(
                         new FileFilter() {
                             public boolean accept(File pathname) {
-                                return pathname.getName().endsWith("jar");
+                                String fileName = pathname.getName();
+                                return (fileName.endsWith("jar") &&
+                                        (!ignoreHiddenJarFiles ||
+                                        !fileName.startsWith(".")));
                             }
                         }))
                 {
@@ -90,6 +108,10 @@ public class WarHandler extends AbstractArchiveHandler implements ArchiveHandler
             }
         } catch (MalformedURLException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        } catch(XMLStreamException xse) {
+            xse.printStackTrace();
+        } catch(FileNotFoundException fnfe) {
+            fnfe.printStackTrace();
         }
         try {
             cloader.start();
@@ -97,5 +119,117 @@ public class WarHandler extends AbstractArchiveHandler implements ArchiveHandler
             throw new RuntimeException(e);
         }
         return cloader;
+    }
+
+    private class SunWebXmlParser {
+        private XMLStreamReader parser = null;
+        private boolean delegate = true;
+        private boolean ignoreHiddenJarFiles = false;
+
+        SunWebXmlParser(String baseStr) throws XMLStreamException, FileNotFoundException {
+            InputStream input = null;
+            File f = new File(baseStr, "WEB-INF/sun-web.xml");
+            if (f.exists()) {
+                input = new FileInputStream(f);
+                try {
+                    read(input);
+                } finally {
+                    if (parser != null) {
+                        try {
+                            parser.close();
+                        } catch(Exception ex) {
+                            // ignore
+                        }
+                    }
+                    if (input != null) {
+                        try {
+                            input.close();
+                        } catch(Exception ex) {
+                            // ignore
+                        }
+                    }
+                }
+            }
+        }
+
+        private void read(InputStream input) throws XMLStreamException {
+            parser = xmlIf.createXMLStreamReader(input);
+
+            int event = 0;
+            boolean done = false;
+            boolean inClassLoader = false;
+            skipRoot("sun-web-app");
+
+            while (!done && (event = parser.next()) != END_DOCUMENT) {
+
+                if (event == START_ELEMENT) {
+                    String name = parser.getLocalName();
+                    if ("class-loader".equals(name)) {
+                        int count = parser.getAttributeCount();
+                        for (int i = 0; i < count; i++) {
+                            String attrName = parser.getAttributeName(i).getLocalPart();
+                            if ("delegate".equals(attrName)) {
+                                delegate = Boolean.valueOf(parser.getAttributeValue(i));
+                            }
+                        }
+                        inClassLoader = true;
+                    } else if (inClassLoader && "property".equals(name)) {
+                        int count = parser.getAttributeCount();
+                        String propName = null;
+                        String value = null;
+                        for (int i = 0; i < count; i++) {
+                            String attrName = parser.getAttributeName(i).getLocalPart();
+                            if ("name".equals(attrName)) {
+                                propName = parser.getAttributeValue(i);
+                            } else if ("value".equals(attrName)) {
+                                value = parser.getAttributeValue(i);
+                            }
+                        }
+
+                        if ("ignoreHiddenJarFiles".equals(propName)) {
+                            ignoreHiddenJarFiles = Boolean.valueOf(value);
+                        }
+                    } else {
+                        skipSubTree(name);
+                    }
+                } else if (inClassLoader && event == END_ELEMENT) {
+                    if ("class-loader".equals(parser.getLocalName())) {
+                        inClassLoader = false;
+                        done = true;
+                    }
+                }
+            }
+        }
+
+        private void skipRoot(String name) throws XMLStreamException {
+            while (true) {
+                int event = parser.next();
+                if (event == START_ELEMENT) {
+                    if (!name.equals(parser.getLocalName())) {
+                        throw new XMLStreamException();
+                    }
+                    return;
+                }
+            }
+        }
+
+        private void skipSubTree(String name) throws XMLStreamException {
+            while (true) {
+                int event = parser.next();
+                if (event == END_DOCUMENT) {
+                    throw new XMLStreamException();
+                } else if (event == END_ELEMENT && name.equals(parser.getLocalName())) {
+                    return;
+                }
+            }
+        }
+
+        boolean isDelegate() {
+            return delegate;
+        }
+
+        boolean isIgnoreHiddenJarFiles() {
+            return ignoreHiddenJarFiles;
+        }
     }
 }
