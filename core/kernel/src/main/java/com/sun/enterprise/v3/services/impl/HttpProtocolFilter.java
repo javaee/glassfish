@@ -35,6 +35,7 @@ import com.sun.grizzly.util.OutputWriter;
 import com.sun.grizzly.util.WorkerThread;
 import com.sun.grizzly.util.buf.ByteChunk;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.nio.ByteBuffer;
 import java.util.logging.Level;
 
@@ -122,7 +123,7 @@ public class HttpProtocolFilter implements ProtocolFilter {
                 return false;               
             }
         } catch (IOException ex) {
-            GrizzlyEmbeddedHttp.logger().severe(ex.getMessage());
+            GrizzlyEmbeddedHttp.logger().fine(ex.getMessage());
         }
 
         return wrappedFilter.execute(ctx);

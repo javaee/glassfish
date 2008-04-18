@@ -120,42 +120,47 @@ public class WebProtocolHandler implements ProtocolHandler {
     public boolean handle(Context context, PUProtocolRequest protocolRequest) 
             throws IOException {
         
+        boolean mappedOk = false;
         initDefaultHttpArtifactsIfRequired();
         
-        // Make sure we have enough bytes to parse context-root
-        if (protocolRequest.getByteBuffer().position() < 
-                ContextRootMapper.MIN_CONTEXT_ROOT_READ_BYTES) {
-            if (GrizzlyUtils.readToWorkerThreadBuffers(context.getSelectionKey(), 
-                    ByteBufferInputStream.getDefaultReadTimeout()) == -1) {
-                    context.setKeyRegistrationState(
-                        Context.KeyRegistrationState.CANCEL);
-                    return false;
-            }
-        }
-
-        boolean wasMap = grizzlyEmbeddedHttp.getContextRootMapper().map(
-                (GlassfishProtocolChain)context.getProtocolChain(),
-                protocolRequest.getByteBuffer(), defaultProtocolFilters, 
-                fallbackContextRootInfo);
-        if (!wasMap){
-            //TODO: Some Application might not have Adapter. Might want to
-            //add a dummy one instead of sending a 404.
-             try {
-                ByteBuffer bb = HtmlHelper.getErrorPage("Not Found", "HTTP/1.1 404 Not Found\n");
-                OutputWriter.flushChannel(protocolRequest.getChannel(), bb);
-            } catch (IOException ex){
-                if (logger.isLoggable(Level.FINE)){
-                    logger.log(Level.FINE, "Send Error failed", ex);
+        try {
+            // Make sure we have enough bytes to parse context-root
+            if (protocolRequest.getByteBuffer().position() < 
+                    ContextRootMapper.MIN_CONTEXT_ROOT_READ_BYTES) {
+                if (GrizzlyUtils.readToWorkerThreadBuffers(context.getSelectionKey(), 
+                        ByteBufferInputStream.getDefaultReadTimeout()) == -1) {
+                        context.setKeyRegistrationState(
+                            Context.KeyRegistrationState.CANCEL);
+                        return false;
                 }
-            } finally{
-                ((WorkerThread)Thread.currentThread()).getByteBuffer().clear();
             }
-            return false;
+
+            mappedOk = grizzlyEmbeddedHttp.getContextRootMapper().map(
+                    (GlassfishProtocolChain)context.getProtocolChain(),
+                    protocolRequest.getByteBuffer(), defaultProtocolFilters, 
+                    fallbackContextRootInfo);
+            if (!mappedOk){
+                //TODO: Some Application might not have Adapter. Might want to
+                //add a dummy one instead of sending a 404.
+                 try {
+                    ByteBuffer bb = HtmlHelper.getErrorPage("Not Found", "HTTP/1.1 404 Not Found\n");
+                    OutputWriter.flushChannel(protocolRequest.getChannel(), bb);
+                } catch (IOException ex){
+                    if (logger.isLoggable(Level.FINE)){
+                        logger.log(Level.FINE, "Send Error failed", ex);
+                    }
+                } finally{
+                    ((WorkerThread)Thread.currentThread()).getByteBuffer().clear();
+                }
+            }
+        } catch (IOException ex){
+            GrizzlyEmbeddedHttp.logger().log(Level.FINE,"WebProtocolHandler",ex);
+            mappedOk = false;
         }
         
         // Grizzly will invoke take care of invoking the Container.
-        protocolRequest.setExecuteFilterChain(true);                
-        return wasMap;
+        protocolRequest.setExecuteFilterChain(mappedOk);                
+        return mappedOk;
     }
         
 

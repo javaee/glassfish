@@ -45,11 +45,9 @@ import java.io.FileInputStream;
 import java.net.URLConnection;
 import java.text.SimpleDateFormat;
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -158,9 +156,9 @@ public class VsAdapter extends AbstractAdapter implements Adapter {
                     } else {
                         // TODO : a better job at error reporting
                         Utils.getDefaultLogger().info("No adapter registered for : "
-                                + req.requestURI().toString());
+                                + requestURI);
                         sendError(res, "Glassfish v3 Error : NotFound : "
-                                + req.requestURI().getString());
+                                + requestURI);
                     }
                     return;
                 }
@@ -170,9 +168,13 @@ public class VsAdapter extends AbstractAdapter implements Adapter {
             }
         } finally {
             try{
-                req.action( ActionCode.ACTION_POST_REQUEST , null);
+                // The request has been already recycled. We need to call again
+                // the toString() to make sure we are getting the updated value.
+                if (req.requestURI().toString() != null) {
+                    req.action( ActionCode.ACTION_POST_REQUEST , null);
+                }
             }catch (Throwable t) {
-                t.printStackTrace();
+                Utils.getDefaultLogger().log(Level.WARNING,"VsAdapter",t);
             }
 
             res.finish();
