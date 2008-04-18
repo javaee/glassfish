@@ -45,7 +45,6 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>javadb</artifactId>
     <packaging>distribution-fragment</packaging>
-    <version>10.2.2.1-1-SNAPSHOT</version>
     <name>JavaDB to be bundled into GlassFish</name>
 
     <build>
