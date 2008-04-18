@@ -47,7 +47,6 @@
     <artifactId>amx-api</artifactId>
     <packaging>hk2-jar</packaging>
     <name>AMX API</name>
-    <version>${amx-api.version}</version>
     <description>Appserver Management Extensions (AMX) interfaces and utilities</description>
     
     <developers>

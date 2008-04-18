@@ -47,7 +47,6 @@
     <artifactId>amx-annotations</artifactId>
     <packaging>hk2-jar</packaging>
     <name>AMX Annotations</name>
-    <version>${amx-api.version}</version>
     <description>Appserver Management Extensions (AMX) annotations</description>
     
     <developers>
@@ -79,7 +78,7 @@
         <dependency>
             <groupId>org.glassfish.admin</groupId>
             <artifactId>config-api</artifactId>
-            <version>10.0-tp-2-SNAPSHOT</version>
+	    <version>${project.version}</version>
         </dependency>
         
         
