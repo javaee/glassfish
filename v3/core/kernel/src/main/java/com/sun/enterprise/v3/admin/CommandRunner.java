@@ -270,7 +270,7 @@ public class CommandRunner {
             report.setMessage(
                     adminStrings.getLocalString("adapter.command.launch", "Command {0} was successfully initiated asynchronously.", commandName));
         }
-        return report;
+        return context.getActionReport();
     }
 
     protected String getParamDescription(LocalStringManagerImpl localStrings, String i18nKey, String paramName, AnnotatedElement annotated) {
