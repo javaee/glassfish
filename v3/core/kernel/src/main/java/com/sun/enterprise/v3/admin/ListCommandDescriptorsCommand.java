@@ -49,7 +49,7 @@ import org.jvnet.hk2.component.PerLookup;
  * @author Jerome Dochez
  * 
  */
-@Service(name="list-descriptors", metadata="mode=internal")
+@Service(name="list-descriptors", metadata="mode=debug")
 @Scoped(PerLookup.class)
 @I18n("list.commands")
 
