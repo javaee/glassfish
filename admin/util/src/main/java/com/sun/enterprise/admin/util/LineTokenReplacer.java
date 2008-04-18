@@ -128,7 +128,7 @@ public final class LineTokenReplacer {
             TokenValue aPair        = tokenArray[i];
             //System.out.println("To replace: " + aPair.delimitedToken);
             //System.out.println("Value replace: " + aPair.value);
-            tokenFreeString = tokenFreeString.replaceAll(aPair.delimitedToken,
+            tokenFreeString = tokenFreeString.replace(aPair.delimitedToken,
                 aPair.value);
         }
         return ( tokenFreeString );
