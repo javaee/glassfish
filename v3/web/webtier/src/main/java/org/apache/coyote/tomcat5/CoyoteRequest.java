@@ -2101,7 +2101,15 @@ public class CoyoteRequest
      * @return the URL decoded request URI
      */
     public String getDecodedRequestURI() {
-        return (coyoteRequest.decodedURI().toString());
+        String ret = null;
+
+        if (isDefaultContext) {
+            ret = getContextPath() + coyoteRequest.decodedURI().toString();
+        } else {
+            ret = coyoteRequest.decodedURI().toString();
+        }
+
+        return ret;
     }
 
 
