@@ -74,17 +74,17 @@ public interface JDBCConnectionPoolConfig
 	public String	getDatasourceClassname();
 	public void	setDatasourceClassname( String value );
 
-	public String	getFailAllConnections();
-	public void	setFailAllConnections( String value );
+	public boolean	getFailAllConnections();
+	public void	setFailAllConnections( boolean value );
 
 	public String	getIdleTimeoutInSeconds();
 	public void	setIdleTimeoutInSeconds( String value );
 
-	public String	getIsConnectionValidationRequired();
-	public void	setIsConnectionValidationRequired( String value );
+	public boolean	getIsConnectionValidationRequired();
+	public void	setIsConnectionValidationRequired( boolean value );
 
-	public String	getIsIsolationLevelGuaranteed();
-	public void	setIsIsolationLevelGuaranteed( String value );
+	public boolean	getIsIsolationLevelGuaranteed();
+	public void	setIsIsolationLevelGuaranteed( boolean value );
 
 	public String	getMaxPoolSize();
 	public void	setMaxPoolSize( String value );
@@ -117,13 +117,13 @@ public interface JDBCConnectionPoolConfig
         
         @since AppServer 9.0
      */
-    public String getNonTransactionalConnections();
+    public boolean getNonTransactionalConnections();
     
     /**
         @see #getNonTransactionalConnections          
         @since AppServer 9.0
      */
-    public void setNonTransactionalConnections( String enabled );
+    public void setNonTransactionalConnections( boolean enabled );
     
     /**                                
         A pool with this property set to true, can be used by         
@@ -140,13 +140,13 @@ public interface JDBCConnectionPoolConfig
         
         @since AppServer 9.0
      */
-    public String getAllowNonComponentCallers();
+    public boolean getAllowNonComponentCallers();
     
     /**
         @see #getAllowNonComponentCallers          
         @since AppServer 9.0
      */
-    public void setAllowNonComponentCallers( String enabled );
+    public void setAllowNonComponentCallers( boolean enabled );
 
 
     

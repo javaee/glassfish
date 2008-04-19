@@ -89,12 +89,12 @@ public interface ApplicationConfig
 
 		@see #setAvailabilityEnabled
 	 */
-	public String	getAvailabilityEnabled();
+	public boolean	getAvailabilityEnabled();
 
 	/**
 		@see #getAvailabilityEnabled
 	*/       
-	public void		setAvailabilityEnabled( String enabled );
+	public void		setAvailabilityEnabled( boolean enabled );
 	
     public Map<String,WebServiceEndpointConfig> getWebServiceEndpointConfigMap();
     

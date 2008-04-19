@@ -70,7 +70,7 @@ public interface DeployedItemRefConfig extends RefConfig
         this application to consider this application unavailable to
         them. Defaults to unavailable (false).
      */    
-    public String getLBEnabled();
+    public boolean getLBEnabled();
 
     /**
         <b>EE only</b>
@@ -78,7 +78,7 @@ public interface DeployedItemRefConfig extends RefConfig
         this application to consider this application unavailable to
         them. 
      */    
-    public void setLBEnabled(final String lbEnabled);
+    public void setLBEnabled(final boolean lbEnabled);
     
     /**
         The time, in minutes, that it takes this application to reach 

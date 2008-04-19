@@ -57,8 +57,8 @@ public interface LifecycleModuleConfig
 	public String	getLoadOrder();
 	public void		setLoadOrder( String order );
 	
-	public String	getIsFailureFatal();
-	public void 	setIsFailureFatal( String isFatal );
+	public boolean	getIsFailureFatal();
+	public void 	setIsFailureFatal( boolean isFatal );
 }
 
 

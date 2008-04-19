@@ -83,12 +83,12 @@ public interface ConnectorConnectionPoolConfig
         Specifies if the connection that is about to   
         be returned is to be validated by the container.
       */
-    public String  getConnectionValidationRequired();
+    public boolean  getConnectionValidationRequired();
     
 	/**
 	    See {@link #getConnectionValidationRequired}.
 	*/
-    public void     setConnectionValidationRequired( final String required );
+    public void     setConnectionValidationRequired( final boolean required );
     
 	/**             
         Unique name, identifying one connection-definition in a       
@@ -107,12 +107,12 @@ public interface ConnectorConnectionPoolConfig
         false. One attempt will be made to re-establish failed        
         connections.               
 	*/
-	public String  getFailAllConnections();
+	public boolean  getFailAllConnections();
 	
 	/**
 	    See {@link #getFailAllConnections}.
 	*/
-	public void     setFailAllConnections( final String value );
+	public void     setFailAllConnections( final boolean value );
 
 	/**
         Maximum time in seconds, that a connection can remain idle in 

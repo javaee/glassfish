@@ -61,9 +61,6 @@ public interface HTTPListenerConfig
 	public String	getDefaultVirtualServer();
 	public void		setDefaultVirtualServer( String value );
 
-	public String	getEnabled();
-	public void		setEnabled( String value );
-
 	/**
 
 
@@ -82,14 +79,14 @@ public interface HTTPListenerConfig
 	public String	getRedirectPort();
 	public void		setRedirectPort( String value );
 
-	public String	getSecurityEnabled();
-	public void		setSecurityEnabled( String value );
+	public boolean	getSecurityEnabled();
+	public void		setSecurityEnabled( boolean value );
 
 	public String	getServerName();
 	public void		setServerName( String value );
 
-	public String	getXpoweredBy();
-	public void		setXpoweredBy( String value );
+	public boolean	getXpoweredBy();
+	public void		setXpoweredBy( boolean value );
 
 	/**
 		See {@link HTTPListenerConfigFamilyValues}.
@@ -103,6 +100,6 @@ public interface HTTPListenerConfig
 	public String	getExternalPort();
 	public void	setExternalPort( final String value );
 
-	public String	getBlockingEnabled();
-	public void	setBlockingEnabled( final String value );
+	public boolean	getBlockingEnabled();
+	public void	setBlockingEnabled( final boolean value );
 }

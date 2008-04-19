@@ -48,11 +48,11 @@ public interface JavaWebStart
         
         @since Appserver 9.0
       */
-	public String  getJavaWebStartEnabled();
+	public boolean  getJavaWebStartEnabled();
 	
     /**
         @see #getJavaWebStartEnabled
         @since Appserver 9.0
       */
-	public void     setJavaWebStartEnabled( String enabled );
+	public void     setJavaWebStartEnabled( boolean enabled );
 }

@@ -71,7 +71,7 @@ public interface ServerRefConfig extends RefConfig, HealthCheckerConfigCR, Conta
         this application to consider this application unavailable to
         them. Defaults to unavailable (false).
      */    
-    public String getLBEnabled();
+    public boolean getLBEnabled();
 
     /**
         <b>EE only</b>
