@@ -597,7 +597,7 @@ public class CommandRunner {
             i18nKey = i18n.value();
         }
         report.setMessage(commandName + " - " + localStrings.getLocalString(i18nKey, ""));
-        report.getTopMessagePart().addProperty("SYNOPSYS", getUsageText(command));
+        report.getTopMessagePart().addProperty("SYNOPSIS", getUsageText(command));
         for (Field f : command.getClass().getDeclaredFields()) {
             addParamUsage(report, localStrings, i18nKey, f);
         }

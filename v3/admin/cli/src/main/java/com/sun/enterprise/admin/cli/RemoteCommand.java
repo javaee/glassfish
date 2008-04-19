@@ -322,7 +322,7 @@ public class RemoteCommand {
             rrm.process();
         }
         catch(RemoteSuccessException rse) {
-           Log.info("remote success: " + rse.getMessage()); 
+           Log.info(rse.getMessage()); 
            return;
         }
         catch(RemoteException rfe) {
@@ -393,7 +393,7 @@ public class RemoteCommand {
         if(processManPage(mainAtts))
             return;
 
-        String usageText = mainAtts.get("SYNOPSYS_value");
+        String usageText = mainAtts.get("SYNOPSIS_value");
 
         if(usageText == null) {
             // this is one way to figure out there was an error!
@@ -407,9 +407,9 @@ public class RemoteCommand {
         System.out.println("");
         System.out.println("SYNOPSIS :");
         if (usageText.startsWith("Usage: ")) {
-            System.out.println("\t" + mainAtts.get("SYNOPSYS_value").substring(7));            
+            System.out.println("\t" + mainAtts.get("SYNOPSIS_value").substring(7));            
         } else {
-            System.out.println("\t" + mainAtts.get("SYNOPSYS_value"));
+            System.out.println("\t" + mainAtts.get("SYNOPSIS_value"));
         }
         System.out.println("");
         boolean displayOptionTitle = true;
@@ -425,7 +425,7 @@ public class RemoteCommand {
                         operands.add(property);
                         continue;
                     }
-                    if (property.endsWith("SYNOPSYS")) {
+                    if (property.endsWith("SYNOPSIS")) {
                             //do not want to display operand and synopsis
                         continue;
                     }

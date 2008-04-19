@@ -69,7 +69,7 @@ class ManifestManager implements ResponseManager {
         
         // remember these are "succeed-fast".  They will throw a 
         // RemoteSuccessException if they succeed...
-        processGeneratedHelp();
+        processGeneratedManPage();
         processManPage();
         processGeneric();
 
@@ -99,11 +99,11 @@ class ManifestManager implements ResponseManager {
         throw new RemoteSuccessException(manPage);
     }
 
-    private void processGeneratedHelp() throws RemoteSuccessException {
+    private void processGeneratedManPage() throws RemoteException {
         if(!Boolean.parseBoolean(mainAtts.get(AdminCommandConstants.GENERATED_HELP_VALUE)))
             return;
-        
-        throw new RemoteSuccessException("Process Generated Help Goes Here!!!!");
+        GeneratedManPageManager mgr = new GeneratedManPageManager(mainAtts);
+        mgr.process();
     }
 
     private void dump() {
