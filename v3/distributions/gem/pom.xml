@@ -121,7 +121,7 @@
 
                 spec = Gem::Specification.new do |s| 
                   s.name = "glassfish"
-                  s.version = "0.1.2"
+                  s.version = "0.1.3"
                   s.author = "Vivek Pandey, Pramod Gopinath, Jerome Dochez"
                   s.email = "vivek.pandey@sun.com, pramod.gopinath@sun.com, jerome.dochez@sun.com"
                   s.homepage = "http://wiki.glassfish.java.net/Wiki.jsp?page=JRuby"
