@@ -20,6 +20,7 @@ div.j1holpanel{padding: 15px;}
 div.j1holcontents{margin-left: 40px;}
 div.j1holcontents img{margin-top:9px; margin-bottom:15px;}
 div#j1holframe table.gwt-TabPanel{width: 100%;}
+img.j1holheaderimg{height: 180px; width: 711px; border: 0px;}
 .hidden{display: none !important}
 .j1holduration{text-align: center;font-weight: bold;padding-top: 9px;}
 div.j1holcopyright p{text-align: center;font-weight: bold;padding-top: 15px;padding-bottom: 9px;}

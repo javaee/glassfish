@@ -9,6 +9,21 @@
 /* Override default settings that aren't printer-friendly */
 .d7 div.cornerBL {background: white;}
 a:link, a.named:visited, div#breadcrumb a:visited, div.breadcrumb, div.breadcrumb a:visited, div.sitelinks a:visited, a code, .e2 table.navblue a:visited, .e5 a:visited, .e8v0 a:visited, .e9v0 a:visited {color: black; text-decoration: underline}
-div.codebox pre {border: solid 2px black; background-color: white;}
-div.console pre {border: double 4px black; background-color: white; color: black;}
+div.codebox pre {border: solid 2px black; background-color: white; white-space: pre;}
+div.console pre {border: double 4px black; background-color: white; color: black; white-space: pre;}
 .j1holtip {border: groove 3px black; background-color: white;}
+.j1coverpage {height: 100%; width: 100%; vertical-align: center; text-align: center;}
+.j1coverpage div.pagetitle h1{color: black; font-weight: normal; font-size:48px;}
+.j1coverpage div.pagetitle h2{text-decoration: none; font-weight: normal; font-size:36px;}
+.j1coverpage div.pagetitle h3{text-decoration: none; font-weight: normal; font-size:28px;}
+
+@media all {
+    .j1holnoprint {display: block;}
+    .j1holprint, .j1holpagebreak {display: none;}
+}
+@media print {
+    .j1holnoprint {display: none;}
+    .j1holprint, .j1holpagebreak {display: block;}
+    .j1holpagebreak {page-break-after: always;}
+    div.j1holcontents {page-break-after: always}
+}
