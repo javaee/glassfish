@@ -92,7 +92,6 @@ public class ManifestUtils {
         
         return pristine;
     }
-
     
     public final static String encode(String s) {
         // do DOS linefeed first!
@@ -100,6 +99,11 @@ public class ManifestUtils {
         
         return s.replaceAll("\n", EOL_TOKEN);
     }
+
+    public static Map<String,String> getMain(Map<String, Map<String,String>> exManifest) {
+        return exManifest.get(MAIN_ATTS);
+    }
+    
     private final static String decode(String s) {
         // replace "null" with null
         if(s == null || s.equals("null"))

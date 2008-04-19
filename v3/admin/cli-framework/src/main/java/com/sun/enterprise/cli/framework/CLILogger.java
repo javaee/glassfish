@@ -54,6 +54,7 @@ import java.io.ByteArrayOutputStream;
  */
 public class CLILogger 
 {
+    private static boolean trace;
     private static boolean debug;
     private static CLILogger logger;
     private Logger s1asLogger;
@@ -67,11 +68,15 @@ public class CLILogger
     /** Creates a new instance of CLILogger */
     protected CLILogger() 
     {
+        // bnevins 4-18-08 A quickly added trace. should clean up later.
+        // TODO TODO TODO TODO
+        
+        
         // System Prop just needs to exist
         // Env Var. needs to be set to "true"
         String sys = System.getProperty(DEBUG_FLAG);
         boolean env = Boolean.parseBoolean(System.getenv(ENV_DEBUG_FLAG));
-        
+        trace = Boolean.parseBoolean(System.getenv("AS_TRACE"));
         
         if ( sys != null || env) {
             debug = true;
@@ -80,14 +85,22 @@ public class CLILogger
             debug = false;
         }
         
+        if(trace) {
+            debug = true;
+        }
+        
         s1asLogger = Logger.getLogger(PACKAGE_NAME, null);
-        if (isDebug() ) 
+        if(trace) {
             s1asLogger.setLevel(Level.FINEST);
+        }
+            
+        else if (isDebug() ) 
+            s1asLogger.setLevel(Level.FINER);
         else
-	{
+        {
             s1asLogger.setLevel(Level.INFO);
             //s1asLogger.setLevel(Level.SEVERE);
-	}
+        }
         s1asLogger.addHandler(new CLILoggerHandler());
         s1asLogger.setUseParentHandlers(false);
     }
@@ -176,10 +189,18 @@ public class CLILogger
     }
     
     /**
-     * prints the message with level as FINEST
+     * prints the message with level as FINER
      * @param message the message to be written on the output stream
      */
     public void printDebugMessage(String message)
+    {
+        s1asLogger.log(Level.FINER, message);
+    }
+    /**
+     * prints the message with level as FINEST
+     * @param message the message to be written on the output stream
+     */
+    public void printTraceMessage(String message)
     {
         s1asLogger.log(Level.FINEST, message);
     }

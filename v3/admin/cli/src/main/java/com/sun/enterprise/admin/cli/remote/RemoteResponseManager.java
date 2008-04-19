@@ -75,7 +75,6 @@ public class RemoteResponseManager implements ResponseManager {
         Log.finer("------- RESPONSE RRM ---------");
     }
 
-
     public void process() throws RemoteException {
         checkCode();  // Exception == Goodbye!
         try { 

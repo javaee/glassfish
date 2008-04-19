@@ -37,6 +37,7 @@ package com.sun.enterprise.v3.admin;
 
 import com.sun.enterprise.module.impl.Utils;
 import com.sun.enterprise.universal.collections.ManifestUtils;
+import com.sun.enterprise.universal.glassfish.AdminCommandConstants;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.v3.common.PlainTextActionReporter;
 import com.sun.logging.LogDomains;
@@ -114,11 +115,13 @@ public class CommandRunner {
             InputStream in = getManPage(commandName, command);
             String manPage = encodeManPage(in);
 
-            if(manPage != null)
+            if(manPage != null) {
                 report.getTopMessagePart().addProperty("MANPAGE", manPage);
-            else
+            }
+            else {
+                report.getTopMessagePart().addProperty(AdminCommandConstants.GENERATED_HELP, "true");
                 getHelp(commandName, command, report);
-
+            }
             return report;
         }
         report.setActionDescription(commandName + " AdminCommand");

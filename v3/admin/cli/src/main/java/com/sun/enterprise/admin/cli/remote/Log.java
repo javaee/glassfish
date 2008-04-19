@@ -25,7 +25,7 @@ class Log{
         logger.printDebugMessage(strings.get(s, objs));
     }
     static final void finest(String s, Object... objs) {
-        logger.printDebugMessage(strings.get(s, objs));
+        logger.printTraceMessage(strings.get(s, objs));
     }
 
     private static final CLILogger logger = CLILogger.getInstance();

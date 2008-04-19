@@ -42,6 +42,10 @@ import com.sun.appserv.management.client.prefs.StoreException;
 import com.sun.enterprise.universal.StringUtils;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import com.sun.enterprise.admin.cli.deployment.FileUploadUtil;
+import com.sun.enterprise.admin.cli.remote.RemoteException;
+import com.sun.enterprise.admin.cli.remote.RemoteFailureException;
+import com.sun.enterprise.admin.cli.remote.RemoteResponseManager;
+import com.sun.enterprise.admin.cli.remote.RemoteSuccessException;
 import java.io.*;
 import java.net.*;
 import java.util.*;
@@ -306,6 +310,26 @@ public class RemoteCommand {
         }
     }
 
+    private void handleResponseNew(Map<String, String> params,
+                                 InputStream in, int code) throws IOException, CommandException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        copyStream(in, baos);
+        String responseString = baos.toString();
+        in = new ByteArrayInputStream(baos.toByteArray());
+
+        try {
+            RemoteResponseManager rrm = new RemoteResponseManager(baos, code);
+            rrm.process();
+        }
+        catch(RemoteSuccessException rse) {
+           Log.info("remote success: " + rse.getMessage()); 
+           return;
+        }
+        catch(RemoteException rfe) {
+           throw new CommandException("remote failure: " + rfe.getMessage());
+        }
+    }
+    
     private void handleResponse(Map<String, String> params,
                                  InputStream in, int code) throws IOException, CommandException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -332,11 +356,16 @@ public class RemoteCommand {
         if (serverResponse == null) {
             processPlainText(responseString);
         }
+        
+        
+        
         else if (params.size() == 1 && params.get("help") != null) {
             processHelp(serverResponse);
         } else {
             processMessage(serverResponse);
         }
+        
+
     }
 
     private Map<String, Map<String,String>> getServerData(InputStream is) throws IOException {

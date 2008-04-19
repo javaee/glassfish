@@ -38,6 +38,7 @@ package com.sun.enterprise.admin.cli.remote;
 
 import com.sun.enterprise.cli.framework.*;
 import com.sun.enterprise.universal.collections.ManifestUtils;
+import com.sun.enterprise.universal.glassfish.AdminCommandConstants;
 import java.io.*;
 import java.util.*;
 import java.util.jar.*;
@@ -62,9 +63,18 @@ class ManifestManager implements ResponseManager {
     }
 
     public void process() throws RemoteException {
-        System.out.println("PROCESSING MANIFEST...");
-        Map<String,Map<String,String>> map = ManifestUtils.normalize(manifest);
-        throw new RemoteSuccessException("successful!!");
+        Log.finer("PROCESSING MANIFEST...");
+        allAtts = ManifestUtils.normalize(manifest);
+        mainAtts = ManifestUtils.getMain(allAtts);
+        
+        // remember these are "succeed-fast".  They will throw a 
+        // RemoteSuccessException if they succeed...
+        processGeneratedHelp();
+        processManPage();
+        processGeneric();
+
+        // No RemoteSuccessException was thrown -- this is now an Error!!
+        throw new RemoteFailureException("Could not process");
     }
 
     private Manifest makeManifest() throws RemoteFailureException, IOException {
@@ -75,12 +85,38 @@ class ManifestManager implements ResponseManager {
         m.read(inStream);
         return m;
     }
+
+    private void processGeneric() {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
     
+    private void processManPage() throws RemoteSuccessException {
+        String manPage = mainAtts.get("MANPAGE_value");
+
+        if(!ok(manPage)) 
+            return;
+
+        throw new RemoteSuccessException(manPage);
+    }
+
+    private void processGeneratedHelp() throws RemoteSuccessException {
+        if(!Boolean.parseBoolean(mainAtts.get(AdminCommandConstants.GENERATED_HELP_VALUE)))
+            return;
+        
+        throw new RemoteSuccessException("Process Generated Help Goes Here!!!!");
+    }
+
     private void dump() {
         
-        
     }
+    
+    private boolean ok(String s) {
+        return s != null && s.length() > 0 && !s.equals("null");
+    }
+    
     private final InputStream inStream;
     private final String inString;
     private final Manifest manifest;
+    private Map<String,String> mainAtts;
+    Map<String,Map<String,String>> allAtts;
 }
