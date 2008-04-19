@@ -65,7 +65,7 @@ public class Main {
     public static void main(String[] args) {
         if (args.length < 2) {
                System.out.println(
-                "Usage:java Main wsRoot[v3 parent] pkgName[common,nucleus,web]");
+                "Usage:java Main wsRoot[v3 workspace parent] pkgName[common,nucleus,web]");
 	       return;
         }
 
@@ -73,8 +73,8 @@ public class Main {
 
         String CHANGEME = args[0]; //Where is V3 repository
         
-        File web = new File(CHANGEME+"/v3/distributions/web/target/web.zip");
-        File nucleus = new File(CHANGEME+"/v3/distributions/nucleus/target/nucleus.zip");
+        File web = new File(CHANGEME+"/distributions/web/target/web.zip");
+        File nucleus = new File(CHANGEME+"/distributions/nucleus/target/nucleus.zip");
         if (web.isFile() && nucleus.isFile())
         {
           try {

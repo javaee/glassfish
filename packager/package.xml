@@ -44,7 +44,7 @@
     <antcall target="create-prototype-com">
         <param name="component.package" value="SUNWglassfishv3-nucleus"/>
         <param name="package.home" value="${package.home}"/>
-        <param name="repo.home" value="${basedir}/../.."/>
+        <param name="repo.home" value="${basedir}/.."/>
         <param name="pkgname" value="nucleus"/>
     </antcall>
 
@@ -77,7 +77,7 @@
     <antcall target="create-prototype-com">
         <param name="component.package" value="SUNWglassfishv3-web"/>
         <param name="package.home" value="${package.home}"/>
-        <param name="repo.home" value="${basedir}/../.."/>
+        <param name="repo.home" value="${basedir}/.."/>
         <param name="pkgname" value="web"/>
     </antcall>
 
@@ -105,7 +105,7 @@
     <antcall target="create-prototype-com">
         <param name="component.package" value="SUNWglassfishv3-common"/>
         <param name="package.home" value="${package.home}"/>
-        <param name="repo.home" value="${basedir}/../.."/>
+        <param name="repo.home" value="${basedir}/.."/>
         <param name="pkgname" value="common"/>
     </antcall>
 
