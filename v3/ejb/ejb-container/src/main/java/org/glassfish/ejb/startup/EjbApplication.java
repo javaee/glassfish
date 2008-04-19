@@ -75,16 +75,16 @@ public class EjbApplication
         Set<EjbDescriptor> descs = (Set<EjbDescriptor>) bundleDesc.getEjbs();
 
         long appUniqueID = ejbs.getUniqueId();
-        */
         long appUniqueID = 0;
         if (appUniqueID == 0) {
             appUniqueID = (System.currentTimeMillis() & 0xFFFFFFFF) << 16;
         }
+        */
 
         //System.out.println("**CL => " + bundleDesc.getClassLoader());
         int counter = 0;
         for (EjbDescriptor desc : ejbs) {
-            desc.setUniqueId(appUniqueID + (counter++));
+            desc.setUniqueId(getUniqueId(desc)); // XXX appUniqueID + (counter++));
             try {
                 Container container = ejbContainerFactory.createContainer(desc, ejbAppClassLoader,
                     null, dc);
@@ -126,6 +126,29 @@ public class EjbApplication
      */
     public ClassLoader getClassLoader() {
         return ejbAppClassLoader;
+    }
+
+    private static final char NAME_PART_SEPARATOR  = '_';   // NOI18N
+    private static final char NAME_CONCATENATOR    = ' ';   // NOI18N
+
+    private long getUniqueId(EjbDescriptor desc) {
+        
+        com.sun.enterprise.deployment.BundleDescriptor bundle = desc.getEjbBundleDescriptor();
+        com.sun.enterprise.deployment.Application application = bundle.getApplication();
+
+        // Add ejb name and application name.
+        StringBuffer rc = new StringBuffer().
+                append(desc.getName()).
+                append(NAME_CONCATENATOR).
+                append(application.getRegistrationName());
+
+        // If it's not just a module, add a module name.
+        if (!application.isVirtual()) {
+            rc.append(NAME_CONCATENATOR).
+               append(bundle.getModuleDescriptor().getArchiveUri());
+        }
+
+        return rc.toString().hashCode();
     }
 
 }
