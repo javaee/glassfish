@@ -102,7 +102,7 @@ public class ListCommandsCommand extends S1ASCommand {
             CLILogger.getInstance().pushAndLockLevel(Level.WARNING);
             RemoteCommand rc = new RemoteCommand(getRemoteArgs());
             // throw away everything but the main atts
-            Map<String,String> mainAtts = rc.getServerResponse().get(ManifestUtils.MAIN_ATTS);
+            Map<String,String> mainAtts = rc.getMainAtts();
             String cmds = mainAtts.get("children");
             remoteCommands = cmds.split(";");
             return remoteCommands;

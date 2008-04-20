@@ -37,8 +37,10 @@
 package com.sun.enterprise.admin.cli.remote;
 
 import com.sun.enterprise.cli.framework.*;
-import com.sun.enterprise.universal.collections.ManifestUtils;
-import com.sun.enterprise.universal.glassfish.AdminCommandConstants;
+import com.sun.enterprise.universal.NameValue;
+import com.sun.enterprise.universal.StringUtils;
+import com.sun.enterprise.universal.collections.CollectionUtils;
+import com.sun.enterprise.universal.glassfish.AdminCommandResponse;
 import java.io.*;
 import java.util.*;
 import java.util.jar.*;
@@ -48,24 +50,16 @@ import java.util.jar.*;
  * @author bnevins
  */
 class ManifestManager implements ResponseManager {
-    ManifestManager(InputStream inStream, String inString) throws RemoteException  {
-        try {
-            this.inStream = inStream;
-            this.inString = inString;
-            this.manifest = makeManifest();
-        }
-        catch (RemoteException e) {
-            throw e;
-        }
-        catch (Exception e) {
-            throw new RemoteFailureException(e);
-        }
+    ManifestManager(InputStream inStream) throws RemoteException, IOException  {
+        response = new AdminCommandResponse(inStream);
     }
 
+    public Map<String,String> getMainAtts() {
+        return response.getMainAtts();
+    }
+    
     public void process() throws RemoteException {
         Log.finer("PROCESSING MANIFEST...");
-        allAtts = ManifestUtils.normalize(manifest);
-        mainAtts = ManifestUtils.getMain(allAtts);
         
         // remember these are "succeed-fast".  They will throw a 
         // RemoteSuccessException if they succeed...
@@ -77,21 +71,9 @@ class ManifestManager implements ResponseManager {
         throw new RemoteFailureException("Could not process");
     }
 
-    private Manifest makeManifest() throws RemoteFailureException, IOException {
-        if(!inString.startsWith("Signature-Version:"))
-            throw new RemoteFailureException("");
-        
-        Manifest m = new Manifest(inStream);
-        m.read(inStream);
-        return m;
-    }
-
-    private void processGeneric() {
-        throw new UnsupportedOperationException("Not yet implemented");
-    }
     
     private void processManPage() throws RemoteSuccessException {
-        String manPage = mainAtts.get("MANPAGE_value");
+        String manPage = response.getValue(AdminCommandResponse.MANPAGE);
 
         if(!ok(manPage)) 
             return;
@@ -100,10 +82,95 @@ class ManifestManager implements ResponseManager {
     }
 
     private void processGeneratedManPage() throws RemoteException {
-        if(!Boolean.parseBoolean(mainAtts.get(AdminCommandConstants.GENERATED_HELP_VALUE)))
+        if(!response.isGeneratedHelp())
             return;
-        GeneratedManPageManager mgr = new GeneratedManPageManager(mainAtts);
+        GeneratedManPageManager mgr = new GeneratedManPageManager(response);
         mgr.process();
+    }
+
+    private void processGeneric() throws RemoteSuccessException, RemoteFailureException {
+        if(!response.wasSuccess()) {
+            String msg = response.getMainMessage();
+            String cause = response.getCause();
+            
+            if( CLILogger.isDebug() && ok(cause)){
+                msg += EOL + cause;
+            }
+            throw new RemoteFailureException(msg);
+        }        
+        
+        StringBuilder sb = new StringBuilder();
+        String s = response.getMainMessage();
+        
+        if(ok(s))
+            sb.append(s).append(EOL);
+
+        processOneLevel("", null, response.getMainAtts(), sb);
+
+        throw new RemoteSuccessException(sb.toString());
+    }
+
+    // this is just HORRIBLE -- but that's the way it is presented from the 
+    // server.  I imagine tons of bug reports on this coming up...
+    private void processOneLevel(String prefix, String key, 
+            Map<String,String> atts, StringBuilder sb) {
+
+        if(atts == null)
+            return;
+
+        processProps(prefix, atts, sb);
+        processChildren(prefix, key, atts, sb);
+    }
+
+    private void processProps(String prefix, Map<String, String> atts, StringBuilder sb) {
+        // output "properties=(a=b,c=d)"
+        List<NameValue<String,String>> props = response.getKeys(atts);
+
+        for(Iterator<NameValue<String,String>> it = props.iterator(); it.hasNext(); ) {
+            NameValue<String,String> nv = it.next();
+            if(nv.getName().startsWith("nb-"))
+                it.remove();
+        }
+        
+        if(props == null || props.isEmpty()) 
+            return;
+        
+        sb.append(prefix).append("properties=(");
+        boolean first = true;
+
+        for(NameValue<String,String> nv : props) {
+            String name = nv.getName();
+            String value = nv.getValue();
+
+            if(first)
+                first = false;
+            else
+                sb.append(",");
+
+            sb.append(name + "=" + value);
+        }
+        sb.append(")").append(EOL);
+    }
+
+    private void processChildren(String prefix, String parent, Map<String, String> atts, StringBuilder sb) {
+
+        Map<String,Map<String,String>> kids = response.getChildren(atts);
+        
+        if(kids == null || kids.isEmpty())
+            return;
+
+        String childrenType = atts.get(AdminCommandResponse.CHILDREN_TYPE);
+        int index = (parent == null) ? 0 : parent.length() + 1; 
+        
+        for(Map.Entry<String, Map<String,String>> entry : kids.entrySet()) {
+            String container = entry.getKey();
+            
+            if(ok(childrenType))
+                sb.append(prefix).append(childrenType).append(" : ");
+            
+            sb.append(container.substring(index)).append(EOL);
+            processOneLevel(prefix + TAB, container, entry.getValue(), sb);
+        }
     }
 
     private void dump() {
@@ -113,10 +180,9 @@ class ManifestManager implements ResponseManager {
     private boolean ok(String s) {
         return s != null && s.length() > 0 && !s.equals("null");
     }
-    
-    private final InputStream inStream;
-    private final String inString;
-    private final Manifest manifest;
-    private Map<String,String> mainAtts;
-    Map<String,Map<String,String>> allAtts;
+
+    private AdminCommandResponse response;
+    private static final String EOL = StringUtils.EOL;
+    private static final String TAB = "    ";
 }
+ 

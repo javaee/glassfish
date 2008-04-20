@@ -37,9 +37,8 @@
 package com.sun.enterprise.admin.cli.remote;
 
 import com.sun.enterprise.cli.framework.*;
-import com.sun.enterprise.universal.collections.CollectionUtils;
-import com.sun.enterprise.universal.collections.ManifestUtils;
-import com.sun.enterprise.universal.glassfish.AdminCommandConstants;
+import com.sun.enterprise.universal.NameValue;
+import com.sun.enterprise.universal.glassfish.AdminCommandResponse;
 import java.util.*;
 
 /**
@@ -47,17 +46,17 @@ import java.util.*;
  * @author bnevins
  */
 class GeneratedManPageManager implements ResponseManager{
-    GeneratedManPageManager(Map<String,String> mainAtts) {
-        this.mainAtts = mainAtts;
+    GeneratedManPageManager(AdminCommandResponse response) {
+        this.response = response;
     }
 
     public void process() throws RemoteException {
-        String usageText = mainAtts.get("SYNOPSIS_value");
+        String usageText = response.getValue(AdminCommandResponse.SYNOPSIS);
 
         if(usageText == null) {
             // this is one way to figure out there was an error!
             throw new RemoteFailureException("XXXXXXXXXXXXXXXXXXXX", 
-                    mainAtts.get("message"));
+                    response.getMainMessage());
         }
         setName();
         setSynopsis();
@@ -70,7 +69,69 @@ class GeneratedManPageManager implements ResponseManager{
         printOperands(sb);
         throw new RemoteSuccessException(sb.toString());
     }
-    
+
+    private void setName() {
+        name = displayInProperLen(response.getMainMessage());
+    }
+
+    private void printName(StringBuilder sb) {
+        sb.append("NAME :").append(EOL);
+        sb.append(name).append(EOL);
+    }
+
+    private void setSynopsis() {
+        synopsis = response.getValue(AdminCommandResponse.SYNOPSIS);
+        
+        if (synopsis.startsWith("Usage: ")) {
+            synopsis = synopsis.substring(7);     
+        }
+        // this looks too horrible - go with one long line...
+        //synopsis = displayInProperLen(synopsis);
+    }
+    private void printSynopsis(StringBuilder sb) {
+        sb.append("SYNOPSIS :").append(EOL);
+        sb.append(TAB).append(synopsis).append(EOL);
+        sb.append(EOL);
+    }
+
+    private void setParamsAndOperands() {
+        List<NameValue<String,String>> list = response.getMainKeys();
+        
+        for(NameValue<String,String> nv : list) {
+            String name = nv.getName();
+            if(name.equals(AdminCommandResponse.SYNOPSIS))
+                continue;
+            if(name.endsWith("operand")) 
+                operands.add(nv);
+            else
+                params.add(nv);
+        }
+    }
+
+    private void printParams(StringBuilder sb) {
+        sb.append("OPTIONS :").append(EOL);
+        
+        for(NameValue<String,String> nv : params) {
+            sb.append(TAB + "--").append(nv.getName()).append(EOL);
+            sb.append(displayInProperLen(nv.getValue()));
+            sb.append(EOL);
+        }
+    }
+
+    private void printOperands(StringBuilder sb) {
+
+        sb.append("OPERANDS :").append(EOL);
+
+        for(NameValue<String,String> nv : operands) {
+            String key = nv.getName();
+            // peel off "_operand"
+            key = key.substring(0, key.length() - 8);
+            String value = nv.getValue();
+            sb.append(displayInProperLen(key + " - " + value));
+            sb.append(EOL);
+        }
+    }
+       
     // bnevins -- original code reused, this looks painful to change...
     private String displayInProperLen(String strToDisplay) {
         int index = 0;
@@ -95,96 +156,13 @@ class GeneratedManPageManager implements ResponseManager{
         return sb.toString();
     }
 
-    private void setName() {
-        name = displayInProperLen(mainAtts.get("message"));
-    }
-
-    private void printName(StringBuilder sb) {
-        sb.append("NAME :").append(EOL);
-        sb.append(name).append(EOL);
-    }
-
-    private void setSynopsis() {
-        synopsis = mainAtts.get("SYNOPSIS_value");
-        
-        if (synopsis.startsWith("Usage: ")) {
-            synopsis = synopsis.substring(7);     
-        }
-        // this looks too horrible - go with one long line...
-        //synopsis = displayInProperLen(synopsis);
-    }
-    private void printSynopsis(StringBuilder sb) {
-        sb.append("SYNOPSIS :").append(EOL);
-        sb.append(TAB).append(synopsis).append(EOL);
-        sb.append(EOL);
-    }
-
-    private void setParamsAndOperands() {
-        String keysString = mainAtts.get("keys");
-        String[] keys = keysString.split(";");
-        
-        for(String key : keys) {
-            if(key.equals(AdminCommandConstants.GENERATED_HELP))
-                continue;   // tag for generated help
-            if(key.equals("SYNOPSIS"))
-                continue;
-            if(key.endsWith("operand")) 
-                add(operands, key);
-            else
-                add(params, key);
-        }
-    }
-
-    private void printParams(StringBuilder sb) {
-        sb.append("OPTIONS :").append(EOL);
-        
-        for(NameValue nv : params) {
-            sb.append(TAB + "--").append(nv.name).append(EOL);
-            sb.append(displayInProperLen(nv.value));
-            sb.append(EOL);
-        }
-    }
-
-    private void printOperands(StringBuilder sb) {
-
-        sb.append("OPERANDS :").append(EOL);
-
-        for(NameValue nv : operands) {
-            String key = nv.name;
-            // peel off "_operand"
-            key = key.substring(0, key.length() - 8);
-            String value = nv.value;
-            sb.append(displayInProperLen(key + " - " + value));
-            sb.append(EOL);
-        }
-    }
-    
-    private void add(List<NameValue> list, String key) {
-        //Log.finest()
-        String aname = mainAtts.get(key + "_name");
-        String value = mainAtts.get(key + "_value");
-        list.add(new NameValue(aname, value));
-        Log.finest("Adding " + aname + "=" + value);
-    }
-
-    private Map<String, String> mainAtts;
+    AdminCommandResponse response;
     private String name; 
     private String synopsis; 
-    List<NameValue> params = new LinkedList<NameValue>();
-    List<NameValue> operands = new LinkedList<NameValue>();
+    List<NameValue<String,String>> params = new LinkedList<NameValue<String,String>>();
+    List<NameValue<String,String>> operands = new LinkedList<NameValue<String,String>>();
     private static final String EOL = System.getProperty("line.separator");
     private static final String TAB = "    ";
-    
-    private static class NameValue
-    {
-        private NameValue(String n, String v) {
-            name = n;
-            value = v;
-        }
-        String name;
-        String value;
-
-    }
 }
 /*
  --------  RESPONSE DUMP         --------------

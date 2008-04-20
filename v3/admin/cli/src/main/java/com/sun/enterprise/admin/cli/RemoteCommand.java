@@ -39,19 +39,17 @@ import com.sun.appserv.management.client.prefs.LoginInfo;
 import com.sun.appserv.management.client.prefs.LoginInfoStore;
 import com.sun.appserv.management.client.prefs.LoginInfoStoreFactory;
 import com.sun.appserv.management.client.prefs.StoreException;
-import com.sun.enterprise.universal.StringUtils;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import com.sun.enterprise.admin.cli.deployment.FileUploadUtil;
 import com.sun.enterprise.admin.cli.remote.RemoteException;
-import com.sun.enterprise.admin.cli.remote.RemoteFailureException;
 import com.sun.enterprise.admin.cli.remote.RemoteResponseManager;
 import com.sun.enterprise.admin.cli.remote.RemoteSuccessException;
+import com.sun.enterprise.universal.io.FileUtils;
 import java.io.*;
 import java.net.*;
 import java.util.*;
 import com.sun.enterprise.admin.cli.util.*;
 import com.sun.enterprise.cli.framework.*;
-import com.sun.enterprise.universal.collections.ManifestUtils;
 import java.util.jar.*;
 import sun.misc.BASE64Encoder;
 /**
@@ -304,24 +302,23 @@ public class RemoteCommand {
     private void handleResponse(Map<String, String> params,
                                  InputStream in, int code, OutputStream userOut) throws IOException, CommandException {
         if (userOut == null) {
-            handleResponse(params, in, code);
+                handleResponse(params, in, code);
         } else {
-            copyStream(in, userOut);
+            FileUtils.copyStream(in, userOut);
         }
     }
 
-    private void handleResponseNew(Map<String, String> params,
+    private void handleResponse(Map<String, String> params,
                                  InputStream in, int code) throws IOException, CommandException {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        copyStream(in, baos);
-        String responseString = baos.toString();
-        in = new ByteArrayInputStream(baos.toByteArray());
+        RemoteResponseManager rrm = null;
 
         try {
-            RemoteResponseManager rrm = new RemoteResponseManager(baos, code);
+            rrm = new RemoteResponseManager(in, code);
             rrm.process();
         }
         catch(RemoteSuccessException rse) {
+           if(rrm != null)
+               mainAtts = rrm.getMainAtts();
            Log.info(rse.getMessage()); 
            return;
         }
@@ -330,295 +327,6 @@ public class RemoteCommand {
         }
     }
     
-    private void handleResponse(Map<String, String> params,
-                                 InputStream in, int code) throws IOException, CommandException {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        copyStream(in, baos);
-        String responseString = baos.toString();
-        in = new ByteArrayInputStream(baos.toByteArray());
-
-        logger.printDebugMessage("--------  RESPONSE DUMP         --------------");
-        logger.printDebugMessage(responseString);
-        logger.printDebugMessage("----------------------------------------------");
-        
-        if (code != 200) {
-            throw new CommandException("Failed : error code " + code);
-        }
-
-        // it might not be formatted properly -- e.g. output of "amx" and man pages
-        // in that case just print the message...
-        try {
-            serverResponse = getServerData(in);
-        }
-        catch(Exception e) {
-            // handled below...
-        }
-        if (serverResponse == null) {
-            processPlainText(responseString);
-        }
-        
-        
-        
-        else if (params.size() == 1 && params.get("help") != null) {
-            processHelp(serverResponse);
-        } else {
-            processMessage(serverResponse);
-        }
-        
-
-    }
-
-    private Map<String, Map<String,String>> getServerData(InputStream is) throws IOException {
-        try {
-            Manifest m = new Manifest();
-            m.read(is);
-            Map<String, Map<String,String>> serverResponse = ManifestUtils.normalize(m);
-            return serverResponse;
-        } finally {
-            if (is != null) {
-                try {
-                    is.close();
-                } catch (IOException e) {
-
-                }
-            }
-        }
-    }
-
-    private void processHelp(Map<String,Map<String,String>> serverResponse) throws CommandException {
-        
-        Map<String,String> mainAtts = serverResponse.get(ManifestUtils.MAIN_ATTS);
-        
-        // if we got a "real" man page -- process it & return
-        if(processManPage(mainAtts))
-            return;
-
-        String usageText = mainAtts.get("SYNOPSIS_value");
-
-        if(usageText == null) {
-            // this is one way to figure out there was an error!
-            throw new CommandException(strings.get("remoteError", 
-                    mainAtts.get("message")));
-        }
-        
-        
-        System.out.println("NAME :");
-        displayInProperLen(mainAtts.get("message"));
-        System.out.println("");
-        System.out.println("SYNOPSIS :");
-        if (usageText.startsWith("Usage: ")) {
-            System.out.println("\t" + mainAtts.get("SYNOPSIS_value").substring(7));            
-        } else {
-            System.out.println("\t" + mainAtts.get("SYNOPSIS_value"));
-        }
-        System.out.println("");
-        boolean displayOptionTitle = true;
-        String keys = mainAtts.get("keys");
-        List<String> operands = new ArrayList();
-        if (keys != null) {
-            StringTokenizer token = new StringTokenizer(keys, ";");
-            if (token.hasMoreTokens()) {
-                while (token.hasMoreTokens()) {
-                    String property = token.nextToken();
-                    if (property.endsWith("operand")) {
-                            //collect operands and display later
-                        operands.add(property);
-                        continue;
-                    }
-                    if (property.endsWith("SYNOPSIS")) {
-                            //do not want to display operand and synopsis
-                        continue;
-                    }
-                    if (displayOptionTitle) {
-                            //display only once
-                        System.out.println("OPTIONS : ");
-                        displayOptionTitle = false;
-                    }
-                    
-                    String name = mainAtts.get(property + "_name");
-                    String value = mainAtts.get(property + "_value");
-                    logger.printMessage("\t--" + name);
-                    displayInProperLen(value);
-                    logger.printMessage("");
-                }
-            }
-        }
-        displayOperands(operands, mainAtts);
-    }
-
-    // bnevins Apr 8, 2008
-    private boolean processManPage(Map<String,String> mainAtts) throws CommandException {
-        String manPage = mainAtts.get("MANPAGE_value");
-
-        if(!ok(manPage)) {
-            return false;
-        }
-
-        logger.printMessage(manPage);
-        return true;
-    }
-        
-
-    
-    private void displayOperands(final List<String> operands, Map<String,String> mainAtts) {
-        //display operands
-        if (!operands.isEmpty()) {
-            System.out.println("OPERANDS : ");
-            for (String operand : operands) {
-                final String value = mainAtts.get(operand + "_value");
-                String displayStr = operand.substring(0, operand.length()-8)
-                                    + " - " + value;
-                displayInProperLen(displayStr);
-                logger.printMessage("");            
-            }
-        }
-    }
-    
-
-    private void displayInProperLen(String strToDisplay) {
-        int index = 0;
-        for (int ii=0; ii+70<strToDisplay.length();ii+=70) {
-            index=ii+70;
-            String subStr = strToDisplay.substring(ii, index+1);
-            if (subStr.endsWith(" ") || subStr.endsWith(",") ||
-                subStr.endsWith(".") || subStr.endsWith("-") ) {
-                logger.printMessage("\t" + subStr);
-                ii++;
-                index++;
-            } else {
-                logger.printMessage("\t" + strToDisplay.substring(ii, index) + "-");
-            }
-        }
-        if (index < strToDisplay.length()) {
-            logger.printMessage("\t" + strToDisplay.substring(index));
-        }
-    }
-    
-
-    private void processMessage(Map<String,Map<String,String>> serverResponse) throws CommandException {
-        
-        Map<String,String> mainAtts = serverResponse.get(ManifestUtils.MAIN_ATTS);
-        
-        String exitCode = mainAtts.get("exit-code");
-        String message = mainAtts.get("message");
-
-        if (exitCode == null || exitCode.equalsIgnoreCase("Success")) {
-            if(ok(message))
-                logger.printMessage(message);
-            processOneLevel("", null, serverResponse, mainAtts);
-            return;
-        }
-        // bnevins -- this block is pretty bizarre!
-        //if there is any children message, then display it
-        final String childMsg = mainAtts.get("children");
-        if (childMsg != null && !childMsg.equals("")) {
-            StringTokenizer childTok = new StringTokenizer(childMsg, ";");
-            while (childTok.hasMoreTokens()) {
-                logger.printMessage(childTok.nextToken());
-            }
-        }
-
-        if(ok(message))
-            message = exitCode + " : " + message;
-        else
-            message = exitCode;
-        
-        String cause = mainAtts.get("cause");
-
-        // TODO We may need to  change this post-TP2
-        if( CLILogger.isDebug()) {
-            if(ok(cause)) {
-                message += StringUtils.NEWLINE + strings.get("cause", cause);
-            }
-        }        
-        throw new CommandException(message);
-    }
-
-    private void processOneLevel(String prefix, String key, Map<String, Map<String,String>> serverResponse,
-                                  Map<String,String> atts) {
-
-        if(atts == null) {
-            return;
-        }
-        String keys = atts.get("keys");
-        String output = "";
-        if (keys != null) {
-            StringTokenizer token = new StringTokenizer(keys, ";");
-            boolean displayProperties = false;
-            while (token.hasMoreTokens()) {
-                String property = token.nextToken();
-                //a kludge for NB plugin
-                if (!property.startsWith("nb-")) {
-                    if (!displayProperties) {
-                        output += prefix + "properties=(";
-                        displayProperties = true;
-                    }
-                        
-                    String name = atts.get(property + "_name");
-                    String value = atts.get(property + "_value");
-                    output += name + "=" + value;
-                    if (token.hasMoreElements()) {
-                        output += ",";
-                    }
-                }
-                if (displayProperties) {
-                    output += ")";
-                    logger.printMessage(output);
-                    output = "";
-                }
-            }
-        }
-        String children = atts.get("children");
-        if (children == null) {
-            // no container currently started.
-            return;
-        }
-
-        String childrenType = atts.get("children-type");
-        StringTokenizer token = new StringTokenizer(children, ";");
-        while (token.hasMoreTokens()) {
-            String container = token.nextToken();
-            int index = key == null ? 0 : key.length() + 1;
-            if (childrenType.equals("null") || childrenType.equals("")) {
-                logger.printMessage(container.substring(index));
-            } else {
-                logger.printMessage(prefix + childrenType + " : " + container.substring(index));
-            }
-            // get container attributes
-            Map<String,String> childAtts = serverResponse.get(container);
-            processOneLevel(prefix + "\t", container, serverResponse, childAtts);
-        }
-    }
-
-    private void copyStream(InputStream in, OutputStream out) throws IOException {
-        byte[] buf = new byte[1024];
-        int len;
-        while ((len = in.read(buf)) >= 0) {
-            out.write(buf, 0, len);
-        }
-        out.close();
-    }
-
-    private void processPlainText(String response) throws CommandException {
-        // format:
-        // "PlainTextActionReporterSUCCESS..." or
-        // "PlainTextActionReporterFAILURE..." or
-        if(response.startsWith(MAGIC)) {
-            response = response.substring(MAGIC.length());
-            
-            if(response.startsWith(SUCCESS)) {
-                logger.printMessage(response.substring(SUCCESS.length()));
-            }
-            else if(response.startsWith(FAILURE)) {
-                throw new CommandException(
-                    strings.get("remoteError", response.substring(FAILURE.length())));
-            }
-            return;
-        }
-        // Unknown Format -- print it...
-        logger.printDetailMessage(strings.get("unknownFormat"));
-        logger.printMessage(response);
-    }
 
     private void setBooleans(Map<String, String> params) {
         // need to differentiate a null value from a null key.
@@ -681,8 +389,8 @@ public class RemoteCommand {
         return sb.toString();
     }
 
-    Map<String,Map<String,String>> getServerResponse() {
-        return serverResponse;
+    Map<String,String> getMainAtts() {
+        return mainAtts;
     }
     
     /**
@@ -729,7 +437,7 @@ public class RemoteCommand {
     private boolean verbose = false;
     private boolean terse = false;
     private boolean echo = false;
-    private Map<String,Map<String,String>> serverResponse;
+    private Map<String,String>   mainAtts;
     private final static LocalStringsImpl strings = new LocalStringsImpl(RemoteCommand.class);
     private LoginInfoStore store = null;
 }
