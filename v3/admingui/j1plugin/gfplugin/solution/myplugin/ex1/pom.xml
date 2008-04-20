@@ -40,8 +40,8 @@
 
 
     <!--  !!!!!!!!!   NOTE  !!!!!!!!!!  -->
-    <!--  Specify  LAB  when using this pom.xml eg.
-          mvn -DLAB=/mydir/repository install
+    <!--  Specify  "repo"  when using this pom.xml eg.
+          mvn -Drepo=/mydir/repository install
     -->
 
     <modelVersion>4.0.0</modelVersion>
@@ -63,7 +63,7 @@
 	</mailingList>
     </mailingLists>
     <properties>
-	<mvn-repo>file://${LAB}</mvn-repo>
+	<mvn-repo>file://${repo}</mvn-repo>
     </properties>
     <build>
 	<defaultGoal>install</defaultGoal>
