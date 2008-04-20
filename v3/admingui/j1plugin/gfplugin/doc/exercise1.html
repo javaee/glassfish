@@ -394,9 +394,8 @@ public class MyPlugin implements ConsoleProvider {
 
 <li><a name="ex1stepA3"><b>Compiling your plugin</b></a>
     <p>	In this step we will compile the <code>MyPlugin.java</code> you just
-	created.  To do this you will need to enter the following commands on
-	the command line. The <b><code>-DLAB</code></b> property specifies the absolute path to 
-	the repository for this lab.</p>
+	created.  To do this you will need to enter "<code>mvn install</code>"
+	on the command line in your plugin root directory.</p>
 
     <ol class="j1hollist">
         <li><p> Go to your <code>gfplugin/myplugin</code> directory:</p>
@@ -409,7 +408,7 @@ cd gfplugin/myplugin
 	<li><p>	Compile your code.</p>
 <div class="console">
 <pre>
-mvn -DLAB=&lt;lab_root&gt;/gfplugin/maven2/repository install
+mvn install
 </pre>
 </div>
 <br />
@@ -739,7 +738,7 @@ cd gfplugin/myplugin
 	<li><b>	Compile your code.</b>
 <div class="console">
 <pre>
-mvn -DLAB=&lt;lab_root&gt;/gfplugin/maven2/repository install
+mvn install
 </pre>
 </div>
 <br />
