@@ -89,23 +89,20 @@ class ManifestManager implements ResponseManager {
     }
 
     private void processGeneric() throws RemoteSuccessException, RemoteFailureException {
-        if(!response.wasSuccess()) {
-            String msg = response.getMainMessage();
-            String cause = response.getCause();
-            
-            if( CLILogger.isDebug() && ok(cause)){
-                msg += EOL + cause;
-            }
-            throw new RemoteFailureException(msg);
-        }        
-        
         StringBuilder sb = new StringBuilder();
-        String s = response.getMainMessage();
-        
-        if(ok(s))
-            sb.append(s).append(EOL);
+        String msg = response.getMainMessage();
+        if(ok(msg))
+            sb.append(msg).append(EOL);
 
         processOneLevel("", null, response.getMainAtts(), sb);
+
+        if(!response.wasSuccess()) {
+            String cause = response.getCause();
+            if( CLILogger.isDebug() && ok(cause)){
+                sb.append(EOL).append(cause);
+            }
+            throw new RemoteFailureException(sb.toString());
+        }        
 
         throw new RemoteSuccessException(sb.toString());
     }
