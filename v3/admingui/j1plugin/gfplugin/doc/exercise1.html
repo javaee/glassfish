@@ -5,7 +5,7 @@
 	<style type="text/css">
 img { border: 3px ridge #888; }
 .j1hollist li p { padding-top: 5px; padding-bottom: 5px;}
-.figure { padding: 0px 0px 12px 20px; font-weight: bold; font-size: 0.9em; }
+.figure { margin-top: -20px; padding: 0px 0px 22px 20px; font-weight: bold; font-size: 0.9em; }
 	</style>
     </head>
     <body>
@@ -83,6 +83,7 @@ public interface ConsoleProvider {
 	     "META-INF/admingui/console-config.xml";
 }
 </pre></div>
+<br />
 <div class="figure">Figure 1-2: ConsoleProvider Interface</div>
 
 <p>
@@ -95,6 +96,7 @@ public interface ConsoleProvider {
 
 <div class="codebox"><pre>
   class=org.example.glassfish.admingui.MyPlugin,index=org.glassfish.api.admingui.ConsoleProvider</pre></div>
+<br />
 <div class="figure">Figure 1-3: </div>
 
 <p> This is used to efficiently locate all implementations of a @Contract in the system.</p>
@@ -179,6 +181,7 @@ v3/admingui/plugin-service/src/main/java/org/glassfish/admingui/plugin/ConsoleCo
 v3/admingui/plugin-service/src/main/java/org/glassfish/admingui/plugin/ConsolePluginService.java
 v3/admingui/plugin-service/src/main/java/org/glassfish/admingui/plugin/IntegrationPoint.java</pre>
 </div>
+<br />
 <div class="figure">Figure 1-4: </div>
 
 <b>Core Module for Administration Console</b>
@@ -197,6 +200,7 @@ v3/admingui/core/src/main/java/com/sun/enterprise/tools/admingui/handlers
 v3/admingui/core/src/main/resources/home.jsf
 </pre>
 </div>
+<br />
 <div class="figure">Figure 1-5: </div>
 
   <b> Administration Console Web Application </b>
@@ -213,6 +217,7 @@ v3/admingui/war/
 v3/admingui/war/src/main/webApp
 </pre>
 </div>
+<br />
 <div class="figure">Figure 1-6: </div>
 
 
@@ -345,6 +350,7 @@ public class MyPlugin implements ConsoleProvider {
 }
 </pre>
 </div>
+<br />
 <div class="figure">Figure 1-10: Edit MyPlugin.java</div>
 </a>
 
@@ -360,8 +366,7 @@ public class MyPlugin implements ConsoleProvider {
 	    <p>
 	    <a href="images/ex1-createMyPlugin.jpg"><img style="border: 1px solid ; width: 700px; height: 475;" alt="" src="images/ex1-createMyPlugin.jpg"></a>
 	    </p>
-		<div class="figure">Figure 1-9: Create MyPlugin Class</div>
-		<br>
+	    <div class="figure">Figure 1-9: Create MyPlugin Class</div>
 	    <li><p> Now open this newly created Java File and add the necessary
 		    implementation for the plugin.  (Note: This file should be
 		    located at:
@@ -492,6 +497,7 @@ The output will look similar to:
     /&gt;
 &lt;/console-config&gt;
 	</div>
+<br />
     <div class="figure">Figure 1-12: console-config.xml</div>
 </a>
 
@@ -584,6 +590,7 @@ The output will look similar to:
 &lt;/sun:treeNode&gt;
 </pre>
 </div>
+<br />
 <div class="figure">Figure 1-16: treenode-ex1.jsf</div>
 </a>
 
@@ -609,6 +616,7 @@ The output will look similar to:
 &lt;/html&gt;
 </pre>
 </div>
+<br />
 <div class="figure">Figure 1-17: hello.jsf</div>
 </a>
 
