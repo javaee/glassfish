@@ -36,16 +36,41 @@
 <p class="j1holheader">Background Information:</p>
 </a>
 
-<p> JSFTemplating makes building pages and components easier.  When creating
-    pages, often content is repeated many times across multiple pages.  Using
-    templates you can easily reuse your code and make it much easier to
-    maintain.</p>
+<p> JSFTemplating is an open source project hosted on java.net
+    (<a href="https://jsftemplating.dev.java.net">https://jsftemplating.dev.java.net</a>).
+    This project provides an alternative to using JavaServer Pages for the JSF
+    view definition.  JSFTemplating allows for pluggable syntaxes to be used to define JSF
+    pages.  One of those syntaxes is the Facelets syntax
+    (<a href="https://facelets.dev.java.net">https://facelets.dev.java.net</a>),
+    it also includes two other formats, and others can be added.  JSFTemplating
+    also provides many other useful features, many of which will appear in JSF 2.0
+    when <a href="http://jcp.org/en/jsr/detail?id=314">JSR 314</a> is final.
+    Here are some of the useful features in JSFTemplating:</p>
 
-<!--
-    <font color=#ff0000>TBD:</font> More info relating to Templating.
--->
-</p>
+<ul><li>Facelets-style Templating<li>
+    <li>Page Scope</li>
+    <li>Events</li>
+    <li>Handlers</li>
+    <li>Component Factories</li>
+    <li>Better Performance than JSP</li>
+    <li>Ajax Support</li></ul>
 
+<p> In this lab you will be using the Facelets-style of templating pages.
+    This allows you to define a template which specifies the entire layout of
+    the page.  You then build pages which refer to the template and
+    "pass content" into it.  The template uses the content which you pass
+    (via ui:define or !define tags) to layout the structure of youe page.  This
+    means your individual pages do not need to be aware of the general layout
+    of your page, nor do they need to know the ordering in which content
+    appears.  In this example, our template is very simple, but more complex
+    examples achieve even greater benefit from this type of templating.</p>
+
+<p> To get involved, or to learn more about the templating features of
+    JSFTemplating, or any of the other features, visit:
+    <a href="https://jsftemplating.dev.java.net">https://jsftemplating.dev.java.net</a>,
+    or the #jsftemplating IRC channel on irc.freenode.net.  Instructions for
+    using IRC can be found at:
+    <a href="https://jsftemplating.dev.java.net/irc.html">https://jsftemplating.dev.java.net/irc.html</a>.</p>
 
 <a name="ex3steps">
     <p class="j1holheader">Step-by-Step Instructions:</p>
