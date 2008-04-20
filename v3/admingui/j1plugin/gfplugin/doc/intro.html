@@ -8,7 +8,7 @@
 		 page in the first tab will be used to set the title for the
 		 page.  If such a tag cannot be found, the page title will be
 		 the generic title from the index page. -->
-	    <div id="j1holtitleid" class="pagetitle">LAB-4520: Plug into GlassFish v3 with JavaServer Faces and jMaki</div>
+	    <div id="j1holtitleid" class="pagetitle">LAB-4520: Plug into GlassFish v3 with JavaServer&#8482; Faces and jMaki</div>
 
 	    <div class="j1holduration xbig">Approximate duration: 120 minutes</div>
 
@@ -33,14 +33,14 @@
   The Administration Console for GlassFish has not been left out when it comes
   to plugability. In order to manage a dynamic application server like
   GlassFish v3, the administration console must itself be very dynamic. This
-  is a big challenge for a JavaServer Faces web application. How are resources
+  is a big challenge for a JavaServer&#8482; Faces web application. How are resources
   (pages, images, etc.) discovered when the bits are not available at install
   time? How do you accommodate multiple "plugins" which want to contribute
   to the same page?
 </p>
 <p>
   In this lab, we will explore these issues and learn how creating a pluggable
-  JavaServer Faces application is addressed in GlassFish v3 Administration
+  JavaServer&#8482; Faces application is addressed in GlassFish v3 Administration
   Console. You will learn how you may create a plugin for GlassFish v3 which
   integrates seamlessly with the administration console. This lab will guide you
   through the process of adding new tree nodes to the GlassFish navigation tree,
@@ -68,7 +68,7 @@
 	    basic knowledge or programming experience on the following technologies.</p>
 
 	    <ul>
-		<li>Java</li>
+		<li>Java&#8482;</li>
 	    </ul>
 
 	    <p class="j1holheader">Helpful Knowledge</p>
@@ -85,7 +85,7 @@
 	    <p class="j1holheader">System Requirements</p>
 
 	    <ul>
-		<li>Supported OS: Windows, Solaris, Linux, MacOS</li>
+		<li>Supported OS: Windows, Solaris&#8482;, Linux, MacOS</li>
 		<li>Memory requirement: 512M minimum, 2GB recommended</li>
 		<li>Disk space requirement: 500 MB</li>
 	    </ul>
@@ -101,15 +101,26 @@
 </p>
 
 	    <ul class="j1hollist">
-  <li>Java SE <a href=http://java.sun.com/javase/downloads/?intcmp=1281>JDK 6</a></li>
+  <li>Java SE <a href=http://java.sun.com/javase/downloads/?intcmp=1281>JDK&#8482; 6</a></li>
   <li><a href=http://www.netbeans.info/downloads/download.php?a=b&amp;p=1></a><a href=http://download.netbeans.org/netbeans/6.0/final/>NetBeans IDE 6.0</a> or higher
-      <ul><li>On the download page, choose either the Web &amp; Java EE download orthe All download.</li>
+      <ul><li>On the download page, choose either the Web &amp; Java&#8482; EE download orthe All download.</li>
 	  <li>The instruction of how to build and deploy the lab exercises in this lab is provided as optional exercise #0.</li>
 	  </ul></li>
-  <li><a href=http://developers.sun.com/learning/javaoneonline/j1lab.jsp?lab=LAB-4205&amp;yr=2008&amp;track=1>Lab zip file (4520_j1plugin.zip)</a> under a directory of your choice, &lt;lab_root&gt;
-      <ul><li>Read &lt;lab_root&gt;/index.html to proceed</li></ul></li>
-	    </ul>
 
+	  <li> Download and unzip lab zip file <a href="../4520_gfplugin.zip" >
+		    lab zip file (4520_gfplugin.zip)</a> under a directory of your
+                    choice, &lt;lab_root&gt;.
+                    <ul>
+                        <li>(Optional) Read the <a href="4520_gfplugin.pdf">lab presentation</a>
+                        <li>Read &lt;lab_root&gt;/gfplugin/index.html
+                         (this document) to proceed</li>
+                    </ul>
+                    <p>The latest version of this zip file is available at
+                    <a href="http://developers.sun.com/learning/javaoneonline/j1labs2008.jsp?track=1&yr=2008"
+                    >JavaOne Online</a>.</p>
+                </li>
+
+		<br>
 	    <p class="j1holheader"">Notations used in this documentation</p>
 
 	    <ul class="j1hollist">
@@ -133,6 +144,7 @@
     </ul>
   </li>
 	    </ul>
+	    <br>
 
 	    <p class="j1holheader"">Lab exercises</p>
 
@@ -142,6 +154,7 @@
 		<li><a href="#Exercise_2">Exercise 2: Charting with jMaki</a></li>
 		<li><a href="#Exercise_3">Exercise 3: Templating your Plugin</a></li>
 	    </ul>
+	    <br>
 
 	    <p class="j1holheader">Resources</p>
 
@@ -154,6 +167,7 @@
 		<li><a href="https://jmaki-charting.dev.java.net">jMaki Charting</a></li>
 		<li><a href="https://hk2.dev.java.net">HK2</a></li>
 	    </ul>
+	    <br><br>
 
 	    <p class="j1holheader">Where to send questions or feedbacks
 	    on this lab and public discussion forums</p>
@@ -167,8 +181,8 @@
 
 		    <ul>
 			<li>
-			    <a href="https://hands-on-labs.dev.java.net/servlets/ForumMessageList?forumID=2548">4520_GlassFish_Plugin
-			    forum at hands-on-labs.dev.java.net</a>
+			<a href="https://hands-on-labs.dev.java.net/servlets/ForumMessageList?forumID=3101">
+			    JavaOne 2008 Hands on Lab Forum</a>
 			</li>
 		    </ul>
 		</li>

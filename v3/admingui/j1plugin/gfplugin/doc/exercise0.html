@@ -41,8 +41,8 @@
 		install maven on your machine, please follow these
 		instructions.<br>
 		A copy of maven 2.0.9 is already installed when you unzip the lab .zip file, it can be found at
-		: <code>gfplugin/glassfish/maven2/maven-2.0.9</code>.  You can set your MAVEN_HOME to this 
-		directory and add <code>gfplugin/glassfish/maven2/maven-2.0.9/bin</code> to your PATH.
+		: <code>gfplugin/maven2/maven-2.0.9</code>.  You can set your MAVEN_HOME to this 
+		directory and add <code>gfplugin/maven2/maven-2.0.9/bin</code> to your PATH.
 		</li>
 	</ul>
 	</a></li>
@@ -62,7 +62,7 @@
 	    <li>Launch NetBeans 6.
 		<ul class="j1hollist"><li>On Windows: <b>Start --&gt; Programs --&gt; NetBeans IDE --&gt;
 			    NetBeans IDE 6.0 --&gt; NetBeans IDE</b></li>
-		    <li>On Solaris or Linux: open a terminal window, and type:
+		    <li>On Solaris&#8482; or Linux: open a terminal window, and type:
 <div class="console"><pre>
 netbeans
 </pre></div>
@@ -70,30 +70,33 @@ netbeans
 		</ul>
 	    </li>
 	    <li><a name="ex0mvn">Ensure the Maven 2 plugin for NetBeans 6.0 is installed.
-		<p> This plugin is required in order to build the lab files as well as
-		GlassFish modules.</p>
-		<ul class="j1hollist"><li>Choose <b>Plugins</b> from the <b>Tools</b> menu.</li>
-		    <li>Select the <b>Available Plugins</b> tab.</li>
-		    <li>Select the <b>Maven</b> plugin and press the <b>Install</b> button.
-		<p> <img src="images/ex0-mavenplugin.jpg"></p>
-		<div class="figure">Figure 0-1: Installing the Maven Plugin</div>
-		    </li></ul>
+		<p> This plugin is required in order to open the project. A copy of Maven Plugin for NetBeans is available at <code>gfplugin/maven2/maven-nb-plugins </code> directory.</p>
+		<ol class="j1hollist"><li>Choose <b>Plugins</b> from the <b>Tools</b> menu.</li>
+		    <li>Select the <b>Downloaded</b> tab</li>
+			<li>Press the <b>Add Plugins...</b> button </li>
+			<p><img src="images/ex0-download.jpg"></p>
+			<li>Navigate to <code>gfplugin/maven2/maven-nb-plugins</code> directory
+			<li>Select all the .nbm files and Press <b>Open</b> button. </li>
+			<p><img src="images/ex0-mvnPlugin.jpg"></p>
+			<li>Press the <b>Install</b> button to start the installation</li>
+			<p><img src="images/ex0-mavenplugin.jpg"></p>
+			<div class="figure">Figure 0-1: Installing the Maven Plugin</div>
+		</ol>
 		</a>
 	    </li>
-	</ul>
-	</a></li>
+
     <li><a name="ex0InstallSVN">
-	<b>Install Subversion</b> (<span class="j1holnote">only needed if you wish to checkout the GlassFish source</span>).
+	<b>Install Subversion</b> (<span class="j1holnote">only needed if you wish to checkout the GlassFish source</span>)
 	<ul class="j1hollist">
 	    <li>Choose <b>Plugins</b> from the <b>Tools</b> menu. Select the <b>Available Plugins</b> tab.</li>
 	    <li>Select the <b>Subversion Plugin</b> and press the <b>Install</b> Button.</li>
 	</ul>
-	<p> <img src="images/ex0-subversion.jpg"></p>
+		<a href="images/ex0-subversion.jpg"><img style="border: 1px solid ; width: 700px; height: 471;" alt="" src="images/ex0-subversion.jpg"></a>
 	<div class="figure">Figure 0-2: Installing Subversion</div>
 	</a>
     </li>
 
-    <br />
+    <br/>
     <p class="j1holsubheader">References:</p>
 	<p> For more information regarding the GlassFish v3 development
 	    environment and workspace, refer to the build instructions at:

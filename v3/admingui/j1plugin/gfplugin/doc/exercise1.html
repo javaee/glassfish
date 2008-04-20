@@ -83,7 +83,7 @@ public interface ConsoleProvider {
 	     "META-INF/admingui/console-config.xml";
 }
 </pre></div>
-<div class="figure">Figure 1-2: </div>
+<div class="figure">Figure 1-2: ConsoleProvider Interface</div>
 
 <p>
   The @Service annotation is placed on a Java Class which typically implements a
@@ -106,7 +106,7 @@ public interface ConsoleProvider {
   implementation of the ConsoleProvider "@Contract" Interface which is annotated
   with the @Service annotation. The GlassFish Administration Console is then able
   to easily find these implementations and access the configuration file they
-  specify via their interface (see fig TBD). Once the configuration
+  specify via their interface (see figure 1-2). Once the configuration
   information is obtained, the task of integrating the new content is easily
   performed.
 </p>
@@ -203,7 +203,7 @@ v3/admingui/core/src/main/resources/home.jsf
 
 <p>
   This is the war packaging module which contains the deployment descriptor and
-  includes the <code>console-core-1.2-SNAPSHOT.jar</code> which is built from the core
+  includes the <code>console-core-1.0-SNAPSHOT.jar</code> which is built from the core
   module. After the build cycle, a war file is created ready for
   deployment.</p>
 
@@ -286,20 +286,16 @@ page</a>.
 	    <ol class="j1hollist">
 		<li>Choose <b>Open Project</b> from the <b>File</b> menu.</li>
 		<li>Browse to <b>gfplugin</b> and select <b>myplugin</b>.</li>
-		<li>Press the <b>Open Project</b> button.
-		    <p>&nbsp;</p>
+		<li>Press the <b>Open Project</b> button.  </li>
+	    </ol>
 		    <p><img src="images/ex1-project-open.jpg" /></p>
 <div class="figure">Figure 1-7: Open Project myplugin</div>
-		</li>
-	    </ol>
 	</li>
 
-	<li>You should see the following directory layout under the Projects tab:
-	    <p>&nbsp;</p>
+	<li>You should see the following directory layout under the Projects tab: </li>
+    </ol>
 	    <p><img src="images/ex1-project-layout.jpg"></p>
 <div class="figure">Figure 1-8: Project myplugin layout</div>
-	</li>
-    </ol>
   </li>
 
   <li><a name="ex1stepA2"><b>Create your plugin Java @Service Class</b>
@@ -359,10 +355,11 @@ public class MyPlugin implements ConsoleProvider {
 	    <li>Right click on it and select "<b>New --&gt; Java Class</b>". A pop up window will display.</li>
 	    <li>Enter the class name "<b>MyPlugin</b>"  (Note: Do <b>not</b> enter the ".java" extension.)</li>
 	    <li>Select <b>Finish</b>.
+		</li>
 
-		<p> <img src="images/ex1-createMyPlugin.jpg"></p>
+	    <a href="images/ex1-createMyPlugin.jpg"><img style="border: 1px solid ; width: 700px; height: 475;" alt="" src="images/ex1-createMyPlugin.jpg"></a>
 		<div class="figure">Figure 1-9: Create MyPlugin Class</div>
-	    </li>
+		<br>
 	    <li><p> Now open this newly created Java File and add the necessary
 		    implementation for the plugin.  (Note: This file should be
 		    located at:
@@ -385,7 +382,7 @@ public class MyPlugin implements ConsoleProvider {
 
     <p>	As seen in NetBeans:</p>
 
-    <p>	<img src="images/ex1-editMyPlugin.jpg"></p>
+    <a href="images/ex1-editMyPlugin.jpg"><img style="border: 1px solid ; width: 700px; height: 382;" alt="" src="images/ex1-editMyPlugin.jpg"></a>
     <div class="figure">Figure 1-11: Edit MyPlugin.java</div>
   </li>
     </ol>
@@ -394,7 +391,8 @@ public class MyPlugin implements ConsoleProvider {
 <li><a name="ex1stepA3"><b>Compiling your plugin</b></a>
     <p>	In this step we will compile the <code>MyPlugin.java</code> you just
 	created.  To do this you will need to enter the following commands on
-	the command line.</p>
+	the command line. The <b><code>-DLAB</code></b> property specifies the absolute path to 
+	the repository for this lab.</p>
 
     <ol class="j1hollist">
         <li><p> Go to your <code>gfplugin/myplugin</code> directory:</p>
@@ -407,7 +405,7 @@ cd gfplugin/myplugin
 	<li><p>	Compile your code.</p>
 <div class="console">
 <pre>
-mvn install
+mvn -DLAB=&lt;lab_root&gt;/gfplugin/maven2/repository install
 </pre>
 </div>
 <br />
@@ -436,9 +434,9 @@ The output will look similar to:
 [INFO] [surefire:test]
 [INFO] No tests to run.
 [INFO] [hk2:package]
-[INFO] Building jar: .../gfplugin/myplugin/target/console-myplugin-1.0-SNAPSHOT.jar
+[INFO] Building jar: .../gfplugin/myplugin/target/console-myplugin-1.0.jar
 [INFO] [install:install]
-[INFO] Installing .../gfplugin/myplugin/target/console-myplugin-1.0-SNAPSHOT.jar to ...
+[INFO] Installing .../gfplugin/myplugin/target/console-myplugin-1.0.jar to ...
 [INFO] ------------------------------------------------------------------------
 [INFO] BUILD SUCCESSFUL
 [INFO] ------------------------------------------------------------------------
@@ -509,21 +507,21 @@ The output will look similar to:
 		left, and "<b>Empty File</b>" in "<b>File Types</b>"
 		list on the right. Select <code>Next</code>.
 
-		<p><img src="images/ex1-createConsoleConfig1.jpg"></p>
+		<a href="images/ex1-createConsoleConfig1.jpg"><img style="border: 1px solid ; width: 700px; height: 448;" alt="" src="images/ex1-createConsoleConfig1.jpg"></a>
 		<div class="figure">Figure 1-13: Creating console-config.xml.</div>
 	    </li>
 	    <li>Enter "<code><b>console-config.xml</b></code>" as the file name.
 		Select <b>Finish</b>.
 
-		<p><img src="images/ex1-createConsoleConfig2.jpg"></p>
+		<a href="images/ex1-createConsoleConfig2.jpg"><img style="border: 1px solid ; width: 700px; height: 403;" alt="" src="images/ex1-createConsoleConfig2.jpg"></a>
 		<div class="figure">Figure 1-14: Creating console-config.xml (step 2)</div>
 	    </li>
 	    <li>Edit the "<code><b>console-config.xml</b></code>" file to
 		specify the <code>IntegrationPoint</code> (note: the path to
 		this file is:
-		<code>myplugin/src/main/resources/META-INF/admingui/console-config.xml</code>).
+		<code>myplugin/src/main/resources/META-INF/admingui/console-config.xml</code>.)
 
-		<p><img src="images/ex1-editConsoleConfig.jpg"></p>
+		<a href="images/ex1-editConsoleConfig.jpg"><img style="border: 1px solid ; width: 700px; height: 382;" alt="" src="images/ex1-editConsoleConfig.jpg"></a>
 		<div class="figure">Figure 1-15: Edit console-config.xml</div>
 	    </li>
 	</ol>
@@ -618,14 +616,16 @@ The output will look similar to:
 		This is referenced from the "content" specified in one of the
 		<code>integration-point<code>'s in the
 		<code>console-config.xml</code>.
-		<p><img src="images/ex1-createTreenode.jpg"></p>
-    <div class="figure">Figure 1-18: Create treenode-ex1.jsf</div>
+		<p>
+		<a href="images/ex1-createTreenode.jpg"><img style="border: 1px solid ; width: 700px; height: 399;" alt="" src="images/ex1-createTreenode.jpg"></a>
+		</p>
+    <div class="figure"> Figure 1-18: Create treenode-ex1.jsf</div>
 	    </li>
 	    <li>
 		Edit the file to specify the tree nodes layout
 		(Note: the full path of this file is
 		<code>myplugin/src/main/resources/treenode-ex1.jsf</code>)
-		<p><img src="images/ex1-editTreenode.jpg"></p>
+		<a href="images/ex1-editTreenode.jpg"><img style="border: 1px solid ; width: 700px; height: 375;" alt="" src="images/ex1-editTreenode.jpg"></a>
     <div class="figure">Figure 1-19: Edit treenode-ex1.jsf</div>
 
 	    </li>
@@ -651,7 +651,7 @@ The output will look similar to:
 	    <li>Open the file. Add the following code. (Note: the full path
 		to this file is <code>myplugin/src/main/resources/hello.jsf</code>)
 
-		<p> <img src="images/ex1-editHello.jpg"></p>
+		<a href="images/ex1-editHello.jpg"><img style="border: 1px solid ; width: 700px; height: 357;" alt="" src="images/ex1-editHello.jpg"></a>
 		<div class="figure">Figure 1-20: Edit hello.jsf</div>
 
 	    </li>
@@ -708,7 +708,7 @@ glassfish/bin/asadmin deploy glassfish/admingui
                         JavaOne tree node yet since you have not integrated your
                         plugin.</p>
 
-                    <p> <img src="images/ex1-before.jpg"></p>
+		    <a href="images/ex1-before.jpg"><img style="border: 1px solid ; width: 700px; height: 552;" alt="" src="images/ex1-before.jpg"></a>
                     <div class="figure">Figure 1-21: Before Integration</div>
                 </li>
             </ol>
@@ -723,14 +723,14 @@ cd gfplugin/myplugin
 	<li><b>	Compile your code.</b>
 <div class="console">
 <pre>
-mvn install
+mvn -DLAB=&lt;lab_root&gt;/gfplugin/maven2/repository install
 </pre>
 </div>
 <br />
 </li>
         <li><b> Intall your plugin.</b>
             <p> You now have a jar file named
-                <code>gfplugin/myplugin/target/console-myplugin-1.0-SNAPSHOT.jar</code>.
+                <code>gfplugin/myplugin/target/console-myplugin-1.0.jar</code>.
                 This jar file is ready to plugin into the GlassFish v3
                 Application Server.</p>
 
@@ -756,7 +756,7 @@ glassfish/bin/asadmin stop-domain
                     <li>Integrate the jar to GlassFish by copying it to the GlassFish modules directory.
 <div class="console">
 <pre>
-cp myplugin/target/console-myplugin-1.0-SNAPSHOT.jar glassfish/modules/console-myplugin-1.0-SNAPSHOT.jar
+cp myplugin/target/console-myplugin-1.0.jar glassfish/modules/console-myplugin-1.0.jar
 </pre>
 </div>
                     </li>
@@ -783,10 +783,11 @@ glassfish/bin/asadmin start-domain
                                 page.</p></li>
                         </ol>
 
-                        <p>	<img src="images/ex1-result.jpg"></p>
-                        <div class="figure">Figure 1-22: Browser showing the plugin page.</div>
                     </li>
                 </ol>
+
+			<a href="images/ex1-result.jpg"><img style="border: 1px solid ; width: 700px; height: 552;" alt="" src="images/ex1-result.jpg"></a>
+                        <div class="figure">Figure 1-22: Browser showing the plugin page.</div>
             </li>
         </ol>
     </li>

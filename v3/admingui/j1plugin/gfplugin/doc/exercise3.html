@@ -104,10 +104,10 @@ it again.</p>
 		<li>Browse to <b>gfplugin</b> and select <b>myplugin</b>.</li>
 		<li>Press the <b>Open Project</b> button.
 		    <p>&nbsp;</p>
-		    <p><img src="images/ex3-open-project.jpg" /></p>
-		    <div class="figure">Figure 3-2: Open Project myplugin</div>
 		</li>
 	    </ol>
+		<a href="images/ex3-open-project.jpg"><img style="border: 1px solid ; width: 700px; height: 398;" alt="" src="images/ex3-open-project.jpg"></a>
+		    <div class="figure">Figure 3-2: Open Project myplugin</div>
 	</li>
     </ol>
 </li>
@@ -224,19 +224,18 @@ value="{  xAxis : {
 &lt;/composition&gt;
 </pre>
 </div>
-<div class="figure">Figure 3-3: TBD</div>
+<div class="figure">Figure 3-3: chart3.jsf</div>
 </a>
 
     <p>	If you are using NetBeans, follow these steps to create "<code>chart3.jsf</code>":</p>
     <ol class="j1hollist">
 	<li>Select <b>Other Sources --&gt; resources</b>.</li>
 	<li>Create an empty file named "<code>chart3.jsf</code>".</li>
-	<li>Add the code defined in <a href="#chart3">Figure TBD</a> to "<code>chart3.jsf</code>".
-	    <p><img src="images/ex3-editChart3.jpg"></p>
-	    <div class="figure">Figure 3-4: Create Chart3.jsf</div>
-	</li>
+	<li>Add the code defined in <a href="#chart3">Figure 3-3</a> to "<code>chart3.jsf</code>".  </li>
     </ol>
-</a></li>
+		<a href="images/ex3-editChart3.jpg"><img style="border: 1px solid ; width: 700px; height: 433;" alt="" src="images/ex3-editChart3.jpg"></a>
+	    <div class="figure">Figure 3-4: Create Chart3.jsf</div>
+		<br>
 
 <div class="j1holwarn" style="text-align: center">Congratulations!  You've completed creating a JSF page that shows the jMaki chart in a template!</div>
 
@@ -264,7 +263,7 @@ value="{  xAxis : {
 /&gt;
 </pre>
 </div>
-<div class="figure">Figure 3-5: TBD</div>
+<div class="figure">Figure 3-5: Add Intergation-point</div>
 </a>
 </p>
 
@@ -280,11 +279,10 @@ Step-by-step instructions in NetBeans:
 
     <li>Edit the file and add the following <code>IntegrationPoint</code> (refer to <a href="#Solution_3">Solution 3 </a> for the entire file):
 
-
-	<p><img src="images/ex3-editConfig.jpg" /></p>
-	<div class="figure">Figure 3-6: Modify console-config.xml</div>
     </li>
 </ol>
+		<a href="images/ex3-editConfig.jpg"><img style="border: 1px solid ; width: 700px; height: 486;" alt="" src="images/ex3-editConfig.jpg"></a>
+	<div class="figure">Figure 3-6: Modify console-config.xml</div>
 <p><a href="#ex3contents">Back to step overview</a></p>
 
 <hr style="WIDTH:100%; HEIGHT:2px"><br>
@@ -306,16 +304,17 @@ Step-by-step instructions in NetBeans:
 /&gt;
 </pre>
 </div>
-<div class="figure">Figure 3-7: TBD</div>
+<div class="figure">Figure 3-7: Add treeNode</div>
 
     <ol class="j1hollist">
 	<li>Select <b>Other Sources --&gt; resources</b>.</li>
 	<li>Create an empty file named <code>treenode-ex3.jsf</code> under <b>resources</b>.</li>
 	<li>Edit "<code>treenode-ex3.jsf</code>" to specify the information regarding this second tree node.  
-	    <p><img src="images/ex3-editTreenode.jpg"></p>
-	    <div class="figure">Figure 3-8: Edit of treenode-ex3.jsf</div>
 	</li>
     </ol>
+		<a href="images/ex3-editTreenode.jpg"><img style="border: 1px solid ; width: 700px; height: 508;" alt="" src="images/ex3-editTreenode.jpg"></a>
+	    <div class="figure">Figure 3-8: Edit of treenode-ex3.jsf</div>
+		<br>
 
     <p><a href="#ex3contents">Back to step overview</a></p>
 
@@ -328,7 +327,7 @@ Step-by-step instructions in NetBeans:
 <div class="console">
 <pre>
 cd gfplugin/plugin
-mvn install
+mvn -DLAB=&lt;lab_root&gt;/gfplugin/maven2/repository install
 </pre>
 </div>
 
@@ -340,7 +339,7 @@ mvn install
     </ol>
     <br>
     <p> You should now have a jar file named
-	<code>gfplugin/myplugin/target/console-myplugin-1.0-SNAPSHOT.jar</code>.
+	<code>gfplugin/myplugin/target/console-myplugin-1.0.jar</code>.
 	This jar file is ready to install into GlassFish v3!</span></p>
 
 <p> You now need a Terminal to enter some commands, please bring up a terminal window.
@@ -367,7 +366,7 @@ glassfish/bin/stop-domain
     <li>Integrate the jar into GlassFish by simply copying it to the GlassFish modules directory.
 <div class="console">
 <pre>
-cp myplugin/target/console-myplugin-1.0-SNAPSHOT.jar glassfish/modules/console-myplugin-1.0-SNAPSHOT.jar
+cp myplugin/target/console-myplugin-1.0.jar glassfish/modules/console-myplugin-1.0.jar
 </pre>
 </div>
     </li>
@@ -386,10 +385,10 @@ glassfish/bin/asadmin start-domain
 	    the navigation tree.  Note the new tree node "Exercise #3" under
 	    it.  Click on the "Exercise #3" tree node which displays the charts
 	    and notice that there is a header added to the charting page.</p>
-	<p> <img src="images/ex3-result.jpg"></p>
-	<div class="figure">Figure 3-9: Browser showing the plugin page with charts.</div>
     </li>
 </ol>
+	<p> <img src="images/ex3-result.jpg"></p>
+	<div class="figure">Figure 3-9: Browser showing the plugin page with charts.</div>
 <div class="j1holwarn" style="text-align: center">Congratulations!  You have customized the Administration Console and
     plugged in your own tree node to show the jMaki Charts with a customized header.
     <br>
