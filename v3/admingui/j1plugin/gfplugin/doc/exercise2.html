@@ -40,21 +40,20 @@
 	    jMaki charting provides dynamic charting capabilities where charts can be manipulated on the client without round trips to the server.  Chart manipulation is handled through the jMaki publish and subscribe mechanism.  jMaki  provides a common API to the following JavaScript Charting packages, Plotkit, Dojo, Yahoo and Google.  Developers can quickly represent their data using bar, line or area charts.
 	    </p>
 
-<div class="j1holtip">You will need Exercise 1 completed in order to continue with Exercise 2.  If you have
-not completed Exercise 1 you can perform the following commands below to copy the solution.</div>
-<font color=#ff0000><b>Warning! By copying the solution you will no longer see any work you completed in exercise 2. </b></font></p>
-<div class="console"><pre>
-mv gfplugin/myplugin gfplugin/myplugin.save
-mkdir gfplugin/myplugin
-cp -R gfplugin/solution/myplugin/ex1 gfplugin/myplugin
-</pre></div>
-
-
-
-
 <a name="ex2steps">
     <p class="j1holheader">Step-by-Step Instructions:</p>
 </a>
+
+<div class="j1holnote">You will need Exercise #1 completed in order to continue with Exercise #2.</div>
+<ol class="j1hollist">
+    <li>To use the solution application instead of your own application (which you should have completed in Exercise #1), execute the following commands from a terminal window:
+    <div class="j1holwarn">Warning! By copying the solution you will no longer see any work you completed in exercise #1.  We recommend you complete exercise #1 instead.</div>
+<div class="console"><pre>
+mv gfplugin/myplugin gfplugin/myplugin.save
+cp -r gfplugin/solution/myplugin/ex1 gfplugin/myplugin
+</pre></div>
+    </li>
+</ol>
 
     <p class="j1holsubheader">Overview:</p>
 
@@ -74,13 +73,11 @@ You will modify your configuration file to add a new <code>IntegrationPoint</cod
 In this step you will add the file "treenode-ex2.jsf" for specifying the new tree node that points to the jMaki Charting page
 	    </p></li>
 
-	<li><b><a href="#ex2stepD">Build and Install your first GlassFish v3 plugin</a></b>
+	<li><b><a href="#ex2stepD">Build and Install your GlassFish v3 plugin</a></b>
 	    <p>
 In this step you will install and test your plugin.
 	    </p></li>
     </ol>
-	<br>
-
 
 <p class="j1holsubheader">Steps:</p>
 
@@ -166,9 +163,12 @@ In this step you will install and test your plugin.
 <div class="figure">Figure 2-2: chart.jsf</div>
 </a>
 
-	<p>You should have <code>myplugin</code> project still open in
+    <ol class="j1hollist">
+	<li><b>Open your project in NetBeans</b>
+
+	    <p>You should have <code>myplugin</code> project still open in
 NetBeans. If you have closed the project, follow these steps to open
-it again. More detailed instructions can be found in <a href="#Exercise_1=ex1stepA">exercise 1-A </a>
+it again.</p>
 
     <ol class="j1hollist">
 	<li>Launch NetBeans IDE 6.0.</li>
@@ -177,23 +177,21 @@ it again. More detailed instructions can be found in <a href="#Exercise_1=ex1ste
 		<li> Choose <b>Open Project</b> from the File menu.</li>
 		<li> Browse to <b>gfplugin</b> and select <b>myplugin</b> module.</li>
 		<li> Press the <b>Open Project button</b>.  Your NetBeans <b>Projects</b> tab should show:
+		    <p><img style="width: 700px; height: 405;" alt="" src="images/ex2-project-open.jpg"></p>
+		    <div class="figure">Figure 2-3: Open myplugin module.</div>
 		</li>
 	    </ol>
-			<p>
-			<a href="images/ex2-project-open.jpg"><img style="border: 1px solid ; width: 700px; height: 405;" alt="" src="images/ex2-project-open.jpg"></a>
-			</p>
-		    <div class="figure">Figure 2-3: Open myplugin module.</div>
 	</li>
-	<li>Create a page showing a jMaki chart:
+   </ol></li>
+	<li><b>Create a jMaki Charting page</b>
 	    <ol class="j1hollist">
-		<li>Select <b>Other Sources --&gt; resources</b>.</li>
-		<li>Create an empty file named "<codee>chart.jsf</code>".</li>
-		<li>Use <a href="#FigChartPage">Figure 2.2</a> as the content for chart.jsf.  </li>
-	    </ol>
-		<p>
-		<a href="images/ex2-editChart.jpg"><img style="border: 1px solid ; width: 700px; height: 405;" alt="" src="images/ex2-editChart.jpg"></a>
-		</p>
+		<li>Select "<b>Other Sources</b>" and then "<b>Resources</b>".</li>
+		<li>Create an empty file named "<b>chart.jsf</b>".</li>
+		<li>Use <a href="#FigChartPage">Figure 2.2</a> for the content of chart.jsf.
+		    <p><img style="width: 700px; height: 405;" alt="" src="images/ex2-editChart.jpg"></p>
 		    <div class="figure">Figure 2-4: Edit chart.jsf.</div>
+		</li>
+	    </ol>
 	</li>
    </ol>
 
@@ -207,13 +205,11 @@ it again. More detailed instructions can be found in <a href="#Exercise_1=ex1ste
     Exercise 2 tree node into the Administration Console. Each plugin module
     should have 1 <code>console-config.xml</code>, and you can specify as
     many <code>IntegrationPoint</code>s as needed in this configuration file.
-    Since you have created this file in Exercise 1, all you need to do now is
-    to edit it and add the second <code>IntegrationPoint</code>.  You want the
-    Exercise 2 tree node to be under the JavaOne tree node.  So, you must
-    specify the <code>parentId</code> to be "<code>j1root</code>". You can
-    refer to <a href="#FIXME">treenode-ex1.jsf</a> to see this.  You also
-    need to create the file <code>treenode-ex2.jsf</code> which will point to
-    the JSF jMaki chart page.
+    Since you already created this file in Exercise #1, all you need to do is
+    edit it and add the second <code>IntegrationPoint</code>.  The Exercise 2
+    tree node should be under the J1 TreeNode, so you must specify the
+    <code>parentId</code> to be "<code>j1root</code>". You can refer to
+    <a href="#figIntPoint">Figure 2-5</a> to see this.</p>
 
 <a name="figIntPoint">
 <div class="codebox">
@@ -228,22 +224,20 @@ it again. More detailed instructions can be found in <a href="#Exercise_1=ex1ste
 </pre>
 </div>
 <br />
-<div class="figure">Figure 2-5: Modify console-config.xml </div>
+<div class="figure">Figure 2-5: New integration-point for console-config.xml</div>
 </a>
 </p>
 
     <ol class="j1hollist">
 	<li>Double click on <code><b>console-config.xml</b></code> under
-	    Other Sources --&gt; resources --&gt; META-INF --&gt; admingui</li>
+	    <code><b>Other Sources --&gt; resources --&gt; META-INF --&gt; admingui</b></code></li>
 
-	<li>Add the <code>IntegrationPoint</code> declaration as shown in <a href="#figIntPoint">Figure TBD</a> to your
-	<code>console-config.xml</code> file. </li>
-    </ol>
-
-		<p>
-		<a href="images/ex2-editConfig.jpg"><img style="border: 1px solid ; width: 700px; height: 405;" alt="" src="images/ex2-editConfig.jpg"></a>
-		</p>
+	<li>Add the <code>IntegrationPoint</code> declaration as shown in <a href="#figIntPoint">Figure 2-5</a> to your
+	<code>console-config.xml</code> file.
+	    <p><img style="width: 700px; height: 405;" alt="" src="images/ex2-editConfig.jpg"></p>
 	    <div class="figure">Figure 2-6: Modified console-config.xml file.</div>
+	</li>
+    </ol>
 
 <hr style="WIDTH:100%; HEIGHT:2px"><br>
 
@@ -251,8 +245,11 @@ it again. More detailed instructions can be found in <a href="#Exercise_1=ex1ste
     <b>C. Specify your Tree Node layout</a></b>
 </a>
 
-<p> You will need to create <code>exercise-2.jsf</code>, which is specfied as
-    the "content" of your new <code>IntegrationPoint</code>.
+<p> You need to create <code>treenode-ex2.jsf</code>, which is specfied as
+    the "<code>content</code>" of your new <code>IntegrationPoint</code> in
+    your <code>console-config.xml</code> file.  The
+    <code>treenode-ex2.jsf</code> file will provide access to your new JSF
+    jMaki Charting page.</p>
 
 <a name="figNewTreeNode">
 <div class="codebox">
@@ -272,23 +269,23 @@ it again. More detailed instructions can be found in <a href="#Exercise_1=ex1ste
 </p>
 
 <ol class="j1hollist">
-    <li>Select Other Sources --&gt; resources.</li>
-    <li>Create an empty file named <code>treenode-ex2.jsf</code> under "resources".</li>
-	<li>Edit <code>treenode-ex2.jsf</code> to specify the information regarding this second tree node. </li>
+    <li>Select "<b>Other Sources</b>" and then "<b>Resources</b>".</li>
+    <li>Create an empty file named "<b>treenode-ex2.jsf</b>".</li>
+    <li>Edit <code><b>treenode-ex2.jsf</b></code> to specify the information
+	regarding this second tree node.
+	<p><img style="width: 700px; height: 450;" alt="" src="images/ex2-editTreenode.jpg"></p>
+	<div class="figure">Figure 2-8: treenode-ex2.jsf</div>
+    </li>
 </ol>
-		<p>
-		<a href="images/ex2-editTreenode.jpg"><img style="border: 1px solid ; width: 700px; height: 450;" alt="" src="images/ex2-editTreenode.jpg"></a>
-		</p>
-	<div class="figure">Figure 2-8: Edit of treenode-ex2.jsf</div>
-	<p>
 
 <hr style="WIDTH:100%; HEIGHT:2px">
 
 <a name="ex2stepD">
-    <b>D. Build and Install your first GlassFish v3 plugin</b>
+    <b>D. Build and Install your GlassFish v3 plugin</b>
 </a>
+
 <ol class="j1hollist">
-    <li><p> Build the project.</p>
+    <li><p> <b>Build your plugin</b></p>
 
 <div class="console"><pre>
 cd gfplugin/myplugin
@@ -300,7 +297,7 @@ mvn install
 		<code>gfplugin/myplugin/target/console-myplugin-1.0.jar</code>.
 		This jar file is ready to be integrated into GlassFish.</span><br>
     </li>
-    <li><p> Install your plugin in GlassFish v3</p>
+    <li><p> <b>Install your plugin</b></p>
 
 	<p> You now need a Terminal to enter some commands. Please bring
 	    up a terminal window.</p>
@@ -318,11 +315,10 @@ cd &lt;path-to-gfplugin&gt;
 </div>
 		</li>
 	    <li>Shut down the server which may have been started in
-		<a href="#Exercise_1">Exercise 1</a>
-<!-- FIXME: Remove magic script... lets use the real thing unless we make them make the script -->
+		<a href="#Exercise_1">Exercise 1</a>.
 <div class="console">
 <pre>
-glassfish/bin/stop-domain
+glassfish/bin/asadmin stop-domain
 </pre>
 </div>
 	    </li>
@@ -342,15 +338,15 @@ glassfish/bin/asadmin start-domain
 	    </li>
             <li>In the browser enter the following URL to bring up the Administration Console:
                 <div class="codebox"><pre>http://localhost:8080/admingui/index.jsf</pre></div>
+
 	    <li>Expand the JavaOne tree node in the navigation tree, note your
 		new tree node "<code>Exercise #2</code>" has been added.  Click
 		the "<code>Exercise #2</code>" tree node to display your chart
 		page.
-		</li>
-	    </ol>
 		<p> <img src="images/ex2-result.jpg"></p>
 		<div class="figure">Figure 2-9: Browser showing the plugin page with charts.</div>
-		<br>
+		</li>
+	    </ol>
 
 <hr style="WIDTH:100%; HEIGHT:2px"><br>
 

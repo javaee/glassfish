@@ -47,20 +47,20 @@
 </p>
 
 
-<div class="j1holtip">You will need Exercise 2 completed in order to continue with Exercise 3.  If you have
-not completed Exercise 2 you can perform the following commands below to copy the solution.</div>
-<font color=#ff0000><b>Warning! By copying the solution you will no longer see any work you completed in exercise 2. </b></font></p>
-<div class="console"><pre>
-mv gfplugin/myplugin gfplugin/myplugin.save
-mkdir gfplugin/myplugin
-cp -R gfplugin/solution/myplugin/ex2 gfplugin/myplugin
-</pre></div>
-
-
-
 <a name="ex3steps">
     <p class="j1holheader">Step-by-Step Instructions:</p>
 </a>
+
+<div class="j1holnote">You will need Exercise #2 completed in order to continue with Exercise #3.</div>
+<ol class="j1hollist">
+    <li>To use the solution application instead of your own application (which you should have completed in Exercise #2), execute the following commands from a terminal window:
+    <div class="j1holwarn">Warning! By copying the solution you will no longer see any work you completed in exercise #2.  We recommend you complete exercise #2 instead.</div>
+<div class="console"><pre>
+mv gfplugin/myplugin gfplugin/myplugin.save2
+cp -r gfplugin/solution/myplugin/ex2 gfplugin/myplugin
+</pre></div>
+    </li>
+</ol>
 
 <p class="j1holsubheader">Overview:</p>
 
@@ -102,12 +102,11 @@ it again.</p>
 	    <ol class="j1hollist">
 		<li>Choose <b>Open Project</b> from the <b>File</b> menu.</li>
 		<li>Browse to <b>gfplugin</b> and select <b>myplugin</b>.</li>
-		<li>Press the <b>Open Project</b> button.</li>
-	    </ol>
-		<p>
-		<a href="images/ex3-open-project.jpg"><img style="border: 1px solid ; width: 700px; height: 398;" alt="" src="images/ex3-open-project.jpg"></a>
-		</p>
+		<li>Press the <b>Open Project</b> button.
+		    <p><img style="width: 700px; height: 398;" alt="" src="images/ex3-open-project.jpg"></p>
 		    <div class="figure">Figure 3-2: Open Project myplugin</div>
+		</li>
+	    </ol>
 	</li>
     </ol>
 </li>
@@ -228,17 +227,16 @@ value="{  xAxis : {
 <div class="figure">Figure 3-3: chart3.jsf</div>
 </a>
 
-    <p>	If you are using NetBeans, follow these steps to create "<code>chart3.jsf</code>":</p>
     <ol class="j1hollist">
 	<li>Select <b>Other Sources --&gt; resources</b>.</li>
-	<li>Create an empty file named "<code>chart3.jsf</code>".</li>
-	<li>Add the code defined in <a href="#chart3">Figure 3-3</a> to "<code>chart3.jsf</code>".  </li>
-    </ol>
-		<p>
-		<a href="images/ex3-editChart3.jpg"><img style="border: 1px solid ; width: 700px; height: 433;" alt="" src="images/ex3-editChart3.jpg"></a>
-		</p>
+	<li>Create an empty file named "<b>chart3.jsf</b>".</li>
+	<li>Add the content defined in <a href="#chart3">Figure 3-3</a> to "<b>chart3.jsf</b>".
+	    <p><img style="width: 700px; height: 433;" alt="" src="images/ex3-editChart3.jpg"></p>
 	    <div class="figure">Figure 3-4: Create Chart3.jsf</div>
-		<br>
+	</li>
+    </ol>
+</li>
+</ol>
 
 <div class="j1holwarn" style="text-align: center">Congratulations!  You've completed creating a JSF page that shows the jMaki chart in a template!</div>
 
@@ -271,24 +269,22 @@ value="{  xAxis : {
 </a>
 </p>
 
-<p> To complete this step outside NetBeans, add the <a href="#ex3IP">above
-    code</a> specifying the <code>IntegrationPoint</code> to your
+<p> To complete this step outside NetBeans, add the code in <a href="#ex3IP">Figure 3-5</a>
+    specifying the <code>IntegrationPoint</code> to your
     <code>console-config.xml</code> file.  After completing this, you may
     proceed to <a href="#ex3stepC">Step C</a>.</p>
 
-Step-by-step instructions in NetBeans:
 <ol class="j1hollist">
     <li>Double-click on "<b>console-config.xml</b>" under <b>Other Sources
 	    --&gt; resources --&gt; META-INF --&gt; admingui</b></li>
 
-    <li>Edit the file and add the following <code>IntegrationPoint</code> (refer to <a href="#Solution_3">Solution 3 </a> for the entire file):
-
+    <li>Edit the file and add the <code>IntegrationPoint</code> in <a href="#ex3IP">Figure 3-5</a>
+	(refer to <a href="#Solution_3">Solution 3 </a> for the entire file):
+	<p><img style="width: 700px; height: 486;" alt="" src="images/ex3-editConfig.jpg"></p>
+	<div class="figure">Figure 3-6: Modify console-config.xml</div>
     </li>
 </ol>
-		<p>
-		<a href="images/ex3-editConfig.jpg"><img style="border: 1px solid ; width: 700px; height: 486;" alt="" src="images/ex3-editConfig.jpg"></a>
-		</p>
-	<div class="figure">Figure 3-6: Modify console-config.xml</div>
+
 <p><a href="#ex3contents">Back to step overview</a></p>
 
 <hr style="WIDTH:100%; HEIGHT:2px"><br>
@@ -315,15 +311,12 @@ Step-by-step instructions in NetBeans:
 
     <ol class="j1hollist">
 	<li>Select <b>Other Sources --&gt; resources</b>.</li>
-	<li>Create an empty file named <code>treenode-ex3.jsf</code> under <b>resources</b>.</li>
-	<li>Edit "<code>treenode-ex3.jsf</code>" to specify the information regarding this second tree node.  
+	<li>Create an empty file named <b>treenode-ex3.jsf</b> under <b>resources</b>.</li>
+	<li>Edit "<b>treenode-ex3.jsf</b>" to specify the new tree node.  
+	    <p><img style="width: 700px; height: 508;" alt="" src="images/ex3-editTreenode.jpg"></p>
+	    <div class="figure">Figure 3-8: Edit of treenode-ex3.jsf</div>
 	</li>
     </ol>
-		<p>
-		<a href="images/ex3-editTreenode.jpg"><img style="border: 1px solid ; width: 700px; height: 508;" alt="" src="images/ex3-editTreenode.jpg"></a>
-		</p>
-	    <div class="figure">Figure 3-8: Edit of treenode-ex3.jsf</div>
-		<br>
 
     <p><a href="#ex3contents">Back to step overview</a></p>
 
@@ -331,73 +324,70 @@ Step-by-step instructions in NetBeans:
     <a name="ex3stepD">
 	<p><b>D. Build and Install Your GlassFish v3 Plugin.</b></p>
     </a>
-    <p>The last step of this implementation is to build the project on your system.  You can build the project by typing the following
-    command:</p>
-<div class="console">
-<pre>
+
+<ol class="j1hollist">
+    <li><p> <b>Build your plugin</b></p>
+
+<div class="console"><pre>
 cd gfplugin/myplugin
 mvn install
 </pre>
 </div>
 
-    <p> NetBeans have the option of building from within NetBeans by following these steps:</p>
+<p> After the above steps are finished, you will have the jar file named
+		<code>gfplugin/myplugin/target/console-myplugin-1.0.jar</code>.
+		This jar file is ready to be integrated into GlassFish.</span><br>
+    </li>
+    <li><p> <b>Install your plugin</b></p>
 
-    <ol class="j1hollist">
-	<li>Right-click on the project "<code><b>Java One 2008 Administration Console Plugin</b></code>".</li>
-	<li>Select <b>Build</b>.</li>
-    </ol>
-    <br>
-    <p> You should now have a jar file named
-	<code>gfplugin/myplugin/target/console-myplugin-1.0.jar</code>.
-	This jar file is ready to install into GlassFish v3!</span></p>
+	<p> You now need a Terminal to enter some commands. Please bring
+	    up a terminal window.</p>
 
-<p> You now need a Terminal to enter some commands, please bring up a terminal window.
-For your convenience, GlassFish v3 has been installed as <code>gfplugin/glassfish</code>.
-The following steps show you how to integrate and test your plugin module.<br>
+	<p> The GlassFish v3 server is installed in the
+	    <code>gfplugin/glassfish</code> directory.  The following steps
+	    show you how to integrate and test your plugin module.</p>
 
-
-<p><b>Step-by-step instruction:</b></p>
-<ol class="j1hollist">
-    <li>Go to your <code>gfplugin</code> directory.
+	<ol class="j1hollist">
+	    <li>Go to your <code>gfplugin</code> directory.
 <div class="console">
 <pre>
-cd gfplugin
+cd &lt;path-to-gfplugin&gt;
 </pre>
 </div>
-    </li>
-    <li>Shut down the server which may be started from a previous exercise:<br>
+		</li>
+	    <li>Shut down the server which may have been started in
+		<a href="#Exercise_1">Exercise 1</a>.
 <div class="console">
 <pre>
-glassfish/bin/stop-domain
+glassfish/bin/asadmin stop-domain
 </pre>
 </div>
-    </li>
-    <li>Integrate the jar into GlassFish by simply copying it to the GlassFish modules directory.
+	    </li>
+	    <li>Integrate your plugin into GlassFish by copying it to the GlassFish modules directory:
 <div class="console">
 <pre>
 cp myplugin/target/console-myplugin-1.0.jar glassfish/modules/console-myplugin-1.0.jar
 </pre>
 </div>
-    </li>
-    <li>Start the server again:
+	    </li>
+	    <li>Start GlassFish:<br>
 <div class="console">
 <pre>
 glassfish/bin/asadmin start-domain
 </pre>
 </div>
-    </li>
-    <li>In the browser enter the following URL to bring up the
-	Administration Console.<br>
-	<div class="codebox"><pre>http://localhost:8080/admingui/index.jsf</pre></div>
+	    </li>
+            <li>In the browser enter the following URL to bring up the Administration Console:
+                <div class="codebox"><pre>http://localhost:8080/admingui/index.jsf</pre></div>
 
 	<p> Expand the <code>JavaOne</code> tree node which is displayed in
 	    the navigation tree.  Note the new tree node "Exercise #3" under
 	    it.  Click on the "Exercise #3" tree node which displays the charts
 	    and notice that there is a header added to the charting page.</p>
-    </li>
-</ol>
 	<p> <img src="images/ex3-result.jpg"></p>
 	<div class="figure">Figure 3-9: Browser showing the plugin page with charts.</div>
+    </li>
+</ol>
 <div class="j1holwarn" style="text-align: center">Congratulations!  You have customized the Administration Console and
     plugged in your own tree node to show the jMaki Charts with a customized header.
     <br>
