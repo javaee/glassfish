@@ -38,12 +38,6 @@
 --> 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
-
-    <!--  !!!!!!!!!   NOTE  !!!!!!!!!!  -->
-    <!--  Specify  "repo"  when using this pom.xml eg.
-          mvn -Drepo=/mydir/repository install
-    -->
-
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.example</groupId>
     <artifactId>console-myplugin</artifactId>
@@ -63,7 +57,7 @@
 	</mailingList>
     </mailingLists>
     <properties>
-	<mvn-repo>file://${repo}</mvn-repo>
+	<mvn-repo>file://${basedir}/../../../maven2/repository</mvn-repo>
     </properties>
     <build>
 	<defaultGoal>install</defaultGoal>
