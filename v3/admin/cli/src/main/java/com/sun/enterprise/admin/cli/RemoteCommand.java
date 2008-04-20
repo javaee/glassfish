@@ -40,7 +40,6 @@ import com.sun.appserv.management.client.prefs.LoginInfoStore;
 import com.sun.appserv.management.client.prefs.LoginInfoStoreFactory;
 import com.sun.appserv.management.client.prefs.StoreException;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
-import com.sun.enterprise.admin.cli.deployment.FileUploadUtil;
 import com.sun.enterprise.admin.cli.remote.RemoteException;
 import com.sun.enterprise.admin.cli.remote.RemoteResponseManager;
 import com.sun.enterprise.admin.cli.remote.RemoteSuccessException;
@@ -110,7 +109,7 @@ public class RemoteCommand {
                                                       rcp.getCommandName(),
                                                       operands.size() > 0 ? (String) operands.firstElement() : (String) params.get("path"));
             File fileName = null;
-            String uriConnection;
+            String uriString;
             final String hostName = (params.get("host") == null ? "localhost" : params.get("host"));
             final String hostPort = (params.get("port") == null ? "8080" : params.get("port"));
                 //set default value of secure to false
@@ -133,7 +132,16 @@ public class RemoteCommand {
             password        = getPassword(li, params);
             //System.out.println("Password = " + password);
             
-            uriConnection = "/__asadmin/" + rcp.getCommandName();
+            //////////////////////////////////////////////////////////////////
+            //////////////////////////////////////////////////////////////////
+            //////////////////////////////////////////////////////////////////
+            // bnevins - start rewrite
+            //////////////////////////////////////////////////////////////////
+            //////////////////////////////////////////////////////////////////
+            //////////////////////////////////////////////////////////////////
+            //////////////////////////////////////////////////////////////////
+            
+            uriString = "/__asadmin/" + rcp.getCommandName();
             
             for (Map.Entry<String, String> param : params.entrySet()) {
                 String paramName = param.getKey();
@@ -154,7 +162,7 @@ public class RemoteCommand {
                         //absoluate path if uploadFile=false
                         paramValue = getFileParam(uploadFile, fileName);
                     }
-                    uriConnection = uriConnection + "?" + paramName + "=" + URLEncoder.encode(paramValue,
+                    uriString = uriString + "?" + paramName + "=" + URLEncoder.encode(paramValue,
                                                                                                 "UTF-8");
                 } catch (UnsupportedEncodingException e) {
                     logger.printError("Error encoding " + paramName + ", parameter value will be ignored");
@@ -167,7 +175,7 @@ public class RemoteCommand {
                 for (String passwdName : passwordOptions.keySet()) {
                     String encodedpasswd = base64encoder.encode(
                             passwordOptions.get(passwdName).getBytes());
-                    uriConnection = uriConnection + "?" + passwdName + "=" 
+                    uriString = uriString + "?" + passwdName + "=" 
                             + encodedpasswd;
                 }
             }
@@ -180,42 +188,31 @@ public class RemoteCommand {
                     fileName = new File(operand);
                     final String fileParam = getFileParam(uploadFile, fileName);
                     //there should only be one operand for deploy command
-                    uriConnection = uriConnection + "?path=" + URLEncoder.encode(fileParam,
+                    uriString = uriString + "?path=" + URLEncoder.encode(fileParam,
                                                                                    "UTF-8");
                     break;
                 }
-                uriConnection = uriConnection + "?DEFAULT=" + URLEncoder.encode(operand,
+                uriString = uriString + "?DEFAULT=" + URLEncoder.encode(operand,
                                                                                   "UTF-8");
             }
 
             try {
                 HttpConnectorAddress url = new HttpConnectorAddress(hostName, Integer.parseInt(hostPort), isSecure);
-                logger.printDebugMessage("URL: " + url.toURL(uriConnection).toString());
+                logger.printDebugMessage("URI: " + uriString.toString());
+                logger.printDebugMessage("URL: " + url.toString());
+                logger.printDebugMessage("URL: " + url.toURL(uriString).toString());
                 url.setAuthenticationInfo(new AuthenticationInfo(user, password));
 
-                if (fileName != null && uploadFile) {
-                    if (fileName.exists()) {
-                        HttpURLConnection urlConnection = FileUploadUtil.upload(url.toURL(uriConnection).toString(),
-                                                                                fileName);
-                        InputStream in = urlConnection.getInputStream();
-                        handleResponse(params, in,
-                                       urlConnection.getResponseCode());
-                    } else {
-                        throw new CommandException("File " + fileName.getName() + " does not exist.");
-                    }
-                }
-                else {
-                    final HttpURLConnection urlConnection = (HttpURLConnection)url.openConnection(uriConnection);
-                    urlConnection.setRequestProperty("User-Agent",
-                                                     responseFormatType);
-                    urlConnection.setRequestProperty(HttpConnectorAddress.AUTHORIZATION_KEY, url.getBasicAuthString());
-                    urlConnection.connect();
-
-                    InputStream in = urlConnection.getInputStream();
-                    handleResponse(params, in, urlConnection.getResponseCode(),
-                                   userOut);
-                }
-            } catch (IOException e) {
+                final HttpURLConnection urlConnection = (HttpURLConnection)url.openConnection(uriString);
+                urlConnection.setRequestProperty("User-Agent", responseFormatType);
+                urlConnection.setRequestProperty(HttpConnectorAddress.AUTHORIZATION_KEY, url.getBasicAuthString());
+                urlConnection.connect();
+                upload(fileName, uploadFile, urlConnection);
+                InputStream in = urlConnection.getInputStream();
+                handleResponse(params, in, urlConnection.getResponseCode(),
+                               userOut);
+            }
+            catch (IOException e) {
                 throw new CommandException("Cannot connect to host, is server up ?");
             }
         } catch (CommandException e) {
@@ -226,6 +223,39 @@ public class RemoteCommand {
         }
     }
 
+    private void upload(File file, boolean uploadFile, HttpURLConnection conn) throws CommandException{
+
+        OutputStream out = null;
+        try {
+            if (file == null || !uploadFile)
+                return;
+            if (!file.exists())
+                throw new CommandException("File " + file.getName() + " does not exist.");
+            out = conn.getOutputStream();
+            BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file));
+
+            // write upload file data
+            byte[] buffer = new byte[1024 * 64];
+            for (int i = bis.read(buffer); i > 0; i = bis.read(buffer)) {
+                out.write(buffer, 0, i);
+            }
+            out.flush();
+            bis.close();
+        }
+        catch (IOException ex) {
+            throw new CommandException(ex.getMessage());
+        }
+        finally {
+            try {
+                if(out != null)
+                    out.close();
+            }
+            catch (IOException ex) {
+                // ignore
+            }
+        }
+    }
+            
     /**
      * Returns either the name of the file/directory or the canonical form
      * of the file/directory.  If <code>uploadFile</code> is
