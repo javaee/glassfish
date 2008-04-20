@@ -19,7 +19,7 @@
 * as provided by Sun in the GPL Version 2 section of the License file that 
 * accompanied this code.  If applicable, add the following below the License 
 * Header, with the fields enclosed by brackets [] replaced by your own 
-* identifying information: "Portions Copyrighted [year] 
+
 * [name of copyright owner]" 
 * 
 * Contributor(s): 
@@ -37,6 +37,12 @@
 */ 
 --> 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+
+    <!--  !!!!!!!!!   NOTE  !!!!!!!!!!  -->
+    <!--  Specify  LAB  when using this pom.xml eg.
+          mvn -DLAB=/mydir/repository install
+    -->
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.example</groupId>
@@ -56,7 +62,9 @@
 	    <archive>https://glassfish.dev.java.net/servlets/SummarizeList?listName=admin</archive>
 	</mailingList>
     </mailingLists>
-    
+    <properties>
+	<mvn-repo>file://${LAB}</mvn-repo>
+    </properties>
     <build>
 	<defaultGoal>install</defaultGoal>
 	<sourceDirectory>src/main/java</sourceDirectory>      
@@ -86,28 +94,116 @@
 	</plugins>
     </build>
 
+
     <repositories>
-	<repository>
-	    <id>gfv3</id>
-	    <url>http://download.java.net/maven/glassfish/</url>
-	</repository>
-	<repository>
-	    <id>java.net2</id>
-	    <url>https://maven2-repository.dev.java.net/nonav/repository</url>
-	</repository>
-        <repository>
-            <id>java-dev-repository</id>
-            <name>Maven 1.x java.dev Snapshot Repository</name>
-            <layout>legacy</layout>
-            <url>https://maven-repository.dev.java.net/nonav/repository</url>
-        </repository>
+    <repository>
+        <id>gfv3</id>
+	<url>${mvn-repo}</url>
+        <!-- <url>http://download.java.net/maven/glassfish/</url> -->
+        <snapshots>
+            <enabled>true</enabled>
+            <updatePolicy>never</updatePolicy>
+            <checksumPolicy>fail</checksumPolicy>
+        </snapshots>
+    </repository>
+    <repository>
+        <id>java.net2</id>
+	<url>${mvn-repo}</url>
+        <!-- <url>https://maven2-repository.dev.java.net/nonav/repository</url> -->
+        <snapshots>
+            <enabled>true</enabled>
+            <updatePolicy>never</updatePolicy>
+            <checksumPolicy>fail</checksumPolicy>
+        </snapshots>
+    </repository>
+    <repository>
+        <id>java-dev-repository</id>
+        <name>Maven 1.x java.dev Snapshot Repository</name>
+        <layout>legacy</layout>
+	<url>${mvn-repo}</url>
+        <!-- <url>https://maven-repository.dev.java.net/nonav/repository</url> -->
+        <snapshots>
+            <enabled>true</enabled>
+            <updatePolicy>never</updatePolicy>
+            <checksumPolicy>fail</checksumPolicy>
+        </snapshots>
+    </repository>
+    <repository>
+	<id>java.net</id>
+	<url>${mvn-repo}</url>
+	<!-- <url>http://download.java.net/maven/1</url> -->
+	<layout>legacy</layout>
+        <snapshots>
+            <enabled>true</enabled>
+            <updatePolicy>never</updatePolicy>
+            <checksumPolicy>fail</checksumPolicy>
+        </snapshots>
+    </repository>
+
+    <repository>
+	<id>maven2-repository.dev.java.net</id>
+	<name>Java.net Repository for Maven</name>
+	<url>${mvn-repo}</url>
+	<!-- <url>http://download.java.net/maven/2/</url> -->
+	<layout>default</layout>
+        <snapshots>
+            <enabled>true</enabled>
+            <updatePolicy>never</updatePolicy>
+            <checksumPolicy>fail</checksumPolicy>
+        </snapshots>
+    </repository>
+
+    <repository>
+	<id>java.net</id>
+	<url>${mvn-repo}</url>
+	<!-- <url>http://download.java.net/maven/1</url> -->
+	<layout>legacy</layout>
+        <snapshots>
+            <enabled>true</enabled>
+            <updatePolicy>never</updatePolicy>
+            <checksumPolicy>fail</checksumPolicy>
+        </snapshots>
+    </repository>
+
+    <repository>
+	<id>central</id>
+	<url>${mvn-repo}</url>
+	<!-- <url>http://repo1.maven.org/maven2/</url> -->
+        <snapshots>
+            <enabled>true</enabled>
+            <updatePolicy>never</updatePolicy>
+            <checksumPolicy>fail</checksumPolicy>
+        </snapshots>
+    </repository>
+
+    <repository>
+	<id>maven-repository.dev.java.net</id>
+	<url>${mvn-repo}</url>
+	<!-- <url>http://download.java.net/maven/1/</url> -->
+        <snapshots>
+            <enabled>true</enabled>
+            <updatePolicy>never</updatePolicy>
+            <checksumPolicy>fail</checksumPolicy>
+        </snapshots>
+    </repository>
+
+
+
     </repositories>
+
     <pluginRepositories>
-	<pluginRepository>
-	    <id>glassfish-repository</id>
-	    <name>Glassfish repository</name>
-	    <url>http://download.java.net/maven/glassfish/</url>
-	</pluginRepository>
+    <pluginRepository>
+        <id>glassfish-repository</id>
+        <name>Glassfish repository</name>
+	<url>${mvn-repo}</url>
+        <!-- <url>http://download.java.net/maven/glassfish/</url> -->
+        <snapshots>
+            <enabled>true</enabled>
+            <updatePolicy>never</updatePolicy>
+            <checksumPolicy>fail</checksumPolicy>
+        </snapshots>
+    </pluginRepository>
+
     </pluginRepositories>
 
     <dependencies>
