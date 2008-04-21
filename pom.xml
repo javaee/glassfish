@@ -140,7 +140,6 @@
         <admingui.version>1.0-tp-2-SNAPSHOT</admingui.version>
     </properties>
     <modules>
-      	<module>build</module>
         <!-- Don't include javaee-api until we have resolved build issues
              associated with it. Currently, I have no idea as to why
              bnd fails when javaee-api/javax.javaee is built from
