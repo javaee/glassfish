@@ -41,7 +41,7 @@
         <antcall target="asadmin-common-ignore-fail">
             <param name="admin.command" value="set" />
             <param name="operand.props"
-                   value="${appserver.instance.name}.http-service.virtual-server.server.property.send-error_1=&quot;path=default-web.xml reason=MY404 code=404&quot;"/>
+                   value="${appserver.instance.name}.http-service.virtual-server.server.property.send-error_1=&quot;path=${admin.domain.dir}/${admin.domain}/config/default-web.xml reason=MY404 code=404&quot;"/>
         </antcall>
     </target>
 
