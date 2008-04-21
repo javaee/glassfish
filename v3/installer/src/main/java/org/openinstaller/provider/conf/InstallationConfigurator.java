@@ -34,7 +34,7 @@
 * holder. 
 */ 
 
-package com.sun.enterprise.glassfish.install.configurator;
+package org.openinstaller.provider.conf;
 
 
 import org.openinstaller.provider.conf.ResultReport;
@@ -50,7 +50,7 @@ import java.io.FileWriter;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public final class InstallationConfigurator implements Configurator {
+public final class InstallationConfigurator implements Configurator, NotificationListener {
 
 private final String productName;
 private final String altRootDir;
@@ -69,10 +69,12 @@ static {
     LOGGER = Logger.getLogger(ClassUtils.getClassName());
 }
 
-public InstallationConfigurator(String aProductName, String aAltRootDir,
-     String aXCSFilePath, String aInstallDir) {
 
-    LOGGER.log(Level.INFO, "In configurator constructor");
+
+
+public InstallationConfigurator(final String aProductName, final String aAltRootDir,
+     final String aXCSFilePath, final String aInstallDir) {
+
     productName = aProductName;
     altRootDir = aAltRootDir;
     xcsFilePath = aXCSFilePath;
@@ -82,22 +84,35 @@ public InstallationConfigurator(String aProductName, String aAltRootDir,
 }
 
 
-public ResultReport configure (PropertySheet aSheet, boolean aValidateFlag) throws EnhancedException {
+public ResultReport configure (final PropertySheet aSheet, final boolean aValidateFlag) throws EnhancedException {
 
-    LOGGER.log(Level.INFO, "In configure method");
 
-    try {
+    
+     try {
         if (productName.equals(GLASSFISH_PRODUCT_NAME)) {
+            LOGGER.log(Level.INFO, "Configuring GlassFish");
             configureGlassfish(
-                aSheet.getProperty("Administration.A_INSTALL_HOME"),
+                installDir,
                 aSheet.getProperty("Administration.A_ADMIN_PORT"),
                 aSheet.getProperty("Administration.A_HTTP_PORT"));
 	    }
+
+        if (productName.equals(UPDATETOOL_PRODUCT_NAME)) {
+            LOGGER.log(Level.INFO, "Configuring Updatetool");
+            LOGGER.log(Level.INFO, "Installation directory: " + installDir);
+            configureUpdatetool(
+                installDir,
+                aSheet.getProperty("Configuration.BOOTSTRAP_UPDATETOOL"),
+                aSheet.getProperty("Configuration.ALLOW_UPDATE_CHECK"),
+                aSheet.getProperty("Configuration.ALLOW_DATA_COLLECTION"),
+                aSheet.getProperty("Configuration.PROXY_HOST"),
+                aSheet.getProperty("Configuration.PROXY_PORT"));
+	    }
      }
      catch (Exception e) {
-         throw new EnhancedException(e);
+         
      }
-    
+  
      return new ResultReport(ResultReport.ResultStatus.SUCCESS, "Documentation", "Next Steps", null, productError);
          
 }
@@ -109,7 +124,7 @@ public PropertySheet getCurrentConfiguration() {
 }
 
 
-public ResultReport unConfigure (PropertySheet aSheet, boolean aValidateFlag) {
+public ResultReport unConfigure (final PropertySheet aSheet, final boolean aValidateFlag) {
 
     return new ResultReport(ResultReport.ResultStatus.SUCCESS, "Documentation", "Next Steps", null, productError);
 }
@@ -160,6 +175,7 @@ void configureGlassfish(String installDir, String adminPort, String httpPort) th
 	        }      
             
         } catch (Exception ex) {
+            LOGGER.log(Level.INFO, "Error while creating password file: " + ex.getMessage());
             // ensure that we delete the file should any exception occur
             if (pwdFile != null) {
                 try {
@@ -200,9 +216,13 @@ void configureGlassfish(String installDir, String adminPort, String httpPort) th
                 "--passwordfile", pwdFile.getAbsolutePath(),
                 "--instanceport", httpPort,
                 "domain1"};
-                
+            
+            LOGGER.log(Level.INFO, "Creating GlassFish domain");
+            LOGGER.log(Level.INFO, "Admin port:" + adminPort);
+            LOGGER.log(Level.INFO, "HTTP port:" + httpPort);
+    
             ExecuteCommand asadminExecuteCommand = new ExecuteCommand(asadminCommandArray);
-            asadminExecuteCommand.setOutputType(ExecuteCommand.ERRORS);
+            asadminExecuteCommand.setOutputType(ExecuteCommand.ERRORS | ExecuteCommand.NORMAL);
             asadminExecuteCommand.setCollectOutput(true);
         
             asadminExecuteCommand.execute();
@@ -210,7 +230,117 @@ void configureGlassfish(String installDir, String adminPort, String httpPort) th
             productError = asadminExecuteCommand.getErrors();
        } catch (Exception e) {
 
+            LOGGER.log(Level.INFO, "Exception while creating GlassFish domain: " + e.getMessage()); 
+       }
+}
+
+void configureUpdatetool(String installDir, String bootstrap, String allowUpdateCheck,
+    String allowDataCollection, String proxyHost, String proxyPort) throws Exception {
+
+    
+    boolean isWindows = false;
+    if (System.getProperty("os.name").indexOf("Windows") !=-1 ) {
+        isWindows=true;
+    }
+
+
+    // check whether to bootstrap at all
+
+    if (bootstrap.equalsIgnoreCase("false")) {
+        LOGGER.log(Level.INFO, "Skipping updatetool bootstrap");
+        return;
+    }
+
+    String proxyURL = null;
+
+    if ((proxyHost.length()>0) && (proxyPort.length()>0)) {
+        proxyURL = proxyHost + ":" + proxyPort;
+    }
+
+    //adjust Windows path for use in properties file
+
+    String installDirForward = installDir;
+
+    if (isWindows) {
+        installDirForward = installDir.replace('\\', '/');
+    }
+    
+        
+    
+    //create temporary property file for bootstrap
+
+        FileWriter writer = null;
+        File propertiesFile = null;        
+        try {            
+            propertiesFile = File.createTempFile("bootstrapTmp", null);                                  propertiesFile.deleteOnExit();            
+            writer = new FileWriter(propertiesFile); 
+            writer.write("image.path=" + installDirForward + "\n");
+            writer.write("install.pkg=true\n");
+            writer.write("install.updatetool=true\n");
+            writer.write("optin.update.notification=" + allowUpdateCheck + "\n");
+            writer.write("optin.usage.reporting=" + allowDataCollection + "\n");
+            if (proxyURL != null) {
+                writer.write("proxy.URL=" + proxyURL + "\n");
+            }
+            writer.close();
+            writer = null;
+                 
             
+        } catch (Exception ex) {
+            LOGGER.log(Level.INFO, "Error while creating properties file: " + ex.getMessage());
+            // ensure that we delete the file should any exception occur
+            if (propertiesFile != null) {
+                try {
+                    propertiesFile.delete();
+                } catch (Exception ex2) {
+                    //ignore we are cleaning up on error
+                }                
+            }
+            throw ex; 
+        } finally {
+            //ensure that we close the file no matter what.
+            if (writer != null) {
+                try {
+                    writer.close();
+                } catch (Exception ex2) {
+                    //ignore we are cleaning up on error
+                }                
+            }
+        }
+ 
+    //construct the command command
+
+        try {
+
+            String javaCommand;
+            String bootstrapJar;
+        
+            if (isWindows) {
+                 javaCommand = System.getProperty("java.home") + "\\bin\\javaw.exe";
+                 bootstrapJar = installDir + "\\updatetool\\lib\\ucbootstrap.jar";
+            }
+            else {
+                javaCommand = System.getProperty("java.home") + "/bin/java";
+                bootstrapJar = installDir + "/updatetool/lib/ucbootstrap.jar";
+            }
+
+            String[] javaCommandArray = { javaCommand, 
+                "-jar" ,
+                bootstrapJar,
+                propertiesFile.getAbsolutePath()};
+            
+            LOGGER.log(Level.INFO, "Bootstrapping updatetool packages");
+            
+            ExecuteCommand javaExecuteCommand = new ExecuteCommand(javaCommandArray);
+            javaExecuteCommand.setOutputType(ExecuteCommand.ERRORS | ExecuteCommand.NORMAL);
+            javaExecuteCommand.setCollectOutput(true);
+        
+            javaExecuteCommand.execute();
+
+            productError = javaExecuteCommand.getErrors();
+       } catch (Exception e) {
+
+            LOGGER.log(Level.INFO, "Exception while boostrapping updatetool: " + e.getMessage()); 
        }
 }
 

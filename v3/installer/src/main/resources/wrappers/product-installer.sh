@@ -75,7 +75,7 @@ ENGINE_DIR=${MYDIR}/install
 
 # global settings
 JAVA_HOME="$JAVA_HOME"				# java home path
-JAVAOPTIONS=""			  
+JAVAOPTIONS="-Dorg.openinstaller.provider.configurator.class=org.openinstaller.provider.conf.InstallationConfigurator"			  
 INSTALLPROPS=""     # install specific properties
 
 # user options

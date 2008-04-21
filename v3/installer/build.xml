@@ -76,13 +76,21 @@
                </classpath>
         </javac>
  
+        <unjar src="${stage.dir}/install/lib/providers/providers.jar"
+            dest="${tmp.dir}" />
 
-        <jar jarfile="${stage.dir}/install-configurator.jar">
+        <copy todir="${tmp.dir}" >
             <fileset dir="${component.classes.dir}">
-                <include name="com/sun/enterprise/**/*.class"/>
+                <include name="**/*.class"/>
             </fileset>
+        </copy>
+
+        <jar jarfile="${stage.dir}/install/lib/providers/providers.jar"
+            basedir="${tmp.dir}"
+            manifest="${tmp.dir}/meta-inf/manifest.mf">
         </jar>
 
+        <delete dir="${tmp.dir}" />
 
     </target>
 
@@ -121,7 +129,7 @@
          <echo message="Copying Glassfish zip file"/>
  
          <copy tofile="${stage.dir}/product/packages/glassfish.zip"
-               file="${gf.zip.dir}/V3IPSImage_GF.zip" />
+               file="${gf.zip.dir}/V3IPSImage_Installer.zip" />
 
          <echo message="Copying openInstaller zip files"/>
  
