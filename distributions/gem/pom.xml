@@ -107,7 +107,7 @@
       <plugin>
         <groupId>org.jruby.plugins</groupId>
         <artifactId>jruby-rake-plugin</artifactId>
-        <version>${project.version}</version>
+        <version>${jruby.version}</version>
         <executions>
           <execution>
             <id>download-actionwebservice</id>
