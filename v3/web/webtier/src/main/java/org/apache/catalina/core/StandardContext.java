@@ -713,8 +713,9 @@ public class StandardContext
     /**
      * Attribute value used to turn on/off XML validation
      */
-     private boolean webXmlValidation = false;
+    private boolean webXmlValidation = false;
 
+    private String jvmRoute;
 
     /**
      * Attribute value used to turn on/off XML namespace validation
@@ -760,7 +761,6 @@ public class StandardContext
     private ArrayList<AlternateDocBase> alternateDocBases = null;
 
     private boolean useMyFaces;
-
 
     /**
      * GMT timezone - all HTTP dates are on GMT
@@ -1412,6 +1412,14 @@ public class StandardContext
 
         return (info);
 
+    }
+
+    public void setJvmRoute(String jvmRoute) {
+        this.jvmRoute = jvmRoute;
+    }
+
+    public String getJvmRoute() {
+        return jvmRoute;
     }
 
     public String getEngineName() {

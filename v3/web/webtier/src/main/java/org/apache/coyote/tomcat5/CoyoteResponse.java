@@ -84,6 +84,7 @@ import org.apache.catalina.Globals;
 import org.apache.catalina.Session;
 import org.apache.catalina.HttpResponse;
 import org.apache.catalina.Wrapper;
+import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.util.CharsetMapper;
 import org.apache.catalina.util.DateTool;
 import org.apache.catalina.util.RequestUtil;
@@ -1707,6 +1708,10 @@ public class CoyoteResponse
         if( sb.length() > 0 ) { // jsessionid can't be first.
             sb.append(";jsessionid=");
             sb.append(sessionId);
+            StandardContext ctx = (StandardContext) getContext();
+            if (ctx != null && ctx.getJvmRoute() != null) {
+                sb.append('.').append(ctx.getJvmRoute());
+            }                    
 
             // START SJSAS 6337561
             String jrouteId = request.getHeader(Constants.PROXY_JROUTE);

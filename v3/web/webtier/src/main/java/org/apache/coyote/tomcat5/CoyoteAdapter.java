@@ -116,6 +116,8 @@ public class CoyoteAdapter
 
     public static final int ADAPTER_NOTES = 1;
 
+    static final String JVM_ROUTE = System.getProperty("jvmRoute");
+
     protected static final boolean ALLOW_BACKSLASH = 
         Boolean.valueOf(System.getProperty("org.apache.coyote.tomcat5.CoyoteAdapter.ALLOW_BACKSLASH", "false")).booleanValue();
 

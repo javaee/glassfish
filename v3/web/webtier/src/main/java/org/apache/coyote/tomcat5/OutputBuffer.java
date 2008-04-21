@@ -69,7 +69,9 @@ import javax.servlet.http.Cookie;
 import com.sun.grizzly.tcp.ActionCode;
 import com.sun.grizzly.tcp.Response;
 import org.apache.catalina.Globals;
+import org.apache.catalina.Session;
 import org.apache.catalina.connector.ClientAbortException;
+import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.util.RequestUtil;
 import com.sun.grizzly.util.buf.ByteChunk;
 import com.sun.grizzly.util.buf.C2BConverter;
@@ -87,13 +89,12 @@ import com.sun.grizzly.util.buf.C2BConverter;
 public class OutputBuffer extends Writer
     implements ByteChunk.ByteOutputChannel {
 
-
     private static com.sun.org.apache.commons.logging.Log log=
         com.sun.org.apache.commons.logging.LogFactory.getLog( OutputBuffer.class );
 
     // -------------------------------------------------------------- Constants
 
-
+    private static final String SET_COOKIE_HEADER = "Set-Cookie";
     public static final String DEFAULT_ENCODING = 
         com.sun.grizzly.tcp.Constants.DEFAULT_CHARACTER_ENCODING;
     public static final int DEFAULT_BUFFER_SIZE = 8*1024;
@@ -366,6 +367,7 @@ public class OutputBuffer extends Writer
         doFlush = true;
         if (initial){
             addSessionVersionCookieIfNecessary();
+            addSessionCookieWithJvmRoute();
             response.sendHeaders();
             initial = false;
         }
@@ -414,6 +416,7 @@ public class OutputBuffer extends Writer
         // If we really have something to write
         if (cnt > 0) {
             addSessionVersionCookieIfNecessary();
+            addSessionCookieWithJvmRoute();
             // real write to the adapter
             outputChunk.setBytes(buf, off, cnt);
             try {
@@ -682,11 +685,42 @@ public class OutputBuffer extends Writer
             } else {
                 cookie.setPath(coyoteResponse.getContext().getName());
             }
-            response.addHeader("Set-Cookie",
+            response.addHeader(SET_COOKIE_HEADER,
                                coyoteResponse.getCookieString(cookie));
         }
     }
 
+    /**
+     * Adds JSESSIONID cookie whose value includes jvmRoute if necessary.
+     */
+    private void addSessionCookieWithJvmRoute() {
+        CoyoteRequest req = (CoyoteRequest) coyoteResponse.getRequest();
+        if (req.isRequestedSessionIdFromURL()) {
+            return;
+        }
+ 
+        StandardContext ctx = (StandardContext) coyoteResponse.getContext();
+        if (ctx == null || ctx.getJvmRoute() == null) {
+            return;
+        }
+    
+        if (response.containsHeader(SET_COOKIE_HEADER)) {
+            return;
+        }
+
+        Session sess = req.getSessionInternal(false);
+        if (sess == null) {
+            return;
+        }
+
+        // Creating JSESSIONID cookie that includes jvmRoute
+        Cookie cookie = new Cookie(Globals.SESSION_COOKIE_NAME,
+                                   sess.getIdInternal() + "." +
+                                   ctx.getJvmRoute());
+        cookie.setPath(ctx.getName());
+        response.addHeader(SET_COOKIE_HEADER,
+                           coyoteResponse.getCookieString(cookie));
+    }
 
     // START PWC 6512276
     /**

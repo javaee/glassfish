@@ -888,29 +888,7 @@ public abstract class ManagerBase implements Manager, MBeanRegistration {
         session.setValid(true);
         session.setCreationTime(System.currentTimeMillis());
         session.setMaxInactiveInterval(this.maxInactiveInterval);
-        //HERCULES:mod
         String sessionId = generateSessionId(session);
-
-        /*
-        String jvmRoute = getJvmRoute();
-        // @todo Move appending of jvmRoute generateSessionId()???
-        if (jvmRoute != null) {
-            sessionId += '.' + jvmRoute;
-        }
-         */
-        /*
-        synchronized (sessions) {
-            while (sessions.get(sessionId) != null){ // Guarantee uniqueness
-                duplicates++;
-                sessionId = generateSessionId();
-                // @todo Move appending of jvmRoute generateSessionId()???
-                if (jvmRoute != null) {
-                    sessionId += '.' + jvmRoute;
-                }
-            }
-        }
-         */
-        //end HERCULES:mod
 
         session.setId(sessionId);
         sessionCounter++;

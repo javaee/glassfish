@@ -2815,7 +2815,11 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         ctx.setUseNaming(false);
 
         // Set JSR 77 object name and attributes
-        String engineName = vs.getParent().getName();
+        Engine engine = (Engine) vs.getParent();
+        if (engine != null) {
+            ctx.setEngineName(engine.getName());
+            ctx.setJvmRoute(engine.getJvmRoute());
+        }
         String j2eeServer = _serverContext.getInstanceName();
         String domain = _serverContext.getDefaultDomainName();
         String server = domain + ":j2eeType=J2EEServer,name=" + j2eeServer;
@@ -2824,7 +2828,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
         ctx.setJ2EEServer(j2eeServer);
         ctx.setJ2EEApplication(j2eeApplication);
-        ctx.setEngineName(engineName);
         ctx.setServer(server);
         //       ctx.setJavaVMs(javaVMs);
         ctx.setCachingAllowed(false);

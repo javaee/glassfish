@@ -129,6 +129,7 @@ import org.apache.catalina.Wrapper;
 
 import org.apache.catalina.authenticator.SingleSignOn;
 import org.apache.catalina.core.ApplicationFilterFactory;
+import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.core.StandardHost;
 import org.apache.catalina.session.StandardSession;
 import org.apache.catalina.util.Enumerator;
@@ -162,7 +163,6 @@ public class CoyoteRequest
      * Whether or not to enforce scope checking of this object.
      */
     private static boolean enforceScope = false;
-
 
     // ----------------------------------------------------------- Constructors
 
@@ -2051,12 +2051,30 @@ public class CoyoteRequest
      * Set the requested session ID for this request.  This is normally called
      * by the HTTP Connector, when it parses the request headers.
      *
+     * This method, which is called when the session id is sent as a cookie,
+     * or when it is encoded in the request URL, removes a jvmRoute
+     * (if present) from the given id.
+     *
      * @param id The new session id
      */
     public void setRequestedSessionId(String id) {
-
-        this.requestedSessionId = id;
-
+        requestedSessionId = id;
+        if (id != null && CoyoteAdapter.JVM_ROUTE != null) {
+            // Remove jvmRoute. The assumption is that the first dot in the
+            // passed in id is the separator between the session id and the
+            // jvmRoute. Therefore, the session id, however generated, must
+            // never have any dots in it if the jvmRoute mechanism has been
+            // enabled. There is no choice to use a separator other than dot
+            // because this is the semantics mandated by the mod_jk LB for it
+            // to function properly.
+            // We can't use StandardContext.getJvmRoute() to determine whether
+            // jvmRoute has been enabled, because this CoyoteRequest may not
+            // have been associated with any context yet.
+            int index = id.indexOf(".");
+            if (index > 0) {
+                requestedSessionId = id.substring(0, index);
+            }
+        }
     }
 
 
@@ -2772,8 +2790,12 @@ public class CoyoteRequest
         // Creating a new session cookie based on the newly created session
         if ((session != null) && (getContext() != null)
                 && getContext().getCookies()) {
-            Cookie cookie = new Cookie(Globals.SESSION_COOKIE_NAME,
-                                       session.getIdInternal());
+            String id = session.getIdInternal();
+            String jvmRoute = ((StandardContext) getContext()).getJvmRoute();
+            if (jvmRoute != null) {
+                id += ("." + jvmRoute);
+            }
+            Cookie cookie = new Cookie(Globals.SESSION_COOKIE_NAME, id);
             configureSessionCookie(cookie);
             ((HttpServletResponse) response).addCookie(cookie);
 
