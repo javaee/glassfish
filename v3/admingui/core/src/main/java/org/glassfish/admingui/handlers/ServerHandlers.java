@@ -72,7 +72,7 @@ import com.sun.appserv.management.config.ProfilerConfig;
 import com.sun.appserv.management.config.DomainConfig;
 import com.sun.appserv.management.config.ModuleLogLevelsConfig;
 import com.sun.appserv.management.config.DASConfig;
-import com.sun.appserv.management.config.PropertiesAccess;
+import com.sun.appserv.management.config.ProfilerConfigKeys;
 import org.glassfish.admingui.util.AMXUtil;
 
 
@@ -1172,10 +1172,10 @@ public class ServerHandlers {
         if(profiler == null){
             Map map = new HashMap();
             if(classpath != null)
-                map.put(CLASSPATH_KEY, classpath);
+                map.put(ProfilerConfigKeys.CLASSPATH_KEY, classpath);
             if(nativelibrary != null)
-                map.put(NATIVE_LIBRARY_PATH_KEY, nativelibrary);
-            map.put(ENABLED_KEY, (profilerenabled == null) ? "false" : profilerenabled.toString());
+                map.put(ProfilerConfigKeys.NATIVE_LIBRARY_PATH_KEY, nativelibrary);
+            map.put(ProfilerConfigKeys.ENABLED_KEY, (profilerenabled == null) ? "false" : profilerenabled.toString());
             javaConfig.createProfilerConfig((String)handlerCtx.getInputValue("ProfilerName"), map);
         } else {
             profiler.setClasspath(classpath);
@@ -1671,8 +1671,5 @@ public class ServerHandlers {
         skipLogModulePropsList.add(JBI_MODULE_PROPERTY);
     }
     
-    private static final String CLASSPATH_KEY = "Classpath";
-    private static final String NATIVE_LIBRARY_PATH_KEY = "NativeLibraryPath";
-    private static final String ENABLED_KEY = "Enabled";
     private static final String PATH_SEPARATOR = "${path.separator}";
 }
