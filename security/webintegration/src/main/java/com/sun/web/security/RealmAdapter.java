@@ -706,6 +706,7 @@ public class RealmAdapter extends RealmBase implements RealmInitializer {
         } catch (IOException iex) {
             throw iex;
         } catch (Throwable ex) {
+            _logger.log(Level.SEVERE,"web_server.excep_authenticate_realmadapter", ex);
             ((HttpServletResponse) response.getResponse()).sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE);
             response.setDetailMessage(sm.getString("realmBase.forbidden"));
             return isGranted;
@@ -1072,6 +1073,7 @@ public class RealmAdapter extends RealmBase implements RealmInitializer {
         } catch (IOException iex) {
             throw iex;
         } catch (Throwable ex) {
+            _logger.log(Level.SEVERE,"web_server.excep_authenticate_realmadapter", ex);
             ((HttpServletResponse) response.getResponse()).sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE);
             response.setDetailMessage(sm.getString("realmBase.forbidden"));
             return Realm.AUTHENTICATED_NOT_AUTHORIZED;
