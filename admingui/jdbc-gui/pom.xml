@@ -42,7 +42,7 @@
     <parent>
         <groupId>org.glassfish.admingui</groupId>
         <artifactId>admingui</artifactId>
-        <version>1.0-SNAPSHOT</version>
+        <version>1.0-tp-2-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>console-jdbc-plugin</artifactId>
@@ -75,14 +75,14 @@
         <dependency>
             <groupId>org.glassfish.common</groupId>
             <artifactId>glassfish-api</artifactId>
-            <version>10.0-tp-2-SNAPSHOT</version>
+	    <version>${glassfish.version}</version>
 	    <scope>provided</scope>
         </dependency>
     <!--
         <dependency>
             <groupId>org.glassfish.admingui</groupId>
             <artifactId>console-core</artifactId>
-            <version>1.0-SNAPSHOT</version>
+	    <version>${project.version}</version>
 	    <optional>true</optional>
 	    <scope>provided</scope>
         </dependency>

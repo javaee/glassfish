@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.glassfish.admingui</groupId>
         <artifactId>admingui</artifactId>
-        <version>1.0-SNAPSHOT</version>
+        <version>1.0-tp-2-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -28,7 +28,7 @@
         <dependency>
             <groupId>org.glassfish.admingui</groupId>
             <artifactId>console-plugin-service</artifactId>
-            <version>1.0-SNAPSHOT</version>
+	    <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.core</groupId>
