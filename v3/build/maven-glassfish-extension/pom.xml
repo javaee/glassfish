@@ -1,55 +1,16 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- 
-/* 
-* DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER. 
-* 
-* Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved. 
-* 
-* The contents of this file are subject to the terms of either the GNU 
-* General Public License Version 2 only ("GPL") or the Common Development 
-* and Distribution License("CDDL") (collectively, the "License").  You 
-* may not use this file except in compliance with the License. You can obtain 
-* a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html 
-* or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific 
-* language governing permissions and limitations under the License. 
-* 
-* When distributing the software, include this License Header Notice in each 
-* file and include the License file at glassfish/bootstrap/legal/LICENSE.txt. 
-* Sun designates this particular file as subject to the "Classpath" exception 
-* as provided by Sun in the GPL Version 2 section of the License file that 
-* accompanied this code.  If applicable, add the following below the License 
-* Header, with the fields enclosed by brackets [] replaced by your own 
-* identifying information: "Portions Copyrighted [year] 
-* [name of copyright owner]" 
-* 
-* Contributor(s): 
-* 
-* If you wish your version of this file to be governed by only the CDDL or 
-* only the GPL Version 2, indicate your decision by adding "[Contributor] 
-* elects to include this software in this distribution under the [CDDL or GPL 
-* Version 2] license."  If you don't indicate a single choice of license, a 
-* recipient has the option to distribute your version of this file under 
-* either the CDDL, the GPL Version 2 or to extend the choice of license to 
-* its licensees as provided above.  However, if you add GPL Version 2 code 
-* and therefore, elected the GPL Version 2 license, then the option applies 
-* only if the new code is made subject to such option by the copyright 
-* holder. 
-*/ 
---> 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <parent>
         <groupId>org.glassfish.build</groupId>
         <artifactId>build</artifactId>
-        <version>10.0-SNAPSHOT</version>
+        <version>10.0-alpha-1</version>
         <relativePath>../pom.xml</relativePath>  
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.glassfish.build</groupId>
     <artifactId>maven-glassfish-extension</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>10.0-alpha-1</version>
     <packaging>jar</packaging>
     <name>Maven extension for building GlassFish</name>
     <description>
@@ -59,12 +20,12 @@
         Maven early on during Maven execution.
 
         This definition was originally in maven-glassfish-plugin, which was integrated
-        into Maven POM through &lt;plugin>/&lt;extensions>true marking, but after
+        into Maven POM through &lt;plugin&gt;/&lt;extensions&gt;true marking, but after
         a series of debugging to resolve artifact resolution failure problems, it turns
         out that that doesn't cause Maven to load components early enough.
 
         I tried to circumbent the prolem by also registering the maven-glassfish-plugin
-        as an extension module (via &lt;build>/&lt;extensions/&lt;extension>), but that
+        as an extension module (via &lt;build&gt;/&lt;extensions/&lt;extension&gt;), but that
         apparently confuses Maven to no end --- I get build errors like this:
 
           [INFO] Internal error in the plugin manager executing goal 'org.apache.maven.plugins:maven-jar-plugin:2.1:jar': Unable to find the mojo 'org.apache.maven.plugins:maven-jar-plugin:2.1:jar' in the plugin 'org.apache.maven.plugins:maven-jar-plugin'
