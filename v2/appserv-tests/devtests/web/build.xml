@@ -9,7 +9,7 @@
 
 <project name="web" default="all" basedir=".">
 
-    <property name="TOTAL_EXPECTED" value="295"/>
+    <property name="TOTAL_EXPECTED" value="296"/>
 
     &commonSetup;
     &commonBuild;
@@ -241,6 +241,7 @@
         <ant dir="loadClassesFromZipFile" target="all"/>
         <ant dir="serverRedirectWithQueryString" target="all"/>
         <ant dir="sessionIdCustomGenerator" target="all"/>
+        <ant dir="sessionJvmRoute" target="all"/>
         <ant dir="sessionPropertyEnableCookiesInstanceLevel" target="all"/>
         <ant dir="singleSignOnHttpServiceDynamicReconfig" target="all"/>
         <ant dir="webappLoaderIgnoreHiddenJarFiles" target="all"/>
