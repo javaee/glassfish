@@ -26,7 +26,6 @@ package com.sun.enterprise.v3.admin;
 import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.module.impl.Utils;
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.enterprise.v3.common.ActionReporter;
 import com.sun.enterprise.v3.common.HTMLActionReporter;
 import com.sun.enterprise.v3.common.PropsFileActionReporter;
 import com.sun.enterprise.v3.common.XMLActionReporter;
@@ -49,7 +48,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.Properties;
 import java.util.StringTokenizer;
-import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
@@ -58,6 +56,7 @@ import java.util.Enumeration;
 import com.sun.enterprise.security.auth.realm.file.FileRealm;
 import com.sun.enterprise.universal.glassfish.SystemPropertyConstants;
 import com.sun.enterprise.v3.server.ServerEnvironment;
+import java.net.HttpURLConnection;
 import sun.misc.BASE64Decoder;
 
 /**
@@ -149,11 +148,9 @@ public class AdminAdapter implements Adapter, PostConstruct {
                 report.setMessage("V3 cannot process this command at this time, please wait");
             }
         } else {
-                /* Commented out because user name and password not
-                 * supplied yet from .asadminpass 
+
             if (!authenticate(req, report, res))
                 return;
-                 */
             report = doCommand(req, report);
         }
 
@@ -176,10 +173,9 @@ public class AdminAdapter implements Adapter, PostConstruct {
         // the file containing userid and password
         FileRealm f =
                 new FileRealm(serverEnviron.getProps().get(SystemPropertyConstants.INSTANCE_ROOT_PROPERTY) + "/config/admin-keyfile");
-        if (authHeader == null || !authHeader.startsWith(BASIC)) {
-            // auth header not found - try anonymous auth
-            authenticated = authenticateAnonymous(f);
-        } else {
+
+        authenticated = authenticateAnonymous(f); // allow anonymous login regardless
+        if (!authenticated && authHeader != null) { // only if anonymous login is allowed.
             String base64Coded = authHeader.substring(BASIC.length());
             String decoded = new String(decoder.decodeBuffer(base64Coded));
             String[] userNamePassword = decoded.split(":");
@@ -212,8 +208,6 @@ public class AdminAdapter implements Adapter, PostConstruct {
 
     private boolean authenticate(Request req, ActionReport report, Response res)
             throws Exception {
-
-        String authHeader = req.getHeader("Authorization");
         boolean authenticated = authenticate(req, env);
         if (!authenticated) {
             String msg = adminStrings.getLocalString("adapter.auth.userpassword",
@@ -222,12 +216,8 @@ public class AdminAdapter implements Adapter, PostConstruct {
             report.setMessage(msg);
             report.setActionDescription("Authentication error");
             InternalOutputBuffer outputBuffer = (InternalOutputBuffer) res.getOutputBuffer();
-            if (req.getHeader("User-Agent").startsWith("hk2-cli")) {
-                res.setStatus(200);
-            } else {
-                res.setStatus(401);                
-                res.setHeader("WWW-Authenticate", "BASIC");
-            }
+            res.setStatus(HttpURLConnection.HTTP_UNAUTHORIZED);                
+            res.setHeader("WWW-Authenticate", "BASIC");
             res.setContentType(report.getContentType());
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
             report.writeReport(bos);

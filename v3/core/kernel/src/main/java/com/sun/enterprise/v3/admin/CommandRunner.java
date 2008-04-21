@@ -76,6 +76,7 @@ public class CommandRunner {
     public final static LocalStringManagerImpl adminStrings = new LocalStringManagerImpl(CommandRunner.class);
     public final static Logger logger = LogDomains.getLogger(LogDomains.ADMIN_LOGGER);
 
+    private static final String ASADMIN_CMD_PREFIX = "AS_ADMIN_";
     @Inject
     Habitat habitat;
 
@@ -309,7 +310,7 @@ public class CommandRunner {
                 return ((Method) annotated).getName().substring(3).toLowerCase();
             }
         } else if (param.password() == true) {
-            return "AS_ADMIN_" + param.name().toUpperCase();
+            return ASADMIN_CMD_PREFIX + param.name().toUpperCase();
         } else {
             return param.name();
         }
@@ -430,7 +431,7 @@ public class CommandRunner {
                 final String propName = (String)propObj;
                 if (propName.equalsIgnoreCase(key)) {
                     try {
-                    if (propName.startsWith("AS_ADMIN_"))
+                    if (propName.startsWith(ASADMIN_CMD_PREFIX))
                         return new String(base64Decoder.decodeBuffer(
                                 props.getProperty(propName)));
                     } catch (IOException e) {
@@ -656,8 +657,10 @@ public class CommandRunner {
         //loop through parameters and make sure they are part of the Param declared field
         while (e.hasMoreElements()) {
             String key = (String)e.nextElement();
+            if (key == null)
+                continue; // this should really be an assertion
             //DEFAULT is the operand and it's a valid Parameter
-            if (key.equals("DEFAULT")) {
+            if ("DEFAULT".equals(key) || key.startsWith(ASADMIN_CMD_PREFIX)) {
                 continue;
             }
             
@@ -670,7 +673,7 @@ public class CommandRunner {
                 final Param param = field.getAnnotation(Param.class);
                 if (param == null)     continue;
                 
-                if (key.startsWith("AS_ADMIN_")) {
+                if (key.startsWith(ASADMIN_CMD_PREFIX)) {
                     validOption = true;
                     continue;
                 }

@@ -30,6 +30,7 @@ import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.Property;
 import com.sun.enterprise.config.serverbeans.ServerTags;
+import com.sun.enterprise.v3.admin.AdminAdapter;
 import com.sun.enterprise.v3.data.ApplicationRegistry;
 import com.sun.enterprise.v3.server.ServerEnvironment;
 import com.sun.enterprise.v3.services.impl.ApplicationLoaderService;
@@ -39,6 +40,7 @@ import com.sun.grizzly.tcp.http11.GrizzlyRequest;
 import com.sun.grizzly.tcp.http11.GrizzlyResponse;
 import java.io.File;
 import java.io.IOException;
+import java.net.HttpURLConnection;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -150,7 +152,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
 
     public void service(GrizzlyRequest req, GrizzlyResponse res) {
         logRequest(req);
-        
+        handleAuth(req, res);
         if (state == AdapterState.APPLICATION_NOT_INSTALLED)
             handleNotInstalledState(req, res);
         else if (state == AdapterState.INSTALLING)
@@ -170,10 +172,30 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
     public void ready() {
         lock.unlock();
         if (log != null) 
-            log.info("AdminConsoleAdapter is ready.");
+            if (log.isLoggable(Level.FINE)) 
+                log.fine("AdminConsoleAdapter is ready.");
     }
     
+    private void handleAuth(GrizzlyRequest greq, GrizzlyResponse gres) {
+        try {
+            if (!AdminAdapter.authenticate(greq.getRequest(), env)) {
+                gres.setStatus(HttpURLConnection.HTTP_UNAUTHORIZED);                
+                gres.addHeader("WWW-Authenticate", "BASIC");
+                gres.finishResponse();
+            }
+        } catch(Exception e) {
+            throw new RuntimeException(e);
+        }        
+    }
     private void init() {
+        if (as == null || as.getProperty() == null || as.getProperty().isEmpty()) {
+            String msg = "Define following properties in <admin-service> element in domain.xml" +
+                    "for admin console to work properly\n" +
+                    ServerTags.ADMIN_CONSOLE_CONTEXT_ROOT + ", " +
+                    ServerTags.ADMIN_CONSOLE_DOWNLOAD_LOCATION + ", " +
+                    ServerTags.ADMIN_CONSOLE_LOCATION_ON_DISK;
+            log.info(msg);
+        }
         List<Property> props = as.getProperty();
         for (Property prop : props) {
             setContextRoot(prop);
@@ -212,11 +234,15 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
             while(names.hasMoreElements()) {
                 String name = (String) names.nextElement();
                 String values = Arrays.toString(req.getParameterValues(name));
-                log.info("Parameter name: " + name + " values: " + values);
+                log.fine("Parameter name: " + name + " values: " + values);
             }
         }
     }
     private void setContextRoot(Property prop) {
+        if (prop == null) {
+            contextRoot = ServerEnvironment.DEFAULT_ADMIN_CONSOLE_CONTEXT_ROOT;
+            return;
+        }
         if(ServerTags.ADMIN_CONSOLE_CONTEXT_ROOT.equals(prop.getName())) {
             if (prop.getValue() != null && prop.getValue().startsWith("/")) {
                 contextRoot = prop.getValue();

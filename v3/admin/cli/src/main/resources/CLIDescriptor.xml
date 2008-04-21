@@ -104,10 +104,12 @@
         <Command name="stop-domain" 
               classname="com.sun.enterprise.admin.cli.StopDomainCommand" 
               numberofoperands="?" 
-              usage-text="stop-domain [--terse=false] [--echo=false] [--domaindir domain_directory] [domain_name]">
+              usage-text="stop-domain [--terse=false] [--echo=false] [--user admin-user] [--passwordfile filename] [--domaindir domain_directory] [domain_name]">
             <ValidOption name="domaindir"/>
             <ValidOption name="terse"/>
             <ValidOption name="echo"/>
+            <ValidOption name="user"/>
+            <ValidOption name="passwordfile"/>
         </Command>
         <Command name="backup-domain" classname="com.sun.enterprise.admin.cli.BackupCommands" numberofoperands="?" usage-text="backup-domain [--domaindir domain_directory] [--description description] [--echo=false] [--terse=false] [--verbose=false] [domain_name]">
                 <ValidOption name="domaindir"/>
@@ -139,13 +141,15 @@
 	</Command>
         <Command name="list-commands" classname="com.sun.enterprise.admin.cli.ListCommandsCommand"
               numberofoperands="0" 
-              usage-text="list-commands [--host hostname] [--port adminport] [--terse=false] [--echo=false] [--localonly=false] [--remoteonly=false]">
+              usage-text="list-commands [--host hostname] [--port adminport] [--terse=false] [--echo=false] [--localonly=false] [--remoteonly=false] [--user user] [--passwordfile filename]">
             <ValidOption name="terse"/>
             <ValidOption name="echo"/>
             <ValidOption name="host"/>
             <ValidOption name="port"/>
             <ValidOption name="localonly"/>
             <ValidOption name="remoteonly"/>
-	</Command>
+            <ValidOption name="user"/>
+            <ValidOption name="passwordfile"/>
+        </Command>
     </Commands>
 </CommandsAndOptions>

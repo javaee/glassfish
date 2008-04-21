@@ -39,7 +39,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.net.MalformedURLException;
 import java.net.URLConnection;
-import java.net.HttpURLConnection;
 import sun.misc.BASE64Encoder;
 
 public final class HttpConnectorAddress
@@ -231,7 +230,11 @@ public final class HttpConnectorAddress
 	   character with empty string "" works. Hence implementing the same.
 	   Date: 10/10/2003.
 	*/
-        String enc = this.getBase64Encoded(this.getUser() + ":" + this.getPassword());
+        String cs = null, user = this.getUser(), pass = this.getPassword();
+        String up = (user == null) ? "" : user;
+        String pp = (pass == null) ? "" : pass;
+        cs = up + ":" + pp;
+        String enc = this.getBase64Encoded(cs);
         enc = enc.replaceAll(System.getProperty("line.separator"), "");
         return ( AUTHORIZATION_TYPE + enc );
     }
