@@ -188,6 +188,7 @@
             <plugin>
                 <groupId>org.glassfish.build</groupId>
                 <artifactId>maven-glassfish-plugin</artifactId>
+		<version>10.0-alpha-2</version>
                 <configuration>
                     <!-- configuration for the checkout mojo -->
                     <checkoutDirectory>.</checkoutDirectory>
@@ -245,7 +246,7 @@
             <extension>
                 <groupId>org.glassfish.build</groupId>
                 <artifactId>maven-glassfish-extension</artifactId>
-                <version>1.0-SNAPSHOT</version>
+                <version>10.0-alpha-2</version>
             </extension>
         </extensions>
     </build>
