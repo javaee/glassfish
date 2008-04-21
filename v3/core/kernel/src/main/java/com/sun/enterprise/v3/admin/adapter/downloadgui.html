@@ -5,13 +5,15 @@
 	<title>GlassFish Admin Console - Install</title>
 	<style type="text/css">
 
-
+                a:link {color:#003399;text-decoration:none; font-weight: bold;}
+                a:visited {color:#003399;text-decoration:none}
+                a:hover {color:#003399;text-decoration:underline}
 		body {
 		font-family:Arial, Helvetica, sans-serif;
 		font-size:76%;
 		}
 		
-		h4 {font-style:normal; font-size:.9em;
+		h4 {font-style:normal; font-size:.9em; color:#666;
 		}
 		
 		h1 {
@@ -20,9 +22,19 @@
 		color:#46626e;
 		font-size:21px;
 		}
-
+                .subtitle {
+		color:#000000;
+		font-size:16px;
+                font-weight: bold;
+		} 
+               
+                h2 {
+		margin-left:395px;
+		color:#46626e;
+		font-size:16px;
+		}
 		#container {
-			padding-left: 0px;      
+			padding-left: 130px;      
 			padding-right: 180px;     
 			background:#d4dbe1;
 			height:435px;
@@ -33,9 +45,15 @@
 			float: left;
 		}
 		
-		#container #buttons {
-		margin-left:465px;
-		color:#666;
+		#container #fields{
+		margin-left:420px;
+                margin-top:1em;
+		}
+                #container #buttons {
+		margin-left:485px;
+		}
+                #container #helptext {
+		margin-left:485px;
 		}
 		
 		#center {
@@ -47,7 +65,6 @@
 		#center p {
 		margin-left:395px;
 		}
-		
 		#footer {
 			clear: both;
 		}
@@ -85,9 +102,15 @@
 			background:#4a5c6a;
 			height:20px;
 			color:#FFFFFF;
+                        font-weight:bold;
 		}
+                 
+                #label {
+			font-size: 12px;
+                        font-weight:bold;
+		}                 
 
-		// #center {background-image:url(login-backimage2.jpg);
+		#center {background-image:url(http://download.java.net/glassfish/v3/admingui/download-backimage.jpg);
 		background-repeat:no-repeat;
 		background-color:#FFFFFF;
 		}
@@ -95,11 +118,22 @@
 		#container .column {
 			text-align: left;
 		}
+                
 
 	</style>
+<SCRIPT language = Javascript >
+function checkHiddenElements(directvalue) {
+    if (!directvalue.checked) {   
+		document.getElementById('dates').style.display = 'block';
+	} else {
+		document.getElementById('dates').style.display = 'none';
+	}
+
+}
+</SCRIPT>          
 </head>
 
-<body>
+<body onload="Javascript:checkHiddenElements(document.getElementById('direct'));">
 
 	<div id="header"></div>
 
@@ -107,31 +141,44 @@
 
 		<div id="center" class="column">
         	<!-- <div id="page_content"> -->
-			<h1>Install the GlassFish Administration Console</h1>
-    		<p>The GlassFish Administration Console is not installed. To install the console, click the &quot;OK&quot; button below. </p>
+			<h1>GlassFish Application Server -<br>
+                         <small>Administration Console</small></h1>
+                         <p><span class="subtitle">GlassFish Administration Console - Installation</span><br>
+                         The GlassFish Administration Console is not installed. To install the console, specify an Internet connection and click OK. <a href="https://glassfish.dev.java.net/" target="_blank">>>More about the console</a></p>
                 <!-- don't change the names -->
     		<form id="form1" name="form1" method="post" action="%%%MYURL%%%">
-      		<p><strong>Download and install the Glassfish Administration Console?</strong></p>
-      		<p><span class="sm"><strong >Proxy Host:</strong></span> 
-        	<input name="proxyHost" type="text" class="textInput" id="text" tabindex="1" onfocus="showFocus(this, 'on');" onblur="showFocus(this, 'off');" />
-        	</p>
-      		<p><span class="sm"><strong >Proxy Port:</strong></span>
-      		<input name="pxoryPort" type="text" class="textInput" id="text2" tabindex="2" onfocus="showFocus(this, 'on');" onblur="showFocus(this, 'off');" />
-        	</p>
-    
-				<div id="buttons">
-    			<h4>If your GlassFish Application Server requires a proxy to reach the Internet, you will need to supply your proxy host and port information.
+                     <p><h2>Internet Connection</h2></p>
+                
+                 <p><input name="direct" type="radio" id="direct" tabindex="1"  onclick="Javascript:checkHiddenElements(document.getElementById('direct'));" checked /><strong >Direct</strong><br>&nbsp;<br>         
+                    <input name="direct" type="radio" id="useproxy" tabindex="2"  onclick="Javascript:checkHiddenElements(document.getElementById('direct'));" /><strong >Through a Proxy</strong></p>
+               
+                 <div id="dates">
+                 <div id="fields">
+                 <span class="sm"><strong>Proxy Host:</strong></span> 
+        	<input name="proxyHost" type="text" class="textInput" id="text" tabindex="3" />
+        	
+      		<span class="sm"><strong >Port:</strong></span>
+      		<input name="pxoryPort" size="10" type="text" class="textInput" id="text2" tabindex="4" />
+             </div>
+             <div id="helptext">
+             <h4>If your GlassFish Application Server requires a proxy to reach the Internet, you will need to supply your proxy host and port information.
     			</h4>
+                     </div>
+         </div>
+         
+    
+			<div id="buttons">	
+    			
       			<label>
       			<input type="submit" name="ok" id="ok" value="OK" tabindex="3" />
       			</label>
         		<input type="submit" name="cancel" id="Cancel" value="Cancel" tabindex="4" />
-      			</div> 
+                     </div>
                         <input type="hidden" name="visitor" id="visitor" value="%%%VISITOR%%%" tabindex="4" />
            	</form>
  		</div>
    </div>      
-	</div>
+
 
 	<div id="footer-wrapper">
 		<div id="footer">Thank you for using GlassFish Application Server!</div>
