@@ -35,9 +35,99 @@
 <a name="ex2background">
 	    <p class="j1holheader">Background Information:</p>
 </a>
+	    <div class="j1holsubheader">jMaki</div>
+
+	    <p> jMaki is a lightweight client/server framework for creating
+		JavaScript centric Web 2.0 applications using CSS layouts,
+		widgets widget model, client services such as publish /
+		subscribe events to tie widgets together, JavaScript action
+		handlers, and a generic proxy to interact with external RESTful
+		web services. While jMaki abstracts much of the JavaScript and
+		CSS by providing defaults for widgets, the JavaScript widgets
+		and CSS are made easily accessible so they may be customized by
+		a designer or page developer. jMaki focuses on the aspects of
+		delivering JavaScript to the client allowing the JavaScript to
+		communicate to various server-technologies including PHP,
+		JavaServer Pages, JavaServer Faces, and Phobos in a
+		server-technology neutral way.</p>
+
+	    <p><img style="width: 700px;" alt="" src="images/jmaki-architecture.jpg"></p>
+
+	    <p>Following are the client and the server modules that make up jMaki.</p>
+
+	    <div class="j1holsubheader">Client-side Components</div>
+
+	    <ul span="j1hollist">
+		<li><b>jMaki Layouts:</b> - <a href="https://ajax.dev.java.net/source/browse/*checkout*/ajax/ws/lib/css/index.html">jMaki Layouts</a> provide a standards based starting point for creating your web applications using HTML and CSS. The CSS is in plain view so it can be easily customized for your needs.</a>
+		</li>
+
+		<li><b>jMaki Client Runtime:</b> - The <a href="https://ajax.dev.java.net/jsdocs/Jmaki.html">jMaki Client Runtime</a>
+		    is the JavaScript responsible for bootstrapping all widgets and passing parameters provided by a server-side
+		    runtime to the widgets. Parameters are unique to each widget, and the JavaScript runtime makes sure that each
+		    widget instance gets the correct parameters that were passed from the server-side runtime. In cases where
+		    parameters are not provided the runtime uses default parameters that may then be customized for each widget.
+		</li>
+		<li><b>jMaki Client Services:</b>Services such convenient APIs for
+		    performing XMLHttpRequest and publish subscribe on the client are provided
+		    to all widgets as a means of communication.  jMaki glue is built on top of
+		    <a href="https://ajax.dev.java.net/publishsubscribe.html">publish/subscribe</a> events.
+		    <a href="https://ajax.dev.java.net/glue.html">jMaki Glue</a> is built on top
+		    of the publish/subscribe mechanism. It allows you to define application
+		    behavior and time widgets together widgets  using JavaScript actions when a
+		    specific event is published to a topic. jMaki Timers allow JavaScript action
+		    handlers to be called or events to be published at a set interval. The
+		    <a href="https://ajax.dev.java.net/injector.html">jMaki Injector</a> is a client service that allows you
+		    to bring in an external page into any given div element. The Injector transfers
+		    scripts and CSS to the global page content and allows widgets to be loaded much
+		    like an iframe without the usability issues.
+		</li>
+		<li><b>jMaki Widget Model</b> - The <a href="https://ajax.dev.java.net/widget-model.html">jMaki widget model</a>
+		    provides a component model for reusable JavaScript components. The structure is
+		    based on a HTML, JavaScript and CSS. You can use this structure to create your
+		    own widgets or wrap widgets from any given toolkit. jMaki provides default
+		    wrappers and a server tie-in for many commonly-used Dojo, Yahoo UI, Prototype,
+		    and some native widgets. jMaki also defines a widget.json format which is a
+		    common way of describing which so that they are accessible by tools.
+		</li>
+	    </ul>
+
+	    <div class="j1holsubheader">Server Components</div>
+	    <ul class="j1hollist">
+		<li><b>jMaki Server Runtime</b> - The <a href="https://ajax.dev.java.net/images/jmaki-lifecycle.jpg">jMaki Server Runtime</a>
+		    is responsible for tying the jMaki JavaScript Client Runtime to a server-side runtime such as Java, PHP, or
+		    the JavaScript-based Phobos runtime. The server runtime tracks and renders all script
+		    and CSS references based on library type being used making sure that the duplicate script and CSS
+		    links are not duplicated. The server-runtime also makes sure API keys (such as Google and Yahoo Map keys)
+		    are applied when necessary based on a configurable set of keys. The server runtime renders the HTML templates
+		    making and serializes data in JavaScript such that each widget instance is provided the proper data.
+		</li>
+		<li><b>XmlHttpProxy</b> - The <a href="https://ajax.dev.java.net/xmlhttpproxy.html">XmlHttpProxy</a> module
+		    provides a means for widgets to access JSON or XML access RESTful XML-based services outside of the web
+		    application domain. Such services include RSS feeds, Yahoo services such as geocoding, Flickr image
+		    searches, and many more to come.  The XmlHttpProxy allows widgets to access services in a uniform way by
+		    providing XSL-to-JSON transformations that can be easily customized.</li>
+	    </ul>
+
+	    <p> For more developer information on jMaki, visit:
+		<a href="https://ajax.dev.java.net/developer.html">https://ajax.dev.java.net/developer.html</a>.</p>
+
+	    <div class="j1holsubheader">jMaki Charting</div>
 
 	    <p>
-	    jMaki charting provides dynamic charting capabilities where charts can be manipulated on the client without round trips to the server.  Chart manipulation is handled through the jMaki publish and subscribe mechanism.  jMaki  provides a common API to the following JavaScript Charting packages, Plotkit, Dojo, Yahoo and Google.  Developers can quickly represent their data using bar, line or area charts.
+	    jMaki charting is an extension of the jMaki project which provides
+	    dynamic charting capabilities where charts can be manipulated on
+	    the client without round trips to the server.
+	    Chart manipulation is handled through the jMaki publish and
+	    subscribe mechanism.  jMaki  provides a common API to the following
+	    JavaScript Charting packages, Plotkit, Dojo, Yahoo and Google.
+	    Developers can quickly represent their data using bar, line, or area
+	    charts.
+	    </p>
+
+	    <p>
+	    You will get to experiment with jMaki Charting in this lab.  If you
+	    would like more details on jMaki Charting, visit:
+	    <a href="https://jmaki-charting.dev.java.net">https://jmaki-charting.dev.java.net</a>.
 	    </p>
 
 <a name="ex2steps">
