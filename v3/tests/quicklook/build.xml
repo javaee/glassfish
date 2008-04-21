@@ -87,6 +87,7 @@
         <ant dir="web/jsfastrologer" target="build"/>
         <ant dir="web/jsfinjection" target="build"/>
         <ant dir="jdbc/jdbcusertx" target="build"/>
+        <ant dir="persistence/jpainjectemf" target="build"/>
         <!-- ant dir="web/strutsbasic" target="build"/ -->
         <!-- ant dir="persistence/servlet-jpa-app" target="build"/ -->
         <!--<ant dir="ejb30/hello" target="build"/>
@@ -101,6 +102,7 @@
         <ant dir="web/jsfastrologer" target="compile-tests"/>
         <ant dir="web/jsfinjection" target="compile-tests"/>
         <ant dir="jdbc/jdbcusertx" target="compile-tests"/>
+        <ant dir="persistence/jpainjectemf" target="compile-tests"/>
         <!-- ant dir="web/strutsbasic" target="compile-tests"/ -->
         <!-- ant dir="persistence/servlet-jpa-app" target="compile-tests"/ -->
         <record name="compiletests.output" action="stop"/>
@@ -112,6 +114,7 @@
         <ant dir="web/jsfastrologer" target="deploy"/>
         <ant dir="web/jsfinjection" target="deploy"/>
         <ant dir="jdbc/jdbcusertx" target="deploy"/>
+        <ant dir="persistence/jpainjectemf" target="deploy"/>
         <!-- ant dir="web/strutsbasic" target="deploy"/ -->
         <!-- ant dir="persistence/servlet-jpa-app" target="deploy"/ -->   
         <record name="deploy.output" action="stop"/>
@@ -123,6 +126,7 @@
         <ant dir="web/jsfastrologer" target="undeploy"/>
         <ant dir="web/jsfinjection" target="undeploy"/>
         <ant dir="jdbc/jdbcusertx" target="undeploy"/>
+        <ant dir="persistence/jpainjectemf" target="undeploy"/>
         <!-- ant dir="web/strutsbasic" target="undeploy"/ -->
         <!-- ant dir="persistence/servlet-jpa-app" target="undeploy"/ -->   
         <record name="undeploy.output" action="stop"/>
