@@ -154,8 +154,8 @@ public class DeploymentHandler {
             targets = new String[] {defaultTarget};
         }
         
-     	archivePath = archivePath.replace('\\', '/' );
-        URI source = new URI("file:"+archivePath);
+        File filePath = new File(archivePath);
+        URI source = filePath.toURI();
         DeploymentFacility df = GuiUtil.getDeploymentFacility();
         DFProgressObject progressObject = null;
         progressObject = df.deploy(df.createTargets(targets), source, null , props);  //null for deployment plan
