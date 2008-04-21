@@ -1,0 +1,506 @@
+/*
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+ * 
+ * Copyright 1997-2008 Sun Microsystems, Inc. All rights reserved.
+ * 
+ * The contents of this file are subject to the terms of either the GNU
+ * General Public License Version 2 only ("GPL") or the Common Development
+ * and Distribution License("CDDL") (collectively, the "License").  You
+ * may not use this file except in compliance with the License. You can obtain
+ * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
+ * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
+ * language governing permissions and limitations under the License.
+ * 
+ * When distributing the software, include this License Header Notice in each
+ * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
+ * Sun designates this particular file as subject to the "Classpath" exception
+ * as provided by Sun in the GPL Version 2 section of the License file that
+ * accompanied this code.  If applicable, add the following below the License
+ * Header, with the fields enclosed by brackets [] replaced by your own
+ * identifying information: "Portions Copyrighted [year]
+ * [name of copyright owner]"
+ * 
+ * Contributor(s):
+ * 
+ * If you wish your version of this file to be governed by only the CDDL or
+ * only the GPL Version 2, indicate your decision by adding "[Contributor]
+ * elects to include this software in this distribution under the [CDDL or GPL
+ * Version 2] license."  If you don't indicate a single choice of license, a
+ * recipient has the option to distribute your version of this file under
+ * either the CDDL, the GPL Version 2 or to extend the choice of license to
+ * its licensees as provided above.  However, if you add GPL Version 2 code
+ * and therefore, elected the GPL Version 2 license, then the option applies
+ * only if the new code is made subject to such option by the copyright
+ * holder.
+ */
+package com.sun.enterprise.admin.cli.remote;
+
+import com.sun.appserv.management.client.prefs.LoginInfo;
+import com.sun.appserv.management.client.prefs.LoginInfoStore;
+import com.sun.appserv.management.client.prefs.LoginInfoStoreFactory;
+import com.sun.appserv.management.client.prefs.StoreException;
+import com.sun.enterprise.universal.glassfish.SystemPropertyConstants;
+import com.sun.enterprise.universal.i18n.LocalStringsImpl;
+import com.sun.enterprise.universal.io.FileUtils;
+import com.sun.enterprise.universal.io.SmartFile;
+import java.io.*;
+import java.net.*;
+import java.util.*;
+import com.sun.enterprise.admin.cli.util.*;
+import com.sun.enterprise.cli.framework.*;
+import com.sun.enterprise.universal.glassfish.ASenvPropertyReader;
+import java.util.jar.*;
+import sun.misc.BASE64Encoder;
+
+public class CLIRemoteCommand {
+    
+    public CLIRemoteCommand(String... args) throws CommandException {
+        initialize(args);
+    }
+
+    /** 
+     * designed for use by the RemoteDeploymentFacility class
+     * @param args
+     * @param responseFormatType
+     * @param userOut
+     * @throws com.sun.enterprise.cli.framework.CommandException
+     */
+    public CLIRemoteCommand(String[] args, String responseFormatType, OutputStream userOut) throws CommandException {
+        initialize(args);
+        this.responseFormatType = responseFormatType;
+        this.userOut = userOut;
+    }
+
+
+    /**
+     * Runs the command using the specified arguments and sending the result
+     * to the caller-provided {@link OutputStream} in the requested format for processing.
+     * @param args the arguments to use in building the command
+     * @param responseFormatType direction to the server as to how to format the response; usually hk2-cli or xml-cli
+     * @param userOut the {@link OutputStream} to which to write the command's response text
+     * @throws com.sun.enterprise.cli.framework.CommandException 
+     */
+    public void runCommand() throws CommandException {
+        try {
+            String uriString;
+            uriString = "/__asadmin/" + commandName;
+
+            for (Map.Entry<String, String> param : params.entrySet()) {
+                String paramName = param.getKey();
+                //do not want to add host/port/upload/secure/user/password to the uri
+                if (isLocalParam(paramName))
+                    continue;
+                try {
+                    String paramValue = param.getValue();
+                    // let's check if I am passing a valid path...
+                    uriString = uriString + "?" + paramName + "=" + URLEncoder.encode(paramValue,
+                            "UTF-8");
+                }
+                catch (UnsupportedEncodingException e) {
+                    logger.printError("Error encoding " + paramName + ", parameter value will be ignored");
+                }
+            }
+
+            // add deployment path
+            if(fileParameter != null) {
+                uriString += "?path=";
+                // if we are about to upload it -- give just the name
+                // o/w give the full path
+                if(doUpload)
+                    uriString += URLEncoder.encode(fileParameter.getName(), "UTF-8");
+                else
+                    uriString += URLEncoder.encode(fileParameter.getPath(), "UTF-8");
+            }
+            
+            // add passwordfile parameters if any
+            if(encodedPasswords != null) {
+                for(Map.Entry<String,String> entry : encodedPasswords.entrySet()) {
+                    uriString += "?" + entry.getKey() + "=" + entry.getValue();
+                }
+            }
+
+            //add operands
+            for (String operand : operands) {
+                uriString = uriString + "?DEFAULT=" + URLEncoder.encode(operand,
+                        "UTF-8");
+            }
+
+            try {
+                HttpConnectorAddress url = new HttpConnectorAddress(hostName, hostPort, secure);
+                logger.printDebugMessage("URI: " + uriString.toString());
+                logger.printDebugMessage("URL: " + url.toString());
+                logger.printDebugMessage("URL: " + url.toURL(uriString).toString());
+                url.setAuthenticationInfo(new AuthenticationInfo(user, password));
+
+                final HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection(uriString);
+                urlConnection.setRequestProperty("User-Agent", responseFormatType);
+                urlConnection.setRequestProperty(HttpConnectorAddress.AUTHORIZATION_KEY, url.getBasicAuthString());
+                urlConnection.connect();
+                upload(urlConnection);
+                InputStream in = urlConnection.getInputStream();
+                handleResponse(params, in, urlConnection.getResponseCode(),
+                        userOut);
+            }
+            catch (IOException e) {
+                throw new CommandException("Cannot connect to host, is server up ?");
+            }
+        }
+        catch (CommandException e) {
+            throw e;
+        }
+        catch (Exception e) {
+            logger.printExceptionStackTrace(e);
+            throw new CommandException(e);
+        }
+    }
+
+
+    private void upload(HttpURLConnection conn) throws CommandException {
+
+        OutputStream out = null;
+        try {
+            if (fileParameter == null || !doUpload)
+                return;
+
+            out = conn.getOutputStream();
+            BufferedInputStream bis = new BufferedInputStream(new FileInputStream(fileParameter));
+
+            // write upload file data
+            byte[] buffer = new byte[1024 * 64];
+            for (int i = bis.read(buffer); i > 0; i = bis.read(buffer)) {
+                out.write(buffer, 0, i);
+            }
+            out.flush();
+            bis.close();
+        }
+        catch (IOException ex) {
+            throw new CommandException(ex.getMessage());
+        }
+        finally {
+            try {
+                if (out != null)
+                    out.close();
+            }
+            catch (IOException ex) {
+            // ignore
+            }
+        }
+    }
+
+    private void handleResponse(Map<String, String> params,
+            InputStream in, int code, OutputStream userOut) throws IOException, CommandException {
+        if (userOut == null) {
+            handleResponse(params, in, code);
+        }
+        else {
+            FileUtils.copyStream(in, userOut);
+        }
+    }
+
+    private void handleResponse(Map<String, String> params,
+            InputStream in, int code) throws IOException, CommandException {
+        RemoteResponseManager rrm = null;
+
+        try {
+            rrm = new RemoteResponseManager(in, code);
+            rrm.process();
+        }
+        catch (RemoteSuccessException rse) {
+            if (rrm != null)
+                mainAtts = rrm.getMainAtts();
+            Log.info(rse.getMessage());
+            return;
+        }
+        catch (RemoteException rfe) {
+            throw new CommandException("remote failure: " + rfe.getMessage());
+        }
+    }
+
+    private void setBooleans() {
+        // need to differentiate a null value from a null key.
+        // contains --> key is in the map
+
+        // only 3 -- I'm not making another array!
+        if (params.containsKey("verbose")) {
+            String value = params.get("verbose");
+            if (ok(value))
+                verbose = Boolean.parseBoolean(params.get("verbose"));
+            else
+                verbose = true;
+        }
+        if (params.containsKey("echo")) {
+            String value = params.get("echo");
+            if (ok(value))
+                echo = Boolean.parseBoolean(params.get("echo"));
+            else
+                echo = true;
+        }
+        if (params.containsKey("terse")) {
+            String value = params.get("terse");
+            if (ok(value))
+                terse = Boolean.parseBoolean(params.get("terse"));
+            else
+                terse = true;
+        }
+    }
+
+    private boolean ok(String s) {
+        return s != null && s.length() > 0 && !s.equals("null");
+    }
+
+    /* this is a TP2 Hack!  This class should be derived from S1ASCommand
+     * and get automatic support for this stuff
+     */
+    @Override
+    public String toString() {
+        // always include terse and echo
+        StringBuilder sb = new StringBuilder();
+        sb.append(commandName).append(' ');
+        sb.append("--echo=").append(Boolean.toString(echo)).append(' ');
+        sb.append("--terse=").append(Boolean.toString(terse)).append(' ');
+        Set<String> paramKeys = params.keySet();
+
+        for (String key : paramKeys) {
+            if (key.equals("terse") || key.equals("echo"))
+                continue; //already done
+            String value = params.get(key);
+            sb.append("--").append(key);
+            if (ok(value)) {
+                sb.append('=').append(value);
+            }
+            sb.append(' ');
+        }
+
+        for (Object o : operands) {
+            sb.append(o).append(' ');
+        }
+
+        return sb.toString();
+    }
+
+    Map<String, String> getMainAtts() {
+        return mainAtts;
+    }
+
+    /**
+     * See if DAS is alive.
+     * @param port The admin port of DAS
+     * @return true if DAS can be reached and can handle commands, otherwise false.
+     */
+    static boolean pingDAS(int port) {
+        try {
+            new CLIRemoteCommand("version", "--port", Integer.toString(port));
+            return true;
+        }
+        catch (Exception ex) {
+            return false;
+        }
+    }
+
+
+
+    private void initialize(final String[] args) throws CommandException {
+        try {
+            final CLIRemoteCommandParser rcp = new CLIRemoteCommandParser(args);
+            commandName = rcp.getCommandName();
+            params = rcp.getOptions();
+            operands = rcp.getOperands();
+            initializeStandardParams();
+            initializeDeploy();
+            initializeLogger();
+            logger.printDebugMessage("CLIRemoteCommandParser: " + rcp);
+            initializeAuth();
+        }
+        catch(Exception e) {
+            throw new CommandException(e.getMessage());
+        }
+    }
+    private void initializeStandardParams() throws CommandException {
+        ASenvPropertyReader pr = new ASenvPropertyReader();
+        setBooleans();
+        hostName = params.get("host");
+
+        if(!ok(hostName))
+            hostName = pr.getProps().get(SystemPropertyConstants.HOST_NAME_PROPERTY);
+        if(!ok(hostName))
+            hostName = "localhost"; // should never happen
+
+        initializePort();
+
+        String s = params.get("secure");
+        if(ok(s))
+            secure = Boolean.parseBoolean(s);
+        else
+            secure = false;
+    }
+
+    private void initializePort() throws CommandException {
+        String port = params.get("port");
+        if(ok(port)) {
+            try {
+                hostPort = Integer.parseInt(port);
+
+                if(hostPort < 1 || hostPort > 65535)
+                    throw new CommandException(strings.get("badport", hostPort));
+            }
+            catch(NumberFormatException e) {
+                // this makes the default port below fire
+                port = null;
+            }
+        }
+
+        if(!ok(port))
+            hostPort = 8080;
+    }
+
+    private void initializeLogger() {
+        if (terse)
+            logger.setOutputLevel(java.util.logging.Level.INFO);
+        else
+            logger.setOutputLevel(java.util.logging.Level.FINE);
+        if (echo)
+            logger.printMessage(toString());
+        else if (logger.isDebug())
+            logger.printDebugMessage(toString());
+    }
+
+    private void initializeDeploy() throws CommandException {
+        // not a deployment command -- get outta here!
+        if(!isDeployment())
+            return;
+        // it IS a deployment command.  That means we MUST have a valid path
+        String filename;
+        
+        // operand takes precedence over param
+        if(operands.size() > 0) {
+            filename = operands.get(0);
+            operands.clear();
+        }
+        else {
+            filename = params.get("path");
+            params.remove("path");
+        }
+        
+        if(!ok(filename))
+            throw new CommandException(strings.get("noDeployFile", commandName));
+        
+        fileParameter = SmartFile.sanitize(new File(filename));
+        
+        if(!fileParameter.exists())
+            throw new CommandException(strings.get("badDeployFile", commandName, fileParameter));
+
+        // if we make it here -- we have a file param and the file exists!
+        // if the file is a directory, then we keep doUpload as false
+        // if it is a normal file then we set doUpload depending on the param.
+        // remember doUpload is ALREADY set to false...
+        
+        if(!isDirDeployment()) {
+            String upString = params.get("upload");
+            if(!ok(upString)) {
+                // default ==> true
+                doUpload = true;
+            }
+            else
+                doUpload = Boolean.parseBoolean(upString);
+        }
+    }
+
+    private void initializeAuth() throws CommandException {
+        LoginInfo li = null;
+        
+        try {
+            store = LoginInfoStoreFactory.getDefaultStore();
+            li = store.read(hostName, hostPort);
+        }
+        catch (StoreException se) {
+            throw new CommandException(se.getMessage());
+        }
+        initializeUser(li);
+        initializePassword(li);
+    }
+
+    private void initializeUser(LoginInfo li) {
+        user = params.get("user");
+        if (user == null && li != null) { //not on command line & in .asadminpass
+            user = li.getUser();
+        }
+    }
+    private void initializePassword(LoginInfo li) throws CommandException {
+        String pwfile = params.get("passwordfile");
+
+        if (ok(pwfile)) {
+            encodedPasswords = CLIUtil.readPasswordFileOptions(pwfile, true);
+            password = encodedPasswords.get(CLIUtil.ENV_PREFIX + "PASSWORD");
+            base64encode(encodedPasswords);
+        }
+        if (!ok(password) && li != null) { //not in passwordfile and in .asadminpass
+            password = li.getPassword();
+        }
+    }
+    
+    private static void base64encode(Map<String,String> map) {
+        if(map == null || map.isEmpty())
+            return;
+        
+        BASE64Encoder encoder = new sun.misc.BASE64Encoder();
+        
+        for(Map.Entry<String,String> entry : map.entrySet()) {
+            String val = entry.getValue();
+            
+            if(val != null)
+                entry.setValue(encoder.encode(val.getBytes()));
+        }
+    }
+
+    private boolean isDeployment() {
+        return commandName.equals("deploy") || commandName.equals("redeploy");
+    }
+
+    private boolean isDirDeployment() {
+        return isDeployment() && fileParameter != null && fileParameter.isDirectory();
+    }
+
+    private boolean isLocalParam(String param) {
+        return Arrays.asList(LOCAL_PARAMS).contains(param);
+    }
+
+    private boolean                         verbose = false;
+    private boolean                         terse = false;
+    private boolean                         echo = false;
+    private Map<String, String>             mainAtts;
+    private LoginInfoStore                  store;
+    private Map<String, String>             params;
+    private List<String>                    operands;
+    private String                          commandName;
+    private String                          responseFormatType = "hk2-cli";
+    private OutputStream                    userOut;
+    private boolean                         doUpload = false;
+    private File                            fileParameter;
+    private Map<String, String>             encodedPasswords;
+
+    private String                          hostName;
+    private int                             hostPort;
+    private boolean                         secure;
+    private String                          user;
+    private String                          password;
+    
+    private static final LocalStringsImpl   strings = new LocalStringsImpl(CLIRemoteCommand.class);
+    private static final CLILogger          logger = CLILogger.getInstance();
+    private static final String             SUCCESS = "SUCCESS";
+    private static final String             FAILURE = "FAILURE";
+    private static final String             MAGIC = "PlainTextActionReporter";
+
+    private static final String[] LOCAL_PARAMS = new String[] 
+    {
+        "host",
+        "port",
+        "upload",
+        "user",
+        "passwordfile",
+        "secure",
+        "terse",
+        "echo",
+        "interactive",
+    };
+}
+
