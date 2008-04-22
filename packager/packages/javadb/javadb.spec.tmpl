@@ -1,0 +1,32 @@
+Summary: GlassFish V3 javadb
+Name: javadb
+Version: 91.01
+Release: 0
+License: Copyright 2008 Sun Microsystems, Inc.  All rights reserved.  Use is subject to license terms.
+Group: Applications/System
+Source: javadb.zip
+Distribution: Sun Java(TM) Enterprise System
+Vendor: Sun Microsystems, Inc.
+URL: http://www.sun.com
+Provides: javadb
+AutoReqProv: no
+
+%define _prefix /usr/appserver
+Prefix: %{_prefix}
+
+%description
+GlassFish V3 javadb
+
+%undefine       __check_files
+
+%prep
+
+%setup
+
+%build
+
+%install
+
+%clean
+
+%files
