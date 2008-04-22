@@ -61,7 +61,7 @@ public final class KitchenSinkImpl extends AMXNonConfigImplBase
     {
         final Map<String,Object> result = new HashMap<String,Object>();
         Map connProps = null;
-        final Habitat habitat = com.sun.enterprise.v3.server.Globals.getDefaultHabitat();
+        final Habitat habitat = org.glassfish.internal.api.Globals.getDefaultHabitat();
         ConnectorRuntime connRuntime;
 
         // habitat

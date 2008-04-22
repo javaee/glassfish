@@ -25,16 +25,12 @@ package com.sun.enterprise.v3.deployment;
 
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.io.FileUtils;
-import com.sun.enterprise.v3.contract.ApplicationMetaDataPersistence;
 import com.sun.enterprise.v3.data.ApplicationInfo;
-import com.sun.enterprise.v3.data.ApplicationRegistry;
 import com.sun.enterprise.v3.server.ApplicationLifecycle;
 import com.sun.enterprise.v3.server.ServerEnvironment;
-import com.sun.enterprise.v3.services.impl.GrizzlyService;
-import com.sun.enterprise.config.serverbeans.Applications;
 import com.sun.enterprise.config.serverbeans.Module;
 import com.sun.enterprise.config.serverbeans.Application;
-import com.sun.enterprise.deploy.shared.ArchiveFactory;
+import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
@@ -67,23 +63,11 @@ public class UndeployCommand extends ApplicationLifecycle implements AdminComman
     @Inject
     ServerEnvironment env;
 
-    @Inject
-    ApplicationRegistry appRegistry;
-
-    @Inject
-    GrizzlyService adapter;
-
     @Param(primary = true, name=DeployCommand.NAME)
     String name=null;
 
     @Param(optional=true)
     String target = "server";
-
-    @Inject
-    Applications applications;
-
-    @Inject
-    ArchiveFactory archiveFactory;
 
     Logger logger = LogDomains.getLogger(LogDomains.DPL_LOGGER);
 
@@ -100,7 +84,7 @@ public class UndeployCommand extends ApplicationLifecycle implements AdminComman
 
         ApplicationInfo info = appRegistry.get(name);
 
-        Module module = getModule(name);
+        Module module = ConfigBeansUtilities.getModule(name);
         Application application = null;
         if (module instanceof Application) {
             application = (Application) module;

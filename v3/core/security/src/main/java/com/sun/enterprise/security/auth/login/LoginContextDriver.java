@@ -68,7 +68,7 @@ import com.sun.enterprise.security.integration.AppServSecurityContext;
 import com.sun.enterprise.security.common.ClientSecurityContext;
 //import com.sun.enterprise.appclient.AppContainer;
 import com.sun.enterprise.security.common.Util;
-import com.sun.enterprise.v3.server.Globals;
+import org.glassfish.internal.api.Globals;
 import org.jvnet.hk2.component.Habitat;
 
 

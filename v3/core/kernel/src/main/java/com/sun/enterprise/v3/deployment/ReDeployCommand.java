@@ -30,15 +30,14 @@ import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.v3.admin.CommandRunner;
-import com.sun.enterprise.config.serverbeans.ApplicationHelper;
+import com.sun.enterprise.v3.server.ApplicationLifecycle;
+import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
 import com.sun.enterprise.config.serverbeans.Application;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PerLookup;
 import org.jvnet.hk2.annotations.Scoped;
 import java.util.Properties;
-import java.net.URI;
-import java.net.URISyntaxException;
 
 /**
  *
@@ -51,14 +50,11 @@ import java.net.URISyntaxException;
 @Scoped(PerLookup.class)
 @I18n("redeploy.command")
 
-public class ReDeployCommand implements AdminCommand {
+public class ReDeployCommand extends ApplicationLifecycle implements AdminCommand {
 
     @Inject
     CommandRunner commandRunner;
     
-    @Inject
-    ApplicationHelper appHelper;
-
     @Param(optional=false)
     String name;
 
@@ -78,8 +74,7 @@ public class ReDeployCommand implements AdminCommand {
      */
     public void execute(AdminCommandContext context) {
         final ActionReport report = context.getActionReport();
-        final Application app = appHelper.findApplicationByName(name);        
-        if (!validateParameters(app, report)) {
+        if (!validateParameters(name, report)) {
             return;
         }
         Properties deployParam = new Properties(context.getCommandParameters());
@@ -94,13 +89,13 @@ public class ReDeployCommand implements AdminCommand {
          * application must be previously deployed.
          * Verify that path is valid and not null.
          *
-         * @param app - Application
+         * @param name - Application name
          * @param report - ActionReport.
          *
          * @returns true if validation successfully else return false.
          */
-    boolean validateParameters(final Application app, final ActionReport report) {
-        if (app == null) {
+    boolean validateParameters(final String name, final ActionReport report) {
+        if (!isRegistered(name)) {
             report.setMessage(localStrings.getLocalString("application.notreg","Application {0} not registered", name));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             return false;
@@ -111,7 +106,7 @@ public class ReDeployCommand implements AdminCommand {
              * is not directory deployed then throw an exception since we don't
              * want to undeploy and then deploy from the domain_root.
              */
-            if (!Boolean.parseBoolean(app.getDirectoryDeployed())) {
+            if (!Boolean.parseBoolean(ConfigBeansUtilities.getDirectoryDeployed(name))) {
                 report.setMessage(localStrings.getLocalString("redeploy.command.cannot.redeploy","Cannot redeploy this app {0} without specify the operand.", name));
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                 return false;
@@ -119,7 +114,7 @@ public class ReDeployCommand implements AdminCommand {
         }
 
         //if path not specified on the command line then get it from domain.xml
-        path = (path==null)?getPathFromDomainXML(app):path;
+        path = (path==null)?ConfigBeansUtilities.getLocation(name):path;
         if (path == null) {
                 //if unable to get path from domain.xml then return error.
             report.setMessage(localStrings.getLocalString("redeploy.command.invalid.path", "Cannot determine the path of application."));
@@ -128,29 +123,4 @@ public class ReDeployCommand implements AdminCommand {
         }
         return true;
     }
-    
-
-        /**
-         * Retrieve application Path from domain.xml
-         * Search from the application element in domain.xml
-         * and return the location attribute.
-         *
-         * @param app - Application
-         *
-         * @returns the location.
-         */
-    String getPathFromDomainXML(final Application app) {
-        if (app != null) {
-            URI uri = null;
-            try {
-                uri = new URI(app.getLocation());
-            }
-            catch (URISyntaxException e) {
-                return null;
-            }
-            return uri.getPath();
-        }
-        return null;
-    }
-
 }

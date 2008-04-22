@@ -31,7 +31,7 @@ import javax.servlet.Servlet;
 import com.sun.enterprise.module.Module;
 import com.sun.enterprise.module.ModuleDefinition;
 import com.sun.enterprise.module.ModulesRegistry;
-import com.sun.enterprise.v3.server.Globals;
+import org.glassfish.internal.api.Globals;
 
 import org.apache.catalina.Context;
 import org.apache.catalina.Lifecycle;

@@ -58,7 +58,7 @@ import com.sun.enterprise.module.ModulesRegistry;
 //import com.sun.enterprise.server.PELaunch;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.web.WebDeployer;
-import com.sun.enterprise.v3.server.Globals;
+import org.glassfish.internal.api.Globals;
 import org.jvnet.hk2.component.Habitat;
 
 public class ASClassLoaderUtil {
@@ -148,7 +148,7 @@ public class ASClassLoaderUtil {
     private static void addLibrariesForWebModule(StringBuilder sb,
             Habitat habitat, String moduleId) {
        if (moduleId != null) {
-            final String specifiedLibraries = getLibrariesForWebModule(habitat, moduleId);
+            final String specifiedLibraries = getLibrariesForWebModule(moduleId);
             final URL[] libs = getLibraries(specifiedLibraries);
             if (libs != null)  {
                 for (final URL u : libs) {
@@ -186,9 +186,9 @@ public class ASClassLoaderUtil {
      * @return A comma separated list representing the libraries
      * specified by the deployer.
      */    
-    public static <T> String getLibrariesForModule(Habitat habitat, Class<T> type, String moduleId) {
+    public static <T> String getLibrariesForModule(Class<T> type, String moduleId) {
         
-        T app = ConfigBeansUtilities.getModule(type, getApplications(habitat), moduleId);
+        T app = ConfigBeansUtilities.getModule(type, moduleId);
         if (app==null) return null;
         
         String librariesStr=null;
@@ -214,26 +214,15 @@ public class ASClassLoaderUtil {
      * @return A comma separated list representing the libraries
      * specified by the deployer.
      */
-    public static String getLibrariesForWebModule(Habitat habitat, String moduleId) {
+    public static String getLibrariesForWebModule(String moduleId) {
             
-        WebModule module = ConfigBeansUtilities.getModule(WebModule.class, 
-                getApplications(habitat), moduleId);
-        if(module == null) 
-            return null;
-
-        String librariesStr  = module.getLibraries();
+        String librariesStr = ConfigBeansUtilities.getLibraries(moduleId);
         if (_logger.isLoggable(Level.FINE)) {
             _logger.log(Level.FINE, "moduleId = " +  moduleId + " library = " + librariesStr);
         }
         
         return librariesStr;
         
-    }
-    
-    //Gets the Applications config bean from the application server's configcontext
-    private static Applications getApplications(Habitat habitat) {
-        Domain domain = habitat.getComponent(Domain.class);
-        return domain.getApplications();
     }
     
     /**

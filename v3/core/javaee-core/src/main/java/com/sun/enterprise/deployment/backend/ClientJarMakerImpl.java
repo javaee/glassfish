@@ -57,7 +57,7 @@ import com.sun.enterprise.deployment.WebServicesDescriptor;
 import com.sun.enterprise.deployment.io.DescriptorConstants;
 import com.sun.enterprise.util.shared.ArchivistUtils;
 import com.sun.enterprise.util.zip.ZipItem;
-import com.sun.enterprise.v3.server.Globals;
+import org.glassfish.internal.api.Globals;
 
 /**
  * This class is responsible for creating an appclient jar file that

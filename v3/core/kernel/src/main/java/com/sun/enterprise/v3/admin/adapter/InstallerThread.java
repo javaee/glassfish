@@ -185,7 +185,7 @@ final class InstallerThread extends Thread {
                 return ( true );
             }
         };
-        Server server = ConfigBeansUtilities.getServerNamed(env.getInstanceName(), domain);
+        Server server = ConfigBeansUtilities.getServerNamed(env.getInstanceName());
         ConfigSupport.apply(code, domain.getSystemApplications(), server);
         syncMessage("Installed the application ...");
     }

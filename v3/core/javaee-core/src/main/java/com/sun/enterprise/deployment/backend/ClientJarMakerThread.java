@@ -49,7 +49,7 @@ import org.glassfish.deployment.common.DeploymentProperties;
 import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.util.zip.ZipItem;
-import com.sun.enterprise.v3.server.Globals;
+import org.glassfish.internal.api.Globals;
 import org.glassfish.api.deployment.DeploymentContext;
 
 import java.io.File;

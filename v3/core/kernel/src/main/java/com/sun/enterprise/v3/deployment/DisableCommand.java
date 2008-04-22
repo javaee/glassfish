@@ -26,6 +26,7 @@ package com.sun.enterprise.v3.deployment;
 import com.sun.enterprise.v3.server.ServerEnvironment;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
+import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
 import com.sun.enterprise.v3.server.ApplicationLifecycle;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import org.glassfish.api.ActionReport;
@@ -55,6 +56,9 @@ public class DisableCommand extends ApplicationLifecycle implements AdminCommand
     @Param(primary=true, name="component")
     String component = null;
 
+    @Param(optional=true)    
+    String target = "server";
+
     /**
      * Entry point from the framework into the command execution
      * @param context context for the command.
@@ -65,6 +69,13 @@ public class DisableCommand extends ApplicationLifecycle implements AdminCommand
         if (!isRegistered(component)) {
             report.setMessage(localStrings.getLocalString("application.notreg","Application {0} not registered", component));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            return;
+        }
+
+        // return if the application is already in disabled state
+        if (!Boolean.valueOf(ConfigBeansUtilities.getEnabled(target,
+            component))) {
+            logger.fine("The application is already disabled");
             return;
         }
 

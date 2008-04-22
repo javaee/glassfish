@@ -43,10 +43,9 @@ import com.sun.enterprise.container.common.spi.util.InjectionManager;
 import com.sun.enterprise.container.common.spi.util.CallFlowAgent;
 import com.sun.enterprise.config.serverbeans.EjbContainer;
 import com.sun.enterprise.config.serverbeans.Application;
-import com.sun.enterprise.config.serverbeans.ApplicationHelper;
 import com.sun.enterprise.deployment.EjbDescriptor;
 import com.sun.enterprise.server.ServerContext;
-import com.sun.enterprise.v3.server.Globals;
+import org.glassfish.internal.api.Globals;
 import com.sun.enterprise.v3.server.ServerEnvironment;
 import com.sun.enterprise.admin.monitor.callflow.Agent;
 import com.sun.logging.LogDomains;
@@ -111,9 +110,6 @@ public class EjbContainerUtilImpl
 
     @Inject
     private EjbContainer ejbContainer;
-
-    @Inject
-    private ApplicationHelper applicationHelper;
 
     @Inject
     private ServerEnvironment env;
@@ -250,10 +246,6 @@ public class EjbContainerUtilImpl
 
     public EjbContainer getEjbContainer() {
         return ejbContainer;
-    }
-
-    public Application findApplicationByName(String appName) {
-        return applicationHelper.findApplicationByName(appName);
     }
 
     public ServerEnvironment getServerEnvironment() {

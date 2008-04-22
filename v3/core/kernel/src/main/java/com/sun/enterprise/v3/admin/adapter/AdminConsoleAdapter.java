@@ -221,8 +221,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
 
     private Application getConfig() {
         //no application-ref logic here -- that's on purpose for now
-        Application app = ConfigBeansUtilities.getSystemApplicationReferencedFrom(domain,
-                env.getInstanceName(), ADMIN_APP_NAME);
+        Application app = ConfigBeansUtilities.getSystemApplicationReferencedFrom(env.getInstanceName(), ADMIN_APP_NAME);
         
         return ( app );
     }
@@ -408,7 +407,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
             throw new IllegalStateException("handleInstalledButNotLoadedState called with no system app entry");
         }
         String sn = env.getInstanceName();
-        ApplicationRef ref = ConfigBeansUtilities.getApplicationRefInServer(domain, sn, ADMIN_APP_NAME);
+        ApplicationRef ref = ConfigBeansUtilities.getApplicationRefInServer(sn, ADMIN_APP_NAME);
         habitat.getComponent(ApplicationLoaderService.class).processApplication(config ,ref, logger);
     }
     

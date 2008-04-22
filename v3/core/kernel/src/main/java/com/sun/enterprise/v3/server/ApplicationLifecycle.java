@@ -39,6 +39,7 @@ import com.sun.enterprise.config.serverbeans.Property;
 import com.sun.enterprise.config.serverbeans.ServerTags;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.config.serverbeans.ApplicationRef;
+import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.ActionReport;
@@ -97,16 +98,16 @@ abstract public class ApplicationLifecycle {
     protected ModulesRegistry modulesRegistry;
 
     @Inject
-    GrizzlyService adapter;
+    protected GrizzlyService adapter;
 
     @Inject
-    ArchiveFactory archiveFactory;
+    protected ArchiveFactory archiveFactory;
 
     @Inject
-    Applications applications;
+    protected Applications applications;
 
     @Inject
-    Server server;
+    protected Server server;
 
     protected Logger logger = LogDomains.getLogger(LogDomains.DPL_LOGGER);
 
@@ -837,7 +838,6 @@ abstract public class ApplicationLifecycle {
         }
 
 
-        appRegistry.remove(appName);
         return info;
 
     }
@@ -855,6 +855,7 @@ abstract public class ApplicationLifecycle {
                 }
             }
         }
+        appRegistry.remove(appName);
     }
 
     protected void failure(Logger logger, String message, Throwable e, ActionReport report) {
@@ -1114,20 +1115,9 @@ abstract public class ApplicationLifecycle {
         return deploymentProps;
     }
 
-    protected com.sun.enterprise.config.serverbeans.Module getModule(String name) {
-        for (com.sun.enterprise.config.serverbeans.Module module :
-            applications.getModules()) {
-            if (module.getName().equals(name)) {
-                return module;
-            }
-        }
-        return null;
-
-    }
-
     // check if the application is registered in domain.xml
     protected boolean isRegistered(String appName) {
-        return getModule(appName)!=null;
+        return ConfigBeansUtilities.getModule(appName)!=null;
     }
 
     // clean up generated files

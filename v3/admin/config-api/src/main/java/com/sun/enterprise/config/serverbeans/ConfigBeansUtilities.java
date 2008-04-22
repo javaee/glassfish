@@ -29,18 +29,25 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.List;
+import java.net.URI;
+import java.net.URISyntaxException;
+
+import org.glassfish.internal.api.Globals;
 
 /**
  * Bunch of utility methods for the new serverbeans config api based on jaxb
  */
 public final class ConfigBeansUtilities {
-
+    private static Applications apps = 
+        Globals.getDefaultHabitat().getComponent(Applications.class);
+    private static Domain domain = 
+        Globals.getDefaultHabitat().getComponent(Domain.class);
     
     // static methods only
     private ConfigBeansUtilities() {
     }
 
-    public static <T> List<T> getModules(Class<T> type, Applications apps) {
+    public static <T> List<T> getModules(Class<T> type) {
         List<T> modules = new ArrayList<T>();
         for (Object module : apps.getModules()) {
             if (module.getClass().getName().equals(type.getClass().getName())) {
@@ -50,7 +57,7 @@ public final class ConfigBeansUtilities {
         return modules;
     }
 
-    public static <T> T getModule(Class<T> type, Applications apps, String moduleID) {
+    public static <T> T getModule(Class<T> type, String moduleID) {
 
         if (moduleID == null) {
             return null;
@@ -191,14 +198,14 @@ public final class ConfigBeansUtilities {
      * @param sn the string denoting name of the server
      * @return List of system-applications for that server, an empty list in case there is none
      */
-    public static List<Application> getSystemApplicationsReferencedFrom(Domain d, String sn) {
-        if (d == null || sn == null)
+    public static List<Application> getSystemApplicationsReferencedFrom(String sn) {
+        if (domain == null || sn == null)
             throw new IllegalArgumentException("Null argument");
-        List<Application> allApps = getAllDefinedSystemApplications(d);
+        List<Application> allApps = getAllDefinedSystemApplications();
         if (allApps.size() == 0)
             return (allApps); //if there are no sys-apps, none can reference one :)
         //allApps now contains ALL the system applications
-        Server s = getServerNamed(sn, d);
+        Server s = getServerNamed(sn);
         List<Application> referencedApps = new ArrayList<Application>();
         List<ApplicationRef> appsReferenced = s.getApplicationRef();
         for (ApplicationRef ref : appsReferenced) {
@@ -211,9 +218,9 @@ public final class ConfigBeansUtilities {
         return ( referencedApps );
     }
     
-    public static Application getSystemApplicationReferencedFrom(Domain d, String sn, String appName) {
+    public static Application getSystemApplicationReferencedFrom(String sn, String appName) {
         //returns null in case there is none
-        List<Application> allApps = getSystemApplicationsReferencedFrom(d, sn);
+        List<Application> allApps = getSystemApplicationsReferencedFrom(sn);
         for (Application app : allApps) {
             if (app.getName().equals(appName)) {
                 return ( app );
@@ -221,8 +228,8 @@ public final class ConfigBeansUtilities {
         }
         return ( null );
     }
-    public static boolean isNamedSystemApplicationReferencedFrom(Domain d, String appName, String serverName) {
-        List <Application> referencedApps = getSystemApplicationsReferencedFrom(d, serverName);
+    public static boolean isNamedSystemApplicationReferencedFrom(String appName, String serverName) {
+        List <Application> referencedApps = getSystemApplicationsReferencedFrom(serverName);
         for (Application app : referencedApps) {
             if (app.getName().equals(appName))
                 return ( true );
@@ -230,10 +237,10 @@ public final class ConfigBeansUtilities {
         return ( false );
     }
     
-    public static Server getServerNamed(String name, Domain d) {
-        if (d == null || d.getServers() == null || name == null)
+    public static Server getServerNamed(String name) {
+        if (domain == null || domain.getServers() == null || name == null)
             throw new IllegalArgumentException ("Either domain is null or no <servers> element");
-        List<Server> servers = d.getServers().getServer();
+        List<Server> servers = domain.getServers().getServer();
         for (Server s : servers) {
             if (name.equals(s.getName().trim())) {
                 return ( s );
@@ -242,9 +249,9 @@ public final class ConfigBeansUtilities {
         return ( null );
     }
     
-    public static List<Application> getAllDefinedSystemApplications(Domain d) {
+    public static List<Application> getAllDefinedSystemApplications() {
         List<Application> allSysApps = new ArrayList<Application>();
-        SystemApplications sa = d.getSystemApplications();
+        SystemApplications sa = domain.getSystemApplications();
         if (sa != null) {
             for (Module m : sa.getModules()) {
                 if (m instanceof Application)
@@ -254,8 +261,8 @@ public final class ConfigBeansUtilities {
         return ( allSysApps );
     }
     
-    public static ApplicationRef getApplicationRefInServer(Domain d, String sn, String name) {
-        Servers ss = d.getServers();
+    public static ApplicationRef getApplicationRefInServer(String sn, String name) {
+        Servers ss = domain.getServers();
         List<Server> list = ss.getServer();
         Server theServer = null;
         for (Server s : list) {
@@ -276,6 +283,132 @@ public final class ConfigBeansUtilities {
         }
         return ( aref );
     }
+
+    public static Module getModule(String moduleID) {
+        for (Module module : apps.getModules()) {
+            if (module.getName().equals(moduleID)) {
+                return module;
+            }
+        }
+        return null;
+    }
+
+    public static String getEnabled(String sn, String moduleID) {
+        ApplicationRef appRef = getApplicationRefInServer(sn, moduleID);
+        if (appRef != null) { 
+            return appRef.getEnabled();
+        } else {
+            return null;
+        }
+    }
+
+    public static String getVirtualServers(String sn, String moduleID) {
+        ApplicationRef appRef = getApplicationRefInServer(sn, moduleID);
+        if (appRef != null) { 
+            return appRef.getVirtualServers();
+        } else {
+            return null;
+        }
+    }
+
+    public static String getName(String moduleID) {
+        Module module = getModule(moduleID);
+        if (module != null) {
+            return module.getName();
+        } else {
+            return null;
+        }
+    }
+
+   public static String getContextRoot(String moduleID) {
+        Module module = getModule(moduleID);
+        if (module == null) {
+            return null;
+        }
+
+        if (module instanceof Application) {
+            return ((Application)module).getContextRoot();
+        } else if (module instanceof WebModule) {
+            return ((WebModule)module).getContextRoot(); 
+        } else {
+            return null;
+        }
+    }
+
+    public static String getLibraries(String moduleID) {
+        Module module = getModule(moduleID);
+        if (module == null) {
+            return null;
+        }
+
+        if (module instanceof Application) {
+            return ((Application)module).getLibraries();
+        } else if (module instanceof WebModule) {
+            return ((WebModule)module).getLibraries();
+        } else if (module instanceof EjbModule) {
+            return ((EjbModule)module).getLibraries();
+        } else if (module instanceof J2eeApplication) {
+            return ((J2eeApplication)module).getLibraries();
+        } else {
+            return null;
+        }
+    }
+
+    public static String getLocation(String moduleID) {
+        Module module = getModule(moduleID);
+        if (module == null) {
+            return null;
+        } 
+
+        String location = null; 
+        if (module instanceof Application) {
+            location =  ((Application)module).getLocation();
+        } else if (module instanceof WebModule) {
+            location = ((WebModule)module).getLocation();
+        } else if (module instanceof EjbModule) {
+            location = ((EjbModule)module).getLocation();
+        } else if (module instanceof ConnectorModule) {
+            location = ((ConnectorModule)module).getLocation();
+        } else if (module instanceof AppclientModule) {
+            location = ((AppclientModule)module).getLocation();
+        } else if (module instanceof J2eeApplication) {
+            location =  ((J2eeApplication)module).getLocation();
+        }
+
+        try { 
+            if (location != null) {
+                return new URI(location).getPath();
+            } else {
+                return null;
+            }
+        } catch (URISyntaxException e) {
+            return null;
+        }            
+    }
+
+    public static String getDirectoryDeployed(String moduleID) {
+        Module module = getModule(moduleID);
+        if (module == null) {
+            return null;
+        } 
+
+        if (module instanceof Application) {
+            return ((Application)module).getDirectoryDeployed();
+        } else if (module instanceof WebModule) {
+            return ((WebModule)module).getDirectoryDeployed();
+        } else if (module instanceof EjbModule) {
+            return ((EjbModule)module).getDirectoryDeployed();
+        } else if (module instanceof ConnectorModule) {
+            return ((ConnectorModule)module).getDirectoryDeployed();
+        } else if (module instanceof AppclientModule) {
+            return ((AppclientModule)module).getDirectoryDeployed();
+        } else if (module instanceof J2eeApplication) {
+            return ((J2eeApplication)module).getDirectoryDeployed();
+        } else {
+            return null;
+        }
+    }
+
 }
 
 

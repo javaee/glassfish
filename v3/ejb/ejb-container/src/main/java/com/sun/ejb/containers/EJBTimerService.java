@@ -68,6 +68,7 @@ import com.sun.enterprise.admin.monitor.callflow.Agent;
 
 import com.sun.enterprise.config.serverbeans.EjbContainer;
 import com.sun.enterprise.config.serverbeans.EjbTimerService;
+import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
 import com.sun.enterprise.v3.server.ServerEnvironment;
 
 import com.sun.ejb.containers.EjbContainerUtilImpl;
@@ -1806,7 +1807,7 @@ public class EJBTimerService
         File timerServiceShutdownFile;
 
         String j2eeAppPath = 
-                ejbContainerUtil.findApplicationByName(appID).getLocation();
+                ConfigBeansUtilities.getLocation(appID);
 
         timerServiceShutdownDirectory = new File(j2eeAppPath + File.separator);
         timerServiceShutdownDirectory.mkdirs();

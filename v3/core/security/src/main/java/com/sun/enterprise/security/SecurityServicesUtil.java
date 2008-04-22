@@ -42,7 +42,7 @@ package com.sun.enterprise.security;
 
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.v3.server.ServerEnvironment;
-import com.sun.enterprise.v3.server.Globals;
+import org.glassfish.internal.api.Globals;
 import com.sun.logging.LogDomains;
 import java.io.BufferedReader;
 import java.io.File;

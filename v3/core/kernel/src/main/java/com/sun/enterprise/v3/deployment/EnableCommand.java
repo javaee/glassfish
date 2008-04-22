@@ -31,12 +31,10 @@ import org.glassfish.api.deployment.archive.ReadableArchive;
 import com.sun.enterprise.v3.server.ApplicationLifecycle;
 import com.sun.enterprise.v3.data.ApplicationInfo;
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.enterprise.config.serverbeans.Applications;
 import com.sun.enterprise.config.serverbeans.Application;
 import com.sun.enterprise.config.serverbeans.Module;
 import com.sun.enterprise.config.serverbeans.ApplicationRef;
-import com.sun.enterprise.config.serverbeans.Server;
-import com.sun.enterprise.deploy.shared.ArchiveFactory;
+import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.container.Sniffer;
 import org.glassfish.api.I18n;
@@ -68,15 +66,6 @@ public class EnableCommand extends ApplicationLifecycle implements AdminCommand 
     @Inject
     ServerEnvironment env;
 
-    @Inject
-    Applications applications;
-
-    @Inject
-    Server server;
-
-    @Inject
-    ArchiveFactory archiveFactory;
-
     @Param(primary=true, name="component")
     String component = null;
 
@@ -98,6 +87,14 @@ public class EnableCommand extends ApplicationLifecycle implements AdminCommand 
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             return;
         }
+
+        // return if the application is already in enabled state
+        if (Boolean.valueOf(ConfigBeansUtilities.getEnabled(target, 
+            component))) {
+            logger.fine("The application is already enabled");
+            return;
+        }
+
 
         if (getSniffers().isEmpty()) {
             String msg = localStrings.getLocalString("nocontainer", "No container services registered, done...");

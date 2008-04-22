@@ -43,7 +43,6 @@ import com.sun.enterprise.container.common.spi.util.InjectionManager;
 import com.sun.enterprise.container.common.spi.util.CallFlowAgent;
 import com.sun.enterprise.config.serverbeans.EjbContainer;
 import com.sun.enterprise.config.serverbeans.Application;
-import com.sun.enterprise.config.serverbeans.ApplicationHelper;
 import com.sun.enterprise.deployment.EjbDescriptor;
 import com.sun.enterprise.server.ServerContext;
 import com.sun.enterprise.v3.server.ServerEnvironment;
@@ -116,8 +115,6 @@ public interface EjbContainerUtil {
     public void removeContainerSync(Transaction tx);
 
     public EjbContainer getEjbContainer();
-
-    public Application findApplicationByName(String appName);
 
     public ServerEnvironment getServerEnvironment();
 

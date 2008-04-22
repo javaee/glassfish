@@ -38,7 +38,7 @@ package com.sun.enterprise.web;
 
 import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
 import com.sun.enterprise.web.stats.PWCRequestStatsImpl;
-import com.sun.enterprise.v3.server.Globals;
+import org.glassfish.internal.api.Globals;
 import java.beans.PropertyVetoException;
 import java.io.File;
 import java.text.MessageFormat;
@@ -566,7 +566,7 @@ public class VirtualServer extends StandardHost {
 
             // Look up the list of standalone web modules
             if (wmInfo == null) {
-                WebModule wm = ConfigBeansUtilities.getModule(WebModule.class, appsBean, wmID);
+                WebModule wm = ConfigBeansUtilities.getModule(WebModule.class, wmID);
                 if (wm != null) {
                     if (isActive(wm, false)) {
                         // Create a copy as we need to change the name
@@ -857,7 +857,7 @@ public class VirtualServer extends StandardHost {
      */
     private String getVirtualServers(String appName) {
         String ret = null;
-        Server server = com.sun.enterprise.v3.server.Globals.getDefaultHabitat().getComponent(Server.class);
+        Server server = org.glassfish.internal.api.Globals.getDefaultHabitat().getComponent(Server.class);
         for (ApplicationRef appRef : server.getApplicationRef()) {
             if (appRef.getRef().equals(appName)) {
                 return appRef.getVirtualServers();
