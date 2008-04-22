@@ -41,7 +41,7 @@ PRODUCTNAME="GlassFish V3"
 ORIG_ARGS=$@
 
 INST_DIR=/tmp/.launcher.$$
-JAVA_LOC=${INST_DIR}/jvm
+JAVA_LOC=${JAVA_HOME}
 
 # binaries needed on both Solaris, Linux, etc.
 CAT=/bin/cat
@@ -74,8 +74,8 @@ MYDIR=`cd ${MYDIR}; ${_PWD}`
 ENGINE_DIR=${MYDIR}/install
 
 # global settings
-JAVA_HOME=""				# java home path
-JAVAOPTIONS=""			  # java options
+JAVA_HOME="$JAVA_HOME"				# java home path
+JAVAOPTIONS="-Dorg.openinstaller.provider.configurator.class=org.openinstaller.provider.conf.InstallationConfigurator"			  
 INSTALLPROPS=""     # install specific properties
 
 # user options
@@ -145,6 +145,8 @@ ENGINE_OPS="${ENGINE_OPS} -a file://${MYDIR}/install.properties"
 ENGINE_OPS="${ENGINE_OPS} -i file://${MYDIR}/Product"
 ENGINE_OPS="${ENGINE_OPS} -p Default-Product-ID=${PRODUCTNAME}"
 ENGINE_OPS="${ENGINE_OPS} -p Pkg-Format=zip"
+ENGINE_OPS="${ENGINE_OPS} -C install-configurator.jar"
+
 
 # add ubi-enabled packaging tool location to environment so that it
 # is picked up by PH engine.

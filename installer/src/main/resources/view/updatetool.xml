@@ -61,14 +61,22 @@
                 <apt:checkBox apt:labelPost="Install Update Client" apt:toolTip="Requires Online Installation" />
             </apt:visual>
            </apt:property>
-          <apt:property apt:name="PROXY_URL"
-              apt:label="Proxy URL"
-              apt:dataPath="Configuration.PROXY_URL"
+          <apt:property apt:name="PROXY_HOST"
+              apt:label="Proxy Host"
+              apt:dataPath="Configuration.PROXY_HOST"
               apt:type="xs:string">
             <apt:visual>
-                <apt:textField  apt:toolTip="Enter Proxy URL if required" />
+                <apt:textField apt:toolTip="Enter Proxy Host if required"/>
             </apt:visual>
-           </apt:property>           
+           </apt:property>  
+           <apt:property apt:name="PROXY_PORT"
+              apt:label="Proxy Port"
+              apt:dataPath="Configuration.PROXY_PORT"
+              apt:type="xs:string">
+            <apt:visual>
+                <apt:textField apt:toolTip="Enter Proxy Port if required"/>
+            </apt:visual>
+           </apt:property>          
           <apt:property apt:name="ALLOW_UPDATE_CHECK"
               apt:label=""
               apt:dataPath="Configuration.ALLOW_UPDATE_CHECK"
