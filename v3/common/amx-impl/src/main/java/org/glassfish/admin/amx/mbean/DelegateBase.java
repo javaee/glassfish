@@ -88,7 +88,6 @@ public abstract class DelegateBase implements Delegate
 	    }
 	}
 	
-	
 	public final String    getID()    { return mID; }
 	
 		public void
@@ -138,59 +137,12 @@ public abstract class DelegateBase implements Delegate
 	 */
 	public abstract AttributeList setAttributes( final AttributeList attrs, final Map<String,Object> oldValues);
 	
-	/**
-		Do the classnames match the parameter infos?
-	 */
-		private boolean
-	typesMatch(
-		final String[]				types,
-		final MBeanParameterInfo[]	paramInfos )
-	{
-		boolean	matches	= false;
-		final int  numTypes  = types == null ? 0 : types.length;
-		final int   numParams   = paramInfos == null ? 0 : paramInfos.length;
-		
-		if ( numTypes == numParams )
-		{
-			matches	= true;
-			
-			for( int i = 0; i < numTypes; ++i )
-			{
-				if ( ! types[ i ].equals( paramInfos[ i ].getType() ) )
-				{
-					matches	= false;
-					break;
-				}
-			}
-		}
-		
-		return( matches );
-	}
 
 		public boolean
-	supportsAttribute( String 		attrName )
+	supportsAttribute( String attrName )
 	{
-        return true;
+        return false;
 	}
-    
-        protected String
-    _getDefaultValue( final String name )
-        throws AttributeNotFoundException
-    {
-        return "!!! NO DEFAULT VALUE FOR: \"" + name + "\" !!!" + ", " + this.getClass().getName();
-    }
-    
-        public final String
-    getDefaultValue( final String name )
-        throws AttributeNotFoundException
-    {
-        if ( ! supportsAttribute( name ) )
-        {
-            throw new AttributeNotFoundException( name );
-        }
-        
-        return _getDefaultValue( name );
-    }
 
 		public boolean
 	supportsOperation(
@@ -200,7 +152,17 @@ public abstract class DelegateBase implements Delegate
 	{
         return false;
 	}
-	
+
+	/**
+	 */
+		public final Object
+	invoke(
+		String 		operationName,
+		Object[]	args,
+		String[]	types )
+	{
+        throw new RuntimeException( "invoke() not yet implemented" );
+	}
 }
 
 

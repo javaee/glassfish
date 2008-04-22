@@ -69,9 +69,6 @@ public interface Delegate
 		Return true if the Attribute is supported
 	 */
 	public boolean	supportsAttribute( String name );
-    
-    public String getDefaultValue( final String name )
-		throws	AttributeNotFoundException;
 	
 	/**
 		Return true if the operation is supported

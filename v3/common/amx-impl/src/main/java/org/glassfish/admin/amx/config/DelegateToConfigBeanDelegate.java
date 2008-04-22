@@ -39,6 +39,8 @@ import com.sun.appserv.management.base.AMXAttributes;
 import com.sun.appserv.management.util.jmx.JMXUtil;
 import com.sun.appserv.management.util.misc.CollectionUtil;
 import com.sun.appserv.management.util.misc.ExceptionUtil;
+import com.sun.appserv.management.util.misc.GSetUtil;
+import com.sun.appserv.management.util.misc.ListUtil;
 import org.glassfish.admin.amx.mbean.DelegateBase;
 import org.glassfish.admin.amx.util.AMXConfigInfoResolver;
 import org.glassfish.api.amx.AMXConfigInfo;
@@ -48,6 +50,10 @@ import javax.management.AttributeList;
 import javax.management.AttributeNotFoundException;
 import java.beans.PropertyChangeEvent;
 import java.util.*;
+import java.lang.reflect.Method;
+import java.lang.reflect.Type;
+
+import org.jvnet.hk2.config.*;
 
 import com.sun.appserv.management.util.misc.TypeCast;
 
@@ -56,29 +62,11 @@ import com.sun.appserv.management.util.misc.TypeCast;
  */
 public final class DelegateToConfigBeanDelegate extends DelegateBase
 {
-	private final ConfigBean mConfigBean;
-    private final NameMapping mNameMapping;
+	private final ConfigBean        mConfigBean;
+    private final NameMappingHelper mNameMappingHelper;
     
     private static void debug( final String s ) { System.out.println(s); }
-	
-        private static AMXConfigInfoResolver
-    getAMXConfigInfoResolver( final ConfigBean cb )
-    {
-        final Class<? extends ConfigBeanProxy> proxyClass = cb.getProxyType();
-        final AMXConfigInfo amxConfigInfo = proxyClass.getAnnotation( AMXConfigInfo.class );
-        if ( amxConfigInfo == null )
-        {
-            throw new IllegalArgumentException();
-        }
-        return new AMXConfigInfoResolver( amxConfigInfo );
-    }
-    
-        private static String
-    getJ2EEType( final ConfigBean cb )
-    {
-        return getAMXConfigInfoResolver(cb).j2eeType();
-    }
-    
+	    
 		public
 	DelegateToConfigBeanDelegate(
         final ConfigBean configBean )
@@ -86,120 +74,29 @@ public final class DelegateToConfigBeanDelegate extends DelegateBase
 		super( "DelegateToConfigBeanDelegate." + configBean.toString() );
 		
 		mConfigBean	= configBean;
-        mNameMapping    = NameMapping.getInstance( getJ2EEType(configBean) );
-	}
-	
-    public ConfigBean getConfigBean() { return mConfigBean; }
-     
-		public boolean
-	supportsAttribute( final String attrName )
-	{
-        final String xmlName = getXMLName(attrName);
         
+        mNameMappingHelper = new NameMappingHelper( configBean );
+	}
+    
+		public boolean
+	supportsAttribute( final String amxAttrName )
+	{
+        final String xmlName = mNameMappingHelper.getXMLName(amxAttrName);
         //debug( "DelegateToConfigBeanDelegate.supportsAttribute: " + attrName + " => " + xmlName );
         return xmlName != null;
 	}
-    
-    /**
-        Belongs in HK2 itself (Dom.java), but here until versioning can be worked out.
-     */
-        protected ConfigModel.Property
-    getConfigModel_Property( final String xmlName ) {
-        final ConfigModel.Property cmp = mConfigBean.model.findIgnoreCase(xmlName);
-        if (cmp == null) {
-            throw new IllegalArgumentException( "Illegal name: " + xmlName );
-        }
-        return cmp;
-    }
-    
-    public boolean isLeaf( final String xmlName ) {
-        return getConfigModel_Property(xmlName).isLeaf();
-    }
-    
-    public boolean isCollection( final String xmlName ) {
-        return getConfigModel_Property(xmlName).isCollection();
-    }
-
-    
-    /**
-        Utilize AMXConfigInfo for arbitrary name mappings, at least nameHint()
-     */
-        private String
-    smartAttrNameFind( final String amxName )
-    {
-        String xmlName = null;
-        // look for nameHint() in annotation
-       if ( amxName.equals( AMXAttributes.ATTR_NAME ) )
-       {
-            final AMXConfigInfoResolver info = getAMXConfigInfoResolver( mConfigBean );
-            final String hint = info.nameHint();
-            if ( hint != null && hint.length() != 0 )
-            {
-                //debug( "smartNameFind: mapped " + amxName + " to " + hint + " for " + info.amxInterface().getName() ); 
-                xmlName = hint;
-            }
-        }
-       return xmlName;
-    }
-    
-    /**
-        Get the XML attribute name corresponding to the AMX attribute name.
-     */
-        private final String
-    getXMLName( final String amxName )
-    {
-        String xmlName = mNameMapping.getXMLName( amxName );
-        if ( xmlName == null )
-        {
-            xmlName = smartAttrNameFind( amxName );
-            if ( xmlName == null )
-            {
-                final Set<String> xmlNames = mConfigBean.getAttributeNames();
-                //debug( "Attribute names: " + CollectionUtil.toString( xmlNames ) );
-                
-                xmlName = mNameMapping.matchAMXName( amxName, xmlNames );
-                //debug( "Matched: " + amxName + " => " + xmlName );
-                if ( xmlName == null )
-                {
-                    final Set<String> leafNames = mConfigBean.getLeafElementNames();
-                    xmlName = mNameMapping.matchAMXName( amxName, leafNames );
-                    //debug( "Matched leaf element names: " + CollectionUtil.toString(leafNames) + " = " + xmlName );
-                }
-            }
-            else
-            {
-                mNameMapping.pairNames( amxName, xmlName );
-            }
-        }
-        
-        //debug( "getXMLName " + amxName + " => " + xmlName );
-        //debug( "amxAttrNameToConfigBeanName: resolved as : " + xmlName );
-        return xmlName;
-    }
-    
-    /**
-        Get an AttrInfo based on the AMX attribute name.
-     */
-        private AttrInfo
-    getAttrInfo_AMX( final String amxName )
-    {
-        final String xmlName = getXMLName(amxName);
-
-        final boolean isLeaf       = isLeaf(xmlName);
-        final boolean isCollection = isCollection(xmlName);
-
-        return new AttrInfo( amxName, getXMLName( amxName), isLeaf, isCollection );
-    }
-            
+	
+    public ConfigBean getConfigBean() { return mConfigBean; }
+                   
 		public final Object
 	getAttribute( final String amxName )
 		throws AttributeNotFoundException
 	{
-        final AttrInfo info = getAttrInfo_AMX( amxName );
+        final AttrInfo info = mNameMappingHelper.getAttrInfo_AMX( amxName );
         
         Object result = null;
         final String xmlName = info.xmlName();
-        debug( "DelegateToConfigBeanDelegate.getAttribute: attrInfo: " + info );
+        //debug( "DelegateToConfigBeanDelegate.getAttribute: attrInfo: " + info );
         if ( info.isCollection() )
         {
             final List<?> leafElementsX = mConfigBean.leafElements(xmlName);
@@ -215,19 +112,10 @@ public final class DelegateToConfigBeanDelegate extends DelegateBase
             result = (String)mConfigBean.rawAttribute( xmlName );
         }
         
-        debug( "Attribute " + amxName + " has class " + ((result == null) ? "null" : result.getClass()) );
+       // debug( "Attribute " + amxName + " has class " + ((result == null) ? "null" : result.getClass()) );
         return result;
 	}
     
-    
-    @Override
-        protected final String
-    _getDefaultValue( final String name )
-        throws AttributeNotFoundException
-    {
-        throw new AttributeNotFoundException( name );
-    }
-
     private static final class MyTransactionListener implements TransactionListener
     {
         private final List<PropertyChangeEvent> mChangeEvents = new ArrayList<PropertyChangeEvent>();
@@ -279,147 +167,197 @@ public final class DelegateToConfigBeanDelegate extends DelegateBase
         return m;
     }
     
-        private Object
-    autoStringify( final Object o )
+    private void joinTransaction( final Transaction t, final WriteableView writeable ) 
+        throws TransactionFailure
     {
-        Object result = o;
-        
-        if ( o != null &&
-            ((o instanceof Boolean) || (o instanceof Integer) || (o instanceof Long)) )
+        if ( ! writeable.join(t) )
         {
-            result = "" + o;
+            t.rollback();
+            throw new TransactionFailure("Cannot enlist " + writeable.getProxyType() + " in transaction",null);
         }
+    } 
         
-        return result;
+        private static void
+    commit( final Transaction t )
+        throws TransactionFailure
+    {
+        try
+        {
+            t.commit();
+        }
+        catch ( final RetryableException e)
+        {
+            debug("Retryable...");
+            t.rollback();
+            throw new TransactionFailure(e.getMessage(), e);
+        }
+        catch ( final TransactionFailure e) {
+            debug("failure, not retryable...");
+            t.rollback();
+            throw e;
+        }
     }
     
+        static <T extends ConfigBeanProxy> WriteableView
+     getWriteableView(final T s, final ConfigBean sourceBean)
+        throws TransactionFailure {
+        final WriteableView f = new WriteableView(s);
+        if (sourceBean.getLock().tryLock()) {
+            return f;
+        }
+        throw new TransactionFailure("Config bean already locked " + sourceBean, null);
+    }
+    
+    private static Type getCollectionGenericType() 
+        throws NoSuchMethodException
+    {
+        return ConfigSupport.class.getDeclaredMethod("defaultPropertyValue", null).getGenericReturnType();
+    }
+            
+    private void apply(
+        final ConfigBean cb,
+        final Map<String,Object> changes )
+        throws TransactionFailure
+    {
+        final Transaction t = new Transaction();
+        final Class<? extends ConfigBeanProxy> intf = cb.getProxyType();
+        final ConfigBeanProxy readableView = cb.getProxy( intf );
+        final WriteableView writeable = getWriteableView(readableView, cb );
+        try
+        {
+            joinTransaction( t, writeable);
+                
+            for ( final String xmlName : changes.keySet() )
+            {
+                final Object value = changes.get(xmlName);
+                final ConfigModel.Property prop = mNameMappingHelper.getConfigModel_Property(xmlName);
+
+                if ( prop.isCollection() )
+                {
+                    try
+                    {
+                        final Object o = writeable.getter(prop, getCollectionGenericType());
+                        final List<String> existingValues = TypeCast.checkList( TypeCast.asList(o), String.class);
+                        
+                        // single string or List<String> or String[] are all mapped to a list
+                        final List<String> newValues = ListUtil.asStringList( value );
+                        
+                        // eliminate duplicates for now unless there is a good reason to allow them
+                        newValues.removeAll( existingValues );
+                        
+                        // "add" semantics -- need to handle remove another way
+                        existingValues.addAll( newValues );
+                    }
+                    catch ( final NoSuchMethodException e)
+                    {
+                        throw new TransactionFailure("Unknown property name " + xmlName + " on " + intf.getName(), null);                        
+                    }
+                }
+                else if ( value == null || (value instanceof String) )
+                {
+                    writeable.setter( prop, value, String.class);
+                }
+                else
+                {
+                    throw new TransactionFailure( "Illegal data type for attribute " + xmlName + ": " + value.getClass().getName() );
+                }
+            }
+            
+            commit( t );
+        }
+        finally
+        {
+            cb.getLock().unlock();
+        }
+    }
+
+
 		public AttributeList
 	setAttributes( final AttributeList attrsIn, final Map<String,Object> oldValues )
 	{
         oldValues.clear();
         
-        // note that attributeListToStringMap() auto-converts types to 'String' which is desired here
-        final Map<String, Object> amxAttrs = JMXUtil.attributeListToValueMap( attrsIn );
-        
-        /*
-        // auto convert certain special types such as String[] to String
-        for( final String key : amxAttrs.keySet() )
-        {
-            final Object value = amxAttrs.get(key);
-            
-            String valueString = "" + value;
-            amxAttrs.put( key, valueString );
-        }
-        */
-        
         // now map the AMX attribute names to xml attribute names
-        final Map<String,String> xmlAttrs = new HashMap<String,String>();
-        for( final String amxAttrName : amxAttrs.keySet() )
+        final Map<String, Object> amxAttrs = JMXUtil.attributeListToValueMap( attrsIn );
+        final Map<String,Object>  notMatched = new HashMap<String,Object>();
+        final Map<String,Object>  xmlAttrs = mNameMappingHelper.mapNamesAndValues( amxAttrs, notMatched);
+        
+        if ( notMatched.keySet().size() != 0 )
         {
-            final String xmlName = getXMLName(amxAttrName);
-            if ( xmlName != null )
+            debug( "setAttributes: failed to map these AMX attributes: {" + CollectionUtil.toString( notMatched.keySet() ) + "}" );
+        }
+        
+        final AttributeList successfulAttrs = new AttributeList();
+        
+        if ( xmlAttrs.size() != 0 )
+        {
+            /*
+            SAMPLE CODE, but what method to use?
+            List<ConfigSupport.AttributeChanges> changes = new ArrayList<ConfigSupport.AttributeChanges>();
+            String[] values = { "-Xmx512m", "-RFtrq", "-Xmw24" };
+            ConfigSupport.MultipleAttributeChanges multipleChanges = new ConfigSupport.MultipleAttributeChanges("jvm-options", values );
+            profilerChanges.add(multipleChanges);
+            ConfigSupport.createAndSet( mConfigBean, mConfigBean.getProxyType(), changes);
+            */
+            
+            debug( "DelegateToConfigBeanDelegate.setAttributes(): " + attrsIn.size() + " attributes: {" +
+                CollectionUtil.toString(amxAttrs.keySet()) + "} mapped to xml names {" + CollectionUtil.toString(xmlAttrs.keySet()) + "}");
+            
+            final MyTransactionListener  myListener = new MyTransactionListener( mConfigBean );
+            Transactions.get().addTransactionsListener(myListener);
+                
+            // results should contain only those that succeeded which will be all or none
+            // depending on whether the transaction worked or not
+            try
             {
-                final Object valueIn = amxAttrs.get(amxAttrName);
-                final Object value = autoStringify( valueIn );
-                if ( value != valueIn )
+                apply( mConfigBean, xmlAttrs );
+                // use 'attrsIn' vs 'attrs' in case not all values are 'String'
+                successfulAttrs.addAll( attrsIn );
+            }
+            catch( final TransactionFailure tf )
+            {
+                // empty results -- no Exception should be thrown per JMX spec
+                debug( ExceptionUtil.toString(tf) );
+            }
+            finally
+            {
+                Transactions.get().waitForDrain();
+                Transactions.get().removeTransactionsListener(myListener);
+            }
+        
+            // determine later the best way to handle AttributeChangeNotification
+            // It can get ugly at this level; the config code will issue a different event
+            // for every single <jvm-options> element (for example)
+            /*
+            if ( successfulAttrs.size() != 0 )
+            {
+                // verify that the size of the PropertyChangeEvent list matches
+                final List<PropertyChangeEvent> changeEvents = myListener.getChangeEvents();
+                if ( successfulAttrs.size() != changeEvents.size() )
                 {
-                    debug( "Attribute " + amxAttrName + " auto converted from " +
-                        valueIn.getClass().getName() + " to " + value.getClass().getName() );
+                    throw new IllegalStateException( "List<PropertyChangeEvent> size=" + changeEvents.size() +
+                        " does not match the number of Attributes, size = " + successfulAttrs.size() );
                 }
                 
-                // We accept only Strings or null values
-                if ( valueIn == null || (value instanceof String))
+                //
+                // provide details on old values for the caller. Note that config always returns
+                // type 'String' which no ability to map back to 'Integer', etc, so the MBeanInfo info
+                // of the MBean should not be using anything but String.
+                // 
+                final Map<String,PropertyChangeEvent> eventsMap = makePropertyChangeEventMap( changeEvents );
+                final Map<String, String> attrsS = JMXUtil.attributeListToStringMap( successfulAttrs );
+                
+                // supply all the old values to caller using the AMX attribute name
+                for( final String amxAttrName : attrsS.keySet() )
                 {
-                    xmlAttrs.put( xmlName, (String)value);
-                }
-                else
-                {
-                    debug( "Attribute " + amxAttrName + "<=>" + xmlName +
-                        " is of class " + ((value == null) ? null : value.getClass().getName()) );
+                    final PropertyChangeEvent changeEvent = eventsMap.get( mNameMappingHelper.getXMLName( amxAttrName ) );
+                    oldValues.put( amxAttrName, changeEvent.getOldValue() );
                 }
             }
-            else
-            {
-                debug( "WARNING: setAttributes(): no xmlName match found for AMX attribute: " + amxAttrName );
-            }
-        }
-        
-        final Map<ConfigBean, Map<String, String>> changes = new HashMap<ConfigBean, Map<String, String>>();
-        changes.put( mConfigBean, xmlAttrs );
-        
-        debug( "DelegateToConfigBeanDelegate.setAttributes(): " + attrsIn.size() + " attributes: {" +
-            CollectionUtil.toString(amxAttrs.keySet()) + "} mapped to xml names {" + CollectionUtil.toString(xmlAttrs.keySet()) + "}");
-        
-        final MyTransactionListener  myListener = new MyTransactionListener( mConfigBean );
-        Transactions.get().addTransactionsListener(myListener);
-            
-        // results should contain only those that succeeded which will be all or none
-        // depending on whether the transaction worked or not
-        final AttributeList successfulAttrs = new AttributeList();
-        try
-        {
-            ConfigSupport.apply( changes );
-            // use 'attrsIn' vs 'attrs' in case not all values are 'String'
-            successfulAttrs.addAll( attrsIn );
-        }
-        catch( final TransactionFailure tf )
-        {
-            // empty results -- no Exception should be thrown per JMX spec
-            debug( ExceptionUtil.toString(tf) );
-        }
-        finally
-        {
-            Transactions.get().waitForDrain();
-            Transactions.get().removeTransactionsListener(myListener);
-        }
-        
-        if ( successfulAttrs.size() != 0 )
-        {
-            // verify that the size of the PropertyChangeEvent list matches
-            final List<PropertyChangeEvent> changeEvents = myListener.getChangeEvents();
-            if ( successfulAttrs.size() != changeEvents.size() )
-            {
-                throw new IllegalStateException( "List<PropertyChangeEvent> size=" + changeEvents.size() +
-                    " does not match the number of Attributes, size = " + successfulAttrs.size() );
-            }
-            
-            //
-            // provide details on old values for the caller. Note that config always returns
-            // type 'String' which no ability to map back to 'Integer', etc, so the MBeanInfo info
-            // of the MBean should not be using anything but String.
-            // 
-            final Map<String,PropertyChangeEvent> eventsMap = makePropertyChangeEventMap( changeEvents );
-            final Map<String, String> attrsS = JMXUtil.attributeListToStringMap( successfulAttrs );
-            
-            // supply all the old values to caller using the AMX attribute name
-            for( final String amxAttrName : attrsS.keySet() )
-            {
-                final PropertyChangeEvent changeEvent = eventsMap.get( getXMLName( amxAttrName ) );
-                oldValues.put( amxAttrName, changeEvent.getOldValue() );
-            }
+            */
         }
     
 		return successfulAttrs;
-	}
-    
-		private void
-	delegateFailed( final Throwable t )
-	{
-		if ( getOwner() != null )
-		{
-			getOwner().delegateFailed( t );
-		}
-	}
-
-	/**
-	 */
-		public final Object
-	invoke(
-		String 		operationName,
-		Object[]	args,
-		String[]	types )
-	{
-        throw new RuntimeException( "invoke() not yet implemented" );
 	}
 }
 

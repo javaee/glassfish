@@ -84,15 +84,4 @@ public final class DummyDelegate extends DelegateBase
 	{
 		return null;
 	}
-
-	/**
-	 */
-		public final Object
-	invoke(
-		String 		operationName,
-		Object[]	args,
-		String[]	types )
-	{
-		return null;
-	}
 }

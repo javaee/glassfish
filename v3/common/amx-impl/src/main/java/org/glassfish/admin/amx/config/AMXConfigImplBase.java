@@ -51,6 +51,7 @@ import org.glassfish.admin.amx.mbean.Delegate;
 import org.glassfish.admin.amx.util.AMXConfigInfoResolver;
 import org.glassfish.admin.amx.util.SingletonEnforcer;
 import org.glassfish.admin.amx.util.UnregistrationListener;
+import org.glassfish.admin.amx.util.Issues;
 import org.jvnet.hk2.config.ConfigBean;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.ConfigSupport;
@@ -94,6 +95,9 @@ public class AMXConfigImplBase extends AMXImplBase
         final Class<? extends ConfigBeanProxy> intf = cb.getProxyType();
         final Package pkg = intf.getPackage();
         String result = intf.getName().substring( pkg.getName().length() + 1, intf.getName().length() );
+        
+        // how to do this?
+        Issues.getAMXIssues().notDone( "getTypeString: how to get the XML element name from the ConfigBean" );
 
         return result;
     }
@@ -488,87 +492,9 @@ public class AMXConfigImplBase extends AMXImplBase
         
         return m;
     }
-        
-    /*
-        protected ObjectName
-   createAMXConfig(
-        final String         j2eeType,
-        Map<String,Object>   params )
-        throws ClassNotFoundException, TransactionFailure
-   {
-        final Class<? extends AMXConfig>  returnType = null;
-        final AMXCreateInfo amxCreateInfo = returnType.getAnnotation( AMXCreateInfo.class );
-        if ( amxCreateInfo == null )
-        {
-            // might or might not be a problem
-        }
-        
-        final Map<String,String> properties = extractProperties( params, PropertiesAccess.PROPERTY_PREFIX);
-        final Map<String,String> systemProperties = extractProperties( params, SystemPropertiesAccess.SYSTEM_PROPERTY_PREFIX);
-        
-        final String[] paramNames = amxCreateInfo.paramNames();
-        cdebug( "createConfig:  paramNames = {" + StringUtil.toString(paramNames) + "}" );
-        rejectBadAttrs( params );
-
-        final ContainedTypeInfo   subInfo = new ContainedTypeInfo( getConfigBean() );
-        final Class<? extends ConfigBeanProxy>  newItemClass = subInfo.getConfigBeanProxyClassFor(j2eeType);
-        if ( newItemClass == null )
-        {
-            throw new IllegalArgumentException( "Can't find class for j2eeType " + j2eeType );
-        }
-        final AMXConfigInfoResolver resolver = subInfo.getAMXConfigInfoResolverFor( j2eeType );
-        
-        // check for illegal use of properties on configs that don't have them
-        if ( properties.keySet().size() != 0 && ! resolver.supportsProperties() )
-        {
-            throw new IllegalArgumentException(
-                "Properties specified, but not supported by " + resolver.amxInterface().getName() );
-        }
-        // check for illegal use of system properties on configs that don't have them
-        if ( systemProperties.keySet().size() != 0 && ! resolver.supportsSystemProperties()  )
-        {
-            throw new IllegalArgumentException(
-                "Properties specified, but not supported by " + resolver.amxInterface().getName() );
-        }
-
-        ConfigBean newConfigBean = null;
-        try
-        {
-            newConfigBean = ConfigSupport.createAndSet( getConfigBean(), newItemClass, params);
-        }
-        catch( Throwable t )
-        {
-            cdebug( ExceptionUtil.toString(t) );
-        }
-
-        final AMXConfigLoader  amxLoader = SingletonEnforcer.get( AMXConfigLoader.class );
-        amxLoader.handleConfigBean( newConfigBean, true );
-            
-        final ObjectName objectName = newConfigBean.getObjectName();
-       // sendConfigCreatedNotification( objectName );
-    cdebug( "NEW OBJECTNAME:  " + objectName);
-       
-       *
-        // TESTING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        if ( resolver.supportsProperties() && properties.keySet().size() == 0 )
-        {
-            properties.put( "test1", "value1" ); // TESTING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            properties.put( "test2", "value2" ); // TESTING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            properties.put( "test3", "value3" ); // TESTING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        }
-        // TESTING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        *
-        
-        final AMXConfig newAMX = AMXConfig.class.cast( getProxyFactory().getProxy( objectName ) );
-        setAllProperties( newAMX, properties, systemProperties );
-    
-        return objectName;
-
-   }
-   */
 
         private void
-    checkPropertiesOK(
+    checkPropertiesSupported(
         final Class<? extends AMXConfig>  intf,
         final ConfigCreateArgSupport      argSpt )
     {
@@ -584,7 +510,7 @@ public class AMXConfigImplBase extends AMXImplBase
             ! SystemPropertiesAccess.class.isAssignableFrom( intf ) )
         {
             throw new IllegalArgumentException(
-                "Properties specified, but not supported by " + intf.getName() );
+                "System properties specified, but not supported by " + intf.getName() );
         }
     }
     
@@ -619,6 +545,17 @@ public class AMXConfigImplBase extends AMXImplBase
         return amxCreateInfo;
     }
     
+        private void
+    checkJ2EETypeMatches( final String j2eeType, final String operationName )
+    {
+        // Verify that the j2eeType matches the type expected from the operation name
+        final String altJ2EEType = XTypes.PREFIX + operationName.substring( CREATE_PREFIX.length(), operationName.length() );
+        if ( ! j2eeType.equals(altJ2EEType) )
+        {
+            throw new IllegalArgumentException( "checkJ2EETypeMatches: j2eeType " + j2eeType + " != " + altJ2EEType );
+        }
+    }
+    
         protected ObjectName
    createConfig(
         final String operationName,
@@ -639,16 +576,11 @@ public class AMXConfigImplBase extends AMXImplBase
         
         final Method m = getCreateMethod( operationName, types );
         final Class<? extends AMXConfig> returnType = (Class<? extends AMXConfig>)m.getReturnType();
-        checkPropertiesOK( returnType, argSpt );
+        checkPropertiesSupported( returnType, argSpt );
         
         final String j2eeType = Util.getJ2EEType( returnType );
+        checkJ2EETypeMatches( j2eeType, operationName );
         cdebug( "createConfig: j2eeType = " + j2eeType + ", return type = " + returnType.getName() );
-        // Verify that the j2eeType matches the type expected from the operation name
-        final String altJ2EEType = XTypes.PREFIX + operationName.substring( CREATE_PREFIX.length(), operationName.length() );
-        if ( ! j2eeType.equals(altJ2EEType) )
-        {
-            throw new IllegalArgumentException( "j2eeType " + j2eeType + " != " + altJ2EEType );
-        }
                         
         final AMXCreateInfo amxCreateInfo = getAMXCreateInfo( m, returnType, argSpt.numArgs() );
         final String[] paramNames = amxCreateInfo.paramNames();
@@ -661,6 +593,7 @@ public class AMXConfigImplBase extends AMXImplBase
         {
             throw new IllegalArgumentException( "Can't find class for j2eeType " + j2eeType );
         }
+        
         final AMXConfigInfoResolver resolver = subInfo.getAMXConfigInfoResolverFor( j2eeType );
         if ( resolver.amxInterface() != returnType )
         {
@@ -679,12 +612,13 @@ public class AMXConfigImplBase extends AMXImplBase
             throw new RuntimeException( t );
         }
 
+        //
+        // Force a synchronous processing of the new ConfigBean into an AMX MBean
+        //
         final AMXConfigLoader  amxLoader = SingletonEnforcer.get( AMXConfigLoader.class );
         amxLoader.handleConfigBean( newConfigBean, true );
-            
         final ObjectName objectName = newConfigBean.getObjectName();
-       // sendConfigCreatedNotification( objectName );
-    cdebug( "NEW OBJECTNAME:  " + objectName);
+        cdebug( "NEW OBJECTNAME:  " + objectName);
        
        /*
         // TESTING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -697,75 +631,17 @@ public class AMXConfigImplBase extends AMXImplBase
         // TESTING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         */
         
+        //
+        // Set the properties and system properties.  Ideally, this should be part of the original
+        // transaction, but doing so would require creating sub-elements of the newly-created element,
+        // an undertaking that is more involved.
+        //
         final AMXConfig newAMX = AMXConfig.class.cast( getProxyFactory().getProxy( objectName ) );
         setAllProperties( newAMX, argSpt.getProperties(), argSpt.getSystemProperties() );
     
         return objectName;
    }
 
-/*
-
-This is no good--it introduces dependencies on specific types
-    private static final class AddProperties extends ConfigSupport.TransactionCallBack<WriteableView>
-    {
-        private final Map<String,String> mProperties;
-        private final Map<String,String> mSystemProperties;
-        private final Class<? extends ConfigBeanProxy> mIntf;
-        
-        public AddProperties(
-            final Class<? extends ConfigBeanProxy> intf,
-            final Map<String,String> properties, 
-            final Map<String,String> systemProperties )
-        {
-            mIntf = intf;
-            mProperties = properties;
-            mSystemProperties = systemProperties;
-        }
-    
-       public void performOn(WriteableView view) throws TransactionFailure
-       {
-            if ( mProperties.size() != 0 )
-            {
-                try {
-                    final Method m = param.getProxyType().getMethod( "getProperty");
-                    final List<Property> props = TypeCast.asList( m.invoke( view.getProxy(mIntf)) );
-
-                    for( final String key : mProperties )
-                    {
-                        final Property prop = view.allocateProxy(Property.class);
-                        prop.setName( key );
-                        prop.setValue( mProperties.get(key) );
-                        props.add( prop );
-                    }
-                }
-                catch(Exception e)
-                {
-                    throw new TransactionFailure("Cannot add property to listener", e);
-                }
-            }
-            
-            if ( mSystemProperties.size() != 0 )
-            {
-                try {
-                    final Method m = param.getProxyType().getMethod( "getSystemProperty");
-                    final List<SytemProperty> props = TypeCast.asList( m.invoke( view.getProxy(mIntf)) );
-
-                    for( final String key : mSystemProperties )
-                    {
-                        final SystemProperty prop = view.allocateProxy(SystemProperty.class);
-                        prop.setName( key );
-                        prop.setValue( mSystemProperties.get(key) );
-                        props.add( prop );
-                    }
-                }
-                catch(Exception e)
-                {
-                    throw new TransactionFailure("Cannot add property to listener", e);
-                }
-            }
-       }
-    }
-*/
     
     /**
         This should be done in one transaction...
@@ -1109,7 +985,7 @@ cdebug( "removeConfig: by  j2eeType + name" );
         private synchronized void
     initNames()
     {
-        if ( ! _namesInited ) synchronized(this)
+        if ( ! _namesInited )
         {
             final DelegateToConfigBeanDelegate delegate = getConfigDelegate();
             final String[] attrNames = getAttributeNames();
