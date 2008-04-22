@@ -47,7 +47,7 @@
                 if(result == true) {
                         if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'))
                             submitAndDisable(this, '$resource{i18n.button.Processing}');
-                            alert(' after guiValidate, return true');
+                            #alert(' after guiValidate, return true');
                             return true;
                         }
                 }  
