@@ -28,7 +28,6 @@ import com.sun.grizzly.http.DefaultProcessorTask;
 import com.sun.grizzly.http.HttpWorkerThread;
 import com.sun.grizzly.tcp.Adapter;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,11 +44,8 @@ import org.glassfish.api.deployment.ApplicationContainer;
  * @author Alexey Stashok
  */
 public class ContextRootMapper {
-    public final static int MIN_CONTEXT_ROOT_READ_BYTES = 5;
-
     private final static String ROOT = "/";
 
-    
     private GrizzlyEmbeddedHttp grizzlyEmbeddedHttp;
 
     /**
@@ -92,8 +88,8 @@ public class ContextRootMapper {
      * proper ProtocolFilter, and if available, proper Adapter.
      * @return true if the ProtocolFilter was properly set.
      */    
-    public boolean map(GlassfishProtocolChain protocolChain,
-            ByteBuffer byteBuffer, List<ProtocolFilter> defaultProtocolFilters,
+    public boolean map(String contextRoot, GlassfishProtocolChain protocolChain,
+            List<ProtocolFilter> defaultProtocolFilters,
             ContextRootInfo fallbackContextRootInfo) throws IOException {
         //Now we are ready to inject our own ProcessorFilter, but first, we
         //must remove the previous one. The ProtocolChain are statefull, so
@@ -101,15 +97,13 @@ public class ContextRootMapper {
         //TODO: Add support for statefull ProtocolFilter
 
         if (logger.isLoggable(Level.FINE)) {
-            logger.fine("MAP (" + this + ") defaultProtocolFilters: " + 
+            logger.fine("MAP (" + this + ") contextRoot: " + contextRoot + 
+                    " defaultProtocolFilters: " + 
                     defaultProtocolFilters + 
                     " fallback: " + fallbackContextRootInfo + 
                     " CurrentMapState: " + contextRootInfoMap);
-
-            logger.fine(dump(byteBuffer));
         }
-                     
-        String contextRoot = parseContextRoot(byteBuffer);
+
         ContextRootInfo contextRootInfo = lookupContextRootInfo(contextRoot);
         
         Adapter adapter = null;
@@ -160,15 +154,6 @@ public class ContextRootMapper {
     }
     
     
-    /** 
-     * Extract the Context Root from the ByteBuffer.
-     */
-    private String parseContextRoot(ByteBuffer byteBuffer) throws IOException{
-        // TODO: Right now we work at the String level, we should work with bytes.
-        return ROOT + HttpUtils.findContextRoot(byteBuffer);
-    }
-    
-    
     /**
      * Return the Container associated with the current context-root, null
      * if not found. If the Adapter is found, bind it to the current 
@@ -185,19 +170,6 @@ public class ContextRootMapper {
     
     // -------------------------------------------------------------------- //
     
-    
-    /**
-     * Dump the ByteBuffer content. This is used only for debugging purpose.
-     */
-    private final static String dump(ByteBuffer byteBuffer){                   
-        ByteBuffer dd = byteBuffer.duplicate();
-        dd.flip();       
-        int length = dd.limit(); 
-        byte[] dump = new byte[length];
-        dd.get(dump,0,length);
-        return(new String(dump)); 
-    }
-
     
     /**
      * Bind to the current WorkerThread the proper instance of ProcessorTask. 

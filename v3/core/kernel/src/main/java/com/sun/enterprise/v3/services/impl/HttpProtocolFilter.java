@@ -25,41 +25,25 @@ package com.sun.enterprise.v3.services.impl;
 
 import com.sun.grizzly.Context;
 import com.sun.grizzly.ProtocolFilter;
-import com.sun.grizzly.http.HtmlHelper;
-import com.sun.grizzly.tcp.Adapter;
 import com.sun.grizzly.tcp.Request;
 import com.sun.grizzly.tcp.Response;
 import com.sun.grizzly.tcp.StaticResourcesAdapter;
-import com.sun.grizzly.util.ByteBufferInputStream;
-import com.sun.grizzly.util.OutputWriter;
 import com.sun.grizzly.util.WorkerThread;
 import com.sun.grizzly.util.buf.ByteChunk;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.nio.ByteBuffer;
-import java.util.logging.Level;
 
 /**
  * Specialized ProtocolFilter that properly configure the Http Adapter on the fly.
  * 
  * @author Jeanfrancois Arcand
  */
-public class HttpProtocolFilter implements ProtocolFilter {
-
-    
-    private GrizzlyEmbeddedHttp grizzlyEmbeddedHttp;
-    
-    
+public class HttpProtocolFilter extends AbstractHttpHandler 
+        implements ProtocolFilter {
     /**
      * The Grizzly's wrapped ProtocolFilter.
      */
     private final ProtocolFilter wrappedFilter;
-    
-    /**
-     *  Fallback context-root information
-     */
-    private ContextRootMapper.ContextRootInfo fallbackContextRootInfo;
-    
     
     private static byte[] errorBody =
             HttpUtils.getErrorPage("Glassfish/v3","HTTP Status 404");
@@ -89,44 +73,16 @@ public class HttpProtocolFilter implements ProtocolFilter {
     }
 
     
-    public boolean execute(Context ctx) throws IOException {
+    public boolean execute(Context context) throws IOException {
         WorkerThread thread = (WorkerThread)Thread.currentThread();
         ByteBuffer byteBuffer = thread.getByteBuffer();
 
-        try {
-            // Make sure we have enough bytes to parse context-root
-            if (byteBuffer.position() < ContextRootMapper.MIN_CONTEXT_ROOT_READ_BYTES) {
-                if (GrizzlyUtils.readToWorkerThreadBuffers(ctx.getSelectionKey(), 
-                        ByteBufferInputStream.getDefaultReadTimeout()) == -1) {
-                    ctx.setKeyRegistrationState(
-                        Context.KeyRegistrationState.CANCEL);
-                    return false;
-                }
-            }
-
-            boolean wasMap = grizzlyEmbeddedHttp.getContextRootMapper().map(
-                    (GlassfishProtocolChain) ctx.getProtocolChain(),
-                    byteBuffer, null,
-                    fallbackContextRootInfo);
-            if (!wasMap) {
-                //TODO: Some Application might not have Adapter. Might want to
-                //add a dummy one instead of sending a 404.
-                try {
-                    ByteBuffer bb = HtmlHelper.getErrorPage("Not Found", "HTTP/1.1 404 Not Found\n");
-                    OutputWriter.flushChannel
-                            (ctx.getSelectionKey().channel(),bb);
-                } catch (IOException ex){
-                    GrizzlyEmbeddedHttp.logger().log(Level.FINE, "Send Error failed", ex);
-                } finally {
-                    thread.getByteBuffer().clear();
-                }
-                return false;               
-            }
-        } catch (IOException ex) {
-            GrizzlyEmbeddedHttp.logger().fine(ex.getMessage());
+        boolean mappedOk = initializeHttpRequestProcessing(context, byteBuffer);
+        if (mappedOk) {
+            return wrappedFilter.execute(context);
         }
-
-        return wrappedFilter.execute(ctx);
+        
+        return false;
     }
 
     
@@ -135,13 +91,5 @@ public class HttpProtocolFilter implements ProtocolFilter {
      */
     public boolean postExecute(Context ctx) throws IOException {
         return wrappedFilter.postExecute(ctx);
-    }    
-    
-    public void setFallbackAdapter(Adapter adapter) {
-        fallbackContextRootInfo.setAdapter(adapter);
-    }
-    
-    public Adapter getFallbackAdapter() {
-        return fallbackContextRootInfo.getAdapter();
     }    
 }

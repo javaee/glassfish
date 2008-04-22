@@ -25,14 +25,16 @@ package com.sun.enterprise.v3.services.impl;
 
 import com.sun.grizzly.util.buf.Ascii;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.nio.ByteBuffer;
+import java.nio.channels.SelectionKey;
 
 /**
  * Utility class for parsing ByteBuffer
  * @author Jeanfrancois
  */
 public class HttpUtils {
+    private static final int MAX_CONTEXT_ROOT_LENGTH = 2048;
+    
     private final static String CSS =
         "H1 {font-family:Tahoma,Arial,sans-serif;color:white;background-color:#525D76;font-size:22px;} " +
         "H2 {font-family:Tahoma,Arial,sans-serif;color:white;background-color:#525D76;font-size:16px;} " +
@@ -43,6 +45,27 @@ public class HttpUtils {
         "A {color : black;}" +
         "HR {color : #525D76;}";
     
+    public static String readContextRoot(SelectionKey selectionKey,
+            ByteBuffer byteBuffer, int timeout) throws IOException {
+
+        int readBytes = -1;
+
+        do {
+            String contextRoot = findContextRoot(byteBuffer);
+            if (contextRoot == null) {
+                if (byteBuffer.position() > MAX_CONTEXT_ROOT_LENGTH ||
+                        (readBytes = GrizzlyUtils.readToWorkerThreadBuffers(selectionKey,
+                        timeout)) <= 0) {
+                    return null;
+                }
+            } else {
+                return contextRoot;
+            }
+            
+        } while (readBytes > 0);
+        return null;
+    }
+    
     /** 
      * Return the Context root of the request.
      */
@@ -50,12 +73,11 @@ public class HttpUtils {
         int curPosition = byteBuffer.position();
         int curLimit = byteBuffer.limit();
       
-        if (byteBuffer.position() == 0){
-            throw new MalformedURLException("Invalid state");
+        if (byteBuffer.position() == 0) {
+            return null;
         }
        
-        byteBuffer.position(0);
-        byteBuffer.limit(curPosition);
+        byteBuffer.flip();
         int state =0;
         int start =0;
         int end = 0;  
@@ -118,10 +140,10 @@ public class HttpUtils {
                         }
                         break;
                     default:
-                        throw new MalformedURLException("Unexpected state during URL parsing");
+                        return null;
                 }
             }
-            throw new MalformedURLException("Invalid request");
+            return null;
         } finally {     
             byteBuffer.limit(curLimit);
             byteBuffer.position(curPosition);                               

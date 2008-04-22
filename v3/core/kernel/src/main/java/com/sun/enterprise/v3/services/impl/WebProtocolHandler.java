@@ -26,14 +26,10 @@ package com.sun.enterprise.v3.services.impl;
 import com.sun.grizzly.Context;
 import com.sun.grizzly.ProtocolFilter;
 import com.sun.grizzly.http.DefaultProtocolFilter;
-import com.sun.grizzly.http.HtmlHelper;
 import com.sun.grizzly.portunif.PUProtocolRequest;
 import com.sun.grizzly.portunif.ProtocolHandler;
 import com.sun.grizzly.standalone.StaticStreamAlgorithm;
-import com.sun.grizzly.tcp.Adapter;
 import com.sun.grizzly.tcp.StaticResourcesAdapter;
-import com.sun.grizzly.util.ByteBufferInputStream;
-import com.sun.grizzly.util.OutputWriter;
 import com.sun.grizzly.util.WorkerThread;
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -41,8 +37,6 @@ import java.nio.channels.SelectionKey;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 
 
@@ -58,8 +52,8 @@ import java.util.logging.Logger;
  * TODO: Make it work dynamically like MInnow, allocating Service on the fly.
  * @author Jeanfrancois Arcand
  */
-public class WebProtocolHandler implements ProtocolHandler {
-    
+public class WebProtocolHandler extends AbstractHttpHandler 
+        implements ProtocolHandler {
     public enum Mode {
         HTTP, HTTPS, HTTP_HTTPS, SIP, SIP_TLS;
     }
@@ -74,26 +68,6 @@ public class WebProtocolHandler implements ProtocolHandler {
     private Mode mode;
     
     
-    private GrizzlyEmbeddedHttp grizzlyEmbeddedHttp;
-
-    
-    /** 
-     * The number of default ProcessorFilter a ProtocolChain contains.
-     */
-    private volatile List<ProtocolFilter> defaultProtocolFilters;
-    
-    
-    /**
-     *  Fallback context-root information
-     */
-    private ContextRootMapper.ContextRootInfo fallbackContextRootInfo;
-    
-    
-    /**
-     * Logger
-     */
-    private Logger logger;
-    
     // --------------------------------------------------------------------//
     
     
@@ -105,7 +79,6 @@ public class WebProtocolHandler implements ProtocolHandler {
     public WebProtocolHandler(Mode mode, GrizzlyEmbeddedHttp grizzlyEmbeddedHttp) {
         this.mode = mode;
         this.grizzlyEmbeddedHttp = grizzlyEmbeddedHttp;
-        logger = GrizzlyEmbeddedHttp.logger();
     }
 
     
@@ -120,46 +93,14 @@ public class WebProtocolHandler implements ProtocolHandler {
     public boolean handle(Context context, PUProtocolRequest protocolRequest) 
             throws IOException {
         
-        boolean mappedOk = false;
         initDefaultHttpArtifactsIfRequired();
         
-        try {
-            // Make sure we have enough bytes to parse context-root
-            if (protocolRequest.getByteBuffer().position() < 
-                    ContextRootMapper.MIN_CONTEXT_ROOT_READ_BYTES) {
-                if (GrizzlyUtils.readToWorkerThreadBuffers(context.getSelectionKey(), 
-                        ByteBufferInputStream.getDefaultReadTimeout()) == -1) {
-                        context.setKeyRegistrationState(
-                            Context.KeyRegistrationState.CANCEL);
-                        return false;
-                }
-            }
+        ByteBuffer byteBuffer = protocolRequest.getByteBuffer();
 
-            mappedOk = grizzlyEmbeddedHttp.getContextRootMapper().map(
-                    (GlassfishProtocolChain)context.getProtocolChain(),
-                    protocolRequest.getByteBuffer(), defaultProtocolFilters, 
-                    fallbackContextRootInfo);
-            if (!mappedOk){
-                //TODO: Some Application might not have Adapter. Might want to
-                //add a dummy one instead of sending a 404.
-                 try {
-                    ByteBuffer bb = HtmlHelper.getErrorPage("Not Found", "HTTP/1.1 404 Not Found\n");
-                    OutputWriter.flushChannel(protocolRequest.getChannel(), bb);
-                } catch (IOException ex){
-                    if (logger.isLoggable(Level.FINE)){
-                        logger.log(Level.FINE, "Send Error failed", ex);
-                    }
-                } finally{
-                    ((WorkerThread)Thread.currentThread()).getByteBuffer().clear();
-                }
-            }
-        } catch (IOException ex){
-            GrizzlyEmbeddedHttp.logger().log(Level.FINE,"WebProtocolHandler",ex);
-            mappedOk = false;
-        }
-        
+        boolean mappedOk = initializeHttpRequestProcessing(context, byteBuffer);
         // Grizzly will invoke take care of invoking the Container.
-        protocolRequest.setExecuteFilterChain(mappedOk);                
+        protocolRequest.setExecuteFilterChain(mappedOk);
+        
         return mappedOk;
     }
         
@@ -183,34 +124,6 @@ public class WebProtocolHandler implements ProtocolHandler {
      */
     public boolean expireKey(SelectionKey key){
         return true;
-    }
-
-    
-    public List<ProtocolFilter> getDefaultProtocolFilters() {
-        return defaultProtocolFilters;
-    }
-
-    
-    public void setDefaultProtocolFilters(List<ProtocolFilter> defaultProtocolFilters) {
-        this.defaultProtocolFilters = defaultProtocolFilters;
-    }
-
-    
-    public List<ProtocolFilter> getFallbackProtocolFilters() {
-        return fallbackContextRootInfo.getProtocolFilters();
-    }
-
-    
-    public void setFallbackProtocolFilters(List<ProtocolFilter> fallbackProtocolFilters) {
-        fallbackContextRootInfo.setProtocolFilters(fallbackProtocolFilters);
-    }
-
-    public void setFallbackAdapter(Adapter adapter) {
-        fallbackContextRootInfo.setAdapter(adapter);
-    }
-    
-    public Adapter getFallbackAdapter() {
-        return fallbackContextRootInfo.getAdapter();
     }
     
     private void initDefaultHttpArtifactsIfRequired() {
@@ -239,6 +152,11 @@ public class WebProtocolHandler implements ProtocolHandler {
      * @return <code>ByteBuffer</code>
      */    
     public ByteBuffer getByteBuffer(){
+        WorkerThread workerThread = (WorkerThread) Thread.currentThread();
+        if (workerThread.getSSLEngine() != null) {
+            return workerThread.getInputBB();
+        }
+        
         return null;
     }
 }

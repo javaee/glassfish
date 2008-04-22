@@ -28,6 +28,7 @@ import com.sun.grizzly.util.ThreadAttachment;
 import com.sun.grizzly.util.Utils;
 import com.sun.grizzly.util.WorkerThread;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import javax.net.ssl.SSLEngine;
 
@@ -59,8 +60,23 @@ public class GrizzlyUtils {
             return Utils.readWithTemporarySelector(key.channel(), 
                     thread.getByteBuffer(), timeout);
         } else {
-            return SSLUtils.doSecureRead(key.channel(), sslEngine, 
-                    thread.getByteBuffer(), thread.getInputBB());
+            // if ssl - try to unwrap secured buffer first
+            ByteBuffer byteBuffer = thread.getByteBuffer();
+            ByteBuffer securedBuffer = thread.getInputBB();
+            
+            if (securedBuffer.position() > 0) {
+                int initialPosition = byteBuffer.position();
+                byteBuffer = 
+                        SSLUtils.unwrapAll(byteBuffer, securedBuffer, sslEngine);
+                int producedBytes = byteBuffer.position() - initialPosition;
+                if (producedBytes > 0) {
+                    return producedBytes;
+                }
+            }
+            
+            // if no bytes were unwrapped - read more
+            return SSLUtils.doSecureRead(key.channel(), sslEngine, byteBuffer,
+                    securedBuffer);
         }
     }
 }
