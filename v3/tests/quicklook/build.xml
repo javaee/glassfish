@@ -218,7 +218,7 @@
     <!-- Generate the TestNG report -->
     <target name="report" depends="initprops">        
         <echo message="Generating report at ${test.report}"/>
-        <junitreport todir="${test.report}">
+        <junitreport todir="${basedir}/test-output-hk2">
             <fileset dir=".">
                 <include name="**/test-output/**/*.xml"/>
                 <!--<exclude name="**/testng-failed.xml"/>-->
@@ -230,7 +230,7 @@
     
     <target name="initprops">
         <property name="build.class.dir" value="${basedir}/classes/test"/>
-        <property name="test.report" value="${basedir}/test-output-hk2"/>
+        <property name="test.report" value="${basedir}/test-output"/>
         <mkdir dir="${test.report}"/>
         <path id="run.testng.classpath">
             <!-- fileset dir="${basedir}/lib">
