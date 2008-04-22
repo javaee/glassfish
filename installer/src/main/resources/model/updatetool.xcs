@@ -63,12 +63,6 @@
              <desc xml:lang="en-US">Allow check for available updates</desc>
            </info>
         </prop> 
-        <prop oor:name="ALLOW_DATA_COLLECTION" oor:type="xs:boolean">
-           <value>true</value>
-           <info>
-             <desc xml:lang="en-US">Allow anonymous usage data collection</desc>
-           </info>
-        </prop>  
         <prop oor:name="PROXY_HOST" oor:type="xs:string">
            <value></value>
            <info>

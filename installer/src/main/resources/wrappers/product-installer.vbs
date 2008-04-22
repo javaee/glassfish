@@ -104,7 +104,7 @@ if INSTALLABLES <> "" Then
     ENGINE_OPS=ENGINE_OPS+" -i " + chr(34) + INSTALLABLES + chr(34)
 end if
 
-wscript.echo "wscript //nologo " & chr(34) & ENGINE_DIR & "\bin\Engine-wrapper.vbs" & chr(34) & " " &  ENGINE_OPS
+'wscript.echo "wscript //nologo " & chr(34) & ENGINE_DIR & "\bin\Engine-wrapper.vbs" & chr(34) & " " &  ENGINE_OPS
 
 wShell.exec "wscript //nologo " & chr(34) & ENGINE_DIR & "\bin\Engine-wrapper.vbs" & chr(34) & " " &  ENGINE_OPS
 
@@ -252,7 +252,7 @@ end select
 Loop
 
 
-WScript.Echo "Welcome to GlassFish V3 installation based on openInstaller.  Press OK to begin."
+'WScript.Echo "Welcome to GlassFish V3 installation based on openInstaller.  Press OK to begin."
 
 ' overwrite check if user specify javahome to use
 if JAVA_HOME = "" Then

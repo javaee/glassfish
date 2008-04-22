@@ -76,25 +76,24 @@
             <apt:visual>
                 <apt:textField apt:toolTip="Enter Proxy Port if required"/>
             </apt:visual>
-           </apt:property>          
+           </apt:property> 
+         <apt:property apt:name="UPDATE_TOOL_PRIVACY_NOTICE"
+         apt:dataPath=""
+         apt:type="xs:string">
+         <apt:prop-value>$UPDATE_TOOL_PRIVACY_NOTICE</apt:prop-value>
+         <apt:visual>
+            <apt:htmlPanel/>
+         </apt:visual>
+        </apt:property>         
           <apt:property apt:name="ALLOW_UPDATE_CHECK"
               apt:label=""
               apt:dataPath="Configuration.ALLOW_UPDATE_CHECK"
               apt:type="xs:boolean">
             <apt:prop-value>true</apt:prop-value>
             <apt:visual>
-                <apt:checkBox apt:labelPost="Allow Checks for Available Updates"  apt:toolTip="" />
+                <apt:checkBox apt:labelPost="Enable Updatecenter Client" apt:toolTip="" />
             </apt:visual>
-           </apt:property>
-          <apt:property apt:name="ALLOW_DATA_COLLECTION"
-              apt:label=""
-              apt:dataPath="Configuration.ALLOW_DATA_COLLECTION"
-              apt:type="xs:boolean">
-            <apt:prop-value>true</apt:prop-value>
-            <apt:visual>
-                <apt:checkBox apt:labelPost="Allow Anonymous Usage Data Collection" apt:toolTip="" />
-            </apt:visual>
-           </apt:property>            
+           </apt:property>                   
         </apt:section>        
       <apt:scriptHandler apt:scriptLanguage="beanshell">
         <apt:scriptCode>

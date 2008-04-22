@@ -104,7 +104,6 @@ public ResultReport configure (final PropertySheet aSheet, final boolean aValida
                 installDir,
                 aSheet.getProperty("Configuration.BOOTSTRAP_UPDATETOOL"),
                 aSheet.getProperty("Configuration.ALLOW_UPDATE_CHECK"),
-                aSheet.getProperty("Configuration.ALLOW_DATA_COLLECTION"),
                 aSheet.getProperty("Configuration.PROXY_HOST"),
                 aSheet.getProperty("Configuration.PROXY_PORT"));
 	    }
@@ -235,7 +234,7 @@ void configureGlassfish(String installDir, String adminPort, String httpPort) th
 }
 
 void configureUpdatetool(String installDir, String bootstrap, String allowUpdateCheck,
-    String allowDataCollection, String proxyHost, String proxyPort) throws Exception {
+    String proxyHost, String proxyPort) throws Exception {
 
     
     boolean isWindows = false;
@@ -278,7 +277,7 @@ void configureUpdatetool(String installDir, String bootstrap, String allowUpdate
             writer.write("install.pkg=true\n");
             writer.write("install.updatetool=true\n");
             writer.write("optin.update.notification=" + allowUpdateCheck + "\n");
-            writer.write("optin.usage.reporting=" + allowDataCollection + "\n");
+            writer.write("optin.usage.reporting=" + allowUpdateCheck + "\n");
             if (proxyURL != null) {
                 writer.write("proxy.URL=" + proxyURL + "\n");
             }

@@ -153,12 +153,7 @@
          <echo message="Creating updatetool bootstrap zip file"/>
 
          <copy tofile="${tmp.dir}/updatetool/lib/ucbootstrap.jar"
-             file="${maven.repo.local}/com/sun/pkg/client/ucbootstrap/0.0.0.2/ucbootstrap-0.0.0.2.jar"/>
-
-         <copy todir="${tmp.dir}/updatetool/bin">                        
-             <fileset dir="${resources.dir}/configurators" excludes=".svn"/>
-         </copy>   
-
+             file="${maven.repo.local}/com/sun/pkg/client/ucbootstrap/0.0.0.2/ucbootstrap-0.0.0.2.jar"/>          
          <zip destfile="${stage.dir}/product/packages/updatetool.zip"
              basedir="${tmp.dir}" />
 
