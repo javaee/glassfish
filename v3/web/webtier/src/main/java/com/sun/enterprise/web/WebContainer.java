@@ -1324,8 +1324,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         
         configureHostPortNumbers(vs, httpListeners);
         vs.configureCatalinaProperties();
-        // TODO
-        //vs.configureAuthRealm(securityService);
+        vs.configureAuthRealm(securityService);
     }
         
     /**
