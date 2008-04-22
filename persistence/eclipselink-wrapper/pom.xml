@@ -142,19 +142,19 @@
         <dependency>
           <groupId>org.eclipse.persistence</groupId>
           <artifactId>eclipselink.core</artifactId>
-          <version>1.0-M6</version>
+          <version>1.0-M6.1</version>
           <optional>true</optional>
         </dependency>
         <dependency>
           <groupId>org.eclipse.persistence</groupId>
           <artifactId>eclipselink.jpa</artifactId>
-          <version>1.0-M6</version>
+          <version>1.0-M6.1</version>
           <optional>true</optional>
         </dependency>
         <dependency>
           <groupId>org.eclipse.persistence</groupId>
           <artifactId>eclipselink.extension.oracle</artifactId>
-          <version>1.0-M6</version>
+          <version>1.0-M6.1</version>
           <optional>true</optional>
         </dependency>
     </dependencies>
