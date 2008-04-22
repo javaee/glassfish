@@ -64,15 +64,7 @@
 
 		<sun:body onLoad="javascript: 
                      setVisible('#{appType}');
-                     disableComponent('#{dirPathId}', 'text');
-                     //disableComponent('form:title:sheet1:section1:prop1:dirPath', 'text');
-                     synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')
-                if(getSelectedValue('uploadRdBtn')=='serverSide'){ 
-                        enableDOMComponent('#{dirPathId}'); 
-                        enableBtnComponent('#{dirSelectBtnId}'); 
-                        enableBtnComponent('#{filSelectBtnId}');
-                        disableComponent('#{fileuploadId}', 'file'); 
-                        }"
+                     synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')"
                         
                         >
 	    	<sun:form id="form"> 
