@@ -87,7 +87,7 @@
 
         <jar jarfile="${stage.dir}/install/lib/providers/providers.jar"
             basedir="${tmp.dir}"
-            manifest="${tmp.dir}/meta-inf/manifest.mf">
+            manifest="${tmp.dir}/META-INF/MANIFEST.MF">
         </jar>
 
         <delete dir="${tmp.dir}" />
