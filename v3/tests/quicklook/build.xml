@@ -230,7 +230,7 @@
     
     <target name="initprops">
         <property name="build.class.dir" value="${basedir}/classes/test"/>
-        <property name="test.report" value="${basedir}/test-output"/>
+        <property name="test.report" value="${basedir}/test-output-hk2"/>
         <mkdir dir="${test.report}"/>
         <path id="run.testng.classpath">
             <!-- fileset dir="${basedir}/lib">
