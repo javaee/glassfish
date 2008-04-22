@@ -35,7 +35,7 @@
  holder.
 -->
 
-<project name="GlassFish-V3-CommunityTests" default="default" basedir=".">
+<project name="GlassFish-V3-QuickLook" default="default" basedir=".">
     <property file="build.properties"/>
      <property file="${basedir}/gfproject/derby.properties"/>
      <import file="${basedir}/gfproject/db-targets.xml"/>
@@ -53,8 +53,16 @@
         <antcall target="runtest"/>
         <antcall target="undeploy"/>
         <antcall target="stop-server"/>
-        <antcall target="stopDerby"/>
+	<move file="test-output" tofile="test-output-hk2" failonerror="false" overwrite="true"/>
         <!-- antcall target="report"/ -->        
+        <antcall target="start-server-felix"/>
+        <antcall target="build"/>
+        <antcall target="deploy"/>
+        <antcall target="runtest"/>
+        <antcall target="undeploy"/>
+        <antcall target="stop-server"/>
+        <antcall target="stopDerby"/>
+	<move file="test-output" tofile="test-output-felix" failonerror="false" overwrite="true"/>
         <record name="allrun.output" action="stop"/>
     </target>
         
@@ -299,6 +307,40 @@
 <target name="start-server-unix" if="isUnix">
     <exec executable="${glassfish.home}/bin/asadmin">        
         <!-- env key="GlassFish_Platform" value="Felix"/ -->
+        <arg value="start-domain"/>
+    </exec>
+</target>
+
+<target name="start-server-felix" depends="setOSConditions" if="v3">
+  
+    <echo>+-----------------------------+</echo>
+    <echo>|                             |</echo>
+    <echo>| S T A R T I N G   GLASSFISH |</echo>
+    <echo>|       in Felix mode         |</echo>
+    <echo>|                             |</echo>
+    <echo>+-----------------------------+</echo>
+   
+    <antcall target="start-server-felix-unix"/>
+    <antcall target="start-server-felix-windows"/>
+    <!-- GF takes longer than usual while starting Felix. Until we fix the
+         startup issue, let's introduce a delay.
+    -->
+    <echo message="Sleeping for 20 seconds while the server is starting"/>
+    <sleep seconds="20"/>
+</target>
+
+<target name="start-server-felix-windows" if="isWindows">
+    <exec executable="cmd" spawn="true">
+        <env key="GlassFish_Platform" value="Felix"/>
+        <arg value="/c"/>
+        <arg value="${glassfish.home}/bin/asadmin.bat"/>
+        <arg value="start-domain"/>
+    </exec>
+</target>
+
+<target name="start-server-felix-unix" if="isUnix">
+    <exec executable="${glassfish.home}/bin/asadmin">
+        <env key="GlassFish_Platform" value="Felix"/>
         <arg value="start-domain"/>
     </exec>
 </target>
