@@ -1,4 +1,4 @@
-require 'glassfish-10.0-SNAPSHOT.jar'
+require 'glassfish-@GLASSFISH_VERSION@.jar'
 
 module GlassFish
   import com.sun.enterprise.glassfish.bootstrap.ASMain

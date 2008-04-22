@@ -44,9 +44,9 @@
     <version>10.0-tp-2-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
-  
+
   <artifactId>gem</artifactId>
-  
+  <packaging>pom</packaging>   
   <name>Glassfish JRuby Gem distribution</name>
   <description>This module creates the jruby gem distribution image</description>
   
@@ -92,8 +92,9 @@
                   <phase>process-resources</phase>
                   <configuration>
                       <tasks>
-                          <copy file="glassfish_rails" todir="target/dependency/glassfish/bin"/>
-                          <copy file="glassfish.rb" todir="target/dependency/glassfish/modules"/>
+                          <filter token="GLASSFISH_VERSION" value="${project.version}"/>
+                          <copy file="glassfish_rails" todir="target/dependency/glassfish/bin" filtering="true"/>
+                          <copy file="glassfish.rb" todir="target/dependency/glassfish/modules" filtering="true"/>
                           <move file="target/dependency/glassfish/domains/domain1/config/domain.xml" toFile="target/dependency/glassfish/domains/domain1/config/domain.xml_ORIG"/>
                           <copy file="domain.xml" todir="target/dependency/glassfish/domains/domain1/config"/>
                       </tasks>
@@ -119,7 +120,7 @@
 
                 spec = Gem::Specification.new do |s| 
                   s.name = "glassfish"
-                  s.version = "0.1.2"
+                  s.version = "0.2.0"
                   s.author = "Vivek Pandey, Pramod Gopinath, Jerome Dochez"
                   s.email = "vivek.pandey@sun.com, pramod.gopinath@sun.com, jerome.dochez@sun.com"
                   s.homepage = "http://wiki.glassfish.java.net/Wiki.jsp?page=JRuby"
@@ -172,5 +173,24 @@
             <version>${project.version}</version>
         </dependency>
     </dependencies>
+
+    <repositories>
+        <repository>
+            <id>glassfish-repository</id>
+            <name>Java.net Repository for Glassfish</name>
+            <url>http://download.java.net/maven/glassfish</url>
+            <snapshots>
+                <updatePolicy>never</updatePolicy>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>glassfish-repository-wsinterop</id>
+            <name>Java.net Repository for Glassfish</name>
+            <url>http://maven.dyndns.org/glassfish/</url>
+            <snapshots>
+                <updatePolicy>never</updatePolicy>
+            </snapshots>
+        </repository>
+    </repositories>
 
 </project>
