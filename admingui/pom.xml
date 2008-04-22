@@ -103,7 +103,7 @@
         <dependency>
             <groupId>com.sun.woodstock</groupId>
             <artifactId>webui-jsf-suntheme</artifactId>
-            <version>4.2-SNAPSHOT</version>
+            <version>4.2-20080328.171010-2</version>
         </dependency>
         <dependency>
             <groupId>com.sun.woodstock</groupId>
@@ -170,7 +170,7 @@
     </dependencies>
     
     <properties>
-        <hk2.version>0.2</hk2.version>
+        <hk2.version>0.2.1</hk2.version>
         <glassfish.version>10.0-tp-2-SNAPSHOT</glassfish.version>
     </properties>
 </project>
