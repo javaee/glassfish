@@ -105,12 +105,23 @@
     </exec>
 </target>
 
+<target name="update-cfg-cache" depends="check-ips">
+    <echo message="Updating cfg_cache in local IPS image with ${REPO_URL}"/>
+    <available file="${image_cache}" property="cache.present"/>
+    <fail message="${image_cache} File NOT present, call create-local-image target first" unless="cache.present"/>
+    <echo file="${image_cache}" append="true">origin-for-windows-i386 = ${REPO_HOST}:10004${line.separator}</echo>
+    <echo file="${image_cache}" append="true">origin-for-sunos-i386 = ${REPO_HOST}:10003${line.separator}</echo>
+    <echo file="${image_cache}" append="true">origin-for-sunos-sparc = ${REPO_HOST}:10000${line.separator}</echo>
+    <echo file="${image_cache}" append="true">origin-for-linux-i386 = ${REPO_HOST}:10001${line.separator}</echo>
+    <echo file="${image_cache}" append="true">origin-for-darwin-universal = ${REPO_HOST}:10002${line.separator}</echo>
+</target>
+
 <target name="create-local-image" depends="check-ips"
     description="Create local IPS image using ${REPO_URL}">
     <echo message="Creating local IPS image for ${REPO_URL}"/>
     <mkdir dir="${image.dir}"/>
     <exec executable="pkg" failonerror="true">
-        <arg line="image-create -U -a sun.com=${REPO_URL} ${image.dir}" />
+        <arg line="image-create -U -a ${authority}=${REPO_URL} ${image.dir}" />
     </exec>
     <exec dir="${image.dir}" executable="pkg" failonerror="true">
         <arg line="refresh" />
