@@ -220,7 +220,7 @@
         <echo message="Generating report at ${test.report}"/>
         <junitreport todir="${basedir}/test-output-hk2">
             <fileset dir=".">
-                <include name="**/test-output/**/*.xml"/>
+                <include name="**/test-output-hk2/**/*.xml"/>
                 <!--<exclude name="**/testng-failed.xml"/>-->
             </fileset>
             <report format="noframes" todir="${test.report}"/>
