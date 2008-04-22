@@ -125,6 +125,7 @@ public class CLIRemoteCommand {
                         "UTF-8");
             }
 
+            HttpURLConnection urlConnection = null;
             try {
                 HttpConnectorAddress url = new HttpConnectorAddress(hostName, hostPort, secure);
                 logger.printDebugMessage("URI: " + uriString.toString());
@@ -132,7 +133,7 @@ public class CLIRemoteCommand {
                 logger.printDebugMessage("URL: " + url.toURL(uriString).toString());
                 url.setAuthenticationInfo(new AuthenticationInfo(user, password));
 
-                final HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection(uriString);
+                urlConnection = (HttpURLConnection) url.openConnection(uriString);
                 urlConnection.setRequestProperty("User-Agent", responseFormatType);
                 urlConnection.setRequestProperty(HttpConnectorAddress.AUTHORIZATION_KEY, url.getBasicAuthString());
                 urlConnection.connect();
@@ -140,12 +141,26 @@ public class CLIRemoteCommand {
                 InputStream in = urlConnection.getInputStream();
                 handleResponse(params, in, urlConnection.getResponseCode(),
                         userOut);
+            } catch(ConnectException ce) {
+                //this really means none was listening on the remote server end
+                //implementation note: ConnectException extends IOException and tells us more!
+                String msg = strings.get("ConnectException", hostName, hostPort);
+                throw new CommandException(msg, ce);
+            } catch (IOException e) {
+                String msg = null;
+                if (urlConnection != null) {
+                    int rc = urlConnection.getResponseCode();
+                    if (HttpURLConnection.HTTP_UNAUTHORIZED == rc) {
+                        msg = strings.get("InvalidCredentials", user);
+                    } else {
+                        msg = "Status: " + rc;
+                    }
+                } else {
+                    msg = "Unknown Error";
+                }
+                throw new CommandException(msg, e);                
             }
-            catch (IOException e) {
-                throw new CommandException("Cannot connect to host, is server up ?");
-            }
-        }
-        catch (CommandException e) {
+        } catch (CommandException e) {
             throw e;
         }
         catch (Exception e) {
