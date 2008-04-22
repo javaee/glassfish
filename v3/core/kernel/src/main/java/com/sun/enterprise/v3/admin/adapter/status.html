@@ -24,10 +24,10 @@ h4 {font-style:normal;font-size:.9em;color:#666;}
 #header, #footer {font-size:small;text-align:center;padding:0.3em 0;background:#4a5c6a;height:20px;color:#FFFFFF;font-weight:bold;}
 .progress {padding-left:130px;padding-top:10px;}
 </style>
-<meta http-equiv="refresh" content="5;url=javascript:window.location.reload(true);" />
+<meta http-equiv="refresh" content="5;url=status.html" />
 </head>
 
-<body>
+<body onLoad="document.getElementById('spin').src = 'http://download.java.net/glassfish/v3/admingui/asynch-1F.gif';">
     <div id="header"></div>
     <div class="container">
 	<div id="center" class="column">
@@ -39,7 +39,7 @@ h4 {font-style:normal;font-size:.9em;color:#666;}
 	    <!-- don't change the names -->
 	    <form id="form1" name="form1" method="post" action="%%%MYURL%%%">
 		<p><h2>Installation in progress...<br />
-		    <img class="progress" src="http://download.java.net/glassfish/v3/admingui/asynch-1F.gif" border="0" alt="status indicator image" align="center"></h2></p>
+		    <img id="spin" class="progress" src="http://download.java.net/glassfish/v3/admingui/asynch-1F.gif" border="0" alt="status indicator image" align="center"></h2></p>
 		<div id="fields">
 		    <p> <span class="subtitle">Current Status:</subtitle>
 			<small>%%%STATUS%%%</small></p>
