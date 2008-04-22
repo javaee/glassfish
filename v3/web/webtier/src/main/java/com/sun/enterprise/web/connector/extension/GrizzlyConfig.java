@@ -220,7 +220,10 @@ public class GrizzlyConfig implements MonitoringLevelListener{
         try{
             String onStr = domain + ":type=Selector,name=http" + port;
             ObjectName objectName = new ObjectName(onStr);
-            mBeanServer.invoke(objectName,methodToInvoke,objects,signature);
+            if (mBeanServer.isRegistered(objectName)) {
+                mBeanServer.invoke(objectName,methodToInvoke,objects,
+                                   signature);
+            }
         } catch ( Exception ex ){
             logger.log(Level.SEVERE, "Exception while invoking mebean server operation " + methodToInvoke, ex.getMessage());
             //throw new RuntimeException(ex);
