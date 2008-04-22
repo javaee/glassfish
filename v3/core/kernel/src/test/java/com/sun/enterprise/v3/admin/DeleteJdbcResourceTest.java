@@ -51,6 +51,7 @@ import java.util.Properties;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.jvnet.hk2.component.Habitat;
@@ -63,6 +64,7 @@ import org.jvnet.hk2.config.DomDocument;
  *
  * @author Jennifer
  */
+@Ignore
 public class DeleteJdbcResourceTest extends ConfigApiTest {
     Habitat habitat = Utils.instance.getHabitat(this);
     private Resources resources = habitat.getComponent(Resources.class);
