@@ -59,6 +59,7 @@
         <module>jaxb</module>
         <module>javadb</module>
         <module>grizzly-http</module>
+        <module>grizzly-optionals</module>
         <module>grizzly-jruby</module>        
         <module>apache-commons</module>
         <module>jmxremote_optional</module>

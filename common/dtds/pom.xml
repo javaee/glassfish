@@ -38,63 +38,87 @@
 --> 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.glassfish.web</groupId>
-    	<artifactId>web</artifactId>
+        <groupId>org.glassfish.common</groupId>
+        <artifactId>common</artifactId>
         <version>10.0-tp-2-SNAPSHOT</version>
     </parent>
-    <modelVersion>4.0.0</modelVersion>
-    <artifactId>webtier-all</artifactId>
+    <artifactId>dol</artifactId>
     <packaging>hk2-jar</packaging>
-    <name>Web Related Implementations for GlassFish</name>
+    <name>Deployment Object Library</name>
 
     <developers>
         <developer>
-            <id>swchan2</id>
-            <name>Shing Wai Chan</name>
-            <url>http://blogs.sun.com/swchan</url>
+            <id>hzhang</id>
+            <name>Hong Zhang</name>
+            <url>http://blogs.sun.com/misty</url>
+            <organization>Sun Microsystems, Inc.</organization>
+            <roles>
+                <role>lead</role>
+                <role>developer</role>
+            </roles>
+        </developer>
+        <developer>
+            <id>tjquinn</id>
+            <name>Tim Quinn</name>
+            <url>http://blogs.sun.com/quinn</url>
             <organization>Sun Microsystems, Inc.</organization>
             <roles>
                 <role>developer</role>
             </roles>
         </developer>
-    </developers>  
-
+        <developer>
+            <id>dochez</id>
+            <name>Jerome Dochez</name>
+            <url>http://blogs.sun.com/dochez</url>
+            <organization>Sun Microsystems, Inc.</organization>
+            <roles>
+                <role>developer</role>
+            </roles>
+        </developer>
+    </developers>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>com.sun.enterprise</groupId>
+                <artifactId>hk2-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+        <resources>
+            <resource>
+                <directory>src/main/java</directory>
+                <includes>
+                    <include>**/*.properties</include>
+                </includes>
+            </resource>
+        </resources>
+    </build>
     <dependencies>
         <dependency>
-            <groupId>org.glassfish.web</groupId>
-            <artifactId>webtier</artifactId>
+            <groupId>com.sun.enterprise</groupId>
+            <artifactId>hk2</artifactId>
+            <version>${hk2.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.javaee</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.glassfish.security</groupId>
-            <artifactId>websecurity</artifactId>
-            <version>${project.version}</version>
+            <groupId>org.glassfish.common</groupId>
+            <artifactId>common-util</artifactId>
+            <version>${project.parent.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.glassfish.web</groupId>
-            <artifactId>jstl-impl</artifactId>
-            <version>${project.version}</version>
+            <groupId>org.glassfish.common</groupId>
+            <artifactId>glassfish-api</artifactId>
+            <version>${project.parent.version}</version>
         </dependency>
-         <dependency>
-            <groupId>org.glassfish.web</groupId>
-            <artifactId>jsf-connector</artifactId>
-            <version>${project.version}</version>
+        <dependency>
+            <groupId>org.glassfish.common</groupId>
+            <artifactId>annotation-framework</artifactId>
+            <version>${pom.parent.version}</version>
         </dependency>
-         <dependency>
-            <groupId>org.glassfish.web</groupId>
-            <artifactId>web-cli</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-         <dependency>
-            <groupId>org.glassfish.admingui</groupId>
-            <artifactId>console-web-plugin</artifactId>
-	    <version>${admingui.version}</version>
-        </dependency>
-         <!--dependency>
-            <groupId>org.glassfish.web</groupId>
-            <artifactId>gf-web-connector</artifactId>
-            <version>${project.version}</version>
-        </dependency-->
     </dependencies>
 </project>

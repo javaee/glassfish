@@ -44,9 +44,9 @@
         <version>10.0-tp-2-SNAPSHOT</version>
     </parent>
     
-    <artifactId>admin-cli</artifactId>
+    <artifactId>cli-optional</artifactId>
     <packaging>hk2-jar</packaging>
-    <name>Admin CLI for v3</name>
+    <name>Optioanl Admin CLI commands</name>
     
     <developers>
         <developer>
@@ -117,41 +117,6 @@
                 </includes>
             </resource>
         </resources>
-        <plugins>
-            <plugin>
-                <groupId>com.sun.enterprise</groupId>
-                <artifactId>hk2-maven-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>com.sun.enterprise</groupId>
-                <artifactId>hk2-maven-plugin</artifactId>
-                <configuration>
-                    <configFiles>
-                        <configFile>src/main/resources/asadmin</configFile>
-                        <configFile>src/main/resources/asenv</configFile>
-                    </configFiles>
-                    <destDir>target/classes</destDir>
-                    <!-- optional: <forPlatform></forPlatform> -->
-                    <archive>
-                        <manifest>
-                            <mainClass>com.sun.enterprise.admin.cli.AsadminMain</mainClass> 
-                        </manifest>
-                        <manifestEntries>
-				<Class-Path>cli-framework-${project.version}.jar cli-optional-${project.version}.jar glassfish-${project.version}.jar server-mgmt-${project.version}.jar common-util-${project.version}.jar admin-util-${project.version}.jar launcher-${project.version}.jar universal-${project.version}.jar realms-${project.version}.jar backup-${project.version}.jar amx-api-${amx-api.version}.jar</Class-Path>
-                        </manifestEntries>
-
-                    </archive>
-                </configuration>
-                <executions>
-                    <execution>
-                        <phase>compile</phase>
-                        <goals>
-                            <goal>createscripts</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
     </build>
     <dependencies>
         <dependency>
@@ -160,13 +125,27 @@
             <version>${project.parent.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.glassfish.admin</groupId>
+            <artifactId>admin-cli</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>        <dependency>
             <groupId>org.glassfish.core</groupId>
             <artifactId>glassfish</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.glassfish.admin</groupId>
+            <artifactId>server-mgmt</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.glassfish.common</groupId>
             <artifactId>common-util</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.admin</groupId>
+            <artifactId>admin-util</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
         <dependency>
@@ -177,6 +156,11 @@
         <dependency>    
             <groupId>org.glassfish.common</groupId>
             <artifactId>universal</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+        <dependency>    
+            <groupId>org.glassfish.admin</groupId>
+            <artifactId>backup</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
     </dependencies>

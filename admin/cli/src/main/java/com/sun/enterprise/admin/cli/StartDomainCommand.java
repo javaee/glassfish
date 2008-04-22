@@ -30,7 +30,7 @@ import com.sun.enterprise.cli.framework.*;
 import java.util.*;
 import java.util.logging.*;
 
-public class StartDomainCommand extends S1ASCommand {
+public class StartDomainCommand extends AbstractCommand {
 
     public void runCommand() throws CommandException, CommandValidationException {
     

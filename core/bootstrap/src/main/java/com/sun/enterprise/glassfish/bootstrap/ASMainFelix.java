@@ -41,7 +41,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.net.MalformedURLException;
 import java.net.URI;
-import java.io.File;
+import java.io.*;
 import java.util.logging.Logger;
 
 /**
@@ -86,16 +86,7 @@ public class ASMainFelix extends ASMainOSGi {
         String confFileURL = new File(glassfishDir, "felix/conf/config.properties").toURI().toURL().toString();
         System.setProperty("felix.config.properties", confFileURL);
         File cacheProfileDir = new File(domainDir, ".felix/gf/");
-        if (cacheProfileDir.exists() && cacheProfileDir.isDirectory()) {
-            // remove this
-            logger.info("Removing Felix cache profile dir " + cacheProfileDir+ " left from a previous run");
-            boolean deleted = deleteRecurssive(cacheProfileDir);
-            if (!deleted) {
-                logger.warning("Not able to delete " + cacheProfileDir);
-            }
-        }
-        cacheProfileDir.mkdirs();
-        cacheProfileDir.deleteOnExit();
+        helper.setUpOSGiCache(glassfishDir, cacheProfileDir);
         System.setProperty("felix.cache.profiledir", cacheProfileDir.getCanonicalPath());
         Class mc = launcherCL.loadClass(getFWMainClassName());
         final String[] args = new String[0];

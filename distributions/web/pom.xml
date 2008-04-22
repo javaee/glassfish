@@ -95,12 +95,17 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.glassfish.admin</groupId>
+            <artifactId>cli-optional</artifactId>
+            <version>${project.version}</version>
+        </dependency>        
+        <dependency>
             <!-- admin GUI extension points should be in modules/ not modules/web -->
-            <groupId>org.glassfish.admingui</groupId>
+            <!--groupId>org.glassfish.admingui</groupId>
             <artifactId>console-plugin-service</artifactId>
 	    <version>${admingui.version}</version>
         </dependency>
-        <dependency>
+        <dependency-->
             <groupId>org.glassfish.extras</groupId>
             <artifactId>gf-jruby-connector</artifactId>
             <version>${project.version}</version>
@@ -161,16 +166,29 @@
             <artifactId>amx-impl</artifactId>
             <version>${project.version}</version>
         </dependency>
-         <dependency>
-           <groupId>org.glassfish.web</groupId>
-           <artifactId>gf-web-connector</artifactId>
-           <version>${project.version}</version>
-        </dependency>
         <dependency>
            <groupId>org.glassfish.registration</groupId>
            <artifactId>registration-impl</artifactId>
            <version>${project.version}</version>
         </dependency>
+        <dependency>
+           <groupId>org.glassfish.api</groupId>
+           <artifactId>dtds</artifactId>
+           <version>9.1-SNAPSHOT</version>
+            <type>distribution-fragment</type>           
+        </dependency>        
+        <dependency>
+           <groupId>org.glassfish.api</groupId>
+           <artifactId>schemas</artifactId>
+           <version>9.1-SNAPSHOT</version>
+            <type>distribution-fragment</type>           
+        </dependency> 
+         <dependency>
+            <groupId>org.glassfish.web</groupId>
+            <artifactId>gf-web-connector</artifactId>
+            <version>${project.version}</version>
+        </dependency>        
+        
     </dependencies>
 </project>
 

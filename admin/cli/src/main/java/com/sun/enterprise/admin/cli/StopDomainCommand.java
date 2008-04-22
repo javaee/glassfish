@@ -54,7 +54,7 @@ import java.util.logging.Logger;
  * A local StopDomain command
  * @author bnevins
  */
-public class StopDomainCommand extends S1ASCommand {
+public class StopDomainCommand extends AbstractCommand {
 
     @Override
     public void runCommand() throws CommandException, CommandValidationException {

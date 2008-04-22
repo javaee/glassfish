@@ -86,7 +86,8 @@ public class CommandFactory
         }
         try
         {
-            Class  theClass = Class.forName(className);
+            Class theClass = CommandFactory.class.getClassLoader().loadClass(className);
+            //Class  theClass = Class.forName(className);
             command = (Command)theClass.newInstance();
             command.setName(commandName);
             command.setOptionsMap(options);

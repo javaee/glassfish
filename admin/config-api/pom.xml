@@ -76,17 +76,6 @@
             <groupId>com.sun.enterprise</groupId>
             <artifactId>hk2</artifactId>
             <version>${hk2.version}</version>
-        </dependency> 
-         <dependency>
-            <groupId>org.glassfish.common</groupId>
-            <artifactId>amx-api</artifactId>
-            <version>${amx-api.version}</version>
-        </dependency>        
-        <dependency>
-            <groupId>org.glassfish.tests</groupId>
-            <artifactId>utils</artifactId>
-            <version>${project.parent.version}</version>
-            <scope>test</scope>
         </dependency>
         <dependency>    
             <groupId>org.glassfish.common</groupId>
@@ -98,6 +87,13 @@
             <artifactId>glassfish-api</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
+        <!-- test dependencies -->
+        <dependency>
+            <groupId>org.glassfish.tests</groupId>
+            <artifactId>utils</artifactId>
+            <version>${project.parent.version}</version>
+            <scope>test</scope>
+        </dependency>        
         <dependency>
             <groupId>com.sun.xml.stream</groupId>
             <artifactId>sjsxp</artifactId>

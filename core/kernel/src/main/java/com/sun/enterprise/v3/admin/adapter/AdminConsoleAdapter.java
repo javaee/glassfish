@@ -32,7 +32,7 @@ import com.sun.enterprise.config.serverbeans.Property;
 import com.sun.enterprise.config.serverbeans.ServerTags;
 import com.sun.enterprise.v3.data.ApplicationRegistry;
 import com.sun.enterprise.v3.server.ServerEnvironment;
-import com.sun.enterprise.v3.services.impl.ApplicationLoaderService;
+import com.sun.enterprise.v3.server.ApplicationLoaderService;
 import com.sun.grizzly.tcp.http11.GrizzlyAdapter;
 import com.sun.grizzly.tcp.http11.GrizzlyOutputBuffer;
 import com.sun.grizzly.tcp.http11.GrizzlyRequest;
@@ -170,7 +170,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
     public void ready() {
         lock.unlock();
         if (log != null) 
-            log.info("AdminConsoleAdapter is ready.");
+            log.fine("AdminConsoleAdapter is ready.");
     }
     
     private void init() {

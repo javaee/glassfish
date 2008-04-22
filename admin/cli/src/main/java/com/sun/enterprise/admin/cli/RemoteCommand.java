@@ -39,6 +39,7 @@ import com.sun.appserv.management.client.prefs.LoginInfo;
 import com.sun.appserv.management.client.prefs.LoginInfoStore;
 import com.sun.appserv.management.client.prefs.LoginInfoStoreFactory;
 import com.sun.appserv.management.client.prefs.StoreException;
+
 import com.sun.enterprise.universal.StringUtils;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import com.sun.enterprise.admin.cli.deployment.FileUploadUtil;
@@ -130,7 +131,7 @@ public class RemoteCommand {
             //System.out.println("User = " + user);
             password        = getPassword(li, params);
             //System.out.println("Password = " + password);
-            
+
             uriConnection = "/__asadmin/" + rcp.getCommandName();
             
             for (Map.Entry<String, String> param : params.entrySet()) {
@@ -671,6 +672,7 @@ public class RemoteCommand {
             return false;
         }
     }
+
     private String getUser(LoginInfo li, Map<String, String> params) {
         String user = params.get("user");
         if (user == null && li != null) { //not on command line & in .asadminpass
@@ -692,7 +694,8 @@ public class RemoteCommand {
             password = li.getPassword();
         }
         return ( password );
-    }            
+    }
+
     private static final CLILogger logger = CLILogger.getInstance();
     private static final String SUCCESS = "SUCCESS";
     private static final String FAILURE = "FAILURE";

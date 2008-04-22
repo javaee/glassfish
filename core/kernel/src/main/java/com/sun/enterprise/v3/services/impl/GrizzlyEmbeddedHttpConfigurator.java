@@ -40,12 +40,15 @@ import com.sun.enterprise.config.serverbeans.HttpService;
 import com.sun.enterprise.config.serverbeans.Property; 
 import com.sun.enterprise.config.serverbeans.RequestProcessing;
 import com.sun.enterprise.config.serverbeans.Ssl;
+import com.sun.enterprise.v3.server.Globals;
 import com.sun.grizzly.Controller;
 import com.sun.grizzly.arp.DefaultAsyncHandler;
-import com.sun.grizzly.comet.CometAsyncFilter;
 import com.sun.grizzly.http.AsyncHandler;
+import com.sun.grizzly.http.AsyncFilter;
 import com.sun.logging.LogDomains;
 import java.util.LinkedList;
+
+import org.jvnet.hk2.component.Habitat;
 
 /**
  * Utility class that creates Grizzly's SelectorThread instance based on 
@@ -550,10 +553,14 @@ public class GrizzlyEmbeddedHttpConfigurator {
      * Enable Comet/Poll request support.
      */
     private final static void configureComet(GrizzlyEmbeddedHttp grizzlyEmbeddedHttp) {
-        grizzlyEmbeddedHttp.setEnableAsyncExecution(true);
-        AsyncHandler asyncHandler = new DefaultAsyncHandler();
-        asyncHandler.addAsyncFilter(new CometAsyncFilter()); 
-        grizzlyEmbeddedHttp.setAsyncHandler(asyncHandler);
+        Habitat habitat = Globals.getDefaultHabitat();
+        AsyncFilter cometFilter = habitat.getComponent(AsyncFilter.class, "comet");
+        if (cometFilter!=null) {
+            grizzlyEmbeddedHttp.setEnableAsyncExecution(true);
+            AsyncHandler asyncHandler = new DefaultAsyncHandler();
+            asyncHandler.addAsyncFilter(cometFilter);
+            grizzlyEmbeddedHttp.setAsyncHandler(asyncHandler);
+        }
     }
     
         

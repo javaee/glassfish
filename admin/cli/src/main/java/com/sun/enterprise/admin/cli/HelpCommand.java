@@ -54,7 +54,7 @@ import java.io.InputStreamReader;
  * The help command will display the help text for all the commands and their
  * options
  */
-public class HelpCommand extends S1ASCommand 
+public class HelpCommand extends AbstractCommand 
 {
 
   private static final int DEFAULT_PAGE_LENGTH = 50;

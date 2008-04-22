@@ -66,6 +66,7 @@ public class ASMainHK2 extends com.sun.enterprise.module.bootstrap.Main {
 
     Logger logger;
     ASMainHelper helper;
+    File glassfishDir;
 
     public ASMainHK2(Logger logger) {
         this.logger = logger;
@@ -81,6 +82,8 @@ public class ASMainHK2 extends com.sun.enterprise.module.bootstrap.Main {
 
         ClassLoader cl = this.getClass().getClassLoader();
         mr.setParentClassLoader(cl);
+
+        glassfishDir = context.getRootDirectory();
 
         // first we mask JAXB if necessary.
         // mask the JAXB and JAX-WS API in the bootstrap classloader so that
@@ -143,14 +146,46 @@ public class ASMainHK2 extends com.sun.enterprise.module.bootstrap.Main {
 
             }
         }
+
+        // last derby client for jdbc driver access
+        List<URL> urls = new ArrayList<URL>();
+        try {
+            findDerbyClient(urls);
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        }
+
         if (libs.size() > 0) {
-            cl = helper.setupSharedCL(cl, libs);
+            cl = helper.setupSharedCL(cl, urls, libs);
         }
 
         // finally
         mr.setParentClassLoader(cl);
 
     }
+
+    private void findDerbyClient(List<URL> urls) throws MalformedURLException {
+
+
+        List<URL> derbyUrls = new ArrayList<URL>();
+        File derbyLib = new File(glassfishDir.getParent(), "javadb/lib");
+        if (!derbyLib.exists()) {
+            // maybe the jdk...
+            if (System.getProperty("java.version").compareTo("1.6")>0) {
+                File jdkHome = new File(System.getProperty("java.home"));
+                derbyLib = new File(jdkHome, "db/lib");
+            }
+        }
+        if (!derbyLib.exists()) {
+            logger.info("Cannot find javadb client jar file, jdbc driver not available");
+            return;
+        }
+        helper.addPaths(derbyLib, new String[] {"derbyclient"}, derbyUrls);
+        if (derbyUrls.size()>0) {
+            urls.addAll(derbyUrls);
+        }
+    }
+    
 
     /**
      * Gets the shared repository and add all subdirectories as Repository

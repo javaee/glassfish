@@ -107,8 +107,9 @@
        </dependency>
        <dependency>
            <groupId>org.glassfish.docs</groupId>
-           <artifactId>v3-docs</artifactId>
-	   <version>0.1</version>
+           <artifactId>basedocs</artifactId>
+	   	   <version>0.1</version>
+	   	   <type>distribution-fragment</type>
        </dependency>
    </dependencies>
 </project>

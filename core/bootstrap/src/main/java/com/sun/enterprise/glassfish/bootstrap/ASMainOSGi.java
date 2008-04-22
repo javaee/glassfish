@@ -89,6 +89,12 @@ public abstract class ASMainOSGi {
         "wstx-asl" // needed by config module in HK2
     };
 
+    private static final String javaeeJarPath = "modules/javax.javaee-10.0-SNAPSHOT.jar";
+
+    // on jdk5, without the javaee, I need this...
+    private static final String staxJarPath = "modules/stax-api-1.0-2.jar";
+    
+
     public ASMainOSGi(Logger logger, String... args) {
         this.logger = logger;
         findBootstrapFile();
@@ -139,37 +145,35 @@ public abstract class ASMainOSGi {
      */
     private void setupLauncherClassLoader() throws Exception {
         ClassLoader commonCL = createCommonClassLoader();
-        ClassLoader libCL = helper.setupSharedCL(commonCL, getSharedRepos());
+        //ClassLoader libCL = helper.setupSharedCL(commonCL, getSharedRepos());
         final List<URL> urls = new ArrayList<URL>();
         Collections.addAll(urls, getFWJars());
         File moduleDir = context.getRootDirectory().getParentFile();
-        addPaths(moduleDir, additionalJarPrefixes, urls);
-        this.launcherCL = new URLClassLoader(urls.toArray(new URL[urls.size()]), libCL);
+        helper.addPaths(moduleDir, additionalJarPrefixes, urls);
+        this.launcherCL = helper.setupSharedCL(commonCL, urls,getSharedRepos());
+        //this.launcherCL = new URLClassLoader(urls.toArray(new URL[urls.size()]), libCL);
         Thread.currentThread().setContextClassLoader(launcherCL);
-    }
-
-    private void addPaths(File dir, String[] jarPrefixes, List<URL> urls) throws MalformedURLException {
-        File[] jars = dir.listFiles();
-        if(jars!=null) {
-            for( File f : jars) {
-                for (String prefix : jarPrefixes) {
-                    String name = f.getName();
-                    if(name.startsWith(prefix) && name.endsWith(".jar"))
-                        urls.add(f.toURI().toURL());
-                }
-            }
-        }
     }
 
     private ClassLoader createCommonClassLoader() {
         try {
             List<URL> urls = new ArrayList<URL>();
-            addPaths(new File(glassfishDir,"modules"), new String[]{"javax.javaee-"}, urls);
+            helper.addPaths(new File(glassfishDir,"modules"), new String[]{"javax.javaee-"}, urls);
+
+            // on jdk 1.5, I need stax apis, might be duplicated if javax.javaee is present.
+            if (System.getProperty("java.version").compareTo("1.6")<0) {
+                helper.addPaths(new File(glassfishDir, "modules"), new String[]{"stax-api"}, urls);
+            }
+
+            // javadb
+            findDerbyClient(urls);
+
             File jdkToolsJar = helper.getJDKToolsJar();
             if (jdkToolsJar.exists()) {
                 urls.add(jdkToolsJar.toURI().toURL());
             } else {
-                logger.warning("JDK tools.jar does not exist at " + jdkToolsJar);
+                // on the mac, it happens all the time
+                logger.fine("JDK tools.jar does not exist at " + jdkToolsJar);
             }
             ClassLoader extCL = ClassLoader.getSystemClassLoader().getParent();
             return new URLClassLoader(urls.toArray(new URL[urls.size()]), extCL);
@@ -177,6 +181,28 @@ public abstract class ASMainOSGi {
             throw new RuntimeException(e);
         }
     }
+
+    private void findDerbyClient(List<URL> urls) throws MalformedURLException {
+
+        List<URL> derbyUrls = new ArrayList<URL>();
+        File derbyLib = new File(glassfishDir, "javadb/lib");
+        if (!derbyLib.exists()) {
+            // maybe the jdk...
+            if (System.getProperty("java.version").compareTo("1.6")>0) {
+                File jdkHome = new File(System.getProperty("java.home"));
+                derbyLib = new File(jdkHome, "db/lib");
+            }
+        }
+        if (!derbyLib.exists()) {
+            logger.info("Cannot find javadb client jar file, jdbc driver not available");
+            return;
+        }
+        helper.addPaths(derbyLib, new String[] {"derbyclient"}, derbyUrls);
+        if (derbyUrls.size()>0) {
+            urls.addAll(derbyUrls);
+        }
+    }
+
     private void findBootstrapFile() {
         String resourceName = getClass().getName().replace(".", "/") + ".class";
         URL resource = getClass().getClassLoader().getResource(resourceName);
@@ -240,14 +266,5 @@ public abstract class ASMainOSGi {
         return libs;
     }
 
-    protected boolean deleteRecurssive(File dir) {
-        for (File f : dir.listFiles()) {
-            if(f.isFile()) {
-                f.delete();
-            } else {
-                deleteRecurssive(f);
-            }
-        }
-        return dir.delete();
-    }
+
 }

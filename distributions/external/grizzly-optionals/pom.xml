@@ -44,13 +44,13 @@
         <version>10.0-tp-2-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>grizzly-module</artifactId>
-    <version>${grizzly.version}</version>
+    <artifactId>grizzly-optionals</artifactId>
     <!-- Don't change packaging to bundle as there are issues
          using both hk2 and bundle plugin -->
     <packaging>jar</packaging>
-    <name>grizzly-http repackaged as HK2 and OSGi bundle</name>
-    <description>Grizzly HTTP/Comet Module for GlassFish v3</description>
+    <version>${grizzly.version}</version>
+    <name>grizzly optionals repackaged as HK2 and OSGi bundle</name>
+    <description>Grizzly Optionals Module for GlassFish</description>
     <build>
         <plugins>
             <plugin>
@@ -63,7 +63,7 @@
                         <Embed-Dependency>
                             *;groupId=com.sun.grizzly;inline=true
                         </Embed-Dependency>
-                        <Export-Package>com.sun.grizzly.*;-split-package:=merge-first</Export-Package>
+                        <Export-Package>com.sun.grizzly.comet*;split-package:=merge-first,com.sun.grizzly.standalone*;split-package:=merge-first</Export-Package>
                         <Import-Package>*</Import-Package>
                         <!-- Package everything from the embedded jar in the final bundle -->
                         <_exportcontents>*</_exportcontents>
@@ -74,6 +74,7 @@
                          This is needed because we don't want to change the packaging type to
                          hk2-jar. -->
                         <HK2-Bundle-Name>${groupId}:${artifactId}</HK2-Bundle-Name>
+						<HK2-Import-Bundles>org.glassfish.external:grizzly-module,org.glassfish:javax.javaee</HK2-Import-Bundles>                        
                     </instructions>
                     <!-- Maven uses the output directory (target/classes)
                     rather than the final bundle, when compiling against
@@ -133,33 +134,31 @@
     <dependencies>
         <dependency>
             <groupId>com.sun.grizzly</groupId>
-            <artifactId>grizzly-http</artifactId>
+            <artifactId>grizzly-cometd</artifactId>
             <version>${grizzly.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.sun.grizzly</groupId>
-            <artifactId>grizzly-portunif</artifactId>
+            <artifactId>grizzly-comet</artifactId>
             <version>${grizzly.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.sun.grizzly</groupId>
-            <artifactId>grizzly-rcm</artifactId>
+            <artifactId>grizzly-http-servlet</artifactId>
             <version>${grizzly.version}</version>
             <scope>provided</scope>
+        </dependency>        
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>grizzly-module</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.sun.grizzly</groupId>
-            <artifactId>grizzly-http-utils</artifactId>
-            <version>${grizzly.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.grizzly</groupId>
-            <artifactId>grizzly-framework</artifactId>
-            <version>${grizzly.version}</version>
-            <scope>provided</scope>
-        </dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.javaee</artifactId>
+            <version>${parent.version}</version>
+        </dependency>        
     </dependencies>
 </project>
