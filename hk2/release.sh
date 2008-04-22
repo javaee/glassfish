@@ -19,6 +19,10 @@ mvn -B -P release release:prepare || true
 # so we build it, in particular maven-hk2-plugin.
 mvn -P release-phase1 install
 
+# On one occasion I got the next release:prepare to fail, due to missing hk2:<RELEASE VER>:jar
+# so just to be safe, fill the local repository with release versions first.
+mvn install
+
 # Now retry release:prepare and this shall run to the completion
 mvn -B -P release release:prepare
 
