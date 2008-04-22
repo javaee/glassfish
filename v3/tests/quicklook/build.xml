@@ -223,7 +223,7 @@
                 <include name="**/test-output-hk2/**/*.xml"/>
                 <!--<exclude name="**/testng-failed.xml"/>-->
             </fileset>
-            <report format="noframes" todir="${test.report}"/>
+            <report format="noframes" todir="${basedir}/test-output-hk2"/>
         </junitreport>
         <echo message="Test Report available at ${test.report}/index.html"/>
     </target>
