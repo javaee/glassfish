@@ -499,8 +499,8 @@ public class MapperListener
                 }
             }
             if (!portMatch) {
-                if (log.isWarnEnabled()) {
-                    log.warn("HTTP listener with port " + port
+                if (log.isDebugEnabled()) {
+                    log.debug("HTTP listener with port " + port
                               + " ignoring registration of host with object "
                               + "name " + objectName + ", because none of the "
                               + "host's associated HTTP listeners matches "
