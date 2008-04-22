@@ -144,7 +144,7 @@ public class EjbContainerUtilImpl
             // Create the instance first to access the logger.
             _me = Globals.getDefaultHabitat().getComponent(
                     EjbContainerUtilImpl.class);
-            _me.getLogger().log(Level.SEVERE, 
+            _me.getLogger().log(Level.WARNING, 
                     "Internal error: EJBContainerUtilImpl was null",
                     new Throwable());
         }

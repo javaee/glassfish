@@ -59,11 +59,6 @@ import java.util.logging.Logger;
 public class TimerServiceNamingProxy 
         implements NamedNamingObjectProxy {
 
-    private static EjbContainerUtil ejbContainerUtil = 
-            EjbContainerUtilImpl.getInstance();
-
-    private static Logger logger = ejbContainerUtil.getLogger();
-
     private static final String EJB_TIMER_SERVICE 
             = "java:comp/TimerService";
 
@@ -77,7 +72,13 @@ public class TimerServiceNamingProxy
 
     private Object getTimerServiceWrapper() {
 
-        ComponentInvocation currentInv = ejbContainerUtil.getCurrentInvocation();
+        // Cannot store EjbContainerUtilImpl.getInstance() in an instance 
+        // variable because it shouldn't be accessed before EJB container 
+        // is initialized. 
+        // NamedNamingObjectProxy is initialized on the first lookup.
+
+        ComponentInvocation currentInv = 
+                EjbContainerUtilImpl.getInstance().getCurrentInvocation();
 
         if(currentInv == null) {
             throw new IllegalStateException("no current invocation");
@@ -88,7 +89,8 @@ public class TimerServiceNamingProxy
                      + currentInv.getInvocationType());
         }
 
-        EJBTimerService ejbTimerService = ejbContainerUtil.getEJBTimerService();
+        EJBTimerService ejbTimerService = 
+                EjbContainerUtilImpl.getInstance().getEJBTimerService();
         if( ejbTimerService == null ) {
             throw new IllegalStateException("EJB Timer Service not " +
                                             "available");
