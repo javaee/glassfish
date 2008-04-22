@@ -1,0 +1,12 @@
+i copyright
+i pkginfo
+i depend
+d none glassfish/modules/web/ 755 root bin
+f none glassfish/modules/webtier-10.0-SNAPSHOT.jar 644 root bin
+f none glassfish/modules/web/websecurity-10.0-SNAPSHOT.jar 644 root bin
+f none glassfish/modules/web/web-cli-10.0-SNAPSHOT.jar 644 root bin
+f none glassfish/modules/web/jsf-connector-10.0-SNAPSHOT.jar 644 root bin
+f none glassfish/modules/web/javax.javaee-10.0-SNAPSHOT.jar 644 root bin
+f none glassfish/modules/web/webtier-all-10.0-SNAPSHOT.jar 644 root bin
+f none glassfish/modules/web/jstl-impl-10.0-SNAPSHOT.jar 644 root bin
+f none glassfish/modules/web/jsf-impl-1.2_08.jar 644 root bin
