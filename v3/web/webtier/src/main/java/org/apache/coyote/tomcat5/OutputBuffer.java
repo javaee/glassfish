@@ -672,18 +672,23 @@ public class OutputBuffer extends Writer
             return;
         }
 
+        StandardContext ctx = (StandardContext) coyoteResponse.getContext();
+        if (ctx != null && !ctx.getCookies()) {
+            // cookies disabled
+            return;
+        }
+
         HashMap<String, String> sessionVersions = (HashMap<String, String>)
             req.getAttribute(Globals.SESSION_VERSIONS_REQUEST_ATTRIBUTE);
         if (sessionVersions != null) {
             Cookie cookie = new Cookie(
                 Globals.SESSION_VERSION_COOKIE_NAME,
                 RequestUtil.makeSessionVersionString(sessionVersions));
-            if (sessionVersions.size() > 1
-                    || coyoteResponse.getContext() == null) {
+            if (sessionVersions.size() > 1 || ctx == null) {
                 // Cross-context dispatch
                 cookie.setPath("/");
             } else {
-                cookie.setPath(coyoteResponse.getContext().getName());
+                cookie.setPath(ctx.getName());
             }
             response.addHeader(SET_COOKIE_HEADER,
                                coyoteResponse.getCookieString(cookie));

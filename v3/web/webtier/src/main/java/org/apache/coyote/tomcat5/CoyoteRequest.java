@@ -2788,19 +2788,21 @@ public class CoyoteRequest
         // END GlassFish 896
 
         // Creating a new session cookie based on the newly created session
-        if ((session != null) && (getContext() != null)
-                && getContext().getCookies()) {
-            String id = session.getIdInternal();
-            String jvmRoute = ((StandardContext) getContext()).getJvmRoute();
-            if (jvmRoute != null) {
-                id += ("." + jvmRoute);
-            }
-            Cookie cookie = new Cookie(Globals.SESSION_COOKIE_NAME, id);
-            configureSessionCookie(cookie);
-            ((HttpServletResponse) response).addCookie(cookie);
+        if ((session != null) && (getContext() != null)) {
 
             if (manager.isSessionVersioningSupported()) {
                 incrementSessionVersion((StandardSession) session, context);
+            }
+
+            if (getContext().getCookies()) {
+                String id = session.getIdInternal();
+                String jvmRoute = ((StandardContext) getContext()).getJvmRoute();
+                if (jvmRoute != null) {
+                    id += ("." + jvmRoute);
+                }
+                Cookie cookie = new Cookie(Globals.SESSION_COOKIE_NAME, id);
+                configureSessionCookie(cookie);
+                ((HttpServletResponse) response).addCookie(cookie);
             }
         }
 
