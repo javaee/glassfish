@@ -37,8 +37,6 @@
 
 package com.sun.enterprise.admin.cli;
 
-import com.sun.enterprise.universal.collections.CollectionUtils;
-import com.sun.enterprise.universal.collections.ManifestUtils;
 import java.io.*;
 import java.util.*;
 import java.util.logging.*;
@@ -57,15 +55,15 @@ public class ListCommandsCommand extends S1ASCommand {
     public void runCommand() throws CommandException, CommandValidationException {
         // WBN weird -- validateOptions is NOT called by the framework?!?
         validateOptions();
-        getRemoteCommands();
-        getLocalCommands();
         
-        if(!remoteOnly)
+        if(!remoteOnly) {
+            getLocalCommands();
             printLocalCommands();
-        
-        if(!localOnly)
+        }
+        if(!localOnly) {
+            getRemoteCommands();
             printRemoteCommands();
-        
+        }
         logger.printMessage("");
     }
 
@@ -108,9 +106,6 @@ public class ListCommandsCommand extends S1ASCommand {
             String cmds = mainAtts.get("children");
             remoteCommands = cmds.split(";");
             return remoteCommands;
-        }
-        catch(CommandException e) {
-            throw e;
         }
         catch(Exception e) {
             throw new CommandException(strings.get("listCommands.errorRemote", e.getMessage()));
