@@ -49,7 +49,7 @@ ENGINE_DIR=MYDIR+"install"
 LOGDIR=gFileSystem.GetSpecialFolder(2)
 
 ' this must be changed to your products java installation directory
-JAVA_HOME="C:\Program Files\Java\jdk1.6.0_05"
+JAVA_HOME= wShell.ExpandEnvironmentStrings("%JAVA_HOME%")
 
 JAVA_OPTIONS="-Dorg.openinstaller.provider.configurator.class=org.openinstaller.provider.conf.InstallationConfigurator"
 
