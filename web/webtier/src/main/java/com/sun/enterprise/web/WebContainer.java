@@ -249,8 +249,8 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         modulesStubRoot = instance.getModuleStubPath();
         appsStubRoot = instance.getApplicationStubPath();
         // END S1AS 6178005
-        
-        String root = System.getProperty("com.sun.aas.installRoot");
+
+        File root = _serverContext.getInstallRoot();
         File libRoot = new File(root, "lib");
         File schemas = new File(libRoot, "schemas");
         File dtds = new File(libRoot, "dtds");
