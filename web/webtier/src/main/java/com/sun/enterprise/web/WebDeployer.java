@@ -269,9 +269,7 @@ public class WebDeployer extends JavaEEDeployer<WebContainer, WebApplication>{
 
         try {
             // parse default-web.xml contents 
-            String defaultWebXMLPath = env.getConfigDirPath() +
-                File.separator + DEFAULT_WEB_XML;
-            File file = new File(defaultWebXMLPath);
+            File file = new File(env.getConfigDirPath(),DEFAULT_WEB_XML);
             if (file.exists()) {
                 fis = new FileInputStream(file);
                 WebDeploymentDescriptorFile wddf =
