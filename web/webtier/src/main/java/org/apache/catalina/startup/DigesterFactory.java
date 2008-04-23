@@ -324,17 +324,21 @@ public class DigesterFactory implements PostConstruct {
             String resourceURL,
             String resourcePublicId) {
 
-        URL url;
-        if (resourceURL != null && resourceURL.startsWith("file:")) {
+        // do we have this in our resources?
+        URL url = DigesterFactory.class.getResource(resourceURL);
+
+        // if not, is this already an URL?
+        if (resourceURL != null) {
             try {
                 url = new URL(resourceURL);
             } catch (MalformedURLException e) {
                 return;
             }
-
-        } else {
-            url = DigesterFactory.class.getResource(resourceURL);
         }
+
+        // failed to resolve. Ignore.
+        if(url==null)   return;
+
         schemaResolver.register(resourcePublicId , url.toString() );
 
     }
