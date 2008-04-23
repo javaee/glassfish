@@ -238,7 +238,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
     GrizzlyService grizzlyAdapter;
     
     HashMap<String, Integer> portMap = new HashMap<String, Integer>();
-    HashMap<Integer, Adapter> adapterMap = new HashMap<Integer, Adapter>();
+    HashMap<Integer, CoyoteAdapter> adapterMap = new HashMap<Integer, CoyoteAdapter>();
 
     EmbeddedWebContainer _embedded;
     Engine engine;
@@ -677,8 +677,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
      */       
     private void createHttpListener(HttpListener httpListener,
                                              HttpService httpService){
-        
-        
         if (!Boolean.valueOf(httpListener.getEnabled())) {
             _logger.warning(httpListener.getId()+" HTTP listener is disabled " +
                     Boolean.valueOf(httpListener.getEnabled()));
@@ -741,7 +739,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                     Integer.valueOf(httpListener.getPort()));
         CoyoteAdapter coyoteAdapter = new CoyoteAdapter(connector);
         adapterMap.put(Integer.valueOf(httpListener.getPort()), coyoteAdapter);
-        
         // If we already know the redirect port, then set it now
         // This situation will occurs when dynamic reconfiguration occurs
         if ( defaultRedirectPort != -1 ){
@@ -2471,7 +2468,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                             loadStandaloneWebModule(vs, wmInfo);
                         }
                         for (int port : vs.getPorts()) {
-                            Adapter adapter = adapterMap.get(Integer.valueOf(port));
+                            CoyoteAdapter adapter = adapterMap.get(Integer.valueOf(port));
                             WebApplication application = new WebApplication(this, 
                                     wmInfo, grizzlyAdapter);
  	                    grizzlyAdapter.registerEndpoint(wmInfo.getContextPath(), 

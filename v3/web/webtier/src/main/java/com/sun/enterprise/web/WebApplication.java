@@ -29,6 +29,7 @@ import org.apache.catalina.core.StandardHost;
 import org.apache.catalina.Container;
 import org.apache.catalina.Lifecycle;
 import org.apache.catalina.LifecycleException;
+import org.apache.coyote.tomcat5.CoyoteAdapter;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.util.StringUtils;
 import com.sun.enterprise.v3.common.Result;
@@ -88,8 +89,8 @@ public class WebApplication implements ApplicationContainer<WebBundleDescriptor>
                 if (loadToAll || vsList.contains(vs.getName())
                         || isAliasMatched(vsList,vs)) {
                     for (int port : vs.getPorts()) {
-                        Adapter adapter = container.adapterMap.get(Integer.valueOf(port));
-                        grizzlyAdapter.registerEndpoint(contextRoot, c, adapter, this);
+                        CoyoteAdapter adapter = container.adapterMap.get(Integer.valueOf(port));
+                        grizzlyAdapter.registerEndpoint(contextRoot, adapter.getPort(), c, adapter, this);
                     }
                 }
             } else {
