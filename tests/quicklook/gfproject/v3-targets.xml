@@ -75,7 +75,7 @@
     
     <exec executable="cmd">	
         <arg value="/c"/>
-        <arg value="${glassfish.home}/bin/asadmin"/>
+        <arg value="${glassfish.home}\bin\asadmin.bat"/>
         <arg value="start-domain"/>
     </exec>
     
@@ -94,10 +94,10 @@
 </target>
 
 <target name="stop-server-windows" if="isWindows">
-    <echo message="stopping server on windows ..."/>
-    <exec executable="cmd" >
-        <arg value="/c"/>
-        <arg value="${glassfish.home}/bin/asadmin"/>
+    <echo message="Jerome I am stopping server on windows ..."/>
+   <exec executable="cmd">
+    <arg value="/c"/>
+    <arg value="${glassfish.home}\bin\asadmin.bat"/>
         <arg value="stop-domain"/>
     </exec>
 </target>
@@ -117,7 +117,7 @@
 <target name="deploy-v3-impl-windows" if="isWindows">
    <exec executable="cmd">
     <arg value="/c"/>
-    <arg value="${glassfish.home}/bin/asadmin.bat"/>
+    <arg value="${glassfish.home}\bin\asadmin.bat"/>
     <arg value="deploy"/>
     <arg value="--path"/>
     <arg value="--upload=false"/>
@@ -144,7 +144,7 @@
 <target name="undeploy-v3-impl-windows" if="isWindows">
     <exec executable="cmd">
     <arg value="/c"/>
-    <arg value="${glassfish.home}/bin/asadmin.bat"/>
+    <arg value="${glassfish.home}\bin\asadmin.bat"/>
     <arg value="undeploy"/>    
     <arg value="${war.file}"/>
   </exec>  

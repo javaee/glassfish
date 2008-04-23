@@ -23,6 +23,9 @@
 package org.glassfish.admin.amx.loader;
 
 import com.sun.appserv.management.util.jmx.JMXUtil;
+import com.sun.enterprise.v3.server.Globals;
+import com.sun.enterprise.module.ModulesRegistry;
+import com.sun.enterprise.module.Module;
 import org.glassfish.admin.amx.config.AMXConfigRegistrar;
 
 import javax.management.MBeanServer;
@@ -161,7 +164,7 @@ final class StartAMX
     }
 
     public static synchronized void stopAMX() {
-        if (INSTANCE!=null) {
+        if (INSTANCE!=null && INSTANCE.mJMXMP!=null) {
             try {
                 INSTANCE.mJMXMP.stop();
             } catch (IOException e) {
@@ -176,9 +179,17 @@ final class StartAMX
     {
         if ( mJMXMPObjectName == null )
         {
+            ModulesRegistry registry = Globals.getDefaultHabitat().getByType(ModulesRegistry.class);
+            Module jmxmpConnector = registry.makeModuleFor("org.glassfish.external:jmxremote_optional-repackaged", null);
+            if (jmxmpConnector==null) {
+                // ok the jmxmp optional package is not found, that's ok just return.
+                return null;
+            }
+                    
+
             final Map<String,Object> env = new HashMap<String,Object>();
             env.put("jmx.remote.protocol.provider.pkgs", "com.sun.jmx.remote.protocol"); 
-            env.put("jmx.remote.protocol.provider.class.loader", this.getClass().getClassLoader());
+            env.put("jmx.remote.protocol.provider.class.loader", jmxmpConnector.getClassLoader());
 
             final JMXServiceURL      serviceURL = new JMXServiceURL("service:jmx:jmxmp://localhost:" + port );
             final JMXConnectorServer jmxmp = JMXConnectorServerFactory.newJMXConnectorServer( serviceURL, env, mMBeanServer);
