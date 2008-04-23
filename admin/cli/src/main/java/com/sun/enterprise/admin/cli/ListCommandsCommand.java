@@ -73,8 +73,10 @@ public class ListCommandsCommand extends AbstractCommand {
     public boolean validateOptions() throws CommandValidationException {
         super.validateOptions();
         
-        port = getOption("port");
-        host = getOption("host");
+        port         = getOption(PORT);
+        host         = getOption(HOST);
+        user         = getOption(USER);
+        passwordFile = getOption(PASSWORDFILE);
         localOnly = getBooleanOption("localonly");
         remoteOnly = getBooleanOption("remoteonly");
         
@@ -130,6 +132,14 @@ public class ListCommandsCommand extends AbstractCommand {
             list.add("--host");
             list.add(host);
         }
+        if(ok(user)) {
+            list.add("--user");
+            list.add(user);
+        }
+        if(ok(passwordFile)) {
+            list.add("--passwordfile");
+            list.add(passwordFile);
+        }
         return list.toArray(new String[list.size()]);
     }
     
@@ -174,6 +184,8 @@ public class ListCommandsCommand extends AbstractCommand {
     String[] localCommands;
     String port;
     String host;
+    String user;
+    String passwordFile;
     boolean localOnly;
     boolean remoteOnly;
     private final static LocalStringsImpl strings = new LocalStringsImpl(ListCommandsCommand.class);

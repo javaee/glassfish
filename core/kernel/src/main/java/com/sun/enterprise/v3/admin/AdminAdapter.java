@@ -26,7 +26,6 @@ package com.sun.enterprise.v3.admin;
 import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.module.impl.Utils;
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.enterprise.v3.common.ActionReporter;
 import com.sun.enterprise.v3.common.HTMLActionReporter;
 import com.sun.enterprise.v3.common.PropsFileActionReporter;
 import com.sun.enterprise.v3.common.XMLActionReporter;
@@ -50,14 +49,16 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.Properties;
 import java.util.StringTokenizer;
-import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.Enumeration;
+import com.sun.enterprise.security.auth.realm.file.FileRealm;
 import com.sun.enterprise.universal.glassfish.SystemPropertyConstants;
 import com.sun.enterprise.v3.server.ServerEnvironment;
+import java.net.HttpURLConnection;
+import sun.misc.BASE64Decoder;
 
 /**
  * Listen to admin commands...
@@ -72,7 +73,9 @@ public class AdminAdapter implements Adapter, PostConstruct {
     public final static String GFV3 = "gfv3";
     private final static String GET = "GET";
     private final static String POST = "POST";
-
+    private static final BASE64Decoder decoder = new BASE64Decoder();
+    private static final String BASIC = "Basic ";
+    
     @Inject
     ModulesRegistry modulesRegistry;
 
@@ -138,22 +141,16 @@ public class AdminAdapter implements Adapter, PostConstruct {
         if (lock.isLocked()) {
             if (lock.tryLock(20L, TimeUnit.SECONDS)) {
                 lock.unlock();
-                /* Commented out because user name and password not
-                 * supplied yet from .asadminpass 
                 if (!authenticate(req, report, res))
                     return;
-                 */
                 report = doCommand(req, report);
             } else {
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                 report.setMessage("V3 cannot process this command at this time, please wait");
             }
         } else {
-                /* Commented out because user name and password not
-                 * supplied yet from .asadminpass 
             if (!authenticate(req, report, res))
                 return;
-                 */
             report = doCommand(req, report);
         }
 
@@ -169,21 +166,48 @@ public class AdminAdapter implements Adapter, PostConstruct {
         res.finish();
     }
 
-    public boolean authenticate(Request req, ServerEnvironment serverEnviron)
+    public static boolean authenticate(Request req, ServerEnvironment serverEnviron) 
             throws Exception {
+        String authHeader = req.getHeader("Authorization");
+        boolean authenticated = false;
+        // the file containing userid and password
+        FileRealm f =
+                new FileRealm(serverEnviron.getProps().get(SystemPropertyConstants.INSTANCE_ROOT_PROPERTY) + "/config/admin-keyfile");
 
-        File realmFile = new File(serverEnviron.getProps().get(SystemPropertyConstants.INSTANCE_ROOT_PROPERTY) + "/config/admin-keyfile");
-        if (authenticator!=null && realmFile.exists()) {
-           return authenticator.authenticate(req, realmFile);  
+        authenticated = authenticateAnonymous(f); // allow anonymous login regardless
+        if (!authenticated && authHeader != null) { // only if anonymous login is allowed.
+            String base64Coded = authHeader.substring(BASIC.length());
+            String decoded = new String(decoder.decodeBuffer(base64Coded));
+            String[] userNamePassword = decoded.split(":");
+            if (userNamePassword == null || userNamePassword.length == 0) {
+                // no username/password in header - try anonymous auth
+                authenticated = authenticateAnonymous(f);
+            } else {
+                String userName = userNamePassword[0];
+                String password = userNamePassword.length > 1 ? userNamePassword[1] : "";
+                authenticated = f.authenticate(userName, password) != null;
+            }
         }
-        // no authenticator, this is fine.
-        return true;
+        return authenticated;
     }
     
+    private static boolean authenticateAnonymous(FileRealm f) throws Exception {
+        Enumeration<String> users = f.getUserNames();
+        if (users.hasMoreElements()) {
+            String userNameInRealm = users.nextElement();
+            // allow anonymous authentication if the only user in the key file is the
+            // default user, with default password
+            if (!users.hasMoreElements() &&
+                    userNameInRealm.equals(SystemPropertyConstants.DEFAULT_ADMIN_USER)) {
+                logger.finer("Allowed anonymous access");
+                return true;
+            }
+        }
+        return false;
+    }
+
     private boolean authenticate(Request req, ActionReport report, Response res)
             throws Exception {
-
-        String authHeader = req.getHeader("Authorization");
         boolean authenticated = authenticate(req, env);
         if (!authenticated) {
             String msg = adminStrings.getLocalString("adapter.auth.userpassword",
@@ -192,12 +216,8 @@ public class AdminAdapter implements Adapter, PostConstruct {
             report.setMessage(msg);
             report.setActionDescription("Authentication error");
             InternalOutputBuffer outputBuffer = (InternalOutputBuffer) res.getOutputBuffer();
-            if (req.getHeader("User-Agent").startsWith("hk2-cli")) {
-                res.setStatus(200);
-            } else {
-                res.setStatus(401);                
-                res.setHeader("WWW-Authenticate", "BASIC");
-            }
+            res.setStatus(HttpURLConnection.HTTP_UNAUTHORIZED);                
+            res.setHeader("WWW-Authenticate", "BASIC");
             res.setContentType(report.getContentType());
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
             report.writeReport(bos);
@@ -208,7 +228,7 @@ public class AdminAdapter implements Adapter, PostConstruct {
         }
         return authenticated;
     }
-
+    
     private ActionReport doCommand(Request req, ActionReport report) {
 
         String requestURI = req.requestURI().toString();

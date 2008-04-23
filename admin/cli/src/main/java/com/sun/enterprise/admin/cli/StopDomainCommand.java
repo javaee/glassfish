@@ -36,10 +36,8 @@
 package com.sun.enterprise.admin.cli;
 
 import com.sun.enterprise.cli.framework.CLILogger;
-import com.sun.enterprise.cli.framework.Command;
 import com.sun.enterprise.cli.framework.CommandException;
 import com.sun.enterprise.cli.framework.CommandValidationException;
-import com.sun.enterprise.universal.glassfish.GFLauncherUtils;
 import com.sun.enterprise.universal.glassfish.SystemPropertyConstants;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import com.sun.enterprise.universal.io.SmartFile;
@@ -48,7 +46,6 @@ import com.sun.enterprise.universal.xml.MiniXmlParserException;
 import java.io.*;
 import java.util.*;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * A local StopDomain command
@@ -80,7 +77,7 @@ public class StopDomainCommand extends AbstractCommand {
         
         try {
             CLILogger.getInstance().pushAndLockLevel(Level.WARNING);
-            new RemoteCommand("stop-domain", "--port", ports[0].toString());
+            new RemoteCommand(getCmd(ports[0].toString()));
         }
         finally {
             CLILogger.getInstance().popAndUnlockLevel();
@@ -109,6 +106,27 @@ public class StopDomainCommand extends AbstractCommand {
         return true;
     }
 
+    
+    ///// Private Methods /////
+    private String[] getCmd(String port) {
+        List<String> cmd = new ArrayList<String>();
+        cmd.add("stop-domain");
+        addOption(cmd, HOST);
+        addOption(cmd, PORT);
+        addOption(cmd, USER);
+        addOption(cmd, PASSWORDFILE);
+        String[] holdingArray = new String[cmd.size()];
+        return ((String[])cmd.toArray(holdingArray));
+    }
+    
+    private void addOption(List<String> cmd, String option) {
+        //adds the option to list as "--option" followed by its value iff value is non-null
+        String value = getOption(option);
+        if ( value != null) {
+            cmd.add("--" + option); //get it as long option, a suitable method is not available  :( 
+            cmd.add(value);
+        }
+    }
     private void getDomainRootDir() throws CommandValidationException {
         if (domainsDir == null) {
             domainsDir = new File(getSystemProperty(SystemPropertyConstants.DOMAINS_ROOT_PROPERTY));

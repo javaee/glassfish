@@ -186,7 +186,7 @@ public class RemoteCommand {
                 uriConnection = uriConnection + "?DEFAULT=" + URLEncoder.encode(operand,
                                                                                   "UTF-8");
             }
-
+            HttpURLConnection urlConnection = null;
             try {
                 HttpConnectorAddress url = new HttpConnectorAddress(hostName, Integer.parseInt(hostPort), isSecure);
                 logger.printDebugMessage("URL: " + url.toURL(uriConnection).toString());
@@ -194,7 +194,7 @@ public class RemoteCommand {
 
                 if (fileName != null && uploadFile) {
                     if (fileName.exists()) {
-                        HttpURLConnection urlConnection = FileUploadUtil.upload(url.toURL(uriConnection).toString(),
+                        urlConnection = FileUploadUtil.upload(url.toURL(uriConnection).toString(),
                                                                                 fileName);
                         InputStream in = urlConnection.getInputStream();
                         handleResponse(params, in,
@@ -204,7 +204,7 @@ public class RemoteCommand {
                     }
                 }
                 else {
-                    final HttpURLConnection urlConnection = (HttpURLConnection)url.openConnection(uriConnection);
+                    urlConnection = (HttpURLConnection)url.openConnection(uriConnection);
                     urlConnection.setRequestProperty("User-Agent",
                                                      responseFormatType);
                     urlConnection.setRequestProperty(HttpConnectorAddress.AUTHORIZATION_KEY, url.getBasicAuthString());
@@ -214,8 +214,24 @@ public class RemoteCommand {
                     handleResponse(params, in, urlConnection.getResponseCode(),
                                    userOut);
                 }
+            } catch(ConnectException ce) {
+                //this really means none was listening on the remote server end
+                //implementation note: ConnectException extends IOException and tells us more!
+                String msg = strings.get("ConnectException", hostName, hostPort);
+                throw new CommandException(msg, ce);
             } catch (IOException e) {
-                throw new CommandException("Cannot connect to host, is server up ?");
+                String msg = null;
+                if (urlConnection != null) {
+                    int rc = urlConnection.getResponseCode();
+                    if (HttpURLConnection.HTTP_UNAUTHORIZED == rc) {
+                        msg = strings.get("InvalidCredentials", user);
+                    } else {
+                        msg = "Status: " + rc;
+                    }
+                } else {
+                    msg = "Unknown Error";
+                }
+                throw new CommandException(msg, e);
             }
         } catch (CommandException e) {
             throw e;
