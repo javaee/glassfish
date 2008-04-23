@@ -220,6 +220,7 @@ public final class DelegateToConfigBeanDelegate extends DelegateBase
     {
         return s != null && s.startsWith(COLLECTION_CMD_PREFIX) && s.endsWith(COLLECTION_CMD_SUFFIX);
     }
+    
             
     private void apply(
         final ConfigBean cb,
@@ -246,8 +247,10 @@ public final class DelegateToConfigBeanDelegate extends DelegateBase
                         final Object o = writeable.getter(prop, getCollectionGenericType());
                         final List<String> existingValuesList = TypeCast.checkList( TypeCast.asList(o), String.class);
                         
+        debug( "Existing values: {" + CollectionUtil.toString( existingValuesList ) + "}");
                         // make a working copy
                         final List<String> workList = new ArrayList(existingValuesList);
+        debug( "Work list start: {" + CollectionUtil.toString( workList ) + "}");
                         
                         // single string or List<String> or String[] are all mapped to a list
                         final List<String> argValues = ListUtil.asStringList( value );
@@ -255,40 +258,70 @@ public final class DelegateToConfigBeanDelegate extends DelegateBase
                                                 
                         // check for command on what to do -- first argument could be a command
                         final String first = argValues.get(0);
-                        final String cmd   = isCollectionCmd(first) ? first : COLLECTION_OP_ADD;
+                        String cmd = COLLECTION_OP_ADD;
+                        if ( isCollectionCmd(first) )
+                        {
+                            argValues.remove(0);
+                            cmd = first;
+                        }
+        debug( "Arg values start: {" + CollectionUtil.toString( argValues ) + "}");
+
                         if ( cmd.equals( COLLECTION_OP_REPLACE ) )
                         {
                             workList.clear();
                             workList.addAll( argValues );
+        debug( "Work list after COLLECTION_OP_REMOVE: {" + CollectionUtil.toString( workList ) + "}");
                         }
                         else if ( cmd.equals( COLLECTION_OP_REMOVE ) )
                         {
                             workList.removeAll( argValues );
+        debug( "Work list after COLLECTION_OP_REMOVE: {" + CollectionUtil.toString( workList ) + "}");
                         }
                         else if ( cmd.equals( COLLECTION_OP_ADD ) )
                         {
                             // eliminate duplicates for now unless there is a good reason to allow them
                             argValues.removeAll( workList );
+        debug( "Arg values after removeAll(workList): {" + CollectionUtil.toString( argValues ) + "}");
                             
-                            // add in any that are not duplicates
+                            // add in the remaining (non-duplicate) items
                             workList.addAll( argValues );
+        debug( "Work list after COLLECTION_OP_ADD: {" + CollectionUtil.toString( workList ) + "}");
                         }
                         else
                         {
                             throw new IllegalArgumentException(cmd);
                         }
                         
-                        // the existing list does not support clear() or removeAll()
-                        // and it's broken if we remove anything. Arggg....
-                        /*
-                        while ( existingValuesList.size() != 0 )
+                        final boolean IMPAIRED_CONFIG_BEAN_LIST = true;
+                        if ( IMPAIRED_CONFIG_BEAN_LIST  )
                         {
-                            existingValuesList.remove( existingValuesList.get( existingValuesList.size() - 1 ) );
+                           // Ugly nasty internal 'ProtectedList' is not precious at all,
+                           // it supports only add(Object) and remove(Object), no clear() or removeAll()
+                           // remove all items that aren't supposed to exist anymore
+                           for( final String existing : existingValuesList )
+                           {
+                                if ( ! workList.contains(existing) )
+                                {
+                                    existingValuesList.remove(existing);
+                                }
+                           }
+                           // add in all items that are not present
+                           for( final String keepMe : workList )
+                           {
+                                if ( ! existingValuesList.contains(keepMe) )
+                                {
+                                    existingValuesList.add(keepMe);
+                                }
+                           }
                         }
-                        */
+                        else
+                        {
+                            // empty the existing list and add in the new values
+                            existingValuesList.clear();
+                            existingValuesList.addAll( workList );
+                        }
                         
-                       // existingValuesList.removeAll( workList );
-                        existingValuesList.addAll( workList );
+        debug( "Existing values list before commit: {" + CollectionUtil.toString( existingValuesList ) + "}");
                     }
                     catch ( final NoSuchMethodException e)
                     {
