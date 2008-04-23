@@ -46,7 +46,6 @@
 	<!-- resolveArtifact artifactId="testng" property="testng.jar"/>
         <echo message="testng jar value: ${testng.jar}"/ -->
         <!-- antcall target="setup.toplink"/ -->
-<!--
         <antcall target="start-server"/>
         <antcall target="startDerby"/>        
         <antcall target="build"/>
@@ -55,9 +54,7 @@
         <antcall target="undeploy"/>
         <antcall target="stop-server"/>
 	<move file="test-output" tofile="test-output-hk2" failonerror="false" overwrite="true"/>
--->
-        <antcall target="report"/>        
-<!--
+        <!-- antcall target="report"/ -->        
         <antcall target="start-server-felix"/>
         <antcall target="build"/>
         <antcall target="deploy"/>
@@ -66,7 +63,6 @@
         <antcall target="stop-server"/>
         <antcall target="stopDerby"/>
 	<move file="test-output" tofile="test-output-felix" failonerror="false" overwrite="true"/>
--->
         <record name="allrun.output" action="stop"/>
     </target>
         
