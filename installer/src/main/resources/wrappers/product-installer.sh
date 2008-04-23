@@ -37,7 +37,7 @@
  
 
 # Sample fake product.
-PRODUCTNAME="GlassFish V3"
+PRODUCTNAME="glassfish"
 ORIG_ARGS=$@
 
 INST_DIR=/tmp/.launcher.$$
@@ -142,10 +142,9 @@ perform() {
 
 ENGINE_OPS="-m file://${MYDIR}/metadata/"
 ENGINE_OPS="${ENGINE_OPS} -a file://${MYDIR}/install.properties"
-ENGINE_OPS="${ENGINE_OPS} -i file://${MYDIR}/Product"
+ENGINE_OPS="${ENGINE_OPS} -i file://${MYDIR}/Product/"
 ENGINE_OPS="${ENGINE_OPS} -p Default-Product-ID=${PRODUCTNAME}"
 ENGINE_OPS="${ENGINE_OPS} -p Pkg-Format=zip"
-ENGINE_OPS="${ENGINE_OPS} -C install-configurator.jar"
 
 
 # add ubi-enabled packaging tool location to environment so that it
@@ -377,7 +376,7 @@ while getopts "${OPTSTRING}" opt ; do
 done
 
 ${ECHO}
-echo `${GETTEXT} "Welcome to openInstaller Sample Product setup"`
+echo `${GETTEXT} "Welcome to GlassFish V3 installer"`
 ${ECHO}
 
 # check user for access privileges

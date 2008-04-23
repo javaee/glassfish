@@ -60,6 +60,7 @@
             dest="${stage.dir}"/>
         <unzip src="${maven.repo.local}/org/openinstaller/resources/0.9.4/resources-0.9.4.zip"
             dest="${stage.dir}"/>
+        <chmod file="${stage.dir}/install/bin/engine-wrapper" perm="ugo+rx"/>
     </target>
 
     <target name="compile"  description="Compiling configurator">
@@ -96,7 +97,7 @@
 
     <target name="assemble"  description="Assembling installer distribution layout">
          <mkdir dir="${stage.dir}/metadata"/>
-         <mkdir dir="${stage.dir}/product/packages"/>
+         <mkdir dir="${stage.dir}/Product/Packages"/>
 
          <echo message="Staging installer metadata"/>
          <copy todir="${stage.dir}/metadata/dependency">
@@ -121,22 +122,24 @@
          <echo message="Staging wrappers"/>
 
          <copy todir="${stage.dir}">
-               <fileset dir="${resources.dir}/wrappers" excludes=".svn"/>
+               <fileset dir="${resources.dir}/wrappers" excludes=".svn"/>               
          </copy>
+
+         <chmod file="${stage.dir}/product-installer.sh" perm="ugo+rx"/>
 
          <echo message="Staging product payload"/>
 
          <echo message="Copying Glassfish zip file"/>
  
-         <copy tofile="${stage.dir}/product/packages/glassfish.zip"
+         <copy tofile="${stage.dir}/Product/Packages/glassfish.zip"
                file="${gf.zip.dir}/V3IPSImage_Installer.zip" />
 
          <echo message="Copying openInstaller zip files"/>
  
-         <copy tofile="${stage.dir}/product/packages/Engine.zip"
+         <copy tofile="${stage.dir}/Product/Packages/Engine.zip"
                file="${maven.repo.local}/org/openinstaller/engine/0.9.4/engine-0.9.4.zip"/>
 
-         <copy tofile="${stage.dir}/product/packages/Resources.zip"
+         <copy tofile="${stage.dir}/Product/Packages/Resources.zip"
                file="${maven.repo.local}/org/openinstaller/resources/0.9.4/resources-0.9.4.zip"/>
                
          <echo message="Creating icons zip file"/>
@@ -145,7 +148,7 @@
              <fileset dir="${resources.dir}/icons" excludes=".svn"/>
          </copy>
 
-         <zip destfile="${stage.dir}/product/packages/icons.zip"
+         <zip destfile="${stage.dir}/Product/Packages/icons.zip"
              basedir="${tmp.dir}" />
 
          <delete dir="${tmp.dir}/glassfish" />
@@ -154,7 +157,7 @@
 
          <copy tofile="${tmp.dir}/updatetool/lib/ucbootstrap.jar"
              file="${maven.repo.local}/com/sun/pkg/client/ucbootstrap/0.0.0.2/ucbootstrap-0.0.0.2.jar"/>          
-         <zip destfile="${stage.dir}/product/packages/updatetool.zip"
+         <zip destfile="${stage.dir}/Product/Packages/updatetool.zip"
              basedir="${tmp.dir}" />
 
          <delete dir="${tmp.dir}" />
