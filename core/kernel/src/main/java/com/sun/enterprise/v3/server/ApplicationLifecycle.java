@@ -763,7 +763,7 @@ public class ApplicationLifecycle {
 
     }
 
-    protected void undeploy(String appName, DeploymentContext context, ActionReport report) {
+    public void undeploy(String appName, DeploymentContext context, ActionReport report) {
 
         ApplicationInfo info =unload(appName, context, report);
         if (report.getActionExitCode().equals(ActionReport.ExitCode.SUCCESS)) {
