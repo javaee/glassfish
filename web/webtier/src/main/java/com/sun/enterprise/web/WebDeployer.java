@@ -59,8 +59,10 @@ import java.util.logging.Level;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.beans.PropertyVetoException;
 import java.net.URL;
+import java.net.MalformedURLException;
 
 /**
  * Web module deployer.
@@ -265,17 +267,17 @@ public class WebDeployer extends JavaEEDeployer<WebContainer, WebApplication>{
             return;
         }
 
-        FileInputStream fis = null;
+        InputStream fis = null;
 
         try {
             // parse default-web.xml contents 
-            File file = new File(env.getConfigDirPath(),DEFAULT_WEB_XML);
-            if (file.exists()) {
-                fis = new FileInputStream(file);
+            URL defaultWebXml = getDefaultWebXML();
+            if (defaultWebXml!=null)  {
+                fis = defaultWebXml.openStream();
                 WebDeploymentDescriptorFile wddf =
                     new WebDeploymentDescriptorFile();
                 wddf.setXMLValidation(false);
-                defaultWebXMLWbd = (WebBundleDescriptor) wddf.read(fis);
+                defaultWebXMLWbd = wddf.read(fis);
             }
         } catch (Exception e) {
             LogDomains.getLogger(LogDomains.WEB_LOGGER).
@@ -289,6 +291,22 @@ public class WebDeployer extends JavaEEDeployer<WebContainer, WebApplication>{
                 // do nothing
             }
         }
+    }
+
+    /**
+     * Obtains the location of <tt>default-web.xml</tt>.
+     * This allows subclasses to load the file from elsewhere.
+     *
+     * @return
+     *      null if not found, in which case the default web.xml will not be read
+     *      and <tt>web.xml</tt> in the applications need to have everything.
+     */
+    protected URL getDefaultWebXML() throws IOException {
+        File file = new File(env.getConfigDirPath(),DEFAULT_WEB_XML);
+        if (file.exists())
+            return file.toURI().toURL();
+        else
+            return null;
     }
 
     /**
