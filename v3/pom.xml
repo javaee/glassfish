@@ -114,7 +114,7 @@
         <grizzly.version>1.7.3.1</grizzly.version>
         <jasper-jsr199.version>9.1</jasper-jsr199.version>
         <jaxb-api.version>2.1</jaxb-api.version>
-        <jaxws-api.version>2.0</jaxws-api.version>
+        <jaxws-api.version>2.1</jaxws-api.version>
         <jsr250-api.version>1.0</jsr250-api.version>
         <jsr181-api.version>1.0-MR1</jsr181-api.version>
         <saaj-api.version>1.3</saaj-api.version>
