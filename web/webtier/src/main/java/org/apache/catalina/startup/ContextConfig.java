@@ -653,11 +653,9 @@ public class ContextConfig
      */
     public static Digester createWebXmlDigester(boolean namespaceAware,
                                                 boolean validation) {
-        
-        Digester webDigester =  DigesterFactory.newDigester(xmlValidation,
-                                                            xmlNamespaceAware,
-                                                            webRuleSet);
-        return webDigester;
+
+        DigesterFactory df = com.sun.enterprise.v3.server.Globals.get(DigesterFactory.class);
+        return df.newDigester(xmlValidation,xmlNamespaceAware,webRuleSet);
     }
 
 

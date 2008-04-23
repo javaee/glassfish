@@ -587,9 +587,8 @@ public final class TldConfig  {
                                            new TldRuleSet());
         */
         // START SJSAS 6384538
-        return DigesterFactory.newDigester(false, 
-                                           tldNamespaceAware, 
-                                           new TldRuleSet());
+        DigesterFactory df = com.sun.enterprise.v3.server.Globals.get(DigesterFactory.class);
+        return df.newDigester(false, tldNamespaceAware, new TldRuleSet());
         // END SJSAS 6384538
     }
 

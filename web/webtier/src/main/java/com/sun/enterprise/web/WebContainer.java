@@ -250,14 +250,15 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         appsStubRoot = instance.getApplicationStubPath();
         // END S1AS 6178005
 
+        // TODO: ParserUtils should become a @Service and it should initialize itself.
+        // TODO: there should be only one EntityResolver for both DigesterFactory
+        // and ParserUtils
         File root = _serverContext.getInstallRoot();
         File libRoot = new File(root, "lib");
         File schemas = new File(libRoot, "schemas");
         File dtds = new File(libRoot, "dtds");
 
         try {
-            DigesterFactory.setSchemaResourcePrefix(schemas.toURL().toString());
-            DigesterFactory.setDtdResourcePrefix(dtds.toURL().toString());
             ParserUtils.setSchemaResourcePrefix(schemas.toURL().toString());
             ParserUtils.setDtdResourcePrefix(dtds.toURL().toString());
         } catch(MalformedURLException e) {

@@ -1,5 +1,3 @@
-
-
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
@@ -43,40 +41,60 @@ package org.apache.catalina.startup;
 
 import java.net.URL;
 import java.net.MalformedURLException;
+import java.io.File;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.catalina.util.SchemaResolver;
-import org.apache.catalina.util.StringManager;
+import org.apache.jasper.xmlparser.ParserUtils;
 import com.sun.org.apache.commons.digester.Digester;
 import com.sun.org.apache.commons.digester.RuleSet;
-import org.xml.sax.InputSource;
+import com.sun.enterprise.server.ServerContext;
+import com.sun.logging.LogDomains;
 import org.xml.sax.SAXNotRecognizedException;
 import org.xml.sax.SAXNotSupportedException;
+
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.component.PostConstruct;
 
 /**
  * Wrapper class around the Digester that hide Digester's initialization details
  *
  * @author Jean-Francois Arcand
  */
+@Service
+public class DigesterFactory implements PostConstruct {
 
-public class DigesterFactory{
+    @Inject
+    ServerContext serverContext;
 
     /**
      * The path prefix for .xsd resources
      */
-    private static String schemaResourcePrefix;
+    private String schemaResourcePrefix;
 
     /**
      * The path prefix for .dtd resources
      */
-    private static String dtdResourcePrefix;
+    private String dtdResourcePrefix;
 
+    public void postConstruct() {
+        File root = serverContext.getInstallRoot();
+        File libRoot = new File(root, "lib");
+        File schemas = new File(libRoot, "schemas");
+        File dtds = new File(libRoot, "dtds");
+
+        setSchemaResourcePrefix(schemas.toURI().toString());
+        setDtdResourcePrefix(dtds.toURI().toString());
+    }
 
     /**
      * Create a <code>Digester</code> parser with no <code>Rule</code>
      * associated and XML validation turned off.
      */
-    public static Digester newDigester(){
+    public Digester newDigester(){
         return newDigester(false, false, null);
     }
 
@@ -85,7 +103,7 @@ public class DigesterFactory{
      * Create a <code>Digester</code> parser with XML validation turned off.
     ???* @param rule an instance of <code>Rule</code??? used for parsing the xml.
      */
-    public static Digester newDigester(RuleSet rule){
+    public Digester newDigester(RuleSet rule){
         return newDigester(false,false,rule);
     }
 
@@ -93,14 +111,14 @@ public class DigesterFactory{
     /**
      * Sets the path prefix for .xsd resources
      */
-    public static void setSchemaResourcePrefix(String prefix) {
+    public void setSchemaResourcePrefix(String prefix) {
         schemaResourcePrefix = prefix;
     }
 
     /**
      * Sets the path prefix for .dtd resources
      */
-    public static void setDtdResourcePrefix(String prefix) {
+    public void setDtdResourcePrefix(String prefix) {
         dtdResourcePrefix = prefix;
     }
 
@@ -110,11 +128,10 @@ public class DigesterFactory{
      * @param xmlNamespaceAware turn on/off namespace validation
      * @param rule an instance of <code>Rule</code??? used for parsing the xml.
      */
-    public static Digester newDigester(boolean xmlValidation,
+    public Digester newDigester(boolean xmlValidation,
                                        boolean xmlNamespaceAware,
                                        RuleSet rule) {
 
-        URL url = null;
         Digester digester = new Digester();
         digester.setNamespaceAware(xmlNamespaceAware);
         digester.setValidating(xmlValidation);
@@ -149,7 +166,7 @@ public class DigesterFactory{
     /**
      * Patch Xerces for backward compatibility.
      */
-    private static Digester patchXerces(Digester digester){
+    private Digester patchXerces(Digester digester){
         // This feature is needed for backward compatibility with old DDs
         // which used Java encoding names such as ISO8859_1 etc.
         // with Crimson (bug 4701993). By default, Xerces does not
@@ -171,10 +188,11 @@ public class DigesterFactory{
     /**
      * Utilities used to force the parser to use local schema, when available,
      * instead of the <code>schemaLocation</code> XML element.
-     * @param The instance on which properties are set.
+     * @param schemaResolver
+     *  The instance on which properties are set.
      * @return an instance ready to parse XML schema.
      */
-    protected static void registerLocalSchema(SchemaResolver schemaResolver) {
+    protected void registerLocalSchema(SchemaResolver schemaResolver) {
 
         if (schemaResourcePrefix != null) {
             // Java EE 5
@@ -306,7 +324,7 @@ public class DigesterFactory{
             String resourceURL,
             String resourcePublicId) {
 
-        URL url = null;
+        URL url;
         if (resourceURL != null && resourceURL.startsWith("file:")) {
             try {
                 url = new URL(resourceURL);
@@ -325,9 +343,8 @@ public class DigesterFactory{
     /**
      * Turn on DTD and/or validation (based on the parser implementation)
      */
-    protected static void turnOnValidation(Digester digester){
-        URL url = DigesterFactory.class
-                        .getResource(Constants.WebSchemaResourcePath_24);
+    protected void turnOnValidation(Digester digester){
+        URL url = getClass().getResource(Constants.WebSchemaResourcePath_24);
         digester.setSchema(url.toString());     
     }
 
@@ -335,7 +352,7 @@ public class DigesterFactory{
     /** 
      * Turn on schema AND DTD validation on Xerces parser.
      */
-    protected static void turnOnXercesValidation(Digester digester){
+    protected void turnOnXercesValidation(Digester digester){
         try{
             digester.setFeature(
                 "http://apache.org/xml/features/validation/dynamic",
@@ -351,4 +368,6 @@ public class DigesterFactory{
             // log("contextConfig.registerLocalSchema", e);
         }
     }
+
+    protected static final Logger _logger = LogDomains.getLogger(LogDomains.WEB_LOGGER);
 }
