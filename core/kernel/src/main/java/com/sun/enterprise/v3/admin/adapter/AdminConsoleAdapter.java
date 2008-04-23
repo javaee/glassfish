@@ -34,6 +34,7 @@ import com.sun.enterprise.v3.admin.AdminAdapter;
 import com.sun.enterprise.v3.data.ApplicationRegistry;
 import com.sun.enterprise.v3.server.ServerEnvironment;
 import com.sun.enterprise.v3.server.ApplicationLoaderService;
+import com.sun.enterprise.universal.glassfish.SystemPropertyConstants;
 import com.sun.grizzly.tcp.http11.GrizzlyAdapter;
 import com.sun.grizzly.tcp.http11.GrizzlyOutputBuffer;
 import com.sun.grizzly.tcp.http11.GrizzlyRequest;
@@ -54,6 +55,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import org.glassfish.api.container.Adapter;
+import org.glassfish.internal.api.AdminAuthenticator;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PostConstruct;
@@ -115,7 +117,10 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
     Domain domain;
 
     @Inject
-    Habitat habitat;
+    Habitat habitat;   
+
+    @Inject(optional=true)
+    AdminAuthenticator authenticator=null;    
     
     private String statusHtml;
     private String initHtml;
@@ -177,10 +182,13 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
     }
     private void handleAuth(GrizzlyRequest greq, GrizzlyResponse gres) {
         try {
-            if (!AdminAdapter.authenticate(greq.getRequest(), env)) {
-                gres.setStatus(HttpURLConnection.HTTP_UNAUTHORIZED);                
-                gres.addHeader("WWW-Authenticate", "BASIC");
-                gres.finishResponse();
+            File realmFile = new File(env.getProps().get(SystemPropertyConstants.INSTANCE_ROOT_PROPERTY) + "/config/admin-keyfile");
+            if (authenticator!=null && realmFile.exists()) {
+                if (!authenticator.authenticate(greq.getRequest(), realmFile)) {
+                    gres.setStatus(HttpURLConnection.HTTP_UNAUTHORIZED);
+                    gres.addHeader("WWW-Authenticate", "BASIC");
+                    gres.finishResponse();
+                }
             }
         } catch(Exception e) {
             throw new RuntimeException(e);

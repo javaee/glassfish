@@ -54,7 +54,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.Enumeration;
-import com.sun.enterprise.security.auth.realm.file.FileRealm;
 import com.sun.enterprise.universal.glassfish.SystemPropertyConstants;
 import com.sun.enterprise.v3.server.ServerEnvironment;
 import java.net.HttpURLConnection;
@@ -166,44 +165,16 @@ public class AdminAdapter implements Adapter, PostConstruct {
         res.finish();
     }
 
-    public static boolean authenticate(Request req, ServerEnvironment serverEnviron) 
+    public boolean authenticate(Request req, ServerEnvironment serverEnviron) 
             throws Exception {
-        String authHeader = req.getHeader("Authorization");
-        boolean authenticated = false;
-        // the file containing userid and password
-        FileRealm f =
-                new FileRealm(serverEnviron.getProps().get(SystemPropertyConstants.INSTANCE_ROOT_PROPERTY) + "/config/admin-keyfile");
 
-        authenticated = authenticateAnonymous(f); // allow anonymous login regardless
-        if (!authenticated && authHeader != null) { // only if anonymous login is allowed.
-            String base64Coded = authHeader.substring(BASIC.length());
-            String decoded = new String(decoder.decodeBuffer(base64Coded));
-            String[] userNamePassword = decoded.split(":");
-            if (userNamePassword == null || userNamePassword.length == 0) {
-                // no username/password in header - try anonymous auth
-                authenticated = authenticateAnonymous(f);
-            } else {
-                String userName = userNamePassword[0];
-                String password = userNamePassword.length > 1 ? userNamePassword[1] : "";
-                authenticated = f.authenticate(userName, password) != null;
-            }
+        File realmFile = new File(serverEnviron.getProps().get(SystemPropertyConstants.INSTANCE_ROOT_PROPERTY) + "/config/admin-keyfile");
+        if (authenticator!=null && realmFile.exists()) {
+           return authenticator.authenticate(req, realmFile);
         }
-        return authenticated;
-    }
-    
-    private static boolean authenticateAnonymous(FileRealm f) throws Exception {
-        Enumeration<String> users = f.getUserNames();
-        if (users.hasMoreElements()) {
-            String userNameInRealm = users.nextElement();
-            // allow anonymous authentication if the only user in the key file is the
-            // default user, with default password
-            if (!users.hasMoreElements() &&
-                    userNameInRealm.equals(SystemPropertyConstants.DEFAULT_ADMIN_USER)) {
-                logger.finer("Allowed anonymous access");
-                return true;
-            }
-        }
-        return false;
+        // no authenticator, this is fine.
+        return true;
+
     }
 
     private boolean authenticate(Request req, ActionReport report, Response res)

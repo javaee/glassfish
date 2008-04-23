@@ -169,7 +169,7 @@
         </dependency>
         <dependency>
             <groupId>org.glassfish.common</groupId>
-            <artifactId>common-ee-util</artifactId>
+            <artifactId>common-util</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>
