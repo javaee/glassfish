@@ -31,6 +31,7 @@ import com.sun.enterprise.v3.data.*;
 import com.sun.enterprise.v3.deployment.DeploymentContextImpl;
 import com.sun.enterprise.v3.deployment.DeployCommand;
 import com.sun.enterprise.v3.deployment.EnableCommand;
+import com.sun.enterprise.deployment.BundleDescriptor;
 import com.sun.enterprise.v3.services.impl.GrizzlyService;
 import com.sun.enterprise.config.serverbeans.Applications;
 import com.sun.enterprise.config.serverbeans.Application;
@@ -845,6 +846,13 @@ abstract public class ApplicationLifecycle {
     protected void undeploy(String appName, DeploymentContext context, ActionReport report) {
 
         ApplicationInfo info =unload(appName, context, report);
+
+        com.sun.enterprise.deployment.Application app = 
+            getApplicationFromApplicationInfo(info);
+        if (app != null) {
+            context.addModuleMetaData(app);
+        }
+
         if (report.getActionExitCode().equals(ActionReport.ExitCode.SUCCESS)) {
             for (ModuleInfo moduleInfo : info.getModuleInfos()) {
                 try {
@@ -1141,4 +1149,15 @@ abstract public class ApplicationLifecycle {
         FileUtils.whack(generatedJspRoot);
     }
 
+    protected com.sun.enterprise.deployment.Application 
+        getApplicationFromApplicationInfo(ApplicationInfo appInfo) {
+        for (ModuleInfo moduleInfo: appInfo.getModuleInfos()) {
+            ApplicationContainer appCtr = moduleInfo.getApplicationContainer();
+            Object descriptor = appCtr.getDescriptor();
+            if (descriptor instanceof BundleDescriptor) {
+                return ((BundleDescriptor)descriptor).getApplication(); 
+            }
+        }
+        return null;
+    }
 }
