@@ -122,7 +122,7 @@
          <echo message="Staging wrappers"/>
 
          <copy todir="${stage.dir}">
-               <fileset dir="${resources.dir}/wrappers" excludes=".svn"/>               
+               <fileset dir="${resources.dir}/wrappers" excludes=".svn,setup.exe,wrapper.sh"/>               
          </copy>
 
          <chmod file="${stage.dir}/product-installer.sh" perm="ugo+rx"/>
@@ -170,7 +170,17 @@
 
          <zip destfile="${basedir}/target/installer_distro.zip"
              basedir="${stage.dir}" />
-
+         <copy tofile="${basedir}/target/setup-windows" file="${resources.dir}/wrappers/setup.exe"/>
+         <concat append="true" encoding="ISO-8859-1" destfile="${basedir}/target/setup-windows">
+            <fileset dir="${basedir}/target" includes="installer_distro.zip"/>
+        </concat>
+        <jar jarfile="${basedir}/target/installer_distro.jar"
+            basedir="${stage.dir}">            
+        </jar>
+        <copy tofile="${basedir}/target/setup-unix" file="${resources.dir}/wrappers/wrapper.sh"/>
+        <concat append="true" encoding="ISO-8859-1" destfile="${basedir}/target/setup-unix">
+           <fileset dir="${basedir}/target" includes="installer_distro.jar"/>
+        </concat>
     </target>
 
 </project>
