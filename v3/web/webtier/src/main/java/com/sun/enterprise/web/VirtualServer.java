@@ -237,8 +237,6 @@ public class VirtualServer extends StandardHost {
      */
     private PEAccessLogValve accessLogValve;
     
-    private HashMap<String, String> alternateDocBasesMap = null;
-
 
     // ------------------------------------------------------------- Properties
 
@@ -1066,119 +1064,6 @@ public class VirtualServer extends StandardHost {
             _logger.log(Level.SEVERE,"webcontainer.unableToLoadExtension",ex);        
         }
         return null;
-    }
-
-
-    void configureAlternateDocBases() {
-
-        if (vsBean == null) {
-            return;
-        }
-        List<Property> props = vsBean.getProperty();
-        if (props == null) {
-            return;
-        }
-
-        for (Property prop : props) {
-
-            String propName = prop.getName();
-            String propValue = prop.getValue();
-            if (propName == null || propValue == null) {
-                _logger.log(Level.WARNING,
-                            "webcontainer.nullVirtualServerProperty",
-                            getID());
-            }
-
-            if (!propName.startsWith("alternatedocroot_")) {
-                continue;
-            }
-            
-            /*
-             * Validate the prop value
-             */
-            String urlPattern = null;
-            String docBase = null;
-            String[] alternateDocBaseParams = propValue.split(" ");
-            for (int j=0; j<alternateDocBaseParams.length; j++) {
-
-                if (alternateDocBaseParams[j].startsWith("from=")) {
-                    urlPattern = alternateDocBaseParams[j].substring(
-                        "from=".length());
-                    if (!validateURLPattern(urlPattern)) {
-                        _logger.log(
-                            Level.SEVERE,
-                            "webcontainer.alternateDocBase.illegalUrlPattern",
-                            urlPattern);
-                    }
-                }
-                if (alternateDocBaseParams[j].startsWith("dir=")) {
-                    docBase = alternateDocBaseParams[j].substring(
-                        "dir=".length());
-                }
-            }
-
-            addAlternateDocBase(urlPattern, docBase);
-        }
-
-    }
-
-
-    private boolean validateURLPattern(String urlPattern) {
-
-        if (urlPattern == null)
-            return (false);
-        if (urlPattern.indexOf('\n') >= 0 || urlPattern.indexOf('\r') >= 0) {
-            _logger.log(Level.WARNING,
-                        "webcontainer.alternateDocBase.crlfInUrlPattern",
-                        urlPattern);
-        }
-
-        if (urlPattern.startsWith("*.")) {
-            if (urlPattern.indexOf('/') < 0) {
-                return (true);
-            } else {
-                return (false);
-            }
-        }
-        if ( (urlPattern.startsWith("/")) &&
-	     (urlPattern.indexOf("*.") < 0)) {
-            return (true);
-        } else {
-            return (false);
-        }
-    }
-
-
-    /**
-     * Adds the given mapping of url pattern to alternate doc base to this
-     * VirtualServer.
-     *
-     * @param urlPattern The url pattern
-     * @param docBase The alternate doc base
-     */
-    void addAlternateDocBase(String urlPattern, String docBase) {
-        if (urlPattern == null || docBase == null) {
-            _logger.log(
-                Level.SEVERE,
-                "webcontainer.alternateDocBase.missingPathOrUrlPattern");
-        }
-
-        if (alternateDocBasesMap == null) {
-            alternateDocBasesMap = new HashMap<String, String>();
-        }
-        alternateDocBasesMap.put(urlPattern, docBase);
-    }
-
-
-    /**
-     * Gets the mappings of url patterns to alternate doc bases of this
-     * VirtualServer.
-     *
-     * @return The mappings of url patterns to alternate doc bases of this
-     * VirtualServer
-     */
-    public HashMap<String, String> getAlternateDocBasesMap() {
-        return alternateDocBasesMap;
     }
 
 

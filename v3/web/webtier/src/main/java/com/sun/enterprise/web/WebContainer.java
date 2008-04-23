@@ -739,6 +739,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                     Integer.valueOf(httpListener.getPort()));
         CoyoteAdapter coyoteAdapter = new CoyoteAdapter(connector);
         adapterMap.put(Integer.valueOf(httpListener.getPort()), coyoteAdapter);
+
         // If we already know the redirect port, then set it now
         // This situation will occurs when dynamic reconfiguration occurs
         if ( defaultRedirectPort != -1 ){
@@ -2824,9 +2825,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         ctx.setCachingAllowed(false);
         ctx.setCacheControls(vs.getCacheControls());
         ctx.setBean(wmInfo.getBean());
-
-        //ctx.cconfigureAlternateDocBases(wmInfo.getAlternateDocBasesMap());
-
 
         if (adHocPaths != null) {
             ctx.addAdHocPaths(adHocPaths);
