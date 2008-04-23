@@ -38,15 +38,12 @@ package com.sun.ejb.containers;
 import org.glassfish.api.naming.NamedNamingObjectProxy;
 import org.glassfish.api.invocation.ComponentInvocation;
 
-import com.sun.logging.LogDomains;
 import com.sun.ejb.EjbInvocation;
 
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 
 import javax.naming.NamingException;
-
-import java.util.logging.Logger;
 
 /**
  * Proxy for creating TimerService instances when requested by lookup or injection.

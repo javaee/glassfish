@@ -32,6 +32,7 @@ import com.sun.enterprise.deployment.archivist.Archivist;
 import com.sun.enterprise.deployment.archivist.EjbInWarArchivist;
 import com.sun.enterprise.server.ServerContext;
 import com.sun.enterprise.v3.server.ServerEnvironment;
+import com.sun.enterprise.v3.deployment.DeployCommand;
 import com.sun.enterprise.module.ModuleDefinition;
 import com.sun.enterprise.module.Module;
 import org.glassfish.api.deployment.DeploymentContext;
@@ -45,6 +46,7 @@ import org.jvnet.hk2.component.Habitat;
 
 import java.util.*;
 import java.util.logging.Level;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Ejb module deployer.
@@ -67,6 +69,8 @@ public class EjbDeployer
     protected Habitat habitat;
 
     protected ThreadLocal<Application> tldApp = new ThreadLocal<Application>();
+
+    protected ConcurrentHashMap<String, EjbApplication> ejbApps = new ConcurrentHashMap();
 
     /**
      * Constructor
@@ -185,10 +189,10 @@ public class EjbDeployer
         Collection<EjbDescriptor> ebds =
                 (Collection<EjbDescriptor>) app.getEjbDescriptors();
 
-        Collection<EjbApplication> ejbApps =
-                new HashSet<EjbApplication>();
-
         EjbApplication ejbApp = new EjbApplication(ebds, dc, dc.getClassLoader());
+
+        String appName = dc.getCommandParameters().getProperty(DeployCommand.NAME);
+        ejbApps.put(appName, ejbApp);
 
         /*
         System.out.println("**EjbDeployer: " + ejbApp
@@ -202,6 +206,24 @@ public class EjbDeployer
         Properties params = dc.getCommandParameters();
 
         // unload from ejb container
+    }
+
+    /**
+     * Clean any files and artifacts that were created during the execution
+     * of the prepare method.
+     *
+     * @param context deployment context
+     */
+    public void clean(DeploymentContext dc) {
+
+        String appName = dc.getCommandParameters().getProperty(DeployCommand.NAME);
+        EjbApplication ejbApp = ejbApps.get(appName);
+        if (ejbApp != null) {
+            ejbApp.undeploy();
+        } else {
+            dc.getLogger().log(Level.WARNING,
+                    "EjbApplication is null for name " + appName);
+        }
     }
 }
 

@@ -116,7 +116,10 @@ public class EjbApplication
     }
 
     public boolean stop() {
-        return false;
+        for (Container container : containers) {
+            container.onShutdown();
+        }
+        return true;
     }
 
     /**
@@ -149,6 +152,12 @@ public class EjbApplication
         }
 
         return rc.toString().hashCode();
+    }
+
+    protected void undeploy() {
+        for (Container container : containers) {
+            container.undeploy();
+        }
     }
 
 }
