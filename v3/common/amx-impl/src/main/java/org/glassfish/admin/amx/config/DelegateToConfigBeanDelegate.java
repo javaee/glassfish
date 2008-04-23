@@ -56,6 +56,8 @@ import java.lang.reflect.Type;
 import org.jvnet.hk2.config.*;
 
 import com.sun.appserv.management.util.misc.TypeCast;
+import static com.sun.appserv.management.config.CollectionOp.*;
+
 
 /**
 	Delegate which delegates to another MBean.
@@ -212,6 +214,11 @@ public final class DelegateToConfigBeanDelegate extends DelegateBase
         throws NoSuchMethodException
     {
         return ConfigSupport.class.getDeclaredMethod("defaultPropertyValue", null).getGenericReturnType();
+    }    
+    
+    private static boolean isCollectionCmd( final String s )
+    {
+        return s != null && s.startsWith(COLLECTION_CMD_PREFIX) && s.endsWith(COLLECTION_CMD_SUFFIX);
     }
             
     private void apply(
@@ -237,16 +244,51 @@ public final class DelegateToConfigBeanDelegate extends DelegateBase
                     try
                     {
                         final Object o = writeable.getter(prop, getCollectionGenericType());
-                        final List<String> existingValues = TypeCast.checkList( TypeCast.asList(o), String.class);
+                        final List<String> existingValuesList = TypeCast.checkList( TypeCast.asList(o), String.class);
+                        
+                        // make a working copy
+                        final List<String> workList = new ArrayList(existingValuesList);
                         
                         // single string or List<String> or String[] are all mapped to a list
-                        final List<String> newValues = ListUtil.asStringList( value );
+                        final List<String> argValues = ListUtil.asStringList( value );
+                        if ( argValues.size() == 0 ) continue;
+                                                
+                        // check for command on what to do -- first argument could be a command
+                        final String first = argValues.get(0);
+                        final String cmd   = isCollectionCmd(first) ? first : COLLECTION_OP_ADD;
+                        if ( cmd.equals( COLLECTION_OP_REPLACE ) )
+                        {
+                            workList.clear();
+                            workList.addAll( argValues );
+                        }
+                        else if ( cmd.equals( COLLECTION_OP_REMOVE ) )
+                        {
+                            workList.removeAll( argValues );
+                        }
+                        else if ( cmd.equals( COLLECTION_OP_ADD ) )
+                        {
+                            // eliminate duplicates for now unless there is a good reason to allow them
+                            argValues.removeAll( workList );
+                            
+                            // add in any that are not duplicates
+                            workList.addAll( argValues );
+                        }
+                        else
+                        {
+                            throw new IllegalArgumentException(cmd);
+                        }
                         
-                        // eliminate duplicates for now unless there is a good reason to allow them
-                        newValues.removeAll( existingValues );
+                        // the existing list does not support clear() or removeAll()
+                        // and it's broken if we remove anything. Arggg....
+                        /*
+                        while ( existingValuesList.size() != 0 )
+                        {
+                            existingValuesList.remove( existingValuesList.get( existingValuesList.size() - 1 ) );
+                        }
+                        */
                         
-                        // "add" semantics -- need to handle remove another way
-                        existingValues.addAll( newValues );
+                       // existingValuesList.removeAll( workList );
+                        existingValuesList.addAll( workList );
                     }
                     catch ( final NoSuchMethodException e)
                     {
