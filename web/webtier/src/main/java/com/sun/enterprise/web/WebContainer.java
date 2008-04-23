@@ -197,8 +197,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
     EmbeddedWebContainer _embedded;
     Engine engine;
     String instanceName;
-    String defaultWebXml;
-    
+
     private WebConnector jkConnector;
 
     /**
@@ -251,14 +250,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         appsStubRoot = instance.getApplicationStubPath();
         // END S1AS 6178005
         
-        defaultWebXml = System.getProperty("AS_DEF_DOMAINS_PATH");
-        if (defaultWebXml != null) {
-            defaultWebXml += File.separator + "domain1"
-                + File.separator + "config" + File.separator
-                + "default-web.xml";
-            _logger.info("Using default-web.xml " + defaultWebXml);
-        }
-
         String root = System.getProperty("com.sun.aas.installRoot");
         File libRoot = new File(root, "lib");
         File schemas = new File(libRoot, "schemas");
