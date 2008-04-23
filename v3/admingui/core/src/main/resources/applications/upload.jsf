@@ -64,8 +64,14 @@
 
 		<sun:body onLoad="javascript: 
                      setVisible('#{appType}');
-                     synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')"
-                        
+                     disableComponent('#{dirPathId}', 'text');
+                     synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}');
+                     if(getSelectedValue('uploadRdBtn')=='serverSide'){ 
+                        enableDOMComponent('#{dirPathId}'); 
+                        enableBtnComponent('#{dirSelectBtnId}'); 
+                        enableBtnComponent('#{filSelectBtnId}');
+                        disableComponent('#{fileuploadId}', 'file'); 
+                        }"   
                         >
 	    	<sun:form id="form"> 
 #include "/shared/treeBreadcrumbs.inc"

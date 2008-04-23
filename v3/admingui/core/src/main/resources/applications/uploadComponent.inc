@@ -62,8 +62,8 @@
                 label="$resource{i18n.deploy.chooseJarLabel}" 
                 selected="#{uploadRdBtn}"  selectedValue="client" 
                 onClick="javascript:
-                    disableDOMComponent('#{dirPathId}');
-                    //disableComponent('#{dirPathId}', 'text');
+                    //disableDOMComponent('#{dirPathId}');
+                    disableComponent('#{dirPathId}', 'text');
                     disableBtnComponent('#{dirSelectBtnId}');
                     disableBtnComponent('#{filSelectBtnId}');
                     enableComponent('#{fileuploadId}', 'file'); "
@@ -96,7 +96,7 @@
             /> 
             "<br />
 
-            <sun:textField id="dirPath" required="#{false}" disabled="true" text="#{dirPath}" style="margin-left: 17pt" columns="$int{50}" 
+            <sun:textField id="dirPath" required="#{false}" text="#{dirPath}" style="margin-left: 17pt" columns="$int{50}" 
                 onChange="javascript: setFieldValue('#{appNameId}', this.value, '#{typeId}', '#{contextRootId}', '#{extensionId}' );" 
                >
                 <!afterCreate
