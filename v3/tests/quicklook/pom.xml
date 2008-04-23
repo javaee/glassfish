@@ -91,6 +91,11 @@
     			<version>5.6</version>
 	   	        <classifier>jdk15</classifier>
 		     </dependency>
+		     <dependency>
+			<groupId>ant</groupId>
+			<artifactId>ant-junit</artifactId>
+			<version>1.6.5</version>
+		      </dependency>
 		     <!-- dependency>
  	      		<groupId>org.testng</groupId>
  	      		<artifactId>testng</artifactId>
