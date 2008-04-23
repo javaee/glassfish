@@ -44,6 +44,7 @@
 package com.sun.enterprise.server;
 
 import org.jvnet.hk2.annotations.Contract;
+import org.jvnet.hk2.component.Habitat;
 
 import javax.naming.InitialContext;
 import java.io.File;
@@ -155,6 +156,6 @@ public interface ServerContext {
      * Returns the default habitat for this instance
      * @return defa ult habitat
      */
-    public org.jvnet.hk2.component.Habitat getDefaultHabitat();
+    public Habitat getDefaultHabitat();
 
 }
