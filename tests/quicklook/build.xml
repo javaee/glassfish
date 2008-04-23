@@ -35,7 +35,7 @@
  holder.
 -->
 
-<project name="GlassFish-V3-CommunityTests" default="default" basedir=".">
+<project name="GlassFish-V3-QuickLook" default="default" basedir=".">
     <property file="build.properties"/>
      <property file="${basedir}/gfproject/derby.properties"/>
      <import file="${basedir}/gfproject/db-targets.xml"/>
@@ -46,6 +46,7 @@
 	<!-- resolveArtifact artifactId="testng" property="testng.jar"/>
         <echo message="testng jar value: ${testng.jar}"/ -->
         <!-- antcall target="setup.toplink"/ -->
+<!--
         <antcall target="start-server"/>
         <antcall target="startDerby"/>        
         <antcall target="build"/>
@@ -53,8 +54,19 @@
         <antcall target="runtest"/>
         <antcall target="undeploy"/>
         <antcall target="stop-server"/>
+	<move file="test-output" tofile="test-output-hk2" failonerror="false" overwrite="true"/>
+-->
+        <antcall target="report"/>        
+<!--
+        <antcall target="start-server-felix"/>
+        <antcall target="build"/>
+        <antcall target="deploy"/>
+        <antcall target="runtest"/>
+        <antcall target="undeploy"/>
+        <antcall target="stop-server"/>
         <antcall target="stopDerby"/>
-        <!-- antcall target="report"/ -->        
+	<move file="test-output" tofile="test-output-felix" failonerror="false" overwrite="true"/>
+-->
         <record name="allrun.output" action="stop"/>
     </target>
         
@@ -87,6 +99,7 @@
         <ant dir="web/jsfastrologer" target="build"/>
         <ant dir="web/jsfinjection" target="build"/>
         <ant dir="jdbc/jdbcusertx" target="build"/>
+        <ant dir="persistence/jpainjectemf" target="build"/>
         <!-- ant dir="web/strutsbasic" target="build"/ -->
         <!-- ant dir="persistence/servlet-jpa-app" target="build"/ -->
         <!--<ant dir="ejb30/hello" target="build"/>
@@ -101,6 +114,7 @@
         <ant dir="web/jsfastrologer" target="compile-tests"/>
         <ant dir="web/jsfinjection" target="compile-tests"/>
         <ant dir="jdbc/jdbcusertx" target="compile-tests"/>
+        <ant dir="persistence/jpainjectemf" target="compile-tests"/>
         <!-- ant dir="web/strutsbasic" target="compile-tests"/ -->
         <!-- ant dir="persistence/servlet-jpa-app" target="compile-tests"/ -->
         <record name="compiletests.output" action="stop"/>
@@ -112,6 +126,7 @@
         <ant dir="web/jsfastrologer" target="deploy"/>
         <ant dir="web/jsfinjection" target="deploy"/>
         <ant dir="jdbc/jdbcusertx" target="deploy"/>
+        <ant dir="persistence/jpainjectemf" target="deploy"/>
         <!-- ant dir="web/strutsbasic" target="deploy"/ -->
         <!-- ant dir="persistence/servlet-jpa-app" target="deploy"/ -->   
         <record name="deploy.output" action="stop"/>
@@ -123,6 +138,7 @@
         <ant dir="web/jsfastrologer" target="undeploy"/>
         <ant dir="web/jsfinjection" target="undeploy"/>
         <ant dir="jdbc/jdbcusertx" target="undeploy"/>
+        <ant dir="persistence/jpainjectemf" target="undeploy"/>
         <!-- ant dir="web/strutsbasic" target="undeploy"/ -->
         <!-- ant dir="persistence/servlet-jpa-app" target="undeploy"/ -->   
         <record name="undeploy.output" action="stop"/>
@@ -206,12 +222,12 @@
     <!-- Generate the TestNG report -->
     <target name="report" depends="initprops">        
         <echo message="Generating report at ${test.report}"/>
-        <junitreport todir="${test.report}">
+        <junitreport todir="${basedir}/test-output-hk2">
             <fileset dir=".">
-                <include name="**/test-output/**/*.xml"/>
+                <include name="**/test-output-hk2/**/*.xml"/>
                 <!--<exclude name="**/testng-failed.xml"/>-->
             </fileset>
-            <report format="noframes" todir="${test.report}"/>
+            <report format="noframes" todir="${basedir}/test-output-hk2"/>
         </junitreport>
         <echo message="Test Report available at ${test.report}/index.html"/>
     </target>
@@ -295,6 +311,40 @@
 <target name="start-server-unix" if="isUnix">
     <exec executable="${glassfish.home}/bin/asadmin">        
         <!-- env key="GlassFish_Platform" value="Felix"/ -->
+        <arg value="start-domain"/>
+    </exec>
+</target>
+
+<target name="start-server-felix" depends="setOSConditions" if="v3">
+  
+    <echo>+-----------------------------+</echo>
+    <echo>|                             |</echo>
+    <echo>| S T A R T I N G   GLASSFISH |</echo>
+    <echo>|       in Felix mode         |</echo>
+    <echo>|                             |</echo>
+    <echo>+-----------------------------+</echo>
+   
+    <antcall target="start-server-felix-unix"/>
+    <antcall target="start-server-felix-windows"/>
+    <!-- GF takes longer than usual while starting Felix. Until we fix the
+         startup issue, let's introduce a delay.
+    -->
+    <echo message="Sleeping for 20 seconds while the server is starting"/>
+    <sleep seconds="20"/>
+</target>
+
+<target name="start-server-felix-windows" if="isWindows">
+    <exec executable="cmd" spawn="true">
+        <env key="GlassFish_Platform" value="Felix"/>
+        <arg value="/c"/>
+        <arg value="${glassfish.home}/bin/asadmin.bat"/>
+        <arg value="start-domain"/>
+    </exec>
+</target>
+
+<target name="start-server-felix-unix" if="isUnix">
+    <exec executable="${glassfish.home}/bin/asadmin">
+        <env key="GlassFish_Platform" value="Felix"/>
         <arg value="start-domain"/>
     </exec>
 </target>
