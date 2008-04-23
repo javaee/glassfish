@@ -248,7 +248,7 @@ public class SecurityContext extends AbstractSecurityContext implements PostCons
 				    assert(securityService != null);
 				    return securityService.getDefaultPrincipal();*/
                                     SecurityService securityService = SecurityServicesUtil.getInstance().getHabitat().getComponent(SecurityService.class);
-                                    assert(securityService != null);
+                                    if(securityService==null)   return null;
                                     return securityService.getDefaultPrincipal();
 				}
 			    });
