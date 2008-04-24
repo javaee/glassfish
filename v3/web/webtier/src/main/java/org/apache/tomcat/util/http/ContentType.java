@@ -51,15 +51,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+ 
 
 
 
 package org.apache.tomcat.util.http;
 
-import java.io.*;
-import java.net.*;
-import java.util.*;
-import java.text.*;
 
 /**
  * Usefull methods for Content-Type processing
@@ -72,51 +69,67 @@ import java.text.*;
  */
 public class ContentType {
 
-    // Basically return everything after ";charset="
-    // If no charset specified, use the HTTP default (ASCII) character set.
-    public static String getCharsetFromContentType(String type) {
-        if (type == null) {
-            return null;
-        }
-        int semi = type.indexOf(";");
-        if (semi == -1) {
-            return null;
-        }
-        int charsetLocation = type.indexOf("charset=", semi);
-        if (charsetLocation == -1) {
-            return null;
-        }
-	String afterCharset = type.substring(charsetLocation + 8);
-        // The charset value in a Content-Type header is allowed to be quoted
-        // and charset values can't contain quotes.  Just convert any quote
-        // chars into spaces and let trim clean things up.
-        afterCharset = afterCharset.replace('"', ' ');
-        String encoding = afterCharset.trim();
-        return encoding;
+    /**
+     * Parse the character encoding from the specified content type header.
+     * If the content type is null, or there is no explicit character encoding,
+     * <code>null</code> is returned.
+     *
+     * @param contentType a content type header
+     */
+    public static String getCharsetFromContentType(String contentType) {
+
+        if (contentType == null)
+            return (null);
+        int start = contentType.indexOf("charset=");
+        if (start < 0)
+            return (null);
+        String encoding = contentType.substring(start + 8);
+        int end = encoding.indexOf(';');
+        if (end >= 0)
+            encoding = encoding.substring(0, end);
+        encoding = encoding.trim();
+        if ((encoding.length() > 2) && (encoding.startsWith("\""))
+            && (encoding.endsWith("\"")))
+            encoding = encoding.substring(1, encoding.length() - 1);
+        return (encoding.trim());
+
     }
-
-
-    // Bad method: the user may set the charset explicitely
     
-//     /** Utility method for parsing the mime type and setting
-//      *  the encoding to locale. Also, convert from java Locale to mime
-//      *  encodings
-//      */
-//     public static String constructLocalizedContentType(String type,
-// 							Locale loc) {
-//         // Cut off everything after the semicolon
-//         int semi = type.indexOf(";");
-//         if (semi != -1) {
-//             type = type.substring(0, semi);
-//         }
+    /**
+     * Returns true if the given content type contains a charset component,
+     * false otherwise.
+     *
+     * @param type Content type
+     * @return true if the given content type contains a charset component,
+     * false otherwise
+     */
+    public static boolean hasCharset(String type) {
 
-//         // Append the appropriate charset, based on the locale
-//         String charset = LocaleToCharsetMap.getCharset(loc);
-//         if (charset != null) {
-//             type = type + "; charset=" + charset;
-//         }
+        boolean hasCharset = false;
 
-//         return type;
-//     }
+        int len = type.length();
+        int index = type.indexOf(';');
+        while (index != -1) {
+            index++;
+            while (index < len && Character.isSpace(type.charAt(index))) {
+                index++;
+            }
+            if (index+8 < len
+                    && type.charAt(index) == 'c'
+                    && type.charAt(index+1) == 'h'
+                    && type.charAt(index+2) == 'a'
+                    && type.charAt(index+3) == 'r'
+                    && type.charAt(index+4) == 's'
+                    && type.charAt(index+5) == 'e'
+                    && type.charAt(index+6) == 't'
+                    && type.charAt(index+7) == '=') {
+                hasCharset = true;
+                break;
+            }
+            index = type.indexOf(';', index);
+        }
+
+        return hasCharset;
+    }
 
 }
