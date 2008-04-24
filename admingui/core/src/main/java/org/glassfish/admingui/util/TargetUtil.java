@@ -70,13 +70,13 @@ public class TargetUtil {
      */
     static public boolean isResourceEnabled(Enabled resourceObject, String target)
     {
-	boolean master = resourceObject.getEnabled();
+	boolean master = Boolean.valueOf(resourceObject.getEnabled());
 	if (!master) return false;		// no need to look at ref if master is off.
 	String name = ((AMX)resourceObject).getName();
 	ResourceRefConfig ref = getResourceRef(name, target);
 	if (ref == null)
 	    return master;
-	return ref.getEnabled();
+	return Boolean.valueOf(ref.getEnabled());
     }
 
     /*
@@ -118,13 +118,13 @@ public class TargetUtil {
     {
 
         if (enabledFlag)
-	    resource.setEnabled(true);
+	    resource.setEnabled(Boolean.toString(enabledFlag));
         //We use the ref to control enable status
         String name = ((AMX)resource).getName();
 	List<Map<String, ResourceRefConfig>> allResourceRefs = getAllResourceRefConfig(target);
         for(Map<String, ResourceRefConfig> oneResourceMap : allResourceRefs){
             ResourceRefConfig ref = oneResourceMap.get(name);
-            ref.setEnabled(enabledFlag);
+            ref.setEnabled(Boolean.toString(enabledFlag));
         }
     }
 
@@ -238,7 +238,7 @@ public class TargetUtil {
     
     static public boolean isApplicationEnabled(Enabled app, String target, Boolean forLB)
     {
-	boolean master = app.getEnabled();
+	boolean master = Boolean.valueOf(app.getEnabled());
 	if (!master) return false;		// no need to look at ref if master is off.
 	String name = ((AMX)app).getName();
         DeployedItemRefConfig ref = getDeployedItemRefObject(name, target);
@@ -250,7 +250,7 @@ public class TargetUtil {
         }
 	if (ref == null)
 	    return master;
-	return ref.getEnabled();
+	return Boolean.valueOf(ref.getEnabled());
     }
 
 
@@ -274,9 +274,9 @@ public class TargetUtil {
         }
         
 	if (enabledFlag)
-	    app.setEnabled(true);
+	    app.setEnabled("true");
 	if (ref != null)
-	    ref.setEnabled((Boolean)enabledFlag);
+	    ref.setEnabled(Boolean.toString(enabledFlag));
     }
 
 	/*

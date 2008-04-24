@@ -276,18 +276,22 @@ public class AMXRoot {
      */
     public String getConfigName(String name){
 
-        Map sm = domainConfig.getStandaloneServerConfigMap();
-        Map cm = domainConfig.getClusteredServerConfigMap();
+        Map sm = domainConfig.getServersConfig().getStandaloneServerConfigMap();
+        Map cm = domainConfig.getServersConfig().getClusteredServerConfigMap();
         if(true)
             return "server-config";
         //try to see if its a server, if not, try cluster.
-        ServerConfig serverConfig = domainConfig.getServerConfigMap().get(name);
+        ServerConfig serverConfig = domainConfig.getServersConfig().getStandaloneServerConfigMap().get(name);
         if (serverConfig != null){
-            return serverConfig.getReferencedConfigName();
+            return serverConfig.getConfigRef();
         }
-        ClusterConfig clusterConfig = domainConfig.getClusterConfigMap().get(name);
+        serverConfig = domainConfig.getServersConfig().getClusteredServerConfigMap().get(name);
+        if (serverConfig != null){
+            return serverConfig.getConfigRef();
+        }
+        ClusterConfig clusterConfig = domainConfig.getClustersConfig().getClusterConfigMap().get(name);
         if (clusterConfig != null)
-            return clusterConfig.getReferencedConfigName();
+            return clusterConfig.getConfigRef();
         return null;
     }
 

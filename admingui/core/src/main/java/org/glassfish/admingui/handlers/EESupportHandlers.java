@@ -75,6 +75,8 @@ import com.sun.appserv.management.config.StandaloneServerConfig;
 import com.sun.appserv.management.config.ClusteredServerConfig;
 import com.sun.appserv.management.config.ServerConfig;
 import com.sun.appserv.management.config.ConfigConfigKeys;
+import com.sun.appserv.management.config.SystemPropertyConfig;
+import com.sun.appserv.management.config.SystemPropertiesAccess;
 import javax.faces.component.UIComponent;
 import com.sun.webui.jsf.model.Option;
 
@@ -586,14 +588,14 @@ public class EESupportHandlers {
         Map clusteredMap = amxRoot.getServersConfig().getClusteredServerConfigMap();
         for(Iterator it = standaloneMap.values().iterator(); it.hasNext();){
             StandaloneServerConfig server = (StandaloneServerConfig) it.next();
-            String config = server.getReferencedConfigName();
+            String config = server.getConfigRef();
             if(config.equalsIgnoreCase(configName)){
                 targets.add(server);
             }
         }
         for(Iterator it = clusteredMap.values().iterator(); it.hasNext();){
             ClusteredServerConfig server = (ClusteredServerConfig) it.next();
-            String config = server.getReferencedConfigName();
+            String config = server.getConfigRef();
             if(config.equalsIgnoreCase(configName)){
                 targets.add(server);
             }
@@ -602,6 +604,21 @@ public class EESupportHandlers {
         return targets;
     }
     
+    /**
+        Return a Map<String,String> of all system properties in the specified config.
+     */
+    private static Map<String,String> getSystemProperties( final SystemPropertiesAccess config ) {
+        final Map<String,SystemPropertyConfig> systemPropertyConfigMap = config.getSystemPropertyConfigMap();
+        
+        Map<String,String> props = null;
+        if ( systemPropertyConfigMap.size() != 0 ) {
+            props = new HashMap<String,String>();
+            for( final SystemPropertyConfig prop : systemPropertyConfigMap.values() ) {
+                props.put( prop.getName(), prop.getValue() );
+            }
+        }
+        return props;
+    }
     
    /**
      * <p> This handler returns the configs attributes.
@@ -623,7 +640,7 @@ public class EESupportHandlers {
         
         handlerCtx.setOutputValue("DynamicReconfig", config.getDynamicReconfigurationEnabled());
         List data = new ArrayList();
-        Map<String, String> props = config.getSystemProperties();	
+        final Map<String, String> props = getSystemProperties(config);	
         if(props != null ){
             for(String key : props.keySet()){
                 HashMap oneRow = new HashMap();

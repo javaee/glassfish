@@ -148,6 +148,7 @@ public class SSLHandlers {
             boolean isEdit = ((Boolean)handlerCtx.getInputValue("Edit")).booleanValue();
             Map sslProps = (Map)handlerCtx.getFacesContext().getExternalContext().getSessionMap().get("sslProps");
             if(isEdit){
+                sslProps = null;
                 if(type.equals("jmx")){
                     JMXConnectorConfig jmxConfig = config.getAdminServiceConfig().getJMXConnectorConfigMap().get(oName);
                     sslContainerConfig = (SSLConfigContainer)jmxConfig;
@@ -158,7 +159,7 @@ public class SSLHandlers {
                     HTTPListenerConfig httpConfig = config.getHTTPServiceConfig().getHTTPListenerConfigMap().get(oName);
                     sslContainerConfig = (SSLConfigContainer)httpConfig;
                 }else if(type.equals("nodeagent")){
-                    NodeAgentConfig agentConfig = AMXRoot.getInstance().getDomainConfig().getNodeAgentConfigMap().get(oName);
+                    NodeAgentConfig agentConfig = AMXRoot.getInstance().getDomainConfig().getNodeAgentsConfig().getNodeAgentConfigMap().get(oName);
                     JMXConnectorConfig jmxConfig = agentConfig.getJMXConnectorConfig();
                     sslContainerConfig = (SSLConfigContainer)jmxConfig;
                 }
@@ -274,7 +275,7 @@ public class SSLHandlers {
                         IIOPListenerConfig iiopConfig = config.getIIOPServiceConfig().getIIOPListenerConfigMap().get(oName);
                         sslContainerConfig = (SSLConfigContainer)iiopConfig;
                     }else if(type.equals("nodeagent")){
-                        NodeAgentConfig agentConfig = amxRoot.getDomainConfig().getNodeAgentConfigMap().get(oName);
+                        NodeAgentConfig agentConfig = amxRoot.getDomainConfig().getNodeAgentsConfig().getNodeAgentConfigMap().get(oName);
                         JMXConnectorConfig jmxConfig = agentConfig.getJMXConnectorConfig();
                         sslContainerConfig = (SSLConfigContainer)jmxConfig;
                     }
@@ -314,7 +315,7 @@ public class SSLHandlers {
                                 vs,
                                 serverName,
                                 options);
-                        httpConfig.setEnabled(GuiUtil.getBooleanValue(props, "enabled"));
+                        httpConfig.setEnabled( "" + GuiUtil.getBooleanValue(props, "enabled"));
                         httpConfig.setSecurityEnabled(GuiUtil.getBooleanValue(props, "securityEnabled"));
                         httpConfig.setRedirectPort((String)props.get("redirectPort"));
                         httpConfig.setAcceptorThreads((String)props.get("acceptor-threads"));

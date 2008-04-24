@@ -72,7 +72,7 @@ import com.sun.appserv.management.config.ProfilerConfig;
 import com.sun.appserv.management.config.DomainConfig;
 import com.sun.appserv.management.config.ModuleLogLevelsConfig;
 import com.sun.appserv.management.config.DASConfig;
-import com.sun.appserv.management.config.PropertiesAccess;
+import com.sun.appserv.management.config.ProfilerConfigKeys;
 import org.glassfish.admingui.util.AMXUtil;
 
 
@@ -326,7 +326,7 @@ public class ServerHandlers {
         JavaConfig javaConfig = config.getJavaConfig();
         String javaHome = javaConfig.getJavaHome();
         String javacOptions = javaConfig.getJavacOptions();
-        boolean debugEnabled = javaConfig.getDebugEnabled();
+        String debugEnabled = javaConfig.getDebugEnabled();
         String debugOptions = javaConfig.getDebugOptions();
         String rmicOptions = javaConfig.getRMICOptions();
         String bytecodePreprocessors = javaConfig.getBytecodePreprocessors();
@@ -802,7 +802,7 @@ public class ServerHandlers {
         
         javaConfig.setJavaHome((String)handlerCtx.getInputValue("JavaHome"));
         javaConfig.setJavacOptions((String)handlerCtx.getInputValue("JavacOptions"));
-        javaConfig.setDebugEnabled(((Boolean)handlerCtx.getInputValue("DebugEnabled")).booleanValue());
+        javaConfig.setDebugEnabled( "" + handlerCtx.getInputValue("DebugEnabled"));
         javaConfig.setDebugOptions((String)handlerCtx.getInputValue("DebugOptions"));
         javaConfig.setRMICOptions((String)handlerCtx.getInputValue("RmicOptions"));
         javaConfig.setBytecodePreprocessors((String)handlerCtx.getInputValue("BytecodePreprocessor"));
@@ -839,7 +839,7 @@ public class ServerHandlers {
         JavaConfig javaConfig = config.getJavaConfig();
         String systemClasspath = javaConfig.getSystemClasspath();
         String serverClasspath = javaConfig.getServerClasspath();
-        boolean ignoreEnvClasspath = javaConfig.getEnvClasspathIgnored();
+        String ignoreEnvClasspath = javaConfig.getEnvClasspathIgnored();
         String classpathPrefix = javaConfig.getClasspathPrefix();
         String classpathSuffix = javaConfig.getClasspathSuffix();
         String nativeLibPathPrefix = javaConfig.getNativeLibraryPathPrefix();
@@ -890,7 +890,7 @@ public class ServerHandlers {
         String nativeSuffix = (String)handlerCtx.getInputValue("NativeLibPathSuffix");
         javaConfig.setSystemClasspath(formatStringsforSaving(sysCP));
         javaConfig.setServerClasspath(formatStringsforSaving(serverCP));
-        javaConfig.setEnvClasspathIgnored(((Boolean)handlerCtx.getInputValue("IgnoreEnvClasspath")).booleanValue());
+        javaConfig.setEnvClasspathIgnored("" + handlerCtx.getInputValue("IgnoreEnvClasspath"));
         javaConfig.setClasspathPrefix(formatStringsforSaving(cpPrefix));
         javaConfig.setClasspathSuffix(formatStringsforSaving(cpSuffix));
         javaConfig.setNativeLibraryPathPrefix(formatStringsforSaving(nativePrefix));
@@ -1124,7 +1124,7 @@ public class ServerHandlers {
             if(javaConfig.getProfilerConfig() != null) {
                 ProfilerConfig profilerConfig = javaConfig.getProfilerConfig();
                 String name = profilerConfig.getName();
-                boolean enabled = profilerConfig.getEnabled();
+                String enabled = profilerConfig.getEnabled();
                 String classPath = profilerConfig.getClasspath();
                 String nativeLibrary = profilerConfig.getNativeLibraryPath();
                 handlerCtx.setOutputValue("Classpath", classPath);
@@ -1172,14 +1172,14 @@ public class ServerHandlers {
         if(profiler == null){
             Map map = new HashMap();
             if(classpath != null)
-                map.put(CLASSPATH_KEY, classpath);
+                map.put(ProfilerConfigKeys.CLASSPATH_KEY, classpath);
             if(nativelibrary != null)
-                map.put(NATIVE_LIBRARY_PATH_KEY, nativelibrary);
-            map.put(ENABLED_KEY, (profilerenabled == null) ? "false" : profilerenabled.toString());
+                map.put(ProfilerConfigKeys.NATIVE_LIBRARY_PATH_KEY, nativelibrary);
+            map.put(ProfilerConfigKeys.ENABLED_KEY, (profilerenabled == null) ? "false" : profilerenabled.toString());
             javaConfig.createProfilerConfig((String)handlerCtx.getInputValue("ProfilerName"), map);
         } else {
             profiler.setClasspath(classpath);
-            profiler.setEnabled((profilerenabled == null) ? false : profilerenabled);
+            profiler.setEnabled((profilerenabled == null) ? "false" : ""+profilerenabled);
             profiler.setNativeLibraryPath(nativelibrary);
         }
     }
@@ -1671,8 +1671,5 @@ public class ServerHandlers {
         skipLogModulePropsList.add(JBI_MODULE_PROPERTY);
     }
     
-    private static final String CLASSPATH_KEY = "Classpath";
-    private static final String NATIVE_LIBRARY_PATH_KEY = "NativeLibraryPath";
-    private static final String ENABLED_KEY = "Enabled";
     private static final String PATH_SEPARATOR = "${path.separator}";
 }

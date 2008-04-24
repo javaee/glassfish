@@ -659,7 +659,7 @@ public class JdbcHandlers {
             Map allOptions = new HashMap();
            
             allOptions.put("res-type", pool.get("ResType"));
-            allOptions.put("Connection-validation-method", pool.get("ConnectionValidationMethod"));
+            allOptions.put("connection-validation-method", pool.get("ConnectionValidationMethod"));
             allOptions.put("transaction-isolation-level", pool.get("TransactionIsolationLevel"));
             allOptions.put("steady-pool-size", pool.get("SteadyPoolSize"));
             allOptions.put("max-pool-size", pool.get("MaxPoolSize"));

@@ -1685,7 +1685,7 @@ public class ConnectorsHandlers {
                 }
             }
             Map oneRow = new HashMap();
-            oneRow.put("enabled", refObject.getEnabled() ? "true" : false);
+            oneRow.put("enabled", refObject.getEnabled());
             oneRow.put("selected", false);
             oneRow.put("name", resName);
             oneRow.put("link", "/resourceNode/" + editMap.get(resType) + "?name=" + resName);
@@ -1710,7 +1710,7 @@ public class ConnectorsHandlers {
 })
     public static void changeEnableForTarget(HandlerContext handlerCtx) {
         List<Map> selectedRows = (List) handlerCtx.getInputValue("selectedRows");
-        boolean enabled = ((Boolean) handlerCtx.getInputValue("enabled")).booleanValue();
+        String enabled = ""+ handlerCtx.getInputValue("enabled");
         String target = (String) handlerCtx.getInputValue("target");
 
         List<Map<String, ResourceRefConfig>> allResourceRefs = TargetUtil.getAllResourceRefConfig(target);
