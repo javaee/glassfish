@@ -69,10 +69,7 @@ public class GrizzlyService implements Startup, PostConstruct, PreDestroy {
     List<NetworkProxy> proxies = new ArrayList<NetworkProxy>();
     
     private final Controller controller  = new Controller();
-    
-    private final static boolean enablePU = 
-            Boolean.parseBoolean(System.getProperty("v3.grizzly.enablePU", "true"));
-    
+
     /**
      * Returns the life expectency of the service
      *
@@ -92,12 +89,8 @@ public class GrizzlyService implements Startup, PostConstruct, PreDestroy {
         try {
             for (HttpListener listener : httpService.getHttpListener()) {
                 // create the proxy for the port.
-                NetworkProxy proxy = null;
-                if (enablePU) {
-                    proxy = new GrizzlyProxy(logger, habitat, listener, controller, httpService);
-                } else {
-                    proxy = new GrizzlyAdapter(logger, habitat, listener, controller);
-                }
+                NetworkProxy proxy = new GrizzlyProxy(logger, habitat,
+                        listener, controller, httpService);
                 proxy.setVsMapper(new VirtualHostMapper(logger, listener));
 
                 // attach all virtual servers to this port
