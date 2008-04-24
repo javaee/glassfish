@@ -38,16 +38,20 @@
 
 package org.jvnet.hk2.osgiadapter;
 
+import com.sun.enterprise.module.ModuleDefinition;
 import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.module.Repository;
 import com.sun.enterprise.module.RepositoryChangeListener;
-import com.sun.enterprise.module.ModuleDefinition;
-import com.sun.enterprise.module.bootstrap.ModuleStartup;
+import com.sun.enterprise.module.bootstrap.Main;
 import com.sun.enterprise.module.bootstrap.StartupContext;
+import com.sun.enterprise.module.bootstrap.ModuleStartup;
+import com.sun.enterprise.module.bootstrap.BootException;
 import com.sun.enterprise.module.common_impl.AbstractFactory;
 import com.sun.enterprise.module.common_impl.DirectoryBasedRepository;
 import com.sun.hk2.component.ExistingSingletonInhabitant;
 import org.jvnet.hk2.component.Habitat;
+import static org.jvnet.hk2.osgiadapter.BundleEventType.valueOf;
+import static org.jvnet.hk2.osgiadapter.Logger.logger;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
@@ -58,23 +62,21 @@ import org.osgi.util.tracker.ServiceTracker;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.FileFilter;
+import java.io.IOException;
+import java.net.URI;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Dictionary;
 import java.util.List;
-import java.util.ArrayList;
 import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.net.URI;
-
-import static org.jvnet.hk2.osgiadapter.BundleEventType.*;
-import static org.jvnet.hk2.osgiadapter.Logger.logger;
 
 /**
+ * {@link BundleActivator} that launches a Habitat and hands the execution to {@link ModuleStartup}.
+ * 
  * @author Sanjeeb.Sahoo@Sun.COM
  */
-public class HK2Main implements
+public class HK2Main extends Main implements
         BundleActivator,
         SynchronousBundleListener {
 
@@ -87,9 +89,10 @@ public class HK2Main implements
     private static final String CONTEXT_ROOT_DIR_PROP =
             HK2Main.class.getPackage().getName()+".contextrootdir";
 
+    /**
+     * <tt>$GLASSFISH_HOME/modules</tt> directory.
+     */
     private File contextRootDir;
-
-    private Habitat habitat;
 
     public void start(BundleContext context) throws Exception {
         this.ctx = context;
@@ -100,53 +103,42 @@ public class HK2Main implements
         ctx.addBundleListener(this);
 
         // Create StartupContext
-        contextRootDir = (context.getProperty(CONTEXT_ROOT_DIR_PROP)!=null) ?
-                new File(context.getProperty(CONTEXT_ROOT_DIR_PROP)) :
-                new File(System.getProperty("user.home"));
-        logger.logp(Level.INFO, "HK2Main", "start", "contextRootDir = {0}", contextRootDir);
+        contextRootDir = getContextRootDir(context);
         StartupContext startupContext = new StartupContext(contextRootDir, new String[0]);
 
         OSGiFactoryImpl.initialize(ctx);
 
-        mr = AbstractFactory.getInstance().createModulesRegistry();
+        mr = createModulesRegistry();
+        Habitat habitat = createHabitat(mr, startupContext);
+        // createServiceTracker(habitat); Don't track service, as there are issues with GlassFish services
+        launch(mr,habitat,null,startupContext);
+    }
+
+    protected ModulesRegistry createModulesRegistry() {
+        ModulesRegistry mr = AbstractFactory.getInstance().createModulesRegistry();
 
         Collection<? extends Repository> reps = createRepositories();
 
-        for (Repository rep : reps) {
+        for (Repository rep : reps)
             mr.addRepository(rep);
-        }
 
-        // Create and initialize the habitat
-        habitat = mr.newHabitat();
-        /*
-         * StartupContext is a HK2 Service defined in hk2-core jar file.
-         * Since hk2-core jar file is not itself an HK2 module,
-         * StartupContext is not automatically registered during course of
-         * inhabitants parsing. Hence we need to add StartupContext
-         * to the habitat so that other components can inject it into them.
-         */
-        habitat.add(new ExistingSingletonInhabitant<StartupContext>(startupContext));
-        habitat.add(new ExistingSingletonInhabitant<java.util.logging.Logger>(Logger.global));
-        habitat.add(new ExistingSingletonInhabitant(ModulesRegistry.class, mr));
-        mr.createHabitat("default", habitat);
-        // createServiceTracker(); Don't track service, as there are issues with GlassFish services
-        ModuleStartup startup;
-        Collection<ModuleStartup> startups = habitat.getAllByContract(ModuleStartup.class);
-        switch(startups.size()) {
-            case 0:
-                throw new RuntimeException("No module with ModuleStartup implementation found");
-            case 1:
-                startup = startups.iterator().next();
-                break;
-            default:
-                throw new RuntimeException("Multiple ModuleStartup classes found");
-        }
-        startup.setStartupContext(startupContext);
-        startup.run();
+        return mr;
     }
 
-    private void createServiceTracker() {
-        ServiceTracker st = new ServiceTracker(ctx, new NonHK2ServiceFilter(), new HK2ServiceTrackerCustomizer());
+    protected File getContextRootDir(BundleContext context) {
+        String prop = context.getProperty(CONTEXT_ROOT_DIR_PROP);
+        File f = (prop !=null) ? new File(prop) : new File(System.getProperty("user.home"));
+        logger.logp(Level.INFO, "HK2Main", "start", "contextRootDir = {0}", contextRootDir);
+        return f;
+    }
+    
+    @Override
+    protected void setParentClassLoader(StartupContext context, ModulesRegistry mr) throws BootException {
+        // OSGi doesn't have this feature, so ignore it for now.
+    }
+
+    private void createServiceTracker(Habitat habitat) {
+        ServiceTracker st = new ServiceTracker(ctx, new NonHK2ServiceFilter(), new HK2ServiceTrackerCustomizer(habitat));
         st.open(true);
     }
 
@@ -165,14 +157,14 @@ public class HK2Main implements
             }
             throw new RuntimeException(e);
         }
-        for (File file : contextRootDir.listFiles(
+        for (File dir : contextRootDir.listFiles(
                 new FileFilter() {
                     public boolean accept(File pathname) {
                         return pathname.isDirectory();
                     }
                 }))
         {
-            rep = new DirectoryBasedRepository(file.getName(), file);
+            rep = new DirectoryBasedRepository(dir.getName(), dir);
             try {
                 rep.initialize();
                 reps.add(rep);
@@ -182,7 +174,7 @@ public class HK2Main implements
                 } catch (IOException e1) {
                     // ignore as we are shutting down
                 }
-                logger.log(Level.SEVERE, "Cannot initialize repository at " + file.getAbsolutePath(), e);
+                logger.log(Level.SEVERE, "Cannot initialize repository at " + dir.getAbsolutePath(), e);
             }
         }
         // add a listener for each repository
@@ -253,6 +245,11 @@ public class HK2Main implements
     }
 
     private class HK2ServiceTrackerCustomizer implements ServiceTrackerCustomizer {
+        private final Habitat habitat;
+
+        private HK2ServiceTrackerCustomizer(Habitat habitat) {
+            this.habitat = habitat;
+        }
 
         public Object addingService(final ServiceReference reference) {
             final Object object = ctx.getService(reference);

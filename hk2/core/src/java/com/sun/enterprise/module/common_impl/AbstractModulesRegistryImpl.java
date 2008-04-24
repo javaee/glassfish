@@ -37,14 +37,13 @@
 
 package com.sun.enterprise.module.common_impl;
 
-import com.sun.enterprise.module.bootstrap.Populator;
-import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.module.Module;
-import com.sun.enterprise.module.ModuleLifecycleListener;
-import com.sun.enterprise.module.Repository;
-import com.sun.enterprise.module.ResolveError;
 import com.sun.enterprise.module.ModuleDefinition;
 import com.sun.enterprise.module.ModuleMetadata;
+import com.sun.enterprise.module.ModulesRegistry;
+import com.sun.enterprise.module.Repository;
+import com.sun.enterprise.module.ResolveError;
+import com.sun.enterprise.module.bootstrap.Populator;
 import com.sun.hk2.component.InhabitantsParser;
 import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.Habitat;
@@ -65,8 +64,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Logger;
-import java.util.logging.Level;
-import java.net.URL;
 
 /**
  * The Modules Registry maintains the registry of all available module.
@@ -124,33 +121,26 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry {
         return createHabitat(name, h);
     }
 
-    /**
-     * Creates a {@link Habitat} from all the modules in this registry
-     *
-     * @param name
-     *      Determines which inhabitants descriptors are loaded.
-     *      (so that different parallel habitats can be
-     *      created over the same modules registry.)
-     * @param h
-     *      Habitat to initialize, null if it should be created
-     *
-     * @return initialized Habitat
-     */
+    @Override
     public Habitat createHabitat(String name, Habitat h) throws ComponentException {
+        if (h==null)
+            h = newHabitat();
+        return createHabitat(name,new InhabitantsParser(h));
+    }
+
+    @Override
+    public Habitat createHabitat(String name, InhabitantsParser parser) throws ComponentException {
         try {
-            if (h==null) {
-                h = newHabitat();
-            }
+            Habitat habitat = parser.habitat;
 
-            InhabitantsParser inhabitantsParser = new InhabitantsParser(h);
             for (final Module module : getModules())
-                parseInhabitants(module, name,inhabitantsParser);
+                parseInhabitants(module, name,parser);
 
-            ConfigParser configParser = new ConfigParser(h);
-            for( Populator p : h.getAllByContract(Populator.class) )
+            ConfigParser configParser = new ConfigParser(habitat);
+            for( Populator p : habitat.getAllByContract(Populator.class) )
                 p.run(configParser);
 
-            return h;
+            return habitat;
         } catch (IOException e) {
             throw new ComponentException("Failed to create a habitat",e);
         }

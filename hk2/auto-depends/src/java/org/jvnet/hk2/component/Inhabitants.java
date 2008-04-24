@@ -38,6 +38,7 @@ package org.jvnet.hk2.component;
 
 import com.sun.hk2.component.ScopedInhabitant;
 import com.sun.hk2.component.SingletonInhabitant;
+import com.sun.hk2.component.ExistingSingletonInhabitant;
 import org.jvnet.hk2.annotations.Scoped;
 
 /**
@@ -45,6 +46,13 @@ import org.jvnet.hk2.annotations.Scoped;
  * @author Kohsuke Kawaguchi
  */
 public class Inhabitants {
+    /**
+     * Creates a singleton wrapper around existing object.
+     */
+    public static <T> Inhabitant<T> create(T instance) {
+        return new ExistingSingletonInhabitant<T>(instance);
+    }
+    
     /**
      * Creates a {@link Inhabitant} by looking at annotations of the given type.
      */

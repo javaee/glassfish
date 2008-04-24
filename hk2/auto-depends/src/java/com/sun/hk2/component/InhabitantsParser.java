@@ -40,43 +40,118 @@ import static com.sun.hk2.component.InhabitantsFile.CLASS_KEY;
 import static com.sun.hk2.component.InhabitantsFile.INDEX_KEY;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
+import org.jvnet.hk2.component.Inhabitants;
 import org.jvnet.hk2.component.MultiMap;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * Parses <tt>/META-INF/inhabitants</tt> and
- * populate {@link Habitat}.
+ * Parses <tt>/META-INF/inhabitants</tt> and populate {@link Habitat}.
+ *
+ * <p>
+ * This class can be subclasses to customize the parsing behavior, which is useful
+ * for ignoring some components.
  *
  * @author Kohsuke Kawaguchi
  */
 public class InhabitantsParser {
-    private final Habitat habitat;
+    public final Habitat habitat;
+
+    /**
+     * Fully qualified class names of components to be replaced, to {@link Class} that replaces them.
+     * If the value is null, that means just drops it without a replacement.
+     *
+     * @see #drop(Class)
+     * @see #replace(Class, Class)
+     */
+    // Whether this feature should belong to this base class is arguable --- perhaps a better
+    // approach is to create a sub classs that does it?
+    private final Map<String,Class> replacements = new HashMap<String,Class>();
 
     public InhabitantsParser(Habitat habitat) {
         this.habitat = habitat;
     }
 
+    /**
+     * Tells {@link InhabitantsParser} that if it encounters the specified component
+     * while parsing inhabitants file,
+     * simply drop it and pretend that such an inhabitant had never existed.
+     *
+     * <p>
+     * This is useful when the application that's hosting an HK2 environment
+     * wants to tweak the inhabitant population at sub-module level.
+     */
+    public void drop(Class component) {
+        drop(component.getName());
+    }
+
+    public void drop(String fullyQualifiedClassName) {
+        replace(fullyQualifiedClassName,null);
+    }
+
+    /**
+     * Tells {@link InhabitantsParser} that if it encounters the specified component
+     * while parsing inhabitants file,
+     * ignore the one in the inhabitants file and instead insert the specified 'new' component.
+     *
+     * <p>
+     * This is useful when the application that's hosting an HK2 environment
+     * wants to tweak the inhabitant population at sub-module level.
+     */
+    public void replace(Class oldComponent, Class newComponent) {
+        replace(oldComponent.getName(),newComponent);
+    }
+
+    public void replace(String oldComponentFullyQualifiedClassName, Class newComponent) {
+        replacements.put(oldComponentFullyQualifiedClassName,newComponent);
+    }
+
+    /**
+     * Parses the inhabitants file (which is represented by {@link InhabitantsScanner}.
+     *
+     * <p>
+     * All the earlier drop/replace commands will be honored during this process.
+     */
     public void parse(InhabitantsScanner scanner, Holder<ClassLoader> classLoader) throws IOException {
         for( KeyValuePairParser kvpp : scanner) {
             MultiMap<String,String> metadata=buildMetadata(kvpp);
-            Inhabitant i = new LazyInhabitant(habitat, classLoader, metadata.getOne(CLASS_KEY), metadata);
-            habitat.add(i);
-
-            for (String v : kvpp.findAll(INDEX_KEY)) {
-                // register inhabitant to the index
-                int idx = v.indexOf(':');
-                if(idx==-1) {
-                    // no name
-                    habitat.addIndex(i,v,null);
-                } else {
-                    // v=contract:name
-                    String contract = v.substring(0, idx);
-                    String name = v.substring(idx + 1);
-                    habitat.addIndex(i, contract, name);
+            String typeName = metadata.getOne(CLASS_KEY);
+            if(replacements.containsKey(typeName)) {
+                // create a replacement instead
+                Class<?> target = replacements.get(typeName);
+                if(target!=null) {
+                    metadata.set(CLASS_KEY,target.getName());
+                    Inhabitant i = Inhabitants.create(target,habitat,metadata);
+                    add(i, kvpp);
+                    // add index so that the new component can be looked up by the name of the old component.
+                    habitat.addIndex(i,typeName,null);
                 }
+            } else {
+                Inhabitant i = new LazyInhabitant(habitat, classLoader, typeName, metadata);
+                add(i, kvpp);
+            }
+        }
+    }
+
+    /**
+     * Adds the given inhabitant to the habitat, with all its indices.
+     */
+    protected void add(Inhabitant i, KeyValuePairParser kvpp) {
+        habitat.add(i);
+
+        for (String v : kvpp.findAll(INDEX_KEY)) {
+            // register inhabitant to the index
+            int idx = v.indexOf(':');
+            if(idx==-1) {
+                // no name
+                habitat.addIndex(i,v,null);
+            } else {
+                // v=contract:name
+                String contract = v.substring(0, idx);
+                String name = v.substring(idx + 1);
+                habitat.addIndex(i, contract, name);
             }
         }
     }

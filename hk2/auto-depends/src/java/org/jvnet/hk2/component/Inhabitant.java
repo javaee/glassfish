@@ -56,8 +56,12 @@ import java.util.Collection;
  * All the methods exept {@link #get()} are immutable, meaning
  * they never change the value they return.
  *
+ * <p>
+ * See {@link Inhabitants} for several factory methods for typical
+ * {@link Inhabitant} constructions.
+ * 
  * @author Kohsuke Kawaguchi
- * @see Inhabitant
+ * @see Inhabitants
  */
 public interface Inhabitant<T> extends Holder<T> {
     /**

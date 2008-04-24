@@ -107,6 +107,9 @@ public class Habitat {
 
     /**
      * Adds a new inhabitant.
+     *
+     * <p>
+     * See {@link Inhabitants} for typical ways to create {@link Inhabitant}s.
      */
     public void add(final Inhabitant<?> i) {
         String name = i.typeName();
@@ -285,7 +288,10 @@ public class Habitat {
      *      new instance of the component.
      */
     public <T> T getComponent(Class<T> clazz) throws ComponentException {
-        return getByType(clazz);
+        if(isContract(clazz))
+            return getByContract(clazz);
+        else
+            return getByType(clazz);
     }
 
     /**

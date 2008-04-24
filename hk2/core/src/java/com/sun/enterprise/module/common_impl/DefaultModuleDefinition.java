@@ -293,6 +293,13 @@ public class DefaultModuleDefinition implements ModuleDefinition {
         return metadata;
     }
 
+    /**
+     * Assists debugging.
+     */
+    public String toString() {
+        return name+':'+version;
+    }
+
     private static final Manifest EMPTY_MANIFEST = new Manifest();
 
     private static final Logger LOGGER = Logger.getLogger(DefaultModuleDefinition.class.getName());

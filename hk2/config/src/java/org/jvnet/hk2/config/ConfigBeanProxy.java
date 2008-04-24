@@ -48,6 +48,9 @@ package org.jvnet.hk2.config;
  *
  * @author Kohsuke Kawaguchi
  * @see Dom#unwrap(ConfigBeanProxy)
+ * @see DuckTyped
+ * @see Element
+ * @see Attribute
  */
 public interface ConfigBeanProxy {
 }

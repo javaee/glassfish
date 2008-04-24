@@ -109,7 +109,7 @@ public final class OSGiModuleImpl implements Module {
             bundle.start();
             state = ModuleState.RESOLVED;
         } catch (BundleException e) {
-            throw new ResolveError(e);
+            throw new ResolveError("Failed to start "+this,e);
         }
     }
 
@@ -366,5 +366,9 @@ public final class OSGiModuleImpl implements Module {
 
     public Bundle getBundle() {
         return bundle;
+    }
+
+    public String toString() {
+        return md.toString();
     }
 }

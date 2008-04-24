@@ -93,6 +93,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Stack;
 import java.util.jar.Pack200;
 
 /**
@@ -253,11 +254,29 @@ public class ConfigInjectorGenerator extends SimpleDeclarationVisitor implements
          * generates the body of the {@link ConfigInjector#inject(Dom, Object)} code.
          */
         public void generate() {
-            for (FieldDeclaration f : clz.getFields())
-                generate(new Property.Field(f));
+            Stack<TypeDeclaration> q = new Stack<TypeDeclaration>();
+            Set<TypeDeclaration> visited = new HashSet<TypeDeclaration>();
+            q.push(clz);
 
-            for (MethodDeclaration m : clz.getMethods())
-                generate(new Property.Method(m));
+            while(!q.isEmpty()) {
+                TypeDeclaration t = q.pop();
+                if(!visited.add(t)) continue;   // been here already
+
+                for (FieldDeclaration f : t.getFields())
+                    generate(new Property.Field(f));
+
+                for (MethodDeclaration m : t.getMethods())
+                    generate(new Property.Method(m));
+
+                for (InterfaceType it : clz.getSuperinterfaces())
+                    q.add(it.getDeclaration());
+
+                if (t instanceof ClassDeclaration) {
+                    ClassDeclaration cd = (ClassDeclaration) t;
+                    if(cd.getSuperclass()!=null)
+                        q.add(cd.getSuperclass().getDeclaration());
+                }
+            }
 
             service.param("metadata", metadata.toCommaSeparatedString());
         }

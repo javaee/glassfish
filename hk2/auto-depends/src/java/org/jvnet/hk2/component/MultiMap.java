@@ -43,6 +43,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.Collection;
 
 /**
  * Map from a key to multiple values.
@@ -85,6 +86,15 @@ public final class MultiMap<K,V> {
     }
 
     /**
+     * Copy constructor.
+     */
+    public MultiMap(MultiMap<K,V> base) {
+        this();
+        for (Entry<K, List<V>> e : base.entrySet())
+            store.put(e.getKey(),new ArrayList<V>(e.getValue()));
+    }
+
+    /**
      * Adds one more value.
      */
     public final void add(K k,V v) {
@@ -103,8 +113,21 @@ public final class MultiMap<K,V> {
      * @param v
      *      Can be null or empty.
      */
-    public void set(K k, List<V> v) {
+    public void set(K k, Collection<? extends V> v) {
         store.put(k,new ArrayList<V>(v));
+    }
+
+    /**
+     * Replaces all the existing values associated wit hthe key
+     * by the given single value.
+     *
+     * <p>
+     * This is short for <tt>set(k,Collections.singleton(v))</tt>
+     */
+    public void set(K k, V v) {
+        ArrayList<V> vlist = new ArrayList<V>(1);
+        vlist.add(v);
+        store.put(k, vlist);
     }
 
     /**
@@ -166,10 +189,7 @@ public final class MultiMap<K,V> {
      * Keys and values won't cloned.
      */
     public MultiMap<K,V> clone() {
-        MultiMap<K,V> m = new MultiMap<K,V>();
-        for (Entry<K, List<V>> e : store.entrySet())
-            m.store.put(e.getKey(),new ArrayList<V>(e.getValue()));
-        return m;
+        return new MultiMap<K,V>(this);
     }
 
     private static final MultiMap EMPTY = new MultiMap(Collections.emptyMap());

@@ -38,7 +38,6 @@ package org.jvnet.hk2.config;
 
 import com.sun.hk2.component.LazyInhabitant;
 import org.jvnet.hk2.component.*;
-import org.jvnet.hk2.annotations.CagedBy;
 
 import javax.xml.stream.Location;
 import javax.xml.stream.XMLStreamException;
@@ -737,6 +736,9 @@ public class Dom extends LazyInhabitant implements InvocationHandler, Observable
             injectInto(this, args[0]);
             return null;
         }
+        if(method.getAnnotation(DuckTyped.class)!=null) {
+            return invokeDuckMethod(method,proxy,args);
+        }
 
         ConfigModel.Property p = toProperty(method);
         if(p==null)
@@ -749,6 +751,34 @@ public class Dom extends LazyInhabitant implements InvocationHandler, Observable
             // setter
             setter(p, args[0]);
             return null;
+        }
+    }
+
+    /**
+     * Invoke the user defined static method in the nested "Duck" class so that
+     * the user can define convenience methods on the config beans.
+     */
+    private Object invokeDuckMethod(Method method, Object proxy, Object[] args) throws Exception {
+        Method duckMethod = model.getDuckMethod(method);
+
+        Object[] duckArgs;
+        if(args==null) {
+            duckArgs = new Object[]{proxy};
+        } else {
+            duckArgs = new Object[args.length+1];
+            duckArgs[0] = proxy;
+            System.arraycopy(args,0,duckArgs,1,args.length);
+        }
+
+        try {
+            return duckMethod.invoke(null,duckArgs);
+        } catch (InvocationTargetException e) {
+            Throwable t = e.getTargetException();
+            if (t instanceof Exception)
+                throw (Exception) t;
+            if (t instanceof Error)
+                throw (Error) t;
+            throw e;
         }
     }
 
