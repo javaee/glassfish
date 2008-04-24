@@ -50,11 +50,11 @@ public class ResolveError extends LinkageError {
     
     public ResolveError(String s, Throwable t) {
         super(s);
-        setStackTrace(t.getStackTrace());
+        initCause(t);
     }
         
     public ResolveError(Throwable t) {
         super(t.getLocalizedMessage());
-        setStackTrace(t.getStackTrace());
+        initCause(t);
     }
 }

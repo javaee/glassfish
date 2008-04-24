@@ -46,6 +46,8 @@ import java.util.List;
 import java.util.logging.Logger;
 import java.io.PrintStream;
 
+import com.sun.hk2.component.InhabitantsParser;
+
 /**
  * @author Sanjeeb.Sahoo@Sun.COM
  */
@@ -56,13 +58,13 @@ public interface ModulesRegistry extends ModuleChangeListener {
     ModulesRegistry createChild();
 
     /**
-     * Creates an uninitialized {@link org.jvnet.hk2.component.Habitat}
+     * Creates an uninitialized {@link Habitat}
      *
      */
     Habitat newHabitat() throws ComponentException;
 
     /**
-     * Creates a {@link org.jvnet.hk2.component.Habitat} from all the modules in this registry
+     * Creates a {@link Habitat} from all the modules in this registry
      *
      * @param name
      *      Determines which inhabitants descriptors are loaded.
@@ -72,7 +74,10 @@ public interface ModulesRegistry extends ModuleChangeListener {
     Habitat createHabitat(String name) throws ComponentException;
 
     /**
-     * Creates a {@link org.jvnet.hk2.component.Habitat} from all the modules in this registry
+     * Creates a {@link Habitat} from all the modules in this registry.
+     *
+     * <p>
+     * Default {@link InhabitantsParser} is used.
      *
      * @param name
      *      Determines which inhabitants descriptors are loaded.
@@ -84,6 +89,22 @@ public interface ModulesRegistry extends ModuleChangeListener {
      * @return initialized Habitat
      */
     Habitat createHabitat(String name, Habitat h) throws ComponentException;
+
+    /**
+     * Creates a {@link Habitat} from all the modules in this registry,
+     * by using the given {@link InhabitantsParser}.
+     *
+     * @param name
+     *      Determines which inhabitants descriptors are loaded.
+     *      (so that different parallel habitats can be
+     *      created over the same modules registry.)
+     * @param parser
+     *      Parser to load inhabitants file. Sub types can be used
+     *      to customize the parsing behavior, like ignoring some inhabitants deliberately.
+     *
+     * @return initialized Habitat
+     */
+    Habitat createHabitat(String name, InhabitantsParser parser) throws ComponentException;
 
     /**
      * Add a new <code>Repository</code> to this registry. From now on

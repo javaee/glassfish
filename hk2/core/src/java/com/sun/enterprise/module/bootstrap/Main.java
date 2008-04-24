@@ -58,14 +58,12 @@ import com.sun.hk2.component.ExistingSingletonInhabitant;
 import static com.sun.hk2.component.InhabitantsFile.CLASS_KEY;
 import static com.sun.hk2.component.InhabitantsFile.INDEX_KEY;
 import com.sun.hk2.component.KeyValuePairParser;
+import com.sun.hk2.component.InhabitantsParser;
 import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.Habitat;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.JarURLConnection;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Properties;
@@ -134,26 +132,11 @@ public class Main {
      *      If failed to determine the bootstrap file name.
      */
     protected File getBootstrapFile() throws BootException {
-        String resourceName = getClass().getName().replace(".","/")+".class";
-        URL resource = getClass().getClassLoader().getResource(resourceName);
-        if (resource==null) {
-            throw new BootException("Cannot get bootstrap path from "
-                    + resourceName + " class location, aborting");
+        try {
+            return Which.jarFile(getClass());
+        } catch (IOException e) {
+            throw new BootException("Failed to get bootstrap path",e);
         }
-
-        if (resource.getProtocol().equals("jar")) {
-            try {
-                JarURLConnection c = (JarURLConnection) resource.openConnection();
-                URL jarFile = c.getJarFileURL();
-                File f = new File(jarFile.toURI());
-                return f;
-            } catch (IOException e) {
-                throw new BootException("Cannot open bootstrap jar file", e);
-            } catch (URISyntaxException e) {
-                throw new BootException("Incorrect bootstrap class URI", e);
-            }
-        } else
-            throw new BootException("Don't support packaging "+resource+" , please contribute !");
     }
 
     /**
@@ -306,12 +289,26 @@ public class Main {
      * This version of the method auto-discoveres the main module.
      * If there's more than one {@link ModuleStartup} implementation, it is an error.
      *
+     * <p>
+     * All the <tt>launch</tt> methods start additional threads and run GFv3,
+     * then return from the method. 
+     *
      * @param context
      *      startup context instance
      *
+     * @return
+     *      the entry point to all the components in this newly launched GlassFish.
      */
-    public void launch(ModulesRegistry registry, StartupContext context) throws BootException {
-        launch(registry,null, context);
+    public Habitat launch(ModulesRegistry registry, StartupContext context) throws BootException {
+        return launch(registry, null, context);
+    }
+
+    private static final String HABITAT_NAME = "default"; // TODO: take this as a parameter
+
+    public Habitat launch(ModulesRegistry registry, String mainModuleName, StartupContext context) throws BootException {
+        Habitat habitat = createHabitat(registry, context);
+        launch(registry, habitat,mainModuleName,context);
+        return habitat;
     }
 
     /**
@@ -323,29 +320,8 @@ public class Main {
      *      one will be auto-discovered.
      * @param context
      *      startup context instance
-     *
      */
-    public void launch(ModulesRegistry registry, String mainModuleName, StartupContext context) throws BootException {
-        final String habitatName = "default"; // TODO: take this as a parameter
-
-        // set the parent class loader before we start loading modules
-        setParentClassLoader(context, registry);
-
-        // create a habitat and initialize them
-        Habitat mgr = registry.newHabitat();                        
-        mgr.add(new ExistingSingletonInhabitant<StartupContext>(context));
-        mgr.add(new ExistingSingletonInhabitant<Logger>(Logger.global));
-        // the root registry must be added as other components sometimes inject it 
-        mgr.add(new ExistingSingletonInhabitant(ModulesRegistry.class, registry));
-        ClassLoader oldCL = Thread.currentThread().getContextClassLoader();
-        Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
-        try {
-            registry.createHabitat(habitatName, mgr);
-        } finally {
-            Thread.currentThread().setContextClassLoader(oldCL);
-        }
-
-
+    public void launch(ModulesRegistry registry, Habitat habitat, String mainModuleName, StartupContext context) throws BootException {
         // now go figure out the start up module
         final ModuleStartup startupCode;
         final Module mainModule;
@@ -361,7 +337,7 @@ public class Main {
                     throw new BootException("Cannot find main module " + mainModuleName+" : no such module");
             }
 
-            String targetClassName = findModuleStartup(mainModule, habitatName);
+            String targetClassName = findModuleStartup(mainModule, HABITAT_NAME);
             if (targetClassName==null) {
                 throw new BootException("Cannot find a ModuleStartup implementation in the META-INF/services/com.sun.enterprise.v3.ModuleStartup file, aborting");
             }
@@ -371,7 +347,7 @@ public class Main {
             Thread.currentThread().setContextClassLoader(mainModule.getClassLoader());
             try {
                 targetClass = mainModule.getClassLoader().loadClass(targetClassName).asSubclass(ModuleStartup.class);
-                startupCode = mgr.getComponent(targetClass);
+                startupCode = habitat.getComponent(targetClass);
             } catch (ClassNotFoundException e) {
                 throw new BootException("Unable to load "+targetClassName,e);
             } catch (ComponentException e) {
@@ -380,7 +356,7 @@ public class Main {
                 Thread.currentThread().setContextClassLoader(currentCL);
             }
         } else {
-            Collection<ModuleStartup> startups = mgr.getAllByContract(ModuleStartup.class);
+            Collection<ModuleStartup> startups = habitat.getAllByContract(ModuleStartup.class);
             if(startups.isEmpty())
                 throw new BootException("No module has ModuleStartup");
             if(startups.size()>1) {
@@ -398,6 +374,34 @@ public class Main {
 
         mainModule.setSticky(true);
         launch(startupCode, context, mainModule);
+    }
+
+    protected Habitat createHabitat(ModulesRegistry registry, StartupContext context) throws BootException {
+        // set the parent class loader before we start loading modules
+        setParentClassLoader(context, registry);
+
+        // create a habitat and initialize them
+        Habitat habitat = registry.newHabitat();
+        habitat.add(new ExistingSingletonInhabitant<StartupContext>(context));
+        habitat.add(new ExistingSingletonInhabitant<Logger>(Logger.global));
+        // the root registry must be added as other components sometimes inject it
+        habitat.add(new ExistingSingletonInhabitant(ModulesRegistry.class, registry));
+        ClassLoader oldCL = Thread.currentThread().getContextClassLoader();
+        Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
+        try {
+            registry.createHabitat(HABITAT_NAME, createInhabitantsParser(habitat));
+        } finally {
+            Thread.currentThread().setContextClassLoader(oldCL);
+        }
+        return habitat;
+    }
+
+    /**
+     * Creates {@link InhabitantsParser} to fill in {@link Habitat}.
+     * Override for customizing the behavior.
+     */
+    protected InhabitantsParser createInhabitantsParser(Habitat habitat) {
+        return new InhabitantsParser(habitat);
     }
 
     protected String findMainModuleName(File bootstrap) throws BootException {
@@ -423,16 +427,6 @@ public class Main {
         ClassLoader cl = Thread.currentThread().getContextClassLoader();
         try {
             startupCode.setStartupContext(context);
-            //Thread thread = new Thread(startupCode);
-            //thread.setContextClassLoader(mainModule.getClassLoader());
-            //
-            //thread.start();
-            //try {
-            //    thread.join();
-            //} catch (InterruptedException e) {
-            //    e.printStackTrace();
-            //}
-
             Thread.currentThread().setContextClassLoader(mainModule.getClassLoader());
             startupCode.run();
         } finally {

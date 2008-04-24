@@ -45,6 +45,7 @@ import org.jvnet.tiger_types.Types;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.lang.reflect.Method;
 import java.util.*;
 import java.util.logging.Logger;
 
@@ -71,6 +72,8 @@ public final class ConfigModel {
      * Legal child element names and how they should be handled
      */
     final Map<String,Property> elements = new HashMap<String,Property>();
+
+    final Map<Method,Method> duckMethods = new HashMap<Method, Method>();
 
     /**
      * Contracts under which the inhabitant should be registered.
@@ -135,6 +138,28 @@ public final class ConfigModel {
         } catch (ConfigurationException e) {
             e.setLocation(dom.getLocation());
             throw e;
+        }
+    }
+
+    /**
+     * Obtains the duck method implementation from a method on the {@link ConfigBeanProxy}-derived interface.
+     */
+    public Method getDuckMethod(Method method) throws ClassNotFoundException, NoSuchMethodException {
+        synchronized (duckMethods) {
+            Method duckMethod = duckMethods.get(method);
+            if(duckMethod!=null)    return duckMethod;
+
+            Class<?> clz = method.getDeclaringClass();
+            Class<?> duck = clz.getClassLoader().loadClass(clz.getName() + "$Duck");
+
+            Class<?>[] types = method.getParameterTypes();
+            Class[] paramTypes = new Class[types.length+1];
+            System.arraycopy(types,0,paramTypes,1,types.length);
+            paramTypes[0] = clz;
+            duckMethod = duck.getMethod(method.getName(), paramTypes);
+            duckMethods.put(method,duckMethod);
+
+            return duckMethod;
         }
     }
 

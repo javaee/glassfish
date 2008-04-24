@@ -80,6 +80,10 @@ public final class ModuleMetadata {
             this.data = data;
         }
 
+        public InhabitantsDescriptor(URL systemId, byte[] data) {
+            this(systemId.toExternalForm(),data);
+        }
+
         public InhabitantsScanner createScanner() throws IOException {
             return new InhabitantsScanner(new ByteArrayInputStream(data),systemId);
         }

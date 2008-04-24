@@ -8,6 +8,12 @@
     <version>0.2.2-SNAPSHOT</version>
     <name>Modules Subsystem</name>
     <description>Generic Modules subsystem</description>
+
+    <organization>
+        <name>Sun Microsystems, Inc.</name>
+        <url>http://www.sun.com</url>
+    </organization>
+
     <developers>
         <developer>
             <id>kohuske</id>

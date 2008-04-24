@@ -99,7 +99,9 @@ public interface ModuleDefinition {
      * could use another interface, it is the responsibility of the associated
      * Repository to invoke that interface when the module is started.
      *
-     * @return the ImportPolicy or equivalent interface implementation
+     * @return
+     *      Fully qualified class name that's assignable to {@link ImportPolicy},
+     *      or null if no import policy exists.
      */
     String getImportPolicyClassName();
 
@@ -109,7 +111,9 @@ public interface ModuleDefinition {
      * could use another interface, it is the responsibility of the associated
      * Repository to invoke that interface when the module is started.
      *
-     * @return the LifecyclePolicy or equivalent interface implementation
+     * @return
+     *      Fully qualified class name that's assignable to {@link LifecyclePolicy},
+     *      or null if no import policy exists.
      */
     String getLifecyclePolicyClassName();
 
