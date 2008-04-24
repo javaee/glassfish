@@ -54,7 +54,7 @@ public final class CollectionOp
     public static final String COLLECTION_CMD_PREFIX = "###";
     public static final String COLLECTION_CMD_SUFFIX = "###";
     
-    /** indicates that the values are to be replaced with the new ones */
+    /** indicates that all values are to be replaced with the specified ones */
     public static final String COLLECTION_OP_REPLACE = COLLECTION_CMD_PREFIX + "replace" + COLLECTION_CMD_SUFFIX;
     
     /** indicates that the values are to be added to the existing ones */
