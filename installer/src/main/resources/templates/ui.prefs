@@ -436,6 +436,10 @@ http://wiki.glassfish.java.net/gfwiki/wiki.jsp?page=UsageMetricsV3\
 &lt;BR&gt;\
 &lt;/BODY&gt;&lt;/HTML&gt;
 
+ADMINISTRATION_TOP_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;\
+Please configure the administration settings for the server.&lt;BR&gt;\
+&lt;/BODY&gt;&lt;/HTML&gt;
+
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~PRODUCT SELECTION PAGE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ADD_BUTTON_LABEL=Add >
 ADD_ALL_BUTTON_LABEL=Add all >>
