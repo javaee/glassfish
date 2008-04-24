@@ -100,7 +100,7 @@
         <dependency>
             <groupId>org.glassfish.external</groupId>
             <artifactId>grizzly-module</artifactId>
-            <version>${grizzly.version}</version>
+            <version>${project.parent.version}</version>
             <scope>compile</scope>
         </dependency>         
         <dependency>

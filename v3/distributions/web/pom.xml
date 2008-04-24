@@ -109,7 +109,7 @@
         <dependency>
             <groupId>org.glassfish.external</groupId>
             <artifactId>grizzly-jruby-module</artifactId>
-            <version>${glassfish-jruby.version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.extras</groupId>
@@ -161,6 +161,11 @@
             <groupId>org.glassfish.common</groupId>
             <artifactId>amx-impl</artifactId>
             <version>${pe.version}</version>
+        </dependency>
+         <dependency>
+           <groupId>com.sun.enterprise</groupId>
+           <artifactId>hk2</artifactId>
+           <version>${hk2.version}</version>
         </dependency>
          <dependency>
            <groupId>org.glassfish.web</groupId>
