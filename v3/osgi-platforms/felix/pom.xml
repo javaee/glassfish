@@ -104,4 +104,17 @@
             </plugin>
         </plugins>
     </build>
+
+    <dependencies>
+        <!--
+            add it as a test scope dependency so that IDEs can recognize this as a dependency
+            and show the source code during the debugging
+        -->
+        <dependency>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.apache.felix.main</artifactId>
+            <version>1.0.3</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 </project>
