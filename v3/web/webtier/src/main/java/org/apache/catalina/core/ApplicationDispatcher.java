@@ -716,7 +716,7 @@ final class ApplicationDispatcher
             if(crossContext) {
                 context.getManager().preRequestDispatcherProcess(request, response);
             }            
-            doInvoke(request,response);
+            doInvoke(request, response, crossContext);
             if(crossContext) {
                 context.getManager().postRequestDispatcherProcess(request, response);
             }
@@ -741,23 +741,24 @@ final class ApplicationDispatcher
      *
      * @param request The servlet request we are processing
      * @param response The servlet response we are creating
+     * @param crossContext true if the request dispatch is crossing context
+     * boundaries, false otherwise
      *
      * @exception IOException if an input/output error occurs
      * @exception ServletException if a servlet error occurs
      */
-    private void doInvoke(ServletRequest request, ServletResponse response)
+    private void doInvoke(ServletRequest request, ServletResponse response,
+                          boolean crossContext)
             throws IOException, ServletException {
 
         // Checking to see if the context classloader is the current context
         // classloader. If it's not, we're saving it, and setting the context
         // classloader to the Context classloader
-        ClassLoader oldCCL = Thread.currentThread().getContextClassLoader();
-        ClassLoader contextClassLoader = context.getLoader().getClassLoader();
-
-        if (oldCCL != contextClassLoader) {
+        ClassLoader oldCCL = null;
+        if (crossContext) {
+            oldCCL = Thread.currentThread().getContextClassLoader();
+            ClassLoader contextClassLoader = context.getLoader().getClassLoader();
             Thread.currentThread().setContextClassLoader(contextClassLoader);
-        } else {
-            oldCCL = null;
         }
 
         // Initialize local variables we may need
