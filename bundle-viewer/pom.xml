@@ -44,6 +44,7 @@
   <name>Dumps the OSGi manifest entry in a human readable foramt</name>
   
   <build>
+	  <finalName>bundle-viewer</finalName>
     <sourceDirectory>src</sourceDirectory>
     <plugins>
       <plugin>
