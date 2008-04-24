@@ -3,4 +3,4 @@ Archiver-Version: Plexus Archiver
 Created-By: Apache Maven
 Built-By: paulsen
 Build-Jdk: 1.6.0_03
-HK2-Import-Bundles: com.sun.enterprise:hk2,org.glassfish.admingui:console-plugin-service,org.glassfish.common:amx-api,org.glassfish.core:deployment-client,org.glassfish.registration:registration-api,org.glassfish.registration:registration-impl
+HK2-Import-Bundles: com.sun.enterprise:hk2,org.glassfish.admingui:console-plugin-service,org.glassfish.common:amx-api,org.glassfish.core:deployment-client,org.glassfish.registration:registration-api,org.glassfish.registration:registration-impl,org.glassfish.security:securitycommon
