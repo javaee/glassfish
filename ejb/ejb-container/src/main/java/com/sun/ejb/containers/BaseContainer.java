@@ -162,6 +162,9 @@ public abstract class BaseContainer
     // True if bean exposes a local business view
     protected boolean hasLocalBusinessView=false;
 
+    protected boolean hasOptionalLocalBusinessView = false;
+
+    protected Class ejbGeneratedOptionalLocalBusinessIntfClass;
     //
     // Data members for LocalHome/Local view
     //
@@ -189,6 +192,7 @@ public abstract class BaseContainer
     // Internal interface describing operation used to create an
     // instance of a local business object. (GenericEJBLocalHome)
     protected Class localBusinessHomeIntf = null;
+    protected Class ejbOptionalLocalBusinessHomeIntf = null;
 
     // Local business interface written by developer
     protected Set<Class> localBusinessIntfs = new HashSet();
@@ -198,11 +202,19 @@ public abstract class BaseContainer
     // business objects during lookups.
     protected GenericEJBLocalHome ejbLocalBusinessHome;
 
+    protected GenericEJBLocalHome ejbOptionalLocalBusinessHome;
+
     // Implementation of internal local business home interface.
     protected EJBLocalHomeImpl ejbLocalBusinessHomeImpl;
 
+    // Implementation of internal local business home interface.
+    protected EJBLocalHomeImpl ejbOptionalLocalBusinessHomeImpl;
+
     // Constructor used to instantiate local business object proxy.
     private Constructor ejbLocalBusinessObjectProxyCtor;
+
+    // Constructor used to instantiate local business object proxy.
+    private Constructor ejbOptionalLocalBusinessObjectProxyCtor;
 
     /*****************************************
      *     Data members for Remote views     *
@@ -379,6 +391,8 @@ public abstract class BaseContainer
 
     protected EjbContainerUtil ejbContainerUtilImpl = EjbContainerUtilImpl.getInstance();
 
+    protected ClassLoader optIntfClassLoader;
+
     /**
      * This constructor is called from ContainerFactoryImpl when an
      * EJB Jar is deployed.
@@ -538,16 +552,32 @@ public abstract class BaseContainer
 
                 if( ejbDescriptor.isLocalBusinessInterfacesSupported() ) {
                     isLocal = true;
-                    hasLocalBusinessView = true;                    
+                    hasLocalBusinessView = true;
 
                     localBusinessHomeIntf = GenericEJBLocalHome.class;
 
-                    for(String next : 
+                    for(String next :
                             ejbDescriptor.getLocalBusinessClassNames() ) {
                         Class clz = loader.loadClass(next);
                         localBusinessIntfs.add(clz);
                         addToGeneratedMonitoredMethodInfo(next, clz);
                     }
+                }
+
+                if( ejbDescriptor.isOptionalLocalBusinessViewSupported() ) {
+                    isLocal = true;
+                    hasOptionalLocalBusinessView = true;
+
+                    ejbOptionalLocalBusinessHomeIntf = GenericEJBLocalHome.class;
+                    String genOptionalLocalIntf = EJBUtils.getGeneratedOptionalInterfaceName(
+                            ejbDescriptor.getEjbClassName());
+                    Class clz = loader.loadClass(ejbDescriptor.getEjbClassName());
+                    addToGeneratedMonitoredMethodInfo(ejbDescriptor.getEjbClassName(), clz);
+
+                    String optIntfClassName = EJBUtils.getGeneratedOptionalInterfaceName(ejbClass.getName());
+                    optIntfClassLoader = new EjbOptionalIntfGenerator(loader);
+                    ((EjbOptionalIntfGenerator) optIntfClassLoader).generateOptionalLocalInterface(ejbClass, optIntfClassName);
+                    ejbGeneratedOptionalLocalBusinessIntfClass = optIntfClassLoader.loadClass(optIntfClassName);
                 }
 
                 /*TODO
@@ -802,9 +832,11 @@ public abstract class BaseContainer
      * Return an object that implements ejb's local business home interface.
      */
     public final GenericEJBLocalHome getEJBLocalBusinessHome() {
-        return ejbLocalBusinessHome;
+        return (hasOptionalLocalBusinessView)
+            ? ejbOptionalLocalBusinessHome
+            : ejbLocalBusinessHome;
     }
-    
+
     public final Class getEJBClass() {
         return ejbClass;
     }
@@ -1055,8 +1087,8 @@ public abstract class BaseContainer
                     instantiateEJBLocalBusinessHomeImpl();
                 ejbLocalBusinessHome = (GenericEJBLocalHome)
                     ejbLocalBusinessHomeImpl.getEJBLocalHome();
-                
-                Class[] proxyInterfaces = 
+
+                Class[] proxyInterfaces =
                     new Class[ localBusinessIntfs.size() + 1 ];
                 proxyInterfaces[0] = IndirectlySerializable.class;
                 int index = 1;
@@ -1067,6 +1099,27 @@ public abstract class BaseContainer
 
                 Class proxyClass = Proxy.getProxyClass(loader,proxyInterfaces);
                 ejbLocalBusinessObjectProxyCtor = proxyClass.
+                    getConstructor(new Class[] { InvocationHandler.class });
+            }
+
+            if(hasOptionalLocalBusinessView) {
+                EJBLocalHomeImpl obj = instantiateEJBOptionalLocalBusinessHomeImpl();
+                ejbOptionalLocalBusinessHomeImpl = (EJBLocalHomeImpl) obj;
+                    //instantiateEJBOptionalLocalBusinessHomeImpl();
+                ejbOptionalLocalBusinessHome = (GenericEJBLocalHome)
+                    ejbOptionalLocalBusinessHomeImpl.getEJBLocalHome();
+
+                Class[] proxyInterfaces =
+                    new Class[ 2 ];
+                proxyInterfaces[0] = IndirectlySerializable.class;
+                String optionalIntfName = EJBUtils.getGeneratedOptionalInterfaceName(
+                        ejbClass.getName());
+
+                proxyInterfaces[1] = ejbGeneratedOptionalLocalBusinessIntfClass =
+                        optIntfClassLoader.loadClass(optionalIntfName);
+
+                Class proxyClass = Proxy.getProxyClass(optIntfClassLoader,proxyInterfaces);
+                ejbOptionalLocalBusinessObjectProxyCtor = proxyClass.
                     getConstructor(new Class[] { InvocationHandler.class });
             }
 
@@ -1081,7 +1134,6 @@ public abstract class BaseContainer
         }
         metadata = new EJBMetaDataImpl(ejbHomeStub, homeIntf, remoteIntf,
             primaryKeyClass, isSession, isStatelessSession);
-        System.out.println("Created and Initialized container: " + this);
     }
     
     /**
@@ -2049,7 +2101,8 @@ public abstract class BaseContainer
         InvocationInfo info = createInvocationInfo
             (method, txAttr, flushEnabled, methodIntf, originalIntf);
         boolean isHomeIntf = (methodIntf.equals(MethodDescriptor.EJB_HOME)
-                || methodIntf.equals(MethodDescriptor.EJB_LOCALHOME));
+                || methodIntf.equals(MethodDescriptor.EJB_LOCALHOME)
+                || methodIntf.equals(MethodDescriptor.EJB_OPTIONAL_LOCALHOME));
         if (! isHomeIntf) {
             Method beanMethod = null;
             try {
@@ -2110,7 +2163,7 @@ public abstract class BaseContainer
             if( method.getDeclaringClass() != EJBHome.class ) {
                 setHomeTargetMethodInfo(invInfo, false);
             }
-        } else if( methodIntf.equals(MethodDescriptor.EJB_LOCAL) ) { 
+        } else if( methodIntf.equals(MethodDescriptor.EJB_LOCAL) ) {
             if( method.getDeclaringClass() != EJBLocalObject.class ) {
                 setEJBObjectTargetMethodInfo(invInfo, true, originalIntf);
             }
@@ -2118,7 +2171,15 @@ public abstract class BaseContainer
             if( method.getDeclaringClass() != EJBObject.class ) {
                 setEJBObjectTargetMethodInfo(invInfo, false, originalIntf);
             }
-        }       
+        }  else if( methodIntf.equals(MethodDescriptor.EJB_OPTIONAL_LOCALHOME) ) {
+            if( method.getDeclaringClass() != EJBLocalHome.class ) {
+                setHomeTargetMethodInfo(invInfo, true);
+            }
+        } else if( methodIntf.equals(MethodDescriptor.EJB_OPTIONAL_LOCAL) ) {
+            if( method.getDeclaringClass() != EJBLocalObject.class ) {
+                setEJBObjectTargetMethodInfo(invInfo, false, originalIntf);
+            }
+        }
 
         if( _logger.isLoggable(Level.FINE) ) {
             _logger.log(Level.FINE, invInfo.toString());
@@ -2411,6 +2472,28 @@ public abstract class BaseContainer
                                           localBusinessHomeIntf);
                     }
                 }
+
+                if (hasOptionalLocalBusinessView) {
+                    // Process generated Optional Local Business interface
+                    String optClassName = EJBUtils.getGeneratedOptionalInterfaceName(ejbClass.getName());
+                    ejbGeneratedOptionalLocalBusinessIntfClass = optIntfClassLoader.loadClass(optClassName);
+                    Method[] methods = ejbGeneratedOptionalLocalBusinessIntfClass.getMethods();
+                    for ( int i=0; i<methods.length; i++ ) {
+                        Method method = methods[i];
+                        addInvocationInfo(method,
+                                          MethodDescriptor.EJB_OPTIONAL_LOCAL,
+                                          ejbGeneratedOptionalLocalBusinessIntfClass);
+                    }
+
+                    // Process generated Optional Local Business interface
+                    Method[] optHomeMethods = ejbOptionalLocalBusinessHomeIntf.getMethods();
+                    for ( int i=0; i<optHomeMethods.length; i++ ) {
+                        Method method = optHomeMethods[i];
+                        addInvocationInfo(method,
+                                          MethodDescriptor.EJB_OPTIONAL_LOCALHOME,
+                                          ejbOptionalLocalBusinessHomeIntf);
+                    }
+                }
             }
 
             if ( isWebServiceEndpoint ) {
@@ -2628,19 +2711,39 @@ public abstract class BaseContainer
     private EJBLocalHomeImpl instantiateEJBLocalBusinessHomeImpl()
         throws Exception {
 
-        EJBLocalHomeInvocationHandler invHandler = 
-            new EJBLocalHomeInvocationHandler(ejbDescriptor, 
+        EJBLocalHomeInvocationHandler invHandler =
+            new EJBLocalHomeInvocationHandler(ejbDescriptor,
                                               localBusinessHomeIntf,
                                               proxyInvocationInfoMap);
 
         EJBLocalHomeImpl homeImpl = invHandler;
 
-        System.out.println("Creating proxy using loader: " + loader);
-        
         EJBLocalHome proxy = (EJBLocalHome) Proxy.newProxyInstance
             (loader, new Class[] { IndirectlySerializable.class,
                                    localBusinessHomeIntf }, invHandler);
-            
+
+        invHandler.setProxy(proxy);
+
+        homeImpl.setContainer(this);
+
+        return homeImpl;
+    }
+
+
+    private EJBLocalHomeImpl instantiateEJBOptionalLocalBusinessHomeImpl()
+        throws Exception {
+
+        EJBLocalHomeInvocationHandler invHandler =
+            new EJBLocalHomeInvocationHandler(ejbDescriptor,
+                                              localBusinessHomeIntf,
+                                              proxyInvocationInfoMap);
+
+        EJBLocalHomeImpl homeImpl = invHandler;
+
+        EJBLocalHome proxy = (EJBLocalHome) Proxy.newProxyInstance
+            (loader, new Class[] { IndirectlySerializable.class,
+                                   ejbOptionalLocalBusinessHomeIntf }, invHandler);
+
         invHandler.setProxy(proxy);
 
         homeImpl.setContainer(this);
@@ -2667,10 +2770,10 @@ public abstract class BaseContainer
         return localObjImpl;
     }
 
-    protected EJBLocalObjectImpl instantiateEJBLocalBusinessObjectImpl() 
+    protected EJBLocalObjectImpl instantiateEJBLocalBusinessObjectImpl()
         throws Exception {
 
-        EJBLocalObjectInvocationHandler handler = 
+        EJBLocalObjectInvocationHandler handler =
             new EJBLocalObjectInvocationHandler(proxyInvocationInfoMap);
 
         EJBLocalObjectImpl localBusinessObjImpl = handler;
@@ -2690,6 +2793,43 @@ public abstract class BaseContainer
             localBusinessObjImpl.mapClientObject(businessIntfClass.getName(),
                     proxy);
         }
+        return localBusinessObjImpl;
+    }
+
+    protected EJBLocalObjectImpl instantiateOptionalEJBLocalBusinessObjectImpl()
+        throws Exception {
+
+        EJBLocalObjectInvocationHandler handler =
+            new EJBLocalObjectInvocationHandler(proxyInvocationInfoMap);
+
+        EJBLocalObjectImpl localBusinessObjImpl = handler;
+
+        Object localObjectProxy = ejbOptionalLocalBusinessObjectProxyCtor.newInstance
+            ( new Object[] { handler });
+
+        localBusinessObjImpl.setContainer(this);
+
+        Class businessIntfClass = ejbGeneratedOptionalLocalBusinessIntfClass;
+        EJBLocalObjectInvocationHandlerDelegate delegate =
+            new EJBLocalObjectInvocationHandlerDelegate(
+                    businessIntfClass, getContainerId(), handler);
+        Proxy proxy = (Proxy) Proxy.newProxyInstance(
+                optIntfClassLoader, new Class[] { IndirectlySerializable.class,
+                               businessIntfClass}, delegate);
+
+        String beanSubClassName = ejbGeneratedOptionalLocalBusinessIntfClass.getName() + "__Bean__";
+
+        ((EjbOptionalIntfGenerator) optIntfClassLoader).generateOptionalLocalInterfaceSubClass(
+                ejbClass, beanSubClassName, ejbGeneratedOptionalLocalBusinessIntfClass);
+
+        Class dummyIntfTst = optIntfClassLoader.loadClass(ejbGeneratedOptionalLocalBusinessIntfClass.getName());
+
+        Class subClass = optIntfClassLoader.loadClass(beanSubClassName);
+        OptionalLocalInterfaceProvider provider =
+                (OptionalLocalInterfaceProvider) subClass.newInstance();
+        provider.setOptionalLocalIntfProxy(proxy);
+        localBusinessObjImpl.mapClientObject(ejbClass.getName(), provider);
+
         return localBusinessObjImpl;
     }
 
@@ -2825,11 +2965,8 @@ public abstract class BaseContainer
         inv.beanMethod = ejbTimeoutMethod;
 
         // Application must be passed a TimerWrapper.
-        /*TODO
         Object[] args  = { new TimerWrapper(timerState.getTimerId(),
                                             timerService) };
-        */
-        Object[] args = new Object[2];
         inv.methodParams = args;
      
         // Delegate to subclass for i.ejbObject / i.isLocal setup.
@@ -2974,7 +3111,8 @@ public abstract class BaseContainer
                 });
             }
 
-            securityManager.destroy();
+            if (securityManager != null) securityManager.destroy();
+            // TODO securityManager.destroy();
             
             if( !isMessageDriven ) {
                 // destroy home objref
@@ -3850,7 +3988,7 @@ public abstract class BaseContainer
             // Register Synchronization with TM so that we can
             // dissociate the context from tx in afterCompletion
             ejbContainerUtilImpl.getContainerSync(tx).addBean(sc);
-            
+                                                                   
             enlistExtendedEntityManagers(sc);
             // Dont call container.afterBegin() because
             // TX_BEAN_MANAGED EntityBeans are not allowed,

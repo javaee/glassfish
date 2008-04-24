@@ -269,7 +269,8 @@ public class MonitoringRegistryMediator
 	    sfsbStoreMonitor = null;
 	    ejbTimedObjectStatsProvider = null;
 
-	    registry.unregisterMonitoringLevelListener(this);
+	    if (registry != null) registry.unregisterMonitoringLevelListener(this);
+	    // TODO registry.unregisterMonitoringLevelListener(this);
 	}
     }
 

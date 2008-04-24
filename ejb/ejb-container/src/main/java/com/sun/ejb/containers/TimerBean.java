@@ -811,7 +811,7 @@ public class TimerBean implements TimerLocal {
             case TimerState.ACTIVE : 
                 if( status == Status.STATUS_COMMITTED ) {
                     timerService.scheduleTask(timerId_, timeout_);
-                    container_.incrementCreatedTimedObject();
+                    // XXX TODO XXX container_.incrementCreatedTimedObject();
                 } else {
                     timerService.expungeTimer(timerId_);
                 }
@@ -829,7 +829,7 @@ public class TimerBean implements TimerLocal {
                     }
                 } else {
                     timerService.expungeTimer(timerId_);
-                    container_.incrementRemovedTimedObject();
+                    // XXX TODO XXX container_.incrementRemovedTimedObject();
                 }
                 break;
             }

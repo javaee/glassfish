@@ -155,8 +155,7 @@ public class EJBTimerService
         "com.sun.ejb.timer.ReadDBBeforeTimeout";
     private boolean foundSysPropDBReadBeforeTimeout = false;
 
-    /*** XXX NEED TO FIX XXX **/
-    private Agent agent;
+    private Agent agent = ejbContainerUtil.getCallFlowAgent();
 
     public EJBTimerService(String appID, TimerLocal timerLocal) {
         timerLocal_ = timerLocal;
@@ -435,6 +434,20 @@ public class EJBTimerService
      * Called at server startup *after* user apps have been re-activated
      * to restart any active EJB timers.  
      */
+    public boolean restoreEJBTimers() {
+        boolean rc = false;
+        try {
+// XXX TODO XXX this count will be right the 1st time
+            if( totalTimedObjectsInitialized_ > 0 ) {
+                restoreTimers();
+                rc = true;
+            }
+        } catch (Exception ex) {
+            logger.log(Level.SEVERE, "Exception restoring EJB Timers", ex);
+        }
+        return rc;
+    }
+
     void restoreTimers() throws Exception {
 
         // Optimization.  Skip timer restoration if there aren't any
@@ -615,7 +628,7 @@ public class EJBTimerService
             TimerPrimaryKey timerId    = nextTimer.getTimerId();
             Date expiration = (Date) next.getValue();
             scheduleTask(timerId, expiration);
-            logger.log(Level.FINE, 
+            logger.log(Level.FINE,  
                        "EJBTimerService.restoreTimers(), scheduling timer " + 
                        nextTimer);
         }
@@ -1431,7 +1444,7 @@ public class EJBTimerService
             // Since the ejbTimeout was called successfully increment the
             // delivery count
             BaseContainer container = getContainer(timerState.getContainerId());
-            container.incrementDeliveredTimedObject();
+            // XXX TODO XXX container.incrementDeliveredTimedObject();
                                   
             synchronized(timerState) {
                 
@@ -1446,7 +1459,6 @@ public class EJBTimerService
                         }
 
                         if( timerState.isPeriodic() ) {
-// ??? TX  is timer still managed ???
                             Date now = new Date();
                             timer.setLastExpiration(now);   
                             
@@ -1470,7 +1482,6 @@ public class EJBTimerService
                             }
 
                             // Timer has expired sucessfully, so remove it.
-// XXX check if TX logic is correct here  XXX
 // XXX the original logic relied on the tx being executed on CMP if needed
 // XXX the original logic didn't need a FinderException as it assumed that it's in the same tx XXX
                             timerLocal_.cancel(timerId); // XXX cancelTimer(timerBean);

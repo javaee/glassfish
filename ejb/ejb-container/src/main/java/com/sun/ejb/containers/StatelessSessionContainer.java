@@ -101,6 +101,7 @@ public class StatelessSessionContainer
     // EJBObject/EJBLocalObject instance since they are all identical.
     private EJBLocalObjectImpl theEJBLocalObjectImpl = null;
     private EJBLocalObjectImpl theEJBLocalBusinessObjectImpl = null;
+    private EJBLocalObjectImpl theOptionalEJBLocalBusinessObjectImpl = null;
 
     // Data members for RemoteHome view
     private EJBObjectImpl theEJBObjectImpl = null;
@@ -235,6 +236,10 @@ public class StatelessSessionContainer
             if( hasLocalBusinessView ) {
                 theEJBLocalBusinessObjectImpl = 
                     instantiateEJBLocalBusinessObjectImpl();
+            }
+            if (hasOptionalLocalBusinessView) {
+                theOptionalEJBLocalBusinessObjectImpl =
+                    instantiateOptionalEJBLocalBusinessObjectImpl();
             }
         }
 
@@ -372,7 +377,9 @@ public class StatelessSessionContainer
     {	
         // No access checks needed because this is called as a result
         // of an internal creation, not a user-visible create method.
-        return theEJBLocalBusinessObjectImpl;
+        return (hasOptionalLocalBusinessView)
+                ? theOptionalEJBLocalBusinessObjectImpl
+                : theEJBLocalBusinessObjectImpl;
     }
 
 

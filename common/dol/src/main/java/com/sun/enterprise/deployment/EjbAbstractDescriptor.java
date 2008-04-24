@@ -265,5 +265,18 @@ public abstract class EjbAbstractDescriptor extends Descriptor implements NamedD
         return (getWebServiceEndpointInterfaceName() != null);        
     }
 
+    /**
+     * @return true if this is an EJB provides a no interface local view.
+     */
+    public boolean isOptionalLocalBusinessViewSupported() {
+        boolean result =
+                isRemoteInterfacesSupported() ||
+                isRemoteBusinessInterfacesSupported() ||
+                isLocalInterfacesSupported() ||
+                isLocalBusinessInterfacesSupported();
+
+        return (! result);
+    }
+
 }
     

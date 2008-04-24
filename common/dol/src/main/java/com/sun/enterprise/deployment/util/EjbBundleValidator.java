@@ -39,7 +39,6 @@ package com.sun.enterprise.deployment.util;
 import java.util.*;
 import java.util.logging.Level;
 import java.lang.reflect.Method;
-import java.lang.reflect.Field;
 import java.security.AccessController;
 import java.security.Principal;
 import java.security.PrivilegedAction;
@@ -47,31 +46,22 @@ import javax.security.auth.Subject;
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.ApplicationClientDescriptor;
 import com.sun.enterprise.deployment.BundleDescriptor;
-import com.sun.enterprise.deployment.ContainerTransaction;
-import com.sun.enterprise.deployment.Descriptor;
-import com.sun.enterprise.deployment.DynamicAttributesDescriptor;
 import com.sun.enterprise.deployment.EjbDescriptor;
 import com.sun.enterprise.deployment.DummyEjbDescriptor;
 import com.sun.enterprise.deployment.EjbBundleDescriptor;
 import com.sun.enterprise.deployment.EjbEntityDescriptor;
 import com.sun.enterprise.deployment.EjbMessageBeanDescriptor;
-import com.sun.enterprise.deployment.EjbReferenceDescriptor;
 import com.sun.enterprise.deployment.InjectionCapable;
 import com.sun.enterprise.deployment.JmsDestinationReferenceDescriptor;
 import com.sun.enterprise.deployment.MethodDescriptor;
 import com.sun.enterprise.deployment.MessageDestinationDescriptor;
 import com.sun.enterprise.deployment.MessageDestinationReferenceDescriptor;
-import com.sun.enterprise.deployment.PersistenceDescriptor;
-import com.sun.enterprise.deployment.RelationshipDescriptor;
 import com.sun.enterprise.deployment.ResourceReferenceDescriptor;
 import com.sun.enterprise.deployment.RunAsIdentityDescriptor;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.WebService;
 import com.sun.enterprise.deployment.InterceptorBindingDescriptor;
-import com.sun.enterprise.deployment.EjbInterceptor;
-import com.sun.enterprise.deployment.InjectionTarget;
 import com.sun.enterprise.deployment.types.EjbReference;
-import com.sun.enterprise.deployment.interfaces.*;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 
 /**
@@ -87,7 +77,7 @@ public class EjbBundleValidator  extends ComponentValidator implements EjbBundle
             new LocalStringManagerImpl(EjbBundleValidator.class);
             
     /** visits an ejb bundle descriptor
-     * @param an ejb bundle descriptor
+     * @param bundleDescriptor ejb bundle descriptor
      */
     public void accept(EjbBundleDescriptor bundleDescriptor) {
         if (bundleDescriptor.getEjbs().size() == 0) {
@@ -204,7 +194,7 @@ public class EjbBundleValidator  extends ComponentValidator implements EjbBundle
     /**
      * visits all entries within the component environment for which
      * isInjectable() == true.
-     * @param the InjectionCapable environment dependency
+     * @param injectable InjectionCapable environment dependency
      */
     public void accept(InjectionCapable injectable) {
         acceptWithCL(injectable);
@@ -291,7 +281,7 @@ public class EjbBundleValidator  extends ComponentValidator implements EjbBundle
 
     /**
      * visits an ejb reference for the last J2EE component visited
-     * @param the ejb reference
+     * @param ejbRef ejb reference
      */
     public void accept(EjbReference ejbRef) {
         DOLUtils.getDefaultLogger().fine("Visiting Ref" + ejbRef);
@@ -578,10 +568,14 @@ public class EjbBundleValidator  extends ComponentValidator implements EjbBundle
                     ejbRef.setLocal(false);
 
                 } else {
-                    String msg = "Warning : Unable to determine local " +
-                        " business vs. remote business designation for " +
-                        " EJB 3.0 ref " + ejbRef;
-                    throw new RuntimeException(msg);
+                    if (ejbReferee.isOptionalLocalBusinessViewSupported()) {
+                        ejbRef.setLocal(true);    
+                    } else {
+                        String msg = "Warning : Unable to determine local " +
+                            " business vs. remote business designation for " +
+                            " EJB 3.0 ref " + ejbRef;
+                        throw new RuntimeException(msg);
+                    }
                 }
             }
 
@@ -732,6 +726,11 @@ public class EjbBundleValidator  extends ComponentValidator implements EjbBundle
                     addIntfInfo(intfInfoMap, nextIntf, 
                                 EjbIntfType.LOCAL_BUSINESS, next);
                 }
+            }
+
+            if (next.isOptionalLocalBusinessViewSupported()) {
+                addIntfInfo(intfInfoMap, next.getEjbClassName(),
+                                EjbIntfType.NO_INTF_LOCAL_BUSINESS, next);
             }
 
         }
@@ -964,7 +963,8 @@ public class EjbBundleValidator  extends ComponentValidator implements EjbBundle
         REMOTE_HOME,
         REMOTE_BUSINESS,
         LOCAL_HOME,
-        LOCAL_BUSINESS
+        LOCAL_BUSINESS,
+        NO_INTF_LOCAL_BUSINESS
     }
 
     private static class EjbIntfInfo {

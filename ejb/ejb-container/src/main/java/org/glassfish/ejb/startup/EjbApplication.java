@@ -51,6 +51,11 @@ public class EjbApplication
     ClassLoader ejbAppClassLoader;
     DeploymentContext dc;
 
+    // TODO: move restoreEJBTimers to correct location
+    private static boolean restored = false;
+    private static Object lock = new Object();
+    // TODO: move restoreEJBTimers to correct location
+
     public EjbApplication(
             Collection<EjbDescriptor> bundleDesc, DeploymentContext dc,
             ClassLoader cl) {
@@ -70,27 +75,22 @@ public class EjbApplication
         Set<EjbDescriptor> descs = (Set<EjbDescriptor>) bundleDesc.getEjbs();
 
         long appUniqueID = ejbs.getUniqueId();
-        */
         long appUniqueID = 0;
         if (appUniqueID == 0) {
-            System.out.println("*** EjbApp::start() => ASSIGNING RANDOM uniqueID..");
             appUniqueID = (System.currentTimeMillis() & 0xFFFFFFFF) << 16;
         }
-        System.out.println("*** EjbApp::start() => " + appName
-                + "; uID => " + appUniqueID);
+        */
 
         //System.out.println("**CL => " + bundleDesc.getClassLoader());
         int counter = 0;
         for (EjbDescriptor desc : ejbs) {
-            desc.setUniqueId(appUniqueID + (counter++));
-            System.out.println("==>UniqueID: " + desc.getUniqueId() + " ==> "
-                    + desc.getName() + "   isLocal: " + desc.toString());
+            desc.setUniqueId(getUniqueId(desc)); // XXX appUniqueID + (counter++));
             try {
                 Container container = ejbContainerFactory.createContainer(desc, ejbAppClassLoader,
                     null, dc);
                 containers.add(container);
             } catch (Throwable th) {
-                throw new RuntimeException("Error", th);
+                throw new RuntimeException("Error during EjbApplication.start() ", th);
             }
         }
 
@@ -98,11 +98,28 @@ public class EjbApplication
             container.doAfterApplicationDeploy();
         }
 
+        // TODO: move restoreEJBTimers to correct location
+        synchronized(lock) {
+            System.out.println("==> Restore Timers? == " + restored);
+            if (!restored) {
+                com.sun.ejb.containers.EJBTimerService ejbTimerService = 
+                    com.sun.ejb.containers.EjbContainerUtilImpl.getInstance().getEJBTimerService();
+                if (ejbTimerService != null) {
+                    restored = ejbTimerService.restoreEJBTimers();
+                    System.out.println("==> Restored Timers? == " + restored);
+                }
+            }
+        }
+        // TODO: move restoreEJBTimers to correct location
+
         return true;
     }
 
     public boolean stop() {
-        return false;
+        for (Container container : containers) {
+            container.onShutdown();
+        }
+        return true;
     }
 
     /**
@@ -112,6 +129,35 @@ public class EjbApplication
      */
     public ClassLoader getClassLoader() {
         return ejbAppClassLoader;
+    }
+
+    private static final char NAME_PART_SEPARATOR  = '_';   // NOI18N
+    private static final char NAME_CONCATENATOR    = ' ';   // NOI18N
+
+    private long getUniqueId(EjbDescriptor desc) {
+        
+        com.sun.enterprise.deployment.BundleDescriptor bundle = desc.getEjbBundleDescriptor();
+        com.sun.enterprise.deployment.Application application = bundle.getApplication();
+
+        // Add ejb name and application name.
+        StringBuffer rc = new StringBuffer().
+                append(desc.getName()).
+                append(NAME_CONCATENATOR).
+                append(application.getRegistrationName());
+
+        // If it's not just a module, add a module name.
+        if (!application.isVirtual()) {
+            rc.append(NAME_CONCATENATOR).
+               append(bundle.getModuleDescriptor().getArchiveUri());
+        }
+
+        return rc.toString().hashCode();
+    }
+
+    protected void undeploy() {
+        for (Container container : containers) {
+            container.undeploy();
+        }
     }
 
 }

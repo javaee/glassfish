@@ -169,6 +169,14 @@ public class EJBUtils {
         return (dot == -1) ? intf : intf.substring(dot+1);
     }
 
+    public static String getGeneratedOptionalInterfaceName(String ejbClassName) {
+        String packageName = getClassPackageName(ejbClassName);
+        String simpleName = getClassSimpleName(ejbClassName);
+        String optionalIntfName = "__EJB31_Generated__" + simpleName + "__Intf__";
+        return (packageName != null) ?
+            packageName + "." + optionalIntfName : optionalIntfName;
+    }
+
     public static String getGeneratedSerializableClassName(String beanClass) {
         String packageName = getClassPackageName(beanClass);
         String simpleName = getClassSimpleName(beanClass);

@@ -95,7 +95,7 @@ public class EjbReferenceDescriptor extends EnvironmentProperty implements com.s
      * with the given name and descriptor of the reference.
      *
      * @param name the ejb-ref name as used in the referencing bean
-     * @param optional description
+     * @param description optional description
      * @param ejbDescriptor of the referenced bean
      */
     public EjbReferenceDescriptor(String name, String description, EjbDescriptor ejbDescriptor) {
@@ -145,7 +145,7 @@ public class EjbReferenceDescriptor extends EnvironmentProperty implements com.s
     
     /**
      * Sets the ejb descriptor to which I refer.
-     * @param the ejb descriptor referenced, null if it is unknow at this time
+     * @param ejbDescriptor the ejb descriptor referenced, null if it is unknow at this time
      */
     public void setEjbDescriptor(EjbDescriptor ejbDescriptor) {
 	if (this.ejbDescriptor != null) {
@@ -156,7 +156,8 @@ public class EjbReferenceDescriptor extends EnvironmentProperty implements com.s
             ejbDescriptor.addEjbReferencer(this);
             if (isLocal()) {
                 if (!ejbDescriptor.isLocalInterfacesSupported() &&
-                    !ejbDescriptor.isLocalBusinessInterfacesSupported()) {
+                    !ejbDescriptor.isLocalBusinessInterfacesSupported() &&
+                    !ejbDescriptor.isOptionalLocalBusinessViewSupported()) {
                      throw new RuntimeException(localStrings.getLocalString(
                      "entreprise.deployment.invalidLocalInterfaceReference",
                      "Trying to set an ejb-local-ref on an EJB while the EJB does not define local interfaces"));
@@ -334,7 +335,7 @@ public class EjbReferenceDescriptor extends EnvironmentProperty implements com.s
 
     /** 
      * Sets the local or remote home classname of the referee EJB. 
-     * @param the class name of the EJB home.
+     * @param homeClassName the class name of the EJB home.
      */
     public void setEjbHomeInterface(String homeClassName) {
         setHomeClassName(homeClassName);
@@ -349,7 +350,7 @@ public class EjbReferenceDescriptor extends EnvironmentProperty implements com.s
     }
     /** 
      * Sets the local or remote bean interface classname of the referee EJB. 
-     * @param the classname of the EJB remote object.
+     * @param remoteClassName the classname of the EJB remote object.
      */
     public void setEjbInterface(String remoteClassName) {
         setBeanClassName(remoteClassName);
